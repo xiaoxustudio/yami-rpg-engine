@@ -2,6 +2,7 @@
 	"name": "yami-rpg-editor",
 	"version": "1.0.0",
 	"main": "main.js",
+	"packageManager": "pnpm@10.13.1",
 	"productName": "Yami RPG Editor",
 	"author": "Yami",
 	"description": "2D Game Editor",
@@ -35,6 +36,12 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/yami-pro/yami-rpg-editor.git"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"electron",
+			"sharp"
+		]
 	},
 	"build": {
 		"appId": "com.open.yami.rpgeditor",
