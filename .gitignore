@@ -5,6 +5,7 @@ Project/Templates/electron-win-x64/
 Project/Templates/electron-mac-universal.app/
 Project/Apk/decompiled/
 package-lock.json
+pnpm-lock.yaml
 .DS_Store
 extension
 build
