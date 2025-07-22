@@ -2815,7 +2815,6 @@ command-item.item command-mark-major:before {
 command-item.disabled > command-mark-major,
 command-item.disabled > command-mark-minor,
 command-item.disabled > command-fold,
-command-item.disabled > command-footer,
 command-item.disabled > command-text:not(.transparent),
 command-item.disabled > text,
 command-item.disabled > span > span {
@@ -2997,17 +2996,6 @@ command-fold:hover {
 command-fold:active {
 	background-color: var(--command-fold-background-active) !important;
 	border-color: var(--command-fold-background-active);
-}
-
-command-footer {
-	position: absolute;
-	margin: 3px 0;
-	left: 40px;
-	width: 14px;
-	height: 14px;
-	line-height: 12px;
-	text-indent: 0;
-	text-align: center;
 }
 
 command-mark-major {
