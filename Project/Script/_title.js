@@ -671,7 +671,7 @@ Title.maximizeClick = function (event) {
 
 // 关闭按钮 - 鼠标点击事件
 Title.closeClick = function (event) {
-	require('electron').ipcRenderer.send('close-window')
+	Title.windowBeforeClose()
 }
 
 // ******************************** 新建项目窗口 ********************************
