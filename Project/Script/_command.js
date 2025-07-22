@@ -13344,6 +13344,32 @@ Command.cases.script = {
 		tabSize: 2,
 		theme: ''
 	},
+	isMaximized: function () {
+		return $('#script').hasClass('maximized')
+	},
+	resize: function () {
+		const content = $('#script-script')
+		const parent = content.parentElement
+		if (!this.isMaximized()) {
+			content.style.width = ''
+			content.style.height = ''
+			const boundingRect = content.getBoundingClientRect()
+			this.editor.layout({
+				width: boundingRect.width,
+				height: parent.clientHeight - 60
+			})
+		} else {
+			const boundingRect = content.getBoundingClientRect()
+			// 保持content左右间距相同
+			content.style.width =
+				parent.clientWidth - boundingRect.left * 2 + 'px'
+			content.style.height = parent.clientHeight - 60 + 'px'
+			this.editor.layout({
+				width: parseFloat(content.style.width),
+				height: parseFloat(content.style.height)
+			})
+		}
+	},
 	initialize: function () {
 		$('#script-confirm').on('click', this.save.bind(this))
 
@@ -13373,6 +13399,10 @@ Command.cases.script = {
 					]
 				)
 			}
+		})
+
+		$('#script').on('resize', () => {
+			this.resize()
 		})
 
 		// 窗口已关闭事件

@@ -2998,33 +2998,37 @@
     </content-frame>
   </window-frame>
 
-  
-<!-- 创意工坊窗口 -->
-<window-frame id="workshop" mode="center">
-  <title-bar>Workshop<maximize></maximize><close></close></title-bar>
-  <content-frame>
-    <common-list id="workshop-list"></common-list>
-    <button id="workshop-upload">Upload</button>
-    <button id="workshop-confirm" name="confirm">Confirm</button>
-    <button id="workshop-cancel" name="cancel">Cancel</button>
-  </content-frame>
-</window-frame>
 
-<!-- 创意工坊项目窗口 -->
-<window-frame id="workshop-item" mode="center">
-  <title-bar>Workshop Item<maximize></maximize><close></close></title-bar>
-  <content-frame>
-    <grid-box>
-      <text>Type</text><select-box id="workshop-item-type"></select-box>
-      <text>Content</text><custom-box id="workshop-item-content" type="dialog-dir"></custom-box>
-      <text>Title</text><text-box id="workshop-item-title"></text-box>
-      <text>Preview</text><custom-box id="workshop-item-image" type="file" filter="image"></custom-box>
-      <text>Description</text><text-area id="workshop-item-description"></text-area>
-    </grid-box>
-    <button id="workshop-confirm" name="confirm">Confirm</button>
-    <button id="workshop-cancel" name="cancel">Cancel</button>
-  </content-frame>
-</window-frame>
+  <!-- 创意工坊窗口 -->
+  <window-frame id="workshop" mode="center">
+    <title-bar>Workshop<maximize></maximize>
+      <close></close>
+    </title-bar>
+    <content-frame>
+      <common-list id="workshop-list"></common-list>
+      <button id="workshop-upload">Upload</button>
+      <button id="workshop-confirm" name="confirm">Confirm</button>
+      <button id="workshop-cancel" name="cancel">Cancel</button>
+    </content-frame>
+  </window-frame>
+
+  <!-- 创意工坊项目窗口 -->
+  <window-frame id="workshop-item" mode="center">
+    <title-bar>Workshop Item<maximize></maximize>
+      <close></close>
+    </title-bar>
+    <content-frame>
+      <grid-box>
+        <text>Type</text><select-box id="workshop-item-type"></select-box>
+        <text>Content</text><custom-box id="workshop-item-content" type="dialog-dir"></custom-box>
+        <text>Title</text><text-box id="workshop-item-title"></text-box>
+        <text>Preview</text><custom-box id="workshop-item-image" type="file" filter="image"></custom-box>
+        <text>Description</text><text-area id="workshop-item-description"></text-area>
+      </grid-box>
+      <button id="workshop-confirm" name="confirm">Confirm</button>
+      <button id="workshop-cancel" name="cancel">Cancel</button>
+    </content-frame>
+  </window-frame>
 
   <!-- 图像剪辑窗口 -->
   <window-frame id="imageClip">
@@ -3293,7 +3297,6 @@
         </box>
       </field-set>
       <select-box id="event-type"></select-box>
-      <button id="event-script" name="Script">Script</button>
       <button id="event-confirm" name="confirm">Confirm</button>
       <button id="event-cancel" name="cancel">Cancel</button>
       <button id="event-apply" name="apply">Apply</button>
@@ -6098,6 +6101,7 @@
   <window-frame id="script">
     <title-bar>Script<text id='script-mark' class='hidden'>✱</text>
       <button id="script-change" name="script-change-ts">切换为TS</button>
+      <maximize id="script-maximize"></maximize>
       <close></close>
     </title-bar>
     <content-frame>
