@@ -24,7 +24,7 @@
 		"Project/Images/",
 		"Project/Locales/",
 		"Project/Templates/",
-		"Project/index.html",
+		"index.html",
 		"prettierrc.json",
 		"Runtime/",
 		"LICENSE",
@@ -33,7 +33,6 @@
 		"README.md",
 		"package-lock.json",
 		"!**/*.min.js",
-		"Unused",
-		"Project/html/body-end.html"
+		"Unused"
 	]
 }

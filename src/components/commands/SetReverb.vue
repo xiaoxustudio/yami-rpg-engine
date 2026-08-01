@@ -1,0 +1,39 @@
+<template>
+<window-frame id="setReverb">
+	<title-bar>Set Reverb<close /></title-bar>
+	<content-frame>
+		<grid-box>
+			<text>Type</text><select-box id="setReverb-type" /> <text>Dry</text
+			><number-var id="setReverb-dry" min="0" max="1" step="0.1" decimals="4" />
+			<text>Wet</text
+			><number-var id="setReverb-wet" min="0" max="1" step="0.1" decimals="4" />
+			<text>Easing</text><select-box id="setReverb-easingId" name="easing" />
+			<text>Duration</text
+			><number-box
+				id="setReverb-duration"
+				name="duration"
+				min="0"
+				max="3600000"
+				unit="ms"
+			 />
+			<text>Wait</text><select-box id="setReverb-wait" name="wait" />
+		</grid-box>
+		<button id="setReverb-confirm" name="confirm">Confirm</button>
+		<button id="setReverb-cancel" name="cancel">Cancel</button>
+	</content-frame>
+</window-frame>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>

@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-// 全局类型扩展声明 本文件集中声明 Project/Script/util/ 各模块对内置对象 / window 的新增成员类型, 避免 TS2339 / TS2551 报错。所有扩展均来自 util/*.ts 的实际运行时挂载。
+// 全局类型扩展声明 本文件集中声明 src/legacy/util/ 各模块对内置对象 / window 的新增成员类型, 避免 TS2339 / TS2551 报错。所有扩展均来自 util/*.ts 的实际运行时挂载。
 
 // 注：本文件保持 ambient script（无顶层 import/export），interface 声明才能自动合并到全局。故 EditorEvent 别名在此内联，不 import types/editor-event.ts（顶层 import 会破坏 ambient 语义）。
 type EditorEvent =
@@ -106,38 +106,13 @@ interface DataTransfer {
 interface HTMLElement {
 	count: number;
 	test(name: string): RegExp;
-	seek(name: string): HTMLElement | null;
 	direction: number;
 	// ScrollBar / CommandList 共用的滚动监听方法（scroll-listener.ts 中挂载到 HTMLElement.prototype）
 	addScrollListener: (...args: any[]) => any;
 	removeScrollListener: (...args: any[]) => any;
-	// element-methods.ts 中挂载到 HTMLElement.prototype 的元素方法 注：show/hide/clear 等方法被子类（FilterBox/LoadingOverlay/ToastManager 等）重写为不同签名，故返回类型用 any 兼容子类，避免 TS2416 冲突。
+	// element-utils.ts 中 read/write 访问 dataValue；addScrollbars / listenDraggingScrollbarEvent 运行时赋值下列实例成员
 	dataValue: any;
-	read(): any;
-	write(value: any): any;
-	clear(): any;
-	enable(): void;
-	disable(): void;
-	hasClass(className: string): boolean;
-	addClass(className: string): boolean;
-	removeClass(className: string): boolean;
 	seekUp(tagName: string, count?: number): HTMLElement | null;
-	css(...args: any[]): CSSStyleDeclaration;
-	rect(): DOMRect;
-	hide(): any;
-	show(...args: any[]): any;
-	hideChildNodes(): void;
-	showChildNodes(): void;
-	getFocus(mode?: string | null): void;
-	setTooltip(content?: string): void;
-	addScrollbars(): void;
-	addSetScrollMethod(): void;
-	hasScrollBar(): boolean;
-	isInContent(event: EditorEvent): boolean;
-	dispatchChangeEvent(index?: number): void;
-	dispatchResizeEvent(): void;
-	dispatchUpdateEvent(): void;
-	listenDraggingScrollbarEvent(...args: any[]): void;
 	beginScrolling(): void;
 	endScrolling(): void;
 	setScroll(left: number, top: number): void;
@@ -228,26 +203,16 @@ interface EventTarget {
 }
 
 interface HTMLElement {
-	addClass(name: string): boolean;
-	removeClass(name: string): boolean;
-	hasClass(name: string): boolean;
-	dispatchChangeEvent(): void;
-	dispatchUpdateEvent(): void;
-	css(): CSSStyleDeclaration;
-	css(property: string): string;
-	css(property: string, value: string): void;
-	css(properties: Record<string, string>): void;
-	setTooltip(text: string): void;
-	showChildNodes(): void;
-	hideChildNodes(): void;
-	listenDraggingScrollbarEvent(): void;
-	append(...nodes: (Node | string)[]): void;
-	read(...args: any[]): any;
-	inputCode(code: any): void;
 	_paddingTop: number;
 	innerHeight: number;
 	dataValue: any;
 	dataIndex: any;
+	dataKey: any;
+	dataParent: any;
+	dataList: any;
+	dataItem: any;
+	dataIndent: any;
+	contents: any[];
 	varSpace: any;
 	varType: any;
 	varKey: any;
@@ -268,6 +233,7 @@ interface HTMLElement {
 	dragging: any;
 	restoring: boolean;
 	_built: boolean;
+	_initialized: boolean;
 	_checkVariablesScheduled: boolean;
 	windowVariableChange: (event: EditorEvent) => void;
 	speedX: number;
@@ -276,10 +242,7 @@ interface HTMLElement {
 	start: number;
 	back: any;
 	item: any;
-	hasScrollBar(): boolean;
 	elements: any[];
-	show(...args: any[]): any;
-	hide(...args: any[]): any;
 }
 
 interface Element {
@@ -309,6 +272,7 @@ interface ParentNode {
 	inputCode(code: any): void;
 	// file-head-pane.ts 中局使用（head = this.parentNode 为 ParentNode，需访问 .links）
 	links: any;
+	textNode: any;
 }
 
 interface ChildNode {
@@ -333,6 +297,11 @@ interface Event {
 	lastValue: any;
 	key: any;
 	last: any;
+	button: number;
+	altKey: boolean;
+	mode: any;
+	scrollLeft: number;
+	scrollTop: number;
 }
 
 interface KeyboardEvent {
@@ -422,3 +391,11 @@ interface TimerStatic {
 	appendUpdater: ((key: string, updater: (deltaTime: number) => void) => void) | null;
 	removeUpdater: ((key: string, updater: (deltaTime: number) => void) => void) | null;
 }
+
+declare module 'xml2js';
+declare module 'koa';
+declare module 'mime-types';
+declare module 'qrcode';
+declare module 'fs-extra';
+declare module 'yauzl';
+declare module 'markdown-it';

@@ -9,8 +9,8 @@ import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
 
 let isBuilding = false;
-let currentChildProcess = null;
-let abortController = null;
+let currentChildProcess: any = null;
+let abortController: AbortController | null = null;
 
 const defaultConfig = {
 	apkPath: '@/app-release.apk',
@@ -36,7 +36,7 @@ const defaultConfig = {
 	projectPath: ''
 };
 
-const ICON_SIZES = {
+const ICON_SIZES: Record<string, number> = {
 	'mipmap-mdpi': 48,
 	'mipmap-hdpi': 72,
 	'mipmap-xhdpi': 96,
@@ -81,8 +81,8 @@ async function copyFolderAsync(source: string, destination: string): Promise<voi
 }
 
 function sendLog(msg: string, percentage: number | null = null, isError: boolean = false): void {
-	if (global.editor && typeof global.editor.send === 'function') {
-		global.editor.send('apk-log', {
+	if ((globalThis as any).editor && typeof (globalThis as any).editor.send === 'function') {
+		(globalThis as any).editor.send('apk-log', {
 			done: isError,
 			msg: percentage !== null ? `[${percentage}%] ${msg}` : msg
 		});
@@ -141,7 +141,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const decompileResult = await decompileApk(config);
 		if (!decompileResult.success) {
-			sendLog(decompileResult.error, currentProgress, true);
+			sendLog(decompileResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 15; // 25%
@@ -150,7 +150,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const manifestResult = await modifyManifest(config);
 		if (!manifestResult.success) {
-			sendLog(manifestResult.error, currentProgress, true);
+			sendLog(manifestResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 10; // 35%
@@ -159,7 +159,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const stringsResult = await modifyStrings(config);
 		if (!stringsResult.success) {
-			sendLog(stringsResult.error, currentProgress, true);
+			sendLog(stringsResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 10; // 45%
@@ -168,7 +168,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const iconsResult = await replaceIconsWithSharp(config);
 		if (!iconsResult.success) {
-			sendLog(iconsResult.error, currentProgress, true);
+			sendLog(iconsResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 15; // 60%
@@ -177,7 +177,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const roundIconsResult = await removeRoundIcons(config);
 		if (!roundIconsResult.success) {
-			sendLog(roundIconsResult.error, currentProgress, true);
+			sendLog(roundIconsResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 5; // 65%
@@ -186,7 +186,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const resourceResult = await fixResourceReferences(config);
 		if (!resourceResult.success) {
-			sendLog(resourceResult.error, currentProgress, true);
+			sendLog(resourceResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 10; // 75%
@@ -207,7 +207,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const rebuildResult = await rebuildApk(config);
 		if (!rebuildResult.success) {
-			sendLog(rebuildResult.error, currentProgress, true);
+			sendLog(rebuildResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 15; // 90%
@@ -216,7 +216,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 
 		const zipalignResult = await zipalignApk(config);
 		if (!zipalignResult.success) {
-			sendLog(zipalignResult.error, currentProgress, true);
+			sendLog(zipalignResult.error ?? '', currentProgress, true);
 			return false;
 		}
 		currentProgress += 5; // 95%
@@ -226,7 +226,7 @@ async function main(options: ApkOptions = {}): Promise<ApkResult> {
 		if (config.isSign) {
 			const signResult = await signApk(config);
 			if (!signResult.success) {
-				sendLog(signResult.error, currentProgress, true);
+				sendLog(signResult.error ?? '', currentProgress, true);
 				return false;
 			}
 		}
@@ -264,7 +264,7 @@ async function decompileApk(config: ApkConfig): Promise<{ success: boolean; erro
 		currentChildProcess = child;
 
 		// 监听中止信号
-		abortController.signal.addEventListener('abort', () => {
+		abortController!.signal.addEventListener('abort', () => {
 			if (child) {
 				child.kill('SIGINT');
 				resolve({
@@ -360,7 +360,7 @@ async function updateStringsFile(stringsPath: string, config: ApkConfig): Promis
 		let found = false;
 
 		if (resources.string) {
-			resources.string.forEach((item) => {
+			resources.string.forEach((item: any) => {
 				if (item.$.name === 'app_name') {
 					item._ = config.appName;
 					found = true;
@@ -535,10 +535,10 @@ async function cleanStylesXml(stylesPath: string): Promise<void> {
 	const result = await parseXml(xml);
 
 	if (result.resources && result.resources.style) {
-		result.resources.style.forEach((style) => {
+		result.resources.style.forEach((style: any) => {
 			if (style.$ && style.$.name === 'AppTheme') {
 				if (style.item) {
-					style.item = style.item.filter((item) => {
+					style.item = style.item.filter((item: any) => {
 						return !(
 							item.$.name === 'android:roundIcon' &&
 							item._ === '@mipmap/ic_launcher_round'
@@ -559,7 +559,7 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 	const result = await parseXml(xml);
 
 	if (result.resources && result.resources.public) {
-		result.resources.public = result.resources.public.filter((item) => {
+		result.resources.public = result.resources.public.filter((item: any) => {
 			const name = item.$.name;
 			const type = item.$.type;
 
@@ -695,7 +695,7 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 
 function parseXml(xml: string): Promise<any> {
 	return new Promise((resolve, reject) => {
-		parseString(xml, (err, result) => {
+		parseString(xml, (err: any, result: any) => {
 			if (err) reject(err);
 			else resolve(result);
 		});

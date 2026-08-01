@@ -1,0 +1,30 @@
+<template>
+<window-frame id="setCooldown">
+	<title-bar>Set Cooldown<close /></title-bar>
+	<content-frame>
+		<grid-box>
+			<text>Actor</text><custom-box id="setCooldown-actor" type="actor" />
+			<text>Operation</text><select-box id="setCooldown-operation" />
+			<text>Cooldown Key</text><select-var id="setCooldown-key" />
+			<text>Cooldown Time</text
+			><number-var id="setCooldown-cooldown" min="1" max="3600000" unit="ms" />
+		</grid-box>
+		<button id="setCooldown-confirm" name="confirm">Confirm</button>
+		<button id="setCooldown-cancel" name="cancel">Cancel</button>
+	</content-frame>
+</window-frame>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>

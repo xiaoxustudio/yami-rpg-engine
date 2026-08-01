@@ -22,15 +22,13 @@
 		"Unused/**",
 		"jsons/**",
 		"Project/Templates/**",
-		"Project/Script/vs/**",
-		"Project/index.html",
+		"index.html",
 		"Project/index.css",
-		"Project/Script/main/module-init.js",
+		"src/legacy/main/module-init.js",
 		"Project/Apk/**",
 		"Project/Fonts/**",
 		"Project/Images/**",
-		"Project/Locales/**",
-		"Project/html/**"
+		"Project/Locales/**"
 	],
 	"rules": {
 		"eslint/no-unused-vars": [

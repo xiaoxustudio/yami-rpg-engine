@@ -1,0 +1,22 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true
+	},
+	"include": ["src/**/*.ts", "src/**/*.vue", "main/**/*.ts", "Project/global.d.ts"],
+	"exclude": [
+		"src/legacy/**",
+		"Project/Templates/**",
+		"node_modules/**",
+		"dist/**",
+		"dist-electron/**",
+		"build/**",
+		"Unused/**",
+		"jsons/**"
+	]
+}

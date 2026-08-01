@@ -16,7 +16,7 @@
 
 因为我们要尽量保持原有的东西不变，以便在`原作者`更新时更好的进行合并更新操作。
 
-`Project\Script\module`是模块文件，我们的改动一般都放在这。
+`src\legacy\module`是模块文件，我们的改动一般都放在这。
 
 其次，`css`尽量在`Project\css\`下对应的模块文件中添加，内联样式尽量少用。
 `index.css` 由 `build-css.js` 自动生成（扫描 `Project\css\` 下所有 `.css` 文件生成 `@import` 入口），请勿直接编辑。

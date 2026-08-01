@@ -1,0 +1,44 @@
+<template>
+	<window-frame id="imageClip">
+		<title-bar
+			>Image Clip<maximize></maximize>
+			<close></close>
+		</title-bar>
+		<content-frame>
+			<box id="imageClip-screen" tabindex="-1">
+				<img id="imageClip-image" />
+				<marquee-area id="imageClip-marquee" />
+			</box>
+			<flex-box id="imageClip-flex">
+				<number-box id="imageClip-x" min="0" max="10000"
+					><text class="label">X:</text></number-box
+				>
+				<number-box id="imageClip-y" min="0" max="10000"
+					><text class="label">Y:</text></number-box
+				>
+				<number-box id="imageClip-width" min="0" max="10000"
+					><text class="label">W:</text></number-box
+				>
+				<number-box id="imageClip-height" min="0" max="10000"
+					><text class="label">H:</text></number-box
+				>
+			</flex-box>
+			<button id="imageClip-confirm" name="confirm">Confirm</button>
+			<button id="imageClip-cancel" name="cancel">Cancel</button>
+		</content-frame>
+	</window-frame>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>

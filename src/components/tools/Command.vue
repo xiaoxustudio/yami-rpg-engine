@@ -1,0 +1,41 @@
+<template>
+	<window-frame id="command">
+		<title-bar>Custom Command<close /></title-bar>
+		<content-frame>
+			<field-set id="command-list-fieldset" class="input pad">
+				<legend>List</legend>
+				<node-list id="command-list" padded />
+			</field-set>
+			<box id="command-inspector">
+				<detail-box id="command-overview-detail" open>
+					<detail-summary>Overview</detail-summary>
+					<box id="command-overview" />
+				</detail-box>
+				<detail-box id="command-settings-detail" open>
+					<detail-summary>Settings</detail-summary>
+					<detail-grid id="command-settings-grid">
+						<text>Alias</text><text-box id="command-alias" /> <text>Keywords</text
+						><text-box id="command-keywords" />
+					</detail-grid>
+				</detail-box>
+			</box>
+			<button id="command-confirm" name="confirm">Confirm</button>
+			<button id="command-cancel" name="cancel">Cancel</button>
+			<button id="command-apply" name="apply">Apply</button>
+		</content-frame>
+	</window-frame>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>

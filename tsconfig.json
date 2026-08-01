@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
 	  "paths": {
-	   "@/*": ["./Project/Script/*"]
+	   "@/*": ["./src/legacy/*"],
+	   "@app/*": ["./src/*"]
 	  },
 	 "target": "es2022",
 	 "module": "esnext",
@@ -26,7 +27,7 @@
 		"verbatimModuleSyntax": false,
 		"types": ["node"]
 	},
-	"include": ["Project/Script/**/*.ts", "main/**/*.ts", "Project/global.d.ts"],
+	"include": ["src/**/*.ts", "src/**/*.vue", "main/**/*.ts", "Project/global.d.ts"],
 	"exclude": [
 		"Project/Templates/**",
 		"node_modules/**",

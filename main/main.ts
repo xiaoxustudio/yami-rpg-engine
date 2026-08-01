@@ -54,7 +54,7 @@ function getLocalIpAddress(): string[] {
 	const results = new Set<string>();
 
 	for (const name of Object.keys(interfaces)) {
-		for (const iface of interfaces[name]) {
+		for (const iface of interfaces[name]!) {
 			if (iface.family !== 'IPv4' || iface.internal !== false) continue;
 
 			results.add(iface.address);
@@ -71,7 +71,7 @@ ipcMain.on('get-server-state', (event) => {
 ipcMain.handle('start-server', (event, config) => {
 	const basePath = path.dirname(config.path);
 	const instanceServer = new Koa();
-	instanceServer.use(async (ctx) => {
+	instanceServer.use(async (ctx: any) => {
 		try {
 			const filePath = path.join(basePath, '.preview', ctx.path);
 			const ext = path.extname(filePath);
@@ -102,10 +102,10 @@ ipcMain.handle('start-server', (event, config) => {
 
 ipcMain.handle('to-qrcode', (event, url) => {
 	return QRCode.toDataURL(url, { errorCorrectionLevel: 'H' })
-		.then((url) => {
+		.then((url: string) => {
 			return url;
 		})
-		.catch((err) => {
+		.catch((err: any) => {
 			console.error(err);
 		});
 });
@@ -120,7 +120,7 @@ ipcMain.handle('to-excel', async (event, { langs, list }) => {
 	worksheet.columns = [
 		{ header: 'ID', key: 'id', width: 20 },
 		{ header: 'Name', key: 'name', width: 10 },
-		...langs.map((v) => ({ header: v, key: v, width: 10 })),
+		...langs.map((v: string) => ({ header: v, key: v, width: 10 })),
 		{ header: 'parentID', key: 'parentID', width: 20 },
 		{ header: 'isDir', key: 'isDir', width: 10 }
 	];
@@ -136,12 +136,12 @@ ipcMain.handle('to-excel', async (event, { langs, list }) => {
 					isDir: 1
 				});
 			} else {
-				const data = {
+				const data: Record<string, any> = {
 					id: item.id,
 					name: item.name || '',
 					parentID
 				};
-				langs.forEach((v) => {
+				langs.forEach((v: string) => {
 					data[v] = item.contents[v];
 				});
 				worksheet.addRow(data);
@@ -158,7 +158,7 @@ ipcMain.handle('to-excel', async (event, { langs, list }) => {
 		.then((result) => {
 			if (result.canceled) return;
 			const filePath = result.filePath;
-			return workbook.xlsx.writeFile(filePath);
+			return workbook.xlsx.writeFile(filePath!);
 		});
 });
 
@@ -182,7 +182,7 @@ ipcMain.handle('from-excel', async (event) => {
 
 		// 解析表头：建立列标题到列号的映射
 		const headerRow = worksheet.getRow(1);
-		const colMap = {};
+		const colMap: Record<string, number> = {};
 		headerRow.eachCell((cell, colNumber) => {
 			const value = String(cell.value || '').trim();
 			if (value) colMap[value] = colNumber;
@@ -196,7 +196,7 @@ ipcMain.handle('from-excel', async (event) => {
 			const isDirCell = row.getCell(colMap['isDir']);
 			const isDir = isDirCell && isDirCell.value === 1;
 
-			const rowData = isDir
+			const rowData: Record<string, any> = isDir
 				? {
 						class: 'folder',
 						id: row.getCell(colMap['ID']).value,
@@ -315,8 +315,8 @@ const writeFile = async (filePath: string, text: string, check?: boolean) => {
 	return FSP.writeFile(filePath, text);
 };
 
-const promises = [];
-const protectPromise = function (promise) {
+const promises: Promise<any>[] = [];
+const protectPromise = function (promise: Promise<any>) {
 	promises.push(promise);
 	promise.finally(() => {
 		const index = promises.indexOf(promise);
@@ -363,11 +363,11 @@ const createMenuTemplate = function () {
 	const template = [];
 	const file = {
 		label: 'File',
-		submenu: []
+		submenu: [] as any[]
 	};
 	const edit = {
 		label: 'Edit',
-		submenu: []
+		submenu: [] as any[]
 	};
 	// 开发模式：开启F5刷新
 	if (debug) {
@@ -422,12 +422,36 @@ const createEditorWindow = function () {
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
+			sandbox: false,
 			spellcheck: false,
 			additionalArguments: ['--disable-security-warnings', ...(debug ? ['--debug-mode'] : [])]
 		}
 	}) as BrowserWindow & BrowserWindowExtension;
 
 	editor.setMenuBarVisibility(process.platform === 'darwin');
+
+	editor.webContents.on('console-message', (event, level, message, line, sourceId) => {
+		const levelStr = ['log', 'warning', 'error'][level] || 'log';
+		const tag = `[renderer:${levelStr}]`;
+		const loc = `${sourceId}:${line}`;
+		if (level === 2) {
+			console.error(`${tag} ${message} (${loc})`);
+		} else {
+			console.log(`${tag} ${message} (${loc})`);
+		}
+	});
+	editor.webContents.on('did-finish-load', () => {
+		editor.webContents
+			.executeJavaScript(`
+			window.addEventListener('error', (e) => {
+				console.error('[Uncaught Error]', e.error && e.error.stack ? e.error.stack : e.message, '@', e.filename + ':' + e.lineno + ':' + e.colno);
+			});
+			window.addEventListener('unhandledrejection', (e) => {
+				console.error('[Unhandled Rejection]', e.reason && e.reason.stack ? e.reason.stack : e.reason);
+			});
+		`)
+			.catch(() => {});
+	});
 
 	if (useViteDev) {
 		// Vite dev 模式：载 dev server URL，HMR + 模块解析由 Vite 接管
@@ -447,6 +471,7 @@ const createEditorWindow = function () {
 	const configPath = path.resolve(path.join(os.homedir(), '.openyami'), 'config.json');
 	const promise = FSP.readFile(configPath);
 	editor.once('ready-to-show', () => {
+		editor.show();
 		editor.maximize();
 		promise
 			.then((config: Buffer) => {
@@ -487,7 +512,7 @@ const createEditorWindow = function () {
 		}
 	});
 
-	global.editor = editor;
+	(globalThis as any).editor = editor;
 
 	ipcMain.handle('build-apk', (event, config) => {
 		const send = (data: any) => {
@@ -617,7 +642,7 @@ const createEditorWindow = function () {
 		return { res, error };
 	});
 
-	let tscProcess = null;
+	let tscProcess: any = null;
 
 	// 启动TSC
 	function startTSC(projectDir: string) {
@@ -630,10 +655,10 @@ const createEditorWindow = function () {
 			stdio: ['ignore', 'pipe', 'pipe'],
 			cwd: projectDir
 		});
-		tscProcess.stdout.on('data', (data) => {
+		tscProcess.stdout.on('data', (data: any) => {
 			if (!editor.isDestroyed()) editor.send('tsc-log', data.toString());
 		});
-		tscProcess.stderr.on('data', (data) => {
+		tscProcess.stderr.on('data', (data: any) => {
 			if (!editor.isDestroyed()) editor.send('tsc-log', data.toString());
 		});
 	}
@@ -685,6 +710,7 @@ const createPlayerWindow = function (
 		webPreferences: {
 			nodeIntegration: true,
 			contextIsolation: false,
+			sandbox: false,
 			spellcheck: false,
 			additionalArguments: ['--disable-security-warnings', '--debug-mode']
 		}
@@ -734,10 +760,8 @@ const createPlayerWindow = function (
 // 获取事件来源窗口
 const getWindowFromEvent = function (
 	event: IpcMainEvent | IpcMainInvokeEvent
-): (BrowserWindow & BrowserWindowExtension) | null {
-	return BrowserWindow.fromWebContents(event.sender) as
-		| (BrowserWindow & BrowserWindowExtension)
-		| null;
+): BrowserWindow & BrowserWindowExtension {
+	return BrowserWindow.fromWebContents(event.sender) as BrowserWindow & BrowserWindowExtension;
 };
 
 ipcMain.on('minimize-window', (event) => {
@@ -767,7 +791,7 @@ ipcMain.on('close-window', (event) => {
 
 ipcMain.on('prevent-close-window', (event) => {
 	const window = getWindowFromEvent(event);
-	window.cancelForceClose();
+	window.cancelForceClose?.();
 });
 
 ipcMain.on('force-close-window', (event) => {
@@ -796,7 +820,7 @@ ipcMain.on('show-item-in-folder', (event, filePath) => {
 });
 
 let currentprojectPath = '';
-let currentPlayerWindow = null;
+let currentPlayerWindow: any = null;
 ipcMain.on('create-player-window', (event, projectPath) => {
 	const window = getWindowFromEvent(event);
 	currentprojectPath = projectPath;

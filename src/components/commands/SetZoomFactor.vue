@@ -1,0 +1,44 @@
+<template>
+	<window-frame id="setZoomFactor">
+		<title-bar>Set Zoom Factor<close /></title-bar>
+		<content-frame>
+			<grid-box>
+				<text>Zoom Factor</text
+				><number-var
+					id="setZoomFactor-zoom"
+					min="1"
+					max="8"
+					step="0.1"
+					decimals="4"
+				 />
+				<text>Easing</text><select-box id="setZoomFactor-easingId" name="easing" />
+				<text>Duration</text
+				><number-var
+					id="setZoomFactor-duration"
+					name="duration"
+					min="0"
+					max="3600000"
+					unit="ms"
+				 />
+				<text>Wait</text><select-box id="setZoomFactor-wait" name="wait" />
+			</grid-box>
+			<button id="setZoomFactor-confirm" name="confirm">Confirm</button>
+			<button id="setZoomFactor-cancel" name="cancel">Cancel</button>
+		</content-frame>
+	</window-frame>
+	
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>

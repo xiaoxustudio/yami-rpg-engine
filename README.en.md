@@ -75,7 +75,7 @@ pnpm run build:linux
 
 1. Download the resource package you need to update from https://github.com/Open-Yami-Community/yami-rpg-editor/releases/tag/win
 2. Extract and replace it to `C:\Users\<username>\.openyami\Templates`
-3. Replace the `C:\Users\<username>\.openyami\Templates\template.json` file with the `./Project/Script/module/packmeta.json` file from this repository
+3. Replace the `C:\Users\<username>\.openyami\Templates\template.json` file with the `./src/legacy/module/packmeta.json` file from this repository
 4. Restart the editor
 
 ## Contributors

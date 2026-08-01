@@ -1,0 +1,143 @@
+import { ctrl } from '@/util/event-accessors.ts';
+import { write } from '@/util/element-utils.ts';
+import { Menu } from '@/components/menu-list.ts';
+import { Reference } from '@/log/related-references.ts';
+import { Local } from '@/tools/localization.ts';
+import { Variable } from './variable.ts';
+
+Variable.listSelect = function (event: any) {
+	const item = event.value;
+	return item.class !== 'folder'
+		? Variable.openPropertyPanel(item)
+		: Variable.closePropertyPanel();
+};
+
+Variable.listRecord = function (event: any) {
+	Variable.changed = true;
+	const response = event.value;
+	switch (response.type) {
+		case 'rename': {
+			// 如果是变量则执行操作否则进入默认分支
+			const { item, oldValue, newValue } = response;
+			if (Variable.panel.variable === item) {
+				write(Variable.inputs.name, newValue);
+				Variable.saveHistory(item, 'name', oldValue);
+				break;
+			}
+		}
+		default:
+			Variable.history.save({
+				type: 'variable-list-operation',
+				response: response
+			});
+			break;
+	}
+};
+
+Variable.listPopup = function (this: any, event: any) {
+	const item = event.value;
+	const selected = !!item;
+	const copyable = selected && item.class !== 'folder';
+	const pastable = (Clipboard as any).has('yami.data.variable');
+	const undoable = Variable.history.canUndo();
+	const redoable = Variable.history.canRedo();
+	const get = (Local.createGetter as any)('menuVariableList');
+	const items: any[] = [
+		{
+			label: get('create'),
+			submenu: [
+				{
+					label: get('create.folder'),
+					click: () => {
+						this.addNodeTo(this.createFolder(), item);
+					}
+				},
+				{
+					label: get('create.variable'),
+					accelerator: 'Insert',
+					click: () => {
+						this.addNodeTo(this.createVariable(), item);
+					}
+				}
+			]
+		},
+		{
+			label: get('copy'),
+			accelerator: ctrl('C'),
+			enabled: copyable,
+			click: () => {
+				this.copy(item);
+			}
+		},
+		{
+			label: get('paste'),
+			accelerator: ctrl('V'),
+			enabled: pastable,
+			click: () => {
+				this.paste(item);
+			}
+		},
+		{
+			label: get('delete'),
+			accelerator: 'Delete',
+			enabled: selected,
+			click: () => {
+				this.delete(item);
+			}
+		},
+		{
+			label: get('rename'),
+			accelerator: 'F2',
+			enabled: selected,
+			click: () => {
+				this.rename(item);
+			}
+		},
+		{
+			label: get('undo'),
+			accelerator: ctrl('Z'),
+			enabled: undoable,
+			click: () => {
+				Variable.undo();
+			}
+		},
+		{
+			label: get('redo'),
+			accelerator: ctrl('Y'),
+			enabled: redoable,
+			click: () => {
+				Variable.redo();
+			}
+		}
+	];
+	if (copyable) {
+		items.unshift({
+			label: `ID: ${item.id}`,
+			style: 'id',
+			click: () => {
+				navigator.clipboard.writeText(item.id);
+			}
+		});
+		items.push({
+			label: get('find-references'),
+			accelerator: 'Alt+LB',
+			click: () => {
+				(Reference.openRelated as any)(item.id);
+			}
+		});
+	}
+	(Menu.popup as any)(
+		{
+			x: event.clientX,
+			y: event.clientY
+		},
+		items
+	);
+};
+
+Variable.listOpen = function (event: any) {
+	if (event.value.class !== 'folder' && Variable.target instanceof Object) {
+		(Variable.target as any).getFocus?.();
+		Variable.confirm();
+	}
+};

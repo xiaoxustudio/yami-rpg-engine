@@ -1,0 +1,28 @@
+<template>
+	<window-frame id="fileEvent-parameter">
+		<title-bar>Parameter<close></close></title-bar>
+		<content-frame>
+			<grid-box>
+				<text>Type</text><select-box id="fileEvent-parameter-type" /> <text>Key</text
+				><text-box id="fileEvent-parameter-key" /> <text>Note</text
+				><text-area id="fileEvent-parameter-note" />
+			</grid-box>
+			<button id="fileEvent-parameter-confirm" name="confirm">Confirm</button>
+			<button id="fileEvent-parameter-cancel" name="cancel">Cancel</button>
+		</content-frame>
+	</window-frame>
+</template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useInspectorStore } from '@app/stores/inspector';
+import { useLocalStore } from '@app/stores/local';
+
+const inspector = useInspectorStore();
+const local = useLocalStore();
+
+onMounted(() => {
+	inspector.syncState();
+	local.syncState();
+});
+</script>
