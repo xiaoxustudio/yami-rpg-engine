@@ -2,7 +2,6 @@ import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { IfCondition } from '@/command/conditional-condition-window.ts';
-import { TreeList } from '@/components/tree-list.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { IListInterface } from '@/types/list-interface.ts';
 import { Local } from './localization.ts';
@@ -78,7 +77,7 @@ export class ConditionListInterface implements IListInterface {
 		if (item?.conditions === list.read()) {
 			const element = item.element;
 			const list = element?.parentNode;
-			if (list instanceof TreeList) {
+			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
 				(list as any).updateConditionIcon(item);
 			}
 		}

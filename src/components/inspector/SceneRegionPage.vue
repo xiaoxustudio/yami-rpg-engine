@@ -61,7 +61,7 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<parameter-pane id="sceneRegion-parameter-pane"></parameter-pane>
+	<ParameterPane id="sceneRegion-parameter-pane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +74,7 @@ import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

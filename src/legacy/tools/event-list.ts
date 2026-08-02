@@ -2,7 +2,6 @@ import { Command } from '@/command/command-object.ts';
 import { addClass } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { EventEditor } from '@/command/event-editor.ts';
-import { TreeList } from '@/components/tree-list.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Local } from './localization.ts';
 
@@ -89,7 +88,7 @@ export class EventListInterface implements IListInterface {
 		if (item?.events === list.read()) {
 			const element = item.element;
 			const list = element?.parentNode;
-			if (list instanceof TreeList) {
+			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
 				(list as any).updateEventIcon(item);
 			}
 		}

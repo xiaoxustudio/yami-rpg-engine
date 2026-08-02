@@ -1,7 +1,7 @@
 <template>
 	<div class="select-var" ref="root" :id="props.id">
-		<SelectBox v-if="mode === 'constant'" ref="selectBoxRef" />
-		<CustomBox v-else-if="mode === 'variable'" ref="varBoxRef" type="variable" filter="all" />
+		<SelectBox v-show="mode === 'constant'" ref="selectBoxRef" />
+		<CustomBox v-show="mode === 'variable'" ref="varBoxRef" type="variable" filter="all" />
 	</div>
 </template>
 
@@ -145,6 +145,14 @@ const getFocus = (focusMode: any): void => {
 	}
 };
 
+const loadItems = (items: any): void => {
+	selectBoxEl()?.loadItems?.(items);
+};
+
+const clear = (): void => {
+	selectBoxEl()?.clear?.();
+};
+
 const keydown = (event: KeyboardEvent): void => {
 	switch (event.code) {
 		case 'Slash':
@@ -181,7 +189,18 @@ const on = (
 	root.value?.addEventListener(type, listener as EventListener, options);
 };
 
-defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
+defineExpose({
+	read,
+	write,
+	switch: switchMode,
+	enable,
+	disable,
+	getFocus,
+	loadItems,
+	clear,
+	on,
+	root
+});
 
 watch(mode, () => {
 	const el = root.value;
@@ -205,6 +224,8 @@ onMounted(() => {
 	el.enable = enable;
 	el.disable = disable;
 	el.getFocus = getFocus;
+	el.loadItems = loadItems;
+	el.clear = clear;
 	el.on = on;
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('pointerdown', pointerdown as EventListener);

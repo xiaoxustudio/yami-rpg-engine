@@ -9,7 +9,6 @@ import {
 	read,
 	rect,
 	removeClass,
-	seek,
 	setTooltip
 } from '@/util/element-utils.ts';
 import { SettingConfig } from '@/module/settingconfig';
@@ -220,7 +219,8 @@ export class CommandList extends HTMLElement {
 			let className = '';
 			let color = '';
 			let mainColor = 'normal';
-			li = document.createElement('command-item');
+			li = document.createElement('div');
+			addClass(li, 'command-item');
 			li.contents = [];
 			li.dataKey = true;
 			li.dataParent = parent;
@@ -273,7 +273,8 @@ export class CommandList extends HTMLElement {
 				}
 
 				if (content.break !== undefined) {
-					li = document.createElement('command-item');
+					li = document.createElement('div');
+					addClass(li, 'command-item');
 					li.contents = [];
 					li.dataKey = false;
 					li.dataList = commands;
@@ -285,7 +286,8 @@ export class CommandList extends HTMLElement {
 				}
 
 				if (content.fold !== undefined) {
-					(li as any).fold = document.createElement('command-fold');
+					(li as any).fold = document.createElement('div');
+					addClass((li as any).fold, 'command-fold');
 					li.appendChild((li as any).fold);
 				}
 
@@ -293,7 +295,8 @@ export class CommandList extends HTMLElement {
 					buffer.push(content.children);
 
 					if (i < length) {
-						li = document.createElement('command-item');
+						li = document.createElement('div');
+						addClass(li, 'command-item');
 						li.contents = [];
 						li.dataKey = false;
 						li.dataList = commands;
@@ -325,7 +328,8 @@ export class CommandList extends HTMLElement {
 					const items = new Array(length);
 					items[0] = li;
 					for (let i = 1; i < length; i++) {
-						li = document.createElement('command-item');
+						li = document.createElement('div');
+						addClass(li, 'command-item');
 						li.contents = [];
 						li.dataKey = false;
 						li.dataList = commands;
@@ -336,7 +340,8 @@ export class CommandList extends HTMLElement {
 						items[i] = li;
 					}
 					if (lines > MAX_LINES) {
-						const text = document.createElement('text');
+						const text = document.createElement('div');
+						addClass(text, 'text');
 						text.textContent = `... ${lines} lines`;
 						addClass(text, 'gray');
 						li.appendChild(text);
@@ -379,18 +384,21 @@ export class CommandList extends HTMLElement {
 		element.style.textIndent = this.computeTextIndent(element.dataIndent);
 
 		if (element.dataKey) {
-			const mark = document.createElement('command-mark-major');
+			const mark = document.createElement('div');
+			addClass(mark, 'command-mark-major');
 			mark.textContent = '>';
 			element.insertBefore(mark, element.firstElementChild);
 		} else {
-			const mark = document.createElement('command-mark-minor');
+			const mark = document.createElement('div');
+			addClass(mark, 'command-mark-minor');
 			mark.textContent = ':';
 			element.insertBefore(mark, element.firstElementChild);
 		}
 
 		for (const content of element.contents) {
 			if (content.text !== undefined) {
-				const text = document.createElement('command-text');
+				const text = document.createElement('div');
+				addClass(text, 'command-text');
 				text.textContent = content.text;
 				addClass(text, content.color);
 				if (content.textId) {
@@ -464,7 +472,8 @@ export class CommandList extends HTMLElement {
 				if (folded) {
 					element.fold.textContent = '+';
 					if (!element.ellipsis) {
-						element.ellipsis = document.createElement('command-text');
+						element.ellipsis = document.createElement('div');
+						addClass(element.ellipsis, 'command-text');
 						element.ellipsis.textContent = ' ......';
 						element.appendChild(element.ellipsis);
 					}
@@ -495,7 +504,8 @@ export class CommandList extends HTMLElement {
 	createBlankElement(commands: any, index: any, indent: any, parent: any) {
 		let blank = commands.blank;
 		if (blank === undefined) {
-			blank = document.createElement('command-item');
+			blank = document.createElement('div');
+			addClass(blank, 'command-item');
 
 			blank.contents = Array.empty;
 			blank.enabled = true;
@@ -1166,7 +1176,7 @@ export class CommandList extends HTMLElement {
 				lastIndent = indent;
 				while (indent-- > 0) string += '　　';
 				for (const node of element.children) {
-					if (node.tagName === 'COMMAND-FOLD') {
+					if (hasClass(node, 'command-fold')) {
 						continue;
 					}
 					if (hasClass(node, 'transparent')) {
@@ -1680,34 +1690,31 @@ try {
 			const element = elements[i];
 			if (!element) continue;
 			if (searchMode.matchLine) {
-				switch (element.tagName) {
-					case 'COMMAND-FOLD':
-					case 'COMMAND-CONTAINER':
-						continue;
-					default:
-						if (searchMode.regex && str instanceof RegExp) {
-							if (str.test(element.textContent))
-								findList.push({
-									node: element,
-									index: i,
-									sub: element
-								});
-						} else if (
-							searchMode.caseInsensitive &&
-							element.textContent.toLowerCase().includes(str.toLowerCase())
-						)
-							findList.push({
-								node: element,
-								index: i,
-								sub: null
-							});
-						else if (element.textContent.includes(str))
-							findList.push({
-								node: element,
-								index: i,
-								sub: null
-							});
+				if (hasClass(element, 'command-fold') || hasClass(element, 'command-container')) {
+					continue;
 				}
+				if (searchMode.regex && str instanceof RegExp) {
+					if (str.test(element.textContent))
+						findList.push({
+							node: element,
+							index: i,
+							sub: element
+						});
+				} else if (
+					searchMode.caseInsensitive &&
+					element.textContent.toLowerCase().includes(str.toLowerCase())
+				)
+					findList.push({
+						node: element,
+						index: i,
+						sub: null
+					});
+				else if (element.textContent.includes(str))
+					findList.push({
+						node: element,
+						index: i,
+						sub: null
+					});
 				continue;
 			}
 			if (element?.dataItem && element.dataItem.folded) {
@@ -1746,7 +1753,7 @@ try {
 
 			if (element?.children)
 				for (const node of element.children) {
-					if (node.tagName === 'COMMAND-FOLD') {
+					if (hasClass(node, 'command-fold')) {
 						continue;
 					}
 					if (searchMode.regex && str instanceof RegExp) {
@@ -1948,12 +1955,12 @@ try {
 					if (isInContent(element, event)) {
 						index = this.elements.count - 1;
 					}
-				} else if (element.tagName === 'COMMAND-FOLD') {
+				} else if (hasClass(element, 'command-fold')) {
 					this.fold(element.parentNode);
 					break;
 				} else {
-					element = seek(element, 'command-item', 2);
-					if (element.tagName === 'COMMAND-ITEM') {
+					element = (element as HTMLElement)?.closest?.('.command-item');
+					if (element && hasClass(element, 'command-item')) {
 						index = read(element);
 					}
 				}
@@ -1994,8 +2001,8 @@ try {
 						index = this.elements.count - 1;
 					}
 				} else {
-					element = seek(element, 'command-item');
-					if (element.tagName === 'COMMAND-ITEM') {
+					element = (element as HTMLElement)?.closest?.('.command-item');
+					if (element && hasClass(element, 'command-item')) {
 						index = read(element);
 					}
 				}
@@ -2173,7 +2180,7 @@ try {
 	}
 
 	doubleclick(event: any) {
-		if (this.start !== null && event.target.tagName !== 'COMMAND-FOLD') {
+		if (this.start !== null && !hasClass(event.target, 'command-fold')) {
 			const elements = this.elements;
 			const sData = elements[this.start].dataItem;
 			const eData = elements[this.end].dataItem;
@@ -2277,4 +2284,47 @@ try {
 	}
 }
 
-customElements.define('command-list', CommandList);
+export function attachCommandListApi(el: CommandList): void {
+	el._initialized = false;
+	el._paddingTop = 0;
+	el.data = null;
+	el.varList = null;
+	el.varMap = null;
+	el.elements = [];
+	el.elements.versionId = 0;
+	el.elements.count = 0;
+	el.elements.start = -1;
+	el.elements.end = -1;
+	el.elements.head = null;
+	el.elements.foot = null;
+	el.selections = [];
+	el.selections.count = 0;
+	el.start = null;
+	el.end = null;
+	el.origin = null;
+	el.active = null;
+	el.anchor = null;
+	el.inserting = false;
+	el.focusing = false;
+	el.dragging = null;
+	el.windowPointerup = CommandList.windowPointerup.bind(el);
+	el.windowPointermove = CommandList.windowPointermove.bind(el);
+	el.windowVariableChange = CommandList.windowVariableChange.bind(el);
+
+	on(el, 'scroll', el.resize);
+	on(el, 'focus', el.listFocus);
+	on(el, 'blur', el.listBlur);
+	on(el, 'keydown', el.keydown);
+	on(el, 'pointerdown', el.pointerdown);
+	on(el, 'pointerup', el.pointerup);
+	on(el, 'doubleclick', el.doubleclick);
+	window.addEventListener('variablechange', el.windowVariableChange);
+}
+
+export function createCommandList(): CommandList {
+	const el = document.createElement('div') as unknown as CommandList;
+	addClass(el, 'command-list');
+	Object.setPrototypeOf(el, CommandList.prototype);
+	attachCommandListApi(el);
+	return el;
+}

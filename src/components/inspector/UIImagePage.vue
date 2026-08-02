@@ -244,7 +244,7 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<parameter-pane id="uiElement-parameter-pane"></parameter-pane>
+	<ParameterPane id="uiElement-parameter-pane"></ParameterPane>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<detail-grid id="uiImage-properties-grid">
@@ -356,6 +356,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();

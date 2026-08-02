@@ -1521,4 +1521,80 @@ export class TreeList extends HTMLElement {
 	})();
 }
 
-customElements.define('node-list', TreeList);
+export interface TreeListElement extends HTMLElement {
+	[k: string]: any;
+}
+
+export function attachTreeListApi(el: HTMLElement): void {
+	const list = el as unknown as TreeListElement;
+
+	for (const name of Object.getOwnPropertyNames(TreeList.prototype)) {
+		if (name !== 'constructor' && typeof (TreeList.prototype as any)[name] === 'function') {
+			list[name] = (TreeList.prototype as any)[name];
+		}
+	}
+
+	list._initialized = false;
+	list.display = 'normal';
+	list.keyword = null;
+	list.searchResults = [];
+	list.creators = [];
+	list.updaters = [];
+	const elements: any = [];
+	elements.versionId = 0;
+	elements.count = 0;
+	elements.start = -1;
+	elements.end = -1;
+	elements.head = null;
+	elements.foot = null;
+	list.elements = elements;
+	list.root = Object.defineProperty({}, 'children', {
+		get: () => list.data
+	});
+	list.timer = new Timer({
+		duration: 500,
+		callback: (timer: any) => {
+			const item = list.read();
+			if (item instanceof Object) {
+				const target = timer.target;
+				const element = item.element;
+				if (element.contains(target)) {
+					list.rename(item);
+				}
+			}
+			timer.target = null;
+			timer.running = false;
+		}
+	});
+	list.selections = [];
+	list.dragging = null;
+	list.padded = el.hasAttribute('padded');
+	list.removable = false;
+	list.renamable = false;
+	list.foldable = true;
+	list.lockDirectory = false;
+	list.multipleSelect = false;
+	list.selectEventEnabled = false;
+	list.unselectEventEnabled = false;
+	list.recordEventEnabled = false;
+	list.popupEventEnabled = false;
+	list.openEventEnabled = false;
+	list.updateEventEnabled = false;
+	list.tabIndex = 0;
+
+	list.addEventListener('scroll', list.resize);
+	list.addEventListener('keydown', list.keydown);
+	list.addEventListener('pointerdown', list.pointerdown);
+	list.addEventListener('pointerup', list.pointerup);
+	attachDoubleclick(list, list.doubleclick);
+	list.addEventListener('dragstart', list.dragstart);
+	list.addEventListener('dragend', list.dragend);
+	list.addEventListener('change', list.dataChange);
+}
+
+export function createTreeList(): TreeListElement {
+	const el = document.createElement('div');
+	addClass(el, 'tree-list');
+	attachTreeListApi(el);
+	return el as unknown as TreeListElement;
+}

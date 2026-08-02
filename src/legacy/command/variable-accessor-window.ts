@@ -4,7 +4,7 @@ import { getVariable } from '@/util/safe.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { EventEditor } from './event-editor.ts';
 import { TextSuggestion } from './text-tip.ts';
-import { SelectBox } from '@/components/select-box.ts';
+import { selectBoxSetItemNames } from '@/components/select-box.ts';
 function getWindow() {
 	return (window as any).Window;
 }
@@ -144,7 +144,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 	$('#variableGetter-type').setItemNames = function (options) {
 		const backup = this.dataItems;
 		this.dataItems = allTypes;
-		SelectBox.prototype.setItemNames.call(this, options);
+		selectBoxSetItemNames(this, options);
 		this.dataItems = backup;
 	};
 

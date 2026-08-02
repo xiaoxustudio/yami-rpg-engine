@@ -2,7 +2,6 @@ import { $ } from '@/util/dom.ts';
 import { addClass, setTooltip } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
 import { fileURLToPath, URL } from 'node:url';
-import { SelectBox } from '@/components/select-box.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FSP } from '@/file/file-system.ts';
 import { Log } from '@/log/log-window.ts';
@@ -233,7 +232,7 @@ Local.setElement = (function IIFE() {
 			}
 		}
 		if (item.options !== undefined) {
-			if (element instanceof SelectBox) {
+			if ((element as HTMLElement).classList.contains('select-box')) {
 				element.setItemNames(item.options);
 			} else {
 				throwError(element, 'typeof @element is not select-box');

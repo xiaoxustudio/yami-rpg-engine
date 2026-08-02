@@ -7,7 +7,6 @@ import {
 	addClass,
 	removeClass,
 	hasClass,
-	seek,
 	rect,
 	setTooltip,
 	hasScrollBar,
@@ -15,19 +14,18 @@ import {
 } from '@/util/element-utils.ts';
 import { CommonList } from './common-list.ts';
 
-// 下拉列表的宿主元素（SelectBox 等）需提供的契约
 interface SelectTarget extends HTMLElement {
 	dataItems: Array<{ value: any; name: string; tip?: string }>;
 	dataValue: any;
 	input(value: any): void;
-	selectList?: SelectList | null;
+	selectList?: SelectListElement | null;
 }
 
 interface SelectItemElement extends HTMLElement {
 	dataValue: any;
 }
 
-export class SelectList extends HTMLElement {
+export interface SelectListElement extends HTMLElement {
 	state: 'open' | 'closed';
 	target: SelectTarget | null;
 	elements: SelectItemElement[] & {
@@ -39,42 +37,52 @@ export class SelectList extends HTMLElement {
 		foot: HTMLElement | null;
 	};
 	selection: HTMLElement | null;
+	read(): any;
+	write(value: any): void;
+	select(element: HTMLElement): void;
+	unselect(): void;
+	reselect(offset: number): void;
+	open(target: SelectTarget): void;
+	close(): void;
+	resize(): void;
+	updateHeadAndFoot(): void;
+	updateOnResize(): void;
+	createItems(items: Array<{ value: any; name: string; tip?: string }>): void;
+	pageUp(select: boolean): void;
+	pageDown(select: boolean): void;
+	getElementIndexOfSelection(defIndex: number): number;
+	scrollToSelection(): void;
+	clearElements(start: number): void;
+	clear(): HTMLElement;
+	pointermove(event: PointerEvent): void;
+	windowKeydown(event: KeyboardEvent): void;
+	windowPointerdown(event: PointerEvent): void;
+	windowResize(event?: Event): void;
+	windowBlur(event: Event): void;
+}
 
-	constructor() {
-		super();
+export function attachSelectListApi(el: HTMLElement): void {
+	const box = el as SelectListElement;
 
-		this.state = 'closed';
-		this.target = null;
-		this.elements = [] as unknown as SelectItemElement[] & {
-			versionId: number;
-			count: number;
-			start: number;
-			end: number;
-			head: HTMLElement | null;
-			foot: HTMLElement | null;
-		};
-		this.elements.versionId = 0;
-		this.elements.count = 0;
-		this.elements.start = -1;
-		this.elements.end = -1;
-		this.elements.head = null;
-		this.elements.foot = null;
-		this.selection = null;
-		this.windowKeydown = this.windowKeydown.bind(this);
-		this.windowPointerdown = this.windowPointerdown.bind(this);
-		this.windowResize = this.windowResize.bind(this);
-		this.windowBlur = this.windowBlur.bind(this);
-		listenDraggingScrollbarEvent(this);
+	box.state = 'closed';
+	box.target = null;
+	box.elements = [] as unknown as SelectListElement['elements'];
+	box.elements.versionId = 0;
+	box.elements.count = 0;
+	box.elements.start = -1;
+	box.elements.end = -1;
+	box.elements.head = null;
+	box.elements.foot = null;
+	box.selection = null;
+	listenDraggingScrollbarEvent(box);
+	on(box, 'scroll', resize);
 
-		on(this, 'scroll', this.resize);
+	function read(): any {
+		return (box.selection as SelectItemElement | null)?.dataValue;
 	}
 
-	read(): any {
-		return (this.selection as SelectItemElement | null)?.dataValue;
-	}
-
-	write(value: any): void {
-		const elements = this.elements;
+	function write(value: any): void {
+		const elements = box.elements;
 		const count = elements.count;
 		if (count !== 0) {
 			let target = elements[0];
@@ -84,101 +92,102 @@ export class SelectList extends HTMLElement {
 					break;
 				}
 			}
-			this.select(target);
+			select(target);
 		}
 	}
 
-	select(element: HTMLElement): void {
-		if (element instanceof HTMLElement && this.selection !== element) {
-			this.unselect();
-			this.selection = element;
+	function select(element: HTMLElement): void {
+		if (element instanceof HTMLElement && box.selection !== element) {
+			unselect();
+			box.selection = element;
 			addClass(element, 'selected');
 		}
 	}
 
-	unselect(): void {
-		if (this.selection) {
-			removeClass(this.selection, 'selected');
-			this.selection = null;
+	function unselect(): void {
+		if (box.selection) {
+			removeClass(box.selection, 'selected');
+			box.selection = null;
 		}
 	}
 
-	reselect(offset: number): void {
-		const elements = this.elements;
-		const selection = this.selection!;
+	function reselect(offset: number): void {
+		const elements = box.elements;
+		const selection = box.selection!;
 		const index = elements.indexOf(selection) + offset;
 		if (index >= 0 && index < elements.count) {
-			this.select(elements[index]);
+			select(elements[index]);
 		}
 	}
 
-	open(target: SelectTarget): void {
-		this.close();
-		this.state = 'open';
+	function open(target: SelectTarget): void {
+		close();
+		box.state = 'open';
 
-		this.target = target;
+		box.target = target;
 
-		this.createItems(target.dataItems);
+		createItems(target.dataItems);
 
-		this.windowResize();
+		windowResize();
 
-		document.body.appendChild(this);
+		document.body.appendChild(box);
 
-		this.resize();
+		resize();
 
-		this.write(target.dataValue);
-		this.scrollToSelection();
+		write(target.dataValue);
+		scrollToSelection();
 
-		on(this, 'pointermove', this.pointermove as (event: EditorEvent) => void);
-		on(window as any, 'keydown', this.windowKeydown as (event: EditorEvent) => void, {
+		on(box, 'pointermove', pointermove as (event: EditorEvent) => void);
+		on(window as any, 'keydown', windowKeydown as (event: EditorEvent) => void, {
 			capture: true
 		});
-		on(window as any, 'pointerdown', this.windowPointerdown as (event: EditorEvent) => void, {
+		on(window as any, 'pointerdown', windowPointerdown as (event: EditorEvent) => void, {
 			capture: true
 		});
-		on(window as any, 'resize', this.windowResize as (event: EditorEvent) => void);
-		on(window as any, 'blur', this.windowBlur as (event: EditorEvent) => void);
+		on(window as any, 'resize', windowResize as (event: EditorEvent) => void);
+		on(window as any, 'blur', windowBlur as (event: EditorEvent) => void);
 	}
 
-	close(): void {
-		if (this.state === 'closed') {
+	function close(): void {
+		if (box.state === 'closed') {
 			return;
 		}
 
-		this.state = 'closed';
-		this.target = null;
-		this.clear();
-		document.body.removeChild(this);
+		box.state = 'closed';
+		box.target = null;
+		clear();
+		document.body.removeChild(box);
 
-		off(this, 'pointermove', this.pointermove as (event: EditorEvent) => void);
-		off(window as any, 'keydown', this.windowKeydown as (event: EditorEvent) => void, {
+		off(box, 'pointermove', pointermove as (event: EditorEvent) => void);
+		off(window as any, 'keydown', windowKeydown as (event: EditorEvent) => void, {
 			capture: true
 		});
-		off(window as any, 'pointerdown', this.windowPointerdown as (event: EditorEvent) => void, {
+		off(window as any, 'pointerdown', windowPointerdown as (event: EditorEvent) => void, {
 			capture: true
 		});
-		off(window as any, 'resize', this.windowResize as (event: EditorEvent) => void);
-		off(window as any, 'blur', this.windowBlur as (event: EditorEvent) => void);
+		off(window as any, 'resize', windowResize as (event: EditorEvent) => void);
+		off(window as any, 'blur', windowBlur as (event: EditorEvent) => void);
 	}
 
-	resize(): void {
-		CommonList.resize(this as unknown as CommonList);
+	function resize(): void {
+		CommonList.resize(box as unknown as CommonList);
 	}
 
-	updateHeadAndFoot(): void {
-		CommonList.updateHeadAndFoot(this as unknown as CommonList);
+	function updateHeadAndFoot(): void {
+		CommonList.updateHeadAndFoot(box as unknown as CommonList);
 	}
 
-	updateOnResize(): void {}
+	function updateOnResize(): void {}
 
-	createItems(items: Array<{ value: any; name: string; tip?: string }>): void {
-		const { elements } = this;
+	function createItems(items: Array<{ value: any; name: string; tip?: string }>): void {
+		const { elements } = box;
 		elements.start = -1;
 		elements.count = 0;
 
 		for (const item of items) {
-			const li = document.createElement('select-item') as any;
-			li.dataValue = item.value;
+			const li = document.createElement('div');
+			addClass(li, 'select-item');
+			(li as SelectItemElement).dataValue = item.value;
 			li.textContent = item.name;
 			if (item.tip) {
 				setTooltip(li, item.tip);
@@ -186,186 +195,216 @@ export class SelectList extends HTMLElement {
 			elements[elements.count++] = li;
 		}
 
-		this.clearElements(elements.count);
+		clearElements(elements.count);
 	}
 
-	pageUp(select: boolean): void {
-		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+	function pageUp(select: boolean): void {
+		const scrollLines = Math.floor(box.clientHeight / 20) - 1;
 		if (select) {
-			const bottom = this.scrollTop + this.clientHeight;
+			const bottom = box.scrollTop + box.clientHeight;
 			const bottomIndex = Math.floor(bottom / 20) - 1;
-			let index = this.getElementIndexOfSelection(Infinity);
+			let index = getElementIndexOfSelection(Infinity);
 			index = Math.min(index, bottomIndex) - scrollLines;
 			index = Math.max(index, 0);
-			this.select(this.elements[index]);
+			box.select(box.elements[index]);
 		}
-		this.scrollBy(0, -scrollLines * 20);
+		box.scrollBy(0, -scrollLines * 20);
 	}
 
-	pageDown(select: boolean): void {
-		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
+	function pageDown(select: boolean): void {
+		const scrollLines = Math.floor(box.clientHeight / 20) - 1;
 		if (select) {
-			const count = this.elements.count;
-			const topIndex = Math.floor(this.scrollTop / 20);
-			let index = this.getElementIndexOfSelection(0);
+			const count = box.elements.count;
+			const topIndex = Math.floor(box.scrollTop / 20);
+			let index = getElementIndexOfSelection(0);
 			index = Math.max(index, topIndex) + scrollLines;
 			index = Math.min(index, count - 1);
-			this.select(this.elements[index]);
+			box.select(box.elements[index]);
 		}
-		this.scrollBy(0, +scrollLines * 20);
+		box.scrollBy(0, +scrollLines * 20);
 	}
 
-	getElementIndexOfSelection(defIndex: number): number {
-		const selection = this.selection;
+	function getElementIndexOfSelection(defIndex: number): number {
+		const selection = box.selection;
 		if (selection instanceof HTMLElement) {
-			return this.elements.indexOf(selection);
+			return box.elements.indexOf(selection);
 		}
 		return defIndex;
 	}
 
-	scrollToSelection(): void {
-		if (hasScrollBar(this)) {
-			const elements = this.elements;
-			const selection = this.selection!;
+	function scrollToSelection(): void {
+		if (hasScrollBar(box)) {
+			const elements = box.elements;
+			const selection = box.selection!;
 			const index = elements.indexOf(selection);
 			if (index !== -1) {
 				const scrollTop = Math.clamp(
-					this.scrollTop,
-					index * 20 + 20 - this.innerHeight,
+					box.scrollTop,
+					index * 20 + 20 - box.innerHeight,
 					index * 20
 				);
-				if (this.scrollTop !== scrollTop) {
-					this.scrollTop = scrollTop;
+				if (box.scrollTop !== scrollTop) {
+					box.scrollTop = scrollTop;
 				}
 			}
 		}
 	}
 
-	clearElements(start: number): void {
-		CommonList.clearElements(this as unknown as CommonList, start);
+	function clearElements(start: number): void {
+		CommonList.clearElements(box as unknown as CommonList, start);
 	}
 
-	clear(): this {
-		this.unselect();
-		this.textContent = '';
-		this.clearElements(0);
-		this.elements.count = 0;
-		this.elements.start = -1;
-		this.elements.end = -1;
-		this.updateHeadAndFoot();
-		return this;
+	function clear(): HTMLElement {
+		unselect();
+		box.textContent = '';
+		clearElements(0);
+		box.elements.count = 0;
+		box.elements.start = -1;
+		box.elements.end = -1;
+		updateHeadAndFoot();
+		return box;
 	}
 
-	pointermove(event: PointerEvent): void {
-		const element = seek(event.target as HTMLElement, 'select-item') as SelectItemElement;
-		if (element.tagName === 'SELECT-ITEM' && !hasClass(element, 'selected')) {
-			this.write(element.dataValue);
+	function pointermove(event: PointerEvent): void {
+		const element = (event.target as HTMLElement).closest(
+			'.select-item'
+		) as SelectItemElement | null;
+		if (element && !hasClass(element, 'selected')) {
+			write(element.dataValue);
 		}
 	}
 
-	windowKeydown(event: KeyboardEvent): void {
+	function windowKeydown(event: KeyboardEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
 		switch (event.code) {
 			case 'Escape':
-				this.close();
+				close();
 				break;
 			case 'Enter':
 			case 'NumpadEnter': {
-				const value = this.read();
+				const value = read();
 				if (value !== undefined) {
-					this.target!.input(value);
+					box.target!.input(value);
 				}
-				this.close();
+				close();
 				break;
 			}
 			case 'ArrowUp':
-				this.reselect(-1);
-				this.scrollToSelection();
+				reselect(-1);
+				scrollToSelection();
 				break;
 			case 'ArrowDown':
-				this.reselect(1);
-				this.scrollToSelection();
+				reselect(1);
+				scrollToSelection();
 				break;
 			case 'Home': {
-				const elements = this.elements;
-				this.scroll(0, 0);
-				this.select(elements[0]);
+				const elements = box.elements;
+				box.scroll(0, 0);
+				select(elements[0]);
 				break;
 			}
 			case 'End': {
-				const elements = this.elements;
+				const elements = box.elements;
 				const last = elements.count - 1;
-				this.scroll(0, this.scrollHeight);
-				this.select(elements[last]);
+				box.scroll(0, box.scrollHeight);
+				select(elements[last]);
 				break;
 			}
 			case 'PageUp':
-				this.pageUp(true);
+				pageUp(true);
 				break;
 			case 'PageDown':
-				this.pageDown(true);
+				pageDown(true);
 				break;
 		}
 	}
 
-	windowPointerdown(event: PointerEvent): void {
+	function windowPointerdown(event: PointerEvent): void {
 		switch (event.button) {
 			case 0: {
-				const target = this.target!;
-				let element = event.target as HTMLElement;
-				if (element instanceof SelectList) {
+				const target = box.target!;
+				const eventTarget = event.target as HTMLElement;
+				if (eventTarget === box) {
 					event.preventDefault();
 					return;
 				}
-				if (seek(element, 'select-box') === target) {
+				if (eventTarget.closest('.select-box') === target) {
 					event.stopImmediatePropagation();
-					this.close();
+					close();
 					return;
 				}
-				element = seek(element, 'select-item') as SelectItemElement;
-				if (element.tagName === 'SELECT-ITEM' && element.parentNode === this) {
+				const item = eventTarget.closest('.select-item') as SelectItemElement | null;
+				if (item && item.parentNode === box) {
 					event.preventDefault();
 					if (event.altKey) {
 						return;
 					}
-					target.input(element.dataValue);
+					target.input(item.dataValue);
 				}
-				this.close();
+				close();
 				return;
 			}
 			case 2:
-				this.close();
+				close();
 				return;
 		}
 	}
 
-	windowResize(event?: Event): void {
+	function windowResize(event?: Event): void {
 		const MAX_LINES = 30;
-		const r = rect(this.target!);
+		const r = rect(box.target!);
 		const rl = r.left;
 		const rt = r.top;
 		const rb = r.bottom;
 		const rw = r.width;
-		const count = this.elements.count;
+		const count = box.elements.count;
 		const space = window.innerHeight - rb;
 		const below = space >= Math.min(count, 10) * 20;
 		const capacity = below ? Math.floor(space / 20) : Math.floor(rt / 20);
 		const lines = Math.min(count, capacity, MAX_LINES);
 		const top = below ? rb : rt - lines * 20;
-		this.style.left = `${rl}px`;
-		this.style.top = `${top}px`;
-		this.style.width = `calc(${rw}px - var(--2dpx))`;
-		this.style.height = `${lines * 20}px`;
-		this.style.zIndex = `${(getWindow().frames?.length ?? 0) + 1}`;
+		box.style.left = `${rl}px`;
+		box.style.top = `${top}px`;
+		box.style.width = `calc(${rw}px - var(--2dpx))`;
+		box.style.height = `${lines * 20}px`;
+		box.style.zIndex = `${(getWindow().frames?.length ?? 0) + 1}`;
 	}
 
-	windowBlur(event: Event): void {
-		this.close();
+	function windowBlur(event: Event): void {
+		close();
 	}
+
+	box.read = read;
+	box.write = write;
+	box.select = select;
+	box.unselect = unselect;
+	box.reselect = reselect;
+	box.open = open;
+	box.close = close;
+	box.resize = resize;
+	box.updateHeadAndFoot = updateHeadAndFoot;
+	box.updateOnResize = updateOnResize;
+	box.createItems = createItems;
+	box.pageUp = pageUp;
+	box.pageDown = pageDown;
+	box.getElementIndexOfSelection = getElementIndexOfSelection;
+	box.scrollToSelection = scrollToSelection;
+	box.clearElements = clearElements;
+	box.clear = clear;
+	box.pointermove = pointermove;
+	box.windowKeydown = windowKeydown;
+	box.windowPointerdown = windowPointerdown;
+	box.windowResize = windowResize;
+	box.windowBlur = windowBlur;
 }
 
-customElements.define('select-list', SelectList);
+export function createSelectList(): SelectListElement {
+	const el = document.createElement('div');
+	addClass(el, 'select-list');
+	attachSelectListApi(el);
+	return el as unknown as SelectListElement;
+}
 
-// 注：Select 必须是真实的 SelectList 实例（继承其 windowPointerdown/windowKeydown/ resize/createItems 等所有类方法）。此前类型化时误改为简化对象字面量 {target,open,close}，导致所有 Select.windowPointerdown 等调用失效 —— 下拉列表点击行为全部断裂。
-export const Select = new SelectList();
+// 注：Select 必须是真实的 SelectList 实例（继承其 windowPointerdown/windowKeydown/resize/createItems 等所有方法）。此前类型化时误改为简化对象字面量 {target,open,close}，导致所有 Select.windowPointerdown 等调用失效 —— 下拉列表点击行为全部断裂。
+export const Select = createSelectList();

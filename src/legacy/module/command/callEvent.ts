@@ -7,7 +7,7 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { createCustomBox } from '@/components/custom-box.ts';
 import { createNumberVar } from '@/components/number-var.ts';
-import { SelectBox } from '@/components/select-box.ts';
+import { createSelectBox } from '@/components/select-box.ts';
 import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
@@ -144,7 +144,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		let input: any;
 		switch (type) {
 			case 'boolean':
-				input = new SelectBox();
+				input = createSelectBox();
 				input.loadItems([
 					{ name: 'False', value: false },
 					{ name: 'True', value: true }

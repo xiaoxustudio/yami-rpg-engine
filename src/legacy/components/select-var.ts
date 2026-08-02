@@ -10,7 +10,7 @@ import {
 	read,
 	write
 } from '@/util/element-utils.ts';
-import { SelectBox } from './select-box.ts';
+import { createSelectBox } from './select-box.ts';
 import { createCustomBox } from './custom-box.ts';
 
 interface SelectVarElement extends HTMLElement {
@@ -33,7 +33,7 @@ export function attachSelectVarApi(el: HTMLElement): void {
 	const box = el as SelectVarElement;
 
 	box.mode = null;
-	box.selectBox = new SelectBox();
+	box.selectBox = createSelectBox();
 	box.varBox = createCustomBox();
 	box.varBox.type = 'variable';
 	box.varBox.filter = 'all';

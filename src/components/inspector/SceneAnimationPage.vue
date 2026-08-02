@@ -135,7 +135,7 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<parameter-pane id="sceneAnimation-parameter-pane"></parameter-pane>
+	<ParameterPane id="sceneAnimation-parameter-pane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -149,6 +149,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();

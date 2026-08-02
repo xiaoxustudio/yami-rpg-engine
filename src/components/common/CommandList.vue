@@ -1,94 +1,100 @@
 <template>
-	<command-list ref="root" />
+	<div class="command-list" ref="root" :id="props.id"></div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import {
-  read as readElement,
-  write as writeElement,
-  clear as clearElement
-} from '@/util/element-utils';
+import { onMounted, ref } from 'vue';
+import { CommandList, attachCommandListApi } from '@/components/command-list';
+import { applyCommandListInstanceOverride } from '@/module/eslints';
 
-interface CommandListElement extends HTMLElement {
-	read(): any;
-	write(data: any): void;
-	update(): void;
-	resize(...args: any[]): void;
-	select(start: any, end?: any): void;
-	unselect(): void;
-	reselect(): void;
-	selectAll(): void;
-	selectUp(): void;
-	selectDown(): void;
-	pageUp(select: any): void;
-	pageDown(select: any): void;
-	scrollToSelection(mode?: string): void;
-	clear(): void;
-	insert(id?: string): void;
-	edit(data?: any): void;
-	fold(element?: any): void;
-	toggle(): void;
-	copy(): void;
-	paste(): void;
-	delete(): void;
-	undo(): void;
-	redo(): void;
-	save(command: any): void;
+interface Props {
+	id?: string;
 }
 
-const root = ref<CommandListElement | null>(null);
+const props = defineProps<Props>();
 
-const read = (): any => (root.value ? readElement(root.value) : undefined);
-const write = (data: any): void => { if (root.value) writeElement(root.value, data); };
-const update = (): void => root.value?.update();
-const resize = (...args: any[]): void => root.value?.resize(...args);
-const select = (start: any, end?: any): void => root.value?.select(start, end);
-const unselect = (): void => root.value?.unselect();
-const reselect = (): void => root.value?.reselect();
-const selectAll = (): void => root.value?.selectAll();
-const selectUp = (): void => root.value?.selectUp();
-const selectDown = (): void => root.value?.selectDown();
-const pageUp = (select: any): void => root.value?.pageUp(select);
-const pageDown = (select: any): void => root.value?.pageDown(select);
-const scrollToSelection = (mode?: string): void => root.value?.scrollToSelection(mode);
-const clear = (): void => { if (root.value) clearElement(root.value); };
-const insert = (id?: string): void => root.value?.insert(id);
-const edit = (data?: any): void => root.value?.edit(data);
-const fold = (element?: any): void => root.value?.fold(element);
-const toggle = (): void => root.value?.toggle();
-const copy = (): void => root.value?.copy();
-const paste = (): void => root.value?.paste();
-const deleteItems = (): void => root.value?.delete();
-const undo = (): void => root.value?.undo();
-const redo = (): void => root.value?.redo();
-const save = (command: any): void => root.value?.save(command);
+const root = ref<HTMLElement | null>(null);
+
+const method = (name: string) => {
+	return (...args: any[]): any => (root.value as any)?.[name](...args);
+};
 
 defineExpose({
-	read,
-	write,
-	update,
-	resize,
-	select,
-	unselect,
-	reselect,
-	selectAll,
-	selectUp,
-	selectDown,
-	pageUp,
-	pageDown,
-	scrollToSelection,
-	clear,
-	insert,
-	edit,
-	fold,
-	toggle,
-	copy,
-	paste,
-	delete: deleteItems,
-	undo,
-	redo,
-	save,
-	root
+	root,
+	read: method('read'),
+	write: method('write'),
+	update: method('update'),
+	resize: method('resize'),
+	updateHeadAndFoot: method('updateHeadAndFoot'),
+	updateOnResize: method('updateOnResize'),
+	createFoldedCommandBuffer: method('createFoldedCommandBuffer'),
+	createItems: method('createItems'),
+	createCommandBuffer: method('createCommandBuffer'),
+	updateCommandElement: method('updateCommandElement'),
+	updateCommandElementFold: method('updateCommandElementFold'),
+	deleteCommandBuffers: method('deleteCommandBuffers'),
+	createBlankElement: method('createBlankElement'),
+	computeTextIndent: method('computeTextIndent'),
+	select: method('select'),
+	selectMultiple: method('selectMultiple'),
+	selectAll: method('selectAll'),
+	unselect: method('unselect'),
+	reselect: method('reselect'),
+	selectUp: method('selectUp'),
+	selectDown: method('selectDown'),
+	pageUp: method('pageUp'),
+	pageDown: method('pageDown'),
+	selectMultipleTo: method('selectMultipleTo'),
+	selectMultipleUp: method('selectMultipleUp'),
+	selectMultipleDown: method('selectMultipleDown'),
+	scrollToSelection: method('scrollToSelection'),
+	scrollAndResize: method('scrollAndResize'),
+	getRangeByIndex: method('getRangeByIndex'),
+	getRangeByData: method('getRangeByData'),
+	isParentEnabled: method('isParentEnabled'),
+	insert: method('insert'),
+	edit: method('edit'),
+	fold: method('fold'),
+	unfoldCommand: method('unfoldCommand'),
+	reselectAfterFolding: method('reselectAfterFolding'),
+	toggle: method('toggle'),
+	enableItems: method('enableItems'),
+	disableItems: method('disableItems'),
+	copy: method('copy'),
+	copyAsText: method('copyAsText'),
+	copyAsJSCode: method('copyAsJSCode'),
+	generateExecutableCode: method('generateExecutableCode'),
+	paste: method('paste'),
+	delete: method('delete'),
+	undo: method('undo'),
+	redo: method('redo'),
+	save: method('save'),
+	getSelectionPosition: method('getSelectionPosition'),
+	clearElements: method('clearElements'),
+	clear: method('clear'),
+	analyzeVariables: method('analyzeVariables'),
+	scheduleCheckVariables: method('scheduleCheckVariables'),
+	checkVariables: method('checkVariables'),
+	tryGetEventId: method('tryGetEventId'),
+	findString: method('findString'),
+	scrollToRow: method('scrollToRow'),
+	listFocus: method('listFocus'),
+	listBlur: method('listBlur'),
+	keydown: method('keydown'),
+	pointerdown: method('pointerdown'),
+	pointerup: method('pointerup'),
+	doubleclick: method('doubleclick'),
+	history: () => (root.value as any)?.history,
+	paddingTop: () => (root.value as any)?.paddingTop
+});
+
+onMounted(() => {
+	const el = root.value;
+	if (!el) return;
+	Object.setPrototypeOf(el, CommandList.prototype);
+	attachCommandListApi(el);
+	el.tabIndex = 0;
+	(el as any)._initialized = true;
+	applyCommandListInstanceOverride(el);
 });
 </script>

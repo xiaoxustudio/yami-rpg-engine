@@ -1,7 +1,6 @@
 import { File } from '@/file/file-system-core.ts';
 import { addClass, removeClass } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { TreeList } from '@/components/tree-list.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
@@ -71,7 +70,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		if (item?.scripts === list.read()) {
 			const element = item.element;
 			const list = element?.parentNode;
-			if (list instanceof TreeList) {
+			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
 				(list as any).updateScriptIcon(item);
 			}
 		}

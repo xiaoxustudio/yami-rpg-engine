@@ -36,7 +36,7 @@
 			flexible
 		/>
 	</DetailBox>
-	<parameter-pane id="fileSkill-parameter-pane" />
+	<ParameterPane id="fileSkill-parameter-pane" />
 </template>
 
 <script setup lang="ts">
@@ -47,6 +47,7 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

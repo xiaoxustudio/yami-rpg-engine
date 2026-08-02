@@ -131,7 +131,7 @@
 			flexible
 		></ParamList>
 	</DetailBox>
-	<parameter-pane id="sceneParticle-parameter-pane"></parameter-pane>
+	<ParameterPane id="sceneParticle-parameter-pane"></ParameterPane>
 </template>
 
 <script setup lang="ts">
@@ -145,6 +145,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

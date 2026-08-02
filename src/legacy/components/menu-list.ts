@@ -1,95 +1,111 @@
-import { on, off, addClass, removeClass, hasClass, seek, rect } from '@/util/element-utils.ts';
+import { on, off, addClass, removeClass, hasClass, rect } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
+
 function getWindow() {
 	return (window as any).Window;
 }
 
-export class MenuList extends HTMLElement {
+interface MenuApi {
+	el: HTMLElement;
 	state: string;
 	callback: (() => void) | null;
 	dataItems: any[] | null;
 	selection: HTMLElement | null;
 	popupTimer: any;
 	closeTimer: any;
-	parent: HTMLElement | null;
-	submenu: MenuList | null;
+	parent: MenuApi | null;
+	submenu: MenuApi | null;
 	buttonPressed: boolean;
 	minWidth: number;
-	parentMenuItem: HTMLElement | null = null;
+	parentMenuItem: HTMLElement | null;
 	windowBlur: (event: any) => void;
 	windowKeydown: (event: any) => void;
 	windowPointerdown: (event: any) => void;
 	windowPointerup: (event: any) => void;
 	windowPointerover: (event: any) => void;
 	windowPointerout: (event: any) => void;
+	popup(options: any, items: any): void;
+	computeMenuWidth(): void;
+	close(): void;
+	clear(): HTMLElement;
+	createItem(item: any): HTMLElement;
+	select(element: HTMLElement): void;
+	unselect(): void;
+	reselect(offset: any): void;
+	popupSubmenu(delay: any): void;
+	closeSubmenu(delay: any): void;
+	pointerenter(event: any): void;
+}
 
-	static selection: HTMLElement | null;
-	static popupSubmenu: (menu: MenuList, x?: number, y?: number) => void;
-	static reselect: () => void;
-	static select: (item: HTMLElement) => void;
-	static unselect: () => void;
-	static closeSubmenu: () => void;
+export function attachMenuListApi(el: HTMLElement): void {
+	const menu: MenuApi = {
+		el,
+		state: 'closed',
+		callback: null,
+		dataItems: null,
+		selection: null,
+		popupTimer: null,
+		closeTimer: null,
+		parent: null,
+		submenu: null,
+		buttonPressed: false,
+		minWidth: 0,
+		parentMenuItem: null,
+		windowBlur: null as any,
+		windowKeydown: null as any,
+		windowPointerdown: null as any,
+		windowPointerup: null as any,
+		windowPointerover: null as any,
+		windowPointerout: null as any,
+		popup: null as any,
+		computeMenuWidth: null as any,
+		close: null as any,
+		clear: null as any,
+		createItem: null as any,
+		select: null as any,
+		unselect: null as any,
+		reselect: null as any,
+		popupSubmenu: null as any,
+		closeSubmenu: null as any,
+		pointerenter: null as any
+	};
 
-	constructor() {
-		super();
-
-		this.state = 'closed';
-		this.callback = null;
-		this.dataItems = null;
-		this.selection = null;
-		this.popupTimer = null;
-		this.closeTimer = null;
-		this.parent = null;
-		this.submenu = null;
-		this.buttonPressed = false;
-		this.minWidth = 0;
-		this.windowBlur = MenuList.windowBlur.bind(this);
-		this.windowKeydown = MenuList.windowKeydown.bind(this);
-		this.windowPointerdown = MenuList.windowPointerdown.bind(this);
-		this.windowPointerup = MenuList.windowPointerup.bind(this);
-		this.windowPointerover = MenuList.windowPointerover.bind(this);
-		this.windowPointerout = MenuList.windowPointerout.bind(this);
-	}
-
-	popup(options: any, items: any) {
-		this.close();
-		this.state = 'open';
-		this.dataItems = items;
-		this.callback = options.close ?? null;
-		this.parent = options.parent ?? null;
-		this.minWidth = options.minWidth ?? 180;
+	function popup(options: any, items: any): void {
+		close();
+		menu.state = 'open';
+		menu.dataItems = items;
+		menu.callback = options.close ?? null;
+		menu.parent = options.parent ?? null;
+		menu.minWidth = options.minWidth ?? 180;
 		for (let i = 0; i < items.length; i++) {
-			this.appendChild(this.createItem(items[i]));
+			el.appendChild(createItem(items[i]));
 		}
-
-		document.body.appendChild(this);
-		this.computeMenuWidth();
-		const { width, height } = rect(this);
+		document.body.appendChild(el);
+		computeMenuWidth();
+		const { width, height } = rect(el);
 		const dpx = 1 / window.devicePixelRatio;
 		const right = window.innerWidth - width - dpx;
 		const bottom = window.innerHeight - height - dpx;
 		const x = options.x ?? 0;
 		const y = options.y ?? 0;
-		this.style.left = `${Math.min(x + dpx, right)}px`;
-		this.style.top = `${Math.min(y + dpx, bottom)}px`;
-		this.style.zIndex = String((getWindow().frames?.length ?? 0) + 1);
-
+		el.style.left = `${Math.min(x + dpx, right)}px`;
+		el.style.top = `${Math.min(y + dpx, bottom)}px`;
+		el.style.zIndex = String((getWindow().frames?.length ?? 0) + 1);
 		window.event?.stopPropagation();
-		on(window as any, 'blur', this.windowBlur);
-		on(window as any, 'pointerdown', this.windowPointerdown);
-		on(window as any, 'pointerup', this.windowPointerup);
-		on(window as any, 'pointerover', this.windowPointerover);
-		on(window as any, 'pointerout', this.windowPointerout);
-		on(window as any, 'keydown', this.windowKeydown, { capture: true });
-		// window.addEventListener('keyup', this.windowKeyup, {capture: true})
-		on(this, 'pointerenter', this.pointerenter);
+		on(window as any, 'blur', menu.windowBlur);
+		on(window as any, 'pointerdown', menu.windowPointerdown);
+		on(window as any, 'pointerup', menu.windowPointerup);
+		on(window as any, 'pointerover', menu.windowPointerover);
+		on(window as any, 'pointerout', menu.windowPointerout);
+		on(window as any, 'keydown', menu.windowKeydown, { capture: true });
+		on(el, 'pointerenter', menu.pointerenter);
 	}
 
-	computeMenuWidth() {
+	function computeMenuWidth(): void {
 		let labelWidth = 0;
 		let acceleratorWidth = 0;
-		for (const li of this.childNodes) {
-			const { label, accelerator } = li;
+		for (const li of el.childNodes) {
+			const { label, accelerator } = li as any;
 			if (label !== undefined) {
 				labelWidth = Math.max(labelWidth, label.offsetWidth);
 			}
@@ -102,111 +118,110 @@ export class MenuList extends HTMLElement {
 			padding += 10;
 		}
 		const width = labelWidth + acceleratorWidth + padding;
-		this.style.width = `${Math.max(width, this.minWidth)}px`;
+		el.style.width = `${Math.max(width, menu.minWidth)}px`;
 	}
 
-	close() {
-		if (this.state === 'open') {
-			this.state = 'closed';
-			this.unselect();
-			this.callback?.();
-			this.callback = null;
-			this.submenu?.close();
-			this.dataItems = null;
-			this.parent = null;
-			this.buttonPressed = false;
-			document.body.removeChild(this.clear());
-
-			off(window as any, 'blur', this.windowBlur);
-			off(window as any, 'pointerdown', this.windowPointerdown);
-			off(window as any, 'pointerup', this.windowPointerup);
-			off(window as any, 'pointerover', this.windowPointerover);
-			off(window as any, 'pointerout', this.windowPointerout);
-			off(window as any, 'keydown', this.windowKeydown, { capture: true });
-			// window.removeEventListener('keyup', this.windowKeyup, {capture: true})
-			off(this, 'pointerenter', this.pointerenter);
+	function close(): void {
+		if (menu.state === 'open') {
+			menu.state = 'closed';
+			unselect();
+			menu.callback?.();
+			menu.callback = null;
+			menu.submenu?.close();
+			menu.dataItems = null;
+			menu.parent = null;
+			menu.buttonPressed = false;
+			document.body.removeChild(clear());
+			off(window as any, 'blur', menu.windowBlur);
+			off(window as any, 'pointerdown', menu.windowPointerdown);
+			off(window as any, 'pointerup', menu.windowPointerup);
+			off(window as any, 'pointerover', menu.windowPointerover);
+			off(window as any, 'pointerout', menu.windowPointerout);
+			off(window as any, 'keydown', menu.windowKeydown, { capture: true });
+			off(el, 'pointerenter', menu.pointerenter);
 		}
 	}
 
-	clear() {
-		this.textContent = '';
-		return this;
+	function clear(): HTMLElement {
+		el.textContent = '';
+		return el;
 	}
 
-	createItem(item: any) {
+	function createItem(item: any): HTMLElement {
 		switch (item.type) {
-			case 'separator':
-				return document.createElement('menu-separator');
+			case 'separator': {
+				const separator = document.createElement('div');
+				addClass(separator, 'menu-separator');
+				return separator;
+			}
 			default: {
-				const li = document.createElement('menu-item');
-				li.dataValue = item;
-
+				const li = document.createElement('div');
+				addClass(li, 'menu-item');
+				(li as any).dataValue = item;
 				if (item.enabled === false) {
 					addClass(li, 'disabled');
 				}
-
 				if (item.checked === true) {
-					const mark = document.createElement('menu-checked');
-					mark.textContent = '✓';
+					const mark = document.createElement('div');
+					addClass(mark, 'menu-checked');
+					mark.textContent = '\u2713';
 					li.appendChild(mark);
 				}
-
 				if (item.icon !== undefined) {
 					li.appendChild(item.icon);
 				}
-
 				if (item.label !== undefined) {
-					const label = document.createElement('menu-label');
+					const label = document.createElement('div');
+					addClass(label, 'menu-label');
 					label.textContent = item.label;
-					li.label = label;
+					(li as any).label = label;
 					li.appendChild(label);
 				}
-
 				if (item.accelerator !== undefined) {
-					const accelerator = document.createElement('menu-accelerator');
+					const accelerator = document.createElement('div');
+					addClass(accelerator, 'menu-accelerator');
 					accelerator.textContent = item.accelerator;
-					li.accelerator = accelerator;
+					(li as any).accelerator = accelerator;
 					li.appendChild(accelerator);
 				}
-
 				if (item.style !== undefined) {
 					addClass(li, item.style);
 				}
-
 				if (item.submenu !== undefined) {
-					const accelerator = document.createElement('menu-sub-mark');
-					accelerator.textContent = '>';
-					li.appendChild(accelerator);
+					const subMark = document.createElement('div');
+					addClass(subMark, 'menu-sub-mark');
+					subMark.textContent = '>';
+					li.appendChild(subMark);
 				}
 				return li;
 			}
 		}
 	}
 
-	select(element: any) {
-		if (this.selection !== element) {
-			this.unselect();
-			this.selection = element;
-			addClass(this.selection!, 'selected');
+	function select(element: HTMLElement): void {
+		if (menu.selection !== element) {
+			unselect();
+			menu.selection = element;
+			addClass(menu.selection!, 'selected');
 		}
 	}
 
-	unselect() {
-		if (this.selection) {
-			removeClass(this.selection, 'selected');
-			this.selection = null;
-			if (this.popupTimer) {
-				this.popupTimer.remove();
-				this.popupTimer = null;
+	function unselect(): void {
+		if (menu.selection) {
+			removeClass(menu.selection, 'selected');
+			menu.selection = null;
+			if (menu.popupTimer) {
+				menu.popupTimer.remove();
+				menu.popupTimer = null;
 			}
 		}
 	}
 
-	reselect(offset: any) {
-		const elements = [];
-		for (const child of this.childNodes) {
+	function reselect(offset: any): void {
+		const elements: HTMLElement[] = [];
+		for (const child of el.childNodes) {
 			const element = child as HTMLElement;
-			if (element.tagName === 'MENU-ITEM' && !hasClass(element, 'disabled')) {
+			if (element.classList.contains('menu-item') && !hasClass(element, 'disabled')) {
 				elements.push(element);
 			}
 		}
@@ -214,33 +229,33 @@ export class MenuList extends HTMLElement {
 		if (length === 0) {
 			return;
 		}
-		if (this.selection) {
-			const last = elements.indexOf(this.selection);
+		if (menu.selection) {
+			const last = elements.indexOf(menu.selection);
 			const index = (last + offset + length) % length;
-			this.select(elements[index]);
+			select(elements[index]);
 		} else {
 			switch (offset) {
 				case 1:
-					this.select(elements[0]);
+					select(elements[0]);
 					break;
 				case -1:
-					this.select(elements[length - 1]);
+					select(elements[length - 1]);
 					break;
 			}
 		}
 	}
 
-	popupSubmenu(delay: any) {
-		const element = this.selection;
-		if (element instanceof HTMLElement && element !== this.submenu?.parentMenuItem) {
-			const node = element.dataValue;
+	function popupSubmenu(delay: any): void {
+		const element = menu.selection;
+		if (element instanceof HTMLElement && element !== menu.submenu?.parentMenuItem) {
+			const node = (element as any).dataValue;
 			if (node.submenu) {
-				if (!this.popupTimer) {
-					this.popupTimer = new Timer({
+				if (!menu.popupTimer) {
+					menu.popupTimer = new Timer({
 						duration: delay,
 						callback: () => {
-							this.popupTimer = null;
-							if (element === this.selection) {
+							menu.popupTimer = null;
+							if (element === menu.selection) {
 								const r = rect(element);
 								let x = r.right;
 								let y = r.top - 5;
@@ -248,16 +263,16 @@ export class MenuList extends HTMLElement {
 								if (x + width > window.innerWidth) {
 									x = r.left - width;
 								}
-								this.submenu?.close();
-								this.submenu = new MenuList();
-								this.submenu.parentMenuItem = element;
-								this.submenu.popup(
+								menu.submenu?.close();
+								menu.submenu = createMenuList() as unknown as MenuApi;
+								menu.submenu.parentMenuItem = element;
+								menu.submenu.popup(
 									{
 										x: x,
 										y: y,
-										parent: this,
+										parent: menu,
 										close: () => {
-											this.submenu = null;
+											menu.submenu = null;
 										}
 									},
 									node.submenu
@@ -267,21 +282,21 @@ export class MenuList extends HTMLElement {
 					}).add();
 				}
 				if (delay === 0) {
-					this.popupTimer.finish();
+					menu.popupTimer.finish();
 				}
 			}
 		}
 	}
 
-	closeSubmenu(delay: any) {
-		const { submenu, selection } = this;
+	function closeSubmenu(delay: any): void {
+		const { submenu, selection } = menu;
 		if (submenu?.parentMenuItem === selection) {
-			if (!this.closeTimer) {
-				this.closeTimer = new Timer({
+			if (!menu.closeTimer) {
+				menu.closeTimer = new Timer({
 					duration: delay,
 					callback: () => {
-						this.closeTimer = null;
-						if (submenu === this.submenu && selection !== this.selection) {
+						menu.closeTimer = null;
+						if (submenu === menu.submenu && selection !== menu.selection) {
 							submenu.close();
 						}
 					}
@@ -290,64 +305,62 @@ export class MenuList extends HTMLElement {
 		}
 	}
 
-	pointerenter(event: any) {
-		(this.parent as unknown as MenuList)?.select(this.parentMenuItem);
+	function pointerenter(event: any): void {
+		(menu.parent as unknown as MenuApi)?.select(menu.parentMenuItem as HTMLElement);
 	}
 
-	static windowBlur(this: MenuList, event: Event) {
-		this.close();
+	function windowBlur(event: Event): void {
+		close();
 	}
 
-	static windowKeydown(this: MenuList, event: KeyboardEvent) {
-		if (!this.submenu) {
+	function windowKeydown(event: KeyboardEvent): void {
+		if (!menu.submenu) {
 			event.preventDefault();
 			event.stopPropagation();
 			switch (event.code) {
 				case 'Escape':
-					this.close();
+					close();
 					break;
 				case 'Enter':
 				case 'NumpadEnter':
-					if (this.selection) {
-						const node = this.selection.dataValue;
+					if (menu.selection) {
+						const node = (menu.selection as any).dataValue;
 						if (node.submenu) {
-							this.popupSubmenu(0);
-							this.submenu && (this.submenu as any).reselect(1);
+							popupSubmenu(0);
+							menu.submenu && (menu.submenu as any).reselect(1);
 						} else {
 							node.click && node.click();
-							let menu: MenuList | null = this;
-							while (menu!.parent) {
-								menu = menu!.parent as MenuList | null;
+							let m: MenuApi | null = menu;
+							while (m!.parent) {
+								m = m!.parent as MenuApi | null;
 							}
-							menu!.close();
+							m!.close();
 						}
 					}
 					break;
 				case 'ArrowUp':
-					this.reselect(-1);
+					reselect(-1);
 					break;
 				case 'ArrowDown':
-					this.reselect(1);
+					reselect(1);
 					break;
 				case 'ArrowLeft':
-					if (this.parent) {
-						this.close();
+					if (menu.parent) {
+						close();
 					}
 					break;
 				case 'ArrowRight':
-					this.popupSubmenu(0);
-					this.submenu && (this.submenu as any).reselect(1);
+					popupSubmenu(0);
+					menu.submenu && (menu.submenu as any).reselect(1);
 					break;
 			}
 		}
 	}
 
-	// static windowKeyup(event) {
-
-	static windowPointerdown(this: MenuList, event: PointerEvent) {
-		const element = seek(event.target as HTMLElement, 'menu-list');
+	function windowPointerdown(event: PointerEvent): void {
+		const element = (event.target as HTMLElement).closest('.menu-list');
 		if (
-			element instanceof MenuList ||
+			element !== null ||
 			((document.activeElement instanceof HTMLInputElement ||
 				document.activeElement instanceof HTMLTextAreaElement) &&
 				document.activeElement !== event.target &&
@@ -360,84 +373,167 @@ export class MenuList extends HTMLElement {
 		}
 		switch (event.button) {
 			case 0:
-				if (element!.tagName !== 'MENU-LIST') {
-					this.close();
-				} else if (element === this) {
-					this.buttonPressed = true;
+				if (element === null) {
+					close();
+				} else if (element === el) {
+					menu.buttonPressed = true;
 				}
 				break;
 			case 2:
-				if (element!.tagName !== 'MENU-LIST') {
-					this.close();
+				if (element === null) {
+					close();
 				}
 				break;
 		}
 	}
 
-	static windowPointerup(this: MenuList, event: PointerEvent) {
+	function windowPointerup(event: PointerEvent): void {
 		switch (event.button) {
 			case 0: {
 				const element = event.target as HTMLElement;
-				switch (element.tagName) {
-					case 'MENU-ITEM':
-						if (this.buttonPressed) {
-							this.buttonPressed = false;
-							if (!hasClass(element, 'disabled')) {
-								const node = element.dataValue;
-								if (node.submenu) {
-									this.popupSubmenu(0);
-								} else if (node.click) {
-									let root: MenuList | null = this;
-									while (root!.parent) {
-										root = root!.parent as MenuList | null;
-									}
-									node.click();
-									root!.close();
+				if (element.classList.contains('menu-item')) {
+					if (menu.buttonPressed) {
+						menu.buttonPressed = false;
+						if (!hasClass(element, 'disabled')) {
+							const node = (element as any).dataValue;
+							if (node.submenu) {
+								popupSubmenu(0);
+							} else if (node.click) {
+								let m: MenuApi | null = menu;
+								while (m!.parent) {
+									m = m!.parent as MenuApi | null;
 								}
+								node.click();
+								m!.close();
 							}
 						}
-						break;
-					case 'MENU-LIST':
-						break;
-					default:
-						this.close();
-						break;
+					}
+				} else if (element.classList.contains('menu-list')) {
+					break;
+				} else {
+					close();
 				}
 				break;
 			}
 		}
 	}
 
-	static windowPointerover(this: MenuList, event: PointerEvent) {
+	function windowPointerover(event: PointerEvent): void {
 		const element = event.target as HTMLElement;
 		if (
-			element !== this.selection &&
-			element.parentNode === this &&
-			element.tagName === 'MENU-ITEM' &&
+			element !== menu.selection &&
+			element.parentNode === el &&
+			element.classList.contains('menu-item') &&
 			!hasClass(element, 'disabled')
 		) {
-			if (this.closeTimer && this.submenu?.parentMenuItem === element) {
-				this.closeTimer.remove();
-				this.closeTimer = null;
+			if (menu.closeTimer && menu.submenu?.parentMenuItem === element) {
+				menu.closeTimer.remove();
+				menu.closeTimer = null;
 			}
-			// 因为逆序更新计时器
-			this.closeSubmenu(400);
-			this.select(element);
-			this.popupSubmenu(400);
+			closeSubmenu(400);
+			select(element);
+			popupSubmenu(400);
 		}
 	}
 
-	static windowPointerout(this: MenuList, event: PointerEvent) {
+	function windowPointerout(event: PointerEvent): void {
 		const element = event.target;
-		if (this.selection === element) {
-			if (this.submenu !== null) {
-				this.closeSubmenu(400);
+		if (menu.selection === element) {
+			if (menu.submenu !== null) {
+				closeSubmenu(400);
 			}
-			this.unselect();
+			unselect();
 		}
 	}
+
+	menu.windowBlur = windowBlur;
+	menu.windowKeydown = windowKeydown;
+	menu.windowPointerdown = windowPointerdown;
+	menu.windowPointerup = windowPointerup;
+	menu.windowPointerover = windowPointerover;
+	menu.windowPointerout = windowPointerout;
+	menu.popup = popup;
+	menu.computeMenuWidth = computeMenuWidth;
+	menu.close = close;
+	menu.clear = clear;
+	menu.createItem = createItem;
+	menu.select = select;
+	menu.unselect = unselect;
+	menu.reselect = reselect;
+	menu.popupSubmenu = popupSubmenu;
+	menu.closeSubmenu = closeSubmenu;
+	menu.pointerenter = pointerenter;
+
+	const box = el as MenuListElement;
+	Object.defineProperty(box, 'state', {
+		configurable: true,
+		get: () => menu.state
+	});
+	box.callback = null;
+	box.dataItems = null;
+	box.selection = null;
+	box.popupTimer = null;
+	box.closeTimer = null;
+	box.parent = null;
+	box.submenu = null;
+	box.buttonPressed = false;
+	box.minWidth = 0;
+	box.parentMenuItem = null;
+	box.popup = popup;
+	box.computeMenuWidth = computeMenuWidth;
+	box.close = close;
+	box.clear = clear;
+	box.createItem = createItem;
+	box.select = select;
+	box.unselect = unselect;
+	box.reselect = reselect;
+	box.popupSubmenu = popupSubmenu;
+	box.closeSubmenu = closeSubmenu;
+	box.pointerenter = pointerenter;
+	box.windowBlur = windowBlur;
+	box.windowKeydown = windowKeydown;
+	box.windowPointerdown = windowPointerdown;
+	box.windowPointerup = windowPointerup;
+	box.windowPointerover = windowPointerover;
+	box.windowPointerout = windowPointerout;
 }
 
-customElements.define('menu-list', MenuList);
+export function createMenuList(): MenuListElement {
+	const el = document.createElement('div');
+	addClass(el, 'menu-list');
+	attachMenuListApi(el);
+	return el as unknown as MenuListElement;
+}
 
-export const Menu = new MenuList();
+export const Menu = createMenuList();
+
+interface MenuListElement extends HTMLElement {
+	state: string;
+	callback: (() => void) | null;
+	dataItems: any[] | null;
+	selection: HTMLElement | null;
+	popupTimer: any;
+	closeTimer: any;
+	parent: MenuApi | null;
+	submenu: MenuApi | null;
+	buttonPressed: boolean;
+	minWidth: number;
+	parentMenuItem: HTMLElement | null;
+	windowBlur: (event: any) => void;
+	windowKeydown: (event: any) => void;
+	windowPointerdown: (event: any) => void;
+	windowPointerup: (event: any) => void;
+	windowPointerover: (event: any) => void;
+	windowPointerout: (event: any) => void;
+	popup(options: any, items: any): void;
+	computeMenuWidth(): void;
+	close(): void;
+	clear(): HTMLElement;
+	createItem(item: any): HTMLElement;
+	select(element: HTMLElement): void;
+	unselect(): void;
+	reselect(offset: any): void;
+	popupSubmenu(delay: any): void;
+	closeSubmenu(delay: any): void;
+	pointerenter(event: any): void;
+}

@@ -126,9 +126,9 @@ Layout.initialize = function () {
 	});
 
 	this.focusableSelector = `
-  input, textarea, button, select-box, check-box, radio-box,
-  color-box, custom-box, common-list, node-list, param-list,
-  command-list, file-body-content`;
+  input, textarea, button, .select-box, .check-box, .radio-box,
+  .color-box, .custom-box, .common-list, .tree-list, .param-list,
+  .command-list, file-body-content`;
 
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);

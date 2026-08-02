@@ -355,5 +355,3 @@ export class CommonList extends HTMLElement {
 		}
 	}
 }
-
-customElements.define('common-list', CommonList);

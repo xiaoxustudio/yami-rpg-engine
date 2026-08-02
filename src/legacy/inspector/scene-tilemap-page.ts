@@ -1,7 +1,7 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, read, write } from '@/util/element-utils';
 import { Codec } from '@/codec/codec.ts';
-import { SelectBox } from '@/components/select-box.ts';
+import { selectBoxSetItemNames } from '@/components/select-box.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -51,7 +51,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		this.lightBox.setItemNames = function (options) {
 			const backup = this.dataItems;
 			this.dataItems = this.lightItems.all;
-			SelectBox.prototype.setItemNames.call(this, options);
+			selectBoxSetItemNames(this, options);
 			this.dataItems = backup;
 			if (this.dataValue !== null) {
 				this.update();

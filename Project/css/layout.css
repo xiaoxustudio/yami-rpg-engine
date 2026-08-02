@@ -530,7 +530,7 @@ page-frame:not(.visible) {
 	visibility: visible;
 }
 
-.menu-item {
+#menu .menu-item {
 	padding: 0 10px;
 	height: 28px;
 	font-family: var(--font-family-title);
@@ -540,11 +540,11 @@ page-frame:not(.visible) {
 	-webkit-app-region: no-drag;
 }
 
-.menu-item:hover {
+#menu .menu-item:hover {
 	background-color: var(--list-item-background-hover);
 }
 
-.menu-item.selected {
+#menu .menu-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }

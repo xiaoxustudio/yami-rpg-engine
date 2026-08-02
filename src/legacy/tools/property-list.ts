@@ -2,7 +2,7 @@ import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { Command } from '@/command/command-object.ts';
-import { SelectBox } from '@/components/select-box.ts';
+import { createSelectBox } from '@/components/select-box.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { GameLocal } from '@/local/local-object.ts';
@@ -210,10 +210,10 @@ export class AttributeListInterface implements IListInterface {
 		}
 	}
 
-	static _typeBox: SelectBox | null = null;
+	static _typeBox: ReturnType<typeof createSelectBox> | null = null;
 
 	static get typeBox() {
-		if (!this._typeBox) this._typeBox = new SelectBox();
+		if (!this._typeBox) this._typeBox = createSelectBox();
 		return this._typeBox;
 	}
 }

@@ -11,12 +11,12 @@
 					<DetailSummary>Overview</DetailSummary>
 					<box id="plugin-overview" />
 				</DetailBox>
-				<parameter-pane id="plugin-parameter-pane">
-					<DetailBox id="plugin-parameter-detail" open>
-						<DetailSummary>Parameters</DetailSummary>
-						<detail-grid id="plugin-parameter-grid" />
-					</DetailBox>
-				</parameter-pane>
+				<ParameterPane id="plugin-parameter-pane">
+				<DetailBox id="plugin-parameter-detail" open>
+					<DetailSummary>Parameters</DetailSummary>
+					<detail-grid id="plugin-parameter-grid" />
+				</DetailBox>
+			</ParameterPane>
 			</box>
 			<button id="plugin-confirm" name="confirm">Confirm</button>
 			<button id="plugin-cancel" name="cancel">Cancel</button>
@@ -33,6 +33,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();

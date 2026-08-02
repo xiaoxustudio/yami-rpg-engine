@@ -924,5 +924,3 @@ export class ParamList extends HTMLElement {
 		}
 	}
 }
-
-customElements.define('param-list', ParamList);

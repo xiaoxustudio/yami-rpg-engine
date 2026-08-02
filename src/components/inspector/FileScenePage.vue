@@ -105,7 +105,7 @@
 			flexible
 		/>
 	</DetailBox>
-	<parameter-pane id="fileScene-parameter-pane" />
+	<ParameterPane id="fileScene-parameter-pane" />
 </template>
 
 <script setup lang="ts">
@@ -117,6 +117,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

@@ -136,7 +136,7 @@
 				flexible
 			/>
 		</DetailBox>
-		<parameter-pane id="fileActor-parameter-pane" />
+		<ParameterPane id="fileActor-parameter-pane" />
 </template>
 
 <script setup lang="ts">
@@ -148,6 +148,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();

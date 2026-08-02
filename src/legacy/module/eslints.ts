@@ -1,5 +1,6 @@
 import { EventBus } from './eventbus.ts';
-import { on } from '@/util/element-utils.ts';
+import { on, addClass } from '@/util/element-utils.ts';
+import { CommandList } from '@/components/command-list.ts';
 
 let _origUpdateCommandElement: any;
 // command-list 内 command-item 元素运行时挂载的扩展字段
@@ -12,22 +13,24 @@ interface CommandItemElement extends HTMLElement {
 export function updateCommandElement(this: any, element: CommandItemElement): any {
 	const ret = _origUpdateCommandElement.call(this, element);
 
-	element.querySelectorAll('command-mark-major').forEach((e) => {
+	element.querySelectorAll('.command-mark-major').forEach((e) => {
 		e.remove();
 	});
 
-	element.querySelectorAll('command-mark-minor').forEach((e) => {
+	element.querySelectorAll('.command-mark-minor').forEach((e) => {
 		e.remove();
 	});
 
-	let pre = document.createElement('command-mark-major');
+	let pre = document.createElement('div');
 	pre.textContent = '';
+	addClass(pre, 'command-mark-major');
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
 	element.lines = [];
 	for (let i = element.dataIndent; i >= 0; i--) {
-		let line = document.createElement('command-line');
+		let line = document.createElement('div');
+		addClass(line, 'command-line');
 		line.style.marginLeft = this.computeTextIndent(i);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
@@ -72,20 +75,35 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 }
 
 EventBus.once('editor_loaded', () => {
-	const CL = customElements.get('command-list');
-	if (CL) {
-		// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
-		_origUpdateCommandElement = CL.prototype.updateCommandElement;
-		CL.prototype.updateCommandElement = updateCommandElement;
-	}
+	// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
+	_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
+	CommandList.prototype.updateCommandElement = updateCommandElement;
 });
 
-export const commandList = document.querySelector<HTMLElement>('#event-commands');
-
-if (commandList) {
-	(commandList as any).getSelectionPosition = function () {
+export function applyCommandListInstanceOverride(commandList: any): void {
+	if (!commandList) return;
+	commandList.getSelectionPosition = function () {
 		return this.elements[this.active].pre.getBoundingClientRect();
 	};
+	on(commandList, 'update', function () {
+		const list = this.elements;
+		for (let i = 0; i < list.count; i++) {
+			const e = list[i];
+			if (e.fold) {
+				e.mark = 'header';
+			} else {
+				e.mark = 'item';
+				const buffer = e.dataItem?.buffer;
+				if (buffer && buffer.length > 1) {
+					e.mark = 'option';
+					if (buffer[buffer.length - 1] == e) {
+						e.mark = 'footer';
+					}
+				}
+			}
+			e.classList.add(e.mark);
+		}
+	});
 }
 
 export function range(
@@ -132,26 +150,3 @@ export function range(
 		indent
 	};
 }
-
-EventBus.once('editor_loaded', () => {
-	if (!commandList) return;
-	on(commandList, 'update', function () {
-		const list = this.elements;
-		for (let i = 0; i < list.count; i++) {
-			const e = list[i];
-			if (e.fold) {
-				e.mark = 'header';
-			} else {
-				e.mark = 'item';
-				const buffer = e.dataItem?.buffer;
-				if (buffer && buffer.length > 1) {
-					e.mark = 'option';
-					if (buffer[buffer.length - 1] == e) {
-						e.mark = 'footer';
-					}
-				}
-			}
-			e.classList.add(e.mark);
-		}
-	});
-});

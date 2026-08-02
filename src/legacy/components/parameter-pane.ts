@@ -21,10 +21,9 @@ import { createDetailBox } from './detail-box.ts';
 import { createDetailSummary } from './detail-summary.ts';
 import { createNumberBox } from './number-box.ts';
 import { createNumberVar } from './number-var.ts';
-import { SelectBox } from './select-box.ts';
+import { createSelectBox as createSelectBoxElement } from './select-box.ts';
 import { Select } from './select-list.ts';
 import { createTextBox } from './text-box.ts';
-import { TreeList } from './tree-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Local } from '@/tools/localization.ts';
@@ -86,7 +85,7 @@ export class ParameterPane extends HTMLElement {
 				this.update();
 			};
 		}
-		if (scriptList instanceof TreeList) {
+		if (scriptList instanceof HTMLElement && scriptList.classList.contains('tree-list')) {
 			this.getData = () => {
 				const item = read(scriptList as HTMLElement);
 				return item ? [item] : [];
@@ -461,7 +460,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'select-box';
 		const label = document.createElement('text');
-		const input = new SelectBox();
+		const input = createSelectBoxElement();
 		return { tag, label, input };
 	}
 
@@ -789,5 +788,3 @@ export class ParameterPane extends HTMLElement {
 		}
 	}
 }
-
-customElements.define('parameter-pane', ParameterPane);

@@ -8,7 +8,7 @@
 			<item id="menu-help" class="menu-item" value="help">Help</item>
 			<item id="menu-open-yami" class="menu-item" value="openYami">Open Yami</item>
 		</box>
-		<tab-bar id="title-tabBar"></tab-bar>
+		<TabBar id="title-tabBar" />
 		<box id="title-buttons">
 			<box id="title-play" hotkey="F4">&#xf04b;</box>
 			<minimize id="title-minimize"></minimize>
@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import TabBar from './components/common/TabBar.vue';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
 import { defineAsyncComponent } from 'vue';

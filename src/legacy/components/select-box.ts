@@ -1,21 +1,21 @@
 import {
 	addClass,
-	on,
+	on as onElement,
 	removeClass,
 	hasClass,
 	show,
 	hide,
-	enable,
-	disable,
+	enable as enableUtil,
+	disable as disableUtil,
 	dispatchChangeEvent,
 	hideChildNodes,
 	showChildNodes,
-	setTooltip
+	setTooltip as setTooltipElement
 } from '@/util/element-utils.ts';
 import { Select } from './select-list.ts';
 import { Local } from '@/tools/localization.ts';
 
-export class SelectBox extends HTMLElement {
+export interface SelectBoxElement extends HTMLElement {
 	info: HTMLElement & { [k: string]: any };
 	dataItems: any[];
 	dataValue: any;
@@ -23,86 +23,134 @@ export class SelectBox extends HTMLElement {
 	invalid: boolean;
 	hideUnrelated: boolean;
 	savedValue: any;
-	originalTip: string = '';
+	originalTip: string;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
-	_initialized: boolean;
+	read(): any;
+	write(value: any): void;
+	write2(value: any): void;
+	writeDefault(): void;
+	input(value: any): void;
+	update(): void;
+	reselect(offset: any): void;
+	save(): void;
+	restore(): void;
+	enable(): void;
+	disable(): void;
+	loadItems(items: any): void;
+	setItemNames(options: any): void;
+	setTooltip(tip: any): void;
+	createTooltip(): void;
+	clear(): HTMLElement;
+	enableHiddenMode(): SelectBoxElement;
+	relate(entries: any): void;
+	toggleRelatedElements(): void;
+	enableElement(element: any): void;
+	disableElement(element: any): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	keydown(event: any): void;
+	pointerdown(event: any): void;
+}
 
-	constructor() {
-		super();
-
-		const text = document.createElement('text');
-		addClass(text, 'select-box-text');
-		this.info = text;
-		this.dataItems = [];
-		this.dataValue = null;
-		this.relations = [];
-		this.invalid = false;
-		this.hideUnrelated = false;
-		this.writeEventEnabled = false;
-		this.inputEventEnabled = false;
-		this._initialized = false;
-
-		on(this, 'keydown', this.keydown);
-		on(this, 'pointerdown', this.pointerdown);
-	}
-
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		this.appendChild(this.info);
-		this.tabIndex = 0;
-	}
-
-	read() {
-		return this.dataValue;
-	}
-
-	write(value: any) {
-		this.dataValue = value;
-		this.update();
-		if (!hasClass(this, 'disabled')) {
-			this.toggleRelatedElements();
+export function selectBoxSetItemNames(box: SelectBoxElement, options: any): void {
+	for (const item of box.dataItems) {
+		const key = item.value;
+		const option = options[key];
+		switch (typeof option) {
+			case 'string':
+				item.name = option;
+				continue;
+			case 'object':
+				if ('name' in option) {
+					item.name = option.name;
+				}
+				if ('tip' in option) {
+					item.tip = (Local.parseTip as any)(option.tip, option.name);
+				}
+				continue;
 		}
-		if (this.writeEventEnabled) {
+	}
+	if (box.dataValue !== null) {
+		box.update();
+	}
+	box.createTooltip();
+}
+
+export function attachSelectBoxApi(el: HTMLElement): void {
+	const box = el as SelectBoxElement;
+
+	const text = document.createElement('div');
+	addClass(text, 'select-box-text');
+	box.info = text;
+	box.dataItems = [];
+	box.dataValue = null;
+	box.relations = [];
+	box.invalid = false;
+	box.hideUnrelated = false;
+	box.writeEventEnabled = false;
+	box.inputEventEnabled = false;
+	box.savedValue = undefined;
+	box.originalTip = '';
+
+	el.appendChild(text);
+	el.tabIndex = 0;
+
+	onElement(el, 'keydown', keydown);
+	onElement(el, 'pointerdown', pointerdown);
+
+	function read(): any {
+		return box.dataValue;
+	}
+
+	function write(value: any): void {
+		box.dataValue = value;
+		update();
+		if (!hasClass(el, 'disabled')) {
+			toggleRelatedElements();
+		}
+		if (box.writeEventEnabled) {
 			const write = new Event('write');
-			write.value = this.dataValue;
-			this.dispatchEvent(write);
+			write.value = box.dataValue;
+			el.dispatchEvent(write);
 		}
 	}
 
-	write2(value: any) {
-		for (const item of this.dataItems) {
+	function write2(value: any): void {
+		for (const item of box.dataItems) {
 			if (item.value === value) {
-				this.write(value);
+				write(value);
 				return;
 			}
 		}
-		this.writeDefault();
+		writeDefault();
 	}
 
-	writeDefault() {
-		this.write(this.dataItems[0]?.value);
+	function writeDefault(): void {
+		write(box.dataItems[0]?.value);
 	}
 
-	input(value: any) {
-		const last = this.dataValue;
+	function input(value: any): void {
+		const last = box.dataValue;
 		if (last !== value) {
-			this.write(value);
-			if (this.inputEventEnabled) {
+			write(value);
+			if (box.inputEventEnabled) {
 				const input = new Event('input', { bubbles: true });
 				input.last = last;
-				input.value = this.dataValue;
-				this.dispatchEvent(input);
+				input.value = box.dataValue;
+				el.dispatchEvent(input);
 			}
-			dispatchChangeEvent(this);
+			dispatchChangeEvent(el);
 		}
 	}
 
-	update() {
-		const info = this.info;
-		const value = this.dataValue;
-		const items = this.dataItems;
+	function update(): void {
+		const info = box.info;
+		const value = box.dataValue;
+		const items = box.dataItems;
 		const length = items.length;
 		let name;
 		for (let i = 0; i < length; i++) {
@@ -113,108 +161,86 @@ export class SelectBox extends HTMLElement {
 			}
 		}
 		if (name !== undefined) {
-			this.invalid = false;
+			box.invalid = false;
 			removeClass(info, 'invalid');
 			info.textContent = name;
 		} else {
-			this.invalid = true;
+			box.invalid = true;
 			addClass(info, 'invalid');
 			info.textContent = value;
 		}
 	}
 
-	reselect(offset: any) {
-		const value = this.dataValue;
-		const items = this.dataItems;
+	function reselect(offset: any): void {
+		const value = box.dataValue;
+		const items = box.dataItems;
 		const length = items.length;
 		for (let i = 0; i < length; i++) {
 			if (items[i].value === value) {
 				const index = i + offset;
 				if (index >= 0 && index < length) {
-					this.input(items[index].value);
+					input(items[index].value);
 				}
 				return;
 			}
 		}
 		const index = offset > 0 ? 0 : length - 1;
-		this.input(items[index].value);
+		input(items[index].value);
 	}
 
-	save() {
-		this.savedValue = this.read();
+	function save(): void {
+		box.savedValue = read();
 	}
 
-	restore() {
-		if (this.savedValue !== undefined) {
-			this.input(this.savedValue);
-			delete this.savedValue;
+	function restore(): void {
+		if (box.savedValue !== undefined) {
+			input(box.savedValue);
+			delete box.savedValue;
 		}
 	}
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			this.tabIndex += 1;
-			showChildNodes(this);
-			this.toggleRelatedElements();
+	function enable(): void {
+		if (removeClass(el, 'disabled')) {
+			el.tabIndex += 1;
+			showChildNodes(el);
+			toggleRelatedElements();
 		}
 	}
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			this.tabIndex -= 1;
-			hideChildNodes(this);
-			this.toggleRelatedElements();
+	function disable(): void {
+		if (addClass(el, 'disabled')) {
+			el.tabIndex -= 1;
+			hideChildNodes(el);
+			toggleRelatedElements();
 		}
 	}
 
-	loadItems(items: any) {
-		this.dataItems = items;
-		if (this.dataValue !== null && this.dataValue !== undefined) {
-			this.update();
+	function loadItems(items: any): void {
+		box.dataItems = items;
+		if (box.dataValue !== null && box.dataValue !== undefined) {
+			update();
 		}
 	}
 
-	setItemNames(options: any) {
-		for (const item of this.dataItems) {
-			const key = item.value;
-			const option = options[key];
-			switch (typeof option) {
-				case 'string':
-					item.name = option;
-					continue;
-				case 'object':
-					if ('name' in option) {
-						item.name = option.name;
-					}
-					if ('tip' in option) {
-						item.tip = (Local.parseTip as any)(option.tip, option.name);
-					}
-					continue;
-			}
-		}
-		if (this.dataValue !== null) {
-			this.update();
-		}
-
-		this.createTooltip();
+	function setItemNames(options: any): void {
+		selectBoxSetItemNames(box, options);
 	}
 
-	setTooltip(tip: any) {
-		this.originalTip = tip;
-		setTooltip(this, tip);
+	function setTooltip(tip: any): void {
+		box.originalTip = tip;
+		setTooltipElement(el, tip);
 	}
 
-	createTooltip() {
-		let tip = this.originalTip ?? '';
+	function createTooltip(): void {
+		let tip = box.originalTip ?? '';
 		let options = '';
-		for (const item of this.dataItems) {
+		for (const item of box.dataItems) {
 			if (item.tip) {
 				options += item.tip + '\n';
 			}
 		}
-		// 如果不存在选择框工具提示但是存在选项工具提示，添加标签名称
 		if (tip === '' && options !== '') {
-			const prev = this.previousElementSibling;
+			const prev = el.previousElementSibling;
 			if (prev?.tagName === 'TEXT') {
 				tip += `<b>${prev.textContent}</b>`;
 			}
@@ -224,31 +250,31 @@ export class SelectBox extends HTMLElement {
 		}
 		tip += options;
 		if (tip !== '') {
-			setTooltip(this, tip.trim());
+			setTooltipElement(el, tip.trim());
 		}
 	}
 
-	clear() {
-		this.dataItems = null as any;
-		this.dataValue = null;
-		this.info.textContent = '';
-		return this;
+	function clear(): HTMLElement {
+		box.dataItems = null as any;
+		box.dataValue = null;
+		box.info.textContent = '';
+		return el;
 	}
 
-	enableHiddenMode() {
-		this.hideUnrelated = true;
-		return this;
+	function enableHiddenMode(): SelectBoxElement {
+		box.hideUnrelated = true;
+		return el as SelectBoxElement;
 	}
 
-	relate(entries: any) {
-		this.relations = entries;
+	function relate(entries: any): void {
+		box.relations = entries;
 	}
 
-	toggleRelatedElements() {
-		if (this.relations.length !== 0) {
-			if (!hasClass(this, 'disabled')) {
-				const entries = this.relations;
-				const value = this.dataValue;
+	function toggleRelatedElements(): void {
+		if (box.relations.length !== 0) {
+			if (!hasClass(el, 'disabled')) {
+				const entries = box.relations;
+				const value = box.dataValue;
 				const selection = entries.find((entry) =>
 					entry.case instanceof Array ? entry.case.includes(value) : entry.case === value
 				);
@@ -264,34 +290,33 @@ export class SelectBox extends HTMLElement {
 						for (const element of selection
 							? Array.subtract(entry.targets, selection.targets)
 							: entry.targets) {
-							this.disableElement(element);
+							disableElement(element);
 						}
 					}
 				}
-				// 延后启用元素避免可能被禁用的情况
 				for (const entry of deferredList) {
 					for (const element of entry.targets) {
-						this.enableElement(element);
+						enableElement(element);
 					}
 				}
 			} else {
-				const entries = this.relations;
+				const entries = box.relations;
 				for (const entry of entries) {
 					for (const element of entry.targets) {
-						this.disableElement(element);
+						disableElement(element);
 					}
 				}
 			}
 		}
 	}
 
-	enableElement(element: any) {
+	function enableElement(element: any): void {
 		if (typeof element.enable === 'function') {
 			element.enable();
 		} else {
-			enable(element);
+			enableUtil(element);
 		}
-		if (this.hideUnrelated) {
+		if (box.hideUnrelated) {
 			let node = element.previousSibling;
 			while (node instanceof Text) {
 				node = node.previousSibling;
@@ -303,13 +328,13 @@ export class SelectBox extends HTMLElement {
 		}
 	}
 
-	disableElement(element: any) {
+	function disableElement(element: any): void {
 		if (typeof element.disable === 'function') {
 			element.disable();
 		} else {
-			disable(element);
+			disableUtil(element);
 		}
-		if (this.hideUnrelated) {
+		if (box.hideUnrelated) {
 			let node = element.previousSibling;
 			while (node instanceof Text) {
 				node = node.previousSibling;
@@ -321,51 +346,81 @@ export class SelectBox extends HTMLElement {
 		}
 	}
 
-	on = (
+	function onEvent(
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
-	): void => {
-		super.addEventListener(type, listener, options);
+	): void {
+		el.addEventListener(type, listener as EventListener, options);
 		switch (type) {
 			case 'write':
-				this.writeEventEnabled = true;
+				box.writeEventEnabled = true;
 				break;
 			case 'input':
-				this.inputEventEnabled = true;
+				box.inputEventEnabled = true;
 				break;
 		}
-	};
+	}
 
-	keydown(event: any) {
+	function keydown(event: any): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
 				if (!event.cmdOrCtrlKey) {
 					event.stopPropagation();
-					Select.open(this);
+					Select.open(box);
 				}
 				break;
 			case 'ArrowUp':
 				event.preventDefault();
 				event.stopPropagation();
-				this.reselect(-1);
+				reselect(-1);
 				break;
 			case 'ArrowDown':
 				event.preventDefault();
 				event.stopPropagation();
-				this.reselect(1);
+				reselect(1);
 				break;
 		}
 	}
 
-	pointerdown(event: any) {
+	function pointerdown(event: any): void {
 		switch (event.button) {
 			case 0:
-				Select.open(this);
+				Select.open(box);
 				break;
 		}
 	}
+
+	box.read = read;
+	box.write = write;
+	box.write2 = write2;
+	box.writeDefault = writeDefault;
+	box.input = input;
+	box.update = update;
+	box.reselect = reselect;
+	box.save = save;
+	box.restore = restore;
+	box.enable = enable;
+	box.disable = disable;
+	box.loadItems = loadItems;
+	box.setItemNames = setItemNames;
+	box.setTooltip = setTooltip;
+	box.createTooltip = createTooltip;
+	box.clear = clear;
+	box.enableHiddenMode = enableHiddenMode;
+	box.relate = relate;
+	box.toggleRelatedElements = toggleRelatedElements;
+	box.enableElement = enableElement;
+	box.disableElement = disableElement;
+	box.on = onEvent;
+	box.keydown = keydown;
+	box.pointerdown = pointerdown;
 }
 
-customElements.define('select-box', SelectBox);
+export function createSelectBox(): SelectBoxElement {
+	const el = document.createElement('div');
+	addClass(el, 'select-box');
+	attachSelectBoxApi(el);
+	return el as unknown as SelectBoxElement;
+}

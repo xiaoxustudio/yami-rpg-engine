@@ -5,8 +5,9 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSyn
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-// 旧自定义元素 + HTML partial 伪标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
-// 来源：customElements.define 注册的 43 个 + html/** 中作为结构标签使用的伪元素
+// 伪元素/未迁移 CE 标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
+// Wave 3 后：9 个复合/重型 CE（tab-bar/menu-list/select-box/tree-list/common-list/param-list/parameter-pane/command-list 等）已迁移为 Vue SFC，白名单 41 → 32
+// 剩余：结构伪元素（box/item/text/page-frame/detail-grid/grid-box/group/nav-item 等）+ 非 Wave 3 CE（file-*/flex-* 等）
 const CUSTOM_ELEMENT_TAGS = new Set([
 	'box',
 	'item',
@@ -23,19 +24,11 @@ const CUSTOM_ELEMENT_TAGS = new Set([
 	'nav-item',
 	'nav-icon',
 	'nav-text',
-	'tab-bar',
-	'command-list',
-	'select-box',
 	'flex-box',
-	'tree-list',
-	'node-list',
-	'param-list',
-	'parameter-pane',
 	'file-body-pane',
 	'file-nav-pane',
 	'file-head-pane',
 	'file-browser',
-	'menu-list',
 	'content-frame',
 	'grid-box',
 	'field-set',
@@ -46,7 +39,6 @@ const CUSTOM_ELEMENT_TAGS = new Set([
 	'file-body-icon',
 	'file-body-name',
 	'flex-item',
-	'common-list',
 	'empty',
 	'selection'
 ]);

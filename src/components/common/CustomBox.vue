@@ -333,6 +333,7 @@ const write = (value: any): void => {
 	}
 	const el = root.value;
 	if (el) {
+		el.dataValue = value;
 		if (state.writeEventEnabled) {
 			const write: any = new Event('write');
 			write.value = state.dataValue;

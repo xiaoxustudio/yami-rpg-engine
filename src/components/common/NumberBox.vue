@@ -69,6 +69,8 @@ const state = {
 	blurEventEnabled: false
 };
 
+let decimalPlaces: number = Number(props.decimals);
+
 const whiteList = [
 	'Digit0',
 	'Digit1',
@@ -118,7 +120,7 @@ const read = (): number => {
 	const max = parseFloat(el.max);
 	let value = parseFloat(el.value) || 0;
 	value = Math.clamp(value, min, max);
-	value = Math.roundTo(value, Number(props.decimals));
+	value = Math.roundTo(value, decimalPlaces);
 	return value;
 };
 
@@ -224,6 +226,12 @@ onMounted(() => {
 	el.disable = disable;
 	el.getFocus = getFocus;
 	el.on = on;
+	Object.defineProperty(el, 'decimals', {
+		get: (): number => decimalPlaces,
+		set: (value: number): void => {
+			decimalPlaces = Number(value);
+		}
+	});
 	write(props.modelValue);
 	if (props.disabled) disable();
 });

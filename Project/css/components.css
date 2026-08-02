@@ -646,7 +646,7 @@ slider-filler {
 /* --------------------------------
  * 选择�? * --------------------------------
  */
-select-box {
+.select-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -660,7 +660,7 @@ select-box {
 	overflow: hidden;
 }
 
-select-box:not(.disabled)::before {
+.select-box:not(.disabled)::before {
 	content: '';
 	position: absolute;
 	right: 4px;
@@ -670,16 +670,16 @@ select-box:not(.disabled)::before {
 	border-top: 4px solid var(--text-color);
 }
 
-select-box.disabled {
+.select-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-select-box:hover {
+.select-box:hover {
 	background-color: var(--input-background-hover);
 }
 
-select-box:focus {
+.select-box:focus {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -702,7 +702,7 @@ select-box:focus {
  * 选择列表
  * --------------------------------
  */
-select-list {
+.select-list {
 	display: block;
 	position: fixed;
 	margin-left: var(--1dpx);
@@ -715,7 +715,7 @@ select-list {
 
 /* 指针在列表底部边框触�?mousemove 事件�? * position: relative 事件目标为列表本�? * position: static 事件目标为列表选项
  */
-select-item {
+.select-item {
 	display: block;
 	padding: 0 4px;
 	height: 20px;
@@ -725,12 +725,12 @@ select-item {
 	text-overflow: ellipsis;
 }
 
-select-item.selected {
+.select-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-select-item.disabled {
+.select-item.disabled {
 	color: var(--text-color-disabled);
 }
 
@@ -738,7 +738,7 @@ select-item.disabled {
  * 菜单列表
  * --------------------------------
  */
-menu-list {
+.menu-list {
 	display: block;
 	position: fixed;
 	padding: 4px 0;
@@ -749,7 +749,7 @@ menu-list {
 	pointer-events: auto;
 }
 
-menu-item {
+.menu-item {
 	display: block;
 	margin: 0;
 	padding: 4px 0;
@@ -757,30 +757,30 @@ menu-item {
 	pointer-events: auto;
 }
 
-menu-item.id {
+.menu-item.id {
 	color: var(--text-color-disabled);
 }
 
-menu-item.id.selected {
+.menu-item.id.selected {
 	color: var(--text-color-accelerator-selected);
 }
 
-menu-item.id > menu-label {
+.menu-item.id > .menu-label {
 	width: 100px;
 	overflow: visible;
 }
 
-menu-item.selected {
+.menu-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-menu-item.disabled {
+.menu-item.disabled {
 	color: var(--text-color-disabled);
 	background-color: transparent;
 }
 
-menu-checked {
+.menu-checked {
 	position: absolute;
 	left: 4px;
 	width: 16px;
@@ -792,7 +792,7 @@ menu-checked {
 	pointer-events: none;
 }
 
-menu-icon.color-icon {
+.menu-icon.color-icon {
 	position: absolute;
 	left: 4px;
 	margin: 2px;
@@ -802,7 +802,7 @@ menu-icon.color-icon {
 	pointer-events: none;
 }
 
-menu-icon.color-icon.transparent::before {
+.menu-icon.color-icon.transparent::before {
 	content: '';
 	position: absolute;
 	top: 4px;
@@ -813,7 +813,7 @@ menu-icon.color-icon.transparent::before {
 	transform: rotate(-45deg);
 }
 
-menu-label {
+.menu-label {
 	position: absolute;
 	left: 24px;
 	overflow: hidden;
@@ -822,7 +822,7 @@ menu-label {
 	pointer-events: none;
 }
 
-menu-accelerator {
+.menu-accelerator {
 	position: absolute;
 	right: 24px;
 	font-family: var(--font-family-accelerator);
@@ -830,17 +830,17 @@ menu-accelerator {
 	pointer-events: none;
 }
 
-.selected > menu-accelerator {
+.selected > .menu-accelerator {
 	color: var(--text-color-accelerator-selected);
 }
 
-menu-sub-mark {
+.menu-sub-mark {
 	position: absolute;
 	right: 10px;
 	pointer-events: none;
 }
 
-menu-separator {
+.menu-separator {
 	display: block;
 	position: relative;
 	margin: 4px 0;
@@ -936,11 +936,11 @@ menu-separator {
 	visibility: visible;
 }
 
-tab-bar.dragging {
+.tab-bar.dragging {
 	-webkit-app-region: no-drag;
 }
 
-tab-item {
+.tab-item {
 	display: flex;
 	width: 200px;
 	line-height: 28px;
@@ -951,7 +951,7 @@ tab-item {
 	-webkit-app-region: no-drag;
 }
 
-tab-text {
+.tab-text {
 	flex-grow: 1;
 	width: 0;
 	text-indent: 8px;
@@ -961,20 +961,20 @@ tab-text {
 	pointer-events: none;
 }
 
-tab-item:first-child {
+.tab-item:first-child {
 	border-left: var(--tab-item-border);
 }
 
-tab-item:not(.selected):hover {
+.tab-item:not(.selected):hover {
 	background-color: var(--tab-item-background-hover);
 }
 
-tab-item.selected {
+.tab-item.selected {
 	color: var(--toolbar-item-color-highlight);
 	background-color: var(--tab-item-background-selected);
 }
 
-tab-close {
+.tab-close {
 	margin: 4px;
 	width: 16px;
 	height: 16px;
@@ -986,12 +986,12 @@ tab-close {
 	border-radius: 50%;
 }
 
-tab-close:hover {
+.tab-close:hover {
 	color: var(--tab-close-color-hover);
 	background-color: var(--titlebar-button-background-hover);
 }
 
-tab-close:active {
+.tab-close:active {
 	color: var(--tab-close-color-active);
 	background-color: var(--titlebar-button-background-active);
 }
@@ -1058,7 +1058,7 @@ nav-text {
  * 节点列表
  * --------------------------------
  */
-node-list {
+.tree-list {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
@@ -1074,16 +1074,16 @@ node-item {
 }
 
 /* 避免拖拽时非指针位置的列表项触发:hover样式 */
-node-list:not(.dragging) > node-item:hover {
+.tree-list:not(.dragging) > node-item:hover {
 	background-color: var(--list-item-background-hover);
 }
 
-node-list:focus > node-item.selected {
+.tree-list:focus > node-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-node-list:not(:focus) > node-item.selected {
+.tree-list:not(:focus) > node-item.selected {
 	background-color: var(--selected-background-blur);
 }
 
@@ -1407,7 +1407,7 @@ lock-icon:hover {
 	color: var(--text-color-rename);
 }
 
-field-set > node-list {
+field-set > .tree-list {
 	position: absolute;
 	padding: 10px 0;
 	width: 100%;
@@ -1436,7 +1436,7 @@ field-set > node-list {
 /* --------------------------------
  * 普通列�? * --------------------------------
  */
-common-list {
+.common-list {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
@@ -1455,16 +1455,16 @@ common-item:hover {
 	background-color: var(--list-item-background-hover);
 }
 
-common-list:focus > common-item.selected {
+.common-list:focus > common-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-common-list:not(:focus) > common-item.selected {
+.common-list:not(:focus) > common-item.selected {
 	background-color: var(--selected-background-blur);
 }
 
-field-set > common-list {
+field-set > .common-list {
 	position: absolute;
 	padding: 10px 0;
 	width: 100%;
@@ -1475,7 +1475,7 @@ field-set > common-list {
  * 参数列表
  * --------------------------------
  */
-param-list {
+.param-list {
 	display: block;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -1488,11 +1488,11 @@ param-list {
 	border-radius: 2px;
 }
 
-param-list.dragover {
+.param-list.dragover {
 	border-color: var(--input-border-color-focus);
 }
 
-param-item {
+.param-item {
 	display: flex;
 	padding: 0 10px;
 	height: 20px;
@@ -1500,17 +1500,17 @@ param-item {
 	white-space: pre;
 }
 
-param-item:hover {
+.param-item:hover {
 	background-color: var(--list-item-background-hover);
 }
 
-param-item.selected {
+.param-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
 /* display: flex 无法显示省略�?*/
-param-item.one-column {
+.param-item.one-column {
 	display: block;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1524,19 +1524,19 @@ param-item.one-column {
 	pointer-events: none;
 }
 
-param-item.invalid,
+.param-item.invalid,
 .text-0-of-2.invalid,
 .text-1-of-2.invalid {
 	color: var(--text-color-error);
 }
 
-param-item.weak,
+.param-item.weak,
 .text-0-of-2.weak,
 .text-1-of-2.weak {
 	color: var(--text-color-disabled);
 }
 
-param-item.weak.selected,
+.param-item.weak.selected,
 .selected > .text-0-of-2.weak,
 .selected > .text-1-of-2.weak {
 	color: var(--text-color-accelerator-selected);
@@ -1591,7 +1591,7 @@ param-item.weak.selected,
  * 指令列表
  * --------------------------------
  */
-command-list {
+.command-list {
 	display: block;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -1599,48 +1599,48 @@ command-list {
 	font-family: var(--font-family-mono);
 }
 
-command-line.hover {
+.command-line.hover {
 	border-left-color: var(--command-line-hover-color);
 	border-bottom-color: var(--command-line-hover-color) !important;
 }
-command-line {
+.command-line {
 	position: absolute;
 	height: 100%;
 	pointer-events: none;
 	left: 47px;
 }
 
-command-item command-line {
+.command-item .command-line {
 	border-left: 1px solid var(--command-line-color);
 }
 
-command-item.header command-line:last-of-type {
+.command-item.header .command-line:last-of-type {
 	top: 18px;
 }
 
-command-item.item command-line:last-of-type {
+.command-item.item .command-line:last-of-type {
 	visibility: hidden;
 }
 
-command-item.footer command-line:last-of-type {
+.command-item.footer .command-line:last-of-type {
 	bottom: 10px;
 	width: 6px;
 	border-bottom: 1px solid var(--command-line-color);
 }
 
-command-item.header command-mark-major {
+.command-item.header .command-mark-major {
 	visibility: hidden;
 }
 
-command-item.option command-mark-major {
+.command-item.option .command-mark-major {
 	visibility: hidden;
 }
 
-command-item.footer command-mark-major {
+.command-item.footer .command-mark-major {
 	visibility: hidden;
 }
 
-command-item {
+.command-item {
 	position: relative;
 	display: block;
 	padding-left: 56px;
@@ -1652,173 +1652,178 @@ command-item {
 	text-overflow: ellipsis;
 }
 
-command-item > span {
+.command-item > span {
 	pointer-events: none;
 }
 
-command-item.item command-mark-major:before {
+.command-text,
+.command-mark-minor {
+	display: inline;
+}
+
+.command-item.item .command-mark-major:before {
 	content: '>';
 }
 
-command-item.disabled.selected > command-text:not(.transparent) {
+.command-item.disabled.selected > .command-text:not(.transparent) {
 	pointer-events: auto;
 	color: var(--text-color-accelerator-selected) !important;
 }
 
-command-item.disabled > command-mark-major,
-command-item.disabled > command-mark-minor,
-command-item.disabled > command-fold,
-command-item.disabled > command-text:not(.transparent),
-command-item.disabled > text {
+.command-item.disabled > .command-mark-major,
+.command-item.disabled > .command-mark-minor,
+.command-item.disabled > .command-fold,
+.command-item.disabled > .command-text:not(.transparent),
+.command-item.disabled > text {
 	color: var(--command-color-mark-minor);
 }
 
-command-item:hover {
+.command-item:hover {
 	background-color: var(--list-item-background-hover);
 }
 
-command-item.selected {
+.command-item.selected {
 	color: white;
 	background-color: var(--selected-background);
 }
 
-command-item > .transparent {
+.command-item > .transparent {
 	color: transparent;
 	text-shadow: none;
 }
 
-command-item:not(.selected) > .element {
+.command-item:not(.selected) > .element {
 	color: var(--command-color-element);
 }
 
-command-item:not(.selected) > .gray {
+.command-item:not(.selected) > .gray {
 	color: var(--command-color-gray);
 }
 
-command-item:not(.selected) > .text {
+.command-item:not(.selected) > .text {
 	color: var(--command-color-text);
 }
 
-command-item:not(.selected) > .variable {
+.command-item:not(.selected) > .variable {
 	color: var(--command-color-variable);
 }
 
-command-item:not(.selected) > .flow {
+.command-item:not(.selected) > .flow {
 	color: var(--command-color-flow);
 }
 
-command-item:not(.selected) > .label {
+.command-item:not(.selected) > .label {
 	color: var(--command-color-label);
 }
 
-command-item:not(.selected) > .comment {
+.command-item:not(.selected) > .comment {
 	color: var(--command-color-comment);
 }
 
-command-item:not(.selected) > .wait {
+.command-item:not(.selected) > .wait {
 	color: var(--command-color-wait);
 }
 
-command-item:not(.selected) > .object {
+.command-item:not(.selected) > .object {
 	color: var(--command-color-object);
 }
 
-command-item:not(.selected) > .audio {
+.command-item:not(.selected) > .audio {
 	color: var(--command-color-audio);
 }
 
-command-item:not(.selected) > .actor {
+.command-item:not(.selected) > .actor {
 	color: var(--command-color-actor);
 }
 
-command-item:not(.selected) > .skill {
+.command-item:not(.selected) > .skill {
 	color: var(--command-color-skill);
 }
 
-command-item:not(.selected) > .inventory {
+.command-item:not(.selected) > .inventory {
 	color: var(--command-color-inventory);
 }
 
-command-item:not(.selected) > .scene {
+.command-item:not(.selected) > .scene {
 	color: var(--command-color-scene);
 }
 
-command-item:not(.selected) > .network {
+.command-item:not(.selected) > .network {
 	color: var(--command-color-network);
 }
 
-command-item:not(.selected) > .system {
+.command-item:not(.selected) > .system {
 	color: var(--command-color-system);
 }
 
-command-item:not(.selected) > .custom {
+.command-item:not(.selected) > .custom {
 	color: var(--command-color-custom);
 }
 
-command-item:not(.disabled) > .invalid,
-command-item:not(.disabled) > .error {
+.command-item:not(.disabled) > .invalid,
+.command-item:not(.disabled) > .error {
 	text-decoration: underline wavy var(--command-color-invalid-wave);
 }
 
-command-item:not(.selected) > .normal {
+.command-item:not(.selected) > .normal {
 	color: var(--text-color);
 }
 
-command-item:not(.selected) > .global-var {
+.command-item:not(.selected) > .global-var {
 	color: var(--command-color-global-var);
 }
 
-command-item:not(.selected) > .identifier {
+.command-item:not(.selected) > .identifier {
 	color: var(--command-color-identifier);
 }
 
-command-item:not(.selected) > .identifier.no-ref {
+.command-item:not(.selected) > .identifier.no-ref {
 	color: var(--command-color-identifier-no-ref);
 }
 
-command-item:not(.selected) > .delimiter {
+.command-item:not(.selected) > .delimiter {
 	color: var(--command-color-delimiter);
 }
 
-command-item:not(.selected) > .operator {
+.command-item:not(.selected) > .operator {
 	color: var(--command-color-operator);
 }
 
-command-item:not(.selected) > .boolean {
+.command-item:not(.selected) > .boolean {
 	color: var(--command-color-boolean);
 }
 
-command-item:not(.selected) > .number {
+.command-item:not(.selected) > .number {
 	color: var(--command-color-number);
 }
 
-command-item:not(.selected) > .string {
+.command-item:not(.selected) > .string {
 	color: var(--command-color-string);
 }
 
-command-item:not(.selected) > .file {
+.command-item:not(.selected) > .file {
 	color: var(--command-color-file);
 }
 
-command-item:not(.selected) > .preset {
+.command-item:not(.selected) > .preset {
 	color: var(--command-color-preset);
 }
 
-command-item:not(.selected) > .weak {
+.command-item:not(.selected) > .weak {
 	color: var(--command-color-weak);
 }
 
-command-list.alt > command-item.global-event {
+.command-list.alt > .command-item.global-event {
 	background-color: var(--command-global-event-link-background);
 	cursor: pointer;
 }
 
-command-list.alt > command-item.global-event > .file {
+.command-list.alt > .command-item.global-event > .file {
 	font-weight: bold;
 	color: var(--command-color-audio) !important;
 }
 
-command-fold {
+.command-fold {
 	position: absolute;
 	margin: 3px 0;
 	left: 40px;
@@ -1834,22 +1839,22 @@ command-fold {
 	margin-left: -16px;
 }
 
-command-item.selected > command-fold {
+.command-item.selected > .command-fold {
 	background-color: transparent;
 	border-color: rgba(255, 255, 255, 0.1);
 }
 
-command-fold:hover {
+.command-fold:hover {
 	background-color: var(--command-fold-background-hover) !important;
 	border-color: var(--command-fold-background-hover);
 }
 
-command-fold:active {
+.command-fold:active {
 	background-color: var(--command-fold-background-active) !important;
 	border-color: var(--command-fold-background-active);
 }
 
-command-mark-major {
+.command-mark-major {
 	letter-spacing: 2px;
 	position: absolute;
 	text-indent: 0px;
@@ -1858,13 +1863,13 @@ command-mark-major {
 	/* background: green; */
 }
 
-command-mark-minor {
+.command-mark-minor {
 	letter-spacing: 2px;
 	color: var(--command-color-mark-minor);
 	/* background: green; */
 }
 
-command-item.selected > command-mark-minor {
+.command-item.selected > .command-mark-minor {
 	color: var(--command-color-mark-minor-selected);
 }
 
@@ -1894,7 +1899,7 @@ command-item.selected > command-mark-minor {
 	background-color: var(--command-text-background-highlight-any) !important;
 }
 
-field-set > command-list {
+field-set > .command-list {
 	position: absolute;
 	padding: 10px 0;
 	width: 100%;
