@@ -121,6 +121,6 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.on('change', () => emit('change', readElement(el)));
+	el.addEventListener('change', () => emit('change', readElement(el)));
 });
 </script>

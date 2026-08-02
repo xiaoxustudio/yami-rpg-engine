@@ -3,15 +3,15 @@
 		<DetailSummary>{{ local.getLabel('fileEquipment-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileEquipment-general-grid">
 			<text>{{ local.getLabel('fileEquipment-icon') || 'Icon' }}</text
-			><custom-box id="fileEquipment-icon" type="file" filter="image" />
+			><CustomBox id="fileEquipment-icon" type="file" filter="image" />
 			<text>{{ local.getLabel('fileEquipment-clip') || 'Clip' }}</text
-			><custom-box
+			><CustomBox
 				id="fileEquipment-clip"
 				type="clip"
 				image="fileEquipment-icon"
 			/>
 			<text>{{ local.getLabel('fileEquipment-inherit') || 'Inherit' }}</text
-			><custom-box
+			><CustomBox
 				id="fileEquipment-inherit"
 				type="file"
 				filter="equipment"
@@ -20,7 +20,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-attributes') || 'Attributes' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileEquipment-attributes"
 			class="inspector-list"
 			group="equipment"
@@ -29,7 +29,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-events') || 'Events' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileEquipment-events"
 			class="inspector-list"
 			filter="equipment"
@@ -38,7 +38,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-scripts') || 'Scripts' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileEquipment-scripts"
 			class="inspector-list"
 			flexible
@@ -53,6 +53,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

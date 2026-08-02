@@ -1,12 +1,12 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { addClass, getFocus, hide, read, setTooltip, show, write } from '@/util/element-utils.ts';
-import { TextAreaVar } from '@/components/textarea-var.ts';
+import { createTextAreaVar } from '@/components/textarea-var.ts';
 import { Command } from '@/command/command-object.ts';
 import { EventEditor } from '@/command/event-editor.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { CustomBox } from '@/components/custom-box.ts';
-import { NumberVar } from '@/components/number-var.ts';
+import { createCustomBox } from '@/components/custom-box.ts';
+import { createNumberVar } from '@/components/number-var.ts';
 import { SelectBox } from '@/components/select-box.ts';
 import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
@@ -141,7 +141,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		const label = document.createElement('text');
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
 		label.textContent = name;
-		let input;
+		let input: any;
 		switch (type) {
 			case 'boolean':
 				input = new SelectBox();
@@ -151,13 +151,13 @@ import { Selection } from '@/tools/text-capture.ts';
 				]);
 				break;
 			case 'number':
-				input = new NumberVar();
+				input = createNumberVar();
 				input.numBox.input.min = '-1000000000';
 				input.numBox.input.max = '1000000000';
 				input.numBox.decimals = 10;
 				break;
 			case 'string':
-				input = new TextAreaVar();
+				input = createTextAreaVar();
 				input.strBox.setAttribute(
 					'menu',
 					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
@@ -167,40 +167,40 @@ import { Selection } from '@/tools/text-capture.ts';
 				Selection.addEventListeners(input.strBox);
 				break;
 			case 'object':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
 			case 'actor':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'actor';
 				break;
 			case 'skill':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'skill';
 				break;
 			case 'state':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'state';
 				break;
 			case 'equipment':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'equipment';
 				break;
 			case 'item':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'item';
 				break;
 			case 'trigger':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'trigger';
 				break;
 			case 'light':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'light';
 				break;
 			case 'element':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'element';
 				break;
 		}
@@ -214,27 +214,27 @@ import { Selection } from '@/tools/text-capture.ts';
 		this.parameters.push({ key, type, label, input });
 	},
 	createEventResultElements(type: any) {
-		let input;
+		let input: any;
 		switch (type) {
 			case 'none':
 				return;
 			case 'boolean':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'boolean';
 				break;
 			case 'number':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'number';
 				break;
 			case 'string':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'string';
 				break;
 			case 'object':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
@@ -246,7 +246,7 @@ import { Selection } from '@/tools/text-capture.ts';
 			case 'trigger':
 			case 'light':
 			case 'element':
-				input = new CustomBox();
+				input = createCustomBox();
 				input.type = 'variable';
 				input.filter = 'object';
 				break;

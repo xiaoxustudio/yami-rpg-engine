@@ -298,7 +298,7 @@ CommandSuggestion.initialize = function (): void {
 		this.data = data;
 	});
 
-	window.on('localize', this.windowLocalize!);
+	window.addEventListener('localize', this.windowLocalize!);
 	on(this.widget, 'close', this.windowClose!);
 	on(this.searcher, 'keydown', this.searcherKeydown!);
 	on(this.searcher, 'input', this.searcherInput!);
@@ -332,7 +332,7 @@ CommandSuggestion.open = function (): void {
 			list.resize();
 		}
 		getFocus(searcher);
-		window.on('pointerdown', this.pointerdown!, { capture: true });
+		window.addEventListener('pointerdown', this.pointerdown!, { capture: true });
 	}
 };
 
@@ -355,7 +355,7 @@ CommandSuggestion.windowClose = function (event: Event): void {
 	// 但是异步触发的scroll事件因为列表被隐藏而不会刷新列表项
 	CommandSuggestion.searcher.deleteInputContent();
 	hide(CommandSuggestion.list);
-	window.off('pointerdown', CommandSuggestion.pointerdown!, {
+	window.removeEventListener('pointerdown', CommandSuggestion.pointerdown!, {
 		capture: true
 	});
 };
@@ -440,7 +440,7 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 			}
 		};
 		this.pressing = pointerup;
-		window.on('pointerup', pointerup, { once: true });
+		window.addEventListener('pointerup', pointerup, { once: true });
 	}
 };
 

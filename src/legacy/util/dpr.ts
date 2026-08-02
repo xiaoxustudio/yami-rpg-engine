@@ -1,4 +1,4 @@
-window.on(
+window.addEventListener(
 	'resize',
 	(function IIFE() {
 		let dpr = window.devicePixelRatio;

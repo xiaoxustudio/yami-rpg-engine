@@ -25,8 +25,8 @@ export const Log = {
 Log.initialize = function () {
 	setInterval(this.tick!, 1000);
 
-	window.on('error', this.catchError!);
-	window.on('unhandledrejection', this.catchRejection!);
+	window.addEventListener('error', this.catchError!);
+	window.addEventListener('unhandledrejection', this.catchRejection!);
 	ipcRenderer.on('tsc-log', this.tscLog!);
 };
 

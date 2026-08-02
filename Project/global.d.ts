@@ -189,19 +189,6 @@ interface Event {
 	last: any;
 }
 
-interface EventTarget {
-	on(
-		type: string,
-		listener: (event: EditorEvent) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-	off(
-		type: string,
-		listener: (event: EditorEvent) => void,
-		options?: boolean | EventListenerOptions
-	): void;
-}
-
 interface HTMLElement {
 	_paddingTop: number;
 	innerHeight: number;
@@ -308,23 +295,7 @@ interface KeyboardEvent {
 	cmdOrCtrlKey: boolean;
 }
 
-interface NodeListOf<TNode extends Node> {
-	on: (
-		type: string,
-		listener: (event: EditorEvent) => void,
-		options?: boolean | AddEventListenerOptions
-	) => void;
-	off: (
-		type: string,
-		listener: (event: EditorEvent) => void,
-		options?: boolean | EventListenerOptions
-	) => void;
-}
-
 interface NodeList {
-	on(type: string, listener: (event: EditorEvent) => void, options?: any): NodeList;
-	enable(): void;
-	disable(): void;
 	// tab-bar.ts 中局使用（this.childNodes 解构 { item }）
 	item: any;
 }

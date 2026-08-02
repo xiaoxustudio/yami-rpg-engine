@@ -3,9 +3,9 @@
 		<TitleBar>Change Team Relation<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Team A</text><select-box id="setTeamRelation-teamId1" />
-				<text>Team B</text><select-box id="setTeamRelation-teamId2" />
-				<text>Relation</text><select-box id="setTeamRelation-relation" />
+				<text>Team A</text><SelectBox id="setTeamRelation-teamId1" />
+				<text>Team B</text><SelectBox id="setTeamRelation-teamId2" />
+				<text>Relation</text><SelectBox id="setTeamRelation-relation" />
 			</grid-box>
 			<button id="setTeamRelation-confirm" name="confirm">Confirm</button>
 			<button id="setTeamRelation-cancel" name="cancel">Cancel</button>
@@ -19,6 +19,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

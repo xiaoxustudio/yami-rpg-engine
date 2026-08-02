@@ -10,143 +10,170 @@ import {
 	read,
 	write
 } from '@/util/element-utils.ts';
-import { CustomBox } from './custom-box.ts';
-import { NumberBox } from './number-box.ts';
+import { createCustomBox } from './custom-box.ts';
+import { createNumberBox } from './number-box.ts';
 
-export class NumberVar extends HTMLElement {
+interface NumberVarElement extends HTMLElement {
 	mode: string;
 	numBox: HTMLElement & { [k: string]: any };
-	varBox: CustomBox & { [k: string]: any };
+	varBox: HTMLElement & { [k: string]: any };
+	read(): any;
+	write(value: any): void;
+	switch(mode?: string): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: any): any;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	keydown(event: any): void;
+	pointerdown(event: any): void;
+}
 
-	constructor() {
-		super();
+export const defVar = { type: 'local', key: 'key' };
+export const defVarForPlugin = { getter: 'variable', type: 'local', key: 'key' };
 
-		this.mode = null;
-		this.numBox = new NumberBox(this);
-		this.varBox = new CustomBox();
-		this.varBox.type = 'variable';
-		this.varBox.filter = 'number';
+export function attachNumberVarApi(el: HTMLElement): void {
+	const box = el as NumberVarElement;
+	let currentMode: string = null as any;
 
-		on(this, 'keydown', this.keydown);
-		on(this, 'pointerdown', this.pointerdown);
-	}
+	const numBox = createNumberBox(el) as HTMLElement & { [k: string]: any };
+	const varBox = createCustomBox() as HTMLElement & { [k: string]: any };
+	varBox.type = 'variable';
+	varBox.filter = 'number';
 
-	read() {
-		switch (this.mode) {
+	box.mode = currentMode;
+	box.numBox = numBox;
+	box.varBox = varBox;
+
+	box.read = function (): any {
+		switch (currentMode) {
 			case 'constant':
-				return read(this.numBox);
+				return read(numBox);
 			case 'variable':
-				return this.varBox.read();
+				return varBox.read();
 		}
-	}
+	};
 
-	write(value: any) {
+	box.write = function (value: any): void {
 		switch (typeof value) {
 			case 'number':
-				this.switch('constant');
-				write(this.numBox, value);
-				// 暂时这么写，不是很理想
-				this.varBox.write(
-					this.varBox.isPluginInput ? NumberVar.defVarForPlugin : NumberVar.defVar
-				);
+				box.switch('constant');
+				write(numBox, value);
+				varBox.write(varBox.isPluginInput ? defVarForPlugin : defVar);
 				break;
 			case 'object':
-				this.switch('variable');
-				write(this.numBox, 0);
-				this.varBox.write(value);
+				box.switch('variable');
+				write(numBox, 0);
+				varBox.write(value);
 				break;
 		}
-	}
+	};
 
-	switch(mode?) {
-		const focus = !mode && !hasClass(this, 'disabled');
-		if (mode === undefined) {
-			switch (this.mode) {
+	box.switch = function (target?: string): void {
+		const focus = !target && !hasClass(box, 'disabled');
+		if (target === undefined) {
+			switch (currentMode) {
 				case 'constant':
-					mode = 'variable';
+					target = 'variable';
 					break;
 				case 'variable':
-					mode = 'constant';
+					target = 'constant';
 					break;
 			}
 		}
-		if (this.mode !== mode) {
-			removeClass(this, this.mode);
-			addClass(this, mode);
-			this.mode = mode;
-			switch (mode) {
+		if (currentMode !== target) {
+			removeClass(box, currentMode);
+			addClass(box, target as string);
+			currentMode = target as string;
+			box.mode = currentMode;
+			switch (target) {
 				case 'constant':
-					this.varBox.remove();
-					this.appendChild(this.numBox);
+					varBox.remove();
+					box.appendChild(numBox);
 					if (focus) {
-						this.numBox.input.focus();
-						this.numBox.input.select();
+						numBox.input.focus();
+						numBox.input.select();
 					}
 					break;
 				case 'variable':
-					this.numBox.remove();
-					this.appendChild(this.varBox);
+					numBox.remove();
+					box.appendChild(varBox);
 					if (focus) {
-						this.varBox.focus();
+						varBox.focus();
 					}
 					break;
 			}
-			dispatchChangeEvent(this);
+			dispatchChangeEvent(box);
 		}
-	}
+	};
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			enable(this.numBox);
-			enable(this.varBox);
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			enable(numBox);
+			enable(varBox);
 		}
-	}
+	};
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			disable(this.numBox);
-			disable(this.varBox);
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			disable(numBox);
+			disable(varBox);
 		}
-	}
+	};
 
-	getFocus(mode: any) {
-		switch (this.mode) {
+	box.getFocus = function (mode: any): any {
+		switch (currentMode) {
 			case 'constant':
-				return getFocus(this.numBox, mode);
+				return getFocus(numBox, mode);
 			case 'variable':
-				return getFocus(this.varBox, mode);
+				return getFocus(varBox, mode);
 		}
-	}
+	};
 
-	keydown(event: any) {
+	box.keydown = function (event: any): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				this.switch();
+				box.switch();
 				break;
 		}
-	}
+	};
 
-	pointerdown(event: any) {
+	box.pointerdown = function (event: any): void {
 		switch (event.button) {
 			case 0:
-				if (!hasClass(this, 'disabled') && event.target === this) {
+				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 			case 2:
-				if (!hasClass(this, 'disabled')) {
+				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 		}
-	}
+	};
 
-	static defVar = { type: 'local', key: 'key' };
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		box.addEventListener(type, listener as EventListener, options);
+	};
 
-	static defVarForPlugin = { getter: 'variable', type: 'local', key: 'key' };
+	on(box, 'keydown', box.keydown);
+	on(box, 'pointerdown', box.pointerdown);
 }
 
-customElements.define('number-var', NumberVar);
+export function createNumberVar(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'number-var';
+	attachNumberVarApi(el);
+	return el;
+}

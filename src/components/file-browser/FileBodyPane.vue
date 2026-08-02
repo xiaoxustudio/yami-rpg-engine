@@ -7,12 +7,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { addClass, hasClass, hasScrollBar, hide, isInContent, rect, removeClass, show } from '@/util/element-utils';
+import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { Path } from '@/util/config.ts';
 import { Data } from '@/data/data-object.ts';
 import { Window } from '@/tools/window-object.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { TextBox } from '@/components/text-box.ts';
+import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -49,7 +50,7 @@ let openEventEnabled = false;
 let selectEventEnabled = false;
 let unselectEventEnabled = false;
 let popupEventEnabled = false;
-let textBox: TextBox;
+let textBox: any;
 let windowKeydownHandler: (event: KeyboardEvent) => void;
 
 function setViewIndex(idx: number): void {
@@ -574,7 +575,7 @@ function activateFile(file: any): void {
 		}
 	};
 	pressing = pointerup;
-	window.on('pointerup', pointerup, { once: true });
+	window.addEventListener('pointerup', pointerup, { once: true });
 }
 
 function deactivateFile(): void {
@@ -1278,7 +1279,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.on('pointerup', pointerup, { once: true });
+							window.addEventListener('pointerup', pointerup, { once: true });
 						}
 						return;
 					}
@@ -1320,7 +1321,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.on('pointerup', pointerup, { once: true });
+							window.addEventListener('pointerup', pointerup, { once: true });
 						} else {
 							activateFile((element as any).file);
 							if (
@@ -1409,8 +1410,8 @@ function windowKeydown(event: KeyboardEvent): void {
 					(Window as any).getTopWindow()?.id === 'selector'
 				) {
 					addClass(contentEl.value as any, 'alt');
-					window.on('keyup', windowKeyup);
-					window.on('pointermove', windowPointermove);
+					window.addEventListener('keyup', windowKeyup);
+					window.addEventListener('pointermove', windowPointermove);
 				}
 				break;
 		}
@@ -1422,8 +1423,8 @@ function windowKeyup(event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'AltLeft':
 				removeClass(contentEl.value as any, 'alt');
-				window.off('keyup', windowKeyup);
-				window.off('pointermove', windowPointermove);
+				window.removeEventListener('keyup', windowKeyup);
+				window.removeEventListener('pointermove', windowPointermove);
 				break;
 		}
 	}
@@ -1432,18 +1433,18 @@ function windowKeyup(event: KeyboardEvent): void {
 function windowPointermove(event: PointerEvent): void {
 	if (!event.altKey) {
 		removeClass(contentEl.value as any, 'alt');
-		window.off('keyup', windowKeyup);
-		window.off('pointermove', windowPointermove);
+		window.removeEventListener('keyup', windowKeyup);
+		window.removeEventListener('pointermove', windowPointermove);
 	}
 }
 
-function createTextBox(): TextBox {
-	const tb = new TextBox();
+function createTextBox(): HTMLElement {
+	const tb = createTextBoxFactory();
 	tb.setMaxLength(64);
 	addClass(tb, 'file-body-text-box');
 	addClass(tb.input, 'file-body-text-box-input');
 
-	tb.on('keydown', function (this: TextBox, event: KeyboardEvent) {
+	tb.addEventListener('keydown', function (this: any, event: KeyboardEvent) {
 		event.stopPropagation();
 		switch (event.code) {
 			case 'Enter':
@@ -1458,7 +1459,7 @@ function createTextBox(): TextBox {
 		}
 	});
 
-	tb.on('beforeinput', function (event: any) {
+	tb.addEventListener('beforeinput', function (event: any) {
 		if (event.inputType === 'insertText' && typeof event.data === 'string') {
 			const regexp = /[\\/:*?"<>|]/;
 			if (regexp.test(event.data)) {
@@ -1468,17 +1469,17 @@ function createTextBox(): TextBox {
 		}
 	});
 
-	tb.on('input', function (this: TextBox, event: Event) {
+	tb.addEventListener('input', function (this: any, event: Event) {
 		if (this.style.width !== '') {
 			this.fitContent();
 		}
 	});
 
-	tb.on('select', function (event: Event) {
+	tb.addEventListener('select', function (event: Event) {
 		event.stopPropagation();
 	});
 
-	tb.on('blur', function (this: TextBox, event: Event) {
+	tb.addEventListener('blur', function (this: any, event: Event) {
 		const item = this.parentNode as any;
 		const file = item.file;
 		const name = this.read().trim();
@@ -1516,7 +1517,7 @@ function createTextBox(): TextBox {
 
 function on(type: string, listener: (event: any) => void, options?: boolean | AddEventListenerOptions): void {
 	const node = el.value as any;
-	EventTarget.prototype.on.call(node, type, listener, options);
+	node.addEventListener(type, listener, options);
 	switch (type) {
 		case 'open':
 			openEventEnabled = true;
@@ -1577,7 +1578,7 @@ onMounted(() => {
 	node.addEventListener('keydown', keydown as any);
 	node.addEventListener('pointerdown', pointerdown as any);
 	node.addEventListener('pointerup', pointerup as any);
-	(node as any).on('doubleclick', doubleclick as any);
+	attachDoubleclick(node, doubleclick as any);
 	node.addEventListener('wheel', wheel as any);
 
 	const resizeObserver = new ResizeObserver(() => {

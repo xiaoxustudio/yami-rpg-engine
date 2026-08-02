@@ -130,8 +130,8 @@ Layout.initialize = function () {
   color-box, custom-box, common-list, node-list, param-list,
   command-list, file-body-content`;
 
-	window.on('resize', this.windowResize!);
-	window.on('localize', this.windowLocalize!);
+	window.addEventListener('resize', this.windowResize!);
+	window.addEventListener('localize', this.windowLocalize!);
 	this.manager.on('switch', this.pageSwitch!);
 };
 
@@ -221,6 +221,8 @@ Layout.createGroups = function (item: any, parent: HTMLElement) {
 			if (item) {
 				nav.appendChild(item);
 				manager.appendChild(item.page);
+			} else {
+				console.warn('missing item for tab:', tab);
 			}
 		}
 	}
@@ -867,8 +869,8 @@ Layout.navDragstart = function (this: HTMLElement, event: any) {
 		event.group = this.parentNode;
 		event.hint = createDragAndDropHint();
 		addClass(event.hint, 'for-group');
-		window.on('dragenter', Layout.navDragover!);
-		window.on('dragover', Layout.navDragover!);
+		window.addEventListener('dragenter', Layout.navDragover!);
+		window.addEventListener('dragover', Layout.navDragover!);
 		const groups = Layout.getKeyGroups!();
 		const navs = (event.navs = [] as any[]);
 		const regions = (event.regions = [] as any[]);
@@ -894,8 +896,8 @@ Layout.navDragstart = function (this: HTMLElement, event: any) {
 Layout.navDragend = function (event: EditorEvent) {
 	const { dragging } = Layout;
 	if (dragging) {
-		window.off('dragenter', Layout.navDragover!);
-		window.off('dragover', Layout.navDragover!);
+		window.removeEventListener('dragenter', Layout.navDragover!);
+		window.removeEventListener('dragover', Layout.navDragover!);
 		for (const nav of dragging.navs) {
 			off(nav, 'dragenter', Layout.navDragenter!);
 			off(nav, 'dragleave', Layout.navDragleave!);
@@ -1292,8 +1294,8 @@ Layout.borderPointerdown = function (this: HTMLElement, event: any) {
 				event.outer = outer;
 				event.group = group;
 				event.end = group.end;
-				window.on('pointerup', Layout.pointerup!);
-				window.on('pointermove', Layout.pointermove!);
+				window.addEventListener('pointerup', Layout.pointerup!);
+				window.addEventListener('pointermove', Layout.pointermove!);
 				const groups = Layout.getKeyGroups!();
 				const infos = (event.infos = [] as any[]);
 				for (const group of groups) {
@@ -1329,8 +1331,8 @@ Layout.pointerup = function (event?: EditorEvent) {
 			info.remove();
 		}
 		Layout.resizing = null;
-		window.off('pointerup', Layout.pointerup!);
-		window.off('pointermove', Layout.pointermove!);
+		window.removeEventListener('pointerup', Layout.pointerup!);
+		window.removeEventListener('pointermove', Layout.pointermove!);
 	}
 };
 

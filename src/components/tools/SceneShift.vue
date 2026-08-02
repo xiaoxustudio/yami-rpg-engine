@@ -3,8 +3,8 @@
 		<TitleBar>Shift<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Shift X</text><number-box id="scene-shift-x" min="-512" max="512" />
-				<text>Shift Y</text><number-box id="scene-shift-y" min="-512" max="512" />
+				<text>Shift X</text><NumberBox id="scene-shift-x" min="-512" max="512" />
+				<text>Shift Y</text><NumberBox id="scene-shift-y" min="-512" max="512" />
 			</grid-box>
 			<button id="scene-shift-confirm" name="confirm">Confirm</button>
 			<button id="scene-shift-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

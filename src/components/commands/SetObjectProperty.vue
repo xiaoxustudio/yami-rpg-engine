@@ -4,14 +4,14 @@
 		<content-frame>
 			<grid-box>
 				<text>Variable</text
-				><custom-box
+				><CustomBox
 					id="setObjectProperty-variable"
 					type="variable"
 					filter="object"
 				/>
-				<text>setObjectProperty</text><param-list id="setObjectProperty-list" />
+				<text>setObjectProperty</text><ParamList id="setObjectProperty-list" />
 				<text>valueVariable</text
-				><custom-box
+				><CustomBox
 					id="setObjectProperty-value-variable"
 					type="variable"
 					filter="all"
@@ -29,6 +29,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

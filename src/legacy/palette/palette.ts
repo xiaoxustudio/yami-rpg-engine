@@ -267,7 +267,7 @@ Palette.initialize = function () {
 		}
 	};
 
-	window.on('themechange', this.themechange);
+	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
 	on($('#fileTileset-general-detail'), 'toggle', this.windowResize);
 	on($('#palette-head-start'), 'pointerdown', this.toolbarPointerdown);
@@ -1797,8 +1797,8 @@ Palette.marqueePointerdown = function (event) {
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			if (event.cmdOrCtrlKey) {
@@ -1813,8 +1813,8 @@ Palette.marqueePointerdown = function (event) {
 					event.startIndex = i;
 					this.marqueePointerleave();
 					this.marquee.customSelect('source', x, y);
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					return;
 				}
 			}
@@ -1840,8 +1840,8 @@ Palette.marqueePointerdown = function (event) {
 					}
 					this.dragging = event;
 					event.mode = 'select';
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					this.screen.addScrollListener('both', this.scaleX / 4, false, () => {
 						this.screen.beginScrolling();
 						this.updateTransform();
@@ -1862,8 +1862,8 @@ Palette.marqueePointerdown = function (event) {
 					event.startY = y;
 					event.startIndex = i;
 					this.requestRendering();
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
 				case 'tag': {
@@ -1877,13 +1877,13 @@ Palette.marqueePointerdown = function (event) {
 					event.startY = y;
 					event.startIndex = i;
 					this.requestRendering();
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
 				case 'terrain':
 					this.setTerrain(x, y, -1);
-					// window.on('pointerup', this.pointerup) window.on('pointermove', this.pointermove)
+					// window.addEventListener('pointerup', this.pointerup) window.addEventListener('pointermove', this.pointermove)
 					break;
 				case 'edit': {
 					const tileset = this.tileset;
@@ -1903,8 +1903,8 @@ Palette.marqueePointerdown = function (event) {
 								event.startIndex = i;
 								this.requestRendering();
 								marquee.customSelect('source', x, y);
-								window.on('pointerup', this.pointerup);
-								window.on('pointermove', this.pointermove);
+								window.addEventListener('pointerup', this.pointerup);
+								window.addEventListener('pointermove', this.pointermove);
 							} else {
 								event.preventDefault();
 								this.editAutoTile(i);
@@ -1925,8 +1925,8 @@ Palette.marqueePointerdown = function (event) {
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
 					Cursor.open('cursor-grab');
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'priority': {
 					const tileset = this.tileset;
@@ -1941,8 +1941,8 @@ Palette.marqueePointerdown = function (event) {
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
 					this.requestRendering();
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
 				case 'tag': {
@@ -1958,8 +1958,8 @@ Palette.marqueePointerdown = function (event) {
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
 					this.requestRendering();
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				}
 				case 'terrain':
@@ -1970,16 +1970,16 @@ Palette.marqueePointerdown = function (event) {
 					event.startY = y;
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'edit':
 					this.dragging = event;
 					event.mode = 'ready-to-scroll';
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 			}
 			break;
@@ -2135,8 +2135,8 @@ Palette.pointerup = function (event) {
 				File.planToSave(this.meta);
 				break;
 		}
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Palette);
 

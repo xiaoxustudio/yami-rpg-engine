@@ -4,7 +4,7 @@
 		<content-frame>
 			<grid-box>
 				<text>Content</text
-				><text-box
+				><TextBox
 					id="choice-content"
 					menu="tag-local-var tag-global-var tag-localization"
 				/>
@@ -21,6 +21,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

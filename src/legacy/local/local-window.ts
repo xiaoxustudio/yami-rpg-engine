@@ -17,7 +17,7 @@ import { Shortcuts } from '@/tools/shortcut-registry.ts';
 import { createDetailBox } from '@/components/detail-box.ts';
 import { createDetailSummary } from '@/components/detail-summary.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { TextArea } from '@/components/text-area.ts';
+import { createTextArea } from '@/components/text-area.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { GUID } from '@/file/guid.ts';
 import { ExportLanguage } from './export-language-window.ts';
@@ -198,8 +198,8 @@ Localization.createInputs = function () {
 		const detailBox = createDetailBox();
 		const detailSummary = createDetailSummary();
 		detailSummary.textContent = (Local.get as any)('languages.' + language);
-		const textarea = new TextArea();
-		(textarea as TextArea & { language: string }).language = language;
+		const textarea = createTextArea();
+		(textarea as HTMLElement & { language: string }).language = language;
 		textarea.setAttribute('menu', 'tag-global tag-dynamic-global-var');
 		addClass(textarea, 'localization-text-area');
 		detailBox.appendChild(detailSummary);
@@ -238,8 +238,8 @@ Localization.open = function (target: any = null) {
 
 	getFocus(list);
 
-	(window as any).on('keydown', this.keydown);
-	(window as any).on('keydown', (Reference.getKeydownListener as any)(list, 'localization'));
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', (Reference.getKeydownListener as any)(list, 'localization'));
 };
 
 Localization.undo = function () {
@@ -437,8 +437,8 @@ Localization.windowClosed = function (this: any, event: any) {
 	clear(this.list);
 	clear(this.panel);
 	this.closeContentPanel();
-	(window as any).off('keydown', this.keydown);
-	(window as any).off('keydown', (Reference.getKeydownListener as any)(this.list));
+	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('keydown', (Reference.getKeydownListener as any)(this.list));
 }.bind(Localization);
 
 Localization.keydown = Shortcuts.createUndoRedo(Localization);

@@ -5,9 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { on as addEvent, off as removeEvent, addClass, removeClass, hasClass, rect } from '@/util/element-utils.ts';
 import { Layout } from '@/layout/layout.ts';
+import { Local } from '@/tools/localization.ts';
 
 function getWindow() {
 	return (window as any).Window;
@@ -298,11 +299,30 @@ const setTitle = (text: string): void => {
 
 defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, on, root });
 
+const applyLocalization = (): void => {
+	const element = root.value as any;
+	if (!element) {
+		return;
+	}
+	const apply = (el: any): void => {
+		const item = Local.components?.[el?.id];
+		if (item) {
+			Local.setElement(el, item);
+		}
+	};
+	apply(element);
+	for (const el of element.querySelectorAll('[id]')) {
+		apply(el);
+	}
+};
+
 onMounted(() => {
 	const element = root.value as any;
 	if (!element) {
 		return;
 	}
+	applyLocalization();
+	window.addEventListener('localize', applyLocalization);
 	element.open = open;
 	element.close = close;
 	element.maximize = maximize;
@@ -353,5 +373,9 @@ onMounted(() => {
 	on('resize', () => emit('resize'));
 	on('maximize', () => emit('maximize'));
 	on('unmaximize', () => emit('unmaximize'));
+});
+
+onUnmounted(() => {
+	window.removeEventListener('localize', applyLocalization);
 });
 </script>

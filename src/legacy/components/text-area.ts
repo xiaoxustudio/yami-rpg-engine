@@ -9,50 +9,65 @@ import {
 	listenDraggingScrollbarEvent
 } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
-import { TextBox } from './text-box.ts';
+import { macInputKeydown } from './text-box.ts';
 
-export class TextArea extends HTMLElement {
-	input: HTMLElement;
+interface TextAreaElement extends HTMLElement {
+	input: HTMLTextAreaElement;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	_initialized: boolean;
+	read(): string;
+	write(value: string): void;
+	insert(value: string): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: any): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-	constructor() {
-		super();
+let target: HTMLElement | null = null;
 
-		const input = document.createElement('textarea');
-		input.history = new TextHistory(input);
-		on(input, 'keydown', this.inputKeydown);
-		on(input, 'input', this.inputInput);
-		listenDraggingScrollbarEvent(input);
+const timer = new Timer({
+	duration: 0,
+	callback: () => {
+		removeClass(target, 'inputting');
+		target = null;
+	}
+});
 
-		this.input = input;
-		this.focusEventEnabled = false;
-		this.blurEventEnabled = false;
-		this._initialized = false;
+export function attachTextAreaApi(el: HTMLElement): void {
+	const box = el as TextAreaElement;
 
-		if (process.platform === 'darwin') {
-			on(input, 'keydown', TextBox.macInputKeydown as (event: EditorEvent) => void);
-		}
+	const input = document.createElement('textarea');
+	input.history = new TextHistory(input);
+	on(input, 'keydown', inputKeydown);
+	on(input, 'input', inputInput);
+	listenDraggingScrollbarEvent(input);
+
+	box.input = input;
+	box.focusEventEnabled = false;
+	box.blurEventEnabled = false;
+
+	if (process.platform === 'darwin') {
+		on(input, 'keydown', macInputKeydown as (event: EditorEvent) => void);
 	}
 
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		this.appendChild(this.input);
-	}
+	el.appendChild(input);
 
-	read(): string {
-		return this.input.value;
-	}
+	box.read = function (): string {
+		return input.value;
+	};
 
-	write(value: string): void {
-		this.input.value = value;
-		this.input.history.reset();
-	}
+	box.write = function (value: string): void {
+		input.value = value;
+		input.history.reset();
+	};
 
-	insert(value: string): void {
-		this.input.dispatchEvent(
+	box.insert = function (value: string): void {
+		input.dispatchEvent(
 			new InputEvent('beforeinput', {
 				inputType: 'insertFromPaste',
 				data: value,
@@ -60,25 +75,51 @@ export class TextArea extends HTMLElement {
 			})
 		);
 		document.execCommand('insertText', false, value);
-	}
+	};
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			showChildNodes(this);
+	box.enable = function (): void {
+		if (removeClass(el, 'disabled')) {
+			showChildNodes(el);
 		}
-	}
+	};
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			hideChildNodes(this);
+	box.disable = function (): void {
+		if (addClass(el, 'disabled')) {
+			hideChildNodes(el);
 		}
-	}
+	};
 
-	getFocus(mode: any) {
-		return getFocus(this.input, mode);
-	}
+	box.getFocus = function (mode: any): void {
+		getFocus(input, mode);
+	};
 
-	inputKeydown(event: any) {
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		el.addEventListener(type, listener as EventListener, options);
+		switch (type) {
+			case 'focus':
+				if (!box.focusEventEnabled) {
+					box.focusEventEnabled = true;
+					on(input, 'focus', () => {
+						el.dispatchEvent(new FocusEvent('focus'));
+					});
+				}
+				break;
+			case 'blur':
+				if (!box.blurEventEnabled) {
+					box.blurEventEnabled = true;
+					on(input, 'blur', () => {
+						el.dispatchEvent(new FocusEvent('blur'));
+					});
+				}
+				break;
+		}
+	};
+
+	function inputKeydown(event: any): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -87,56 +128,25 @@ export class TextArea extends HTMLElement {
 				}
 				break;
 		}
-		if (!TextArea.target) {
-			TextArea.target = this;
-			TextArea.timer.add();
-			addClass(this, 'inputting');
+		if (!target) {
+			target = el;
+			timer.add();
+			addClass(el, 'inputting');
 		}
 	}
 
-	inputInput(event: any) {
-		if (!TextArea.target) {
-			TextArea.target = this;
-			TextArea.timer.add();
-			addClass(this, 'inputting');
+	function inputInput(event: any): void {
+		if (!target) {
+			target = el;
+			timer.add();
+			addClass(el, 'inputting');
 		}
 	}
-
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void {
-		super.on(type, listener, options);
-		switch (type) {
-			case 'focus':
-				if (!this.focusEventEnabled) {
-					this.focusEventEnabled = true;
-					on(this.input, 'focus', (event) => {
-						this.dispatchEvent(new FocusEvent('focus'));
-					});
-				}
-				break;
-			case 'blur':
-				if (!this.blurEventEnabled) {
-					this.blurEventEnabled = true;
-					on(this.input, 'blur', (event) => {
-						this.dispatchEvent(new FocusEvent('blur'));
-					});
-				}
-				break;
-		}
-	}
-
-	static target: HTMLElement | null = null;
-
-	static timer = new Timer({
-		duration: 0,
-		callback: (timer) => {
-			removeClass(TextArea.target!, 'inputting');
-			TextArea.target = null;
-		}
-	});
 }
 
-customElements.define('text-area', TextArea);
+export function createTextArea(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'text-area';
+	attachTextAreaApi(el);
+	return el;
+}

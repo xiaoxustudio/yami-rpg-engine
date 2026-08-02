@@ -2,7 +2,7 @@
 	<WindowFrame id="arrayList-number">
 		<TitleBar>Number<close /></TitleBar>
 		<content-frame>
-			<number-box
+			<NumberBox
 				id="arrayList-number-value"
 				min="-1000000000"
 				max="1000000000"
@@ -20,6 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

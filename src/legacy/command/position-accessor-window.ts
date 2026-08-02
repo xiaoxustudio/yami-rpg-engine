@@ -81,7 +81,7 @@ PositionGetter.initialize = function (): void {
 		{ name: 'Random - Wall', value: 'random-wall' }
 	]);
 
-	($('#positionGetter-confirm') as HTMLElement).on('click', this.confirm!);
+	($('#positionGetter-confirm') as HTMLElement).addEventListener('click', this.confirm!);
 };
 
 PositionGetter.open = function (this: PositionGetterShape, target: PositionGetterTarget): void {

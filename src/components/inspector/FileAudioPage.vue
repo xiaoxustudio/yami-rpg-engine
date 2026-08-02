@@ -13,7 +13,7 @@
 		<detail-grid id="fileAudio-mixer-grid">
 			<text>{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</text>
 			<flex-box id="fileAudio-volume-box">
-				<slider-box
+				<SliderBox
 					id="fileAudio-volume"
 					min="0"
 					max="1"
@@ -23,7 +23,7 @@
 			</flex-box>
 			<text>{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</text>
 			<flex-box id="fileAudio-pan-box">
-				<slider-box
+				<SliderBox
 					id="fileAudio-pan"
 					min="-1"
 					max="1"
@@ -33,7 +33,7 @@
 			</flex-box>
 			<text>{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</text>
 			<flex-box id="fileAudio-dry-box">
-				<slider-box
+				<SliderBox
 					id="fileAudio-dry"
 					min="0"
 					max="1"
@@ -43,7 +43,7 @@
 			</flex-box>
 			<text>{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</text>
 			<flex-box id="fileAudio-wet-box">
-				<slider-box
+				<SliderBox
 					id="fileAudio-wet"
 					min="0"
 					max="1"
@@ -76,6 +76,7 @@ import { useAudioStore } from '@app/stores/audio';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
 
 const audio = useAudioStore();
 const local = useLocalStore();

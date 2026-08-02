@@ -122,16 +122,26 @@ File.get = function (descriptor) {
 					const absPath = /^[A-Za-z]:[\\/]|^[/\\]/.test(cleanPath)
 						? cleanPath
 						: Path.resolve(this.root || getFallbackRoot(), cleanPath);
-					const content = fs.readFileSync(absPath, 'utf-8');
-					if (type === 'json') {
-						try {
-							resolve(JSON.parse(content));
-						} catch (parseError) {
-							// 非 JSON 文件回退包装对象，避免 Object.defineProperty 对字符串抛错
-							resolve({ code: content });
-						}
+					if (type === 'arraybuffer') {
+						const buffer = fs.readFileSync(absPath);
+						resolve(
+							buffer.buffer.slice(
+								buffer.byteOffset,
+								buffer.byteOffset + buffer.byteLength
+							)
+						);
 					} else {
-						resolve(content);
+						const content = fs.readFileSync(absPath, 'utf-8');
+						if (type === 'json') {
+							try {
+								resolve(JSON.parse(content));
+							} catch (parseError) {
+								// 非 JSON 文件回退包装对象，避免 Object.defineProperty 对字符串抛错
+								resolve({ code: content });
+							}
+						} else {
+							resolve(content);
+						}
 					}
 				} catch (error: any) {
 					reject(new URIError(path));

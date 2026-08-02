@@ -3,24 +3,24 @@
 	<TitleBar>Return<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Type</text><select-box id="return-type" /> <text>Boolean</text
-			><select-box id="return-boolean" /> <text>Number</text
-			><number-var
+			<text>Type</text><SelectBox id="return-type" /> <text>Boolean</text
+			><SelectBox id="return-boolean" /> <text>Number</text
+			><NumberVar
 				id="return-number"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			 />
-			<text>String</text><string-var id="return-string" /> <text>Object</text
-			><custom-box id="return-object" type="variable" filter="object" />
-			<text>Actor</text><custom-box id="return-actor" type="actor" />
-			<text>Skill</text><custom-box id="return-skill" type="skill" />
-			<text>State</text><custom-box id="return-state" type="state" />
-			<text>Equipment</text><custom-box id="return-equipment" type="equipment" />
-			<text>Item</text><custom-box id="return-item" type="item" />
-			<text>Trigger</text><custom-box id="return-trigger" type="trigger" />
-			<text>Light</text><custom-box id="return-light" type="light" />
-			<text>Element</text><custom-box id="return-element" type="element" />
+			<text>String</text><StringVar id="return-string" /> <text>Object</text
+			><CustomBox id="return-object" type="variable" filter="object" />
+			<text>Actor</text><CustomBox id="return-actor" type="actor" />
+			<text>Skill</text><CustomBox id="return-skill" type="skill" />
+			<text>State</text><CustomBox id="return-state" type="state" />
+			<text>Equipment</text><CustomBox id="return-equipment" type="equipment" />
+			<text>Item</text><CustomBox id="return-item" type="item" />
+			<text>Trigger</text><CustomBox id="return-trigger" type="trigger" />
+			<text>Light</text><CustomBox id="return-light" type="light" />
+			<text>Element</text><CustomBox id="return-element" type="element" />
 		</grid-box>
 		<button id="return-confirm" name="confirm">Confirm</button>
 		<button id="return-cancel" name="cancel">Cancel</button>
@@ -34,6 +34,10 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import StringVar from '@app/components/common/StringVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

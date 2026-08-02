@@ -3,13 +3,13 @@
 	<TitleBar>Set Event<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Operation</text><select-box id="setEvent-operation" />
+			<text>Operation</text><SelectBox id="setEvent-operation" />
 			<text>Variable</text
-			><custom-box id="setEvent-variable" type="variable" filter="object" />
+			><CustomBox id="setEvent-variable" type="variable" filter="object" />
 			<text>Event</text
-			><custom-box id="setEvent-eventId" type="file" filter="event" />
+			><CustomBox id="setEvent-eventId" type="file" filter="event" />
 			<text>Choice Index</text
-			><number-var id="setEvent-choiceIndex" min="0" max="255" />
+			><NumberVar id="setEvent-choiceIndex" min="0" max="255" />
 		</grid-box>
 		<button id="setEvent-confirm" name="confirm">Confirm</button>
 		<button id="setEvent-cancel" name="cancel">Cancel</button>
@@ -23,6 +23,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -86,7 +86,7 @@ export class CommandList extends HTMLElement {
 		on(this, 'pointerdown', this.pointerdown);
 		on(this, 'pointerup', this.pointerup);
 		on(this, 'doubleclick', this.doubleclick);
-		window.on('variablechange', this.windowVariableChange);
+		window.addEventListener('variablechange', this.windowVariableChange);
 	}
 
 	connectedCallback() {
@@ -1978,8 +1978,8 @@ try {
 					event.mode = 'select';
 					event.itemIndex = index;
 					event.itemHeight = element.clientHeight;
-					window.on('pointerup', this.windowPointerup);
-					window.on('pointermove', this.windowPointermove);
+					window.addEventListener('pointerup', this.windowPointerup);
+					window.addEventListener('pointermove', this.windowPointermove);
 					this.addScrollListener('vertical', 2, true, () => {
 						this.windowPointermove(event.latest);
 					});
@@ -2194,8 +2194,8 @@ try {
 					break;
 			}
 			this.dragging = null;
-			window.off('pointerup', this.windowPointerup);
-			window.off('pointermove', this.windowPointermove);
+			window.removeEventListener('pointerup', this.windowPointerup);
+			window.removeEventListener('pointermove', this.windowPointermove);
 		}
 	}
 

@@ -3,11 +3,11 @@
 	<TitleBar>Set Cooldown<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="setCooldown-actor" type="actor" />
-			<text>Operation</text><select-box id="setCooldown-operation" />
-			<text>Cooldown Key</text><select-var id="setCooldown-key" />
+			<text>Actor</text><CustomBox id="setCooldown-actor" type="actor" />
+			<text>Operation</text><SelectBox id="setCooldown-operation" />
+			<text>Cooldown Key</text><SelectVar id="setCooldown-key" />
 			<text>Cooldown Time</text
-			><number-var id="setCooldown-cooldown" min="1" max="3600000" unit="ms" />
+			><NumberVar id="setCooldown-cooldown" min="1" max="3600000" unit="ms" />
 		</grid-box>
 		<button id="setCooldown-confirm" name="confirm">Confirm</button>
 		<button id="setCooldown-cancel" name="cancel">Cancel</button>
@@ -21,6 +21,10 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectVar from '@app/components/common/SelectVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

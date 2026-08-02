@@ -4,8 +4,8 @@
 		<content-frame>
 			<grid-box>
 				<text>Skill</text
-				><custom-box id="fileActor-skill-id" type="file" filter="skill" />
-				<text>Shortcut Key</text><select-box id="fileActor-skill-key" />
+				><CustomBox id="fileActor-skill-id" type="file" filter="skill" />
+				<text>Shortcut Key</text><SelectBox id="fileActor-skill-key" />
 			</grid-box>
 			<button id="fileActor-skill-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-skill-cancel" name="cancel">Cancel</button>
@@ -19,6 +19,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

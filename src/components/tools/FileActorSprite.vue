@@ -3,8 +3,8 @@
 		<TitleBar>Sprite<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Name</text><select-box id="fileActor-sprite-id" /> <text>Image</text
-				><custom-box id="fileActor-sprite-image" type="file" filter="image" />
+				<text>Name</text><SelectBox id="fileActor-sprite-id" /> <text>Image</text
+				><CustomBox id="fileActor-sprite-image" type="file" filter="image" />
 			</grid-box>
 			<button id="fileActor-sprite-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-sprite-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

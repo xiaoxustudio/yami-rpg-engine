@@ -8,32 +8,32 @@
 		<content-frame>
 			<grid-box id="setting-grid">
 				<text id="setting-title-server" class="setting-title">Server</text>
-				<text /><number-box id="setting-server-port" min="0" max="65535" />
-				<text /><check-box id="setting-server-auto" class="standard" />
+				<text /><NumberBox id="setting-server-port" min="0" max="65535" />
+				<text /><CheckBox id="setting-server-auto" class="standard" />
 				<text id="setting-title-apkbuild" class="setting-title">APK Build</text>
-				<text /><text-box id="setting-apkbuild-outputDir" /> <text />
-				<text-box id="setting-apkbuild-newApkPath" /> <text />
-				<text-box id="setting-apkbuild-apktoolPath" />
+				<text /><TextBox id="setting-apkbuild-outputDir" /> <text />
+				<TextBox id="setting-apkbuild-newApkPath" /> <text />
+				<TextBox id="setting-apkbuild-apktoolPath" />
 				<text id="setting-title-signed" class="setting-title">签名配置</text>
-				<text /><text-box id="setting-signed-jksPath" /> <text />
-				<text-box id="setting-signed-keyStorePassword" /> <text />
-				<text-box id="setting-signed-keyAlias" /> <text />
-				<text-box id="setting-signed-keyPassword" /> <text />
-				<text-box id="setting-signed-apksignerPath" /> <text />
-				<text-box id="setting-signed-zipalignPath" /> <text />
-				<text-box id="setting-signed-signedApkPath" />
+				<text /><TextBox id="setting-signed-jksPath" /> <text />
+				<TextBox id="setting-signed-keyStorePassword" /> <text />
+				<TextBox id="setting-signed-keyAlias" /> <text />
+				<TextBox id="setting-signed-keyPassword" /> <text />
+				<TextBox id="setting-signed-apksignerPath" /> <text />
+				<TextBox id="setting-signed-zipalignPath" /> <text />
+				<TextBox id="setting-signed-signedApkPath" />
 				<text id="setting-title-other" class="setting-title">other</text>
 				<text />
-				<check-box id="setting-other-copyAsTextKeepEmptyLine" class="standard" />
-				<text /><select-box id="setting-other-browserSearchHistoryLimit" />
+				<CheckBox id="setting-other-copyAsTextKeepEmptyLine" class="standard" />
+				<text /><SelectBox id="setting-other-browserSearchHistoryLimit" />
 				<text id="setting-title-recent" class="setting-title"></text>
 				<text id="setting-recent-statsMode-label" />
-				<select-box id="setting-recent-statsMode" />
+				<SelectBox id="setting-recent-statsMode" />
 				<text id="setting-title-github" class="setting-title">GitHub</text>
-				<text /><select-box id="setting-github-accelerationNode" />
+				<text /><SelectBox id="setting-github-accelerationNode" />
 				<text id="setting-title-update" class="setting-title"></text>
 				<text id="setting-update-checkOnStart-label" />
-				<check-box id="setting-update-checkOnStart" class="standard" />
+				<CheckBox id="setting-update-checkOnStart" class="standard" />
 			</grid-box>
 			<button id="setting-confirm" name="confirm">Confirm</button>
 			<button id="setting-cancel" name="cancel">Cancel</button>
@@ -47,6 +47,10 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CheckBox from '@app/components/common/CheckBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

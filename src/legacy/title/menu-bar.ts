@@ -103,11 +103,11 @@ export const Menubar: MenubarShape = {
 // 初始化
 Menubar.initialize = function () {
 	// 侦听事件
-	window.on('keydown', this.keydown);
-	$('#menu').on('pointerdown', this.pointerdown);
-	$('#menu').on('pointerup', this.pointerup);
-	$('#menu').on('pointerover', this.pointerover);
-	$('.href').on('click', this.hrefClick);
+	window.addEventListener('keydown', this.keydown);
+	$('#menu').addEventListener('pointerdown', this.pointerdown);
+	$('#menu').addEventListener('pointerup', this.pointerup);
+	$('#menu').addEventListener('pointerover', this.pointerover);
+	$('.href').forEach((el: HTMLElement) => el.addEventListener('click', this.hrefClick!));
 };
 
 // 开关全屏模式
@@ -720,7 +720,7 @@ Menubar.popupOpenYamiMenu = function (target) {
 						getWindow().open('windowProgress');
 						const progressInfo = $('#windowProgress-info');
 						progressInfo.textContent = '加载中...';
-						$('#export-apk').on(
+						$('#export-apk').addEventListener(
 							'closed',
 							() => {
 								ApkBuilder.reset();
@@ -767,29 +767,33 @@ Menubar.popupOpenYamiMenu = function (target) {
 						}).then(() => {
 							// 初始化
 							write($('#export-apk-apkName'), config.appName);
-							$('#export-apk-apkName').on('input', (e) => InputEvent(e, 'appName'));
+							$('#export-apk-apkName').addEventListener('input', (e) =>
+								InputEvent(e, 'appName')
+							);
 							write($('#export-apk-apkIcon'), config.iconPath);
-							$('#export-apk-apkIcon').on('input', (e) => InputEvent(e, 'iconPath'));
-							$('#export-apk-apkIcon').on('mouseenter', (e) =>
+							$('#export-apk-apkIcon').addEventListener('input', (e) =>
+								InputEvent(e, 'iconPath')
+							);
+							$('#export-apk-apkIcon').addEventListener('mouseenter', (e) =>
 								setTooltip(
 									$('#export-apk-apkIcon'),
 									ApkBuilder.processPathOnly(config.iconPath)
 								)
 							);
 							write($('#export-apk-apkPackageName'), config.packageName);
-							$('#export-apk-apkPackageName').on('input', (e) =>
+							$('#export-apk-apkPackageName').addEventListener('input', (e) =>
 								InputEvent(e, 'packageName')
 							);
 							write($('#export-apk-apkVersionName'), config.versionName);
-							$('#export-apk-apkVersionName').on('input', (e) =>
+							$('#export-apk-apkVersionName').addEventListener('input', (e) =>
 								InputEvent(e, 'versionName')
 							);
 							write($('#export-apk-apkVersionCode'), config.versionCode);
-							$('#export-apk-apkVersionCode').on('input', (e) =>
+							$('#export-apk-apkVersionCode').addEventListener('input', (e) =>
 								InputEvent(e, 'versionCode')
 							);
 
-							$('#export-apk-button').on('click', (e) => {
+							$('#export-apk-button').addEventListener('click', (e) => {
 								disable($('#export-apk-button'));
 								apkConfigSave();
 								SettingConfig.load(); // 更新配置

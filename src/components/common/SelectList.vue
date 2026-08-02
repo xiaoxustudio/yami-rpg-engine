@@ -76,6 +76,6 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.on('input', (e: any) => emit('input', e.value));
+	el.addEventListener('input', (e: any) => emit('input', e.value));
 });
 </script>

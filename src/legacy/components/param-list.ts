@@ -728,8 +728,8 @@ export class ParamList extends HTMLElement {
 					(event as any).mode = 'select';
 					(event as any).itemIndex = index;
 					(event as any).itemHeight = element.clientHeight;
-					window.on('pointerup', this.windowPointerup);
-					window.on('pointermove', this.windowPointermove);
+					window.addEventListener('pointerup', this.windowPointerup);
+					window.addEventListener('pointermove', this.windowPointermove);
 					(this as any).addScrollListener('vertical', 2, true, () => {
 						this.windowPointermove((event as any).latest);
 					});
@@ -893,8 +893,8 @@ export class ParamList extends HTMLElement {
 					break;
 			}
 			self.dragging = null;
-			window.off('pointerup', self.windowPointerup);
-			window.off('pointermove', self.windowPointermove);
+			window.removeEventListener('pointerup', self.windowPointerup);
+			window.removeEventListener('pointermove', self.windowPointermove);
 		}
 	}
 

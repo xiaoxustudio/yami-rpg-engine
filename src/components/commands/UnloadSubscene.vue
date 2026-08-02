@@ -4,7 +4,7 @@
 		<content-frame>
 			<grid-box>
 				<text>Scene</text
-				><file-var id="unloadSubscene-sceneId" type="file" filter="scene" />
+				><FileVar id="unloadSubscene-sceneId" type="file" filter="scene" />
 			</grid-box>
 			<button id="unloadSubscene-confirm" name="confirm">Confirm</button>
 			<button id="unloadSubscene-cancel" name="cancel">Cancel</button>
@@ -19,6 +19,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import FileVar from '@app/components/common/FileVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

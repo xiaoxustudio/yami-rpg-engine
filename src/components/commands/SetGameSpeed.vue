@@ -4,23 +4,23 @@
 		<content-frame>
 			<grid-box>
 				<text>Speed</text
-				><number-var
+				><NumberVar
 					id="setGameSpeed-speed"
 					min="0"
 					max="10"
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Easing</text><select-box id="setGameSpeed-easingId" name="easing" />
+				<text>Easing</text><SelectBox id="setGameSpeed-easingId" name="easing" />
 				<text>Duration</text
-				><number-var
+				><NumberVar
 					id="setGameSpeed-duration"
 					name="duration"
 					min="0"
 					max="3600000"
 					unit="ms"
 				/>
-				<text>Wait</text><select-box id="setGameSpeed-wait" name="wait" />
+				<text>Wait</text><SelectBox id="setGameSpeed-wait" name="wait" />
 			</grid-box>
 			<button id="setGameSpeed-confirm" name="confirm">Confirm</button>
 			<button id="setGameSpeed-cancel" name="cancel">Cancel</button>
@@ -34,6 +34,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

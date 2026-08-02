@@ -62,19 +62,16 @@ export class SettingRenderer {
 
 	// ---- 渲染 ----
 
-	/** 渲染：清空 #setting-grid 并按 schema 重建 UI、绑定事件、写入值、加载下拉项 */
+	/** 渲染：设置窗口控件由 Setting.vue 静态提供，此处只做本地化、绑定事件与写入值 */
 	render() {
-		const grid = $('#setting-grid');
-		// 1. 由 schema 生成 DOM 字符串。自定义元素（number-box/check-box 等）在 innerHTML 解析期完成升级，
-		//    保证 min/max/class 等属性在构造函数读取时已就位。
-		grid.innerHTML = this.renderSections(this.schema, []);
-
-		// 2. 应用本地化（标题/标签/提示）
+		// 1. 应用本地化（标题/标签/提示）
 		this.applyL10n();
 
-		// 3. 绑定事件 + 写入当前值（select 项异步加载）
+		// 2. 首次绑定事件（控件生命周期由 Vue 管理，事件不得重复绑定）
+		this.bindAllOnce();
+
+		// 3. 写入当前值（select 项异步加载）
 		this.forAllOptions((sectionPath, opt) => {
-			this.bindOption(sectionPath, opt);
 			if (opt.type === 'select') {
 				void this.loadSelectOptions(sectionPath, opt);
 			} else {
@@ -83,42 +80,11 @@ export class SettingRenderer {
 		});
 	}
 
-	/** 递归生成分组 HTML（标题 + 各选项 + 子分组） */
-	private renderSections(sections: SettingSection[], basePath: string[]): string {
-		let html = '';
-		for (const section of sections) {
-			const path = [...basePath, section.id];
-			html += `<text id="${this.titleId(path)}" class="setting-title"></text>`;
-			for (const opt of section.options) {
-				if (!opt.hidden) html += this.renderOption(path, opt);
-			}
-			if (section.subgroups) html += this.renderSections(section.subgroups, path);
-		}
-		return html;
-	}
-
-	/** 生成单个选项 HTML：标签 + 控件 */
-	private renderOption(sectionPath: string[], opt: SettingOption): string {
-		const id = this.optionId(sectionPath, opt);
-		// 命名标签（labelKey）走 properties；其余走 components（applyL10n 经 Local.setElement 写入前一个兄弟 <text>）
-		const labelHtml = opt.labelKey
-			? `<text id="${opt.labelId ?? id + '-label'}"></text>`
-			: `<text></text>`;
-		let inputHtml: string;
-		switch (opt.type) {
-			case 'number':
-				inputHtml = `<number-box id="${id}"${opt.min != null ? ` min="${opt.min}"` : ''}${opt.max != null ? ` max="${opt.max}"` : ''}${opt.step != null ? ` step="${opt.step}"` : ''}></number-box>`;
-				break;
-			case 'checkbox':
-				inputHtml = `<check-box id="${id}" class="standard"></check-box>`;
-				break;
-			case 'select':
-				inputHtml = `<select-box id="${id}"></select-box>`;
-				break;
-			default:
-				inputHtml = `<text-box id="${id}"></text-box>`;
-		}
-		return labelHtml + inputHtml;
+	private _eventsBound = false;
+	private bindAllOnce() {
+		if (this._eventsBound) return;
+		this._eventsBound = true;
+		this.forAllOptions((sectionPath, opt) => this.bindOption(sectionPath, opt));
 	}
 
 	// ---- 本地化 ----

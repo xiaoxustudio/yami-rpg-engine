@@ -2,219 +2,219 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneParallax-general-grid">
-			<text>{{ local.getLabel('sceneParallax-name') || 'Name' }}</text><text-box id="sceneParallax-name"></text-box>
+			<text>{{ local.getLabel('sceneParallax-name') || 'Name' }}</text><TextBox id="sceneParallax-name"></TextBox>
 			<text>{{ local.getLabel('sceneParallax-image') || 'Image' }}</text
-			><custom-box
+			><CustomBox
 				id="sceneParallax-image"
 				type="file"
 				filter="image"
-			></custom-box>
-			<text>{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</text><select-box id="sceneParallax-layer"></select-box>
+			></CustomBox>
+			<text>{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</text><SelectBox id="sceneParallax-layer"></SelectBox>
 			<text>{{ local.getLabel('sceneParallax-order') || 'Order' }}</text
-			><number-box id="sceneParallax-order" min="0" max="100"></number-box>
+			><NumberBox id="sceneParallax-order" min="0" max="100"></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-light') || 'Light Sampling' }}</text
-			><select-box id="sceneParallax-light"></select-box> <text>{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</text
-			><select-box id="sceneParallax-blend"></select-box> <text>{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</text
-			><number-box
+			><SelectBox id="sceneParallax-light"></SelectBox> <text>{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</text
+			><SelectBox id="sceneParallax-blend"></SelectBox> <text>{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</text
+			><NumberBox
 				id="sceneParallax-opacity"
 				min="0"
 				max="1"
 				step="0.05"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-x') || 'X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-x"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 				unit="tile"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-y') || 'Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-y"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
 				unit="tile"
-			></number-box>
+			></NumberBox>
 		</detail-grid>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</DetailSummary>
 		<detail-grid id="sceneParallax-parallax-grid">
 			<text>{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-scaleX"
 				min="0.2"
 				max="32"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-scaleY') || 'Scale Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-scaleY"
 				min="0.2"
 				max="32"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-repeatX') || 'Repeat X' }}</text
-			><number-box id="sceneParallax-repeatX" min="1" max="100"></number-box>
+			><NumberBox id="sceneParallax-repeatX" min="1" max="100"></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-repeatY') || 'Repeat Y' }}</text
-			><number-box id="sceneParallax-repeatY" min="1" max="100"></number-box>
+			><NumberBox id="sceneParallax-repeatY" min="1" max="100"></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-anchorX') || 'Anchor X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-anchorX"
 				min="0"
 				max="1"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-anchorY') || 'Anchor Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-anchorY"
 				min="0"
 				max="1"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-offsetX') || 'Offset X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-offsetX"
 				min="-10000"
 				max="10000"
 				unit="px"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-offsetY') || 'Offset Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-offsetY"
 				min="-10000"
 				max="10000"
 				unit="px"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-parallaxFactorX') || 'Parallax Factor X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-parallaxFactorX"
 				min="-4"
 				max="4"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-parallaxFactorY') || 'Parallax Factor Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-parallaxFactorY"
 				min="-4"
 				max="4"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-shiftSpeedX') || 'Shift Speed X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-shiftSpeedX"
 				min="-10000"
 				max="10000"
 				step="5"
 				decimals="4"
 				unit="px/s"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-shiftSpeedY') || 'Shift Speed Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParallax-shiftSpeedY"
 				min="-10000"
 				max="10000"
 				step="5"
 				decimals="4"
 				unit="px/s"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-tint-0-box') || 'Tint - Red' }}</text>
 			<flex-box id="sceneParallax-tint-0-box">
-				<slider-box
+				<SliderBox
 					id="sceneParallax-tint-0-slider"
 					min="-255"
 					max="255"
 					step="15"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParallax-tint-0"
 					min="-255"
 					max="255"
 					step="5"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParallax-tint-1-box') || 'Tint - Green' }}</text>
 			<flex-box id="sceneParallax-tint-1-box">
-				<slider-box
+				<SliderBox
 					id="sceneParallax-tint-1-slider"
 					min="-255"
 					max="255"
 					step="15"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParallax-tint-1"
 					min="-255"
 					max="255"
 					step="5"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParallax-tint-2-box') || 'Tint - Blue' }}</text>
 			<flex-box id="sceneParallax-tint-2-box">
-				<slider-box
+				<SliderBox
 					id="sceneParallax-tint-2-slider"
 					min="-255"
 					max="255"
 					step="15"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParallax-tint-2"
 					min="-255"
 					max="255"
 					step="5"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParallax-tint-3-box') || 'Tint - Grayscale' }}</text>
 			<flex-box id="sceneParallax-tint-3-box">
-				<slider-box
+				<SliderBox
 					id="sceneParallax-tint-3-slider"
 					min="0"
 					max="255"
 					step="15"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParallax-tint-3"
 					min="0"
 					max="255"
 					step="5"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 		</detail-grid>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-conditions') || 'Conditions' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParallax-conditions"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-events') || 'Events' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParallax-events"
 			class="inspector-list"
 			filter="parallax"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-scripts') || 'Scripts' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParallax-scripts"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<parameter-pane id="sceneParallax-parameter-pane"></parameter-pane>
 </template>
@@ -225,6 +225,12 @@ import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

@@ -4,8 +4,8 @@
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text
-				><custom-box id="setTriggerSpeed-trigger" type="trigger" /> <text>Speed</text
-				><number-var
+				><CustomBox id="setTriggerSpeed-trigger" type="trigger" /> <text>Speed</text
+				><NumberVar
 					id="setTriggerSpeed-speed"
 					min="0"
 					max="512"
@@ -26,6 +26,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -34,7 +34,7 @@ Window.initialize = function () {
 	const buttons = document.getElementsByName('cancel');
 	const length = buttons.length;
 	for (let i = 0; i < length; i++) {
-		buttons[i].on('click', this.cancel);
+		buttons[i].addEventListener('click', this.cancel);
 	}
 };
 
@@ -55,12 +55,12 @@ Window.open = function (id) {
 			Layout.disableFocusableElements();
 			document.body.style.pointerEvents = 'none';
 			document.activeElement.blur();
-			window.off('keydown', Menubar.keydown);
-			window.off('keydown', Scene.keydown);
-			window.off('keydown', UI.keydown);
-			window.off('keydown', Animation.keydown);
-			window.off('keydown', Particle.keydown);
-			window.on('keydown', Window.keydown);
+			window.removeEventListener('keydown', Menubar.keydown);
+			window.removeEventListener('keydown', Scene.keydown);
+			window.removeEventListener('keydown', UI.keydown);
+			window.removeEventListener('keydown', Animation.keydown);
+			window.removeEventListener('keydown', Particle.keydown);
+			window.addEventListener('keydown', Window.keydown);
 		}
 
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
@@ -95,12 +95,12 @@ Window.close = function (id = null) {
 			Window.restoreActiveElement();
 			Layout.enableFocusableElements();
 			document.body.style.pointerEvents = 'inherit';
-			window.on('keydown', Menubar.keydown);
-			window.on('keydown', Scene.keydown);
-			window.on('keydown', UI.keydown);
-			window.on('keydown', Animation.keydown);
-			window.on('keydown', Particle.keydown);
-			window.off('keydown', Window.keydown);
+			window.addEventListener('keydown', Menubar.keydown);
+			window.addEventListener('keydown', Scene.keydown);
+			window.addEventListener('keydown', UI.keydown);
+			window.addEventListener('keydown', Animation.keydown);
+			window.addEventListener('keydown', Particle.keydown);
+			window.removeEventListener('keydown', Window.keydown);
 		}
 		if (this.overlapRoot === element) {
 			this.setPositionMode('center');
@@ -201,7 +201,7 @@ Window.confirm = (function IIFE() {
 			const item = items[i];
 			if (item) {
 				button.textContent = item.label;
-				button.on('click', click);
+				button.addEventListener('click', click);
 				show(button);
 			} else {
 				hide(button);
@@ -211,11 +211,11 @@ Window.confirm = (function IIFE() {
 			getFocus(buttons[0]);
 		}
 		elMessage.textContent = message;
-		elWindow.on(
+		elWindow.addEventListener(
 			'closed',
 			(event) => {
 				for (const button of buttons) {
-					button.off('click', click);
+					button.removeEventListener('click', click);
 				}
 				options.close?.();
 			},

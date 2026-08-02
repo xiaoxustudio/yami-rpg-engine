@@ -3,9 +3,9 @@
 		<TitleBar>webSocketClose<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>ID</text><string-var id="webSocketClose-id" /> <text>Code</text
-				><number-box id="webSocketClose-code" min="1000" max="4999" />
-				<text>Reason</text><string-var id="webSocketClose-reason" />
+				<text>ID</text><StringVar id="webSocketClose-id" /> <text>Code</text
+				><NumberBox id="webSocketClose-code" min="1000" max="4999" />
+				<text>Reason</text><StringVar id="webSocketClose-reason" />
 			</grid-box>
 			<button id="webSocketClose-confirm" name="confirm">Confirm</button>
 			<button id="webSocketClose-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import StringVar from '@app/components/common/StringVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -2,7 +2,7 @@
 <WindowFrame id="saveAudio">
 	<TitleBar>Save Audio<close /></TitleBar>
 	<content-frame>
-		<grid-box> <text>Type</text><select-box id="saveAudio-type" /> </grid-box>
+		<grid-box> <text>Type</text><SelectBox id="saveAudio-type" /> </grid-box>
 		<button id="saveAudio-confirm" name="confirm">Confirm</button>
 		<button id="saveAudio-cancel" name="cancel">Cancel</button>
 	</content-frame>
@@ -15,6 +15,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

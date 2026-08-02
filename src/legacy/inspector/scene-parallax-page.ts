@@ -69,14 +69,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		const sliders = $(`
     #sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider,
     #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Scene));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
-		$('#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts').on(
-			'change',
-			Scene.listChange
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+		);
+		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
+		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
+		$('#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts').forEach(
+			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 

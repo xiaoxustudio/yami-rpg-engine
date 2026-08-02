@@ -33,12 +33,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		const elements = $(`#sceneRegion-name, #sceneRegion-color,
     #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Scene));
-		$('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts').on(
-			'change',
-			Scene.listChange
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+		);
+		$('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts').forEach(
+			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 

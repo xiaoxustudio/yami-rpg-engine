@@ -3,10 +3,10 @@
 		<TitleBar>Set Skill<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Skill</text><custom-box id="setSkill-skill" type="skill" />
-				<text>Operation</text><select-box id="setSkill-operation" />
+				<text>Skill</text><CustomBox id="setSkill-skill" type="skill" />
+				<text>Operation</text><SelectBox id="setSkill-operation" />
 				<text>Cooldown</text
-				><number-var id="setSkill-cooldown" min="1" max="3600000" unit="ms" />
+				><NumberVar id="setSkill-cooldown" min="1" max="3600000" unit="ms" />
 			</grid-box>
 			<button id="setSkill-confirm" name="confirm">Confirm</button>
 			<button id="setSkill-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

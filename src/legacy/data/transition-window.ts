@@ -207,8 +207,8 @@ Easing.initialize = () => {
 		}
 	});
 
-	window.on('dprchange', Easing.dprchange);
-	window.on('themechange', Easing.themechange);
+	window.addEventListener('dprchange', Easing.dprchange);
+	window.addEventListener('themechange', Easing.themechange);
 	on($('#easing'), 'close', Easing.windowClose);
 	on($('#easing'), 'closed', Easing.windowClosed);
 	on($('#easing-points-grid'), 'change', Easing.dataChange);
@@ -1042,8 +1042,8 @@ Easing.curvePointerdown = function (event) {
 				this.dragging = event;
 				event.pointStartX = selectedPoint.x;
 				event.pointStartY = selectedPoint.y;
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 			}
 			break;
 		}
@@ -1085,8 +1085,8 @@ Easing.pointerup = function (event) {
 	}
 	if (this.dragging.relate(event)) {
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Easing);
 

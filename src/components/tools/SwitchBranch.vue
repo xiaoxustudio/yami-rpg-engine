@@ -4,7 +4,7 @@
 		<TitleBar>Branch<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Cases</text><param-list id="switch-branch-conditions" />
+				<text>Cases</text><ParamList id="switch-branch-conditions" />
 			</grid-box>
 			<button id="switch-branch-confirm" name="confirm">Confirm</button>
 			<button id="switch-branch-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -4,7 +4,7 @@
 		<content-frame>
 			<field-set id="plugin-list-fieldset" class="input pad">
 				<legend>List</legend>
-				<node-list id="plugin-list" padded />
+				<TreeList id="plugin-list" padded />
 			</field-set>
 			<box id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
@@ -33,6 +33,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

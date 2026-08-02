@@ -4,7 +4,7 @@
 		<content-frame>
 			<field-set id="command-list-fieldset" class="input pad">
 				<legend>List</legend>
-				<node-list id="command-list" padded />
+				<TreeList id="command-list" padded />
 			</field-set>
 			<box id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
@@ -14,8 +14,8 @@
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<detail-grid id="command-settings-grid">
-						<text>Alias</text><text-box id="command-alias" /> <text>Keywords</text
-						><text-box id="command-keywords" />
+						<text>Alias</text><TextBox id="command-alias" /> <text>Keywords</text
+						><TextBox id="command-keywords" />
 					</detail-grid>
 				</DetailBox>
 			</box>
@@ -34,6 +34,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

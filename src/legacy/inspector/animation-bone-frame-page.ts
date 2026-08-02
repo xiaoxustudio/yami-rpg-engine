@@ -21,15 +21,17 @@ import { read, write } from '@/util/element-utils.ts';
 		if (!$('#animJointFrame-x')) return;
 		const elements = $(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
     #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on(
-			'blur',
-			Inspector.inputBlur(this, Animation, (data) => {
-				data.type = 'inspector-frame-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener(
+				'blur',
+				Inspector.inputBlur(this, Animation, (data) => {
+					data.type = 'inspector-frame-change';
+					data.motion = this.motion;
+					data.direction = Animation.direction;
+				})
+			)
 		);
 	};
 

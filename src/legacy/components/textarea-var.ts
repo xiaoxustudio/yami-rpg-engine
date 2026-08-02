@@ -10,145 +10,170 @@ import {
 	read,
 	write
 } from '@/util/element-utils.ts';
-import { CustomBox } from './custom-box.ts';
-import { TextArea } from './text-area.ts';
+import { createCustomBox } from './custom-box.ts';
+import { createTextArea } from './text-area.ts';
 
-export class TextAreaVar extends HTMLElement {
+interface TextAreaVarElement extends HTMLElement {
 	mode: string;
 	strBox: HTMLElement & { [k: string]: any };
-	varBox: CustomBox;
-	_initialized: boolean;
+	varBox: HTMLElement & { [k: string]: any };
+	read(): any;
+	write(value: any): void;
+	switch(mode?: string): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: any): any;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	keydown(event: any): void;
+	pointerdown(event: any): void;
+}
 
-	constructor() {
-		super();
+export const defVar = { type: 'local', key: 'key' };
 
-		this.mode = null;
-		this.strBox = new TextArea();
-		this.varBox = new CustomBox();
-		this.varBox.type = 'variable';
-		this.varBox.filter = 'string';
-		this._initialized = false;
+export function attachTextAreaVarApi(el: HTMLElement): void {
+	const box = el as TextAreaVarElement;
+	let currentMode: string = null as any;
 
-		on(this, 'keydown', this.keydown);
-		on(this, 'pointerdown', this.pointerdown);
+	const strBox = createTextArea() as HTMLElement & { [k: string]: any };
+	const varBox = createCustomBox() as HTMLElement & { [k: string]: any };
+	varBox.type = 'variable';
+	varBox.filter = 'string';
+
+	const menu = box.getAttribute('menu');
+	if (menu) {
+		strBox.setAttribute('menu', menu);
 	}
 
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		const menu = this.getAttribute('menu');
-		if (menu) {
-			this.strBox.setAttribute('menu', menu);
-		}
-	}
+	box.mode = currentMode;
+	box.strBox = strBox;
+	box.varBox = varBox;
 
-	read() {
-		switch (this.mode) {
+	box.read = function (): any {
+		switch (currentMode) {
 			case 'constant':
-				return read(this.strBox);
+				return read(strBox);
 			case 'variable':
-				return this.varBox.read();
+				return varBox.read();
 		}
-	}
+	};
 
-	write(value: any) {
+	box.write = function (value: any): void {
 		switch (typeof value) {
 			case 'string':
-				this.switch('constant');
-				write(this.strBox, value);
-				this.varBox.write(TextAreaVar.defVar);
+				box.switch('constant');
+				write(strBox, value);
+				varBox.write(defVar);
 				break;
 			case 'object':
-				this.switch('variable');
-				write(this.strBox, '');
-				this.varBox.write(value);
+				box.switch('variable');
+				write(strBox, '');
+				varBox.write(value);
 				break;
 		}
-	}
+	};
 
-	switch(mode?) {
-		const focus = !mode && !hasClass(this, 'disabled');
-		if (mode === undefined) {
-			switch (this.mode) {
+	box.switch = function (target?: string): void {
+		const focus = !target && !hasClass(box, 'disabled');
+		if (target === undefined) {
+			switch (currentMode) {
 				case 'constant':
-					mode = 'variable';
+					target = 'variable';
 					break;
 				case 'variable':
-					mode = 'constant';
+					target = 'constant';
 					break;
 			}
 		}
-		if (this.mode !== mode) {
-			removeClass(this, this.mode);
-			addClass(this, mode);
-			this.mode = mode;
-			switch (mode) {
+		if (currentMode !== target) {
+			removeClass(box, currentMode);
+			addClass(box, target as string);
+			currentMode = target as string;
+			box.mode = currentMode;
+			switch (target) {
 				case 'constant':
-					this.varBox.remove();
-					this.appendChild(this.strBox);
+					varBox.remove();
+					box.appendChild(strBox);
 					if (focus) {
-						this.strBox.input.focus();
-						this.strBox.input.select();
+						strBox.input.focus();
+						strBox.input.select();
 					}
 					break;
 				case 'variable':
-					this.strBox.remove();
-					this.appendChild(this.varBox);
+					strBox.remove();
+					box.appendChild(varBox);
 					if (focus) {
-						this.varBox.focus();
+						varBox.focus();
 					}
 					break;
 			}
-			dispatchChangeEvent(this);
+			dispatchChangeEvent(box);
 		}
-	}
+	};
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			enable(this.strBox);
-			enable(this.varBox);
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			enable(strBox);
+			enable(varBox);
 		}
-	}
+	};
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			disable(this.strBox);
-			disable(this.varBox);
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			disable(strBox);
+			disable(varBox);
 		}
-	}
+	};
 
-	getFocus(mode: any) {
-		switch (this.mode) {
+	box.getFocus = function (mode: any): any {
+		switch (currentMode) {
 			case 'constant':
-				return getFocus(this.strBox, mode);
+				return getFocus(strBox, mode);
 			case 'variable':
-				return getFocus(this.varBox, mode);
+				return getFocus(varBox, mode);
 		}
-	}
+	};
 
-	keydown(event: any) {
+	box.keydown = function (event: any): void {
 		if (event.cmdOrCtrlKey || event.altKey) {
 			switch (event.code) {
 				case 'Slash':
 					event.preventDefault();
-					this.switch();
+					box.switch();
 					break;
 			}
 		}
-	}
+	};
 
-	pointerdown(event: any) {
+	box.pointerdown = function (event: any): void {
 		switch (event.button) {
 			case 0:
-				if (!hasClass(this, 'disabled') && event.target === this) {
+				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 		}
-	}
+	};
 
-	static defVar = { type: 'local', key: 'key' };
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		box.addEventListener(type, listener as EventListener, options);
+	};
+
+	on(box, 'keydown', box.keydown);
+	on(box, 'pointerdown', box.pointerdown);
 }
 
-customElements.define('text-area-var', TextAreaVar);
+export function createTextAreaVar(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'text-area-var';
+	attachTextAreaVarApi(el);
+	return el;
+}

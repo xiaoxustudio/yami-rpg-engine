@@ -51,14 +51,18 @@ Color.initialize = function () {
 	const colorIndex = $('#color-index') as any;
 	if (colorIndex) colorIndex.cancelable = true;
 
-	$('#color')?.on('closed', this.windowClosed);
+	$('#color')?.addEventListener('closed', this.windowClosed);
 	on($('#color-palette-frame'), 'pointerdown', this.palettePointerdown);
 	on($('#color-pillar-frame'), 'pointerdown', this.pillarPointerdown);
-	$('#color-index')?.on('input', this.indexedColorInput);
-	$('[name="color-index"]')?.on('pointerdown', this.indexedColorPointerdown);
-	$('#color-r, #color-g, #color-b, #color-a')?.on('input', this.rgbaInput);
-	$('#color-hex')?.on('beforeinput', this.hexBeforeinput, { capture: true });
-	$('#color-hex')?.on('input', this.hexInput);
+	$('#color-index')?.addEventListener('input', this.indexedColorInput);
+	$('[name="color-index"]')?.forEach((el: HTMLElement) =>
+		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
+	);
+	$('#color-r, #color-g, #color-b, #color-a')?.forEach((el: HTMLElement) =>
+		el.addEventListener('input', this.rgbaInput!)
+	);
+	$('#color-hex')?.addEventListener('beforeinput', this.hexBeforeinput, { capture: true });
+	$('#color-hex')?.addEventListener('input', this.hexInput);
 	on($('#color-confirm'), 'click', this.confirm);
 };
 
@@ -252,8 +256,8 @@ Color.palettePointerdown = function (event) {
 			if (!this.dragging) {
 				this.dragging = event;
 				event.mode = 'palette';
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 			}
 			const canvas = $('#color-palette-canvas');
 			const coords = event.getRelativeCoords(canvas);
@@ -281,8 +285,8 @@ Color.pillarPointerdown = function (event) {
 			if (!this.dragging) {
 				this.dragging = event;
 				event.mode = 'pillar';
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 			}
 			const canvas = $('#color-pillar-canvas');
 			const coords = event.getRelativeCoords(canvas);
@@ -361,8 +365,8 @@ Color.pointerup = function (event) {
 	const { dragging } = this;
 	if (dragging.relate(event)) {
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Color);
 

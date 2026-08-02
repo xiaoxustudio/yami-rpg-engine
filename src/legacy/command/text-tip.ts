@@ -3,7 +3,6 @@ import { addClass, hasClass, hide, rect, show } from '@/util/element-utils';
 function getWindow() {
 	return (window as any).Window;
 }
-import { StringVar } from '@/components/string-var.ts';
 
 interface TextSuggestionItem {
 	name: string;
@@ -29,8 +28,8 @@ interface TextSuggestionList {
 	pressing: ((event: PointerEvent) => void) | null;
 	style: CSSStyleDeclaration;
 	bind(getter: () => any): void;
-	on(type: string, listener: (event: any) => void, options?: any): void;
-	off(type: string, listener: (event: any) => void, options?: any): void;
+	addEventListener(type: string, listener: (event: any) => void, options?: any): void;
+	removeEventListener(type: string, listener: (event: any) => void, options?: any): void;
 	update(): HTMLElement | void;
 	clear(): void;
 	hide(): HTMLElement | void;
@@ -54,8 +53,8 @@ interface TextSuggestionTarget {
 	rect(): { left: number; top: number; bottom: number; width: number };
 	read(): string;
 	contains(node: Node | null): boolean;
-	on(type: string, listener: (event: any) => void, options?: any): void;
-	off(type: string, listener: (event: any) => void, options?: any): void;
+	addEventListener(type: string, listener: (event: any) => void, options?: any): void;
+	removeEventListener(type: string, listener: (event: any) => void, options?: any): void;
 }
 
 type TextBoxMethod = ((this: TextSuggestionTarget, event: any) => void) | null;
@@ -96,8 +95,8 @@ function createEmptyList(): TextSuggestionList {
 		pressing: null,
 		style: document.createElement('div').style,
 		bind: noop,
-		on: noop,
-		off: noop,
+		addEventListener: noop,
+		removeEventListener: noop,
 		update: () => {},
 		clear: noop,
 		hide: () => {},
@@ -167,11 +166,11 @@ TextSuggestion.listen = function (
 	generator: () => TextSuggestionItem[]
 ): void {
 	textBox.generator = generator;
-	textBox.on('focus', this.textBoxFocus!);
-	textBox.on('blur', this.textBoxBlur!);
-	textBox.on('keydown', this.textBoxKeydown!);
-	textBox.on('input', this.textBoxInput!);
-	textBox.on('compositionend', this.textBoxInput!);
+	textBox.addEventListener('focus', this.textBoxFocus!);
+	textBox.addEventListener('blur', this.textBoxBlur!);
+	textBox.addEventListener('keydown', this.textBoxKeydown!);
+	textBox.addEventListener('input', this.textBoxInput!);
+	textBox.addEventListener('compositionend', this.textBoxInput!);
 };
 
 TextSuggestion.open = function (this: TextSuggestionShape, target: TextSuggestionTarget): void {
@@ -194,7 +193,7 @@ TextSuggestion.select = function (this: TextSuggestionShape, item: TextSuggestio
 	this.inserting = true;
 	let target: TextSuggestionTarget | { input: { select(): void }; insert(name: string): void } =
 		this.target!;
-	if (target instanceof StringVar) {
+	if ((target as unknown as { strBox: TextSuggestionTarget }).strBox) {
 		target = (target as unknown as { strBox: TextSuggestionTarget }).strBox;
 	}
 	target.input.select();
@@ -281,7 +280,7 @@ TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Poin
 			}
 		};
 		this.pressing = pointerup;
-		window.on('pointerup', pointerup, { once: true });
+		window.addEventListener('pointerup', pointerup, { once: true });
 	}
 };
 

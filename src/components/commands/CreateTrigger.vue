@@ -4,12 +4,12 @@
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text
-				><file-var id="createTrigger-triggerId" type="file" filter="trigger" />
-				<text>Caster</text><custom-box id="createTrigger-caster" type="actor" />
-				<text>Origin</text><custom-box id="createTrigger-origin" type="position" />
-				<text>Angle</text><custom-box id="createTrigger-angle" type="angle" />
+				><FileVar id="createTrigger-triggerId" type="file" filter="trigger" />
+				<text>Caster</text><CustomBox id="createTrigger-caster" type="actor" />
+				<text>Origin</text><CustomBox id="createTrigger-origin" type="position" />
+				<text>Angle</text><CustomBox id="createTrigger-angle" type="angle" />
 				<text>Distance</text
-				><number-var
+				><NumberVar
 					id="createTrigger-distance"
 					min="-512"
 					max="512"
@@ -17,7 +17,7 @@
 					unit="tile"
 				 />
 				<text>Scale</text
-				><number-var
+				><NumberVar
 					id="createTrigger-scale"
 					min="0.1"
 					max="10"
@@ -25,7 +25,7 @@
 					decimals="4"
 				 />
 				<text>Global Speed</text
-				><number-var
+				><NumberVar
 					id="createTrigger-timeScale"
 					min="0.1"
 					max="10"
@@ -46,6 +46,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import FileVar from '@app/components/common/FileVar.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

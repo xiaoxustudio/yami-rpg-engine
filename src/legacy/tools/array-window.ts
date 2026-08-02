@@ -21,9 +21,9 @@ ArrayList.initialize = function () {
 	if (!this.list) return;
 	this.list.bind(this.interface);
 
-	$('#arrayList').on('close', this.windowClose);
-	$('#arrayList').on('closed', this.windowClosed);
-	this.list.on('change', this.listChange);
+	$('#arrayList').addEventListener('close', this.windowClose);
+	$('#arrayList').addEventListener('closed', this.windowClosed);
+	this.list.addEventListener('change', this.listChange);
 	on($('#arrayList-confirm'), 'click', this.confirm);
 };
 

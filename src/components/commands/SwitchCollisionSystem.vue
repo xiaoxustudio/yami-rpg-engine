@@ -3,7 +3,7 @@
 		<TitleBar>Switch Collision System<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Operation</text><select-box id="switchCollisionSystem-operation" />
+				<text>Operation</text><SelectBox id="switchCollisionSystem-operation" />
 			</grid-box>
 			<button id="switchCollisionSystem-confirm" name="confirm">Confirm</button>
 			<button id="switchCollisionSystem-cancel" name="cancel">Cancel</button>
@@ -17,6 +17,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -3,7 +3,6 @@ import { addClass, setTooltip } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
 import { fileURLToPath, URL } from 'node:url';
 import { SelectBox } from '@/components/select-box.ts';
-import { TextBox } from '@/components/text-box.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FSP } from '@/file/file-system.ts';
 import { Log } from '@/log/log-window.ts';
@@ -208,7 +207,9 @@ Local.setElement = (function IIFE() {
 		}
 		if (item.title !== undefined) {
 			if ((element as HTMLElement).classList.contains('window-frame')) {
-				element.setTitle(item.title);
+				if (typeof (element as any).setTitle === 'function') {
+					element.setTitle(item.title);
+				}
 			} else {
 				throwError(element, 'typeof @element is not window-frame');
 			}
@@ -225,7 +226,7 @@ Local.setElement = (function IIFE() {
 			setTooltip(element, Local.parseTip(item.tip, item.label ?? item.content));
 		}
 		if (item.placeholder !== undefined) {
-			if (element instanceof TextBox) {
+			if ((element as HTMLElement).classList.contains('text-box')) {
 				element.setPlaceholder(item.placeholder);
 			} else {
 				throwError(element, 'typeof @element is not text-box');

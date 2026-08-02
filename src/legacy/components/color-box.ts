@@ -8,107 +8,120 @@ import {
 } from '@/util/element-utils.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 
-export class ColorBox extends HTMLElement {
+interface ColorBoxElement extends HTMLElement {
 	dataValue: string;
 	foreground: HTMLElement;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
 	_background: HTMLElement;
+	read(): string;
+	write(color: string): void;
+	input(color: string): void;
+	enable(): void;
+	disable(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	keydown(event: KeyboardEvent): void;
+	mouseclick(event: Event): void;
+}
 
-	constructor() {
-		super();
+export function attachColorBoxApi(el: HTMLElement): void {
+	const box = el as ColorBoxElement;
 
-		const background = document.createElement('box');
-		addClass(background, 'color-box-background');
-		const foreground = document.createElement('box');
-		addClass(foreground, 'color-box-foreground');
+	const background = document.createElement('box');
+	addClass(background, 'color-box-background');
+	const foreground = document.createElement('box');
+	addClass(foreground, 'color-box-foreground');
 
-		this.foreground = foreground;
-		this._background = background;
-		this.dataValue = '';
-		this.inputEventEnabled = false;
-		this._initialized = false;
+	box.foreground = foreground;
+	box._background = background;
+	box.dataValue = '';
+	box.inputEventEnabled = false;
+	box._initialized = true;
 
-		on(this, 'keydown', this.keydown);
-		on(this, 'click', this.mouseclick);
-	}
+	box.appendChild(background);
+	box.appendChild(foreground);
+	box.tabIndex = 0;
 
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		this.appendChild(this._background);
-		this.appendChild(this.foreground);
-		this.tabIndex = 0;
-	}
+	box.read = function (): string {
+		return box.dataValue;
+	};
 
-	read(): string {
-		return this.dataValue;
-	}
-
-	write(color: string): void {
-		this.dataValue = color;
+	box.write = function (color: string): void {
+		box.dataValue = color;
 
 		const r = parseInt(color.slice(0, 2), 16);
 		const g = parseInt(color.slice(2, 4), 16);
 		const b = parseInt(color.slice(4, 6), 16);
 		const a = parseInt(color.slice(6, 8), 16) / 255;
-		this.foreground.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-	}
+		foreground.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
+	};
 
-	input(color: string): void {
-		if (this.dataValue !== color) {
-			this.write(color);
-			if (this.inputEventEnabled) {
+	box.input = function (color: string): void {
+		if (box.dataValue !== color) {
+			box.write(color);
+			if (box.inputEventEnabled) {
 				const input = new Event('input') as Event & {
 					value: string;
 				};
-				input.value = this.dataValue;
-				this.dispatchEvent(input);
+				input.value = box.dataValue;
+				box.dispatchEvent(input);
 			}
-			dispatchChangeEvent(this);
+			dispatchChangeEvent(box);
 		}
-	}
+	};
 
-	enable(): void {
-		if (removeClass(this, 'disabled')) {
-			showChildNodes(this);
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			showChildNodes(box);
 		}
-	}
+	};
 
-	disable(): void {
-		if (addClass(this, 'disabled')) {
-			hideChildNodes(this);
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			hideChildNodes(box);
 		}
-	}
+	};
 
-	on(
+	box.on = function (
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		super.on(type, listener, options);
+		box.addEventListener(type, listener as EventListener, options);
 		switch (type) {
 			case 'input':
-				this.inputEventEnabled = true;
+				box.inputEventEnabled = true;
 				break;
 		}
-	}
+	};
 
-	keydown(event: KeyboardEvent): void {
+	box.keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
 				if (!event.cmdOrCtrlKey) {
 					event.stopPropagation();
-					this.mouseclick(event);
+					box.mouseclick(event);
 				}
 				break;
 		}
-	}
+	};
 
-	mouseclick(event: Event): void {
-		Color.open(this);
-	}
+	box.mouseclick = function (event: Event): void {
+		Color.open(box);
+	};
+
+	on(box, 'keydown', box.keydown);
+	on(box, 'click', box.mouseclick);
 }
 
-customElements.define('color-box', ColorBox);
+export function createColorBox(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'color-box';
+	attachColorBoxApi(el);
+	return el;
+}

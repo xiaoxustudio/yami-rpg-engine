@@ -1,9 +1,9 @@
 <template>
 			<page-frame id="ui-element" value="ui-element">
 				<box id="ui-list-head">
-					<text-box id="ui-searcher" name="search" />
+					<TextBox id="ui-searcher" name="search" />
 				</box>
-				<node-list id="ui-list" padded />
+				<TreeList id="ui-list" padded />
 			</page-frame>
 </template>
 
@@ -11,6 +11,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

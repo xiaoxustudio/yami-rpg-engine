@@ -20,7 +20,7 @@ import { Inspector } from './inspector.ts';
 		if (!$('#fileVideo-video')) return;
 		this.video = $('#fileVideo-video');
 
-		window.on('error', this.windowError);
+		window.addEventListener('error', this.windowError);
 	};
 
 	FileVideo.open = function (file, meta) {
@@ -46,7 +46,7 @@ import { Inspector } from './inspector.ts';
 
 			const symbol = (this.symbol = Symbol());
 			new Promise((resolve) => {
-				video.on(
+				video.addEventListener(
 					'loadedmetadata',
 					() => {
 						resolve(video);

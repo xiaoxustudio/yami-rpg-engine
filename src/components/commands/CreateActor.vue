@@ -4,9 +4,9 @@
 	<content-frame>
 		<grid-box>
 			<text>Actor</text
-			><custom-box id="createActor-actorId" type="file" filter="actor" /><text>Team</text><select-box id="createActor-teamId" /><text>Position</text
-			><custom-box id="createActor-position" type="position" /><text>Angle</text
-			><number-var
+			><CustomBox id="createActor-actorId" type="file" filter="actor" /><text>Team</text><SelectBox id="createActor-teamId" /><text>Position</text
+			><CustomBox id="createActor-position" type="position" /><text>Angle</text
+			><NumberVar
 				id="createActor-angle"
 				min="-360"
 				max="360"
@@ -25,6 +25,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -744,11 +744,11 @@ Scene.initialize = function () {
 		Scene.planToSave();
 	};
 
-	window.on('themechange', this.themechange);
-	window.on('dprchange', this.dprchange);
-	window.on('datachange', this.datachange);
-	window.on('keydown', this.keydown);
-	window.on('keydown', Reference.getKeydownListener!(list));
+	window.addEventListener('themechange', this.themechange);
+	window.addEventListener('dprchange', this.dprchange);
+	window.addEventListener('datachange', this.datachange);
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', Reference.getKeydownListener!(list));
 	on(this.page, 'resize', this.windowResize);
 	on(this.head, 'pointerdown', this.headPointerdown);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);

@@ -4,7 +4,7 @@
 		<TitleBar>Set Quantity<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Quantity</text><number-box id="setQuantity-quantity" min="1" />
+				<text>Quantity</text><NumberBox id="setQuantity-quantity" min="1" />
 			</grid-box>
 			<button id="setQuantity-confirm" name="confirm">Confirm</button>
 			<button id="setQuantity-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

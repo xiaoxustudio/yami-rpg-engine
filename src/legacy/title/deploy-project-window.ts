@@ -83,7 +83,7 @@ Deployment.initialize = function () {
 		{ name: 'Web / Android / iOS', value: 'web' }
 	]);
 
-	platform.on('input', this.platformInput);
+	platform.addEventListener('input', this.platformInput);
 	$('#deployment-folder').on('beforeinput', this.folderBeforeinput, {
 		capture: true
 	});
@@ -91,7 +91,7 @@ Deployment.initialize = function () {
 	$('#deployment-location').on('input', this.locationInput);
 	on($('#deployment-choose'), 'click', this.chooseClick);
 	on($('#deployment-confirm'), 'click', this.confirm);
-	$('#deployment-compress').on('change', (e) => {
+	$('#deployment-compress').addEventListener('change', (e) => {
 		Deployment.compress = read(e.target);
 	});
 };

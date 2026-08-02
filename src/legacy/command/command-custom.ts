@@ -73,20 +73,20 @@ Command.custom = {
 		style: CSSStyleDeclaration;
 		absolute(x: number | null, y: number | null): void;
 		setTitle(title: string): void;
-		on(type: string, listener: (event: any) => void): void;
+		addEventListener(type: string, listener: (event: any) => void): void;
 	},
 	parameterPane: $('#scriptCommand-parameter-pane') as ParameterPane,
 	parameterGrid: $('#scriptCommand-parameter-grid') as HTMLElement,
 
 	initialize: function (): void {
-		window.on('localize', this.windowLocalize);
-		($('#scriptCommand-confirm') as HTMLElement)?.on('click', this.save);
+		window.addEventListener('localize', this.windowLocalize);
+		($('#scriptCommand-confirm') as HTMLElement)?.addEventListener('click', this.save);
 
 		this.windowFrame = $('#scriptCommand') as HTMLElement & {
 			style: CSSStyleDeclaration;
 			absolute(x: number | null, y: number | null): void;
 			setTitle(title: string): void;
-			on(type: string, listener: (event: any) => void): void;
+			addEventListener(type: string, listener: (event: any) => void): void;
 		};
 		this.parameterPane = $('#scriptCommand-parameter-pane') as ParameterPane;
 		this.parameterGrid = $('#scriptCommand-parameter-grid') as HTMLElement;
@@ -133,10 +133,10 @@ Command.custom = {
 				children.length = 0;
 				wraps.length = 0;
 			}
-			window.off('script-change', this.scriptChange);
+			window.removeEventListener('script-change', this.scriptChange);
 		};
 
-		this.windowFrame.on('closed', (event: Event) => {
+		this.windowFrame.addEventListener('closed', (event: Event) => {
 			this.loadedScript.parameters = null;
 			clear(this.parameterPane);
 		});

@@ -64,16 +64,16 @@ import { Timer } from '@/util/timer.ts';
 		this.intensities = new Float64Array(64);
 		this.intensities.index = 0;
 
-		window.on('themechange', this.themechange);
-		$('#fileAudio').on('resize', this.windowResize);
-		$('#fileAudio-frequency-detail').on('toggle', this.windowResize);
-		$('#fileAudio-volume').on('input', this.paramInput);
-		$('#fileAudio-pan').on('input', this.paramInput);
-		$('#fileAudio-dry').on('input', this.paramInput);
-		$('#fileAudio-wet').on('input', this.paramInput);
-		this.progress.on('pointerdown', this.progressPointerdown);
-		this.progress.on('pointermove', this.progressPointermove);
-		this.progress.on('pointerleave', this.progressPointerleave);
+		window.addEventListener('themechange', this.themechange);
+		$('#fileAudio').addEventListener('resize', this.windowResize);
+		$('#fileAudio-frequency-detail').addEventListener('toggle', this.windowResize);
+		$('#fileAudio-volume').addEventListener('input', this.paramInput);
+		$('#fileAudio-pan').addEventListener('input', this.paramInput);
+		$('#fileAudio-dry').addEventListener('input', this.paramInput);
+		$('#fileAudio-wet').addEventListener('input', this.paramInput);
+		this.progress.addEventListener('pointerdown', this.progressPointerdown);
+		this.progress.addEventListener('pointermove', this.progressPointermove);
+		this.progress.addEventListener('pointerleave', this.progressPointerleave);
 	};
 
 	FileAudio.open = function (file, meta) {
@@ -117,7 +117,7 @@ import { Timer } from '@/util/timer.ts';
 			const symbol = (this.symbol = Symbol());
 			new Promise<void>((resolve) => {
 				if (isNaN(audio.duration)) {
-					audio.on(
+					audio.addEventListener(
 						'loadedmetadata',
 						() => {
 							resolve();

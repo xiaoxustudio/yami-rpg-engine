@@ -18,9 +18,9 @@ import { UI } from '@/ui/ui-window.ts';
 	UIReference.initialize = function () {
 		if (!$('#uiReference-prefabId')) return;
 		const elements = $('#uiReference-prefabId, #uiReference-synchronous');
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.forEach((el: any) => el.addEventListener('input', this.paramInput));
+		elements.forEach((el: any) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: any) => el.addEventListener('blur', Inspector.inputBlur(this, UI)));
 	};
 
 	UIReference.create = function () {

@@ -2,6 +2,71 @@ import { $ } from './dom.ts';
 import { Timer } from './timer.ts';
 import { Cursor } from '../tools/pointer-object.ts';
 import { createScrollBar } from '@/components/scroll-bar.ts';
+import { attachDoubleclick, detachDoubleclick } from './doubleclick.ts';
+
+if (typeof (HTMLElement.prototype as any).on !== 'function') {
+	Object.defineProperty(HTMLElement.prototype, 'on', {
+		configurable: true,
+		writable: true,
+		value: function (
+			this: HTMLElement,
+			type: string,
+			listener: (event: any) => void,
+			options?: AddEventListenerOptions
+		) {
+			if (type === 'doubleclick') {
+				attachDoubleclick(this, listener, options);
+			} else {
+				this.addEventListener(type, listener, options);
+			}
+		}
+	});
+	Object.defineProperty(HTMLElement.prototype, 'off', {
+		configurable: true,
+		writable: true,
+		value: function (
+			this: HTMLElement,
+			type: string,
+			listener: (event: any) => void,
+			options?: EventListenerOptions
+		) {
+			if (type === 'doubleclick') {
+				detachDoubleclick(this, listener, options);
+			} else {
+				this.removeEventListener(type, listener, options);
+			}
+		}
+	});
+}
+if (typeof (NodeList.prototype as any).on !== 'function') {
+	Object.defineProperty(NodeList.prototype, 'on', {
+		configurable: true,
+		value: function (
+			this: NodeList,
+			type: string,
+			listener: (event: any) => void,
+			options?: AddEventListenerOptions
+		) {
+			for (const el of this) {
+				(el as Element).addEventListener(type, listener, options);
+			}
+		}
+	});
+	Object.defineProperty(NodeList.prototype, 'off', {
+		configurable: true,
+		writable: true,
+		value: function (
+			this: NodeList,
+			type: string,
+			listener: (event: any) => void,
+			options?: EventListenerOptions
+		) {
+			for (const el of this) {
+				(el as Element).removeEventListener(type, listener, options);
+			}
+		}
+	});
+}
 
 export function on(
 	el: any,
@@ -11,6 +76,14 @@ export function on(
 ): void {
 	if (!el) {
 		console.error('[on] el is null/undefined, type:', type, 'stack:', new Error().stack);
+		return;
+	}
+	if (type === 'doubleclick') {
+		if (typeof (el as any).on === 'function') {
+			(el as any).on(type, listener, options);
+		} else {
+			attachDoubleclick(el, listener, options);
+		}
 		return;
 	}
 	if (typeof (el as any).on === 'function') {
@@ -27,6 +100,14 @@ export function off(
 	options?: EventListenerOptions
 ): void {
 	if (!el) return;
+	if (type === 'doubleclick') {
+		if (typeof (el as any).off === 'function') {
+			(el as any).off(type, listener, options);
+		} else {
+			detachDoubleclick(el, listener, options);
+		}
+		return;
+	}
 	if (typeof (el as any).off === 'function') {
 		(el as any).off(type, listener, options);
 	} else {
@@ -183,8 +264,8 @@ export const setTooltip = (function IIFE() {
 				let tip = (target as any)?.tip ?? '';
 				if (!tip) {
 					state = 'closed';
-					window.off('keydown', close, capture);
-					window.off('pointerdown', close, capture);
+					window.removeEventListener('keydown', close, capture);
+					window.removeEventListener('pointerdown', close, capture);
 					return;
 				}
 				const hotkey = target?.getAttribute('hotkey');
@@ -218,8 +299,8 @@ export const setTooltip = (function IIFE() {
 				rect = null;
 				timer.remove();
 				removeClass(tooltip, 'open');
-				window.off('keydown', close, capture);
-				window.off('pointerdown', close, capture);
+				window.removeEventListener('keydown', close, capture);
+				window.removeEventListener('pointerdown', close, capture);
 				break;
 		}
 	};
@@ -239,8 +320,8 @@ export const setTooltip = (function IIFE() {
 					timer.add();
 					clientX = event.clientX;
 					clientY = event.clientY;
-					window.on('keydown', close, capture);
-					window.on('pointerdown', close, capture);
+					window.addEventListener('keydown', close, capture);
+					window.addEventListener('pointerdown', close, capture);
 				}
 				break;
 			case 'waiting':
@@ -295,13 +376,17 @@ export const setTooltip = (function IIFE() {
 
 export function hideChildNodes(el: any): void {
 	for (const childNode of el.childNodes) {
-		hide(childNode as HTMLElement);
+		if (childNode.nodeType === Node.ELEMENT_NODE) {
+			hide(childNode as HTMLElement);
+		}
 	}
 }
 
 export function showChildNodes(el: any): void {
 	for (const childNode of el.childNodes) {
-		show(childNode as HTMLElement);
+		if (childNode.nodeType === Node.ELEMENT_NODE) {
+			show(childNode as HTMLElement);
+		}
 	}
 }
 
@@ -440,8 +525,8 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
 				(Cursor.open as any)('cursor-grab');
-				window.on('pointerup', this.scrollPointerup);
-				window.on('pointermove', this.scrollPointermove);
+				window.addEventListener('pointerup', this.scrollPointerup);
+				window.addEventListener('pointermove', this.scrollPointermove);
 			}
 			break;
 	}
@@ -456,8 +541,8 @@ const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.scrollPointerup);
-		window.off('pointermove', this.scrollPointermove);
+		window.removeEventListener('pointerup', this.scrollPointerup);
+		window.removeEventListener('pointermove', this.scrollPointermove);
 	}
 };
 

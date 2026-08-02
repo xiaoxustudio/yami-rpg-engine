@@ -4,9 +4,9 @@
 		<content-frame>
 			<grid-box>
 				<text>Scene</text
-				><file-var id="loadSubscene-sceneId" type="file" filter="scene" />
-				<text>Shift X</text><number-var id="loadSubscene-shiftX" min="0" max="512" />
-				<text>Shift Y</text><number-var id="loadSubscene-shiftY" min="0" max="512" />
+				><FileVar id="loadSubscene-sceneId" type="file" filter="scene" />
+				<text>Shift X</text><NumberVar id="loadSubscene-shiftX" min="0" max="512" />
+				<text>Shift Y</text><NumberVar id="loadSubscene-shiftY" min="0" max="512" />
 			</grid-box>
 			<button id="loadSubscene-confirm" name="confirm">Confirm</button>
 			<button id="loadSubscene-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import FileVar from '@app/components/common/FileVar.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

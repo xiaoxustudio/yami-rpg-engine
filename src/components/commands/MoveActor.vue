@@ -3,16 +3,16 @@
 	<TitleBar>Move Actor<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="moveActor-actor" type="actor" /><text>Mode</text><select-box id="moveActor-mode" /><text>Angle</text
-			><number-var
+			<text>Actor</text><CustomBox id="moveActor-actor" type="actor" /><text>Mode</text><SelectBox id="moveActor-mode" /><text>Angle</text
+			><NumberVar
 				id="moveActor-angle"
 				min="-360"
 				max="360"
 				decimals="4"
 				unit="deg"
 			 /><text>Destination</text
-			><custom-box id="moveActor-destination" type="position" /><text>Wait</text
-			><select-box id="moveActor-wait" name="wait" /></grid-box>
+			><CustomBox id="moveActor-destination" type="position" /><text>Wait</text
+			><SelectBox id="moveActor-wait" name="wait" /></grid-box>
 		<button id="moveActor-confirm" name="confirm">Confirm</button>
 		<button id="moveActor-cancel" name="cancel">Cancel</button>
 	</content-frame>
@@ -25,6 +25,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

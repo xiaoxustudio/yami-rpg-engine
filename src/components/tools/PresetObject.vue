@@ -2,9 +2,9 @@
 		<WindowFrame id="presetObject" mode="center">
 		<TitleBar>Object<close></close></TitleBar>
 		<content-frame>
-			<custom-box id="presetObject-sceneId" type="file" filter="scene" />
-			<node-list id="presetObject-list" />
-			<text-box id="presetObject-searcher" name="search" />
+			<CustomBox id="presetObject-sceneId" type="file" filter="scene" />
+			<TreeList id="presetObject-list" />
+			<TextBox id="presetObject-searcher" name="search" />
 			<button id="presetObject-confirm" name="confirm">Confirm</button>
 			<button id="presetObject-cancel" name="cancel">Cancel</button>
 		</content-frame>
@@ -17,6 +17,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

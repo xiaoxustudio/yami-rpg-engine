@@ -5,11 +5,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { addClass, hasClass, hasScrollBar, rect, removeClass } from '@/util/element-utils';
+import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
 import { CommonList } from '@/components/common-list.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { TextBox } from '@/components/text-box.ts';
+import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FS, FSP } from '@/file/file-system.ts';
 import { Timer } from '@/util/timer.ts';
@@ -33,12 +34,12 @@ let elements: any[] & {
 let selections: any[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
 let selectEventEnabled = false;
-let textBox: TextBox;
+let textBox: any;
 let dirchangeHandler: (event: Event) => void;
 
 function listenDraggingScrollbarEvent() {
 	const node = el.value!;
-	(node as any).on('pointerdown', (event: PointerEvent) => {
+	node.addEventListener('pointerdown', (event: PointerEvent) => {
 		if (event.button === 0 && event.target === node) {
 			const nodeRect = rect(node);
 			if (event.offsetX >= nodeRect.width) {
@@ -438,7 +439,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.on('pointerup', pointerup, { once: true });
+							window.addEventListener('pointerup', pointerup, { once: true });
 						}
 						return;
 					}
@@ -473,7 +474,7 @@ function pointerdown(event: PointerEvent): void {
 								}
 							};
 							pressing = pointerup;
-							window.on('pointerup', pointerup, { once: true });
+							window.addEventListener('pointerup', pointerup, { once: true });
 						} else if (
 							(Menu as any).state === 'closed' &&
 							document.activeElement === node &&
@@ -547,13 +548,13 @@ function dirchange(event: Event): void {
 	}
 }
 
-function createTextBox(): TextBox {
-	const tb = new TextBox();
+function createTextBox(): HTMLElement {
+	const tb = createTextBoxFactory();
 	tb.setMaxLength(64);
 	addClass(tb, 'file-nav-text-box');
 	addClass(tb.input, 'file-nav-text-box-input');
 
-	tb.on('keydown', function (this: HTMLElement, event: KeyboardEvent) {
+	tb.addEventListener('keydown', function (this: HTMLElement, event: KeyboardEvent) {
 		event.stopPropagation();
 		switch (event.code) {
 			case 'Enter':
@@ -568,7 +569,7 @@ function createTextBox(): TextBox {
 		}
 	});
 
-	tb.on('beforeinput', function (event: any) {
+	tb.addEventListener('beforeinput', function (event: any) {
 		if (event.inputType === 'insertText' && typeof event.data === 'string') {
 			const regexp = /[\\/:*?"<>|]/;
 			if (regexp.test(event.data)) {
@@ -578,15 +579,15 @@ function createTextBox(): TextBox {
 		}
 	});
 
-	tb.on('input', function (this: TextBox) {
+	tb.addEventListener('input', function (this: any) {
 		this.fitContent();
 	});
 
-	tb.on('select', function (event: Event) {
+	tb.addEventListener('select', function (event: Event) {
 		event.stopPropagation();
 	});
 
-	tb.on('blur', function (this: TextBox) {
+	tb.addEventListener('blur', function (this: any) {
 		const item = this.parentNode as any;
 		const file = item.file;
 		const name = this.read().trim();
@@ -649,7 +650,7 @@ onMounted(() => {
 	node.addEventListener('keydown', keydown as any);
 	node.addEventListener('pointerdown', pointerdown as any);
 	node.addEventListener('pointerup', pointerup as any);
-	(node as any).on('doubleclick', doubleclick as any);
+	attachDoubleclick(node, doubleclick as any);
 	node.addEventListener('select', listSelect as any);
 	selectEventEnabled = true;
 

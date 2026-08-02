@@ -65,14 +65,14 @@ NewProject.initialize = function () {
 		{ name: 'Minimized Current Project', value: 'minimized-project' }
 	]);
 
-	template.on('input', this.templateInput);
+	template.addEventListener('input', this.templateInput);
 	$('#newProject-folder').on('beforeinput', this.folderBeforeinput, {
 		capture: true
 	});
 	$('#newProject-folder').on('input', this.folderInput);
 	$('#newProject-location').on('input', this.locationInput);
-	$('#newProject-choose').on('click', this.chooseClick);
-	$('#newProject-confirm').on('click', this.confirm);
+	$('#newProject-choose').addEventListener('click', this.chooseClick);
+	$('#newProject-confirm').addEventListener('click', this.confirm);
 };
 
 NewProject.open = function () {

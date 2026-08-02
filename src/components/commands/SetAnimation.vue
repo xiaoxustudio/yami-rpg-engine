@@ -3,8 +3,8 @@
 		<TitleBar>Set Animation<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Element</text><custom-box id="setAnimation-element" type="element" />
-				<text>Properties</text><param-list id="setAnimation-properties" />
+				<text>Element</text><CustomBox id="setAnimation-element" type="element" />
+				<text>Properties</text><ParamList id="setAnimation-properties" />
 			</grid-box>
 			<button id="setAnimation-confirm" name="confirm">Confirm</button>
 			<button id="setAnimation-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

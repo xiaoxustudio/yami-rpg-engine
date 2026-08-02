@@ -1034,7 +1034,7 @@
 	height: 146px;
 }
 
-.callEvent-argument-string > text-area {
+.callEvent-argument-string > .text-area {
 	height: 92px;
 }
 

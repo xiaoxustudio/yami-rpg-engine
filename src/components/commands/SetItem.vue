@@ -3,9 +3,9 @@
 	<TitleBar>Set Item<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Item</text><custom-box id="setItem-item" type="item" />
-			<text>Operation</text><select-box id="setItem-operation" />
-			<text>Quantity</text><number-var id="setItem-quantity" min="1" max="10000" />
+			<text>Item</text><CustomBox id="setItem-item" type="item" />
+			<text>Operation</text><SelectBox id="setItem-operation" />
+			<text>Quantity</text><NumberVar id="setItem-quantity" min="1" max="10000" />
 		</grid-box>
 		<button id="setItem-confirm" name="confirm">Confirm</button>
 		<button id="setItem-cancel" name="cancel">Cancel</button>
@@ -19,6 +19,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -3,8 +3,8 @@
 		<TitleBar>Set Element<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Element</text><custom-box id="setElement-element" type="element" />
-				<text>Operation</text><select-box id="setElement-operation" />
+				<text>Element</text><CustomBox id="setElement-element" type="element" />
+				<text>Operation</text><SelectBox id="setElement-operation" />
 			</grid-box>
 			<button id="setElement-confirm" name="confirm">Confirm</button>
 			<button id="setElement-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

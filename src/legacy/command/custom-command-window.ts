@@ -41,7 +41,7 @@ interface CustomCommandList {
 	createEditIcon: any;
 	edit: (item: CustomCommandData) => void;
 	bind(getter: () => any): void;
-	on(type: string, listener: (event: any) => void): void;
+	addEventListener(type: string, listener: (event: any) => void): void;
 	getFocus(): void;
 	read(): CustomCommandData | null;
 	clear(): void;
@@ -189,8 +189,8 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	list.updaters.push(list.updateTextNode);
 	list.creators.push(list.createEditIcon);
 
-	($('#command') as HTMLElement).on('close', this.windowClose!);
-	($('#command') as HTMLElement).on('closed', this.windowClosed!);
+	($('#command') as HTMLElement).addEventListener('close', this.windowClose!);
+	($('#command') as HTMLElement).addEventListener('closed', this.windowClosed!);
 	list.on('keydown', this.listKeydown!);
 	list.on('select', this.listSelect!);
 	list.on('unselect', this.listUnselect!);
@@ -198,7 +198,9 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	list.on('popup', this.listPopup!);
 	list.on('open', this.listOpen!);
 	list.on('pointerdown', ScriptListInterface.listPointerdown);
-	($('#command-alias, #command-keywords') as HTMLElement).on('input', this.paramInput!);
+	$('#command-alias, #command-keywords').forEach((el: HTMLElement) =>
+		el.addEventListener('input', this.paramInput!)
+	);
 	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
 	on($('#command-apply') as HTMLElement, 'click', this.apply!);
 };
@@ -212,8 +214,8 @@ CustomCommand.open = function (this: CustomCommandShape): void {
 
 	getFocus(this.list);
 
-	window.on('pointerdown', this.pointerdown!);
-	window.on('script-change', this.scriptChange!);
+	window.addEventListener('pointerdown', this.pointerdown!);
+	window.addEventListener('script-change', this.scriptChange!);
 };
 
 CustomCommand.load = async function (
@@ -294,8 +296,8 @@ CustomCommand.windowClosed = function (this: CustomCommandShape, event: Event): 
 	this.list.saveSelection!();
 	this.data = null;
 	this.list.clear();
-	window.off('pointerdown', this.pointerdown!);
-	window.off('script-change', this.scriptChange!);
+	window.removeEventListener('pointerdown', this.pointerdown!);
+	window.removeEventListener('script-change', this.scriptChange!);
 }.bind(CustomCommand);
 
 CustomCommand.pointerdown = PluginManager.pointerdown;

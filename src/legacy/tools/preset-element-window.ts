@@ -45,7 +45,7 @@ PresetElement.initialize = function () {
 	this.searcher.on('keydown', this.searcherKeydown);
 	this.searcher.on('input', this.searcherInput);
 	this.searcher.on('compositionend', this.searcherInput);
-	$('#presetElement').on('closed', this.windowClosed);
+	$('#presetElement').addEventListener('closed', this.windowClosed);
 	on($('#presetElement-confirm'), 'click', this.confirm);
 };
 

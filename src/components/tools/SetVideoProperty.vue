@@ -4,19 +4,19 @@
 		<TitleBar>Image Property<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Property</text><select-box id="setVideo-property-key" />
+				<text>Property</text><SelectBox id="setVideo-property-key" />
 				<text>Video</text
-				><custom-box id="setVideo-property-video" type="file" filter="video" />
+				><CustomBox id="setVideo-property-video" type="file" filter="video" />
 				<text>Playback Rate</text
-				><number-var
+				><NumberVar
 					id="setVideo-property-playbackRate"
 					min="0"
 					max="4"
 					decimals="4"
 				/>
-				<text>Loop</text><select-box id="setVideo-property-loop" /> <text>Flip</text
-				><select-box id="setVideo-property-flip" /> <text>Blend</text
-				><select-box id="setVideo-property-blend" />
+				<text>Loop</text><SelectBox id="setVideo-property-loop" /> <text>Flip</text
+				><SelectBox id="setVideo-property-flip" /> <text>Blend</text
+				><SelectBox id="setVideo-property-blend" />
 			</grid-box>
 			<button id="setVideo-property-confirm" name="confirm">Confirm</button>
 			<button id="setVideo-property-cancel" name="cancel">Cancel</button>
@@ -30,6 +30,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

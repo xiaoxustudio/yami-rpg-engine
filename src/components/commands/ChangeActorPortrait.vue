@@ -3,9 +3,9 @@
 	<TitleBar>Change Actor Portrait<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="changeActorPortrait-actor" type="actor" /><text>Mode</text><select-box id="changeActorPortrait-mode" /><text>Portrait</text
-			><custom-box id="changeActorPortrait-portrait" type="file" filter="image" /><text>Clip</text
-			><custom-box
+			<text>Actor</text><CustomBox id="changeActorPortrait-actor" type="actor" /><text>Mode</text><SelectBox id="changeActorPortrait-mode" /><text>Portrait</text
+			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" /><text>Clip</text
+			><CustomBox
 				id="changeActorPortrait-clip"
 				type="clip"
 				image="changeActorPortrait-portrait"
@@ -22,6 +22,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

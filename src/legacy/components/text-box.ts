@@ -11,72 +11,119 @@ import {
 } from '@/util/element-utils.ts';
 import { TextHistory } from './text-history.ts';
 
-export class TextBox extends HTMLElement {
+interface TextBoxElement extends HTMLElement {
 	input: HTMLInputElement;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
-	// tree-list 等用于在 TextBox 实例上绑定重命名前的原文与被隐藏的子节点
-	lastText: string = '';
-	hiddenNodes: any[] = [];
-	declare closeButton: HTMLElement | null;
+	lastText: string;
+	hiddenNodes: any[];
+	closeButton: HTMLElement | null;
+	read(): string;
+	write(value: string): void;
+	insert(value: string): void;
+	enable(): void;
+	disable(): void;
+	focus(): void;
+	getFocus(mode: string | null): HTMLInputElement;
+	setPlaceholder(placeholder: string): void;
+	setMaxLength(length: number): void;
+	fitContent(): void;
+	deleteInputContent(): void;
+	addCloseButton(): void;
+	addKeydownFilter(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-	constructor() {
-		super();
-
-		const input = document.createElement('input');
-		addClass(input, 'text-box-input');
-		input.type = 'text';
-		input.history = new TextHistory(input);
-
-		this.input = input;
-		this.focusEventEnabled = false;
-		this.blurEventEnabled = false;
-
-		if (process.platform === 'darwin') {
-			on(input, 'keydown', TextBox.macInputKeydown as (event: EditorEvent) => void);
+export function macInputKeydown(event: KeyboardEvent): void {
+	if (event.metaKey) {
+		switch (event.code) {
+			case 'KeyC':
+				document.execCommand('copy');
+				break;
+			case 'KeyV':
+				document.execCommand('paste');
+				break;
+			case 'KeyX':
+				document.execCommand('cut');
+				break;
 		}
+	}
+}
 
-		let isEditing = false;
-		input.addEventListener('compositionstart', () => {
-			isEditing = true;
-		});
-		input.addEventListener('compositionend', () => {
-			isEditing = false;
-		});
-		input.addEventListener(
-			'keydown',
-			(e) => {
-				if (!isEditing) {
+const addKeydownFilterKeydown = function (event: KeyboardEvent): void {
+	if (event.altKey) {
+		return;
+	} else if (!event.cmdOrCtrlKey && !event.shiftKey) {
+		switch (event.code) {
+			case 'Escape':
+			case 'F1':
+			case 'F3':
+			case 'F4':
+			case 'F9':
+				return;
+		}
+	}
+	event.stopImmediatePropagation();
+};
+
+export function attachTextBoxApi(el: HTMLElement): void {
+	const box = el as TextBoxElement;
+
+	const input = document.createElement('input');
+	addClass(input, 'text-box-input');
+	input.type = 'text';
+	input.history = new TextHistory(input);
+
+	box.input = input;
+	box.focusEventEnabled = false;
+	box.blurEventEnabled = false;
+	box.lastText = '';
+	box.hiddenNodes = [];
+
+	if (process.platform === 'darwin') {
+		on(input, 'keydown', macInputKeydown as (event: EditorEvent) => void);
+	}
+
+	let isEditing = false;
+	input.addEventListener('compositionstart', () => {
+		isEditing = true;
+	});
+	input.addEventListener('compositionend', () => {
+		isEditing = false;
+	});
+	input.addEventListener(
+		'keydown',
+		(e) => {
+			if (!isEditing) {
+				return;
+			}
+			switch (e.code) {
+				case 'Escape':
+				case 'Enter':
+					e.stopPropagation();
 					return;
-				}
-				switch (e.code) {
-					case 'Escape':
-					case 'Enter':
-						e.stopPropagation();
-						return;
-				}
-			},
-			{ capture: true }
-		);
-	}
+			}
+		},
+		{ capture: true }
+	);
 
-	connectedCallback() {
-		if (this._built) return;
-		this._built = true;
-		this.appendChild(this.input);
-	}
+	el.appendChild(input);
 
-	read(): string {
-		return this.input.value;
-	}
+	box.read = function (): string {
+		return input.value;
+	};
 
-	write(value: string): void {
-		this.input.value = value;
-		this.input.history.reset();
-	}
+	box.write = function (value: string): void {
+		input.value = value;
+		input.history.reset();
+	};
 
-	insert(value: string): void {
-		this.input.dispatchEvent(
+	box.insert = function (value: string): void {
+		input.dispatchEvent(
 			new InputEvent('beforeinput', {
 				inputType: 'insertFromPaste',
 				data: value,
@@ -84,52 +131,52 @@ export class TextBox extends HTMLElement {
 			})
 		);
 		document.execCommand('insertText', false, value);
-	}
+	};
 
-	enable(): void {
-		if (removeClass(this, 'disabled')) {
-			showChildNodes(this);
+	box.enable = function (): void {
+		if (removeClass(el, 'disabled')) {
+			showChildNodes(el);
 		}
-	}
+	};
 
-	disable(): void {
-		if (addClass(this, 'disabled')) {
-			hideChildNodes(this);
+	box.disable = function (): void {
+		if (addClass(el, 'disabled')) {
+			hideChildNodes(el);
 		}
-	}
+	};
 
-	focus(): void {
-		super.focus();
-		this.input.focus();
-	}
+	box.focus = function (): void {
+		el.focus();
+		input.focus();
+	};
 
-	getFocus(mode: string | null): HTMLInputElement {
-		getFocus(this.input, mode ?? undefined);
-		return this.input;
-	}
+	box.getFocus = function (mode: string | null): HTMLInputElement {
+		getFocus(input, mode ?? undefined);
+		return input;
+	};
 
-	setPlaceholder(placeholder: string): void {
-		this.input.placeholder = placeholder;
-	}
+	box.setPlaceholder = function (placeholder: string): void {
+		input.placeholder = placeholder;
+	};
 
-	setMaxLength(length: number): void {
-		this.input.maxLength = length;
-	}
+	box.setMaxLength = function (length: number): void {
+		input.maxLength = length;
+	};
 
-	fitContent(): void {
-		const parent = this.parentNode as HTMLElement;
-		this.style.width = '0';
-		this.style.width = `${Math.clamp(
-			this.input.scrollWidth + 2,
+	box.fitContent = function (): void {
+		const parent = el.parentNode as HTMLElement;
+		el.style.width = '0';
+		el.style.width = `${Math.clamp(
+			input.scrollWidth + 2,
 			0,
-			rect(parent).right - rect(this).left
+			rect(parent).right - rect(el).left
 		)}px`;
-	}
+	};
 
-	deleteInputContent(): void {
-		if (this.read() !== '') {
-			this.input.select();
-			this.input.dispatchEvent(
+	box.deleteInputContent = function (): void {
+		if (box.read() !== '') {
+			input.select();
+			input.dispatchEvent(
 				new InputEvent('beforeinput', {
 					inputType: 'deleteContentForward',
 					bubbles: true
@@ -137,127 +184,89 @@ export class TextBox extends HTMLElement {
 			);
 			document.execCommand('delete');
 		}
-	}
+	};
 
-	addCloseButton(): void {
-		return TextBox.addCloseButton(this);
-	}
-
-	addKeydownFilter(): void {
-		return TextBox.addKeydownFilter(this);
-	}
-
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void {
-		super.on(type, listener, options);
-		switch (type) {
-			case 'focus':
-				if (!this.focusEventEnabled) {
-					this.focusEventEnabled = true;
-					on(this.input, 'focus', (event: Event) => {
-						this.dispatchEvent(new FocusEvent('focus'));
-					});
-				}
-				break;
-			case 'blur':
-				if (!this.blurEventEnabled) {
-					this.blurEventEnabled = true;
-					on(this.input, 'blur', (event: Event) => {
-						this.dispatchEvent(new FocusEvent('blur'));
-					});
-				}
-				break;
+	const updateCloseButton = function (): void {
+		const closeButton = box.closeButton;
+		if (!closeButton) return;
+		if (box.read() !== '') {
+			show(closeButton);
+		} else {
+			hide(closeButton);
 		}
-	}
+	};
 
-	static addCloseButton = (function IIFE() {
-		const write = function (this: TextBox, value: string): void {
-			TextBox.prototype.write.call(this, value);
-			updateCloseButton(this);
+	box.addCloseButton = function (): void {
+		const baseWrite = box.write;
+		box.write = function (value: string): void {
+			baseWrite(value);
+			updateCloseButton();
 		};
-		const updateCloseButton = function (textBox: TextBox): void {
-			if (textBox.read() !== '') {
-				show(textBox.closeButton as HTMLElement);
-			} else {
-				hide(textBox.closeButton as HTMLElement);
-			}
-		};
-		const keydown = function (this: TextBox, event: KeyboardEvent): void {
+		const keydown = function (event: KeyboardEvent): void {
 			switch (event.code) {
 				case 'Escape':
-					if (this.read() !== '') {
+					if (box.read() !== '') {
 						event.stopPropagation();
-						this.deleteInputContent();
+						box.deleteInputContent();
 					}
 					break;
 			}
 		};
-		const input = function (this: TextBox, event: Event): void {
-			updateCloseButton(this);
+		const input = function (): void {
+			updateCloseButton();
 		};
 		const closeButtonPointerdown = function (event: PointerEvent): void {
 			event.preventDefault();
 			event.stopPropagation();
 		};
-		const closeButtonClick = function (this: HTMLElement, event: Event): void {
-			(this.parentNode as TextBox).deleteInputContent();
+		const closeButtonClick = function (): void {
+			box.deleteInputContent();
 		};
-		return (textBox: TextBox): void => {
-			textBox.write = write;
-			on(textBox, 'keydown', keydown);
-			on(textBox, 'input', input);
-			textBox.closeButton = document.createElement('box');
-			addClass(textBox.closeButton as HTMLElement, 'close-button');
-			(textBox.closeButton as HTMLElement).textContent = '\u2716';
-			on(
-				textBox.closeButton as HTMLElement,
-				'pointerdown',
-				closeButtonPointerdown as (event: EditorEvent) => void
-			);
-			on(textBox.closeButton as HTMLElement, 'click', closeButtonClick);
-			textBox.appendChild(hide(textBox.closeButton as HTMLElement));
-		};
-	})();
+		on(el, 'keydown', keydown);
+		on(el, 'input', input);
+		const closeButton = document.createElement('box');
+		addClass(closeButton, 'close-button');
+		closeButton.textContent = '\u2716';
+		on(closeButton, 'pointerdown', closeButtonPointerdown as (event: EditorEvent) => void);
+		on(closeButton, 'click', closeButtonClick);
+		box.closeButton = closeButton;
+		el.appendChild(hide(closeButton));
+	};
 
-	static addKeydownFilter = (function IIFE() {
-		const keydown = function (event: KeyboardEvent): void {
-			if (event.altKey) {
-				return;
-			} else if (!event.cmdOrCtrlKey && !event.shiftKey) {
-				switch (event.code) {
-					case 'Escape':
-					case 'F1':
-					case 'F3':
-					case 'F4':
-					case 'F9':
-						return;
+	box.addKeydownFilter = function (): void {
+		on(el, 'keydown', addKeydownFilterKeydown);
+	};
+
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		el.addEventListener(type, listener as EventListener, options);
+		switch (type) {
+			case 'focus':
+				if (!box.focusEventEnabled) {
+					box.focusEventEnabled = true;
+					on(input, 'focus', () => {
+						el.dispatchEvent(new FocusEvent('focus'));
+					});
 				}
-			}
-			event.stopImmediatePropagation();
-		};
-		return (textBox: TextBox): void => {
-			on(textBox, 'keydown', keydown);
-		};
-	})();
-
-	static macInputKeydown(event: KeyboardEvent): void {
-		if (event.metaKey) {
-			switch (event.code) {
-				case 'KeyC':
-					document.execCommand('copy');
-					break;
-				case 'KeyV':
-					document.execCommand('paste');
-					break;
-				case 'KeyX':
-					document.execCommand('cut');
-					break;
-			}
+				break;
+			case 'blur':
+				if (!box.blurEventEnabled) {
+					box.blurEventEnabled = true;
+					on(input, 'blur', () => {
+						el.dispatchEvent(new FocusEvent('blur'));
+					});
+				}
+				break;
 		}
-	}
+	};
 }
 
-customElements.define('text-box', TextBox);
+export function createTextBox(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'text-box';
+	attachTextBoxApi(el);
+	return el;
+}

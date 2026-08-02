@@ -2,8 +2,8 @@
 	<file-head-pane ref="el">
 		<file-head-address ref="addressEl"></file-head-address>
 		<item ref="backEl" class="upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</item>
-		<text-box ref="searcherEl" class="file-head-searcher" name="search"></text-box>
-		<slider-box ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></slider-box>
+		<TextBox ref="searcherEl" class="file-head-searcher" name="search"></TextBox>
+		<SliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></SliderBox>
 	</file-head-pane>
 </template>
 
@@ -12,6 +12,8 @@ import { ref, onMounted, watch } from 'vue';
 import { addClass, clear, hasClass, rect, removeClass } from '@/util/element-utils';
 import { Menu } from '@/components/menu-list.ts';
 import { FolderItem } from '@/file/folder-item.ts';
+import SliderBox from '@app/components/common/SliderBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
 
 const props = defineProps<{
 	links: {
@@ -24,8 +26,8 @@ const props = defineProps<{
 const el = ref<HTMLElement>();
 const addressEl = ref<HTMLElement & { clear(): HTMLElement; appendChild(n: Node): any }>();
 const backEl = ref<HTMLElement & { addClass(c: string): void; name: string }>();
-const searcherEl = ref<HTMLElement & { addCloseButton(): void; addClass(c: string): void; name: string; input: HTMLInputElement }>();
-const viewEl = ref<HTMLElement & { addClass(c: string): void; name: string; input: HTMLInputElement; activeWheel: boolean; read(): number }>();
+const searcherEl = ref<{ root: HTMLElement & { input: HTMLInputElement; addCloseButton(): void }; input: HTMLInputElement }>();
+const viewEl = ref<{ root: HTMLElement & { input: HTMLInputElement; activeWheel: boolean; read(): number } }>();
 
 function updateAddress() {
 	const { browser, nav, body } = props.links;
@@ -108,7 +110,7 @@ function addressPointerdown(event: PointerEvent) {
 				if (hasClass(element, 'active')) {
 					return;
 				}
-				window.on(
+				window.addEventListener(
 					'pointerup',
 					(event: PointerEvent) => {
 						if (event.button === 0 && element === event.target) {
@@ -194,17 +196,17 @@ onMounted(() => {
 	const root = el.value!;
 	(root as any).links = props.links;
 	(root as any).updateAddress = updateAddress;
-	(root as any).view = viewEl.value;
-	(root as any).searcher = searcherEl.value;
+	(root as any).view = viewEl.value!.root;
+	(root as any).searcher = searcherEl.value!.root;
 	(root as any).address = addressEl.value;
 	root.addEventListener('pointerdown', pointerdown as any);
-	searcherEl.value!.addCloseButton();
-	searcherEl.value!.addEventListener('input', searcherInput as any);
-	searcherEl.value!.addEventListener('compositionend', searcherInput as any);
-	viewEl.value!.input.max = '4';
-	viewEl.value!.activeWheel = true;
-	viewEl.value!.addEventListener('focus', viewFocus as any);
-	viewEl.value!.addEventListener('input', viewInput as any);
+	searcherEl.value!.root.addCloseButton();
+	searcherEl.value!.root.addEventListener('input', searcherInput as any);
+	searcherEl.value!.root.addEventListener('compositionend', searcherInput as any);
+	viewEl.value!.root.input.max = '4';
+	viewEl.value!.root.activeWheel = true;
+	viewEl.value!.root.addEventListener('focus', viewFocus as any);
+	viewEl.value!.root.addEventListener('input', viewInput as any);
 	addressEl.value!.addEventListener('pointerdown', addressPointerdown as any);
 	backEl.value!.addEventListener('click', backButtonClick as any);
 });

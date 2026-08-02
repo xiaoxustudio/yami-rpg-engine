@@ -47,7 +47,7 @@ TileNode.initialize = function () {
 	if (!this.canvas) return;
 	this.context = this.canvas.getContext('2d');
 
-	window.on('dprchange', this.dprchange);
+	window.addEventListener('dprchange', this.dprchange);
 	on($('#autoTile-selectNode'), 'closed', this.windowClosed);
 	on(this.screen, 'scroll', this.screenScroll);
 	on(this.marquee, 'pointerdown', this.marqueePointerdown);
@@ -94,7 +94,7 @@ TileNode.open = function (nodes, image, offsetX, offsetY) {
 	contentHeight = Math.clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
-	window.on('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown);
 	getWindow().open('autoTile-selectNode');
 
 	const screenBox = this.getDevicePixelClientBoxSize(screen);
@@ -253,7 +253,7 @@ TileNode.windowClosed = function (event) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
-	window.off('keydown', this.keydown);
+	window.removeEventListener('keydown', this.keydown);
 }.bind(TileNode);
 
 TileNode.keydown = function (event) {
@@ -336,8 +336,8 @@ TileNode.marqueePointerdown = function (event) {
 				event.scrollLeft = event.screen.scrollLeft;
 				event.scrollTop = event.screen.scrollTop;
 				Cursor.open('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const marquee = this.marquee;
@@ -349,7 +349,7 @@ TileNode.marqueePointerdown = function (event) {
 				marquee.select(x, y, 1, 1);
 				this.dragging = event;
 				event.mode = 'select';
-				window.on('pointerup', this.pointerup);
+				window.addEventListener('pointerup', this.pointerup);
 			}
 			break;
 		}
@@ -360,8 +360,8 @@ TileNode.marqueePointerdown = function (event) {
 			event.scrollLeft = event.screen.scrollLeft;
 			event.scrollTop = event.screen.scrollTop;
 			Cursor.open('cursor-grab');
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(TileNode);
@@ -402,8 +402,8 @@ TileNode.pointerup = function (event) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(TileNode);
 

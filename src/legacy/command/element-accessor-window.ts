@@ -85,7 +85,7 @@ ElementGetter.initialize = function (): void {
 		}
 	]);
 
-	($('#elementGetter-confirm') as HTMLElement).on('click', this.confirm!);
+	($('#elementGetter-confirm') as HTMLElement).addEventListener('click', this.confirm!);
 };
 
 ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTarget): void {

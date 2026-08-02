@@ -5,20 +5,20 @@
 	const dragstart = function (event: EditorEvent): void {
 		dragging = true;
 		event.preventDefault();
-		window.on('pointerup', pointerup);
+		window.addEventListener('pointerup', pointerup);
 	};
 
 	const dragend = function (event: EditorEvent): void {
 		if (dragging) {
 			dragging = false;
-			window.off('pointerup', pointerup);
+			window.removeEventListener('pointerup', pointerup);
 		}
 	};
 
 	const pointerup = function (event: EditorEvent): void {
 		if (dragging) {
 			dragging = false;
-			window.off('pointerup', pointerup);
+			window.removeEventListener('pointerup', pointerup);
 		}
 	};
 
@@ -26,9 +26,9 @@
 		if (!dragging && !osdragging && !(event as DragEvent).relatedTarget) {
 			osdragging = true;
 			window.dispatchEvent(new DragEvent('os-dragstart'));
-			window.on('dragleave', dragleave);
-			window.on('dragover', dragover);
-			window.on('drop', drop);
+			window.addEventListener('dragleave', dragleave);
+			window.addEventListener('dragover', dragover);
+			window.addEventListener('drop', drop);
 		}
 	};
 
@@ -36,9 +36,9 @@
 		if (osdragging && !(event as DragEvent).relatedTarget) {
 			osdragging = false;
 			window.dispatchEvent(new DragEvent('os-dragend'));
-			window.off('dragleave', dragleave);
-			window.off('dragover', dragover);
-			window.off('drop', drop);
+			window.removeEventListener('dragleave', dragleave);
+			window.removeEventListener('dragover', dragover);
+			window.removeEventListener('drop', drop);
 		}
 	};
 
@@ -50,13 +50,13 @@
 		if (osdragging) {
 			osdragging = false;
 			window.dispatchEvent(new DragEvent('os-dragend'));
-			window.off('dragleave', dragleave);
-			window.off('dragover', dragover);
-			window.off('drop', drop);
+			window.removeEventListener('dragleave', dragleave);
+			window.removeEventListener('dragover', dragover);
+			window.removeEventListener('drop', drop);
 		}
 	};
 
-	window.on('dragstart', dragstart);
-	window.on('dragend', dragend);
-	window.on('dragenter', dragenter);
+	window.addEventListener('dragstart', dragstart);
+	window.addEventListener('dragend', dragend);
+	window.addEventListener('dragenter', dragenter);
 }

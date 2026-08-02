@@ -21,8 +21,8 @@ export const SceneShift: {
 SceneShift.initialize = function () {
 	const shiftEl = $('#scene-shift');
 	if (!shiftEl) return;
-	shiftEl.on('closed', this.windowClosed);
-	$('#scene-shift-confirm')?.on('click', this.confirm);
+	shiftEl.addEventListener('closed', this.windowClosed);
+	$('#scene-shift-confirm')?.addEventListener('click', this.confirm);
 };
 
 SceneShift.open = function (callback: any) {

@@ -784,17 +784,17 @@ Animation.initialize = function () {
 		Animation.planToSave();
 	};
 
-	window.on('themechange', this.themechange);
-	window.on('datachange', this.datachange);
-	window.on('enumchange', this.enumchange);
-	window.on('keydown', this.keydown);
+	window.addEventListener('themechange', this.themechange);
+	window.addEventListener('datachange', this.datachange);
+	window.addEventListener('enumchange', this.enumchange);
+	window.addEventListener('keydown', this.keydown);
 	on(this.page, 'resize', this.windowResize);
 	on(this.head, 'pointerdown', this.headPointerdown);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
 	on($('#animation-head-start'), 'pointerdown', this.switchPointerdown);
-	$('#animation-speed').on('input', this.speedInput);
-	$('#animation-zoom').on('focus', this.zoomFocus);
-	$('#animation-zoom').on('input', this.zoomInput);
+	$('#animation-speed').addEventListener('input', this.speedInput);
+	$('#animation-zoom').addEventListener('focus', this.zoomFocus);
+	$('#animation-zoom').addEventListener('input', this.zoomInput);
 	on(this.screen, 'keydown', this.screenKeydown);
 	on(this.screen, 'wheel', this.screenWheel);
 	on(this.screen, 'userscroll', this.screenUserscroll);
@@ -803,8 +803,8 @@ Animation.initialize = function () {
 	on(this.marquee, 'pointermove', this.marqueePointermove);
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
 	on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
-	this.searcher.on('input', this.searcherInput);
-	this.searcher.on('compositionend', this.searcherInput);
+	this.searcher.addEventListener('input', this.searcherInput);
+	this.searcher.addEventListener('compositionend', this.searcherInput);
 	list.on('keydown', this.listKeydown);
 	list.on('pointerdown', this.listPointerdown);
 	list.on('select', this.listSelect);
@@ -4242,28 +4242,28 @@ Animation.screenKeydown = function (event) {
 				if ((this.translationKey & 0b0001) === 0) {
 					this.translationKey |= 0b0001;
 					this.translationTimer.add();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyW':
 				if ((this.translationKey & 0b0010) === 0) {
 					this.translationKey |= 0b0010;
 					this.translationTimer.add();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyD':
 				if ((this.translationKey & 0b0100) === 0) {
 					this.translationKey |= 0b0100;
 					this.translationTimer.add();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyS':
 				if ((this.translationKey & 0b1000) === 0) {
 					this.translationKey |= 0b1000;
 					this.translationTimer.add();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'ArrowLeft':
@@ -4338,7 +4338,7 @@ Animation.translationKeyup = function (event) {
 	}
 	if (this.translationKey === 0b0000) {
 		this.translationTimer.remove();
-		window.off('keyup', this.translationKeyup);
+		window.removeEventListener('keyup', this.translationKeyup);
 	}
 }.bind(Animation);
 
@@ -4379,8 +4379,8 @@ Animation.marqueePointerdown = function (event) {
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			if (this.controlPointActive && this.target) {
@@ -4440,8 +4440,8 @@ Animation.marqueePointerdown = function (event) {
 						break;
 					}
 				}
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const { x, y } = this.getPointerCoords(event);
@@ -4458,8 +4458,8 @@ Animation.marqueePointerdown = function (event) {
 				event.enabled = false;
 				event.startX = object.x;
 				event.startY = object.y;
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 			}
 			this.selectFrame(object);
 			break;
@@ -4469,8 +4469,8 @@ Animation.marqueePointerdown = function (event) {
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(Animation);
@@ -4530,8 +4530,8 @@ Animation.pointerup = function (event) {
 				break;
 		}
 		Animation.dragging = null;
-		window.off('pointerup', Animation.pointerup);
-		window.off('pointermove', Animation.pointermove);
+		window.removeEventListener('pointerup', Animation.pointerup);
+		window.removeEventListener('pointermove', Animation.pointermove);
 	}
 };
 
@@ -5311,8 +5311,8 @@ Animation.outerTimelineListPointerdown = function (event) {
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
 				Cursor.open('cursor-grab');
-				window.on('pointerup', Animation.outerTimelineListPointerup);
-				window.on('pointermove', Animation.outerTimelineListPointermove);
+				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
+				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
 				return;
 			}
 			if (event.target === Animation.innerTimelineList) {
@@ -5341,8 +5341,11 @@ Animation.outerTimelineListPointerdown = function (event) {
 						event.pointerdownX = x;
 						event.pointerdownY = y;
 						event.enableDblclickEvent = true;
-						window.on('pointerup', Animation.outerTimelineListPointerup);
-						window.on('pointermove', Animation.outerTimelineListPointermove);
+						window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
+						window.addEventListener(
+							'pointermove',
+							Animation.outerTimelineListPointermove
+						);
 						this.addScrollListener('both', 1, true, () => {
 							Animation.outerTimelineListPointermove(event.latest);
 						});
@@ -5357,8 +5360,8 @@ Animation.outerTimelineListPointerdown = function (event) {
 				event.pointerdownX = origin;
 				event.pointerdownY = y;
 				event.enableDblclickEvent = true;
-				window.on('pointerup', Animation.outerTimelineListPointerup);
-				window.on('pointermove', Animation.outerTimelineListPointermove);
+				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
+				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
 				this.addScrollListener('horizontal', 1, true, () => {
 					Animation.outerTimelineListPointermove(event.latest);
 				});
@@ -5370,8 +5373,8 @@ Animation.outerTimelineListPointerdown = function (event) {
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.scrollLeft;
 			event.scrollTop = this.scrollTop;
-			window.on('pointerup', Animation.outerTimelineListPointerup);
-			window.on('pointermove', Animation.outerTimelineListPointermove);
+			window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
+			window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
 			break;
 	}
 };
@@ -5497,8 +5500,8 @@ Animation.outerTimelineListPointerup = function (event) {
 		}
 		Animation.innerTimelineList.pointerevent = dragging;
 		Animation.outerTimelineList.dragging = null;
-		window.off('pointerup', Animation.outerTimelineListPointerup);
-		window.off('pointermove', Animation.outerTimelineListPointermove);
+		window.removeEventListener('pointerup', Animation.outerTimelineListPointerup);
+		window.removeEventListener('pointermove', Animation.outerTimelineListPointermove);
 	}
 };
 

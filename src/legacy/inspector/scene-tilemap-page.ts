@@ -76,15 +76,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y,
     #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY,
     #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Scene));
-		$('#sceneTilemap-layer').on('write', this.layerWrite);
-		$('#sceneTilemap-layer').on('input', this.layerInput);
-		$('#sceneTilemap-width, #sceneTilemap-height').on('change', this.paramInput);
-		$('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts').on(
-			'change',
-			Scene.listChange
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+		);
+		$('#sceneTilemap-layer').addEventListener('write', this.layerWrite);
+		$('#sceneTilemap-layer').addEventListener('input', this.layerInput);
+		$('#sceneTilemap-width, #sceneTilemap-height').forEach((el: HTMLElement) =>
+			el.addEventListener('change', this.paramInput!)
+		);
+		$('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts').forEach(
+			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 

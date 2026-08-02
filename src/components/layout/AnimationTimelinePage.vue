@@ -38,7 +38,7 @@
 						<box id="animation-timeline-ruler-inner" />
 					</box>
 				</box>
-				<node-list id="animation-layer-list" />
+				<TreeList id="animation-layer-list" />
 				<box id="animation-timeline-list-outer" tabindex="0">
 					<box id="animation-timeline-list-inner" />
 					<box id="animation-timeline-cursor" />
@@ -57,6 +57,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

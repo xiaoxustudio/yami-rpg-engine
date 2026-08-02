@@ -7,66 +7,66 @@
 				id="animJointFrame-position-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animJointFrame-x"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px"
-				></number-box>
-				<number-box
+				></NumberBox>
+				<NumberBox
 					id="animJointFrame-y"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animJointFrame-rotation-box') || 'Rotation' }}</text>
 			<box
 				id="animJointFrame-rotation-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animJointFrame-rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
 					unit="deg"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animJointFrame-scale-box') || 'Scale' }}</text>
 			<box
 				id="animJointFrame-scale-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animJointFrame-scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4"
-				></number-box>
-				<number-box
+				></NumberBox>
+				<NumberBox
 					id="animJointFrame-scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animJointFrame-opacity-box') || 'Opacity' }}</text>
 			<box
 				id="animJointFrame-opacity-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animJointFrame-opacity"
 					min="0"
 					max="1"
 					step="0.05"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</box>
 		</detail-grid>
 	</DetailBox>
@@ -78,6 +78,7 @@ import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

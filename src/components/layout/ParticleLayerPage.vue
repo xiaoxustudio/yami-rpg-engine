@@ -1,6 +1,6 @@
 <template>
 			<page-frame id="particle-layer" value="particle-layer">
-				<node-list id="particle-list" padded />
+				<TreeList id="particle-list" padded />
 			</page-frame>
 </template>
 
@@ -8,6 +8,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

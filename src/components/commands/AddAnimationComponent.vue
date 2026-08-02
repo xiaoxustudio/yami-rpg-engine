@@ -4,14 +4,14 @@
 	<content-frame>
 		<grid-box>
 			<text>Actor</text
-			><custom-box id="addAnimationComponent-actor" type="actor" /><text>Animation</text
-			><custom-box
+			><CustomBox id="addAnimationComponent-actor" type="actor" /><text>Animation</text
+			><CustomBox
 				id="addAnimationComponent-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Motion</text><select-box id="addAnimationComponent-motion" /><text>Rotatable</text><select-box id="addAnimationComponent-rotatable" /><text>Sync Angle</text><select-box id="addAnimationComponent-syncAngle" /><text>Priority</text
-			><number-box id="addAnimationComponent-priority" min="-100" max="100" /><text>Offset Y</text
-			><number-box
+			 /><text>Motion</text><SelectBox id="addAnimationComponent-motion" /><text>Rotatable</text><SelectBox id="addAnimationComponent-rotatable" /><text>Sync Angle</text><SelectBox id="addAnimationComponent-syncAngle" /><text>Priority</text
+			><NumberBox id="addAnimationComponent-priority" min="-100" max="100" /><text>Offset Y</text
+			><NumberBox
 				id="addAnimationComponent-offsetY"
 				min="-100"
 				max="100"
@@ -29,6 +29,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -4,29 +4,29 @@
 		<content-frame>
 			<grid-box>
 				<text>Variable</text
-				><custom-box id="setList-variable" type="variable" filter="object" />
-				<text>Operation</text><select-box id="setList-operation" />
+				><CustomBox id="setList-variable" type="variable" filter="object" />
+				<text>Operation</text><SelectBox id="setList-operation" />
 				<text>Numbers</text
-				><custom-box id="setList-numbers" type="array" filter="number" />
+				><CustomBox id="setList-numbers" type="array" filter="number" />
 				<text>Strings</text
-				><custom-box id="setList-strings" type="array" filter="string" />
-				<text>Index</text><number-var id="setList-index" min="0" max="1000000000" />
-				<text>Boolean</text><select-box id="setList-boolean" /> <text>Number</text
-				><number-box
+				><CustomBox id="setList-strings" type="array" filter="string" />
+				<text>Index</text><NumberVar id="setList-index" min="0" max="1000000000" />
+				<text>Boolean</text><SelectBox id="setList-boolean" /> <text>Number</text
+				><NumberBox
 					id="setList-number"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>String</text><text-area id="setList-string" /> <text>Variable</text
-				><custom-box id="setList-operand" type="variable" filter="all" />
-				<text>Separator</text><text-area-var id="setList-separator" />
+				<text>String</text><TextArea id="setList-string" /> <text>Variable</text
+				><CustomBox id="setList-operand" type="variable" filter="all" />
+				<text>Separator</text><TextAreaVar id="setList-separator" />
 				<text>Attribute Group</text
-				><custom-box id="setList-attribute-groupId" type="attribute-group" />
+				><CustomBox id="setList-attribute-groupId" type="attribute-group" />
 				<text>Enum Group</text
-				><custom-box id="setList-enum-groupId" type="enum-group" /> <text>Actor</text
-				><custom-box id="setList-actor" type="actor" /> <text>Default</text
-				><check-box id="setList-index-skip-check" class="standard" />
+				><CustomBox id="setList-enum-groupId" type="enum-group" /> <text>Actor</text
+				><CustomBox id="setList-actor" type="actor" /> <text>Default</text
+				><CheckBox id="setList-index-skip-check" class="standard" />
 			</grid-box>
 			<button id="setList-confirm" name="confirm">Confirm</button>
 			<button id="setList-cancel" name="cancel">Cancel</button>
@@ -40,6 +40,13 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CheckBox from '@app/components/common/CheckBox.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import TextArea from '@app/components/common/TextArea.vue';
+import TextAreaVar from '@app/components/common/TextAreaVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

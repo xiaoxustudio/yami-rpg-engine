@@ -514,10 +514,10 @@ UI.initialize = function (this: any) {
 		UI.planToSave();
 	};
 
-	window.on('themechange', this.themechange);
-	window.on('localizationchange', this.localizationchange);
-	window.on('keydown', this.keydown);
-	window.on('keydown', Reference.getKeydownListener!(list));
+	window.addEventListener('themechange', this.themechange);
+	window.addEventListener('localizationchange', this.localizationchange);
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', Reference.getKeydownListener!(list));
 	on(this.page, 'resize', this.windowResize);
 	on(this.head, 'pointerdown', this.headPointerdown);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
@@ -992,6 +992,29 @@ UI.shiftTarget = function (this: any, x: any, y: any) {
 		// transform.x = x transform.y = y
 		instances.set('transform-x', x);
 		instances.set('transform-y', y);
+		if (instances.length > 0 && typeof instances[0]?.resize !== 'function') {
+			console.error(
+				'[DEBUG-instances]',
+				JSON.stringify({
+					targetKeys: target ? Object.keys(target).slice(0, 25) : 'none',
+					targetClass: target?.class,
+					targetName: target?.name,
+					hasChildren: Array.isArray(target?.children),
+					transform: target?.transform ? 'yes' : 'no',
+					instanceCtor: target?.instance?.constructor?.name,
+					instancesCtor: instances?.constructor?.name,
+					instancesProto: Object.getPrototypeOf(instances)?.constructor?.name,
+					instancesContent: Array.isArray(instances)
+						? instances.map((e: any) => `${typeof e}:${e}`)
+						: String(instances),
+					instancesSetType: typeof (instances as any).set,
+					instancesSetName: (instances as any).set?.name,
+					instancesIsMap: instances instanceof Map,
+					instancesIsArray: Array.isArray(instances),
+					instancesOwnKeys: Object.keys(instances)
+				})
+			);
+		}
 		instances.resize();
 		this.requestRendering();
 
@@ -2051,7 +2074,7 @@ UI.screenKeydown = function (this: any, event: any) {
 					this.translationKey |= 0b0001;
 					this.translationTimer.add();
 					this.screen.beginScrolling();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyW':
@@ -2059,7 +2082,7 @@ UI.screenKeydown = function (this: any, event: any) {
 					this.translationKey |= 0b0010;
 					this.translationTimer.add();
 					this.screen.beginScrolling();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyD':
@@ -2067,7 +2090,7 @@ UI.screenKeydown = function (this: any, event: any) {
 					this.translationKey |= 0b0100;
 					this.translationTimer.add();
 					this.screen.beginScrolling();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'KeyS':
@@ -2075,7 +2098,7 @@ UI.screenKeydown = function (this: any, event: any) {
 					this.translationKey |= 0b1000;
 					this.translationTimer.add();
 					this.screen.beginScrolling();
-					window.on('keyup', this.translationKeyup);
+					window.addEventListener('keyup', this.translationKeyup);
 				}
 				break;
 			case 'ArrowLeft':
@@ -2156,7 +2179,7 @@ UI.translationKeyup = function (this: any, event: any) {
 	if (this.translationKey === 0b0000) {
 		this.translationTimer.remove();
 		this.screen.endScrolling();
-		window.off('keyup', this.translationKeyup);
+		window.removeEventListener('keyup', this.translationKeyup);
 	}
 }.bind(UI);
 
@@ -2199,8 +2222,8 @@ UI.marqueePointerdown = function (this: any, event: any) {
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				Cursor.open!('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			if (this.controlPointActive && this.target) {
@@ -2247,8 +2270,8 @@ UI.marqueePointerdown = function (this: any, event: any) {
 						event.startHeight = transform.height;
 						break;
 				}
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const { x, y } = this.getPointerCoords(event);
@@ -2266,8 +2289,8 @@ UI.marqueePointerdown = function (this: any, event: any) {
 				event.enabled = false;
 				event.startX = object.transform.x;
 				event.startY = object.transform.y;
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				this.requestRendering();
 			}
 			this.setTarget(object);
@@ -2278,8 +2301,8 @@ UI.marqueePointerdown = function (this: any, event: any) {
 			event.mode = 'ready-to-scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(UI);
@@ -2348,8 +2371,8 @@ UI.pointerup = function (this: any, event: any) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(UI);
 

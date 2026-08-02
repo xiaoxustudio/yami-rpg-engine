@@ -4,7 +4,7 @@
 		<content-frame>
 			<grid-box>
 				<text>Left</text
-				><number-var
+				><NumberVar
 					id="clampCamera-left"
 					min="-1000"
 					max="1000"
@@ -12,7 +12,7 @@
 					decimals="4"
 				 />
 				<text>Top</text
-				><number-var
+				><NumberVar
 					id="clampCamera-top"
 					min="-1000"
 					max="1000"
@@ -20,7 +20,7 @@
 					decimals="4"
 				 />
 				<text>Right</text
-				><number-var
+				><NumberVar
 					id="clampCamera-right"
 					min="-1000"
 					max="1000"
@@ -28,7 +28,7 @@
 					decimals="4"
 				 />
 				<text>Bottom</text
-				><number-var
+				><NumberVar
 					id="clampCamera-bottom"
 					min="-1000"
 					max="1000"
@@ -49,6 +49,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberVar from '@app/components/common/NumberVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,7 +1,3 @@
-// 保证 window.on / canvas.on 等原型扩展方法先于本模块的 IIFE 生效（原 element-methods.ts 的职责）
-import '../util/event-target.ts';
-import '../util/node-list.ts';
-
 // @type {WebGLRenderingContext}
 export let GL: any;
 (() => {
@@ -17,7 +13,7 @@ export let GL: any;
 		dark: { r: 0x20, g: 0x20, b: 0x20 }
 	};
 
-	window.on('themechange', function (event) {
+	window.addEventListener('themechange', function (event) {
 		const { r, g, b } = (background as any)[event.value];
 		GL.BACKGROUND_RED = r / 255;
 		GL.BACKGROUND_GREEN = g / 255;
@@ -25,14 +21,14 @@ export let GL: any;
 	});
 
 	// 侦听WebGL上下文丢失事件
-	canvas.on('webglcontextlost', function (event) {
+	canvas.addEventListener('webglcontextlost', function (event) {
 		console.log('webglcontextlost');
 		event.preventDefault();
 		setTimeout(() => GL.WEBGL_lose_context.restoreContext());
 	});
 
 	// 侦听WebGL上下文恢复事件
-	canvas.on('webglcontextrestored', function (event) {
+	canvas.addEventListener('webglcontextrestored', function (event) {
 		console.log('webglcontextrestored');
 		GL.restore();
 	});

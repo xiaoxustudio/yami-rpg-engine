@@ -11,54 +11,61 @@ import {
 	write
 } from '@/util/element-utils.ts';
 import { SelectBox } from './select-box.ts';
-import { CustomBox } from './custom-box.ts';
+import { createCustomBox } from './custom-box.ts';
 
-export class SelectVar extends HTMLElement {
-	mode: string;
+interface SelectVarElement extends HTMLElement {
+	mode: string | null;
 	selectBox: HTMLElement & { [k: string]: any };
-	varBox: CustomBox;
+	varBox: HTMLElement & { [k: string]: any };
+	read(): any;
+	write(value: any): void;
+	switch(mode?: string): void;
+	enable(): void;
+	disable(): void;
+	loadItems(items: any): void;
+	getFocus(mode: any): void;
+	clear(): void;
+	keydown(event: any): void;
+	pointerdown(event: any): void;
+}
 
-	constructor() {
-		super();
+export function attachSelectVarApi(el: HTMLElement): void {
+	const box = el as SelectVarElement;
 
-		this.mode = null;
-		this.selectBox = new SelectBox();
-		this.varBox = new CustomBox();
-		this.varBox.type = 'variable';
-		this.varBox.filter = 'all';
+	box.mode = null;
+	box.selectBox = new SelectBox();
+	box.varBox = createCustomBox();
+	box.varBox.type = 'variable';
+	box.varBox.filter = 'all';
 
-		on(this, 'keydown', this.keydown);
-		on(this, 'pointerdown', this.pointerdown);
-	}
-
-	read() {
-		switch (this.mode) {
+	box.read = function (): any {
+		switch (box.mode) {
 			case 'constant':
-				return read(this.selectBox);
+				return read(box.selectBox);
 			case 'variable':
-				return this.varBox.read();
+				return box.varBox.read();
 		}
-	}
+	};
 
-	write(value: any) {
+	box.write = function (value: any): void {
 		switch (typeof value) {
 			case 'string':
-				this.switch('constant');
-				write(this.selectBox, value);
-				this.varBox.write(SelectVar.defVar);
+				box.switch('constant');
+				write(box.selectBox, value);
+				box.varBox.write(defVar);
 				break;
 			case 'object':
-				this.switch('variable');
-				this.selectBox.writeDefault();
-				this.varBox.write(value);
+				box.switch('variable');
+				box.selectBox.writeDefault();
+				box.varBox.write(value);
 				break;
 		}
-	}
+	};
 
-	switch(mode?) {
-		const focus = !mode && !hasClass(this, 'disabled');
+	box.switch = function (mode?: string): void {
+		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
-			switch (this.mode) {
+			switch (box.mode) {
 				case 'constant':
 					mode = 'variable';
 					break;
@@ -67,88 +74,95 @@ export class SelectVar extends HTMLElement {
 					break;
 			}
 		}
-		if (this.mode !== mode) {
-			removeClass(this, this.mode);
-			addClass(this, mode);
-			this.mode = mode;
+		if (box.mode !== mode) {
+			removeClass(box, box.mode as string);
+			addClass(box, mode as string);
+			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					this.varBox.remove();
-					this.appendChild(this.selectBox);
+					box.varBox.remove();
+					box.appendChild(box.selectBox);
 					if (focus) {
-						this.selectBox.focus();
+						box.selectBox.focus();
 					}
 					break;
 				case 'variable':
-					this.selectBox.remove();
-					this.appendChild(this.varBox);
+					box.selectBox.remove();
+					box.appendChild(box.varBox);
 					if (focus) {
-						this.varBox.focus();
+						box.varBox.focus();
 					}
 					break;
 			}
-			// this.dispatchChangeEvent()
 		}
-	}
+	};
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			enable(this.selectBox);
-			enable(this.varBox);
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			enable(box.selectBox);
+			enable(box.varBox);
 		}
-	}
+	};
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			disable(this.selectBox);
-			disable(this.varBox);
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			disable(box.selectBox);
+			disable(box.varBox);
 		}
-	}
+	};
 
-	loadItems(items: any) {
-		this.selectBox.loadItems(items);
-	}
+	box.loadItems = function (items: any): void {
+		box.selectBox.loadItems(items);
+	};
 
-	getFocus(mode: any) {
-		switch (this.mode) {
+	box.getFocus = function (mode: any): void {
+		switch (box.mode) {
 			case 'constant':
-				return getFocus(this.selectBox, mode);
+				return getFocus(box.selectBox, mode);
 			case 'variable':
-				return getFocus(this.varBox, mode);
+				return getFocus(box.varBox, mode);
 		}
-	}
+	};
 
-	clear() {
-		clear(this.selectBox);
-	}
+	box.clear = function (): void {
+		clear(box.selectBox);
+	};
 
-	keydown(event: any) {
+	box.keydown = function (event: any): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				this.switch();
+				box.switch();
 				break;
 		}
-	}
+	};
 
-	pointerdown(event: any) {
+	box.pointerdown = function (event: any): void {
 		switch (event.button) {
 			case 0:
-				if (!hasClass(this, 'disabled') && event.target === this) {
+				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 			case 2:
-				if (!hasClass(this, 'disabled')) {
+				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 		}
-	}
+	};
 
-	static defVar = { type: 'local', key: 'key' };
+	on(box, 'keydown', box.keydown);
+	on(box, 'pointerdown', box.pointerdown);
 }
 
-customElements.define('select-var', SelectVar);
+export function createSelectVar(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'select-var';
+	attachSelectVarApi(el);
+	return el;
+}
+
+export const defVar = { type: 'local', key: 'key' };

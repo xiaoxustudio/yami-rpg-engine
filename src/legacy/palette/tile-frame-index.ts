@@ -35,7 +35,7 @@ export const TileFrame = {
 
 TileFrame.initialize = function () {
 	if (!this.window) return;
-	window.on('dprchange', this.dprchange);
+	window.addEventListener('dprchange', this.dprchange);
 	on(this.window, 'closed', this.windowClosed);
 	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 	on(this.marquee, 'pointermove', this.marqueePointermove);
@@ -90,7 +90,7 @@ TileFrame.open = function () {
 	contentHeight = Math.clamp(contentHeight, MIN_CONTENT_HEIGHT, MAX_CONTENT_HEIGHT);
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
-	window.on('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown);
 	getWindow().open('autoTile-frameIndex');
 
 	const screenBox = this.getDevicePixelClientBoxSize(screen);
@@ -200,7 +200,7 @@ TileFrame.windowClosed = function (event) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
-	window.off('keydown', this.keydown);
+	window.removeEventListener('keydown', this.keydown);
 }.bind(TileFrame);
 
 TileFrame.keydown = function (event) {
@@ -258,8 +258,8 @@ TileFrame.marqueePointerdown = function (event) {
 				event.scrollLeft = event.screen.scrollLeft;
 				event.scrollTop = event.screen.scrollTop;
 				Cursor.open('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const marquee = this.marquee;
@@ -269,7 +269,7 @@ TileFrame.marqueePointerdown = function (event) {
 			marquee.select(x, y, 1, 1);
 			this.dragging = event;
 			event.mode = 'select';
-			window.on('pointerup', this.pointerup);
+			window.addEventListener('pointerup', this.pointerup);
 			break;
 		}
 		case 2:
@@ -279,8 +279,8 @@ TileFrame.marqueePointerdown = function (event) {
 			event.scrollLeft = event.screen.scrollLeft;
 			event.scrollTop = event.screen.scrollTop;
 			Cursor.open('cursor-grab');
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(TileFrame);
@@ -326,8 +326,8 @@ TileFrame.pointerup = function (event) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(TileFrame);
 

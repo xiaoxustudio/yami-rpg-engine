@@ -37,8 +37,8 @@ Variable.open = function (this: any, target: any = null) {
 
 	getFocus(list);
 
-	(window as any).on('keydown', this.keydown);
-	(window as any).on('keydown', (Reference.getKeydownListener as any)(list, 'variable'));
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', (Reference.getKeydownListener as any)(list, 'variable'));
 };
 
 Variable.undo = function (this: any) {

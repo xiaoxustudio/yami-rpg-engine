@@ -23,9 +23,11 @@ import { UI } from '@/ui/ui-window.ts';
 		const elements = $(`#uiAnimation-animation, #uiAnimation-motion,
     #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
     #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, UI))
+		);
 	};
 
 	UIAnimation.create = function () {

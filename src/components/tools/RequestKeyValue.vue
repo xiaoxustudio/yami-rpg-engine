@@ -3,8 +3,8 @@
 		<TitleBar>Header<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>key</text><string-var id="request-keyValue-key" /> <text>value</text
-				><string-var id="request-keyValue-value" />
+				<text>key</text><StringVar id="request-keyValue-key" /> <text>value</text
+				><StringVar id="request-keyValue-value" />
 			</grid-box>
 			<button id="request-keyValue-confirm" name="confirm">Confirm</button>
 			<button id="request-keyValue-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import StringVar from '@app/components/common/StringVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

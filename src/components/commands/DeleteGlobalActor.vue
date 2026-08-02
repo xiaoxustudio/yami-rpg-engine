@@ -4,7 +4,7 @@
 	<content-frame>
 		<grid-box>
 			<text>Actor</text
-			><custom-box id="deleteGlobalActor-actorId" type="file" filter="actor" /></grid-box>
+			><CustomBox id="deleteGlobalActor-actorId" type="file" filter="actor" /></grid-box>
 		<button id="deleteGlobalActor-confirm" name="confirm">Confirm</button>
 		<button id="deleteGlobalActor-cancel" name="cancel">Cancel</button>
 	</content-frame>
@@ -17,6 +17,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

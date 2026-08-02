@@ -7,83 +7,83 @@
 				id="animParticleFrame-position-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animParticleFrame-x"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px"
-				></number-box>
-				<number-box
+				></NumberBox>
+				<NumberBox
 					id="animParticleFrame-y"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animParticleFrame-rotation-box') || 'Rotation' }}</text>
 			<box
 				id="animParticleFrame-rotation-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animParticleFrame-rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
 					unit="deg"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animParticleFrame-scale-box') || 'Scale' }}</text>
 			<box
 				id="animParticleFrame-scale-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animParticleFrame-scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4"
-				></number-box>
-				<number-box
+				></NumberBox>
+				<NumberBox
 					id="animParticleFrame-scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animParticleFrame-opacity-box') || 'Opacity' }}</text>
 			<box
 				id="animParticleFrame-opacity-box"
 				class="uiElement-grid-box with-2-columns"
 			>
-				<number-box
+				<NumberBox
 					id="animParticleFrame-opacity"
 					min="0"
 					max="1"
 					step="0.05"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</text
-			><number-box
+			><NumberBox
 				id="animParticleFrame-scale"
 				min="0.1"
 				max="10"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('animParticleFrame-speed') || 'Speed' }}</text
-			><number-box
+			><NumberBox
 				id="animParticleFrame-speed"
 				min="0.1"
 				max="10"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 		</detail-grid>
 	</DetailBox>
 </template>
@@ -94,6 +94,7 @@ import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

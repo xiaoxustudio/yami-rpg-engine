@@ -63,7 +63,7 @@ export const Directory: {
 };
 
 Directory.initialize = function () {
-	window.on('focus', this.windowFocus);
+	window.addEventListener('focus', this.windowFocus);
 };
 
 Directory.read = function () {

@@ -410,9 +410,9 @@ Particle.initialize = function () {
 		Particle.planToSave!();
 	};
 
-	window.on('themechange', this.themechange!);
-	window.on('datachange', this.datachange!);
-	window.on('keydown', this.keydown!);
+	window.addEventListener('themechange', this.themechange!);
+	window.addEventListener('datachange', this.datachange!);
+	window.addEventListener('keydown', this.keydown!);
 	on(this.page, 'resize', this.windowResize!);
 	on(this.head, 'pointerdown', this.headPointerdown!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
@@ -1288,8 +1288,8 @@ Particle.keydown = function (event: any) {
 						Particle.restartKey = true;
 						Particle.restart!();
 						addClass($('#particle-control-restart'), 'selected');
-						window.on('keyup', Particle.restartKeyup!);
-						window.on('blur', Particle.restartKeyup!);
+						window.addEventListener('keyup', Particle.restartKeyup!);
+						window.addEventListener('blur', Particle.restartKeyup!);
 					}
 					break;
 				case 'KeyP':
@@ -1310,8 +1310,8 @@ Particle.restartKeyup = function (event: any) {
 			if (Particle.restartKey) {
 				Particle.restartKey = false;
 				removeClass($('#particle-control-restart'), 'selected');
-				window.off('keyup', Particle.restartKeyup!);
-				window.off('blur', Particle.restartKeyup!);
+				window.removeEventListener('keyup', Particle.restartKeyup!);
+				window.removeEventListener('blur', Particle.restartKeyup!);
 			}
 			break;
 	}
@@ -1437,8 +1437,8 @@ Particle.marqueePointerdown = function (this: ParticleShape, event: any) {
 					event.enabled = false;
 					event.startX = emitter.startX;
 					event.startY = emitter.startY;
-					window.on('pointerup', this.pointerup!);
-					window.on('pointermove', this.pointermove!);
+					window.addEventListener('pointerup', this.pointerup!);
+					window.addEventListener('pointermove', this.pointermove!);
 				} else {
 					emitter.selected = false;
 				}
@@ -1451,8 +1451,8 @@ Particle.marqueePointerdown = function (this: ParticleShape, event: any) {
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
 			(Cursor.open as any)('cursor-grab');
-			window.on('pointerup', this.pointerup!);
-			window.on('pointermove', this.pointermove!);
+			window.addEventListener('pointerup', this.pointerup!);
+			window.addEventListener('pointermove', this.pointermove!);
 			break;
 	}
 }.bind(Particle);
@@ -1496,8 +1496,8 @@ Particle.pointerup = function (event: any) {
 				break;
 		}
 		Particle.dragging = null;
-		window.off('pointerup', Particle.pointerup!);
-		window.off('pointermove', Particle.pointermove!);
+		window.removeEventListener('pointerup', Particle.pointerup!);
+		window.removeEventListener('pointermove', Particle.pointermove!);
 	}
 };
 

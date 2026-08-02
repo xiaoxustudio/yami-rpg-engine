@@ -2,134 +2,134 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneParticle-general-grid">
-			<text>{{ local.getLabel('sceneParticle-name') || 'Name' }}</text><text-box id="sceneParticle-name"></text-box>
+			<text>{{ local.getLabel('sceneParticle-name') || 'Name' }}</text><TextBox id="sceneParticle-name"></TextBox>
 			<text>{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</text
-			><custom-box
+			><CustomBox
 				id="sceneParticle-particleId"
 				type="file"
 				filter="particle"
-			></custom-box>
+			></CustomBox>
 			<text>{{ local.getLabel('sceneParticle-x') || 'X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParticle-x"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParticle-y') || 'Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneParticle-y"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneParticle-angle-box') || 'Angle' }}</text
 			><flex-box id="sceneParticle-angle-box">
-				<slider-box
+				<SliderBox
 					id="sceneParticle-angle-slider"
 					min="0"
 					max="360"
 					step="45"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParticle-angle"
 					min="-360"
 					max="360"
 					step="45"
 					decimals="4"
 					unit="deg"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParticle-scale-box') || 'Scale' }}</text
 			><flex-box id="sceneParticle-scale-box">
-				<slider-box
+				<SliderBox
 					id="sceneParticle-scale-slider"
 					min="0"
 					max="2"
 					step="0.1"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParticle-scale"
 					min="0"
 					max="10"
 					step="0.1"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParticle-speed-box') || 'Speed' }}</text
 			><flex-box id="sceneParticle-speed-box">
-				<slider-box
+				<SliderBox
 					id="sceneParticle-speed-slider"
 					min="0"
 					max="2"
 					step="0.1"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParticle-speed"
 					min="0"
 					max="10"
 					step="0.1"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParticle-opacity-box') || 'Opacity' }}</text
 			><flex-box id="sceneParticle-opacity-box">
-				<slider-box
+				<SliderBox
 					id="sceneParticle-opacity-slider"
 					min="0"
 					max="1"
 					step="0.05"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParticle-opacity"
 					min="0"
 					max="1"
 					step="0.05"
 					decimals="4"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('sceneParticle-priority-box') || 'Priority' }}</text
 			><flex-box id="sceneParticle-priority-box">
-				<slider-box
+				<SliderBox
 					id="sceneParticle-priority-slider"
 					min="-4"
 					max="4"
 					step="1"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="sceneParticle-priority"
 					min="-512"
 					max="512"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 		</detail-grid>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-conditions') || 'Conditions' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParticle-conditions"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-events') || 'Events' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParticle-events"
 			class="inspector-list"
 			filter="particle"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-scripts') || 'Scripts' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneParticle-scripts"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<parameter-pane id="sceneParticle-parameter-pane"></parameter-pane>
 </template>
@@ -140,6 +140,11 @@ import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

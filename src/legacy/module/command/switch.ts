@@ -13,10 +13,10 @@ Command.cases.switch = new CommandSchema({
 	onInitialize() {
 		const confirmEl = $('#switch-confirm');
 		if (!confirmEl) return;
-		confirmEl.on('click', () => this.save());
+		confirmEl.addEventListener('click', () => this.save());
 		$('#switch-branches')?.bind(SwitchBranch);
 		$('#switch-branch-conditions')?.bind(SwitchCondition);
-		$('#switch')?.on('closed', () => {
+		$('#switch')?.addEventListener('closed', () => {
 			this.defaultCommands = null;
 			clear($('#switch-branches'));
 		});

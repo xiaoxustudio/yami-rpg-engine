@@ -6,9 +6,8 @@ import {
 	showChildNodes,
 	read
 } from '@/util/element-utils.ts';
-import { NumberBox } from './number-box.ts';
 
-export class SliderBox extends HTMLElement {
+interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;
 	input: HTMLInputElement;
 	synchronizer: HTMLElement & { value: any; [k: string]: any };
@@ -17,73 +16,52 @@ export class SliderBox extends HTMLElement {
 	activeWheel: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
+	read(): number;
+	write(value: any): void;
+	enable(): void;
+	disable(): void;
+	updateFiller(): void;
+	synchronize(target: any): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	sliderInput(event?: any): void;
+	inputWheel(event: any): void;
+}
 
-	constructor() {
-		super();
+export function attachSliderBoxApi(el: HTMLElement): void {
+	const box = el as SliderBoxElement;
 
-		const bar = document.createElement('slider-bar');
+	const bar = document.createElement('slider-bar');
+	const filler = document.createElement('slider-filler');
+	bar.appendChild(filler);
 
-		const filler = document.createElement('slider-filler');
-		bar.appendChild(filler);
+	const input = document.createElement('input');
+	addClass(input, 'slider-input');
+	input.type = 'range';
+	input.tabIndex = -1;
 
-		const input = document.createElement('input');
-		addClass(input, 'slider-input');
-		input.type = 'range';
-		input.tabIndex = -1;
-		on(input, 'wheel', this.inputWheel);
+	box.bar = bar;
+	box.filler = filler;
+	box.input = input;
+	box.synchronizer = null;
+	box.focusEventEnabled = false;
+	box.blurEventEnabled = false;
 
-		this.bar = bar;
-		this.filler = filler;
-		this.input = input;
-		this.synchronizer = null;
-		this.focusEventEnabled = false;
-		this.blurEventEnabled = false;
+	input.min = box.getAttribute('min') ?? '0';
+	input.max = box.getAttribute('max') ?? '0';
+	input.step = box.getAttribute('step') ?? '1';
+	box.activeWheel = box.hasAttribute('active-wheel');
 
-		on(this, 'input', this.sliderInput);
-	}
+	box.appendChild(bar);
+	box.appendChild(input);
 
-	// 自定义元素升级后（已连入文档）才允许读取属性/操作子节点
-	connectedCallback() {
-		if (this._built) return;
-		this._built = true;
-		const min = this.getAttribute('min') ?? '0';
-		const max = this.getAttribute('max') ?? '0';
-		const step = this.getAttribute('step') ?? '1';
-		this.input.min = min;
-		this.input.max = max;
-		this.input.step = step;
-		this.activeWheel = this.hasAttribute('active-wheel');
-		this.appendChild(this.bar);
-		this.appendChild(this.input);
-	}
-
-	read() {
-		return parseFloat(this.input.value);
-	}
-
-	write(value: any) {
-		this.input.value = value;
-		this.updateFiller();
-	}
-
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			showChildNodes(this);
-		}
-	}
-
-	disable() {
-		if (addClass(this, 'disabled')) {
-			hideChildNodes(this);
-		}
-	}
-
-	updateFiller() {
-		const filler = this.filler;
-		const value = read(this);
+	box.updateFiller = function (): void {
+		const value = read(box);
 		if (filler.value !== value) {
 			filler.value = value;
-			const input = this.input;
 			const min = parseFloat(input.min);
 			const max = parseFloat(input.max);
 			if (min !== max) {
@@ -91,16 +69,41 @@ export class SliderBox extends HTMLElement {
 				filler.style.width = `${p}%`;
 			}
 		}
-	}
+	};
 
-	synchronize(target: any) {
-		const slider = this;
+	box.read = function (): number {
+		return parseFloat(input.value);
+	};
+
+	box.write = function (value: any): void {
+		input.value = value;
+		box.updateFiller();
+	};
+
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			showChildNodes(box);
+		}
+	};
+
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			hideChildNodes(box);
+		}
+	};
+
+	box.synchronize = function (target: any): void {
+		const slider = box;
 		const number = target;
 		if (slider.synchronizer) {
 			return;
 		}
 
-		if (number instanceof NumberBox) {
+		if (
+			number &&
+			number.input instanceof HTMLInputElement &&
+			typeof number.write === 'function'
+		) {
 			const writeSlider = slider.write;
 			const writeNumber = number.write;
 
@@ -108,12 +111,12 @@ export class SliderBox extends HTMLElement {
 				slider.input.focus();
 			};
 
-			const sliderInput = (event?) => {
+			const sliderInput = (event?: any) => {
 				writeNumber.call(number, read(slider));
 				event && number.dispatchEvent(new Event('input'));
 			};
 
-			const numberInput = (event?) => {
+			const numberInput = (event?: any) => {
 				writeSlider.call(slider, read(number));
 				event && slider.dispatchEvent(new Event('input'));
 			};
@@ -134,46 +137,24 @@ export class SliderBox extends HTMLElement {
 				numberInput();
 			};
 		}
-	}
+	};
 
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void {
-		super.on(type, listener, options);
-		switch (type) {
-			case 'focus':
-				if (!this.focusEventEnabled) {
-					this.focusEventEnabled = true;
-					on(this.input, 'focus', (event) => {
-						this.dispatchEvent(new FocusEvent('focus'));
-					});
-				}
-				break;
-			case 'blur':
-				if (!this.blurEventEnabled) {
-					this.blurEventEnabled = true;
-					on(this.input, 'blur', (event) => {
-						this.dispatchEvent(new FocusEvent('blur'));
-					});
-				}
-				break;
-		}
-	}
+	box.sliderInput = function (): void {
+		box.updateFiller();
+	};
 
-	sliderInput(event: any) {
-		this.updateFiller();
-	}
-
-	inputWheel(event: any) {
+	box.inputWheel = function (event: any): void {
 		if (event.deltaY === 0) return;
-		if (this.parentNode.activeWheel) {
+		const parent = this.parentNode;
+		if (parent.activeWheel) {
 			event.preventDefault();
 			const input = this;
 			const last = input.value;
 			input.value = String(
-				Math.roundTo(parseFloat(input.value) + input.step * (event.deltaY > 0 ? -1 : 1), 2)
+				Math.roundTo(
+					parseFloat(input.value) + parseFloat(input.step) * (event.deltaY > 0 ? -1 : 1),
+					2
+				)
 			);
 			if (input.value !== last) {
 				input.dispatchEvent(
@@ -183,7 +164,41 @@ export class SliderBox extends HTMLElement {
 				);
 			}
 		}
-	}
+	};
+
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		box.addEventListener(type, listener as EventListener, options);
+		switch (type) {
+			case 'focus':
+				if (!box.focusEventEnabled) {
+					box.focusEventEnabled = true;
+					on(input, 'focus', () => {
+						box.dispatchEvent(new FocusEvent('focus'));
+					});
+				}
+				break;
+			case 'blur':
+				if (!box.blurEventEnabled) {
+					box.blurEventEnabled = true;
+					on(input, 'blur', () => {
+						box.dispatchEvent(new FocusEvent('blur'));
+					});
+				}
+				break;
+		}
+	};
+
+	on(input, 'wheel', box.inputWheel);
+	on(box, 'input', box.sliderInput);
 }
 
-customElements.define('slider-box', SliderBox);
+export function createSliderBox(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'slider-box';
+	attachSliderBoxApi(el);
+	return el;
+}

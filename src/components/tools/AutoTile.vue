@@ -6,18 +6,18 @@
 				<legend>General</legend>
 				<grid-box id="autoTile-general-grid">
 					<text>Image</text
-					><custom-box id="autoTile-image" type="file" filter="image" />
-					<text>Offset X</text><number-box id="autoTile-x" min="0" max="255" />
-					<text>Offset Y</text><number-box id="autoTile-y" min="0" max="255" />
+					><CustomBox id="autoTile-image" type="file" filter="image" />
+					<text>Offset X</text><NumberBox id="autoTile-x" min="0" max="255" />
+					<text>Offset Y</text><NumberBox id="autoTile-y" min="0" max="255" />
 				</grid-box>
 			</field-set>
 			<field-set id="autoTile-templates-fieldset" class="input pad">
 				<legend>Templates</legend>
-				<node-list id="autoTile-templates" padded />
+				<TreeList id="autoTile-templates" padded />
 			</field-set>
 			<field-set id="autoTile-nodes-fieldset" class="input pad">
 				<legend>Tiles</legend>
-				<common-list id="autoTile-nodes" />
+				<CommonList id="autoTile-nodes" />
 			</field-set>
 			<field-set id="autoTile-canvas-fieldset">
 				<legend>View</legend>
@@ -71,7 +71,7 @@
 			</field-set>
 			<field-set id="autoTile-frames-fieldset" class="input pad">
 				<legend>Frames</legend>
-				<common-list id="autoTile-frames" />
+				<CommonList id="autoTile-frames" />
 			</field-set>
 			<button id="autoTile-confirm" name="confirm">Confirm</button>
 			<button id="autoTile-cancel" name="cancel">Cancel</button>
@@ -86,6 +86,10 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import SwitchItem from '@app/components/common/SwitchItem.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import CommonList from '@app/components/common/CommonList.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

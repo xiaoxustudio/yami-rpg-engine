@@ -111,7 +111,7 @@ Sprite.initialize = function () {
 		}
 	});
 
-	window.on('themechange', this.themechange);
+	window.addEventListener('themechange', this.themechange);
 	on($('#animSpriteFrame-vue-mount'), 'resize', this.windowResize);
 	on($('#animSpriteFrame-properties-detail'), 'toggle', this.windowResize);
 	on($('#animSpriteFrame-sprite-detail'), 'toggle', this.windowResize);
@@ -627,8 +627,8 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
 				(Cursor.open as any)('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const { x, y } = this.getUnitCoords(event);
@@ -644,8 +644,8 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
 			(Cursor.open as any)('cursor-grab');
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(Sprite);
@@ -660,8 +660,8 @@ Sprite.pointerup = function (this: typeof Sprite, event: any) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Sprite);
 

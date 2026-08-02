@@ -72,9 +72,9 @@ export class TabBar extends HTMLElement {
 		this.dirItem = null;
 		this.windowPointerup = TabBar.windowPointerup.bind(this);
 
-		this.on('pointerdown', this.pointerdown);
-		this.on('dragstart', this.dragstart);
-		this.on('dragend', this.dragend);
+		this.addEventListener('pointerdown', this.pointerdown);
+		this.addEventListener('dragstart', this.dragstart);
+		this.addEventListener('dragend', this.dragend);
 	}
 
 	read(): any {
@@ -277,7 +277,7 @@ export class TabBar extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void => {
-		EventTarget.prototype.on.call(this, type, listener, options);
+		super.addEventListener(type, listener, options);
 		switch (type) {
 			case 'write':
 				this.writeEventEnabled = true;
@@ -327,7 +327,7 @@ export class TabBar extends HTMLElement {
 						}
 					};
 					this.dragging = dragging;
-					window.on('pointerup', this.windowPointerup);
+					window.addEventListener('pointerup', this.windowPointerup);
 					return;
 				}
 				if (element.tagName === 'TAB-ITEM' && !hasClass(element, 'selected')) {
@@ -362,7 +362,7 @@ export class TabBar extends HTMLElement {
 								mode: 'popup'
 							};
 							this.dragging = dragging;
-							window.on('pointerup', this.windowPointerup);
+							window.addEventListener('pointerup', this.windowPointerup);
 							break;
 						}
 					}
@@ -400,10 +400,10 @@ export class TabBar extends HTMLElement {
 			this.parentNode!.insertBefore(hide(hint), this);
 			addClass(this, 'dragging');
 			Title.updateAppRegion();
-			this.on('dragenter', this.dragenter);
-			this.on('dragleave', this.dragleave);
-			this.on('dragover', this.dragover);
-			this.on('drop', this.drop);
+			this.addEventListener('dragenter', this.dragenter);
+			this.addEventListener('dragleave', this.dragleave);
+			this.addEventListener('dragover', this.dragover);
+			this.addEventListener('drop', this.drop);
 		}
 	}
 
@@ -565,7 +565,7 @@ export class TabBar extends HTMLElement {
 					break;
 			}
 			this.dragging = null;
-			window.off('pointerup', this.windowPointerup);
+			window.removeEventListener('pointerup', this.windowPointerup);
 		}
 	}
 }

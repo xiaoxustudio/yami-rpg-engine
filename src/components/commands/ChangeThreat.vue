@@ -3,8 +3,8 @@
 	<TitleBar>Change Threat<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="changeThreat-actor" type="actor" /><text>Target</text><custom-box id="changeThreat-target" type="actor" /><text>Operation</text><select-box id="changeThreat-operation" /><text>Threat</text
-			><number-var
+			<text>Actor</text><CustomBox id="changeThreat-actor" type="actor" /><text>Target</text><CustomBox id="changeThreat-target" type="actor" /><text>Operation</text><SelectBox id="changeThreat-operation" /><text>Threat</text
+			><NumberVar
 				id="changeThreat-threat"
 				min="0"
 				max="1000000000"
@@ -22,6 +22,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,4 +1,8 @@
 export class UIInstanceList extends Array {
+	set(key: string, value: any): void {
+		this.setProperty(key, value);
+	}
+
 	setProperty(key: string, value: any): void {
 		const keys = key.split('-');
 		const last = keys.length - 1;

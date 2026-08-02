@@ -2,10 +2,10 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSpriteLayer-properties-grid') || 'Sprite Layer' }}</DetailSummary>
 		<detail-grid id="animSpriteLayer-properties-grid">
-			<text>{{ local.getLabel('animSpriteLayer-sprite') || 'Sprite' }}</text><select-box id="animSpriteLayer-sprite"></select-box>
-			<text>{{ local.getLabel('animSpriteLayer-blend') || 'Blend' }}</text><select-box id="animSpriteLayer-blend"></select-box>
+			<text>{{ local.getLabel('animSpriteLayer-sprite') || 'Sprite' }}</text><SelectBox id="animSpriteLayer-sprite"></SelectBox>
+			<text>{{ local.getLabel('animSpriteLayer-blend') || 'Blend' }}</text><SelectBox id="animSpriteLayer-blend"></SelectBox>
 			<text>{{ local.getLabel('animSpriteLayer-light') || 'Light Sampling' }}</text
-			><select-box id="animSpriteLayer-light"></select-box>
+			><SelectBox id="animSpriteLayer-light"></SelectBox>
 		</detail-grid>
 	</DetailBox>
 </template>
@@ -16,6 +16,7 @@ import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

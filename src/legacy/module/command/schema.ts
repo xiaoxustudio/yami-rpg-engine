@@ -1,5 +1,5 @@
 import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus, on, read, write } from '@/util/element-utils';
 import { reportError } from '@/util/safe.ts';
 import { ActorGetter } from '@/command/actor-accessor-window.ts';
 import { AncestorGetter } from '@/command/ancestor-accessor-window.ts';
@@ -124,7 +124,7 @@ export class CommandSchema {
 		if (this.onInitialize) {
 			return this.onInitialize();
 		}
-		$(`#${this.confirmId}`).on('click', () => this.save());
+		on($(`#${this.confirmId}`), 'click', () => this.save());
 	}
 
 	parse(data: any) {

@@ -4,11 +4,11 @@
 	<content-frame>
 		<grid-box>
 			<text>Variable</text
-			><custom-box id="switch-variable" type="variable" filter="all" />
-			<text>Branches</text><param-list id="switch-branches" />
+			><CustomBox id="switch-variable" type="variable" filter="all" />
+			<text>Branches</text><ParamList id="switch-branches" />
 		</grid-box>
-		<check-box id="switch-default" class="standard"
-			><text id="switch-default-label">Default</text></check-box
+		<CheckBox id="switch-default" class="standard"
+			><text id="switch-default-label">Default</text></CheckBox
 		>
 		<button id="switch-confirm" name="confirm">Confirm</button>
 		<button id="switch-cancel" name="cancel">Cancel</button>
@@ -22,6 +22,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CheckBox from '@app/components/common/CheckBox.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

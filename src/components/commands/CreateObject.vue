@@ -4,9 +4,9 @@
 		<content-frame>
 			<grid-box>
 				<text>Object</text
-				><custom-box id="createObject-presetId" type="preset-object" filter="any" />
+				><CustomBox id="createObject-presetId" type="preset-object" filter="any" />
 				<text>Position</text
-				><custom-box id="createObject-position" type="position" />
+				><CustomBox id="createObject-position" type="position" />
 			</grid-box>
 			<button id="createObject-confirm" name="confirm">Confirm</button>
 			<button id="createObject-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

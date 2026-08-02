@@ -3,15 +3,15 @@
 		<DetailSummary>{{ local.getLabel('uiReference-properties-grid') || 'Reference Properties' }}</DetailSummary>
 		<detail-grid id="uiReference-properties-grid">
 			<text>{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</text
-			><custom-box
+			><CustomBox
 				id="uiReference-prefabId"
 				type="preset-element"
-			></custom-box>
+			></CustomBox>
 			<text>{{ local.getLabel('uiReference-synchronous') || 'Synchronous' }}</text
-			><check-box
+			><CheckBox
 				id="uiReference-synchronous"
 				class="standard large"
-			></check-box>
+			></CheckBox>
 		</detail-grid>
 	</DetailBox>
 </template>
@@ -22,6 +22,8 @@ import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CheckBox from '@app/components/common/CheckBox.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

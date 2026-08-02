@@ -2,7 +2,7 @@
 	<WindowFrame id="arrayList-string">
 		<TitleBar>String<close /></TitleBar>
 		<content-frame>
-			<text-area id="arrayList-string-value" />
+			<TextArea id="arrayList-string-value" />
 			<button id="arrayList-string-confirm" name="confirm">Confirm</button>
 			<button id="arrayList-string-cancel" name="cancel">Cancel</button>
 		</content-frame>
@@ -15,6 +15,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextArea from '@app/components/common/TextArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

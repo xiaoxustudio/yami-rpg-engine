@@ -42,11 +42,11 @@ export const Home: HomeShape = {
 };
 
 Home.initialize = function () {
-	window.on('resize', this.windowResize);
-	window.on('localize', this.windowLocalize);
-	$('#home-start-list').on('click', this.startClick);
-	$('#home-recent-list').on('click', this.recentClick);
-	$('#home-recent-list').on('pointerup', this.recentPointerup);
+	window.addEventListener('resize', this.windowResize);
+	window.addEventListener('localize', this.windowLocalize);
+	$('#home-start-list').addEventListener('click', this.startClick);
+	$('#home-recent-list').addEventListener('click', this.recentClick);
+	$('#home-recent-list').addEventListener('pointerup', this.recentPointerup);
 };
 
 Home.updateCenterPosition = function () {

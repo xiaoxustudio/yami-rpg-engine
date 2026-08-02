@@ -1,4 +1,4 @@
-window.on(
+window.addEventListener(
 	'keydown',
 	function (event: EditorEvent) {
 		if (event.cmdOrCtrlKey) {
@@ -29,7 +29,7 @@ window.on(
 	{ capture: true }
 );
 
-window.on(
+window.addEventListener(
 	'keyup',
 	function (event: EditorEvent) {
 		switch ((event as KeyboardEvent).code) {

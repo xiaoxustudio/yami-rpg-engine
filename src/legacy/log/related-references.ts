@@ -790,8 +790,11 @@ Reference.getKeydownListener = function (list: any, winId = '') {
 								: !(Window.getTopWindow as any)()
 						) {
 							addClass(list, 'alt');
-							window.on('keyup', this.getKeyupListener!(list));
-							window.on('pointermove', this.getPointermoveListener!(list));
+							window.addEventListener('keyup', this.getKeyupListener!(list));
+							window.addEventListener(
+								'pointermove',
+								this.getPointermoveListener!(list)
+							);
 						}
 						break;
 				}
@@ -809,8 +812,11 @@ Reference.getKeyupListener = function (list: any) {
 				switch (event.code) {
 					case 'AltLeft':
 						removeClass(list, 'alt');
-						window.off('keyup', listener);
-						window.off('pointermove', this.getPointermoveListener!(list));
+						window.removeEventListener('keyup', listener);
+						window.removeEventListener(
+							'pointermove',
+							this.getPointermoveListener!(list)
+						);
 						break;
 				}
 			}
@@ -847,8 +853,8 @@ Reference.getPointermoveListener = function (list: any) {
 		listener = (event: any) => {
 			if (!event.altKey) {
 				removeClass(list, 'alt');
-				window.off('keyup', this.getKeyupListener!(list));
-				window.off('pointermove', listener);
+				window.removeEventListener('keyup', this.getKeyupListener!(list));
+				window.removeEventListener('pointermove', listener);
 			}
 		};
 	}

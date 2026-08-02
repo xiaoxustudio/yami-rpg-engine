@@ -433,7 +433,7 @@ export const Resources = new (class {
 			`<box id="resource-item-${value}" class='resource-item' style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
           <text style="flex: 0 0 auto;">${value}:&emsp;</text>
-          <text-box style="flex: 1;"></text-box>
+          <div class="text-box" style="flex: 1;"><input class="text-box-input" type="text" readonly /></div>
           <button id='resource-item-${value}-download' name='resource-download'></button>
           <button id='resource-item-${value}-pause' name='pause' style="display: none;">暂停</button>
           <button id='resource-item-${value}-delete' name='delete'></button>
@@ -453,9 +453,14 @@ export const Resources = new (class {
 		);
 		const boxDom = domPase.body.firstChild!;
 		this.content.append(boxDom);
-		const textbox = boxDom.querySelector('text-box')!;
+		const textbox = boxDom.querySelector('.text-box')!;
+		const textboxInput = textbox.querySelector('input')!;
+		textbox.input = textboxInput;
+		textbox.write = (value: string): void => {
+			textboxInput.value = value;
+		};
 		disable(textbox);
-		(textbox as any).input.readOnly = true;
+		textboxInput.readOnly = true;
 
 		const button = boxDom.querySelector(`#resource-item-${value}-download`)!;
 		const pauseButton = boxDom.querySelector(`#resource-item-${value}-pause`)!;

@@ -3,8 +3,8 @@
 		<TitleBar>Set Button<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Element</text><custom-box id="setButton-element" type="element" />
-				<text>Properties</text><param-list id="setButton-properties" />
+				<text>Element</text><CustomBox id="setButton-element" type="element" />
+				<text>Properties</text><ParamList id="setButton-properties" />
 			</grid-box>
 			<button id="setButton-confirm" name="confirm">Confirm</button>
 			<button id="setButton-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

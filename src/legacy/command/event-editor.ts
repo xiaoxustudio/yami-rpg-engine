@@ -694,7 +694,7 @@ EventEditor.initialize = function () {
 	this.commandList.style.paddingBottom = `${PADDING_BOTTOM + 10}px`;
 	this.innerGutter.style.paddingBottom = `${PADDING_BOTTOM}px`;
 
-	window.on('localize', this.windowLocalize);
+	window.addEventListener('localize', this.windowLocalize);
 	on($('#event'), 'close', this.windowClose);
 	on($('#event'), 'closed', this.windowClosed);
 	on($('#event'), 'resize', this.windowResize);
@@ -713,7 +713,7 @@ EventEditor.openLocalEvent = function (inserting, filter, name, event, callback)
 	this.initialize();
 	this.unpackOpenEvents();
 	Window.open('event');
-	window.on('keydown', this.windowKeydown);
+	window.addEventListener('keydown', this.windowKeydown);
 
 	const list = this.list;
 	const item = list.createLocalEventItem(inserting, filter, name, event, callback);
@@ -732,7 +732,7 @@ EventEditor.openGlobalEvent = function (guid) {
 	if (!Window.isWindowOpen('event')) {
 		this.unpackOpenEvents();
 		Window.open('event');
-		window.on('keydown', this.windowKeydown);
+		window.addEventListener('keydown', this.windowKeydown);
 	} else if (read(this.list)?.id === guid) {
 		return;
 	}
@@ -1260,7 +1260,7 @@ EventEditor.windowClosed = function (event) {
 	clear(this.list);
 	clear(this.commandList);
 	this.clearCommandBuffers();
-	window.off('keydown', this.windowKeydown);
+	window.removeEventListener('keydown', this.windowKeydown);
 }.bind(EventEditor);
 
 EventEditor.windowResize = function (event) {
@@ -1306,8 +1306,8 @@ EventEditor.windowKeydown = function (event) {
 				if (Window.getTopWindow()?.id === 'event') {
 					addClass(EventEditor.list, 'alt');
 					addClass(EventEditor.commandList, 'alt');
-					window.on('keyup', EventEditor.windowKeyup);
-					window.on('pointermove', EventEditor.windowPointermove);
+					window.addEventListener('keyup', EventEditor.windowKeyup);
+					window.addEventListener('pointermove', EventEditor.windowPointermove);
 				}
 				break;
 		}
@@ -1320,8 +1320,8 @@ EventEditor.windowKeyup = function (event) {
 			case 'AltLeft':
 				removeClass(EventEditor.list, 'alt');
 				removeClass(EventEditor.commandList, 'alt');
-				window.off('keyup', EventEditor.windowKeyup);
-				window.off('pointermove', EventEditor.windowPointermove);
+				window.removeEventListener('keyup', EventEditor.windowKeyup);
+				window.removeEventListener('pointermove', EventEditor.windowPointermove);
 				break;
 		}
 	}
@@ -1331,8 +1331,8 @@ EventEditor.windowPointermove = function (event) {
 	if (!event.altKey) {
 		removeClass(EventEditor.list, 'alt');
 		removeClass(EventEditor.commandList, 'alt');
-		window.off('keyup', EventEditor.windowKeyup);
-		window.off('pointermove', EventEditor.windowPointermove);
+		window.removeEventListener('keyup', EventEditor.windowKeyup);
+		window.removeEventListener('pointermove', EventEditor.windowPointermove);
 	}
 };
 

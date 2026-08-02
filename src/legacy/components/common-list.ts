@@ -193,7 +193,7 @@ export class CommonList extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		super.on(type, listener, options);
+		super.addEventListener(type, listener, options);
 		switch (type) {
 			case 'write':
 				this.writeEventEnabled = true;

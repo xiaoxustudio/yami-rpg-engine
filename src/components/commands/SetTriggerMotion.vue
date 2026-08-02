@@ -4,9 +4,9 @@
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text
-				><custom-box id="setTriggerMotion-trigger" type="trigger" />
+				><CustomBox id="setTriggerMotion-trigger" type="trigger" />
 				<text>Motion</text
-				><custom-box id="setTriggerMotion-motion" type="enum-string" />
+				><CustomBox id="setTriggerMotion-motion" type="enum-string" />
 			</grid-box>
 			<button id="setTriggerMotion-confirm" name="confirm">Confirm</button>
 			<button id="setTriggerMotion-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

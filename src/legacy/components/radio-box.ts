@@ -1,130 +1,130 @@
-import { RadioProxy } from './radio-proxy.ts';
+import { radioProxyMap, createRadioProxy, type RadioProxyElement } from './radio-proxy.ts';
 import { on, hasClass } from '@/util/element-utils.ts';
 
-export class RadioBox extends HTMLElement {
-	proxy: RadioProxy;
-	dataValue: number | string | boolean = '';
-	_mark: HTMLElement | null;
-	_isNewProxy: boolean;
-	_initialized: boolean;
-	_listenersAttached: boolean;
+export interface RadioBoxElement extends HTMLElement {
+	proxy: RadioProxyElement;
+	dataValue: number | string | boolean;
+	read(): any;
+	write(value: any): void;
+	input(value: any): void;
+	enable(): void;
+	disable(): void;
+	relate(entries: any[]): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-	constructor() {
-		super();
+export function attachRadioBoxApi(el: HTMLElement): void {
+	const box = el as RadioBoxElement;
+	let proxy = radioProxyMap[box.name] as RadioProxyElement;
+	let isNewProxy = false;
+	if (proxy === undefined) {
+		proxy = createRadioProxy() as RadioProxyElement;
+		proxy.id = box.name;
+		proxy.style.display = 'none';
+		radioProxyMap[proxy.id] = proxy;
+		isNewProxy = true;
+	}
+	box.proxy = proxy;
+	box.dataValue = '';
 
-		let proxy = RadioProxy.map[this.name];
-		this._isNewProxy = false;
-		if (proxy === undefined) {
-			proxy = document.createElement('radio-proxy') as RadioProxy;
-			proxy.id = this.name;
-			proxy.style.display = 'none';
-			RadioProxy.map[proxy.id] = proxy;
-			this._isNewProxy = true;
+	const string = box.getAttribute('value') ?? '';
+	const isNumber = RegExp.number.test(string);
+	const value = isNumber
+		? parseFloat(string)
+		: string === 'false'
+			? false
+			: string === 'true'
+				? true
+				: string;
+	box.dataValue = value;
+
+	if (box.name && box.proxy.id !== box.name) {
+		const existing = radioProxyMap[box.name] as RadioProxyElement;
+		if (existing) {
+			box.proxy = existing;
+			isNewProxy = false;
+		} else if (box.proxy.id === '') {
+			delete radioProxyMap[''];
+			box.proxy.id = box.name;
+			radioProxyMap[box.name] = box.proxy;
+			isNewProxy = true;
+		} else {
+			box.proxy = createRadioProxy() as RadioProxyElement;
+			box.proxy.id = box.name;
+			box.proxy.style.display = 'none';
+			radioProxyMap[box.name] = box.proxy;
+			isNewProxy = true;
 		}
-
-		this.proxy = proxy;
-		this.dataValue = '';
-		this._mark = null;
-		this._initialized = false;
-		this._listenersAttached = false;
-
-		on(this, 'keydown', this.keydown);
+	}
+	if (isNewProxy) {
+		box.appendChild(box.proxy);
 	}
 
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-
-		const string = this.getAttribute('value') ?? '';
-		const isNumber = RegExp.number.test(string);
-		const value = isNumber
-			? parseFloat(string)
-			: string === 'false'
-				? false
-				: string === 'true'
-					? true
-					: string;
-		this.dataValue = value;
-
-		if (this.name && this.proxy.id !== this.name) {
-			const existing = RadioProxy.map[this.name];
-			if (existing) {
-				this.proxy = existing;
-				this._isNewProxy = false;
-			} else if (this.proxy.id === '') {
-				delete RadioProxy.map[''];
-				this.proxy.id = this.name;
-				RadioProxy.map[this.name] = this.proxy;
-				this._isNewProxy = true;
-			} else {
-				this.proxy = document.createElement('radio-proxy') as RadioProxy;
-				this.proxy.id = this.name;
-				this.proxy.style.display = 'none';
-				RadioProxy.map[this.name] = this.proxy;
-				this._isNewProxy = true;
-			}
-		}
-		if (this._isNewProxy) {
-			this.appendChild(this.proxy);
-		}
-
-		if (!this._listenersAttached) {
-			this._listenersAttached = true;
-			switch (hasClass(this, 'standard')) {
-				case true: {
-					this._mark = document.createElement('radio-mark');
-					on(this, 'click', this.mouseclick);
-					break;
+	const pointerdown = (event: PointerEvent): void => {
+		switch (event.button) {
+			case 0:
+				if (!hasClass(box, 'selected')) {
+					if (document.activeElement !== document.body) {
+						document.activeElement.blur();
+					}
+					box.proxy.input(box.dataValue);
+				} else if (box.proxy.cancelable) {
+					if (document.activeElement !== document.body) {
+						document.activeElement.blur();
+					}
+					box.proxy.reset();
 				}
-				case false:
-					on(this, 'pointerdown', this.pointerdown);
-					break;
-			}
+				break;
 		}
+	};
 
-		if (this._mark) {
-			this.tabIndex = 0;
-			this.insertBefore(this._mark, this.childNodes[0]);
+	const mouseclick = (event: Event): void => {
+		if (!hasClass(box, 'selected')) {
+			box.proxy.input(box.dataValue);
+		} else if (box.proxy.cancelable) {
+			box.proxy.reset();
 		}
-	}
+	};
 
-	keydown(event: KeyboardEvent): void {
+	const keydown = (event: KeyboardEvent): void => {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!event.cmdOrCtrlKey && !hasClass(this, 'disabled')) {
+				if (!event.cmdOrCtrlKey && !hasClass(box, 'disabled')) {
 					event.stopPropagation();
-					this.mouseclick(event);
+					mouseclick(event);
 				}
 				break;
 		}
+	};
+
+	on(box, 'keydown', keydown);
+
+	let mark: HTMLElement | null = null;
+	switch (hasClass(box, 'standard')) {
+		case true: {
+			mark = document.createElement('radio-mark');
+			on(box, 'click', mouseclick);
+			break;
+		}
+		case false:
+			on(box, 'pointerdown', pointerdown);
+			break;
 	}
 
-	pointerdown(event: PointerEvent): void {
-		switch (event.button) {
-			case 0:
-				if (!hasClass(this, 'selected')) {
-					if (document.activeElement !== document.body) {
-						document.activeElement.blur();
-					}
-					this.proxy.input(this.dataValue);
-				} else if (this.proxy.cancelable) {
-					if (document.activeElement !== document.body) {
-						document.activeElement.blur();
-					}
-					this.proxy.reset();
-				}
-				break;
-		}
-	}
-
-	mouseclick(event: Event): void {
-		if (!hasClass(this, 'selected')) {
-			this.proxy.input(this.dataValue);
-		} else if (this.proxy.cancelable) {
-			this.proxy.reset();
-		}
+	if (mark) {
+		box.tabIndex = 0;
+		box.insertBefore(mark, box.childNodes[0]);
 	}
 }
 
-customElements.define('radio-box', RadioBox);
+export function createRadioBox(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'radio-box';
+	attachRadioBoxApi(el);
+	return el;
+}

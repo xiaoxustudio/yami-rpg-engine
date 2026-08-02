@@ -4,23 +4,23 @@
 		<content-frame>
 			<grid-box>
 				<text>Zoom Factor</text
-				><number-var
+				><NumberVar
 					id="setZoomFactor-zoom"
 					min="1"
 					max="8"
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Easing</text><select-box id="setZoomFactor-easingId" name="easing" />
+				<text>Easing</text><SelectBox id="setZoomFactor-easingId" name="easing" />
 				<text>Duration</text
-				><number-var
+				><NumberVar
 					id="setZoomFactor-duration"
 					name="duration"
 					min="0"
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><select-box id="setZoomFactor-wait" name="wait" />
+				<text>Wait</text><SelectBox id="setZoomFactor-wait" name="wait" />
 			</grid-box>
 			<button id="setZoomFactor-confirm" name="confirm">Confirm</button>
 			<button id="setZoomFactor-cancel" name="cancel">Cancel</button>
@@ -35,6 +35,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

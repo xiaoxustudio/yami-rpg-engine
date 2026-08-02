@@ -159,18 +159,18 @@ Title.initialize = function () {
 		return (File as any).parseMetaName(meta);
 	};
 
-	window.on('drop', this.windowDrop);
-	window.on('dirchange', this.windowDirchange);
-	window.on('localize', this.windowLocalize);
-	$('#title').on('pointerenter', this.pointerenter);
-	$('#title-tabBar').on('pointerdown', this.tabBarPointerdown);
-	$('#title-tabBar').on('select', this.tabBarSelect);
-	$('#title-tabBar').on('closed', this.tabBarClosed);
-	$('#title-tabBar').on('popup', this.tabBarPopup);
-	$('#title-play').on('click', this.playClick);
-	$('#title-minimize').on('click', this.minimizeClick);
-	$('#title-maximize').on('click', this.maximizeClick);
-	$('#title-close').on('click', this.closeClick);
+	window.addEventListener('drop', this.windowDrop);
+	window.addEventListener('dirchange', this.windowDirchange);
+	window.addEventListener('localize', this.windowLocalize);
+	$('#title').addEventListener('pointerenter', this.pointerenter);
+	this.tabBar.on('pointerdown', this.tabBarPointerdown);
+	this.tabBar.on('select', this.tabBarSelect);
+	this.tabBar.on('closed', this.tabBarClosed);
+	this.tabBar.on('popup', this.tabBarPopup);
+	$('#title-play').addEventListener('click', this.playClick);
+	$('#title-minimize').addEventListener('click', this.minimizeClick);
+	$('#title-maximize').addEventListener('click', this.maximizeClick);
+	$('#title-close').addEventListener('click', this.closeClick);
 
 	ipcRenderer.on('before-close-window', this.windowBeforeClose);
 	ipcRenderer.on('maximize', this.windowMaximize);
@@ -535,7 +535,7 @@ Title.pointerenter = function (event) {
 		target.active = true;
 		target.style.WebkitAppRegion = 'drag';
 		this.updateAppRegion();
-		window.on('pointermove', this.pointermove);
+		window.addEventListener('pointermove', this.pointermove);
 	}
 }.bind(Title);
 
@@ -554,7 +554,7 @@ Title.pointermove = function (event) {
 			target.active = false;
 			target.style.WebkitAppRegion = 'no-drag';
 			this.updateAppRegion();
-			window.off('pointermove', this.pointermove);
+			window.removeEventListener('pointermove', this.pointermove);
 		}
 	}
 }.bind(Title);

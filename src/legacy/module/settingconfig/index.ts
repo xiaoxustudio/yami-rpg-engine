@@ -76,7 +76,7 @@ export const SettingConfig = new (class {
 		this._rendered = true;
 		if (!this._localizeBound) {
 			this._localizeBound = true;
-			window.on('localize', () => {
+			window.addEventListener('localize', () => {
 				if (!this._rendered) return;
 				this.renderer.applyL10n();
 				void this.renderer.reloadAllSelectOptions();

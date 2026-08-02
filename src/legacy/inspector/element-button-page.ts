@@ -151,11 +151,13 @@ import { UI } from '@/ui/ui-window.ts';
     #uiButton-hoverSound, #uiButton-clickSound`);
 		const sliders = $(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
     #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, UI))
+		);
+		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
+		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
 	};
 
 	UIButton.create = function () {

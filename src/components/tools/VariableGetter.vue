@@ -4,16 +4,16 @@
 		<TitleBar>Variable<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Type</text><select-box id="variableGetter-type" /> <text>Actor</text
-				><custom-box id="variableGetter-actor" type="actor" /> <text>Skill</text
-				><custom-box id="variableGetter-skill" type="skill" /> <text>State</text
-				><custom-box id="variableGetter-state" type="state" /> <text>Equipment</text
-				><custom-box id="variableGetter-equipment" type="equipment" />
-				<text>Item</text><custom-box id="variableGetter-item" type="item" />
-				<text>Element</text><custom-box id="variableGetter-element" type="element" />
-				<text>Key</text><text-box id="variableGetter-common-key" /> <text>Key</text
-				><select-var id="variableGetter-preset-key" /> <text>Key</text
-				><custom-box id="variableGetter-global-key" type="global-variable" />
+				<text>Type</text><SelectBox id="variableGetter-type" /> <text>Actor</text
+				><CustomBox id="variableGetter-actor" type="actor" /> <text>Skill</text
+				><CustomBox id="variableGetter-skill" type="skill" /> <text>State</text
+				><CustomBox id="variableGetter-state" type="state" /> <text>Equipment</text
+				><CustomBox id="variableGetter-equipment" type="equipment" />
+				<text>Item</text><CustomBox id="variableGetter-item" type="item" />
+				<text>Element</text><CustomBox id="variableGetter-element" type="element" />
+				<text>Key</text><TextBox id="variableGetter-common-key" /> <text>Key</text
+				><SelectVar id="variableGetter-preset-key" /> <text>Key</text
+				><CustomBox id="variableGetter-global-key" type="global-variable" />
 			</grid-box>
 			<button id="variableGetter-confirm" name="confirm">Confirm</button>
 			<button id="variableGetter-cancel" name="cancel">Cancel</button>
@@ -27,6 +27,10 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectVar from '@app/components/common/SelectVar.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -219,7 +219,7 @@ VariableGetter._openCore = function (
 	$(`#${prefix}-type`).loadItems(items);
 	$(`#${prefix}-global-key`).filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 
-	const variable = target.dataValue;
+	const variable = target.dataValue ?? { type: '', key: '' };
 	const type = variable.type;
 	const key = variable.key;
 	const write = getElementWriter(prefix);

@@ -7,126 +7,140 @@ import {
 	dispatchChangeEvent
 } from '@/util/element-utils.ts';
 
-interface RadioRelationEntry {
+interface RadioRelationTarget extends HTMLElement {
+	enable?(): void;
+	disable?(): void;
+}
+
+export interface RadioRelationEntry {
 	case: any;
-	targets: RadioProxy[];
+	targets: RadioRelationTarget[];
 }
 
-// 单选项元素运行时挂载的扩展字段（与 RadioProxy 类同：dataValue/enable/disable）
-interface RadioProxyElement extends HTMLElement {
-	dataValue: any;
-	enable(): void;
-	disable(): void;
-}
-
-export class RadioProxy extends HTMLElement {
+export interface RadioProxyElement extends HTMLElement {
 	dataValue: any;
 	relations: RadioRelationEntry[];
 	cancelable: boolean;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
+	read(): any;
+	write(value: any): void;
+	input(value: any): void;
+	reset(): void;
+	enable(): void;
+	disable(): void;
+	relate(entries: RadioRelationEntry[]): void;
+	toggleRelatedElements(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-	constructor() {
-		super();
+export const radioProxyMap: Record<string, HTMLElement> = {};
 
-		this.dataValue = null;
-		this.relations = [];
-		this.cancelable = false;
-		this.writeEventEnabled = false;
-		this.inputEventEnabled = false;
-	}
+export const RadioProxy = { map: radioProxyMap };
 
-	read(): any {
-		return this.dataValue;
-	}
+export function attachRadioProxyApi(el: HTMLElement): void {
+	const proxy = el as RadioProxyElement;
+	proxy.dataValue = null;
+	proxy.relations = [];
+	proxy.cancelable = false;
+	proxy.writeEventEnabled = false;
+	proxy.inputEventEnabled = false;
 
-	write(value: any): void {
+	proxy.read = function (): any {
+		return proxy.dataValue;
+	};
+
+	proxy.write = function (value: any): void {
 		const elements = document.getElementsByName(
-			this.id
+			proxy.id
 		) as unknown as NodeListOf<RadioProxyElement>;
 		for (const element of elements) {
 			if (element.dataValue === value) {
 				addClass(element as HTMLElement, 'selected');
-				this.dataValue = value;
+				proxy.dataValue = value;
 			} else {
 				removeClass(element as HTMLElement, 'selected');
 			}
 		}
-		if (!hasClass(this, 'disabled')) {
-			this.toggleRelatedElements();
+		if (!hasClass(proxy, 'disabled')) {
+			proxy.toggleRelatedElements();
 		}
-		if (this.writeEventEnabled) {
+		if (proxy.writeEventEnabled) {
 			const write = new Event('write') as Event & {
 				value: any;
 			};
-			write.value = this.dataValue;
-			this.dispatchEvent(write);
+			write.value = proxy.dataValue;
+			proxy.dispatchEvent(write);
 		}
-	}
+	};
 
-	input(value: any): void {
-		const lastValue = this.dataValue;
+	proxy.input = function (value: any): void {
+		const lastValue = proxy.dataValue;
 		if (lastValue !== value) {
-			this.write(value);
-			if (this.inputEventEnabled) {
+			proxy.write(value);
+			if (proxy.inputEventEnabled) {
 				const input = new Event('input') as Event & {
 					value: any;
 					lastValue: any;
 				};
-				input.value = this.dataValue;
+				input.value = proxy.dataValue;
 				input.lastValue = lastValue;
-				this.dispatchEvent(input);
+				proxy.dispatchEvent(input);
 			}
-			dispatchChangeEvent(this);
+			dispatchChangeEvent(proxy);
 		}
-	}
+	};
 
-	reset(): void {
-		if (this.dataValue !== null) {
+	proxy.reset = function (): void {
+		if (proxy.dataValue !== null) {
 			const elements = document.getElementsByName(
-				this.id
+				proxy.id
 			) as unknown as NodeListOf<RadioProxyElement>;
 			for (const element of elements) {
-				if (element.dataValue === this.dataValue) {
+				if (element.dataValue === proxy.dataValue) {
 					removeClass(element as HTMLElement, 'selected');
 					break;
 				}
 			}
-			this.dataValue = null;
+			proxy.dataValue = null;
 		}
-	}
+	};
 
-	enable(): void {
-		if (removeClass(this, 'disabled')) {
-			const elements = document.getElementsByName(this.id);
+	proxy.enable = function (): void {
+		if (removeClass(proxy, 'disabled')) {
+			const elements = document.getElementsByName(proxy.id);
 			for (const element of elements) {
 				removeClass(element as HTMLElement, 'disabled');
 			}
-			this.toggleRelatedElements();
+			proxy.toggleRelatedElements();
 		}
-	}
+	};
 
-	disable(): void {
-		if (addClass(this, 'disabled')) {
-			const elements = document.getElementsByName(this.id);
+	proxy.disable = function (): void {
+		if (addClass(proxy, 'disabled')) {
+			const elements = document.getElementsByName(proxy.id);
 			for (const element of elements) {
 				addClass(element as HTMLElement, 'disabled');
 			}
-			this.toggleRelatedElements();
+			proxy.toggleRelatedElements();
 		}
-	}
+	};
 
-	relate(entries: RadioRelationEntry[]): void {
-		this.relations = entries;
-	}
+	proxy.relate = function (entries: RadioRelationEntry[]): void {
+		proxy.relations = entries;
+	};
 
-	toggleRelatedElements(): void {
-		if (this.relations.length !== 0) {
-			if (!hasClass(this, 'disabled')) {
-				const entries = this.relations;
-				const selection = entries.find((entry) => entry.case === this.dataValue);
+	proxy.toggleRelatedElements = function (): void {
+		if (proxy.relations.length !== 0) {
+			if (!hasClass(proxy, 'disabled')) {
+				const entries = proxy.relations;
+				const selection = entries.find((entry) => entry.case === proxy.dataValue);
 				for (const entry of entries) {
-					if (entry.case === this.dataValue) {
+					if (entry.case === proxy.dataValue) {
 						for (const element of entry.targets) {
 							if (typeof element.enable === 'function') {
 								element.enable();
@@ -147,7 +161,7 @@ export class RadioProxy extends HTMLElement {
 					}
 				}
 			} else {
-				const entries = this.relations;
+				const entries = proxy.relations;
 				for (const entry of entries) {
 					for (const element of entry.targets) {
 						if (typeof element.disable === 'function') {
@@ -159,25 +173,29 @@ export class RadioProxy extends HTMLElement {
 				}
 			}
 		}
-	}
+	};
 
-	on(
+	proxy.on = function (
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		super.on(type, listener, options);
+		proxy.addEventListener(type, listener as EventListener, options);
 		switch (type) {
 			case 'write':
-				this.writeEventEnabled = true;
+				proxy.writeEventEnabled = true;
 				break;
 			case 'input':
-				this.inputEventEnabled = true;
+				proxy.inputEventEnabled = true;
 				break;
 		}
-	}
-
-	static map: Record<string, RadioProxy> = {};
+	};
 }
 
-customElements.define('radio-proxy', RadioProxy);
+export function createRadioProxy(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'radio-proxy';
+	el.style.display = 'none';
+	attachRadioProxyApi(el);
+	return el;
+}

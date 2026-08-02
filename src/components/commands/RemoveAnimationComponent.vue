@@ -4,12 +4,12 @@
 	<content-frame>
 		<grid-box>
 			<text>Actor</text
-			><custom-box id="removeAnimationComponent-actor" type="actor" /><text>Animation</text
-			><custom-box
+			><CustomBox id="removeAnimationComponent-actor" type="actor" /><text>Animation</text
+			><CustomBox
 				id="removeAnimationComponent-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Motion</text><select-box id="removeAnimationComponent-motion" /></grid-box>
+			 /><text>Motion</text><SelectBox id="removeAnimationComponent-motion" /></grid-box>
 		<button id="removeAnimationComponent-confirm" name="confirm">Confirm</button>
 		<button id="removeAnimationComponent-cancel" name="cancel">Cancel</button>
 	</content-frame>
@@ -22,6 +22,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

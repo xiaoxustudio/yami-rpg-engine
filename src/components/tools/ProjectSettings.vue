@@ -6,39 +6,39 @@
 				<box id="project-grid-box">
 					<text id="config-window-summary" class="project-summary">Window</text>
 					<text class="project-label">Title</text
-					><text-box id="config-window-title" />
+					><TextBox id="config-window-title" />
 					<text class="project-label">Width</text
-					><number-box id="config-window-width" min="240" max="7680" unit="px" />
+					><NumberBox id="config-window-width" min="240" max="7680" unit="px" />
 					<text class="project-label">Height</text
-					><number-box id="config-window-height" min="240" max="7680" unit="px" />
+					><NumberBox id="config-window-height" min="240" max="7680" unit="px" />
 					<text class="project-label">Display</text
-					><select-box id="config-window-display" />
+					><SelectBox id="config-window-display" />
 					<text id="config-resolution-summary" class="project-summary"
 						>Virtual Resolution</text
 					>
 					<text class="project-label">Width</text
-					><number-box
+					><NumberBox
 						id="config-resolution-width"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
 					<text class="project-label">Height</text
-					><number-box
+					><NumberBox
 						id="config-resolution-height"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
 					<text class="project-label">Scene Scale</text
-					><number-box
+					><NumberBox
 						id="config-resolution-sceneScale"
 						min="0.5"
 						max="8"
 						decimals="10"
 					/>
 					<text class="project-label">UI Scale</text
-					><number-box
+					><NumberBox
 						id="config-resolution-uiScale"
 						min="0.5"
 						max="4"
@@ -46,9 +46,9 @@
 					/>
 					<text id="config-scene-summary" class="project-summary">Scene</text>
 					<text class="project-label">Padding</text
-					><number-box id="config-scene-padding" min="0" max="7680" unit="px" />
+					><NumberBox id="config-scene-padding" min="0" max="7680" unit="px" />
 					<text class="project-label">Tile Animation Interval</text
-					><number-box
+					><NumberBox
 						id="config-scene-animationInterval"
 						min="0"
 						max="1000"
@@ -58,28 +58,28 @@
 						>Tile Rendering Area</text
 					>
 					<text class="project-label">Expansion Top</text
-					><number-box
+					><NumberBox
 						id="config-tileArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Left</text
-					><number-box
+					><NumberBox
 						id="config-tileArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Right</text
-					><number-box
+					><NumberBox
 						id="config-tileArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Bottom</text
-					><number-box
+					><NumberBox
 						id="config-tileArea-expansionBottom"
 						min="0"
 						max="400"
@@ -89,28 +89,28 @@
 						>Animation Rendering Area</text
 					>
 					<text class="project-label">Expansion Top</text
-					><number-box
+					><NumberBox
 						id="config-animationArea-expansionTop"
 						min="0"
 						max="800"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Left</text
-					><number-box
+					><NumberBox
 						id="config-animationArea-expansionLeft"
 						min="0"
 						max="800"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Right</text
-					><number-box
+					><NumberBox
 						id="config-animationArea-expansionRight"
 						min="0"
 						max="800"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Bottom</text
-					><number-box
+					><NumberBox
 						id="config-animationArea-expansionBottom"
 						min="0"
 						max="800"
@@ -120,28 +120,28 @@
 						>Light Rendering Area</text
 					>
 					<text class="project-label">Expansion Top</text
-					><number-box
+					><NumberBox
 						id="config-lightArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Left</text
-					><number-box
+					><NumberBox
 						id="config-lightArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Right</text
-					><number-box
+					><NumberBox
 						id="config-lightArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
 					<text class="project-label">Expansion Bottom</text
-					><number-box
+					><NumberBox
 						id="config-lightArea-expansionBottom"
 						min="0"
 						max="400"
@@ -158,11 +158,11 @@
 					><KeyboardBox id="config-virtualAxis-right" />
 					<text id="config-collision-summary" class="project-summary">Collision System</text>
 					<text class="project-label">Actor Collision</text
-					><select-box id="config-collision-actor-enabled" />
+					><SelectBox id="config-collision-actor-enabled" />
 					<text class="project-label">Scene Collision</text
-					><select-box id="config-collision-scene-enabled" />
+					><SelectBox id="config-collision-scene-enabled" />
 					<text class="project-label">Scene Collision Size</text
-					><number-box
+					><NumberBox
 						id="config-collision-scene-actorSize"
 						min="0.5"
 						max="1"
@@ -171,20 +171,20 @@
 						unit="tile"
 					/>
 					<text class="project-label">Trigger Collision Mode</text
-					><select-box id="config-collision-trigger-collideWithActorShape" />
+					><SelectBox id="config-collision-trigger-collideWithActorShape" />
 					<text id="config-text-summary" class="project-summary">Text</text>
 					<text class="project-label">Imported Fonts</text
-					><param-list id="config-text-importedFonts" flexible />
+					><ParamList id="config-text-importedFonts" flexible />
 					<text class="project-label">Default Font Family</text
-					><text-box id="config-text-fontFamily" />
+					><TextBox id="config-text-fontFamily" />
 					<text class="project-label">High Definition</text
-					><select-box id="config-text-highDefinition" />
+					><SelectBox id="config-text-highDefinition" />
 					<text id="config-actor-summary" class="project-summary">Actor</text>
 					<text class="project-label">Temporary Attributes</text
-					><param-list id="config-actor-tempAttributes" group="actor" flexible />
+					><ParamList id="config-actor-tempAttributes" group="actor" flexible />
 					<text id="config-animation-summary" class="project-summary">Animation</text>
 					<text class="project-label">Frame Rate</text
-					><number-box
+					><NumberBox
 						id="config-animation-frameRate"
 						min="1"
 						max="240"
@@ -194,39 +194,39 @@
 						>Sound Attenuation</text
 					>
 					<text class="project-label">Attenuation Distance</text
-					><number-box
+					><NumberBox
 						id="config-soundAttenuation-distance"
 						min="0"
 						max="100"
 						unit="tile"
 					/>
 					<text class="project-label">Attenuation Easing</text
-					><select-box id="config-soundAttenuation-easingId" />
+					><SelectBox id="config-soundAttenuation-easingId" />
 					<text id="config-webgl-summary" class="project-summary">WebGL</text>
 					<text class="project-label">Low Latency Mode</text
-					><select-box id="config-webgl-desynchronized" />
+					><SelectBox id="config-webgl-desynchronized" />
 					<text class="project-label">Texture Mag Filter</text
-					><select-box id="config-webgl-textureMagFilter" />
+					><SelectBox id="config-webgl-textureMagFilter" />
 					<text class="project-label">Texture Min Filter</text
-					><select-box id="config-webgl-textureMinFilter" />
+					><SelectBox id="config-webgl-textureMinFilter" />
 					<text id="config-script-summary" class="project-summary">Script</text>
 					<text class="project-label">Auto Compile</text
-					><select-box id="config-script-autoCompile" />
+					><SelectBox id="config-script-autoCompile" />
 					<text id="config-save-summary" class="project-summary">Save</text>
 					<text class="project-label">Save Location</text
-					><select-box id="config-save-location" />
+					><SelectBox id="config-save-location" />
 					<text class="project-label">Subdirectory</text
-					><text-box id="config-save-subdir" />
+					><TextBox id="config-save-subdir" />
 					<text id="config-localization-summary" class="project-summary">Localization</text>
 					<text class="project-label">Languages</text
-					><param-list id="config-localization-languages" flexible />
+					><ParamList id="config-localization-languages" flexible />
 					<text class="project-label">Default Game Language</text
-					><select-box id="config-localization-default" />
+					><SelectBox id="config-localization-default" />
 					<text id="config-other-summary" class="project-summary">Other Options</text>
 					<text class="project-label">Preload Files</text
-					><select-box id="config-preload" />
+					><SelectBox id="config-preload" />
 					<text class="project-label">dead Zone</text
-					><number-box
+					><NumberBox
 						id="config-deadzone"
 						min="0"
 						max="1"
@@ -248,6 +248,10 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

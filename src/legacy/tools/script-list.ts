@@ -34,11 +34,11 @@ export class ScriptListInterface implements IScriptListInterface {
 			this.history = new Inspector.ParamHistory(editor, owner, list);
 		}
 
-		list.on('pointerdown', ScriptListInterface.listPointerdown);
-		list.on('dragenter', ScriptListInterface.listDragenter);
-		list.on('dragleave', ScriptListInterface.listDragleave);
-		list.on('dragover', ScriptListInterface.listDragover);
-		list.on('drop', ScriptListInterface.listDrop);
+		list.addEventListener('pointerdown', ScriptListInterface.listPointerdown);
+		list.addEventListener('dragenter', ScriptListInterface.listDragenter);
+		list.addEventListener('dragleave', ScriptListInterface.listDragleave);
+		list.addEventListener('dragover', ScriptListInterface.listDragover);
+		list.addEventListener('drop', ScriptListInterface.listDrop);
 	}
 
 	parse(script: any): any {
@@ -111,7 +111,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			if (event.button === 0 && event.target.tagName === 'BOX') {
 				element = event.target;
 				// 自动过滤重复侦听器，无需额外检查
-				window.on('pointerup', pointerup, once);
+				window.addEventListener('pointerup', pointerup, once);
 			}
 		};
 	})();

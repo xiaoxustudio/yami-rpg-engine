@@ -3,8 +3,8 @@
 	<TitleBar>Change Actor State<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="changeActorState-actor" type="actor" /><text>Operation</text><select-box id="changeActorState-operation" /><text>State</text
-			><custom-box id="changeActorState-stateId" type="file" filter="state" /><text>State</text><custom-box id="changeActorState-state" type="state" /></grid-box>
+			<text>Actor</text><CustomBox id="changeActorState-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorState-operation" /><text>State</text
+			><CustomBox id="changeActorState-stateId" type="file" filter="state" /><text>State</text><CustomBox id="changeActorState-state" type="state" /></grid-box>
 		<button id="changeActorState-confirm" name="confirm">Confirm</button>
 		<button id="changeActorState-cancel" name="cancel">Cancel</button>
 	</content-frame>
@@ -17,6 +17,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

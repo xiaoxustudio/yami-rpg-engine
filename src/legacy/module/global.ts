@@ -410,7 +410,7 @@ UpdateLog.internalItems = [];
 UpdateLog.communityItems = [];
 
 export const UpdateLogInitializeOrigin = UpdateLog.initialize;
-window.on('localize', () => {
+window.addEventListener('localize', () => {
 	const tabInternal = $('#update-log-tab-internal');
 	const tabCommunity = $('#update-log-tab-community');
 	const tabDonation = $('#update-log-tab-donation');

@@ -11,19 +11,19 @@ import {
 	show,
 	write
 } from '@/util/element-utils.ts';
-import { CheckBox } from './check-box.ts';
-import { ColorBox } from './color-box.ts';
+import { createCheckBox } from './check-box.ts';
+import { createColorBox } from './color-box.ts';
 import { createKeyboardBox } from './keyboard-box.ts';
 import { ParamList } from './param-list.ts';
 import { TypeRegistry } from './type-registry.ts';
-import { CustomBox } from './custom-box.ts';
+import { createCustomBox } from './custom-box.ts';
 import { createDetailBox } from './detail-box.ts';
 import { createDetailSummary } from './detail-summary.ts';
-import { NumberBox } from './number-box.ts';
-import { NumberVar } from './number-var.ts';
+import { createNumberBox } from './number-box.ts';
+import { createNumberVar } from './number-var.ts';
 import { SelectBox } from './select-box.ts';
 import { Select } from './select-list.ts';
-import { TextBox } from './text-box.ts';
+import { createTextBox } from './text-box.ts';
 import { TreeList } from './tree-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
@@ -71,8 +71,8 @@ export class ParameterPane extends HTMLElement {
 		this.windowLocalize = ParameterPane.windowLocalize.bind(this);
 		this.scriptChange = ParameterPane.scriptChange.bind(this);
 
-		window.on('localize', this.windowLocalize);
-		this.on('change', this.componentChange);
+		window.addEventListener('localize', this.windowLocalize);
+		this.addEventListener('change', this.componentChange);
 	}
 
 	bind(scriptList: HTMLElement): void {
@@ -282,7 +282,7 @@ export class ParameterPane extends HTMLElement {
 			dispatchUpdateEvent(this);
 		}
 		this.onResize?.();
-		window.on('script-change', this.scriptChange);
+		window.addEventListener('script-change', this.scriptChange);
 	}
 
 	appendHeadPad(): void {
@@ -410,7 +410,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'check-box';
 		const label = document.createElement('text');
-		const input = new CheckBox(true);
+		const input = createCheckBox(true);
 		(input as any).inputEventEnabled = true;
 		addClass(input, 'standard');
 		addClass(input, 'large');
@@ -424,7 +424,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'number-box';
 		const label = document.createElement('text');
-		const input = new NumberBox();
+		const input = createNumberBox();
 		return { tag, label, input };
 	}
 
@@ -435,7 +435,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'number-var';
 		const label = document.createElement('text');
-		const input = new NumberVar();
+		const input = createNumberVar();
 		return { tag, label, input };
 	}
 
@@ -446,11 +446,11 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'text-box';
 		const label = document.createElement('text');
-		const input = new TextBox();
-		(input as any).on('keydown', (Selection as any).inputKeydown);
-		(input as any).on('keyup', (Selection as any).inputKeyup);
-		(input as any).on('pointerdown', (Selection as any).inputPointerdown);
-		(input as any).on('pointerup', (Selection as any).inputPointerup);
+		const input = createTextBox();
+		input.addEventListener('keydown', (Selection as any).inputKeydown);
+		input.addEventListener('keyup', (Selection as any).inputKeyup);
+		input.addEventListener('pointerdown', (Selection as any).inputPointerdown);
+		input.addEventListener('pointerup', (Selection as any).inputPointerup);
 		return { tag, label, input };
 	}
 
@@ -483,7 +483,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'color-box';
 		const label = document.createElement('text');
-		const input = new ColorBox();
+		const input = createColorBox();
 		return { tag, label, input };
 	}
 
@@ -494,7 +494,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'custom-box';
 		const label = document.createElement('text');
-		const input = new CustomBox();
+		const input = createCustomBox();
 		return { tag, label, input };
 	}
 
@@ -684,7 +684,7 @@ export class ParameterPane extends HTMLElement {
 			this.textContent = '';
 		}
 		if (!(this.scriptList as any)?.data) {
-			window.off('script-change', this.scriptChange);
+			window.removeEventListener('script-change', this.scriptChange);
 		}
 	}
 
@@ -704,7 +704,7 @@ export class ParameterPane extends HTMLElement {
 		if (element.tagName === 'INPUT') {
 			element = element.parentNode as HTMLElement;
 		}
-		if (element.parentNode instanceof NumberVar) {
+		if ((element.parentNode as HTMLElement | null)?.classList?.contains('number-var')) {
 			element = element.parentNode as HTMLElement;
 		}
 		const { parameters, key } = element as any;

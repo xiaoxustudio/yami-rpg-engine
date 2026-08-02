@@ -9,172 +9,161 @@ import {
 	dispatchChangeEvent
 } from '@/util/element-utils.ts';
 
-export class CheckBox extends HTMLElement {
-	dataValue = false;
-	relations: HTMLElement[] = [];
-	writeEventEnabled = false;
-	inputEventEnabled = false;
-	_initialized: boolean;
-	_standardMark: HTMLElement;
-	_isStandard: boolean;
-	_listenersAttached: boolean;
+interface CheckBoxElement extends HTMLElement {
+	dataValue: boolean;
+	relations: HTMLElement[];
+	read(): boolean;
+	write(value: boolean): void;
+	input(value: boolean): void;
+	enable(): void;
+	disable(): void;
+	relate(elements: HTMLElement[]): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+	keydown: (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }) => void;
+	pointerdown: (event: PointerEvent) => void;
+	mouseclick: (event: Event) => void;
+}
 
-	constructor(standard?: boolean) {
-		super();
+export function attachCheckBoxApi(el: HTMLElement, standard?: boolean): void {
+	const box = el as CheckBoxElement;
+	let dataValue = false;
+	let relations: HTMLElement[] = [];
+	let writeEventEnabled = false;
+	let inputEventEnabled = false;
 
-		this.dataValue = false;
-		this.relations = [];
-		this.writeEventEnabled = false;
-		this.inputEventEnabled = false;
-		this._initialized = false;
-		this._listenersAttached = false;
-		this._isStandard = standard ?? false;
-
-		on(this, 'keydown', this.keydown);
-
-		if (standard !== undefined) {
-			this._setupListeners(standard);
-		}
-	}
-
-	_setupListeners(standard: boolean): void {
-		if (this._listenersAttached) return;
-		this._listenersAttached = true;
-		switch (standard) {
-			case true: {
-				this._standardMark = document.createElement('check-mark');
-				on(this, 'click', this.mouseclick);
-				this._isStandard = true;
-				break;
-			}
-			case false:
-				on(this, 'pointerdown', this.pointerdown);
-				this._isStandard = false;
-				break;
-		}
-	}
-
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		if (!this._listenersAttached) {
-			this._setupListeners(hasClass(this, 'standard'));
-		}
-		if (this._isStandard) {
-			this.tabIndex = 0;
-			this.insertBefore(this._standardMark, this.childNodes[0]);
-		}
-	}
-
-	read(): boolean {
-		return this.dataValue;
-	}
-
-	write(value: boolean): void {
-		this.dataValue = !!value;
-		this.dataValue ? addClass(this, 'selected') : removeClass(this, 'selected');
-		if (!hasClass(this, 'disabled')) {
-			this.toggleRelatedElements();
-		}
-		if (this.writeEventEnabled) {
-			const write = new Event('write');
-			write.value = this.dataValue;
-			this.dispatchEvent(write);
-		}
-	}
-
-	input(value: boolean): void {
-		if (this.dataValue !== value) {
-			this.write(value);
-			if (this.inputEventEnabled) {
-				const input = new Event('input', {
-					bubbles: true
-				});
-				input.value = this.dataValue;
-				this.dispatchEvent(input);
-			}
-			dispatchChangeEvent(this);
-		}
-	}
-
-	enable(): void {
-		if (removeClass(this, 'disabled')) {
-			this.toggleRelatedElements();
-		}
-	}
-
-	disable(): void {
-		if (addClass(this, 'disabled')) {
-			this.toggleRelatedElements();
-		}
-	}
-
-	relate(elements: HTMLElement[]): void {
-		this.relations = elements;
-	}
-
-	toggleRelatedElements(): void {
-		if (!hasClass(this, 'disabled') && this.dataValue) {
-			for (const element of this.relations) {
-				if (typeof element.enable === 'function') {
-					element.enable();
+	const toggleRelatedElements = (): void => {
+		if (!hasClass(box, 'disabled') && dataValue) {
+			for (const element of relations) {
+				if (typeof (element as any).enable === 'function') {
+					(element as any).enable();
 				} else {
 					enable(element);
 				}
 			}
 		} else {
-			for (const element of this.relations) {
-				if (typeof element.disable === 'function') {
-					element.disable();
+			for (const element of relations) {
+				if (typeof (element as any).disable === 'function') {
+					(element as any).disable();
 				} else {
 					disable(element);
 				}
 			}
 		}
-	}
+	};
 
-	on(
+	box.dataValue = dataValue;
+	box.relations = relations;
+
+	box.write = function (value: boolean): void {
+		dataValue = !!value;
+		box.dataValue = dataValue;
+		dataValue ? addClass(box, 'selected') : removeClass(box, 'selected');
+		if (!hasClass(box, 'disabled')) {
+			toggleRelatedElements();
+		}
+		if (writeEventEnabled) {
+			const writeEvent = new Event('write');
+			writeEvent.value = dataValue;
+			box.dispatchEvent(writeEvent);
+		}
+	};
+
+	box.read = function (): boolean {
+		return dataValue;
+	};
+
+	box.input = function (value: boolean): void {
+		if (dataValue !== value) {
+			box.write(value);
+			if (inputEventEnabled) {
+				const inputEvent = new Event('input', {
+					bubbles: true
+				});
+				inputEvent.value = dataValue;
+				box.dispatchEvent(inputEvent);
+			}
+			dispatchChangeEvent(box);
+		}
+	};
+
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			toggleRelatedElements();
+		}
+	};
+
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			toggleRelatedElements();
+		}
+	};
+
+	box.relate = function (elements: HTMLElement[]): void {
+		relations = elements;
+		box.relations = relations;
+	};
+
+	box.on = function (
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		HTMLElement.prototype.on.call(this as any, type, listener, options);
+		box.addEventListener(type, listener as EventListener, options);
 		switch (type) {
 			case 'write':
-				this.writeEventEnabled = true;
+				writeEventEnabled = true;
 				break;
 			case 'input':
-				this.inputEventEnabled = true;
+				inputEventEnabled = true;
 				break;
 		}
-	}
+	};
 
-	keydown(event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
+	box.keydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!event.cmdOrCtrlKey && !hasClass(this, 'disabled')) {
+				if (!event.cmdOrCtrlKey && !hasClass(box, 'disabled')) {
 					event.stopPropagation();
-					this.mouseclick(event);
+					box.mouseclick(event);
 				}
 				break;
 		}
-	}
+	};
 
-	pointerdown(event: PointerEvent): void {
+	box.pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (document.activeElement !== document.body) {
 					document.activeElement.blur();
 				}
-				this.input(!read(this));
+				box.input(!read(box));
 				break;
 		}
-	}
+	};
 
-	mouseclick(event: Event): void {
-		this.input(!read(this));
+	box.mouseclick = function (event: Event): void {
+		box.input(!read(box));
+	};
+
+	on(box, 'keydown', box.keydown);
+	if (standard ?? hasClass(box, 'standard')) {
+		const standardMark = document.createElement('check-mark');
+		box.tabIndex = 0;
+		box.insertBefore(standardMark, box.childNodes[0] || null);
+		on(box, 'click', box.mouseclick);
+	} else {
+		on(box, 'pointerdown', box.pointerdown);
 	}
 }
 
-customElements.define('check-box', CheckBox as any);
+export function createCheckBox(standard?: boolean): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'check-box';
+	attachCheckBoxApi(el, standard);
+	return el;
+}

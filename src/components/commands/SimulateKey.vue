@@ -3,7 +3,7 @@
 		<TitleBar>Simulate Key<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Operation</text><select-box id="simulateKey-operation" />
+				<text>Operation</text><SelectBox id="simulateKey-operation" />
 				<text>Key Code</text><KeyboardBox id="simulateKey-keycode" />
 			</grid-box>
 			<button id="simulateKey-confirm" name="confirm">Confirm</button>
@@ -19,6 +19,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

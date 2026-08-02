@@ -4,9 +4,9 @@
 		<content-frame>
 			<grid-box>
 				<text>Parent Element</text
-				><custom-box id="nestElement-parent" type="element" />
+				><CustomBox id="nestElement-parent" type="element" />
 				<text>Child Element</text
-				><custom-box id="nestElement-child" type="element" />
+				><CustomBox id="nestElement-child" type="element" />
 			</grid-box>
 			<button id="nestElement-confirm" name="confirm">Confirm</button>
 			<button id="nestElement-cancel" name="cancel">Cancel</button>
@@ -20,6 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

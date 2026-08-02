@@ -157,9 +157,9 @@ PluginManager.open = function () {
 
 	getFocus(this.list);
 
-	window.on('keydown', this.keydown);
-	window.on('pointerdown', this.pointerdown);
-	window.on('script-change', this.scriptChange);
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('pointerdown', this.pointerdown);
+	window.addEventListener('script-change', this.scriptChange);
 };
 
 PluginManager.load = async function (item) {
@@ -1596,9 +1596,9 @@ PluginManager.windowClosed = function (event) {
 	this.list.saveSelection();
 	this.data = null;
 	clear(this.list);
-	window.off('keydown', this.keydown);
-	window.off('pointerdown', this.pointerdown);
-	window.off('script-change', this.scriptChange);
+	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('pointerdown', this.pointerdown);
+	window.removeEventListener('script-change', this.scriptChange);
 }.bind(PluginManager);
 
 PluginManager.keydown = function (event) {
@@ -1758,7 +1758,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 	return function (event) {
 		switch (event.button) {
 			case 2:
-				window.on('pointerup', pointerup, once);
+				window.addEventListener('pointerup', pointerup, once);
 				break;
 		}
 	};

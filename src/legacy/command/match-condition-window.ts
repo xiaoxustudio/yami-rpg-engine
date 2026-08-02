@@ -107,7 +107,7 @@ SwitchCondition.initialize = function (): void {
 		{ name: 'Forward Button', value: 4 }
 	]);
 
-	($('#switch-condition-confirm') as HTMLElement).on('click', this.confirm!);
+	($('#switch-condition-confirm') as HTMLElement).addEventListener('click', this.confirm!);
 };
 
 SwitchCondition.parse = function (condition: SwitchConditionData, listData?: boolean): string {

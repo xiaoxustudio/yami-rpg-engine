@@ -1,24 +1,26 @@
 <template>
-	<number-box ref="root" :id="props.id" />
+	<div class="number-box" ref="root" :id="props.id">
+		<slot />
+		<input ref="inputEl" class="number-box-input" type="number" />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import {
-  read as readElement,
-  write as writeElement,
-  enable as enableElement,
-  disable as disableElement,
-  getFocus as getFocusElement
+	on as onElement,
+	addClass,
+	removeClass,
+	hideChildNodes,
+	showChildNodes,
+	getFocus as getFocusElement
 } from '@/util/element-utils';
+import { NumberHistory } from '@/components/number-history';
+import { measureText } from '@/util/dom';
 
 interface NumberBoxElement extends HTMLElement {
 	input: HTMLInputElement;
 	decimals: number;
-	focusEventEnabled: boolean;
-	blurEventEnabled: boolean;
-	_unit: string | null;
-	_attrSource: HTMLElement | null;
 	read(): number;
 	write(value: any): void;
 	enable(): void;
@@ -37,7 +39,7 @@ interface Props {
 	min?: number | string;
 	max?: number | string;
 	step?: number | string;
-	decimals?: number;
+	decimals?: number | string;
 	unit?: string;
 	disabled?: boolean;
 }
@@ -60,40 +62,169 @@ const emit = defineEmits<{
 }>();
 
 const root = ref<NumberBoxElement | null>(null);
+const inputEl = ref<HTMLInputElement | null>(null);
 
-const read = (): number => (root.value ? readElement(root.value) : undefined) ?? 0;
-const write = (value: any): void => { if (root.value) writeElement(root.value, value); };
-const enable = (): void => { if (root.value) enableElement(root.value); };
-const disable = (): void => { if (root.value) disableElement(root.value); };
-const getFocus = (mode: any): void => { if (root.value) getFocusElement(root.value, mode); };
+const state = {
+	focusEventEnabled: false,
+	blurEventEnabled: false
+};
+
+const whiteList = [
+	'Digit0',
+	'Digit1',
+	'Digit2',
+	'Digit3',
+	'Digit4',
+	'Digit5',
+	'Digit6',
+	'Digit7',
+	'Digit8',
+	'Digit9',
+	'Minus',
+	'Period',
+	'Numpad0',
+	'Numpad1',
+	'Numpad2',
+	'Numpad3',
+	'Numpad4',
+	'Numpad5',
+	'Numpad6',
+	'Numpad7',
+	'Numpad8',
+	'Numpad9',
+	'NumpadSubtract',
+	'NumpadDecimal',
+	'Backspace',
+	'Delete',
+	'Tab',
+	'Enter',
+	'ArrowLeft',
+	'ArrowUp',
+	'ArrowRight',
+	'ArrowDown',
+	'Home',
+	'End',
+	'NumpadEnter'
+];
+
+const inputKeydown = (event: any): void => {
+	!whiteList.includes(event.code) && !event.cmdOrCtrlKey && event.preventDefault();
+};
+
+const read = (): number => {
+	const el = inputEl.value;
+	if (!el) return 0;
+	const min = parseFloat(el.min);
+	const max = parseFloat(el.max);
+	let value = parseFloat(el.value) || 0;
+	value = Math.clamp(value, min, max);
+	value = Math.roundTo(value, Number(props.decimals));
+	return value;
+};
+
+const write = (value: any): void => {
+	const el = inputEl.value;
+	if (!el) return;
+	el.value = String(value);
+	el.value = String(read());
+	el.history.reset();
+};
+
+const enable = (): void => {
+	if (removeClass(root.value, 'disabled')) {
+		showChildNodes(root.value);
+	}
+};
+
+const disable = (): void => {
+	if (addClass(root.value, 'disabled')) {
+		hideChildNodes(root.value);
+	}
+};
+
+const getFocus = (mode: any): void => {
+	getFocusElement(inputEl.value, mode);
+};
+
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.on(type, listener, options);
+	const el = root.value;
+	if (!el) return;
+	el.addEventListener(type, listener as EventListener, options);
+	switch (type) {
+		case 'focus':
+			if (!state.focusEventEnabled) {
+				state.focusEventEnabled = true;
+				onElement(inputEl.value, 'focus', () => {
+					el.dispatchEvent(new FocusEvent('focus'));
+				});
+			}
+			break;
+		case 'blur':
+			if (!state.blurEventEnabled) {
+				state.blurEventEnabled = true;
+				onElement(inputEl.value, 'blur', () => {
+					el.dispatchEvent(new FocusEvent('blur'));
+				});
+			}
+			break;
+	}
 };
 
-defineExpose({ read, write, enable, disable, getFocus, on, root });
+defineExpose({ read, write, enable, disable, getFocus, on, input: inputEl, root });
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
 onMounted(() => {
 	const el = root.value;
-	if (!el) return;
-	el.setAttribute('min', String(props.min));
-	el.setAttribute('max', String(props.max));
-	el.setAttribute('step', String(props.step));
-	el.setAttribute('decimals', String(props.decimals));
-	if (props.unit !== null) el.setAttribute('unit', props.unit);
-	el.input.on('change', () => {
-		emit('update:modelValue', readElement(el));
-		emit('change', readElement(el));
+	const input = inputEl.value;
+	if (!el || !input) return;
+	input.min = String(props.min);
+	input.max = String(props.max);
+	input.step = String(props.step);
+	input.title = '';
+	input.history = new NumberHistory(input);
+	onElement(input, 'keydown', inputKeydown);
+	onElement(input, 'change', () => {
+		input.value = String(read());
+		const val = read();
+		emit('update:modelValue', val);
+		emit('change', val);
 	});
-	el.on('focus', (e: any) => emit('focus', e));
-	el.on('blur', (e: any) => emit('blur', e));
-	writeElement(el, props.modelValue);
-	if (props.disabled) disableElement(el);
+	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
+	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
+	if (el.childNodes.length > 1) {
+		const labelNode = Array.from(el.childNodes).find(
+			(n: any) => n.nodeType === Node.ELEMENT_NODE || (n.textContent ?? '').trim() !== ''
+		);
+		const label = labelNode ? String(labelNode.textContent ?? '').trim() : '';
+		if (label) {
+			const font = 'var(--font-family-mono)';
+			const padding = measureText(label, font).width + 8;
+			input.style.paddingLeft = `${padding}px`;
+		}
+	}
+	if (props.unit !== null) {
+		const unitText = document.createElement('text');
+		const font = 'var(--font-family-mono)';
+		const padding = measureText(props.unit, font).width + 8;
+		addClass(unitText, 'unit');
+		unitText.textContent = props.unit;
+		el.insertBefore(unitText, input);
+		input.style.paddingRight = `${padding}px`;
+	}
+	el.input = input;
+	el.read = read;
+	el.write = write;
+	el.enable = enable;
+	el.disable = disable;
+	el.getFocus = getFocus;
+	el.on = on;
+	write(props.modelValue);
+	if (props.disabled) disable();
 });
 </script>

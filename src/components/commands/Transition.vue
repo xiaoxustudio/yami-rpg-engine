@@ -4,24 +4,24 @@
 	<content-frame>
 		<grid-box>
 			<text>Write to Variable</text
-			><custom-box id="transition-variable" type="variable" filter="number" />
+			><CustomBox id="transition-variable" type="variable" filter="number" />
 			<text>Start Value</text
-			><number-var
+			><NumberVar
 				id="transition-start"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			 />
 			<text>End Value</text
-			><number-var
+			><NumberVar
 				id="transition-end"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			 />
-			<text>Easing</text><select-box id="transition-easingId" name="easing" />
+			<text>Easing</text><SelectBox id="transition-easingId" name="easing" />
 			<text>Duration</text
-			><number-var
+			><NumberVar
 				id="transition-duration"
 				name="duration"
 				min="0"
@@ -41,6 +41,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

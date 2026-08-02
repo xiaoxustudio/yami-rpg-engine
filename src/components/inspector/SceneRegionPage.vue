@@ -2,64 +2,64 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneRegion-general-grid">
-			<text>{{ local.getLabel('sceneRegion-name') || 'Name' }}</text><text-box id="sceneRegion-name"></text-box>
-			<text>{{ local.getLabel('sceneRegion-color') || 'Color' }}</text><color-box id="sceneRegion-color"></color-box>
+			<text>{{ local.getLabel('sceneRegion-name') || 'Name' }}</text><TextBox id="sceneRegion-name"></TextBox>
+			<text>{{ local.getLabel('sceneRegion-color') || 'Color' }}</text><ColorBox id="sceneRegion-color"></ColorBox>
 			<text>{{ local.getLabel('sceneRegion-x') || 'X' }}</text
-			><number-box
+			><NumberBox
 				id="sceneRegion-x"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneRegion-y') || 'Y' }}</text
-			><number-box
+			><NumberBox
 				id="sceneRegion-y"
 				min="-128"
 				max="640"
 				step="0.1"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneRegion-width') || 'Width' }}</text
-			><number-box
+			><NumberBox
 				id="sceneRegion-width"
 				min="0"
 				max="512"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('sceneRegion-height') || 'Height' }}</text
-			><number-box
+			><NumberBox
 				id="sceneRegion-height"
 				min="0"
 				max="512"
 				decimals="4"
-			></number-box>
+			></NumberBox>
 		</detail-grid>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-conditions') || 'Conditions' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneRegion-conditions"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-events') || 'Events' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneRegion-events"
 			class="inspector-list"
 			filter="region"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-scripts') || 'Scripts' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="sceneRegion-scripts"
 			class="inspector-list"
 			flexible
-		></param-list>
+		></ParamList>
 	</DetailBox>
 	<parameter-pane id="sceneRegion-parameter-pane"></parameter-pane>
 </template>
@@ -70,6 +70,10 @@ import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import ColorBox from '@app/components/common/ColorBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

@@ -7,17 +7,17 @@
 		<content-frame>
 			<field-set id="event-open-fieldset" class="input pad">
 				<legend>Event</legend>
-				<node-list id="event-open-list" />
+				<TreeList id="event-open-list" />
 			</field-set>
 			<field-set id="event-commands-fieldset" class="input pad">
 				<legend>Content</legend>
 				<box id="event-commands-gutter-background" />
-				<command-list id="event-commands" />
+				<CommandList id="event-commands" />
 				<box id="event-commands-gutter-outer">
 					<box id="event-commands-gutter-inner" />
 				</box>
 			</field-set>
-			<select-box id="event-type" />
+			<SelectBox id="event-type" />
 			<button id="event-confirm" name="confirm">Confirm</button>
 			<button id="event-cancel" name="cancel">Cancel</button>
 			<button id="event-apply" name="apply">Apply</button>
@@ -31,6 +31,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CommandList from '@app/components/common/CommandList.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

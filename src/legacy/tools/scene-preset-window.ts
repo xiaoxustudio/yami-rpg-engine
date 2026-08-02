@@ -47,8 +47,8 @@ PresetObject.initialize = function () {
 	this.searcher.on('keydown', this.searcherKeydown);
 	this.searcher.on('input', this.searcherInput);
 	this.searcher.on('compositionend', this.searcherInput);
-	$('#presetObject').on('closed', this.windowClosed);
-	$('#presetObject-confirm').on('click', this.confirm);
+	$('#presetObject').addEventListener('closed', this.windowClosed);
+	$('#presetObject-confirm').addEventListener('click', this.confirm);
 };
 
 PresetObject.open = function (target) {

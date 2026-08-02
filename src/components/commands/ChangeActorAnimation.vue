@@ -3,8 +3,8 @@
 	<TitleBar>Change Actor Animation<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Actor</text><custom-box id="changeActorAnimation-actor" type="actor" /><text>Animation</text
-			><custom-box
+			<text>Actor</text><CustomBox id="changeActorAnimation-actor" type="actor" /><text>Animation</text
+			><CustomBox
 				id="changeActorAnimation-animationId"
 				type="file"
 				filter="animation"
@@ -21,6 +21,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
+import CustomBox from '@app/components/common/CustomBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

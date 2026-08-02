@@ -3,11 +3,11 @@
 		<TitleBar>New Project<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Template</text><select-box id="newProject-template" />
-				<text>Folder</text><text-box id="newProject-folder" />
+				<text>Template</text><SelectBox id="newProject-template" />
+				<text>Folder</text><TextBox id="newProject-folder" />
 				<text>Location</text>
 				<flex-box id="newProject-location-box">
-					<text-box id="newProject-location" />
+					<TextBox id="newProject-location" />
 					<button id="newProject-choose">…</button>
 				</flex-box>
 			</grid-box>
@@ -24,6 +24,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

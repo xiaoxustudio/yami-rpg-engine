@@ -3,8 +3,8 @@
 	<TitleBar>Show Choices<close /></TitleBar>
 	<content-frame>
 		<grid-box>
-			<text>Choices</text><param-list id="showChoices-choices" />
-			<text>Parameters</text><text-box id="showChoices-parameters" />
+			<text>Choices</text><ParamList id="showChoices-choices" />
+			<text>Parameters</text><TextBox id="showChoices-parameters" />
 		</grid-box>
 		<button id="showChoices-confirm" name="confirm">Confirm</button>
 		<button id="showChoices-cancel" name="cancel">Cancel</button>
@@ -18,6 +18,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

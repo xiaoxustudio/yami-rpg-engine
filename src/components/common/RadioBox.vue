@@ -1,41 +1,34 @@
 <template>
-	<radio-box ref="root" :id="props.id" :name="props.name" :value="props.value" />
+	<div
+		class="radio-box"
+		ref="root"
+		:id="props.id"
+		:name="props.name"
+		:class="props.standard ? 'standard' : ''"
+	>
+		<slot />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+import { on as onElement, hasClass } from '@/util/element-utils';
 import {
-  read as readElement,
-  write as writeElement,
-  enable as enableElement,
-  disable as disableElement,
-  addClass
-} from '@/util/element-utils';
+	createRadioProxy,
+	radioProxyMap,
+	type RadioProxyElement,
+	type RadioRelationEntry
+} from '@/components/radio-proxy';
 
-interface RadioProxyElement extends HTMLElement {
-	dataValue: any;
+interface RadioBoxElement extends HTMLElement {
+	proxy: RadioProxyElement;
+	dataValue: number | string | boolean;
 	read(): any;
 	write(value: any): void;
 	input(value: any): void;
 	enable(): void;
 	disable(): void;
-	relate(entries: any[]): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-	cancelable: boolean;
-}
-
-interface RadioBoxElement extends HTMLElement {
-	proxy: RadioProxyElement;
-	dataValue: number | string | boolean;
-	_mark: HTMLElement | null;
-	_isNewProxy: boolean;
-	_isStandard: boolean;
-	pointerdown: (event: PointerEvent) => void;
-	mouseclick: (event: Event) => void;
+	relate(entries: RadioRelationEntry[]): void;
 	on(
 		type: string,
 		listener: (event: any) => void,
@@ -64,43 +57,138 @@ const emit = defineEmits<{
 
 const root = ref<RadioBoxElement | null>(null);
 
-const ensureStandard = (el: RadioBoxElement): void => {
-	if (!props.standard || el._isStandard) return;
-	el._isStandard = true;
-	el._mark = document.createElement('radio-mark');
-	el.tabIndex = 0;
-	el.insertBefore(el._mark, el.childNodes[0] || null);
-	el.removeEventListener('pointerdown', el.pointerdown);
-	el.addEventListener('click', el.mouseclick);
+const state = reactive({
+	proxy: null as RadioProxyElement | null,
+	dataValue: '' as number | string | boolean,
+	mark: null as HTMLElement | null
+});
+
+const keydown = (event: KeyboardEvent): void => {
+	const el = root.value;
+	if (!el) return;
+	switch (event.code) {
+		case 'Enter':
+		case 'NumpadEnter':
+			if (!event.cmdOrCtrlKey && !hasClass(el, 'disabled')) {
+				event.stopPropagation();
+				mouseclick(event);
+			}
+			break;
+	}
 };
 
-const read = (): any => (root.value?.proxy ? readElement(root.value.proxy) : undefined);
-const write = (value: any): void => { if (root.value?.proxy) writeElement(root.value.proxy, value); };
-const enable = (): void => { if (root.value?.proxy) enableElement(root.value.proxy); };
-const disable = (): void => { if (root.value?.proxy) disableElement(root.value.proxy); };
+const pointerdown = (event: PointerEvent): void => {
+	const el = root.value;
+	if (!el) return;
+	switch (event.button) {
+		case 0:
+			if (!hasClass(el, 'selected')) {
+				if (document.activeElement !== document.body) {
+					document.activeElement.blur();
+				}
+				state.proxy?.input(state.dataValue);
+			} else if (state.proxy?.cancelable) {
+				if (document.activeElement !== document.body) {
+					document.activeElement.blur();
+				}
+				state.proxy.reset();
+			}
+			break;
+	}
+};
+
+const mouseclick = (event: Event): void => {
+	const el = root.value;
+	if (!el) return;
+	if (!hasClass(el, 'selected')) {
+		state.proxy?.input(state.dataValue);
+	} else if (state.proxy?.cancelable) {
+		state.proxy.reset();
+	}
+};
+
+const read = (): any => state.proxy?.read();
+const write = (value: any): void => {
+	state.proxy?.write(value);
+};
+const input = (value: any): void => {
+	state.proxy?.input(value);
+};
+const enable = (): void => {
+	state.proxy?.enable();
+};
+const disable = (): void => {
+	state.proxy?.disable();
+};
+const relate = (entries: RadioRelationEntry[]): void => {
+	state.proxy?.relate(entries);
+};
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.proxy?.on(type, listener, options);
+	state.proxy?.on(type, listener, options);
 };
 
-defineExpose({ read, write, enable, disable, on, root });
+defineExpose({ read, write, input, enable, disable, relate, on, root });
 
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	if (props.standard) addClass(el, 'standard');
-	ensureStandard(el);
-	const proxy = el.proxy;
-	if (proxy) {
-		proxy.on('write', (e: any) => emit('write', e.value));
-		proxy.on('input', (e: any) => emit('input', e.value));
-		proxy.on('change', (e: any) => emit('change', e.value));
-		if (props.disabled) disableElement(proxy);
+
+	const string = String(props.value ?? '');
+	const isNumber = RegExp.number.test(string);
+	state.dataValue = isNumber
+		? parseFloat(string)
+		: string === 'false'
+			? false
+			: string === 'true'
+				? true
+				: string;
+
+	let proxy = radioProxyMap[props.name] as RadioProxyElement;
+	let isNewProxy = false;
+	if (proxy === undefined) {
+		proxy = createRadioProxy() as RadioProxyElement;
+		proxy.id = props.name;
+		proxy.style.display = 'none';
+		radioProxyMap[proxy.id] = proxy;
+		isNewProxy = true;
 	}
+	state.proxy = proxy;
+	el.proxy = proxy;
+	el.dataValue = state.dataValue;
+
+	if (isNewProxy) {
+		el.appendChild(proxy);
+	}
+
+	onElement(el, 'keydown', keydown);
+	if (hasClass(el, 'standard')) {
+		state.mark = document.createElement('radio-mark');
+		el.tabIndex = 0;
+		onElement(el, 'click', mouseclick);
+	} else {
+		onElement(el, 'pointerdown', pointerdown);
+	}
+	if (state.mark) {
+		el.insertBefore(state.mark, el.childNodes[0] || null);
+	}
+
+	proxy.on('write', (e: any) => emit('write', e.value));
+	proxy.on('input', (e: any) => emit('input', e.value));
+	proxy.on('change', (e: any) => emit('change', e.value));
+	if (props.disabled) disable();
+
+	el.read = read;
+	el.write = write;
+	el.input = input;
+	el.enable = enable;
+	el.disable = disable;
+	el.relate = relate;
+	el.on = on;
 });
 </script>

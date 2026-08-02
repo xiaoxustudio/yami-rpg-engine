@@ -24,10 +24,10 @@ Editor.switchHotkey = (function IIFE() {
 	return function (enabled) {
 		switch (enabled) {
 			case true:
-				(window as any).off('keydown', keydown, { capture: true });
+				window.removeEventListener('keydown', keydown, { capture: true });
 				break;
 			case false:
-				(window as any).on('keydown', keydown, { capture: true });
+				window.addEventListener('keydown', keydown, { capture: true });
 				break;
 		}
 	};

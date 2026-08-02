@@ -156,8 +156,8 @@ Inspector.initialize = function () {
 		editor.owner.setTarget(target, meta);
 	};
 
-	$('#inspector').on('resize', this.inspectorResize);
-	this.manager.on('keydown', this.managerKeydown);
+	$('#inspector').addEventListener('resize', this.inspectorResize);
+	this.manager.addEventListener('keydown', this.managerKeydown);
 
 	const initSub = (name: string) => {
 		const sub = (this as any)[name];
@@ -353,8 +353,8 @@ Inspector.scrollPointerdown = function (this: any, event: any) {
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
 				(Cursor as any).open('cursor-grab');
-				window.on('pointerup', this.scrollPointerup);
-				window.on('pointermove', this.scrollPointermove);
+				window.addEventListener('pointerup', this.scrollPointerup);
+				window.addEventListener('pointermove', this.scrollPointermove);
 			}
 			break;
 	}

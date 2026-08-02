@@ -5,11 +5,11 @@
 			<box id="export-apk-out">
 				<grid-box id="export-apk-grid">
 					<text class="project-summary">应用配置</text>
-					<text>应用名称</text><text-box id="export-apk-apkName" />
-					<text>应用图标</text><text-box id="export-apk-apkIcon" />
-					<text>应用包名</text><text-box id="export-apk-apkPackageName" />
-					<text>应用版本</text><text-box id="export-apk-apkVersionName" />
-					<text>应用版本号</text><text-box id="export-apk-apkVersionCode" />
+					<text>应用名称</text><TextBox id="export-apk-apkName" />
+					<text>应用图标</text><TextBox id="export-apk-apkIcon" />
+					<text>应用包名</text><TextBox id="export-apk-apkPackageName" />
+					<text>应用版本</text><TextBox id="export-apk-apkVersionName" />
+					<text>应用版本号</text><TextBox id="export-apk-apkVersionCode" />
 				</grid-box>
 				<box id="export-apk-PS">
 					<text class="project-summary export-apk-major">PS（温馨提示）</text>
@@ -45,6 +45,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

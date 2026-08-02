@@ -42,6 +42,6 @@ Variable.windowClosed = function (this: any, event: any) {
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
-	(window as any).off('keydown', this.keydown);
-	(window as any).off('keydown', (Reference.getKeydownListener as any)(this.list));
+	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('keydown', (Reference.getKeydownListener as any)(this.list));
 }.bind(Variable);

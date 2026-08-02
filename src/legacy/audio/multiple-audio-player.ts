@@ -30,8 +30,8 @@ export class MultipleAudioPlayer {
 			audio.onStop = onStop;
 			audio.autoplay = true;
 			audio.source = source;
-			audio.on('ended', onStop);
-			audio.on('error', onStop);
+			audio.addEventListener('ended', onStop);
+			audio.addEventListener('error', onStop);
 		}
 		this.audios.push(audio);
 		audio.source.connect(AudioManager.context!.destination);

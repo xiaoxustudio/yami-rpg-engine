@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { on, hide, show, hasClass, read } from '@/util/element-utils.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from './localization.ts';
@@ -50,15 +51,14 @@ function ensureDomBound() {
 ImageClip.initialize = function () {
 	ensureDomBound();
 	if (!this.window) return;
-	window.on('dprchange', this.dprchange);
-	this.window.on('closed', this.windowClosed);
-	this.window.on('resize', this.windowResize);
+	window.addEventListener('dprchange', this.dprchange);
+	this.window.addEventListener('closed', this.windowClosed);
+	this.window.addEventListener('resize', this.windowResize);
 	on(this.screen, 'keydown', this.screenKeydown);
-	this.marquee.on('pointerdown', this.marqueePointerdown);
-	this.marquee.on('doubleclick', this.marqueeDoubleclick);
-	$('#imageClip-x, #imageClip-y, #imageClip-width, #imageClip-height').on(
-		'input',
-		this.paramInput
+	this.marquee.addEventListener('pointerdown', this.marqueePointerdown);
+	attachDoubleclick(this.marquee, this.marqueeDoubleclick);
+	$('#imageClip-x, #imageClip-y, #imageClip-width, #imageClip-height').forEach(
+		(el: HTMLElement) => el.addEventListener('input', this.paramInput!)
 	);
 	on($('#imageClip-confirm'), 'click', this.confirm);
 };
@@ -218,8 +218,8 @@ ImageClip.startDragging = function (event) {
 	event.mode = 'scroll';
 	event.scrollLeft = this.screen.scrollLeft;
 	event.scrollTop = this.screen.scrollTop;
-	window.on('pointerup', this.pointerup);
-	window.on('pointermove', this.pointermove);
+	window.addEventListener('pointerup', this.pointerup);
+	window.addEventListener('pointermove', this.pointermove);
 };
 
 ImageClip.dprchange = function (event) {
@@ -321,8 +321,8 @@ ImageClip.pointerup = function (event) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(ImageClip);
 

@@ -21,7 +21,7 @@ import { PluginManager } from '@/plugin/plugin.ts';
 		if (!$('#fileScript-overview')) return;
 		this.overview = $('#fileScript-overview');
 
-		window.on('localize', this.windowLocalize);
+		window.addEventListener('localize', this.windowLocalize);
 	};
 
 	FileScript.create = function () {

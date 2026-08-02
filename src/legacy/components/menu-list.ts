@@ -81,7 +81,7 @@ export class MenuList extends HTMLElement {
 		on(window as any, 'pointerover', this.windowPointerover);
 		on(window as any, 'pointerout', this.windowPointerout);
 		on(window as any, 'keydown', this.windowKeydown, { capture: true });
-		// window.on('keyup', this.windowKeyup, {capture: true})
+		// window.addEventListener('keyup', this.windowKeyup, {capture: true})
 		on(this, 'pointerenter', this.pointerenter);
 	}
 
@@ -123,7 +123,7 @@ export class MenuList extends HTMLElement {
 			off(window as any, 'pointerover', this.windowPointerover);
 			off(window as any, 'pointerout', this.windowPointerout);
 			off(window as any, 'keydown', this.windowKeydown, { capture: true });
-			// window.off('keyup', this.windowKeyup, {capture: true})
+			// window.removeEventListener('keyup', this.windowKeyup, {capture: true})
 			off(this, 'pointerenter', this.pointerenter);
 		}
 	}

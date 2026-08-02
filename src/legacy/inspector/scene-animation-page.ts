@@ -53,14 +53,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		const sliders = $(`#sceneAnimation-angle-slider,
     #sceneAnimation-scale-slider, #sceneAnimation-speed-slider,
     #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Scene));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
-		$('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts').on(
-			'change',
-			Scene.listChange
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+		);
+		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
+		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
+		$('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts').forEach(
+			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 

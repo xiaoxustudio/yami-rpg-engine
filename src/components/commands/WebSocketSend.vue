@@ -3,8 +3,8 @@
 		<TitleBar>webSocketSend<close /></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>ID</text><string-var id="webSocketSend-id" /> <text>Data</text
-				><string-var id="webSocketSend-data" />
+				<text>ID</text><StringVar id="webSocketSend-id" /> <text>Data</text
+				><StringVar id="webSocketSend-data" />
 			</grid-box>
 			<button id="webSocketSend-confirm" name="confirm">Confirm</button>
 			<button id="webSocketSend-cancel" name="cancel">Cancel</button>
@@ -19,6 +19,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import StringVar from '@app/components/common/StringVar.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

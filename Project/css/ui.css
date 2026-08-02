@@ -609,7 +609,7 @@ nav-item[value='particle'].selected {
 	margin: 10px 0;
 	padding: 0 4px;
 }
-.resource-item text-box {
+.resource-item .text-box {
 	flex: 1;
 }
 .resource-item button {

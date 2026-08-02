@@ -2,7 +2,7 @@
 	<WindowFrame id="arrayList" mode="center">
 		<TitleBar>Array<close /></TitleBar>
 		<content-frame>
-			<param-list id="arrayList-list" />
+			<ParamList id="arrayList-list" />
 			<button id="arrayList-confirm" name="confirm">Confirm</button>
 			<button id="arrayList-cancel" name="cancel">Cancel</button>
 		</content-frame>
@@ -15,6 +15,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

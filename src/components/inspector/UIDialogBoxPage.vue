@@ -3,95 +3,95 @@
 		<DetailSummary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</DetailSummary>
 		<detail-grid id="uiDialogBox-properties-grid">
 			<text>{{ local.getLabel('uiDialogBox-content') || 'Content' }}</text
-			><text-area
+			><TextArea
 				id="uiDialogBox-content"
 				menu="tag-localization"
-			></text-area>
+			></TextArea>
 			<text>{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</text
-			><number-box
+			><NumberBox
 				id="uiDialogBox-interval"
 				min="0"
 				max="100"
 				decimals="4"
 				unit="ms"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</text>
 			<flex-box id="uiDialogBox-size-box">
-				<slider-box
+				<SliderBox
 					id="uiDialogBox-size-slider"
 					min="12"
 					max="52"
 					step="2"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="uiDialogBox-size"
 					min="10"
 					max="400"
 					step="1"
 					unit="px"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</text>
 			<flex-box id="uiDialogBox-lineSpacing-box">
-				<slider-box
+				<SliderBox
 					id="uiDialogBox-lineSpacing-slider"
 					min="0"
 					max="20"
 					step="1"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="uiDialogBox-lineSpacing"
 					min="-10"
 					max="100"
 					step="1"
 					unit="px"
-				></number-box>
+				></NumberBox>
 			</flex-box>
 			<text>{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</text>
 			<flex-box id="uiDialogBox-letterSpacing-box">
-				<slider-box
+				<SliderBox
 					id="uiDialogBox-letterSpacing-slider"
 					min="0"
 					max="20"
 					step="1"
-				></slider-box>
-				<number-box
+				></SliderBox>
+				<NumberBox
 					id="uiDialogBox-letterSpacing"
 					min="-10"
 					max="100"
 					step="1"
 					unit="px"
-				></number-box>
+				></NumberBox>
 			</flex-box>
-			<text>{{ local.getLabel('uiDialogBox-color') || 'Color' }}</text><color-box id="uiDialogBox-color"></color-box>
-			<text>{{ local.getLabel('uiDialogBox-font') || 'Font' }}</text><text-box id="uiDialogBox-font"></text-box>
-			<text>{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</text><select-box id="uiDialogBox-typeface"></select-box>
+			<text>{{ local.getLabel('uiDialogBox-color') || 'Color' }}</text><ColorBox id="uiDialogBox-color"></ColorBox>
+			<text>{{ local.getLabel('uiDialogBox-font') || 'Font' }}</text><TextBox id="uiDialogBox-font"></TextBox>
+			<text>{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</text><SelectBox id="uiDialogBox-typeface"></SelectBox>
 			<text>{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</text
-			><select-box id="uiDialogBox-effect-type"></select-box>
+			><SelectBox id="uiDialogBox-effect-type"></SelectBox>
 			<text>{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</text
-			><number-box
+			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetX"
 				min="-9"
 				max="9"
 				unit="px"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</text
-			><number-box
+			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetY"
 				min="-9"
 				max="9"
 				unit="px"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</text
-			><number-box
+			><NumberBox
 				id="uiDialogBox-effect-strokeWidth"
 				min="1"
 				max="20"
 				unit="px"
-			></number-box>
+			></NumberBox>
 			<text>{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</text
-			><color-box id="uiDialogBox-effect-color"></color-box> <text>{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</text
-			><select-box id="uiDialogBox-blend"></select-box>
+			><ColorBox id="uiDialogBox-effect-color"></ColorBox> <text>{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</text
+			><SelectBox id="uiDialogBox-blend"></SelectBox>
 		</detail-grid>
 	</DetailBox>
 </template>
@@ -102,6 +102,12 @@ import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import ColorBox from '@app/components/common/ColorBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
+import TextArea from '@app/components/common/TextArea.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

@@ -1,9 +1,9 @@
 <template>
 			<page-frame id="scene-object" value="scene-object">
 				<box id="scene-list-head">
-					<text-box id="scene-searcher" name="search" />
+					<TextBox id="scene-searcher" name="search" />
 				</box>
-				<node-list id="scene-list" padded />
+				<TreeList id="scene-list" padded />
 			</page-frame>
 </template>
 
@@ -11,6 +11,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

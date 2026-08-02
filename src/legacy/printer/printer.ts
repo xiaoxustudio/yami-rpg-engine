@@ -999,7 +999,7 @@ export class Printer {
 			outline: 'drawTextWithOutline'
 		};
 
-		window.on('datachange', this.datachange);
+		window.addEventListener('datachange', this.datachange);
 	}
 
 	static loadDefault() {

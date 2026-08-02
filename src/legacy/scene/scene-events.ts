@@ -248,7 +248,7 @@ Scene.screenKeydown = function (event) {
 									break;
 							}
 						}
-						window.on('keyup', this.shiftKeyup);
+						window.addEventListener('keyup', this.shiftKeyup);
 					}
 					break;
 				case 'Enter':
@@ -271,7 +271,7 @@ Scene.screenKeydown = function (event) {
 						this.translationKey |= 0b0001;
 						this.translationTimer.add();
 						this.screen.beginScrolling();
-						window.on('keyup', this.translationKeyup);
+						window.addEventListener('keyup', this.translationKeyup);
 					}
 					break;
 				case 'KeyW':
@@ -279,7 +279,7 @@ Scene.screenKeydown = function (event) {
 						this.translationKey |= 0b0010;
 						this.translationTimer.add();
 						this.screen.beginScrolling();
-						window.on('keyup', this.translationKeyup);
+						window.addEventListener('keyup', this.translationKeyup);
 					}
 					break;
 				case 'KeyD':
@@ -287,7 +287,7 @@ Scene.screenKeydown = function (event) {
 						this.translationKey |= 0b0100;
 						this.translationTimer.add();
 						this.screen.beginScrolling();
-						window.on('keyup', this.translationKeyup);
+						window.addEventListener('keyup', this.translationKeyup);
 					}
 					break;
 				case 'KeyS':
@@ -295,7 +295,7 @@ Scene.screenKeydown = function (event) {
 						this.translationKey |= 0b1000;
 						this.translationTimer.add();
 						this.screen.beginScrolling();
-						window.on('keyup', this.translationKeyup);
+						window.addEventListener('keyup', this.translationKeyup);
 					}
 					break;
 				case 'ArrowLeft':
@@ -396,7 +396,7 @@ Scene.shiftKeyup = function (event) {
 							break;
 					}
 				}
-				window.off('keyup', this.shiftKeyup);
+				window.removeEventListener('keyup', this.shiftKeyup);
 			}
 			break;
 	}
@@ -427,7 +427,7 @@ Scene.translationKeyup = function (event) {
 	if (this.translationKey === 0b0000) {
 		this.translationTimer.remove();
 		this.screen.endScrolling();
-		window.off('keyup', this.translationKeyup);
+		window.removeEventListener('keyup', this.translationKeyup);
 	}
 }.bind(Scene);
 
@@ -520,8 +520,8 @@ Scene.marqueePointerdown = function (event) {
 				event.scrollTop = this.screen.scrollTop;
 				this.marquee.clear();
 				Cursor.open('cursor-grab');
-				window.on('pointerup', this.pointerup);
-				window.on('pointermove', this.pointermove);
+				window.addEventListener('pointerup', this.pointerup);
+				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
 			const marquee = this.marquee;
@@ -547,8 +547,8 @@ Scene.marqueePointerdown = function (event) {
 								event.mode = this.brush;
 								event.pointerdownX = x;
 								event.pointerdownY = y;
-								window.on('pointerup', this.pointerup);
-								window.on('pointermove', this.pointermove);
+								window.addEventListener('pointerup', this.pointerup);
+								window.addEventListener('pointermove', this.pointermove);
 								marquee.selectInPencilMode(mx, my);
 								this.edit(marquee.x, marquee.y, marquee.width, marquee.height);
 							}
@@ -562,8 +562,8 @@ Scene.marqueePointerdown = function (event) {
 								event.mode = this.brush;
 								event.pointerdownX = x;
 								event.pointerdownY = y;
-								window.on('pointerup', this.pointerup);
-								window.on('pointermove', this.pointermove);
+								window.addEventListener('pointerup', this.pointerup);
+								window.addEventListener('pointermove', this.pointermove);
 								marquee.save();
 								marquee.selectInRectMode(x, y, width, height);
 								this.edit(marquee.x, marquee.y, marquee.width, marquee.height);
@@ -607,8 +607,8 @@ Scene.marqueePointerdown = function (event) {
 						event.startY = object.y;
 						event.pointerdownX = x;
 						event.pointerdownY = y;
-						window.on('pointerup', this.pointerup);
-						window.on('pointermove', this.pointermove);
+						window.addEventListener('pointerup', this.pointerup);
+						window.addEventListener('pointermove', this.pointermove);
 						this.screen.addScrollListener('both', this.scale / 2, false, () => {
 							this.screen.beginScrolling();
 							this.screen.rawScrollLeft = this.screen.scrollLeft;
@@ -633,8 +633,8 @@ Scene.marqueePointerdown = function (event) {
 			event.scrollTop = this.screen.scrollTop;
 			this.marquee.clear();
 			Cursor.open('cursor-grab');
-			window.on('pointerup', this.pointerup);
-			window.on('pointermove', this.pointermove);
+			window.addEventListener('pointerup', this.pointerup);
+			window.addEventListener('pointermove', this.pointermove);
 			break;
 		case 2: {
 			const marquee = this.marquee;
@@ -644,8 +644,8 @@ Scene.marqueePointerdown = function (event) {
 					event.mode = 'ready-to-scroll';
 					event.scrollLeft = this.screen.scrollLeft;
 					event.scrollTop = this.screen.scrollTop;
-					window.on('pointerup', this.pointerup);
-					window.on('pointermove', this.pointermove);
+					window.addEventListener('pointerup', this.pointerup);
+					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'tilemap': {
 					const { x, y } = this.getTileCoords(event, true);
@@ -660,8 +660,8 @@ Scene.marqueePointerdown = function (event) {
 						event.mode = 'copy';
 						event.pointerdownX = x;
 						event.pointerdownY = y;
-						window.on('pointerup', this.pointerup);
-						window.on('pointermove', this.pointermove);
+						window.addEventListener('pointerup', this.pointerup);
+						window.addEventListener('pointermove', this.pointermove);
 						marquee.selectInCopyMode(x, y, 1, 1);
 					}
 					break;
@@ -829,8 +829,8 @@ Scene.pointerup = function (event) {
 				break;
 		}
 		this.dragging = null;
-		window.off('pointerup', this.pointerup);
-		window.off('pointermove', this.pointermove);
+		window.removeEventListener('pointerup', this.pointerup);
+		window.removeEventListener('pointermove', this.pointermove);
 	}
 }.bind(Scene);
 

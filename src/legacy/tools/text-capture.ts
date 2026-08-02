@@ -49,12 +49,12 @@ export const Selection = {
 
 Selection.initialize = function () {
 	if (!$('#font-confirm')) return;
-	$('#font-confirm').on('click', this.font.confirm);
-	$('#fontSize-confirm').on('click', this.fontSize.confirm);
-	$('#textPosition-confirm').on('click', this.textPosition.confirm);
-	$('#textEffect-confirm').on('click', this.textEffect.confirm);
-	$('#insertImage-confirm').on('click', this.image.confirm);
-	$('#localVariable-confirm').on('click', this.localVariable.confirm);
+	$('#font-confirm').addEventListener('click', this.font.confirm);
+	$('#fontSize-confirm').addEventListener('click', this.fontSize.confirm);
+	$('#textPosition-confirm').addEventListener('click', this.textPosition.confirm);
+	$('#textEffect-confirm').addEventListener('click', this.textEffect.confirm);
+	$('#insertImage-confirm').addEventListener('click', this.image.confirm);
+	$('#localVariable-confirm').addEventListener('click', this.localVariable.confirm);
 
 	const exclusions = {
 		'color-hex': true,
@@ -96,10 +96,10 @@ Selection.restoreContext = function () {
 };
 
 Selection.addEventListeners = function (element) {
-	element.on('keydown', this.inputKeydown);
-	element.on('keyup', this.inputKeyup);
-	element.on('pointerdown', this.inputPointerdown);
-	element.on('pointerup', this.inputPointerup);
+	element.addEventListener('keydown', this.inputKeydown);
+	element.addEventListener('keyup', this.inputKeyup);
+	element.addEventListener('pointerdown', this.inputPointerdown);
+	element.addEventListener('pointerup', this.inputPointerup);
 };
 
 Selection.match = function () {

@@ -3,16 +3,16 @@
 		<DetailSummary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileItem-general-grid">
 			<text>{{ local.getLabel('fileItem-icon') || 'Icon' }}</text
-			><custom-box id="fileItem-icon" type="file" filter="image" />
+			><CustomBox id="fileItem-icon" type="file" filter="image" />
 			<text>{{ local.getLabel('fileItem-clip') || 'Clip' }}</text
-			><custom-box id="fileItem-clip" type="clip" image="fileItem-icon" />
+			><CustomBox id="fileItem-clip" type="clip" image="fileItem-icon" />
 			<text>{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</text
-			><custom-box id="fileItem-inherit" type="file" filter="item" />
+			><CustomBox id="fileItem-inherit" type="file" filter="item" />
 		</detail-grid>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-attributes') || 'Attributes' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileItem-attributes"
 			class="inspector-list"
 			group="item"
@@ -21,7 +21,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-events') || 'Events' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileItem-events"
 			class="inspector-list"
 			filter="item"
@@ -30,7 +30,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-scripts') || 'Scripts' }}</DetailSummary>
-		<param-list
+		<ParamList
 			id="fileItem-scripts"
 			class="inspector-list"
 			flexible
@@ -45,6 +45,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

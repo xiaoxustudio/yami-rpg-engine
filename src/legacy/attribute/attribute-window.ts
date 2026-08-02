@@ -303,8 +303,8 @@ Attribute.open = function (target = null, mode = 'normal') {
 
 	getFocus(list);
 
-	window.on('keydown', this.keydown);
-	window.on('keydown', Reference.getKeydownListener(list, 'attribute'));
+	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', Reference.getKeydownListener(list, 'attribute'));
 };
 
 Attribute.undo = function () {
@@ -557,8 +557,8 @@ Attribute.windowClosed = function (event) {
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
-	window.off('keydown', this.keydown);
-	window.off('keydown', Reference.getKeydownListener(this.list));
+	window.removeEventListener('keydown', this.keydown);
+	window.removeEventListener('keydown', Reference.getKeydownListener(this.list));
 }.bind(Attribute);
 
 Attribute.keydown = Shortcuts.createUndoRedo(Attribute);

@@ -10,17 +10,17 @@
 				<MarqueeArea id="imageClip-marquee" />
 			</box>
 			<flex-box id="imageClip-flex">
-				<number-box id="imageClip-x" min="0" max="10000"
-					><text class="label">X:</text></number-box
+				<NumberBox id="imageClip-x" min="0" max="10000"
+					><text class="label">X:</text></NumberBox
 				>
-				<number-box id="imageClip-y" min="0" max="10000"
-					><text class="label">Y:</text></number-box
+				<NumberBox id="imageClip-y" min="0" max="10000"
+					><text class="label">Y:</text></NumberBox
 				>
-				<number-box id="imageClip-width" min="0" max="10000"
-					><text class="label">W:</text></number-box
+				<NumberBox id="imageClip-width" min="0" max="10000"
+					><text class="label">W:</text></NumberBox
 				>
-				<number-box id="imageClip-height" min="0" max="10000"
-					><text class="label">H:</text></number-box
+				<NumberBox id="imageClip-height" min="0" max="10000"
+					><text class="label">H:</text></NumberBox
 				>
 			</flex-box>
 			<button id="imageClip-confirm" name="confirm">Confirm</button>
@@ -36,6 +36,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

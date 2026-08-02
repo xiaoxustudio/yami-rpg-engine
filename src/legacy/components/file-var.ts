@@ -9,63 +9,61 @@ import {
 	read,
 	write
 } from '@/util/element-utils.ts';
-import { CustomBox } from './custom-box.ts';
+import { createCustomBox } from './custom-box.ts';
 
-export class FileVar extends HTMLElement {
-	mode: string;
-	strBox: HTMLElement & { [k: string]: any };
-	varBox: CustomBox;
-	_initialized: boolean;
+interface FileVarElement extends HTMLElement {
+	mode: string | null;
+	fileBox: HTMLElement & { [k: string]: any };
+	varBox: HTMLElement & { [k: string]: any };
+	read(): any;
+	write(value: any): void;
+	switch(mode?: string): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: any): void;
+	keydown(event: any): void;
+	pointerdown(event: any): void;
+}
 
-	constructor() {
-		super();
+export function attachFileVarApi(el: HTMLElement): void {
+	const box = el as FileVarElement;
 
-		this.mode = null;
-		this.fileBox = new CustomBox();
-		this.varBox = new CustomBox();
-		this.fileBox.type = 'file';
-		this.varBox.type = 'variable';
-		this.varBox.filter = 'string';
-		this._initialized = false;
+	box.mode = null;
+	box.fileBox = createCustomBox();
+	box.varBox = createCustomBox();
+	box.fileBox.type = 'file';
+	box.fileBox.filter = el.getAttribute('filter');
+	box.varBox.type = 'variable';
+	box.varBox.filter = 'string';
 
-		on(this, 'keydown', this.keydown);
-		on(this, 'pointerdown', this.pointerdown);
-	}
-
-	connectedCallback() {
-		if (this._initialized) return;
-		this._initialized = true;
-		this.fileBox.filter = this.getAttribute('filter');
-	}
-
-	read() {
-		switch (this.mode) {
+	box.read = function (): any {
+		switch (box.mode) {
 			case 'constant':
-				return read(this.fileBox);
+				return read(box.fileBox);
 			case 'variable':
-				return this.varBox.read();
+				return box.varBox.read();
 		}
-	}
+	};
 
-	write(value: any) {
+	box.write = function (value: any): void {
 		switch (typeof value) {
 			case 'string':
-				this.switch('constant');
-				write(this.fileBox, value);
-				this.varBox.write(FileVar.defVar);
+				box.switch('constant');
+				write(box.fileBox, value);
+				box.varBox.write(defVar);
 				break;
 			case 'object':
-				this.switch('variable');
-				write(this.fileBox, '');
-				this.varBox.write(value);
+				box.switch('variable');
+				write(box.fileBox, '');
+				box.varBox.write(value);
 				break;
 		}
-	}
+	};
 
-	switch(mode?) {
-		const focus = !mode && !hasClass(this, 'disabled');
+	box.switch = function (mode?: string): void {
+		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
-			switch (this.mode) {
+			switch (box.mode) {
 				case 'constant':
 					mode = 'variable';
 					break;
@@ -74,80 +72,87 @@ export class FileVar extends HTMLElement {
 					break;
 			}
 		}
-		if (this.mode !== mode) {
-			removeClass(this, this.mode);
-			addClass(this, mode);
-			this.mode = mode;
+		if (box.mode !== mode) {
+			removeClass(box, box.mode as string);
+			addClass(box, mode as string);
+			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					this.varBox.remove();
-					this.appendChild(this.fileBox);
+					box.varBox.remove();
+					box.appendChild(box.fileBox);
 					if (focus) {
-						this.fileBox.focus();
+						box.fileBox.focus();
 					}
 					break;
 				case 'variable':
-					this.fileBox.remove();
-					this.appendChild(this.varBox);
+					box.fileBox.remove();
+					box.appendChild(box.varBox);
 					if (focus) {
-						this.varBox.focus();
+						box.varBox.focus();
 					}
 					break;
 			}
-			// this.dispatchChangeEvent()
 		}
-	}
+	};
 
-	enable() {
-		if (removeClass(this, 'disabled')) {
-			enable(this.fileBox);
-			enable(this.varBox);
+	box.enable = function (): void {
+		if (removeClass(box, 'disabled')) {
+			enable(box.fileBox);
+			enable(box.varBox);
 		}
-	}
+	};
 
-	disable() {
-		if (addClass(this, 'disabled')) {
-			disable(this.fileBox);
-			disable(this.varBox);
+	box.disable = function (): void {
+		if (addClass(box, 'disabled')) {
+			disable(box.fileBox);
+			disable(box.varBox);
 		}
-	}
+	};
 
-	getFocus(mode: any) {
-		switch (this.mode) {
+	box.getFocus = function (mode: any): void {
+		switch (box.mode) {
 			case 'constant':
-				return getFocus(this.fileBox, mode);
+				return getFocus(box.fileBox, mode);
 			case 'variable':
-				return getFocus(this.varBox, mode);
+				return getFocus(box.varBox, mode);
 		}
-	}
+	};
 
-	keydown(event: any) {
+	box.keydown = function (event: any): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
-				this.switch();
+				box.switch();
 				break;
 		}
-	}
+	};
 
-	pointerdown(event: any) {
+	box.pointerdown = function (event: any): void {
 		switch (event.button) {
 			case 0:
-				if (!hasClass(this, 'disabled') && event.target === this) {
+				if (!hasClass(box, 'disabled') && event.target === box) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 			case 2:
-				if (!hasClass(this, 'disabled')) {
+				if (!hasClass(box, 'disabled')) {
 					event.preventDefault();
-					this.switch();
+					box.switch();
 				}
 				break;
 		}
-	}
+	};
 
-	static defVar = { type: 'local', key: 'key' };
+	on(box, 'keydown', box.keydown);
+	on(box, 'pointerdown', box.pointerdown);
 }
 
-customElements.define('file-var', FileVar);
+export function createFileVar(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'file-var';
+	attachFileVarApi(el);
+	return el;
+}
+
+export const defVar = { type: 'local', key: 'key' };

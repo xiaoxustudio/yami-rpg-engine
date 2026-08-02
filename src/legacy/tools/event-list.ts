@@ -46,7 +46,7 @@ export class EventListInterface implements IListInterface {
 			this.history.save = EventListInterface.historySave;
 		}
 
-		window.on('localize', (event) => {
+		window.addEventListener('localize', (event) => {
 			if (list.data) list.update();
 		});
 	}

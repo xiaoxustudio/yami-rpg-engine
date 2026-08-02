@@ -3,9 +3,9 @@
 		<TitleBar>Transform Property<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Property</text><select-box id="moveElement-property-key" />
+				<text>Property</text><SelectBox id="moveElement-property-key" />
 				<text>Anchor X</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-anchorX"
 					min="-100"
 					max="100"
@@ -13,7 +13,7 @@
 					decimals="4"
 				/>
 				<text>Anchor Y</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-anchorY"
 					min="-100"
 					max="100"
@@ -21,7 +21,7 @@
 					decimals="4"
 				/>
 				<text>X</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-x"
 					min="-10000"
 					max="10000"
@@ -29,7 +29,7 @@
 					unit="px"
 				/>
 				<text>Y</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-y"
 					min="-10000"
 					max="10000"
@@ -37,7 +37,7 @@
 					unit="px"
 				/>
 				<text>Width</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-width"
 					min="-10000"
 					max="10000"
@@ -45,7 +45,7 @@
 					unit="px"
 				/>
 				<text>Height</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-height"
 					min="-10000"
 					max="10000"
@@ -53,7 +53,7 @@
 					unit="px"
 				/>
 				<text>X2</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-x2"
 					min="-100"
 					max="100"
@@ -62,7 +62,7 @@
 					unit="r"
 				/>
 				<text>Y2</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-y2"
 					min="-100"
 					max="100"
@@ -71,7 +71,7 @@
 					unit="r"
 				/>
 				<text>Width2</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-width2"
 					min="-100"
 					max="100"
@@ -80,7 +80,7 @@
 					unit="r"
 				/>
 				<text>Height2</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-height2"
 					min="-100"
 					max="100"
@@ -89,7 +89,7 @@
 					unit="r"
 				/>
 				<text>Rotation</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-rotation"
 					min="-36000"
 					max="36000"
@@ -97,7 +97,7 @@
 					unit="deg"
 				/>
 				<text>Scale X</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-scaleX"
 					min="-100"
 					max="100"
@@ -105,7 +105,7 @@
 					decimals="4"
 				/>
 				<text>Scale Y</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-scaleY"
 					min="-100"
 					max="100"
@@ -113,7 +113,7 @@
 					decimals="4"
 				/>
 				<text>Skew X</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-skewX"
 					min="-100"
 					max="100"
@@ -121,7 +121,7 @@
 					decimals="4"
 				/>
 				<text>Skew Y</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-skewY"
 					min="-100"
 					max="100"
@@ -129,7 +129,7 @@
 					decimals="4"
 				/>
 				<text>Opacity</text
-				><number-var
+				><NumberVar
 					id="moveElement-property-opacity"
 					min="0"
 					max="1"
@@ -149,6 +149,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="command-widget">
-		<text-box id="command-searcher" />
+		<TextBox id="command-searcher" />
 	</WindowFrame>
 </template>
 
@@ -9,6 +9,7 @@ import { onMounted } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import TextBox from '@app/components/common/TextBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

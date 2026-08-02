@@ -11,11 +11,12 @@ import {
 	seek,
 	show
 } from '@/util/element-utils.ts';
+import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
 import { debounce } from '@/util/safe.ts';
 import { CommonList } from './common-list.ts';
 import { Menu } from './menu-list.ts';
-import { TextBox } from './text-box.ts';
+import { createTextBox } from './text-box.ts';
 import { Timer } from '@/util/timer.ts';
 
 export class TreeList extends HTMLElement {
@@ -102,14 +103,14 @@ export class TreeList extends HTMLElement {
 		this.openEventEnabled = false;
 		this.updateEventEnabled = false;
 
-		this.on('scroll', this.resize);
-		this.on('keydown', this.keydown);
-		this.on('pointerdown', this.pointerdown);
-		this.on('pointerup', this.pointerup);
-		this.on('doubleclick', this.doubleclick);
-		this.on('dragstart', this.dragstart);
-		this.on('dragend', this.dragend);
-		this.on('change', this.dataChange);
+		this.addEventListener('scroll', this.resize);
+		this.addEventListener('keydown', this.keydown);
+		this.addEventListener('pointerdown', this.pointerdown);
+		this.addEventListener('pointerup', this.pointerup);
+		attachDoubleclick(this, this.doubleclick);
+		this.addEventListener('dragstart', this.dragstart);
+		this.addEventListener('dragend', this.dragend);
+		this.addEventListener('change', this.dataChange);
 	}
 
 	connectedCallback() {
@@ -1058,7 +1059,7 @@ export class TreeList extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		super.on(type, listener, options);
+		super.addEventListener(type, listener, options);
 		switch (type) {
 			case 'select':
 				this.selectEventEnabled = true;
@@ -1246,10 +1247,10 @@ export class TreeList extends HTMLElement {
 			addClass(event.hint, 'for-list');
 			this.parentNode!.insertBefore(hide(event.hint), this);
 			addClass(this, 'dragging');
-			this.on('dragenter', this.dragenter);
-			this.on('dragleave', this.dragleave);
-			this.on('dragover', this.dragover);
-			this.on('drop', this.drop);
+			this.addEventListener('dragenter', this.dragenter);
+			this.addEventListener('dragleave', this.dragleave);
+			this.addEventListener('dragover', this.dragover);
+			this.addEventListener('drop', this.drop);
 		}
 	}
 
@@ -1290,7 +1291,7 @@ export class TreeList extends HTMLElement {
 			}
 			dragging.offsetY = event.offsetY;
 			const element = seek(event.target, 'node-item');
-			const hint = show(dragging.hint);
+			const hint: any = show(dragging.hint);
 			if (element.tagName === 'NODE-ITEM') {
 				const sItem = dragging.target.item;
 				const dItem = element.item;
@@ -1454,11 +1455,11 @@ export class TreeList extends HTMLElement {
 	})();
 
 	static textBox = (function IIFE() {
-		const textBox = new TextBox();
+		const textBox = createTextBox() as HTMLElement & { [k: string]: any };
 		addClass(textBox, 'node-list-text-box');
 		addClass(textBox.input, 'node-list-text-box-input');
 
-		textBox.on('keydown', function (this: TextBox, event) {
+		textBox.addEventListener('keydown', function (this: any, event) {
 			event.stopPropagation();
 			switch (event.code) {
 				case 'Enter':
@@ -1473,19 +1474,19 @@ export class TreeList extends HTMLElement {
 			}
 		});
 
-		textBox.on('input', function (this: TextBox, event) {
+		textBox.addEventListener('input', function (this: any, event) {
 			this.fitContent();
 		});
 
-		textBox.on('select', function (event) {
+		textBox.addEventListener('select', function (event) {
 			event.stopPropagation();
 		});
 
-		textBox.on('change', function (event) {
+		textBox.addEventListener('change', function (event) {
 			event.stopPropagation();
 		});
 
-		textBox.on('blur', function (this: TextBox, event) {
+		textBox.addEventListener('blur', function (this: any, event) {
 			const element = this.parentNode as any;
 			const list = element.parentNode as any;
 			const item = element.item;

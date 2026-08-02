@@ -9,7 +9,7 @@
 	<DetailBox id="fileFont-font-detail" open>
 		<DetailSummary>{{ local.getLabel('fileFont-font-grid') || 'Font Preview' }}</DetailSummary>
 		<detail-grid id="fileFont-font-grid">
-			<text-box id="fileFont-content" />
+			<TextBox id="fileFont-content" />
 			<text id="fileFont-12px" class="fileFont-preview"></text>
 			<text id="fileFont-18px" class="fileFont-preview"></text>
 			<text id="fileFont-24px" class="fileFont-preview"></text>
@@ -27,6 +27,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import TextBox from '@app/components/common/TextBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

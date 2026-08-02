@@ -65,7 +65,7 @@
 						</box>
 					</box>
 					<box id="scene-head-end">
-						<slider-box id="scene-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></slider-box>
+						<SliderBox id="scene-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
 					</box>
 				</box>
 				<box id="scene-body">
@@ -77,9 +77,9 @@
 			</page-frame>
 			<page-frame id="scene-object" value="scene-object">
 				<box id="scene-list-head">
-					<text-box id="scene-searcher" name="search"></text-box>
+					<TextBox id="scene-searcher" name="search"></TextBox>
 				</box>
-				<node-list id="scene-list" padded></node-list>
+				<TreeList id="scene-list" padded></TreeList>
 			</page-frame>
 			<page-frame id="ui" value="ui">
 				<box id="ui-head">
@@ -100,7 +100,7 @@
 						<item id="ui-element-reference" class="toolbar-item" value="reference"></item>
 					</box>
 					<box id="ui-head-end">
-						<slider-box id="ui-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></slider-box>
+						<SliderBox id="ui-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
 					</box>
 				</box>
 				<box id="ui-body">
@@ -111,9 +111,9 @@
 			</page-frame>
 			<page-frame id="ui-element" value="ui-element">
 				<box id="ui-list-head">
-					<text-box id="ui-searcher" name="search"></text-box>
+					<TextBox id="ui-searcher" name="search"></TextBox>
 				</box>
-				<node-list id="ui-list" padded></node-list>
+				<TreeList id="ui-list" padded></TreeList>
 			</page-frame>
 			<page-frame id="animation" value="animation">
 				<box id="animation-head">
@@ -124,10 +124,10 @@
 						<item id="animation-switch-settings" class="toolbar-item" value="settings"></item>
 					</box>
 					<box id="animation-head-center">
-						<number-box id="animation-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></number-box>
+						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
 					</box>
 					<box id="animation-head-end">
-						<slider-box id="animation-zoom" name="zoom-0-6" min="0" max="6" hotkey="-/+" active-wheel></slider-box>
+						<SliderBox id="animation-zoom" name="zoom-0-6" min="0" max="6" hotkey="-/+" active-wheel></SliderBox>
 					</box>
 				</box>
 				<box id="animation-body">
@@ -139,9 +139,9 @@
 			</page-frame>
 			<page-frame id="animation-motion" value="animation-motion">
 				<box id="animation-list-head">
-					<text-box id="animation-searcher" name="search"></text-box>
+					<TextBox id="animation-searcher" name="search"></TextBox>
 				</box>
-				<node-list id="animation-list" padded></node-list>
+				<TreeList id="animation-list" padded></TreeList>
 			</page-frame>
 			<page-frame id="animation-timeline" value="animation-timeline">
 				<box id="animation-timeline-head">
@@ -157,7 +157,7 @@
 						<box id="animation-timeline-ruler-inner"></box>
 					</box>
 				</box>
-				<node-list id="animation-layer-list"></node-list>
+				<TreeList id="animation-layer-list"></TreeList>
 				<box id="animation-timeline-list-outer" tabindex="0">
 					<box id="animation-timeline-list-inner"></box>
 					<box id="animation-timeline-cursor"></box>
@@ -173,7 +173,7 @@
 			<page-frame id="animation-easing" value="animation-easing">
 				<box id="animation-easing-head">
 					<item id="animation-easing-settings" class="toolbar-item" value="bezier"></item>
-					<select-box id="animation-easing-id"></select-box>
+					<SelectBox id="animation-easing-id"></SelectBox>
 				</box>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
 			</page-frame>
@@ -188,10 +188,10 @@
 							<item id="particle-control-restart" class="toolbar-item" value="restart" hotkey="R"></item>
 							<item id="particle-control-pause" class="toolbar-item" value="pause" hotkey="P"></item>
 						</box>
-						<number-box id="particle-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></number-box>
+						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
 					</box>
 					<box id="particle-head-end">
-						<slider-box id="particle-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></slider-box>
+						<SliderBox id="particle-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
 					</box>
 				</box>
 				<box id="particle-body">
@@ -202,7 +202,7 @@
 				</box>
 			</page-frame>
 			<page-frame id="particle-layer" value="particle-layer">
-				<node-list id="particle-list" padded></node-list>
+				<TreeList id="particle-list" padded></TreeList>
 			</page-frame>
 			<page-frame id="inspector" value="inspector">
 				<PageManager id="inspector-page-manager" tabindex="-1">
@@ -265,4 +265,9 @@
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
+import TextBox from '@app/components/common/TextBox.vue';
+import TreeList from '@app/components/common/TreeList.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 </script>

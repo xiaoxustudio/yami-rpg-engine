@@ -35,7 +35,7 @@ export const GameLocal: {
 GameLocal.initialize = function () {
 	this.setLanguage(Data.config.localization.default);
 
-	(window as any).on('datachange', this.datachange);
+	window.addEventListener('datachange', this.datachange);
 };
 
 GameLocal.setLanguage = async function (language: string) {

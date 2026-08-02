@@ -3,23 +3,23 @@
 		<TitleBar>Set Object Animation<close /></TitleBar>
 		<content-frame>
 			<grid-box id="setObjectAnimation-grid-box">
-				<text>Sort</text><select-box id="setObjectAnimation-sort" />
-				<text>Actor</text><custom-box id="setObjectAnimation-actor" type="actor" />
+				<text>Sort</text><SelectBox id="setObjectAnimation-sort" />
+				<text>Actor</text><CustomBox id="setObjectAnimation-actor" type="actor" />
 				<text>Trigger</text
-				><custom-box id="setObjectAnimation-trigger" type="trigger" />
+				><CustomBox id="setObjectAnimation-trigger" type="trigger" />
 				<text>Animation</text
-				><custom-box id="setObjectAnimation-animation" type="object" />
-				<text>Operation</text><select-box id="setObjectAnimation-operation" />
+				><CustomBox id="setObjectAnimation-animation" type="object" />
+				<text>Operation</text><SelectBox id="setObjectAnimation-operation" />
 				<text>Tint - Red</text
-				><number-box id="setObjectAnimation-tint-0" min="-255" max="255" step="5" />
+				><NumberBox id="setObjectAnimation-tint-0" min="-255" max="255" step="5" />
 				<text>Tint - Green</text
-				><number-box id="setObjectAnimation-tint-1" min="-255" max="255" step="5" />
+				><NumberBox id="setObjectAnimation-tint-1" min="-255" max="255" step="5" />
 				<text>Tint - Blue</text
-				><number-box id="setObjectAnimation-tint-2" min="-255" max="255" step="5" />
+				><NumberBox id="setObjectAnimation-tint-2" min="-255" max="255" step="5" />
 				<text>Tint - Grayscale</text
-				><number-box id="setObjectAnimation-tint-3" min="0" max="255" step="5" />
+				><NumberBox id="setObjectAnimation-tint-3" min="0" max="255" step="5" />
 				<text>Opacity</text
-				><number-var
+				><NumberVar
 					id="setObjectAnimation-opacity"
 					min="0"
 					max="1"
@@ -27,7 +27,7 @@
 					decimals="4"
 				 />
 				<text>OffsetY</text
-				><number-var
+				><NumberVar
 					id="setObjectAnimation-offsetY"
 					min="-10000"
 					max="10000"
@@ -35,7 +35,7 @@
 					decimals="4"
 				 />
 				<text>Rotation</text
-				><number-var
+				><NumberVar
 					id="setObjectAnimation-rotation"
 					min="-10000"
 					max="10000"
@@ -43,16 +43,16 @@
 					decimals="4"
 				 />
 				<text>Easing</text
-				><select-box id="setObjectAnimation-easingId" name="easing" />
+				><SelectBox id="setObjectAnimation-easingId" name="easing" />
 				<text>Duration</text
-				><number-box
+				><NumberBox
 					id="setObjectAnimation-duration"
 					name="duration"
 					min="0"
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><select-box id="setObjectAnimation-wait" name="wait" />
+				<text>Wait</text><SelectBox id="setObjectAnimation-wait" name="wait" />
 			</grid-box>
 			<button id="setObjectAnimation-confirm" name="confirm">Confirm</button>
 			<button id="setObjectAnimation-cancel" name="cancel">Cancel</button>
@@ -66,6 +66,10 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

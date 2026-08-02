@@ -41,7 +41,7 @@ button:focus {
 /* --------------------------------
  * 文本�? * --------------------------------
  */
-text-box {
+.text-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -55,12 +55,12 @@ text-box {
 	overflow: hidden;
 }
 
-text-box.disabled {
+.text-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-text-box:focus-within {
+.text-box:focus-within {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -98,7 +98,7 @@ text-box:focus-within {
  * 文本区域
  * --------------------------------
  */
-text-area {
+.text-area {
 	display: block;
 	position: relative;
 	background-color: var(--input-background);
@@ -109,16 +109,16 @@ text-area {
 	border-radius: 2px;
 }
 
-text-area.disabled {
+.text-area.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-text-area:focus-within {
+.text-area:focus-within {
 	border-color: var(--input-border-color-focus);
 }
 
-text-area > textarea {
+.text-area > textarea {
 	display: block;
 	position: absolute;
 	margin: 0;
@@ -138,14 +138,14 @@ text-area > textarea {
 }
 
 /* 添加 margin-top 属性避免微软输入法面板晃动 */
-text-area > textarea.inputting {
+.text-area > textarea.inputting {
 	margin-top: 4px;
 	padding-top: 0;
 	padding-bottom: 0;
 	height: calc(100% - 8px);
 }
 
-field-set > text-area {
+field-set > .text-area {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -154,11 +154,11 @@ field-set > text-area {
 	border-radius: 0;
 }
 
-field-set > text-area > textarea {
+field-set > .text-area > textarea {
 	padding: 10px;
 }
 
-field-set > text-area > textarea.inputting {
+field-set > .text-area > textarea.inputting {
 	margin-top: 10px;
 	height: calc(100% - 20px);
 }
@@ -236,7 +236,7 @@ field-set > text-area > textarea.inputting {
 /* --------------------------------
  * 颜色�? * --------------------------------
  */
-color-box {
+.color-box {
 	display: block;
 	position: relative;
 	padding: 1px;
@@ -247,11 +247,11 @@ color-box {
 	border-radius: 2px;
 }
 
-color-box:focus {
+.color-box:focus {
 	border-color: var(--input-border-color-focus);
 }
 
-color-box.disabled {
+.color-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
@@ -284,17 +284,17 @@ color-box.disabled {
  * 复选框
  * --------------------------------
  */
-check-box {
+.check-box {
 	white-space: nowrap;
 }
 
-check-box.standard {
+.check-box.standard {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-check-box.standard:focus > check-mark {
+.check-box.standard:focus > check-mark {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -313,7 +313,7 @@ check-mark {
 	border-radius: 2px;
 }
 
-check-box > check-mark::before {
+.check-box > check-mark::before {
 	content: '\2713';
 	position: absolute;
 	margin: -1px;
@@ -327,30 +327,30 @@ check-box > check-mark::before {
 	opacity: 0;
 }
 
-check-box.selected > check-mark::before {
+.check-box.selected > check-mark::before {
 	opacity: 1;
 }
 
-check-box:active > check-mark::before {
+.check-box:active > check-mark::before {
 	opacity: 0.5;
 }
 
-check-box.standard.disabled {
+.check-box.standard.disabled {
 	pointer-events: none;
 	opacity: 0.5;
 }
 
-check-box.standard.large {
+.check-box.standard.large {
 	padding: 0;
 	line-height: 20px;
 }
 
-check-box.standard.large > check-mark {
+.check-box.standard.large > check-mark {
 	width: 20px;
 	height: 20px;
 }
 
-check-box.standard.large > check-mark::before {
+.check-box.standard.large > check-mark::before {
 	width: 20px;
 	height: 20px;
 	font-size: 1.5em;
@@ -360,17 +360,17 @@ check-box.standard.large > check-mark::before {
  * 单选框
  * --------------------------------
  */
-radio-box {
+.radio-box {
 	white-space: nowrap;
 }
 
-radio-box.standard {
+.radio-box.standard {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-radio-box.standard:focus > radio-mark {
+.radio-box.standard:focus > radio-mark {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -386,7 +386,7 @@ radio-mark {
 	border-radius: 50%;
 }
 
-radio-box > radio-mark::before {
+.radio-box > radio-mark::before {
 	content: ' ';
 	position: absolute;
 	margin: -1px;
@@ -399,15 +399,15 @@ radio-box > radio-mark::before {
 	opacity: 0;
 }
 
-radio-box.selected > radio-mark::before {
+.radio-box.selected > radio-mark::before {
 	opacity: 1;
 }
 
-radio-box:active > radio-mark::before {
+.radio-box:active > radio-mark::before {
 	opacity: 0.5;
 }
 
-radio-box.standard.disabled {
+.radio-box.standard.disabled {
 	pointer-events: none;
 	opacity: 0.5;
 }
@@ -416,14 +416,14 @@ radio-box.standard.disabled {
  * 滑动条
  * --------------------------------
  */
-slider-box {
+.slider-box {
 	display: block;
 	position: relative;
 	width: auto;
 	height: 20px;
 }
 
-slider-box.disabled {
+.slider-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
@@ -477,7 +477,7 @@ slider-filler {
 /* --------------------------------
  * 数字�? * --------------------------------
  */
-number-box {
+.number-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -491,16 +491,16 @@ number-box {
 	overflow: hidden;
 }
 
-number-box.disabled {
+.number-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-number-box:focus-within {
+.number-box:focus-within {
 	border-color: var(--input-border-color-focus);
 }
 
-number-box > .label {
+.number-box > .label {
 	position: absolute;
 	padding: 0 4px;
 	left: 0;
@@ -509,19 +509,19 @@ number-box > .label {
 	color: var(--text-color-unit);
 }
 
-number-box > .label.red {
+.number-box > .label.red {
 	color: var(--number-box-label-red);
 }
 
-number-box > .label.green {
+.number-box > .label.green {
 	color: var(--number-box-label-green);
 }
 
-number-box > .label.blue {
+.number-box > .label.blue {
 	color: var(--number-box-label-blue);
 }
 
-number-box > .unit {
+.number-box > .unit {
 	position: absolute;
 	padding: 0 4px;
 	right: 0;
@@ -547,7 +547,7 @@ number-box > .unit {
 /* --------------------------------
  * 数字变量�? * --------------------------------
  */
-number-var:focus-within::before {
+.number-var:focus-within::before {
 	position: absolute;
 	margin-left: -2em;
 	/* 不知是何原因，即时创建的number-var元素，标签行高不�?0px */
@@ -556,11 +556,11 @@ number-var:focus-within::before {
 	color: var(--text-color-disabled);
 }
 
-number-var.constant:focus-within::before {
+.number-var.constant:focus-within::before {
 	content: 'num';
 }
 
-number-var.variable:focus-within::before {
+.number-var.variable:focus-within::before {
 	content: ' var';
 }
 
@@ -568,58 +568,58 @@ number-var.variable:focus-within::before {
  * 字符串变量框
  * --------------------------------
  */
-string-var:focus-within::before {
+.string-var:focus-within::before {
 	position: absolute;
 	margin-left: -2em;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-string-var.constant:focus-within::before {
+.string-var.constant:focus-within::before {
 	content: 'str';
 }
 
-string-var.variable:focus-within::before {
+.string-var.variable:focus-within::before {
 	content: ' var';
 }
 
 /* --------------------------------
  * 文本区域变量�? * --------------------------------
  */
-text-area-var > text-area {
+.text-area-var > .text-area {
 	height: 100%;
 }
 
-text-area-var:focus-within::before {
+.text-area-var:focus-within::before {
 	position: absolute;
 	margin-left: -2em;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-text-area-var.constant:focus-within::before {
+.text-area-var.constant:focus-within::before {
 	content: 'str';
 }
 
-text-area-var.variable:focus-within::before {
+.text-area-var.variable:focus-within::before {
 	content: ' var';
 }
 
 /* --------------------------------
  * 选择变量�? * --------------------------------
  */
-select-var:focus-within::before {
+.select-var:focus-within::before {
 	position: absolute;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-select-var.constant:focus-within::before {
+.select-var.constant:focus-within::before {
 	content: 'enum';
 	margin-left: -2.6em;
 }
 
-select-var.variable:focus-within::before {
+.select-var.variable:focus-within::before {
 	content: 'var';
 	margin-left: -2em;
 }
@@ -627,18 +627,18 @@ select-var.variable:focus-within::before {
 /* --------------------------------
  * 文件变量�? * --------------------------------
  */
-file-var:focus-within::before {
+.file-var:focus-within::before {
 	position: absolute;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-file-var.constant:focus-within::before {
+.file-var.constant:focus-within::before {
 	content: 'file';
 	margin-left: -2.6em;
 }
 
-file-var.variable:focus-within::before {
+.file-var.variable:focus-within::before {
 	content: 'var';
 	margin-left: -2em;
 }
@@ -856,7 +856,7 @@ menu-separator {
  * 自定义框
  * --------------------------------
  */
-custom-box {
+.custom-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -870,7 +870,7 @@ custom-box {
 	overflow: hidden;
 }
 
-custom-box:not(.disabled)::before {
+.custom-box:not(.disabled)::before {
 	content: '...';
 	position: absolute;
 	right: 0;
@@ -880,17 +880,17 @@ custom-box:not(.disabled)::before {
 	text-align: center;
 }
 
-custom-box.disabled {
+.custom-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-custom-box:hover {
+.custom-box:hover {
 	background-color: var(--input-background-hover);
 }
 
-custom-box:focus,
-custom-box.dragover {
+.custom-box:focus,
+.custom-box.dragover {
 	border-color: var(--input-border-color-focus);
 }
 

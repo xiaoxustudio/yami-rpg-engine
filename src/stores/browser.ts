@@ -307,7 +307,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		Browser.page = $('#project');
 		Browser.searcher = Browser.links.head.searcher;
 		Browser.searcher.addKeydownFilter();
-		Browser.page.on('resize', pageResize);
+		Browser.page.addEventListener('resize', pageResize);
 		Browser.body.on('keydown', bodyKeydown);
 		Browser.body.on('open', bodyOpen);
 		Browser.body.on('select', bodySelect);

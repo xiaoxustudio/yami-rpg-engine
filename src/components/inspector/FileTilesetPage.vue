@@ -17,7 +17,7 @@
 				hotkey="F"
 			></item>
 		</box>
-		<slider-box
+		<SliderBox
 			id="palette-zoom"
 			name="zoom"
 			min="0"
@@ -38,41 +38,41 @@
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
 		<detail-grid id="fileTileset-general-grid">
 			<text>{{ local.getLabel('fileTileset-image') || 'Image' }}</text
-			><custom-box id="fileTileset-image" type="file" filter="image" />
+			><CustomBox id="fileTileset-image" type="file" filter="image" />
 			<text>{{ local.getLabel('fileTileset-width') || 'Width' }}</text
-			><number-box id="fileTileset-width" min="1" max="256" unit="tile" />
+			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" />
 			<text>{{ local.getLabel('fileTileset-height') || 'Height' }}</text
-			><number-box id="fileTileset-height" min="1" max="256" unit="tile" />
+			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" />
 			<text>{{ local.getLabel('fileTileset-tileWidth') || 'Tile Width' }}</text
-			><number-box
+			><NumberBox
 				id="fileTileset-tileWidth"
 				min="16"
 				max="256"
 				unit="px"
 			/>
 			<text>{{ local.getLabel('fileTileset-tileHeight') || 'Tile Height' }}</text
-			><number-box
+			><NumberBox
 				id="fileTileset-tileHeight"
 				min="16"
 				max="256"
 				unit="px"
 			/>
 			<text>{{ local.getLabel('fileTileset-globalOffsetX') || 'Tile Offset X' }}</text
-			><number-box
+			><NumberBox
 				id="fileTileset-globalOffsetX"
 				min="-256"
 				max="256"
 				unit="px"
 			/>
 			<text>{{ local.getLabel('fileTileset-globalOffsetY') || 'Tile Offset Y' }}</text
-			><number-box
+			><NumberBox
 				id="fileTileset-globalOffsetY"
 				min="-256"
 				max="256"
 				unit="px"
 			/>
 			<text>{{ local.getLabel('fileTileset-globalPriority') || 'Tile Priority' }}</text
-			><number-box
+			><NumberBox
 				id="fileTileset-globalPriority"
 				min="-10"
 				max="10"
@@ -89,6 +89,9 @@ import { useLocalStore } from '@app/stores/local';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

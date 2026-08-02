@@ -22,7 +22,7 @@
 						<item id="ui-element-reference" class="toolbar-item" value="reference" />
 					</box>
 					<box id="ui-head-end">
-						<slider-box
+						<SliderBox
 							id="ui-zoom"
 							name="zoom"
 							min="0"
@@ -45,6 +45,7 @@ import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

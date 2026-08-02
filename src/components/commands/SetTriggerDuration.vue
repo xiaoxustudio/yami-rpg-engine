@@ -4,10 +4,10 @@
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text
-				><custom-box id="setTriggerDuration-trigger" type="trigger" />
-				<text>Operation</text><select-box id="setTriggerDuration-operation" />
+				><CustomBox id="setTriggerDuration-trigger" type="trigger" />
+				<text>Operation</text><SelectBox id="setTriggerDuration-operation" />
 				<text>Duration</text
-				><number-var
+				><NumberVar
 					id="setTriggerDuration-duration"
 					min="0"
 					max="3600000"
@@ -27,6 +27,9 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import NumberVar from '@app/components/common/NumberVar.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

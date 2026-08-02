@@ -102,8 +102,8 @@ Curve.initialize = function () {
 		}
 	};
 
-	window.on('themechange', this.themechange);
-	window.on('datachange', this.datachange);
+	window.addEventListener('themechange', this.themechange);
+	window.addEventListener('datachange', this.datachange);
 	on(this.page, 'resize', this.windowResize);
 	on(this.list, 'write', this.easingIdWrite);
 	on(this.list, 'input', this.easingIdInput);

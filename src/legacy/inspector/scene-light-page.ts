@@ -87,14 +87,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneLight-anchorX-slider, #sceneLight-anchorY-slider,
     #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider,
     #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Scene));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
-		$('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts').on(
-			'change',
-			Scene.listChange
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+		);
+		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
+		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
+		$('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts').forEach(
+			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 

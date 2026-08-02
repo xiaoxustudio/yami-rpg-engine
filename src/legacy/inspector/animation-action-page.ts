@@ -41,10 +41,12 @@ import { read, write } from '@/util/element-utils.ts';
 
 		const elMode = $('#animMotion-mode');
 		const elements = $('#animMotion-skip, #animMotion-loop, #animMotion-loopStart');
-		elMode.on('input', this.paramInput);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, Animation));
+		elMode.addEventListener('input', this.paramInput);
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, Animation))
+		);
 	};
 
 	AnimMotion.create = function (motionId) {

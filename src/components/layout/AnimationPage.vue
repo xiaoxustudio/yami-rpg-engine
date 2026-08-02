@@ -22,12 +22,12 @@
 						/>
 					</box>
 					<box id="animation-head-center">
-						<number-box id="animation-speed" min="0" max="4" step="0.05" decimals="2"
-							><text class="label">speed:</text></number-box
+						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"
+							><text class="label">speed:</text></NumberBox
 						>
 					</box>
 					<box id="animation-head-end">
-						<slider-box
+						<SliderBox
 							id="animation-zoom"
 							name="zoom-0-6"
 							min="0"
@@ -51,6 +51,8 @@ import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import NumberBox from '@app/components/common/NumberBox.vue';
+import SliderBox from '@app/components/common/SliderBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

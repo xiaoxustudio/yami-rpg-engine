@@ -3,8 +3,8 @@
 		<TitleBar>Region<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
-				<text>Type</text><select-box id="regionGetter-type" /> <text>Region</text
-				><custom-box
+				<text>Type</text><SelectBox id="regionGetter-type" /> <text>Region</text
+				><CustomBox
 					id="regionGetter-presetId"
 					type="preset-object"
 					filter="region"
@@ -22,6 +22,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import CustomBox from '@app/components/common/CustomBox.vue';
+import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

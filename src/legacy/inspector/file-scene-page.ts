@@ -54,13 +54,19 @@ import { GL } from '@/webgl/webgl-init.ts';
     #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct`);
 		const sliders = $(`#fileScene-ambient-red-slider, #fileScene-ambient-green-slider,
     #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider`);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, this.owner));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
-		$('#fileScene-width, #fileScene-height').on('change', this.paramInput);
-		$('#fileScene-events, #fileScene-scripts').on('change', Scene.listChange);
+		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
+		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
+		elements.forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur(this, this.owner))
+		);
+		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
+		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
+		$('#fileScene-width, #fileScene-height').forEach((el: HTMLElement) =>
+			el.addEventListener('change', this.paramInput!)
+		);
+		$('#fileScene-events, #fileScene-scripts').forEach((el: HTMLElement) =>
+			el.addEventListener('change', Scene.listChange)
+		);
 	};
 
 	FileScene.create = function () {

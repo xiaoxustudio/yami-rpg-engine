@@ -120,7 +120,7 @@ AutoTile.initialize = function () {
 	list.creators.push(list.addElementClass);
 	list.updaters.push(list.updateTextNode);
 
-	window.on('dprchange', this.dprchange);
+	window.addEventListener('dprchange', this.dprchange);
 	on($('#autoTile'), 'close', this.windowClose);
 	on($('#autoTile'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.templatesKeydown);
@@ -130,7 +130,9 @@ AutoTile.initialize = function () {
 	on(this.nodeList, 'write', this.nodesWrite);
 	on(this.nodeList, 'popup', this.nodesPopup);
 	on(this.nodeList, 'keydown', this.nodesKeydown);
-	$('.autoTile-neighbor').on('input', this.ruleNeighborInput);
+	$('.autoTile-neighbor').forEach((el: HTMLElement) =>
+		el.addEventListener('input', this.ruleNeighborInput!)
+	);
 	on(this.frameList, 'write', this.framesWrite);
 	on(this.frameList, 'popup', this.framesPopup);
 	on(this.frameList, 'keydown', this.framesKeydown);

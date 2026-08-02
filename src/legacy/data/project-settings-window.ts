@@ -110,7 +110,7 @@ Project.initialize = function () {
 		{ name: 'Only on Deployment', value: 'deployed' }
 	]);
 
-	window.on('datachange', this.projectChange);
+	window.addEventListener('datachange', this.projectChange);
 	on($('#project-settings'), 'close', this.windowClose);
 	on($('#project-settings'), 'closed', this.windowClosed);
 	on($('#project-settings'), 'change', this.dataChange);

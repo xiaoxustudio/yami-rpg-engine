@@ -41,7 +41,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.head.searcher.on('keydown', searcherKeydown);
 		$('#selector').on('closed', windowClosed);
 		$('#selector').on('resize', windowResize);
-		$('#selector-confirm').on('click', confirm);
+		$('#selector-confirm').addEventListener('click', confirm);
 		EventBus.once('editor_loaded', () => {
 			if (Selector.head && Selector.head.searcher) {
 				Selector.head.searcher.id = 'selector-search';
