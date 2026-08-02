@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="condition">
-		<TitleBar>Condition<close /></TitleBar>
+		<TitleBar>Condition<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Condition Type</text><SelectBox id="condition-type" />

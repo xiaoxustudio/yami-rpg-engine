@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="plugin">
-		<TitleBar>Plugin<close></close></TitleBar>
+		<TitleBar>Plugin<div class="close"></div></TitleBar>
 		<content-frame>
 			<field-set id="plugin-list-fieldset" class="input pad">
 				<legend>List</legend>

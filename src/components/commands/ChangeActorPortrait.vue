@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorPortrait">
-	<TitleBar>Change Actor Portrait<close /></TitleBar>
+	<TitleBar>Change Actor Portrait<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorPortrait-actor" type="actor" /><text>Mode</text><SelectBox id="changeActorPortrait-mode" /><text>Portrait</text

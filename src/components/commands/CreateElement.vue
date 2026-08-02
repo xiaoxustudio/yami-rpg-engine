@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="createElement">
-		<TitleBar>Create Element<close /></TitleBar>
+		<TitleBar>Create Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="createElement-operation" />

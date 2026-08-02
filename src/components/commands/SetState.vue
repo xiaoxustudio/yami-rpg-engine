@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setState">
-		<TitleBar>Set State<close /></TitleBar>
+		<TitleBar>Set State<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>State</text><CustomBox id="setState-state" type="state" />

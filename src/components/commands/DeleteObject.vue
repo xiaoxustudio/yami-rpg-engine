@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteObject">
-		<TitleBar>Delete Object<close /></TitleBar>
+		<TitleBar>Delete Object<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Object</text><CustomBox id="deleteObject-object" type="object" />

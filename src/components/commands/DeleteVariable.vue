@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteVariable">
-		<TitleBar>Delete Variable<close /></TitleBar>
+		<TitleBar>Delete Variable<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text

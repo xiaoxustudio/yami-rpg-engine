@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="loadScene">
-		<TitleBar>Load Scene<close /></TitleBar>
+		<TitleBar>Load Scene<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Scene</text

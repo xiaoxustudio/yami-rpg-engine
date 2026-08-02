@@ -1,7 +1,7 @@
 <template>
 	<!-- 匹配 - 分支 -->
 	<WindowFrame id="switch-branch">
-		<TitleBar>Branch<close /></TitleBar>
+		<TitleBar>Branch<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Cases</text><ParamList id="switch-branch-conditions" />

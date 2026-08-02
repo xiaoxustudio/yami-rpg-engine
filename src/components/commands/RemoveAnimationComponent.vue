@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="removeAnimationComponent">
-	<TitleBar>Remove Animation Component<close /></TitleBar>
+	<TitleBar>Remove Animation Component<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text

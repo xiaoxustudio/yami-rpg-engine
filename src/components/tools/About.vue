@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="about">
-		<TitleBar>Yami RPG Editor<close /></TitleBar>
+		<TitleBar>Yami RPG Editor<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text id="about-credits">Credits</text

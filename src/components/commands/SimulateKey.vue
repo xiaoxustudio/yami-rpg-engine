@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="simulateKey">
-		<TitleBar>Simulate Key<close /></TitleBar>
+		<TitleBar>Simulate Key<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="simulateKey-operation" />

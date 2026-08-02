@@ -25,7 +25,7 @@ const read = (): any => {
 		return undefined;
 	}
 	const item = element.querySelector('.selected') as (HTMLElement & { dataValue: any }) | null;
-	if (item && item.dataValue === undefined && item.tagName === 'NAV-ITEM') {
+	if (item && item.dataValue === undefined && hasClass(item, 'nav-item')) {
 		const string = item.getAttribute('value') ?? '';
 		const isNumber = RegExp.number.test(string);
 		item.dataValue = isNumber ? parseFloat(string) : string;
@@ -49,14 +49,14 @@ const write = (value: any): void => {
 	if (!element) {
 		return;
 	}
-	const items = element.childNodes;
+	const items = element.children;
 	const length = items.length;
 	if (length !== 0) {
 		unselect();
 		let target: HTMLElement | undefined;
 		for (let i = 0; i < length; i++) {
 			const item = items[i] as HTMLElement & { dataValue: any };
-			if (item.tagName === 'NAV-ITEM' && item.dataValue === undefined) {
+			if (hasClass(item, 'nav-item') && item.dataValue === undefined) {
 				const string = item.getAttribute('value') ?? '';
 				const isNumber = RegExp.number.test(string);
 				item.dataValue = isNumber ? parseFloat(string) : string;
@@ -105,7 +105,7 @@ const pointerdown = (event: PointerEvent): void => {
 	switch (event.button) {
 		case 0: {
 			const target = event.target as HTMLElement & { dataValue: any };
-			if (target.tagName === 'NAV-ITEM' && !hasClass(target, 'selected')) {
+			if (hasClass(target, 'nav-item') && !hasClass(target, 'selected')) {
 				if (target.dataValue === undefined) {
 					const string = target.getAttribute('value') ?? '';
 					const isNumber = RegExp.number.test(string);
@@ -128,12 +128,12 @@ onMounted(() => {
 	if (!element) {
 		return;
 	}
-	const elements = element.childNodes;
+	const elements = element.children;
 	if (elements.length > 0) {
 		let i = elements.length;
 		while (--i >= 0) {
 			const child = elements[i] as HTMLElement & { dataValue: any };
-			if (child.tagName === 'NAV-ITEM') {
+			if (hasClass(child, 'nav-item')) {
 				const string = child.getAttribute('value') ?? '';
 				const isNumber = RegExp.number.test(string);
 				child.dataValue = isNumber ? parseFloat(string) : string;

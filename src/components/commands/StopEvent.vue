@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="stopEvent">
-	<TitleBar>Stop Event<close /></TitleBar>
+	<TitleBar>Stop Event<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="stopEvent-type" /> <text>Actor</text

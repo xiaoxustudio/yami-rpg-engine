@@ -21,10 +21,10 @@
 	background-color: var(--stage-page-background);
 }
 
-nav-item[value='scene'].selected,
-nav-item[value='ui'].selected,
-nav-item[value='animation'].selected,
-nav-item[value='particle'].selected {
+.nav-item[value='scene'].selected,
+.nav-item[value='ui'].selected,
+.nav-item[value='animation'].selected,
+.nav-item[value='particle'].selected {
 	background-clip: padding-box;
 	border-bottom: 1px solid transparent;
 }

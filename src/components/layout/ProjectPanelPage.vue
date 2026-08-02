@@ -1,6 +1,6 @@
 <template>
 			<page-frame id="project" value="project">
-				<file-browser id="project-browser" />
+				<div class="file-browser" id="project-browser" />
 			</page-frame>
 </template>
 

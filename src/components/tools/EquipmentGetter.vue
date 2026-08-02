@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="equipmentGetter">
-		<TitleBar>Actor<close></close></TitleBar>
+		<TitleBar>Actor<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="equipmentGetter-type" /> <text>Actor</text

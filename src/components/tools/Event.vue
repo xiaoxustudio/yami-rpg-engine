@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="event" class="opaque">
 		<TitleBar id="event-title"
-			>Event<maximize></maximize>
-			<close></close>
+			>Event<div class="maximize"></div>
+			<div class="close"></div>
 		</TitleBar>
 		<content-frame>
 			<field-set id="event-open-fieldset" class="input pad">

@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置视频 - 属性 -->
 	<WindowFrame id="setVideo-property">
-		<TitleBar>Image Property<close /></TitleBar>
+		<TitleBar>Image Property<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setVideo-property-key" />

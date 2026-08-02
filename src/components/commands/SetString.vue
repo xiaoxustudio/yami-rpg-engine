@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setString">
-		<TitleBar>Set String<close /></TitleBar>
+		<TitleBar>Set String<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text

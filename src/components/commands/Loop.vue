@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="loop">
-	<TitleBar>Loop<close /></TitleBar>
+	<TitleBar>Loop<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Mode</text><SelectBox id="loop-mode" /> <text>Conditions</text

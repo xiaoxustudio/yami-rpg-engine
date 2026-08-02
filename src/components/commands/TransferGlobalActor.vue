@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="transferGlobalActor">
-	<TitleBar>Transfer Global Actor<close /></TitleBar>
+	<TitleBar>Transfer Global Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="transferGlobalActor-actor" type="actor" />

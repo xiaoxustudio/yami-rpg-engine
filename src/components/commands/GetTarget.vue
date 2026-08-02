@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="getTarget">
-	<TitleBar>Get Target<close /></TitleBar>
+	<TitleBar>Get Target<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="getTarget-actor" type="actor" /><text>Selector</text><SelectBox id="getTarget-selector" /><text>Condition</text><SelectBox id="getTarget-condition" /><text>Attribute</text><SelectBox id="getTarget-attribute" /><text>Attribute 2</text><SelectBox id="getTarget-divisor" /></grid-box>

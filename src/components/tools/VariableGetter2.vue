@@ -1,7 +1,7 @@
 <template>
 	<!-- 变量访问器窗口2 -->
 	<WindowFrame id="variableGetter2">
-		<TitleBar>Variable<close /></TitleBar>
+		<TitleBar>Variable<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="variableGetter2-type" /> <text>Element</text

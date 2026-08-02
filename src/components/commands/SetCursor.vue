@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setCursor">
-		<TitleBar>Set Cursor<close /></TitleBar>
+		<TitleBar>Set Cursor<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Image</text

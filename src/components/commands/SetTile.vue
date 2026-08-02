@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTile">
-		<TitleBar>Set Tile<close /></TitleBar>
+		<TitleBar>Set Tile<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tilemap</text><CustomBox id="setTile-tilemap" type="tilemap" />

@@ -20,22 +20,22 @@
 		<page-frame value="directory">
 			<box id="layout-content">
 				<NavBar id="layout-nav">
-			<nav-item value="project"><nav-icon>&#xf07b;</nav-icon><nav-text id="nav-project">Project</nav-text></nav-item>
-			<nav-item value="scene"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-scene">Scene</nav-text></nav-item>
-			<nav-item value="scene-object"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-scene-object">Object</nav-text></nav-item>
-			<nav-item value="ui"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-ui">UI</nav-text></nav-item>
-			<nav-item value="ui-element"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-ui-element">Element</nav-text></nav-item>
-			<nav-item value="animation"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-animation">Animation</nav-text></nav-item>
-			<nav-item value="animation-motion"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-animation-motion">Motion</nav-text></nav-item>
-			<nav-item value="animation-timeline"><nav-icon>&#xf017;</nav-icon><nav-text id="nav-animation-timeline">Timeline</nav-text></nav-item>
-			<nav-item value="animation-easing"><nav-icon>&#xf201;</nav-icon><nav-text id="nav-animation-easing">Easing</nav-text></nav-item>
-			<nav-item value="particle"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-particle">Particle</nav-text></nav-item>
-			<nav-item value="particle-layer"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-particle-layer">Layer</nav-text></nav-item>
-			<nav-item value="inspector"><nav-icon>&#xf05a;</nav-icon><nav-text id="nav-inspector">Inspector</nav-text></nav-item>
+			<div class="nav-item" value="project"><div class="nav-icon">&#xf07b;</div><div class="nav-text" id="nav-project">Project</div></div>
+			<div class="nav-item" value="scene"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-scene">Scene</div></div>
+			<div class="nav-item" value="scene-object"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-scene-object">Object</div></div>
+			<div class="nav-item" value="ui"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-ui">UI</div></div>
+			<div class="nav-item" value="ui-element"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-ui-element">Element</div></div>
+			<div class="nav-item" value="animation"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-animation">Animation</div></div>
+			<div class="nav-item" value="animation-motion"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-animation-motion">Motion</div></div>
+			<div class="nav-item" value="animation-timeline"><div class="nav-icon">&#xf017;</div><div class="nav-text" id="nav-animation-timeline">Timeline</div></div>
+			<div class="nav-item" value="animation-easing"><div class="nav-icon">&#xf201;</div><div class="nav-text" id="nav-animation-easing">Easing</div></div>
+			<div class="nav-item" value="particle"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-particle">Particle</div></div>
+			<div class="nav-item" value="particle-layer"><div class="nav-icon">&#xf1b2;</div><div class="nav-text" id="nav-particle-layer">Layer</div></div>
+			<div class="nav-item" value="inspector"><div class="nav-icon">&#xf05a;</div><div class="nav-text" id="nav-inspector">Inspector</div></div>
 		</NavBar>
 		<PageManager id="layout-page-manager">
 			<page-frame id="project" value="project">
-				<file-browser id="project-browser"></file-browser>
+				<div class="file-browser" id="project-browser"></div>
 			</page-frame>
 			<page-frame id="scene" value="scene">
 				<box id="scene-head">

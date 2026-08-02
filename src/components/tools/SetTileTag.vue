@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTileTag">
-		<TitleBar>Set Tile Tag<close /></TitleBar>
+		<TitleBar>Set Tile Tag<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tag</text><NumberBox id="setTileTag-tag" min="0" max="99999" />

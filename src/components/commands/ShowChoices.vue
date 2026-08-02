@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="showChoices">
-	<TitleBar>Show Choices<close /></TitleBar>
+	<TitleBar>Show Choices<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Choices</text><ParamList id="showChoices-choices" />

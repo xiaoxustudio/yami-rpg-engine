@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="playActorAnimation">
-	<TitleBar>Play Actor Animation<close /></TitleBar>
+	<TitleBar>Play Actor Animation<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="playActorAnimation-actor" type="actor" /><text>Motion</text

@@ -476,7 +476,7 @@ Layout.updateHint = function (location: any) {
 	const { hint } = dragging;
 	if (dragging.location) {
 		const { trigger } = dragging.location;
-		if (trigger.tagName === 'NAV-ITEM') {
+		if (hasClass(trigger, 'nav-item')) {
 			removeClass(trigger, 'drag-entered');
 		}
 	}
@@ -512,7 +512,7 @@ Layout.updateHint = function (location: any) {
 				x = x - w;
 				break;
 		}
-		if (trigger.tagName === 'NAV-ITEM') {
+		if (hasClass(trigger, 'nav-item')) {
 			addClass(trigger, 'drag-entered');
 		}
 		document.body.appendChild(hint);
@@ -835,7 +835,7 @@ Layout.navPointerdown = function (event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'NAV-ITEM' && hasClass(element, 'selected')) {
+			if (hasClass(element, 'nav-item') && hasClass(element, 'selected')) {
 				switch (element.dataValue) {
 					case 'inspector':
 						Layout.readyToFocus!(Inspector.manager);
@@ -1035,7 +1035,7 @@ Layout.navDrop = function (event: EditorEvent) {
 		}
 
 		const page = item.page;
-		if (trigger.tagName === 'NAV-ITEM') {
+		if (hasClass(trigger, 'nav-item')) {
 			dNav.insertBefore(item, trigger);
 			dManager.insertBefore(page, trigger.page);
 		} else {

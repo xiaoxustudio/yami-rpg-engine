@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="playAnimation">
-		<TitleBar>Play Animation<close /></TitleBar>
+		<TitleBar>Play Animation<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Mode</text><SelectBox id="playAnimation-mode" /> <text>Position</text

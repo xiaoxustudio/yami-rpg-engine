@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="presetElement" mode="center">
-		<TitleBar>Element<close></close></TitleBar>
+		<TitleBar>Element<div class="close"></div></TitleBar>
 		<content-frame>
 			<CustomBox id="presetElement-uiId" type="file" filter="ui" />
 			<TreeList id="presetElement-list" />

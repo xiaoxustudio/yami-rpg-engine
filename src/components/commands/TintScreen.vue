@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="tintScreen">
-		<TitleBar>Tint Screen<close /></TitleBar>
+		<TitleBar>Tint Screen<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box id="tintScreen-grid-box">
 				<text>Tint - Red</text

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="break">
-	<TitleBar>Break<close /></TitleBar>
+	<TitleBar>Break<div class="close" /></TitleBar>
 	<content-frame>
 		<button id="break-confirm" name="confirm">Confirm</button>
 		<button id="break-cancel" name="cancel">Cancel</button>

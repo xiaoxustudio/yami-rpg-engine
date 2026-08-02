@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorTeam">
-	<TitleBar>Change Actor Team<close /></TitleBar>
+	<TitleBar>Change Actor Team<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorTeam-actor" type="actor" /><text>Team</text><SelectBox id="changeActorTeam-teamId" /></grid-box>

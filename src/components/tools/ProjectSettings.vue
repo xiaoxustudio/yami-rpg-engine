@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="project-settings">
-		<TitleBar>Project Settings<close></close></TitleBar>
+		<TitleBar>Project Settings<div class="close"></div></TitleBar>
 		<content-frame>
 			<box id="project-page">
 				<box id="project-grid-box">

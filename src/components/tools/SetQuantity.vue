@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置数量窗口 -->
 	<WindowFrame id="setQuantity">
-		<TitleBar>Set Quantity<close /></TitleBar>
+		<TitleBar>Set Quantity<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Quantity</text><NumberBox id="setQuantity-quantity" min="1" />

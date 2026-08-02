@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="httpRequest">
-	<TitleBar>httpRequest<close /></TitleBar>
+	<TitleBar>httpRequest<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>URL</text><StringVar id="httpRequest-url" /> <text>Method</text

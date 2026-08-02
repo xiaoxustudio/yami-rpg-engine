@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="comment">
-	<TitleBar>Comment<close /></TitleBar>
+	<TitleBar>Comment<div class="close" /></TitleBar>
 	<content-frame>
 		<TextArea id="comment-comment" />
 		<button id="comment-confirm" name="confirm">Confirm</button>

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerAngle">
-		<TitleBar>Set Trigger Angle<close /></TitleBar>
+		<TitleBar>Set Trigger Angle<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text

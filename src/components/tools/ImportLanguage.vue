@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="importLanguage">
-		<TitleBar>Import Language Pack<close></close></TitleBar>
+		<TitleBar>Import Language Pack<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Import to</text><SelectBox id="importLanguage-language" />

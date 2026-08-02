@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="createGlobalActor">
-	<TitleBar>Create Global Actor<close /></TitleBar>
+	<TitleBar>Create Global Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text

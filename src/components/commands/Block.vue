@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="block">
-	<TitleBar>Block<close /></TitleBar>
+	<TitleBar>Block<div class="close" /></TitleBar>
 	<content-frame>
 		<TextBox id="block-note" />
 		<CheckBox id="block-asynchronous" class="standard"

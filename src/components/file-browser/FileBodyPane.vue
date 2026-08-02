@@ -1,7 +1,7 @@
 <template>
-	<file-body-pane ref="el">
-		<file-body-content ref="contentEl" tabindex="0"></file-body-content>
-	</file-body-pane>
+	<div class="file-body-pane" ref="el">
+		<div class="file-body-content" ref="contentEl" tabindex="0"></div>
+	</div>
 </template>
 
 <script setup lang="ts">

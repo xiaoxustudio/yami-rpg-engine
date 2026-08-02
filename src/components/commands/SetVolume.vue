@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setVolume">
-	<TitleBar>Set Volume<close /></TitleBar>
+	<TitleBar>Set Volume<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="setVolume-type" /> <text>Volume</text

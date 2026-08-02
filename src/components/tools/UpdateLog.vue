@@ -1,7 +1,7 @@
 <template>
 	<!-- 公告窗口 -->
 	<WindowFrame id="update-log">
-		<TitleBar>Update Log<close /></TitleBar>
+		<TitleBar>Update Log<div class="close" /></TitleBar>
 		<content-frame>
 			<box id="update-log-tabs">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setNumber">
-		<TitleBar>Set Number<close /></TitleBar>
+		<TitleBar>Set Number<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text

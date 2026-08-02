@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changePassableTerrain">
-	<TitleBar>Change Passable Terrain<close /></TitleBar>
+	<TitleBar>Change Passable Terrain<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text

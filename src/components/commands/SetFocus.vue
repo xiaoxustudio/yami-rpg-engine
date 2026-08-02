@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setFocus">
-		<TitleBar>Set Focus<close /></TitleBar>
+		<TitleBar>Set Focus<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="setFocus-operation" />

@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="regionGetter">
-		<TitleBar>Region<close></close></TitleBar>
+		<TitleBar>Region<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="regionGetter-type" /> <text>Region</text

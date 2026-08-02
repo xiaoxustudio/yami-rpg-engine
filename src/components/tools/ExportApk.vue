@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="export-apk">
-		<TitleBar>构建APK<close></close></TitleBar>
+		<TitleBar>构建APK<div class="close"></div></TitleBar>
 		<content-frame>
 			<box id="export-apk-out">
 				<grid-box id="export-apk-grid">

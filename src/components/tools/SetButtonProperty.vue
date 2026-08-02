@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setButton-property">
-		<TitleBar>Set Button<close></close></TitleBar>
+		<TitleBar>Set Button<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setButton-property-key" />

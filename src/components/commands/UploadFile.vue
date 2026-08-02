@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="uploadFile">
-		<TitleBar>uploadFile<close /></TitleBar>
+		<TitleBar>uploadFile<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>URL</text><StringVar id="uploadFile-url" /> <text>LocalPath</text

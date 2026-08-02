@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fontSize">
-		<TitleBar>Set Font Size<close></close></TitleBar>
+		<TitleBar>Set Font Size<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Size</text

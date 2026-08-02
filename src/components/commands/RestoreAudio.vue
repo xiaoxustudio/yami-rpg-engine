@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="restoreAudio">
-	<TitleBar>Restore Audio<close /></TitleBar>
+	<TitleBar>Restore Audio<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Type</text><SelectBox id="restoreAudio-type" /> </grid-box>
 		<button id="restoreAudio-confirm" name="confirm">Confirm</button>

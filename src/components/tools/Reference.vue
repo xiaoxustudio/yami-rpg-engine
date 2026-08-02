@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="reference">
-		<TitleBar>Reference<close></close></TitleBar>
+		<TitleBar>Reference<div class="close"></div></TitleBar>
 		<content-frame>
 			<CommonList id="reference-list" />
 		</content-frame>

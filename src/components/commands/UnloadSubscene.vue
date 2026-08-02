@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="unloadSubscene">
-		<TitleBar>Unload Subscene<close /></TitleBar>
+		<TitleBar>Unload Subscene<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Scene</text

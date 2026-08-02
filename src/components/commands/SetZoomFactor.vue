@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setZoomFactor">
-		<TitleBar>Set Zoom Factor<close /></TitleBar>
+		<TitleBar>Set Zoom Factor<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Zoom Factor</text

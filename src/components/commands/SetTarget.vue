@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setTarget">
-	<TitleBar>Set Target<close /></TitleBar>
+	<TitleBar>Set Target<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setTarget-actor" type="actor" /></grid-box>

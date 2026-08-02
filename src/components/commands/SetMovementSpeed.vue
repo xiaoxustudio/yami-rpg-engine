@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setMovementSpeed">
-	<TitleBar>Set Movement Speed<close /></TitleBar>
+	<TitleBar>Set Movement Speed<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setMovementSpeed-actor" type="actor" /><text>Property</text><SelectBox id="setMovementSpeed-property" /><text>Base Speed</text

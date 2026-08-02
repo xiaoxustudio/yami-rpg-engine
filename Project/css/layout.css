@@ -329,14 +329,15 @@ body.border > .window-frame.maximized {
 	background-color: var(--titlebar-background);
 }
 
-minimize {
+.minimize {
 	position: absolute;
+	top: 0;
 	right: 88px;
 	width: 44px;
 	height: 28px;
 }
 
-minimize::after {
+.minimize::after {
 	content: '';
 	display: block;
 	width: 100%;
@@ -350,22 +351,23 @@ minimize::after {
 	mask-position: 0 0;
 }
 
-minimize:hover {
+.minimize:hover {
 	background-color: var(--titlebar-button-background-hover);
 }
 
-minimize:active {
+.minimize:active {
 	background-color: var(--titlebar-button-background-active);
 }
 
-maximize {
+.maximize {
 	position: absolute;
+	top: 0;
 	right: 44px;
 	width: 44px;
 	height: 28px;
 }
 
-:root:not(.darwin) maximize::after {
+:root:not(.darwin) .maximize::after {
 	content: '';
 	display: block;
 	width: 100%;
@@ -379,22 +381,23 @@ maximize {
 	mask-position: 0 -100%;
 }
 
-:root:not(.darwin) maximize:hover {
+:root:not(.darwin) .maximize:hover {
 	background-color: var(--titlebar-button-background-hover);
 }
 
-:root:not(.darwin) maximize:active {
+:root:not(.darwin) .maximize:active {
 	background-color: var(--titlebar-button-background-active);
 }
 
-close {
+.close {
 	position: absolute;
+	top: 0;
 	right: 0;
 	width: 44px;
 	height: 28px;
 }
 
-:root:not(.darwin) close::after {
+:root:not(.darwin) .close::after {
 	content: '';
 	display: block;
 	width: 100%;
@@ -408,31 +411,31 @@ close {
 	mask-position: 0 -300%;
 }
 
-:root:not(.darwin) close:hover {
+:root:not(.darwin) .close:hover {
 	background-color: var(--titlebar-close-background-hover);
 }
 
-:root:not(.darwin) close:active {
+:root:not(.darwin) .close:active {
 	background-color: var(--titlebar-close-background-active);
 }
 
-:root:not(.darwin) close:hover::after,
-:root:not(.darwin) close:active::after {
+:root:not(.darwin) .close:hover::after,
+:root:not(.darwin) .close:active::after {
 	background-color: var(--titlebar-close-color);
 }
 
-:root:not(.darwin) .window-frame.maximized > .title-bar > maximize::after {
+:root:not(.darwin) .window-frame.maximized > .title-bar > .maximize::after {
 	-webkit-mask-position: 0 -200%;
 	mask-position: 0 -200%;
 }
 
-:root.darwin maximize {
+:root.darwin .maximize {
 	left: 24px;
 	right: auto;
 	width: 20px;
 }
 
-:root.darwin maximize::after {
+:root.darwin .maximize::after {
 	content: '';
 	display: block;
 	margin: 8px 0 0 4px;
@@ -443,21 +446,22 @@ close {
 	background-position: 0 0;
 }
 
-:root.darwin maximize:hover::after {
+:root.darwin .maximize:hover::after {
 	background-position: 0 -100%;
 }
 
-:root.darwin maximize:active::after {
+:root.darwin .maximize:active::after {
 	background-position: 0 -200%;
 }
 
-:root.darwin close {
+:root.darwin .close {
+	top: 0;
 	left: 4px;
 	right: auto;
 	width: 20px;
 }
 
-:root.darwin close::after {
+:root.darwin .close::after {
 	content: '';
 	display: block;
 	margin: 8px 0 0 4px;
@@ -468,11 +472,11 @@ close {
 	background-position: 0 0;
 }
 
-:root.darwin close:hover::after {
+:root.darwin .close:hover::after {
 	background-position: 0 -100%;
 }
 
-:root.darwin close:active::after {
+:root.darwin .close:active::after {
 	background-position: 0 -200%;
 }
 
@@ -499,7 +503,7 @@ page-frame:not(.visible) {
  * 选框区域
  * --------------------------------
  */
-.marquee-area > selection {
+.marquee-area > .selection {
 	position: absolute;
 	pointer-events: none;
 }
@@ -843,8 +847,8 @@ group {
 	display: none;
 }
 
-group.ready-to-focus > .nav-bar > nav-item.selected,
-group:focus-within > .nav-bar > nav-item.selected {
+group.ready-to-focus > .nav-bar > .nav-item.selected,
+group:focus-within > .nav-bar > .nav-item.selected {
 	background-image: linear-gradient(
 		to right,
 		rgba(64, 128, 192, 0) 0%,
@@ -886,7 +890,8 @@ group-info {
 }
 
 /* --------------------------------
- * 工具�? * --------------------------------
+ * 工具栏
+ * --------------------------------
  */
 .toolbar-item {
 	width: 29px;

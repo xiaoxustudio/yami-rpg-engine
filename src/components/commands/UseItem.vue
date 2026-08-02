@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="useItem">
-	<TitleBar>Use Item<close /></TitleBar>
+	<TitleBar>Use Item<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="useItem-actor" type="actor" />

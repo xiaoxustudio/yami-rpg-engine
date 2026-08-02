@@ -574,7 +574,7 @@ anim-dir.selected {
 	overflow: hidden;
 }
 
-#sprite-marquee > selection {
+#sprite-marquee > .selection {
 	background-color: var(--marquee-background);
 	border: var(--marquee-border);
 }

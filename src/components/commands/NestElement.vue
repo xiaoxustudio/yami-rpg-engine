@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="nestElement">
-		<TitleBar>Nest Element<close /></TitleBar>
+		<TitleBar>Nest Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Parent Element</text

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileEvent-parameter">
-		<TitleBar>Parameter<close></close></TitleBar>
+		<TitleBar>Parameter<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="fileEvent-parameter-type" /> <text>Key</text

@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="positionGetter">
-		<TitleBar>Position<close></close></TitleBar>
+		<TitleBar>Position<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="positionGetter-type" /> <text>X</text

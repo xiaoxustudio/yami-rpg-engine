@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setPlayerActor">
-	<TitleBar>Set Player Actor<close /></TitleBar>
+	<TitleBar>Set Player Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Global Actor</text

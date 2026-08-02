@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="if-branch">
-		<TitleBar>Branch<close></close></TitleBar>
+		<TitleBar>Branch<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Mode</text><SelectBox id="if-branch-mode" /> <text>Conditions</text

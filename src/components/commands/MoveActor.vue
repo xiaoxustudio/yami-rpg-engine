@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="moveActor">
-	<TitleBar>Move Actor<close /></TitleBar>
+	<TitleBar>Move Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="moveActor-actor" type="actor" /><text>Mode</text><SelectBox id="moveActor-mode" /><text>Angle</text

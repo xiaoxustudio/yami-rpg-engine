@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileActor-sprite">
-		<TitleBar>Sprite<close></close></TitleBar>
+		<TitleBar>Sprite<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Name</text><SelectBox id="fileActor-sprite-id" /> <text>Image</text

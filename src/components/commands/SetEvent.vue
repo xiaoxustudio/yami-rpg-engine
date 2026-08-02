@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setEvent">
-	<TitleBar>Set Event<close /></TitleBar>
+	<TitleBar>Set Event<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Operation</text><SelectBox id="setEvent-operation" />

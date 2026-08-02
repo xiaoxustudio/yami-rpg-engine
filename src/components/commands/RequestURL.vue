@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="requestURL">
-	<TitleBar>requestURL<close /></TitleBar>
+	<TitleBar>requestURL<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>URL</text><StringVar id="requestURL-url" /> <text>Header</text

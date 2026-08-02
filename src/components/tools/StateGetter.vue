@@ -1,7 +1,7 @@
 <template>
 	<!-- 状态访问器窗口 -->
 	<WindowFrame id="stateGetter">
-		<TitleBar>Actor<close /></TitleBar>
+		<TitleBar>Actor<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="stateGetter-type" /> <text>Actor</text

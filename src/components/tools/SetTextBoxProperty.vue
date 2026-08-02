@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文本框 - 属性 -->
 	<WindowFrame id="setTextBox-property">
-		<TitleBar>Text Property<close /></TitleBar>
+		<TitleBar>Text Property<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setTextBox-property-key" />

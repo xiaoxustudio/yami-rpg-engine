@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeThreat">
-	<TitleBar>Change Threat<close /></TitleBar>
+	<TitleBar>Change Threat<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeThreat-actor" type="actor" /><text>Target</text><CustomBox id="changeThreat-target" type="actor" /><text>Operation</text><SelectBox id="changeThreat-operation" /><text>Threat</text

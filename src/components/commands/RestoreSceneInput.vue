@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="restoreSceneInput">
-		<TitleBar>Restore Scene Input<close /></TitleBar>
+		<TitleBar>Restore Scene Input<div class="close" /></TitleBar>
 		<content-frame>
 			<button id="restoreSceneInput-confirm" name="confirm">Confirm</button>
 			<button id="restoreSceneInput-cancel" name="cancel">Cancel</button>

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorState">
-	<TitleBar>Change Actor State<close /></TitleBar>
+	<TitleBar>Change Actor State<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorState-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorState-operation" /><text>State</text

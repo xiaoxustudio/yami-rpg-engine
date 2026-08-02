@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setPan">
-	<TitleBar>Set Pan<close /></TitleBar>
+	<TitleBar>Set Pan<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="setPan-type" /> <text>Pan</text

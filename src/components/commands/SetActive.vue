@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setActive">
-	<TitleBar>Set Active<close /></TitleBar>
+	<TitleBar>Set Active<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setActive-actor" type="actor" /><text>State</text><SelectBox id="setActive-active" /></grid-box>

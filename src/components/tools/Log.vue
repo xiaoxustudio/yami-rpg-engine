@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="log">
-		<TitleBar>Log<close></close></TitleBar>
+		<TitleBar>Log<div class="close"></div></TitleBar>
 		<content-frame>
 			<CommonList id="log-list" />
 		</content-frame>

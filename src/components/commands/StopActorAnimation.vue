@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="stopActorAnimation">
-	<TitleBar>Stop Actor Animation<close /></TitleBar>
+	<TitleBar>Stop Actor Animation<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="stopActorAnimation-actor" type="actor" /></grid-box>

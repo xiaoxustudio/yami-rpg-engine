@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileActor-skill">
-		<TitleBar>Skill<close></close></TitleBar>
+		<TitleBar>Skill<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Skill</text

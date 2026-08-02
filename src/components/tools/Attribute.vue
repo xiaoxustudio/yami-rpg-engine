@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="attribute">
-		<TitleBar>Attribute<close /></TitleBar>
+		<TitleBar>Attribute<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="attribute-list-fieldset" class="input pad">
 				<legend>List</legend>

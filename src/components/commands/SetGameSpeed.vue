@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setGameSpeed">
-		<TitleBar>Set Game Speed<close /></TitleBar>
+		<TitleBar>Set Game Speed<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Speed</text

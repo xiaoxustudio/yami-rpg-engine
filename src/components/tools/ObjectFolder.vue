@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="object-folder">
-		<TitleBar>Default Object Folders<close></close></TitleBar>
+		<TitleBar>Default Object Folders<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tilemap</text><TextBox id="object-folder-tilemap" /> <text>Actor</text

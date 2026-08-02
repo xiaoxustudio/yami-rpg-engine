@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setAnimation">
-		<TitleBar>Set Animation<close /></TitleBar>
+		<TitleBar>Set Animation<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setAnimation-element" type="element" />

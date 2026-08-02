@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="rename">
-		<TitleBar>Rename<close></close></TitleBar>
+		<TitleBar>Rename<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box> <text>Name</text><TextBox id="rename-name" /> </grid-box>
 			<button id="rename-confirm" name="confirm">Confirm</button>

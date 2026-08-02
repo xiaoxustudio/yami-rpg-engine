@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deployment">
-		<TitleBar>Deployment<close /></TitleBar>
+		<TitleBar>Deployment<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Platform</text><SelectBox id="deployment-platform" />

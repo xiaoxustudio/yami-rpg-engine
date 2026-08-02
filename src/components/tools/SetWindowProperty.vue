@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置窗口 - 属性 -->
 	<WindowFrame id="setWindow-property">
-		<TitleBar>Window Property<close /></TitleBar>
+		<TitleBar>Window Property<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setWindow-property-key" />

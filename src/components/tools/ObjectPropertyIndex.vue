@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="ObjectProperty-index">
-		<TitleBar>ObjectProperty-index<close /></TitleBar>
+		<TitleBar>ObjectProperty-index<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>IndexName</text><TextBox id="ObjectProperty-index-name" />

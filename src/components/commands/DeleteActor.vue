@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="deleteActor">
-	<TitleBar>Delete Actor<close /></TitleBar>
+	<TitleBar>Delete Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="deleteActor-actor" type="actor" /></grid-box>

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="clampCamera">
-		<TitleBar>Clamp Camera<close /></TitleBar>
+		<TitleBar>Clamp Camera<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Left</text

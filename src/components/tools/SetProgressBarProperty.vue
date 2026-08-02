@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setProgressBar-property">
-		<TitleBar>Image Property<close></close></TitleBar>
+		<TitleBar>Image Property<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setProgressBar-property-key" />

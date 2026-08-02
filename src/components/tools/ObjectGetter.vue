@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="objectGetter">
-		<TitleBar>Scene Object<close></close></TitleBar>
+		<TitleBar>Scene Object<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="objectGetter-type" /> <text>Object</text

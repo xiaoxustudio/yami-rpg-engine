@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="resetTargets">
-	<TitleBar>Reset Targets<close /></TitleBar>
+	<TitleBar>Reset Targets<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="resetTargets-actor" type="actor" /></grid-box>

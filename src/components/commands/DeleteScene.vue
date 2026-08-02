@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteScene">
-		<TitleBar>Delete Scene<close /></TitleBar>
+		<TitleBar>Delete Scene<div class="close" /></TitleBar>
 		<content-frame>
 			<button id="deleteScene-confirm" name="confirm">Confirm</button>
 			<button id="deleteScene-cancel" name="cancel">Cancel</button>

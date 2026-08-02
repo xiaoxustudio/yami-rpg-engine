@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setInventory">
-	<TitleBar>Set Inventory<close /></TitleBar>
+	<TitleBar>Set Inventory<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setInventory-actor" type="actor" />

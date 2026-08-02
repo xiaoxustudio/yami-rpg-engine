@@ -2,8 +2,8 @@
 	<WindowFrame id="edit-data">
 		<TitleBar
 			>edit data<text id="edit-data-mark" class="hidden">✱</text>
-			<maximize id="edit-data-maximize" />
-			<close />
+			<div class="maximize" id="edit-data-maximize" />
+			<div class="close" />
 		</TitleBar>
 		<content-frame>
 			<box id="edit-data-current"> </box>

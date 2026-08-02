@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setWindow">
-		<TitleBar>Set Window<close /></TitleBar>
+		<TitleBar>Set Window<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setWindow-element" type="element" />

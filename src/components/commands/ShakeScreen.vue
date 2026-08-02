@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="shakeScreen">
-		<TitleBar>Tint Screen<close /></TitleBar>
+		<TitleBar>Tint Screen<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Shake Mode</text><SelectBox id="shakeScreen-mode" /> <text>Power</text

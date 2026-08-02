@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerDuration">
-		<TitleBar>Set Trigger Duration<close /></TitleBar>
+		<TitleBar>Set Trigger Duration<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text

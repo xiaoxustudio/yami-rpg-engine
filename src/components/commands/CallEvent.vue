@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="callEvent">
-	<TitleBar>Call Event<close /></TitleBar>
+	<TitleBar>Call Event<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="callEvent-type" /> <text>Actor</text

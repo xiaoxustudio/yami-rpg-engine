@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="createActor">
-	<TitleBar>Create Actor<close /></TitleBar>
+	<TitleBar>Create Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text

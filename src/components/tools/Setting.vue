@@ -2,8 +2,8 @@
 	<!-- Open设置窗口 -->
 	<WindowFrame id="setting">
 		<TitleBar id="setting-title"
-			>Setting<maximize />
-			<close />
+			>Setting<div class="maximize" />
+			<div class="close" />
 		</TitleBar>
 		<content-frame>
 			<grid-box id="setting-grid">

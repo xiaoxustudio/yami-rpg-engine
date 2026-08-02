@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="arrayList" mode="center">
-		<TitleBar>Array<close /></TitleBar>
+		<TitleBar>Array<div class="close" /></TitleBar>
 		<content-frame>
 			<ParamList id="arrayList-list" />
 			<button id="arrayList-confirm" name="confirm">Confirm</button>

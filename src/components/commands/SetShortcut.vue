@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setShortcut">
-	<TitleBar>Set Shortcut<close /></TitleBar>
+	<TitleBar>Set Shortcut<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setShortcut-actor" type="actor" />

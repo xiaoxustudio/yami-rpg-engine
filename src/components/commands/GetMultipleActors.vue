@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="getMultipleActors">
-	<TitleBar>Get Actor<close /></TitleBar>
+	<TitleBar>Get Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Write to List</text

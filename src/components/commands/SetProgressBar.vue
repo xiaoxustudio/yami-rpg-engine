@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setProgressBar">
-		<TitleBar>Set Progress Bar<close /></TitleBar>
+		<TitleBar>Set Progress Bar<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setProgressBar-element" type="element" />

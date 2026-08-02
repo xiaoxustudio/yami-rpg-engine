@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="easing">
-		<TitleBar>Easing<close /></TitleBar>
+		<TitleBar>Easing<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="easing-list-fieldset" class="input pad">
 				<legend>List</legend>

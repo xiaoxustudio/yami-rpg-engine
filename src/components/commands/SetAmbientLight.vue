@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setAmbientLight">
-		<TitleBar>Set Ambient Light<close /></TitleBar>
+		<TitleBar>Set Ambient Light<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Red</text

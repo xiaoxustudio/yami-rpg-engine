@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="gameData">
-		<TitleBar>Game Data<close /></TitleBar>
+		<TitleBar>Game Data<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="gameData-operation" />

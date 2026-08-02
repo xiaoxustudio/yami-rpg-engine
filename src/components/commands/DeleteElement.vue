@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteElement">
-		<TitleBar>Delete Element<close /></TitleBar>
+		<TitleBar>Delete Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="deleteElement-operation" />

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setAngle">
-	<TitleBar>Set Angle<close /></TitleBar>
+	<TitleBar>Set Angle<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setAngle-actor" type="actor" /><text>Angle</text><CustomBox id="setAngle-angle" type="angle" /><text>Easing</text><SelectBox id="setAngle-easingId" name="easing" /><text>Duration</text

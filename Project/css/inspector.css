@@ -801,19 +801,19 @@
 	border-bottom: var(--selector-browser-border);
 }
 
-#selector-browser > file-nav-pane {
+#selector-browser > .file-nav-pane {
 	width: 240px;
 	border-right: var(--selector-browser-border);
 }
 
-#selector-browser > file-head-pane {
+#selector-browser > .file-head-pane {
 	padding-left: 240px;
 	left: 0;
 	/* right: 44px; */
 	/* background-color: transparent; */
 }
 
-#selector-browser > file-body-pane {
+#selector-browser > .file-body-pane {
 	left: 240px;
 }
 

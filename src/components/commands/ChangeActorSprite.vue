@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorSprite">
-	<TitleBar>Change Actor Sprite<close /></TitleBar>
+	<TitleBar>Change Actor Sprite<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorSprite-actor" type="actor" /><text>Animation</text

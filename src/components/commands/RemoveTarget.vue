@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="removeTarget">
-	<TitleBar>Remove Target<close /></TitleBar>
+	<TitleBar>Remove Target<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="removeTarget-actor" type="actor" /><text>Target</text><CustomBox id="removeTarget-target" type="actor" /></grid-box>

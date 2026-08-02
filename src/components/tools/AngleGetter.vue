@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="angleGetter">
-		<TitleBar>Angle<close /></TitleBar>
+		<TitleBar>Angle<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="angleGetter-type" /> <text>Position</text

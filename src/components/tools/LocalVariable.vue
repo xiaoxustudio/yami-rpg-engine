@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="localVariable">
-		<TitleBar>Set Local Variable<close></close></TitleBar>
+		<TitleBar>Set Local Variable<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Local Variable</text><TextBox id="localVariable-key" />

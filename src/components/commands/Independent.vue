@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="independent">
-	<TitleBar>Independent<close /></TitleBar>
+	<TitleBar>Independent<div class="close" /></TitleBar>
 	<content-frame>
 		<button id="independent-confirm" name="confirm">Confirm</button>
 		<button id="independent-cancel" name="cancel">Cancel</button>

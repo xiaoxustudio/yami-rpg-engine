@@ -1,7 +1,7 @@
 <template>
 	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame id="tilemapGetter">
-		<TitleBar>Tilemap<close /></TitleBar>
+		<TitleBar>Tilemap<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="tilemapGetter-type" /> <text>Tilemap</text

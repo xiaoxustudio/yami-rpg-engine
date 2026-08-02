@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setDialogBox-property">
-		<TitleBar>Dialog Box Property<close></close></TitleBar>
+		<TitleBar>Dialog Box Property<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setDialogBox-property-key" />

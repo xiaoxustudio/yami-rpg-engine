@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="ancestorGetter">
-		<TitleBar>Element<close /></TitleBar>
+		<TitleBar>Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="ancestorGetter-type" /> <text>Data ID</text

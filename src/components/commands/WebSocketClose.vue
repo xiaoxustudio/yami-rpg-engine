@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="webSocketClose">
-		<TitleBar>webSocketClose<close /></TitleBar>
+		<TitleBar>webSocketClose<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>ID</text><StringVar id="webSocketClose-id" /> <text>Code</text

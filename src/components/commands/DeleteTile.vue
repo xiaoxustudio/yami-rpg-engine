@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteTile">
-		<TitleBar>Delete Tile<close /></TitleBar>
+		<TitleBar>Delete Tile<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tilemap</text><CustomBox id="deleteTile-tilemap" type="tilemap" />

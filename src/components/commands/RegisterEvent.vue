@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="registerEvent">
-	<TitleBar>Register Event<close /></TitleBar>
+	<TitleBar>Register Event<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Target</text><SelectBox id="registerEvent-target" /> <text>Actor</text

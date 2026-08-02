@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="showText">
-	<TitleBar>Show Text<close /></TitleBar>
+	<TitleBar>Show Text<div class="close" /></TitleBar>
 	<content-frame>
 		<CustomBox id="showText-target" type="actor" />
 		<TextBox id="showText-parameters" />

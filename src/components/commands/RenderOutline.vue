@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="renderOutline">
-	<TitleBar>Render Outline<close /></TitleBar>
+	<TitleBar>Render Outline<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Operation</text><SelectBox id="renderOutline-operation" /><text>Actor</text><CustomBox id="renderOutline-actor" type="actor" /><text>Color</text><ColorBox id="renderOutline-color" /></grid-box>

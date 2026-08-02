@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setImage">
-		<TitleBar>Set Image<close /></TitleBar>
+		<TitleBar>Set Image<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setImage-element" type="element" />

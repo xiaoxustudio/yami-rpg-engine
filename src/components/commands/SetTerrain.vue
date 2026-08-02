@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTerrain">
-		<TitleBar>Set Terrain<close /></TitleBar>
+		<TitleBar>Set Terrain<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Position</text><CustomBox id="setTerrain-position" type="position" />

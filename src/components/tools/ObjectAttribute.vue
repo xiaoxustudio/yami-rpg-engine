@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="object-attribute">
-		<TitleBar>Attribute<close></close></TitleBar>
+		<TitleBar>Attribute<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Key</text><SelectBox id="object-attribute-key" /> <text>Boolean</text

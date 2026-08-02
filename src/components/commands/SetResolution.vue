@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setResolution">
-		<TitleBar>Set Resolution<close /></TitleBar>
+		<TitleBar>Set Resolution<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Width</text

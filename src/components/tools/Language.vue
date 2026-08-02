@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="language">
-		<TitleBar>Language<close></close></TitleBar>
+		<TitleBar>Language<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Name</text><SelectBox id="language-name" /> <text>Font</text

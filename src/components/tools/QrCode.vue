@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="qr-code">
-		<TitleBar>本地服务预览<close></close></TitleBar>
+		<TitleBar>本地服务预览<div class="close"></div></TitleBar>
 		<content-frame>
 			<box>
 				<box id="qr-img-container"><img id="qr-code-img" /></box><br />

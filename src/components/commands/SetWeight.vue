@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setWeight">
-	<TitleBar>Set Weight<close /></TitleBar>
+	<TitleBar>Set Weight<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setWeight-actor" type="actor" /><text>Weight</text

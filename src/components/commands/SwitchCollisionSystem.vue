@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="switchCollisionSystem">
-		<TitleBar>Switch Collision System<close /></TitleBar>
+		<TitleBar>Switch Collision System<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="switchCollisionSystem-operation" />

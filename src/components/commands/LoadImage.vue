@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="loadImage">
-		<TitleBar>Load Image<close /></TitleBar>
+		<TitleBar>Load Image<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="loadImage-element" type="element" />

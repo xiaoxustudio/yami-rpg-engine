@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setLanguage">
-		<TitleBar>Set Language<close /></TitleBar>
+		<TitleBar>Set Language<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Language</text><SelectBox id="setLanguage-language" />

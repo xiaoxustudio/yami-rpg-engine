@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorSkill">
-	<TitleBar>Change Actor Skill<close /></TitleBar>
+	<TitleBar>Change Actor Skill<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorSkill-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorSkill-operation" /><text>Skill</text

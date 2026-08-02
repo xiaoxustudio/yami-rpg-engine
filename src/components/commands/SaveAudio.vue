@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="saveAudio">
-	<TitleBar>Save Audio<close /></TitleBar>
+	<TitleBar>Save Audio<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Type</text><SelectBox id="saveAudio-type" /> </grid-box>
 		<button id="saveAudio-confirm" name="confirm">Confirm</button>

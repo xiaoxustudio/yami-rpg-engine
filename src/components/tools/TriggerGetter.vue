@@ -1,7 +1,7 @@
 <template>
 	<!-- 触发器访问器窗口 -->
 	<WindowFrame id="triggerGetter">
-		<TitleBar>Trigger<close /></TitleBar>
+		<TitleBar>Trigger<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="triggerGetter-type" /> <text>Variable</text

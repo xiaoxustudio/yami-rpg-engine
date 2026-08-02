@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="scene-shift">
-		<TitleBar>Shift<close></close></TitleBar>
+		<TitleBar>Shift<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Shift X</text><NumberBox id="scene-shift-x" min="-512" max="512" />

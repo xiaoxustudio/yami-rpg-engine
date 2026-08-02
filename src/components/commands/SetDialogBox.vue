@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setDialogBox">
-		<TitleBar>Set Dialog Box<close /></TitleBar>
+		<TitleBar>Set Dialog Box<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setDialogBox-element" type="element" />

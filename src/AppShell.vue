@@ -11,9 +11,9 @@
 		<TabBar id="title-tabBar" />
 		<box id="title-buttons">
 			<box id="title-play" hotkey="F4">&#xf04b;</box>
-			<minimize id="title-minimize"></minimize>
-			<maximize id="title-maximize"></maximize>
-			<close id="title-close"></close>
+			<div class="minimize" id="title-minimize"></div>
+			<div class="maximize" id="title-maximize"></div>
+			<div class="close" id="title-close"></div>
 		</box>
 	</box>
 	<LayoutPanel />

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="arrayList-number">
-		<TitleBar>Number<close /></TitleBar>
+		<TitleBar>Number<div class="close" /></TitleBar>
 		<content-frame>
 			<NumberBox
 				id="arrayList-number-value"

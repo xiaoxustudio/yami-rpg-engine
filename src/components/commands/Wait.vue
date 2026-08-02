@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="wait">
-	<TitleBar>Wait<close /></TitleBar>
+	<TitleBar>Wait<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Duration</text

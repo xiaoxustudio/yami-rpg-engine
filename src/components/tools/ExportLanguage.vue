@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="exportLanguage">
-		<TitleBar>Export Language Pack<close></close></TitleBar>
+		<TitleBar>Export Language Pack<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>First Lang</text><SelectBox id="exportLanguage-first" />

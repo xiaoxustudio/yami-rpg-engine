@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="downloadFile">
-	<TitleBar>downloadFile<close /></TitleBar>
+	<TitleBar>downloadFile<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>URL</text><StringVar id="downloadFile-url" /> <text>Header</text

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setList">
-		<TitleBar>Set List<close /></TitleBar>
+		<TitleBar>Set List<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text

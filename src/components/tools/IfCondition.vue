@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="if-condition">
-		<TitleBar>Condition<close></close></TitleBar>
+		<TitleBar>Condition<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Condition Type</text><SelectBox id="if-condition-type" />

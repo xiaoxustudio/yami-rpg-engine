@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setImage-property">
-		<TitleBar>Image Property<close></close></TitleBar>
+		<TitleBar>Image Property<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setImage-property-key" />

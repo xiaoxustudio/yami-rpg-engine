@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileActor-equipment">
-		<TitleBar>Equipment<close></close></TitleBar>
+		<TitleBar>Equipment<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Equipment</text

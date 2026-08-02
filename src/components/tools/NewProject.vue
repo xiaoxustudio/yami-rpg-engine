@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="newProject">
-		<TitleBar>New Project<close></close></TitleBar>
+		<TitleBar>New Project<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Template</text><SelectBox id="newProject-template" />

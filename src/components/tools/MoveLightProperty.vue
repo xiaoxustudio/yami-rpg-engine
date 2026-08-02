@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="moveLight-property">
-		<TitleBar>Point Light Property<close></close></TitleBar>
+		<TitleBar>Point Light Property<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="moveLight-property-key" /> <text>X</text

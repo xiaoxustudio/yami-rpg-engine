@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="detectTargets">
-	<TitleBar>Detect Targets<close /></TitleBar>
+	<TitleBar>Detect Targets<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="detectTargets-actor" type="actor" /><text>Distance</text

@@ -1,7 +1,7 @@
 <template>
 	<!-- 缩放窗口 -->
 	<WindowFrame id="zoom">
-		<TitleBar>Zoom<close /></TitleBar>
+		<TitleBar>Zoom<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Zoom Factor</text

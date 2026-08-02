@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="autoTile-generateFrames">
-		<TitleBar>Generate Frames<close /></TitleBar>
+		<TitleBar>Generate Frames<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Stride X</text

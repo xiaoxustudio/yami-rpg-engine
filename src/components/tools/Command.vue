@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="command">
-		<TitleBar>Custom Command<close /></TitleBar>
+		<TitleBar>Custom Command<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="command-list-fieldset" class="input pad">
 				<legend>List</legend>

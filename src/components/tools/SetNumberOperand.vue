@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setNumber-operand">
-		<TitleBar>Number Operand<close></close></TitleBar>
+		<TitleBar>Number Operand<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="setNumber-operation" />

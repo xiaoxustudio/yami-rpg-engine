@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setLoop">
-	<TitleBar>Set Loop<close /></TitleBar>
+	<TitleBar>Set Loop<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="setLoop-type" /> <text>Loop</text

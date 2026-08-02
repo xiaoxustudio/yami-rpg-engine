@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="autoTile-frameIndex">
-		<TitleBar>Tile Index<close /></TitleBar>
+		<TitleBar>Tile Index<div class="close" /></TitleBar>
 		<content-frame>
 			<box id="autoTile-frameIndex-screen">
 				<box id="autoTile-frameIndex-image-clip">

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="commandLine">
-		<TitleBar>Command Line<close /></TitleBar>
+		<TitleBar>Command Line<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="commandLine-type" /> <text>Key</text

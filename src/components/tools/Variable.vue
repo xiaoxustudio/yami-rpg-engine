@@ -1,7 +1,7 @@
 <template>
 	<!-- 变量窗口 -->
 	<WindowFrame id="variable" mode="center">
-		<TitleBar>Variable<close /></TitleBar>
+		<TitleBar>Variable<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="variable-list-fieldset" class="input pad">
 				<legend>List</legend>

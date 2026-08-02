@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setElement">
-		<TitleBar>Set Element<close /></TitleBar>
+		<TitleBar>Set Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setElement-element" type="element" />

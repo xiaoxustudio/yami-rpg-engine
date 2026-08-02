@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文字位置 -->
 	<WindowFrame id="textPosition">
-		<TitleBar>Set Text Position<close /></TitleBar>
+		<TitleBar>Set Text Position<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Axis</text><SelectBox id="textPosition-axis" /> <text>Operation</text

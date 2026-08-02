@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="scriptCommand">
-		<TitleBar>Custom Command<close></close></TitleBar>
+		<TitleBar>Custom Command<div class="close"></div></TitleBar>
 		<content-frame>
 			<ParameterPane id="scriptCommand-parameter-pane">
 				<DetailBox id="scriptCommand-parameter-detail" open>

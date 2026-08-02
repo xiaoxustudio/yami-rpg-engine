@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="color">
-		<TitleBar>Color Picker<close /></TitleBar>
+		<TitleBar>Color Picker<div class="close" /></TitleBar>
 		<content-frame>
 			<canvas id="color-palette-canvas" width="256" height="194" />
 			<box id="color-palette-frame">

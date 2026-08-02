@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setBoolean">
-		<TitleBar>Set Boolean<close /></TitleBar>
+		<TitleBar>Set Boolean<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text

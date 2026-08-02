@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="enum" mode="center">
-		<TitleBar>Enumeration<close /></TitleBar>
+		<TitleBar>Enumeration<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="enum-list-fieldset" class="input pad">
 				<legend>List</legend>

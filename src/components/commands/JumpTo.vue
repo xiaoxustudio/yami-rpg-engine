@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="jumpTo">
-	<TitleBar>Jump to<close /></TitleBar>
+	<TitleBar>Jump to<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Operation</text><SelectBox id="jumpTo-operation" />

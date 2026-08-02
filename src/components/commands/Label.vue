@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="label">
-	<TitleBar>Label<close /></TitleBar>
+	<TitleBar>Label<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Label Name</text><TextBox id="label-name" /> </grid-box>
 		<button id="label-confirm" name="confirm">Confirm</button>

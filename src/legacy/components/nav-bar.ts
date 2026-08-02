@@ -38,7 +38,7 @@ export function attachNavBarApi(el: HTMLElement): void {
 
 	nav.read = function (): any {
 		const item = el.querySelector('.selected') as (HTMLElement & { dataValue: any }) | null;
-		if (item && item.dataValue === undefined && item.tagName === 'NAV-ITEM') {
+		if (item && item.dataValue === undefined && hasClass(item, 'nav-item')) {
 			const string = item.getAttribute('value') ?? '';
 			const isNumber = RegExp.number.test(string);
 			item.dataValue = isNumber ? parseFloat(string) : string;
@@ -54,7 +54,7 @@ export function attachNavBarApi(el: HTMLElement): void {
 			let target: HTMLElement | undefined;
 			for (let i = 0; i < length; i++) {
 				const item = items[i] as HTMLElement & { dataValue: any };
-				if (item.tagName === 'NAV-ITEM' && item.dataValue === undefined) {
+				if (hasClass(item, 'nav-item') && item.dataValue === undefined) {
 					const string = item.getAttribute('value') ?? '';
 					const isNumber = RegExp.number.test(string);
 					item.dataValue = isNumber ? parseFloat(string) : string;
@@ -86,7 +86,7 @@ export function attachNavBarApi(el: HTMLElement): void {
 		switch (event.button) {
 			case 0: {
 				const element = event.target as HTMLElement & { dataValue: any };
-				if (element.tagName === 'NAV-ITEM' && !hasClass(element, 'selected')) {
+				if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
 					if (element.dataValue === undefined) {
 						const string = element.getAttribute('value') ?? '';
 						const isNumber = RegExp.number.test(string);
@@ -111,7 +111,7 @@ export function attachNavBarApi(el: HTMLElement): void {
 		let i = elements.length;
 		while (--i >= 0) {
 			const element = elements[i] as HTMLElement & { dataValue: any };
-			if (element.tagName === 'NAV-ITEM') {
+			if (hasClass(element, 'nav-item')) {
 				const string = element.getAttribute('value') ?? '';
 				const isNumber = RegExp.number.test(string);
 				element.dataValue = isNumber ? parseFloat(string) : string;

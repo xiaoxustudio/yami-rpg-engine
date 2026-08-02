@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="controlDialog">
-		<TitleBar>Control Dialog<close /></TitleBar>
+		<TitleBar>Control Dialog<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="controlDialog-element" type="element" />

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="addAnimationComponent">
-	<TitleBar>Add Animation Component<close /></TitleBar>
+	<TitleBar>Add Animation Component<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text

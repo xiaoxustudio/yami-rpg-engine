@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerSpeed">
-		<TitleBar>Set Trigger Speed<close /></TitleBar>
+		<TitleBar>Set Trigger Speed<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text

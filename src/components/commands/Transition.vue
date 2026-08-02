@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="transition">
-	<TitleBar>Transition<close /></TitleBar>
+	<TitleBar>Transition<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Write to Variable</text

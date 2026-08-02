@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveElement-property">
-		<TitleBar>Transform Property<close></close></TitleBar>
+		<TitleBar>Transform Property<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="moveElement-property-key" />

@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="imageClip">
 		<TitleBar
-			>Image Clip<maximize></maximize>
-			<close></close>
+			>Image Clip<div class="maximize"></div>
+			<div class="close"></div>
 		</TitleBar>
 		<content-frame>
 			<box id="imageClip-screen" tabindex="-1">

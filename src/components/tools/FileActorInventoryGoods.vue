@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileActor-inventory-goods">
-		<TitleBar>Inventory<close></close></TitleBar>
+		<TitleBar>Inventory<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="fileActor-inventory-type" />

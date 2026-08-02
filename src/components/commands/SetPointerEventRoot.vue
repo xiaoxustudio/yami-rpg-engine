@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setPointerEventRoot">
-		<TitleBar>Set Pointer Event Root<close /></TitleBar>
+		<TitleBar>Set Pointer Event Root<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="setPointerEventRoot-operation" />

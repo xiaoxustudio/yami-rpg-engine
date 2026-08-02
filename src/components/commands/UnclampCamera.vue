@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="unclampCamera">
-		<TitleBar>Unclamp Camera<close /></TitleBar>
+		<TitleBar>Unclamp Camera<div class="close" /></TitleBar>
 		<content-frame>
 			<button id="unclampCamera-confirm" name="confirm">Confirm</button>
 			<button id="unclampCamera-cancel" name="cancel">Cancel</button>

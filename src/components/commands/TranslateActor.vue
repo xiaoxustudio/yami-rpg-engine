@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="translateActor">
-	<TitleBar>Translate Actor<close /></TitleBar>
+	<TitleBar>Translate Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="translateActor-actor" type="actor" />

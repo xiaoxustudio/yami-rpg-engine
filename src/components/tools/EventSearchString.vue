@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="event-search-string">
-		<TitleBar>Search String<close></close></TitleBar>
+		<TitleBar>Search String<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text></text><TextBox id="event-search-string-search" /> <text></text

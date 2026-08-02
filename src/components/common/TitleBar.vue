@@ -110,17 +110,14 @@ const mouseclick = (event: Event): void => {
 	if (!windowFrame || !(windowFrame instanceof HTMLElement)) {
 		return;
 	}
-	switch (target.tagName) {
-		case 'MAXIMIZE':
-			if (!hasClass(windowFrame, 'maximized')) {
-				windowFrame.maximize();
-			} else {
-				windowFrame.unmaximize();
-			}
-			break;
-		case 'CLOSE':
-			getWindow().close(windowFrame.id);
-			break;
+	if (hasClass(target, 'maximize')) {
+		if (!hasClass(windowFrame, 'maximized')) {
+			windowFrame.maximize();
+		} else {
+			windowFrame.unmaximize();
+		}
+	} else if (hasClass(target, 'close')) {
+		getWindow().close(windowFrame.id);
 	}
 };
 
@@ -130,7 +127,7 @@ const doubleclick = (event: Event): void => {
 		return;
 	}
 	const target = event.target as HTMLElement;
-	if (target === element && element.querySelector('maximize')) {
+	if (target === element && element.querySelector('.maximize')) {
 		(dragging as (PointerEvent & { cancel(): void }) | null)?.cancel();
 		const windowFrame = element.parentNode as HTMLElement & {
 			hasClass(name: string): boolean;

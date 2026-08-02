@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setVideo">
-		<TitleBar>Set Video<close /></TitleBar>
+		<TitleBar>Set Video<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="setVideo-element" type="element" />

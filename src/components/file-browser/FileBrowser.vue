@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { addClass, removeClass } from '@/util/element-utils';
+import { addClass, hasClass, removeClass } from '@/util/element-utils';
 import { Menu } from '@/components/menu-list.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
@@ -267,9 +267,9 @@ function dragover(event: DragEvent): void {
 		}
 		while (
 			!(
-				element instanceof (node.constructor as any) ||
-				element.tagName === 'FILE-NAV-PANE' ||
-				element.tagName === 'FILE-BODY-PANE' ||
+				hasClass(element, 'file-browser') ||
+				hasClass(element, 'file-nav-pane') ||
+				hasClass(element, 'file-body-pane') ||
 				(element as any).file instanceof FolderItem
 			)
 		) {
@@ -304,7 +304,7 @@ function dragover(event: DragEvent): void {
 						}
 					});
 			} else {
-				if (element.tagName === 'FILE-BODY-PANE') {
+				if (hasClass(element, 'file-body-pane')) {
 					const nav = navEl.value?.el as any;
 					const { selections } = nav;
 					d.dropPath = selections.length === 1 ? selections[0].path : null;
@@ -416,9 +416,9 @@ function osDragover(event: DragEvent): void {
 		let element = event.target as HTMLElement;
 		while (
 			!(
-				element.tagName === 'FILE-BROWSER' ||
-				element.tagName === 'FILE-NAV-PANE' ||
-				element.tagName === 'FILE-BODY-PANE' ||
+				hasClass(element, 'file-browser') ||
+				hasClass(element, 'file-nav-pane') ||
+				hasClass(element, 'file-body-pane') ||
 				(element as any).file instanceof FolderItem
 			)
 		) {
@@ -433,7 +433,7 @@ function osDragover(event: DragEvent): void {
 				addClass(element, 'drop-target');
 				d.dropPath = (element as any).file.path;
 			} else {
-				if (element.tagName === 'FILE-BODY-PANE') {
+				if (hasClass(element, 'file-body-pane')) {
 					const nav = navEl.value?.el as any;
 					const { selections } = nav;
 					d.dropPath = selections.length === 1 ? selections[0].path : null;
@@ -473,9 +473,9 @@ function osDrop(event: DragEvent): void {
 
 function setupLinks() {
 	const nav = navEl.value?.el as any;
-	const node = nav?.closest('file-browser') as any;
-	const head = (headEl.value?.el as any) || (node?.querySelector('file-head-pane') as any);
-	const body = (bodyEl.value?.el as any) || (node?.querySelector('file-body-pane') as any);
+	const node = nav?.closest('.file-browser') as any;
+	const head = (headEl.value?.el as any) || (node?.querySelector('.file-head-pane') as any);
+	const body = (bodyEl.value?.el as any) || (node?.querySelector('.file-body-pane') as any);
 	el.value = node;
 	links.browser = node;
 	links.nav = nav;
@@ -486,15 +486,15 @@ function setupLinks() {
 	body.links = links;
 	node.links = links;
 	Object.defineProperty(node, 'nav', {
-		get: () => node.querySelector('file-nav-pane'),
+		get: () => node.querySelector('.file-nav-pane'),
 		configurable: true
 	});
 	Object.defineProperty(node, 'head', {
-		get: () => node.querySelector('file-head-pane'),
+		get: () => node.querySelector('.file-head-pane'),
 		configurable: true
 	});
 	Object.defineProperty(node, 'body', {
-		get: () => node.querySelector('file-body-pane'),
+		get: () => node.querySelector('.file-body-pane'),
 		configurable: true
 	});
 }

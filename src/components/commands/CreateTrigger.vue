@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="createTrigger">
-		<TitleBar>Create Trigger<close /></TitleBar>
+		<TitleBar>Create Trigger<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text

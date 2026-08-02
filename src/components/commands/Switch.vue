@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="switch">
-	<TitleBar>Switch<close /></TitleBar>
+	<TitleBar>Switch<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Variable</text

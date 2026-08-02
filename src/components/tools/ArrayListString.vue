@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="arrayList-string">
-		<TitleBar>String<close /></TitleBar>
+		<TitleBar>String<div class="close" /></TitleBar>
 		<content-frame>
 			<TextArea id="arrayList-string-value" />
 			<button id="arrayList-string-confirm" name="confirm">Confirm</button>

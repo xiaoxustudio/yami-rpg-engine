@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="forEach">
-	<TitleBar>For Each<close /></TitleBar>
+	<TitleBar>For Each<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Data</text><SelectBox id="forEach-data" /> <text>List Variable</text

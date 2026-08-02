@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="resource">
 		<TitleBar>
-			<close></close>
+			<div class="close"></div>
 		</TitleBar>
 		<content-frame>
 			<box style="display: flex; flex-direction: column; height: 100%">

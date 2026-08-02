@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="localization" mode="center">
-		<TitleBar>Localization<close></close></TitleBar>
+		<TitleBar>Localization<div class="close"></div></TitleBar>
 		<content-frame>
 			<field-set id="localization-list-fieldset" class="input pad">
 				<legend>List</legend>

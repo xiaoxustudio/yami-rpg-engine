@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="fixAngle">
-	<TitleBar>Fix Angle<close /></TitleBar>
+	<TitleBar>Fix Angle<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="fixAngle-actor" type="actor" /><text>State</text><SelectBox id="fixAngle-fixed" /></grid-box>

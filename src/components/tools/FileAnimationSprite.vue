@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="fileAnimation-sprite">
-		<TitleBar>Sprite<close></close></TitleBar>
+		<TitleBar>Sprite<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Name</text><TextBox id="fileAnimation-sprite-name" /> <text>Image</text

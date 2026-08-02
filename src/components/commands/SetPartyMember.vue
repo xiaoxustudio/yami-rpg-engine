@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setPartyMember">
-	<TitleBar>Set Party Member<close /></TitleBar>
+	<TitleBar>Set Party Member<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Operation</text><SelectBox id="setPartyMember-operation" /><text>Global Actor</text

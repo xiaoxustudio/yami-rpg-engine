@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setSkill">
-		<TitleBar>Set Skill<close /></TitleBar>
+		<TitleBar>Set Skill<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Skill</text><CustomBox id="setSkill-skill" type="skill" />

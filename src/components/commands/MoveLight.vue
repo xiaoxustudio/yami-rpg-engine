@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveLight">
-		<TitleBar>Move Light<close /></TitleBar>
+		<TitleBar>Move Light<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Light</text><CustomBox id="moveLight-light" type="light" />

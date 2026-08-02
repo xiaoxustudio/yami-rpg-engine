@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="pauseGame">
-		<TitleBar>Pause Game<close /></TitleBar>
+		<TitleBar>Pause Game<div class="close" /></TitleBar>
 		<content-frame>
 			<button id="pauseGame-confirm" name="confirm">Confirm</button>
 			<button id="pauseGame-cancel" name="cancel">Cancel</button>

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="if">
-	<TitleBar>If<close /></TitleBar>
+	<TitleBar>If<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Branches</text><ParamList id="if-branches" /> </grid-box>
 		<CheckBox id="if-else" class="standard"><text id="if-else-label">Else</text></CheckBox>

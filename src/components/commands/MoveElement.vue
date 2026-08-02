@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveElement">
-		<TitleBar>Move Element<close /></TitleBar>
+		<TitleBar>Move Element<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="moveElement-element" type="element" />

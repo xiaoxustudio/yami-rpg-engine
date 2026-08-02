@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="activateScene">
-		<TitleBar>Activate Scene<close /></TitleBar>
+		<TitleBar>Activate Scene<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Scene</text><SelectBox id="activateScene-pointer" />

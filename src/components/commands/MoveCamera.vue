@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveCamera">
-		<TitleBar>Move Camera<close /></TitleBar>
+		<TitleBar>Move Camera<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Mode</text><SelectBox id="moveCamera-mode" /> <text>Position</text

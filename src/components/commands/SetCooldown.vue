@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setCooldown">
-	<TitleBar>Set Cooldown<close /></TitleBar>
+	<TitleBar>Set Cooldown<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="setCooldown-actor" type="actor" />

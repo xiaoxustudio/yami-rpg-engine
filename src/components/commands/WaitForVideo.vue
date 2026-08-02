@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="waitForVideo">
-		<TitleBar>Wait For Video<close /></TitleBar>
+		<TitleBar>Wait For Video<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><CustomBox id="waitForVideo-element" type="element" />

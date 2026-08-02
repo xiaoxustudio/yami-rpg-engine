@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="appendTarget">
-	<TitleBar>Append Target<close /></TitleBar>
+	<TitleBar>Append Target<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="appendTarget-actor" type="actor" /><text>Target</text><CustomBox id="appendTarget-target" type="actor" /></grid-box>

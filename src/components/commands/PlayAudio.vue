@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="playAudio">
-	<TitleBar>Play Audio<close /></TitleBar>
+	<TitleBar>Play Audio<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="playAudio-type" /> <text>Audio</text

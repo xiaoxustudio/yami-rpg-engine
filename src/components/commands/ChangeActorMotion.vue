@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorMotion">
-	<TitleBar>Change Actor Motion<close /></TitleBar>
+	<TitleBar>Change Actor Motion<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorMotion-actor" type="actor" /><text>Type</text><SelectBox id="changeActorMotion-type" /><text>Motion</text

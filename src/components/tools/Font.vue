@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="font">
-		<TitleBar>Set Font<close></close></TitleBar>
+		<TitleBar>Set Font<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box> <text>Font Family</text><TextBox id="font-font" /> </grid-box>
 			<button id="font-confirm" name="confirm">Confirm</button>

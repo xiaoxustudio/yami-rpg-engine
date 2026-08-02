@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setReverb">
-	<TitleBar>Set Reverb<close /></TitleBar>
+	<TitleBar>Set Reverb<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="setReverb-type" /> <text>Dry</text

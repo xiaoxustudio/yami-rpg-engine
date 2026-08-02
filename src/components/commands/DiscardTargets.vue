@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="discardTargets">
-	<TitleBar>Discard Targets<close /></TitleBar>
+	<TitleBar>Discard Targets<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="discardTargets-actor" type="actor" /><text>Selector</text><SelectBox id="discardTargets-selector" /><text>Distance</text

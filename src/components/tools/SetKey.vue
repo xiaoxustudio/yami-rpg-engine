@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setKey">
-		<TitleBar>Set Key<close></close></TitleBar>
+		<TitleBar>Set Key<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box> <text>Key</text><TextBox id="setKey-key" /> </grid-box>
 			<button id="setKey-confirm" name="confirm">Confirm</button>

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="createObject">
-		<TitleBar>Create Object<close /></TitleBar>
+		<TitleBar>Create Object<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Object</text

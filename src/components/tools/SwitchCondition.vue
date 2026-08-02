@@ -1,7 +1,7 @@
 <template>
 	<!-- 匹配 - 条件 -->
 	<WindowFrame id="switch-condition">
-		<TitleBar>Condition<close /></TitleBar>
+		<TitleBar>Condition<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Condition Type</text><SelectBox id="switch-condition-type" />

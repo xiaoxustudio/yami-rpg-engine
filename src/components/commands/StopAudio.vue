@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="stopAudio">
-	<TitleBar>Stop Audio<close /></TitleBar>
+	<TitleBar>Stop Audio<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Type</text><SelectBox id="stopAudio-type" /> </grid-box>
 		<button id="stopAudio-confirm" name="confirm">Confirm</button>

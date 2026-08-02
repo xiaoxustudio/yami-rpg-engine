@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setObjectAnimation">
-		<TitleBar>Set Object Animation<close /></TitleBar>
+		<TitleBar>Set Object Animation<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box id="setObjectAnimation-grid-box">
 				<text>Sort</text><SelectBox id="setObjectAnimation-sort" />

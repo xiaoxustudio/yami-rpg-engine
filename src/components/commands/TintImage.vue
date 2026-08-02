@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="tintImage">
-		<TitleBar>Tint Image<close /></TitleBar>
+		<TitleBar>Tint Image<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box id="tintImage-grid-box">
 				<text>Element</text><CustomBox id="tintImage-element" type="element" />

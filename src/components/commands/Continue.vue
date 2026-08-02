@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="continue">
-	<TitleBar>Continue<close /></TitleBar>
+	<TitleBar>Continue<div class="close" /></TitleBar>
 	<content-frame>
 		<button id="continue-confirm" name="confirm">Confirm</button>
 		<button id="continue-cancel" name="cancel">Cancel</button>

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="confirmation" mode="center">
 		<TitleBar>
-			<close />
+			<div class="close" />
 		</TitleBar>
 		<content-frame>
 			<text id="confirmation-message" />

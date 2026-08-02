@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="castSkill">
-		<TitleBar>Cast Skill<close /></TitleBar>
+		<TitleBar>Cast Skill<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Actor</text><CustomBox id="castSkill-actor" type="actor" />

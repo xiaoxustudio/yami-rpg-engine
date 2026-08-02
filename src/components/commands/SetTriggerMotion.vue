@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerMotion">
-		<TitleBar>Set Trigger Motion<close /></TitleBar>
+		<TitleBar>Set Trigger Motion<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Trigger</text

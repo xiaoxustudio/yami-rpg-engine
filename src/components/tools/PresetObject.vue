@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="presetObject" mode="center">
-		<TitleBar>Object<close></close></TitleBar>
+		<TitleBar>Object<div class="close"></div></TitleBar>
 		<content-frame>
 			<CustomBox id="presetObject-sceneId" type="file" filter="scene" />
 			<TreeList id="presetObject-list" />

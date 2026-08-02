@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="webSocketSend">
-		<TitleBar>webSocketSend<close /></TitleBar>
+		<TitleBar>webSocketSend<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>ID</text><StringVar id="webSocketSend-id" /> <text>Data</text

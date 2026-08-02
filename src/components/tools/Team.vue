@@ -1,7 +1,7 @@
 <template>
 	<!-- 队伍窗口 -->
 	<WindowFrame id="team">
-		<TitleBar>Team<close /></TitleBar>
+		<TitleBar>Team<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="team-list-fieldset" class="input pad">
 				<TreeList id="team-list" />

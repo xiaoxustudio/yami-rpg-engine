@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="insertImage">
-		<TitleBar>Insert Image<close></close></TitleBar>
+		<TitleBar>Insert Image<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Mode</text><SelectBox id="insertImage-mode" /> <text>Image</text

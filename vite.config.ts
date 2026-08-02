@@ -6,41 +6,19 @@ import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 // 伪元素/未迁移 CE 标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
-// Wave 3 后：9 个复合/重型 CE（tab-bar/menu-list/select-box/tree-list/common-list/param-list/parameter-pane/command-list 等）已迁移为 Vue SFC，白名单 41 → 32
-// 剩余：结构伪元素（box/item/text/page-frame/detail-grid/grid-box/group/nav-item 等）+ 非 Wave 3 CE（file-*/flex-* 等）
+// 结构伪元素（box/item/text/page-frame/detail-grid/grid-box 等）+ 非 Wave 3 CE（file-*/flex-* 等）
 const CUSTOM_ELEMENT_TAGS = new Set([
 	'box',
 	'item',
 	'text',
-	'minimize',
-	'maximize',
-	'close',
 	'page-frame',
 	'detail-grid',
-	'group',
-	'group-border',
-	'group-region',
-	'group-info',
-	'nav-item',
-	'nav-icon',
-	'nav-text',
 	'flex-box',
-	'file-body-pane',
-	'file-nav-pane',
-	'file-head-pane',
-	'file-browser',
 	'content-frame',
 	'grid-box',
 	'field-set',
 	'legend',
-	'file-head-address',
-	'file-body-content',
-	'file-body-item',
-	'file-body-icon',
-	'file-body-name',
-	'flex-item',
-	'empty',
-	'selection'
+	'flex-item'
 ]);
 
 // 递归复制目录（保留静态资源到 dist）

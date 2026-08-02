@@ -3,8 +3,8 @@
 		<TitleBar
 			>Script<text id="script-mark" class="hidden">✱</text>
 			<button id="script-change" name="script-change-ts">切换为TS</button>
-			<maximize id="script-maximize" />
-			<close />
+			<div class="maximize" id="script-maximize" />
+			<div class="close" />
 		</TitleBar>
 		<content-frame>
 			<box id="script-script"> </box>

@@ -1,7 +1,7 @@
 <template>
 	<!-- 技能访问器窗口 -->
 	<WindowFrame id="skillGetter">
-		<TitleBar>Actor<close /></TitleBar>
+		<TitleBar>Actor<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="skillGetter-type" /> <text>Actor</text

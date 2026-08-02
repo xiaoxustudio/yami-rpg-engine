@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="autoTile-selectNode">
-		<TitleBar>Tile Node<close /></TitleBar>
+		<TitleBar>Tile Node<div class="close" /></TitleBar>
 		<content-frame>
 			<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
 			<box id="autoTile-selectNode-screen">

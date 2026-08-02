@@ -1,6 +1,6 @@
 <template>
 	<div class="marquee-area" ref="root">
-		<selection ref="selection" />
+		<div class="selection" ref="selection" />
 	</div>
 </template>
 

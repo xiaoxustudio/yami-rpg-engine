@@ -1,10 +1,10 @@
 <template>
-	<file-head-pane ref="el">
-		<file-head-address ref="addressEl"></file-head-address>
+	<div class="file-head-pane" ref="el">
+		<div class="file-head-address" ref="addressEl"></div>
 		<item ref="backEl" class="upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</item>
 		<TextBox ref="searcherEl" class="file-head-searcher" name="search"></TextBox>
 		<SliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></SliderBox>
-	</file-head-pane>
+	</div>
 </template>
 
 <script setup lang="ts">

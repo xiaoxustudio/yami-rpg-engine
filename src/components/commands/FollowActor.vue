@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="followActor">
-	<TitleBar>Follow Actor<close /></TitleBar>
+	<TitleBar>Follow Actor<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="followActor-actor" type="actor" /><text>Target</text><CustomBox id="followActor-target" type="actor" /><text>Mode</text><SelectBox id="followActor-mode" /><text>Min Distance</text

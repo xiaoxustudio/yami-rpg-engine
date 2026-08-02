@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorEquipment">
-	<TitleBar>Change Actor Equipment<close /></TitleBar>
+	<TitleBar>Change Actor Equipment<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><CustomBox id="changeActorEquipment-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorEquipment-operation" /><text>Shortcut Key</text><SelectVar id="changeActorEquipment-slot" /><text>Equipment</text

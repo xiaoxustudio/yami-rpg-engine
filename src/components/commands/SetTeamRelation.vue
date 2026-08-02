@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTeamRelation">
-		<TitleBar>Change Team Relation<close /></TitleBar>
+		<TitleBar>Change Team Relation<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Team A</text><SelectBox id="setTeamRelation-teamId1" />

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="lightGetter">
-		<TitleBar>Light<close></close></TitleBar>
+		<TitleBar>Light<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><SelectBox id="lightGetter-type" /> <text>Light</text

@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="request-keyValue">
-		<TitleBar>Header<close></close></TitleBar>
+		<TitleBar>Header<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>key</text><StringVar id="request-keyValue-key" /> <text>value</text

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="choice">
-		<TitleBar>Choice<close /></TitleBar>
+		<TitleBar>Choice<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Content</text

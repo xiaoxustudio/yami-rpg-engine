@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="return">
-	<TitleBar>Return<close /></TitleBar>
+	<TitleBar>Return<div class="close" /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><SelectBox id="return-type" /> <text>Boolean</text

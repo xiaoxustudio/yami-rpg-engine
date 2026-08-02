@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="controlButton">
-		<TitleBar>Control Button<close /></TitleBar>
+		<TitleBar>Control Button<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><SelectBox id="controlButton-operation" />

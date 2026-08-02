@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="setAnimation-property">
-		<TitleBar>Set Animation<close></close></TitleBar>
+		<TitleBar>Set Animation<div class="close"></div></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><SelectBox id="setAnimation-property-key" />

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="autoTile">
-		<TitleBar>Auto Tile<close /></TitleBar>
+		<TitleBar>Auto Tile<div class="close" /></TitleBar>
 		<content-frame>
 			<field-set id="autoTile-general-fieldset">
 				<legend>General</legend>
@@ -46,7 +46,7 @@
 						class="autoTile-switch autoTile-neighbor"
 						:length="3"
 					/>
-					<empty />
+					<div class="empty" />
 					<SwitchItem
 						id="autoTile-rule-4"
 						class="autoTile-switch autoTile-neighbor"

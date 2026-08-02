@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="reset">
-		<TitleBar>Reset<close /></TitleBar>
+		<TitleBar>Reset<div class="close" /></TitleBar>
 		<content-frame>
 			<button id="reset-confirm" name="confirm">Confirm</button>
 			<button id="reset-cancel" name="cancel">Cancel</button>

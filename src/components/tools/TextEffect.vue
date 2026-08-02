@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文字效果 -->
 	<WindowFrame id="textEffect">
-		<TitleBar>Set Text Effect<close /></TitleBar>
+		<TitleBar>Set Text Effect<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Effect</text><SelectBox id="textEffect-type" /> <text>Shadow X</text

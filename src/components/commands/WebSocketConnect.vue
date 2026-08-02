@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="webSocketConnect">
-		<TitleBar>webSocketConnect<close /></TitleBar>
+		<TitleBar>webSocketConnect<div class="close" /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>URL</text><StringVar id="webSocketConnect-url" /> <text>ID</text
