@@ -28,7 +28,7 @@ export const SettingConfig = new (class {
 		return GlobalPathForDir;
 	}
 	get configPath() {
-		return path.join(GlobalPath, 'yami-config.json');
+		return typeof path.join === 'function' ? path.join(GlobalPath, 'yami-config.json') : '';
 	}
 	/** 由 schema 派生默认 config（含 hidden 隐藏项） */
 	get defaultConfig() {
@@ -87,6 +87,10 @@ export const SettingConfig = new (class {
 	// ---- 配置读写 ----
 
 	load() {
+		if (typeof nodeFs.existsSync !== 'function') {
+			this.config = JSON.parse(JSON.stringify(this.defaultConfig));
+			return;
+		}
 		if (!nodeFs.existsSync(this.configPath)) {
 			nodeFs.writeFileSync(this.configPath, JSON.stringify(this.defaultConfig), 'utf-8');
 			this.config = JSON.parse(JSON.stringify(this.defaultConfig));

@@ -53,9 +53,9 @@ Command.cases.script = new CommandSchema({
 		}
 	},
 	onInitialize() {
-		$('#script-confirm').on('click', () => this.save());
+		$('#script-confirm')?.on('click', () => this.save());
 
-		$('#script').on('close', (event: any) => {
+		$('#script')?.on('close', (event: any) => {
 			if (this.changed) {
 				event.preventDefault();
 				const get = Local.createGetter('confirmation');
@@ -82,15 +82,15 @@ Command.cases.script = new CommandSchema({
 			}
 		});
 
-		$('#script').on('resize', () => {
+		$('#script')?.on('resize', () => {
 			this.resize();
 		});
 
-		$('#script').on('closed', () => {
+		$('#script')?.on('closed', () => {
 			this.model.setValue('');
 		});
 
-		$('#script').on('keydown', (event: any) => {
+		$('#script')?.on('keydown', (event: any) => {
 			if (hasClass(event.target, 'inputarea')) {
 				switch (event.code) {
 					case 'Enter':

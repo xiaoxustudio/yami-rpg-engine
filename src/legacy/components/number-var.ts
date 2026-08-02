@@ -64,6 +64,15 @@ export function attachNumberVarApi(el: HTMLElement): void {
 				write(numBox, value);
 				varBox.write(varBox.isPluginInput ? defVarForPlugin : defVar);
 				break;
+			case 'string': {
+				const n = Number(value);
+				if (!isNaN(n)) {
+					box.switch('constant');
+					write(numBox, n);
+					varBox.write(varBox.isPluginInput ? defVarForPlugin : defVar);
+				}
+				break;
+			}
 			case 'object':
 				box.switch('variable');
 				write(numBox, 0);

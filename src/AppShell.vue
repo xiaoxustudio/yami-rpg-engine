@@ -48,28 +48,13 @@ import LayoutPanel from './components/layout/LayoutPanel.vue';
 import { defineAsyncComponent } from 'vue';
 
 const toolModules = import.meta.glob('./components/tools/*.vue');
-const toolComponents = Object.fromEntries(
-	Object.entries(toolModules).map(([path, loader]) => [path, defineAsyncComponent(loader as any)])
-);
-
 const commandModules = import.meta.glob('./components/commands/*.vue');
-const commandComponents = Object.fromEntries(
-	Object.entries(commandModules).map(([path, loader]) => [path, defineAsyncComponent(loader as any)])
-);
-
 const inspectorModules = import.meta.glob('./components/inspector/*.vue');
-const inspectorSpecialTargets = new Set(['fileImage', 'fileFont', 'fileScript', 'fileAudio', 'fileVideo', 'fileTileset']);
-const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => {
-	const name = path.split('/').pop()!.replace(/\.vue$/, '').replace(/Page$/, '');
-	const raw = name.replace(/^UI(?=[A-Z])/, 'ui');
-	const value = raw.charAt(0).toLowerCase() + raw.slice(1);
-	const target = inspectorSpecialTargets.has(value) ? `#${value}` : `#${value}-vue-mount`;
-	return { value, target, comp: defineAsyncComponent(loader as any) };
-});
 
 // 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，
 // 懒加载组件就绪前先阻塞 Editor.initialize，避免读取到 null DOM
-const lazyTotal = Object.keys(toolComponents).length + Object.keys(commandComponents).length + inspectorPages.length;
+const lazyTotal =
+	Object.keys(toolModules).length + Object.keys(commandModules).length + Object.keys(inspectorModules).length;
 let lazyMounted = 0;
 let resolveLazyReady: (() => void) | undefined;
 const lazyComponentsReady = new Promise<void>((resolve) => {
@@ -81,5 +66,32 @@ const onComponentMounted = () => {
 		resolveLazyReady?.();
 	}
 };
+const onAsyncError = (error: any, retry: any, fail: any, attempts: number) => {
+	if (attempts < 3) {
+		retry();
+		return;
+	}
+	onComponentMounted();
+	fail();
+};
+const asyncComp = (loader: any) => defineAsyncComponent({ loader, onError: onAsyncError });
+const toolComponents = Object.fromEntries(
+	Object.entries(toolModules).map(([path, loader]) => [path, asyncComp(loader as any)])
+);
+const commandComponents = Object.fromEntries(
+	Object.entries(commandModules).map(([path, loader]) => [path, asyncComp(loader as any)])
+);
+const inspectorSpecialTargets = new Set(['fileImage', 'fileFont', 'fileScript', 'fileAudio', 'fileVideo', 'fileTileset']);
+const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => {
+	const name = path.split('/').pop()!.replace(/\.vue$/, '').replace(/Page$/, '');
+	const raw = name.replace(/^UI(?=[A-Z])/, 'ui');
+	const value = raw.charAt(0).toLowerCase() + raw.slice(1);
+	const target = inspectorSpecialTargets.has(value) ? `#${value}` : `#${value}-vue-mount`;
+	return {
+		value,
+		target,
+		comp: asyncComp(loader as any)
+	};
+});
 (window as any).__lazyComponentsReady__ = lazyComponentsReady;
 </script>

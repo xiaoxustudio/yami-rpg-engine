@@ -62,9 +62,11 @@ export const File: {
 // 开发模式取 process.cwd()/Project，生产模式从 HTML 文件位置推导避免 process.cwd() 不准确
 function getFallbackRoot(): string {
 	if ((import.meta as any).env?.DEV) {
-		return Path.resolve(process.cwd(), 'Project');
+		return typeof process !== 'undefined' && typeof process.cwd === 'function'
+			? Path.resolve(process.cwd(), 'Project')
+			: '';
 	}
-	return Path.dirname(fileURLToPath(document.baseURI));
+	return typeof fileURLToPath === 'function' ? Path.dirname(fileURLToPath(document.baseURI)) : '';
 }
 
 File.get = function (descriptor) {
@@ -118,10 +120,16 @@ File.get = function (descriptor) {
 			return new Promise((resolve, reject) => {
 				try {
 					const fs = nodeFs;
+					if (typeof fs.readFileSync !== 'function') {
+						resolve(type === 'json' ? {} : '');
+						return;
+					}
 					const cleanPath = path.replace(/\?ver=\d+$/, '');
 					const absPath = /^[A-Za-z]:[\\/]|^[/\\]/.test(cleanPath)
 						? cleanPath
-						: Path.resolve(this.root || getFallbackRoot(), cleanPath);
+						: typeof Path.resolve === 'function'
+							? Path.resolve(this.root || getFallbackRoot(), cleanPath)
+							: cleanPath;
 					if (type === 'arraybuffer') {
 						const buffer = fs.readFileSync(absPath);
 						resolve(

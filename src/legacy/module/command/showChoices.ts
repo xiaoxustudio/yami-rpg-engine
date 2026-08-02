@@ -10,9 +10,9 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.showChoices = new CommandSchema({
 	name: 'showChoices',
 	onInitialize() {
-		$('#showChoices-confirm').on('click', () => this.save());
-		$('#showChoices-choices').bind(Choices);
-		$('#showChoices').on('closed', () => {
+		$('#showChoices-confirm')?.on('click', () => this.save());
+		$('#showChoices-choices')?.bind(Choices);
+		$('#showChoices')?.on('closed', () => {
 			clear($('#showChoices-choices'));
 		});
 	},

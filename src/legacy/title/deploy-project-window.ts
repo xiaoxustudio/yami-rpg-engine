@@ -15,17 +15,18 @@ function getWindow() {
 }
 import { Path } from '@/util/config.ts';
 import uglifyJs from 'uglify-js';
-// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 process.cwd()/Project
-import { fileURLToPath, URL } from 'node:url';
+// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
+import { fileURLToPath } from 'node:url';
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
-	_moduleURL.protocol === 'file:'
+	typeof fileURLToPath === 'function' && _moduleURL.protocol === 'file:'
 		? fileURLToPath(_moduleURL)
-		: Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop());
-const __dirname =
-	_moduleURL.protocol === 'file:'
-		? Path.dirname(Path.dirname(_modulePath))
-		: Path.resolve(process.cwd(), 'Project');
+		: typeof process !== 'undefined' &&
+			  typeof process.cwd === 'function' &&
+			  typeof Path.resolve === 'function'
+			? Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
+			: '';
+const __dirname = _modulePath ? Path.dirname(Path.dirname(_modulePath)) : '';
 
 type DeploymentState = 'passed' | 'open' | 'closed';
 

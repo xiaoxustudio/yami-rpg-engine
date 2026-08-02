@@ -3,6 +3,11 @@
 		<NumberBox
 			v-if="state.mode === 'constant'"
 			ref="numBoxRef"
+			:min="props.min"
+			:max="props.max"
+			:step="props.step"
+			:decimals="props.decimals"
+			:unit="props.unit"
 			@update:model-value="(v: any) => (state.numValue = v)"
 		/>
 		<CustomBox
@@ -33,6 +38,11 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 
 interface Props {
 	id?: string;
+	min?: number | string;
+	max?: number | string;
+	step?: number | string;
+	decimals?: number | string;
+	unit?: string;
 }
 
 interface NumberVarElement extends HTMLElement {
@@ -52,7 +62,13 @@ interface NumberVarElement extends HTMLElement {
 	): void;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+	min: '0',
+	max: '0',
+	step: '1',
+	decimals: 0,
+	unit: null
+});
 
 const root = ref<NumberVarElement | null>(null);
 const numBoxRef = ref<any>(null);
@@ -95,6 +111,17 @@ const write = (value: any): void => {
 			state.numValue = value;
 			numBoxRef.value?.write(value);
 			state.varValue = plugin ? defVarForPlugin : defVar;
+			break;
+		}
+		case 'string': {
+			const n = Number(value);
+			if (!Number.isNaN(n)) {
+				const plugin = getVarPluginInput();
+				switchMode('constant');
+				state.numValue = n;
+				numBoxRef.value?.write(n);
+				state.varValue = plugin ? defVarForPlugin : defVar;
+			}
 			break;
 		}
 		case 'object':

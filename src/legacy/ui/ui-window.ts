@@ -221,7 +221,7 @@ EventBus.once('editor_loaded', () => {
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
 	UI.list.updateItemClass = Scene.list.updateItemClass;
 	// 否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
-	UI.list.updaters.push(UI.list.updateItemClass);
+	UI.list.updaters?.push(UI.list.updateItemClass);
 });
 UI.list.createIcon = null;
 UI.list.updateIcon = null;
@@ -239,14 +239,14 @@ EventBus.once('editor_loaded', () => {
 	UI.list.updateLockIcon = Scene.list.updateLockIcon;
 	// 上面 8 个方法是从 Scene.list 复制而来，赋值完成后才能往 creators/updaters 推；否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
 	const { list } = UI;
-	list.creators.push(list.createEventIcon);
-	list.creators.push(list.updateEventIcon);
-	list.creators.push(list.createScriptIcon);
-	list.creators.push(list.updateScriptIcon);
-	list.creators.push(list.createVisibilityIcon);
-	list.updaters.push(list.updateVisibilityIcon);
-	list.creators.push(list.createLockIcon);
-	list.updaters.push(list.updateLockIcon);
+	list.creators?.push(list.createEventIcon);
+	list.creators?.push(list.updateEventIcon);
+	list.creators?.push(list.createScriptIcon);
+	list.creators?.push(list.updateScriptIcon);
+	list.creators?.push(list.createVisibilityIcon);
+	list.updaters?.push(list.updateVisibilityIcon);
+	list.creators?.push(list.createLockIcon);
+	list.updaters?.push(list.updateLockIcon);
 });
 UI.list.onCreate = null;
 UI.list.onRemove = null;

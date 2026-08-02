@@ -122,7 +122,7 @@ export const Title: TitleShape = {
 Title.initialize = function () {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar');
-	ipcRenderer.invoke('update-max-min-icon').then((mode) => {
+	ipcRenderer?.invoke?.('update-max-min-icon').then((mode) => {
 		switch (mode) {
 			case 'maximize':
 				this.windowMaximize(event);
@@ -172,11 +172,11 @@ Title.initialize = function () {
 	$('#title-maximize').addEventListener('click', this.maximizeClick);
 	$('#title-close').addEventListener('click', this.closeClick);
 
-	ipcRenderer.on('before-close-window', this.windowBeforeClose);
-	ipcRenderer.on('maximize', this.windowMaximize);
-	ipcRenderer.on('unmaximize', this.windowUnmaximize);
-	ipcRenderer.on('enter-full-screen', this.windowEnterFullScreen);
-	ipcRenderer.on('leave-full-screen', this.windowLeaveFullScreen);
+	ipcRenderer?.on?.('before-close-window', this.windowBeforeClose);
+	ipcRenderer?.on?.('maximize', this.windowMaximize);
+	ipcRenderer?.on?.('unmaximize', this.windowUnmaximize);
+	ipcRenderer?.on?.('enter-full-screen', this.windowEnterFullScreen);
+	ipcRenderer?.on?.('leave-full-screen', this.windowLeaveFullScreen);
 	NewProject.initialize();
 	Deployment.initialize();
 };

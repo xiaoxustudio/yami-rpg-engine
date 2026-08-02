@@ -92,9 +92,10 @@ Editor.initialize = async function () {
 	this.switchHotkey(false);
 
 	// 等待 AppShell 懒加载的命令/工具弹窗组件挂载完成，保证 initAll 能拿到 DOM
+	// 首次冷启动时 145+ 个异步组件编译较慢，8s 超时太短会提前 initAll 导致元素缺失，放宽到 60s
 	await Promise.race([
 		(window as any).__lazyComponentsReady__ ?? Promise.resolve(),
-		new Promise((resolve) => setTimeout(resolve, 8000))
+		new Promise((resolve) => setTimeout(resolve, 60000))
 	]);
 
 	try {
@@ -103,8 +104,8 @@ Editor.initialize = async function () {
 		(Title.initialize as any)();
 		const data = await (window as any).config;
 		const code = JSON.stringify(data);
-		this.config = data;
-		this.checkForEditorUpdates();
+		this.config = data ?? {};
+		if (this.config) this.checkForEditorUpdates();
 		Object.defineProperty(this.config, 'code', { value: code });
 		delete (window as any).config;
 

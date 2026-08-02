@@ -1308,10 +1308,25 @@ PluginManager.reconstruct = (function IIFE() {
 					const { min, max, decimals } = parameter;
 					return Math.clamp(Math.roundTo(value, decimals), min, max) === value;
 				}
+				if (typeof value === 'string') {
+					const n = Number(value);
+					if (!Number.isNaN(n)) {
+						const { min, max, decimals } = parameter;
+						return Math.clamp(Math.roundTo(n, decimals), min, max) === n;
+					}
+				}
+				return false;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
 					return Math.clamp(Math.roundTo(value, decimals), min, max) === value;
+				}
+				if (typeof value === 'string') {
+					const n = Number(value);
+					if (!Number.isNaN(n)) {
+						const { min, max, decimals } = parameter;
+						return Math.clamp(Math.roundTo(n, decimals), min, max) === n;
+					}
 				}
 				return VariableGetter.checkDataForPlugin(value);
 			case 'option':
@@ -1371,6 +1386,13 @@ PluginManager.reconstruct = (function IIFE() {
 					const t = type.slice(0, -2);
 					for (const item of value) {
 						if (typeof item !== t) {
+							if (
+								t === 'number' &&
+								typeof item === 'string' &&
+								!Number.isNaN(Number(item))
+							) {
+								continue;
+							}
 							return false;
 						}
 					}
@@ -1395,22 +1417,48 @@ PluginManager.reconstruct = (function IIFE() {
 				if (typeof value === type) return value;
 				return parameter.value;
 			case 'number':
-				if (typeof value === type) {
+				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
 					return Math.clamp(Math.roundTo(value, decimals), min, max);
+				}
+				if (typeof value === 'string') {
+					const n = Number(value);
+					if (!Number.isNaN(n)) {
+						const { min, max, decimals } = parameter;
+						return Math.clamp(Math.roundTo(n, decimals), min, max);
+					}
 				}
 				return parameter.value;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
 					return Math.clamp(Math.roundTo(value, decimals), min, max);
+				} else if (typeof value === 'string') {
+					const n = Number(value);
+					if (!Number.isNaN(n)) {
+						const { min, max, decimals } = parameter;
+						return Math.clamp(Math.roundTo(n, decimals), min, max);
+					}
 				} else if (VariableGetter.checkDataForPlugin(value)) {
 					return value;
 				}
 				return parameter.value;
-			case 'option':
+			case 'option': {
 				if (parameter.options.includes(value)) return value;
+				if (typeof value === 'number' && parameter.options[value] !== undefined) {
+					return parameter.options[value];
+				}
+				if (typeof value === 'string') {
+					const n = Number(value);
+					if (!Number.isNaN(n) && parameter.options.includes(n)) {
+						return n;
+					}
+				}
+				if (typeof value === 'number' && parameter.options.includes(String(value))) {
+					return String(value);
+				}
 				return parameter.value;
+			}
 			case 'easing':
 				if (Data.easings.map[value]) return value;
 				return Data.easings[0].id;
@@ -1483,16 +1531,25 @@ PluginManager.reconstruct = (function IIFE() {
 				return PositionGetter.createDefaultForPlugin();
 			case 'number[]':
 			case 'string[]':
-				if (value instanceof Array)
-					check: {
-						const t = type.slice(0, -2);
-						for (const item of value) {
-							if (typeof item !== t) {
-								break check;
+				if (value instanceof Array) {
+					const t = type.slice(0, -2);
+					const arr = [];
+					for (const item of value) {
+						if (typeof item !== t) {
+							if (
+								t === 'number' &&
+								typeof item === 'string' &&
+								!Number.isNaN(Number(item))
+							) {
+								arr.push(Number(item));
+								continue;
 							}
+							return parameter.value;
 						}
-						return value;
+						arr.push(item);
 					}
+					return arr;
+				}
 				return parameter.value;
 			case 'keycode':
 				if (typeof value === 'string') return value;
@@ -1522,10 +1579,12 @@ PluginManager.reconstruct = (function IIFE() {
 		if (length !== oEntries.length) {
 			reconstruct = true;
 		} else {
-			for (let i = 0; i < length; i++) {
-				const oEntry = oEntries[i];
-				const mParam = mParameters[i];
-				if (!checkValue(mParam, ...oEntry)) {
+			const oMap = {};
+			for (const [k, v] of oEntries) {
+				oMap[k] = v;
+			}
+			for (const mParam of mParameters) {
+				if (!(mParam.key in oMap) || !checkValue(mParam, mParam.key, oMap[mParam.key])) {
 					reconstruct = true;
 					break;
 				}

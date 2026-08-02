@@ -605,6 +605,7 @@ Layout.enableFocusableElements = function () {
 };
 
 Layout.disableFocusableElements = function () {
+	if (!this.manager) return;
 	const { active } = this.manager;
 	if (active) {
 		const nodes: any[] = [];

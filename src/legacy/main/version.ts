@@ -4,6 +4,7 @@ import { Editor } from './editor.ts';
 import { Updater } from '@/update/updater.ts';
 
 Editor.checkForEditorUpdates = function () {
+	if (!Editor.config) return;
 	const ver1 = Editor.config.version;
 	const ver2 = Updater.latestEditorVersion;
 	const verNum1 = (Updater.getVersionNumber as any)(ver1);

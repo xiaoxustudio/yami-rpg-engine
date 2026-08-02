@@ -1,8 +1,8 @@
-﻿import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import nodeFs from 'node:fs';
 
 export const FS = nodeFs;
-export const FSP = FS.promises;
+export const FSP = (FS as any).promises ?? ({} as any);
 
 FSP.writeFile = function (path, text, check = false as any) {
 	const { invoke } = ipcRenderer;

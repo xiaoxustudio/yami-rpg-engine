@@ -8,7 +8,7 @@ import { ipcRenderer } from 'electron';
 export const Log = {
 	box: $('#log-message'),
 	list: [] as any[],
-	devmode: process.argv.includes('--debug-mode'),
+	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
 	throw: null as ((error: any) => void) | null,
 	print: null as ((item: any) => void) | null,
@@ -27,7 +27,7 @@ Log.initialize = function () {
 
 	window.addEventListener('error', this.catchError!);
 	window.addEventListener('unhandledrejection', this.catchRejection!);
-	ipcRenderer.on('tsc-log', this.tscLog!);
+	ipcRenderer?.on?.('tsc-log', this.tscLog!);
 };
 
 Log.throw = function (error: any) {

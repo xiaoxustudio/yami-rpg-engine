@@ -36,23 +36,28 @@ import { Variable } from '@/variable/variable.ts';
 import { shell } from 'electron';
 import Path from 'node:path';
 import os from 'node:os';
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import nodeFs from 'node:fs';
 import fsExtra from 'fs-extra';
 import nodeYauzl from 'yauzl';
 import MarkdownIt from 'markdown-it';
 
-const GlobalPath = Path.resolve(os.homedir(), '.openyami');
+const GlobalPath =
+	typeof Path.resolve === 'function' ? Path.resolve(os.homedir?.() ?? '', '.openyami') : '';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算
 const _moduleURL = new URL(import.meta.url);
 const _modulePath =
-	_moduleURL.protocol === 'file:'
-		? fileURLToPath(_moduleURL)
-		: Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '');
+	typeof (window as any).__nodeRequire === 'function'
+		? _moduleURL.protocol === 'file:'
+			? fileURLToPath(_moduleURL)
+			: Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
+		: '';
 const __dirname =
-	_moduleURL.protocol === 'file:'
-		? Path.dirname(Path.dirname(_modulePath))
-		: Path.resolve(process.cwd(), 'Project');
+	typeof (window as any).__nodeRequire === 'function'
+		? _moduleURL.protocol === 'file:'
+			? Path.dirname(Path.dirname(_modulePath))
+			: Path.resolve(process.cwd(), 'Project')
+		: '';
 // oxlint-disable no-unused-vars
 export const fs = fsExtra;
 export const yauzl = nodeYauzl;
@@ -71,15 +76,21 @@ EventBus.once('editor_loaded', () => {
 });
 
 const packmetaPath = () => {
+	if (typeof Path.join !== 'function') return '';
 	const scriptPath = Path.join(__dirname, 'Script/module', 'packmeta.json');
-	if (nodeFs.existsSync(scriptPath)) return scriptPath;
+	if (typeof nodeFs.existsSync === 'function' && nodeFs.existsSync(scriptPath)) return scriptPath;
 	return Path.join(__dirname, '../src/legacy/module', 'packmeta.json');
 };
 
-export let PackMeta = JSON.parse(nodeFs.readFileSync(packmetaPath(), 'utf-8'));
+export let PackMeta =
+	typeof nodeFs.readFileSync === 'function'
+		? JSON.parse(nodeFs.readFileSync(packmetaPath(), 'utf-8'))
+		: ({} as any);
 
-export const TemplatesPath = Path.resolve(GlobalPath, 'Templates');
-if (!fs.existsSync(TemplatesPath)) fs.mkdirSync(TemplatesPath, { recursive: true });
+export const TemplatesPath =
+	typeof Path.resolve === 'function' ? Path.resolve(GlobalPath, 'Templates') : '';
+if (typeof fs.existsSync === 'function' && !fs.existsSync(TemplatesPath))
+	fs.mkdirSync(TemplatesPath, { recursive: true });
 
 export function isNoResource() {
 	const bak = JSON.parse(JSON.stringify(PackMeta));
@@ -97,8 +108,8 @@ export function isNoResource() {
 		Object.keys(p).map((v) => {
 			p[v] = {};
 			p[v]['check'] = false;
-			const _path = Path.resolve(TemplatesPath, v);
-			if (fs.existsSync(_path)) {
+			const _path = typeof Path.resolve === 'function' ? Path.resolve(TemplatesPath, v) : '';
+			if (typeof fs.existsSync === 'function' && fs.existsSync(_path)) {
 				p[v]['check'] = true;
 				checkArr.push(true);
 			} else {
@@ -363,6 +374,7 @@ window.addEventListener(
 	{ once: true }
 );
 (() => {
+	if (typeof fs.writeFileSync !== 'function') return;
 	PackMeta['Editor'] = Updater.latestEditorVersion;
 	PackMeta['Project'] = Updater.latestProjectVersion;
 	PackMeta['Community'] = CommunityVersion;

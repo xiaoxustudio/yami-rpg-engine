@@ -316,7 +316,7 @@ Directory.filterFiles = (function IIFE() {
 })();
 
 Directory.deleteFiles = (function IIFE() {
-	const { invoke } = ipcRenderer;
+	const { invoke } = ipcRenderer ?? ({} as any);
 	const trash = async (files: any) => {
 		const promises = [];
 		for (const file of files) {

@@ -1,7 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import { addClass, setTooltip } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
-import { fileURLToPath, URL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { File } from '@/file/file-system-core.ts';
 import { FSP } from '@/file/file-system.ts';
 import { Log } from '@/log/log-window.ts';
@@ -37,17 +37,20 @@ Local.initialize = function () {
 	for (const button of document.getElementsByName('cancel')) {
 		button.setAttribute('hotkey', 'Escape');
 	}
-	// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 process.cwd()/Project
+	// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 	const _moduleURL = new URL(import.meta.url);
 	const _modulePath =
-		_moduleURL.protocol === 'file:'
+		typeof fileURLToPath === 'function' && _moduleURL.protocol === 'file:'
 			? fileURLToPath(_moduleURL)
-			: Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop());
-	const _moduleDir =
-		_moduleURL.protocol === 'file:'
-			? Path.dirname(Path.dirname(_modulePath))
-			: Path.resolve(process.cwd(), 'Project');
-	this.dirname = Path.resolve(_moduleDir, 'Locales');
+			: '';
+	const _moduleDir = _modulePath
+		? Path.dirname(Path.dirname(_modulePath))
+		: typeof process !== 'undefined' &&
+			  typeof process.cwd === 'function' &&
+			  typeof Path.resolve === 'function'
+			? Path.resolve(process.cwd(), 'Project')
+			: '';
+	this.dirname = _moduleDir ? Path.resolve(_moduleDir, 'Locales') : '';
 	this.readLanguageList()
 		.then(() => {
 			return this.setLanguage(Editor.config.language);
@@ -269,7 +272,7 @@ Local.get = function (key) {
 };
 
 Local.showInExplorer = function () {
-	switch (process.platform) {
+	switch (typeof process !== 'undefined' ? process.platform : '') {
 		case 'win32':
 			return 'showInExplorer';
 		case 'darwin':

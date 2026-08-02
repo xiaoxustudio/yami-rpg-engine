@@ -235,7 +235,7 @@ const update = (): void => {
 			box.meta = meta;
 			box.data = script;
 			self.wraps.push(detailWrap);
-			if (summary.classList.contains('detail-summary')) {
+			if (summary?.classList.contains('detail-summary')) {
 				if (isMain) {
 					summary.textContent = Local.get('parameter.param');
 				} else {

@@ -7,7 +7,7 @@ import { TemplatesPath } from './global.ts';
 export const ApkBuilder = new (class {
 	logs: any[] = [];
 	constructor() {
-		ipcRenderer.on('apk-log', (_, log) => {
+		ipcRenderer?.on?.('apk-log', (_, log) => {
 			this.logs.push(log);
 			this.apkLog(log);
 		});
