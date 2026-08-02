@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="setAnimation-property">
-		<title-bar>Set Animation<close></close></title-bar>
+		<WindowFrame id="setAnimation-property">
+		<TitleBar>Set Animation<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><select-box id="setAnimation-property-key" />
@@ -22,11 +22,13 @@
 			<button id="setAnimation-property-confirm" name="confirm">Confirm</button>
 			<button id="setAnimation-property-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,7 +1,7 @@
 <template>
 	<!-- 公告窗口 -->
-	<window-frame id="update-log">
-		<title-bar>Update Log<close /></title-bar>
+	<WindowFrame id="update-log">
+		<TitleBar>Update Log<close /></TitleBar>
 		<content-frame>
 			<box id="update-log-tabs">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>
@@ -12,11 +12,13 @@
 				<box id="update-log-content" />
 			</box>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

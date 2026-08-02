@@ -1,30 +1,19 @@
 <template>
-	<keyboard-box ref="root" />
+	<div class="keyboard-box" ref="root">
+		<input class="keyboard-box-input" ref="input" type="text" />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import {
-  read as readElement,
-  write as writeElement,
-  enable as enableElement,
-  disable as disableElement,
-  getFocus as getFocusElement
+	addClass,
+	removeClass,
+	hideChildNodes,
+	showChildNodes,
+	getFocus as getFocusElement,
+	dispatchChangeEvent
 } from '@/util/element-utils';
-
-interface KeyboardBoxElement extends HTMLElement {
-	read(): number;
-	write(code: number): void;
-	inputCode(code: number): void;
-	enable(): void;
-	disable(): void;
-	getFocus(mode: string): HTMLInputElement;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
 
 const emit = defineEmits<{
 	input: [value: number];
@@ -32,30 +21,114 @@ const emit = defineEmits<{
 	blur: [];
 }>();
 
-const root = ref<KeyboardBoxElement | null>(null);
+const root = ref<HTMLElement | null>(null);
+const input = ref<HTMLInputElement | null>(null);
 
-const read = (): number => (root.value ? readElement(root.value) : undefined) ?? 0;
-const write = (code: number): void => { if (root.value) writeElement(root.value, code); };
-const inputCode = (code: number): void => root.value?.inputCode(code);
-const enable = (): void => { if (root.value) enableElement(root.value); };
-const disable = (): void => { if (root.value) disableElement(root.value); };
-const getFocus = (mode: string): HTMLInputElement | undefined =>
-	root.value ? getFocusElement(root.value, mode) : undefined;
+let dataValue = 0;
+let inputEventEnabled = false;
+let focusEventEnabled = false;
+let blurEventEnabled = false;
+
+const read = (): number => dataValue;
+
+const write = (code: number): void => {
+	dataValue = code;
+	if (input.value) {
+		input.value.value = String(code);
+	}
+};
+
+const inputCode = (code: number): void => {
+	if (dataValue !== code) {
+		write(code);
+		if (inputEventEnabled) {
+			const inputEvent = new InputEvent('input') as InputEvent & {
+				value: number;
+			};
+			inputEvent.value = dataValue;
+			root.value?.dispatchEvent(inputEvent);
+		}
+		dispatchChangeEvent(root.value);
+	}
+};
+
+const enable = (): void => {
+	if (removeClass(root.value, 'disabled')) {
+		showChildNodes(root.value);
+	}
+};
+
+const disable = (): void => {
+	if (addClass(root.value, 'disabled')) {
+		hideChildNodes(root.value);
+	}
+};
+
+const getFocus = (mode: string): HTMLInputElement => getFocusElement(input.value, mode) as any;
+
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.on(type, listener, options);
+	root.value?.addEventListener(type, listener, options);
+	switch (type) {
+		case 'input':
+			inputEventEnabled = true;
+			break;
+		case 'focus':
+			if (!focusEventEnabled) {
+				focusEventEnabled = true;
+				input.value?.addEventListener('focus', () => {
+					root.value?.dispatchEvent(new FocusEvent('focus'));
+				});
+			}
+			break;
+		case 'blur':
+			if (!blurEventEnabled) {
+				blurEventEnabled = true;
+				input.value?.addEventListener('blur', () => {
+					root.value?.dispatchEvent(new FocusEvent('blur'));
+				});
+			}
+			break;
+	}
 };
 
-defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
+const inputKeydown = (event: KeyboardEvent): void => {
+	event.stopPropagation();
+	event.preventDefault();
+	switch (event.code) {
+		case 'Backspace':
+			inputCode(0);
+			break;
+		case 'Enter':
+		case 'NumpadEnter':
+			event.stopImmediatePropagation();
+		default:
+			inputCode(parseInt(event.code) || 0);
+			break;
+	}
+};
 
 onMounted(() => {
-	const el = root.value;
-	if (!el) return;
-	el.on('input', (e: any) => emit('input', e.value));
-	el.on('focus', () => emit('focus'));
-	el.on('blur', () => emit('blur'));
+	input.value?.addEventListener('keydown', inputKeydown);
+	const el = root.value as any;
+	if (!el) {
+		return;
+	}
+	el.read = read;
+	el.write = write;
+	el.inputCode = inputCode;
+	el.enable = enable;
+	el.disable = disable;
+	el.getFocus = getFocus;
+	el.on = on;
+	el.input = input.value;
+	on('input', (event: any) => emit('input', event.value));
+	on('focus', () => emit('focus'));
+	on('blur', () => emit('blur'));
 });
+
+defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 </script>

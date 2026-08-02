@@ -1,14 +1,14 @@
 <template>
-	<detail-box id="uiElement-general-group" open>
-		<detail-summary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</detail-summary>
+	<DetailBox id="uiElement-general-group" open>
+		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="uiElement-general-grid">
 			<text>{{ local.getLabel('uiElement-name') || 'Name' }}</text><text-box id="uiElement-name"></text-box>
 			<text>{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</text
 			><select-box id="uiElement-pointerEvents"></select-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box id="uiElement-transform-group" open>
-		<detail-summary>{{ local.getLabel('uiElement-transform-grid') || 'Transform' }}</detail-summary>
+	</DetailBox>
+	<DetailBox id="uiElement-transform-group" open>
+		<DetailSummary>{{ local.getLabel('uiElement-transform-grid') || 'Transform' }}</DetailSummary>
 		<detail-grid id="uiElement-transform-grid">
 			<text>{{ local.getLabel('uiElement-transform-align-box') || 'Align' }}</text>
 			<flex-box id="uiElement-transform-align-box">
@@ -226,27 +226,27 @@
 				></number-box>
 			</box>
 		</detail-grid>
-	</detail-box>
-	<detail-box id="uiElement-events-group" open>
-		<detail-summary>{{ local.getLabel('uiElement-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox id="uiElement-events-group" open>
+		<DetailSummary>{{ local.getLabel('uiElement-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="uiElement-events"
 			class="inspector-list"
 			filter="element"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box id="uiElement-scripts-group" open>
-		<detail-summary>{{ local.getLabel('uiElement-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox id="uiElement-scripts-group" open>
+		<DetailSummary>{{ local.getLabel('uiElement-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="uiElement-scripts"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="uiElement-parameter-pane"></parameter-pane>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<detail-grid id="uiImage-properties-grid">
 			<text>{{ local.getLabel('uiImage-image') || 'Image' }}</text
 			><custom-box id="uiImage-image" type="file" filter="image"></custom-box>
@@ -342,13 +342,15 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

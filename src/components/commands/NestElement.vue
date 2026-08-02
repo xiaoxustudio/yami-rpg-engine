@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="nestElement">
-		<title-bar>Nest Element<close /></title-bar>
+	<WindowFrame id="nestElement">
+		<TitleBar>Nest Element<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Parent Element</text
@@ -11,11 +11,13 @@
 			<button id="nestElement-confirm" name="confirm">Confirm</button>
 			<button id="nestElement-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

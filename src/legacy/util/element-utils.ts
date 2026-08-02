@@ -1,6 +1,7 @@
 import { $ } from './dom.ts';
 import { Timer } from './timer.ts';
 import { Cursor } from '../tools/pointer-object.ts';
+import { createScrollBar } from '@/components/scroll-bar.ts';
 
 export function on(
 	el: any,
@@ -329,8 +330,8 @@ export function isInContent(el: any, event: MouseEvent): boolean {
 }
 
 export function addScrollbars(el: any): void {
-	const hBar = document.createElement('scroll-bar');
-	const vBar = document.createElement('scroll-bar');
+	const hBar = createScrollBar();
+	const vBar = createScrollBar();
 	const corner = document.createElement('scroll-corner');
 	const parent = el.parentNode as Node;
 	const next = el.nextSibling;

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="castSkill">
-		<title-bar>Cast Skill<close /></title-bar>
+	<WindowFrame id="castSkill">
+		<TitleBar>Cast Skill<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Actor</text><custom-box id="castSkill-actor" type="actor" />
@@ -14,12 +14,14 @@
 			<button id="castSkill-confirm" name="confirm">Confirm</button>
 			<button id="castSkill-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 	
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

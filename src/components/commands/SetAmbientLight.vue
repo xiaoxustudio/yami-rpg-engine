@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setAmbientLight">
-		<title-bar>Set Ambient Light<close /></title-bar>
+	<WindowFrame id="setAmbientLight">
+		<TitleBar>Set Ambient Light<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Red</text
@@ -23,12 +23,13 @@
 			<button id="setAmbientLight-confirm" name="confirm">Confirm</button>
 			<button id="setAmbientLight-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

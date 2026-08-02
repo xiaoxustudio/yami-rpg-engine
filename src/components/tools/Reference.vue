@@ -1,14 +1,16 @@
 <template>
-		<window-frame id="reference">
-		<title-bar>Reference<close></close></title-bar>
+		<WindowFrame id="reference">
+		<TitleBar>Reference<close></close></TitleBar>
 		<content-frame>
 			<common-list id="reference-list" />
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

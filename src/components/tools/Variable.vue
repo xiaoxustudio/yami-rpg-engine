@@ -1,7 +1,7 @@
 <template>
 	<!-- 变量窗口 -->
-	<window-frame id="variable" mode="center">
-		<title-bar>Variable<close /></title-bar>
+	<WindowFrame id="variable" mode="center">
+		<TitleBar>Variable<close /></TitleBar>
 		<content-frame>
 			<field-set id="variable-list-fieldset" class="input pad">
 				<legend>List</legend>
@@ -68,7 +68,7 @@
 					</flex-item>
 					<flex-item id="variable-value-box"
 						><text>Value</text>
-						<page-manager id="variable-value-manager">
+						<PageManager id="variable-value-manager">
 							<page-frame value="boolean">
 								<radio-box
 									id="variable-value-boolean-false"
@@ -96,7 +96,7 @@
 							<page-frame value="string">
 								<text-area id="variable-value-string" />
 							</page-frame>
-						</page-manager>
+						</PageManager>
 					</flex-item>
 					<flex-item><text>Note</text><text-area id="variable-note" /></flex-item>
 				</flex-box>
@@ -106,13 +106,16 @@
 			<button id="variable-cancel" name="cancel">Cancel</button>
 			<button id="variable-apply" name="apply">Apply</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import PageManager from '@app/components/common/PageManager.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

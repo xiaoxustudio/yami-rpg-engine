@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileEvent-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileEvent-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileEvent-general-grid">
 			<text>{{ local.getLabel('fileEvent-type') || 'Type' }}</text><select-box id="fileEvent-type" />
 			<text>{{ local.getLabel('fileEvent-enabled') || 'Enabled' }}</text
@@ -13,21 +13,23 @@
 			><select-box id="fileEvent-returnType" />
 			<text>{{ local.getLabel('fileEvent-description') || 'Description' }}</text><text-area id="fileEvent-description" />
 		</detail-grid>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileEvent-parameters') || 'Parameters' }}</detail-summary>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileEvent-parameters') || 'Parameters' }}</DetailSummary>
 			<param-list
 				id="fileEvent-parameters"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
-	</detail-box>
+		</DetailBox>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

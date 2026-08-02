@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="deleteVariable">
-		<title-bar>Delete Variable<close /></title-bar>
+	<WindowFrame id="deleteVariable">
+		<TitleBar>Delete Variable<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text
@@ -13,11 +13,13 @@
 			<button id="deleteVariable-confirm" name="confirm">Confirm</button>
 			<button id="deleteVariable-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

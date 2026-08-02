@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="loadImage">
-		<title-bar>Load Image<close /></title-bar>
+	<WindowFrame id="loadImage">
+		<TitleBar>Load Image<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><custom-box id="loadImage-element" type="element" />
@@ -16,11 +16,13 @@
 			<button id="loadImage-confirm" name="confirm">Confirm</button>
 			<button id="loadImage-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

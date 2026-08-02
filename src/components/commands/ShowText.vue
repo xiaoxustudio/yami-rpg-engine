@@ -1,6 +1,6 @@
 <template>
-<window-frame id="showText">
-	<title-bar>Show Text<close /></title-bar>
+<WindowFrame id="showText">
+	<TitleBar>Show Text<close /></TitleBar>
 	<content-frame>
 		<custom-box id="showText-target" type="actor" />
 		<text-box id="showText-parameters" />
@@ -11,11 +11,13 @@
 		<button id="showText-confirm" name="confirm">Confirm</button>
 		<button id="showText-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -10,6 +10,9 @@ import {
 	write,
 	dispatchResizeEvent
 } from '@/util/element-utils.ts';
+import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
+import { createNavBar } from '@/components/nav-bar.ts';
+import { createPageManager } from '@/components/page-manager.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { GL } from '@/webgl/webgl-init.ts';
@@ -564,14 +567,14 @@ Layout.readyToFocus = function (element: HTMLElement) {
 };
 
 Layout.createGroupContent = function (group: any) {
-	const nav = document.createElement('nav-bar');
+	const nav = createNavBar();
 	on(nav, 'write', this.navWrite!);
 	on(nav, 'pointerdown', this.navPointerdown!);
 	on(nav, 'dragstart', this.navDragstart!);
 	on(nav, 'dragend', this.navDragend!);
 	group.appendChild(nav);
 
-	const manager = document.createElement('page-manager');
+	const manager = createPageManager();
 	addClass(manager, 'group-manager');
 	group.appendChild(manager);
 
@@ -862,7 +865,7 @@ Layout.navDragstart = function (this: HTMLElement, event: any) {
 		event.preventDefault = Function.empty;
 		event.dataTransfer.hideDragImage();
 		event.group = this.parentNode;
-		event.hint = document.createElement('drag-and-drop-hint');
+		event.hint = createDragAndDropHint();
 		addClass(event.hint, 'for-group');
 		window.on('dragenter', Layout.navDragover!);
 		window.on('dragover', Layout.navDragover!);

@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiProgressBar-properties-grid') || 'ProgressBar Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiProgressBar-properties-grid') || 'ProgressBar Properties' }}</DetailSummary>
 		<detail-grid id="uiProgressBar-properties-grid">
 			<text>{{ local.getLabel('uiProgressBar-image') || 'Image' }}</text
 			><custom-box
@@ -124,13 +124,15 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

@@ -1,16 +1,18 @@
 <template>
-<window-frame id="comment">
-	<title-bar>Comment<close /></title-bar>
+<WindowFrame id="comment">
+	<TitleBar>Comment<close /></TitleBar>
 	<content-frame>
 		<text-area id="comment-comment" />
 		<button id="comment-confirm" name="confirm">Confirm</button>
 		<button id="comment-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -564,37 +564,37 @@
  * 自定义滚动条
  * --------------------------------
  */
-scroll-bar {
+.scroll-bar {
 	display: none;
 }
 
-scroll-bar.visible {
+.scroll-bar.visible {
 	display: block;
 }
 
-scroll-bar.horizontal {
+.scroll-bar.horizontal {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
 	height: 12px;
 }
 
-scroll-bar.horizontal.with-corner {
+.scroll-bar.horizontal.with-corner {
 	width: calc(100% - 12px);
 }
 
-scroll-bar.vertical {
+.scroll-bar.vertical {
 	position: absolute;
 	right: 0;
 	width: 12px;
 	height: 100%;
 }
 
-scroll-bar.vertical.with-corner {
+.scroll-bar.vertical.with-corner {
 	height: calc(100% - 12px);
 }
 
-scroll-thumb {
+.scroll-thumb {
 	position: absolute;
 	opacity: 0;
 	visibility: hidden;
@@ -603,16 +603,16 @@ scroll-thumb {
 	transition-duration: 0.8s;
 }
 
-scroll-bar:hover > scroll-thumb,
-scroll-bar:active > scroll-thumb,
-scroll-bar.dragging > scroll-thumb {
+.scroll-bar:hover > .scroll-thumb,
+.scroll-bar:active > .scroll-thumb,
+.scroll-bar.dragging > .scroll-thumb {
 	opacity: 1;
 	visibility: visible;
 	transition-delay: 0s;
 	transition-duration: 0.2s;
 }
 
-scroll-thumb-inner {
+.scroll-thumb-inner {
 	position: absolute;
 	left: 1px;
 	top: 1px;
@@ -624,8 +624,8 @@ scroll-thumb-inner {
 	pointer-events: none;
 }
 
-scroll-thumb:hover > scroll-thumb-inner,
-scroll-thumb:active > scroll-thumb-inner {
+.scroll-thumb:hover > .scroll-thumb-inner,
+.scroll-thumb:active > .scroll-thumb-inner {
 	background-color: var(--custom-scrollbar-thumb-background-hover);
 }
 

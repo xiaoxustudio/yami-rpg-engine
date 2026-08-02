@@ -34,7 +34,7 @@
 				</box>
 				<box id="ui-body">
 					<box id="ui-screen" tabindex="-1">
-						<marquee-area id="ui-marquee" />
+						<MarqueeArea id="ui-marquee" />
 					</box>
 				</box>
 			</page-frame>
@@ -44,6 +44,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

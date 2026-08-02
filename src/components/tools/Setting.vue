@@ -1,10 +1,10 @@
 <template>
 	<!-- Open设置窗口 -->
-	<window-frame id="setting">
-		<title-bar id="setting-title"
+	<WindowFrame id="setting">
+		<TitleBar id="setting-title"
 			>Setting<maximize />
 			<close />
-		</title-bar>
+		</TitleBar>
 		<content-frame>
 			<grid-box id="setting-grid">
 				<text id="setting-title-server" class="setting-title">Server</text>
@@ -38,11 +38,13 @@
 			<button id="setting-confirm" name="confirm">Confirm</button>
 			<button id="setting-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

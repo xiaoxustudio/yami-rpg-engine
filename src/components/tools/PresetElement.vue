@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="presetElement" mode="center">
-		<title-bar>Element<close></close></title-bar>
+		<WindowFrame id="presetElement" mode="center">
+		<TitleBar>Element<close></close></TitleBar>
 		<content-frame>
 			<custom-box id="presetElement-uiId" type="file" filter="ui" />
 			<node-list id="presetElement-list" />
@@ -8,11 +8,13 @@
 			<button id="presetElement-confirm" name="confirm">Confirm</button>
 			<button id="presetElement-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

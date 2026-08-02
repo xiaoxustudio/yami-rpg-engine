@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文字效果 -->
-	<window-frame id="textEffect">
-		<title-bar>Set Text Effect<close /></title-bar>
+	<WindowFrame id="textEffect">
+		<TitleBar>Set Text Effect<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Effect</text><select-box id="textEffect-type" /> <text>Shadow X</text
@@ -15,11 +15,13 @@
 			<button id="textEffect-confirm" name="confirm">Confirm</button>
 			<button id="textEffect-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

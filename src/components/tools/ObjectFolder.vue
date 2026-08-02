@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="object-folder">
-		<title-bar>Default Object Folders<close></close></title-bar>
+		<WindowFrame id="object-folder">
+		<TitleBar>Default Object Folders<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tilemap</text><text-box id="object-folder-tilemap" /> <text>Actor</text
@@ -14,11 +14,13 @@
 			<button id="object-folder-confirm" name="confirm">Confirm</button>
 			<button id="object-folder-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

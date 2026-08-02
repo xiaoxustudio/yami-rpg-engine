@@ -1,16 +1,18 @@
 <template>
-	<window-frame id="preventSceneInput">
-		<title-bar>Prevent Scene Input<close /></title-bar>
+	<WindowFrame id="preventSceneInput">
+		<TitleBar>Prevent Scene Input<close /></TitleBar>
 		<content-frame>
 			<button id="preventSceneInput-confirm" name="confirm">Confirm</button>
 			<button id="preventSceneInput-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 	
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setBoolean">
-		<title-bar>Set Boolean<close /></title-bar>
+	<WindowFrame id="setBoolean">
+		<TitleBar>Set Boolean<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text
@@ -22,11 +22,13 @@
 			<button id="setBoolean-confirm" name="confirm">Confirm</button>
 			<button id="setBoolean-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

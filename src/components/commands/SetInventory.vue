@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setInventory">
-	<title-bar>Set Inventory<close /></title-bar>
+<WindowFrame id="setInventory">
+	<TitleBar>Set Inventory<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="setInventory-actor" type="actor" />
@@ -25,11 +25,13 @@
 		<button id="setInventory-confirm" name="confirm">Confirm</button>
 		<button id="setInventory-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

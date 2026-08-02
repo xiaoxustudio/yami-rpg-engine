@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="setDialogBox-property">
-		<title-bar>Dialog Box Property<close></close></title-bar>
+		<WindowFrame id="setDialogBox-property">
+		<TitleBar>Dialog Box Property<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><select-box id="setDialogBox-property-key" />
@@ -62,11 +62,13 @@
 			<button id="setDialogBox-property-confirm" name="confirm">Confirm</button>
 			<button id="setDialogBox-property-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

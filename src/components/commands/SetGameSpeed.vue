@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setGameSpeed">
-		<title-bar>Set Game Speed<close /></title-bar>
+	<WindowFrame id="setGameSpeed">
+		<TitleBar>Set Game Speed<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Speed</text
@@ -25,11 +25,13 @@
 			<button id="setGameSpeed-confirm" name="confirm">Confirm</button>
 			<button id="setGameSpeed-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

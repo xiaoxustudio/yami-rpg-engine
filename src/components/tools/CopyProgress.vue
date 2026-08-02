@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="copyProgress">
-		<title-bar>New Project</title-bar>
+	<WindowFrame id="copyProgress">
+		<TitleBar>New Project</TitleBar>
 		<content-frame>
 			<flex-box id="copyProgress-flex">
 				<text>Copying Files...</text>
@@ -10,11 +10,13 @@
 				<text id="copyProgress-info" />
 			</flex-box>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

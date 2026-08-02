@@ -1,11 +1,12 @@
 <template>
-	<window-frame id="command-widget">
+	<WindowFrame id="command-widget">
 		<text-box id="command-searcher" />
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

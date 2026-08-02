@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setState">
-		<title-bar>Set State<close /></title-bar>
+	<WindowFrame id="setState">
+		<TitleBar>Set State<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>State</text><custom-box id="setState-state" type="state" />
@@ -10,12 +10,13 @@
 			<button id="setState-confirm" name="confirm">Confirm</button>
 			<button id="setState-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

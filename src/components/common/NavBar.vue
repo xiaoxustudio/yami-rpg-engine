@@ -1,27 +1,12 @@
 <template>
-	<nav-bar ref="root" :id="props.id" />
+	<div class="nav-bar" ref="root" :id="props.id">
+		<slot />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import {
-  read as readElement,
-  write as writeElement
-} from '@/util/element-utils';
-
-interface NavBarElement extends HTMLElement {
-	writeEventEnabled: boolean;
-	selectEventEnabled: boolean;
-	read(): any;
-	write(value: any): void;
-	unselect(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-	pointerdown: (event: PointerEvent) => void;
-}
+import { onMounted, ref } from 'vue';
+import { addClass, removeClass, hasClass } from '@/util/element-utils.ts';
 
 interface Props {
 	id?: string;
@@ -29,30 +14,140 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<{
-	write: [value: any];
-	select: [value: any];
-}>();
+const root = ref<HTMLElement | null>(null);
 
-const root = ref<NavBarElement | null>(null);
+let writeEventEnabled = false;
+let selectEventEnabled = false;
 
-const read = (): any => (root.value ? readElement(root.value) : undefined);
-const write = (value: any): void => { if (root.value) writeElement(root.value, value); };
-const unselect = (): void => root.value?.unselect();
+const read = (): any => {
+	const element = root.value;
+	if (!element) {
+		return undefined;
+	}
+	const item = element.querySelector('.selected') as (HTMLElement & { dataValue: any }) | null;
+	if (item && item.dataValue === undefined && item.tagName === 'NAV-ITEM') {
+		const string = item.getAttribute('value') ?? '';
+		const isNumber = RegExp.number.test(string);
+		item.dataValue = isNumber ? parseFloat(string) : string;
+	}
+	return item ? item.dataValue : undefined;
+};
+
+const unselect = (): void => {
+	const element = root.value;
+	if (!element) {
+		return;
+	}
+	const item = element.querySelector('.selected');
+	if (item) {
+		removeClass(item as HTMLElement, 'selected');
+	}
+};
+
+const write = (value: any): void => {
+	const element = root.value;
+	if (!element) {
+		return;
+	}
+	const items = element.childNodes;
+	const length = items.length;
+	if (length !== 0) {
+		unselect();
+		let target: HTMLElement | undefined;
+		for (let i = 0; i < length; i++) {
+			const item = items[i] as HTMLElement & { dataValue: any };
+			if (item.tagName === 'NAV-ITEM' && item.dataValue === undefined) {
+				const string = item.getAttribute('value') ?? '';
+				const isNumber = RegExp.number.test(string);
+				item.dataValue = isNumber ? parseFloat(string) : string;
+			}
+			if (item.dataValue === value) {
+				target = item;
+				break;
+			}
+		}
+		if (target !== undefined) {
+			addClass(target, 'selected');
+		}
+		if (writeEventEnabled) {
+			const writeEvent: any = new Event('write');
+			writeEvent.value = target ? value : undefined;
+			element.dispatchEvent(writeEvent);
+		}
+	}
+};
+
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.on(type, listener, options);
+	const element = root.value;
+	if (!element) {
+		return;
+	}
+	element.addEventListener(type, listener, options);
+	switch (type) {
+		case 'write':
+			writeEventEnabled = true;
+			break;
+		case 'select':
+			selectEventEnabled = true;
+			break;
+	}
 };
 
-defineExpose({ read, write, unselect, on, root });
+const pointerdown = (event: PointerEvent): void => {
+	const element = root.value;
+	if (!element) {
+		return;
+	}
+	switch (event.button) {
+		case 0: {
+			const target = event.target as HTMLElement & { dataValue: any };
+			if (target.tagName === 'NAV-ITEM' && !hasClass(target, 'selected')) {
+				if (target.dataValue === undefined) {
+					const string = target.getAttribute('value') ?? '';
+					const isNumber = RegExp.number.test(string);
+					target.dataValue = isNumber ? parseFloat(string) : string;
+				}
+				write(target.dataValue);
+				if (selectEventEnabled) {
+					const select = new Event('select');
+					select.value = target.dataValue;
+					element.dispatchEvent(select);
+				}
+			}
+			break;
+		}
+	}
+};
 
 onMounted(() => {
-	const el = root.value;
-	if (!el) return;
-	el.on('write', (e: any) => emit('write', e.value));
-	el.on('select', (e: any) => emit('select', e.value));
+	const element = root.value as any;
+	if (!element) {
+		return;
+	}
+	const elements = element.childNodes;
+	if (elements.length > 0) {
+		let i = elements.length;
+		while (--i >= 0) {
+			const child = elements[i] as HTMLElement & { dataValue: any };
+			if (child.tagName === 'NAV-ITEM') {
+				const string = child.getAttribute('value') ?? '';
+				const isNumber = RegExp.number.test(string);
+				child.dataValue = isNumber ? parseFloat(string) : string;
+			} else {
+				element.removeChild(child);
+			}
+		}
+	}
+	element.read = read;
+	element.write = write;
+	element.unselect = unselect;
+	element.on = on;
+	element.addEventListener('pointerdown', pointerdown);
 });
+
+defineExpose({ read, write, unselect, on, root });
 </script>

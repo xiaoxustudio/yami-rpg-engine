@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="positionGetter">
-		<title-bar>Position<close></close></title-bar>
+		<WindowFrame id="positionGetter">
+		<TitleBar>Position<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><select-box id="positionGetter-type" /> <text>X</text
@@ -34,11 +34,13 @@
 			<button id="positionGetter-confirm" name="confirm">Confirm</button>
 			<button id="positionGetter-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="project-settings">
-		<title-bar>Project Settings<close></close></title-bar>
+		<WindowFrame id="project-settings">
+		<TitleBar>Project Settings<close></close></TitleBar>
 		<content-frame>
 			<box id="project-page">
 				<box id="project-grid-box">
@@ -149,13 +149,13 @@
 					/>
 					<text id="config-virtualAxis-summary" class="project-summary">Virtual Axis</text>
 					<text class="project-label">Axis Up</text
-					><keyboard-box id="config-virtualAxis-up" />
+					><KeyboardBox id="config-virtualAxis-up" />
 					<text class="project-label">Axis Down</text
-					><keyboard-box id="config-virtualAxis-down" />
+					><KeyboardBox id="config-virtualAxis-down" />
 					<text class="project-label">Axis Left</text
-					><keyboard-box id="config-virtualAxis-left" />
+					><KeyboardBox id="config-virtualAxis-left" />
 					<text class="project-label">Axis Right</text
-					><keyboard-box id="config-virtualAxis-right" />
+					><KeyboardBox id="config-virtualAxis-right" />
 					<text id="config-collision-summary" class="project-summary">Collision System</text>
 					<text class="project-label">Actor Collision</text
 					><select-box id="config-collision-actor-enabled" />
@@ -238,13 +238,16 @@
 			<button id="project-confirm" name="confirm">Confirm</button>
 			<button id="project-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

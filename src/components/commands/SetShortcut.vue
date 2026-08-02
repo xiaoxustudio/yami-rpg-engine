@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setShortcut">
-	<title-bar>Set Shortcut<close /></title-bar>
+<WindowFrame id="setShortcut">
+	<TitleBar>Set Shortcut<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="setShortcut-actor" type="actor" />
@@ -14,11 +14,13 @@
 		<button id="setShortcut-confirm" name="confirm">Confirm</button>
 		<button id="setShortcut-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

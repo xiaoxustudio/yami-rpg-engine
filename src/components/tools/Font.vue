@@ -1,16 +1,18 @@
 <template>
-	<window-frame id="font">
-		<title-bar>Set Font<close></close></title-bar>
+	<WindowFrame id="font">
+		<TitleBar>Set Font<close></close></TitleBar>
 		<content-frame>
 			<grid-box> <text>Font Family</text><text-box id="font-font" /> </grid-box>
 			<button id="font-confirm" name="confirm">Confirm</button>
 			<button id="font-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

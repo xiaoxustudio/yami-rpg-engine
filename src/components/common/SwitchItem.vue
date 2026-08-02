@@ -1,17 +1,16 @@
 <template>
-	<switch-item ref="root" :id="props.id" />
+	<div
+		ref="root"
+		:id="props.id"
+		:class="stateClass"
+		@pointerdown="pointerdown"
+	/>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import {
-  read as readElement,
-  write as writeElement,
-  enable as enableElement,
-  disable as disableElement
-} from '@/util/element-utils';
+import { ref, computed, watch, onMounted } from 'vue';
 
-interface SwitchItemElement extends HTMLElement {
+interface SwitchItemElement extends HTMLDivElement {
 	read(): number;
 	write(value: number): void;
 	update(): void;
@@ -21,8 +20,6 @@ interface SwitchItemElement extends HTMLElement {
 		options?: boolean | AddEventListenerOptions
 	): void;
 	dataValue: number;
-	class: string;
-	length: number;
 	inputEventEnabled: boolean;
 }
 
@@ -39,39 +36,68 @@ const props = withDefaults(defineProps<Props>(), {
 	disabled: false
 });
 
-const emit = defineEmits<{
-	'update:modelValue': [value: number];
-	input: [value: number];
-}>();
+const classes = ['zero', 'one', 'two', 'three'];
 
-const root = ref<SwitchItemElement | null>(null);
+const root = ref<HTMLDivElement | null>(null);
+const length = computed(() => Math.clamp(props.length, 1, 4));
+const dataValue = ref(props.modelValue % length.value);
+const inputEventEnabled = ref(false);
+const stateClass = computed(() => classes[dataValue.value]);
 
-const read = (): number => (root.value ? readElement(root.value) : undefined) ?? 0;
-const write = (value: number): void => { if (root.value) writeElement(root.value, value); };
-const update = (): void => root.value?.update();
+const read = (): number => dataValue.value;
+
+const write = (value: number): void => {
+	dataValue.value = value % length.value;
+};
+
+const update = (): void => {};
+
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.on(type, listener, options);
+	root.value?.addEventListener(type, listener, options);
+	if (type === 'input') inputEventEnabled.value = true;
+};
+
+const pointerdown = (event: PointerEvent): void => {
+	if (props.disabled) return;
+	if (event.button !== 0) return;
+	write((dataValue.value + 1) % length.value);
+	if (inputEventEnabled.value) {
+		const input = new Event('input');
+		(input as any).value = dataValue.value;
+		root.value?.dispatchEvent(input);
+	}
 };
 
 defineExpose({ read, write, update, on, root });
 
 watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (root.value ? (val ? disableElement(root.value) : enableElement(root.value)) : undefined));
+watch(() => props.disabled, (val) => root.value?.classList.toggle('disabled', val));
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as SwitchItemElement | null;
 	if (!el) return;
-	el.setAttribute('length', String(props.length));
-	el.length = Math.clamp(props.length, 1, 4);
-	el.on('input', (e: any) => {
-		emit('input', e.value);
-		emit('update:modelValue', e.value);
+	el.read = read;
+	el.write = write;
+	el.update = update;
+	el.on = on;
+	Object.defineProperty(el, 'dataValue', {
+		get: () => dataValue.value,
+		set: (value: number) => {
+			dataValue.value = value;
+		},
+		configurable: true
 	});
-	if (props.modelValue) writeElement(el, props.modelValue);
-	if (props.disabled) disableElement(el);
+	Object.defineProperty(el, 'inputEventEnabled', {
+		get: () => inputEventEnabled.value,
+		set: (value: boolean) => {
+			inputEventEnabled.value = value;
+		},
+		configurable: true
+	});
+	if (props.disabled) el.classList.add('disabled');
 });
 </script>

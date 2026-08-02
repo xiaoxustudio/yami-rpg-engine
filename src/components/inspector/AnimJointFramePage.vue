@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('animJointFrame-properties-grid') || 'Frame' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('animJointFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<detail-grid id="animJointFrame-properties-grid">
 			<text>{{ local.getLabel('animJointFrame-position-box') || 'Position' }}</text>
 			<box
@@ -69,13 +69,15 @@
 				></number-box>
 			</box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setVolume">
-	<title-bar>Set Volume<close /></title-bar>
+<WindowFrame id="setVolume">
+	<TitleBar>Set Volume<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><select-box id="setVolume-type" /> <text>Volume</text
@@ -19,11 +19,13 @@
 		<button id="setVolume-confirm" name="confirm">Confirm</button>
 		<button id="setVolume-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

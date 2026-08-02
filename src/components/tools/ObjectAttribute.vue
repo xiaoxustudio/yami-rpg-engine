@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="object-attribute">
-		<title-bar>Attribute<close></close></title-bar>
+		<WindowFrame id="object-attribute">
+		<TitleBar>Attribute<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Key</text><select-box id="object-attribute-key" /> <text>Boolean</text
@@ -18,11 +18,13 @@
 			<button id="object-attribute-confirm" name="confirm">Confirm</button>
 			<button id="object-attribute-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

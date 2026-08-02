@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="activateScene">
-		<title-bar>Activate Scene<close /></title-bar>
+	<WindowFrame id="activateScene">
+		<TitleBar>Activate Scene<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Scene</text><select-box id="activateScene-pointer" />
@@ -8,12 +8,13 @@
 			<button id="activateScene-confirm" name="confirm">Confirm</button>
 			<button id="activateScene-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileItem-general-grid">
 			<text>{{ local.getLabel('fileItem-icon') || 'Icon' }}</text
 			><custom-box id="fileItem-icon" type="file" filter="image" />
@@ -9,33 +9,33 @@
 			<text>{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</text
 			><custom-box id="fileItem-inherit" type="file" filter="item" />
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileItem-attributes') || 'Attributes' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileItem-attributes') || 'Attributes' }}</DetailSummary>
 		<param-list
 			id="fileItem-attributes"
 			class="inspector-list"
 			group="item"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileItem-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileItem-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="fileItem-events"
 			class="inspector-list"
 			filter="item"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileItem-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileItem-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="fileItem-scripts"
 			class="inspector-list"
 			flexible
 		/>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="fileItem-parameter-pane" />
 </template>
 
@@ -43,6 +43,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

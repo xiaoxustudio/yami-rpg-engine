@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="moveLight-property">
-		<title-bar>Point Light Property<close></close></title-bar>
+		<WindowFrame id="moveLight-property">
+		<TitleBar>Point Light Property<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><select-box id="moveLight-property-key" /> <text>X</text
@@ -86,11 +86,13 @@
 			<button id="moveLight-property-confirm" name="confirm">Confirm</button>
 			<button id="moveLight-property-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

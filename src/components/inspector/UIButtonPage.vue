@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiButton-image-properties-grid') || 'Image Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiButton-image-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<detail-grid id="uiButton-image-properties-grid">
 			<text>{{ local.getLabel('uiButton-display') || 'Display' }}</text><select-box id="uiButton-display"></select-box>
 			<text>{{ local.getLabel('uiButton-normalImage') || 'Normal Image' }}</text
@@ -169,9 +169,9 @@
 				></number-box>
 			</box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiButton-text-properties-grid') || 'Text Properties' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiButton-text-properties-grid') || 'Text Properties' }}</DetailSummary>
 		<detail-grid id="uiButton-text-properties-grid">
 			<text>{{ local.getLabel('uiButton-direction') || 'Direction' }}</text><select-box id="uiButton-direction"></select-box>
 			<text>{{ local.getLabel('uiButton-align-box') || 'Align' }}</text>
@@ -311,9 +311,9 @@
 			<text>{{ local.getLabel('uiButton-activeColor') || 'Active Color' }}</text
 			><color-box id="uiButton-activeColor"></color-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiButton-sound-effects-grid') || 'Sound Effects' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiButton-sound-effects-grid') || 'Sound Effects' }}</DetailSummary>
 		<detail-grid id="uiButton-sound-effects-grid">
 			<text>{{ local.getLabel('uiButton-hoverSound') || 'Hover SE' }}</text
 			><custom-box
@@ -328,13 +328,15 @@
 				filter="audio"
 			></custom-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

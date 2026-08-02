@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneParticle-general-grid">
 			<text>{{ local.getLabel('sceneParticle-name') || 'Name' }}</text><text-box id="sceneParticle-name"></text-box>
 			<text>{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</text
@@ -105,32 +105,32 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParticle-conditions') || 'Conditions' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParticle-conditions') || 'Conditions' }}</DetailSummary>
 		<param-list
 			id="sceneParticle-conditions"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParticle-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParticle-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="sceneParticle-events"
 			class="inspector-list"
 			filter="particle"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParticle-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParticle-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="sceneParticle-scripts"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="sceneParticle-parameter-pane"></parameter-pane>
 </template>
 
@@ -138,6 +138,8 @@
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

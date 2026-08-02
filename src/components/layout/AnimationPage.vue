@@ -39,7 +39,7 @@
 				</box>
 				<box id="animation-body">
 					<box id="animation-screen" tabindex="-1">
-						<marquee-area id="animation-marquee" />
+						<MarqueeArea id="animation-marquee" />
 					</box>
 					<box id="animation-dirList" />
 				</box>
@@ -50,6 +50,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

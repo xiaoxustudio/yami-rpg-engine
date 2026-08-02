@@ -1,19 +1,21 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileUI-foreground-grid') || 'Stage Foreground' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileUI-foreground-grid') || 'Stage Foreground' }}</DetailSummary>
 		<detail-grid id="fileUI-foreground-grid">
 			<text>{{ local.getLabel('fileUI-width') || 'Width' }}</text
 			><number-box id="fileUI-width" min="8" max="7680" unit="px" />
 			<text>{{ local.getLabel('fileUI-height') || 'Height' }}</text
 			><number-box id="fileUI-height" min="8" max="7680" unit="px" />
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

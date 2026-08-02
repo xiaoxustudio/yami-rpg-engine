@@ -1,28 +1,32 @@
 import { css, rect } from '@/util/element-utils.ts';
 
-export class DragAndDropHint extends HTMLElement {
+interface DragAndDropHintElement extends HTMLElement {
 	left: number;
 	top: number;
 	width: number;
 	height: number;
 	upper: boolean;
+	measure(item: HTMLElement): { left: number; top: number; width: number; height: number };
+	moveUp(): DragAndDropHintElement;
+	moveDown(): DragAndDropHintElement;
+	set(coords: { left: number; top: number; width: number; height: number }): void;
+}
 
-	constructor() {
-		super();
+export function attachDragAndDropHintApi(el: HTMLElement): void {
+	const hint = el as DragAndDropHintElement;
 
-		this.left = 0;
-		this.top = 0;
-		this.width = 0;
-		this.height = 0;
-	}
+	hint.left = 0;
+	hint.top = 0;
+	hint.width = 0;
+	hint.height = 0;
 
-	measure(item: HTMLElement): {
+	hint.measure = function (item: HTMLElement): {
 		left: number;
 		top: number;
 		width: number;
 		height: number;
 	} {
-		const parent = this.parentNode as HTMLElement & {
+		const parent = hint.parentNode as HTMLElement & {
 			borderLeft?: number;
 			borderTop?: number;
 		};
@@ -38,29 +42,29 @@ export class DragAndDropHint extends HTMLElement {
 		const pRect = rect(parent as HTMLElement);
 		const tRect = rect(item);
 		const left = tRect.left - pRect.left - bl;
-		const top = tRect.top - pRect.top - bt;
+		const top = tRect.top - pRect.top - (bt ?? 0);
 		const width = tRect.width;
 		const height = tRect.height;
 		return { left, top, width, height };
-	}
+	};
 
-	moveUp(): this {
-		if (!this.upper) {
-			this.upper = true;
-			this.style.zIndex = '1';
+	hint.moveUp = function (): DragAndDropHintElement {
+		if (!hint.upper) {
+			hint.upper = true;
+			hint.style.zIndex = '1';
 		}
-		return this;
-	}
+		return hint;
+	};
 
-	moveDown(): this {
-		if (this.upper) {
-			this.upper = false;
-			this.style.zIndex = '';
+	hint.moveDown = function (): DragAndDropHintElement {
+		if (hint.upper) {
+			hint.upper = false;
+			hint.style.zIndex = '';
 		}
-		return this;
-	}
+		return hint;
+	};
 
-	set({
+	hint.set = function ({
 		left,
 		top,
 		width,
@@ -72,21 +76,26 @@ export class DragAndDropHint extends HTMLElement {
 		height: number;
 	}): void {
 		if (
-			this.left !== left ||
-			this.top !== top ||
-			this.width !== width ||
-			this.height !== height
+			hint.left !== left ||
+			hint.top !== top ||
+			hint.width !== width ||
+			hint.height !== height
 		) {
-			this.left = left;
-			this.top = top;
-			this.width = width;
-			this.height = height;
-			this.style.left = `${left}px`;
-			this.style.top = `${top}px`;
-			this.style.width = `${width}px`;
-			this.style.height = `${height}px`;
+			hint.left = left;
+			hint.top = top;
+			hint.width = width;
+			hint.height = height;
+			hint.style.left = `${left}px`;
+			hint.style.top = `${top}px`;
+			hint.style.width = `${width}px`;
+			hint.style.height = `${height}px`;
 		}
-	}
+	};
 }
 
-customElements.define('drag-and-drop-hint', DragAndDropHint);
+export function createDragAndDropHint(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'drag-and-drop-hint';
+	attachDragAndDropHintApi(el);
+	return el;
+}

@@ -1,7 +1,7 @@
 <template>
 	<!-- 匹配 - 条件 -->
-	<window-frame id="switch-condition">
-		<title-bar>Condition<close /></title-bar>
+	<WindowFrame id="switch-condition">
+		<TitleBar>Condition<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Condition Type</text><select-box id="switch-condition-type" />
@@ -18,8 +18,8 @@
 				><custom-box id="switch-condition-attribute-attributeId" type="attribute" />
 				<text>Enum String</text
 				><custom-box id="switch-condition-enum-stringId" type="enum-string" />
-				<text>Key</text><keyboard-box id="switch-condition-keyboard-keycode" />
-				<text>Button</text><gamepad-box id="switch-condition-gamepad-button" />
+				<text>Key</text><KeyboardBox id="switch-condition-keyboard-keycode" />
+				<text>Button</text><GamepadBox id="switch-condition-gamepad-button" />
 				<text>Button</text><select-box id="switch-condition-mouse-button" />
 				<text>Variable</text
 				><custom-box
@@ -31,11 +31,15 @@
 			<button id="switch-condition-confirm" name="confirm">Confirm</button>
 			<button id="switch-condition-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
+import GamepadBox from '@app/components/common/GamepadBox.vue';
+import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

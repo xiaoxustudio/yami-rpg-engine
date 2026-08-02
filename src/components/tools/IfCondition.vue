@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="if-condition">
-		<title-bar>Condition<close></close></title-bar>
+	<WindowFrame id="if-condition">
+		<TitleBar>Condition<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Condition Type</text><select-box id="if-condition-type" />
@@ -67,9 +67,9 @@
 				<text>Target</text><custom-box id="if-condition-actor-target" type="actor" />
 				<text>Team</text><select-box id="if-condition-actor-teamId" />
 				<text>Operation</text><select-box id="if-condition-element-operation" />
-				<text>Key Code</text><keyboard-box id="if-condition-keyboard-keycode" />
+				<text>Key Code</text><KeyboardBox id="if-condition-keyboard-keycode" />
 				<text>State</text><select-box id="if-condition-keyboard-state" />
-				<text>Button</text><gamepad-box id="if-condition-gamepad-button" />
+				<text>Button</text><GamepadBox id="if-condition-gamepad-button" />
 				<text>State</text><select-box id="if-condition-gamepad-state" />
 				<text>Button</text><select-box id="if-condition-mouse-button" />
 				<text>State</text><select-box id="if-condition-mouse-state" />
@@ -78,11 +78,15 @@
 			<button id="if-condition-confirm" name="confirm">Confirm</button>
 			<button id="if-condition-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
+import GamepadBox from '@app/components/common/GamepadBox.vue';
+import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setObjectAnimation">
-		<title-bar>Set Object Animation<close /></title-bar>
+	<WindowFrame id="setObjectAnimation">
+		<TitleBar>Set Object Animation<close /></TitleBar>
 		<content-frame>
 			<grid-box id="setObjectAnimation-grid-box">
 				<text>Sort</text><select-box id="setObjectAnimation-sort" />
@@ -57,12 +57,13 @@
 			<button id="setObjectAnimation-confirm" name="confirm">Confirm</button>
 			<button id="setObjectAnimation-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

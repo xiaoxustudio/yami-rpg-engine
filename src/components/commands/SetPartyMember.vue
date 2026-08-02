@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setPartyMember">
-	<title-bar>Set Party Member<close /></title-bar>
+<WindowFrame id="setPartyMember">
+	<TitleBar>Set Party Member<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Operation</text><select-box id="setPartyMember-operation" /><text>Global Actor</text
@@ -8,11 +8,13 @@
 		<button id="setPartyMember-confirm" name="confirm">Confirm</button>
 		<button id="setPartyMember-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

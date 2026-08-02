@@ -1,6 +1,6 @@
 <template>
-<window-frame id="followActor">
-	<title-bar>Follow Actor<close /></title-bar>
+<WindowFrame id="followActor">
+	<TitleBar>Follow Actor<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="followActor-actor" type="actor" /><text>Target</text><custom-box id="followActor-target" type="actor" /><text>Mode</text><select-box id="followActor-mode" /><text>Min Distance</text
@@ -43,11 +43,13 @@
 		<button id="followActor-confirm" name="confirm">Confirm</button>
 		<button id="followActor-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

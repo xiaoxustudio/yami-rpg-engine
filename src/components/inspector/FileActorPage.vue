@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</DetailSummary>
 			<detail-grid id="fileActor-general-grid">
 				<text>{{ local.getLabel('fileActor-portrait') || 'Portrait' }}</text
 			><custom-box
@@ -77,65 +77,65 @@
 					filter="actor"
 				/>
 			</detail-grid>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-sprites') || 'Sprites' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-sprites') || 'Sprites' }}</DetailSummary>
 			<param-list
 				id="fileActor-sprites"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-attributes') || 'Attributes' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-attributes') || 'Attributes' }}</DetailSummary>
 			<param-list
 				id="fileActor-attributes"
 				class="inspector-list"
 				group="actor"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-skills') || 'Skills' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-skills') || 'Skills' }}</DetailSummary>
 			<param-list
 				id="fileActor-skills"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-equipments') || 'Equipments' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-equipments') || 'Equipments' }}</DetailSummary>
 			<param-list
 				id="fileActor-equipments"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-inventory') || 'Inventory' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-inventory') || 'Inventory' }}</DetailSummary>
 			<param-list
 				id="fileActor-inventory"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-events') || 'Events' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-events') || 'Events' }}</DetailSummary>
 			<param-list
 				id="fileActor-events"
 				class="inspector-list"
 				filter="actor"
 				flexible
 			/>
-		</detail-box>
-		<detail-box open>
-			<detail-summary>{{ local.getLabel('fileActor-scripts') || 'Scripts' }}</detail-summary>
+		</DetailBox>
+		<DetailBox open>
+			<DetailSummary>{{ local.getLabel('fileActor-scripts') || 'Scripts' }}</DetailSummary>
 			<param-list
 				id="fileActor-scripts"
 				class="inspector-list"
 				flexible
 			/>
-		</detail-box>
+		</DetailBox>
 		<parameter-pane id="fileActor-parameter-pane" />
 </template>
 
@@ -143,6 +143,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

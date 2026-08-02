@@ -1,67 +1,90 @@
-import { DetailSummary } from './detail-summary.ts';
 import { show, hide } from '@/util/element-utils.ts';
 
-export class DetailBox extends HTMLElement {
-	toggleEventEnabled: boolean;
-
-	constructor() {
-		super();
-
-		this.toggleEventEnabled = false;
-	}
-
-	toggle(): void {
-		if (this.hasAttribute('open')) {
-			DetailBox.prototype.close.call(this);
-		} else {
-			DetailBox.prototype.open.call(this);
-		}
-	}
-
-	open(): void {
-		if (!this.hasAttribute('open')) {
-			this.setAttribute('open', '');
-			for (const node of this.children) {
-				if (!(node instanceof DetailSummary)) {
-					show(node as HTMLElement);
-				}
-			}
-			if (this.toggleEventEnabled) {
-				const toggle = new Event('toggle');
-				toggle.value = 'open';
-				this.dispatchEvent(toggle);
-			}
-		}
-	}
-
-	close(): void {
-		if (this.hasAttribute('open')) {
-			this.removeAttribute('open');
-			for (const node of this.children) {
-				if (!(node instanceof DetailSummary)) {
-					hide(node as HTMLElement);
-				}
-			}
-			if (this.toggleEventEnabled) {
-				const toggle = new Event('toggle');
-				toggle.value = 'closed';
-				this.dispatchEvent(toggle);
-			}
-		}
-	}
-
+interface DetailBoxElement extends HTMLElement {
+	toggle(): void;
+	open(): void;
+	close(): void;
 	on(
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
-	): void {
-		super.on(type, listener, options);
-		switch (type) {
-			case 'toggle':
-				this.toggleEventEnabled = true;
-				break;
+	): void;
+}
+
+export function attachDetailBoxApi(el: HTMLElement): void {
+	const box = el as DetailBoxElement;
+	let toggleEventEnabled = false;
+
+	const isSummary = (node: Element): boolean =>
+		node.classList.contains('detail-summary') ||
+		node.tagName.toLowerCase() === 'detail-summary';
+
+	const apply = (open: boolean): void => {
+		for (const node of box.children) {
+			if (!isSummary(node)) {
+				if (open) {
+					show(node as HTMLElement);
+				} else {
+					hide(node as HTMLElement);
+				}
+			}
 		}
+	};
+
+	box.open = function (): void {
+		if (!box.hasAttribute('open')) {
+			box.setAttribute('open', '');
+			apply(true);
+			if (toggleEventEnabled) {
+				const toggle = new Event('toggle');
+				toggle.value = 'open';
+				box.dispatchEvent(toggle);
+			}
+		}
+	};
+
+	box.close = function (): void {
+		if (box.hasAttribute('open')) {
+			box.removeAttribute('open');
+			apply(false);
+			if (toggleEventEnabled) {
+				const toggle = new Event('toggle');
+				toggle.value = 'closed';
+				box.dispatchEvent(toggle);
+			}
+		}
+	};
+
+	box.toggle = function (): void {
+		if (box.hasAttribute('open')) {
+			box.close();
+		} else {
+			box.open();
+		}
+	};
+
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		box.addEventListener(type, listener as EventListener, options);
+		if (type === 'toggle') {
+			toggleEventEnabled = true;
+		}
+	};
+
+	if (box.hasAttribute('open')) {
+		apply(true);
+	} else {
+		apply(false);
 	}
 }
 
-customElements.define('detail-box', DetailBox);
+export function createDetailBox(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'detail-box';
+	el.setAttribute('open', '');
+	attachDetailBoxApi(el);
+	return el;
+}

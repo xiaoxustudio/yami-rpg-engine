@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiVideo-properties-grid') || 'Video Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiVideo-properties-grid') || 'Video Properties' }}</DetailSummary>
 		<detail-grid id="uiVideo-properties-grid">
 			<text>{{ local.getLabel('uiVideo-video') || 'Video' }}</text
 			><custom-box id="uiVideo-video" type="file" filter="video"></custom-box>
@@ -15,13 +15,15 @@
 			<text>{{ local.getLabel('uiVideo-flip') || 'Flip' }}</text><select-box id="uiVideo-flip"></select-box>
 			<text>{{ local.getLabel('uiVideo-blend') || 'Blend' }}</text><select-box id="uiVideo-blend"></select-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

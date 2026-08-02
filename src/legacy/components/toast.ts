@@ -1,53 +1,69 @@
 import { on } from '@/util/element-utils.ts';
 
-// 轻量用户可见提示，接入 reportError 派发的 'yami:error' 事件
+interface ToastManagerElement extends HTMLElement {
+	show(message: string, type?: string, duration?: number): HTMLDivElement;
+	dismiss(el: HTMLElement | null): void;
+}
 
-export class ToastManager extends HTMLElement {
-	show(message: string, type: string = 'info', duration: number = 4000): HTMLDivElement {
-		const el = document.createElement('div');
-		el.className = `toast toast-${type}`;
+export function attachToastManagerApi(el: HTMLElement): void {
+	const manager = el as ToastManagerElement;
+
+	manager.show = function (
+		message: string,
+		type: string = 'info',
+		duration: number = 4000
+	): HTMLDivElement {
+		const toast = document.createElement('div');
+		toast.className = `toast toast-${type}`;
 		const text = document.createElement('span');
 		text.className = 'toast-text';
 		text.textContent = message;
 		const close = document.createElement('span');
 		close.className = 'toast-close';
 		close.textContent = '×';
-		on(close, 'click', () => this.dismiss(el));
-		el.appendChild(text);
-		el.appendChild(close);
-		this.appendChild(el);
-		requestAnimationFrame(() => el.classList.add('toast-show'));
+		on(close, 'click', () => manager.dismiss(toast));
+		toast.appendChild(text);
+		toast.appendChild(close);
+		manager.appendChild(toast);
+		requestAnimationFrame(() => toast.classList.add('toast-show'));
 		if (duration > 0) {
-			(el as HTMLDivElement & { _timer: ReturnType<typeof setTimeout> })._timer = setTimeout(
-				() => this.dismiss(el),
-				duration
-			);
+			(toast as HTMLDivElement & { _timer: ReturnType<typeof setTimeout> })._timer =
+				setTimeout(() => manager.dismiss(toast), duration);
 		}
-		return el;
-	}
+		return toast;
+	};
 
-	dismiss(el: HTMLElement | null): void {
-		if (!el || el.parentNode !== this) return;
-		clearTimeout((el as HTMLElement & { _timer: ReturnType<typeof setTimeout> })._timer);
-		el.classList.remove('toast-show');
-		el.classList.add('toast-hide');
-		setTimeout(() => el.remove(), 200);
-	}
+	manager.dismiss = function (toast: HTMLElement | null): void {
+		if (!toast || toast.parentNode !== manager) return;
+		clearTimeout((toast as HTMLElement & { _timer: ReturnType<typeof setTimeout> })._timer);
+		toast.classList.remove('toast-show');
+		toast.classList.add('toast-hide');
+		setTimeout(() => toast.remove(), 200);
+	};
 }
 
-customElements.define('toast-manager', ToastManager as CustomElementConstructor);
+export function createToastManager(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'toast-manager';
+	attachToastManagerApi(el);
+	return el;
+}
 
 export const Toast = {
-	_manager(): ToastManager {
-		let m = document.querySelector('toast-manager');
+	_manager(): HTMLElement {
+		let m = document.querySelector('.toast-manager');
 		if (!m) {
-			m = document.createElement('toast-manager');
+			m = createToastManager();
 			document.body.appendChild(m);
 		}
-		return m as ToastManager;
+		return m as HTMLElement;
 	},
 	show(message: string, type?: string, duration?: number): HTMLDivElement {
-		return (this._manager() as ToastManager).show(message, type ?? 'info', duration ?? 4000);
+		return (this._manager() as ToastManagerElement).show(
+			message,
+			type ?? 'info',
+			duration ?? 4000
+		);
 	},
 	error(message: string): HTMLDivElement {
 		return this.show(message, 'error');
@@ -60,15 +76,13 @@ export const Toast = {
 	}
 };
 
-// 接入上一步的 reportError：将全局错误事件转为用户可见的 Toast
-window.addEventListener(
-	'yami:error',
-	(event: Event & { detail: { message?: string } | string }) => {
-		const detail = event.detail;
-		if (typeof detail === 'string') {
-			Toast.error(detail);
-		} else {
-			Toast.error(detail.message || String(detail));
-		}
+window.addEventListener('yami:error', ((
+	event: Event & { detail: { message?: string } | string }
+) => {
+	const detail = event.detail;
+	if (typeof detail === 'string') {
+		Toast.error(detail);
+	} else {
+		Toast.error(detail.message || String(detail));
 	}
-);
+}) as EventListener);

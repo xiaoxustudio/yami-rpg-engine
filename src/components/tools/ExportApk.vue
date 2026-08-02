@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="export-apk">
-		<title-bar>构建APK<close></close></title-bar>
+	<WindowFrame id="export-apk">
+		<TitleBar>构建APK<close></close></TitleBar>
 		<content-frame>
 			<box id="export-apk-out">
 				<grid-box id="export-apk-grid">
@@ -36,11 +36,13 @@
 			</box>
 			<button id="export-apk-button" name="export-to-apk" />
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

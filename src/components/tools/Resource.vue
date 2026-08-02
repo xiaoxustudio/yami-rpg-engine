@@ -1,8 +1,8 @@
 <template>
-		<window-frame id="resource">
-		<title-bar>
+		<WindowFrame id="resource">
+		<TitleBar>
 			<close></close>
-		</title-bar>
+		</TitleBar>
 		<content-frame>
 			<box style="display: flex; flex-direction: column; height: 100%">
 				<box
@@ -41,11 +41,13 @@
 				</grid-box>
 			</box>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="lightGetter">
-		<title-bar>Light<close></close></title-bar>
+	<WindowFrame id="lightGetter">
+		<TitleBar>Light<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><select-box id="lightGetter-type" /> <text>Light</text
@@ -11,11 +11,13 @@
 			<button id="lightGetter-confirm" name="confirm">Confirm</button>
 			<button id="lightGetter-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

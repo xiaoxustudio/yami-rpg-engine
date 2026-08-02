@@ -1,34 +1,38 @@
 <template>
-		<window-frame id="plugin">
-		<title-bar>Plugin<close></close></title-bar>
+		<WindowFrame id="plugin">
+		<TitleBar>Plugin<close></close></TitleBar>
 		<content-frame>
 			<field-set id="plugin-list-fieldset" class="input pad">
 				<legend>List</legend>
 				<node-list id="plugin-list" padded />
 			</field-set>
 			<box id="plugin-inspector">
-				<detail-box id="plugin-overview-detail" open>
-					<detail-summary>Overview</detail-summary>
+				<DetailBox id="plugin-overview-detail" open>
+					<DetailSummary>Overview</DetailSummary>
 					<box id="plugin-overview" />
-				</detail-box>
+				</DetailBox>
 				<parameter-pane id="plugin-parameter-pane">
-					<detail-box id="plugin-parameter-detail" open>
-						<detail-summary>Parameters</detail-summary>
+					<DetailBox id="plugin-parameter-detail" open>
+						<DetailSummary>Parameters</DetailSummary>
 						<detail-grid id="plugin-parameter-grid" />
-					</detail-box>
+					</DetailBox>
 				</parameter-pane>
 			</box>
 			<button id="plugin-confirm" name="confirm">Confirm</button>
 			<button id="plugin-cancel" name="cancel">Cancel</button>
 			<button id="plugin-apply" name="apply">Apply</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

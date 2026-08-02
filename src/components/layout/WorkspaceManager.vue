@@ -1,5 +1,5 @@
 <template>
-	<page-manager id="workspace-page-manager">
+	<PageManager id="workspace-page-manager">
 		<page-frame id="home" value="home">
 			<box id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
@@ -22,8 +22,9 @@
 		<page-frame value="ui"></page-frame>
 		<page-frame value="animation"></page-frame>
 		<page-frame value="particle"></page-frame>
-	</page-manager>
+	</PageManager>
 </template>
 
 <script setup lang="ts">
+import PageManager from '@app/components/common/PageManager.vue';
 </script>

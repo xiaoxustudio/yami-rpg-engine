@@ -1,9 +1,9 @@
 <template>
-	<window-frame id="event" class="opaque">
-		<title-bar id="event-title"
+	<WindowFrame id="event" class="opaque">
+		<TitleBar id="event-title"
 			>Event<maximize></maximize>
 			<close></close>
-		</title-bar>
+		</TitleBar>
 		<content-frame>
 			<field-set id="event-open-fieldset" class="input pad">
 				<legend>Event</legend>
@@ -22,11 +22,13 @@
 			<button id="event-cancel" name="cancel">Cancel</button>
 			<button id="event-apply" name="apply">Apply</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</DetailSummary>
 		<detail-grid id="fileScene-general-grid">
 			<text>{{ local.getLabel('fileScene-width') || 'Width' }}</text
 			><number-box id="fileScene-width" min="0" max="512" unit="tile" />
@@ -21,9 +21,9 @@
 				unit="px"
 			/>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileScene-ambient-grid') || 'Ambient Light' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileScene-ambient-grid') || 'Ambient Light' }}</DetailSummary>
 		<detail-grid id="fileScene-ambient-grid">
 			<text>{{ local.getLabel('fileScene-ambient-red-box') || 'Red' }}</text>
 			<flex-box id="fileScene-ambient-red-box">
@@ -87,24 +87,24 @@
 				/>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileScene-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileScene-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="fileScene-events"
 			class="inspector-list"
 			filter="scene"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileScene-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileScene-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="fileScene-scripts"
 			class="inspector-list"
 			flexible
 		/>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="fileScene-parameter-pane" />
 </template>
 
@@ -112,6 +112,8 @@
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

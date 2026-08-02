@@ -1,7 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@/util/element-utils';
 
-import { MarqueeArea } from '@/components/marquee-area.ts';
 function getWindow() {
 	return (window as any).Window;
 }
@@ -339,7 +338,7 @@ Inspector.scrollPointerdown = function (this: any, event: any) {
 	}
 	switch (event.button) {
 		case 0:
-			if (event.altKey && !(event.target instanceof MarqueeArea)) {
+			if (event.altKey && !(event.target as HTMLElement).closest('.marquee-area')) {
 				let element = event.target;
 				while (element !== this) {
 					if (element.scrollPointerup && hasScrollBar(element as HTMLElement)) {

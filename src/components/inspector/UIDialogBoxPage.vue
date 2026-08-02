@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</DetailSummary>
 		<detail-grid id="uiDialogBox-properties-grid">
 			<text>{{ local.getLabel('uiDialogBox-content') || 'Content' }}</text
 			><text-area
@@ -93,13 +93,15 @@
 			><color-box id="uiDialogBox-effect-color"></color-box> <text>{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</text
 			><select-box id="uiDialogBox-blend"></select-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

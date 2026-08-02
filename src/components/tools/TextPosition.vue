@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文字位置 -->
-	<window-frame id="textPosition">
-		<title-bar>Set Text Position<close /></title-bar>
+	<WindowFrame id="textPosition">
+		<TitleBar>Set Text Position<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Axis</text><select-box id="textPosition-axis" /> <text>Operation</text
@@ -11,11 +11,13 @@
 			<button id="textPosition-confirm" name="confirm">Confirm</button>
 			<button id="textPosition-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

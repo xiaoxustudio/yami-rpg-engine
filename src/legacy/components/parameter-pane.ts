@@ -13,11 +13,12 @@ import {
 } from '@/util/element-utils.ts';
 import { CheckBox } from './check-box.ts';
 import { ColorBox } from './color-box.ts';
-import { KeyboardBox } from './keyboard-box.ts';
+import { createKeyboardBox } from './keyboard-box.ts';
 import { ParamList } from './param-list.ts';
 import { TypeRegistry } from './type-registry.ts';
 import { CustomBox } from './custom-box.ts';
-import { DetailSummary } from './detail-summary.ts';
+import { createDetailBox } from './detail-box.ts';
+import { createDetailSummary } from './detail-summary.ts';
 import { NumberBox } from './number-box.ts';
 import { NumberVar } from './number-var.ts';
 import { SelectBox } from './select-box.ts';
@@ -259,7 +260,7 @@ export class ParameterPane extends HTMLElement {
 				box.data = script;
 				this.wraps.push(detailWrap);
 				// 主段（无 @group）与分组段外观一致，均为可折叠 detail-box：
-				if (summary instanceof DetailSummary) {
+				if (summary.classList.contains('detail-summary')) {
 					if (isMain) {
 						summary.textContent = Local.get('parameter.param');
 					} else {
@@ -304,11 +305,10 @@ export class ParameterPane extends HTMLElement {
 				box.removeChild(box.firstChild);
 			}
 		} else {
-			box = document.createElement('detail-box');
-			box.setAttribute('open', '');
+			box = createDetailBox();
 		}
 		const tag = 'detail-box';
-		const summary = document.createElement('detail-summary');
+		const summary = createDetailSummary();
 		const grid = document.createElement('detail-grid');
 		const wrap = { tag, box, summary, grid, children: [] as any[] };
 		box.appendChild(summary);
@@ -472,7 +472,7 @@ export class ParameterPane extends HTMLElement {
 		}
 		const tag = 'keyboard-box';
 		const label = document.createElement('text');
-		const input = new KeyboardBox();
+		const input = createKeyboardBox();
 		return { tag, label, input };
 	}
 

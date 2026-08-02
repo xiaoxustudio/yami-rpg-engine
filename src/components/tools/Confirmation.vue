@@ -1,8 +1,8 @@
 <template>
-	<window-frame id="confirmation" mode="center">
-		<title-bar>
+	<WindowFrame id="confirmation" mode="center">
+		<TitleBar>
 			<close />
-		</title-bar>
+		</TitleBar>
 		<content-frame>
 			<text id="confirmation-message" />
 			<box id="confirmation-button-frame">
@@ -11,11 +11,13 @@
 				<button id="confirmation-button-2" />
 			</box>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

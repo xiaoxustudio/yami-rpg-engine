@@ -1,21 +1,11 @@
 <template>
-	<detail-box ref="root" :id="props.id" />
+	<div class="detail-box" ref="root" :id="props.id" :open="state.open ? '' : undefined">
+		<slot />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-
-interface DetailBoxElement extends HTMLElement {
-	toggleEventEnabled: boolean;
-	toggle(): void;
-	open(): void;
-	close(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-}
+import { onMounted, reactive, ref, watch } from 'vue';
 
 interface Props {
 	id?: string;
@@ -30,17 +20,68 @@ const emit = defineEmits<{
 	toggle: [value: string];
 }>();
 
-const root = ref<DetailBoxElement | null>(null);
+const state = reactive({
+	open: false,
+	toggleEventEnabled: false
+});
 
-const toggle = (): void => root.value?.toggle();
-const open = (): void => root.value?.open();
-const close = (): void => root.value?.close();
+const root = ref<HTMLElement | null>(null);
+
+const isSummary = (node: Element): boolean =>
+	node.classList.contains('detail-summary') ||
+	node.tagName.toLowerCase() === 'detail-summary';
+
+const apply = (open: boolean): void => {
+	const el = root.value;
+	if (!el) return;
+	for (const node of el.children) {
+		if (!isSummary(node)) {
+			if (open) {
+				node.classList.remove('hidden');
+			} else {
+				node.classList.add('hidden');
+			}
+		}
+	}
+};
+
+const dispatchToggle = (value: string): void => {
+	emit('toggle', value);
+	const el = root.value;
+	if (state.toggleEventEnabled) {
+		const toggle = new Event('toggle');
+		toggle.value = value;
+		el?.dispatchEvent(toggle);
+	}
+};
+
+const open = (): void => {
+	if (state.open) return;
+	state.open = true;
+	apply(true);
+	dispatchToggle('open');
+};
+
+const close = (): void => {
+	if (!state.open) return;
+	state.open = false;
+	apply(false);
+	dispatchToggle('closed');
+};
+
+const toggle = (): void => (state.open ? close() : open());
+
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	root.value?.on(type, listener, options);
+	const el = root.value;
+	if (!el) return;
+	el.addEventListener(type, listener as EventListener, options);
+	if (type === 'toggle') {
+		state.toggleEventEnabled = true;
+	}
 };
 
 defineExpose({ toggle, open, close, on, root });
@@ -50,7 +91,12 @@ watch(() => props.open, (val) => (val ? open() : close()));
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.on('toggle', (e: any) => emit('toggle', e.value));
-	if (props.open) el.open();
+	el.toggle = toggle;
+	el.open = open;
+	el.close = close;
+	el.on = on;
+	if (props.open) {
+		open();
+	}
 });
 </script>

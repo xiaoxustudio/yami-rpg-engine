@@ -9,6 +9,7 @@ import {
 	show
 } from '@/util/element-utils.ts';
 import { Title } from '@/title/title-bar.ts';
+import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
 
 interface TabDraggingEvent {
 	hint: HTMLElement & {
@@ -372,7 +373,7 @@ export class TabBar extends HTMLElement {
 
 	dragstart(event: DragEvent): void {
 		if (!this.dragging) {
-			const hint = document.createElement('drag-and-drop-hint') as HTMLElement & {
+			const hint = createDragAndDropHint() as HTMLElement & {
 				target: HTMLElement;
 				position: 'before' | 'after';
 				measure(item: HTMLElement): {

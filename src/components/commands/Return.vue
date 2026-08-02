@@ -1,6 +1,6 @@
 <template>
-<window-frame id="return">
-	<title-bar>Return<close /></title-bar>
+<WindowFrame id="return">
+	<TitleBar>Return<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><select-box id="return-type" /> <text>Boolean</text
@@ -25,11 +25,13 @@
 		<button id="return-confirm" name="confirm">Confirm</button>
 		<button id="return-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

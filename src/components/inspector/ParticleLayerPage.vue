@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="particleLayer-general-grid">
 			<text>{{ local.getLabel('particleLayer-name') || 'Name' }}</text><text-box id="particleLayer-name"></text-box>
 			<text>{{ local.getLabel('particleLayer-area-type') || 'Emission Area' }}</text
@@ -81,9 +81,9 @@
 				unit="ms"
 			></number-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-anchor-grid') || 'Anchor' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-anchor-grid') || 'Anchor' }}</DetailSummary>
 		<detail-grid id="particleLayer-anchor-grid">
 			<text>{{ local.getLabel('particleLayer-anchor-x-box') || 'Anchor X' }}</text>
 			<flex-box id="particleLayer-anchor-x-box">
@@ -162,9 +162,9 @@
 				>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-movement-grid') || 'Movement' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-movement-grid') || 'Movement' }}</DetailSummary>
 		<detail-grid id="particleLayer-movement-grid">
 			<text>{{ local.getLabel('particleLayer-movement-angle-box') || 'Movement Angle' }}</text>
 			<flex-box id="particleLayer-movement-angle-box">
@@ -243,9 +243,9 @@
 				>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-rotation-grid') || 'Rotation' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-rotation-grid') || 'Rotation' }}</DetailSummary>
 		<detail-grid id="particleLayer-rotation-grid">
 			<text>{{ local.getLabel('particleLayer-rotation-angle-box') || 'Rotation Angle' }}</text>
 			<flex-box id="particleLayer-rotation-angle-box">
@@ -307,9 +307,9 @@
 				>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-hRotation-grid') || 'Horizontal Rotation' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-hRotation-grid') || 'Horizontal Rotation' }}</DetailSummary>
 		<detail-grid id="particleLayer-hRotation-grid">
 			<text>{{ local.getLabel('particleLayer-hRotation-radius-box') || 'Initial Radius' }}</text>
 			<flex-box id="particleLayer-hRotation-radius-box">
@@ -424,9 +424,9 @@
 				>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-scale-grid') || 'Scale' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-scale-grid') || 'Scale' }}</DetailSummary>
 		<detail-grid id="particleLayer-scale-grid">
 			<text>{{ local.getLabel('particleLayer-scale-factor-box') || 'Scale Factor' }}</text>
 			<flex-box id="particleLayer-scale-factor-box">
@@ -486,9 +486,9 @@
 				>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('particleLayer-rendering-grid') || 'Rendering' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('particleLayer-rendering-grid') || 'Rendering' }}</DetailSummary>
 		<detail-grid id="particleLayer-rendering-grid">
 			<text>{{ local.getLabel('particleLayer-image') || 'Image' }}</text
 			><custom-box
@@ -803,13 +803,15 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useParticleStore } from '@app/stores/particle';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const particle = useParticleStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="attribute">
-		<title-bar>Attribute<close /></title-bar>
+	<WindowFrame id="attribute">
+		<TitleBar>Attribute<close /></TitleBar>
 		<content-frame>
 			<field-set id="attribute-list-fieldset" class="input pad">
 				<legend>List</legend>
@@ -66,11 +66,13 @@
 			<button id="attribute-cancel" name="cancel">Cancel</button>
 			<button id="attribute-apply" name="apply">Apply</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

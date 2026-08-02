@@ -1,15 +1,15 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</DetailSummary>
 		<detail-grid id="fileAudio-info-grid">
 			<text>{{ local.getLabel('fileAudio-name') || 'Name' }}</text><text id="fileAudio-name"></text> <text>{{ local.getLabel('fileAudio-size') || 'Size' }}</text
 			><text id="fileAudio-size"></text> <text>{{ local.getLabel('fileAudio-duration') || 'Duration' }}</text
 			><text id="fileAudio-duration"></text> <text>{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</text
 			><text id="fileAudio-bitrate"></text>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileAudio-mixer-grid') || 'Mixer' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileAudio-mixer-grid') || 'Mixer' }}</DetailSummary>
 		<detail-grid id="fileAudio-mixer-grid">
 			<text>{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</text>
 			<flex-box id="fileAudio-volume-box">
@@ -52,9 +52,9 @@
 				<text id="fileAudio-wet-info">0%</text>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileAudio-progress-box') || 'Progress' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileAudio-progress-box') || 'Progress' }}</DetailSummary>
 		<box id="fileAudio-progress-box">
 			<box id="fileAudio-progress">
 				<box id="fileAudio-progress-filler"></box>
@@ -63,17 +63,19 @@
 			<text id="fileAudio-currentTime"></text>
 			<text id="fileAudio-pointerTime"></text>
 		</box>
-	</detail-box>
-	<detail-box id="fileAudio-frequency-detail" open>
-		<detail-summary>{{ local.getLabel('fileAudio-frequency-canvas') || 'Frequency' }}</detail-summary>
+	</DetailBox>
+	<DetailBox id="fileAudio-frequency-detail" open>
+		<DetailSummary>{{ local.getLabel('fileAudio-frequency-canvas') || 'Frequency' }}</DetailSummary>
 		<canvas id="fileAudio-frequency-canvas" width="0" height="0"></canvas>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAudioStore } from '@app/stores/audio';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const audio = useAudioStore();
 const local = useLocalStore();

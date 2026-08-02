@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="tintImage">
-		<title-bar>Tint Image<close /></title-bar>
+	<WindowFrame id="tintImage">
+		<TitleBar>Tint Image<close /></TitleBar>
 		<content-frame>
 			<grid-box id="tintImage-grid-box">
 				<text>Element</text><custom-box id="tintImage-element" type="element" />
@@ -23,15 +23,18 @@
 				/>
 				<text>Wait</text><select-box id="tintImage-wait" name="wait" />
 			</grid-box>
-			<filter-box id="tintImage-filter" width="96" height="208" />
+			<FilterBox id="tintImage-filter" width="96" height="208" />
 			<button id="tintImage-confirm" name="confirm">Confirm</button>
 			<button id="tintImage-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
+import FilterBox from '@app/components/common/FilterBox.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

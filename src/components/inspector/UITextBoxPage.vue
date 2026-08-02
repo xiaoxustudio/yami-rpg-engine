@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiTextBox-properties-grid') || 'TextBox Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiTextBox-properties-grid') || 'TextBox Properties' }}</DetailSummary>
 		<detail-grid id="uiTextBox-properties-grid">
 			<text>{{ local.getLabel('uiTextBox-type') || 'Type' }}</text><select-box id="uiTextBox-type"></select-box>
 			<text>{{ local.getLabel('uiTextBox-align') || 'Align' }}</text><select-box id="uiTextBox-align"></select-box>
@@ -45,13 +45,15 @@
 			<text>{{ local.getLabel('uiTextBox-selectionBgColor') || 'Selection Bg Color' }}</text
 			><color-box id="uiTextBox-selectionBgColor"></color-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

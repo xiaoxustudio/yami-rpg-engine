@@ -1,6 +1,6 @@
 <template>
-<window-frame id="getMultipleActors">
-	<title-bar>Get Actor<close /></title-bar>
+<WindowFrame id="getMultipleActors">
+	<TitleBar>Get Actor<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Write to List</text
@@ -34,11 +34,13 @@
 		<button id="getMultipleActors-confirm" name="confirm">Confirm</button>
 		<button id="getMultipleActors-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

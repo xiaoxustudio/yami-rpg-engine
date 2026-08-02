@@ -1,6 +1,6 @@
 <template>
-<window-frame id="playAudio">
-	<title-bar>Play Audio<close /></title-bar>
+<WindowFrame id="playAudio">
+	<TitleBar>Play Audio<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><select-box id="playAudio-type" /> <text>Audio</text
@@ -13,11 +13,13 @@
 		<button id="playAudio-confirm" name="confirm">Confirm</button>
 		<button id="playAudio-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

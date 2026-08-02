@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneParallax-general-grid">
 			<text>{{ local.getLabel('sceneParallax-name') || 'Name' }}</text><text-box id="sceneParallax-name"></text-box>
 			<text>{{ local.getLabel('sceneParallax-image') || 'Image' }}</text
@@ -41,9 +41,9 @@
 				unit="tile"
 			></number-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</DetailSummary>
 		<detail-grid id="sceneParallax-parallax-grid">
 			<text>{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</text
 			><number-box
@@ -190,32 +190,32 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParallax-conditions') || 'Conditions' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParallax-conditions') || 'Conditions' }}</DetailSummary>
 		<param-list
 			id="sceneParallax-conditions"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParallax-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParallax-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="sceneParallax-events"
 			class="inspector-list"
 			filter="parallax"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneParallax-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneParallax-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="sceneParallax-scripts"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="sceneParallax-parameter-pane"></parameter-pane>
 </template>
 
@@ -223,6 +223,8 @@
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

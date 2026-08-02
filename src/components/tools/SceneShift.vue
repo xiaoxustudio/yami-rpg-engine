@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="scene-shift">
-		<title-bar>Shift<close></close></title-bar>
+		<WindowFrame id="scene-shift">
+		<TitleBar>Shift<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Shift X</text><number-box id="scene-shift-x" min="-512" max="512" />
@@ -9,11 +9,13 @@
 			<button id="scene-shift-confirm" name="confirm">Confirm</button>
 			<button id="scene-shift-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('uiAnimation-properties-grid') || 'Animation Properties' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('uiAnimation-properties-grid') || 'Animation Properties' }}</DetailSummary>
 		<detail-grid id="uiAnimation-properties-grid">
 			<text>{{ local.getLabel('uiAnimation-animation') || 'Animation' }}</text
 			><custom-box
@@ -47,13 +47,15 @@
 				></number-box>
 			</box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();

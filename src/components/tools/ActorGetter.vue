@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="actorGetter">
-		<title-bar>Actor<close /></title-bar>
+	<WindowFrame id="actorGetter">
+		<TitleBar>Actor<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><select-box id="actorGetter-type" /> <text>Member ID</text
@@ -15,11 +15,13 @@
 			<button id="actorGetter-confirm" name="confirm">Confirm</button>
 			<button id="actorGetter-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

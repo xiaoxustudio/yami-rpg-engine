@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="localization" mode="center">
-		<title-bar>Localization<close></close></title-bar>
+	<WindowFrame id="localization" mode="center">
+		<TitleBar>Localization<close></close></TitleBar>
 		<content-frame>
 			<field-set id="localization-list-fieldset" class="input pad">
 				<legend>List</legend>
@@ -14,11 +14,13 @@
 			<button id="localization-cancel" name="cancel">Cancel</button>
 			<button id="localization-apply" name="apply">Apply</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

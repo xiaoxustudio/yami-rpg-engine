@@ -1,6 +1,6 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils';
-import { GamepadBox } from '@/components/gamepad-box.ts';
+import { getButtonName } from '@app/components/common/gamepad-button-name';
 import { Command } from './command-object.ts';
 import { IfCondition } from './conditional-condition-window.ts';
 import { Token } from './mark-string-manager.ts';
@@ -138,7 +138,7 @@ SwitchCondition.parse = function (condition: SwitchConditionData, listData?: boo
 			break;
 		}
 		case 'gamepad': {
-			const button = GamepadBox.getButtonName(condition.button!);
+			const button = getButtonName(condition.button!);
 			const gamepad = Local.get('command.switch.gamepad');
 			string = gamepad + Token('[') + Command.setStringColor!(button) + Token(']');
 			break;

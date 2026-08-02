@@ -1,9 +1,10 @@
 <template>
-	<drag-and-drop-hint ref="root" :id="props.id" />
+	<div ref="root" class="drag-and-drop-hint" :id="props.id" />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { attachDragAndDropHintApi } from '@/components/drag-and-drop-hint';
 
 interface DragAndDropHintElement extends HTMLElement {
 	left: number;
@@ -25,11 +26,15 @@ const props = withDefaults(defineProps<Props>(), {});
 
 const root = ref<DragAndDropHintElement | null>(null);
 
-const measure = (item: HTMLElement) => root.value?.measure(item);
-const moveUp = () => root.value?.moveUp();
-const moveDown = () => root.value?.moveDown();
+onMounted(() => {
+	attachDragAndDropHintApi(root.value!);
+});
+
+const measure = (item: HTMLElement) => root.value!.measure(item);
+const moveUp = () => root.value!.moveUp();
+const moveDown = () => root.value!.moveDown();
 const set = (coords: { left: number; top: number; width: number; height: number }) =>
-	root.value?.set(coords);
+	root.value!.set(coords);
 
 defineExpose({ measure, moveUp, moveDown, set, root });
 </script>

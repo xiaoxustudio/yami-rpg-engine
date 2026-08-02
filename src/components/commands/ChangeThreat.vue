@@ -1,6 +1,6 @@
 <template>
-<window-frame id="changeThreat">
-	<title-bar>Change Threat<close /></title-bar>
+<WindowFrame id="changeThreat">
+	<TitleBar>Change Threat<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="changeThreat-actor" type="actor" /><text>Target</text><custom-box id="changeThreat-target" type="actor" /><text>Operation</text><select-box id="changeThreat-operation" /><text>Threat</text
@@ -13,11 +13,13 @@
 		<button id="changeThreat-confirm" name="confirm">Confirm</button>
 		<button id="changeThreat-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

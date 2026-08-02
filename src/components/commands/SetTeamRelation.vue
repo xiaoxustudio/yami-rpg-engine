@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setTeamRelation">
-		<title-bar>Change Team Relation<close /></title-bar>
+	<WindowFrame id="setTeamRelation">
+		<TitleBar>Change Team Relation<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Team A</text><select-box id="setTeamRelation-teamId1" />
@@ -10,11 +10,13 @@
 			<button id="setTeamRelation-confirm" name="confirm">Confirm</button>
 			<button id="setTeamRelation-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

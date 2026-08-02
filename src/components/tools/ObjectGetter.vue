@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="objectGetter">
-		<title-bar>Scene Object<close></close></title-bar>
+		<WindowFrame id="objectGetter">
+		<TitleBar>Scene Object<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><select-box id="objectGetter-type" /> <text>Object</text
@@ -11,11 +11,13 @@
 			<button id="objectGetter-confirm" name="confirm">Confirm</button>
 			<button id="objectGetter-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

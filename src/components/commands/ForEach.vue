@@ -1,6 +1,6 @@
 <template>
-<window-frame id="forEach">
-	<title-bar>For Each<close /></title-bar>
+<WindowFrame id="forEach">
+	<TitleBar>For Each<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Data</text><select-box id="forEach-data" /> <text>List Variable</text
@@ -21,11 +21,13 @@
 		<button id="forEach-confirm" name="confirm">Confirm</button>
 		<button id="forEach-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

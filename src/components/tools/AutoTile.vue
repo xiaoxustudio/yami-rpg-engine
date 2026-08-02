@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="autoTile">
-		<title-bar>Auto Tile<close /></title-bar>
+	<WindowFrame id="autoTile">
+		<TitleBar>Auto Tile<close /></TitleBar>
 		<content-frame>
 			<field-set id="autoTile-general-fieldset">
 				<legend>General</legend>
@@ -76,11 +76,13 @@
 			<button id="autoTile-confirm" name="confirm">Confirm</button>
 			<button id="autoTile-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import SwitchItem from '@app/components/common/SwitchItem.vue';

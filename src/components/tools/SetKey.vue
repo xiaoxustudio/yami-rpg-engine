@@ -1,16 +1,18 @@
 <template>
-		<window-frame id="setKey">
-		<title-bar>Set Key<close></close></title-bar>
+		<WindowFrame id="setKey">
+		<TitleBar>Set Key<close></close></TitleBar>
 		<content-frame>
 			<grid-box> <text>Key</text><text-box id="setKey-key" /> </grid-box>
 			<button id="setKey-confirm" name="confirm">Confirm</button>
 			<button id="setKey-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

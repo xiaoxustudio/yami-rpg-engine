@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileSkill-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileSkill-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileSkill-general-grid">
 			<text>{{ local.getLabel('fileSkill-icon') || 'Icon' }}</text
 			><custom-box id="fileSkill-icon" type="file" filter="image" />
@@ -9,33 +9,33 @@
 			<text>{{ local.getLabel('fileSkill-inherit') || 'Inherit' }}</text
 			><custom-box id="fileSkill-inherit" type="file" filter="skill" />
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileSkill-attributes') || 'Attributes' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileSkill-attributes') || 'Attributes' }}</DetailSummary>
 		<param-list
 			id="fileSkill-attributes"
 			class="inspector-list"
 			group="skill"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileSkill-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileSkill-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="fileSkill-events"
 			class="inspector-list"
 			filter="skill"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileSkill-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileSkill-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="fileSkill-scripts"
 			class="inspector-list"
 			flexible
 		/>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="fileSkill-parameter-pane" />
 </template>
 
@@ -43,6 +43,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('animSoundFrame-properties-grid') || 'Frame' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('animSoundFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<detail-grid id="animSoundFrame-properties-grid">
 			<text>{{ local.getLabel('animSoundFrame-sound') || 'Sound' }}</text
 			><custom-box
@@ -17,13 +17,15 @@
 				decimals="4"
 			></number-box>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

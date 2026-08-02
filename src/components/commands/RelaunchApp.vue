@@ -1,16 +1,18 @@
 <template>
-	<window-frame id="relaunchApp">
-		<title-bar>Relaunch App<close /></title-bar>
+	<WindowFrame id="relaunchApp">
+		<TitleBar>Relaunch App<close /></TitleBar>
 		<content-frame>
 			<button id="relaunchApp-confirm" name="confirm">Confirm</button>
 			<button id="relaunchApp-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 	
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

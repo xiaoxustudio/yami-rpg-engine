@@ -1,9 +1,9 @@
 <template>
-		<window-frame id="selector" mode="center">
-		<title-bar
+		<WindowFrame id="selector" mode="center">
+		<TitleBar
 			>Select File<maximize></maximize>
 			<close></close>
-		</title-bar>
+		</TitleBar>
 		<content-frame>
 			<file-browser id="selector-browser">
 				<FileBrowser />
@@ -11,11 +11,13 @@
 			<button id="selector-confirm" name="confirm">Confirm</button>
 			<button id="selector-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import FileBrowser from '../file-browser/FileBrowser.vue';

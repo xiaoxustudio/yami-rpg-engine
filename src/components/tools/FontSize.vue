@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="fontSize">
-		<title-bar>Set Font Size<close></close></title-bar>
+	<WindowFrame id="fontSize">
+		<TitleBar>Set Font Size<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Size</text
@@ -9,11 +9,13 @@
 			<button id="fontSize-confirm" name="confirm">Confirm</button>
 			<button id="fontSize-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

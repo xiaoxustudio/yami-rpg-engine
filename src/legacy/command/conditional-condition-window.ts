@@ -1,5 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { GamepadBox } from '@/components/gamepad-box.ts';
+import { getButtonName } from '@app/components/common/gamepad-button-name';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -660,7 +660,7 @@ const parseTypeHandlers: Record<string, (this: typeof IfCondition, condition: an
 		return keyboard + Token('[') + Command.setStringColor(key) + Token(']') + ' ' + state;
 	},
 	gamepad: function (condition) {
-		const button = GamepadBox.getButtonName(condition.button);
+		const button = getButtonName(condition.button);
 		const gamepad = Local.get('command.if.gamepad');
 		const state = this.parseGamepadState!(condition.state);
 		return gamepad + Token('[') + Command.setStringColor(button) + Token(']') + ' ' + state;

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="createElement">
-		<title-bar>Create Element<close /></title-bar>
+	<WindowFrame id="createElement">
+		<TitleBar>Create Element<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Operation</text><select-box id="createElement-operation" />
@@ -13,11 +13,13 @@
 			<button id="createElement-confirm" name="confirm">Confirm</button>
 			<button id="createElement-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

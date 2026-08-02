@@ -13,10 +13,8 @@ import {
 
 import { ParamListHistory } from './param-history.ts';
 import { ctrl } from '@/util/event-accessors.ts';
-import { DetailBox } from './detail-box.ts';
 import { CommonList } from './common-list.ts';
 import { Menu } from './menu-list.ts';
-import { WindowFrame } from './window-frame.ts';
 import { Local } from '@/tools/localization.ts';
 
 export class ParamList extends HTMLElement {
@@ -235,12 +233,17 @@ export class ParamList extends HTMLElement {
 			}
 			if (this.autoSwitch) {
 				this.autoSwitch = false;
-				const detailBox = this.parentNode;
-				if (detailBox instanceof DetailBox) {
+				const detailBox = this.parentNode as
+					| (HTMLElement & {
+							open?: () => void;
+							close?: () => void;
+					  })
+					| null;
+				if (detailBox?.open && detailBox?.close) {
 					if (count !== 1) {
-						DetailBox.prototype.open.call(detailBox);
+						detailBox.open();
 					} else {
-						DetailBox.prototype.close.call(detailBox);
+						detailBox.close();
 					}
 				}
 			}
@@ -608,7 +611,10 @@ export class ParamList extends HTMLElement {
 		if (this.focusing) {
 			let element: any = this;
 			while ((element = element.parentNode)) {
-				if (element instanceof WindowFrame) {
+				if (element.nodeType !== Node.ELEMENT_NODE) {
+					continue;
+				}
+				if ((element as HTMLElement).classList.contains('window-frame')) {
 					if (hasClass(element, 'blur')) {
 						return;
 					} else {

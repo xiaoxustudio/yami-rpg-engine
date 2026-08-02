@@ -109,7 +109,7 @@
 				</box>
 				<box id="scene-body">
 					<box id="scene-screen" tabindex="-1">
-						<marquee-area id="scene-marquee" />
+						<MarqueeArea id="scene-marquee" />
 					</box>
 					<text id="scene-info" />
 				</box>
@@ -120,6 +120,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

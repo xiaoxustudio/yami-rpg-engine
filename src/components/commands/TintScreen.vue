@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="tintScreen">
-		<title-bar>Tint Screen<close /></title-bar>
+	<WindowFrame id="tintScreen">
+		<TitleBar>Tint Screen<close /></TitleBar>
 		<content-frame>
 			<grid-box id="tintScreen-grid-box">
 				<text>Tint - Red</text
@@ -22,16 +22,19 @@
 				 />
 				<text>Wait</text><select-box id="tintScreen-wait" name="wait" />
 			</grid-box>
-			<filter-box id="tintScreen-filter" width="96" height="160" />
+			<FilterBox id="tintScreen-filter" width="96" height="160" />
 			<button id="tintScreen-confirm" name="confirm">Confirm</button>
 			<button id="tintScreen-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 	
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
+import FilterBox from '@app/components/common/FilterBox.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

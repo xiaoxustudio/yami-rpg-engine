@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneAnimation-general-grid">
 			<text>{{ local.getLabel('sceneAnimation-name') || 'Name' }}</text><text-box id="sceneAnimation-name"></text-box>
 			<text>{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</text
@@ -109,32 +109,32 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneAnimation-conditions') || 'Conditions' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneAnimation-conditions') || 'Conditions' }}</DetailSummary>
 		<param-list
 			id="sceneAnimation-conditions"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneAnimation-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneAnimation-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="sceneAnimation-events"
 			class="inspector-list"
 			filter="animation"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneAnimation-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneAnimation-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="sceneAnimation-scripts"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="sceneAnimation-parameter-pane"></parameter-pane>
 </template>
 
@@ -142,6 +142,8 @@
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

@@ -1,5 +1,5 @@
 <template>
-	<page-manager id="workspace-page-manager">
+	<PageManager id="workspace-page-manager">
 		<page-frame id="home" value="home">
 			<box id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
@@ -19,7 +19,7 @@
 		</page-frame>
 		<page-frame value="directory">
 			<box id="layout-content">
-				<nav-bar id="layout-nav">
+				<NavBar id="layout-nav">
 			<nav-item value="project"><nav-icon>&#xf07b;</nav-icon><nav-text id="nav-project">Project</nav-text></nav-item>
 			<nav-item value="scene"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-scene">Scene</nav-text></nav-item>
 			<nav-item value="scene-object"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-scene-object">Object</nav-text></nav-item>
@@ -32,8 +32,8 @@
 			<nav-item value="particle"><nav-icon>&#xf26c;</nav-icon><nav-text id="nav-particle">Particle</nav-text></nav-item>
 			<nav-item value="particle-layer"><nav-icon>&#xf1b2;</nav-icon><nav-text id="nav-particle-layer">Layer</nav-text></nav-item>
 			<nav-item value="inspector"><nav-icon>&#xf05a;</nav-icon><nav-text id="nav-inspector">Inspector</nav-text></nav-item>
-		</nav-bar>
-		<page-manager id="layout-page-manager">
+		</NavBar>
+		<PageManager id="layout-page-manager">
 			<page-frame id="project" value="project">
 				<file-browser id="project-browser"></file-browser>
 			</page-frame>
@@ -70,7 +70,7 @@
 				</box>
 				<box id="scene-body">
 					<box id="scene-screen" tabindex="-1">
-						<marquee-area id="scene-marquee"></marquee-area>
+						<MarqueeArea id="scene-marquee"></MarqueeArea>
 					</box>
 					<text id="scene-info"></text>
 				</box>
@@ -105,7 +105,7 @@
 				</box>
 				<box id="ui-body">
 					<box id="ui-screen" tabindex="-1">
-						<marquee-area id="ui-marquee"></marquee-area>
+						<MarqueeArea id="ui-marquee"></MarqueeArea>
 					</box>
 				</box>
 			</page-frame>
@@ -132,7 +132,7 @@
 				</box>
 				<box id="animation-body">
 					<box id="animation-screen" tabindex="-1">
-						<marquee-area id="animation-marquee"></marquee-area>
+						<MarqueeArea id="animation-marquee"></MarqueeArea>
 					</box>
 					<box id="animation-dirList"></box>
 				</box>
@@ -196,7 +196,7 @@
 				</box>
 				<box id="particle-body">
 					<box id="particle-screen" tabindex="-1">
-						<marquee-area id="particle-marquee"></marquee-area>
+						<MarqueeArea id="particle-marquee"></MarqueeArea>
 					</box>
 					<text id="particle-info"></text>
 				</box>
@@ -205,7 +205,7 @@
 				<node-list id="particle-list" padded></node-list>
 			</page-frame>
 			<page-frame id="inspector" value="inspector">
-				<page-manager id="inspector-page-manager" tabindex="-1">
+				<PageManager id="inspector-page-manager" tabindex="-1">
 					<page-frame value="fileScene" id="fileScene-vue-mount"></page-frame>
 					<page-frame value="fileUI" id="fileUI-vue-mount"></page-frame>
 					<page-frame value="fileAnimation" id="fileAnimation-vue-mount"></page-frame>
@@ -249,17 +249,20 @@
 					<page-frame value="animSoundLayer" id="animSoundLayer-vue-mount"></page-frame>
 					<page-frame value="animSoundFrame" id="animSoundFrame-vue-mount"></page-frame>
 					<page-frame value="particleLayer" id="particleLayer-vue-mount"></page-frame>
-					</page-manager>
+					</PageManager>
 			</page-frame>
-		</page-manager>
+		</PageManager>
 </box>
 </page-frame>
 	<page-frame value="scene"></page-frame>
 	<page-frame value="ui"></page-frame>
 	<page-frame value="animation"></page-frame>
 	<page-frame value="particle"></page-frame>
-	</page-manager>
+	</PageManager>
 </template>
 
 <script setup lang="ts">
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import PageManager from '@app/components/common/PageManager.vue';
+import NavBar from '@app/components/common/NavBar.vue';
 </script>

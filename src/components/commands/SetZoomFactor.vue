@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setZoomFactor">
-		<title-bar>Set Zoom Factor<close /></title-bar>
+	<WindowFrame id="setZoomFactor">
+		<TitleBar>Set Zoom Factor<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Zoom Factor</text
@@ -25,12 +25,14 @@
 			<button id="setZoomFactor-confirm" name="confirm">Confirm</button>
 			<button id="setZoomFactor-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 	
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

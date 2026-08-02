@@ -1,7 +1,7 @@
 <template>
 	<!-- 变量访问器窗口 -->
-	<window-frame id="variableGetter">
-		<title-bar>Variable<close /></title-bar>
+	<WindowFrame id="variableGetter">
+		<TitleBar>Variable<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Type</text><select-box id="variableGetter-type" /> <text>Actor</text
@@ -18,11 +18,13 @@
 			<button id="variableGetter-confirm" name="confirm">Confirm</button>
 			<button id="variableGetter-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

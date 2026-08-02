@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setAnimationComponent">
-	<title-bar>Set Animation Component<close /></title-bar>
+<WindowFrame id="setAnimationComponent">
+	<TitleBar>Set Animation Component<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text
@@ -43,11 +43,13 @@
 		<button id="setAnimationComponent-confirm" name="confirm">Confirm</button>
 		<button id="setAnimationComponent-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

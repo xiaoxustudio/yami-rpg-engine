@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="importLanguage">
-		<title-bar>Import Language Pack<close></close></title-bar>
+	<WindowFrame id="importLanguage">
+		<TitleBar>Import Language Pack<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Import to</text><select-box id="importLanguage-language" />
@@ -8,11 +8,13 @@
 			<button id="importLanguage-confirm" name="confirm">Confirm</button>
 			<button id="importLanguage-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

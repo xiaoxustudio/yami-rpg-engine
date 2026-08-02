@@ -1,6 +1,6 @@
 <template>
-	<detail-box id="animSpriteFrame-properties-detail" open>
-		<detail-summary>{{ local.getLabel('animSpriteFrame-properties-grid') || 'Frame' }}</detail-summary>
+	<DetailBox id="animSpriteFrame-properties-detail" open>
+		<DetailSummary>{{ local.getLabel('animSpriteFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<detail-grid id="animSpriteFrame-properties-grid">
 			<text>{{ local.getLabel('animSpriteFrame-anchor-box') || 'Anchor' }}</text>
 			<box
@@ -169,9 +169,9 @@
 				></number-box>
 			</flex-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box id="animSpriteFrame-sprite-detail" open>
-		<detail-summary id="animSpriteFrame-sprite-summary">
+	</DetailBox>
+	<DetailBox id="animSpriteFrame-sprite-detail" open>
+		<DetailSummary id="animSpriteFrame-sprite-summary">
 			<text id="sprite-label">Sprite</text>
 			<box id="sprite-info"></box>
 			<slider-box
@@ -181,22 +181,25 @@
 				max="4"
 				hotkey="-/+"
 			></slider-box>
-		</detail-summary>
+		</DetailSummary>
 		<box id="sprite-body">
 			<box id="sprite-frame">
 				<canvas id="sprite-canvas" width="0" height="0"></canvas>
 				<box id="sprite-screen" tabindex="-1">
-					<marquee-area id="sprite-marquee"></marquee-area>
+					<MarqueeArea id="sprite-marquee"></MarqueeArea>
 				</box>
 			</box>
 		</box>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();

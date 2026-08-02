@@ -11,6 +11,7 @@ import {
 	seek,
 	show
 } from '@/util/element-utils.ts';
+import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
 import { debounce } from '@/util/safe.ts';
 import { CommonList } from './common-list.ts';
 import { Menu } from './menu-list.ts';
@@ -1241,7 +1242,7 @@ export class TreeList extends HTMLElement {
 			Object.defineProperty(event, 'offsetY', { writable: true });
 			event.preventDefault = Function.empty;
 			event.dataTransfer.hideDragImage();
-			event.hint = document.createElement('drag-and-drop-hint');
+			event.hint = createDragAndDropHint();
 			addClass(event.hint, 'for-list');
 			this.parentNode!.insertBefore(hide(event.hint), this);
 			addClass(this, 'dragging');

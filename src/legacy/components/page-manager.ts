@@ -1,78 +1,87 @@
 import { addClass, removeClass, dispatchResizeEvent } from '@/util/element-utils.ts';
 
-export class PageManager extends HTMLElement {
+interface PageManagerElement extends HTMLElement {
 	index: any;
 	active: HTMLElement | null;
 	switchEventEnabled: boolean;
+	switch(value: any): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-	constructor() {
-		super();
+export function attachPageManagerApi(el: HTMLElement): void {
+	const manager = el as PageManagerElement;
 
-		const elements = this.childNodes;
-		if (elements.length > 0) {
-			let i = elements.length;
-			while (--i >= 0) {
-				const element: any = elements[i];
-				if (element.tagName === 'PAGE-FRAME') {
-					element.dataValue = element.getAttribute('value');
-				} else {
-					this.removeChild(element);
-				}
-			}
-		}
+	manager.index = null;
+	manager.active = null;
+	manager.switchEventEnabled = false;
 
-		this.index = null;
-		this.active = null;
-		this.switchEventEnabled = false;
-	}
-
-	switch(value: any): void {
-		const last = this.index;
+	manager.switch = function (value: any): void {
+		const last = manager.index;
 		if (last !== value) {
 			let target: HTMLElement | null = null;
 			if (value !== null) {
-				for (const element of <any>this.childNodes) {
-					if (element.tagName === 'PAGE-FRAME') {
-						if ((<any>element).dataValue === undefined) {
-							(<any>element).dataValue = element.getAttribute('value');
+				for (const child of el.childNodes as any) {
+					if (child.tagName === 'PAGE-FRAME') {
+						if (child.dataValue === undefined) {
+							child.dataValue = child.getAttribute('value');
 						}
-						if ((<any>element).dataValue === value) {
-							target = element;
+						if (child.dataValue === value) {
+							target = child;
 							break;
 						}
 					}
 				}
 			}
-			const active = this.active;
+			const active = manager.active;
 			if (active !== target) {
-				this.index = value;
-				this.active = target;
+				manager.index = value;
+				manager.active = target;
 				active && removeClass(active, 'visible');
 				target && addClass(target, 'visible');
-				if (this.switchEventEnabled) {
+				if (manager.switchEventEnabled) {
 					const event: any = new Event('switch');
 					event.last = last;
 					event.value = value;
-					this.dispatchEvent(event);
+					el.dispatchEvent(event);
 				}
 				active && dispatchResizeEvent(active);
 				target && dispatchResizeEvent(target);
 			}
 		}
-	}
+	};
 
-	on(
+	manager.on = function (
 		type: string,
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
-		super.on(type, listener, options);
-		switch (type) {
-			case 'switch':
-				this.switchEventEnabled = true;
-				break;
+		el.addEventListener(type, listener, options);
+		if (type === 'switch') {
+			manager.switchEventEnabled = true;
+		}
+	};
+
+	const nodes = el.childNodes;
+	if (nodes.length > 0) {
+		let i = nodes.length;
+		while (--i >= 0) {
+			const child: any = nodes[i];
+			if (child.tagName === 'PAGE-FRAME') {
+				child.dataValue = child.getAttribute('value');
+			} else {
+				el.removeChild(child);
+			}
 		}
 	}
 }
 
-customElements.define('page-manager', PageManager);
+export function createPageManager(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'page-manager';
+	attachPageManagerApi(el);
+	return el;
+}

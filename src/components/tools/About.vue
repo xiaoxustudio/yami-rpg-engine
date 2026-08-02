@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="about">
-		<title-bar>Yami RPG Editor<close /></title-bar>
+	<WindowFrame id="about">
+		<TitleBar>Yami RPG Editor<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text id="about-credits">Credits</text
@@ -26,11 +26,13 @@
 				><text id="os-version"></text>
 			</grid-box>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,7 +1,7 @@
 <template>
 	<!-- 匹配 - 分支 -->
-	<window-frame id="switch-branch">
-		<title-bar>Branch<close /></title-bar>
+	<WindowFrame id="switch-branch">
+		<TitleBar>Branch<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Cases</text><param-list id="switch-branch-conditions" />
@@ -9,11 +9,13 @@
 			<button id="switch-branch-confirm" name="confirm">Confirm</button>
 			<button id="switch-branch-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="deleteObject">
-		<title-bar>Delete Object<close /></title-bar>
+	<WindowFrame id="deleteObject">
+		<TitleBar>Delete Object<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Object</text><custom-box id="deleteObject-object" type="object" />
@@ -8,12 +8,13 @@
 			<button id="deleteObject-confirm" name="confirm">Confirm</button>
 			<button id="deleteObject-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

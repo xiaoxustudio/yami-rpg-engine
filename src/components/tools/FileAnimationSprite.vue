@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="fileAnimation-sprite">
-		<title-bar>Sprite<close></close></title-bar>
+	<WindowFrame id="fileAnimation-sprite">
+		<TitleBar>Sprite<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Name</text><text-box id="fileAnimation-sprite-name" /> <text>Image</text
@@ -13,11 +13,13 @@
 			<button id="fileAnimation-sprite-confirm" name="confirm">Confirm</button>
 			<button id="fileAnimation-sprite-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

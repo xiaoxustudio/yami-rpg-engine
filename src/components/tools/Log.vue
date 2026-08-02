@@ -1,14 +1,16 @@
 <template>
-	<window-frame id="log">
-		<title-bar>Log<close></close></title-bar>
+	<WindowFrame id="log">
+		<TitleBar>Log<close></close></TitleBar>
 		<content-frame>
 			<common-list id="log-list" />
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

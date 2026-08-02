@@ -1,41 +1,69 @@
-import { DetailBox } from './detail-box.ts';
-import { on } from '@/util/element-utils.ts';
+interface DetailSummaryElement extends HTMLElement {
+	toggle(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
-export class DetailSummary extends HTMLElement {
-	constructor() {
-		super();
+export function attachDetailSummaryApi(el: HTMLElement): void {
+	const summary = el as DetailSummaryElement;
 
-		on(this, 'keydown', this.keydown as (event: EditorEvent) => void);
-		on(this, 'pointerdown', this.pointerdown as (event: EditorEvent) => void);
-	}
-
-	toggle(): void {
-		const parent = this.parentNode;
-		if (parent instanceof DetailBox) {
-			parent.toggle();
+	const findBox = (node: Element): (HTMLElement & { toggle?: () => void }) | null => {
+		let parent = node.parentElement;
+		while (parent) {
+			if (
+				parent.classList.contains('detail-box') ||
+				parent.tagName.toLowerCase() === 'detail-box'
+			) {
+				return parent;
+			}
+			parent = parent.parentElement;
 		}
-	}
+		return null;
+	};
 
-	keydown(event: KeyboardEvent): void {
+	const toggle = (): void => {
+		const parent =
+			(summary.closest('.detail-box') as (HTMLElement & { toggle?: () => void }) | null) ??
+			findBox(summary);
+		parent?.toggle?.();
+	};
+
+	const keydown = (event: KeyboardEvent): void => {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
 				if (!event.cmdOrCtrlKey && !event.altKey) {
-					this.toggle();
+					toggle();
 				}
 				break;
 		}
-	}
+	};
 
-	pointerdown(event: PointerEvent): void {
-		switch (event.button) {
-			case 0:
-				if (event.target === this) {
-					this.toggle();
-				}
-				break;
+	const pointerdown = (event: PointerEvent): void => {
+		if (event.button === 0 && event.target === summary) {
+			toggle();
 		}
-	}
+	};
+
+	summary.toggle = toggle;
+	summary.on = function (
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void {
+		summary.addEventListener(type, listener as EventListener, options);
+	};
+
+	summary.addEventListener('keydown', keydown);
+	summary.addEventListener('pointerdown', pointerdown);
 }
 
-customElements.define('detail-summary', DetailSummary);
+export function createDetailSummary(): HTMLElement {
+	const el = document.createElement('div');
+	el.className = 'detail-summary';
+	attachDetailSummaryApi(el);
+	return el;
+}

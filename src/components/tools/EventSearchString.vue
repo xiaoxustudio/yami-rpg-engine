@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="event-search-string">
-		<title-bar>Search String<close></close></title-bar>
+	<WindowFrame id="event-search-string">
+		<TitleBar>Search String<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text></text><text-box id="event-search-string-search" /> <text></text
@@ -13,11 +13,13 @@
 			<button id="event-search-string-previous" name="previous">上一个</button>
 			<button id="event-search-string-next" name="next">下一个</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

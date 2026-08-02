@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="deleteTile">
-		<title-bar>Delete Tile<close /></title-bar>
+	<WindowFrame id="deleteTile">
+		<TitleBar>Delete Tile<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Tilemap</text><custom-box id="deleteTile-tilemap" type="tilemap" />
@@ -12,12 +12,13 @@
 			<button id="deleteTile-confirm" name="confirm">Confirm</button>
 			<button id="deleteTile-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

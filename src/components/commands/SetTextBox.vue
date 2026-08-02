@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setTextBox">
-		<title-bar>Set Text Box<close /></title-bar>
+	<WindowFrame id="setTextBox">
+		<TitleBar>Set Text Box<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Element</text><custom-box id="setTextBox-element" type="element" />
@@ -9,11 +9,13 @@
 			<button id="setTextBox-confirm" name="confirm">Confirm</button>
 			<button id="setTextBox-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

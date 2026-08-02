@@ -1,7 +1,7 @@
 <template>
 	<!-- 设置文本 - 属性 -->
-	<window-frame id="setText-property">
-		<title-bar>Text Property<close /></title-bar>
+	<WindowFrame id="setText-property">
+		<TitleBar>Text Property<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><select-box id="setText-property-key" />
@@ -55,11 +55,13 @@
 			<button id="setText-property-confirm" name="confirm">Confirm</button>
 			<button id="setText-property-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

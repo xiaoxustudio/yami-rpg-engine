@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="sceneRegion-general-grid">
 			<text>{{ local.getLabel('sceneRegion-name') || 'Name' }}</text><text-box id="sceneRegion-name"></text-box>
 			<text>{{ local.getLabel('sceneRegion-color') || 'Color' }}</text><color-box id="sceneRegion-color"></color-box>
@@ -35,32 +35,32 @@
 				decimals="4"
 			></number-box>
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneRegion-conditions') || 'Conditions' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneRegion-conditions') || 'Conditions' }}</DetailSummary>
 		<param-list
 			id="sceneRegion-conditions"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneRegion-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneRegion-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="sceneRegion-events"
 			class="inspector-list"
 			filter="region"
 			flexible
 		></param-list>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('sceneRegion-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('sceneRegion-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="sceneRegion-scripts"
 			class="inspector-list"
 			flexible
 		></param-list>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="sceneRegion-parameter-pane"></parameter-pane>
 </template>
 
@@ -68,6 +68,8 @@
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

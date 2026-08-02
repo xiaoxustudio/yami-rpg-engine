@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="setString">
-		<title-bar>Set String<close /></title-bar>
+	<WindowFrame id="setString">
+		<TitleBar>Set String<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Variable</text
@@ -110,11 +110,13 @@
 			<button id="setString-confirm" name="confirm">Confirm</button>
 			<button id="setString-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

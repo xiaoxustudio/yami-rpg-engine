@@ -14,8 +14,8 @@ import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Shortcuts } from '@/tools/shortcut-registry.ts';
-import { DetailBox } from '@/components/detail-box.ts';
-import { DetailSummary } from '@/components/detail-summary.ts';
+import { createDetailBox } from '@/components/detail-box.ts';
+import { createDetailSummary } from '@/components/detail-summary.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { TextArea } from '@/components/text-area.ts';
 import { TreeList } from '@/components/tree-list.ts';
@@ -195,9 +195,8 @@ Localization.initialize = function () {
 Localization.createInputs = function () {
 	const inputs: Record<string, any> = (this.inputs = {});
 	for (const language of this.languages) {
-		const detailBox = new DetailBox();
-		detailBox.setAttribute('open', '');
-		const detailSummary = new DetailSummary();
+		const detailBox = createDetailBox();
+		const detailSummary = createDetailSummary();
 		detailSummary.textContent = (Local.get as any)('languages.' + language);
 		const textarea = new TextArea();
 		(textarea as TextArea & { language: string }).language = language;

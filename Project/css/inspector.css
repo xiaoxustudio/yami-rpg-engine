@@ -523,7 +523,7 @@
 	pointer-events: none;
 }
 
-#fileTileset-general-detail:not([open]) > detail-summary {
+#fileTileset-general-detail:not([open]) > .detail-summary {
 	margin-bottom: 0;
 	height: 21px;
 	border-bottom: none;

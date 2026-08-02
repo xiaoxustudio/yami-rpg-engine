@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="moveLight">
-		<title-bar>Move Light<close /></title-bar>
+	<WindowFrame id="moveLight">
+		<TitleBar>Move Light<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Light</text><custom-box id="moveLight-light" type="light" />
@@ -19,12 +19,13 @@
 			<button id="moveLight-confirm" name="confirm">Confirm</button>
 			<button id="moveLight-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

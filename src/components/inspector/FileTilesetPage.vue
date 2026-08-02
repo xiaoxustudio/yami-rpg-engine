@@ -29,13 +29,13 @@
 		<box id="palette-frame">
 			<canvas id="palette-canvas" width="0" height="0"></canvas>
 			<box id="palette-screen" tabindex="-1">
-				<marquee-area id="palette-marquee"></marquee-area>
+				<MarqueeArea id="palette-marquee"></MarqueeArea>
 			</box>
 		</box>
 		<text id="palette-info"></text>
 	</box>
-	<detail-box id="fileTileset-general-detail" open>
-		<detail-summary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</detail-summary>
+	<DetailBox id="fileTileset-general-detail" open>
+		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
 		<detail-grid id="fileTileset-general-grid">
 			<text>{{ local.getLabel('fileTileset-image') || 'Image' }}</text
 			><custom-box id="fileTileset-image" type="file" filter="image" />
@@ -79,13 +79,16 @@
 				decimals="4"
 			/>
 		</detail-grid>
-	</detail-box>
+	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();

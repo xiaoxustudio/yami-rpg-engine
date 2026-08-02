@@ -1,22 +1,25 @@
 <template>
-		<window-frame id="scriptCommand">
-		<title-bar>Custom Command<close></close></title-bar>
+		<WindowFrame id="scriptCommand">
+		<TitleBar>Custom Command<close></close></TitleBar>
 		<content-frame>
 			<parameter-pane id="scriptCommand-parameter-pane">
-				<detail-box id="scriptCommand-parameter-detail" open>
+				<DetailBox id="scriptCommand-parameter-detail" open>
 					<detail-grid id="scriptCommand-parameter-grid" />
-				</detail-box>
+				</DetailBox>
 			</parameter-pane>
 			<button id="scriptCommand-confirm" name="confirm">Confirm</button>
 			<button id="scriptCommand-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

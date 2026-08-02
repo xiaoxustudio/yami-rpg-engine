@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="color">
-		<title-bar>Color Picker<close /></title-bar>
+	<WindowFrame id="color">
+		<TitleBar>Color Picker<close /></TitleBar>
 		<content-frame>
 			<canvas id="color-palette-canvas" width="256" height="194" />
 			<box id="color-palette-frame">
@@ -41,11 +41,13 @@
 			<button id="color-confirm" name="confirm">Confirm</button>
 			<button id="color-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

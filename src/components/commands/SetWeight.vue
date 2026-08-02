@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setWeight">
-	<title-bar>Set Weight<close /></title-bar>
+<WindowFrame id="setWeight">
+	<TitleBar>Set Weight<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="setWeight-actor" type="actor" /><text>Weight</text
@@ -8,11 +8,13 @@
 		<button id="setWeight-confirm" name="confirm">Confirm</button>
 		<button id="setWeight-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

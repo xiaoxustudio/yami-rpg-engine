@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="choice">
-		<title-bar>Choice<close /></title-bar>
+	<WindowFrame id="choice">
+		<TitleBar>Choice<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Content</text
@@ -12,11 +12,13 @@
 			<button id="choice-confirm" name="confirm">Confirm</button>
 			<button id="choice-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

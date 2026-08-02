@@ -99,7 +99,7 @@ tooltip-line {
  * 细节组件
  * --------------------------------
  */
-detail-summary {
+.detail-summary {
 	display: block;
 	height: 22px;
 	line-height: 20px;
@@ -114,20 +114,20 @@ detail-summary {
 	text-overflow: ellipsis;
 }
 
-detail-summary:hover {
+.detail-summary:hover {
 	background-color: var(--summary-background-hover);
 }
 
-detail-box:first-child > detail-summary {
+.detail-box:first-child > .detail-summary {
 	height: 21px;
 	border-top: none;
 }
 
-detail-box:not([open]) > detail-summary {
+.detail-box:not([open]) > .detail-summary {
 	margin-bottom: -1px;
 }
 
-detail-box[open] > detail-summary::before {
+.detail-box[open] > .detail-summary::before {
 	content: '';
 	display: block;
 	position: absolute;
@@ -137,7 +137,7 @@ detail-box[open] > detail-summary::before {
 	border-top: 8px solid var(--folder-mark-color);
 }
 
-detail-box:not([open]) > detail-summary::before {
+.detail-box:not([open]) > .detail-summary::before {
 	content: '';
 	display: block;
 	position: absolute;
@@ -281,7 +281,7 @@ grid-box > text {
  */
 /* 使用outline会导致文本丢失子像素渲染
  * 结合overflow: hidden可以解决此问�? * 使用border会导致放大时背景和边框之间出现空�? */
-window-frame {
+.window-frame {
 	display: none;
 	position: fixed;
 	box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
@@ -290,29 +290,29 @@ window-frame {
 	overflow: hidden;
 }
 
-window-frame.open {
+.window-frame.open {
 	display: block;
 	pointer-events: auto;
 }
 
-window-frame.blur {
+.window-frame.blur {
 	pointer-events: none;
 }
 
-window-frame.translucent {
+.window-frame.translucent {
 	filter: opacity(75%);
 }
 
-window-frame.maximized {
+.window-frame.maximized {
 	width: 100% !important;
 	height: 100% !important;
 }
 
-body.border > window-frame {
+body.border > .window-frame {
 	margin: var(--1dpx);
 }
 
-body.border > window-frame.maximized {
+body.border > .window-frame.maximized {
 	width: calc(100% - var(--2dpx)) !important;
 	height: calc(100% - var(--2dpx)) !important;
 }
@@ -320,7 +320,7 @@ body.border > window-frame.maximized {
 /* --------------------------------
  * 标题�? * --------------------------------
  */
-title-bar {
+.title-bar {
 	display: block;
 	padding: 0 5px;
 	width: 100%;
@@ -421,7 +421,7 @@ close {
 	background-color: var(--titlebar-close-color);
 }
 
-:root:not(.darwin) window-frame.maximized > title-bar > maximize::after {
+:root:not(.darwin) .window-frame.maximized > .title-bar > maximize::after {
 	-webkit-mask-position: 0 -200%;
 	mask-position: 0 -200%;
 }
@@ -499,13 +499,7 @@ page-frame:not(.visible) {
  * 选框区域
  * --------------------------------
  */
-marquee-area {
-	display: block;
-	position: absolute;
-	overflow: hidden;
-}
-
-marquee-area > selection {
+.marquee-area > selection {
 	position: absolute;
 	pointer-events: none;
 }
@@ -598,7 +592,7 @@ marquee-area > selection {
 	display: none;
 }
 
-:root.darwin title-bar {
+:root.darwin .title-bar {
 	text-align: center;
 	font-weight: bold;
 	font-size: 14px;
@@ -849,8 +843,8 @@ group {
 	display: none;
 }
 
-group.ready-to-focus > nav-bar > nav-item.selected,
-group:focus-within > nav-bar > nav-item.selected {
+group.ready-to-focus > .nav-bar > nav-item.selected,
+group:focus-within > .nav-bar > nav-item.selected {
 	background-image: linear-gradient(
 		to right,
 		rgba(64, 128, 192, 0) 0%,

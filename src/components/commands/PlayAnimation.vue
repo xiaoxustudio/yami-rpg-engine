@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="playAnimation">
-		<title-bar>Play Animation<close /></title-bar>
+	<WindowFrame id="playAnimation">
+		<TitleBar>Play Animation<close /></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Mode</text><select-box id="playAnimation-mode" /> <text>Position</text
@@ -39,12 +39,13 @@
 			<button id="playAnimation-confirm" name="confirm">Confirm</button>
 			<button id="playAnimation-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
-	
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

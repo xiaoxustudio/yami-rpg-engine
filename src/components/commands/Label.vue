@@ -1,16 +1,18 @@
 <template>
-<window-frame id="label">
-	<title-bar>Label<close /></title-bar>
+<WindowFrame id="label">
+	<TitleBar>Label<close /></TitleBar>
 	<content-frame>
 		<grid-box> <text>Label Name</text><text-box id="label-name" /> </grid-box>
 		<button id="label-confirm" name="confirm">Confirm</button>
 		<button id="label-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

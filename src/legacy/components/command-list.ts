@@ -23,7 +23,6 @@ import { Attribute } from '@/attribute/attribute-window.ts';
 import { CommandSuggestion } from '@/command/command-tip.ts';
 import { EventEditor } from '@/command/event-editor.ts';
 import { Menu } from './menu-list.ts';
-import { WindowFrame } from './window-frame.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { SearchString } from '@/module/searchstring.ts';
@@ -1646,7 +1645,10 @@ try {
 		if (this.focusing) {
 			let element = this;
 			while ((element = element.parentNode as any)) {
-				if (element instanceof WindowFrame) {
+				if (element.nodeType !== Node.ELEMENT_NODE) {
+					continue;
+				}
+				if ((element as HTMLElement).classList.contains('window-frame')) {
 					if (hasClass(element, 'blur')) {
 						return;
 					} else {

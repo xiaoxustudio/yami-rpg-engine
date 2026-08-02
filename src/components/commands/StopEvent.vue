@@ -1,6 +1,6 @@
 <template>
-<window-frame id="stopEvent">
-	<title-bar>Stop Event<close /></title-bar>
+<WindowFrame id="stopEvent">
+	<TitleBar>Stop Event<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Type</text><select-box id="stopEvent-type" /> <text>Actor</text
@@ -17,11 +17,13 @@
 		<button id="stopEvent-confirm" name="confirm">Confirm</button>
 		<button id="stopEvent-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

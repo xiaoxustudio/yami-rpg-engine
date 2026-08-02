@@ -1,6 +1,6 @@
 <template>
-<window-frame id="changeActorAnimation">
-	<title-bar>Change Actor Animation<close /></title-bar>
+<WindowFrame id="changeActorAnimation">
+	<TitleBar>Change Actor Animation<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="changeActorAnimation-actor" type="actor" /><text>Animation</text
@@ -12,11 +12,13 @@
 		<button id="changeActorAnimation-confirm" name="confirm">Confirm</button>
 		<button id="changeActorAnimation-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

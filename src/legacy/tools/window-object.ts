@@ -292,7 +292,7 @@ Window.keydown = function (event) {
 Window.cancel = function (event) {
 	let element = event.target.parentNode;
 	while (element) {
-		if (element.tagName === 'WINDOW-FRAME') {
+		if ((element as HTMLElement).classList.contains('window-frame')) {
 			return Window.close(element.id);
 		} else {
 			element = element.parentNode;

@@ -1,6 +1,6 @@
 <template>
-<window-frame id="changeActorMotion">
-	<title-bar>Change Actor Motion<close /></title-bar>
+<WindowFrame id="changeActorMotion">
+	<TitleBar>Change Actor Motion<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="changeActorMotion-actor" type="actor" /><text>Type</text><select-box id="changeActorMotion-type" /><text>Motion</text
@@ -8,11 +8,13 @@
 		<button id="changeActorMotion-confirm" name="confirm">Confirm</button>
 		<button id="changeActorMotion-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 

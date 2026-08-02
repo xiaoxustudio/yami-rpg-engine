@@ -1,6 +1,6 @@
 <template>
-	<window-frame id="fileActor-equipment">
-		<title-bar>Equipment<close></close></title-bar>
+	<WindowFrame id="fileActor-equipment">
+		<TitleBar>Equipment<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Equipment</text
@@ -10,11 +10,13 @@
 			<button id="fileActor-equipment-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-equipment-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -166,7 +166,7 @@ field-set > text-area > textarea.inputting {
 /* --------------------------------
  * 键盘按键�? * --------------------------------
  */
-keyboard-box {
+.keyboard-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -179,12 +179,12 @@ keyboard-box {
 	border-radius: 2px;
 }
 
-keyboard-box.disabled {
+.keyboard-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-keyboard-box:focus-within {
+.keyboard-box:focus-within {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -201,7 +201,7 @@ keyboard-box:focus-within {
 /* --------------------------------
  * 手柄按键�? * --------------------------------
  */
-gamepad-box {
+.gamepad-box {
 	display: block;
 	position: relative;
 	width: auto;
@@ -214,12 +214,12 @@ gamepad-box {
 	border-radius: 2px;
 }
 
-gamepad-box.disabled {
+.gamepad-box.disabled {
 	pointer-events: none;
 	background-color: var(--input-background-disabled);
 }
 
-gamepad-box:focus-within {
+.gamepad-box:focus-within {
 	border-color: var(--input-border-color-focus);
 }
 
@@ -913,7 +913,7 @@ custom-box.dragover {
 /* --------------------------------
  * 滤镜�? * --------------------------------
  */
-filter-box {
+.filter-box {
 	display: block;
 	padding: 1px;
 	border: var(--input-border);
@@ -1000,7 +1000,7 @@ tab-close:active {
  * 导航�? * --------------------------------
  */
 /* 使用本地字体让导航项目的宽度固定 */
-nav-bar {
+.nav-bar {
 	display: flex;
 	position: absolute;
 	width: 100%;
@@ -1418,18 +1418,18 @@ field-set > node-list {
  * 拖放提示
  * --------------------------------
  */
-drag-and-drop-hint {
+.drag-and-drop-hint {
 	display: block;
 	position: absolute;
 	pointer-events: none;
 }
 
-drag-and-drop-hint.for-tab,
-drag-and-drop-hint.for-list {
+.drag-and-drop-hint.for-tab,
+.drag-and-drop-hint.for-list {
 	background-color: var(--node-hint-background);
 }
 
-drag-and-drop-hint.for-group {
+.drag-and-drop-hint.for-group {
 	background-color: rgba(0, 128, 255, 0.25);
 }
 
@@ -2631,7 +2631,7 @@ file-body-content.huge > file-body-item > file-body-icon.icon-file-other {
 /* --------------------------------
  * Toast / Loading / Empty State
  * -------------------------------- */
-toast-manager {
+.toast-manager {
 	position: fixed;
 	right: 16px;
 	bottom: 16px;
@@ -2642,7 +2642,7 @@ toast-manager {
 	pointer-events: none;
 }
 
-toast-manager .toast {
+.toast-manager .toast {
 	pointer-events: auto;
 	min-width: 220px;
 	max-width: 360px;
@@ -2663,96 +2663,38 @@ toast-manager .toast {
 		transform 0.2s;
 }
 
-toast-manager .toast-show {
+.toast-manager .toast-show {
 	opacity: 1;
 	transform: translateY(0);
 }
 
-toast-manager .toast-hide {
+.toast-manager .toast-hide {
 	opacity: 0;
 	transform: translateY(8px);
 }
 
-toast-manager .toast-error {
+.toast-manager .toast-error {
 	background: rgba(180, 40, 40, 0.95);
 }
 
-toast-manager .toast-success {
+.toast-manager .toast-success {
 	background: rgba(40, 130, 70, 0.95);
 }
 
-toast-manager .toast-text {
+.toast-manager .toast-text {
 	flex: 1;
 	word-break: break-word;
 }
 
-toast-manager .toast-close {
+.toast-manager .toast-close {
 	cursor: pointer;
 	opacity: 0.7;
 	font-weight: bold;
 	line-height: 1.2;
 }
 
-toast-manager .toast-close:hover {
+.toast-manager .toast-close:hover {
 	opacity: 1;
-}
-
-loading-overlay {
-	position: fixed;
-	inset: 0;
-	display: none;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	gap: 16px;
-	background: rgba(0, 0, 0, 0.45);
-	z-index: 9999;
-}
-
-loading-overlay.visible {
-	display: flex;
-}
-
-loading-overlay .loading-spinner {
-	width: 40px;
-	height: 40px;
-	border: 4px solid rgba(255, 255, 255, 0.25);
-	border-top-color: #fff;
-	border-radius: 50%;
-	animation: loading-spin 0.8s linear infinite;
-}
-
-loading-overlay .loading-text {
-	color: #fff;
-	font-size: 14px;
-}
-
-@keyframes loading-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-empty-state {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 12px;
-	padding: 32px;
-	color: rgba(128, 128, 128, 0.9);
-	text-align: center;
-	user-select: none;
-}
-
-empty-state .empty-icon {
-	color: rgba(128, 128, 128, 0.7);
-}
-
-empty-state .empty-text {
-	font-size: 13px;
-	line-height: 1.5;
-	max-width: 280px;
 }
 
 /* --------------------------------

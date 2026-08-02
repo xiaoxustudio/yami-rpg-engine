@@ -1,6 +1,6 @@
 <template>
-		<window-frame id="setImage-property">
-		<title-bar>Image Property<close></close></title-bar>
+		<WindowFrame id="setImage-property">
+		<TitleBar>Image Property<close></close></TitleBar>
 		<content-frame>
 			<grid-box>
 				<text>Property</text><select-box id="setImage-property-key" />
@@ -34,11 +34,13 @@
 			<button id="setImage-property-confirm" name="confirm">Confirm</button>
 			<button id="setImage-property-cancel" name="cancel">Cancel</button>
 		</content-frame>
-	</window-frame>
+	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

@@ -41,7 +41,7 @@
 				</box>
 				<box id="particle-body">
 					<box id="particle-screen" tabindex="-1">
-						<marquee-area id="particle-marquee" />
+						<MarqueeArea id="particle-marquee" />
 					</box>
 					<text id="particle-info" />
 				</box>
@@ -52,6 +52,7 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

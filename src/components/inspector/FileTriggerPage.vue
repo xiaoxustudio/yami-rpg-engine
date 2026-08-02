@@ -1,6 +1,6 @@
 <template>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileTrigger-general-grid') || 'General' }}</detail-summary>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileTrigger-general-grid') || 'General' }}</DetailSummary>
 		<detail-grid id="fileTrigger-general-grid">
 			<text>{{ local.getLabel('fileTrigger-selector') || 'Selector' }}</text><select-box id="fileTrigger-selector" />
 			<text>{{ local.getLabel('fileTrigger-onHitWalls') || 'On Hit Walls' }}</text
@@ -89,9 +89,9 @@
 			<text>{{ local.getLabel('fileTrigger-inherit') || 'Inherit' }}</text
 			><custom-box id="fileTrigger-inherit" type="file" filter="trigger" />
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileTrigger-animation-grid') || 'Animation' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileTrigger-animation-grid') || 'Animation' }}</DetailSummary>
 		<detail-grid id="fileTrigger-animation-grid">
 			<text>{{ local.getLabel('fileTrigger-animationId') || 'Animation' }}</text
 			><custom-box
@@ -111,24 +111,24 @@
 			/>
 			<text>{{ local.getLabel('fileTrigger-rotatable') || 'Rotatable' }}</text><select-box id="fileTrigger-rotatable" />
 		</detail-grid>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileTrigger-events') || 'Events' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileTrigger-events') || 'Events' }}</DetailSummary>
 		<param-list
 			id="fileTrigger-events"
 			class="inspector-list"
 			filter="trigger"
 			flexible
 		/>
-	</detail-box>
-	<detail-box open>
-		<detail-summary>{{ local.getLabel('fileTrigger-scripts') || 'Scripts' }}</detail-summary>
+	</DetailBox>
+	<DetailBox open>
+		<DetailSummary>{{ local.getLabel('fileTrigger-scripts') || 'Scripts' }}</DetailSummary>
 		<param-list
 			id="fileTrigger-scripts"
 			class="inspector-list"
 			flexible
 		/>
-	</detail-box>
+	</DetailBox>
 	<parameter-pane id="fileTrigger-parameter-pane" />
 </template>
 
@@ -136,6 +136,8 @@
 import { onMounted } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import DetailBox from '@app/components/common/DetailBox.vue';
+import DetailSummary from '@app/components/common/DetailSummary.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
-<window-frame id="setMovementSpeed">
-	<title-bar>Set Movement Speed<close /></title-bar>
+<WindowFrame id="setMovementSpeed">
+	<TitleBar>Set Movement Speed<close /></TitleBar>
 	<content-frame>
 		<grid-box>
 			<text>Actor</text><custom-box id="setMovementSpeed-actor" type="actor" /><text>Property</text><select-box id="setMovementSpeed-property" /><text>Base Speed</text
@@ -15,11 +15,13 @@
 		<button id="setMovementSpeed-confirm" name="confirm">Confirm</button>
 		<button id="setMovementSpeed-cancel" name="cancel">Cancel</button>
 	</content-frame>
-</window-frame>
+</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import WindowFrame from '@app/components/common/WindowFrame.vue';
+import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
 import { useLocalStore } from "@app/stores/local";
 
