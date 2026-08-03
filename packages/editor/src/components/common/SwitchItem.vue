@@ -1,14 +1,17 @@
 <template>
-	<div
-		ref="root"
+	<YMSwitchItem
+		ref="ym"
+		:model-value="dataValue"
+		:length="props.length"
+		:disabled="isDisabled"
 		:id="props.id"
-		:class="stateClass"
-		@pointerdown="pointerdown"
+		@update:model-value="input"
 	/>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { YMSwitchItem } from '@ui-kit';
 
 interface SwitchItemElement extends HTMLDivElement {
 	read(): number;
@@ -36,21 +39,28 @@ const props = withDefaults(defineProps<Props>(), {
 	disabled: false
 });
 
-const classes = ['zero', 'one', 'two', 'three'];
-
-const root = ref<HTMLDivElement | null>(null);
-const length = computed(() => Math.clamp(props.length, 1, 4));
-const dataValue = ref(props.modelValue % length.value);
+const dataValue = ref(props.modelValue % props.length);
 const inputEventEnabled = ref(false);
-const stateClass = computed(() => classes[dataValue.value]);
+const isDisabled = ref(props.disabled);
+const ym = ref<{ root: HTMLElement | null } | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const read = (): number => dataValue.value;
 
 const write = (value: number): void => {
-	dataValue.value = value % length.value;
+	dataValue.value = value % props.length;
 };
 
 const update = (): void => {};
+
+const input = (value: number): void => {
+	dataValue.value = value % props.length;
+	if (inputEventEnabled.value) {
+		const inputEvent = new Event('input');
+		(inputEvent as any).value = dataValue.value;
+		root.value?.dispatchEvent(inputEvent);
+	}
+};
 
 const on = (
 	type: string,
@@ -61,21 +71,10 @@ const on = (
 	if (type === 'input') inputEventEnabled.value = true;
 };
 
-const pointerdown = (event: PointerEvent): void => {
-	if (props.disabled) return;
-	if (event.button !== 0) return;
-	write((dataValue.value + 1) % length.value);
-	if (inputEventEnabled.value) {
-		const input = new Event('input');
-		(input as any).value = dataValue.value;
-		root.value?.dispatchEvent(input);
-	}
-};
-
 defineExpose({ read, write, update, on, root });
 
 watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => root.value?.classList.toggle('disabled', val));
+watch(() => props.disabled, (val) => (isDisabled.value = val));
 
 onMounted(() => {
 	const el = root.value as SwitchItemElement | null;
@@ -98,6 +97,5 @@ onMounted(() => {
 		},
 		configurable: true
 	});
-	if (props.disabled) el.classList.add('disabled');
 });
 </script>

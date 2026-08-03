@@ -1,15 +1,7 @@
-<template>
-	<div class="empty-state" ref="root" :id="props.id">
-		<div class="empty-icon" v-html="iconHtml"></div>
-		<div class="empty-text">{{ message }}</div>
-	</div>
-</template>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
 interface Props {
-	id?: string;
 	message?: string;
 	icon?: string;
 }
@@ -21,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const root = ref<HTMLElement | null>(null);
 
-const message = ref(props.message);
+defineExpose({ root });
 
 const defaultIcon =
 	'<svg viewBox="0 0 24 24" width="48" height="48" ' +
@@ -35,33 +27,35 @@ const iconHtml = computed(() => {
 	d.textContent = props.icon;
 	return d.innerHTML;
 });
-
-const setMessage = (msg: string): void => {
-	message.value = msg;
-};
-
-defineExpose({ setMessage, root });
 </script>
 
-<style scoped>
-.empty-state {
+<template>
+	<div ref="root" class="empty-state" :class="$style.emptyState">
+		<div class="empty-icon" :class="$style.icon" v-html="iconHtml" />
+		<div class="empty-text" :class="$style.text">{{ message }}</div>
+	</div>
+</template>
+
+<style module>
+.emptyState {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 12px;
-	padding: 32px;
-	color: rgba(128, 128, 128, 0.9);
+	gap: var(--ym-space-3);
+	padding: var(--ym-space-6) var(--ym-space-4);
+	color: var(--ym-color-text-unit);
 	text-align: center;
 	user-select: none;
 }
 
-.empty-state .empty-icon {
-	color: rgba(128, 128, 128, 0.7);
+.icon {
+	color: var(--ym-color-text-unit);
+	opacity: 0.8;
 }
 
-.empty-state .empty-text {
-	font-size: 13px;
+.text {
+	font-size: var(--ym-font-size-md);
 	line-height: 1.5;
 	max-width: 280px;
 }

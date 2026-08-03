@@ -152,7 +152,8 @@ export function attachCheckBoxApi(el: HTMLElement, standard?: boolean): void {
 
 	on(box, 'keydown', box.keydown);
 	if (standard ?? hasClass(box, 'standard')) {
-		const standardMark = document.createElement('check-mark');
+		const standardMark = document.createElement('span');
+		addClass(standardMark, 'check-mark');
 		box.tabIndex = 0;
 		box.insertBefore(standardMark, box.childNodes[0] || null);
 		on(box, 'click', box.mouseclick);

@@ -294,11 +294,11 @@ button:focus {
 	line-height: 16px;
 }
 
-.check-box.standard:focus > check-mark {
+.check-box.standard:focus > .check-mark {
 	border-color: var(--input-border-color-focus);
 }
 
-check-mark {
+.check-mark {
 	display: inline-block;
 	position: static;
 	vertical-align: top;
@@ -313,7 +313,7 @@ check-mark {
 	border-radius: 2px;
 }
 
-.check-box > check-mark::before {
+.check-box > .check-mark::before {
 	content: '\2713';
 	position: absolute;
 	margin: -1px;
@@ -327,11 +327,11 @@ check-mark {
 	opacity: 0;
 }
 
-.check-box.selected > check-mark::before {
+.check-box.selected > .check-mark::before {
 	opacity: 1;
 }
 
-.check-box:active > check-mark::before {
+.check-box:active > .check-mark::before {
 	opacity: 0.5;
 }
 
@@ -345,12 +345,12 @@ check-mark {
 	line-height: 20px;
 }
 
-.check-box.standard.large > check-mark {
+.check-box.standard.large > .check-mark {
 	width: 20px;
 	height: 20px;
 }
 
-.check-box.standard.large > check-mark::before {
+.check-box.standard.large > .check-mark::before {
 	width: 20px;
 	height: 20px;
 	font-size: 1.5em;

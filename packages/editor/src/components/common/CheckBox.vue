@@ -1,16 +1,22 @@
 <template>
-	<div class="check-box" ref="root" :id="props.id">
+	<YMCheckBox
+		ref="ym"
+		:model-value="state.dataValue"
+		:disabled="isDisabled"
+		:standard="isStandard"
+		:large="props.large"
+		:id="props.id"
+		@update:model-value="input"
+	>
 		<slot />
-	</div>
+	</YMCheckBox>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
+import { YMCheckBox } from '@ui-kit';
 import {
 	on as onElement,
-	addClass,
-	removeClass,
-	hasClass,
 	enable as enableElement,
 	disable as disableElement,
 	dispatchChangeEvent
@@ -61,10 +67,16 @@ const state = reactive({
 	inputEventEnabled: false
 });
 
-const root = ref<CheckBoxElement | null>(null);
+const isDisabled = ref(props.disabled);
+const ym = ref<{ root: HTMLElement | null } | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-let isStandard = false;
-let standardMark: HTMLElement | null = null;
+const attrs = useAttrs();
+const isStandard = computed(
+	() =>
+		props.standard ||
+		(typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
+);
 
 const read = (): boolean => state.dataValue;
 
@@ -72,8 +84,7 @@ const write = (value: boolean): void => {
 	const el = root.value;
 	if (!el) return;
 	state.dataValue = !!value;
-	state.dataValue ? addClass(el, 'selected') : removeClass(el, 'selected');
-	if (!hasClass(el, 'disabled')) {
+	if (!isDisabled.value) {
 		toggleRelatedElements();
 	}
 	if (state.writeEventEnabled) {
@@ -100,17 +111,15 @@ const input = (value: boolean): void => {
 };
 
 const enable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	if (removeClass(el, 'disabled')) {
+	if (isDisabled.value) {
+		isDisabled.value = false;
 		toggleRelatedElements();
 	}
 };
 
 const disable = (): void => {
-	const el = root.value;
-	if (!el) return;
-	if (addClass(el, 'disabled')) {
+	if (!isDisabled.value) {
+		isDisabled.value = true;
 		toggleRelatedElements();
 	}
 };
@@ -120,9 +129,7 @@ const relate = (elements: HTMLElement[]): void => {
 };
 
 const toggleRelatedElements = (): void => {
-	const el = root.value;
-	if (!el) return;
-	if (!hasClass(el, 'disabled') && state.dataValue) {
+	if (!isDisabled.value && state.dataValue) {
 		for (const element of state.relations) {
 			if (typeof (element as any).enable === 'function') {
 				(element as any).enable();
@@ -159,61 +166,14 @@ const on = (
 	}
 };
 
-const mouseclick = (event: Event): void => {
-	input(!read());
-};
-
-const pointerdown = (event: PointerEvent): void => {
-	switch (event.button) {
-		case 0:
-			if (document.activeElement !== document.body) {
-				document.activeElement.blur();
-			}
-			input(!read());
-			break;
-	}
-};
-
-const keydown = (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (event.code) {
-		case 'Enter':
-		case 'NumpadEnter':
-			if (!event.cmdOrCtrlKey && !hasClass(el, 'disabled')) {
-				event.stopPropagation();
-				mouseclick(event);
-			}
-			break;
-	}
-};
-
-const ensureStandard = (): void => {
-	const el = root.value;
-	if (!el || isStandard || !el.classList.contains('standard')) return;
-	isStandard = true;
-	standardMark = document.createElement('check-mark');
-	el.tabIndex = 0;
-	el.insertBefore(standardMark, el.childNodes[0] || null);
-	el.removeEventListener('pointerdown', pointerdown);
-	el.addEventListener('click', mouseclick);
-};
-
 defineExpose({ read, write, input, enable, disable, relate, on, root });
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as CheckBoxElement | null;
 	if (!el) return;
-	if (props.standard) addClass(el, 'standard');
-	if (props.large) addClass(el, 'large');
-	el.addEventListener('keydown', keydown);
-	ensureStandard();
-	if (!isStandard) {
-		el.addEventListener('pointerdown', pointerdown);
-	}
 	el.read = read;
 	el.write = write;
 	el.input = input;

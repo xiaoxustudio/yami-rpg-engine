@@ -1,23 +1,150 @@
 :root {
-	--ui-color-primary: #4a90d9;
-	--ui-color-primary-hover: #3a7ec6;
-	--ui-color-on-primary: #ffffff;
-	--ui-color-danger: #d9534f;
-	--ui-color-danger-hover: #c9302c;
-	--ui-color-surface: #2b2d31;
-	--ui-color-surface-hover: #33363b;
-	--ui-color-border: #4a4d53;
-	--ui-color-text: #e8e8e8;
-	--ui-radius-sm: 4px;
-	--ui-radius-md: 6px;
-	--ui-space-1: 4px;
-	--ui-space-2: 8px;
-	--ui-space-3: 12px;
-	--ui-space-4: 16px;
-	--ui-space-6: 24px;
-	--ui-font-sans: 'Segoe UI', system-ui, sans-serif;
-	--ui-font-mono: 'Consolas', 'Courier New', monospace;
-	--ui-font-size-sm: 12px;
-	--ui-font-size-md: 14px;
-	--ui-font-size-lg: 16px;
+	/* 品牌色 */
+	--ym-color-primary: #4a90d9;
+	--ym-color-primary-hover: #3a7ec6;
+	--ym-color-on-primary: #ffffff;
+	--ym-color-danger: #d9534f;
+	--ym-color-danger-hover: #c9302c;
+
+	/* 表面与文本（对齐编辑器亮色主题） */
+	--ym-color-surface: #f0f0f0;
+	--ym-color-surface-hover: #e8e8e8;
+	--ym-color-border: #b0b0b0;
+	--ym-color-text: #000000;
+	--ym-color-text-inverse: #ffffff;
+	--ym-color-text-unit: #808080;
+	--ym-color-text-disabled: #c0c0c0;
+	--ym-color-text-error: #ff0000;
+
+	/* 交互状态 */
+	--ym-color-selected: #2080d0;
+	--ym-color-selection: rgba(32, 128, 192, 0.996);
+	--ym-color-drop-target: rgba(32, 128, 192, 0.4);
+
+	/* 输入控件 */
+	--ym-color-input-bg: #ffffff;
+	--ym-color-input-bg-hover: #e4f0fa;
+	--ym-color-input-bg-disabled: #f0f0f0;
+	--ym-color-input-border: #a0a0a0;
+	--ym-color-input-border-focus: #0050a0;
+
+	/* 按钮 */
+	--ym-color-button-bg: #ffffff;
+	--ym-color-button-bg-hover: #e4f0fa;
+	--ym-color-button-bg-active: #cce4f8;
+	--ym-color-button-bg-disabled: #f0f0f0;
+
+	/* 弹层 */
+	--ym-color-popup-bg: #ffffff;
+	--ym-color-tooltip-bg: #ffffff;
+	--ym-color-tooltip-border: #000000;
+	--ym-color-overlay: rgba(0, 0, 0, 0.45);
+
+	/* 滚动条 */
+	--ym-scrollbar-track-bg: rgba(0, 0, 0, 0.05);
+	--ym-scrollbar-thumb-bg: rgba(0, 0, 0, 0.15);
+	--ym-scrollbar-thumb-bg-hover: rgba(0, 0, 0, 0.2);
+
+	/* 圆角 */
+	--ym-radius-sm: 4px;
+	--ym-radius-md: 6px;
+	--ym-radius-lg: 8px;
+
+	/* 间距 */
+	--ym-space-1: 4px;
+	--ym-space-2: 8px;
+	--ym-space-3: 12px;
+	--ym-space-4: 16px;
+	--ym-space-6: 24px;
+
+	/* 字体 */
+	--ym-font-sans: Inter, 'Segoe UI', 'Microsoft YaHei UI', system-ui, sans-serif;
+	--ym-font-bold: 'Inter Bold', 'Microsoft YaHei UI', sans-serif;
+	--ym-font-mono: Consolas, Menlo, 'Microsoft YaHei UI', monospace;
+	--ym-font-title: Arial, 'Microsoft YaHei UI', sans-serif;
+	--ym-font-size-sm: 12px;
+	--ym-font-size-md: 14px;
+	--ym-font-size-lg: 16px;
+
+	/* 物理像素（迁移自编辑器 foundation.css） */
+	--ym-dpx-1: 1px;
+	--ym-dpx-2: 2px;
+	--ym-dpx-3: 3px;
+	--ym-dpx-16: 16px;
+
+	/* 过渡 */
+	--ym-transition-fast: 0.15s ease;
+	--ym-transition-normal: 0.3s ease;
+}
+
+@media (min-resolution: 1.25dppx) {
+	:root {
+		--ym-dpx-1: 0.8px;
+		--ym-dpx-2: 1.6px;
+		--ym-dpx-3: 2.4px;
+		--ym-dpx-16: 12.8px;
+	}
+}
+
+@media (min-resolution: 1.5dppx) {
+	:root {
+		--ym-dpx-1: 0.666667px;
+		--ym-dpx-2: 1.333333px;
+		--ym-dpx-3: 2px;
+		--ym-dpx-16: 10.666667px;
+	}
+}
+
+@media (min-resolution: 1.75dppx) {
+	:root {
+		--ym-dpx-1: 0.571429px;
+		--ym-dpx-2: 1.142857px;
+		--ym-dpx-3: 1.714286px;
+		--ym-dpx-16: 9.142857px;
+	}
+}
+
+@media (min-resolution: 2dppx) {
+	:root {
+		--ym-dpx-1: 0.5px;
+		--ym-dpx-2: 1px;
+		--ym-dpx-3: 1.5px;
+		--ym-dpx-16: 8px;
+	}
+}
+
+/* 暗色主题（对齐编辑器 .dark） */
+:root.dark {
+	--ym-color-surface: #303030;
+	--ym-color-surface-hover: #383838;
+	--ym-color-border: #181818;
+	--ym-color-text: #d8d8d8;
+	--ym-color-text-inverse: #000000;
+	--ym-color-text-unit: #808080;
+	--ym-color-text-disabled: #606060;
+	--ym-color-text-error: #ffc0cb;
+
+	--ym-color-selected: #084872;
+	--ym-color-selection: rgba(8, 72, 114, 0.996);
+	--ym-color-drop-target: rgba(8, 72, 114, 0.4);
+
+	--ym-color-input-bg: #18191a;
+	--ym-color-input-bg-hover: #282828;
+	--ym-color-input-bg-disabled: #404040;
+	--ym-color-input-border: #080808;
+	--ym-color-input-border-focus: #0080ff;
+
+	--ym-color-button-bg: #484848;
+	--ym-color-button-bg-hover: #505050;
+	--ym-color-button-bg-active: #303840;
+	--ym-color-button-bg-disabled: #404040;
+
+	--ym-color-popup-bg: #202020;
+	--ym-color-tooltip-bg: #3c3c3c;
+	--ym-color-tooltip-border: #000000;
+	--ym-color-overlay: rgba(0, 0, 0, 0.6);
+
+	--ym-scrollbar-track-bg: rgba(0, 0, 0, 0.1);
+	--ym-scrollbar-thumb-bg: rgba(255, 255, 255, 0.2);
+	--ym-scrollbar-thumb-bg-hover: rgba(255, 255, 255, 0.24);
 }

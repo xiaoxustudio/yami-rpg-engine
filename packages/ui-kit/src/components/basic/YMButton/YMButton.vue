@@ -1,7 +1,15 @@
 <template>
 	<button
-		class="ui-button"
-		:class="[$style.base, $style[variant], $style[size], { [$style.disabled]: disabled }]"
+		class="ym-button"
+		:class="[
+			'ym-button-' + variant,
+			'ym-button-' + size,
+			{ 'ym-button-disabled': disabled },
+			$style.base,
+			$style[variant],
+			$style[size],
+			{ [$style.disabled]: disabled }
+		]"
 		:disabled="disabled"
 		:type="type"
 		v-bind="$attrs"
@@ -41,14 +49,14 @@ const onClick = (event: MouseEvent) => {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: var(--ui-space-2);
-	padding: var(--ui-space-2) var(--ui-space-4);
-	border: 1px solid var(--ui-color-border);
-	border-radius: var(--ui-radius-sm);
-	background: var(--ui-color-surface);
-	color: var(--ui-color-text);
-	font-family: var(--ui-font-sans);
-	font-size: var(--ui-font-size-md);
+	gap: var(--ym-space-2);
+	padding: var(--ym-space-2) var(--ym-space-4);
+	border: 1px solid var(--ym-color-border);
+	border-radius: var(--ym-radius-sm);
+	background: var(--ym-color-surface);
+	color: var(--ym-color-text);
+	font-family: var(--ym-font-sans);
+	font-size: var(--ym-font-size-md);
 	line-height: 1.4;
 	cursor: pointer;
 	user-select: none;
@@ -59,37 +67,37 @@ const onClick = (event: MouseEvent) => {
 }
 
 .base:hover:not(.disabled) {
-	background: var(--ui-color-surface-hover);
+	background: var(--ym-color-surface-hover);
 }
 
 .primary {
-	background: var(--ui-color-primary);
-	border-color: var(--ui-color-primary);
-	color: var(--ui-color-on-primary);
+	background: var(--ym-color-primary);
+	border-color: var(--ym-color-primary);
+	color: var(--ym-color-on-primary);
 }
 
 .primary:hover:not(.disabled) {
-	background: var(--ui-color-primary-hover);
+	background: var(--ym-color-primary-hover);
 }
 
 .danger {
-	background: var(--ui-color-danger);
-	border-color: var(--ui-color-danger);
-	color: var(--ui-color-on-primary);
+	background: var(--ym-color-danger);
+	border-color: var(--ym-color-danger);
+	color: var(--ym-color-on-primary);
 }
 
 .danger:hover:not(.disabled) {
-	background: var(--ui-color-danger-hover);
+	background: var(--ym-color-danger-hover);
 }
 
 .sm {
-	padding: var(--ui-space-1) var(--ui-space-2);
-	font-size: var(--ui-font-size-sm);
+	padding: var(--ym-space-1) var(--ym-space-2);
+	font-size: var(--ym-font-size-sm);
 }
 
 .lg {
-	padding: var(--ui-space-3) var(--ui-space-6);
-	font-size: var(--ui-font-size-lg);
+	padding: var(--ym-space-3) var(--ym-space-6);
+	font-size: var(--ym-font-size-lg);
 }
 
 .disabled {
