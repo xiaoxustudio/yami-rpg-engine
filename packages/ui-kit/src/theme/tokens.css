@@ -1,0 +1,23 @@
+:root {
+	--ui-color-primary: #4a90d9;
+	--ui-color-primary-hover: #3a7ec6;
+	--ui-color-on-primary: #ffffff;
+	--ui-color-danger: #d9534f;
+	--ui-color-danger-hover: #c9302c;
+	--ui-color-surface: #2b2d31;
+	--ui-color-surface-hover: #33363b;
+	--ui-color-border: #4a4d53;
+	--ui-color-text: #e8e8e8;
+	--ui-radius-sm: 4px;
+	--ui-radius-md: 6px;
+	--ui-space-1: 4px;
+	--ui-space-2: 8px;
+	--ui-space-3: 12px;
+	--ui-space-4: 16px;
+	--ui-space-6: 24px;
+	--ui-font-sans: 'Segoe UI', system-ui, sans-serif;
+	--ui-font-mono: 'Consolas', 'Courier New', monospace;
+	--ui-font-size-sm: 12px;
+	--ui-font-size-md: 14px;
+	--ui-font-size-lg: 16px;
+}

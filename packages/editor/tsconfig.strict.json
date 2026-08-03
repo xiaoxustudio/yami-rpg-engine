@@ -1,0 +1,27 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"paths": {
+			"@app/*": ["./src/*"],
+			"@ui-kit": ["../ui-kit/src/index.ts"],
+			"@ui-kit/*": ["../ui-kit/src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.vue", "main/**/*.ts", "Project/global.d.ts"],
+	"exclude": [
+		"src/legacy/**",
+		"Project/Templates/**",
+		"node_modules/**",
+		"dist/**",
+		"dist-electron/**",
+		"build/**",
+		"Unused/**",
+		"jsons/**"
+	]
+}

@@ -1,82 +1,45 @@
 {
 	"name": "yami-rpg-editor",
 	"version": "1.0.0",
-	"description": "2D Game Editor",
+	"private": true,
+	"description": "2D Game Editor (pnpm workspace root)",
 	"author": "Yami",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/yami-pro/yami-rpg-editor.git"
 	},
-	"main": "dist-electron/main.js",
 	"scripts": {
-		"buildcss": "node scripts/build-css.js",
-		"buildres": "node scripts/buildres.js",
-		"buildtime": "node scripts/buildRuntime.js",
 		"prepare": "husky",
 		"commitlint": "commitlint --config commitlint.config.js --edit ",
-		"build:win": "pnpm run build:all && electron-builder --dir --win --x64",
-		"build:winexe": "pnpm run build:all && electron-builder --win --x64",
-		"build:linux": "pnpm run build:all && electron-builder --dir --linux --x64",
-		"build:linuxexe": "pnpm run build:all && electron-builder --linux --x64",
-		"build:mac": "pnpm run build:all && electron-builder --dir --mac --x64",
-		"build:macexe": "pnpm run build:all && electron-builder --mac --x64",
-		"build:macArm": "pnpm run build:all && electron-builder --dir --mac --arm64",
-		"build:macArmexe": "pnpm run build:all && electron-builder --mac --arm64",
-		"build:universal": "pnpm run build:all && electron-builder --dir --mac --universal",
-		"build:universalexe": "pnpm run build:all && electron-builder --mac --universal",
-		"dev": "pnpm run buildcss && vite",
-		"build:vite": "pnpm run buildcss && vite build",
-		"build:all": "pnpm run build:vite",
-		"start:prod": "pnpm run build:all && electron . --dirname=.",
-		"typecheck": "tsc --noEmit",
-		"typecheck:strict": "tsc --noEmit -p tsconfig.strict.json",
-		"lint": "oxlint -c ./.oxlintrc.json .",
-		"lint:fix": "oxlint -c ./.oxlintrc.json --fix .",
-		"format": "oxfmt -c ./.oxfmtrc.json .",
-		"format:check": "oxfmt -c ./.oxfmtrc.json --check ."
-	},
-	"dependencies": {
-		"@typescript/typescript-win32-x64": "7.1.0-dev.20260724.1",
-		"@vueuse/core": "^14.3.0",
-		"axios": "^1.16.1",
-		"exceljs": "^4.4.0",
-		"fs-extra": "^11.3.5",
-		"koa": "^3.2.1",
-		"markdown-it": "^14.2.0",
-		"mime-types": "^3.0.2",
-		"mitt": "^3.0.1",
-		"monaco-editor": "^0.55.1",
-		"pinia": "^4.0.2",
-		"qrcode": "^1.5.4",
-		"sharp": "^0.34.5",
-		"steamworks.js": "^0.4.0",
-		"typescript": "7.1.0-dev.20260728.1",
-		"uglify-js": "^3.19.3",
-		"vue": "^3.5.40",
-		"xml2js": "^0.6.2",
-		"yauzl": "^3.3.1"
+		"dev": "pnpm -F @yami/editor dev",
+		"build:vite": "pnpm -F @yami/editor build:vite",
+		"build:all": "pnpm -F @yami/editor build:all",
+		"build:win": "pnpm -F @yami/editor build:win",
+		"build:winexe": "pnpm -F @yami/editor build:winexe",
+		"build:linux": "pnpm -F @yami/editor build:linux",
+		"build:linuxexe": "pnpm -F @yami/editor build:linuxexe",
+		"build:mac": "pnpm -F @yami/editor build:mac",
+		"build:macexe": "pnpm -F @yami/editor build:macexe",
+		"build:macArm": "pnpm -F @yami/editor build:macArm",
+		"build:macArmexe": "pnpm -F @yami/editor build:macArmexe",
+		"build:universal": "pnpm -F @yami/editor build:universal",
+		"build:universalexe": "pnpm -F @yami/editor build:universalexe",
+		"start:prod": "pnpm -F @yami/editor start:prod",
+		"typecheck": "pnpm -F @yami/editor typecheck",
+		"typecheck:strict": "pnpm -F @yami/editor typecheck:strict",
+		"lint": "oxlint -c ./.oxlintrc.json packages/editor",
+		"lint:fix": "oxlint -c ./.oxlintrc.json --fix packages/editor",
+		"format": "oxfmt -c ./.oxfmtrc.json packages/editor",
+		"format:check": "oxfmt -c ./.oxfmtrc.json --check packages/editor"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.0.1",
 		"@commitlint/config-conventional": "^21.0.1",
-		"@types/node": "^22.19.19",
-		"@vitejs/plugin-legacy": "^8.2.1",
-		"@vitejs/plugin-vue": "^6.0.8",
-		"archiver": "^7.0.1",
-		"concurrently": "^10.0.3",
-		"cross-env": "^10.1.0",
-		"electron": "^20.3.12",
-		"electron-builder": "^25.1.8",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.4.0",
 		"oxfmt": "^0.60.0",
 		"oxlint": "^1.75.0",
-		"oxlint-tsgolint": "^7.0.2001",
-		"vite": "^8.1.5",
-		"vite-plugin-electron": "^1.1.0",
-		"vite-plugin-electron-renderer": "^1.0.0",
-		"vue-tsc": "^3.3.8",
-		"wait-on": "^9.0.10"
+		"oxlint-tsgolint": "^7.0.2001"
 	},
 	"packageManager": "pnpm@10.13.1",
 	"pnpm": {
@@ -88,84 +51,5 @@
 			"electron-builder-squirrel-windows": "25.1.8",
 			"dmg-builder": "25.1.8"
 		}
-	},
-	"build": {
-		"appId": "com.open.yami.rpgeditor",
-		"electronVersion": "43.2.0",
-		"directories": {
-			"buildResources": "Assets",
-			"output": "./build"
-		},
-		"files": [
-			{
-				"from": "dist",
-				"to": "dist",
-				"filter": [
-					"**",
-					"!config.json",
-					"!Templates/**/*",
-					"!Apk/**/*"
-				]
-			},
-			"dist-electron/**",
-			"main/*.ts",
-			"package.json"
-		],
-		"extraResources": [
-			{
-				"from": "node_modules/typescript",
-				"to": "app/node_modules/typescript"
-			},
-			{
-				"from": "node_modules/@typescript/typescript-win32-x64",
-				"to": "app/node_modules/@typescript/typescript-win32-x64"
-			},
-			{
-				"from": "dist/Templates/electron-win-x64/resources/app/node_modules",
-				"to": "app/Templates/electron-win-x64/resources/app/node_modules"
-			},
-			{
-				"from": "dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules",
-				"to": "app/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
-			}
-		],
-		"asar": false,
-		"asarUnpack": [
-			"node_modules/typescript",
-			"dist/Templates/electron-win-x64/resources/app/node_modules",
-			"dist/Templates/electron-mac-universal.app/Contents/resources/app/node_modules"
-		],
-		"extraFiles": [],
-		"nsis": {
-			"oneClick": false,
-			"allowElevation": true,
-			"allowToChangeInstallationDirectory": true,
-			"shortcutName": "Open Yami RPG Editor",
-			"createDesktopShortcut": true,
-			"createStartMenuShortcut": true
-		},
-		"win": {
-			"icon": "icon.ico",
-			"executableName": "Open Yami RPG Editor",
-			"verifyUpdateCodeSignature": false,
-			"target": [
-				"nsis"
-			]
-		},
-		"mac": {
-			"icon": "icon.icns",
-			"x64ArchFiles": "*",
-			"target": [
-				"dmg",
-				"zip"
-			]
-		},
-		"linux": {
-			"target": [
-				"AppImage",
-				"deb"
-			]
-		}
-	},
-	"productName": "Yami RPG Editor"
+	}
 }

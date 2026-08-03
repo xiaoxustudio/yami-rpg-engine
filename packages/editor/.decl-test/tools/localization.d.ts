@@ -1,0 +1,21 @@
+export declare const Local: {
+	active: any;
+	dirname: string;
+	language: any;
+	languages: any;
+	properties: {};
+	components: Record<string, any>;
+	saveItems: {};
+	saveTagExp: RegExp;
+	titleTagExp: RegExp;
+	initialize: any;
+	update: any;
+	readLanguageList: any;
+	setLanguage: any;
+	setProperties: any;
+	setElement: any;
+	parseTip: any;
+	createGetter: any;
+	get: any;
+	showInExplorer: any;
+};

@@ -1,0 +1,35 @@
+export declare const Selection: {
+	target: any;
+	inserting: boolean;
+	context: any;
+	regexps: {
+		local: RegExp;
+		global: RegExp;
+		dynamicGlobal: RegExp;
+		ref: RegExp;
+	};
+	initialize: any;
+	saveContext: any;
+	restoreContext: any;
+	addEventListeners: any;
+	match: any;
+	insert: any;
+	edit: any;
+	wrap: any;
+	inputKeydown: any;
+	inputKeyup: any;
+	inputPointerdown: any;
+	inputPointerup: any;
+	color: any;
+	font: any;
+	italic: any;
+	bold: any;
+	fontSize: any;
+	textPosition: any;
+	textEffect: any;
+	image: any;
+	localVariable: any;
+	globalVariable: any;
+	dynamicGlobalVariable: any;
+	localization: any;
+};

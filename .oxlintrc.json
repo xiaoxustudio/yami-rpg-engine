@@ -14,21 +14,21 @@
 	},
 	"plugins": ["typescript", "oxc", "import", "unicorn", "promise", "jsdoc"],
 	"ignorePatterns": [
-		"node_modules/**",
-		"dist/**",
-		"dist-electron/**",
-		"build/**",
-		"main/**",
-		"Unused/**",
-		"jsons/**",
-		"Project/Templates/**",
-		"index.html",
-		"Project/index.css",
-		"src/legacy/main/module-init.js",
-		"Project/Apk/**",
-		"Project/Fonts/**",
-		"Project/Images/**",
-		"Project/Locales/**"
+		"packages/editor/node_modules/**",
+		"packages/editor/dist/**",
+		"packages/editor/dist-electron/**",
+		"packages/editor/build/**",
+		"packages/editor/main/**",
+		"packages/editor/Unused/**",
+		"packages/editor/jsons/**",
+		"packages/editor/Project/Templates/**",
+		"packages/editor/index.html",
+		"packages/editor/Project/index.css",
+		"packages/editor/src/legacy/main/module-init.js",
+		"packages/editor/Project/Apk/**",
+		"packages/editor/Project/Fonts/**",
+		"packages/editor/Project/Images/**",
+		"packages/editor/Project/Locales/**"
 	],
 	"rules": {
 		"eslint/no-unused-vars": [
@@ -51,7 +51,7 @@
 	},
 	"overrides": [
 		{
-			"files": ["scripts/**/*.js", "*.config.js"],
+			"files": ["packages/editor/scripts/**/*.js", "packages/editor/*.config.js"],
 			"env": {
 				"node": true,
 				"commonjs": true
