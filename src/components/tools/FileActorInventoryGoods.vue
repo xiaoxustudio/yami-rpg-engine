@@ -3,18 +3,18 @@
 		<TitleBar>Inventory<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="fileActor-inventory-type" />
-				<text>Item</text
+				<div class="text">Type</div><SelectBox id="fileActor-inventory-type" />
+				<div class="text">Item</div
 				><CustomBox id="fileActor-inventory-item-id" type="file" filter="item" />
-				<text>Quantity</text
+				<div class="text">Quantity</div
 				><NumberBox id="fileActor-inventory-item-quantity" min="1" max="10000" />
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><CustomBox
 					id="fileActor-inventory-equipment-id"
 					type="file"
 					filter="equipment"
 				/>
-				<text>Money</text
+				<div class="text">Money</div
 				><NumberBox id="fileActor-inventory-money" min="1" max="100000000" />
 			</div>
 			<button id="fileActor-inventory-confirm" name="confirm">Confirm</button>

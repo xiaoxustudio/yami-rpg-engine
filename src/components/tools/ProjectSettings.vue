@@ -4,164 +4,164 @@
 		<div class="content-frame">
 			<div class="box" id="project-page">
 				<div class="box" id="project-grid-box">
-					<text id="config-window-summary" class="project-summary">Window</text>
-					<text class="project-label">Title</text
+					<div class="text project-summary" id="config-window-summary">Window</div>
+					<div class="text project-label">Title</div
 					><TextBox id="config-window-title" />
-					<text class="project-label">Width</text
+					<div class="text project-label">Width</div
 					><NumberBox id="config-window-width" min="240" max="7680" unit="px" />
-					<text class="project-label">Height</text
+					<div class="text project-label">Height</div
 					><NumberBox id="config-window-height" min="240" max="7680" unit="px" />
-					<text class="project-label">Display</text
+					<div class="text project-label">Display</div
 					><SelectBox id="config-window-display" />
-					<text id="config-resolution-summary" class="project-summary"
-						>Virtual Resolution</text
+					<div class="text project-summary" id="config-resolution-summary"
+						>Virtual Resolution</div
 					>
-					<text class="project-label">Width</text
+					<div class="text project-label">Width</div
 					><NumberBox
 						id="config-resolution-width"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
-					<text class="project-label">Height</text
+					<div class="text project-label">Height</div
 					><NumberBox
 						id="config-resolution-height"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
-					<text class="project-label">Scene Scale</text
+					<div class="text project-label">Scene Scale</div
 					><NumberBox
 						id="config-resolution-sceneScale"
 						min="0.5"
 						max="8"
 						decimals="10"
 					/>
-					<text class="project-label">UI Scale</text
+					<div class="text project-label">UI Scale</div
 					><NumberBox
 						id="config-resolution-uiScale"
 						min="0.5"
 						max="4"
 						decimals="10"
 					/>
-					<text id="config-scene-summary" class="project-summary">Scene</text>
-					<text class="project-label">Padding</text
+					<div class="text project-summary" id="config-scene-summary">Scene</div>
+					<div class="text project-label">Padding</div
 					><NumberBox id="config-scene-padding" min="0" max="7680" unit="px" />
-					<text class="project-label">Tile Animation Interval</text
+					<div class="text project-label">Tile Animation Interval</div
 					><NumberBox
 						id="config-scene-animationInterval"
 						min="0"
 						max="1000"
 						unit="ms"
 					/>
-					<text id="config-tileArea-summary" class="project-summary"
-						>Tile Rendering Area</text
+					<div class="text project-summary" id="config-tileArea-summary"
+						>Tile Rendering Area</div
 					>
-					<text class="project-label">Expansion Top</text
+					<div class="text project-label">Expansion Top</div
 					><NumberBox
 						id="config-tileArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Left</text
+					<div class="text project-label">Expansion Left</div
 					><NumberBox
 						id="config-tileArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Right</text
+					<div class="text project-label">Expansion Right</div
 					><NumberBox
 						id="config-tileArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Bottom</text
+					<div class="text project-label">Expansion Bottom</div
 					><NumberBox
 						id="config-tileArea-expansionBottom"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text id="config-animationArea-summary" class="project-summary"
-						>Animation Rendering Area</text
+					<div class="text project-summary" id="config-animationArea-summary"
+						>Animation Rendering Area</div
 					>
-					<text class="project-label">Expansion Top</text
+					<div class="text project-label">Expansion Top</div
 					><NumberBox
 						id="config-animationArea-expansionTop"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Left</text
+					<div class="text project-label">Expansion Left</div
 					><NumberBox
 						id="config-animationArea-expansionLeft"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Right</text
+					<div class="text project-label">Expansion Right</div
 					><NumberBox
 						id="config-animationArea-expansionRight"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Bottom</text
+					<div class="text project-label">Expansion Bottom</div
 					><NumberBox
 						id="config-animationArea-expansionBottom"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<text id="config-lightArea-summary" class="project-summary"
-						>Light Rendering Area</text
+					<div class="text project-summary" id="config-lightArea-summary"
+						>Light Rendering Area</div
 					>
-					<text class="project-label">Expansion Top</text
+					<div class="text project-label">Expansion Top</div
 					><NumberBox
 						id="config-lightArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Left</text
+					<div class="text project-label">Expansion Left</div
 					><NumberBox
 						id="config-lightArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Right</text
+					<div class="text project-label">Expansion Right</div
 					><NumberBox
 						id="config-lightArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text class="project-label">Expansion Bottom</text
+					<div class="text project-label">Expansion Bottom</div
 					><NumberBox
 						id="config-lightArea-expansionBottom"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<text id="config-virtualAxis-summary" class="project-summary">Virtual Axis</text>
-					<text class="project-label">Axis Up</text
+					<div class="text project-summary" id="config-virtualAxis-summary">Virtual Axis</div>
+					<div class="text project-label">Axis Up</div
 					><KeyboardBox id="config-virtualAxis-up" />
-					<text class="project-label">Axis Down</text
+					<div class="text project-label">Axis Down</div
 					><KeyboardBox id="config-virtualAxis-down" />
-					<text class="project-label">Axis Left</text
+					<div class="text project-label">Axis Left</div
 					><KeyboardBox id="config-virtualAxis-left" />
-					<text class="project-label">Axis Right</text
+					<div class="text project-label">Axis Right</div
 					><KeyboardBox id="config-virtualAxis-right" />
-					<text id="config-collision-summary" class="project-summary">Collision System</text>
-					<text class="project-label">Actor Collision</text
+					<div class="text project-summary" id="config-collision-summary">Collision System</div>
+					<div class="text project-label">Actor Collision</div
 					><SelectBox id="config-collision-actor-enabled" />
-					<text class="project-label">Scene Collision</text
+					<div class="text project-label">Scene Collision</div
 					><SelectBox id="config-collision-scene-enabled" />
-					<text class="project-label">Scene Collision Size</text
+					<div class="text project-label">Scene Collision Size</div
 					><NumberBox
 						id="config-collision-scene-actorSize"
 						min="0.5"
@@ -170,62 +170,62 @@
 						decimals="4"
 						unit="tile"
 					/>
-					<text class="project-label">Trigger Collision Mode</text
+					<div class="text project-label">Trigger Collision Mode</div
 					><SelectBox id="config-collision-trigger-collideWithActorShape" />
-					<text id="config-text-summary" class="project-summary">Text</text>
-					<text class="project-label">Imported Fonts</text
+					<div class="text project-summary" id="config-text-summary">Text</div>
+					<div class="text project-label">Imported Fonts</div
 					><ParamList id="config-text-importedFonts" flexible />
-					<text class="project-label">Default Font Family</text
+					<div class="text project-label">Default Font Family</div
 					><TextBox id="config-text-fontFamily" />
-					<text class="project-label">High Definition</text
+					<div class="text project-label">High Definition</div
 					><SelectBox id="config-text-highDefinition" />
-					<text id="config-actor-summary" class="project-summary">Actor</text>
-					<text class="project-label">Temporary Attributes</text
+					<div class="text project-summary" id="config-actor-summary">Actor</div>
+					<div class="text project-label">Temporary Attributes</div
 					><ParamList id="config-actor-tempAttributes" group="actor" flexible />
-					<text id="config-animation-summary" class="project-summary">Animation</text>
-					<text class="project-label">Frame Rate</text
+					<div class="text project-summary" id="config-animation-summary">Animation</div>
+					<div class="text project-label">Frame Rate</div
 					><NumberBox
 						id="config-animation-frameRate"
 						min="1"
 						max="240"
 						unit="fps"
 					/>
-					<text id="config-soundAttenuation-summary" class="project-summary"
-						>Sound Attenuation</text
+					<div class="text project-summary" id="config-soundAttenuation-summary"
+						>Sound Attenuation</div
 					>
-					<text class="project-label">Attenuation Distance</text
+					<div class="text project-label">Attenuation Distance</div
 					><NumberBox
 						id="config-soundAttenuation-distance"
 						min="0"
 						max="100"
 						unit="tile"
 					/>
-					<text class="project-label">Attenuation Easing</text
+					<div class="text project-label">Attenuation Easing</div
 					><SelectBox id="config-soundAttenuation-easingId" />
-					<text id="config-webgl-summary" class="project-summary">WebGL</text>
-					<text class="project-label">Low Latency Mode</text
+					<div class="text project-summary" id="config-webgl-summary">WebGL</div>
+					<div class="text project-label">Low Latency Mode</div
 					><SelectBox id="config-webgl-desynchronized" />
-					<text class="project-label">Texture Mag Filter</text
+					<div class="text project-label">Texture Mag Filter</div
 					><SelectBox id="config-webgl-textureMagFilter" />
-					<text class="project-label">Texture Min Filter</text
+					<div class="text project-label">Texture Min Filter</div
 					><SelectBox id="config-webgl-textureMinFilter" />
-					<text id="config-script-summary" class="project-summary">Script</text>
-					<text class="project-label">Auto Compile</text
+					<div class="text project-summary" id="config-script-summary">Script</div>
+					<div class="text project-label">Auto Compile</div
 					><SelectBox id="config-script-autoCompile" />
-					<text id="config-save-summary" class="project-summary">Save</text>
-					<text class="project-label">Save Location</text
+					<div class="text project-summary" id="config-save-summary">Save</div>
+					<div class="text project-label">Save Location</div
 					><SelectBox id="config-save-location" />
-					<text class="project-label">Subdirectory</text
+					<div class="text project-label">Subdirectory</div
 					><TextBox id="config-save-subdir" />
-					<text id="config-localization-summary" class="project-summary">Localization</text>
-					<text class="project-label">Languages</text
+					<div class="text project-summary" id="config-localization-summary">Localization</div>
+					<div class="text project-label">Languages</div
 					><ParamList id="config-localization-languages" flexible />
-					<text class="project-label">Default Game Language</text
+					<div class="text project-label">Default Game Language</div
 					><SelectBox id="config-localization-default" />
-					<text id="config-other-summary" class="project-summary">Other Options</text>
-					<text class="project-label">Preload Files</text
+					<div class="text project-summary" id="config-other-summary">Other Options</div>
+					<div class="text project-label">Preload Files</div
 					><SelectBox id="config-preload" />
-					<text class="project-label">dead Zone</text
+					<div class="text project-label">dead Zone</div
 					><NumberBox
 						id="config-deadzone"
 						min="0"

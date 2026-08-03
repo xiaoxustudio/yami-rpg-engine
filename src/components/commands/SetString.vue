@@ -3,103 +3,103 @@
 		<TitleBar>Set String<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="setString-variable"
 					type="variable"
 					filter="writable-string"
 				/>
-				<text>Operation</text><SelectBox id="setString-operation" />
-				<text>Type</text><SelectBox id="setString-operand-type" />
-				<text>String</text
+				<div class="text">Operation</div><SelectBox id="setString-operation" />
+				<div class="text">Type</div><SelectBox id="setString-operand-type" />
+				<div class="text">String</div
 				><TextArea
 					id="setString-operand-common-value"
 					menu="tag-local-var tag-global-var tag-localization"
 				/>
-				<text>String Method</text><SelectBox id="setString-operand-string-method" />
-				<text>Variable</text
+				<div class="text">String Method</div><SelectBox id="setString-operand-string-method" />
+				<div class="text">Variable</div
 				><CustomBox
 					id="setString-operand-common-variable"
 					type="variable"
 					filter="all"
 				/>
-				<text>Index</text
+				<div class="text">Index</div
 				><NumberVar
 					id="setString-operand-string-char-index"
 					min="0"
 					max="1000000000"
 				/>
-				<text>Begin Index</text
+				<div class="text">Begin Index</div
 				><NumberVar
 					id="setString-operand-string-slice-begin"
 					min="-1000000000"
 					max="1000000000"
 				/>
-				<text>End Index</text
+				<div class="text">End Index</div
 				><NumberVar
 					id="setString-operand-string-slice-end"
 					min="-1000000000"
 					max="1000000000"
 				/>
-				<text>Target Length</text
+				<div class="text">Target Length</div
 				><NumberBox
 					id="setString-operand-string-pad-start-length"
 					min="2"
 					max="10"
 				/>
-				<text>Pad String</text><TextBox id="setString-operand-string-pad-start-pad" />
-				<text>Substring</text
+				<div class="text">Pad String</div><TextBox id="setString-operand-string-pad-start-pad" />
+				<div class="text">Substring</div
 				><StringVar id="setString-operand-string-replace-pattern" />
-				<text>Replacement</text
+				<div class="text">Replacement</div
 				><StringVar id="setString-operand-string-replace-replacement" />
-				<text>Attribute Key</text
+				<div class="text">Attribute Key</div
 				><CustomBox id="setString-operand-attribute-attributeId" type="attribute" />
-				<text>Enum String</text
+				<div class="text">Enum String</div
 				><CustomBox id="setString-operand-enum-stringId" type="enum-string" />
-				<text>Property</text><SelectBox id="setString-operand-object-property" />
-				<text>Property</text><SelectBox id="setString-operand-element-property" />
-				<text>Element</text
+				<div class="text">Property</div><SelectBox id="setString-operand-object-property" />
+				<div class="text">Property</div><SelectBox id="setString-operand-element-property" />
+				<div class="text">Element</div
 				><CustomBox id="setString-operand-element-element" type="element" />
-				<text>Actor</text
+				<div class="text">Actor</div
 				><CustomBox id="setString-operand-common-actor" type="actor" />
-				<text>Skill</text
+				<div class="text">Skill</div
 				><CustomBox id="setString-operand-common-skill" type="skill" />
-				<text>Trigger</text
+				<div class="text">Trigger</div
 				><CustomBox id="setString-operand-common-trigger" type="trigger" />
-				<text>State</text
+				<div class="text">State</div
 				><CustomBox id="setString-operand-common-state" type="state" />
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><CustomBox id="setString-operand-common-equipment" type="equipment" />
-				<text>Item</text
+				<div class="text">Item</div
 				><CustomBox id="setString-operand-common-item" type="item" />
-				<text>File</text
+				<div class="text">File</div
 				><CustomBox id="setString-operand-object-fileId" type="file" />
-				<text>Index</text
+				<div class="text">Index</div
 				><NumberVar id="setString-operand-list-index" min="0" max="1000000000" />
-				<text>Param Name</text><StringVar id="setString-operand-parameter-key" />
-				<text>Script</text><TextBox id="setString-operand-script" /> <text>Data</text
-				><SelectBox id="setString-operand-other-data" /> <text>Choice Index</text
+				<div class="text">Param Name</div><StringVar id="setString-operand-parameter-key" />
+				<div class="text">Script</div><TextBox id="setString-operand-script" /> <div class="text">Data</div
+				><SelectBox id="setString-operand-other-data" /> <div class="text">Choice Index</div
 				><NumberVar
 					id="setString-operand-showChoices-content-choiceIndex"
 					min="0"
 					max="255"
 				/>
-				<text>Timestamp</text
+				<div class="text">Timestamp</div
 				><CustomBox
 					id="setString-operand-parse-timestamp-variable"
 					type="variable"
 					filter="number"
 				/>
-				<text>Date Format</text
+				<div class="text">Date Format</div
 				><TextBox id="setString-operand-parse-timestamp-format" />
-				<text>Image Width</text
+				<div class="text">Image Width</div
 				><NumberBox
 					id="setString-operand-screenshot-width"
 					min="64"
 					max="7680"
 					unit="px"
 				/>
-				<text>Image Height</text
+				<div class="text">Image Height</div
 				><NumberBox
 					id="setString-operand-screenshot-height"
 					min="64"

@@ -3,8 +3,8 @@
 		<TitleBar>Set Video<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setVideo-element" type="element" />
-				<text>Properties</text><ParamList id="setVideo-properties" />
+				<div class="text">Element</div><CustomBox id="setVideo-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setVideo-properties" />
 			</div>
 			<button id="setVideo-confirm" name="confirm">Confirm</button>
 			<button id="setVideo-cancel" name="cancel">Cancel</button>

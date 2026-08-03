@@ -3,42 +3,42 @@
 	<TitleBar>Follow Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="followActor-actor" type="actor" /><text>Target</text><CustomBox id="followActor-target" type="actor" /><text>Mode</text><SelectBox id="followActor-mode" /><text>Min Distance</text
+			<div class="text">Actor</div><CustomBox id="followActor-actor" type="actor" /><div class="text">Target</div><CustomBox id="followActor-target" type="actor" /><div class="text">Mode</div><SelectBox id="followActor-mode" /><div class="text">Min Distance</div
 			><NumberVar
 				id="followActor-minDist"
 				min="0"
 				max="16"
 				decimals="4"
 				unit="tile"
-			 /><text>Max Distance</text
+			 /><div class="text">Max Distance</div
 			><NumberVar
 				id="followActor-maxDist"
 				min="0"
 				max="20"
 				decimals="4"
 				unit="tile"
-			 /><text>Offset Ratio</text
+			 /><div class="text">Offset Ratio</div
 			><NumberBox
 				id="followActor-offset"
 				min="-0.8"
 				max="0.8"
 				decimals="4"
 				unit="r"
-			 /><text>Vert Distance</text
+			 /><div class="text">Vert Distance</div
 			><NumberBox
 				id="followActor-vertDist"
 				min="0"
 				max="4"
 				decimals="4"
 				unit="tile"
-			 /><text>Buffer Distance</text
+			 /><div class="text">Buffer Distance</div
 			><NumberBox
 				id="followActor-bufferDist"
 				min="0"
 				max="4"
 				decimals="4"
 				unit="tile"
-			 /><text>Navigate</text><SelectBox id="followActor-navigate" /><text>Bypass Actors</text><SelectBox id="followActor-bypass" /><text>Once</text><SelectBox id="followActor-once" /><text>Wait</text
+			 /><div class="text">Navigate</div><SelectBox id="followActor-navigate" /><div class="text">Bypass Actors</div><SelectBox id="followActor-bypass" /><div class="text">Once</div><SelectBox id="followActor-once" /><div class="text">Wait</div
 			><SelectBox id="followActor-wait" name="wait" /></div>
 		<button id="followActor-confirm" name="confirm">Confirm</button>
 		<button id="followActor-cancel" name="cancel">Cancel</button>

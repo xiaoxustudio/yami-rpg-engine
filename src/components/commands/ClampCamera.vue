@@ -3,7 +3,7 @@
 		<TitleBar>Clamp Camera<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Left</text
+				<div class="text">Left</div
 				><NumberVar
 					id="clampCamera-left"
 					min="-1000"
@@ -11,7 +11,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Top</text
+				<div class="text">Top</div
 				><NumberVar
 					id="clampCamera-top"
 					min="-1000"
@@ -19,7 +19,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Right</text
+				<div class="text">Right</div
 				><NumberVar
 					id="clampCamera-right"
 					min="-1000"
@@ -27,7 +27,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Bottom</text
+				<div class="text">Bottom</div
 				><NumberVar
 					id="clampCamera-bottom"
 					min="-1000"

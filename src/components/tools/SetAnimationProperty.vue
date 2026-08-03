@@ -3,20 +3,20 @@
 		<TitleBar>Set Animation<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setAnimation-property-key" />
-				<text>Animation</text
+				<div class="text">Property</div><SelectBox id="setAnimation-property-key" />
+				<div class="text">Animation</div
 				><CustomBox
 					id="setAnimation-property-animation"
 					type="file"
 					filter="animation"
 				/>
-				<text>Actor</text
+				<div class="text">Actor</div
 				><CustomBox id="setAnimation-property-actor" type="actor" />
-				<text>Motion</text
+				<div class="text">Motion</div
 				><CustomBox id="setAnimation-property-motion" type="enum-string" />
-				<text>Angle</text
+				<div class="text">Angle</div
 				><NumberVar id="setAnimation-property-angle" min="0" max="360" unit="deg" />
-				<text>Frame</text
+				<div class="text">Frame</div
 				><NumberVar id="setAnimation-property-frame" min="0" max="10000" />
 			</div>
 			<button id="setAnimation-property-confirm" name="confirm">Confirm</button>

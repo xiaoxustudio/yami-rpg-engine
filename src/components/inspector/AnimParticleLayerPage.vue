@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animParticleLayer-properties-grid') || 'Particle Layer' }}</DetailSummary>
 		<div class="detail-grid" id="animParticleLayer-properties-grid">
-			<text>{{ local.getLabel('animParticleLayer-particleId') || 'Particle' }}</text
+			<div class="text">{{ local.getLabel('animParticleLayer-particleId') || 'Particle' }}</div
 			><CustomBox
 				id="animParticleLayer-particleId"
 				type="file"
 				filter="particle"
 			></CustomBox>
-			<text>{{ local.getLabel('animParticleLayer-position') || 'Position' }}</text
+			<div class="text">{{ local.getLabel('animParticleLayer-position') || 'Position' }}</div
 			><SelectBox id="animParticleLayer-position"></SelectBox>
-			<text>{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</text><SelectBox id="animParticleLayer-angle"></SelectBox>
-			<text>{{ local.getLabel('animParticleLayer-order') || 'Order' }}</text><SelectBox id="animParticleLayer-order"></SelectBox>
+			<div class="text">{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle"></SelectBox>
+			<div class="text">{{ local.getLabel('animParticleLayer-order') || 'Order' }}</div><SelectBox id="animParticleLayer-order"></SelectBox>
 		</div>
 	</DetailBox>
 </template>

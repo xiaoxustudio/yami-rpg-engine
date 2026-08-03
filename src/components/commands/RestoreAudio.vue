@@ -2,7 +2,7 @@
 <WindowFrame id="restoreAudio">
 	<TitleBar>Restore Audio<div class="close" /></TitleBar>
 	<div class="content-frame">
-		<div class="grid-box"> <text>Type</text><SelectBox id="restoreAudio-type" /> </div>
+		<div class="grid-box"> <div class="text">Type</div><SelectBox id="restoreAudio-type" /> </div>
 		<button id="restoreAudio-confirm" name="confirm">Confirm</button>
 		<button id="restoreAudio-cancel" name="cancel">Cancel</button>
 	</div>

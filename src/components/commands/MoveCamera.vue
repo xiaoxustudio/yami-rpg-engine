@@ -3,10 +3,10 @@
 		<TitleBar>Move Camera<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Mode</text><SelectBox id="moveCamera-mode" /> <text>Position</text
-				><CustomBox id="moveCamera-position" type="position" /> <text>Actor</text
-				><CustomBox id="moveCamera-actor" type="actor" /> <text>Easing</text
-				><SelectBox id="moveCamera-easingId" name="easing" /> <text>Duration</text
+				<div class="text">Mode</div><SelectBox id="moveCamera-mode" /> <div class="text">Position</div
+				><CustomBox id="moveCamera-position" type="position" /> <div class="text">Actor</div
+				><CustomBox id="moveCamera-actor" type="actor" /> <div class="text">Easing</div
+				><SelectBox id="moveCamera-easingId" name="easing" /> <div class="text">Duration</div
 				><NumberBox
 					id="moveCamera-duration"
 					name="duration"
@@ -14,7 +14,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="moveCamera-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="moveCamera-wait" name="wait" />
 			</div>
 			<button id="moveCamera-confirm" name="confirm">Confirm</button>
 			<button id="moveCamera-cancel" name="cancel">Cancel</button>

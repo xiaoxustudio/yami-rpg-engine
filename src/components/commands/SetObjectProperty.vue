@@ -3,14 +3,14 @@
 		<TitleBar>setObjectProperty<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="setObjectProperty-variable"
 					type="variable"
 					filter="object"
 				/>
-				<text>setObjectProperty</text><ParamList id="setObjectProperty-list" />
-				<text>valueVariable</text
+				<div class="text">setObjectProperty</div><ParamList id="setObjectProperty-list" />
+				<div class="text">valueVariable</div
 				><CustomBox
 					id="setObjectProperty-value-variable"
 					type="variable"

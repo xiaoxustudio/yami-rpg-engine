@@ -3,8 +3,8 @@
 	<TitleBar>Jump to<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Operation</text><SelectBox id="jumpTo-operation" />
-			<text>Label Name</text><TextBox id="jumpTo-label" />
+			<div class="text">Operation</div><SelectBox id="jumpTo-operation" />
+			<div class="text">Label Name</div><TextBox id="jumpTo-label" />
 		</div>
 		<button id="jumpTo-confirm" name="confirm">Confirm</button>
 		<button id="jumpTo-cancel" name="cancel">Cancel</button>

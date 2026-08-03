@@ -3,7 +3,7 @@
 		<TitleBar>Set Cursor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Image</text
+				<div class="text">Image</div
 				><CustomBox id="setCursor-image" type="file" filter="image" />
 			</div>
 			<button id="setCursor-confirm" name="confirm">Confirm</button>

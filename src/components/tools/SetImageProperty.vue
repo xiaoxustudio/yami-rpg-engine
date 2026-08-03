@@ -3,32 +3,32 @@
 		<TitleBar>Image Property<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setImage-property-key" />
-				<text>Image</text
+				<div class="text">Property</div><SelectBox id="setImage-property-key" />
+				<div class="text">Image</div
 				><CustomBox id="setImage-property-image" type="file" filter="image" />
-				<text>Display</text><SelectBox id="setImage-property-display" />
-				<text>Flip</text><SelectBox id="setImage-property-flip" /> <text>Blend</text
-				><SelectBox id="setImage-property-blend" /> <text>Shift X</text
+				<div class="text">Display</div><SelectBox id="setImage-property-display" />
+				<div class="text">Flip</div><SelectBox id="setImage-property-flip" /> <div class="text">Blend</div
+				><SelectBox id="setImage-property-blend" /> <div class="text">Shift X</div
 				><NumberVar
 					id="setImage-property-shiftX"
 					min="-10000"
 					max="10000"
 					unit="px"
 				/>
-				<text>Shift Y</text
+				<div class="text">Shift Y</div
 				><NumberVar
 					id="setImage-property-shiftY"
 					min="-10000"
 					max="10000"
 					unit="px"
 				/>
-				<text>Clip - X</text
+				<div class="text">Clip - X</div
 				><NumberVar id="setImage-property-clip-0" min="0" max="10000" unit="px" />
-				<text>Clip - Y</text
+				<div class="text">Clip - Y</div
 				><NumberVar id="setImage-property-clip-1" min="0" max="10000" unit="px" />
-				<text>Clip - Width</text
+				<div class="text">Clip - Width</div
 				><NumberVar id="setImage-property-clip-2" min="0" max="10000" unit="px" />
-				<text>Clip - Height</text
+				<div class="text">Clip - Height</div
 				><NumberVar id="setImage-property-clip-3" min="0" max="10000" unit="px" />
 			</div>
 			<button id="setImage-property-confirm" name="confirm">Confirm</button>

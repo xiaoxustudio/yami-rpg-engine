@@ -4,53 +4,53 @@
 		<TitleBar>Text Property<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setText-property-key" />
-				<text>Content</text
+				<div class="text">Property</div><SelectBox id="setText-property-key" />
+				<div class="text">Content</div
 				><TextAreaVar
 					id="setText-property-content"
 					menu="tag-local-var tag-global-var tag-dynamic-global-var tag-localization"
 				/>
-				<text>Size</text
+				<div class="text">Size</div
 				><NumberBox id="setText-property-size" min="10" max="400" unit="px" />
-				<text>Line Spacing</text
+				<div class="text">Line Spacing</div
 				><NumberBox
 					id="setText-property-lineSpacing"
 					min="-10"
 					max="100"
 					unit="px"
 				/>
-				<text>Letter Spacing</text
+				<div class="text">Letter Spacing</div
 				><NumberBox
 					id="setText-property-letterSpacing"
 					min="-10"
 					max="100"
 					unit="px"
 				/>
-				<text>Color</text><ColorBox id="setText-property-color" /> <text>Font</text
-				><TextBox id="setText-property-font" /> <text>Effect</text
-				><SelectBox id="setText-property-effect-type" /> <text>Shadow X</text
+				<div class="text">Color</div><ColorBox id="setText-property-color" /> <div class="text">Font</div
+				><TextBox id="setText-property-font" /> <div class="text">Effect</div
+				><SelectBox id="setText-property-effect-type" /> <div class="text">Shadow X</div
 				><NumberBox
 					id="setText-property-effect-shadowOffsetX"
 					min="-9"
 					max="9"
 					unit="px"
 				/>
-				<text>Shadow Y</text
+				<div class="text">Shadow Y</div
 				><NumberBox
 					id="setText-property-effect-shadowOffsetY"
 					min="-9"
 					max="9"
 					unit="px"
 				/>
-				<text>Stroke Width</text
+				<div class="text">Stroke Width</div
 				><NumberBox
 					id="setText-property-effect-strokeWidth"
 					min="1"
 					max="20"
 					unit="px"
 				/>
-				<text>Effect Color</text><ColorBox id="setText-property-effect-color" />
-				<text>Blend</text><SelectBox id="setText-property-blend" />
+				<div class="text">Effect Color</div><ColorBox id="setText-property-effect-color" />
+				<div class="text">Blend</div><SelectBox id="setText-property-blend" />
 			</div>
 			<button id="setText-property-confirm" name="confirm">Confirm</button>
 			<button id="setText-property-cancel" name="cancel">Cancel</button>

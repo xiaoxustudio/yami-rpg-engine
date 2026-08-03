@@ -3,22 +3,22 @@
 		<TitleBar>Play Animation<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Mode</text><SelectBox id="playAnimation-mode" /> <text>Position</text
-				><CustomBox id="playAnimation-position" type="position" /> <text>Actor</text
-				><CustomBox id="playAnimation-actor" type="actor" /> <text>Animation</text
+				<div class="text">Mode</div><SelectBox id="playAnimation-mode" /> <div class="text">Position</div
+				><CustomBox id="playAnimation-position" type="position" /> <div class="text">Actor</div
+				><CustomBox id="playAnimation-actor" type="actor" /> <div class="text">Animation</div
 				><CustomBox id="playAnimation-animationId" type="file" filter="animation" />
-				<text>Motion</text><SelectBox id="playAnimation-motion" />
-				<text>Rotatable</text><SelectBox id="playAnimation-rotatable" />
-				<text>Priority</text
+				<div class="text">Motion</div><SelectBox id="playAnimation-motion" />
+				<div class="text">Rotatable</div><SelectBox id="playAnimation-rotatable" />
+				<div class="text">Priority</div
 				><NumberBox id="playAnimation-priority" min="-100" max="100" />
-				<text>Offset Y</text
+				<div class="text">Offset Y</div
 				><NumberVar
 					id="playAnimation-offsetY"
 					min="-1000000000"
 					max="1000000000"
 					unit="px"
 				 />
-				<text>Angle</text
+				<div class="text">Angle</div
 				><NumberVar
 					id="playAnimation-angle"
 					min="-360"
@@ -26,7 +26,7 @@
 					decimals="4"
 					unit="deg"
 				 />
-				<text>Speed</text
+				<div class="text">Speed</div
 				><NumberVar
 					id="playAnimation-speed"
 					min="0.1"
@@ -34,7 +34,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Wait</text><SelectBox id="playAnimation-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="playAnimation-wait" name="wait" />
 			</div>
 			<button id="playAnimation-confirm" name="confirm">Confirm</button>
 			<button id="playAnimation-cancel" name="cancel">Cancel</button>

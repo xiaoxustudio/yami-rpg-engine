@@ -111,7 +111,7 @@
 					<div class="box" id="scene-screen" tabindex="-1">
 						<MarqueeArea id="scene-marquee" />
 					</div>
-					<text id="scene-info" />
+					<div class="text" id="scene-info" />
 				</div>
 			</div>
 </template>

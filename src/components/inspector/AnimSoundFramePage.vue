@@ -2,13 +2,13 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSoundFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSoundFrame-properties-grid">
-			<text>{{ local.getLabel('animSoundFrame-sound') || 'Sound' }}</text
+			<div class="text">{{ local.getLabel('animSoundFrame-sound') || 'Sound' }}</div
 			><CustomBox
 				id="animSoundFrame-sound"
 				type="file"
 				filter="audio"
 			></CustomBox>
-			<text>{{ local.getLabel('animSoundFrame-volume') || 'Volume' }}</text
+			<div class="text">{{ local.getLabel('animSoundFrame-volume') || 'Volume' }}</div
 			><NumberBox
 				id="animSoundFrame-volume"
 				min="0"

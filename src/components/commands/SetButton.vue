@@ -3,8 +3,8 @@
 		<TitleBar>Set Button<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setButton-element" type="element" />
-				<text>Properties</text><ParamList id="setButton-properties" />
+				<div class="text">Element</div><CustomBox id="setButton-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setButton-properties" />
 			</div>
 			<button id="setButton-confirm" name="confirm">Confirm</button>
 			<button id="setButton-cancel" name="cancel">Cancel</button>

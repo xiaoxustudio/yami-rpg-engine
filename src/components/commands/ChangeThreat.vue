@@ -3,7 +3,7 @@
 	<TitleBar>Change Threat<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeThreat-actor" type="actor" /><text>Target</text><CustomBox id="changeThreat-target" type="actor" /><text>Operation</text><SelectBox id="changeThreat-operation" /><text>Threat</text
+			<div class="text">Actor</div><CustomBox id="changeThreat-actor" type="actor" /><div class="text">Target</div><CustomBox id="changeThreat-target" type="actor" /><div class="text">Operation</div><SelectBox id="changeThreat-operation" /><div class="text">Threat</div
 			><NumberVar
 				id="changeThreat-threat"
 				min="0"

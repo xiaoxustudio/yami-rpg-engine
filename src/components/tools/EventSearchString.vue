@@ -3,12 +3,12 @@
 		<TitleBar>Search String<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text></text><TextBox id="event-search-string-search" /> <text></text
+				<div class="text"></div><TextBox id="event-search-string-search" /> <div class="text"></div
 				><CheckBox id="event-search-string-case-insensitive" class="standard" />
-				<text></text><CheckBox id="event-search-string-regex" class="standard" />
-				<text></text
+				<div class="text"></div><CheckBox id="event-search-string-regex" class="standard" />
+				<div class="text"></div
 				><CheckBox id="event-search-string-match-line" class="standard" />
-				<text id="event-search-string-log"></text>
+				<div class="text" id="event-search-string-log"></div>
 			</div>
 			<button id="event-search-string-previous" name="previous">上一个</button>
 			<button id="event-search-string-next" name="next">下一个</button>

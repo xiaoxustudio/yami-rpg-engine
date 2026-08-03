@@ -3,11 +3,11 @@
 		<TitleBar>New Project</TitleBar>
 		<div class="content-frame">
 			<div class="flex-box" id="copyProgress-flex">
-				<text>Copying Files...</text>
+				<div class="text">Copying Files...</div>
 				<div class="box" id="copyProgress-box">
 					<div class="box" id="copyProgress-bar" />
 				</div>
-				<text id="copyProgress-info" />
+				<div class="text" id="copyProgress-info" />
 			</div>
 		</div>
 	</WindowFrame>

@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
-			<text>{{ local.getLabel('sceneAnimation-name') || 'Name' }}</text><TextBox id="sceneAnimation-name"></TextBox>
-			<text>{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-name') || 'Name' }}</div><TextBox id="sceneAnimation-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</div
 			><CustomBox
 				id="sceneAnimation-animationId"
 				type="file"
 				filter="animation"
 			></CustomBox>
-			<text>{{ local.getLabel('sceneAnimation-motion') || 'Motion' }}</text><SelectBox id="sceneAnimation-motion"></SelectBox>
-			<text>{{ local.getLabel('sceneAnimation-rotatable') || 'Rotatable' }}</text
-			><SelectBox id="sceneAnimation-rotatable"></SelectBox> <text>{{ local.getLabel('sceneAnimation-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-motion') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneAnimation-rotatable') || 'Rotatable' }}</div
+			><SelectBox id="sceneAnimation-rotatable"></SelectBox> <div class="text">{{ local.getLabel('sceneAnimation-x') || 'X' }}</div
 			><NumberBox
 				id="sceneAnimation-x"
 				min="-128"
@@ -20,7 +20,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneAnimation-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneAnimation-y"
 				min="-128"
@@ -29,7 +29,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneAnimation-angle-box') || 'Angle' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-angle-box') || 'Angle' }}</div
 			><div class="flex-box" id="sceneAnimation-angle-box">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
@@ -46,7 +46,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneAnimation-scale-box') || 'Scale' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-scale-box') || 'Scale' }}</div
 			><div class="flex-box" id="sceneAnimation-scale-box">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
@@ -62,7 +62,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneAnimation-speed-box') || 'Speed' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-speed-box') || 'Speed' }}</div
 			><div class="flex-box" id="sceneAnimation-speed-box">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
@@ -78,7 +78,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneAnimation-opacity-box') || 'Opacity' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-opacity-box') || 'Opacity' }}</div
 			><div class="flex-box" id="sceneAnimation-opacity-box">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
@@ -94,7 +94,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneAnimation-priority-box') || 'Priority' }}</text
+			<div class="text">{{ local.getLabel('sceneAnimation-priority-box') || 'Priority' }}</div
 			><div class="flex-box" id="sceneAnimation-priority-box">
 				<SliderBox
 					id="sceneAnimation-priority-slider"

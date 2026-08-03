@@ -3,43 +3,43 @@
 	<TitleBar>Set Animation Component<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text
-			><CustomBox id="setAnimationComponent-actor" type="actor" /><text>Animation</text
+			<div class="text">Actor</div
+			><CustomBox id="setAnimationComponent-actor" type="actor" /><div class="text">Animation</div
 			><CustomBox
 				id="setAnimationComponent-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Motion</text><SelectBox id="setAnimationComponent-motion" /><text>Operation</text><SelectBox id="setAnimationComponent-operation" /><text>Angle</text
-			><CustomBox id="setAnimationComponent-angle" type="angle" /><text>Scale</text
+			 /><div class="text">Motion</div><SelectBox id="setAnimationComponent-motion" /><div class="text">Operation</div><SelectBox id="setAnimationComponent-operation" /><div class="text">Angle</div
+			><CustomBox id="setAnimationComponent-angle" type="angle" /><div class="text">Scale</div
 			><NumberVar
 				id="setAnimationComponent-scale"
 				min="0"
 				max="10"
 				step="0.1"
 				decimals="4"
-			 /><text>Speed</text
+			 /><div class="text">Speed</div
 			><NumberVar
 				id="setAnimationComponent-speed"
 				min="0"
 				max="10"
 				step="0.1"
 				decimals="4"
-			 /><text>Opacity</text
+			 /><div class="text">Opacity</div
 			><NumberVar
 				id="setAnimationComponent-opacity"
 				min="0"
 				max="1"
 				step="0.05"
 				decimals="4"
-			 /><text>Priority</text
-			><NumberBox id="setAnimationComponent-priority" min="-100" max="100" /><text>Offset Y</text
+			 /><div class="text">Priority</div
+			><NumberBox id="setAnimationComponent-priority" min="-100" max="100" /><div class="text">Offset Y</div
 			><NumberBox
 				id="setAnimationComponent-offsetY"
 				min="-100"
 				max="100"
 				unit="px"
-			 /><text>Sprite Name</text><SelectBox id="setAnimationComponent-spriteId" /><text>Image</text
-			><CustomBox id="setAnimationComponent-image" type="file" filter="image" /><text>Play Motion</text><SelectBox id="setAnimationComponent-playMotion" /><text>Wait</text><SelectBox id="setAnimationComponent-wait" name="wait" /></div>
+			 /><div class="text">Sprite Name</div><SelectBox id="setAnimationComponent-spriteId" /><div class="text">Image</div
+			><CustomBox id="setAnimationComponent-image" type="file" filter="image" /><div class="text">Play Motion</div><SelectBox id="setAnimationComponent-playMotion" /><div class="text">Wait</div><SelectBox id="setAnimationComponent-wait" name="wait" /></div>
 		<button id="setAnimationComponent-confirm" name="confirm">Confirm</button>
 		<button id="setAnimationComponent-cancel" name="cancel">Cancel</button>
 	</div>

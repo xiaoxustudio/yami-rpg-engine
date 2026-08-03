@@ -6,7 +6,7 @@ import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 // 伪元素/未迁移 CE 标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
-const CUSTOM_ELEMENT_TAGS = new Set(['text']);
+const CUSTOM_ELEMENT_TAGS = new Set<string>();
 
 // 递归复制目录（保留静态资源到 dist）
 const copyDirRecursive = (src: string, dest: string) => {

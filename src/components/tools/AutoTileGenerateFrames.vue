@@ -3,11 +3,11 @@
 		<TitleBar>Generate Frames<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Stride X</text
+				<div class="text">Stride X</div
 				><NumberBox id="autoTile-generateFrames-strideX" min="-128" max="128" />
-				<text>Stride Y</text
+				<div class="text">Stride Y</div
 				><NumberBox id="autoTile-generateFrames-strideY" min="-128" max="128" />
-				<text>Count</text
+				<div class="text">Count</div
 				><NumberBox id="autoTile-generateFrames-count" min="1" max="255" />
 			</div>
 			<button id="autoTile-generateFrames-confirm" name="confirm">Confirm</button>

@@ -3,16 +3,16 @@
 	<TitleBar>httpRequest<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>URL</text><StringVar id="httpRequest-url" /> <text>Method</text
-			><SelectBox id="httpRequest-method" /> <text>Header</text
-			><ParamList id="httpRequest-header" /> <text>Data</text
-			><ParamList id="httpRequest-data" /> <text>TimeOut</text
-			><NumberBox id="httpRequest-timeout" /> <text>ResponseType</text
-			><SelectBox id="httpRequest-responseType" /> <text>WithCredentials</text
+			<div class="text">URL</div><StringVar id="httpRequest-url" /> <div class="text">Method</div
+			><SelectBox id="httpRequest-method" /> <div class="text">Header</div
+			><ParamList id="httpRequest-header" /> <div class="text">Data</div
+			><ParamList id="httpRequest-data" /> <div class="text">TimeOut</div
+			><NumberBox id="httpRequest-timeout" /> <div class="text">ResponseType</div
+			><SelectBox id="httpRequest-responseType" /> <div class="text">WithCredentials</div
 			><CheckBox class="standard" id="httpRequest-withCredentials" />
-			<text>AuthUser</text><StringVar id="httpRequest-authUser" />
-			<text>AuthPass</text><StringVar id="httpRequest-authPass" />
-			<text>CallBack</text
+			<div class="text">AuthUser</div><StringVar id="httpRequest-authUser" />
+			<div class="text">AuthPass</div><StringVar id="httpRequest-authPass" />
+			<div class="text">CallBack</div
 			><CustomBox id="httpRequest-callback" type="file" filter="event" />
 		</div>
 		<button id="httpRequest-confirm" name="confirm">Confirm</button>

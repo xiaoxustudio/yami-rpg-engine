@@ -3,7 +3,7 @@
 	<TitleBar>Set Target<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setTarget-actor" type="actor" /></div>
+			<div class="text">Actor</div><CustomBox id="setTarget-actor" type="actor" /></div>
 		<button id="setTarget-confirm" name="confirm">Confirm</button>
 		<button id="setTarget-cancel" name="cancel">Cancel</button>
 	</div>

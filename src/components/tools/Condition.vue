@@ -3,21 +3,21 @@
 		<TitleBar>Condition<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Condition Type</text><SelectBox id="condition-type" />
-			<text>Variable</text
+				<div class="text">Condition Type</div><SelectBox id="condition-type" />
+			<div class="text">Variable</div
 			><CustomBox id="condition-key" type="global-variable" filter="all" />
-			<text>Operation</text><SelectBox id="condition-boolean-operation" />
-			<text>Boolean</text><SelectBox id="condition-boolean-value" />
-			<text>Operation</text><SelectBox id="condition-number-operation" />
-				<text>Number</text
+			<div class="text">Operation</div><SelectBox id="condition-boolean-operation" />
+			<div class="text">Boolean</div><SelectBox id="condition-boolean-value" />
+			<div class="text">Operation</div><SelectBox id="condition-number-operation" />
+				<div class="text">Number</div
 				><NumberBox
 					id="condition-number-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Operation</text><SelectBox id="condition-string-operation" />
-				<text>String</text><TextArea id="condition-string-value" />
+				<div class="text">Operation</div><SelectBox id="condition-string-operation" />
+				<div class="text">String</div><TextArea id="condition-string-value" />
 			</div>
 			<button id="condition-confirm" name="confirm">Confirm</button>
 			<button id="condition-cancel" name="cancel">Cancel</button>

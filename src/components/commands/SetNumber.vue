@@ -3,13 +3,13 @@
 		<TitleBar>Set Number<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="setNumber-variable"
 					type="variable"
 					filter="writable-number"
 				/>
-				<text>Expression</text><ParamList id="setNumber-operands" />
+				<div class="text">Expression</div><ParamList id="setNumber-operands" />
 			</div>
 			<button id="setNumber-confirm" name="confirm">Confirm</button>
 			<button id="setNumber-cancel" name="cancel">Cancel</button>

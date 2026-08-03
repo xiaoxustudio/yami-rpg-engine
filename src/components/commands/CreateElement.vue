@@ -3,11 +3,11 @@
 		<TitleBar>Create Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="createElement-operation" />
-				<text>Parent</text><CustomBox id="createElement-parent" type="element" />
-				<text>UI Elements</text
+				<div class="text">Operation</div><SelectBox id="createElement-operation" />
+				<div class="text">Parent</div><CustomBox id="createElement-parent" type="element" />
+				<div class="text">UI Elements</div
 				><CustomBox id="createElement-uiId" type="file" filter="ui" />
-				<text>UI Element</text
+				<div class="text">UI Element</div
 				><CustomBox id="createElement-presetId" type="preset-element" />
 			</div>
 			<button id="createElement-confirm" name="confirm">Confirm</button>

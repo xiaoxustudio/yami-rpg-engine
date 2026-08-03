@@ -3,78 +3,78 @@
 		<TitleBar>Number Operand<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="setNumber-operation" />
-				<SelectBox id="setNumber-operand-operation" /> <text>Type</text
-				><SelectBox id="setNumber-operand-type" /> <text>Constant</text
+				<div class="text">Operation</div><SelectBox id="setNumber-operation" />
+				<SelectBox id="setNumber-operand-operation" /> <div class="text">Type</div
+				><SelectBox id="setNumber-operand-type" /> <div class="text">Constant</div
 				><NumberBox
 					id="setNumber-operand-constant-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Math Method</text><SelectBox id="setNumber-operand-math-method" />
-				<text>String Method</text><SelectBox id="setNumber-operand-string-method" />
-				<text>Property</text><SelectBox id="setNumber-operand-object-property" />
-				<text>Property</text><SelectBox id="setNumber-operand-element-property" />
-				<text>Element</text
+				<div class="text">Math Method</div><SelectBox id="setNumber-operand-math-method" />
+				<div class="text">String Method</div><SelectBox id="setNumber-operand-string-method" />
+				<div class="text">Property</div><SelectBox id="setNumber-operand-object-property" />
+				<div class="text">Property</div><SelectBox id="setNumber-operand-element-property" />
+				<div class="text">Element</div
 				><CustomBox id="setNumber-operand-element-element" type="element" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="setNumber-operand-common-variable"
 					type="variable"
 					filter="all"
 				/>
-				<text>Actor</text
+				<div class="text">Actor</div
 				><CustomBox id="setNumber-operand-common-actor" type="actor" />
-				<text>Skill</text
+				<div class="text">Skill</div
 				><CustomBox id="setNumber-operand-common-skill" type="skill" />
-				<text>State</text
+				<div class="text">State</div
 				><CustomBox id="setNumber-operand-common-state" type="state" />
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><CustomBox id="setNumber-operand-common-equipment" type="equipment" />
-				<text>Item</text
+				<div class="text">Item</div
 				><CustomBox id="setNumber-operand-common-item" type="item" />
-				<text>Trigger</text
+				<div class="text">Trigger</div
 				><CustomBox id="setNumber-operand-common-trigger" type="trigger" />
-				<text>Tilemap</text
+				<div class="text">Tilemap</div
 				><CustomBox id="setNumber-operand-common-tilemap" type="tilemap" />
-				<text>Tilemap Position</text
+				<div class="text">Tilemap Position</div
 				><CustomBox id="setNumber-operand-tilemapPosition" type="position" />
-				<text>Item</text
+				<div class="text">Item</div
 				><FileVar id="setNumber-operand-object-itemId" type="file" filter="item" />
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><FileVar
 					id="setNumber-operand-object-equipmentId"
 					type="file"
 					filter="equipment"
 				/>
-				<text>Search String</text><StringVar id="setNumber-operand-string-search" />
-				<text>Decimal Places</text
+				<div class="text">Search String</div><StringVar id="setNumber-operand-string-search" />
+				<div class="text">Decimal Places</div
 				><NumberBox id="setNumber-operand-math-decimals" min="0" max="10" />
-				<text>Min</text
+				<div class="text">Min</div
 				><NumberVar
 					id="setNumber-operand-math-min"
 					min="-1000000000"
 					max="1000000000"
 				/>
-				<text>Max</text
+				<div class="text">Max</div
 				><NumberVar
 					id="setNumber-operand-math-max"
 					min="-1000000000"
 					max="1000000000"
 				/>
-				<text>Start Position</text
+				<div class="text">Start Position</div
 				><CustomBox id="setNumber-operand-math-startPosition" type="position" />
-				<text>End Position</text
+				<div class="text">End Position</div
 				><CustomBox id="setNumber-operand-math-endPosition" type="position" />
-				<text>Cooldown Key</text><SelectVar id="setNumber-operand-cooldown-key" />
-				<text>Index</text
+				<div class="text">Cooldown Key</div><SelectVar id="setNumber-operand-cooldown-key" />
+				<div class="text">Index</div
 				><NumberVar id="setNumber-operand-list-index" min="0" max="1000000000" />
-				<text>Param Name</text><StringVar id="setNumber-operand-parameter-key" />
-				<text>Script</text><TextBox id="setNumber-operand-script" /> <text>Data</text
-				><SelectBox id="setNumber-operand-other-data" /> <text>Touch Id</text
+				<div class="text">Param Name</div><StringVar id="setNumber-operand-parameter-key" />
+				<div class="text">Script</div><TextBox id="setNumber-operand-script" /> <div class="text">Data</div
+				><SelectBox id="setNumber-operand-other-data" /> <div class="text">Touch Id</div
 				><NumberVar id="setNumber-operand-other-touchId" min="0" max="10" />
-				<text>Team</text><SelectBox id="setNumber-operand-other-teamId" />
+				<div class="text">Team</div><SelectBox id="setNumber-operand-other-teamId" />
 			</div>
 			<button id="setNumber-operand-confirm" name="confirm">Confirm</button>
 			<button id="setNumber-operand-cancel" name="cancel">Cancel</button>

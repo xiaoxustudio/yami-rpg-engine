@@ -3,7 +3,7 @@
 		<TitleBar>Point Light Property<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="moveLight-property-key" /> <text>X</text
+				<div class="text">Property</div><SelectBox id="moveLight-property-key" /> <div class="text">X</div
 				><NumberVar
 					id="moveLight-property-x"
 					min="0"
@@ -11,7 +11,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Y</text
+				<div class="text">Y</div
 				><NumberVar
 					id="moveLight-property-y"
 					min="0"
@@ -19,7 +19,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Range</text
+				<div class="text">Range</div
 				><NumberVar
 					id="moveLight-property-range"
 					min="0"
@@ -27,7 +27,7 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<text>Intensity</text
+				<div class="text">Intensity</div
 				><NumberVar
 					id="moveLight-property-intensity"
 					min="0"
@@ -35,7 +35,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Anchor X</text
+				<div class="text">Anchor X</div
 				><NumberVar
 					id="moveLight-property-anchorX"
 					min="0"
@@ -43,7 +43,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Anchor Y</text
+				<div class="text">Anchor Y</div
 				><NumberVar
 					id="moveLight-property-anchorY"
 					min="0"
@@ -51,7 +51,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Width</text
+				<div class="text">Width</div
 				><NumberVar
 					id="moveLight-property-width"
 					min="0"
@@ -59,7 +59,7 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<text>Height</text
+				<div class="text">Height</div
 				><NumberVar
 					id="moveLight-property-height"
 					min="0"
@@ -67,7 +67,7 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<text>Angle</text
+				<div class="text">Angle</div
 				><NumberVar
 					id="moveLight-property-angle"
 					min="-36000"
@@ -76,11 +76,11 @@
 					decimals="4"
 					unit="deg"
 				/>
-				<text>Red</text
+				<div class="text">Red</div
 				><NumberVar id="moveLight-property-red" min="0" max="255" step="5" />
-				<text>Green</text
+				<div class="text">Green</div
 				><NumberVar id="moveLight-property-green" min="0" max="255" step="5" />
-				<text>Blue</text
+				<div class="text">Blue</div
 				><NumberVar id="moveLight-property-blue" min="0" max="255" step="5" />
 			</div>
 			<button id="moveLight-property-confirm" name="confirm">Confirm</button>

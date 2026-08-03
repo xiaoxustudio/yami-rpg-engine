@@ -3,12 +3,12 @@
 		<TitleBar>Create Trigger<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Trigger</text
+				<div class="text">Trigger</div
 				><FileVar id="createTrigger-triggerId" type="file" filter="trigger" />
-				<text>Caster</text><CustomBox id="createTrigger-caster" type="actor" />
-				<text>Origin</text><CustomBox id="createTrigger-origin" type="position" />
-				<text>Angle</text><CustomBox id="createTrigger-angle" type="angle" />
-				<text>Distance</text
+				<div class="text">Caster</div><CustomBox id="createTrigger-caster" type="actor" />
+				<div class="text">Origin</div><CustomBox id="createTrigger-origin" type="position" />
+				<div class="text">Angle</div><CustomBox id="createTrigger-angle" type="angle" />
+				<div class="text">Distance</div
 				><NumberVar
 					id="createTrigger-distance"
 					min="-512"
@@ -16,7 +16,7 @@
 					decimals="4"
 					unit="tile"
 				 />
-				<text>Scale</text
+				<div class="text">Scale</div
 				><NumberVar
 					id="createTrigger-scale"
 					min="0.1"
@@ -24,7 +24,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Global Speed</text
+				<div class="text">Global Speed</div
 				><NumberVar
 					id="createTrigger-timeScale"
 					min="0.1"

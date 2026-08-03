@@ -4,7 +4,7 @@
 		<TitleBar>Set Quantity<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Quantity</text><NumberBox id="setQuantity-quantity" min="1" />
+				<div class="text">Quantity</div><NumberBox id="setQuantity-quantity" min="1" />
 			</div>
 			<button id="setQuantity-confirm" name="confirm">Confirm</button>
 			<button id="setQuantity-cancel" name="cancel">Cancel</button>

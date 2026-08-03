@@ -4,7 +4,7 @@
 		<TitleBar>Branch<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Cases</text><ParamList id="switch-branch-conditions" />
+				<div class="text">Cases</div><ParamList id="switch-branch-conditions" />
 			</div>
 			<button id="switch-branch-confirm" name="confirm">Confirm</button>
 			<button id="switch-branch-cancel" name="cancel">Cancel</button>

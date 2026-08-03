@@ -3,29 +3,29 @@
 		<TitleBar>Set List<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="setList-variable" type="variable" filter="object" />
-				<text>Operation</text><SelectBox id="setList-operation" />
-				<text>Numbers</text
+				<div class="text">Operation</div><SelectBox id="setList-operation" />
+				<div class="text">Numbers</div
 				><CustomBox id="setList-numbers" type="array" filter="number" />
-				<text>Strings</text
+				<div class="text">Strings</div
 				><CustomBox id="setList-strings" type="array" filter="string" />
-				<text>Index</text><NumberVar id="setList-index" min="0" max="1000000000" />
-				<text>Boolean</text><SelectBox id="setList-boolean" /> <text>Number</text
+				<div class="text">Index</div><NumberVar id="setList-index" min="0" max="1000000000" />
+				<div class="text">Boolean</div><SelectBox id="setList-boolean" /> <div class="text">Number</div
 				><NumberBox
 					id="setList-number"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>String</text><TextArea id="setList-string" /> <text>Variable</text
+				<div class="text">String</div><TextArea id="setList-string" /> <div class="text">Variable</div
 				><CustomBox id="setList-operand" type="variable" filter="all" />
-				<text>Separator</text><TextAreaVar id="setList-separator" />
-				<text>Attribute Group</text
+				<div class="text">Separator</div><TextAreaVar id="setList-separator" />
+				<div class="text">Attribute Group</div
 				><CustomBox id="setList-attribute-groupId" type="attribute-group" />
-				<text>Enum Group</text
-				><CustomBox id="setList-enum-groupId" type="enum-group" /> <text>Actor</text
-				><CustomBox id="setList-actor" type="actor" /> <text>Default</text
+				<div class="text">Enum Group</div
+				><CustomBox id="setList-enum-groupId" type="enum-group" /> <div class="text">Actor</div
+				><CustomBox id="setList-actor" type="actor" /> <div class="text">Default</div
 				><CheckBox id="setList-index-skip-check" class="standard" />
 			</div>
 			<button id="setList-confirm" name="confirm">Confirm</button>

@@ -3,8 +3,8 @@
 		<TitleBar>Set State<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>State</text><CustomBox id="setState-state" type="state" />
-				<text>Operation</text><SelectBox id="setState-operation" /> <text>Time</text
+				<div class="text">State</div><CustomBox id="setState-state" type="state" />
+				<div class="text">Operation</div><SelectBox id="setState-operation" /> <div class="text">Time</div
 				><NumberVar id="setState-time" min="0" max="36000000" unit="ms" />
 			</div>
 			<button id="setState-confirm" name="confirm">Confirm</button>

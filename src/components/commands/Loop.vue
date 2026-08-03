@@ -3,7 +3,7 @@
 	<TitleBar>Loop<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Mode</text><SelectBox id="loop-mode" /> <text>Conditions</text
+			<div class="text">Mode</div><SelectBox id="loop-mode" /> <div class="text">Conditions</div
 			><ParamList id="loop-conditions" />
 		</div>
 		<button id="loop-confirm" name="confirm">Confirm</button>

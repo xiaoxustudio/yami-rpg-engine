@@ -3,15 +3,15 @@
 	<TitleBar>Move Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="moveActor-actor" type="actor" /><text>Mode</text><SelectBox id="moveActor-mode" /><text>Angle</text
+			<div class="text">Actor</div><CustomBox id="moveActor-actor" type="actor" /><div class="text">Mode</div><SelectBox id="moveActor-mode" /><div class="text">Angle</div
 			><NumberVar
 				id="moveActor-angle"
 				min="-360"
 				max="360"
 				decimals="4"
 				unit="deg"
-			 /><text>Destination</text
-			><CustomBox id="moveActor-destination" type="position" /><text>Wait</text
+			 /><div class="text">Destination</div
+			><CustomBox id="moveActor-destination" type="position" /><div class="text">Wait</div
 			><SelectBox id="moveActor-wait" name="wait" /></div>
 		<button id="moveActor-confirm" name="confirm">Confirm</button>
 		<button id="moveActor-cancel" name="cancel">Cancel</button>

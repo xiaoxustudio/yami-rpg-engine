@@ -3,10 +3,10 @@
 		<TitleBar>Delete Tile<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Tilemap</text><CustomBox id="deleteTile-tilemap" type="tilemap" />
-				<text>Tilemap X</text
+				<div class="text">Tilemap</div><CustomBox id="deleteTile-tilemap" type="tilemap" />
+				<div class="text">Tilemap X</div
 				><NumberVar id="deleteTile-tilemapX" min="0" max="511" />
-				<text>Tilemap Y</text
+				<div class="text">Tilemap Y</div
 				><NumberVar id="deleteTile-tilemapY" min="0" max="511" />
 			</div>
 			<button id="deleteTile-confirm" name="confirm">Confirm</button>

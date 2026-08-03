@@ -3,7 +3,7 @@
 	<TitleBar>Fix Angle<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="fixAngle-actor" type="actor" /><text>State</text><SelectBox id="fixAngle-fixed" /></div>
+			<div class="text">Actor</div><CustomBox id="fixAngle-actor" type="actor" /><div class="text">State</div><SelectBox id="fixAngle-fixed" /></div>
 		<button id="fixAngle-confirm" name="confirm">Confirm</button>
 		<button id="fixAngle-cancel" name="cancel">Cancel</button>
 	</div>

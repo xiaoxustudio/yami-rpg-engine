@@ -3,10 +3,10 @@
 	<TitleBar>Set Volume<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Type</text><SelectBox id="setVolume-type" /> <text>Volume</text
+			<div class="text">Type</div><SelectBox id="setVolume-type" /> <div class="text">Volume</div
 			><NumberVar id="setVolume-volume" min="0" max="1" step="0.1" decimals="4" />
-			<text>Easing</text><SelectBox id="setVolume-easingId" name="easing" />
-			<text>Duration</text
+			<div class="text">Easing</div><SelectBox id="setVolume-easingId" name="easing" />
+			<div class="text">Duration</div
 			><NumberBox
 				id="setVolume-duration"
 				name="duration"
@@ -14,7 +14,7 @@
 				max="3600000"
 				unit="ms"
 			 />
-			<text>Wait</text><SelectBox id="setVolume-wait" name="wait" />
+			<div class="text">Wait</div><SelectBox id="setVolume-wait" name="wait" />
 		</div>
 		<button id="setVolume-confirm" name="confirm">Confirm</button>
 		<button id="setVolume-cancel" name="cancel">Cancel</button>

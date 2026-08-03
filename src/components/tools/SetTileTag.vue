@@ -3,7 +3,7 @@
 		<TitleBar>Set Tile Tag<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Tag</text><NumberBox id="setTileTag-tag" min="0" max="99999" />
+				<div class="text">Tag</div><NumberBox id="setTileTag-tag" min="0" max="99999" />
 			</div>
 			<button id="setTileTag-confirm" name="confirm">Confirm</button>
 			<button id="setTileTag-cancel" name="cancel">Cancel</button>

@@ -91,11 +91,12 @@ Home.parseRecentProjects = function () {
 		addClass(eBar, 'home-recent-bar');
 		node.appendChild(eBar);
 
-		const eTitle = document.createElement('text');
+		const eTitle = document.createElement('div');
 		addClass(eTitle, 'home-recent-title');
+		addClass(eTitle, 'text');
 		eBar.appendChild(eTitle);
 
-		const eDate = document.createElement('text');
+		const eDate = document.createElement('div');
 		const date = new Date(item.date);
 		const Y = date.getFullYear();
 		const M = date.getMonth() + 1;
@@ -104,12 +105,14 @@ Home.parseRecentProjects = function () {
 		const m = date.getMinutes();
 		const m2 = m.toString().padStart(2, '0');
 		addClass(eDate, 'home-recent-date');
+		addClass(eDate, 'text');
 		eDate.textContent = `${Y}/${M}/${D} ${h}:${m2}`;
 		eBar.appendChild(eDate);
 
-		const ePath = document.createElement('text');
+		const ePath = document.createElement('div');
 		const path = item.path;
 		addClass(ePath, 'home-recent-path');
+		addClass(ePath, 'text');
 		ePath.textContent = Path.normalize(path);
 		node.appendChild(ePath);
 
@@ -178,8 +181,9 @@ Home.parseRecentProjects = function () {
 					const count = counts[type];
 					const size = File.parseFileSize(sizes[type]);
 
-					const eText = document.createElement('text');
+					const eText = document.createElement('div');
 					addClass(eText, 'home-recent-data');
+					addClass(eText, 'text');
 
 					// 根据统计模式显示不同的信息
 					if (statsMode === 'size') {

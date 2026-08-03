@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEvent-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileEvent-general-grid">
-			<text>{{ local.getLabel('fileEvent-type') || 'Type' }}</text><SelectBox id="fileEvent-type" />
-			<text>{{ local.getLabel('fileEvent-enabled') || 'Enabled' }}</text
+			<div class="text">{{ local.getLabel('fileEvent-type') || 'Type' }}</div><SelectBox id="fileEvent-type" />
+			<div class="text">{{ local.getLabel('fileEvent-enabled') || 'Enabled' }}</div
 			><CheckBox id="fileEvent-enabled" class="standard large" />
-			<text>{{ local.getLabel('fileEvent-priority') || 'Priority' }}</text
+			<div class="text">{{ local.getLabel('fileEvent-priority') || 'Priority' }}</div
 			><CheckBox id="fileEvent-priority" class="standard large" />
-			<text>{{ local.getLabel('fileEvent-namespace') || 'Namespace' }}</text
+			<div class="text">{{ local.getLabel('fileEvent-namespace') || 'Namespace' }}</div
 			><CheckBox id="fileEvent-namespace" class="standard large" />
-			<text>{{ local.getLabel('fileEvent-returnType') || 'Return Type' }}</text
+			<div class="text">{{ local.getLabel('fileEvent-returnType') || 'Return Type' }}</div
 			><SelectBox id="fileEvent-returnType" />
-			<text>{{ local.getLabel('fileEvent-description') || 'Description' }}</text><TextArea id="fileEvent-description" />
+			<div class="text">{{ local.getLabel('fileEvent-description') || 'Description' }}</div><TextArea id="fileEvent-description" />
 		</div>
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileEvent-parameters') || 'Parameters' }}</DetailSummary>

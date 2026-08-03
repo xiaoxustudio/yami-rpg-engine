@@ -25,7 +25,7 @@
 							/>
 						</div>
 						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"
-							><text class="label">speed:</text></NumberBox
+							><div class="text label">speed:</div></NumberBox
 						>
 					</div>
 					<div class="box" id="particle-head-end">
@@ -43,7 +43,7 @@
 					<div class="box" id="particle-screen" tabindex="-1">
 						<MarqueeArea id="particle-marquee" />
 					</div>
-					<text id="particle-info" />
+					<div class="text" id="particle-info" />
 				</div>
 			</div>
 </template>

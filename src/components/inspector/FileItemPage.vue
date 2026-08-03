@@ -2,11 +2,11 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileItem-general-grid">
-			<text>{{ local.getLabel('fileItem-icon') || 'Icon' }}</text
+			<div class="text">{{ local.getLabel('fileItem-icon') || 'Icon' }}</div
 			><CustomBox id="fileItem-icon" type="file" filter="image" />
-			<text>{{ local.getLabel('fileItem-clip') || 'Clip' }}</text
+			<div class="text">{{ local.getLabel('fileItem-clip') || 'Clip' }}</div
 			><CustomBox id="fileItem-clip" type="clip" image="fileItem-icon" />
-			<text>{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</text
+			<div class="text">{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</div
 			><CustomBox id="fileItem-inherit" type="file" filter="item" />
 		</div>
 	</DetailBox>

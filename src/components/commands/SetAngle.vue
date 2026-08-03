@@ -3,14 +3,14 @@
 	<TitleBar>Set Angle<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setAngle-actor" type="actor" /><text>Angle</text><CustomBox id="setAngle-angle" type="angle" /><text>Easing</text><SelectBox id="setAngle-easingId" name="easing" /><text>Duration</text
+			<div class="text">Actor</div><CustomBox id="setAngle-actor" type="actor" /><div class="text">Angle</div><CustomBox id="setAngle-angle" type="angle" /><div class="text">Easing</div><SelectBox id="setAngle-easingId" name="easing" /><div class="text">Duration</div
 			><NumberVar
 				id="setAngle-duration"
 				name="duration"
 				min="0"
 				max="3600000"
 				unit="ms"
-			 /><text>Wait</text><SelectBox id="setAngle-wait" name="wait" /></div>
+			 /><div class="text">Wait</div><SelectBox id="setAngle-wait" name="wait" /></div>
 		<button id="setAngle-confirm" name="confirm">Confirm</button>
 		<button id="setAngle-cancel" name="cancel">Cancel</button>
 	</div>

@@ -3,8 +3,8 @@
 		<TitleBar>Parameter<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="fileEvent-parameter-type" /> <text>Key</text
-				><TextBox id="fileEvent-parameter-key" /> <text>Note</text
+				<div class="text">Type</div><SelectBox id="fileEvent-parameter-type" /> <div class="text">Key</div
+				><TextBox id="fileEvent-parameter-key" /> <div class="text">Note</div
 				><TextArea id="fileEvent-parameter-note" />
 			</div>
 			<button id="fileEvent-parameter-confirm" name="confirm">Confirm</button>

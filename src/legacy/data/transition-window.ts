@@ -1308,9 +1308,10 @@ Easing.list_updateTextNode = function (item) {
 };
 
 Easing.list_createKeyTextNode = function (item) {
-	const keyTextNode = document.createElement('text');
+	const keyTextNode = document.createElement('div');
 	keyTextNode.key = '';
 	addClass(keyTextNode, 'variable-init-text');
+	addClass(keyTextNode, 'text');
 	item.element.appendChild(keyTextNode);
 	item.element.keyTextNode = keyTextNode;
 };

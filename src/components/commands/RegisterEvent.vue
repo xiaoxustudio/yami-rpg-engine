@@ -3,15 +3,15 @@
 	<TitleBar>Register Event<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Target</text><SelectBox id="registerEvent-target" /> <text>Actor</text
-			><CustomBox id="registerEvent-actor" type="actor" /> <text>Element</text
+			<div class="text">Target</div><SelectBox id="registerEvent-target" /> <div class="text">Actor</div
+			><CustomBox id="registerEvent-actor" type="actor" /> <div class="text">Element</div
 			><CustomBox id="registerEvent-element" type="element" />
-			<text>Operation</text><SelectBox id="registerEvent-operation" />
-			<text>Type</text><SelectBox id="registerEvent-type" /> <text>Priority</text
+			<div class="text">Operation</div><SelectBox id="registerEvent-operation" />
+			<div class="text">Type</div><SelectBox id="registerEvent-type" /> <div class="text">Priority</div
 			><CheckBox id="registerEvent-priority" class="standard large" />
-			<text>Namespace</text
+			<div class="text">Namespace</div
 			><CheckBox id="registerEvent-namespace" class="standard large" />
-			<text>Tag Name</text><StringVar id="registerEvent-tag" />
+			<div class="text">Tag Name</div><StringVar id="registerEvent-tag" />
 		</div>
 		<button id="registerEvent-confirm" name="confirm">Confirm</button>
 		<button id="registerEvent-cancel" name="cancel">Cancel</button>

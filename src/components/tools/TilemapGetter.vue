@@ -4,13 +4,13 @@
 		<TitleBar>Tilemap<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="tilemapGetter-type" /> <text>Tilemap</text
+				<div class="text">Type</div><SelectBox id="tilemapGetter-type" /> <div class="text">Tilemap</div
 				><CustomBox
 					id="tilemapGetter-presetId"
 					type="preset-object"
 					filter="tilemap"
 				/>
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="tilemapGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="tilemapGetter-confirm" name="confirm">Confirm</button>

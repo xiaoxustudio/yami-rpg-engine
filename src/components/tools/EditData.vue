@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="edit-data">
 		<TitleBar
-			>edit data<text id="edit-data-mark" class="hidden">✱</text>
+			>edit data<div class="text hidden" id="edit-data-mark">✱</div>
 			<div class="maximize" id="edit-data-maximize" />
 			<div class="close" />
 		</TitleBar>

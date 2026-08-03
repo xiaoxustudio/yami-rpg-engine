@@ -3,23 +3,23 @@
 	<TitleBar>Set Inventory<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setInventory-actor" type="actor" />
-			<text>Operation</text><SelectBox id="setInventory-operation" />
-			<text>Money</text
+			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" />
+			<div class="text">Operation</div><SelectBox id="setInventory-operation" />
+			<div class="text">Money</div
 			><NumberVar id="setInventory-money" min="1" max="100000000" />
-			<text>Item</text
+			<div class="text">Item</div
 			><FileVar id="setInventory-itemId" type="file" filter="item" />
-			<text>Quantity</text
+			<div class="text">Quantity</div
 			><NumberVar id="setInventory-quantity" min="1" max="10000" />
-			<text>Equipment</text
+			<div class="text">Equipment</div
 			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" />
-			<text>Equipment</text
+			<div class="text">Equipment</div
 			><CustomBox id="setInventory-equipment" type="equipment" />
-			<text>Order A</text
+			<div class="text">Order A</div
 			><NumberVar id="setInventory-order1" min="0" max="10000" />
-			<text>Order B</text
+			<div class="text">Order B</div
 			><NumberVar id="setInventory-order2" min="0" max="10000" />
-			<text>Global Actor</text
+			<div class="text">Global Actor</div
 			><CustomBox id="setInventory-refActor" type="actor" />
 		</div>
 		<button id="setInventory-confirm" name="confirm">Confirm</button>

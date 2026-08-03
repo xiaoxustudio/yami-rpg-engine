@@ -3,7 +3,7 @@
 		<TitleBar>Region<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="regionGetter-type" /> <text>Region</text
+				<div class="text">Type</div><SelectBox id="regionGetter-type" /> <div class="text">Region</div
 				><CustomBox
 					id="regionGetter-presetId"
 					type="preset-object"

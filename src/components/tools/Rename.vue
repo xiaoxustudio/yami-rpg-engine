@@ -2,7 +2,7 @@
 		<WindowFrame id="rename">
 		<TitleBar>Rename<div class="close"></div></TitleBar>
 		<div class="content-frame">
-			<div class="grid-box"> <text>Name</text><TextBox id="rename-name" /> </div>
+			<div class="grid-box"> <div class="text">Name</div><TextBox id="rename-name" /> </div>
 			<button id="rename-confirm" name="confirm">Confirm</button>
 			<button id="rename-cancel" name="cancel">Cancel</button>
 		</div>

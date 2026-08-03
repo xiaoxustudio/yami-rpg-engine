@@ -9,7 +9,7 @@
 	font-family: var(--font-family-symbol);
 }
 
-.uiElement-transform-align.rotated > text {
+.uiElement-transform-align.rotated > .text {
 	display: block;
 	transform: rotate(90deg);
 }
@@ -81,7 +81,7 @@
 	background-color: var(--selected-background);
 }
 
-.uiText-align.rotated > text {
+.uiText-align.rotated > .text {
 	display: block;
 	transform: rotate(90deg);
 }

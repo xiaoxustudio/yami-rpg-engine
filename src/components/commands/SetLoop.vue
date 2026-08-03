@@ -3,7 +3,7 @@
 	<TitleBar>Set Loop<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Type</text><SelectBox id="setLoop-type" /> <text>Loop</text
+			<div class="text">Type</div><SelectBox id="setLoop-type" /> <div class="text">Loop</div
 			><SelectBox id="setLoop-loop" />
 		</div>
 		<button id="setLoop-confirm" name="confirm">Confirm</button>

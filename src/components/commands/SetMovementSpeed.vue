@@ -3,14 +3,14 @@
 	<TitleBar>Set Movement Speed<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setMovementSpeed-actor" type="actor" /><text>Property</text><SelectBox id="setMovementSpeed-property" /><text>Base Speed</text
+			<div class="text">Actor</div><CustomBox id="setMovementSpeed-actor" type="actor" /><div class="text">Property</div><SelectBox id="setMovementSpeed-property" /><div class="text">Base Speed</div
 			><NumberVar
 				id="setMovementSpeed-base"
 				min="0"
 				max="32"
 				decimals="4"
 				unit="t/s"
-			 /><text>Speed Factor</text
+			 /><div class="text">Speed Factor</div
 			><NumberVar id="setMovementSpeed-factor" min="0" max="4" decimals="4" /></div>
 		<button id="setMovementSpeed-confirm" name="confirm">Confirm</button>
 		<button id="setMovementSpeed-cancel" name="cancel">Cancel</button>

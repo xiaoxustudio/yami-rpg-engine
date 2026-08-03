@@ -3,8 +3,8 @@
 	<TitleBar>Change Actor Portrait<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeActorPortrait-actor" type="actor" /><text>Mode</text><SelectBox id="changeActorPortrait-mode" /><text>Portrait</text
-			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" /><text>Clip</text
+			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" /><div class="text">Portrait</div
+			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" /><div class="text">Clip</div
 			><CustomBox
 				id="changeActorPortrait-clip"
 				type="clip"

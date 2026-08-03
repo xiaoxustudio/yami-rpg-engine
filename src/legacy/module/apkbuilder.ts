@@ -18,9 +18,10 @@ export const ApkBuilder = new (class {
 		ipcRenderer.invoke('build-apk', config);
 	}
 	apkLog(log: any) {
-		const text = document.createElement('text');
+		const text = document.createElement('div');
 		text.textContent = log.msg;
 		addClass(text, 'export-apk-major');
+		addClass(text, 'text');
 		$('#export-apk-content').appendChild(text);
 		if (log.done) {
 			enable($('#export-apk-button'));

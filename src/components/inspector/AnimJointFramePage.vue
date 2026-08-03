@@ -2,7 +2,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animJointFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animJointFrame-properties-grid">
-			<text>{{ local.getLabel('animJointFrame-position-box') || 'Position' }}</text>
+			<div class="text">{{ local.getLabel('animJointFrame-position-box') || 'Position' }}</div>
 			<div
 				id="animJointFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -22,7 +22,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animJointFrame-rotation-box') || 'Rotation' }}</text>
+			<div class="text">{{ local.getLabel('animJointFrame-rotation-box') || 'Rotation' }}</div>
 			<div
 				id="animJointFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -35,7 +35,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animJointFrame-scale-box') || 'Scale' }}</text>
+			<div class="text">{{ local.getLabel('animJointFrame-scale-box') || 'Scale' }}</div>
 			<div
 				id="animJointFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -55,7 +55,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animJointFrame-opacity-box') || 'Opacity' }}</text>
+			<div class="text">{{ local.getLabel('animJointFrame-opacity-box') || 'Opacity' }}</div>
 			<div
 				id="animJointFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"

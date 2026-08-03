@@ -3,7 +3,7 @@
 		<TitleBar>Header<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>key</text><StringVar id="request-keyValue-key" /> <text>value</text
+				<div class="text">key</div><StringVar id="request-keyValue-key" /> <div class="text">value</div
 				><StringVar id="request-keyValue-value" />
 			</div>
 			<button id="request-keyValue-confirm" name="confirm">Confirm</button>

@@ -3,14 +3,14 @@
 	<TitleBar>Add Animation Component<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text
-			><CustomBox id="addAnimationComponent-actor" type="actor" /><text>Animation</text
+			<div class="text">Actor</div
+			><CustomBox id="addAnimationComponent-actor" type="actor" /><div class="text">Animation</div
 			><CustomBox
 				id="addAnimationComponent-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Motion</text><SelectBox id="addAnimationComponent-motion" /><text>Rotatable</text><SelectBox id="addAnimationComponent-rotatable" /><text>Sync Angle</text><SelectBox id="addAnimationComponent-syncAngle" /><text>Priority</text
-			><NumberBox id="addAnimationComponent-priority" min="-100" max="100" /><text>Offset Y</text
+			 /><div class="text">Motion</div><SelectBox id="addAnimationComponent-motion" /><div class="text">Rotatable</div><SelectBox id="addAnimationComponent-rotatable" /><div class="text">Sync Angle</div><SelectBox id="addAnimationComponent-syncAngle" /><div class="text">Priority</div
+			><NumberBox id="addAnimationComponent-priority" min="-100" max="100" /><div class="text">Offset Y</div
 			><NumberBox
 				id="addAnimationComponent-offsetY"
 				min="-100"

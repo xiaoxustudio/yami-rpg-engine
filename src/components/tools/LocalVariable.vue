@@ -3,7 +3,7 @@
 		<TitleBar>Set Local Variable<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Local Variable</text><TextBox id="localVariable-key" />
+				<div class="text">Local Variable</div><TextBox id="localVariable-key" />
 			</div>
 			<button id="localVariable-confirm" name="confirm">Confirm</button>
 			<button id="localVariable-cancel" name="cancel">Cancel</button>

@@ -3,8 +3,8 @@
 	<TitleBar>Show Choices<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Choices</text><ParamList id="showChoices-choices" />
-			<text>Parameters</text><TextBox id="showChoices-parameters" />
+			<div class="text">Choices</div><ParamList id="showChoices-choices" />
+			<div class="text">Parameters</div><TextBox id="showChoices-parameters" />
 		</div>
 		<button id="showChoices-confirm" name="confirm">Confirm</button>
 		<button id="showChoices-cancel" name="cancel">Cancel</button>

@@ -3,9 +3,9 @@
 	<TitleBar>Translate Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="translateActor-actor" type="actor" />
-			<text>Angle</text><CustomBox id="translateActor-angle" type="angle" />
-			<text>Distance</text
+			<div class="text">Actor</div><CustomBox id="translateActor-actor" type="actor" />
+			<div class="text">Angle</div><CustomBox id="translateActor-angle" type="angle" />
+			<div class="text">Distance</div
 			><NumberVar
 				id="translateActor-distance"
 				min="0"
@@ -13,8 +13,8 @@
 				decimals="4"
 				unit="tile"
 			 />
-			<text>Easing</text><SelectBox id="translateActor-easingId" name="easing" />
-			<text>Duration</text
+			<div class="text">Easing</div><SelectBox id="translateActor-easingId" name="easing" />
+			<div class="text">Duration</div
 			><NumberVar
 				id="translateActor-duration"
 				name="duration"
@@ -22,7 +22,7 @@
 				max="3600000"
 				unit="ms"
 			 />
-			<text>Wait</text><SelectBox id="translateActor-wait" name="wait" />
+			<div class="text">Wait</div><SelectBox id="translateActor-wait" name="wait" />
 		</div>
 		<button id="translateActor-confirm" name="confirm">Confirm</button>
 		<button id="translateActor-cancel" name="cancel">Cancel</button>

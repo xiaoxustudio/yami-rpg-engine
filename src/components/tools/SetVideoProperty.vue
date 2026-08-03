@@ -4,18 +4,18 @@
 		<TitleBar>Image Property<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setVideo-property-key" />
-				<text>Video</text
+				<div class="text">Property</div><SelectBox id="setVideo-property-key" />
+				<div class="text">Video</div
 				><CustomBox id="setVideo-property-video" type="file" filter="video" />
-				<text>Playback Rate</text
+				<div class="text">Playback Rate</div
 				><NumberVar
 					id="setVideo-property-playbackRate"
 					min="0"
 					max="4"
 					decimals="4"
 				/>
-				<text>Loop</text><SelectBox id="setVideo-property-loop" /> <text>Flip</text
-				><SelectBox id="setVideo-property-flip" /> <text>Blend</text
+				<div class="text">Loop</div><SelectBox id="setVideo-property-loop" /> <div class="text">Flip</div
+				><SelectBox id="setVideo-property-flip" /> <div class="text">Blend</div
 				><SelectBox id="setVideo-property-blend" />
 			</div>
 			<button id="setVideo-property-confirm" name="confirm">Confirm</button>

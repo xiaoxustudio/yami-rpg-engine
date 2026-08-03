@@ -3,9 +3,9 @@
 		<TitleBar>Create Object<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Object</text
+				<div class="text">Object</div
 				><CustomBox id="createObject-presetId" type="preset-object" filter="any" />
-				<text>Position</text
+				<div class="text">Position</div
 				><CustomBox id="createObject-position" type="position" />
 			</div>
 			<button id="createObject-confirm" name="confirm">Confirm</button>

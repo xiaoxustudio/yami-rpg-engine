@@ -3,13 +3,13 @@
 		<TitleBar>Actor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="actorGetter-type" /> <text>Member ID</text
+				<div class="text">Type</div><SelectBox id="actorGetter-type" /> <div class="text">Member ID</div
 				><NumberVar id="actorGetter-memberId" min="0" max="10000" />
-				<text>Actor</text
+				<div class="text">Actor</div
 				><CustomBox id="actorGetter-actorId" type="file" filter="actor" />
-				<text>Data ID</text
+				<div class="text">Data ID</div
 				><CustomBox id="actorGetter-presetId" type="preset-object" filter="actor" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="actorGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="actorGetter-confirm" name="confirm">Confirm</button>

@@ -199,26 +199,30 @@ PluginManager.createOverview = function (meta, detailed) {
 	const langMap = meta.langMap.update();
 	const { plugin, author, link, version, desc } = meta.overview;
 	if (plugin) {
-		const title = document.createElement('text');
+		const title = document.createElement('div');
 		addClass(title, 'plugin-title');
+		addClass(title, 'text');
 		elements.push(title);
-		const text = document.createElement('text');
+		const text = document.createElement('div');
 		text.textContent = langMap.get(plugin);
 		addClass(text, 'plugin-name');
+		addClass(text, 'text');
 		title.appendChild(text);
 		if (version) {
-			const text = document.createElement('text');
+			const text = document.createElement('div');
 			text.textContent = ' ver' + version;
 			addClass(text, 'plugin-version');
+			addClass(text, 'text');
 			title.appendChild(text);
 		}
 		if (meta.overview.deprecated) {
-			const text = document.createElement('text');
+			const text = document.createElement('div');
 			text.textContent =
 				typeof meta.overview.deprecated === 'string'
 					? get('deprecated') + ': ' + meta.overview.deprecated
 					: get('deprecated');
 			addClass(text, 'plugin-deprecated');
+			addClass(text, 'text');
 			title.appendChild(text);
 		}
 	}
@@ -226,13 +230,15 @@ PluginManager.createOverview = function (meta, detailed) {
 		if (elements.length) {
 			elements.push(document.createTextNode('\n'));
 		}
-		const label = document.createElement('text');
+		const label = document.createElement('div');
 		label.textContent = `${get('author')}: `;
 		addClass(label, 'plugin-label');
+		addClass(label, 'text');
 		elements.push(label);
-		const text = document.createElement('text');
+		const text = document.createElement('div');
 		text.textContent = author;
 		addClass(text, 'plugin-type');
+		addClass(text, 'text');
 		if (link) {
 			addClass(text, 'plugin-link');
 			text.onclick = () => File.openURL(link);
@@ -258,8 +264,9 @@ PluginManager.createOverview = function (meta, detailed) {
 			if (elements.length) {
 				elements.push(document.createTextNode('\n\n'));
 			}
-			const warn = document.createElement('text');
+			const warn = document.createElement('div');
 			addClass(warn, 'plugin-require-warn');
+			addClass(warn, 'text');
 			warn.textContent = get('requireMissing') + missing.map((req) => req.plugin).join(', ');
 			elements.push(warn);
 		}
@@ -272,21 +279,24 @@ PluginManager.createOverview = function (meta, detailed) {
 		}
 		for (const parameter of parameters) {
 			const { key, type, alias, desc } = parameter;
-			const elWrap = document.createElement('text');
+			const elWrap = document.createElement('div');
 			addClass(elWrap, 'plugin-wrap');
+			addClass(elWrap, 'text');
 			elements.push(elWrap);
-			const elKey = document.createElement('text');
+			const elKey = document.createElement('div');
 			elKey.textContent = langMap.get(alias) ?? key;
 			addClass(elKey, 'plugin-key');
+			addClass(elKey, 'text');
 			elWrap.appendChild(elKey);
-			const delimiter = document.createElement('text');
+			const delimiter = document.createElement('div');
 			delimiter.textContent = ': ';
 			addClass(delimiter, 'plugin-label');
+			addClass(delimiter, 'text');
 			elWrap.appendChild(delimiter);
 			switch (type) {
 				case 'attribute':
 				case 'attribute-key': {
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					let attrType = 'attribute';
 					if (parameter.filter !== 'any') {
 						attrType += '.' + parameter.filter;
@@ -297,19 +307,21 @@ PluginManager.createOverview = function (meta, detailed) {
 					}
 					elType.textContent = text;
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 				}
 				case 'attribute-group': {
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					elType.textContent = get('attribute.group');
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 				}
 				case 'enum':
 				case 'enum-value': {
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					let enumType = 'enum';
 					if (parameter.filter !== 'any') {
 						enumType += '.' + parameter.filter;
@@ -320,20 +332,23 @@ PluginManager.createOverview = function (meta, detailed) {
 					}
 					elType.textContent = text;
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 				}
 				case 'enum-group': {
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					elType.textContent = get('enum.group');
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 				}
 				case 'element-id': {
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					elType.textContent = `${get('element')}(${get('id')})`;
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 				}
@@ -343,36 +358,41 @@ PluginManager.createOverview = function (meta, detailed) {
 						const types = parameter.filter.split(' ');
 						for (let i = 0; i < types.length; i++) {
 							if (i !== 0) {
-								const elSeparator = document.createElement('text');
+								const elSeparator = document.createElement('div');
 								elSeparator.textContent = '|';
 								addClass(elSeparator, 'plugin-label');
+								addClass(elSeparator, 'text');
 								elWrap.appendChild(elSeparator);
 							}
-							const elType = document.createElement('text');
+							const elType = document.createElement('div');
 							elType.textContent = get(`file.${types[i]}`);
 							addClass(elType, 'plugin-type');
+							addClass(elType, 'text');
 							elWrap.appendChild(elType);
 						}
 						break;
 					}
 				// 否则跳转到默认分支
 				default:
-					const elType = document.createElement('text');
+					const elType = document.createElement('div');
 					elType.textContent = get(type);
 					addClass(elType, 'plugin-type');
+					addClass(elType, 'text');
 					elWrap.appendChild(elType);
 					break;
 			}
 			if (key in states) {
-				const elCond = document.createElement('text');
+				const elCond = document.createElement('div');
 				elCond.textContent = '?';
 				addClass(elCond, 'plugin-label');
+				addClass(elCond, 'text');
 				elWrap.appendChild(elCond);
 			}
 			if (desc) {
-				const elDesc = document.createElement('text');
+				const elDesc = document.createElement('div');
 				elDesc.textContent = langMap.get(desc);
 				addClass(elDesc, 'plugin-param-desc');
+				addClass(elDesc, 'text');
 				elWrap.appendChild(elDesc);
 			}
 		}

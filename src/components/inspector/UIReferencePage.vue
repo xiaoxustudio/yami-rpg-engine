@@ -2,12 +2,12 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiReference-properties-grid') || 'Reference Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiReference-properties-grid">
-			<text>{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</text
+			<div class="text">{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</div
 			><CustomBox
 				id="uiReference-prefabId"
 				type="preset-element"
 			></CustomBox>
-			<text>{{ local.getLabel('uiReference-synchronous') || 'Synchronous' }}</text
+			<div class="text">{{ local.getLabel('uiReference-synchronous') || 'Synchronous' }}</div
 			><CheckBox
 				id="uiReference-synchronous"
 				class="standard large"

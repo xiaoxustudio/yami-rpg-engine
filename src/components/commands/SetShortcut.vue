@@ -3,12 +3,12 @@
 	<TitleBar>Set Shortcut<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setShortcut-actor" type="actor" />
-			<text>Operation</text><SelectBox id="setShortcut-operation" />
-			<text>Shortcut Key</text><SelectVar id="setShortcut-key" />
-			<text>Shortcut Key 2</text><SelectVar id="setShortcut-key2" />
-			<text>Item</text><FileVar id="setShortcut-itemId" type="file" filter="item" />
-			<text>Skill</text
+			<div class="text">Actor</div><CustomBox id="setShortcut-actor" type="actor" />
+			<div class="text">Operation</div><SelectBox id="setShortcut-operation" />
+			<div class="text">Shortcut Key</div><SelectVar id="setShortcut-key" />
+			<div class="text">Shortcut Key 2</div><SelectVar id="setShortcut-key2" />
+			<div class="text">Item</div><FileVar id="setShortcut-itemId" type="file" filter="item" />
+			<div class="text">Skill</div
 			><FileVar id="setShortcut-skillId" type="file" filter="skill" />
 		</div>
 		<button id="setShortcut-confirm" name="confirm">Confirm</button>

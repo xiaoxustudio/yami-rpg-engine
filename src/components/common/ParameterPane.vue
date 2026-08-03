@@ -385,7 +385,8 @@ const createCheckBox = (): any => {
 		return checkBoxes.pop();
 	}
 	const tag = 'check-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createCheckBoxElement(true);
 	(input as any).inputEventEnabled = true;
 	addClass(input, 'standard');
@@ -400,7 +401,8 @@ const createNumberBox = (): any => {
 		return numberBoxes.pop();
 	}
 	const tag = 'number-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createNumberBoxElement();
 	return { tag, label, input };
 };
@@ -412,7 +414,8 @@ const createNumberVar = (): any => {
 		return numberVars.pop();
 	}
 	const tag = 'number-var';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createNumberVarElement();
 	return { tag, label, input };
 };
@@ -424,7 +427,8 @@ const createTextBox = (): any => {
 		return textBoxes.pop();
 	}
 	const tag = 'text-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createTextBoxElement();
 	input.addEventListener('keydown', (Selection as any).inputKeydown);
 	input.addEventListener('keyup', (Selection as any).inputKeyup);
@@ -440,7 +444,8 @@ const createSelectBox = (): any => {
 		return selectBoxes.pop();
 	}
 	const tag = 'select-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createSelectBoxElement();
 	return { tag, label, input };
 };
@@ -452,7 +457,8 @@ const createKeyboardBox = (): any => {
 		return keyboardBoxes.pop();
 	}
 	const tag = 'keyboard-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createKeyboardBoxElement();
 	return { tag, label, input };
 };
@@ -464,7 +470,8 @@ const createColorBox = (): any => {
 		return colorBoxes.pop();
 	}
 	const tag = 'color-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createColorBoxElement();
 	return { tag, label, input };
 };
@@ -476,7 +483,8 @@ const createCustomBox = (): any => {
 		return customBoxes.pop();
 	}
 	const tag = 'custom-box';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const input = createCustomBoxElement();
 	return { tag, label, input };
 };
@@ -484,7 +492,8 @@ const createCustomBox = (): any => {
 const createRepeatableGroup = (parameter: any): any => {
 	const template = parameter.repeatableGroup.parameters;
 	const tag = 'repeatable-group';
-	const label = document.createElement('text');
+	const label = document.createElement('div');
+	addClass(label, 'text');
 	const container = document.createElement('div');
 	container.className = 'repeatable-group';
 	const rowsEl = document.createElement('div');
@@ -727,17 +736,19 @@ const componentChange = (event: Event): void => {
 const applyAffix = (input: HTMLElement, param: any): void => {
 	const font = 'var(--font-family-mono)';
 	if (param.prefix) {
-		const pre = document.createElement('text');
+		const pre = document.createElement('div');
 		pre.textContent = param.prefix;
 		addClass(pre, 'param-affix');
 		addClass(pre, 'left');
+		addClass(pre, 'text');
 		(input as any).insertBefore(pre, (input as any).input);
 	}
 	if (param.suffix) {
-		const suf = document.createElement('text');
+		const suf = document.createElement('div');
 		suf.textContent = param.suffix;
 		addClass(suf, 'param-affix');
 		addClass(suf, 'right');
+		addClass(suf, 'text');
 		(input as any).insertBefore(suf, (input as any).input);
 	}
 	if ((input as any).input) {

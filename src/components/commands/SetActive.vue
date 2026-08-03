@@ -3,7 +3,7 @@
 	<TitleBar>Set Active<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setActive-actor" type="actor" /><text>State</text><SelectBox id="setActive-active" /></div>
+			<div class="text">Actor</div><CustomBox id="setActive-actor" type="actor" /><div class="text">State</div><SelectBox id="setActive-active" /></div>
 		<button id="setActive-confirm" name="confirm">Confirm</button>
 		<button id="setActive-cancel" name="cancel">Cancel</button>
 	</div>

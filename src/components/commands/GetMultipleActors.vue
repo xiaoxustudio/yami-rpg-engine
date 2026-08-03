@@ -3,34 +3,34 @@
 	<TitleBar>Get Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Write to List</text
+			<div class="text">Write to List</div
 			><CustomBox
 				id="getMultipleActors-variable"
 				type="variable"
 				filter="object"
-			 /><text>Position</text
-			><CustomBox id="getMultipleActors-position" type="position" /><text>Area</text><SelectBox id="getMultipleActors-area" /><text>Width</text
+			 /><div class="text">Position</div
+			><CustomBox id="getMultipleActors-position" type="position" /><div class="text">Area</div><SelectBox id="getMultipleActors-area" /><div class="text">Width</div
 			><NumberVar
 				id="getMultipleActors-width"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
-			 /><text>Height</text
+			 /><div class="text">Height</div
 			><NumberVar
 				id="getMultipleActors-height"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
-			 /><text>Radius</text
+			 /><div class="text">Radius</div
 			><NumberVar
 				id="getMultipleActors-radius"
 				min="0"
 				max="256"
 				decimals="4"
 				unit="tile"
-			 /><text>Selector</text><SelectBox id="getMultipleActors-selector" /><text>Team</text><SelectVar id="getMultipleActors-teamId" /><text>Activation</text><SelectBox id="getMultipleActors-activation" /></div>
+			 /><div class="text">Selector</div><SelectBox id="getMultipleActors-selector" /><div class="text">Team</div><SelectVar id="getMultipleActors-teamId" /><div class="text">Activation</div><SelectBox id="getMultipleActors-activation" /></div>
 		<button id="getMultipleActors-confirm" name="confirm">Confirm</button>
 		<button id="getMultipleActors-cancel" name="cancel">Cancel</button>
 	</div>

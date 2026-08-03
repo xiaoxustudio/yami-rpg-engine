@@ -5676,7 +5676,8 @@ Animation.list.createIcon = function () {
 
 // 列表 - 重写创建文本方法
 Animation.list.createText = function (item) {
-	const textNode = document.createElement('text');
+	const textNode = document.createElement('div');
+	addClass(textNode, 'text');
 	textNode.style.pointerEvents = 'none';
 	return textNode;
 };

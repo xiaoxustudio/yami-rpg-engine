@@ -3,14 +3,14 @@
 		<TitleBar>Set Ambient Light<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Red</text
+				<div class="text">Red</div
 				><NumberVar id="setAmbientLight-red" min="0" max="255" step="5" />
-				<text>Green</text
+				<div class="text">Green</div
 				><NumberVar id="setAmbientLight-green" min="0" max="255" step="5" />
-				<text>Blue</text
+				<div class="text">Blue</div
 				><NumberVar id="setAmbientLight-blue" min="0" max="255" step="5" />
-				<text>Easing</text><SelectBox id="setAmbientLight-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Easing</div><SelectBox id="setAmbientLight-easingId" name="easing" />
+				<div class="text">Duration</div
 				><NumberVar
 					id="setAmbientLight-duration"
 					name="duration"
@@ -18,7 +18,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="setAmbientLight-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="setAmbientLight-wait" name="wait" />
 			</div>
 			<button id="setAmbientLight-confirm" name="confirm">Confirm</button>
 			<button id="setAmbientLight-cancel" name="cancel">Cancel</button>

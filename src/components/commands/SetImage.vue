@@ -3,8 +3,8 @@
 		<TitleBar>Set Image<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setImage-element" type="element" />
-				<text>Properties</text><ParamList id="setImage-properties" />
+				<div class="text">Element</div><CustomBox id="setImage-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setImage-properties" />
 			</div>
 			<button id="setImage-confirm" name="confirm">Confirm</button>
 			<button id="setImage-cancel" name="cancel">Cancel</button>

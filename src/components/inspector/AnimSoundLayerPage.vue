@@ -2,7 +2,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSoundLayer-properties-grid') || 'Sound Layer' }}</DetailSummary>
 		<div class="detail-grid" id="animSoundLayer-properties-grid">
-			<text>{{ local.getLabel('animSoundLayer-playbackRate') || 'Playback Rate' }}</text
+			<div class="text">{{ local.getLabel('animSoundLayer-playbackRate') || 'Playback Rate' }}</div
 			><SelectBox id="animSoundLayer-playbackRate"></SelectBox>
 		</div>
 	</DetailBox>

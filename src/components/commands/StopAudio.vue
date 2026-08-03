@@ -2,7 +2,7 @@
 <WindowFrame id="stopAudio">
 	<TitleBar>Stop Audio<div class="close" /></TitleBar>
 	<div class="content-frame">
-		<div class="grid-box"> <text>Type</text><SelectBox id="stopAudio-type" /> </div>
+		<div class="grid-box"> <div class="text">Type</div><SelectBox id="stopAudio-type" /> </div>
 		<button id="stopAudio-confirm" name="confirm">Confirm</button>
 		<button id="stopAudio-cancel" name="cancel">Cancel</button>
 	</div>

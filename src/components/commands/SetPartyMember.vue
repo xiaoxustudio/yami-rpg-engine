@@ -3,7 +3,7 @@
 	<TitleBar>Set Party Member<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Operation</text><SelectBox id="setPartyMember-operation" /><text>Global Actor</text
+			<div class="text">Operation</div><SelectBox id="setPartyMember-operation" /><div class="text">Global Actor</div
 			><CustomBox id="setPartyMember-actor" type="actor" /></div>
 		<button id="setPartyMember-confirm" name="confirm">Confirm</button>
 		<button id="setPartyMember-cancel" name="cancel">Cancel</button>

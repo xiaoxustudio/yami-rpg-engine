@@ -3,8 +3,8 @@
 		<TitleBar>Set Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setElement-element" type="element" />
-				<text>Operation</text><SelectBox id="setElement-operation" />
+				<div class="text">Element</div><CustomBox id="setElement-element" type="element" />
+				<div class="text">Operation</div><SelectBox id="setElement-operation" />
 			</div>
 			<button id="setElement-confirm" name="confirm">Confirm</button>
 			<button id="setElement-cancel" name="cancel">Cancel</button>

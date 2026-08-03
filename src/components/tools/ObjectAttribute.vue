@@ -3,17 +3,17 @@
 		<TitleBar>Attribute<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Key</text><SelectBox id="object-attribute-key" /> <text>Boolean</text
-				><SelectBox id="object-attribute-boolean-value" /> <text>Number</text
+				<div class="text">Key</div><SelectBox id="object-attribute-key" /> <div class="text">Boolean</div
+				><SelectBox id="object-attribute-boolean-value" /> <div class="text">Number</div
 				><NumberBox
 					id="object-attribute-number-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="6"
 				/>
-				<text>String</text
+				<div class="text">String</div
 				><TextArea id="object-attribute-string-value" menu="tag-localization" />
-				<text>Option</text><SelectBox id="object-attribute-enum-value" />
+				<div class="text">Option</div><SelectBox id="object-attribute-enum-value" />
 			</div>
 			<button id="object-attribute-confirm" name="confirm">Confirm</button>
 			<button id="object-attribute-cancel" name="cancel">Cancel</button>

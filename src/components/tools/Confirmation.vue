@@ -4,7 +4,7 @@
 			<div class="close" />
 		</TitleBar>
 		<div class="content-frame">
-			<text id="confirmation-message" />
+			<div class="text" id="confirmation-message" />
 			<div class="box" id="confirmation-button-frame">
 				<button id="confirmation-button-0" />
 				<button id="confirmation-button-1" />

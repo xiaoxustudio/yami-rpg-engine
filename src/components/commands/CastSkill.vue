@@ -3,13 +3,13 @@
 		<TitleBar>Cast Skill<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Actor</text><CustomBox id="castSkill-actor" type="actor" />
-				<text>Mode</text><SelectBox id="castSkill-mode" /> <text>Shortcut Key</text
-				><SelectBox id="castSkill-key" /> <text>Shortcut Key</text
-				><StringVar id="castSkill-keyVar" /> <text>Skill</text
+				<div class="text">Actor</div><CustomBox id="castSkill-actor" type="actor" />
+				<div class="text">Mode</div><SelectBox id="castSkill-mode" /> <div class="text">Shortcut Key</div
+				><SelectBox id="castSkill-key" /> <div class="text">Shortcut Key</div
+				><StringVar id="castSkill-keyVar" /> <div class="text">Skill</div
 				><CustomBox id="castSkill-skillId" type="file" filter="skill" />
-				<text>Skill</text><CustomBox id="castSkill-skill" type="skill" />
-				<text>Wait</text><SelectBox id="castSkill-wait" name="wait" />
+				<div class="text">Skill</div><CustomBox id="castSkill-skill" type="skill" />
+				<div class="text">Wait</div><SelectBox id="castSkill-wait" name="wait" />
 			</div>
 			<button id="castSkill-confirm" name="confirm">Confirm</button>
 			<button id="castSkill-cancel" name="cancel">Cancel</button>

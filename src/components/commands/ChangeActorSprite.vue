@@ -3,12 +3,12 @@
 	<TitleBar>Change Actor Sprite<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeActorSprite-actor" type="actor" /><text>Animation</text
+			<div class="text">Actor</div><CustomBox id="changeActorSprite-actor" type="actor" /><div class="text">Animation</div
 			><CustomBox
 				id="changeActorSprite-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Sprite Name</text><SelectBox id="changeActorSprite-spriteId" /><text>Sprite</text
+			 /><div class="text">Sprite Name</div><SelectBox id="changeActorSprite-spriteId" /><div class="text">Sprite</div
 			><CustomBox id="changeActorSprite-image" type="file" filter="image" /></div>
 		<button id="changeActorSprite-confirm" name="confirm">Confirm</button>
 		<button id="changeActorSprite-cancel" name="cancel">Cancel</button>

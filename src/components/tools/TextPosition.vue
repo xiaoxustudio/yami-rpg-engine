@@ -4,8 +4,8 @@
 		<TitleBar>Set Text Position<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Axis</text><SelectBox id="textPosition-axis" /> <text>Operation</text
-				><SelectBox id="textPosition-operation" /> <text>Value</text
+				<div class="text">Axis</div><SelectBox id="textPosition-axis" /> <div class="text">Operation</div
+				><SelectBox id="textPosition-operation" /> <div class="text">Value</div
 				><NumberBox id="textPosition-value" min="-1000" max="1000" unit="px" />
 			</div>
 			<button id="textPosition-confirm" name="confirm">Confirm</button>

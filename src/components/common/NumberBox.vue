@@ -211,10 +211,11 @@ onMounted(() => {
 		}
 	}
 	if (props.unit !== null) {
-		const unitText = document.createElement('text');
+		const unitText = document.createElement('div');
 		const font = 'var(--font-family-mono)';
 		const padding = measureText(props.unit, font).width + 8;
 		addClass(unitText, 'unit');
+		addClass(unitText, 'text');
 		unitText.textContent = props.unit;
 		el.insertBefore(unitText, input);
 		input.style.paddingRight = `${padding}px`;

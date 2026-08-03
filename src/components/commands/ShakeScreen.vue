@@ -3,10 +3,10 @@
 		<TitleBar>Tint Screen<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Shake Mode</text><SelectBox id="shakeScreen-mode" /> <text>Power</text
-				><NumberBox id="shakeScreen-power" min="1" max="10" /> <text>Speed</text
-				><NumberBox id="shakeScreen-speed" min="1" max="10" /> <text>Easing</text
-				><SelectBox id="shakeScreen-easingId" name="easing" /> <text>Duration</text
+				<div class="text">Shake Mode</div><SelectBox id="shakeScreen-mode" /> <div class="text">Power</div
+				><NumberBox id="shakeScreen-power" min="1" max="10" /> <div class="text">Speed</div
+				><NumberBox id="shakeScreen-speed" min="1" max="10" /> <div class="text">Easing</div
+				><SelectBox id="shakeScreen-easingId" name="easing" /> <div class="text">Duration</div
 				><NumberBox
 					id="shakeScreen-duration"
 					name="duration"
@@ -14,7 +14,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="shakeScreen-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="shakeScreen-wait" name="wait" />
 			</div>
 			<button id="shakeScreen-confirm" name="confirm">Confirm</button>
 			<button id="shakeScreen-cancel" name="cancel">Cancel</button>

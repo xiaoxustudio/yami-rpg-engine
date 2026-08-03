@@ -1055,6 +1055,10 @@ slider-filler {
 	pointer-events: none;
 }
 
+.text {
+	display: inline;
+}
+
 /* --------------------------------
  * 节点列表
  * --------------------------------
@@ -1675,7 +1679,7 @@ common-item:hover {
 .command-item.disabled > .command-mark-minor,
 .command-item.disabled > .command-fold,
 .command-item.disabled > .command-text:not(.transparent),
-.command-item.disabled > text {
+.command-item.disabled > .text {
 	color: var(--command-color-mark-minor);
 }
 

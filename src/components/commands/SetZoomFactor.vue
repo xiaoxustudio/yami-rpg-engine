@@ -3,7 +3,7 @@
 		<TitleBar>Set Zoom Factor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Zoom Factor</text
+				<div class="text">Zoom Factor</div
 				><NumberVar
 					id="setZoomFactor-zoom"
 					min="1"
@@ -11,8 +11,8 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>Easing</text><SelectBox id="setZoomFactor-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Easing</div><SelectBox id="setZoomFactor-easingId" name="easing" />
+				<div class="text">Duration</div
 				><NumberVar
 					id="setZoomFactor-duration"
 					name="duration"
@@ -20,7 +20,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="setZoomFactor-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="setZoomFactor-wait" name="wait" />
 			</div>
 			<button id="setZoomFactor-confirm" name="confirm">Confirm</button>
 			<button id="setZoomFactor-cancel" name="cancel">Cancel</button>

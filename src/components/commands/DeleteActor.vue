@@ -3,7 +3,7 @@
 	<TitleBar>Delete Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="deleteActor-actor" type="actor" /></div>
+			<div class="text">Actor</div><CustomBox id="deleteActor-actor" type="actor" /></div>
 		<button id="deleteActor-confirm" name="confirm">Confirm</button>
 		<button id="deleteActor-cancel" name="cancel">Cancel</button>
 	</div>

@@ -2,12 +2,12 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animMotion-general-grid') || 'Motion' }}</DetailSummary>
 		<div class="detail-grid" id="animMotion-general-grid">
-			<text>{{ local.getLabel('animMotion-mode') || 'Direction' }}</text><SelectBox id="animMotion-mode"></SelectBox>
-			<text>{{ local.getLabel('animMotion-skip') || 'Skip Last Frame' }}</text
+			<div class="text">{{ local.getLabel('animMotion-mode') || 'Direction' }}</div><SelectBox id="animMotion-mode"></SelectBox>
+			<div class="text">{{ local.getLabel('animMotion-skip') || 'Skip Last Frame' }}</div
 			><CheckBox id="animMotion-skip" class="standard large"></CheckBox>
-			<text>{{ local.getLabel('animMotion-loop') || 'Loop' }}</text
+			<div class="text">{{ local.getLabel('animMotion-loop') || 'Loop' }}</div
 			><CheckBox id="animMotion-loop" class="standard large"></CheckBox>
-			<text>{{ local.getLabel('animMotion-loopStart') || 'Loop Start' }}</text
+			<div class="text">{{ local.getLabel('animMotion-loopStart') || 'Loop Start' }}</div
 			><NumberBox id="animMotion-loopStart" min="0" max="10000"></NumberBox>
 		</div>
 	</DetailBox>

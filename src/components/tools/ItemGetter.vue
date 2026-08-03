@@ -3,11 +3,11 @@
 		<TitleBar>Actor<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="itemGetter-type" /> <text>Actor</text
-				><CustomBox id="itemGetter-actor" type="actor" /> <text>Shortcut Key</text
-				><SelectVar id="itemGetter-key" /> <text>Item</text
+				<div class="text">Type</div><SelectBox id="itemGetter-type" /> <div class="text">Actor</div
+				><CustomBox id="itemGetter-actor" type="actor" /> <div class="text">Shortcut Key</div
+				><SelectVar id="itemGetter-key" /> <div class="text">Item</div
 				><CustomBox id="itemGetter-itemId" type="file" filter="item" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="itemGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="itemGetter-confirm" name="confirm">Confirm</button>

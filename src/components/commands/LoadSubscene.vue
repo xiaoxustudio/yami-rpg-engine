@@ -3,10 +3,10 @@
 		<TitleBar>Load Subscene<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Scene</text
+				<div class="text">Scene</div
 				><FileVar id="loadSubscene-sceneId" type="file" filter="scene" />
-				<text>Shift X</text><NumberVar id="loadSubscene-shiftX" min="0" max="512" />
-				<text>Shift Y</text><NumberVar id="loadSubscene-shiftY" min="0" max="512" />
+				<div class="text">Shift X</div><NumberVar id="loadSubscene-shiftX" min="0" max="512" />
+				<div class="text">Shift Y</div><NumberVar id="loadSubscene-shiftY" min="0" max="512" />
 			</div>
 			<button id="loadSubscene-confirm" name="confirm">Confirm</button>
 			<button id="loadSubscene-cancel" name="cancel">Cancel</button>

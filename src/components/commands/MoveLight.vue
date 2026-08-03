@@ -3,10 +3,10 @@
 		<TitleBar>Move Light<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Light</text><CustomBox id="moveLight-light" type="light" />
-				<text>Properties</text><ParamList id="moveLight-properties" />
-				<text>Easing</text><SelectBox id="moveLight-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Light</div><CustomBox id="moveLight-light" type="light" />
+				<div class="text">Properties</div><ParamList id="moveLight-properties" />
+				<div class="text">Easing</div><SelectBox id="moveLight-easingId" name="easing" />
+				<div class="text">Duration</div
 				><NumberBox
 					id="moveLight-duration"
 					name="duration"
@@ -14,7 +14,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="moveLight-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="moveLight-wait" name="wait" />
 			</div>
 			<button id="moveLight-confirm" name="confirm">Confirm</button>
 			<button id="moveLight-cancel" name="cancel">Cancel</button>

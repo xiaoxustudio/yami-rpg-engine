@@ -32,46 +32,46 @@
 				<MarqueeArea id="palette-marquee"></MarqueeArea>
 			</div>
 		</div>
-		<text id="palette-info"></text>
+		<div class="text" id="palette-info"></div>
 	</div>
 	<DetailBox id="fileTileset-general-detail" open>
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">
-			<text>{{ local.getLabel('fileTileset-image') || 'Image' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-image') || 'Image' }}</div
 			><CustomBox id="fileTileset-image" type="file" filter="image" />
-			<text>{{ local.getLabel('fileTileset-width') || 'Width' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-width') || 'Width' }}</div
 			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" />
-			<text>{{ local.getLabel('fileTileset-height') || 'Height' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-height') || 'Height' }}</div
 			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" />
-			<text>{{ local.getLabel('fileTileset-tileWidth') || 'Tile Width' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-tileWidth') || 'Tile Width' }}</div
 			><NumberBox
 				id="fileTileset-tileWidth"
 				min="16"
 				max="256"
 				unit="px"
 			/>
-			<text>{{ local.getLabel('fileTileset-tileHeight') || 'Tile Height' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-tileHeight') || 'Tile Height' }}</div
 			><NumberBox
 				id="fileTileset-tileHeight"
 				min="16"
 				max="256"
 				unit="px"
 			/>
-			<text>{{ local.getLabel('fileTileset-globalOffsetX') || 'Tile Offset X' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-globalOffsetX') || 'Tile Offset X' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetX"
 				min="-256"
 				max="256"
 				unit="px"
 			/>
-			<text>{{ local.getLabel('fileTileset-globalOffsetY') || 'Tile Offset Y' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-globalOffsetY') || 'Tile Offset Y' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetY"
 				min="-256"
 				max="256"
 				unit="px"
 			/>
-			<text>{{ local.getLabel('fileTileset-globalPriority') || 'Tile Priority' }}</text
+			<div class="text">{{ local.getLabel('fileTileset-globalPriority') || 'Tile Priority' }}</div
 			><NumberBox
 				id="fileTileset-globalPriority"
 				min="-10"

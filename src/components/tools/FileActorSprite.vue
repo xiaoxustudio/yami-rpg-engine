@@ -3,7 +3,7 @@
 		<TitleBar>Sprite<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Name</text><SelectBox id="fileActor-sprite-id" /> <text>Image</text
+				<div class="text">Name</div><SelectBox id="fileActor-sprite-id" /> <div class="text">Image</div
 				><CustomBox id="fileActor-sprite-image" type="file" filter="image" />
 			</div>
 			<button id="fileActor-sprite-confirm" name="confirm">Confirm</button>

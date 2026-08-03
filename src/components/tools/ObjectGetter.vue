@@ -3,9 +3,9 @@
 		<TitleBar>Scene Object<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="objectGetter-type" /> <text>Object</text
+				<div class="text">Type</div><SelectBox id="objectGetter-type" /> <div class="text">Object</div
 				><CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="objectGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="objectGetter-confirm" name="confirm">Confirm</button>

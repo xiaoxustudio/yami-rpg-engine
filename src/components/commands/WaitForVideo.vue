@@ -3,7 +3,7 @@
 		<TitleBar>Wait For Video<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="waitForVideo-element" type="element" />
+				<div class="text">Element</div><CustomBox id="waitForVideo-element" type="element" />
 			</div>
 			<button id="waitForVideo-confirm" name="confirm">Confirm</button>
 			<button id="waitForVideo-cancel" name="cancel">Cancel</button>

@@ -3,8 +3,8 @@
 		<TitleBar>Shift<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Shift X</text><NumberBox id="scene-shift-x" min="-512" max="512" />
-				<text>Shift Y</text><NumberBox id="scene-shift-y" min="-512" max="512" />
+				<div class="text">Shift X</div><NumberBox id="scene-shift-x" min="-512" max="512" />
+				<div class="text">Shift Y</div><NumberBox id="scene-shift-y" min="-512" max="512" />
 			</div>
 			<button id="scene-shift-confirm" name="confirm">Confirm</button>
 			<button id="scene-shift-cancel" name="cancel">Cancel</button>

@@ -3,14 +3,14 @@
 	<TitleBar>Detect Targets<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="detectTargets-actor" type="actor" /><text>Distance</text
+			<div class="text">Actor</div><CustomBox id="detectTargets-actor" type="actor" /><div class="text">Distance</div
 			><NumberVar
 				id="detectTargets-distance"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
-			 /><text>Selector</text><SelectBox id="detectTargets-selector" /><text>In Sight</text><SelectBox id="detectTargets-inSight" /></div>
+			 /><div class="text">Selector</div><SelectBox id="detectTargets-selector" /><div class="text">In Sight</div><SelectBox id="detectTargets-inSight" /></div>
 		<button id="detectTargets-confirm" name="confirm">Confirm</button>
 		<button id="detectTargets-cancel" name="cancel">Cancel</button>
 	</div>

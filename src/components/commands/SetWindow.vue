@@ -3,8 +3,8 @@
 		<TitleBar>Set Window<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setWindow-element" type="element" />
-				<text>Properties</text><ParamList id="setWindow-properties" />
+				<div class="text">Element</div><CustomBox id="setWindow-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setWindow-properties" />
 			</div>
 			<button id="setWindow-confirm" name="confirm">Confirm</button>
 			<button id="setWindow-cancel" name="cancel">Cancel</button>

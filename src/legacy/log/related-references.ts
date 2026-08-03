@@ -742,8 +742,9 @@ Reference.update = function (items: any) {
 			addClass(li, 'reference-comment');
 		}
 		if ('count' in item && item.count > 1) {
-			const counter = document.createElement('text');
+			const counter = document.createElement('div');
 			addClass(counter, 'reference-count');
+			addClass(counter, 'text');
 			counter.textContent = item.count.toString();
 			li.appendChild(counter);
 		}

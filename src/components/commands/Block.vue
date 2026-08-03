@@ -4,7 +4,7 @@
 	<div class="content-frame">
 		<TextBox id="block-note" />
 		<CheckBox id="block-asynchronous" class="standard"
-			><text id="block-asynchronous-label">Asynchronous</text></CheckBox
+			><div class="text" id="block-asynchronous-label">Asynchronous</div></CheckBox
 		>
 		<button id="block-confirm" name="confirm">Confirm</button>
 		<button id="block-cancel" name="cancel">Cancel</button>

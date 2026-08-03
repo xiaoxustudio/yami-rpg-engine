@@ -3,12 +3,12 @@
 		<TitleBar>Default Object Folders<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Tilemap</text><TextBox id="object-folder-tilemap" /> <text>Actor</text
-				><TextBox id="object-folder-actor" /> <text>Region</text
-				><TextBox id="object-folder-region" /> <text>Light</text
-				><TextBox id="object-folder-light" /> <text>Animation</text
-				><TextBox id="object-folder-animation" /> <text>Particle</text
-				><TextBox id="object-folder-particle" /> <text>Parallax</text
+				<div class="text">Tilemap</div><TextBox id="object-folder-tilemap" /> <div class="text">Actor</div
+				><TextBox id="object-folder-actor" /> <div class="text">Region</div
+				><TextBox id="object-folder-region" /> <div class="text">Light</div
+				><TextBox id="object-folder-light" /> <div class="text">Animation</div
+				><TextBox id="object-folder-animation" /> <div class="text">Particle</div
+				><TextBox id="object-folder-particle" /> <div class="text">Parallax</div
 				><TextBox id="object-folder-parallax" />
 			</div>
 			<button id="object-folder-confirm" name="confirm">Confirm</button>

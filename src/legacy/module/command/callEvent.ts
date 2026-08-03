@@ -138,7 +138,8 @@ import { Selection } from '@/tools/text-capture.ts';
 	},
 	createParameterElements(parameter: any) {
 		const { type, key, note } = parameter;
-		const label = document.createElement('text');
+		const label = document.createElement('div');
+		addClass(label, 'text');
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
 		label.textContent = name;
 		let input: any;
@@ -252,12 +253,13 @@ import { Selection } from '@/tools/text-capture.ts';
 				break;
 		}
 		write(input, { type: 'local', key: '' });
-		const label = document.createElement('text');
+		const label = document.createElement('div');
 		const text = Local.get('command.callEvent.return');
 		const tip = Local.get('command.callEvent.return.tip');
 		label.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
 		addClass(label, 'call-event-component');
+		addClass(label, 'text');
 		addClass(input, 'call-event-component');
 		this.gridBox.appendChild(label);
 		this.gridBox.appendChild(input);

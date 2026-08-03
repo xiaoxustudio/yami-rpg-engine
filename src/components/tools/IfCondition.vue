@@ -3,77 +3,77 @@
 		<TitleBar>Condition<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Condition Type</text><SelectBox id="if-condition-type" />
-				<text>Variable</text
+				<div class="text">Condition Type</div><SelectBox id="if-condition-type" />
+				<div class="text">Variable</div
 				><CustomBox
 					id="if-condition-common-variable"
 					type="variable"
 					filter="all"
 				/>
-				<text>Operation</text><SelectBox id="if-condition-boolean-operation" />
-				<text>Operand Type</text
-				><SelectBox id="if-condition-boolean-operand-type" /> <text>Constant</text
+				<div class="text">Operation</div><SelectBox id="if-condition-boolean-operation" />
+				<div class="text">Operand Type</div
+				><SelectBox id="if-condition-boolean-operand-type" /> <div class="text">Constant</div
 				><SelectBox id="if-condition-boolean-constant-value" />
-				<text>Operation</text><SelectBox id="if-condition-number-operation" />
-				<text>Operand Type</text><SelectBox id="if-condition-number-operand-type" />
-				<text>Constant</text
+				<div class="text">Operation</div><SelectBox id="if-condition-number-operation" />
+				<div class="text">Operand Type</div><SelectBox id="if-condition-number-operand-type" />
+				<div class="text">Constant</div
 				><NumberBox
 					id="if-condition-number-constant-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Operation</text><SelectBox id="if-condition-string-operation" />
-				<text>Operand Type</text><SelectBox id="if-condition-string-operand-type" />
-				<text>Constant</text><TextArea id="if-condition-string-constant-value" />
-				<text>Enum String</text
+				<div class="text">Operation</div><SelectBox id="if-condition-string-operation" />
+				<div class="text">Operand Type</div><SelectBox id="if-condition-string-operand-type" />
+				<div class="text">Constant</div><TextArea id="if-condition-string-constant-value" />
+				<div class="text">Enum String</div
 				><CustomBox id="if-condition-string-enum-stringId" type="enum-string" />
-				<text>Operation</text><SelectBox id="if-condition-object-operation" />
-				<text>Operand Type</text><SelectBox id="if-condition-object-operand-type" />
-				<text>Operation</text><SelectBox id="if-condition-list-operation" />
-				<text>Variable</text
+				<div class="text">Operation</div><SelectBox id="if-condition-object-operation" />
+				<div class="text">Operand Type</div><SelectBox id="if-condition-object-operand-type" />
+				<div class="text">Operation</div><SelectBox id="if-condition-list-operation" />
+				<div class="text">Variable</div
 				><CustomBox
 					id="if-condition-operand-variable"
 					type="variable"
 					filter="all"
 				/>
-				<text>Operation</text><SelectBox id="if-condition-actor-operation" />
-				<text>Actor</text><CustomBox id="if-condition-common-actor" type="actor" />
-				<text>Skill</text><CustomBox id="if-condition-common-skill" type="skill" />
-				<text>State</text><CustomBox id="if-condition-common-state" type="state" />
-				<text>Equipment</text
+				<div class="text">Operation</div><SelectBox id="if-condition-actor-operation" />
+				<div class="text">Actor</div><CustomBox id="if-condition-common-actor" type="actor" />
+				<div class="text">Skill</div><CustomBox id="if-condition-common-skill" type="skill" />
+				<div class="text">State</div><CustomBox id="if-condition-common-state" type="state" />
+				<div class="text">Equipment</div
 				><CustomBox id="if-condition-common-equipment" type="equipment" />
-				<text>Item</text><CustomBox id="if-condition-common-item" type="item" />
-				<text>Trigger</text
+				<div class="text">Item</div><CustomBox id="if-condition-common-item" type="item" />
+				<div class="text">Trigger</div
 				><CustomBox id="if-condition-common-trigger" type="trigger" />
-				<text>Light</text><CustomBox id="if-condition-common-light" type="light" />
-				<text>Element</text
+				<div class="text">Light</div><CustomBox id="if-condition-common-light" type="light" />
+				<div class="text">Element</div
 				><CustomBox id="if-condition-common-element" type="element" />
-				<text>Skill</text
+				<div class="text">Skill</div
 				><CustomBox id="if-condition-actor-skillId" type="file" filter="skill" />
-				<text>State</text
+				<div class="text">State</div
 				><CustomBox id="if-condition-actor-stateId" type="file" filter="state" />
-				<text>Item</text
+				<div class="text">Item</div
 				><CustomBox id="if-condition-actor-itemId" type="file" filter="item" />
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><CustomBox
 					id="if-condition-actor-equipmentId"
 					type="file"
 					filter="equipment"
 				/>
-				<text>Quantity</text
+				<div class="text">Quantity</div
 				><NumberBox id="if-condition-actor-quantity" min="1" max="10000" />
-				<text>Shortcut Key</text><SelectVar id="if-condition-actor-shortcutKey" />
-				<text>Target</text><CustomBox id="if-condition-actor-target" type="actor" />
-				<text>Team</text><SelectBox id="if-condition-actor-teamId" />
-				<text>Operation</text><SelectBox id="if-condition-element-operation" />
-				<text>Key Code</text><KeyboardBox id="if-condition-keyboard-keycode" />
-				<text>State</text><SelectBox id="if-condition-keyboard-state" />
-				<text>Button</text><GamepadBox id="if-condition-gamepad-button" />
-				<text>State</text><SelectBox id="if-condition-gamepad-state" />
-				<text>Button</text><SelectBox id="if-condition-mouse-button" />
-				<text>State</text><SelectBox id="if-condition-mouse-state" />
-				<text>Other</text><SelectBox id="if-condition-other-key" />
+				<div class="text">Shortcut Key</div><SelectVar id="if-condition-actor-shortcutKey" />
+				<div class="text">Target</div><CustomBox id="if-condition-actor-target" type="actor" />
+				<div class="text">Team</div><SelectBox id="if-condition-actor-teamId" />
+				<div class="text">Operation</div><SelectBox id="if-condition-element-operation" />
+				<div class="text">Key Code</div><KeyboardBox id="if-condition-keyboard-keycode" />
+				<div class="text">State</div><SelectBox id="if-condition-keyboard-state" />
+				<div class="text">Button</div><GamepadBox id="if-condition-gamepad-button" />
+				<div class="text">State</div><SelectBox id="if-condition-gamepad-state" />
+				<div class="text">Button</div><SelectBox id="if-condition-mouse-button" />
+				<div class="text">State</div><SelectBox id="if-condition-mouse-state" />
+				<div class="text">Other</div><SelectBox id="if-condition-other-key" />
 			</div>
 			<button id="if-condition-confirm" name="confirm">Confirm</button>
 			<button id="if-condition-cancel" name="cancel">Cancel</button>

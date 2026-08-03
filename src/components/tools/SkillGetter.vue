@@ -4,11 +4,11 @@
 		<TitleBar>Actor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="skillGetter-type" /> <text>Actor</text
-				><CustomBox id="skillGetter-actor" type="actor" /> <text>Shortcut Key</text
-				><SelectVar id="skillGetter-key" /> <text>Skill</text
+				<div class="text">Type</div><SelectBox id="skillGetter-type" /> <div class="text">Actor</div
+				><CustomBox id="skillGetter-actor" type="actor" /> <div class="text">Shortcut Key</div
+				><SelectVar id="skillGetter-key" /> <div class="text">Skill</div
 				><CustomBox id="skillGetter-skillId" type="file" filter="skill" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="skillGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="skillGetter-confirm" name="confirm">Confirm</button>

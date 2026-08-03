@@ -3,9 +3,9 @@
 	<TitleBar>Create Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text
-			><CustomBox id="createActor-actorId" type="file" filter="actor" /><text>Team</text><SelectBox id="createActor-teamId" /><text>Position</text
-			><CustomBox id="createActor-position" type="position" /><text>Angle</text
+			<div class="text">Actor</div
+			><CustomBox id="createActor-actorId" type="file" filter="actor" /><div class="text">Team</div><SelectBox id="createActor-teamId" /><div class="text">Position</div
+			><CustomBox id="createActor-position" type="position" /><div class="text">Angle</div
 			><NumberVar
 				id="createActor-angle"
 				min="-360"

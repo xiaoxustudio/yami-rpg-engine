@@ -3,9 +3,9 @@
 		<TitleBar>Set Trigger Motion<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Trigger</text
+				<div class="text">Trigger</div
 				><CustomBox id="setTriggerMotion-trigger" type="trigger" />
-				<text>Motion</text
+				<div class="text">Motion</div
 				><CustomBox id="setTriggerMotion-motion" type="enum-string" />
 			</div>
 			<button id="setTriggerMotion-confirm" name="confirm">Confirm</button>

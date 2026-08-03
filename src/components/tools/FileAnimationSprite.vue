@@ -3,11 +3,11 @@
 		<TitleBar>Sprite<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Name</text><TextBox id="fileAnimation-sprite-name" /> <text>Image</text
+				<div class="text">Name</div><TextBox id="fileAnimation-sprite-name" /> <div class="text">Image</div
 				><CustomBox id="fileAnimation-sprite-image" type="file" filter="image" />
-				<text>Horiz Frames</text
+				<div class="text">Horiz Frames</div
 				><NumberBox id="fileAnimation-sprite-hframes" min="1" max="256" />
-				<text>Vert Frames</text
+				<div class="text">Vert Frames</div
 				><NumberBox id="fileAnimation-sprite-vframes" min="1" max="256" />
 			</div>
 			<button id="fileAnimation-sprite-confirm" name="confirm">Confirm</button>

@@ -2,19 +2,19 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
-			<text>{{ local.getLabel('sceneParallax-name') || 'Name' }}</text><TextBox id="sceneParallax-name"></TextBox>
-			<text>{{ local.getLabel('sceneParallax-image') || 'Image' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-name') || 'Name' }}</div><TextBox id="sceneParallax-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneParallax-image') || 'Image' }}</div
 			><CustomBox
 				id="sceneParallax-image"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<text>{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</text><SelectBox id="sceneParallax-layer"></SelectBox>
-			<text>{{ local.getLabel('sceneParallax-order') || 'Order' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</div><SelectBox id="sceneParallax-layer"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneParallax-order') || 'Order' }}</div
 			><NumberBox id="sceneParallax-order" min="0" max="100"></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-light') || 'Light Sampling' }}</text
-			><SelectBox id="sceneParallax-light"></SelectBox> <text>{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</text
-			><SelectBox id="sceneParallax-blend"></SelectBox> <text>{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-light') || 'Light Sampling' }}</div
+			><SelectBox id="sceneParallax-light"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</div
+			><SelectBox id="sceneParallax-blend"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</div
 			><NumberBox
 				id="sceneParallax-opacity"
 				min="0"
@@ -22,7 +22,7 @@
 				step="0.05"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-x') || 'X' }}</div
 			><NumberBox
 				id="sceneParallax-x"
 				min="-128"
@@ -31,7 +31,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneParallax-y"
 				min="-128"
@@ -45,7 +45,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-parallax-grid">
-			<text>{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</div
 			><NumberBox
 				id="sceneParallax-scaleX"
 				min="0.2"
@@ -53,7 +53,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-scaleY') || 'Scale Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-scaleY') || 'Scale Y' }}</div
 			><NumberBox
 				id="sceneParallax-scaleY"
 				min="0.2"
@@ -61,11 +61,11 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-repeatX') || 'Repeat X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-repeatX') || 'Repeat X' }}</div
 			><NumberBox id="sceneParallax-repeatX" min="1" max="100"></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-repeatY') || 'Repeat Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-repeatY') || 'Repeat Y' }}</div
 			><NumberBox id="sceneParallax-repeatY" min="1" max="100"></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-anchorX') || 'Anchor X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-anchorX') || 'Anchor X' }}</div
 			><NumberBox
 				id="sceneParallax-anchorX"
 				min="0"
@@ -73,7 +73,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-anchorY') || 'Anchor Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-anchorY') || 'Anchor Y' }}</div
 			><NumberBox
 				id="sceneParallax-anchorY"
 				min="0"
@@ -81,21 +81,21 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-offsetX') || 'Offset X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-offsetX') || 'Offset X' }}</div
 			><NumberBox
 				id="sceneParallax-offsetX"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-offsetY') || 'Offset Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-offsetY') || 'Offset Y' }}</div
 			><NumberBox
 				id="sceneParallax-offsetY"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-parallaxFactorX') || 'Parallax Factor X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorX') || 'Parallax Factor X' }}</div
 			><NumberBox
 				id="sceneParallax-parallaxFactorX"
 				min="-4"
@@ -103,7 +103,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-parallaxFactorY') || 'Parallax Factor Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorY') || 'Parallax Factor Y' }}</div
 			><NumberBox
 				id="sceneParallax-parallaxFactorY"
 				min="-4"
@@ -111,7 +111,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-shiftSpeedX') || 'Shift Speed X' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedX') || 'Shift Speed X' }}</div
 			><NumberBox
 				id="sceneParallax-shiftSpeedX"
 				min="-10000"
@@ -120,7 +120,7 @@
 				decimals="4"
 				unit="px/s"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-shiftSpeedY') || 'Shift Speed Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedY') || 'Shift Speed Y' }}</div
 			><NumberBox
 				id="sceneParallax-shiftSpeedY"
 				min="-10000"
@@ -129,7 +129,7 @@
 				decimals="4"
 				unit="px/s"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParallax-tint-0-box') || 'Tint - Red' }}</text>
+			<div class="text">{{ local.getLabel('sceneParallax-tint-0-box') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-0-box">
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
@@ -144,7 +144,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParallax-tint-1-box') || 'Tint - Green' }}</text>
+			<div class="text">{{ local.getLabel('sceneParallax-tint-1-box') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-1-box">
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
@@ -159,7 +159,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParallax-tint-2-box') || 'Tint - Blue' }}</text>
+			<div class="text">{{ local.getLabel('sceneParallax-tint-2-box') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-2-box">
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
@@ -174,7 +174,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParallax-tint-3-box') || 'Tint - Grayscale' }}</text>
+			<div class="text">{{ local.getLabel('sceneParallax-tint-3-box') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-3-box">
 				<SliderBox
 					id="sceneParallax-tint-3-slider"

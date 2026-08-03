@@ -2,8 +2,8 @@
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
 			<div class="box" id="home-content">
-				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
-				<text id="home-version"></text>
+				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
+				<div class="text" id="home-version"></div>
 				<div class="box" id="home-start-list">
 					<div class="item home-list-label" id="home-start-label">Start</div>
 					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>

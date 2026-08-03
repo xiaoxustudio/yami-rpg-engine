@@ -1,7 +1,8 @@
 // 测量文本大小（带缓存，避免重复强制重排）
 export const measureText = (function IIFE() {
 	const size = { width: 0, lines: 0 };
-	const container = document.createElement('text');
+	const container = document.createElement('div');
+	container.classList.add('text');
 	let appended = false;
 	let usedFont = '';
 	let lineHeight = 0;

@@ -2,15 +2,15 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileEquipment-general-grid">
-			<text>{{ local.getLabel('fileEquipment-icon') || 'Icon' }}</text
+			<div class="text">{{ local.getLabel('fileEquipment-icon') || 'Icon' }}</div
 			><CustomBox id="fileEquipment-icon" type="file" filter="image" />
-			<text>{{ local.getLabel('fileEquipment-clip') || 'Clip' }}</text
+			<div class="text">{{ local.getLabel('fileEquipment-clip') || 'Clip' }}</div
 			><CustomBox
 				id="fileEquipment-clip"
 				type="clip"
 				image="fileEquipment-icon"
 			/>
-			<text>{{ local.getLabel('fileEquipment-inherit') || 'Inherit' }}</text
+			<div class="text">{{ local.getLabel('fileEquipment-inherit') || 'Inherit' }}</div
 			><CustomBox
 				id="fileEquipment-inherit"
 				type="file"

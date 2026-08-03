@@ -3,9 +3,9 @@
 		<TitleBar>Game Data<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="gameData-operation" />
-				<text>Index</text><NumberVar id="gameData-index" min="0" max="32" />
-				<text>Variables</text><TextBox id="gameData-variables" />
+				<div class="text">Operation</div><SelectBox id="gameData-operation" />
+				<div class="text">Index</div><NumberVar id="gameData-index" min="0" max="32" />
+				<div class="text">Variables</div><TextBox id="gameData-variables" />
 			</div>
 			<button id="gameData-confirm" name="confirm">Confirm</button>
 			<button id="gameData-cancel" name="cancel">Cancel</button>

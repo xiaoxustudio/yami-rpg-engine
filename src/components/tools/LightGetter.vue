@@ -3,9 +3,9 @@
 		<TitleBar>Light<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="lightGetter-type" /> <text>Light</text
+				<div class="text">Type</div><SelectBox id="lightGetter-type" /> <div class="text">Light</div
 				><CustomBox id="lightGetter-presetId" type="preset-object" filter="light" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="lightGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="lightGetter-confirm" name="confirm">Confirm</button>

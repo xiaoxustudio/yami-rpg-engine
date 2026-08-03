@@ -3,9 +3,9 @@
 		<TitleBar>Equipment<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Equipment</text
+				<div class="text">Equipment</div
 				><CustomBox id="fileActor-equipment-id" type="file" filter="equipment" />
-				<text>Slot</text><SelectBox id="fileActor-equipment-slot" />
+				<div class="text">Slot</div><SelectBox id="fileActor-equipment-slot" />
 			</div>
 			<button id="fileActor-equipment-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-equipment-cancel" name="cancel">Cancel</button>

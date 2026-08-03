@@ -3,7 +3,7 @@
 	<TitleBar>Set Player Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Global Actor</text
+			<div class="text">Global Actor</div
 			><CustomBox id="setPlayerActor-actor" type="actor" /></div>
 		<button id="setPlayerActor-confirm" name="confirm">Confirm</button>
 		<button id="setPlayerActor-cancel" name="cancel">Cancel</button>

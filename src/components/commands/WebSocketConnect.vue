@@ -3,15 +3,15 @@
 		<TitleBar>webSocketConnect<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>URL</text><StringVar id="webSocketConnect-url" /> <text>ID</text
-				><StringVar id="webSocketConnect-id" /> <text>Protocols</text
-				><StringVar id="webSocketConnect-protocols" /> <text>OnOpen</text
+				<div class="text">URL</div><StringVar id="webSocketConnect-url" /> <div class="text">ID</div
+				><StringVar id="webSocketConnect-id" /> <div class="text">Protocols</div
+				><StringVar id="webSocketConnect-protocols" /> <div class="text">OnOpen</div
 				><CustomBox id="webSocketConnect-onOpen" type="file" filter="event" />
-				<text>OnMessage</text
+				<div class="text">OnMessage</div
 				><CustomBox id="webSocketConnect-onMessage" type="file" filter="event" />
-				<text>OnError</text
+				<div class="text">OnError</div
 				><CustomBox id="webSocketConnect-onError" type="file" filter="event" />
-				<text>OnClose</text
+				<div class="text">OnClose</div
 				><CustomBox id="webSocketConnect-onClose" type="file" filter="event" />
 			</div>
 			<button id="webSocketConnect-confirm" name="confirm">Confirm</button>

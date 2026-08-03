@@ -4,10 +4,10 @@
 		<TitleBar>Actor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="stateGetter-type" /> <text>Actor</text
-				><CustomBox id="stateGetter-actor" type="actor" /> <text>State</text
+				<div class="text">Type</div><SelectBox id="stateGetter-type" /> <div class="text">Actor</div
+				><CustomBox id="stateGetter-actor" type="actor" /> <div class="text">State</div
 				><CustomBox id="stateGetter-stateId" type="file" filter="state" />
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="stateGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="stateGetter-confirm" name="confirm">Confirm</button>

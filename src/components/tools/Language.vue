@@ -3,9 +3,9 @@
 		<TitleBar>Language<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Name</text><SelectBox id="language-name" /> <text>Font</text
+				<div class="text">Name</div><SelectBox id="language-name" /> <div class="text">Font</div
 				><CustomBox id="language-font" type="file" filter="font" />
-				<text>Font Size Scaling</text
+				<div class="text">Font Size Scaling</div
 				><NumberBox id="language-scale" min="0.5" max="2" decimals="10" />
 			</div>
 			<button id="language-confirm" name="confirm">Confirm</button>

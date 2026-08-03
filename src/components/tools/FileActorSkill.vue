@@ -3,9 +3,9 @@
 		<TitleBar>Skill<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Skill</text
+				<div class="text">Skill</div
 				><CustomBox id="fileActor-skill-id" type="file" filter="skill" />
-				<text>Shortcut Key</text><SelectBox id="fileActor-skill-key" />
+				<div class="text">Shortcut Key</div><SelectBox id="fileActor-skill-key" />
 			</div>
 			<button id="fileActor-skill-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-skill-cancel" name="cancel">Cancel</button>

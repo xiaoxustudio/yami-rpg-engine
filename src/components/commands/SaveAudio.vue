@@ -2,7 +2,7 @@
 <WindowFrame id="saveAudio">
 	<TitleBar>Save Audio<div class="close" /></TitleBar>
 	<div class="content-frame">
-		<div class="grid-box"> <text>Type</text><SelectBox id="saveAudio-type" /> </div>
+		<div class="grid-box"> <div class="text">Type</div><SelectBox id="saveAudio-type" /> </div>
 		<button id="saveAudio-confirm" name="confirm">Confirm</button>
 		<button id="saveAudio-cancel" name="cancel">Cancel</button>
 	</div>

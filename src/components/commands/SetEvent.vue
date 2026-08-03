@@ -3,12 +3,12 @@
 	<TitleBar>Set Event<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Operation</text><SelectBox id="setEvent-operation" />
-			<text>Variable</text
+			<div class="text">Operation</div><SelectBox id="setEvent-operation" />
+			<div class="text">Variable</div
 			><CustomBox id="setEvent-variable" type="variable" filter="object" />
-			<text>Event</text
+			<div class="text">Event</div
 			><CustomBox id="setEvent-eventId" type="file" filter="event" />
-			<text>Choice Index</text
+			<div class="text">Choice Index</div
 			><NumberVar id="setEvent-choiceIndex" min="0" max="255" />
 		</div>
 		<button id="setEvent-confirm" name="confirm">Confirm</button>

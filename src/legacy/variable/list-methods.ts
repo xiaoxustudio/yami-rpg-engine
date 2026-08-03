@@ -116,8 +116,9 @@ Variable.list_updateItemClass = function (item: any) {
 Variable.list_createInitText = function (item: any) {
 	if (item.class !== 'folder') {
 		const { element } = item;
-		const initText = document.createElement('text');
+		const initText = document.createElement('div');
 		addClass(initText, 'variable-init-text');
+		addClass(initText, 'text');
 		element.appendChild(initText);
 		element.initText = initText;
 		// 对象变量的初始值是null，避免冲突

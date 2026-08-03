@@ -5,10 +5,10 @@
 			<div class="field-set" id="autoTile-general-fieldset">
 				<div class="legend">General</div>
 				<div class="grid-box" id="autoTile-general-grid">
-					<text>Image</text
+					<div class="text">Image</div
 					><CustomBox id="autoTile-image" type="file" filter="image" />
-					<text>Offset X</text><NumberBox id="autoTile-x" min="0" max="255" />
-					<text>Offset Y</text><NumberBox id="autoTile-y" min="0" max="255" />
+					<div class="text">Offset X</div><NumberBox id="autoTile-x" min="0" max="255" />
+					<div class="text">Offset Y</div><NumberBox id="autoTile-y" min="0" max="255" />
 				</div>
 			</div>
 			<div class="field-set input pad" id="autoTile-templates-fieldset">

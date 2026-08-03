@@ -3,7 +3,7 @@
 	<TitleBar>Reset Targets<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="resetTargets-actor" type="actor" /></div>
+			<div class="text">Actor</div><CustomBox id="resetTargets-actor" type="actor" /></div>
 		<button id="resetTargets-confirm" name="confirm">Confirm</button>
 		<button id="resetTargets-cancel" name="cancel">Cancel</button>
 	</div>

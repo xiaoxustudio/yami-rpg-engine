@@ -10,53 +10,53 @@
 				<div class="legend">Properties</div>
 				<div class="flex-box" id="attribute-properties-flex">
 					<div class="flex-item"
-						><text>Name</text
+						><div class="text">Name</div
 						><TextBox id="attribute-name" menu="tag-localization" /></div>
-					<div class="flex-item"><text>Key</text><TextBox id="attribute-key" /></div>
+					<div class="flex-item"><div class="text">Key</div><TextBox id="attribute-key" /></div>
 					<div class="flex-item" id="attribute-type-box"
-						><text>Type</text>
+						><div class="text">Type</div>
 						<RadioBox
 							id="attribute-type-boolean"
 							name="attribute-type"
 							class="standard"
 							value="boolean"
-							><text id="attribute-type-boolean-label">Boolean</text></RadioBox
+							><div class="text" id="attribute-type-boolean-label">Boolean</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-number"
 							name="attribute-type"
 							class="standard"
 							value="number"
-							><text id="attribute-type-number-label">Number</text></RadioBox
+							><div class="text" id="attribute-type-number-label">Number</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-string"
 							name="attribute-type"
 							class="standard"
 							value="string"
-							><text id="attribute-type-string-label">String</text></RadioBox
+							><div class="text" id="attribute-type-string-label">String</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-enum"
 							name="attribute-type"
 							class="standard"
 							value="enum"
-							><text id="attribute-type-enum-label">String(Enum)</text></RadioBox
+							><div class="text" id="attribute-type-enum-label">String(Enum)</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-object"
 							name="attribute-type"
 							class="standard"
 							value="object"
-							><text id="attribute-type-object-label"
-								>Object(For Element)</text
+							><div class="text" id="attribute-type-object-label"
+								>Object(For Element)</div
 							></RadioBox
 						>
 					</div>
 					<div class="flex-item" id="attribute-enum-box"
-						><text>Options</text>
+						><div class="text">Options</div>
 						<CustomBox id="attribute-enum" type="enum-group" /></div>
-					<div class="flex-item"><text>Note</text><TextArea id="attribute-note" /></div>
+					<div class="flex-item"><div class="text">Note</div><TextArea id="attribute-note" /></div>
 				</div>
 			</div>
 			<TextBox id="attribute-searcher" name="search" />

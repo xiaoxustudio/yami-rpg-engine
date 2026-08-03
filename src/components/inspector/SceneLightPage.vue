@@ -2,10 +2,10 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneLight-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneLight-general-grid">
-			<text>{{ local.getLabel('sceneLight-name') || 'Name' }}</text><TextBox id="sceneLight-name"></TextBox>
-			<text>{{ local.getLabel('sceneLight-type') || 'Type' }}</text><SelectBox id="sceneLight-type"></SelectBox>
-			<text>{{ local.getLabel('sceneLight-blend') || 'Blend' }}</text><SelectBox id="sceneLight-blend"></SelectBox>
-			<text>{{ local.getLabel('sceneLight-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneLight-name') || 'Name' }}</div><TextBox id="sceneLight-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneLight-type') || 'Type' }}</div><SelectBox id="sceneLight-type"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneLight-blend') || 'Blend' }}</div><SelectBox id="sceneLight-blend"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneLight-x') || 'X' }}</div
 			><NumberBox
 				id="sceneLight-x"
 				min="-128"
@@ -13,7 +13,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneLight-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneLight-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneLight-y"
 				min="-128"
@@ -21,7 +21,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneLight-range-box') || 'Range' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-range-box') || 'Range' }}</div>
 			<div class="flex-box" id="sceneLight-range-box">
 				<SliderBox
 					id="sceneLight-range-slider"
@@ -36,7 +36,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-intensity-box') || 'Intensity' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-intensity-box') || 'Intensity' }}</div>
 			<div class="flex-box" id="sceneLight-intensity-box">
 				<SliderBox
 					id="sceneLight-intensity-slider"
@@ -52,13 +52,13 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-mask') || 'Mask' }}</text
+			<div class="text">{{ local.getLabel('sceneLight-mask') || 'Mask' }}</div
 			><CustomBox
 				id="sceneLight-mask"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<text>{{ local.getLabel('sceneLight-anchorX-box') || 'Anchor X' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-anchorX-box') || 'Anchor X' }}</div>
 			<div class="flex-box" id="sceneLight-anchorX-box">
 				<SliderBox
 					id="sceneLight-anchorX-slider"
@@ -74,7 +74,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-anchorY-box') || 'Anchor Y' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-anchorY-box') || 'Anchor Y' }}</div>
 			<div class="flex-box" id="sceneLight-anchorY-box">
 				<SliderBox
 					id="sceneLight-anchorY-slider"
@@ -90,7 +90,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-width-box') || 'Width' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-width-box') || 'Width' }}</div>
 			<div class="flex-box" id="sceneLight-width-box">
 				<SliderBox
 					id="sceneLight-width-slider"
@@ -106,7 +106,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-height-box') || 'Height' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-height-box') || 'Height' }}</div>
 			<div class="flex-box" id="sceneLight-height-box">
 				<SliderBox
 					id="sceneLight-height-slider"
@@ -122,7 +122,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-angle-box') || 'Angle' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-angle-box') || 'Angle' }}</div>
 			<div class="flex-box" id="sceneLight-angle-box">
 				<SliderBox
 					id="sceneLight-angle-slider"
@@ -138,7 +138,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-red-box') || 'Red' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-red-box') || 'Red' }}</div>
 			<div class="flex-box" id="sceneLight-red-box">
 				<SliderBox
 					id="sceneLight-red-slider"
@@ -153,7 +153,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-green-box') || 'Green' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-green-box') || 'Green' }}</div>
 			<div class="flex-box" id="sceneLight-green-box">
 				<SliderBox
 					id="sceneLight-green-slider"
@@ -168,7 +168,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-blue-box') || 'Blue' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-blue-box') || 'Blue' }}</div>
 			<div class="flex-box" id="sceneLight-blue-box">
 				<SliderBox
 					id="sceneLight-blue-slider"
@@ -183,7 +183,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneLight-direct-box') || 'Direct Light Ratio' }}</text>
+			<div class="text">{{ local.getLabel('sceneLight-direct-box') || 'Direct Light Ratio' }}</div>
 			<div class="flex-box" id="sceneLight-direct-box">
 				<SliderBox
 					id="sceneLight-direct-slider"

@@ -3,21 +3,21 @@
 		<TitleBar>Set Boolean<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="setBoolean-variable"
 					type="variable"
 					filter="writable-boolean"
 				/>
-				<text>Operation</text><SelectBox id="setBoolean-operation" />
-				<text>Type</text><SelectBox id="setBoolean-operand-type" />
-				<text>Constant</text><SelectBox id="setBoolean-constant-value" />
-				<text>Variable</text
+				<div class="text">Operation</div><SelectBox id="setBoolean-operation" />
+				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" />
+				<div class="text">Constant</div><SelectBox id="setBoolean-constant-value" />
+				<div class="text">Variable</div
 				><CustomBox id="setBoolean-common-variable" type="variable" filter="all" />
-				<text>Index</text
+				<div class="text">Index</div
 				><NumberVar id="setBoolean-list-index" min="0" max="1000000000" />
-				<text>Param Name</text><StringVar id="setBoolean-parameter-key" />
-				<text>Script</text><TextBox id="setBoolean-script" />
+				<div class="text">Param Name</div><StringVar id="setBoolean-parameter-key" />
+				<div class="text">Script</div><TextBox id="setBoolean-script" />
 			</div>
 			<button id="setBoolean-confirm" name="confirm">Confirm</button>
 			<button id="setBoolean-cancel" name="cancel">Cancel</button>

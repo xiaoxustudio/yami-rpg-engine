@@ -4,33 +4,33 @@
 		<TitleBar>Text Property<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setTextBox-property-key" />
-				<text>Type</text><SelectBox id="setTextBox-property-type" />
-				<text>Text</text><StringVar id="setTextBox-property-text" />
-				<text>Number</text
+				<div class="text">Property</div><SelectBox id="setTextBox-property-key" />
+				<div class="text">Type</div><SelectBox id="setTextBox-property-type" />
+				<div class="text">Text</div><StringVar id="setTextBox-property-text" />
+				<div class="text">Number</div
 				><NumberVar
 					id="setTextBox-property-number"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Min</text
+				<div class="text">Min</div
 				><NumberVar
 					id="setTextBox-property-min"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Max</text
+				<div class="text">Max</div
 				><NumberVar
 					id="setTextBox-property-max"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>Decimal Places</text
+				<div class="text">Decimal Places</div
 				><NumberBox id="setTextBox-property-decimals" min="0" max="10" />
-				<text>Color</text><ColorBox id="setTextBox-property-color" />
+				<div class="text">Color</div><ColorBox id="setTextBox-property-color" />
 			</div>
 			<button id="setTextBox-property-confirm" name="confirm">Confirm</button>
 			<button id="setTextBox-property-cancel" name="cancel">Cancel</button>

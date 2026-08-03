@@ -3,7 +3,7 @@
 	<TitleBar>Change Actor Animation<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeActorAnimation-actor" type="actor" /><text>Animation</text
+			<div class="text">Actor</div><CustomBox id="changeActorAnimation-actor" type="actor" /><div class="text">Animation</div
 			><CustomBox
 				id="changeActorAnimation-animationId"
 				type="file"

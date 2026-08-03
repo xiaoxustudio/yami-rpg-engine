@@ -3,16 +3,16 @@
 	<TitleBar>downloadFile<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>URL</text><StringVar id="downloadFile-url" /> <text>Header</text
-			><ParamList id="downloadFile-header" /> <text>Method</text
-			><SelectBox id="downloadFile-method" /> <text>Data</text
-			><ParamList id="downloadFile-data" /> <text>CallBack</text
+			<div class="text">URL</div><StringVar id="downloadFile-url" /> <div class="text">Header</div
+			><ParamList id="downloadFile-header" /> <div class="text">Method</div
+			><SelectBox id="downloadFile-method" /> <div class="text">Data</div
+			><ParamList id="downloadFile-data" /> <div class="text">CallBack</div
 			><CustomBox id="downloadFile-callback" type="file" filter="event" />
-			<text>RateCallBack</text
+			<div class="text">RateCallBack</div
 			><CustomBox id="downloadFile-rateCallback" type="file" filter="event" />
-			<text>IsBackground</text
+			<div class="text">IsBackground</div
 			><CheckBox class="standard" id="downloadFile-isBackground" />
-			<text>Path</text><StringVar id="downloadFile-isBackground-path" />
+			<div class="text">Path</div><StringVar id="downloadFile-isBackground-path" />
 		</div>
 		<button id="downloadFile-confirm" name="confirm">Confirm</button>
 		<button id="downloadFile-cancel" name="cancel">Cancel</button>

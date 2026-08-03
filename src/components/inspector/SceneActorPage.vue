@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneActor-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
-			<text>{{ local.getLabel('sceneActor-name') || 'Name' }}</text><TextBox id="sceneActor-name"></TextBox>
-			<text>{{ local.getLabel('sceneActor-type') || 'Type' }}</text><SelectBox id="sceneActor-type"></SelectBox>
-			<text>{{ local.getLabel('sceneActor-actorId') || 'Actor' }}</text
+			<div class="text">{{ local.getLabel('sceneActor-name') || 'Name' }}</div><TextBox id="sceneActor-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneActor-type') || 'Type' }}</div><SelectBox id="sceneActor-type"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneActor-actorId') || 'Actor' }}</div
 			><CustomBox
 				id="sceneActor-actorId"
 				type="file"
 				filter="actor"
 			></CustomBox>
-			<text>{{ local.getLabel('sceneActor-teamId') || 'Team' }}</text><SelectBox id="sceneActor-teamId"></SelectBox>
-			<text>{{ local.getLabel('sceneActor-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneActor-teamId') || 'Team' }}</div><SelectBox id="sceneActor-teamId"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneActor-x') || 'X' }}</div
 			><NumberBox
 				id="sceneActor-x"
 				min="-128"
@@ -19,7 +19,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneActor-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneActor-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneActor-y"
 				min="-128"
@@ -27,7 +27,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneActor-angle-box') || 'Angle' }}</text
+			<div class="text">{{ local.getLabel('sceneActor-angle-box') || 'Angle' }}</div
 			><div class="flex-box" id="sceneActor-angle-box">
 				<SliderBox
 					id="sceneActor-angle-slider"
@@ -44,7 +44,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneActor-scale-box') || 'Scale' }}</text
+			<div class="text">{{ local.getLabel('sceneActor-scale-box') || 'Scale' }}</div
 			><div class="flex-box" id="sceneActor-scale-box">
 				<SliderBox
 					id="sceneActor-scale-slider"

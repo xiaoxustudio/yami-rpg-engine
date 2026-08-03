@@ -3,17 +3,17 @@
 		<TitleBar>Deployment<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Platform</text><SelectBox id="deployment-platform" />
-				<text>Folder</text><TextBox id="deployment-folder" />
-				<text>Output Location</text>
+				<div class="text">Platform</div><SelectBox id="deployment-platform" />
+				<div class="text">Folder</div><TextBox id="deployment-folder" />
+				<div class="text">Output Location</div>
 				<div class="flex-box" id="deployment-location-box">
 					<TextBox id="deployment-location" />
 					<button id="deployment-choose">…</button>
 				</div>
-				<text>Compress Resources</text>
+				<div class="text">Compress Resources</div>
 			<CheckBox id="deployment-compress" standard />
 			</div>
-			<text id="deployment-warning" />
+			<div class="text" id="deployment-warning" />
 			<button id="deployment-confirm" name="confirm">Confirm</button>
 			<button id="deployment-cancel" name="cancel">Cancel</button>
 		</div>

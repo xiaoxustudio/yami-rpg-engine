@@ -3,7 +3,7 @@
 	<TitleBar>Set Weight<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="setWeight-actor" type="actor" /><text>Weight</text
+			<div class="text">Actor</div><CustomBox id="setWeight-actor" type="actor" /><div class="text">Weight</div
 			><NumberVar id="setWeight-weight" min="0" max="8" step="0.1" decimals="4" /></div>
 		<button id="setWeight-confirm" name="confirm">Confirm</button>
 		<button id="setWeight-cancel" name="cancel">Cancel</button>

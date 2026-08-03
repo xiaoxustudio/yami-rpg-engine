@@ -8,7 +8,7 @@
 					<div class="box" id="autoTile-frameIndex-mask" />
 				</div>
 				<MarqueeArea id="autoTile-frameIndex-marquee" />
-				<text id="autoTile-frameIndex-info" />
+				<div class="text" id="autoTile-frameIndex-info" />
 			</div>
 		</div>
 	</WindowFrame>

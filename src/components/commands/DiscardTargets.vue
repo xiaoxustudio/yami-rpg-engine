@@ -3,7 +3,7 @@
 	<TitleBar>Discard Targets<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="discardTargets-actor" type="actor" /><text>Selector</text><SelectBox id="discardTargets-selector" /><text>Distance</text
+			<div class="text">Actor</div><CustomBox id="discardTargets-actor" type="actor" /><div class="text">Selector</div><SelectBox id="discardTargets-selector" /><div class="text">Distance</div
 			><NumberVar
 				id="discardTargets-distance"
 				min="0"

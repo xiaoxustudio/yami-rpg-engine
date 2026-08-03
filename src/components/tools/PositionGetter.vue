@@ -3,7 +3,7 @@
 		<TitleBar>Position<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="positionGetter-type" /> <text>X</text
+				<div class="text">Type</div><SelectBox id="positionGetter-type" /> <div class="text">X</div
 				><NumberVar
 					id="positionGetter-common-x"
 					min="-512"
@@ -11,7 +11,7 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<text>Y</text
+				<div class="text">Y</div
 				><NumberVar
 					id="positionGetter-common-y"
 					min="-512"
@@ -19,12 +19,12 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<text>Actor</text><CustomBox id="positionGetter-actor" type="actor" />
-				<text>Trigger</text><CustomBox id="positionGetter-trigger" type="trigger" />
-				<text>Light</text><CustomBox id="positionGetter-light" type="light" />
-				<text>Region</text><CustomBox id="positionGetter-region" type="region" />
-				<text>Mode</text><SelectBox id="positionGetter-region-mode" />
-				<text>Object</text
+				<div class="text">Actor</div><CustomBox id="positionGetter-actor" type="actor" />
+				<div class="text">Trigger</div><CustomBox id="positionGetter-trigger" type="trigger" />
+				<div class="text">Light</div><CustomBox id="positionGetter-light" type="light" />
+				<div class="text">Region</div><CustomBox id="positionGetter-region" type="region" />
+				<div class="text">Mode</div><SelectBox id="positionGetter-region-mode" />
+				<div class="text">Object</div
 				><CustomBox
 					id="positionGetter-objectId"
 					type="preset-object"

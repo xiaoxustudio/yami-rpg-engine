@@ -1,5 +1,5 @@
 import { $ } from '@/util/dom.ts';
-import { getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
+import { addClass, getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
@@ -187,7 +187,8 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: any, code: any) {
 		const monaco = await getMonaco();
-		const text = document.createElement('text');
+		const text = document.createElement('div');
+		addClass(text, 'text');
 		const options = this.colorOptions;
 		text.textContent = code;
 		options.theme = Title.theme;

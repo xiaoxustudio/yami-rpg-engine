@@ -2,60 +2,60 @@
 	<DetailBox id="uiElement-general-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
-			<text>{{ local.getLabel('uiElement-name') || 'Name' }}</text><TextBox id="uiElement-name"></TextBox>
-			<text>{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</text
+			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name"></TextBox>
+			<div class="text">{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</div
 			><SelectBox id="uiElement-pointerEvents"></SelectBox>
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-transform-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-transform-grid') || 'Transform' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-transform-grid">
-			<text>{{ local.getLabel('uiElement-transform-align-box') || 'Align' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-align-box') || 'Align' }}</div>
 			<div class="flex-box" id="uiElement-transform-align-box">
 				<button
 					id="uiElement-transform-align-left"
 					class="uiElement-transform-align"
 					value="left"
 				>
-					<text>&#xf036;</text>
+					<div class="text">&#xf036;</div>
 				</button>
 				<button
 					id="uiElement-transform-align-center"
 					class="uiElement-transform-align"
 					value="center"
 				>
-					<text>&#xf037;</text>
+					<div class="text">&#xf037;</div>
 				</button>
 				<button
 					id="uiElement-transform-align-right"
 					class="uiElement-transform-align"
 					value="right"
 				>
-					<text>&#xf038;</text>
+					<div class="text">&#xf038;</div>
 				</button>
 				<button
 					id="uiElement-transform-align-top"
 					class="uiElement-transform-align rotated"
 					value="top"
 				>
-					<text>&#xf036;</text>
+					<div class="text">&#xf036;</div>
 				</button>
 				<button
 					id="uiElement-transform-align-middle"
 					class="uiElement-transform-align rotated"
 					value="middle"
 				>
-					<text>&#xf037;</text>
+					<div class="text">&#xf037;</div>
 				</button>
 				<button
 					id="uiElement-transform-align-bottom"
 					class="uiElement-transform-align rotated"
 					value="bottom"
 				>
-					<text>&#xf038;</text>
+					<div class="text">&#xf038;</div>
 				</button>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-anchor-box') || 'Anchor' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-anchor-box') || 'Anchor' }}</div>
 			<div
 				id="uiElement-transform-anchor-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -75,7 +75,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-x-box') || 'X' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-x-box') || 'X' }}</div>
 			<div
 				id="uiElement-transform-x-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -96,7 +96,7 @@
 					unit="r"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-y-box') || 'Y' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-y-box') || 'Y' }}</div>
 			<div
 				id="uiElement-transform-y-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -117,7 +117,7 @@
 					unit="r"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-width-box') || 'Width' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-width-box') || 'Width' }}</div>
 			<div
 				id="uiElement-transform-width-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -138,7 +138,7 @@
 					unit="r"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-height-box') || 'Height' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-height-box') || 'Height' }}</div>
 			<div
 				id="uiElement-transform-height-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -159,7 +159,7 @@
 					unit="r"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-rotation-box') || 'Rotation' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-rotation-box') || 'Rotation' }}</div>
 			<div
 				id="uiElement-transform-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -172,7 +172,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-scale-box') || 'Scale' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-scale-box') || 'Scale' }}</div>
 			<div
 				id="uiElement-transform-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -192,7 +192,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-skew-box') || 'Skew' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-skew-box') || 'Skew' }}</div>
 			<div
 				id="uiElement-transform-skew-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -212,7 +212,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiElement-transform-opacity-box') || 'Opacity' }}</text>
+			<div class="text">{{ local.getLabel('uiElement-transform-opacity-box') || 'Opacity' }}</div>
 			<div
 				id="uiElement-transform-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -248,12 +248,12 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiImage-properties-grid">
-			<text>{{ local.getLabel('uiImage-image') || 'Image' }}</text
+			<div class="text">{{ local.getLabel('uiImage-image') || 'Image' }}</div
 			><CustomBox id="uiImage-image" type="file" filter="image"></CustomBox>
-			<text>{{ local.getLabel('uiImage-display') || 'Display' }}</text><SelectBox id="uiImage-display"></SelectBox>
-			<text>{{ local.getLabel('uiImage-flip') || 'Flip' }}</text><SelectBox id="uiImage-flip"></SelectBox>
-			<text>{{ local.getLabel('uiImage-blend') || 'Blend' }}</text><SelectBox id="uiImage-blend"></SelectBox>
-			<text>{{ local.getLabel('uiImage-shift-box') || 'Shift' }}</text>
+			<div class="text">{{ local.getLabel('uiImage-display') || 'Display' }}</div><SelectBox id="uiImage-display"></SelectBox>
+			<div class="text">{{ local.getLabel('uiImage-flip') || 'Flip' }}</div><SelectBox id="uiImage-flip"></SelectBox>
+			<div class="text">{{ local.getLabel('uiImage-blend') || 'Blend' }}</div><SelectBox id="uiImage-blend"></SelectBox>
+			<div class="text">{{ local.getLabel('uiImage-shift-box') || 'Shift' }}</div>
 			<div id="uiImage-shift-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiImage-shiftX"
@@ -268,20 +268,20 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiImage-clip') || 'Clip' }}</text
+			<div class="text">{{ local.getLabel('uiImage-clip') || 'Clip' }}</div
 			><CustomBox
 				id="uiImage-clip"
 				type="clip"
 				image="uiImage-image"
 			></CustomBox>
-			<text>{{ local.getLabel('uiImage-border') || 'Border' }}</text
+			<div class="text">{{ local.getLabel('uiImage-border') || 'Border' }}</div
 			><NumberBox
 				id="uiImage-border"
 				min="1"
 				max="100"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiImage-tint-0-box') || 'Tint - Red' }}</text>
+			<div class="text">{{ local.getLabel('uiImage-tint-0-box') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="uiImage-tint-0-box">
 				<SliderBox
 					id="uiImage-tint-0-slider"
@@ -296,7 +296,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiImage-tint-1-box') || 'Tint - Green' }}</text>
+			<div class="text">{{ local.getLabel('uiImage-tint-1-box') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="uiImage-tint-1-box">
 				<SliderBox
 					id="uiImage-tint-1-slider"
@@ -311,7 +311,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiImage-tint-2-box') || 'Tint - Blue' }}</text>
+			<div class="text">{{ local.getLabel('uiImage-tint-2-box') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="uiImage-tint-2-box">
 				<SliderBox
 					id="uiImage-tint-2-slider"
@@ -326,7 +326,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiImage-tint-3-box') || 'Tint - Grayscale' }}</text>
+			<div class="text">{{ local.getLabel('uiImage-tint-3-box') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="uiImage-tint-3-box">
 				<SliderBox
 					id="uiImage-tint-3-slider"

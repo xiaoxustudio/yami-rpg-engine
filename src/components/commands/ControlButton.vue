@@ -3,8 +3,8 @@
 		<TitleBar>Control Button<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="controlButton-operation" />
-				<text>Element</text><CustomBox id="controlButton-element" type="element" />
+				<div class="text">Operation</div><SelectBox id="controlButton-operation" />
+				<div class="text">Element</div><CustomBox id="controlButton-element" type="element" />
 			</div>
 			<button id="controlButton-confirm" name="confirm">Confirm</button>
 			<button id="controlButton-cancel" name="cancel">Cancel</button>

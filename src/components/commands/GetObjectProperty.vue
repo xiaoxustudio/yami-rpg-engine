@@ -3,14 +3,14 @@
 		<TitleBar>getObjectProperty<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="getObjectProperty-variable"
 					type="variable"
 					filter="object"
 				/>
-				<text>getObjectProperty</text><ParamList id="getObjectProperty-list" />
-				<text>saveVariable</text
+				<div class="text">getObjectProperty</div><ParamList id="getObjectProperty-list" />
+				<div class="text">saveVariable</div
 				><CustomBox
 					id="getObjectProperty-save-variable"
 					type="variable"

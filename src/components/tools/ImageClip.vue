@@ -11,16 +11,16 @@
 			</div>
 			<div class="flex-box" id="imageClip-flex">
 				<NumberBox id="imageClip-x" min="0" max="10000"
-					><text class="label">X:</text></NumberBox
+					><div class="text label">X:</div></NumberBox
 				>
 				<NumberBox id="imageClip-y" min="0" max="10000"
-					><text class="label">Y:</text></NumberBox
+					><div class="text label">Y:</div></NumberBox
 				>
 				<NumberBox id="imageClip-width" min="0" max="10000"
-					><text class="label">W:</text></NumberBox
+					><div class="text label">W:</div></NumberBox
 				>
 				<NumberBox id="imageClip-height" min="0" max="10000"
-					><text class="label">H:</text></NumberBox
+					><div class="text label">H:</div></NumberBox
 				>
 			</div>
 			<button id="imageClip-confirm" name="confirm">Confirm</button>

@@ -3,16 +3,16 @@
 		<TitleBar>Tint Screen<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box" id="tintScreen-grid-box">
-				<text>Tint - Red</text
+				<div class="text">Tint - Red</div
 				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" />
-				<text>Tint - Green</text
+				<div class="text">Tint - Green</div
 				><NumberBox id="tintScreen-tint-1" min="-255" max="255" step="5" />
-				<text>Tint - Blue</text
+				<div class="text">Tint - Blue</div
 				><NumberBox id="tintScreen-tint-2" min="-255" max="255" step="5" />
-				<text>Tint - Grayscale</text
+				<div class="text">Tint - Grayscale</div
 				><NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" />
-				<text>Easing</text><SelectBox id="tintScreen-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Easing</div><SelectBox id="tintScreen-easingId" name="easing" />
+				<div class="text">Duration</div
 				><NumberBox
 					id="tintScreen-duration"
 					name="duration"
@@ -20,7 +20,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="tintScreen-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="tintScreen-wait" name="wait" />
 			</div>
 			<FilterBox id="tintScreen-filter" width="96" height="160" />
 			<button id="tintScreen-confirm" name="confirm">Confirm</button>

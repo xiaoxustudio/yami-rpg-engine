@@ -3,12 +3,12 @@
 	<TitleBar>Switch<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Variable</text
+			<div class="text">Variable</div
 			><CustomBox id="switch-variable" type="variable" filter="all" />
-			<text>Branches</text><ParamList id="switch-branches" />
+			<div class="text">Branches</div><ParamList id="switch-branches" />
 		</div>
 		<CheckBox id="switch-default" class="standard"
-			><text id="switch-default-label">Default</text></CheckBox
+			><div class="text" id="switch-default-label">Default</div></CheckBox
 		>
 		<button id="switch-confirm" name="confirm">Confirm</button>
 		<button id="switch-cancel" name="cancel">Cancel</button>

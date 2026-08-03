@@ -3,12 +3,12 @@
 		<TitleBar>Image Property<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setProgressBar-property-key" />
-				<text>Image</text
+				<div class="text">Property</div><SelectBox id="setProgressBar-property-key" />
+				<div class="text">Image</div
 				><CustomBox id="setProgressBar-property-image" type="file" filter="image" />
-				<text>Display</text><SelectBox id="setProgressBar-property-display" />
-				<text>Blend</text><SelectBox id="setProgressBar-property-blend" />
-				<text>Progress</text
+				<div class="text">Display</div><SelectBox id="setProgressBar-property-display" />
+				<div class="text">Blend</div><SelectBox id="setProgressBar-property-blend" />
+				<div class="text">Progress</div
 				><NumberVar
 					id="setProgressBar-property-progress"
 					min="0"
@@ -16,41 +16,41 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Clip - X</text
+				<div class="text">Clip - X</div
 				><NumberVar
 					id="setProgressBar-property-clip-0"
 					min="0"
 					max="10000"
 					unit="px"
 				/>
-				<text>Clip - Y</text
+				<div class="text">Clip - Y</div
 				><NumberVar
 					id="setProgressBar-property-clip-1"
 					min="0"
 					max="10000"
 					unit="px"
 				/>
-				<text>Clip - Width</text
+				<div class="text">Clip - Width</div
 				><NumberVar
 					id="setProgressBar-property-clip-2"
 					min="0"
 					max="10000"
 					unit="px"
 				/>
-				<text>Clip - Height</text
+				<div class="text">Clip - Height</div
 				><NumberVar
 					id="setProgressBar-property-clip-3"
 					min="0"
 					max="10000"
 					unit="px"
 				/>
-				<text>Color - Red</text
+				<div class="text">Color - Red</div
 				><NumberVar id="setProgressBar-property-color-0" min="0" max="255" />
-				<text>Color - Green</text
+				<div class="text">Color - Green</div
 				><NumberVar id="setProgressBar-property-color-1" min="0" max="255" />
-				<text>Color - Blue</text
+				<div class="text">Color - Blue</div
 				><NumberVar id="setProgressBar-property-color-2" min="0" max="255" />
-				<text>Color - Alpha</text
+				<div class="text">Color - Alpha</div
 				><NumberVar id="setProgressBar-property-color-3" min="0" max="255" />
 			</div>
 			<button id="setProgressBar-property-confirm" name="confirm">Confirm</button>

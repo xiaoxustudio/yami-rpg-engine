@@ -4,13 +4,13 @@
 		<TitleBar>Set Text Effect<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Effect</text><SelectBox id="textEffect-type" /> <text>Shadow X</text
+				<div class="text">Effect</div><SelectBox id="textEffect-type" /> <div class="text">Shadow X</div
 				><NumberBox id="textEffect-shadowOffsetX" min="-9" max="9" unit="px" />
-				<text>Shadow Y</text
+				<div class="text">Shadow Y</div
 				><NumberBox id="textEffect-shadowOffsetY" min="-9" max="9" unit="px" />
-				<text>Stroke Width</text
+				<div class="text">Stroke Width</div
 				><NumberBox id="textEffect-strokeWidth" min="1" max="20" unit="px" />
-				<text>Effect Color</text><ColorBox id="textEffect-color" />
+				<div class="text">Effect Color</div><ColorBox id="textEffect-color" />
 			</div>
 			<button id="textEffect-confirm" name="confirm">Confirm</button>
 			<button id="textEffect-cancel" name="cancel">Cancel</button>

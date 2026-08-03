@@ -2,33 +2,33 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiAnimation-properties-grid') || 'Animation Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiAnimation-properties-grid">
-			<text>{{ local.getLabel('uiAnimation-animation') || 'Animation' }}</text
+			<div class="text">{{ local.getLabel('uiAnimation-animation') || 'Animation' }}</div
 			><CustomBox
 				id="uiAnimation-animation"
 				type="file"
 				filter="animation"
 			></CustomBox>
-			<text>{{ local.getLabel('uiAnimation-motion') || 'Motion' }}</text><SelectBox id="uiAnimation-motion"></SelectBox>
-			<text>{{ local.getLabel('uiAnimation-autoplay') || 'Autoplay' }}</text
+			<div class="text">{{ local.getLabel('uiAnimation-motion') || 'Motion' }}</div><SelectBox id="uiAnimation-motion"></SelectBox>
+			<div class="text">{{ local.getLabel('uiAnimation-autoplay') || 'Autoplay' }}</div
 			><CheckBox
 				id="uiAnimation-autoplay"
 				class="standard large"
 			></CheckBox>
-			<text>{{ local.getLabel('uiAnimation-rotatable') || 'Rotatable' }}</text
+			<div class="text">{{ local.getLabel('uiAnimation-rotatable') || 'Rotatable' }}</div
 			><CheckBox
 				id="uiAnimation-rotatable"
 				class="standard large"
 			></CheckBox>
-			<text>{{ local.getLabel('uiAnimation-angle') || 'Angle' }}</text
+			<div class="text">{{ local.getLabel('uiAnimation-angle') || 'Angle' }}</div
 			><NumberBox
 				id="uiAnimation-angle"
 				min="0"
 				max="360"
 				unit="deg"
 			></NumberBox>
-			<text>{{ local.getLabel('uiAnimation-frame') || 'Frame' }}</text
+			<div class="text">{{ local.getLabel('uiAnimation-frame') || 'Frame' }}</div
 			><NumberBox id="uiAnimation-frame" min="0" max="10000"></NumberBox>
-			<text>{{ local.getLabel('uiAnimation-offset-box') || 'Offset' }}</text>
+			<div class="text">{{ local.getLabel('uiAnimation-offset-box') || 'Offset' }}</div>
 			<div
 				id="uiAnimation-offset-box"
 				class="box uiElement-grid-box with-2-columns"

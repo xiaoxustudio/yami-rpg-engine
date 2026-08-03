@@ -2,9 +2,9 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileUI-foreground-grid') || 'Stage Foreground' }}</DetailSummary>
 		<div class="detail-grid" id="fileUI-foreground-grid">
-			<text>{{ local.getLabel('fileUI-width') || 'Width' }}</text
+			<div class="text">{{ local.getLabel('fileUI-width') || 'Width' }}</div
 			><NumberBox id="fileUI-width" min="8" max="7680" unit="px" />
-			<text>{{ local.getLabel('fileUI-height') || 'Height' }}</text
+			<div class="text">{{ local.getLabel('fileUI-height') || 'Height' }}</div
 			><NumberBox id="fileUI-height" min="8" max="7680" unit="px" />
 		</div>
 	</DetailBox>

@@ -3,7 +3,7 @@
 		<TitleBar>Branch<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Mode</text><SelectBox id="if-branch-mode" /> <text>Conditions</text
+				<div class="text">Mode</div><SelectBox id="if-branch-mode" /> <div class="text">Conditions</div
 				><ParamList id="if-branch-conditions" />
 			</div>
 			<button id="if-branch-confirm" name="confirm">Confirm</button>

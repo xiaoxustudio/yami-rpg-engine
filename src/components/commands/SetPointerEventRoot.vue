@@ -3,8 +3,8 @@
 		<TitleBar>Set Pointer Event Root<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="setPointerEventRoot-operation" />
-				<text>Element</text
+				<div class="text">Operation</div><SelectBox id="setPointerEventRoot-operation" />
+				<div class="text">Element</div
 				><CustomBox id="setPointerEventRoot-element" type="element" />
 			</div>
 			<button id="setPointerEventRoot-confirm" name="confirm">Confirm</button>

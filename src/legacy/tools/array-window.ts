@@ -100,12 +100,14 @@ ArrayList.interface = {
 	},
 	parse: function (value, data, index) {
 		const { filter } = ArrayList.target;
-		const indexText = document.createElement('text');
+		const indexText = document.createElement('div');
 		addClass(indexText, 'array-index');
+		addClass(indexText, 'text');
 		indexText.textContent = Number.padZero(index, data.length, ' ') + ':';
 
-		const valueText = document.createElement('text');
+		const valueText = document.createElement('div');
 		addClass(valueText, 'array-value');
+		addClass(valueText, 'text');
 		valueText.textContent = this.parsers[filter](value);
 
 		return [indexText, valueText];

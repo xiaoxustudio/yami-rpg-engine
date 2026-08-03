@@ -3,13 +3,13 @@
 		<TitleBar>Set Tile<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Tilemap</text><CustomBox id="setTile-tilemap" type="tilemap" />
-				<text>Tilemap X</text><NumberVar id="setTile-tilemapX" min="0" max="511" />
-				<text>Tilemap Y</text><NumberVar id="setTile-tilemapY" min="0" max="511" />
-				<text>Tileset</text
+				<div class="text">Tilemap</div><CustomBox id="setTile-tilemap" type="tilemap" />
+				<div class="text">Tilemap X</div><NumberVar id="setTile-tilemapX" min="0" max="511" />
+				<div class="text">Tilemap Y</div><NumberVar id="setTile-tilemapY" min="0" max="511" />
+				<div class="text">Tileset</div
 				><CustomBox id="setTile-tilesetId" type="file" filter="tileset" />
-				<text>Tileset X</text><NumberVar id="setTile-tilesetX" min="0" max="255" />
-				<text>Tileset Y</text><NumberVar id="setTile-tilesetY" min="0" max="255" />
+				<div class="text">Tileset X</div><NumberVar id="setTile-tilesetX" min="0" max="255" />
+				<div class="text">Tileset Y</div><NumberVar id="setTile-tilesetY" min="0" max="255" />
 			</div>
 			<button id="setTile-confirm" name="confirm">Confirm</button>
 			<button id="setTile-cancel" name="cancel">Cancel</button>

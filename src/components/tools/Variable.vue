@@ -10,64 +10,64 @@
 			<div class="field-set" id="variable-properties-fieldset">
 				<div class="legend">Properties</div>
 				<div class="flex-box" id="variable-properties-flex">
-					<div class="flex-item"><text>Name</text><TextBox id="variable-name" /></div>
+					<div class="flex-item"><div class="text">Name</div><TextBox id="variable-name" /></div>
 					<div class="flex-item"
-						><text>Sort</text>
+						><div class="text">Sort</div>
 						<RadioBox
 							id="variable-sort-normal"
 							name="variable-sort"
 							class="standard"
 							value="0"
-							><text id="variable-sort-normal-label">Normal</text></RadioBox
+							><div class="text" id="variable-sort-normal-label">Normal</div></RadioBox
 						>
 						<RadioBox
 							id="variable-sort-shared"
 							name="variable-sort"
 							class="standard"
 							value="1"
-							><text id="variable-sort-shared-label">Shared</text></RadioBox
+							><div class="text" id="variable-sort-shared-label">Shared</div></RadioBox
 						>
 						<RadioBox
 							id="variable-sort-temporary"
 							name="variable-sort"
 							class="standard"
 							value="2"
-							><text id="variable-sort-temporary-label">Temporary</text></RadioBox
+							><div class="text" id="variable-sort-temporary-label">Temporary</div></RadioBox
 						>
 					</div>
 					<div class="flex-item"
-						><text>Type</text>
+						><div class="text">Type</div>
 						<RadioBox
 							id="variable-type-boolean"
 							name="variable-type"
 							class="standard"
 							value="boolean"
-							><text id="variable-type-boolean-label">Boolean</text></RadioBox
+							><div class="text" id="variable-type-boolean-label">Boolean</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-number"
 							name="variable-type"
 							class="standard"
 							value="number"
-							><text id="variable-type-number-label">Number</text></RadioBox
+							><div class="text" id="variable-type-number-label">Number</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-string"
 							name="variable-type"
 							class="standard"
 							value="string"
-							><text id="variable-type-string-label">String</text></RadioBox
+							><div class="text" id="variable-type-string-label">String</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-object"
 							name="variable-type"
 							class="standard"
 							value="object"
-							><text id="variable-type-object-label">Object</text></RadioBox
+							><div class="text" id="variable-type-object-label">Object</div></RadioBox
 						>
 					</div>
 					<div class="flex-item" id="variable-value-box"
-						><text>Value</text>
+						><div class="text">Value</div>
 						<PageManager id="variable-value-manager">
 							<div class="page-frame" value="boolean">
 								<RadioBox
@@ -98,7 +98,7 @@
 							</div>
 						</PageManager>
 					</div>
-					<div class="flex-item"><text>Note</text><TextArea id="variable-note" /></div>
+					<div class="flex-item"><div class="text">Note</div><TextArea id="variable-note" /></div>
 				</div>
 			</div>
 			<TextBox id="variable-searcher" name="search" />

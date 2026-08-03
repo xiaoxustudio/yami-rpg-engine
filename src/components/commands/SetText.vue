@@ -3,8 +3,8 @@
 		<TitleBar>Set Text<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setText-element" type="element" />
-				<text>Properties</text><ParamList id="setText-properties" />
+				<div class="text">Element</div><CustomBox id="setText-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setText-properties" />
 			</div>
 			<button id="setText-confirm" name="confirm">Confirm</button>
 			<button id="setText-cancel" name="cancel">Cancel</button>

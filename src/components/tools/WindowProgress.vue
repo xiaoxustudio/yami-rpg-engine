@@ -4,7 +4,7 @@
 		<TitleBar>进度</TitleBar>
 		<div class="content-frame">
 			<div class="flex-box" id="windowProgress-flex">
-				<text id="windowProgress-info" />
+				<div class="text" id="windowProgress-info" />
 			</div>
 		</div>
 	</WindowFrame>

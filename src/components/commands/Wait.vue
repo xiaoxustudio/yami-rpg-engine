@@ -3,7 +3,7 @@
 	<TitleBar>Wait<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Duration</text
+			<div class="text">Duration</div
 			><NumberVar id="wait-duration" min="1" max="3600000" unit="ms" />
 		</div>
 		<button id="wait-confirm" name="confirm">Confirm</button>

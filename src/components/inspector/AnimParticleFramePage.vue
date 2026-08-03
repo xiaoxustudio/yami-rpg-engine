@@ -2,7 +2,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animParticleFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animParticleFrame-properties-grid">
-			<text>{{ local.getLabel('animParticleFrame-position-box') || 'Position' }}</text>
+			<div class="text">{{ local.getLabel('animParticleFrame-position-box') || 'Position' }}</div>
 			<div
 				id="animParticleFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -22,7 +22,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animParticleFrame-rotation-box') || 'Rotation' }}</text>
+			<div class="text">{{ local.getLabel('animParticleFrame-rotation-box') || 'Rotation' }}</div>
 			<div
 				id="animParticleFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -35,7 +35,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animParticleFrame-scale-box') || 'Scale' }}</text>
+			<div class="text">{{ local.getLabel('animParticleFrame-scale-box') || 'Scale' }}</div>
 			<div
 				id="animParticleFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -55,7 +55,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animParticleFrame-opacity-box') || 'Opacity' }}</text>
+			<div class="text">{{ local.getLabel('animParticleFrame-opacity-box') || 'Opacity' }}</div>
 			<div
 				id="animParticleFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -68,7 +68,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</text
+			<div class="text">{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</div
 			><NumberBox
 				id="animParticleFrame-scale"
 				min="0.1"
@@ -76,7 +76,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('animParticleFrame-speed') || 'Speed' }}</text
+			<div class="text">{{ local.getLabel('animParticleFrame-speed') || 'Speed' }}</div
 			><NumberBox
 				id="animParticleFrame-speed"
 				min="0.1"

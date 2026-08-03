@@ -3,8 +3,8 @@
 		<TitleBar>Set Terrain<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Position</text><CustomBox id="setTerrain-position" type="position" />
-				<text>Terrain</text><SelectBox id="setTerrain-terrain" />
+				<div class="text">Position</div><CustomBox id="setTerrain-position" type="position" />
+				<div class="text">Terrain</div><SelectBox id="setTerrain-terrain" />
 			</div>
 			<button id="setTerrain-confirm" name="confirm">Confirm</button>
 			<button id="setTerrain-cancel" name="cancel">Cancel</button>

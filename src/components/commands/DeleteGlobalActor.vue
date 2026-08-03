@@ -3,7 +3,7 @@
 	<TitleBar>Delete Global Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text
+			<div class="text">Actor</div
 			><CustomBox id="deleteGlobalActor-actorId" type="file" filter="actor" /></div>
 		<button id="deleteGlobalActor-confirm" name="confirm">Confirm</button>
 		<button id="deleteGlobalActor-cancel" name="cancel">Cancel</button>

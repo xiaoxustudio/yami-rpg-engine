@@ -23,7 +23,7 @@
 					</div>
 					<div class="box" id="animation-head-center">
 						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"
-							><text class="label">speed:</text></NumberBox
+							><div class="text label">speed:</div></NumberBox
 						>
 					</div>
 					<div class="box" id="animation-head-end">

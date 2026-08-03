@@ -2,8 +2,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiText-properties-grid') || 'Text Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiText-properties-grid">
-			<text>{{ local.getLabel('uiText-direction') || 'Direction' }}</text><SelectBox id="uiText-direction"></SelectBox>
-			<text>{{ local.getLabel('uiText-align-box') || 'Align' }}</text>
+			<div class="text">{{ local.getLabel('uiText-direction') || 'Direction' }}</div><SelectBox id="uiText-direction"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-align-box') || 'Align' }}</div>
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
 					id="uiText-align-left"
@@ -11,7 +11,7 @@
 					class="uiText-align"
 					value="left"
 					tabindex="0"
-					><text>&#xf036;</text></RadioBox
+					><div class="text">&#xf036;</div></RadioBox
 				>
 				<RadioBox
 					id="uiText-align-center"
@@ -19,7 +19,7 @@
 					class="uiText-align"
 					value="center"
 					tabindex="0"
-					><text>&#xf037;</text></RadioBox
+					><div class="text">&#xf037;</div></RadioBox
 				>
 				<RadioBox
 					id="uiText-align-right"
@@ -27,7 +27,7 @@
 					class="uiText-align"
 					value="right"
 					tabindex="0"
-					><text>&#xf038;</text></RadioBox
+					><div class="text">&#xf038;</div></RadioBox
 				>
 				<RadioBox
 					id="uiText-align-top"
@@ -35,7 +35,7 @@
 					class="uiText-align rotated"
 					value="top"
 					tabindex="0"
-					><text>&#xf036;</text></RadioBox
+					><div class="text">&#xf036;</div></RadioBox
 				>
 				<RadioBox
 					id="uiText-align-middle"
@@ -43,7 +43,7 @@
 					class="uiText-align rotated"
 					value="middle"
 					tabindex="0"
-					><text>&#xf037;</text></RadioBox
+					><div class="text">&#xf037;</div></RadioBox
 				>
 				<RadioBox
 					id="uiText-align-bottom"
@@ -51,15 +51,15 @@
 					class="uiText-align rotated"
 					value="bottom"
 					tabindex="0"
-					><text>&#xf038;</text></RadioBox
+					><div class="text">&#xf038;</div></RadioBox
 				>
 			</div>
-			<text>{{ local.getLabel('uiText-content') || 'Content' }}</text
+			<div class="text">{{ local.getLabel('uiText-content') || 'Content' }}</div
 			><TextArea
 				id="uiText-content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextArea>
-			<text>{{ local.getLabel('uiText-size-box') || 'Size' }}</text>
+			<div class="text">{{ local.getLabel('uiText-size-box') || 'Size' }}</div>
 			<div class="flex-box" id="uiText-size-box">
 				<SliderBox
 					id="uiText-size-slider"
@@ -75,7 +75,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiText-lineSpacing-box') || 'Line Spacing' }}</text>
+			<div class="text">{{ local.getLabel('uiText-lineSpacing-box') || 'Line Spacing' }}</div>
 			<div class="flex-box" id="uiText-lineSpacing-box">
 				<SliderBox
 					id="uiText-lineSpacing-slider"
@@ -91,7 +91,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiText-letterSpacing-box') || 'Letter Spacing' }}</text>
+			<div class="text">{{ local.getLabel('uiText-letterSpacing-box') || 'Letter Spacing' }}</div>
 			<div class="flex-box" id="uiText-letterSpacing-box">
 				<SliderBox
 					id="uiText-letterSpacing-slider"
@@ -107,34 +107,34 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiText-color') || 'Color' }}</text><ColorBox id="uiText-color"></ColorBox>
-			<text>{{ local.getLabel('uiText-font') || 'Font' }}</text><TextBox id="uiText-font"></TextBox>
-			<text>{{ local.getLabel('uiText-typeface') || 'Typeface' }}</text><SelectBox id="uiText-typeface"></SelectBox>
-			<text>{{ local.getLabel('uiText-effect-type') || 'Effect' }}</text><SelectBox id="uiText-effect-type"></SelectBox>
-			<text>{{ local.getLabel('uiText-effect-shadowOffsetX') || 'Shadow X' }}</text
+			<div class="text">{{ local.getLabel('uiText-color') || 'Color' }}</div><ColorBox id="uiText-color"></ColorBox>
+			<div class="text">{{ local.getLabel('uiText-font') || 'Font' }}</div><TextBox id="uiText-font"></TextBox>
+			<div class="text">{{ local.getLabel('uiText-typeface') || 'Typeface' }}</div><SelectBox id="uiText-typeface"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-effect-type') || 'Effect' }}</div><SelectBox id="uiText-effect-type"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetX"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiText-effect-shadowOffsetY') || 'Shadow Y' }}</text
+			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetY"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiText-effect-strokeWidth') || 'Stroke Width' }}</text
+			<div class="text">{{ local.getLabel('uiText-effect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiText-effect-strokeWidth"
 				min="1"
 				max="20"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiText-effect-color') || 'Effect Color' }}</text
-			><ColorBox id="uiText-effect-color"></ColorBox> <text>{{ local.getLabel('uiText-overflow') || 'Overflow' }}</text
-			><SelectBox id="uiText-overflow"></SelectBox> <text>{{ local.getLabel('uiText-blend') || 'Blend' }}</text
+			<div class="text">{{ local.getLabel('uiText-effect-color') || 'Effect Color' }}</div
+			><ColorBox id="uiText-effect-color"></ColorBox> <div class="text">{{ local.getLabel('uiText-overflow') || 'Overflow' }}</div
+			><SelectBox id="uiText-overflow"></SelectBox> <div class="text">{{ local.getLabel('uiText-blend') || 'Blend' }}</div
 			><SelectBox id="uiText-blend"></SelectBox>
 		</div>
 	</DetailBox>

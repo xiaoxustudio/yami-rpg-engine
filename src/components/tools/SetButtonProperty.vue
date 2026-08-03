@@ -3,17 +3,17 @@
 		<TitleBar>Set Button<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="setButton-property-key" />
-				<text>Image</text
+				<div class="text">Property</div><SelectBox id="setButton-property-key" />
+				<div class="text">Image</div
 				><CustomBox id="setButton-property-image" type="file" filter="image" />
-				<text>Clip</text>
+				<div class="text">Clip</div>
 				<div id="setButton-property-clip-box" class="box uiElement-grid-box with-4-columns">
 					<NumberBox id="setButton-property-clip-0" min="0" max="10000" />
 					<NumberBox id="setButton-property-clip-1" min="0" max="10000" />
 					<NumberBox id="setButton-property-clip-2" min="0" max="4000" />
 					<NumberBox id="setButton-property-clip-3" min="0" max="4000" />
 				</div>
-				<text>Tint</text>
+				<div class="text">Tint</div>
 				<div id="setButton-property-tint-box" class="box uiElement-grid-box with-4-columns">
 					<NumberBox
 						id="setButton-property-tint-0"
@@ -35,7 +35,7 @@
 					/>
 					<NumberBox id="setButton-property-tint-3" min="0" max="255" step="5" />
 				</div>
-				<text>Opacity</text
+				<div class="text">Opacity</div
 				><NumberBox
 					id="setButton-property-imageOpacity"
 					min="0"
@@ -43,14 +43,14 @@
 					step="0.05"
 					decimals="4"
 				/>
-				<text>Content</text
+				<div class="text">Content</div
 				><TextAreaVar
 					id="setButton-property-content"
 					menu="tag-local-var tag-global-var tag-dynamic-global-var tag-localization"
 				/>
-				<text>Size</text
+				<div class="text">Size</div
 				><NumberBox id="setButton-property-size" min="10" max="400" unit="px" />
-				<text>Letter Spacing</text
+				<div class="text">Letter Spacing</div
 				><NumberBox
 					id="setButton-property-letterSpacing"
 					min="-10"

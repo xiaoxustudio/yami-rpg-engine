@@ -3,7 +3,7 @@
 		<TitleBar>webSocketSend<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>ID</text><StringVar id="webSocketSend-id" /> <text>Data</text
+				<div class="text">ID</div><StringVar id="webSocketSend-id" /> <div class="text">Data</div
 				><StringVar id="webSocketSend-data" />
 			</div>
 			<button id="webSocketSend-confirm" name="confirm">Confirm</button>

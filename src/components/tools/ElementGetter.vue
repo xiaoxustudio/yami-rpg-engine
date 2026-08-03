@@ -3,12 +3,12 @@
 		<TitleBar>Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="elementGetter-type" /> <text>Ancestor</text
+				<div class="text">Type</div><SelectBox id="elementGetter-type" /> <div class="text">Ancestor</div
 				><CustomBox id="elementGetter-ancestor" type="ancestor-element" />
-				<text>Data ID</text
+				<div class="text">Data ID</div
 				><CustomBox id="elementGetter-presetId" type="preset-element" />
-				<text>Index</text><NumberVar id="elementGetter-index" min="0" max="10000" />
-				<text>Variable</text
+				<div class="text">Index</div><NumberVar id="elementGetter-index" min="0" max="10000" />
+				<div class="text">Variable</div
 				><CustomBox id="elementGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="elementGetter-confirm" name="confirm">Confirm</button>

@@ -3,7 +3,7 @@
 		<TitleBar>Switch Collision System<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="switchCollisionSystem-operation" />
+				<div class="text">Operation</div><SelectBox id="switchCollisionSystem-operation" />
 			</div>
 			<button id="switchCollisionSystem-confirm" name="confirm">Confirm</button>
 			<button id="switchCollisionSystem-cancel" name="cancel">Cancel</button>

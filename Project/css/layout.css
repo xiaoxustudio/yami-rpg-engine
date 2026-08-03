@@ -154,7 +154,7 @@ tooltip-line {
 	grid-template-columns: 1fr 2fr;
 }
 
-.detail-grid > text {
+.detail-grid > .text {
 	line-height: 20px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -268,7 +268,7 @@ tooltip-line {
 	white-space: nowrap;
 }
 
-.grid-box > text {
+.grid-box > .text {
 	line-height: 20px;
 	overflow: hidden;
 	white-space: nowrap;

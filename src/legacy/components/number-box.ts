@@ -113,10 +113,11 @@ export function attachNumberBoxApi(el: HTMLElement, dom?: any): void {
 	}
 
 	if (unit !== null) {
-		const unitText = document.createElement('text');
+		const unitText = document.createElement('div');
 		const font = 'var(--font-family-mono)';
 		const padding = measureText(unit, font).width + 8;
 		addClass(unitText, 'unit');
+		addClass(unitText, 'text');
 		unitText.textContent = unit;
 		el.insertBefore(unitText, input);
 		input.style.paddingRight = `${padding}px`;

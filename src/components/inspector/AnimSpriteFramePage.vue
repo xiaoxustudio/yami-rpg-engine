@@ -2,7 +2,7 @@
 	<DetailBox id="animSpriteFrame-properties-detail" open>
 		<DetailSummary>{{ local.getLabel('animSpriteFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSpriteFrame-properties-grid">
-			<text>{{ local.getLabel('animSpriteFrame-anchor-box') || 'Anchor' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-anchor-box') || 'Anchor' }}</div>
 			<div
 				id="animSpriteFrame-anchor-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -22,7 +22,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-pivot-box') || 'Pivot' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-pivot-box') || 'Pivot' }}</div>
 			<div
 				id="animSpriteFrame-pivot-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -42,7 +42,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-position-box') || 'Position' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-position-box') || 'Position' }}</div>
 			<div
 				id="animSpriteFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -62,7 +62,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-rotation-box') || 'Rotation' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-rotation-box') || 'Rotation' }}</div>
 			<div
 				id="animSpriteFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -75,7 +75,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-scale-box') || 'Scale' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-scale-box') || 'Scale' }}</div>
 			<div
 				id="animSpriteFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -95,7 +95,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-opacity-box') || 'Opacity' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-opacity-box') || 'Opacity' }}</div>
 			<div
 				id="animSpriteFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -108,7 +108,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-tint-0-box') || 'Tint - Red' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-tint-0-box') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
@@ -123,7 +123,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-tint-1-box') || 'Tint - Green' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-tint-1-box') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
@@ -138,7 +138,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-tint-2-box') || 'Tint - Blue' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-tint-2-box') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
@@ -153,7 +153,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('animSpriteFrame-tint-3-box') || 'Tint - Grayscale' }}</text>
+			<div class="text">{{ local.getLabel('animSpriteFrame-tint-3-box') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
@@ -172,7 +172,7 @@
 	</DetailBox>
 	<DetailBox id="animSpriteFrame-sprite-detail" open>
 		<DetailSummary id="animSpriteFrame-sprite-summary">
-			<text id="sprite-label">Sprite</text>
+			<div class="text" id="sprite-label">Sprite</div>
 			<div class="box" id="sprite-info"></div>
 			<SliderBox
 				id="sprite-zoom"

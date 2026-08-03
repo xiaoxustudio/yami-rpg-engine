@@ -373,17 +373,19 @@ function bindListMethods() {
 	};
 
 	list.createIcon = function () {
-		const closeButton = document.createElement('text');
+		const closeButton = document.createElement('div');
 		closeButton.textContent = '×';
 		addClass(closeButton, 'event-close-button');
+		addClass(closeButton, 'text');
 		on(closeButton, 'click', EventEditor.list.closeButtonClick);
 		return closeButton;
 	};
 
 	list.createInitText = function (item: any) {
 		const { element } = item;
-		const initText = document.createElement('text');
+		const initText = document.createElement('div');
 		addClass(initText, 'event-init-text');
+		addClass(initText, 'text');
 		element.appendChild(initText);
 		element.initText = initText;
 		element.attrValue = '';

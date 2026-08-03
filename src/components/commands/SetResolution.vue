@@ -3,13 +3,13 @@
 		<TitleBar>Set Resolution<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Width</text
+				<div class="text">Width</div
 				><NumberVar id="setResolution-width" min="240" max="7680" unit="px" />
-				<text>Height</text
+				<div class="text">Height</div
 				><NumberVar id="setResolution-height" min="240" max="7680" unit="px" />
-				<text>Scene Scale</text
+				<div class="text">Scene Scale</div
 				><NumberVar id="setResolution-sceneScale" min="0.5" max="4" decimals="10" />
-				<text>UI Scale</text
+				<div class="text">UI Scale</div
 				><NumberVar id="setResolution-uiScale" min="0.5" max="4" decimals="10" />
 			</div>
 			<button id="setResolution-confirm" name="confirm">Confirm</button>

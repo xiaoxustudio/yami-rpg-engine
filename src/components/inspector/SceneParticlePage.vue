@@ -2,14 +2,14 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
-			<text>{{ local.getLabel('sceneParticle-name') || 'Name' }}</text><TextBox id="sceneParticle-name"></TextBox>
-			<text>{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</div
 			><CustomBox
 				id="sceneParticle-particleId"
 				type="file"
 				filter="particle"
 			></CustomBox>
-			<text>{{ local.getLabel('sceneParticle-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-x') || 'X' }}</div
 			><NumberBox
 				id="sceneParticle-x"
 				min="-128"
@@ -17,7 +17,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParticle-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneParticle-y"
 				min="-128"
@@ -25,7 +25,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneParticle-angle-box') || 'Angle' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-angle-box') || 'Angle' }}</div
 			><div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
@@ -42,7 +42,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParticle-scale-box') || 'Scale' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-scale-box') || 'Scale' }}</div
 			><div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
@@ -58,7 +58,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParticle-speed-box') || 'Speed' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-speed-box') || 'Speed' }}</div
 			><div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
@@ -74,7 +74,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParticle-opacity-box') || 'Opacity' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-opacity-box') || 'Opacity' }}</div
 			><div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
@@ -90,7 +90,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('sceneParticle-priority-box') || 'Priority' }}</text
+			<div class="text">{{ local.getLabel('sceneParticle-priority-box') || 'Priority' }}</div
 			><div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"

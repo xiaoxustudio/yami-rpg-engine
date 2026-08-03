@@ -3,7 +3,7 @@
 		<TitleBar>Unload Subscene<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Scene</text
+				<div class="text">Scene</div
 				><FileVar id="unloadSubscene-sceneId" type="file" filter="scene" />
 			</div>
 			<button id="unloadSubscene-confirm" name="confirm">Confirm</button>

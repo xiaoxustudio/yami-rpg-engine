@@ -3,8 +3,8 @@
 		<TitleBar>Set Trigger Speed<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Trigger</text
-				><CustomBox id="setTriggerSpeed-trigger" type="trigger" /> <text>Speed</text
+				<div class="text">Trigger</div
+				><CustomBox id="setTriggerSpeed-trigger" type="trigger" /> <div class="text">Speed</div
 				><NumberVar
 					id="setTriggerSpeed-speed"
 					min="0"

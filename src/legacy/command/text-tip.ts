@@ -351,8 +351,9 @@ TextSuggestion.list.createText = function (
 	element: HTMLElement & { item: TextSuggestionItem }
 ): void {
 	const item = element.item;
-	const text = document.createElement('text');
+	const text = document.createElement('div');
 	addClass(text, 'text-suggestion-content');
+	addClass(text, 'text');
 	if (item.class) addClass(text, item.class);
 	text.textContent = item.name;
 	element.appendChild(text);
@@ -363,8 +364,9 @@ TextSuggestion.list.createRefCount = function (
 	element: HTMLElement & { item: TextSuggestionItem }
 ): void {
 	if (element.item.refCount) {
-		const comment = document.createElement('text');
+		const comment = document.createElement('div');
 		addClass(comment, 'text-suggestion-ref-count');
+		addClass(comment, 'text');
 		comment.textContent = String(element.item.refCount);
 		element.appendChild(comment);
 	}
@@ -375,8 +377,9 @@ TextSuggestion.list.createComment = function (
 	element: HTMLElement & { item: TextSuggestionItem }
 ): void {
 	if (element.item.comment) {
-		const comment = document.createElement('text');
+		const comment = document.createElement('div');
 		addClass(comment, 'text-suggestion-comment');
+		addClass(comment, 'text');
 		comment.textContent = element.item.comment;
 		element.appendChild(comment);
 	}

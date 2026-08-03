@@ -115,7 +115,7 @@ export class SettingRenderer {
 						if (labelEl)
 							labelEl.textContent = get(opt.labelKey) || opt.labelFallback || '';
 					} else if (components[id]) {
-						// components 项含 label/tip：setElement 把 label 写入前一个兄弟 <text>，tip 写入控件 tooltip
+						// components 项含 label/tip：setElement 把 label 写入前一个兄弟 .text，tip 写入控件 tooltip
 						Local.setElement!(el, components[id]);
 					}
 				}

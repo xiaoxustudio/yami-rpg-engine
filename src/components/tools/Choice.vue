@@ -3,7 +3,7 @@
 		<TitleBar>Choice<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Content</text
+				<div class="text">Content</div
 				><TextBox
 					id="choice-content"
 					menu="tag-local-var tag-global-var tag-localization"

@@ -432,7 +432,7 @@ export const Resources = new (class {
 		const domPase = new DOMParser().parseFromString(
 			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-          <text style="flex: 0 0 auto;">${value}:&emsp;</text>
+          <div class="text" style="flex: 0 0 auto;">${value}:&emsp;</div>
           <div class="text-box" style="flex: 1;"><input class="text-box-input" type="text" readonly /></div>
           <button id='resource-item-${value}-download' name='resource-download'></button>
           <button id='resource-item-${value}-pause' name='pause' style="display: none;">暂停</button>
@@ -443,11 +443,11 @@ export const Resources = new (class {
             <div style="flex: 1; height: 20px; background: var(--panel-background); border: 1px solid var(--border-color); border-radius: 3px; overflow: hidden;">
               <div id='resource-item-${value}-progress-bar' style="height: 100%; background: linear-gradient(90deg, #4caf50, #66bb6a); transition: width 0.3s; width: 0%;"></div>
             </div>
-            <text id='resource-item-${value}-progress-text' style="flex: 0 0 auto; min-width: 50px; text-align: right;">0%</text>
+            <div class="text" id='resource-item-${value}-progress-text' style="flex: 0 0 auto; min-width: 50px; text-align: right;">0%</div>
           </div>
-          <text id='resource-item-${value}-speed' style="font-size: 12px; color: #888;">速度: 0 KB/s</text>
+          <div class="text" id='resource-item-${value}-speed' style="font-size: 12px; color: #888;">速度: 0 KB/s</div>
         </div>
-        <text id='resource-item-${value}-size' style="font-size: 12px; color: #888; margin-top: 4px;">大小: 获取中...</text>
+        <div class="text" id='resource-item-${value}-size' style="font-size: 12px; color: #888; margin-top: 4px;">大小: 获取中...</div>
         </div>`,
 			'text/html'
 		);

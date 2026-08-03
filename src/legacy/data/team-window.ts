@@ -512,12 +512,14 @@ Team.list_updateItemName = function (item) {
 
 Team.list_createMarks = function (item) {
 	const { element } = item;
-	const relationMark = document.createElement('text');
+	const relationMark = document.createElement('div');
 	addClass(relationMark, 'team-relation-mark');
+	addClass(relationMark, 'text');
 	element.relationMark = relationMark;
 	element.appendChild(relationMark);
-	const collisionMark = document.createElement('text');
+	const collisionMark = document.createElement('div');
 	addClass(collisionMark, 'team-collision-mark');
+	addClass(collisionMark, 'text');
 	collisionMark.textContent = '\uf066';
 	element.collisionMark = collisionMark;
 	element.appendChild(collisionMark);

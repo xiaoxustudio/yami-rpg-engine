@@ -3,15 +3,15 @@
 		<TitleBar>New Project<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Template</text><SelectBox id="newProject-template" />
-				<text>Folder</text><TextBox id="newProject-folder" />
-				<text>Location</text>
+				<div class="text">Template</div><SelectBox id="newProject-template" />
+				<div class="text">Folder</div><TextBox id="newProject-folder" />
+				<div class="text">Location</div>
 				<div class="flex-box" id="newProject-location-box">
 					<TextBox id="newProject-location" />
 					<button id="newProject-choose">…</button>
 				</div>
 			</div>
-			<text id="newProject-warning" />
+			<div class="text" id="newProject-warning" />
 			<button id="newProject-confirm" name="confirm">Confirm</button>
 			<button id="newProject-cancel" name="cancel">Cancel</button>
 		</div>

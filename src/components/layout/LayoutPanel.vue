@@ -2,8 +2,8 @@
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
 			<div class="box" id="home-content">
-				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
-				<text id="home-version"></text>
+				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
+				<div class="text" id="home-version"></div>
 				<div class="box" id="home-start-list">
 					<div class="item home-list-label" id="home-start-label">Start</div>
 					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
@@ -72,7 +72,7 @@
 					<div class="box" id="scene-screen" tabindex="-1">
 						<MarqueeArea id="scene-marquee"></MarqueeArea>
 					</div>
-					<text id="scene-info"></text>
+					<div class="text" id="scene-info"></div>
 				</div>
 			</div>
 			<div class="page-frame" id="scene-object" value="scene-object">
@@ -124,7 +124,7 @@
 						<div class="item toolbar-item" id="animation-switch-settings" value="settings"></div>
 					</div>
 					<div class="box" id="animation-head-center">
-						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
+						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
 					</div>
 					<div class="box" id="animation-head-end">
 						<SliderBox id="animation-zoom" name="zoom-0-6" min="0" max="6" hotkey="-/+" active-wheel></SliderBox>
@@ -188,7 +188,7 @@
 							<div class="item toolbar-item" id="particle-control-restart" value="restart" hotkey="R"></div>
 							<div class="item toolbar-item" id="particle-control-pause" value="pause" hotkey="P"></div>
 						</div>
-						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
+						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
 					</div>
 					<div class="box" id="particle-head-end">
 						<SliderBox id="particle-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
@@ -198,7 +198,7 @@
 					<div class="box" id="particle-screen" tabindex="-1">
 						<MarqueeArea id="particle-marquee"></MarqueeArea>
 					</div>
-					<text id="particle-info"></text>
+					<div class="text" id="particle-info"></div>
 				</div>
 			</div>
 			<div class="page-frame" id="particle-layer" value="particle-layer">

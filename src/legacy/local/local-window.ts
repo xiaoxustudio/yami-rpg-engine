@@ -798,8 +798,9 @@ Localization.list_updateItemName = function (this: any, item: any) {
 Localization.list_createInitText = function (item: any) {
 	if (item.class !== 'folder') {
 		const { element } = item;
-		const initText = document.createElement('text');
+		const initText = document.createElement('div');
 		addClass(initText, 'localization-init-text');
+		addClass(initText, 'text');
 		element.appendChild(initText);
 		element.initText = initText;
 		element.attrValue = '';

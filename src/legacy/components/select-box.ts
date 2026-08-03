@@ -241,7 +241,7 @@ export function attachSelectBoxApi(el: HTMLElement): void {
 		}
 		if (tip === '' && options !== '') {
 			const prev = el.previousElementSibling;
-			if (prev?.tagName === 'TEXT') {
+			if (prev && hasClass(prev, 'text')) {
 				tip += `<b>${prev.textContent}</b>`;
 			}
 		}
@@ -321,7 +321,7 @@ export function attachSelectBoxApi(el: HTMLElement): void {
 			while (node instanceof Text) {
 				node = node.previousSibling;
 			}
-			if (node.tagName === 'TEXT') {
+			if (hasClass(node, 'text')) {
 				show(node);
 			}
 			show(element);
@@ -339,7 +339,7 @@ export function attachSelectBoxApi(el: HTMLElement): void {
 			while (node instanceof Text) {
 				node = node.previousSibling;
 			}
-			if (node.tagName === 'TEXT') {
+			if (hasClass(node, 'text')) {
 				hide(node);
 			}
 			hide(element);

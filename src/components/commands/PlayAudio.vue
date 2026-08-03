@@ -3,11 +3,11 @@
 	<TitleBar>Play Audio<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Type</text><SelectBox id="playAudio-type" /> <text>Audio</text
+			<div class="text">Type</div><SelectBox id="playAudio-type" /> <div class="text">Audio</div
 			><CustomBox id="playAudio-audio" type="file" filter="audio" />
-			<text>Volume</text
+			<div class="text">Volume</div
 			><NumberBox id="playAudio-volume" min="0" max="1" step="0.1" decimals="4" />
-			<text>Sound Location</text
+			<div class="text">Sound Location</div
 			><CustomBox id="playAudio-location" type="position" />
 		</div>
 		<button id="playAudio-confirm" name="confirm">Confirm</button>

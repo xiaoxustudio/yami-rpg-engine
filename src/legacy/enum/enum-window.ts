@@ -164,8 +164,9 @@ function ensureDomBound() {
 	Enum.list.createGroupText = function (item) {
 		if (item.class === 'folder') {
 			const { element } = item;
-			const groupText = document.createElement('text');
+			const groupText = document.createElement('div');
 			addClass(groupText, 'enum-init-text');
+			addClass(groupText, 'text');
 			element.appendChild(groupText);
 			element.groupText = groupText;
 			element.group = '';
@@ -189,8 +190,9 @@ function ensureDomBound() {
 	Enum.list.createInitText = function (item) {
 		if (item.class !== 'folder') {
 			const { element } = item;
-			const initText = document.createElement('text');
+			const initText = document.createElement('div');
 			addClass(initText, 'enum-init-text');
+			addClass(initText, 'text');
 			element.appendChild(initText);
 			element.initText = initText;
 			element.attrValue = '';

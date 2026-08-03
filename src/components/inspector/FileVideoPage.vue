@@ -2,11 +2,11 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileVideo-info-grid') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileVideo-info-grid">
-			<text>{{ local.getLabel('fileVideo-name') || 'Name' }}</text><text id="fileVideo-name"></text> <text>{{ local.getLabel('fileVideo-size') || 'Size' }}</text
-			><text id="fileVideo-size"></text> <text>{{ local.getLabel('fileVideo-duration') || 'Duration' }}</text
-			><text id="fileVideo-duration"></text> <text>{{ local.getLabel('fileVideo-resolution') || 'Resolution' }}</text
-			><text id="fileVideo-resolution"></text> <text>{{ local.getLabel('fileVideo-bitrate') || 'Bitrate' }}</text
-			><text id="fileVideo-bitrate"></text>
+			<div class="text">{{ local.getLabel('fileVideo-name') || 'Name' }}</div><div class="text" id="fileVideo-name"></div> <div class="text">{{ local.getLabel('fileVideo-size') || 'Size' }}</div
+			><div class="text" id="fileVideo-size"></div> <div class="text">{{ local.getLabel('fileVideo-duration') || 'Duration' }}</div
+			><div class="text" id="fileVideo-duration"></div> <div class="text">{{ local.getLabel('fileVideo-resolution') || 'Resolution' }}</div
+			><div class="text" id="fileVideo-resolution"></div> <div class="text">{{ local.getLabel('fileVideo-bitrate') || 'Bitrate' }}</div
+			><div class="text" id="fileVideo-bitrate"></div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileVideo-video-detail" open>

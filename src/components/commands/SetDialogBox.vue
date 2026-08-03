@@ -3,8 +3,8 @@
 		<TitleBar>Set Dialog Box<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="setDialogBox-element" type="element" />
-				<text>Properties</text><ParamList id="setDialogBox-properties" />
+				<div class="text">Element</div><CustomBox id="setDialogBox-element" type="element" />
+				<div class="text">Properties</div><ParamList id="setDialogBox-properties" />
 			</div>
 			<button id="setDialogBox-confirm" name="confirm">Confirm</button>
 			<button id="setDialogBox-cancel" name="cancel">Cancel</button>

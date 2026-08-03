@@ -14,8 +14,8 @@
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<div class="detail-grid" id="command-settings-grid">
-						<text>Alias</text><TextBox id="command-alias" /> <text>Keywords</text
-						><TextBox id="command-keywords" />
+						<div class="text">Alias</div><TextBox id="command-alias" /> <div class="text">Keywords</div
+					><TextBox id="command-keywords" />
 					</div>
 				</DetailBox>
 			</div>

@@ -3,9 +3,9 @@
 		<TitleBar>Set Focus<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="setFocus-operation" />
-				<text>Element</text><CustomBox id="setFocus-element" type="element" />
-				<text>Mode</text><SelectBox id="setFocus-mode" /> <text>Cancelable</text
+				<div class="text">Operation</div><SelectBox id="setFocus-operation" />
+				<div class="text">Element</div><CustomBox id="setFocus-element" type="element" />
+				<div class="text">Mode</div><SelectBox id="setFocus-mode" /> <div class="text">Cancelable</div
 				><CheckBox id="setFocus-cancelable" class="standard large" />
 			</div>
 			<button id="setFocus-confirm" name="confirm">Confirm</button>

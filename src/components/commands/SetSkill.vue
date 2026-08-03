@@ -3,9 +3,9 @@
 		<TitleBar>Set Skill<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Skill</text><CustomBox id="setSkill-skill" type="skill" />
-				<text>Operation</text><SelectBox id="setSkill-operation" />
-				<text>Cooldown</text
+				<div class="text">Skill</div><CustomBox id="setSkill-skill" type="skill" />
+				<div class="text">Operation</div><SelectBox id="setSkill-operation" />
+				<div class="text">Cooldown</div
 				><NumberVar id="setSkill-cooldown" min="1" max="3600000" unit="ms" />
 			</div>
 			<button id="setSkill-confirm" name="confirm">Confirm</button>

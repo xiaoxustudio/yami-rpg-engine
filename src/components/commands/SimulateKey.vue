@@ -3,8 +3,8 @@
 		<TitleBar>Simulate Key<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="simulateKey-operation" />
-				<text>Key Code</text><KeyboardBox id="simulateKey-keycode" />
+				<div class="text">Operation</div><SelectBox id="simulateKey-operation" />
+				<div class="text">Key Code</div><KeyboardBox id="simulateKey-keycode" />
 			</div>
 			<button id="simulateKey-confirm" name="confirm">Confirm</button>
 			<button id="simulateKey-cancel" name="cancel">Cancel</button>

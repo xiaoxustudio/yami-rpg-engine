@@ -3,10 +3,10 @@
 	<TitleBar>Set Pan<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Type</text><SelectBox id="setPan-type" /> <text>Pan</text
+			<div class="text">Type</div><SelectBox id="setPan-type" /> <div class="text">Pan</div
 			><NumberVar id="setPan-pan" min="-1" max="1" step="0.1" decimals="4" />
-			<text>Easing</text><SelectBox id="setPan-easingId" name="easing" />
-			<text>Duration</text
+			<div class="text">Easing</div><SelectBox id="setPan-easingId" name="easing" />
+			<div class="text">Duration</div
 			><NumberBox
 				id="setPan-duration"
 				name="duration"
@@ -14,7 +14,7 @@
 				max="3600000"
 				unit="ms"
 			 />
-			<text>Wait</text><SelectBox id="setPan-wait" name="wait" />
+			<div class="text">Wait</div><SelectBox id="setPan-wait" name="wait" />
 		</div>
 		<button id="setPan-confirm" name="confirm">Confirm</button>
 		<button id="setPan-cancel" name="cancel">Cancel</button>

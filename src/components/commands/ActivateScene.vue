@@ -3,7 +3,7 @@
 		<TitleBar>Activate Scene<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Scene</text><SelectBox id="activateScene-pointer" />
+				<div class="text">Scene</div><SelectBox id="activateScene-pointer" />
 			</div>
 			<button id="activateScene-confirm" name="confirm">Confirm</button>
 			<button id="activateScene-cancel" name="cancel">Cancel</button>

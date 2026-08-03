@@ -3,8 +3,8 @@
 		<TitleBar>Delete Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Operation</text><SelectBox id="deleteElement-operation" />
-				<text>Element</text><CustomBox id="deleteElement-element" type="element" />
+				<div class="text">Operation</div><SelectBox id="deleteElement-operation" />
+				<div class="text">Element</div><CustomBox id="deleteElement-element" type="element" />
 			</div>
 			<button id="deleteElement-confirm" name="confirm">Confirm</button>
 			<button id="deleteElement-cancel" name="cancel">Cancel</button>

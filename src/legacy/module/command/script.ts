@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { $ } from '@/util/dom.ts';
-import { getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
+import { addClass, getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Editor } from '@/main/editor.ts';
 import { CommandSchema } from './schema.ts';
@@ -264,7 +264,8 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: any, code: any) {
 		const monaco = await getMonaco();
-		const text = document.createElement('text');
+		const text = document.createElement('div');
+		addClass(text, 'text');
 		const options = this.colorOptions;
 		text.textContent = code;
 		options.theme = Title.theme;

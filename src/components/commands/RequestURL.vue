@@ -3,10 +3,10 @@
 	<TitleBar>requestURL<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>URL</text><StringVar id="requestURL-url" /> <text>Header</text
-			><ParamList id="requestURL-header" /> <text>Method</text
-			><SelectBox id="requestURL-method" /> <text>Data</text
-			><ParamList id="requestURL-data" /> <text>CallBack</text
+			<div class="text">URL</div><StringVar id="requestURL-url" /> <div class="text">Header</div
+			><ParamList id="requestURL-header" /> <div class="text">Method</div
+			><SelectBox id="requestURL-method" /> <div class="text">Data</div
+			><ParamList id="requestURL-data" /> <div class="text">CallBack</div
 			><CustomBox id="requestURL-callback" type="file" filter="event" />
 		</div>
 		<button id="requestURL-confirm" name="confirm">Confirm</button>

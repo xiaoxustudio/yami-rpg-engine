@@ -3,22 +3,22 @@
 		<TitleBar>Set Object Animation<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box" id="setObjectAnimation-grid-box">
-				<text>Sort</text><SelectBox id="setObjectAnimation-sort" />
-				<text>Actor</text><CustomBox id="setObjectAnimation-actor" type="actor" />
-				<text>Trigger</text
+				<div class="text">Sort</div><SelectBox id="setObjectAnimation-sort" />
+				<div class="text">Actor</div><CustomBox id="setObjectAnimation-actor" type="actor" />
+				<div class="text">Trigger</div
 				><CustomBox id="setObjectAnimation-trigger" type="trigger" />
-				<text>Animation</text
+				<div class="text">Animation</div
 				><CustomBox id="setObjectAnimation-animation" type="object" />
-				<text>Operation</text><SelectBox id="setObjectAnimation-operation" />
-				<text>Tint - Red</text
+				<div class="text">Operation</div><SelectBox id="setObjectAnimation-operation" />
+				<div class="text">Tint - Red</div
 				><NumberBox id="setObjectAnimation-tint-0" min="-255" max="255" step="5" />
-				<text>Tint - Green</text
+				<div class="text">Tint - Green</div
 				><NumberBox id="setObjectAnimation-tint-1" min="-255" max="255" step="5" />
-				<text>Tint - Blue</text
+				<div class="text">Tint - Blue</div
 				><NumberBox id="setObjectAnimation-tint-2" min="-255" max="255" step="5" />
-				<text>Tint - Grayscale</text
+				<div class="text">Tint - Grayscale</div
 				><NumberBox id="setObjectAnimation-tint-3" min="0" max="255" step="5" />
-				<text>Opacity</text
+				<div class="text">Opacity</div
 				><NumberVar
 					id="setObjectAnimation-opacity"
 					min="0"
@@ -26,7 +26,7 @@
 					step="0.1"
 					decimals="4"
 				 />
-				<text>OffsetY</text
+				<div class="text">OffsetY</div
 				><NumberVar
 					id="setObjectAnimation-offsetY"
 					min="-10000"
@@ -34,7 +34,7 @@
 					step="1"
 					decimals="4"
 				 />
-				<text>Rotation</text
+				<div class="text">Rotation</div
 				><NumberVar
 					id="setObjectAnimation-rotation"
 					min="-10000"
@@ -42,9 +42,9 @@
 					step="1"
 					decimals="4"
 				 />
-				<text>Easing</text
+				<div class="text">Easing</div
 				><SelectBox id="setObjectAnimation-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Duration</div
 				><NumberBox
 					id="setObjectAnimation-duration"
 					name="duration"
@@ -52,7 +52,7 @@
 					max="3600000"
 					unit="ms"
 				 />
-				<text>Wait</text><SelectBox id="setObjectAnimation-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="setObjectAnimation-wait" name="wait" />
 			</div>
 			<button id="setObjectAnimation-confirm" name="confirm">Confirm</button>
 			<button id="setObjectAnimation-cancel" name="cancel">Cancel</button>

@@ -3,12 +3,12 @@
 		<TitleBar>Load Scene<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Scene</text
+				<div class="text">Scene</div
 				><FileVar id="loadScene-sceneId" type="file" filter="scene" />
-				<text>Transfer Player</text><SelectBox id="loadScene-transfer" />
-				<text>X</text
+				<div class="text">Transfer Player</div><SelectBox id="loadScene-transfer" />
+				<div class="text">X</div
 				><NumberVar id="loadScene-x" min="0" max="512" step="0.5" decimals="4" />
-				<text>Y</text
+				<div class="text">Y</div
 				><NumberVar id="loadScene-y" min="0" max="512" step="0.5" decimals="4" />
 			</div>
 			<button id="loadScene-confirm" name="confirm">Confirm</button>

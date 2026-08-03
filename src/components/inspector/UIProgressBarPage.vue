@@ -2,21 +2,21 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiProgressBar-properties-grid') || 'ProgressBar Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiProgressBar-properties-grid">
-			<text>{{ local.getLabel('uiProgressBar-image') || 'Image' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-image') || 'Image' }}</div
 			><CustomBox
 				id="uiProgressBar-image"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<text>{{ local.getLabel('uiProgressBar-display') || 'Display' }}</text><SelectBox id="uiProgressBar-display"></SelectBox>
-			<text>{{ local.getLabel('uiProgressBar-clip') || 'Clip' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-display') || 'Display' }}</div><SelectBox id="uiProgressBar-display"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-clip') || 'Clip' }}</div
 			><CustomBox
 				id="uiProgressBar-clip"
 				type="clip"
 				image="uiProgressBar-image"
 			></CustomBox>
-			<text>{{ local.getLabel('uiProgressBar-type') || 'Type' }}</text><SelectBox id="uiProgressBar-type"></SelectBox>
-			<text>{{ local.getLabel('uiProgressBar-centerX') || 'Center X' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-type') || 'Type' }}</div><SelectBox id="uiProgressBar-type"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-centerX') || 'Center X' }}</div
 			><NumberBox
 				id="uiProgressBar-centerX"
 				min="0"
@@ -24,7 +24,7 @@
 				step="0.05"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-centerY') || 'Center Y' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-centerY') || 'Center Y' }}</div
 			><NumberBox
 				id="uiProgressBar-centerY"
 				min="0"
@@ -32,7 +32,7 @@
 				step="0.05"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-startAngle') || 'Start Angle' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-startAngle') || 'Start Angle' }}</div
 			><NumberBox
 				id="uiProgressBar-startAngle"
 				min="-360"
@@ -41,7 +41,7 @@
 				decimals="4"
 				unit="deg"
 			></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-centralAngle') || 'Central Angle' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-centralAngle') || 'Central Angle' }}</div
 			><NumberBox
 				id="uiProgressBar-centralAngle"
 				min="-360"
@@ -50,9 +50,9 @@
 				decimals="4"
 				unit="deg"
 			></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-step') || 'Step' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-step') || 'Step' }}</div
 			><NumberBox id="uiProgressBar-step" min="0" max="100"></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-progress') || 'Progress' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-progress') || 'Progress' }}</div
 			><NumberBox
 				id="uiProgressBar-progress"
 				min="0"
@@ -60,10 +60,10 @@
 				step="0.01"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('uiProgressBar-blend') || 'Blend' }}</text><SelectBox id="uiProgressBar-blend"></SelectBox>
-			<text>{{ local.getLabel('uiProgressBar-colorMode') || 'Color Mode' }}</text
+			<div class="text">{{ local.getLabel('uiProgressBar-blend') || 'Blend' }}</div><SelectBox id="uiProgressBar-blend"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-colorMode') || 'Color Mode' }}</div
 			><SelectBox id="uiProgressBar-colorMode"></SelectBox>
-			<text>{{ local.getLabel('uiProgressBar-color-0-box') || 'Red' }}</text>
+			<div class="text">{{ local.getLabel('uiProgressBar-color-0-box') || 'Red' }}</div>
 			<div class="flex-box" id="uiProgressBar-color-0-box">
 				<SliderBox
 					id="uiProgressBar-color-0-slider"
@@ -78,7 +78,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiProgressBar-color-1-box') || 'Green' }}</text>
+			<div class="text">{{ local.getLabel('uiProgressBar-color-1-box') || 'Green' }}</div>
 			<div class="flex-box" id="uiProgressBar-color-1-box">
 				<SliderBox
 					id="uiProgressBar-color-1-slider"
@@ -93,7 +93,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiProgressBar-color-2-box') || 'Blue' }}</text>
+			<div class="text">{{ local.getLabel('uiProgressBar-color-2-box') || 'Blue' }}</div>
 			<div class="flex-box" id="uiProgressBar-color-2-box">
 				<SliderBox
 					id="uiProgressBar-color-2-slider"
@@ -108,7 +108,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiProgressBar-color-3-box') || 'Alpha' }}</text>
+			<div class="text">{{ local.getLabel('uiProgressBar-color-3-box') || 'Alpha' }}</div>
 			<div class="flex-box" id="uiProgressBar-color-3-box">
 				<SliderBox
 					id="uiProgressBar-color-3-slider"

@@ -3,7 +3,7 @@
 	<TitleBar>Remove Target<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="removeTarget-actor" type="actor" /><text>Target</text><CustomBox id="removeTarget-target" type="actor" /></div>
+			<div class="text">Actor</div><CustomBox id="removeTarget-actor" type="actor" /><div class="text">Target</div><CustomBox id="removeTarget-target" type="actor" /></div>
 		<button id="removeTarget-confirm" name="confirm">Confirm</button>
 		<button id="removeTarget-cancel" name="cancel">Cancel</button>
 	</div>

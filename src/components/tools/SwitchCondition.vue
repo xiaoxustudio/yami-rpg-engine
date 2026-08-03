@@ -4,24 +4,24 @@
 		<TitleBar>Condition<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Condition Type</text><SelectBox id="switch-condition-type" />
-				<text>Boolean</text><SelectBox id="switch-condition-boolean-value" />
-				<text>Number</text
+				<div class="text">Condition Type</div><SelectBox id="switch-condition-type" />
+				<div class="text">Boolean</div><SelectBox id="switch-condition-boolean-value" />
+				<div class="text">Number</div
 				><NumberBox
 					id="switch-condition-number-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="10"
 				/>
-				<text>String</text><TextArea id="switch-condition-string-value" />
-				<text>Attribute Key</text
+				<div class="text">String</div><TextArea id="switch-condition-string-value" />
+				<div class="text">Attribute Key</div
 				><CustomBox id="switch-condition-attribute-attributeId" type="attribute" />
-				<text>Enum String</text
+				<div class="text">Enum String</div
 				><CustomBox id="switch-condition-enum-stringId" type="enum-string" />
-				<text>Key</text><KeyboardBox id="switch-condition-keyboard-keycode" />
-				<text>Button</text><GamepadBox id="switch-condition-gamepad-button" />
-				<text>Button</text><SelectBox id="switch-condition-mouse-button" />
-				<text>Variable</text
+				<div class="text">Key</div><KeyboardBox id="switch-condition-keyboard-keycode" />
+				<div class="text">Button</div><GamepadBox id="switch-condition-gamepad-button" />
+				<div class="text">Button</div><SelectBox id="switch-condition-mouse-button" />
+				<div class="text">Variable</div
 				><CustomBox
 					id="switch-condition-variable-variable"
 					type="variable"

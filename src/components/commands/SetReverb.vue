@@ -3,12 +3,12 @@
 	<TitleBar>Set Reverb<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Type</text><SelectBox id="setReverb-type" /> <text>Dry</text
+			<div class="text">Type</div><SelectBox id="setReverb-type" /> <div class="text">Dry</div
 			><NumberVar id="setReverb-dry" min="0" max="1" step="0.1" decimals="4" />
-			<text>Wet</text
+			<div class="text">Wet</div
 			><NumberVar id="setReverb-wet" min="0" max="1" step="0.1" decimals="4" />
-			<text>Easing</text><SelectBox id="setReverb-easingId" name="easing" />
-			<text>Duration</text
+			<div class="text">Easing</div><SelectBox id="setReverb-easingId" name="easing" />
+			<div class="text">Duration</div
 			><NumberBox
 				id="setReverb-duration"
 				name="duration"
@@ -16,7 +16,7 @@
 				max="3600000"
 				unit="ms"
 			 />
-			<text>Wait</text><SelectBox id="setReverb-wait" name="wait" />
+			<div class="text">Wait</div><SelectBox id="setReverb-wait" name="wait" />
 		</div>
 		<button id="setReverb-confirm" name="confirm">Confirm</button>
 		<button id="setReverb-cancel" name="cancel">Cancel</button>

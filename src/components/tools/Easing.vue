@@ -9,62 +9,62 @@
 			<div class="field-set" id="easing-points-fieldset">
 				<div class="legend">Points</div>
 				<div class="grid-box" id="easing-points-grid">
-					<text>Mode</text><SelectBox id="easing-mode" />
-					<text id="easing-points-0">Point 1</text>
+					<div class="text">Mode</div><SelectBox id="easing-mode" />
+					<div class="text" id="easing-points-0">Point 1</div>
 					<NumberBox id="easing-points-0-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-0-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-1">Point 2</text>
+					<div class="text" id="easing-points-1">Point 2</div>
 					<NumberBox id="easing-points-1-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-1-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-2">Point 3</text>
+					<div class="text" id="easing-points-2">Point 3</div>
 					<NumberBox id="easing-points-2-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-2-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-3">Point 4</text>
+					<div class="text" id="easing-points-3">Point 4</div>
 					<NumberBox id="easing-points-3-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-3-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-4">Point 5</text>
+					<div class="text" id="easing-points-4">Point 5</div>
 					<NumberBox id="easing-points-4-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-4-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-5">Point 6</text>
+					<div class="text" id="easing-points-5">Point 6</div>
 					<NumberBox id="easing-points-5-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-5-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-6">Point 7</text>
+					<div class="text" id="easing-points-6">Point 7</div>
 					<NumberBox id="easing-points-6-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-6-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
-					<text id="easing-points-7">Point 8</text>
+					<div class="text" id="easing-points-7">Point 8</div>
 					<NumberBox id="easing-points-7-x" min="0" max="1" step="0.01" decimals="2"
-						><text class="label">X</text></NumberBox
+						><div class="text label">X</div></NumberBox
 					>
 					<NumberBox id="easing-points-7-y" min="-5" max="5" step="0.01" decimals="2"
-						><text class="label">Y</text></NumberBox
+						><div class="text label">Y</div></NumberBox
 					>
 				</div>
 			</div>
@@ -78,15 +78,15 @@
 				<div class="legend">Preview</div>
 				<canvas id="easing-preview-canvas" width="0" height="0" />
 				<div class="grid-box" id="easing-preview-grid">
-					<text>Reverse</text><SelectBox id="easing-preview-reverse" />
-					<text>Duration</text
+					<div class="text">Reverse</div><SelectBox id="easing-preview-reverse" />
+					<div class="text">Duration</div
 					><NumberBox
 						id="easing-preview-duration"
 						min="1"
 						max="60000"
 						unit="ms"
 					/>
-					<text>Wait</text
+					<div class="text">Wait</div
 					><NumberBox id="easing-preview-delay" min="0" max="5000" unit="ms" />
 				</div>
 			</div>

@@ -3,7 +3,7 @@
 		<TitleBar>Delete Object<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Object</text><CustomBox id="deleteObject-object" type="object" />
+				<div class="text">Object</div><CustomBox id="deleteObject-object" type="object" />
 			</div>
 			<button id="deleteObject-confirm" name="confirm">Confirm</button>
 			<button id="deleteObject-cancel" name="cancel">Cancel</button>

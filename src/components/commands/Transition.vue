@@ -3,24 +3,24 @@
 	<TitleBar>Transition<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Write to Variable</text
+			<div class="text">Write to Variable</div
 			><CustomBox id="transition-variable" type="variable" filter="number" />
-			<text>Start Value</text
+			<div class="text">Start Value</div
 			><NumberVar
 				id="transition-start"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			 />
-			<text>End Value</text
+			<div class="text">End Value</div
 			><NumberVar
 				id="transition-end"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			 />
-			<text>Easing</text><SelectBox id="transition-easingId" name="easing" />
-			<text>Duration</text
+			<div class="text">Easing</div><SelectBox id="transition-easingId" name="easing" />
+			<div class="text">Duration</div
 			><NumberVar
 				id="transition-duration"
 				name="duration"

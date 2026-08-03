@@ -3,10 +3,10 @@
 		<TitleBar>Set Trigger Duration<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Trigger</text
+				<div class="text">Trigger</div
 				><CustomBox id="setTriggerDuration-trigger" type="trigger" />
-				<text>Operation</text><SelectBox id="setTriggerDuration-operation" />
-				<text>Duration</text
+				<div class="text">Operation</div><SelectBox id="setTriggerDuration-operation" />
+				<div class="text">Duration</div
 				><NumberVar
 					id="setTriggerDuration-duration"
 					min="0"

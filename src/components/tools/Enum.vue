@@ -10,11 +10,11 @@
 				<div class="legend">Properties</div>
 				<div class="flex-box" id="enum-properties-flex">
 					<div class="flex-item"
-						><text>Name</text><TextBox id="enum-name" menu="tag-localization" /></div>
+						><div class="text">Name</div><TextBox id="enum-name" menu="tag-localization" /></div>
 					<div class="flex-item"
-						><text>Value</text><TextBox id="enum-value" menu="tag-localization" /></div>
+						><div class="text">Value</div><TextBox id="enum-value" menu="tag-localization" /></div>
 					<div class="flex-item" id="enum-spacing-box" />
-					<div class="flex-item"><text>Note</text><TextArea id="enum-note" /></div>
+					<div class="flex-item"><div class="text">Note</div><TextArea id="enum-note" /></div>
 				</div>
 			</div>
 			<TextBox id="enum-searcher" name="search" />

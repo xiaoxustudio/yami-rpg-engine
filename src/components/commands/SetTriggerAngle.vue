@@ -3,8 +3,8 @@
 		<TitleBar>Set Trigger Angle<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Trigger</text
-				><CustomBox id="setTriggerAngle-trigger" type="trigger" /> <text>Angle</text
+				<div class="text">Trigger</div
+				><CustomBox id="setTriggerAngle-trigger" type="trigger" /> <div class="text">Angle</div
 				><CustomBox id="setTriggerAngle-angle" type="angle" />
 			</div>
 			<button id="setTriggerAngle-confirm" name="confirm">Confirm</button>

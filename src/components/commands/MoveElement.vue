@@ -3,10 +3,10 @@
 		<TitleBar>Move Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Element</text><CustomBox id="moveElement-element" type="element" />
-				<text>Properties</text><ParamList id="moveElement-properties" />
-				<text>Easing</text><SelectBox id="moveElement-easingId" name="easing" />
-				<text>Duration</text
+				<div class="text">Element</div><CustomBox id="moveElement-element" type="element" />
+				<div class="text">Properties</div><ParamList id="moveElement-properties" />
+				<div class="text">Easing</div><SelectBox id="moveElement-easingId" name="easing" />
+				<div class="text">Duration</div
 				><NumberBox
 					id="moveElement-duration"
 					name="duration"
@@ -14,7 +14,7 @@
 					max="3600000"
 					unit="ms"
 				/>
-				<text>Wait</text><SelectBox id="moveElement-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="moveElement-wait" name="wait" />
 			</div>
 			<button id="moveElement-confirm" name="confirm">Confirm</button>
 			<button id="moveElement-cancel" name="cancel">Cancel</button>

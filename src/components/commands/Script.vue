@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="script">
 		<TitleBar
-			>Script<text id="script-mark" class="hidden">✱</text>
+			>Script<div class="text hidden" id="script-mark">✱</div>
 			<button id="script-change" name="script-change-ts">切换为TS</button>
 			<div class="maximize" id="script-maximize" />
 			<div class="close" />

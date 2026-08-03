@@ -3,9 +3,9 @@
 		<TitleBar>webSocketClose<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>ID</text><StringVar id="webSocketClose-id" /> <text>Code</text
+				<div class="text">ID</div><StringVar id="webSocketClose-id" /> <div class="text">Code</div
 				><NumberBox id="webSocketClose-code" min="1000" max="4999" />
-				<text>Reason</text><StringVar id="webSocketClose-reason" />
+				<div class="text">Reason</div><StringVar id="webSocketClose-reason" />
 			</div>
 			<button id="webSocketClose-confirm" name="confirm">Confirm</button>
 			<button id="webSocketClose-cancel" name="cancel">Cancel</button>

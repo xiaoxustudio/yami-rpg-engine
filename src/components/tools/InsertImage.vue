@@ -3,12 +3,12 @@
 		<TitleBar>Insert Image<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Mode</text><SelectBox id="insertImage-mode" /> <text>Image</text
+				<div class="text">Mode</div><SelectBox id="insertImage-mode" /> <div class="text">Image</div
 				><CustomBox id="insertImage-image" type="file" filter="image" />
-				<text>Clip</text
+				<div class="text">Clip</div
 				><CustomBox id="insertImage-clip" type="clip" image="insertImage-image" />
-				<text>Width</text><NumberBox id="insertImage-width" min="0" max="10000" />
-				<text>Height</text><NumberBox id="insertImage-height" min="0" max="10000" />
+				<div class="text">Width</div><NumberBox id="insertImage-width" min="0" max="10000" />
+				<div class="text">Height</div><NumberBox id="insertImage-height" min="0" max="10000" />
 			</div>
 			<button id="insertImage-confirm" name="confirm">Confirm</button>
 			<button id="insertImage-cancel" name="cancel">Cancel</button>

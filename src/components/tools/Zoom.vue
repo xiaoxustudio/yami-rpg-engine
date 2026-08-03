@@ -4,7 +4,7 @@
 		<TitleBar>Zoom<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Zoom Factor</text
+				<div class="text">Zoom Factor</div
 				><NumberBox id="zoom-factor" min="0.6666" max="2" decimals="4" />
 			</div>
 			<button id="zoom-confirm" name="confirm">Confirm</button>

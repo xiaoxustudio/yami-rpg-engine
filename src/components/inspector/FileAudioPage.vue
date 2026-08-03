@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
-			<text>{{ local.getLabel('fileAudio-name') || 'Name' }}</text><text id="fileAudio-name"></text> <text>{{ local.getLabel('fileAudio-size') || 'Size' }}</text
-			><text id="fileAudio-size"></text> <text>{{ local.getLabel('fileAudio-duration') || 'Duration' }}</text
-			><text id="fileAudio-duration"></text> <text>{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</text
-			><text id="fileAudio-bitrate"></text>
+			<div class="text">{{ local.getLabel('fileAudio-name') || 'Name' }}</div><div class="text" id="fileAudio-name"></div> <div class="text">{{ local.getLabel('fileAudio-size') || 'Size' }}</div
+			><div class="text" id="fileAudio-size"></div> <div class="text">{{ local.getLabel('fileAudio-duration') || 'Duration' }}</div
+			><div class="text" id="fileAudio-duration"></div> <div class="text">{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</div
+			><div class="text" id="fileAudio-bitrate"></div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileAudio-mixer-grid') || 'Mixer' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-mixer-grid">
-			<text>{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</text>
+			<div class="text">{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</div>
 			<div class="flex-box" id="fileAudio-volume-box">
 				<SliderBox
 					id="fileAudio-volume"
@@ -19,9 +19,9 @@
 					max="1"
 					step="0.1"
 				/>
-				<text id="fileAudio-volume-info">100%</text>
+				<div class="text" id="fileAudio-volume-info">100%</div>
 			</div>
-			<text>{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</text>
+			<div class="text">{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</div>
 			<div class="flex-box" id="fileAudio-pan-box">
 				<SliderBox
 					id="fileAudio-pan"
@@ -29,9 +29,9 @@
 					max="1"
 					step="0.1"
 				/>
-				<text id="fileAudio-pan-info">0%</text>
+				<div class="text" id="fileAudio-pan-info">0%</div>
 			</div>
-			<text>{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</text>
+			<div class="text">{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</div>
 			<div class="flex-box" id="fileAudio-dry-box">
 				<SliderBox
 					id="fileAudio-dry"
@@ -39,9 +39,9 @@
 					max="1"
 					step="0.1"
 				/>
-				<text id="fileAudio-dry-info">100%</text>
+				<div class="text" id="fileAudio-dry-info">100%</div>
 			</div>
-			<text>{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</text>
+			<div class="text">{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</div>
 			<div class="flex-box" id="fileAudio-wet-box">
 				<SliderBox
 					id="fileAudio-wet"
@@ -49,7 +49,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<text id="fileAudio-wet-info">0%</text>
+				<div class="text" id="fileAudio-wet-info">0%</div>
 			</div>
 		</div>
 	</DetailBox>
@@ -60,8 +60,8 @@
 				<div class="box" id="fileAudio-progress-filler"></div>
 			</div>
 			<div class="box" id="fileAudio-progress-pointer"></div>
-			<text id="fileAudio-currentTime"></text>
-			<text id="fileAudio-pointerTime"></text>
+			<div class="text" id="fileAudio-currentTime"></div>
+			<div class="text" id="fileAudio-pointerTime"></div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileAudio-frequency-detail" open>

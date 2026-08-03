@@ -2,8 +2,8 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScript-info-grid') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileScript-info-grid">
-			<text>{{ local.getLabel('fileScript-name') || 'Name' }}</text><text id="fileScript-name"></text> <text>{{ local.getLabel('fileScript-size') || 'Size' }}</text
-			><text id="fileScript-size"></text>
+			<div class="text">{{ local.getLabel('fileScript-name') || 'Name' }}</div><div class="text" id="fileScript-name"></div> <div class="text">{{ local.getLabel('fileScript-size') || 'Size' }}</div
+			><div class="text" id="fileScript-size"></div>
 		</div>
 	</DetailBox>
 	<DetailBox open>

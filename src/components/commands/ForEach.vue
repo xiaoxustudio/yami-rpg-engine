@@ -3,19 +3,19 @@
 	<TitleBar>For Each<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Data</text><SelectBox id="forEach-data" /> <text>List Variable</text
+			<div class="text">Data</div><SelectBox id="forEach-data" /> <div class="text">List Variable</div
 			><CustomBox id="forEach-list" type="variable" filter="object" />
-			<text>Actor</text><CustomBox id="forEach-actor" type="actor" />
-			<text>Parent Element</text><CustomBox id="forEach-element" type="element" />
-			<text>Attribute Group</text
+			<div class="text">Actor</div><CustomBox id="forEach-actor" type="actor" />
+			<div class="text">Parent Element</div><CustomBox id="forEach-element" type="element" />
+			<div class="text">Attribute Group</div
 			><CustomBox id="forEach-attribute-groupId" type="attribute-group" />
-			<text>Enum Group</text
+			<div class="text">Enum Group</div
 			><CustomBox id="forEach-enum-groupId" type="enum-group" />
-			<text>Write to Variable</text
+			<div class="text">Write to Variable</div
 			><CustomBox id="forEach-variable" type="variable" filter="object" />
-			<text>Write Save Index</text
+			<div class="text">Write Save Index</div
 			><CustomBox id="forEach-saveIndex" type="variable" filter="number" />
-			<text>Touch Id</text
+			<div class="text">Touch Id</div
 			><CustomBox id="forEach-touchId" type="variable" filter="number" />
 		</div>
 		<button id="forEach-confirm" name="confirm">Confirm</button>

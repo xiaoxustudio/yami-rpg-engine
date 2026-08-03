@@ -3,9 +3,9 @@
 	<TitleBar>Set Item<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Item</text><CustomBox id="setItem-item" type="item" />
-			<text>Operation</text><SelectBox id="setItem-operation" />
-			<text>Quantity</text><NumberVar id="setItem-quantity" min="1" max="10000" />
+			<div class="text">Item</div><CustomBox id="setItem-item" type="item" />
+			<div class="text">Operation</div><SelectBox id="setItem-operation" />
+			<div class="text">Quantity</div><NumberVar id="setItem-quantity" min="1" max="10000" />
 		</div>
 		<button id="setItem-confirm" name="confirm">Confirm</button>
 		<button id="setItem-cancel" name="cancel">Cancel</button>

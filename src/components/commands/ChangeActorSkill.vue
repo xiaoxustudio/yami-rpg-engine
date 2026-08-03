@@ -3,8 +3,8 @@
 	<TitleBar>Change Actor Skill<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeActorSkill-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorSkill-operation" /><text>Skill</text
-			><FileVar id="changeActorSkill-skillId" type="file" filter="skill" /><text>Skill</text><CustomBox id="changeActorSkill-skill" type="skill" /></div>
+			<div class="text">Actor</div><CustomBox id="changeActorSkill-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorSkill-operation" /><div class="text">Skill</div
+			><FileVar id="changeActorSkill-skillId" type="file" filter="skill" /><div class="text">Skill</div><CustomBox id="changeActorSkill-skill" type="skill" /></div>
 		<button id="changeActorSkill-confirm" name="confirm">Confirm</button>
 		<button id="changeActorSkill-cancel" name="cancel">Cancel</button>
 	</div>

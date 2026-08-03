@@ -3,8 +3,8 @@
 		<TitleBar>Transform Property<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Property</text><SelectBox id="moveElement-property-key" />
-				<text>Anchor X</text
+				<div class="text">Property</div><SelectBox id="moveElement-property-key" />
+				<div class="text">Anchor X</div
 				><NumberVar
 					id="moveElement-property-anchorX"
 					min="-100"
@@ -12,7 +12,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Anchor Y</text
+				<div class="text">Anchor Y</div
 				><NumberVar
 					id="moveElement-property-anchorY"
 					min="-100"
@@ -20,7 +20,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>X</text
+				<div class="text">X</div
 				><NumberVar
 					id="moveElement-property-x"
 					min="-10000"
@@ -28,7 +28,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<text>Y</text
+				<div class="text">Y</div
 				><NumberVar
 					id="moveElement-property-y"
 					min="-10000"
@@ -36,7 +36,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<text>Width</text
+				<div class="text">Width</div
 				><NumberVar
 					id="moveElement-property-width"
 					min="-10000"
@@ -44,7 +44,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<text>Height</text
+				<div class="text">Height</div
 				><NumberVar
 					id="moveElement-property-height"
 					min="-10000"
@@ -52,7 +52,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<text>X2</text
+				<div class="text">X2</div
 				><NumberVar
 					id="moveElement-property-x2"
 					min="-100"
@@ -61,7 +61,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<text>Y2</text
+				<div class="text">Y2</div
 				><NumberVar
 					id="moveElement-property-y2"
 					min="-100"
@@ -70,7 +70,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<text>Width2</text
+				<div class="text">Width2</div
 				><NumberVar
 					id="moveElement-property-width2"
 					min="-100"
@@ -79,7 +79,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<text>Height2</text
+				<div class="text">Height2</div
 				><NumberVar
 					id="moveElement-property-height2"
 					min="-100"
@@ -88,7 +88,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<text>Rotation</text
+				<div class="text">Rotation</div
 				><NumberVar
 					id="moveElement-property-rotation"
 					min="-36000"
@@ -96,7 +96,7 @@
 					decimals="4"
 					unit="deg"
 				/>
-				<text>Scale X</text
+				<div class="text">Scale X</div
 				><NumberVar
 					id="moveElement-property-scaleX"
 					min="-100"
@@ -104,7 +104,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Scale Y</text
+				<div class="text">Scale Y</div
 				><NumberVar
 					id="moveElement-property-scaleY"
 					min="-100"
@@ -112,7 +112,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Skew X</text
+				<div class="text">Skew X</div
 				><NumberVar
 					id="moveElement-property-skewX"
 					min="-100"
@@ -120,7 +120,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Skew Y</text
+				<div class="text">Skew Y</div
 				><NumberVar
 					id="moveElement-property-skewY"
 					min="-100"
@@ -128,7 +128,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Opacity</text
+				<div class="text">Opacity</div
 				><NumberVar
 					id="moveElement-property-opacity"
 					min="0"

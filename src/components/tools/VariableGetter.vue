@@ -4,15 +4,15 @@
 		<TitleBar>Variable<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="variableGetter-type" /> <text>Actor</text
-				><CustomBox id="variableGetter-actor" type="actor" /> <text>Skill</text
-				><CustomBox id="variableGetter-skill" type="skill" /> <text>State</text
-				><CustomBox id="variableGetter-state" type="state" /> <text>Equipment</text
+				<div class="text">Type</div><SelectBox id="variableGetter-type" /> <div class="text">Actor</div
+				><CustomBox id="variableGetter-actor" type="actor" /> <div class="text">Skill</div
+				><CustomBox id="variableGetter-skill" type="skill" /> <div class="text">State</div
+				><CustomBox id="variableGetter-state" type="state" /> <div class="text">Equipment</div
 				><CustomBox id="variableGetter-equipment" type="equipment" />
-				<text>Item</text><CustomBox id="variableGetter-item" type="item" />
-				<text>Element</text><CustomBox id="variableGetter-element" type="element" />
-				<text>Key</text><TextBox id="variableGetter-common-key" /> <text>Key</text
-				><SelectVar id="variableGetter-preset-key" /> <text>Key</text
+				<div class="text">Item</div><CustomBox id="variableGetter-item" type="item" />
+				<div class="text">Element</div><CustomBox id="variableGetter-element" type="element" />
+				<div class="text">Key</div><TextBox id="variableGetter-common-key" /> <div class="text">Key</div
+				><SelectVar id="variableGetter-preset-key" /> <div class="text">Key</div
 				><CustomBox id="variableGetter-global-key" type="global-variable" />
 			</div>
 			<button id="variableGetter-confirm" name="confirm">Confirm</button>

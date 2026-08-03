@@ -2,9 +2,9 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
-			<text>{{ local.getLabel('sceneRegion-name') || 'Name' }}</text><TextBox id="sceneRegion-name"></TextBox>
-			<text>{{ local.getLabel('sceneRegion-color') || 'Color' }}</text><ColorBox id="sceneRegion-color"></ColorBox>
-			<text>{{ local.getLabel('sceneRegion-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneRegion-name') || 'Name' }}</div><TextBox id="sceneRegion-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneRegion-color') || 'Color' }}</div><ColorBox id="sceneRegion-color"></ColorBox>
+			<div class="text">{{ local.getLabel('sceneRegion-x') || 'X' }}</div
 			><NumberBox
 				id="sceneRegion-x"
 				min="-128"
@@ -12,7 +12,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneRegion-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneRegion-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneRegion-y"
 				min="-128"
@@ -20,14 +20,14 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneRegion-width') || 'Width' }}</text
+			<div class="text">{{ local.getLabel('sceneRegion-width') || 'Width' }}</div
 			><NumberBox
 				id="sceneRegion-width"
 				min="0"
 				max="512"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneRegion-height') || 'Height' }}</text
+			<div class="text">{{ local.getLabel('sceneRegion-height') || 'Height' }}</div
 			><NumberBox
 				id="sceneRegion-height"
 				min="0"

@@ -482,21 +482,24 @@ UpdateLog.update = function (this: any, items: any) {
 
 		for (const item of communityItems) {
 			if (item.title) {
-				const title = document.createElement('text');
+				const title = document.createElement('div');
 				title.innerHTML = markndownToHtml(item.title);
 				addClass(title, 'update-log-title');
+				addClass(title, 'text');
 				this.content.appendChild(title);
 			}
 			if (item.major) {
-				const major = document.createElement('text');
+				const major = document.createElement('div');
 				major.innerHTML = markndownToHtml(item.major);
 				addClass(major, 'update-log-major');
+				addClass(major, 'text');
 				this.content.appendChild(major);
 			}
 			if (item.minor) {
-				const minor = document.createElement('text');
+				const minor = document.createElement('div');
 				minor.innerHTML = markndownToHtml(item.minor);
 				addClass(minor, 'update-log-minor');
+				addClass(minor, 'text');
 				this.content.appendChild(minor);
 			}
 		}
@@ -568,9 +571,10 @@ UpdateLog.displayDonationList = function (this: any) {
 		}
 	];
 
-	const donationTitle = document.createElement('text');
+	const donationTitle = document.createElement('div');
 	donationTitle.innerHTML = '<b>感谢以下捐赠者对项目的支持！</b>';
 	addClass(donationTitle, 'update-log-title');
+	addClass(donationTitle, 'text');
 	this.content.appendChild(donationTitle);
 
 	const donationList = document.createElement('div');
@@ -578,7 +582,8 @@ UpdateLog.displayDonationList = function (this: any) {
 	addClass(donationList, 'donation-list');
 
 	for (const donor of donationData) {
-		const donorItem = document.createElement('text');
+		const donorItem = document.createElement('div');
+		addClass(donorItem, 'text');
 		const link = document.createElement('a');
 		link.href = '#';
 		link.textContent = donor.name;

@@ -3,13 +3,13 @@
 		<TitleBar>uploadFile<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>URL</text><StringVar id="uploadFile-url" /> <text>LocalPath</text
-				><StringVar id="uploadFile-path" /> <text>Method</text
-				><SelectBox id="uploadFile-method" /> <text>Field</text
-				><StringVar id="uploadFile-field" /> <text>Header</text
-				><ParamList id="uploadFile-header" /> <text>CallBack</text
+				<div class="text">URL</div><StringVar id="uploadFile-url" /> <div class="text">LocalPath</div
+				><StringVar id="uploadFile-path" /> <div class="text">Method</div
+				><SelectBox id="uploadFile-method" /> <div class="text">Field</div
+				><StringVar id="uploadFile-field" /> <div class="text">Header</div
+				><ParamList id="uploadFile-header" /> <div class="text">CallBack</div
 				><CustomBox id="uploadFile-callback" type="file" filter="event" />
-				<text>RateCallBack</text
+				<div class="text">RateCallBack</div
 				><CustomBox id="uploadFile-rateCallback" type="file" filter="event" />
 			</div>
 			<button id="uploadFile-confirm" name="confirm">Confirm</button>

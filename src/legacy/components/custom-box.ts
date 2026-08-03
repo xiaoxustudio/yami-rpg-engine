@@ -65,8 +65,9 @@ interface CustomBoxElement extends HTMLElement {
 export function attachCustomBoxApi(el: HTMLElement): void {
 	const box = el as CustomBoxElement;
 
-	const text = document.createElement('text');
+	const text = document.createElement('div');
 	addClass(text, 'custom-box-text');
+	addClass(text, 'text');
 	box.info = text;
 	box.dataValue = null;
 	box.writeEventEnabled = false;

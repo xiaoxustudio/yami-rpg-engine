@@ -3,27 +3,27 @@
 		<TitleBar>Yami RPG Editor<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text id="about-credits">Credits</text
-				><text>
-					<text class="href">刀里个刀</text><br />
-					<text class="href" href="https://store.steampowered.com/app/2346410/Border_Pioneer"
-						>Yahzj</text
+				<div class="text" id="about-credits">Credits</div
+				><div class="text">
+					<div class="text href">刀里个刀</div><br />
+					<div class="text href" href="https://store.steampowered.com/app/2346410/Border_Pioneer"
+						>Yahzj</div
 					><br />
-					<text class="href" href="https://github.com/chunqian">Chunqian</text><br />
-					<text class="href" href="https://github.com/xiaoxustudio">徐然先生</text><br />
-					<text class="href">Alias</text><br />
-					<text class="href" href="https://www.youtube.com/watch?v=3VcWWYIzKNY"
-						>Mr. Von Grimmsy</text
+					<div class="text href" href="https://github.com/chunqian">Chunqian</div><br />
+					<div class="text href" href="https://github.com/xiaoxustudio">徐然先生</div><br />
+					<div class="text href">Alias</div><br />
+					<div class="text href" href="https://www.youtube.com/watch?v=3VcWWYIzKNY"
+						>Mr. Von Grimmsy</div
 					><br />
-					<text class="href" href="https://vk.com/sxdmedia">ZerosmO</text><br />
-					<text class="href">SmoLife</text><br />
-					<text class="href" href="https://twitter.com/DavisCorsac">Davis Corsac</text><br />
-				</text>
-				<text>Editor</text><text id="editor-version"></text> <text>Electron</text
-				><text id="electron-version"></text> <text>Chromium</text
-				><text id="chrome-version"></text> <text>Node.js</text><text id="node-version"></text>
-				<text>V8</text><text id="v8-version"></text> <text>OS</text
-				><text id="os-version"></text>
+					<div class="text href" href="https://vk.com/sxdmedia">ZerosmO</div><br />
+					<div class="text href">SmoLife</div><br />
+					<div class="text href" href="https://twitter.com/DavisCorsac">Davis Corsac</div><br />
+				</div>
+				<div class="text">Editor</div><div class="text" id="editor-version"></div> <div class="text">Electron</div
+				><div class="text" id="electron-version"></div> <div class="text">Chromium</div
+				><div class="text" id="chrome-version"></div> <div class="text">Node.js</div><div class="text" id="node-version"></div>
+				<div class="text">V8</div><div class="text" id="v8-version"></div> <div class="text">OS</div
+				><div class="text" id="os-version"></div>
 			</div>
 		</div>
 	</WindowFrame>

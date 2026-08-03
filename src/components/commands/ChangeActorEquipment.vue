@@ -3,12 +3,12 @@
 	<TitleBar>Change Actor Equipment<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="changeActorEquipment-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorEquipment-operation" /><text>Shortcut Key</text><SelectVar id="changeActorEquipment-slot" /><text>Equipment</text
+			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" /><div class="text">Equipment</div
 			><CustomBox
 				id="changeActorEquipment-equipmentId"
 				type="file"
 				filter="equipment"
-			 /><text>Equipment</text
+			 /><div class="text">Equipment</div
 			><CustomBox id="changeActorEquipment-equipment" type="equipment" /></div>
 		<button id="changeActorEquipment-confirm" name="confirm">Confirm</button>
 		<button id="changeActorEquipment-cancel" name="cancel">Cancel</button>

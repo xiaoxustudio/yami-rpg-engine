@@ -2,12 +2,12 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiDialogBox-properties-grid">
-			<text>{{ local.getLabel('uiDialogBox-content') || 'Content' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-content') || 'Content' }}</div
 			><TextArea
 				id="uiDialogBox-content"
 				menu="tag-localization"
 			></TextArea>
-			<text>{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</div
 			><NumberBox
 				id="uiDialogBox-interval"
 				min="0"
@@ -15,7 +15,7 @@
 				decimals="4"
 				unit="ms"
 			></NumberBox>
-			<text>{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</text>
+			<div class="text">{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</div>
 			<div class="flex-box" id="uiDialogBox-size-box">
 				<SliderBox
 					id="uiDialogBox-size-slider"
@@ -31,7 +31,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</text>
+			<div class="text">{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</div>
 			<div class="flex-box" id="uiDialogBox-lineSpacing-box">
 				<SliderBox
 					id="uiDialogBox-lineSpacing-slider"
@@ -47,7 +47,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</text>
+			<div class="text">{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</div>
 			<div class="flex-box" id="uiDialogBox-letterSpacing-box">
 				<SliderBox
 					id="uiDialogBox-letterSpacing-slider"
@@ -63,34 +63,34 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<text>{{ local.getLabel('uiDialogBox-color') || 'Color' }}</text><ColorBox id="uiDialogBox-color"></ColorBox>
-			<text>{{ local.getLabel('uiDialogBox-font') || 'Font' }}</text><TextBox id="uiDialogBox-font"></TextBox>
-			<text>{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</text><SelectBox id="uiDialogBox-typeface"></SelectBox>
-			<text>{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color"></ColorBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font"></TextBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface"></SelectBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</div
 			><SelectBox id="uiDialogBox-effect-type"></SelectBox>
-			<text>{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetX"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetY"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-strokeWidth"
 				min="1"
 				max="20"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</text
-			><ColorBox id="uiDialogBox-effect-color"></ColorBox> <text>{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</text
+			<div class="text">{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</div
+			><ColorBox id="uiDialogBox-effect-color"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
 			><SelectBox id="uiDialogBox-blend"></SelectBox>
 		</div>
 	</DetailBox>

@@ -32,10 +32,10 @@
 				<div class="box" id="color-viewer" />
 			</div>
 			<div class="grid-box" id="color-rgba-grid">
-				<text>#</text><TextBox id="color-hex" /> <text>R</text
-				><NumberBox id="color-r" min="0" max="255" /> <text>G</text
-				><NumberBox id="color-g" min="0" max="255" /> <text>B</text
-				><NumberBox id="color-b" min="0" max="255" /> <text>A</text
+				<div class="text">#</div><TextBox id="color-hex" /> <div class="text">R</div
+				><NumberBox id="color-r" min="0" max="255" /> <div class="text">G</div
+				><NumberBox id="color-g" min="0" max="255" /> <div class="text">B</div
+				><NumberBox id="color-b" min="0" max="255" /> <div class="text">A</div
 				><NumberBox id="color-a" min="0" max="255" />
 			</div>
 			<button id="color-confirm" name="confirm">Confirm</button>

@@ -3,23 +3,23 @@
 	<TitleBar>Get Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Write to Variable</text
-			><CustomBox id="getActor-variable" type="variable" filter="object" /><text>Position</text><CustomBox id="getActor-position" type="position" /><text>Area</text><SelectBox id="getActor-area" /><text>Size</text
-			><NumberVar id="getActor-size" min="0" max="512" decimals="4" unit="tile" /><text>Radius</text
+			<div class="text">Write to Variable</div
+			><CustomBox id="getActor-variable" type="variable" filter="object" /><div class="text">Position</div><CustomBox id="getActor-position" type="position" /><div class="text">Area</div><SelectBox id="getActor-area" /><div class="text">Size</div
+			><NumberVar id="getActor-size" min="0" max="512" decimals="4" unit="tile" /><div class="text">Radius</div
 			><NumberVar
 				id="getActor-radius"
 				min="0"
 				max="256"
 				decimals="4"
 				unit="tile"
-			 /><text>Selector</text><SelectBox id="getActor-selector" /><text>Team</text
-			><SelectVar id="getActor-teamId" /><text>Condition</text
-			><SelectBox id="getActor-condition" /><text>Attribute</text
-			><SelectBox id="getActor-attribute" /><text>Attribute 2</text
-			><SelectBox id="getActor-divisor" /><text>Activation</text
-			><SelectBox id="getActor-activation" /><text>Exclusion</text
-			><SelectBox id="getActor-exclusion" /><text>Exclusion Actor</text
-			><CustomBox id="getActor-exclusionActor" type="actor" /><text>Exclusion Team</text><SelectVar id="getActor-exclusionTeamId" /></div>
+			 /><div class="text">Selector</div><SelectBox id="getActor-selector" /><div class="text">Team</div
+			><SelectVar id="getActor-teamId" /><div class="text">Condition</div
+			><SelectBox id="getActor-condition" /><div class="text">Attribute</div
+			><SelectBox id="getActor-attribute" /><div class="text">Attribute 2</div
+			><SelectBox id="getActor-divisor" /><div class="text">Activation</div
+			><SelectBox id="getActor-activation" /><div class="text">Exclusion</div
+			><SelectBox id="getActor-exclusion" /><div class="text">Exclusion Actor</div
+			><CustomBox id="getActor-exclusionActor" type="actor" /><div class="text">Exclusion Team</div><SelectVar id="getActor-exclusionTeamId" /></div>
 		<button id="getActor-confirm" name="confirm">Confirm</button>
 		<button id="getActor-cancel" name="cancel">Cancel</button>
 	</div>

@@ -3,9 +3,9 @@
 		<TitleBar>Nest Element<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Parent Element</text
+				<div class="text">Parent Element</div
 				><CustomBox id="nestElement-parent" type="element" />
-				<text>Child Element</text
+				<div class="text">Child Element</div
 				><CustomBox id="nestElement-child" type="element" />
 			</div>
 			<button id="nestElement-confirm" name="confirm">Confirm</button>

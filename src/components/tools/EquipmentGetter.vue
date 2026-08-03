@@ -3,15 +3,15 @@
 		<TitleBar>Actor<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="equipmentGetter-type" /> <text>Actor</text
-				><CustomBox id="equipmentGetter-actor" type="actor" /> <text>Slot</text
-				><SelectVar id="equipmentGetter-slot" /> <text>Equipment</text
+				<div class="text">Type</div><SelectBox id="equipmentGetter-type" /> <div class="text">Actor</div
+				><CustomBox id="equipmentGetter-actor" type="actor" /> <div class="text">Slot</div
+				><SelectVar id="equipmentGetter-slot" /> <div class="text">Equipment</div
 				><CustomBox
 					id="equipmentGetter-equipmentId"
 					type="file"
 					filter="equipment"
 				/>
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox id="equipmentGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="equipmentGetter-confirm" name="confirm">Confirm</button>

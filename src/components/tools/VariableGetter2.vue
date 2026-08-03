@@ -4,10 +4,10 @@
 		<TitleBar>Variable<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="variableGetter2-type" /> <text>Element</text
-				><CustomBox id="variableGetter2-element" type="element" /> <text>Key</text
-				><TextBox id="variableGetter2-common-key" /> <text>Key</text
-				><SelectBox id="variableGetter2-preset-key" /> <text>Key</text
+				<div class="text">Type</div><SelectBox id="variableGetter2-type" /> <div class="text">Element</div
+				><CustomBox id="variableGetter2-element" type="element" /> <div class="text">Key</div
+				><TextBox id="variableGetter2-common-key" /> <div class="text">Key</div
+				><SelectBox id="variableGetter2-preset-key" /> <div class="text">Key</div
 				><CustomBox id="variableGetter2-global-key" type="global-variable" />
 			</div>
 			<button id="variableGetter2-confirm" name="confirm">Confirm</button>

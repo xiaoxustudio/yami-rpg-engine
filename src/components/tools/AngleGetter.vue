@@ -3,9 +3,9 @@
 		<TitleBar>Angle<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="angleGetter-type" /> <text>Position</text
+				<div class="text">Type</div><SelectBox id="angleGetter-type" /> <div class="text">Position</div
 				><CustomBox id="angleGetter-position-position" type="position" />
-				<text>Degrees</text
+				<div class="text">Degrees</div
 				><NumberVar
 					id="angleGetter-common-degrees"
 					min="-36000"

@@ -3,7 +3,7 @@
 	<TitleBar>Render Outline<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Operation</text><SelectBox id="renderOutline-operation" /><text>Actor</text><CustomBox id="renderOutline-actor" type="actor" /><text>Color</text><ColorBox id="renderOutline-color" /></div>
+			<div class="text">Operation</div><SelectBox id="renderOutline-operation" /><div class="text">Actor</div><CustomBox id="renderOutline-actor" type="actor" /><div class="text">Color</div><ColorBox id="renderOutline-color" /></div>
 		<button id="renderOutline-confirm" name="confirm">Confirm</button>
 		<button id="renderOutline-cancel" name="cancel">Cancel</button>
 	</div>

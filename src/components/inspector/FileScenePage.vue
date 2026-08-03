@@ -2,18 +2,18 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-general-grid">
-			<text>{{ local.getLabel('fileScene-width') || 'Width' }}</text
+			<div class="text">{{ local.getLabel('fileScene-width') || 'Width' }}</div
 			><NumberBox id="fileScene-width" min="0" max="512" unit="tile" />
-			<text>{{ local.getLabel('fileScene-height') || 'Height' }}</text
+			<div class="text">{{ local.getLabel('fileScene-height') || 'Height' }}</div
 			><NumberBox id="fileScene-height" min="0" max="512" unit="tile" />
-			<text>{{ local.getLabel('fileScene-tileWidth') || 'Tile Width' }}</text
+			<div class="text">{{ local.getLabel('fileScene-tileWidth') || 'Tile Width' }}</div
 			><NumberBox
 				id="fileScene-tileWidth"
 				min="16"
 				max="256"
 				unit="px"
 			/>
-			<text>{{ local.getLabel('fileScene-tileHeight') || 'Tile Height' }}</text
+			<div class="text">{{ local.getLabel('fileScene-tileHeight') || 'Tile Height' }}</div
 			><NumberBox
 				id="fileScene-tileHeight"
 				min="16"
@@ -25,7 +25,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScene-ambient-grid') || 'Ambient Light' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-ambient-grid">
-			<text>{{ local.getLabel('fileScene-ambient-red-box') || 'Red' }}</text>
+			<div class="text">{{ local.getLabel('fileScene-ambient-red-box') || 'Red' }}</div>
 			<div class="flex-box" id="fileScene-ambient-red-box">
 				<SliderBox
 					id="fileScene-ambient-red-slider"
@@ -40,7 +40,7 @@
 					step="5"
 				/>
 			</div>
-			<text>{{ local.getLabel('fileScene-ambient-green-box') || 'Green' }}</text>
+			<div class="text">{{ local.getLabel('fileScene-ambient-green-box') || 'Green' }}</div>
 			<div class="flex-box" id="fileScene-ambient-green-box">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
@@ -55,7 +55,7 @@
 					step="5"
 				/>
 			</div>
-			<text>{{ local.getLabel('fileScene-ambient-blue-box') || 'Blue' }}</text>
+			<div class="text">{{ local.getLabel('fileScene-ambient-blue-box') || 'Blue' }}</div>
 			<div class="flex-box" id="fileScene-ambient-blue-box">
 				<SliderBox
 					id="fileScene-ambient-blue-slider"
@@ -70,7 +70,7 @@
 					step="5"
 				/>
 			</div>
-			<text>{{ local.getLabel('fileScene-ambient-direct-box') || 'Direct Light Ratio' }}</text>
+			<div class="text">{{ local.getLabel('fileScene-ambient-direct-box') || 'Direct Light Ratio' }}</div>
 			<div class="flex-box" id="fileScene-ambient-direct-box">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"

@@ -7,32 +7,32 @@
 		</TitleBar>
 		<div class="content-frame">
 			<div class="grid-box" id="setting-grid">
-				<text id="setting-title-server" class="setting-title">Server</text>
-				<text /><NumberBox id="setting-server-port" min="0" max="65535" />
-				<text /><CheckBox id="setting-server-auto" class="standard" />
-				<text id="setting-title-apkbuild" class="setting-title">APK Build</text>
-				<text /><TextBox id="setting-apkbuild-outputDir" /> <text />
-				<TextBox id="setting-apkbuild-newApkPath" /> <text />
+				<div class="text setting-title" id="setting-title-server">Server</div>
+				<div class="text" /><NumberBox id="setting-server-port" min="0" max="65535" />
+				<div class="text" /><CheckBox id="setting-server-auto" class="standard" />
+				<div class="text setting-title" id="setting-title-apkbuild">APK Build</div>
+				<div class="text" /><TextBox id="setting-apkbuild-outputDir" /> <div class="text" />
+				<TextBox id="setting-apkbuild-newApkPath" /> <div class="text" />
 				<TextBox id="setting-apkbuild-apktoolPath" />
-				<text id="setting-title-signed" class="setting-title">签名配置</text>
-				<text /><TextBox id="setting-signed-jksPath" /> <text />
-				<TextBox id="setting-signed-keyStorePassword" /> <text />
-				<TextBox id="setting-signed-keyAlias" /> <text />
-				<TextBox id="setting-signed-keyPassword" /> <text />
-				<TextBox id="setting-signed-apksignerPath" /> <text />
-				<TextBox id="setting-signed-zipalignPath" /> <text />
+				<div class="text setting-title" id="setting-title-signed">签名配置</div>
+				<div class="text" /><TextBox id="setting-signed-jksPath" /> <div class="text" />
+				<TextBox id="setting-signed-keyStorePassword" /> <div class="text" />
+				<TextBox id="setting-signed-keyAlias" /> <div class="text" />
+				<TextBox id="setting-signed-keyPassword" /> <div class="text" />
+				<TextBox id="setting-signed-apksignerPath" /> <div class="text" />
+				<TextBox id="setting-signed-zipalignPath" /> <div class="text" />
 				<TextBox id="setting-signed-signedApkPath" />
-				<text id="setting-title-other" class="setting-title">other</text>
-				<text />
+				<div class="text setting-title" id="setting-title-other">other</div>
+				<div class="text" />
 				<CheckBox id="setting-other-copyAsTextKeepEmptyLine" class="standard" />
-				<text /><SelectBox id="setting-other-browserSearchHistoryLimit" />
-				<text id="setting-title-recent" class="setting-title"></text>
-				<text id="setting-recent-statsMode-label" />
+				<div class="text" /><SelectBox id="setting-other-browserSearchHistoryLimit" />
+				<div class="text setting-title" id="setting-title-recent"></div>
+				<div class="text" id="setting-recent-statsMode-label" />
 				<SelectBox id="setting-recent-statsMode" />
-				<text id="setting-title-github" class="setting-title">GitHub</text>
-				<text /><SelectBox id="setting-github-accelerationNode" />
-				<text id="setting-title-update" class="setting-title"></text>
-				<text id="setting-update-checkOnStart-label" />
+				<div class="text setting-title" id="setting-title-github">GitHub</div>
+				<div class="text" /><SelectBox id="setting-github-accelerationNode" />
+				<div class="text setting-title" id="setting-title-update"></div>
+				<div class="text" id="setting-update-checkOnStart-label" />
 				<CheckBox id="setting-update-checkOnStart" class="standard" />
 			</div>
 			<button id="setting-confirm" name="confirm">Confirm</button>

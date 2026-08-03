@@ -3,8 +3,8 @@
 	<TitleBar>Transfer Global Actor<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="transferGlobalActor-actor" type="actor" />
-			<text>Position</text
+			<div class="text">Actor</div><CustomBox id="transferGlobalActor-actor" type="actor" />
+			<div class="text">Position</div
 			><CustomBox id="transferGlobalActor-position" type="position" />
 		</div>
 		<button id="transferGlobalActor-confirm" name="confirm">Confirm</button>

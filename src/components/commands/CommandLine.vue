@@ -3,9 +3,9 @@
 		<TitleBar>Command Line<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="commandLine-type" /> <text>Key</text
-				><StringVar id="commandLine-key" /> <text>Value</text
-				><StringVar id="commandLine-value" /> <text>Variable</text
+				<div class="text">Type</div><SelectBox id="commandLine-type" /> <div class="text">Key</div
+				><StringVar id="commandLine-key" /> <div class="text">Value</div
+				><StringVar id="commandLine-value" /> <div class="text">Variable</div
 				><CustomBox id="commandLine-variable" type="variable" filter="object" />
 			</div>
 			<button id="commandLine-confirm" name="confirm">Confirm</button>

@@ -2,13 +2,13 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneTilemap-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneTilemap-general-grid">
-			<text>{{ local.getLabel('sceneTilemap-name') || 'Name' }}</text><TextBox id="sceneTilemap-name"></TextBox>
-			<text>{{ local.getLabel('sceneTilemap-layer') || 'Layer' }}</text><SelectBox id="sceneTilemap-layer"></SelectBox>
-			<text>{{ local.getLabel('sceneTilemap-order') || 'Order' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-name') || 'Name' }}</div><TextBox id="sceneTilemap-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneTilemap-layer') || 'Layer' }}</div><SelectBox id="sceneTilemap-layer"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneTilemap-order') || 'Order' }}</div
 			><NumberBox id="sceneTilemap-order" min="0" max="100"></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-light') || 'Light Sampling' }}</text
-			><SelectBox id="sceneTilemap-light"></SelectBox> <text>{{ local.getLabel('sceneTilemap-blend') || 'Blend' }}</text
-			><SelectBox id="sceneTilemap-blend"></SelectBox> <text>{{ local.getLabel('sceneTilemap-x') || 'X' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-light') || 'Light Sampling' }}</div
+			><SelectBox id="sceneTilemap-light"></SelectBox> <div class="text">{{ local.getLabel('sceneTilemap-blend') || 'Blend' }}</div
+			><SelectBox id="sceneTilemap-blend"></SelectBox> <div class="text">{{ local.getLabel('sceneTilemap-x') || 'X' }}</div
 			><NumberBox
 				id="sceneTilemap-x"
 				min="-128"
@@ -17,7 +17,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-y') || 'Y' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-y') || 'Y' }}</div
 			><NumberBox
 				id="sceneTilemap-y"
 				min="-128"
@@ -26,21 +26,21 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-width') || 'Width' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-width') || 'Width' }}</div
 			><NumberBox
 				id="sceneTilemap-width"
 				min="0"
 				max="512"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-height') || 'Height' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-height') || 'Height' }}</div
 			><NumberBox
 				id="sceneTilemap-height"
 				min="0"
 				max="512"
 				unit="tile"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-anchorX') || 'Anchor X' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-anchorX') || 'Anchor X' }}</div
 			><NumberBox
 				id="sceneTilemap-anchorX"
 				min="0"
@@ -48,7 +48,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-anchorY') || 'Anchor Y' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-anchorY') || 'Anchor Y' }}</div
 			><NumberBox
 				id="sceneTilemap-anchorY"
 				min="0"
@@ -56,21 +56,21 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-offsetX') || 'Offset X' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-offsetX') || 'Offset X' }}</div
 			><NumberBox
 				id="sceneTilemap-offsetX"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-offsetY') || 'Offset Y' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-offsetY') || 'Offset Y' }}</div
 			><NumberBox
 				id="sceneTilemap-offsetY"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-parallaxFactorX') || 'Parallax Factor X' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-parallaxFactorX') || 'Parallax Factor X' }}</div
 			><NumberBox
 				id="sceneTilemap-parallaxFactorX"
 				min="-4"
@@ -78,7 +78,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-parallaxFactorY') || 'Parallax Factor Y' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-parallaxFactorY') || 'Parallax Factor Y' }}</div
 			><NumberBox
 				id="sceneTilemap-parallaxFactorY"
 				min="-4"
@@ -86,7 +86,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<text>{{ local.getLabel('sceneTilemap-opacity') || 'Opacity' }}</text
+			<div class="text">{{ local.getLabel('sceneTilemap-opacity') || 'Opacity' }}</div
 			><NumberBox
 				id="sceneTilemap-opacity"
 				min="0"

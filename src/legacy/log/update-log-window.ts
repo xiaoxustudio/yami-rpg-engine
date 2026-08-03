@@ -40,21 +40,24 @@ UpdateLog.update = function (items: any) {
 	clear(this.content);
 	for (const item of items) {
 		if (item.title) {
-			const title = document.createElement('text');
+			const title = document.createElement('div');
 			title.textContent = item.title;
 			addClass(title, 'update-log-title');
+			addClass(title, 'text');
 			this.content.appendChild(title);
 		}
 		if (item.major) {
-			const major = document.createElement('text');
+			const major = document.createElement('div');
 			major.textContent = item.major;
 			addClass(major, 'update-log-major');
+			addClass(major, 'text');
 			this.content.appendChild(major);
 		}
 		if (item.minor) {
-			const minor = document.createElement('text');
+			const minor = document.createElement('div');
 			minor.textContent = item.minor;
 			addClass(minor, 'update-log-minor');
+			addClass(minor, 'text');
 			this.content.appendChild(minor);
 		}
 	}

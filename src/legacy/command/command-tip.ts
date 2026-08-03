@@ -164,8 +164,9 @@ function bindListMethods() {
 		if (item.class !== 'folder' && !Local.language.startsWith('en')) {
 			const string = item.class === 'custom' ? (item.keywords ?? item.value) : item.value;
 			if (string) {
-				const comment = document.createElement('text');
+				const comment = document.createElement('div');
 				addClass(comment, 'command-suggestion-comment');
+				addClass(comment, 'text');
 				comment.textContent = string.charAt(0).toUpperCase() + string.slice(1);
 				item.element!.appendChild(comment);
 			}
@@ -275,7 +276,8 @@ CommandSuggestion.initialize = function (): void {
 	this.widget.enableAmbient = false;
 
 	this.searcher.addCloseButton();
-	const mark = document.createElement('text');
+	const mark = document.createElement('div');
+	addClass(mark, 'text');
 	const input = this.searcher.input;
 	input.id = 'command-searcher-input';
 	mark.id = 'command-searcher-mark';

@@ -535,8 +535,9 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 
-	const text = document.createElement('text');
+	const text = document.createElement('div');
 	addClass(text, 'custom-box-text');
+	addClass(text, 'text');
 	info = text;
 
 	el.appendChild(text);

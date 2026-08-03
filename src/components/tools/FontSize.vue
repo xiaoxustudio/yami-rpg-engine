@@ -3,7 +3,7 @@
 		<TitleBar>Set Font Size<div class="close"></div></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Size</text
+				<div class="text">Size</div
 				><NumberBox id="fontSize-size" min="10" max="400" unit="px" />
 			</div>
 			<button id="fontSize-confirm" name="confirm">Confirm</button>

@@ -2,32 +2,32 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</DetailSummary>
 			<div class="detail-grid" id="fileActor-general-grid">
-				<text>{{ local.getLabel('fileActor-portrait') || 'Portrait' }}</text
+				<div class="text">{{ local.getLabel('fileActor-portrait') || 'Portrait' }}</div
 			><CustomBox
 				id="fileActor-portrait"
 				type="file"
 				filter="image"
 			/>
-			<text>{{ local.getLabel('fileActor-clip') || 'Clip' }}</text
+			<div class="text">{{ local.getLabel('fileActor-clip') || 'Clip' }}</div
 			><CustomBox
 				id="fileActor-clip"
 				type="clip"
 				image="fileActor-portrait"
 			/>
-			<text>{{ local.getLabel('fileActor-animationId') || 'Animation' }}</text
+			<div class="text">{{ local.getLabel('fileActor-animationId') || 'Animation' }}</div
 			><CustomBox
 				id="fileActor-animationId"
 				type="file"
 				filter="animation"
 			/>
-				<text>Idle Motion</text
+				<div class="text">Idle Motion</div
 				><SelectBox id="fileActor-idleMotion" />
-				<text>Move Motion</text
+				<div class="text">Move Motion</div
 				><SelectBox id="fileActor-moveMotion" />
-				<text>Rotatable</text><SelectBox id="fileActor-rotatable" />
-				<text>Passage Terrain</text
+				<div class="text">Rotatable</div><SelectBox id="fileActor-rotatable" />
+				<div class="text">Passage Terrain</div
 				><SelectBox id="fileActor-passage" />
-				<text>Movement Speed</text
+				<div class="text">Movement Speed</div
 				><NumberBox
 					id="fileActor-speed"
 					min="0"
@@ -35,9 +35,9 @@
 					decimals="4"
 					unit="t/s"
 				/>
-				<text>Collision Shape</text
+				<div class="text">Collision Shape</div
 				><SelectBox id="fileActor-shape" />
-				<text>Collision Size</text
+				<div class="text">Collision Size</div
 				><NumberBox
 					id="fileActor-size"
 					min="0"
@@ -46,7 +46,7 @@
 					decimals="4"
 					unit="t"
 				/>
-				<text>Collision Weight</text
+				<div class="text">Collision Weight</div
 				><NumberBox
 					id="fileActor-weight"
 					min="0"
@@ -54,8 +54,8 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Immovable</text><SelectBox id="fileActor-immovable" />
-				<text>Scale</text
+				<div class="text">Immovable</div><SelectBox id="fileActor-immovable" />
+				<div class="text">Scale</div
 				><NumberBox
 					id="fileActor-scale"
 					min="0"
@@ -63,14 +63,14 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<text>Priority</text
+				<div class="text">Priority</div
 				><NumberBox
 					id="fileActor-priority"
 					min="-512"
 					max="512"
 					decimals="4"
 				/>
-				<text>Inherit</text
+				<div class="text">Inherit</div
 				><CustomBox
 					id="fileActor-inherit"
 					type="file"

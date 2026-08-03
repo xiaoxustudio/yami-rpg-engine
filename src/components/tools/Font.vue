@@ -2,7 +2,7 @@
 	<WindowFrame id="font">
 		<TitleBar>Set Font<div class="close"></div></TitleBar>
 		<div class="content-frame">
-			<div class="grid-box"> <text>Font Family</text><TextBox id="font-font" /> </div>
+			<div class="grid-box"> <div class="text">Font Family</div><TextBox id="font-font" /> </div>
 			<button id="font-confirm" name="confirm">Confirm</button>
 			<button id="font-cancel" name="cancel">Cancel</button>
 		</div>

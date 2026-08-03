@@ -3,15 +3,15 @@
 	<TitleBar>Play Actor Animation<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="playActorAnimation-actor" type="actor" /><text>Motion</text
-			><CustomBox id="playActorAnimation-motion" type="enum-string" /><text>Speed</text
+			<div class="text">Actor</div><CustomBox id="playActorAnimation-actor" type="actor" /><div class="text">Motion</div
+			><CustomBox id="playActorAnimation-motion" type="enum-string" /><div class="text">Speed</div
 			><NumberVar
 				id="playActorAnimation-speed"
 				min="0.1"
 				max="10"
 				step="0.1"
 				decimals="4"
-			 /><text>Wait</text><SelectBox id="playActorAnimation-wait" name="wait" /></div>
+			 /><div class="text">Wait</div><SelectBox id="playActorAnimation-wait" name="wait" /></div>
 		<button id="playActorAnimation-confirm" name="confirm">Confirm</button>
 		<button id="playActorAnimation-cancel" name="cancel">Cancel</button>
 	</div>

@@ -3,12 +3,12 @@
 	<TitleBar>Use Item<div class="close" /></TitleBar>
 	<div class="content-frame">
 		<div class="grid-box">
-			<text>Actor</text><CustomBox id="useItem-actor" type="actor" />
-			<text>Mode</text><SelectBox id="useItem-mode" /> <text>Shortcut Key</text
-			><SelectBox id="useItem-key" /> <text>Item</text
+			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" />
+			<div class="text">Mode</div><SelectBox id="useItem-mode" /> <div class="text">Shortcut Key</div
+			><SelectBox id="useItem-key" /> <div class="text">Item</div
 			><CustomBox id="useItem-itemId" type="file" filter="item" />
-			<text>Item</text><CustomBox id="useItem-item" type="item" />
-			<text>Wait</text><SelectBox id="useItem-wait" name="wait" />
+			<div class="text">Item</div><CustomBox id="useItem-item" type="item" />
+			<div class="text">Wait</div><SelectBox id="useItem-wait" name="wait" />
 		</div>
 		<button id="useItem-confirm" name="confirm">Confirm</button>
 		<button id="useItem-cancel" name="cancel">Cancel</button>

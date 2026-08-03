@@ -4,7 +4,7 @@
 		<TitleBar>Trigger<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Type</text><SelectBox id="triggerGetter-type" /> <text>Variable</text
+				<div class="text">Type</div><SelectBox id="triggerGetter-type" /> <div class="text">Variable</div
 				><CustomBox id="triggerGetter-variable" type="variable" filter="object" />
 			</div>
 			<button id="triggerGetter-confirm" name="confirm">Confirm</button>

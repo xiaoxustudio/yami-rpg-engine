@@ -3,9 +3,9 @@
 		<TitleBar>Change Team Relation<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Team A</text><SelectBox id="setTeamRelation-teamId1" />
-				<text>Team B</text><SelectBox id="setTeamRelation-teamId2" />
-				<text>Relation</text><SelectBox id="setTeamRelation-relation" />
+				<div class="text">Team A</div><SelectBox id="setTeamRelation-teamId1" />
+				<div class="text">Team B</div><SelectBox id="setTeamRelation-teamId2" />
+				<div class="text">Relation</div><SelectBox id="setTeamRelation-relation" />
 			</div>
 			<button id="setTeamRelation-confirm" name="confirm">Confirm</button>
 			<button id="setTeamRelation-cancel" name="cancel">Cancel</button>

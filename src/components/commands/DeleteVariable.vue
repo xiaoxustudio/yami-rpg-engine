@@ -3,7 +3,7 @@
 		<TitleBar>Delete Variable<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<div class="grid-box">
-				<text>Variable</text
+				<div class="text">Variable</div
 				><CustomBox
 					id="deleteVariable-variable"
 					type="variable"
