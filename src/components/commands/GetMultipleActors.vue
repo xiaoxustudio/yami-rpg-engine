@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="getMultipleActors">
 	<TitleBar>Get Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Write to List</text
 			><CustomBox
 				id="getMultipleActors-variable"
@@ -30,10 +30,10 @@
 				max="256"
 				decimals="4"
 				unit="tile"
-			 /><text>Selector</text><SelectBox id="getMultipleActors-selector" /><text>Team</text><SelectVar id="getMultipleActors-teamId" /><text>Activation</text><SelectBox id="getMultipleActors-activation" /></grid-box>
+			 /><text>Selector</text><SelectBox id="getMultipleActors-selector" /><text>Team</text><SelectVar id="getMultipleActors-teamId" /><text>Activation</text><SelectBox id="getMultipleActors-activation" /></div>
 		<button id="getMultipleActors-confirm" name="confirm">Confirm</button>
 		<button id="getMultipleActors-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

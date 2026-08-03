@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileTrigger-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="fileTrigger-general-grid">
+		<div class="detail-grid" id="fileTrigger-general-grid">
 			<text>{{ local.getLabel('fileTrigger-selector') || 'Selector' }}</text><SelectBox id="fileTrigger-selector" />
 			<text>{{ local.getLabel('fileTrigger-onHitWalls') || 'On Hit Walls' }}</text
 			><SelectBox id="fileTrigger-onHitWalls" />
@@ -88,11 +88,11 @@
 			/>
 			<text>{{ local.getLabel('fileTrigger-inherit') || 'Inherit' }}</text
 			><CustomBox id="fileTrigger-inherit" type="file" filter="trigger" />
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileTrigger-animation-grid') || 'Animation' }}</DetailSummary>
-		<detail-grid id="fileTrigger-animation-grid">
+		<div class="detail-grid" id="fileTrigger-animation-grid">
 			<text>{{ local.getLabel('fileTrigger-animationId') || 'Animation' }}</text
 			><CustomBox
 				id="fileTrigger-animationId"
@@ -110,7 +110,7 @@
 				unit="px"
 			/>
 			<text>{{ local.getLabel('fileTrigger-rotatable') || 'Rotatable' }}</text><SelectBox id="fileTrigger-rotatable" />
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileTrigger-events') || 'Events' }}</DetailSummary>

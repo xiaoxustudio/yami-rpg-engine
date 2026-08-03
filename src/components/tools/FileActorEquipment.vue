@@ -1,15 +1,15 @@
 <template>
 	<WindowFrame id="fileActor-equipment">
 		<TitleBar>Equipment<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Equipment</text
 				><CustomBox id="fileActor-equipment-id" type="file" filter="equipment" />
 				<text>Slot</text><SelectBox id="fileActor-equipment-slot" />
-			</grid-box>
+			</div>
 			<button id="fileActor-equipment-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-equipment-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</DetailSummary>
-			<detail-grid id="fileActor-general-grid">
+			<div class="detail-grid" id="fileActor-general-grid">
 				<text>{{ local.getLabel('fileActor-portrait') || 'Portrait' }}</text
 			><CustomBox
 				id="fileActor-portrait"
@@ -76,7 +76,7 @@
 					type="file"
 					filter="actor"
 				/>
-			</detail-grid>
+			</div>
 		</DetailBox>
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-sprites') || 'Sprites' }}</DetailSummary>

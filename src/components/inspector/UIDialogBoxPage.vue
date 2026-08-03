@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</DetailSummary>
-		<detail-grid id="uiDialogBox-properties-grid">
+		<div class="detail-grid" id="uiDialogBox-properties-grid">
 			<text>{{ local.getLabel('uiDialogBox-content') || 'Content' }}</text
 			><TextArea
 				id="uiDialogBox-content"
@@ -16,7 +16,7 @@
 				unit="ms"
 			></NumberBox>
 			<text>{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</text>
-			<flex-box id="uiDialogBox-size-box">
+			<div class="flex-box" id="uiDialogBox-size-box">
 				<SliderBox
 					id="uiDialogBox-size-slider"
 					min="12"
@@ -30,9 +30,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</text>
-			<flex-box id="uiDialogBox-lineSpacing-box">
+			<div class="flex-box" id="uiDialogBox-lineSpacing-box">
 				<SliderBox
 					id="uiDialogBox-lineSpacing-slider"
 					min="0"
@@ -46,9 +46,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</text>
-			<flex-box id="uiDialogBox-letterSpacing-box">
+			<div class="flex-box" id="uiDialogBox-letterSpacing-box">
 				<SliderBox
 					id="uiDialogBox-letterSpacing-slider"
 					min="0"
@@ -62,7 +62,7 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiDialogBox-color') || 'Color' }}</text><ColorBox id="uiDialogBox-color"></ColorBox>
 			<text>{{ local.getLabel('uiDialogBox-font') || 'Font' }}</text><TextBox id="uiDialogBox-font"></TextBox>
 			<text>{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</text><SelectBox id="uiDialogBox-typeface"></SelectBox>
@@ -92,7 +92,7 @@
 			<text>{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</text
 			><ColorBox id="uiDialogBox-effect-color"></ColorBox> <text>{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</text
 			><SelectBox id="uiDialogBox-blend"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

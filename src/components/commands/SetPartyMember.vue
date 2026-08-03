@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="setPartyMember">
 	<TitleBar>Set Party Member<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Operation</text><SelectBox id="setPartyMember-operation" /><text>Global Actor</text
-			><CustomBox id="setPartyMember-actor" type="actor" /></grid-box>
+			><CustomBox id="setPartyMember-actor" type="actor" /></div>
 		<button id="setPartyMember-confirm" name="confirm">Confirm</button>
 		<button id="setPartyMember-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

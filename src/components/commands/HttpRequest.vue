@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="httpRequest">
 	<TitleBar>httpRequest<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>URL</text><StringVar id="httpRequest-url" /> <text>Method</text
 			><SelectBox id="httpRequest-method" /> <text>Header</text
 			><ParamList id="httpRequest-header" /> <text>Data</text
@@ -14,10 +14,10 @@
 			<text>AuthPass</text><StringVar id="httpRequest-authPass" />
 			<text>CallBack</text
 			><CustomBox id="httpRequest-callback" type="file" filter="event" />
-		</grid-box>
+		</div>
 		<button id="httpRequest-confirm" name="confirm">Confirm</button>
 		<button id="httpRequest-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

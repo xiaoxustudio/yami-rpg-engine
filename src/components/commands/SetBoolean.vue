@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setBoolean">
 		<TitleBar>Set Boolean<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox
 					id="setBoolean-variable"
@@ -18,10 +18,10 @@
 				><NumberVar id="setBoolean-list-index" min="0" max="1000000000" />
 				<text>Param Name</text><StringVar id="setBoolean-parameter-key" />
 				<text>Script</text><TextBox id="setBoolean-script" />
-			</grid-box>
+			</div>
 			<button id="setBoolean-confirm" name="confirm">Confirm</button>
 			<button id="setBoolean-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

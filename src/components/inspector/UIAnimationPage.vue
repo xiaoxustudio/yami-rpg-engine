@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiAnimation-properties-grid') || 'Animation Properties' }}</DetailSummary>
-		<detail-grid id="uiAnimation-properties-grid">
+		<div class="detail-grid" id="uiAnimation-properties-grid">
 			<text>{{ local.getLabel('uiAnimation-animation') || 'Animation' }}</text
 			><CustomBox
 				id="uiAnimation-animation"
@@ -46,7 +46,7 @@
 					unit="px"
 				></NumberBox>
 			</box>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

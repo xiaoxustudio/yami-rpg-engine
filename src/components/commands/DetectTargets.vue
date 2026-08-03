@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="detectTargets">
 	<TitleBar>Detect Targets<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="detectTargets-actor" type="actor" /><text>Distance</text
 			><NumberVar
 				id="detectTargets-distance"
@@ -10,10 +10,10 @@
 				max="512"
 				decimals="4"
 				unit="tile"
-			 /><text>Selector</text><SelectBox id="detectTargets-selector" /><text>In Sight</text><SelectBox id="detectTargets-inSight" /></grid-box>
+			 /><text>Selector</text><SelectBox id="detectTargets-selector" /><text>In Sight</text><SelectBox id="detectTargets-inSight" /></div>
 		<button id="detectTargets-confirm" name="confirm">Confirm</button>
 		<button id="detectTargets-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

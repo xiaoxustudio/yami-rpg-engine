@@ -2,13 +2,13 @@
 	<!-- 设置数量窗口 -->
 	<WindowFrame id="setQuantity">
 		<TitleBar>Set Quantity<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Quantity</text><NumberBox id="setQuantity-quantity" min="1" />
-			</grid-box>
+			</div>
 			<button id="setQuantity-confirm" name="confirm">Confirm</button>
 			<button id="setQuantity-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
-			<page-frame id="scene-object" value="scene-object">
+			<div class="page-frame" id="scene-object" value="scene-object">
 				<box id="scene-list-head">
 					<TextBox id="scene-searcher" name="search" />
 				</box>
 				<TreeList id="scene-list" padded />
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

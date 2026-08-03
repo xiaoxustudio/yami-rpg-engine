@@ -1,15 +1,15 @@
 <template>
 <WindowFrame id="transferGlobalActor">
 	<TitleBar>Transfer Global Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="transferGlobalActor-actor" type="actor" />
 			<text>Position</text
 			><CustomBox id="transferGlobalActor-position" type="position" />
-		</grid-box>
+		</div>
 		<button id="transferGlobalActor-confirm" name="confirm">Confirm</button>
 		<button id="transferGlobalActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

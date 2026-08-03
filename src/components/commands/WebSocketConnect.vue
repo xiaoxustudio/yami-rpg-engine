@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="webSocketConnect">
 		<TitleBar>webSocketConnect<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>URL</text><StringVar id="webSocketConnect-url" /> <text>ID</text
 				><StringVar id="webSocketConnect-id" /> <text>Protocols</text
 				><StringVar id="webSocketConnect-protocols" /> <text>OnOpen</text
@@ -13,10 +13,10 @@
 				><CustomBox id="webSocketConnect-onError" type="file" filter="event" />
 				<text>OnClose</text
 				><CustomBox id="webSocketConnect-onClose" type="file" filter="event" />
-			</grid-box>
+			</div>
 			<button id="webSocketConnect-confirm" name="confirm">Confirm</button>
 			<button id="webSocketConnect-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="stopEvent">
 	<TitleBar>Stop Event<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="stopEvent-type" /> <text>Actor</text
 			><CustomBox id="stopEvent-actor" type="actor" /> <text>Skill</text
 			><CustomBox id="stopEvent-skill" type="skill" /> <text>State</text
@@ -13,10 +13,10 @@
 			><CustomBox id="stopEvent-element" type="element" /> <text>Event</text
 			><CustomBox id="stopEvent-eventId" type="file" filter="event" />
 			<text>Event</text><SelectBox id="stopEvent-eventType" />
-		</grid-box>
+		</div>
 		<button id="stopEvent-confirm" name="confirm">Confirm</button>
 		<button id="stopEvent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

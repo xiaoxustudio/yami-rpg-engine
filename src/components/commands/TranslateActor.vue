@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="translateActor">
 	<TitleBar>Translate Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="translateActor-actor" type="actor" />
 			<text>Angle</text><CustomBox id="translateActor-angle" type="angle" />
 			<text>Distance</text
@@ -23,10 +23,10 @@
 				unit="ms"
 			 />
 			<text>Wait</text><SelectBox id="translateActor-wait" name="wait" />
-		</grid-box>
+		</div>
 		<button id="translateActor-confirm" name="confirm">Confirm</button>
 		<button id="translateActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

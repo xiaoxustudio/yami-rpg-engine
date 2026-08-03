@@ -23,7 +23,7 @@ import { Selection } from '@/tools/text-capture.ts';
 	eventResult: null,
 	onInitialize() {
 		this.windowFrame = $('#callEvent');
-		this.gridBox = $('#callEvent').querySelector('grid-box');
+		this.gridBox = $('#callEvent').querySelector('.grid-box');
 		$('#callEvent-confirm').on('click', () => this.save());
 
 		$('#callEvent-type').loadItems([

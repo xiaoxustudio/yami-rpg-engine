@@ -5,8 +5,8 @@
 			>Setting<div class="maximize" />
 			<div class="close" />
 		</TitleBar>
-		<content-frame>
-			<grid-box id="setting-grid">
+		<div class="content-frame">
+			<div class="grid-box" id="setting-grid">
 				<text id="setting-title-server" class="setting-title">Server</text>
 				<text /><NumberBox id="setting-server-port" min="0" max="65535" />
 				<text /><CheckBox id="setting-server-auto" class="standard" />
@@ -34,10 +34,10 @@
 				<text id="setting-title-update" class="setting-title"></text>
 				<text id="setting-update-checkOnStart-label" />
 				<CheckBox id="setting-update-checkOnStart" class="standard" />
-			</grid-box>
+			</div>
 			<button id="setting-confirm" name="confirm">Confirm</button>
 			<button id="setting-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

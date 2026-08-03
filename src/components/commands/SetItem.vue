@@ -1,15 +1,15 @@
 <template>
 <WindowFrame id="setItem">
 	<TitleBar>Set Item<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Item</text><CustomBox id="setItem-item" type="item" />
 			<text>Operation</text><SelectBox id="setItem-operation" />
 			<text>Quantity</text><NumberVar id="setItem-quantity" min="1" max="10000" />
-		</grid-box>
+		</div>
 		<button id="setItem-confirm" name="confirm">Confirm</button>
 		<button id="setItem-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

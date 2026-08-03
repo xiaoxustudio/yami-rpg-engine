@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="createElement">
 		<TitleBar>Create Element<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Operation</text><SelectBox id="createElement-operation" />
 				<text>Parent</text><CustomBox id="createElement-parent" type="element" />
 				<text>UI Elements</text
 				><CustomBox id="createElement-uiId" type="file" filter="ui" />
 				<text>UI Element</text
 				><CustomBox id="createElement-presetId" type="preset-element" />
-			</grid-box>
+			</div>
 			<button id="createElement-confirm" name="confirm">Confirm</button>
 			<button id="createElement-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

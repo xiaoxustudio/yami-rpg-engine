@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setZoomFactor">
 		<TitleBar>Set Zoom Factor<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Zoom Factor</text
 				><NumberVar
 					id="setZoomFactor-zoom"
@@ -21,10 +21,10 @@
 					unit="ms"
 				 />
 				<text>Wait</text><SelectBox id="setZoomFactor-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="setZoomFactor-confirm" name="confirm">Confirm</button>
 			<button id="setZoomFactor-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

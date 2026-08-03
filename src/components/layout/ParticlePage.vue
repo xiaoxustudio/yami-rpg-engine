@@ -1,5 +1,5 @@
 <template>
-			<page-frame id="particle" value="particle">
+			<div class="page-frame" id="particle" value="particle">
 				<box id="particle-head">
 					<box id="particle-head-start">
 						<item
@@ -45,7 +45,7 @@
 					</box>
 					<text id="particle-info" />
 				</box>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

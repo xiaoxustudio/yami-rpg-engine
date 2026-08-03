@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="autoTile-generateFrames">
 		<TitleBar>Generate Frames<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Stride X</text
 				><NumberBox id="autoTile-generateFrames-strideX" min="-128" max="128" />
 				<text>Stride Y</text
 				><NumberBox id="autoTile-generateFrames-strideY" min="-128" max="128" />
 				<text>Count</text
 				><NumberBox id="autoTile-generateFrames-count" min="1" max="255" />
-			</grid-box>
+			</div>
 			<button id="autoTile-generateFrames-confirm" name="confirm">Confirm</button>
 			<button id="autoTile-generateFrames-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

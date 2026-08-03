@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="loadScene">
 		<TitleBar>Load Scene<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Scene</text
 				><FileVar id="loadScene-sceneId" type="file" filter="scene" />
 				<text>Transfer Player</text><SelectBox id="loadScene-transfer" />
@@ -10,10 +10,10 @@
 				><NumberVar id="loadScene-x" min="0" max="512" step="0.5" decimals="4" />
 				<text>Y</text
 				><NumberVar id="loadScene-y" min="0" max="512" step="0.5" decimals="4" />
-			</grid-box>
+			</div>
 			<button id="loadScene-confirm" name="confirm">Confirm</button>
 			<button id="loadScene-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

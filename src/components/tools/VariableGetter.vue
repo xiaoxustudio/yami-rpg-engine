@@ -2,8 +2,8 @@
 	<!-- 变量访问器窗口 -->
 	<WindowFrame id="variableGetter">
 		<TitleBar>Variable<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="variableGetter-type" /> <text>Actor</text
 				><CustomBox id="variableGetter-actor" type="actor" /> <text>Skill</text
 				><CustomBox id="variableGetter-skill" type="skill" /> <text>State</text
@@ -14,10 +14,10 @@
 				<text>Key</text><TextBox id="variableGetter-common-key" /> <text>Key</text
 				><SelectVar id="variableGetter-preset-key" /> <text>Key</text
 				><CustomBox id="variableGetter-global-key" type="global-variable" />
-			</grid-box>
+			</div>
 			<button id="variableGetter-confirm" name="confirm">Confirm</button>
 			<button id="variableGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

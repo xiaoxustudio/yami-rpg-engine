@@ -3,14 +3,14 @@
 		<TitleBar>
 			<div class="close" />
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<text id="confirmation-message" />
 			<box id="confirmation-button-frame">
 				<button id="confirmation-button-0" />
 				<button id="confirmation-button-1" />
 				<button id="confirmation-button-2" />
 			</box>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

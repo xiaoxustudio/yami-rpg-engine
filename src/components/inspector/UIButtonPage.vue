@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiButton-image-properties-grid') || 'Image Properties' }}</DetailSummary>
-		<detail-grid id="uiButton-image-properties-grid">
+		<div class="detail-grid" id="uiButton-image-properties-grid">
 			<text>{{ local.getLabel('uiButton-display') || 'Display' }}</text><SelectBox id="uiButton-display"></SelectBox>
 			<text>{{ local.getLabel('uiButton-normalImage') || 'Normal Image' }}</text
 			><CustomBox
@@ -48,7 +48,7 @@
 				unit="px"
 			></NumberBox>
 			<text>{{ local.getLabel('uiButton-imagePadding-box') || 'Padding' }}</text>
-			<flex-box id="uiButton-imagePadding-box">
+			<div class="flex-box" id="uiButton-imagePadding-box">
 				<SliderBox
 					id="uiButton-imagePadding-slider"
 					min="0"
@@ -60,9 +60,9 @@
 					max="100"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-imageOpacity-box') || 'Opacity' }}</text>
-			<flex-box id="uiButton-imageOpacity-box">
+			<div class="flex-box" id="uiButton-imageOpacity-box">
 				<SliderBox
 					id="uiButton-imageOpacity-slider"
 					min="0"
@@ -76,7 +76,7 @@
 					step="0.05"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-imageEffect') || 'Effect' }}</text><SelectBox id="uiButton-imageEffect"></SelectBox>
 			<text>{{ local.getLabel('uiButton-normalTint-box') || 'Normal Tint' }}</text>
 			<box
@@ -168,14 +168,14 @@
 					step="5"
 				></NumberBox>
 			</box>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiButton-text-properties-grid') || 'Text Properties' }}</DetailSummary>
-		<detail-grid id="uiButton-text-properties-grid">
+		<div class="detail-grid" id="uiButton-text-properties-grid">
 			<text>{{ local.getLabel('uiButton-direction') || 'Direction' }}</text><SelectBox id="uiButton-direction"></SelectBox>
 			<text>{{ local.getLabel('uiButton-align-box') || 'Align' }}</text>
-			<flex-box id="uiButton-align-box">
+			<div class="flex-box" id="uiButton-align-box">
 				<RadioBox
 					id="uiButton-align-left"
 					name="uiButton-horizontalAlign"
@@ -224,14 +224,14 @@
 					tabindex="0"
 					><text>&#xf038;</text></RadioBox
 				>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-content') || 'Content' }}</text
 			><TextBox
 				id="uiButton-content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextBox>
 			<text>{{ local.getLabel('uiButton-size-box') || 'Size' }}</text>
-			<flex-box id="uiButton-size-box">
+			<div class="flex-box" id="uiButton-size-box">
 				<SliderBox
 					id="uiButton-size-slider"
 					min="12"
@@ -245,9 +245,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-letterSpacing-box') || 'Letter Spacing' }}</text>
-			<flex-box id="uiButton-letterSpacing-box">
+			<div class="flex-box" id="uiButton-letterSpacing-box">
 				<SliderBox
 					id="uiButton-letterSpacing-slider"
 					min="0"
@@ -261,9 +261,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-textPadding-box') || 'Padding' }}</text>
-			<flex-box id="uiButton-textPadding-box">
+			<div class="flex-box" id="uiButton-textPadding-box">
 				<SliderBox
 					id="uiButton-textPadding-slider"
 					min="0"
@@ -277,7 +277,7 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiButton-font') || 'Font' }}</text><TextBox id="uiButton-font"></TextBox>
 			<text>{{ local.getLabel('uiButton-typeface') || 'Typeface' }}</text><SelectBox id="uiButton-typeface"></SelectBox>
 			<text>{{ local.getLabel('uiButton-textEffect-type') || 'Effect' }}</text
@@ -310,11 +310,11 @@
 			<text>{{ local.getLabel('uiButton-hoverColor') || 'Hover Color' }}</text><ColorBox id="uiButton-hoverColor"></ColorBox>
 			<text>{{ local.getLabel('uiButton-activeColor') || 'Active Color' }}</text
 			><ColorBox id="uiButton-activeColor"></ColorBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiButton-sound-effects-grid') || 'Sound Effects' }}</DetailSummary>
-		<detail-grid id="uiButton-sound-effects-grid">
+		<div class="detail-grid" id="uiButton-sound-effects-grid">
 			<text>{{ local.getLabel('uiButton-hoverSound') || 'Hover SE' }}</text
 			><CustomBox
 				id="uiButton-hoverSound"
@@ -327,7 +327,7 @@
 				type="file"
 				filter="audio"
 			></CustomBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

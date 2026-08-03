@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="positionGetter">
 		<TitleBar>Position<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="positionGetter-type" /> <text>X</text
 				><NumberVar
 					id="positionGetter-common-x"
@@ -30,10 +30,10 @@
 					type="preset-object"
 					filter="any"
 				/>
-			</grid-box>
+			</div>
 			<button id="positionGetter-confirm" name="confirm">Confirm</button>
 			<button id="positionGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setResolution">
 		<TitleBar>Set Resolution<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Width</text
 				><NumberVar id="setResolution-width" min="240" max="7680" unit="px" />
 				<text>Height</text
@@ -11,10 +11,10 @@
 				><NumberVar id="setResolution-sceneScale" min="0.5" max="4" decimals="10" />
 				<text>UI Scale</text
 				><NumberVar id="setResolution-uiScale" min="0.5" max="4" decimals="10" />
-			</grid-box>
+			</div>
 			<button id="setResolution-confirm" name="confirm">Confirm</button>
 			<button id="setResolution-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
-			<page-frame id="particle-layer" value="particle-layer">
+			<div class="page-frame" id="particle-layer" value="particle-layer">
 				<TreeList id="particle-list" padded />
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

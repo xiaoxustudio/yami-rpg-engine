@@ -1,20 +1,19 @@
 <template>
 	<WindowFrame id="attribute">
 		<TitleBar>Attribute<div class="close" /></TitleBar>
-		<content-frame>
-			<field-set id="attribute-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="attribute-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="attribute-list" padded />
-			</field-set>
-			<field-set id="attribute-properties-fieldset">
-				<legend>Properties</legend>
-				<flex-box id="attribute-properties-flex">
-					<flex-item
+			</div>
+			<div class="field-set" id="attribute-properties-fieldset">
+				<div class="legend">Properties</div>
+				<div class="flex-box" id="attribute-properties-flex">
+					<div class="flex-item"
 						><text>Name</text
-						><TextBox id="attribute-name" menu="tag-localization" /></flex-item
-					>
-					<flex-item><text>Key</text><TextBox id="attribute-key" /></flex-item>
-					<flex-item id="attribute-type-box"
+						><TextBox id="attribute-name" menu="tag-localization" /></div>
+					<div class="flex-item"><text>Key</text><TextBox id="attribute-key" /></div>
+					<div class="flex-item" id="attribute-type-box"
 						><text>Type</text>
 						<RadioBox
 							id="attribute-type-boolean"
@@ -53,19 +52,18 @@
 								>Object(For Element)</text
 							></RadioBox
 						>
-					</flex-item>
-					<flex-item id="attribute-enum-box"
+					</div>
+					<div class="flex-item" id="attribute-enum-box"
 						><text>Options</text>
-						<CustomBox id="attribute-enum" type="enum-group" /></flex-item
-					>
-					<flex-item><text>Note</text><TextArea id="attribute-note" /></flex-item>
-				</flex-box>
-			</field-set>
+						<CustomBox id="attribute-enum" type="enum-group" /></div>
+					<div class="flex-item"><text>Note</text><TextArea id="attribute-note" /></div>
+				</div>
+			</div>
 			<TextBox id="attribute-searcher" name="search" />
 			<button id="attribute-confirm" name="confirm">Confirm</button>
 			<button id="attribute-cancel" name="cancel">Cancel</button>
 			<button id="attribute-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

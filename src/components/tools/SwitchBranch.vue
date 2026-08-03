@@ -2,13 +2,13 @@
 	<!-- 匹配 - 分支 -->
 	<WindowFrame id="switch-branch">
 		<TitleBar>Branch<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Cases</text><ParamList id="switch-branch-conditions" />
-			</grid-box>
+			</div>
 			<button id="switch-branch-confirm" name="confirm">Confirm</button>
 			<button id="switch-branch-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

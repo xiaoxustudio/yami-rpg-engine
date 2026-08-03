@@ -158,6 +158,7 @@ export function removeClass(el: any, className: string): boolean {
 }
 
 export function hasClass(el: any, className: string): boolean {
+	if (!el || !el.classList) return false;
 	return el.classList.contains(className);
 }
 

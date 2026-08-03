@@ -1,18 +1,18 @@
 <template>
 <WindowFrame id="changeActorEquipment">
 	<TitleBar>Change Actor Equipment<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeActorEquipment-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorEquipment-operation" /><text>Shortcut Key</text><SelectVar id="changeActorEquipment-slot" /><text>Equipment</text
 			><CustomBox
 				id="changeActorEquipment-equipmentId"
 				type="file"
 				filter="equipment"
 			 /><text>Equipment</text
-			><CustomBox id="changeActorEquipment-equipment" type="equipment" /></grid-box>
+			><CustomBox id="changeActorEquipment-equipment" type="equipment" /></div>
 		<button id="changeActorEquipment-confirm" name="confirm">Confirm</button>
 		<button id="changeActorEquipment-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

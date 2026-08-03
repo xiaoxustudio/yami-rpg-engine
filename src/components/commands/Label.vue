@@ -1,11 +1,11 @@
 <template>
 <WindowFrame id="label">
 	<TitleBar>Label<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box> <text>Label Name</text><TextBox id="label-name" /> </grid-box>
+	<div class="content-frame">
+		<div class="grid-box"> <text>Label Name</text><TextBox id="label-name" /> </div>
 		<button id="label-confirm" name="confirm">Confirm</button>
 		<button id="label-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="insertImage">
 		<TitleBar>Insert Image<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Mode</text><SelectBox id="insertImage-mode" /> <text>Image</text
 				><CustomBox id="insertImage-image" type="file" filter="image" />
 				<text>Clip</text
 				><CustomBox id="insertImage-clip" type="clip" image="insertImage-image" />
 				<text>Width</text><NumberBox id="insertImage-width" min="0" max="10000" />
 				<text>Height</text><NumberBox id="insertImage-height" min="0" max="10000" />
-			</grid-box>
+			</div>
 			<button id="insertImage-confirm" name="confirm">Confirm</button>
 			<button id="insertImage-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

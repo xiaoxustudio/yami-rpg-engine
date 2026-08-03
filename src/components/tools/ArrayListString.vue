@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame id="arrayList-string">
 		<TitleBar>String<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<TextArea id="arrayList-string-value" />
 			<button id="arrayList-string-confirm" name="confirm">Confirm</button>
 			<button id="arrayList-string-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

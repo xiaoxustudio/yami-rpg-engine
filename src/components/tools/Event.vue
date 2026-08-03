@@ -4,24 +4,24 @@
 			>Event<div class="maximize"></div>
 			<div class="close"></div>
 		</TitleBar>
-		<content-frame>
-			<field-set id="event-open-fieldset" class="input pad">
-				<legend>Event</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="event-open-fieldset">
+				<div class="legend">Event</div>
 				<TreeList id="event-open-list" />
-			</field-set>
-			<field-set id="event-commands-fieldset" class="input pad">
-				<legend>Content</legend>
+			</div>
+			<div class="field-set input pad" id="event-commands-fieldset">
+				<div class="legend">Content</div>
 				<box id="event-commands-gutter-background" />
 				<CommandList id="event-commands" />
 				<box id="event-commands-gutter-outer">
 					<box id="event-commands-gutter-inner" />
 				</box>
-			</field-set>
+			</div>
 			<SelectBox id="event-type" />
 			<button id="event-confirm" name="confirm">Confirm</button>
 			<button id="event-cancel" name="cancel">Cancel</button>
 			<button id="event-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

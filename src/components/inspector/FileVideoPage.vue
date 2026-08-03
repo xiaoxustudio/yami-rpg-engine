@@ -1,13 +1,13 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileVideo-info-grid') || 'File Info' }}</DetailSummary>
-		<detail-grid id="fileVideo-info-grid">
+		<div class="detail-grid" id="fileVideo-info-grid">
 			<text>{{ local.getLabel('fileVideo-name') || 'Name' }}</text><text id="fileVideo-name"></text> <text>{{ local.getLabel('fileVideo-size') || 'Size' }}</text
 			><text id="fileVideo-size"></text> <text>{{ local.getLabel('fileVideo-duration') || 'Duration' }}</text
 			><text id="fileVideo-duration"></text> <text>{{ local.getLabel('fileVideo-resolution') || 'Resolution' }}</text
 			><text id="fileVideo-resolution"></text> <text>{{ local.getLabel('fileVideo-bitrate') || 'Bitrate' }}</text
 			><text id="fileVideo-bitrate"></text>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox id="fileVideo-video-detail" open>
 		<DetailSummary>{{ local.getLabel('fileVideo-video') || 'Player' }}</DetailSummary>

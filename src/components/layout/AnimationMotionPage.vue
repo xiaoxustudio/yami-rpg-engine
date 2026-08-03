@@ -1,10 +1,10 @@
 <template>
-			<page-frame id="animation-motion" value="animation-motion">
+			<div class="page-frame" id="animation-motion" value="animation-motion">
 				<box id="animation-list-head">
 					<TextBox id="animation-searcher" name="search" />
 				</box>
 				<TreeList id="animation-list" padded />
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

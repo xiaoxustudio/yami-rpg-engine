@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="setAnimation-property">
 		<TitleBar>Set Animation<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setAnimation-property-key" />
 				<text>Animation</text
 				><CustomBox
@@ -18,10 +18,10 @@
 				><NumberVar id="setAnimation-property-angle" min="0" max="360" unit="deg" />
 				<text>Frame</text
 				><NumberVar id="setAnimation-property-frame" min="0" max="10000" />
-			</grid-box>
+			</div>
 			<button id="setAnimation-property-confirm" name="confirm">Confirm</button>
 			<button id="setAnimation-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

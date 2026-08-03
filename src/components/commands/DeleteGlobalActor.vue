@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="deleteGlobalActor">
 	<TitleBar>Delete Global Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text
-			><CustomBox id="deleteGlobalActor-actorId" type="file" filter="actor" /></grid-box>
+			><CustomBox id="deleteGlobalActor-actorId" type="file" filter="actor" /></div>
 		<button id="deleteGlobalActor-confirm" name="confirm">Confirm</button>
 		<button id="deleteGlobalActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

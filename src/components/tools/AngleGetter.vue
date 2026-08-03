@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="angleGetter">
 		<TitleBar>Angle<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="angleGetter-type" /> <text>Position</text
 				><CustomBox id="angleGetter-position-position" type="position" />
 				<text>Degrees</text
@@ -13,10 +13,10 @@
 					decimals="4"
 					unit="deg"
 				/>
-			</grid-box>
+			</div>
 			<button id="angleGetter-confirm" name="confirm">Confirm</button>
 			<button id="angleGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

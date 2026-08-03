@@ -2,15 +2,15 @@
 	<!-- 设置文字位置 -->
 	<WindowFrame id="textPosition">
 		<TitleBar>Set Text Position<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Axis</text><SelectBox id="textPosition-axis" /> <text>Operation</text
 				><SelectBox id="textPosition-operation" /> <text>Value</text
 				><NumberBox id="textPosition-value" min="-1000" max="1000" unit="px" />
-			</grid-box>
+			</div>
 			<button id="textPosition-confirm" name="confirm">Confirm</button>
 			<button id="textPosition-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

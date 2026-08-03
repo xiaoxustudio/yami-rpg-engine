@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="createTrigger">
 		<TitleBar>Create Trigger<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Trigger</text
 				><FileVar id="createTrigger-triggerId" type="file" filter="trigger" />
 				<text>Caster</text><CustomBox id="createTrigger-caster" type="actor" />
@@ -32,10 +32,10 @@
 					step="0.1"
 					decimals="4"
 				 />
-			</grid-box>
+			</div>
 			<button id="createTrigger-confirm" name="confirm">Confirm</button>
 			<button id="createTrigger-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

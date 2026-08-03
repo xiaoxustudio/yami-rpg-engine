@@ -147,14 +147,14 @@ tooltip-line {
 	border-left: 8px solid var(--folder-mark-color);
 }
 
-detail-grid {
+.detail-grid {
 	display: grid;
 	margin: 4px 4px 4px 10px;
 	grid-gap: 4px;
 	grid-template-columns: 1fr 2fr;
 }
 
-detail-grid > text {
+.detail-grid > text {
 	line-height: 20px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -194,18 +194,18 @@ detail-grid > text {
 /* --------------------------------
  * 控件组框�? * --------------------------------
  */
-field-set {
+.field-set {
 	position: absolute;
 	background-color: var(--fieldset-background);
 	border: var(--fieldset-border);
 	border-radius: 2px;
 }
 
-field-set.input {
+.field-set.input {
 	background-color: var(--input-background);
 }
 
-field-set.pad::before {
+.field-set.pad::before {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -216,7 +216,7 @@ field-set.pad::before {
 	z-index: 1;
 }
 
-field-set.pad::after {
+.field-set.pad::after {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -226,7 +226,7 @@ field-set.pad::after {
 	background-color: inherit;
 }
 
-legend {
+.legend {
 	position: absolute;
 	padding-left: 2px;
 	padding-right: 2px;
@@ -243,7 +243,7 @@ legend {
 /* --------------------------------
  * 弹性盒�? * --------------------------------
  */
-flex-box {
+.flex-box {
 	display: flex;
 	row-gap: 4px;
 	column-gap: 4px;
@@ -251,7 +251,7 @@ flex-box {
 	white-space: nowrap;
 }
 
-field-set > flex-box {
+.field-set > .flex-box {
 	margin: 10px;
 }
 
@@ -259,7 +259,7 @@ field-set > flex-box {
  * 网格盒子
  * --------------------------------
  */
-grid-box {
+.grid-box {
 	display: grid;
 	margin: 10px;
 	grid-gap: 4px;
@@ -268,7 +268,7 @@ grid-box {
 	white-space: nowrap;
 }
 
-grid-box > text {
+.grid-box > text {
 	line-height: 20px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -484,7 +484,7 @@ body.border > .window-frame.maximized {
  * 内容框架
  * --------------------------------
  */
-content-frame {
+.content-frame {
 	display: block;
 	position: absolute;
 	top: 28px;
@@ -495,7 +495,7 @@ content-frame {
 /* --------------------------------
  * 页面管理�? * --------------------------------
  */
-page-frame:not(.visible) {
+.page-frame:not(.visible) {
 	display: none !important;
 }
 
@@ -798,7 +798,7 @@ body.maximized > #title > #title-buttons > #title-maximize::after {
  * 项目页面
  * --------------------------------
  */
-#workspace-page-manager > page-frame {
+#workspace-page-manager > .page-frame {
 	position: absolute;
 	width: 100%;
 	height: 100%;

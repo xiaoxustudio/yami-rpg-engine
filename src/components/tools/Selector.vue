@@ -4,13 +4,13 @@
 			>Select File<div class="maximize"></div>
 			<div class="close"></div>
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<div class="file-browser" id="selector-browser">
 				<FileBrowser />
 			</div>
 			<button id="selector-confirm" name="confirm">Confirm</button>
 			<button id="selector-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

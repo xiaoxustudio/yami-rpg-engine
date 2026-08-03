@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setInventory">
 	<TitleBar>Set Inventory<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="setInventory-actor" type="actor" />
 			<text>Operation</text><SelectBox id="setInventory-operation" />
 			<text>Money</text
@@ -21,10 +21,10 @@
 			><NumberVar id="setInventory-order2" min="0" max="10000" />
 			<text>Global Actor</text
 			><CustomBox id="setInventory-refActor" type="actor" />
-		</grid-box>
+		</div>
 		<button id="setInventory-confirm" name="confirm">Confirm</button>
 		<button id="setInventory-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="itemGetter">
 		<TitleBar>Actor<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="itemGetter-type" /> <text>Actor</text
 				><CustomBox id="itemGetter-actor" type="actor" /> <text>Shortcut Key</text
 				><SelectVar id="itemGetter-key" /> <text>Item</text
 				><CustomBox id="itemGetter-itemId" type="file" filter="item" />
 				<text>Variable</text
 				><CustomBox id="itemGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="itemGetter-confirm" name="confirm">Confirm</button>
 			<button id="itemGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

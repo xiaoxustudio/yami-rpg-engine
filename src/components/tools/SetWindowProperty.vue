@@ -2,8 +2,8 @@
 	<!-- 设置窗口 - 属性 -->
 	<WindowFrame id="setWindow-property">
 		<TitleBar>Window Property<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setWindow-property-key" />
 				<text>Scroll X</text
 				><NumberVar id="setWindow-property-scrollX" min="0" max="10000" unit="px" />
@@ -31,10 +31,10 @@
 				><NumberVar id="setWindow-property-paddingX" min="0" max="1000" unit="px" />
 				<text>Padding Y</text
 				><NumberVar id="setWindow-property-paddingY" min="0" max="1000" unit="px" />
-			</grid-box>
+			</div>
 			<button id="setWindow-property-confirm" name="confirm">Confirm</button>
 			<button id="setWindow-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

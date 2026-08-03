@@ -2,14 +2,14 @@
 	<!-- 触发器访问器窗口 -->
 	<WindowFrame id="triggerGetter">
 		<TitleBar>Trigger<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="triggerGetter-type" /> <text>Variable</text
 				><CustomBox id="triggerGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="triggerGetter-confirm" name="confirm">Confirm</button>
 			<button id="triggerGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

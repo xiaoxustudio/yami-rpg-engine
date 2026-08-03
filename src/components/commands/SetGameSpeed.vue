@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setGameSpeed">
 		<TitleBar>Set Game Speed<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Speed</text
 				><NumberVar
 					id="setGameSpeed-speed"
@@ -21,10 +21,10 @@
 					unit="ms"
 				/>
 				<text>Wait</text><SelectBox id="setGameSpeed-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="setGameSpeed-confirm" name="confirm">Confirm</button>
 			<button id="setGameSpeed-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

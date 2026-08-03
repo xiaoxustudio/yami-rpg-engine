@@ -1,11 +1,11 @@
 <template>
-			<page-frame id="animation-easing" value="animation-easing">
+			<div class="page-frame" id="animation-easing" value="animation-easing">
 				<box id="animation-easing-head">
 					<item id="animation-easing-settings" class="toolbar-item" value="bezier" />
 					<SelectBox id="animation-easing-id" />
 				</box>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

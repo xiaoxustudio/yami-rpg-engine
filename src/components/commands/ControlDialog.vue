@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="controlDialog">
 		<TitleBar>Control Dialog<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="controlDialog-element" type="element" />
 				<text>Operation</text><SelectBox id="controlDialog-operation" />
-			</grid-box>
+			</div>
 			<button id="controlDialog-confirm" name="confirm">Confirm</button>
 			<button id="controlDialog-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

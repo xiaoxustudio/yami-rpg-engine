@@ -1,12 +1,12 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileUI-foreground-grid') || 'Stage Foreground' }}</DetailSummary>
-		<detail-grid id="fileUI-foreground-grid">
+		<div class="detail-grid" id="fileUI-foreground-grid">
 			<text>{{ local.getLabel('fileUI-width') || 'Width' }}</text
 			><NumberBox id="fileUI-width" min="8" max="7680" unit="px" />
 			<text>{{ local.getLabel('fileUI-height') || 'Height' }}</text
 			><NumberBox id="fileUI-height" min="8" max="7680" unit="px" />
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

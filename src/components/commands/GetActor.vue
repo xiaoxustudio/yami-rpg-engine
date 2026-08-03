@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="getActor">
 	<TitleBar>Get Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Write to Variable</text
 			><CustomBox id="getActor-variable" type="variable" filter="object" /><text>Position</text><CustomBox id="getActor-position" type="position" /><text>Area</text><SelectBox id="getActor-area" /><text>Size</text
 			><NumberVar id="getActor-size" min="0" max="512" decimals="4" unit="tile" /><text>Radius</text
@@ -19,10 +19,10 @@
 			><SelectBox id="getActor-divisor" /><text>Activation</text
 			><SelectBox id="getActor-activation" /><text>Exclusion</text
 			><SelectBox id="getActor-exclusion" /><text>Exclusion Actor</text
-			><CustomBox id="getActor-exclusionActor" type="actor" /><text>Exclusion Team</text><SelectVar id="getActor-exclusionTeamId" /></grid-box>
+			><CustomBox id="getActor-exclusionActor" type="actor" /><text>Exclusion Team</text><SelectVar id="getActor-exclusionTeamId" /></div>
 		<button id="getActor-confirm" name="confirm">Confirm</button>
 		<button id="getActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

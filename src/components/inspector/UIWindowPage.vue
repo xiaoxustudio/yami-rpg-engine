@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiWindow-properties-grid') || 'Window Properties' }}</DetailSummary>
-		<detail-grid id="uiWindow-properties-grid">
+		<div class="detail-grid" id="uiWindow-properties-grid">
 			<text>{{ local.getLabel('uiWindow-layout') || 'Layout' }}</text><SelectBox id="uiWindow-layout"></SelectBox>
 			<text>{{ local.getLabel('uiWindow-scrollX') || 'Scroll X' }}</text
 			><NumberBox
@@ -60,7 +60,7 @@
 				unit="px"
 			></NumberBox>
 			<text>{{ local.getLabel('uiWindow-overflow') || 'Overflow' }}</text><SelectBox id="uiWindow-overflow"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

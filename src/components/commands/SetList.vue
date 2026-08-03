@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setList">
 		<TitleBar>Set List<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox id="setList-variable" type="variable" filter="object" />
 				<text>Operation</text><SelectBox id="setList-operation" />
@@ -27,10 +27,10 @@
 				><CustomBox id="setList-enum-groupId" type="enum-group" /> <text>Actor</text
 				><CustomBox id="setList-actor" type="actor" /> <text>Default</text
 				><CheckBox id="setList-index-skip-check" class="standard" />
-			</grid-box>
+			</div>
 			<button id="setList-confirm" name="confirm">Confirm</button>
 			<button id="setList-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

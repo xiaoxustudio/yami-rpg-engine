@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="setImage-property">
 		<TitleBar>Image Property<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setImage-property-key" />
 				<text>Image</text
 				><CustomBox id="setImage-property-image" type="file" filter="image" />
@@ -30,10 +30,10 @@
 				><NumberVar id="setImage-property-clip-2" min="0" max="10000" unit="px" />
 				<text>Clip - Height</text
 				><NumberVar id="setImage-property-clip-3" min="0" max="10000" unit="px" />
-			</grid-box>
+			</div>
 			<button id="setImage-property-confirm" name="confirm">Confirm</button>
 			<button id="setImage-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

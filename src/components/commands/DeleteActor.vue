@@ -1,12 +1,12 @@
 <template>
 <WindowFrame id="deleteActor">
 	<TitleBar>Delete Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
-			<text>Actor</text><CustomBox id="deleteActor-actor" type="actor" /></grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
+			<text>Actor</text><CustomBox id="deleteActor-actor" type="actor" /></div>
 		<button id="deleteActor-confirm" name="confirm">Confirm</button>
 		<button id="deleteActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -2,11 +2,11 @@
 	<!-- 进度窗口 -->
 	<WindowFrame id="windowProgress">
 		<TitleBar>进度</TitleBar>
-		<content-frame>
-			<flex-box id="windowProgress-flex">
+		<div class="content-frame">
+			<div class="flex-box" id="windowProgress-flex">
 				<text id="windowProgress-info" />
-			</flex-box>
-		</content-frame>
+			</div>
+		</div>
 	</WindowFrame>
 </template>
 

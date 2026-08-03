@@ -5,11 +5,11 @@
 			<div class="maximize" id="edit-data-maximize" />
 			<div class="close" />
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box id="edit-data-current"> </box>
 			<button id="edit-data-confirm" name="confirm">Confirm</button>
 			<button id="edit-data-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

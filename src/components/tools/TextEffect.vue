@@ -2,8 +2,8 @@
 	<!-- 设置文字效果 -->
 	<WindowFrame id="textEffect">
 		<TitleBar>Set Text Effect<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Effect</text><SelectBox id="textEffect-type" /> <text>Shadow X</text
 				><NumberBox id="textEffect-shadowOffsetX" min="-9" max="9" unit="px" />
 				<text>Shadow Y</text
@@ -11,10 +11,10 @@
 				<text>Stroke Width</text
 				><NumberBox id="textEffect-strokeWidth" min="1" max="20" unit="px" />
 				<text>Effect Color</text><ColorBox id="textEffect-color" />
-			</grid-box>
+			</div>
 			<button id="textEffect-confirm" name="confirm">Confirm</button>
 			<button id="textEffect-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

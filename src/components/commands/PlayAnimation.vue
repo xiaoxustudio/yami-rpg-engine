@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="playAnimation">
 		<TitleBar>Play Animation<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Mode</text><SelectBox id="playAnimation-mode" /> <text>Position</text
 				><CustomBox id="playAnimation-position" type="position" /> <text>Actor</text
 				><CustomBox id="playAnimation-actor" type="actor" /> <text>Animation</text
@@ -35,10 +35,10 @@
 					decimals="4"
 				 />
 				<text>Wait</text><SelectBox id="playAnimation-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="playAnimation-confirm" name="confirm">Confirm</button>
 			<button id="playAnimation-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
 <WindowFrame id="independent">
 	<TitleBar>Independent<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<button id="independent-confirm" name="confirm">Confirm</button>
 		<button id="independent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

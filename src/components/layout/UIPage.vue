@@ -1,5 +1,5 @@
 <template>
-			<page-frame id="ui" value="ui">
+			<div class="page-frame" id="ui" value="ui">
 				<box id="ui-head">
 					<box id="ui-head-start">
 						<item id="ui-switch-settings" class="toolbar-item" value="settings" />
@@ -37,7 +37,7 @@
 						<MarqueeArea id="ui-marquee" />
 					</box>
 				</box>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

@@ -1,13 +1,13 @@
 <template>
 	<WindowFrame id="deleteObject">
 		<TitleBar>Delete Object<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Object</text><CustomBox id="deleteObject-object" type="object" />
-			</grid-box>
+			</div>
 			<button id="deleteObject-confirm" name="confirm">Confirm</button>
 			<button id="deleteObject-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setObject">
 		<TitleBar>Set Object<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox id="setObject-variable" type="variable" filter="object" />
 				<text>Type</text><SelectBox id="setObject-operand-type" /> <text>Actor</text
@@ -26,10 +26,10 @@
 				/>
 				<text>Index</text
 				><NumberVar id="setObject-operand-list-index" min="0" max="1000000000" />
-			</grid-box>
+			</div>
 			<button id="setObject-confirm" name="confirm">Confirm</button>
 			<button id="setObject-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

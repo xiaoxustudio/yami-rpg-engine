@@ -1,17 +1,17 @@
 <template>
 	<DetailBox id="uiElement-general-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="uiElement-general-grid">
+		<div class="detail-grid" id="uiElement-general-grid">
 			<text>{{ local.getLabel('uiElement-name') || 'Name' }}</text><TextBox id="uiElement-name"></TextBox>
 			<text>{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</text
 			><SelectBox id="uiElement-pointerEvents"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-transform-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-transform-grid') || 'Transform' }}</DetailSummary>
-		<detail-grid id="uiElement-transform-grid">
+		<div class="detail-grid" id="uiElement-transform-grid">
 			<text>{{ local.getLabel('uiElement-transform-align-box') || 'Align' }}</text>
-			<flex-box id="uiElement-transform-align-box">
+			<div class="flex-box" id="uiElement-transform-align-box">
 				<button
 					id="uiElement-transform-align-left"
 					class="uiElement-transform-align"
@@ -54,7 +54,7 @@
 				>
 					<text>&#xf038;</text>
 				</button>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-anchor-box') || 'Anchor' }}</text>
 			<box
 				id="uiElement-transform-anchor-box"
@@ -225,7 +225,7 @@
 					decimals="4"
 				></NumberBox>
 			</box>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-events-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-events') || 'Events' }}</DetailSummary>
@@ -247,7 +247,7 @@
 	<ParameterPane id="uiElement-parameter-pane"></ParameterPane>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
-		<detail-grid id="uiImage-properties-grid">
+		<div class="detail-grid" id="uiImage-properties-grid">
 			<text>{{ local.getLabel('uiImage-image') || 'Image' }}</text
 			><CustomBox id="uiImage-image" type="file" filter="image"></CustomBox>
 			<text>{{ local.getLabel('uiImage-display') || 'Display' }}</text><SelectBox id="uiImage-display"></SelectBox>
@@ -282,7 +282,7 @@
 				unit="px"
 			></NumberBox>
 			<text>{{ local.getLabel('uiImage-tint-0-box') || 'Tint - Red' }}</text>
-			<flex-box id="uiImage-tint-0-box">
+			<div class="flex-box" id="uiImage-tint-0-box">
 				<SliderBox
 					id="uiImage-tint-0-slider"
 					min="-255"
@@ -295,9 +295,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiImage-tint-1-box') || 'Tint - Green' }}</text>
-			<flex-box id="uiImage-tint-1-box">
+			<div class="flex-box" id="uiImage-tint-1-box">
 				<SliderBox
 					id="uiImage-tint-1-slider"
 					min="-255"
@@ -310,9 +310,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiImage-tint-2-box') || 'Tint - Blue' }}</text>
-			<flex-box id="uiImage-tint-2-box">
+			<div class="flex-box" id="uiImage-tint-2-box">
 				<SliderBox
 					id="uiImage-tint-2-slider"
 					min="-255"
@@ -325,9 +325,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiImage-tint-3-box') || 'Tint - Grayscale' }}</text>
-			<flex-box id="uiImage-tint-3-box">
+			<div class="flex-box" id="uiImage-tint-3-box">
 				<SliderBox
 					id="uiImage-tint-3-slider"
 					min="0"
@@ -340,8 +340,8 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="getObjectProperty">
 		<TitleBar>getObjectProperty<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox
 					id="getObjectProperty-variable"
@@ -16,10 +16,10 @@
 					type="variable"
 					filter="object"
 				/>
-			</grid-box>
+			</div>
 			<button id="getObjectProperty-confirm" name="confirm">Confirm</button>
 			<button id="getObjectProperty-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="unclampCamera">
 		<TitleBar>Unclamp Camera<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<button id="unclampCamera-confirm" name="confirm">Confirm</button>
 			<button id="unclampCamera-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

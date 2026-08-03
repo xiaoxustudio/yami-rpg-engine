@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="setNumber-operand">
 		<TitleBar>Number Operand<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Operation</text><SelectBox id="setNumber-operation" />
 				<SelectBox id="setNumber-operand-operation" /> <text>Type</text
 				><SelectBox id="setNumber-operand-type" /> <text>Constant</text
@@ -75,10 +75,10 @@
 				><SelectBox id="setNumber-operand-other-data" /> <text>Touch Id</text
 				><NumberVar id="setNumber-operand-other-touchId" min="0" max="10" />
 				<text>Team</text><SelectBox id="setNumber-operand-other-teamId" />
-			</grid-box>
+			</div>
 			<button id="setNumber-operand-confirm" name="confirm">Confirm</button>
 			<button id="setNumber-operand-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

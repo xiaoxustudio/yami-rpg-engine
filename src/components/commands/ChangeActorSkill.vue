@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="changeActorSkill">
 	<TitleBar>Change Actor Skill<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeActorSkill-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorSkill-operation" /><text>Skill</text
-			><FileVar id="changeActorSkill-skillId" type="file" filter="skill" /><text>Skill</text><CustomBox id="changeActorSkill-skill" type="skill" /></grid-box>
+			><FileVar id="changeActorSkill-skillId" type="file" filter="skill" /><text>Skill</text><CustomBox id="changeActorSkill-skill" type="skill" /></div>
 		<button id="changeActorSkill-confirm" name="confirm">Confirm</button>
 		<button id="changeActorSkill-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

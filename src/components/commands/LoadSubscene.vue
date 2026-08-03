@@ -1,16 +1,16 @@
 <template>
 	<WindowFrame id="loadSubscene">
 		<TitleBar>Load Subscene<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Scene</text
 				><FileVar id="loadSubscene-sceneId" type="file" filter="scene" />
 				<text>Shift X</text><NumberVar id="loadSubscene-shiftX" min="0" max="512" />
 				<text>Shift Y</text><NumberVar id="loadSubscene-shiftY" min="0" max="512" />
-			</grid-box>
+			</div>
 			<button id="loadSubscene-confirm" name="confirm">Confirm</button>
 			<button id="loadSubscene-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

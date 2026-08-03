@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame id="arrayList" mode="center">
 		<TitleBar>Array<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<ParamList id="arrayList-list" />
 			<button id="arrayList-confirm" name="confirm">Confirm</button>
 			<button id="arrayList-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

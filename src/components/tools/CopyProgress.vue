@@ -1,15 +1,15 @@
 <template>
 	<WindowFrame id="copyProgress">
 		<TitleBar>New Project</TitleBar>
-		<content-frame>
-			<flex-box id="copyProgress-flex">
+		<div class="content-frame">
+			<div class="flex-box" id="copyProgress-flex">
 				<text>Copying Files...</text>
 				<box id="copyProgress-box">
 					<box id="copyProgress-bar" />
 				</box>
 				<text id="copyProgress-info" />
-			</flex-box>
-		</content-frame>
+			</div>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
 <WindowFrame id="changeActorTeam">
 	<TitleBar>Change Actor Team<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
-			<text>Actor</text><CustomBox id="changeActorTeam-actor" type="actor" /><text>Team</text><SelectBox id="changeActorTeam-teamId" /></grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
+			<text>Actor</text><CustomBox id="changeActorTeam-actor" type="actor" /><text>Team</text><SelectBox id="changeActorTeam-teamId" /></div>
 		<button id="changeActorTeam-confirm" name="confirm">Confirm</button>
 		<button id="changeActorTeam-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

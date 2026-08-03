@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame id="localization" mode="center">
 		<TitleBar>Localization<div class="close"></div></TitleBar>
-		<content-frame>
-			<field-set id="localization-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="localization-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="localization-list" padded />
-			</field-set>
+			</div>
 			<box id="localization-inspector" />
 			<TextBox id="localization-searcher" name="search" />
 			<button id="localization-from-excel" name="from-excel">from-excel</button>
@@ -13,7 +13,7 @@
 			<button id="localization-confirm" name="confirm">Confirm</button>
 			<button id="localization-cancel" name="cancel">Cancel</button>
 			<button id="localization-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

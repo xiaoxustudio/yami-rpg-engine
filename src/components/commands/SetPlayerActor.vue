@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="setPlayerActor">
 	<TitleBar>Set Player Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Global Actor</text
-			><CustomBox id="setPlayerActor-actor" type="actor" /></grid-box>
+			><CustomBox id="setPlayerActor-actor" type="actor" /></div>
 		<button id="setPlayerActor-confirm" name="confirm">Confirm</button>
 		<button id="setPlayerActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

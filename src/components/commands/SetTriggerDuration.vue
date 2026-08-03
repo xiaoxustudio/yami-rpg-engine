@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setTriggerDuration">
 		<TitleBar>Set Trigger Duration<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Trigger</text
 				><CustomBox id="setTriggerDuration-trigger" type="trigger" />
 				<text>Operation</text><SelectBox id="setTriggerDuration-operation" />
@@ -13,10 +13,10 @@
 					max="3600000"
 					unit="ms"
 				 />
-			</grid-box>
+			</div>
 			<button id="setTriggerDuration-confirm" name="confirm">Confirm</button>
 			<button id="setTriggerDuration-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

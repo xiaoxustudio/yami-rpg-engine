@@ -1,18 +1,18 @@
 <template>
 <WindowFrame id="removeAnimationComponent">
 	<TitleBar>Remove Animation Component<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text
 			><CustomBox id="removeAnimationComponent-actor" type="actor" /><text>Animation</text
 			><CustomBox
 				id="removeAnimationComponent-animationId"
 				type="file"
 				filter="animation"
-			 /><text>Motion</text><SelectBox id="removeAnimationComponent-motion" /></grid-box>
+			 /><text>Motion</text><SelectBox id="removeAnimationComponent-motion" /></div>
 		<button id="removeAnimationComponent-confirm" name="confirm">Confirm</button>
 		<button id="removeAnimationComponent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

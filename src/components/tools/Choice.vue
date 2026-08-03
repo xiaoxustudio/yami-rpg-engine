@@ -1,17 +1,17 @@
 <template>
 	<WindowFrame id="choice">
 		<TitleBar>Choice<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Content</text
 				><TextBox
 					id="choice-content"
 					menu="tag-local-var tag-global-var tag-localization"
 				/>
-			</grid-box>
+			</div>
 			<button id="choice-confirm" name="confirm">Confirm</button>
 			<button id="choice-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

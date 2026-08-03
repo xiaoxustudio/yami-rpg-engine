@@ -1,17 +1,17 @@
 <template>
 <WindowFrame id="changeActorAnimation">
 	<TitleBar>Change Actor Animation<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeActorAnimation-actor" type="actor" /><text>Animation</text
 			><CustomBox
 				id="changeActorAnimation-animationId"
 				type="file"
 				filter="animation"
-			 /></grid-box>
+			 /></div>
 		<button id="changeActorAnimation-confirm" name="confirm">Confirm</button>
 		<button id="changeActorAnimation-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

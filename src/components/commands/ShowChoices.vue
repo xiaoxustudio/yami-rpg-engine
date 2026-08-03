@@ -1,14 +1,14 @@
 <template>
 <WindowFrame id="showChoices">
 	<TitleBar>Show Choices<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Choices</text><ParamList id="showChoices-choices" />
 			<text>Parameters</text><TextBox id="showChoices-parameters" />
-		</grid-box>
+		</div>
 		<button id="showChoices-confirm" name="confirm">Confirm</button>
 		<button id="showChoices-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

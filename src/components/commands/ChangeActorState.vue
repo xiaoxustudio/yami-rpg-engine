@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="changeActorState">
 	<TitleBar>Change Actor State<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeActorState-actor" type="actor" /><text>Operation</text><SelectBox id="changeActorState-operation" /><text>State</text
-			><CustomBox id="changeActorState-stateId" type="file" filter="state" /><text>State</text><CustomBox id="changeActorState-state" type="state" /></grid-box>
+			><CustomBox id="changeActorState-stateId" type="file" filter="state" /><text>State</text><CustomBox id="changeActorState-state" type="state" /></div>
 		<button id="changeActorState-confirm" name="confirm">Confirm</button>
 		<button id="changeActorState-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

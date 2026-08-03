@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="about">
 		<TitleBar>Yami RPG Editor<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text id="about-credits">Credits</text
 				><text>
 					<text class="href">刀里个刀</text><br />
@@ -24,8 +24,8 @@
 				><text id="chrome-version"></text> <text>Node.js</text><text id="node-version"></text>
 				<text>V8</text><text id="v8-version"></text> <text>OS</text
 				><text id="os-version"></text>
-			</grid-box>
-		</content-frame>
+			</div>
+		</div>
 	</WindowFrame>
 </template>
 

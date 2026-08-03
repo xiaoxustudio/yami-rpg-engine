@@ -1,18 +1,18 @@
 <template>
 <WindowFrame id="changeThreat">
 	<TitleBar>Change Threat<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeThreat-actor" type="actor" /><text>Target</text><CustomBox id="changeThreat-target" type="actor" /><text>Operation</text><SelectBox id="changeThreat-operation" /><text>Threat</text
 			><NumberVar
 				id="changeThreat-threat"
 				min="0"
 				max="1000000000"
 				decimals="4"
-			 /></grid-box>
+			 /></div>
 		<button id="changeThreat-confirm" name="confirm">Confirm</button>
 		<button id="changeThreat-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

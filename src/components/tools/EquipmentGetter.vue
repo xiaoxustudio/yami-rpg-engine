@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="equipmentGetter">
 		<TitleBar>Actor<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="equipmentGetter-type" /> <text>Actor</text
 				><CustomBox id="equipmentGetter-actor" type="actor" /> <text>Slot</text
 				><SelectVar id="equipmentGetter-slot" /> <text>Equipment</text
@@ -13,10 +13,10 @@
 				/>
 				<text>Variable</text
 				><CustomBox id="equipmentGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="equipmentGetter-confirm" name="confirm">Confirm</button>
 			<button id="equipmentGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
 		<WindowFrame id="reference">
 		<TitleBar>Reference<div class="close"></div></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<CommonList id="reference-list" />
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

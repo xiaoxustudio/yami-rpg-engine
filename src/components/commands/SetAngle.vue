@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setAngle">
 	<TitleBar>Set Angle<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="setAngle-actor" type="actor" /><text>Angle</text><CustomBox id="setAngle-angle" type="angle" /><text>Easing</text><SelectBox id="setAngle-easingId" name="easing" /><text>Duration</text
 			><NumberVar
 				id="setAngle-duration"
@@ -10,10 +10,10 @@
 				min="0"
 				max="3600000"
 				unit="ms"
-			 /><text>Wait</text><SelectBox id="setAngle-wait" name="wait" /></grid-box>
+			 /><text>Wait</text><SelectBox id="setAngle-wait" name="wait" /></div>
 		<button id="setAngle-confirm" name="confirm">Confirm</button>
 		<button id="setAngle-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,14 +1,14 @@
 <template>
 <WindowFrame id="loop">
 	<TitleBar>Loop<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Mode</text><SelectBox id="loop-mode" /> <text>Conditions</text
 			><ParamList id="loop-conditions" />
-		</grid-box>
+		</div>
 		<button id="loop-confirm" name="confirm">Confirm</button>
 		<button id="loop-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

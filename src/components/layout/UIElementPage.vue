@@ -1,10 +1,10 @@
 <template>
-			<page-frame id="ui-element" value="ui-element">
+			<div class="page-frame" id="ui-element" value="ui-element">
 				<box id="ui-list-head">
 					<TextBox id="ui-searcher" name="search" />
 				</box>
 				<TreeList id="ui-list" padded />
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

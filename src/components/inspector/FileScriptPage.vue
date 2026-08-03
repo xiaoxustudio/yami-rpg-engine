@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScript-info-grid') || 'File Info' }}</DetailSummary>
-		<detail-grid id="fileScript-info-grid">
+		<div class="detail-grid" id="fileScript-info-grid">
 			<text>{{ local.getLabel('fileScript-name') || 'Name' }}</text><text id="fileScript-name"></text> <text>{{ local.getLabel('fileScript-size') || 'Size' }}</text
 			><text id="fileScript-size"></text>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScript-overview') || 'Overview' }}</DetailSummary>

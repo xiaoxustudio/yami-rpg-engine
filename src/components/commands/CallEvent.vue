@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="callEvent">
 	<TitleBar>Call Event<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="callEvent-type" /> <text>Actor</text
 			><CustomBox id="callEvent-actor" type="actor" /> <text>Skill</text
 			><CustomBox id="callEvent-skill" type="skill" /> <text>State</text
@@ -13,10 +13,10 @@
 			><CustomBox id="callEvent-element" type="element" /> <text>Event</text
 			><CustomBox id="callEvent-eventId" type="file" filter="event" />
 			<text>Event</text><SelectBox id="callEvent-eventType" />
-		</grid-box>
+		</div>
 		<button id="callEvent-confirm" name="confirm">Confirm</button>
 		<button id="callEvent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

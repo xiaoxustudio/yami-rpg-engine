@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="elementGetter">
 		<TitleBar>Element<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="elementGetter-type" /> <text>Ancestor</text
 				><CustomBox id="elementGetter-ancestor" type="ancestor-element" />
 				<text>Data ID</text
@@ -10,10 +10,10 @@
 				<text>Index</text><NumberVar id="elementGetter-index" min="0" max="10000" />
 				<text>Variable</text
 				><CustomBox id="elementGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="elementGetter-confirm" name="confirm">Confirm</button>
 			<button id="elementGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

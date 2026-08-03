@@ -1,11 +1,11 @@
 <template>
 <WindowFrame id="comment">
 	<TitleBar>Comment<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<TextArea id="comment-comment" />
 		<button id="comment-confirm" name="confirm">Confirm</button>
 		<button id="comment-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

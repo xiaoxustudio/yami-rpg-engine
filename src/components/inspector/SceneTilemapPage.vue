@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneTilemap-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneTilemap-general-grid">
+		<div class="detail-grid" id="sceneTilemap-general-grid">
 			<text>{{ local.getLabel('sceneTilemap-name') || 'Name' }}</text><TextBox id="sceneTilemap-name"></TextBox>
 			<text>{{ local.getLabel('sceneTilemap-layer') || 'Layer' }}</text><SelectBox id="sceneTilemap-layer"></SelectBox>
 			<text>{{ local.getLabel('sceneTilemap-order') || 'Order' }}</text
@@ -94,7 +94,7 @@
 				step="0.05"
 				decimals="4"
 			></NumberBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneTilemap-conditions') || 'Conditions' }}</DetailSummary>

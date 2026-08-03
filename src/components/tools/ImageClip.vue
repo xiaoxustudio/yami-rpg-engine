@@ -4,12 +4,12 @@
 			>Image Clip<div class="maximize"></div>
 			<div class="close"></div>
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box id="imageClip-screen" tabindex="-1">
 				<img id="imageClip-image" />
 				<MarqueeArea id="imageClip-marquee" />
 			</box>
-			<flex-box id="imageClip-flex">
+			<div class="flex-box" id="imageClip-flex">
 				<NumberBox id="imageClip-x" min="0" max="10000"
 					><text class="label">X:</text></NumberBox
 				>
@@ -22,10 +22,10 @@
 				<NumberBox id="imageClip-height" min="0" max="10000"
 					><text class="label">H:</text></NumberBox
 				>
-			</flex-box>
+			</div>
 			<button id="imageClip-confirm" name="confirm">Confirm</button>
 			<button id="imageClip-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

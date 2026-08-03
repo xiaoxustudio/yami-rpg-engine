@@ -1,14 +1,14 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="fileItem-general-grid">
+		<div class="detail-grid" id="fileItem-general-grid">
 			<text>{{ local.getLabel('fileItem-icon') || 'Icon' }}</text
 			><CustomBox id="fileItem-icon" type="file" filter="image" />
 			<text>{{ local.getLabel('fileItem-clip') || 'Clip' }}</text
 			><CustomBox id="fileItem-clip" type="clip" image="fileItem-icon" />
 			<text>{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</text
 			><CustomBox id="fileItem-inherit" type="file" filter="item" />
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileItem-attributes') || 'Attributes' }}</DetailSummary>

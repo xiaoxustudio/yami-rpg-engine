@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="setText">
 		<TitleBar>Set Text<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="setText-element" type="element" />
 				<text>Properties</text><ParamList id="setText-properties" />
-			</grid-box>
+			</div>
 			<button id="setText-confirm" name="confirm">Confirm</button>
 			<button id="setText-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="unloadSubscene">
 		<TitleBar>Unload Subscene<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Scene</text
 				><FileVar id="unloadSubscene-sceneId" type="file" filter="scene" />
-			</grid-box>
+			</div>
 			<button id="unloadSubscene-confirm" name="confirm">Confirm</button>
 			<button id="unloadSubscene-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

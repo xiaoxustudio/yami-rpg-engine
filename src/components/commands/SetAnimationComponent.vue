@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setAnimationComponent">
 	<TitleBar>Set Animation Component<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text
 			><CustomBox id="setAnimationComponent-actor" type="actor" /><text>Animation</text
 			><CustomBox
@@ -39,10 +39,10 @@
 				max="100"
 				unit="px"
 			 /><text>Sprite Name</text><SelectBox id="setAnimationComponent-spriteId" /><text>Image</text
-			><CustomBox id="setAnimationComponent-image" type="file" filter="image" /><text>Play Motion</text><SelectBox id="setAnimationComponent-playMotion" /><text>Wait</text><SelectBox id="setAnimationComponent-wait" name="wait" /></grid-box>
+			><CustomBox id="setAnimationComponent-image" type="file" filter="image" /><text>Play Motion</text><SelectBox id="setAnimationComponent-playMotion" /><text>Wait</text><SelectBox id="setAnimationComponent-wait" name="wait" /></div>
 		<button id="setAnimationComponent-confirm" name="confirm">Confirm</button>
 		<button id="setAnimationComponent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

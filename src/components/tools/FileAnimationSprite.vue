@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="fileAnimation-sprite">
 		<TitleBar>Sprite<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Name</text><TextBox id="fileAnimation-sprite-name" /> <text>Image</text
 				><CustomBox id="fileAnimation-sprite-image" type="file" filter="image" />
 				<text>Horiz Frames</text
 				><NumberBox id="fileAnimation-sprite-hframes" min="1" max="256" />
 				<text>Vert Frames</text
 				><NumberBox id="fileAnimation-sprite-vframes" min="1" max="256" />
-			</grid-box>
+			</div>
 			<button id="fileAnimation-sprite-confirm" name="confirm">Confirm</button>
 			<button id="fileAnimation-sprite-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setReverb">
 	<TitleBar>Set Reverb<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="setReverb-type" /> <text>Dry</text
 			><NumberVar id="setReverb-dry" min="0" max="1" step="0.1" decimals="4" />
 			<text>Wet</text
@@ -17,10 +17,10 @@
 				unit="ms"
 			 />
 			<text>Wait</text><SelectBox id="setReverb-wait" name="wait" />
-		</grid-box>
+		</div>
 		<button id="setReverb-confirm" name="confirm">Confirm</button>
 		<button id="setReverb-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,15 +1,15 @@
 <template>
 	<WindowFrame id="setState">
 		<TitleBar>Set State<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>State</text><CustomBox id="setState-state" type="state" />
 				<text>Operation</text><SelectBox id="setState-operation" /> <text>Time</text
 				><NumberVar id="setState-time" min="0" max="36000000" unit="ms" />
-			</grid-box>
+			</div>
 			<button id="setState-confirm" name="confirm">Confirm</button>
 			<button id="setState-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

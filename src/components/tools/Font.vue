@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame id="font">
 		<TitleBar>Set Font<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box> <text>Font Family</text><TextBox id="font-font" /> </grid-box>
+		<div class="content-frame">
+			<div class="grid-box"> <text>Font Family</text><TextBox id="font-font" /> </div>
 			<button id="font-confirm" name="confirm">Confirm</button>
 			<button id="font-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

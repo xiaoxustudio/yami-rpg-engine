@@ -1,17 +1,17 @@
 <template>
 <WindowFrame id="setCooldown">
 	<TitleBar>Set Cooldown<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="setCooldown-actor" type="actor" />
 			<text>Operation</text><SelectBox id="setCooldown-operation" />
 			<text>Cooldown Key</text><SelectVar id="setCooldown-key" />
 			<text>Cooldown Time</text
 			><NumberVar id="setCooldown-cooldown" min="1" max="3600000" unit="ms" />
-		</grid-box>
+		</div>
 		<button id="setCooldown-confirm" name="confirm">Confirm</button>
 		<button id="setCooldown-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

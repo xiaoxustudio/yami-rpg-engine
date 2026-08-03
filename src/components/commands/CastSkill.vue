@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="castSkill">
 		<TitleBar>Cast Skill<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Actor</text><CustomBox id="castSkill-actor" type="actor" />
 				<text>Mode</text><SelectBox id="castSkill-mode" /> <text>Shortcut Key</text
 				><SelectBox id="castSkill-key" /> <text>Shortcut Key</text
@@ -10,10 +10,10 @@
 				><CustomBox id="castSkill-skillId" type="file" filter="skill" />
 				<text>Skill</text><CustomBox id="castSkill-skill" type="skill" />
 				<text>Wait</text><SelectBox id="castSkill-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="castSkill-confirm" name="confirm">Confirm</button>
 			<button id="castSkill-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

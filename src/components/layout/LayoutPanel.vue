@@ -1,6 +1,6 @@
 <template>
 	<PageManager id="workspace-page-manager">
-		<page-frame id="home" value="home">
+		<div class="page-frame" id="home" value="home">
 			<box id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
 				<text id="home-version"></text>
@@ -16,8 +16,8 @@
 					<item class="home-recent-item" value="2"></item>
 				</box>
 			</box>
-		</page-frame>
-		<page-frame value="directory">
+		</div>
+		<div class="page-frame" value="directory">
 			<box id="layout-content">
 				<NavBar id="layout-nav">
 			<div class="nav-item" value="project"><div class="nav-icon">&#xf07b;</div><div class="nav-text" id="nav-project">Project</div></div>
@@ -34,10 +34,10 @@
 			<div class="nav-item" value="inspector"><div class="nav-icon">&#xf05a;</div><div class="nav-text" id="nav-inspector">Inspector</div></div>
 		</NavBar>
 		<PageManager id="layout-page-manager">
-			<page-frame id="project" value="project">
+			<div class="page-frame" id="project" value="project">
 				<div class="file-browser" id="project-browser"></div>
-			</page-frame>
-			<page-frame id="scene" value="scene">
+			</div>
+			<div class="page-frame" id="scene" value="scene">
 				<box id="scene-head">
 					<box id="scene-head-start">
 						<item id="scene-switch-grid" class="toolbar-item" value="grid"></item>
@@ -74,14 +74,14 @@
 					</box>
 					<text id="scene-info"></text>
 				</box>
-			</page-frame>
-			<page-frame id="scene-object" value="scene-object">
+			</div>
+			<div class="page-frame" id="scene-object" value="scene-object">
 				<box id="scene-list-head">
 					<TextBox id="scene-searcher" name="search"></TextBox>
 				</box>
 				<TreeList id="scene-list" padded></TreeList>
-			</page-frame>
-			<page-frame id="ui" value="ui">
+			</div>
+			<div class="page-frame" id="ui" value="ui">
 				<box id="ui-head">
 					<box id="ui-head-start">
 						<item id="ui-switch-settings" class="toolbar-item" value="settings"></item>
@@ -108,14 +108,14 @@
 						<MarqueeArea id="ui-marquee"></MarqueeArea>
 					</box>
 				</box>
-			</page-frame>
-			<page-frame id="ui-element" value="ui-element">
+			</div>
+			<div class="page-frame" id="ui-element" value="ui-element">
 				<box id="ui-list-head">
 					<TextBox id="ui-searcher" name="search"></TextBox>
 				</box>
 				<TreeList id="ui-list" padded></TreeList>
-			</page-frame>
-			<page-frame id="animation" value="animation">
+			</div>
+			<div class="page-frame" id="animation" value="animation">
 				<box id="animation-head">
 					<box id="animation-head-start">
 						<item id="animation-switch-mark" class="toolbar-item" value="mark"></item>
@@ -136,14 +136,14 @@
 					</box>
 					<box id="animation-dirList"></box>
 				</box>
-			</page-frame>
-			<page-frame id="animation-motion" value="animation-motion">
+			</div>
+			<div class="page-frame" id="animation-motion" value="animation-motion">
 				<box id="animation-list-head">
 					<TextBox id="animation-searcher" name="search"></TextBox>
 				</box>
 				<TreeList id="animation-list" padded></TreeList>
-			</page-frame>
-			<page-frame id="animation-timeline" value="animation-timeline">
+			</div>
+			<div class="page-frame" id="animation-timeline" value="animation-timeline">
 				<box id="animation-timeline-head">
 					<box id="animation-timeline-toolbar">
 						<item id="animation-timeline-previousKey" class="toolbar-item" value="previousKey" hotkey="Z"></item>
@@ -169,15 +169,15 @@
 						<box id="animation-timeline-pointer"></box>
 					</box>
 				</box>
-			</page-frame>
-			<page-frame id="animation-easing" value="animation-easing">
+			</div>
+			<div class="page-frame" id="animation-easing" value="animation-easing">
 				<box id="animation-easing-head">
 					<item id="animation-easing-settings" class="toolbar-item" value="bezier"></item>
 					<SelectBox id="animation-easing-id"></SelectBox>
 				</box>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
-			</page-frame>
-			<page-frame id="particle" value="particle">
+			</div>
+			<div class="page-frame" id="particle" value="particle">
 				<box id="particle-head">
 					<box id="particle-head-start">
 						<item id="particle-view-wireframe" class="toolbar-item" value="wireframe"></item>
@@ -200,64 +200,64 @@
 					</box>
 					<text id="particle-info"></text>
 				</box>
-			</page-frame>
-			<page-frame id="particle-layer" value="particle-layer">
+			</div>
+			<div class="page-frame" id="particle-layer" value="particle-layer">
 				<TreeList id="particle-list" padded></TreeList>
-			</page-frame>
-			<page-frame id="inspector" value="inspector">
+			</div>
+			<div class="page-frame" id="inspector" value="inspector">
 				<PageManager id="inspector-page-manager" tabindex="-1">
-					<page-frame value="fileScene" id="fileScene-vue-mount"></page-frame>
-					<page-frame value="fileUI" id="fileUI-vue-mount"></page-frame>
-					<page-frame value="fileAnimation" id="fileAnimation-vue-mount"></page-frame>
-					<page-frame id="fileTileset" value="fileTileset"></page-frame>
-					<page-frame value="fileActor" id="fileActor-vue-mount"></page-frame>
-					<page-frame value="fileSkill" id="fileSkill-vue-mount"></page-frame>
-					<page-frame value="fileTrigger" id="fileTrigger-vue-mount"></page-frame>
-					<page-frame value="fileItem" id="fileItem-vue-mount"></page-frame>
-					<page-frame value="fileEquipment" id="fileEquipment-vue-mount"></page-frame>
-					<page-frame value="fileState" id="fileState-vue-mount"></page-frame>
-					<page-frame value="fileEvent" id="fileEvent-vue-mount"></page-frame>
-					<page-frame id="fileImage" value="fileImage"></page-frame>
-					<page-frame id="fileAudio" value="fileAudio"></page-frame>
-					<page-frame id="fileVideo" value="fileVideo"></page-frame>
-					<page-frame id="fileFont" value="fileFont"></page-frame>
-					<page-frame id="fileScript" value="fileScript"></page-frame>
-					<page-frame value="sceneActor" id="sceneActor-vue-mount"></page-frame>
-					<page-frame value="sceneRegion" id="sceneRegion-vue-mount"></page-frame>
-					<page-frame value="sceneLight" id="sceneLight-vue-mount"></page-frame>
-					<page-frame value="sceneAnimation" id="sceneAnimation-vue-mount"></page-frame>
-					<page-frame value="sceneParticle" id="sceneParticle-vue-mount"></page-frame>
-					<page-frame value="sceneParallax" id="sceneParallax-vue-mount"></page-frame>
-					<page-frame value="sceneTilemap" id="sceneTilemap-vue-mount"></page-frame>
-					<page-frame value="uiImage" id="uiImage-vue-mount"></page-frame>
-					<page-frame value="uiText" id="uiText-vue-mount"></page-frame>
-					<page-frame value="uiTextBox" id="uiTextBox-vue-mount"></page-frame>
-					<page-frame value="uiDialogBox" id="uiDialogBox-vue-mount"></page-frame>
-					<page-frame value="uiProgressBar" id="uiProgressBar-vue-mount"></page-frame>
-					<page-frame value="uiButton" id="uiButton-vue-mount"></page-frame>
-					<page-frame value="uiAnimation" id="uiAnimation-vue-mount"></page-frame>
-					<page-frame value="uiVideo" id="uiVideo-vue-mount"></page-frame>
-					<page-frame value="uiWindow" id="uiWindow-vue-mount"></page-frame>
-					<page-frame value="uiContainer"></page-frame>
-					<page-frame value="uiReference" id="uiReference-vue-mount"></page-frame>
-					<page-frame value="animMotion" id="animMotion-vue-mount"></page-frame>
-					<page-frame value="animJointFrame" id="animJointFrame-vue-mount"></page-frame>
-					<page-frame value="animSpriteLayer" id="animSpriteLayer-vue-mount"></page-frame>
-					<page-frame value="animSpriteFrame" id="animSpriteFrame-vue-mount"></page-frame>
-					<page-frame value="animParticleLayer" id="animParticleLayer-vue-mount"></page-frame>
-					<page-frame value="animParticleFrame" id="animParticleFrame-vue-mount"></page-frame>
-					<page-frame value="animSoundLayer" id="animSoundLayer-vue-mount"></page-frame>
-					<page-frame value="animSoundFrame" id="animSoundFrame-vue-mount"></page-frame>
-					<page-frame value="particleLayer" id="particleLayer-vue-mount"></page-frame>
+					<div class="page-frame" value="fileScene" id="fileScene-vue-mount"></div>
+					<div class="page-frame" value="fileUI" id="fileUI-vue-mount"></div>
+					<div class="page-frame" value="fileAnimation" id="fileAnimation-vue-mount"></div>
+					<div class="page-frame" id="fileTileset" value="fileTileset"></div>
+					<div class="page-frame" value="fileActor" id="fileActor-vue-mount"></div>
+					<div class="page-frame" value="fileSkill" id="fileSkill-vue-mount"></div>
+					<div class="page-frame" value="fileTrigger" id="fileTrigger-vue-mount"></div>
+					<div class="page-frame" value="fileItem" id="fileItem-vue-mount"></div>
+					<div class="page-frame" value="fileEquipment" id="fileEquipment-vue-mount"></div>
+					<div class="page-frame" value="fileState" id="fileState-vue-mount"></div>
+					<div class="page-frame" value="fileEvent" id="fileEvent-vue-mount"></div>
+					<div class="page-frame" id="fileImage" value="fileImage"></div>
+					<div class="page-frame" id="fileAudio" value="fileAudio"></div>
+					<div class="page-frame" id="fileVideo" value="fileVideo"></div>
+					<div class="page-frame" id="fileFont" value="fileFont"></div>
+					<div class="page-frame" id="fileScript" value="fileScript"></div>
+					<div class="page-frame" value="sceneActor" id="sceneActor-vue-mount"></div>
+					<div class="page-frame" value="sceneRegion" id="sceneRegion-vue-mount"></div>
+					<div class="page-frame" value="sceneLight" id="sceneLight-vue-mount"></div>
+					<div class="page-frame" value="sceneAnimation" id="sceneAnimation-vue-mount"></div>
+					<div class="page-frame" value="sceneParticle" id="sceneParticle-vue-mount"></div>
+					<div class="page-frame" value="sceneParallax" id="sceneParallax-vue-mount"></div>
+					<div class="page-frame" value="sceneTilemap" id="sceneTilemap-vue-mount"></div>
+					<div class="page-frame" value="uiImage" id="uiImage-vue-mount"></div>
+					<div class="page-frame" value="uiText" id="uiText-vue-mount"></div>
+					<div class="page-frame" value="uiTextBox" id="uiTextBox-vue-mount"></div>
+					<div class="page-frame" value="uiDialogBox" id="uiDialogBox-vue-mount"></div>
+					<div class="page-frame" value="uiProgressBar" id="uiProgressBar-vue-mount"></div>
+					<div class="page-frame" value="uiButton" id="uiButton-vue-mount"></div>
+					<div class="page-frame" value="uiAnimation" id="uiAnimation-vue-mount"></div>
+					<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"></div>
+					<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"></div>
+					<div class="page-frame" value="uiContainer"></div>
+					<div class="page-frame" value="uiReference" id="uiReference-vue-mount"></div>
+					<div class="page-frame" value="animMotion" id="animMotion-vue-mount"></div>
+					<div class="page-frame" value="animJointFrame" id="animJointFrame-vue-mount"></div>
+					<div class="page-frame" value="animSpriteLayer" id="animSpriteLayer-vue-mount"></div>
+					<div class="page-frame" value="animSpriteFrame" id="animSpriteFrame-vue-mount"></div>
+					<div class="page-frame" value="animParticleLayer" id="animParticleLayer-vue-mount"></div>
+					<div class="page-frame" value="animParticleFrame" id="animParticleFrame-vue-mount"></div>
+					<div class="page-frame" value="animSoundLayer" id="animSoundLayer-vue-mount"></div>
+					<div class="page-frame" value="animSoundFrame" id="animSoundFrame-vue-mount"></div>
+					<div class="page-frame" value="particleLayer" id="particleLayer-vue-mount"></div>
 					</PageManager>
-			</page-frame>
+			</div>
 		</PageManager>
 </box>
-</page-frame>
-	<page-frame value="scene"></page-frame>
-	<page-frame value="ui"></page-frame>
-	<page-frame value="animation"></page-frame>
-	<page-frame value="particle"></page-frame>
+</div>
+	<div class="page-frame" value="scene"></div>
+	<div class="page-frame" value="ui"></div>
+	<div class="page-frame" value="animation"></div>
+	<div class="page-frame" value="particle"></div>
 	</PageManager>
 </template>
 

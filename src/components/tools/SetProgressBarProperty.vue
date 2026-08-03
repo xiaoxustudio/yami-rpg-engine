@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="setProgressBar-property">
 		<TitleBar>Image Property<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setProgressBar-property-key" />
 				<text>Image</text
 				><CustomBox id="setProgressBar-property-image" type="file" filter="image" />
@@ -52,10 +52,10 @@
 				><NumberVar id="setProgressBar-property-color-2" min="0" max="255" />
 				<text>Color - Alpha</text
 				><NumberVar id="setProgressBar-property-color-3" min="0" max="255" />
-			</grid-box>
+			</div>
 			<button id="setProgressBar-property-confirm" name="confirm">Confirm</button>
 			<button id="setProgressBar-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

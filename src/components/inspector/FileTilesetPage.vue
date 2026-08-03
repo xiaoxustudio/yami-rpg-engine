@@ -36,7 +36,7 @@
 	</box>
 	<DetailBox id="fileTileset-general-detail" open>
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
-		<detail-grid id="fileTileset-general-grid">
+		<div class="detail-grid" id="fileTileset-general-grid">
 			<text>{{ local.getLabel('fileTileset-image') || 'Image' }}</text
 			><CustomBox id="fileTileset-image" type="file" filter="image" />
 			<text>{{ local.getLabel('fileTileset-width') || 'Width' }}</text
@@ -78,7 +78,7 @@
 				max="10"
 				decimals="4"
 			/>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

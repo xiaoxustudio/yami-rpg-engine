@@ -1,12 +1,12 @@
 <template>
 <WindowFrame id="setTarget">
 	<TitleBar>Set Target<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
-			<text>Actor</text><CustomBox id="setTarget-actor" type="actor" /></grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
+			<text>Actor</text><CustomBox id="setTarget-actor" type="actor" /></div>
 		<button id="setTarget-confirm" name="confirm">Confirm</button>
 		<button id="setTarget-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

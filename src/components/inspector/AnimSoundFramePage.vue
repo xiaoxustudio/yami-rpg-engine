@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSoundFrame-properties-grid') || 'Frame' }}</DetailSummary>
-		<detail-grid id="animSoundFrame-properties-grid">
+		<div class="detail-grid" id="animSoundFrame-properties-grid">
 			<text>{{ local.getLabel('animSoundFrame-sound') || 'Sound' }}</text
 			><CustomBox
 				id="animSoundFrame-sound"
@@ -16,7 +16,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

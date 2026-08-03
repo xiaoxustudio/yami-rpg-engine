@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiVideo-properties-grid') || 'Video Properties' }}</DetailSummary>
-		<detail-grid id="uiVideo-properties-grid">
+		<div class="detail-grid" id="uiVideo-properties-grid">
 			<text>{{ local.getLabel('uiVideo-video') || 'Video' }}</text
 			><CustomBox id="uiVideo-video" type="file" filter="video"></CustomBox>
 			<text>{{ local.getLabel('uiVideo-playbackRate') || 'Playback Rate' }}</text
@@ -14,7 +14,7 @@
 			<text>{{ local.getLabel('uiVideo-loop') || 'Loop' }}</text><SelectBox id="uiVideo-loop"></SelectBox>
 			<text>{{ local.getLabel('uiVideo-flip') || 'Flip' }}</text><SelectBox id="uiVideo-flip"></SelectBox>
 			<text>{{ local.getLabel('uiVideo-blend') || 'Blend' }}</text><SelectBox id="uiVideo-blend"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

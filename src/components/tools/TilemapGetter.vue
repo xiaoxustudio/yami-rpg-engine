@@ -2,8 +2,8 @@
 	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame id="tilemapGetter">
 		<TitleBar>Tilemap<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="tilemapGetter-type" /> <text>Tilemap</text
 				><CustomBox
 					id="tilemapGetter-presetId"
@@ -12,10 +12,10 @@
 				/>
 				<text>Variable</text
 				><CustomBox id="tilemapGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="tilemapGetter-confirm" name="confirm">Confirm</button>
 			<button id="tilemapGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

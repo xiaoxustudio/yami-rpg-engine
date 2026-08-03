@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="moveElement-property">
 		<TitleBar>Transform Property<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="moveElement-property-key" />
 				<text>Anchor X</text
 				><NumberVar
@@ -136,10 +136,10 @@
 					step="0.05"
 					decimals="4"
 				/>
-			</grid-box>
+			</div>
 			<button id="moveElement-property-confirm" name="confirm">Confirm</button>
 			<button id="moveElement-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

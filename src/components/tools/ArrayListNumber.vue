@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="arrayList-number">
 		<TitleBar>Number<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<NumberBox
 				id="arrayList-number-value"
 				min="-1000000000"
@@ -10,7 +10,7 @@
 			/>
 			<button id="arrayList-number-confirm" name="confirm">Confirm</button>
 			<button id="arrayList-number-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

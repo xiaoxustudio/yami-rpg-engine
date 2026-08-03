@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="transition">
 	<TitleBar>Transition<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Write to Variable</text
 			><CustomBox id="transition-variable" type="variable" filter="number" />
 			<text>Start Value</text
@@ -28,10 +28,10 @@
 				max="3600000"
 				unit="ms"
 			 />
-		</grid-box>
+		</div>
 		<button id="transition-confirm" name="confirm">Confirm</button>
 		<button id="transition-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

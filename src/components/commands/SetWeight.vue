@@ -1,13 +1,13 @@
 <template>
 <WindowFrame id="setWeight">
 	<TitleBar>Set Weight<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="setWeight-actor" type="actor" /><text>Weight</text
-			><NumberVar id="setWeight-weight" min="0" max="8" step="0.1" decimals="4" /></grid-box>
+			><NumberVar id="setWeight-weight" min="0" max="8" step="0.1" decimals="4" /></div>
 		<button id="setWeight-confirm" name="confirm">Confirm</button>
 		<button id="setWeight-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

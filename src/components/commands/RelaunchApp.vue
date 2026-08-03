@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="relaunchApp">
 		<TitleBar>Relaunch App<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<button id="relaunchApp-confirm" name="confirm">Confirm</button>
 			<button id="relaunchApp-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

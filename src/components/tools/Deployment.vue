@@ -1,22 +1,22 @@
 <template>
 	<WindowFrame id="deployment">
 		<TitleBar>Deployment<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Platform</text><SelectBox id="deployment-platform" />
 				<text>Folder</text><TextBox id="deployment-folder" />
 				<text>Output Location</text>
-				<flex-box id="deployment-location-box">
+				<div class="flex-box" id="deployment-location-box">
 					<TextBox id="deployment-location" />
 					<button id="deployment-choose">…</button>
-				</flex-box>
+				</div>
 				<text>Compress Resources</text>
 			<CheckBox id="deployment-compress" standard />
-			</grid-box>
+			</div>
 			<text id="deployment-warning" />
 			<button id="deployment-confirm" name="confirm">Confirm</button>
 			<button id="deployment-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

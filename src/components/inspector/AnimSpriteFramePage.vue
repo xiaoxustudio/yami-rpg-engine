@@ -1,7 +1,7 @@
 <template>
 	<DetailBox id="animSpriteFrame-properties-detail" open>
 		<DetailSummary>{{ local.getLabel('animSpriteFrame-properties-grid') || 'Frame' }}</DetailSummary>
-		<detail-grid id="animSpriteFrame-properties-grid">
+		<div class="detail-grid" id="animSpriteFrame-properties-grid">
 			<text>{{ local.getLabel('animSpriteFrame-anchor-box') || 'Anchor' }}</text>
 			<box
 				id="animSpriteFrame-anchor-box"
@@ -109,7 +109,7 @@
 				></NumberBox>
 			</box>
 			<text>{{ local.getLabel('animSpriteFrame-tint-0-box') || 'Tint - Red' }}</text>
-			<flex-box id="animSpriteFrame-tint-0-box">
+			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
 					min="-255"
@@ -122,9 +122,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('animSpriteFrame-tint-1-box') || 'Tint - Green' }}</text>
-			<flex-box id="animSpriteFrame-tint-1-box">
+			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
 					min="-255"
@@ -137,9 +137,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('animSpriteFrame-tint-2-box') || 'Tint - Blue' }}</text>
-			<flex-box id="animSpriteFrame-tint-2-box">
+			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
 					min="-255"
@@ -152,9 +152,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('animSpriteFrame-tint-3-box') || 'Tint - Grayscale' }}</text>
-			<flex-box id="animSpriteFrame-tint-3-box">
+			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
 					min="0"
@@ -167,8 +167,8 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 	<DetailBox id="animSpriteFrame-sprite-detail" open>
 		<DetailSummary id="animSpriteFrame-sprite-summary">

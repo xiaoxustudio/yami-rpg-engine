@@ -2,8 +2,8 @@
 	<!-- 设置视频 - 属性 -->
 	<WindowFrame id="setVideo-property">
 		<TitleBar>Image Property<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setVideo-property-key" />
 				<text>Video</text
 				><CustomBox id="setVideo-property-video" type="file" filter="video" />
@@ -17,10 +17,10 @@
 				<text>Loop</text><SelectBox id="setVideo-property-loop" /> <text>Flip</text
 				><SelectBox id="setVideo-property-flip" /> <text>Blend</text
 				><SelectBox id="setVideo-property-blend" />
-			</grid-box>
+			</div>
 			<button id="setVideo-property-confirm" name="confirm">Confirm</button>
 			<button id="setVideo-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

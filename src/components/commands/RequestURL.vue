@@ -1,17 +1,17 @@
 <template>
 <WindowFrame id="requestURL">
 	<TitleBar>requestURL<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>URL</text><StringVar id="requestURL-url" /> <text>Header</text
 			><ParamList id="requestURL-header" /> <text>Method</text
 			><SelectBox id="requestURL-method" /> <text>Data</text
 			><ParamList id="requestURL-data" /> <text>CallBack</text
 			><CustomBox id="requestURL-callback" type="file" filter="event" />
-		</grid-box>
+		</div>
 		<button id="requestURL-confirm" name="confirm">Confirm</button>
 		<button id="requestURL-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setShortcut">
 	<TitleBar>Set Shortcut<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="setShortcut-actor" type="actor" />
 			<text>Operation</text><SelectBox id="setShortcut-operation" />
 			<text>Shortcut Key</text><SelectVar id="setShortcut-key" />
@@ -10,10 +10,10 @@
 			<text>Item</text><FileVar id="setShortcut-itemId" type="file" filter="item" />
 			<text>Skill</text
 			><FileVar id="setShortcut-skillId" type="file" filter="skill" />
-		</grid-box>
+		</div>
 		<button id="setShortcut-confirm" name="confirm">Confirm</button>
 		<button id="setShortcut-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="forEach">
 	<TitleBar>For Each<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Data</text><SelectBox id="forEach-data" /> <text>List Variable</text
 			><CustomBox id="forEach-list" type="variable" filter="object" />
 			<text>Actor</text><CustomBox id="forEach-actor" type="actor" />
@@ -17,10 +17,10 @@
 			><CustomBox id="forEach-saveIndex" type="variable" filter="number" />
 			<text>Touch Id</text
 			><CustomBox id="forEach-touchId" type="variable" filter="number" />
-		</grid-box>
+		</div>
 		<button id="forEach-confirm" name="confirm">Confirm</button>
 		<button id="forEach-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

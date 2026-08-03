@@ -1,10 +1,10 @@
 <template>
 <WindowFrame id="break">
 	<TitleBar>Break<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<button id="break-confirm" name="confirm">Confirm</button>
 		<button id="break-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,12 +1,12 @@
 <template>
 <WindowFrame id="appendTarget">
 	<TitleBar>Append Target<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
-			<text>Actor</text><CustomBox id="appendTarget-actor" type="actor" /><text>Target</text><CustomBox id="appendTarget-target" type="actor" /></grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
+			<text>Actor</text><CustomBox id="appendTarget-actor" type="actor" /><text>Target</text><CustomBox id="appendTarget-target" type="actor" /></div>
 		<button id="appendTarget-confirm" name="confirm">Confirm</button>
 		<button id="appendTarget-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

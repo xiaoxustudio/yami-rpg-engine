@@ -1,13 +1,13 @@
 <template>
 	<WindowFrame id="activateScene">
 		<TitleBar>Activate Scene<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Scene</text><SelectBox id="activateScene-pointer" />
-			</grid-box>
+			</div>
 			<button id="activateScene-confirm" name="confirm">Confirm</button>
 			<button id="activateScene-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

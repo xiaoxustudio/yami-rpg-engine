@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animMotion-general-grid') || 'Motion' }}</DetailSummary>
-		<detail-grid id="animMotion-general-grid">
+		<div class="detail-grid" id="animMotion-general-grid">
 			<text>{{ local.getLabel('animMotion-mode') || 'Direction' }}</text><SelectBox id="animMotion-mode"></SelectBox>
 			<text>{{ local.getLabel('animMotion-skip') || 'Skip Last Frame' }}</text
 			><CheckBox id="animMotion-skip" class="standard large"></CheckBox>
@@ -9,7 +9,7 @@
 			><CheckBox id="animMotion-loop" class="standard large"></CheckBox>
 			<text>{{ local.getLabel('animMotion-loopStart') || 'Loop Start' }}</text
 			><NumberBox id="animMotion-loopStart" min="0" max="10000"></NumberBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

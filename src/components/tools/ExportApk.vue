@@ -1,16 +1,16 @@
 <template>
 	<WindowFrame id="export-apk">
 		<TitleBar>构建APK<div class="close"></div></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box id="export-apk-out">
-				<grid-box id="export-apk-grid">
+				<div class="grid-box" id="export-apk-grid">
 					<text class="project-summary">应用配置</text>
 					<text>应用名称</text><TextBox id="export-apk-apkName" />
 					<text>应用图标</text><TextBox id="export-apk-apkIcon" />
 					<text>应用包名</text><TextBox id="export-apk-apkPackageName" />
 					<text>应用版本</text><TextBox id="export-apk-apkVersionName" />
 					<text>应用版本号</text><TextBox id="export-apk-apkVersionCode" />
-				</grid-box>
+				</div>
 				<box id="export-apk-PS">
 					<text class="project-summary export-apk-major">PS（温馨提示）</text>
 					<text class="export-apk-major"
@@ -35,7 +35,7 @@
 				</box>
 			</box>
 			<button id="export-apk-button" name="export-to-apk" />
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

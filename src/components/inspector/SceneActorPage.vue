@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneActor-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneActor-general-grid">
+		<div class="detail-grid" id="sceneActor-general-grid">
 			<text>{{ local.getLabel('sceneActor-name') || 'Name' }}</text><TextBox id="sceneActor-name"></TextBox>
 			<text>{{ local.getLabel('sceneActor-type') || 'Type' }}</text><SelectBox id="sceneActor-type"></SelectBox>
 			<text>{{ local.getLabel('sceneActor-actorId') || 'Actor' }}</text
@@ -28,7 +28,7 @@
 				decimals="4"
 			></NumberBox>
 			<text>{{ local.getLabel('sceneActor-angle-box') || 'Angle' }}</text
-			><flex-box id="sceneActor-angle-box">
+			><div class="flex-box" id="sceneActor-angle-box">
 				<SliderBox
 					id="sceneActor-angle-slider"
 					min="0"
@@ -43,9 +43,9 @@
 					decimals="4"
 					unit="deg"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneActor-scale-box') || 'Scale' }}</text
-			><flex-box id="sceneActor-scale-box">
+			><div class="flex-box" id="sceneActor-scale-box">
 				<SliderBox
 					id="sceneActor-scale-slider"
 					min="0"
@@ -59,8 +59,8 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneActor-conditions') || 'Conditions' }}</DetailSummary>

@@ -6,11 +6,11 @@
 			<div class="maximize" id="script-maximize" />
 			<div class="close" />
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box id="script-script"> </box>
 			<button id="script-confirm" name="confirm">Confirm</button>
 			<button id="script-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

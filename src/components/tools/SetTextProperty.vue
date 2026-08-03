@@ -2,8 +2,8 @@
 	<!-- 设置文本 - 属性 -->
 	<WindowFrame id="setText-property">
 		<TitleBar>Text Property<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Property</text><SelectBox id="setText-property-key" />
 				<text>Content</text
 				><TextAreaVar
@@ -51,10 +51,10 @@
 				/>
 				<text>Effect Color</text><ColorBox id="setText-property-effect-color" />
 				<text>Blend</text><SelectBox id="setText-property-blend" />
-			</grid-box>
+			</div>
 			<button id="setText-property-confirm" name="confirm">Confirm</button>
 			<button id="setText-property-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

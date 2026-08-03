@@ -1,14 +1,14 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileFont-info-grid') || 'File Info' }}</DetailSummary>
-		<detail-grid id="fileFont-info-grid">
+		<div class="detail-grid" id="fileFont-info-grid">
 			<text>{{ local.getLabel('fileFont-name') || 'Name' }}</text><text id="fileFont-name"></text> <text>{{ local.getLabel('fileFont-size') || 'Size' }}</text
 			><text id="fileFont-size"></text>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox id="fileFont-font-detail" open>
 		<DetailSummary>{{ local.getLabel('fileFont-font-grid') || 'Font Preview' }}</DetailSummary>
-		<detail-grid id="fileFont-font-grid">
+		<div class="detail-grid" id="fileFont-font-grid">
 			<TextBox id="fileFont-content" />
 			<text id="fileFont-12px" class="fileFont-preview"></text>
 			<text id="fileFont-18px" class="fileFont-preview"></text>
@@ -17,7 +17,7 @@
 			<text id="fileFont-48px" class="fileFont-preview"></text>
 			<text id="fileFont-60px" class="fileFont-preview"></text>
 			<text id="fileFont-72px" class="fileFont-preview"></text>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

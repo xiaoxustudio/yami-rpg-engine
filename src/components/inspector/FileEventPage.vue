@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEvent-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="fileEvent-general-grid">
+		<div class="detail-grid" id="fileEvent-general-grid">
 			<text>{{ local.getLabel('fileEvent-type') || 'Type' }}</text><SelectBox id="fileEvent-type" />
 			<text>{{ local.getLabel('fileEvent-enabled') || 'Enabled' }}</text
 			><CheckBox id="fileEvent-enabled" class="standard large" />
@@ -12,7 +12,7 @@
 			<text>{{ local.getLabel('fileEvent-returnType') || 'Return Type' }}</text
 			><SelectBox id="fileEvent-returnType" />
 			<text>{{ local.getLabel('fileEvent-description') || 'Description' }}</text><TextArea id="fileEvent-description" />
-		</detail-grid>
+		</div>
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileEvent-parameters') || 'Parameters' }}</DetailSummary>
 			<ParamList

@@ -1,12 +1,12 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSpriteLayer-properties-grid') || 'Sprite Layer' }}</DetailSummary>
-		<detail-grid id="animSpriteLayer-properties-grid">
+		<div class="detail-grid" id="animSpriteLayer-properties-grid">
 			<text>{{ local.getLabel('animSpriteLayer-sprite') || 'Sprite' }}</text><SelectBox id="animSpriteLayer-sprite"></SelectBox>
 			<text>{{ local.getLabel('animSpriteLayer-blend') || 'Blend' }}</text><SelectBox id="animSpriteLayer-blend"></SelectBox>
 			<text>{{ local.getLabel('animSpriteLayer-light') || 'Light Sampling' }}</text
 			><SelectBox id="animSpriteLayer-light"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

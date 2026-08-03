@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setNumber">
 		<TitleBar>Set Number<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox
 					id="setNumber-variable"
@@ -10,10 +10,10 @@
 					filter="writable-number"
 				/>
 				<text>Expression</text><ParamList id="setNumber-operands" />
-			</grid-box>
+			</div>
 			<button id="setNumber-confirm" name="confirm">Confirm</button>
 			<button id="setNumber-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

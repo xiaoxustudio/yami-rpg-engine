@@ -1,5 +1,5 @@
 <template>
-			<page-frame id="animation-timeline" value="animation-timeline">
+			<div class="page-frame" id="animation-timeline" value="animation-timeline">
 				<box id="animation-timeline-head">
 					<box id="animation-timeline-toolbar">
 						<item
@@ -50,7 +50,7 @@
 						<box id="animation-timeline-pointer" />
 					</box>
 				</box>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

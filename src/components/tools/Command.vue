@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame id="command">
 		<TitleBar>Custom Command<div class="close" /></TitleBar>
-		<content-frame>
-			<field-set id="command-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="command-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="command-list" padded />
-			</field-set>
+			</div>
 			<box id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
@@ -13,16 +13,16 @@
 				</DetailBox>
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
-					<detail-grid id="command-settings-grid">
+					<div class="detail-grid" id="command-settings-grid">
 						<text>Alias</text><TextBox id="command-alias" /> <text>Keywords</text
 						><TextBox id="command-keywords" />
-					</detail-grid>
+					</div>
 				</DetailBox>
 			</box>
 			<button id="command-confirm" name="confirm">Confirm</button>
 			<button id="command-cancel" name="cancel">Cancel</button>
 			<button id="command-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

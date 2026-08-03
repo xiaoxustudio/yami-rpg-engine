@@ -2,16 +2,16 @@
 	<!-- 变量窗口 -->
 	<WindowFrame id="variable" mode="center">
 		<TitleBar>Variable<div class="close" /></TitleBar>
-		<content-frame>
-			<field-set id="variable-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="variable-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="variable-list" padded />
-			</field-set>
-			<field-set id="variable-properties-fieldset">
-				<legend>Properties</legend>
-				<flex-box id="variable-properties-flex">
-					<flex-item><text>Name</text><TextBox id="variable-name" /></flex-item>
-					<flex-item
+			</div>
+			<div class="field-set" id="variable-properties-fieldset">
+				<div class="legend">Properties</div>
+				<div class="flex-box" id="variable-properties-flex">
+					<div class="flex-item"><text>Name</text><TextBox id="variable-name" /></div>
+					<div class="flex-item"
 						><text>Sort</text>
 						<RadioBox
 							id="variable-sort-normal"
@@ -34,8 +34,8 @@
 							value="2"
 							><text id="variable-sort-temporary-label">Temporary</text></RadioBox
 						>
-					</flex-item>
-					<flex-item
+					</div>
+					<div class="flex-item"
 						><text>Type</text>
 						<RadioBox
 							id="variable-type-boolean"
@@ -65,11 +65,11 @@
 							value="object"
 							><text id="variable-type-object-label">Object</text></RadioBox
 						>
-					</flex-item>
-					<flex-item id="variable-value-box"
+					</div>
+					<div class="flex-item" id="variable-value-box"
 						><text>Value</text>
 						<PageManager id="variable-value-manager">
-							<page-frame value="boolean">
+							<div class="page-frame" value="boolean">
 								<RadioBox
 									id="variable-value-boolean-false"
 									name="variable-value-boolean"
@@ -84,28 +84,28 @@
 									value="true"
 									>True</RadioBox
 								>
-							</page-frame>
-							<page-frame value="number">
+							</div>
+							<div class="page-frame" value="number">
 								<NumberBox
 									id="variable-value-number"
 									min="-1000000000"
 									max="1000000000"
 									decimals="10"
 								/>
-							</page-frame>
-							<page-frame value="string">
+							</div>
+							<div class="page-frame" value="string">
 								<TextArea id="variable-value-string" />
-							</page-frame>
+							</div>
 						</PageManager>
-					</flex-item>
-					<flex-item><text>Note</text><TextArea id="variable-note" /></flex-item>
-				</flex-box>
-			</field-set>
+					</div>
+					<div class="flex-item"><text>Note</text><TextArea id="variable-note" /></div>
+				</div>
+			</div>
 			<TextBox id="variable-searcher" name="search" />
 			<button id="variable-confirm" name="confirm">Confirm</button>
 			<button id="variable-cancel" name="cancel">Cancel</button>
 			<button id="variable-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

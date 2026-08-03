@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneParticle-general-grid">
+		<div class="detail-grid" id="sceneParticle-general-grid">
 			<text>{{ local.getLabel('sceneParticle-name') || 'Name' }}</text><TextBox id="sceneParticle-name"></TextBox>
 			<text>{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</text
 			><CustomBox
@@ -26,7 +26,7 @@
 				decimals="4"
 			></NumberBox>
 			<text>{{ local.getLabel('sceneParticle-angle-box') || 'Angle' }}</text
-			><flex-box id="sceneParticle-angle-box">
+			><div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
 					min="0"
@@ -41,9 +41,9 @@
 					decimals="4"
 					unit="deg"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParticle-scale-box') || 'Scale' }}</text
-			><flex-box id="sceneParticle-scale-box">
+			><div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
 					min="0"
@@ -57,9 +57,9 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParticle-speed-box') || 'Speed' }}</text
-			><flex-box id="sceneParticle-speed-box">
+			><div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
 					min="0"
@@ -73,9 +73,9 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParticle-opacity-box') || 'Opacity' }}</text
-			><flex-box id="sceneParticle-opacity-box">
+			><div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
 					min="0"
@@ -89,9 +89,9 @@
 					step="0.05"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParticle-priority-box') || 'Priority' }}</text
-			><flex-box id="sceneParticle-priority-box">
+			><div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"
 					min="-4"
@@ -103,8 +103,8 @@
 					min="-512"
 					max="512"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-conditions') || 'Conditions' }}</DetailSummary>

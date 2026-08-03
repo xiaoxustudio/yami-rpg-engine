@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame id="log">
 		<TitleBar>Log<div class="close"></div></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<CommonList id="log-list" />
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

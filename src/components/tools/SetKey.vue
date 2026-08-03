@@ -1,11 +1,11 @@
 <template>
 		<WindowFrame id="setKey">
 		<TitleBar>Set Key<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box> <text>Key</text><TextBox id="setKey-key" /> </grid-box>
+		<div class="content-frame">
+			<div class="grid-box"> <text>Key</text><TextBox id="setKey-key" /> </div>
 			<button id="setKey-confirm" name="confirm">Confirm</button>
 			<button id="setKey-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

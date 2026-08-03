@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animSoundLayer-properties-grid') || 'Sound Layer' }}</DetailSummary>
-		<detail-grid id="animSoundLayer-properties-grid">
+		<div class="detail-grid" id="animSoundLayer-properties-grid">
 			<text>{{ local.getLabel('animSoundLayer-playbackRate') || 'Playback Rate' }}</text
 			><SelectBox id="animSoundLayer-playbackRate"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

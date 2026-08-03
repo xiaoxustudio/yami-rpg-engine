@@ -1,14 +1,14 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileSkill-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="fileSkill-general-grid">
+		<div class="detail-grid" id="fileSkill-general-grid">
 			<text>{{ local.getLabel('fileSkill-icon') || 'Icon' }}</text
 			><CustomBox id="fileSkill-icon" type="file" filter="image" />
 			<text>{{ local.getLabel('fileSkill-clip') || 'Clip' }}</text
 			><CustomBox id="fileSkill-clip" type="clip" image="fileSkill-icon" />
 			<text>{{ local.getLabel('fileSkill-inherit') || 'Inherit' }}</text
 			><CustomBox id="fileSkill-inherit" type="file" filter="skill" />
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileSkill-attributes') || 'Attributes' }}</DetailSummary>

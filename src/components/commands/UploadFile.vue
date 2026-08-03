@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="uploadFile">
 		<TitleBar>uploadFile<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>URL</text><StringVar id="uploadFile-url" /> <text>LocalPath</text
 				><StringVar id="uploadFile-path" /> <text>Method</text
 				><SelectBox id="uploadFile-method" /> <text>Field</text
@@ -11,10 +11,10 @@
 				><CustomBox id="uploadFile-callback" type="file" filter="event" />
 				<text>RateCallBack</text
 				><CustomBox id="uploadFile-rateCallback" type="file" filter="event" />
-			</grid-box>
+			</div>
 			<button id="uploadFile-confirm" name="confirm">Confirm</button>
 			<button id="uploadFile-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

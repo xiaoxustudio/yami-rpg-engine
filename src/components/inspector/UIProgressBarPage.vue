@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiProgressBar-properties-grid') || 'ProgressBar Properties' }}</DetailSummary>
-		<detail-grid id="uiProgressBar-properties-grid">
+		<div class="detail-grid" id="uiProgressBar-properties-grid">
 			<text>{{ local.getLabel('uiProgressBar-image') || 'Image' }}</text
 			><CustomBox
 				id="uiProgressBar-image"
@@ -64,7 +64,7 @@
 			<text>{{ local.getLabel('uiProgressBar-colorMode') || 'Color Mode' }}</text
 			><SelectBox id="uiProgressBar-colorMode"></SelectBox>
 			<text>{{ local.getLabel('uiProgressBar-color-0-box') || 'Red' }}</text>
-			<flex-box id="uiProgressBar-color-0-box">
+			<div class="flex-box" id="uiProgressBar-color-0-box">
 				<SliderBox
 					id="uiProgressBar-color-0-slider"
 					min="0"
@@ -77,9 +77,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiProgressBar-color-1-box') || 'Green' }}</text>
-			<flex-box id="uiProgressBar-color-1-box">
+			<div class="flex-box" id="uiProgressBar-color-1-box">
 				<SliderBox
 					id="uiProgressBar-color-1-slider"
 					min="0"
@@ -92,9 +92,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiProgressBar-color-2-box') || 'Blue' }}</text>
-			<flex-box id="uiProgressBar-color-2-box">
+			<div class="flex-box" id="uiProgressBar-color-2-box">
 				<SliderBox
 					id="uiProgressBar-color-2-slider"
 					min="0"
@@ -107,9 +107,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiProgressBar-color-3-box') || 'Alpha' }}</text>
-			<flex-box id="uiProgressBar-color-3-box">
+			<div class="flex-box" id="uiProgressBar-color-3-box">
 				<SliderBox
 					id="uiProgressBar-color-3-slider"
 					min="0"
@@ -122,8 +122,8 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 </template>
 

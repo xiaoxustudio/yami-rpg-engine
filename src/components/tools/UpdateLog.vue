@@ -2,7 +2,7 @@
 	<!-- 公告窗口 -->
 	<WindowFrame id="update-log">
 		<TitleBar>Update Log<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box id="update-log-tabs">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>
 				<button id="update-log-tab-community" class="update-log-tab">Community</button>
@@ -11,7 +11,7 @@
 			<box id="update-log-container">
 				<box id="update-log-content" />
 			</box>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

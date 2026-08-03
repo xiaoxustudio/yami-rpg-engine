@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="exportLanguage">
 		<TitleBar>Export Language Pack<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>First Lang</text><SelectBox id="exportLanguage-first" />
 				<text>Second Lang</text><SelectBox id="exportLanguage-second" />
-			</grid-box>
+			</div>
 			<button id="exportLanguage-confirm" name="confirm">Confirm</button>
 			<button id="exportLanguage-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

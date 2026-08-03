@@ -1,5 +1,5 @@
 <template>
-			<page-frame id="scene" value="scene">
+			<div class="page-frame" id="scene" value="scene">
 				<box id="scene-head">
 					<box id="scene-head-start">
 						<item id="scene-switch-grid" class="toolbar-item" value="grid" />
@@ -113,7 +113,7 @@
 					</box>
 					<text id="scene-info" />
 				</box>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

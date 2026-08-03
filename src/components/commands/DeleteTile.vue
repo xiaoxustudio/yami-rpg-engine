@@ -1,17 +1,17 @@
 <template>
 	<WindowFrame id="deleteTile">
 		<TitleBar>Delete Tile<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Tilemap</text><CustomBox id="deleteTile-tilemap" type="tilemap" />
 				<text>Tilemap X</text
 				><NumberVar id="deleteTile-tilemapX" min="0" max="511" />
 				<text>Tilemap Y</text
 				><NumberVar id="deleteTile-tilemapY" min="0" max="511" />
-			</grid-box>
+			</div>
 			<button id="deleteTile-confirm" name="confirm">Confirm</button>
 			<button id="deleteTile-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

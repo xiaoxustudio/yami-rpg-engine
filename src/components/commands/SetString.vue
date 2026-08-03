@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="setString">
 		<TitleBar>Set String<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox
 					id="setString-variable"
@@ -106,10 +106,10 @@
 					max="7680"
 					unit="px"
 				/>
-			</grid-box>
+			</div>
 			<button id="setString-confirm" name="confirm">Confirm</button>
 			<button id="setString-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

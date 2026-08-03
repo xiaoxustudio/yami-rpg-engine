@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiText-properties-grid') || 'Text Properties' }}</DetailSummary>
-		<detail-grid id="uiText-properties-grid">
+		<div class="detail-grid" id="uiText-properties-grid">
 			<text>{{ local.getLabel('uiText-direction') || 'Direction' }}</text><SelectBox id="uiText-direction"></SelectBox>
 			<text>{{ local.getLabel('uiText-align-box') || 'Align' }}</text>
-			<flex-box id="uiText-align-box">
+			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
 					id="uiText-align-left"
 					name="uiText-horizontalAlign"
@@ -53,14 +53,14 @@
 					tabindex="0"
 					><text>&#xf038;</text></RadioBox
 				>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiText-content') || 'Content' }}</text
 			><TextArea
 				id="uiText-content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextArea>
 			<text>{{ local.getLabel('uiText-size-box') || 'Size' }}</text>
-			<flex-box id="uiText-size-box">
+			<div class="flex-box" id="uiText-size-box">
 				<SliderBox
 					id="uiText-size-slider"
 					min="12"
@@ -74,9 +74,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiText-lineSpacing-box') || 'Line Spacing' }}</text>
-			<flex-box id="uiText-lineSpacing-box">
+			<div class="flex-box" id="uiText-lineSpacing-box">
 				<SliderBox
 					id="uiText-lineSpacing-slider"
 					min="0"
@@ -90,9 +90,9 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiText-letterSpacing-box') || 'Letter Spacing' }}</text>
-			<flex-box id="uiText-letterSpacing-box">
+			<div class="flex-box" id="uiText-letterSpacing-box">
 				<SliderBox
 					id="uiText-letterSpacing-slider"
 					min="0"
@@ -106,7 +106,7 @@
 					step="1"
 					unit="px"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('uiText-color') || 'Color' }}</text><ColorBox id="uiText-color"></ColorBox>
 			<text>{{ local.getLabel('uiText-font') || 'Font' }}</text><TextBox id="uiText-font"></TextBox>
 			<text>{{ local.getLabel('uiText-typeface') || 'Typeface' }}</text><SelectBox id="uiText-typeface"></SelectBox>
@@ -136,7 +136,7 @@
 			><ColorBox id="uiText-effect-color"></ColorBox> <text>{{ local.getLabel('uiText-overflow') || 'Overflow' }}</text
 			><SelectBox id="uiText-overflow"></SelectBox> <text>{{ local.getLabel('uiText-blend') || 'Blend' }}</text
 			><SelectBox id="uiText-blend"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

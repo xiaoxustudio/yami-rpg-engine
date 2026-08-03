@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="fileActor-inventory-goods">
 		<TitleBar>Inventory<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="fileActor-inventory-type" />
 				<text>Item</text
 				><CustomBox id="fileActor-inventory-item-id" type="file" filter="item" />
@@ -16,10 +16,10 @@
 				/>
 				<text>Money</text
 				><NumberBox id="fileActor-inventory-money" min="1" max="100000000" />
-			</grid-box>
+			</div>
 			<button id="fileActor-inventory-confirm" name="confirm">Confirm</button>
 			<button id="fileActor-inventory-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

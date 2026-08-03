@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="moveCamera">
 		<TitleBar>Move Camera<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Mode</text><SelectBox id="moveCamera-mode" /> <text>Position</text
 				><CustomBox id="moveCamera-position" type="position" /> <text>Actor</text
 				><CustomBox id="moveCamera-actor" type="actor" /> <text>Easing</text
@@ -15,10 +15,10 @@
 					unit="ms"
 				 />
 				<text>Wait</text><SelectBox id="moveCamera-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="moveCamera-confirm" name="confirm">Confirm</button>
 			<button id="moveCamera-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

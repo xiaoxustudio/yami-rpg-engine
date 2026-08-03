@@ -1,13 +1,13 @@
 <template>
 		<WindowFrame id="presetElement" mode="center">
 		<TitleBar>Element<div class="close"></div></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<CustomBox id="presetElement-uiId" type="file" filter="ui" />
 			<TreeList id="presetElement-list" />
 			<TextBox id="presetElement-searcher" name="search" />
 			<button id="presetElement-confirm" name="confirm">Confirm</button>
 			<button id="presetElement-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

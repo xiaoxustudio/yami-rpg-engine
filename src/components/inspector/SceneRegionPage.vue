@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneRegion-general-grid">
+		<div class="detail-grid" id="sceneRegion-general-grid">
 			<text>{{ local.getLabel('sceneRegion-name') || 'Name' }}</text><TextBox id="sceneRegion-name"></TextBox>
 			<text>{{ local.getLabel('sceneRegion-color') || 'Color' }}</text><ColorBox id="sceneRegion-color"></ColorBox>
 			<text>{{ local.getLabel('sceneRegion-x') || 'X' }}</text
@@ -34,7 +34,7 @@
 				max="512"
 				decimals="4"
 			></NumberBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-conditions') || 'Conditions' }}</DetailSummary>

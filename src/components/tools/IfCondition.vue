@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="if-condition">
 		<TitleBar>Condition<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Condition Type</text><SelectBox id="if-condition-type" />
 				<text>Variable</text
 				><CustomBox
@@ -74,10 +74,10 @@
 				<text>Button</text><SelectBox id="if-condition-mouse-button" />
 				<text>State</text><SelectBox id="if-condition-mouse-state" />
 				<text>Other</text><SelectBox id="if-condition-other-key" />
-			</grid-box>
+			</div>
 			<button id="if-condition-confirm" name="confirm">Confirm</button>
 			<button id="if-condition-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

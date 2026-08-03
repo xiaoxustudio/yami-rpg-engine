@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setVolume">
 	<TitleBar>Set Volume<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="setVolume-type" /> <text>Volume</text
 			><NumberVar id="setVolume-volume" min="0" max="1" step="0.1" decimals="4" />
 			<text>Easing</text><SelectBox id="setVolume-easingId" name="easing" />
@@ -15,10 +15,10 @@
 				unit="ms"
 			 />
 			<text>Wait</text><SelectBox id="setVolume-wait" name="wait" />
-		</grid-box>
+		</div>
 		<button id="setVolume-confirm" name="confirm">Confirm</button>
 		<button id="setVolume-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

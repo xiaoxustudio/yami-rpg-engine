@@ -1,4 +1,4 @@
-import { addClass, removeClass, dispatchResizeEvent } from '@/util/element-utils.ts';
+import { addClass, hasClass, removeClass, dispatchResizeEvent } from '@/util/element-utils.ts';
 
 interface PageManagerElement extends HTMLElement {
 	index: any;
@@ -25,7 +25,7 @@ export function attachPageManagerApi(el: HTMLElement): void {
 			let target: HTMLElement | null = null;
 			if (value !== null) {
 				for (const child of el.childNodes as any) {
-					if (child.tagName === 'PAGE-FRAME') {
+					if (hasClass(child, 'page-frame')) {
 						if (child.dataValue === undefined) {
 							child.dataValue = child.getAttribute('value');
 						}
@@ -70,7 +70,7 @@ export function attachPageManagerApi(el: HTMLElement): void {
 		let i = nodes.length;
 		while (--i >= 0) {
 			const child: any = nodes[i];
-			if (child.tagName === 'PAGE-FRAME') {
+			if (hasClass(child, 'page-frame')) {
 				child.dataValue = child.getAttribute('value');
 			} else {
 				el.removeChild(child);

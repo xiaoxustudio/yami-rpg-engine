@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="actorGetter">
 		<TitleBar>Actor<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Type</text><SelectBox id="actorGetter-type" /> <text>Member ID</text
 				><NumberVar id="actorGetter-memberId" min="0" max="10000" />
 				<text>Actor</text
@@ -11,10 +11,10 @@
 				><CustomBox id="actorGetter-presetId" type="preset-object" filter="actor" />
 				<text>Variable</text
 				><CustomBox id="actorGetter-variable" type="variable" filter="object" />
-			</grid-box>
+			</div>
 			<button id="actorGetter-confirm" name="confirm">Confirm</button>
 			<button id="actorGetter-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

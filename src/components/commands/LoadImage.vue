@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="loadImage">
 		<TitleBar>Load Image<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="loadImage-element" type="element" />
 				<text>Type</text><SelectBox id="loadImage-type" /> <text>Actor</text
 				><CustomBox id="loadImage-actor" type="actor" /> <text>Skill</text
@@ -12,10 +12,10 @@
 				><CustomBox id="loadImage-item" type="item" /> <text>Shortcut Key</text
 				><SelectVar id="loadImage-key" /> <text>Base64 Coding</text
 				><CustomBox id="loadImage-variable" type="variable" filter="string" />
-			</grid-box>
+			</div>
 			<button id="loadImage-confirm" name="confirm">Confirm</button>
 			<button id="loadImage-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

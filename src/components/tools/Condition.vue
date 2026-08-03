@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="condition">
 		<TitleBar>Condition<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Condition Type</text><SelectBox id="condition-type" />
 			<text>Variable</text
 			><CustomBox id="condition-key" type="global-variable" filter="all" />
@@ -18,10 +18,10 @@
 				/>
 				<text>Operation</text><SelectBox id="condition-string-operation" />
 				<text>String</text><TextArea id="condition-string-value" />
-			</grid-box>
+			</div>
 			<button id="condition-confirm" name="confirm">Confirm</button>
 			<button id="condition-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

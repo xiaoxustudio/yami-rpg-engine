@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="fileEquipment-general-grid">
+		<div class="detail-grid" id="fileEquipment-general-grid">
 			<text>{{ local.getLabel('fileEquipment-icon') || 'Icon' }}</text
 			><CustomBox id="fileEquipment-icon" type="file" filter="image" />
 			<text>{{ local.getLabel('fileEquipment-clip') || 'Clip' }}</text
@@ -16,7 +16,7 @@
 				type="file"
 				filter="equipment"
 			/>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileEquipment-attributes') || 'Attributes' }}</DetailSummary>

@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneAnimation-general-grid">
+		<div class="detail-grid" id="sceneAnimation-general-grid">
 			<text>{{ local.getLabel('sceneAnimation-name') || 'Name' }}</text><TextBox id="sceneAnimation-name"></TextBox>
 			<text>{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</text
 			><CustomBox
@@ -30,7 +30,7 @@
 				unit="tile"
 			></NumberBox>
 			<text>{{ local.getLabel('sceneAnimation-angle-box') || 'Angle' }}</text
-			><flex-box id="sceneAnimation-angle-box">
+			><div class="flex-box" id="sceneAnimation-angle-box">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
 					min="0"
@@ -45,9 +45,9 @@
 					decimals="4"
 					unit="deg"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneAnimation-scale-box') || 'Scale' }}</text
-			><flex-box id="sceneAnimation-scale-box">
+			><div class="flex-box" id="sceneAnimation-scale-box">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
 					min="0"
@@ -61,9 +61,9 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneAnimation-speed-box') || 'Speed' }}</text
-			><flex-box id="sceneAnimation-speed-box">
+			><div class="flex-box" id="sceneAnimation-speed-box">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
 					min="0"
@@ -77,9 +77,9 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneAnimation-opacity-box') || 'Opacity' }}</text
-			><flex-box id="sceneAnimation-opacity-box">
+			><div class="flex-box" id="sceneAnimation-opacity-box">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
 					min="0"
@@ -93,9 +93,9 @@
 					step="0.05"
 					decimals="4"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneAnimation-priority-box') || 'Priority' }}</text
-			><flex-box id="sceneAnimation-priority-box">
+			><div class="flex-box" id="sceneAnimation-priority-box">
 				<SliderBox
 					id="sceneAnimation-priority-slider"
 					min="-4"
@@ -107,8 +107,8 @@
 					min="-512"
 					max="512"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneAnimation-conditions') || 'Conditions' }}</DetailSummary>

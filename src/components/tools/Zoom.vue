@@ -2,14 +2,14 @@
 	<!-- 缩放窗口 -->
 	<WindowFrame id="zoom">
 		<TitleBar>Zoom<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Zoom Factor</text
 				><NumberBox id="zoom-factor" min="0.6666" max="2" decimals="4" />
-			</grid-box>
+			</div>
 			<button id="zoom-confirm" name="confirm">Confirm</button>
 			<button id="zoom-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

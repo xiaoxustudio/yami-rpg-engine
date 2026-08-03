@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animParticleLayer-properties-grid') || 'Particle Layer' }}</DetailSummary>
-		<detail-grid id="animParticleLayer-properties-grid">
+		<div class="detail-grid" id="animParticleLayer-properties-grid">
 			<text>{{ local.getLabel('animParticleLayer-particleId') || 'Particle' }}</text
 			><CustomBox
 				id="animParticleLayer-particleId"
@@ -12,7 +12,7 @@
 			><SelectBox id="animParticleLayer-position"></SelectBox>
 			<text>{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</text><SelectBox id="animParticleLayer-angle"></SelectBox>
 			<text>{{ local.getLabel('animParticleLayer-order') || 'Order' }}</text><SelectBox id="animParticleLayer-order"></SelectBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

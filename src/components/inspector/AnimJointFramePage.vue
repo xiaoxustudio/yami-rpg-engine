@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('animJointFrame-properties-grid') || 'Frame' }}</DetailSummary>
-		<detail-grid id="animJointFrame-properties-grid">
+		<div class="detail-grid" id="animJointFrame-properties-grid">
 			<text>{{ local.getLabel('animJointFrame-position-box') || 'Position' }}</text>
 			<box
 				id="animJointFrame-position-box"
@@ -68,7 +68,7 @@
 					decimals="4"
 				></NumberBox>
 			</box>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

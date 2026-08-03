@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="showText">
 	<TitleBar>Show Text<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<CustomBox id="showText-target" type="actor" />
 		<TextBox id="showText-parameters" />
 		<TextArea
@@ -10,7 +10,7 @@
 		 />
 		<button id="showText-confirm" name="confirm">Confirm</button>
 		<button id="showText-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

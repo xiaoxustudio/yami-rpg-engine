@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="if-branch">
 		<TitleBar>Branch<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Mode</text><SelectBox id="if-branch-mode" /> <text>Conditions</text
 				><ParamList id="if-branch-conditions" />
-			</grid-box>
+			</div>
 			<button id="if-branch-confirm" name="confirm">Confirm</button>
 			<button id="if-branch-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

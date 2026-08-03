@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="deleteVariable">
 		<TitleBar>Delete Variable<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Variable</text
 				><CustomBox
 					id="deleteVariable-variable"
 					type="variable"
 					filter="deletable"
 				/>
-			</grid-box>
+			</div>
 			<button id="deleteVariable-confirm" name="confirm">Confirm</button>
 			<button id="deleteVariable-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
-		<detail-grid id="sceneParallax-general-grid">
+		<div class="detail-grid" id="sceneParallax-general-grid">
 			<text>{{ local.getLabel('sceneParallax-name') || 'Name' }}</text><TextBox id="sceneParallax-name"></TextBox>
 			<text>{{ local.getLabel('sceneParallax-image') || 'Image' }}</text
 			><CustomBox
@@ -40,11 +40,11 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</DetailSummary>
-		<detail-grid id="sceneParallax-parallax-grid">
+		<div class="detail-grid" id="sceneParallax-parallax-grid">
 			<text>{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</text
 			><NumberBox
 				id="sceneParallax-scaleX"
@@ -130,7 +130,7 @@
 				unit="px/s"
 			></NumberBox>
 			<text>{{ local.getLabel('sceneParallax-tint-0-box') || 'Tint - Red' }}</text>
-			<flex-box id="sceneParallax-tint-0-box">
+			<div class="flex-box" id="sceneParallax-tint-0-box">
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
 					min="-255"
@@ -143,9 +143,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParallax-tint-1-box') || 'Tint - Green' }}</text>
-			<flex-box id="sceneParallax-tint-1-box">
+			<div class="flex-box" id="sceneParallax-tint-1-box">
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
 					min="-255"
@@ -158,9 +158,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParallax-tint-2-box') || 'Tint - Blue' }}</text>
-			<flex-box id="sceneParallax-tint-2-box">
+			<div class="flex-box" id="sceneParallax-tint-2-box">
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
 					min="-255"
@@ -173,9 +173,9 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
+			</div>
 			<text>{{ local.getLabel('sceneParallax-tint-3-box') || 'Tint - Grayscale' }}</text>
-			<flex-box id="sceneParallax-tint-3-box">
+			<div class="flex-box" id="sceneParallax-tint-3-box">
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
 					min="0"
@@ -188,8 +188,8 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</flex-box>
-		</detail-grid>
+			</div>
+		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-conditions') || 'Conditions' }}</DetailSummary>

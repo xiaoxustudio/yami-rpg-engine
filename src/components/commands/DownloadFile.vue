@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="downloadFile">
 	<TitleBar>downloadFile<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>URL</text><StringVar id="downloadFile-url" /> <text>Header</text
 			><ParamList id="downloadFile-header" /> <text>Method</text
 			><SelectBox id="downloadFile-method" /> <text>Data</text
@@ -13,10 +13,10 @@
 			<text>IsBackground</text
 			><CheckBox class="standard" id="downloadFile-isBackground" />
 			<text>Path</text><StringVar id="downloadFile-isBackground-path" />
-		</grid-box>
+		</div>
 		<button id="downloadFile-confirm" name="confirm">Confirm</button>
 		<button id="downloadFile-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

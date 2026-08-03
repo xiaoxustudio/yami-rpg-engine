@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="object-attribute">
 		<TitleBar>Attribute<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Key</text><SelectBox id="object-attribute-key" /> <text>Boolean</text
 				><SelectBox id="object-attribute-boolean-value" /> <text>Number</text
 				><NumberBox
@@ -14,10 +14,10 @@
 				<text>String</text
 				><TextArea id="object-attribute-string-value" menu="tag-localization" />
 				<text>Option</text><SelectBox id="object-attribute-enum-value" />
-			</grid-box>
+			</div>
 			<button id="object-attribute-confirm" name="confirm">Confirm</button>
 			<button id="object-attribute-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

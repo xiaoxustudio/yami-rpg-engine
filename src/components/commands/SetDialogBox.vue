@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="setDialogBox">
 		<TitleBar>Set Dialog Box<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="setDialogBox-element" type="element" />
 				<text>Properties</text><ParamList id="setDialogBox-properties" />
-			</grid-box>
+			</div>
 			<button id="setDialogBox-confirm" name="confirm">Confirm</button>
 			<button id="setDialogBox-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

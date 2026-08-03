@@ -1,14 +1,14 @@
 <template>
 		<WindowFrame id="request-keyValue">
 		<TitleBar>Header<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>key</text><StringVar id="request-keyValue-key" /> <text>value</text
 				><StringVar id="request-keyValue-value" />
-			</grid-box>
+			</div>
 			<button id="request-keyValue-confirm" name="confirm">Confirm</button>
 			<button id="request-keyValue-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

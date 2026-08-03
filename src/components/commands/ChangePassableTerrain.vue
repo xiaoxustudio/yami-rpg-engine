@@ -1,14 +1,14 @@
 <template>
 <WindowFrame id="changePassableTerrain">
 	<TitleBar>Change Passable Terrain<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text
 			><CustomBox id="changePassableTerrain-actor" type="actor" /><text>Passable Terrain</text
-			><SelectBox id="changePassableTerrain-passage" /></grid-box>
+			><SelectBox id="changePassableTerrain-passage" /></div>
 		<button id="changePassableTerrain-confirm" name="confirm">Confirm</button>
 		<button id="changePassableTerrain-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="return">
 	<TitleBar>Return<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="return-type" /> <text>Boolean</text
 			><SelectBox id="return-boolean" /> <text>Number</text
 			><NumberVar
@@ -21,10 +21,10 @@
 			<text>Trigger</text><CustomBox id="return-trigger" type="trigger" />
 			<text>Light</text><CustomBox id="return-light" type="light" />
 			<text>Element</text><CustomBox id="return-element" type="element" />
-		</grid-box>
+		</div>
 		<button id="return-confirm" name="confirm">Confirm</button>
 		<button id="return-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

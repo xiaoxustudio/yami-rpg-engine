@@ -1,5 +1,5 @@
 <template>
-			<page-frame id="animation" value="animation">
+			<div class="page-frame" id="animation" value="animation">
 				<box id="animation-head">
 					<box id="animation-head-start">
 						<item id="animation-switch-mark" class="toolbar-item" value="mark" />
@@ -43,7 +43,7 @@
 					</box>
 					<box id="animation-dirList" />
 				</box>
-			</page-frame>
+			</div>
 </template>
 
 <script setup lang="ts">

@@ -1,10 +1,10 @@
 <template>
 <WindowFrame id="continue">
 	<TitleBar>Continue<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<button id="continue-confirm" name="confirm">Confirm</button>
 		<button id="continue-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

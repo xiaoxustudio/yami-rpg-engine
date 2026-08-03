@@ -1,11 +1,11 @@
 <template>
 		<WindowFrame id="plugin">
 		<TitleBar>Plugin<div class="close"></div></TitleBar>
-		<content-frame>
-			<field-set id="plugin-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="plugin-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="plugin-list" padded />
-			</field-set>
+			</div>
 			<box id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
@@ -14,14 +14,14 @@
 				<ParameterPane id="plugin-parameter-pane">
 				<DetailBox id="plugin-parameter-detail" open>
 					<DetailSummary>Parameters</DetailSummary>
-					<detail-grid id="plugin-parameter-grid" />
+					<div class="detail-grid" id="plugin-parameter-grid" />
 				</DetailBox>
 			</ParameterPane>
 			</box>
 			<button id="plugin-confirm" name="confirm">Confirm</button>
 			<button id="plugin-cancel" name="cancel">Cancel</button>
 			<button id="plugin-apply" name="apply">Apply</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

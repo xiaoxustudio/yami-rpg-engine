@@ -1,14 +1,14 @@
 <template>
 <WindowFrame id="jumpTo">
 	<TitleBar>Jump to<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Operation</text><SelectBox id="jumpTo-operation" />
 			<text>Label Name</text><TextBox id="jumpTo-label" />
-		</grid-box>
+		</div>
 		<button id="jumpTo-confirm" name="confirm">Confirm</button>
 		<button id="jumpTo-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

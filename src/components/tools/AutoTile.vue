@@ -1,31 +1,31 @@
 <template>
 	<WindowFrame id="autoTile">
 		<TitleBar>Auto Tile<div class="close" /></TitleBar>
-		<content-frame>
-			<field-set id="autoTile-general-fieldset">
-				<legend>General</legend>
-				<grid-box id="autoTile-general-grid">
+		<div class="content-frame">
+			<div class="field-set" id="autoTile-general-fieldset">
+				<div class="legend">General</div>
+				<div class="grid-box" id="autoTile-general-grid">
 					<text>Image</text
 					><CustomBox id="autoTile-image" type="file" filter="image" />
 					<text>Offset X</text><NumberBox id="autoTile-x" min="0" max="255" />
 					<text>Offset Y</text><NumberBox id="autoTile-y" min="0" max="255" />
-				</grid-box>
-			</field-set>
-			<field-set id="autoTile-templates-fieldset" class="input pad">
-				<legend>Templates</legend>
+				</div>
+			</div>
+			<div class="field-set input pad" id="autoTile-templates-fieldset">
+				<div class="legend">Templates</div>
 				<TreeList id="autoTile-templates" padded />
-			</field-set>
-			<field-set id="autoTile-nodes-fieldset" class="input pad">
-				<legend>Tiles</legend>
+			</div>
+			<div class="field-set input pad" id="autoTile-nodes-fieldset">
+				<div class="legend">Tiles</div>
 				<CommonList id="autoTile-nodes" />
-			</field-set>
-			<field-set id="autoTile-canvas-fieldset">
-				<legend>View</legend>
+			</div>
+			<div class="field-set" id="autoTile-canvas-fieldset">
+				<div class="legend">View</div>
 				<canvas id="autoTile-canvas" width="128" height="128" />
-			</field-set>
-			<field-set id="autoTile-rule-fieldset">
-				<legend>Neighbors</legend>
-				<grid-box id="autoTile-rule-grid">
+			</div>
+			<div class="field-set" id="autoTile-rule-fieldset">
+				<div class="legend">Neighbors</div>
+				<div class="grid-box" id="autoTile-rule-grid">
 					<SwitchItem
 						id="autoTile-rule-1"
 						class="autoTile-switch autoTile-neighbor"
@@ -67,15 +67,15 @@
 						class="autoTile-switch autoTile-neighbor"
 						:length="3"
 					/>
-				</grid-box>
-			</field-set>
-			<field-set id="autoTile-frames-fieldset" class="input pad">
-				<legend>Frames</legend>
+				</div>
+			</div>
+			<div class="field-set input pad" id="autoTile-frames-fieldset">
+				<div class="legend">Frames</div>
 				<CommonList id="autoTile-frames" />
-			</field-set>
+			</div>
 			<button id="autoTile-confirm" name="confirm">Confirm</button>
 			<button id="autoTile-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -3,7 +3,7 @@
 		<TitleBar>
 			<div class="close"></div>
 		</TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<box style="display: flex; flex-direction: column; height: 100%">
 				<box
 					id="resource-node-info"
@@ -35,12 +35,12 @@
 					</div>
 				</box>
 				<box id="resource-content" style="flex: 1; overflow: auto" />
-				<grid-box style="flex-shrink: 0">
+				<div class="grid-box" style="flex-shrink: 0">
 					<button id="resource-check-version">check version</button>
 					<button id="resource-open-dir">open dir</button>
-				</grid-box>
+				</div>
 			</box>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

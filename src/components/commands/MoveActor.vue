@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="moveActor">
 	<TitleBar>Move Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="moveActor-actor" type="actor" /><text>Mode</text><SelectBox id="moveActor-mode" /><text>Angle</text
 			><NumberVar
 				id="moveActor-angle"
@@ -12,10 +12,10 @@
 				unit="deg"
 			 /><text>Destination</text
 			><CustomBox id="moveActor-destination" type="position" /><text>Wait</text
-			><SelectBox id="moveActor-wait" name="wait" /></grid-box>
+			><SelectBox id="moveActor-wait" name="wait" /></div>
 		<button id="moveActor-confirm" name="confirm">Confirm</button>
 		<button id="moveActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

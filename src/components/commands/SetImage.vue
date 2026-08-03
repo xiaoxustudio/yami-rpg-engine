@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="setImage">
 		<TitleBar>Set Image<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="setImage-element" type="element" />
 				<text>Properties</text><ParamList id="setImage-properties" />
-			</grid-box>
+			</div>
 			<button id="setImage-confirm" name="confirm">Confirm</button>
 			<button id="setImage-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
 	<PageManager id="workspace-page-manager">
-		<page-frame id="home" value="home">
+		<div class="page-frame" id="home" value="home">
 			<box id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
 				<text id="home-version"></text>
@@ -16,12 +16,12 @@
 					<item class="home-recent-item" value="2"></item>
 				</box>
 			</box>
-		</page-frame>
-		<page-frame value="directory"></page-frame>
-		<page-frame value="scene"></page-frame>
-		<page-frame value="ui"></page-frame>
-		<page-frame value="animation"></page-frame>
-		<page-frame value="particle"></page-frame>
+		</div>
+		<div class="page-frame" value="directory"></div>
+		<div class="page-frame" value="scene"></div>
+		<div class="page-frame" value="ui"></div>
+		<div class="page-frame" value="animation"></div>
+		<div class="page-frame" value="particle"></div>
 	</PageManager>
 </template>
 

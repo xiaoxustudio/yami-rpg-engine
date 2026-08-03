@@ -1,12 +1,12 @@
 <template>
 <WindowFrame id="renderOutline">
 	<TitleBar>Render Outline<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
-			<text>Operation</text><SelectBox id="renderOutline-operation" /><text>Actor</text><CustomBox id="renderOutline-actor" type="actor" /><text>Color</text><ColorBox id="renderOutline-color" /></grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
+			<text>Operation</text><SelectBox id="renderOutline-operation" /><text>Actor</text><CustomBox id="renderOutline-actor" type="actor" /><text>Color</text><ColorBox id="renderOutline-color" /></div>
 		<button id="renderOutline-confirm" name="confirm">Confirm</button>
 		<button id="renderOutline-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

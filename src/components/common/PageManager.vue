@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { addClass, dispatchResizeEvent, removeClass } from '@/util/element-utils.ts';
+import { addClass, dispatchResizeEvent, hasClass, removeClass } from '@/util/element-utils.ts';
 
 interface Props {
 	id?: string;
@@ -34,7 +34,7 @@ const switchover = (value: any): void => {
 		let target: HTMLElement | null = null;
 		if (value !== null) {
 			for (const child of element.childNodes as any) {
-				if (child.tagName === 'PAGE-FRAME') {
+				if (hasClass(child, 'page-frame')) {
 					if (child.dataValue === undefined) {
 						child.dataValue = child.getAttribute('value');
 					}
@@ -84,7 +84,7 @@ onMounted(() => {
 		let i = nodes.length;
 		while (--i >= 0) {
 			const child: any = nodes[i];
-			if (child.tagName === 'PAGE-FRAME') {
+			if (hasClass(child, 'page-frame')) {
 				child.dataValue = child.getAttribute('value');
 			} else {
 				element.removeChild(child);

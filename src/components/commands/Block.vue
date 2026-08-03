@@ -1,14 +1,14 @@
 <template>
 <WindowFrame id="block">
 	<TitleBar>Block<div class="close" /></TitleBar>
-	<content-frame>
+	<div class="content-frame">
 		<TextBox id="block-note" />
 		<CheckBox id="block-asynchronous" class="standard"
 			><text id="block-asynchronous-label">Asynchronous</text></CheckBox
 		>
 		<button id="block-confirm" name="confirm">Confirm</button>
 		<button id="block-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

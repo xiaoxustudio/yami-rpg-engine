@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiTextBox-properties-grid') || 'TextBox Properties' }}</DetailSummary>
-		<detail-grid id="uiTextBox-properties-grid">
+		<div class="detail-grid" id="uiTextBox-properties-grid">
 			<text>{{ local.getLabel('uiTextBox-type') || 'Type' }}</text><SelectBox id="uiTextBox-type"></SelectBox>
 			<text>{{ local.getLabel('uiTextBox-align') || 'Align' }}</text><SelectBox id="uiTextBox-align"></SelectBox>
 			<text>{{ local.getLabel('uiTextBox-text') || 'Text' }}</text><TextBox id="uiTextBox-text"></TextBox>
@@ -44,7 +44,7 @@
 			><ColorBox id="uiTextBox-selectionColor"></ColorBox>
 			<text>{{ local.getLabel('uiTextBox-selectionBgColor') || 'Selection Bg Color' }}</text
 			><ColorBox id="uiTextBox-selectionBgColor"></ColorBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

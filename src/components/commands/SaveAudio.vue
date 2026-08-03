@@ -1,11 +1,11 @@
 <template>
 <WindowFrame id="saveAudio">
 	<TitleBar>Save Audio<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box> <text>Type</text><SelectBox id="saveAudio-type" /> </grid-box>
+	<div class="content-frame">
+		<div class="grid-box"> <text>Type</text><SelectBox id="saveAudio-type" /> </div>
 		<button id="saveAudio-confirm" name="confirm">Confirm</button>
 		<button id="saveAudio-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

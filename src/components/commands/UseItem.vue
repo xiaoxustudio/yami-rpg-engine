@@ -1,18 +1,18 @@
 <template>
 <WindowFrame id="useItem">
 	<TitleBar>Use Item<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="useItem-actor" type="actor" />
 			<text>Mode</text><SelectBox id="useItem-mode" /> <text>Shortcut Key</text
 			><SelectBox id="useItem-key" /> <text>Item</text
 			><CustomBox id="useItem-itemId" type="file" filter="item" />
 			<text>Item</text><CustomBox id="useItem-item" type="item" />
 			<text>Wait</text><SelectBox id="useItem-wait" name="wait" />
-		</grid-box>
+		</div>
 		<button id="useItem-confirm" name="confirm">Confirm</button>
 		<button id="useItem-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="followActor">
 	<TitleBar>Follow Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="followActor-actor" type="actor" /><text>Target</text><CustomBox id="followActor-target" type="actor" /><text>Mode</text><SelectBox id="followActor-mode" /><text>Min Distance</text
 			><NumberVar
 				id="followActor-minDist"
@@ -39,10 +39,10 @@
 				decimals="4"
 				unit="tile"
 			 /><text>Navigate</text><SelectBox id="followActor-navigate" /><text>Bypass Actors</text><SelectBox id="followActor-bypass" /><text>Once</text><SelectBox id="followActor-once" /><text>Wait</text
-			><SelectBox id="followActor-wait" name="wait" /></grid-box>
+			><SelectBox id="followActor-wait" name="wait" /></div>
 		<button id="followActor-confirm" name="confirm">Confirm</button>
 		<button id="followActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

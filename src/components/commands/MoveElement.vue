@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="moveElement">
 		<TitleBar>Move Element<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Element</text><CustomBox id="moveElement-element" type="element" />
 				<text>Properties</text><ParamList id="moveElement-properties" />
 				<text>Easing</text><SelectBox id="moveElement-easingId" name="easing" />
@@ -15,10 +15,10 @@
 					unit="ms"
 				/>
 				<text>Wait</text><SelectBox id="moveElement-wait" name="wait" />
-			</grid-box>
+			</div>
 			<button id="moveElement-confirm" name="confirm">Confirm</button>
 			<button id="moveElement-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

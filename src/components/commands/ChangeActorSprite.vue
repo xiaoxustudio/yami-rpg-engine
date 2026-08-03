@@ -1,18 +1,18 @@
 <template>
 <WindowFrame id="changeActorSprite">
 	<TitleBar>Change Actor Sprite<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text><CustomBox id="changeActorSprite-actor" type="actor" /><text>Animation</text
 			><CustomBox
 				id="changeActorSprite-animationId"
 				type="file"
 				filter="animation"
 			 /><text>Sprite Name</text><SelectBox id="changeActorSprite-spriteId" /><text>Sprite</text
-			><CustomBox id="changeActorSprite-image" type="file" filter="image" /></grid-box>
+			><CustomBox id="changeActorSprite-image" type="file" filter="image" /></div>
 		<button id="changeActorSprite-confirm" name="confirm">Confirm</button>
 		<button id="changeActorSprite-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

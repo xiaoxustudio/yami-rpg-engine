@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="clampCamera">
 		<TitleBar>Clamp Camera<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Left</text
 				><NumberVar
 					id="clampCamera-left"
@@ -35,10 +35,10 @@
 					step="0.1"
 					decimals="4"
 				 />
-			</grid-box>
+			</div>
 			<button id="clampCamera-confirm" name="confirm">Confirm</button>
 			<button id="clampCamera-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 	
 </template>

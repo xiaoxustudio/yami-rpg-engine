@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame id="object-folder">
 		<TitleBar>Default Object Folders<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Tilemap</text><TextBox id="object-folder-tilemap" /> <text>Actor</text
 				><TextBox id="object-folder-actor" /> <text>Region</text
 				><TextBox id="object-folder-region" /> <text>Light</text
@@ -10,10 +10,10 @@
 				><TextBox id="object-folder-animation" /> <text>Particle</text
 				><TextBox id="object-folder-particle" /> <text>Parallax</text
 				><TextBox id="object-folder-parallax" />
-			</grid-box>
+			</div>
 			<button id="object-folder-confirm" name="confirm">Confirm</button>
 			<button id="object-folder-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

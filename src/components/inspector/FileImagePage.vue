@@ -1,11 +1,11 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileImage-info-grid') || 'File Info' }}</DetailSummary>
-		<detail-grid id="fileImage-info-grid">
+		<div class="detail-grid" id="fileImage-info-grid">
 			<text>{{ local.getLabel('fileImage-name') || 'Name' }}</text><text id="fileImage-name"></text> <text>{{ local.getLabel('fileImage-size') || 'Size' }}</text
 			><text id="fileImage-size"></text> <text>{{ local.getLabel('fileImage-resolution') || 'Resolution' }}</text
 			><text id="fileImage-resolution"></text>
-		</detail-grid>
+		</div>
 	</DetailBox>
 	<DetailBox id="fileImage-image-detail" open>
 		<DetailSummary>{{ local.getLabel('fileImage-image-viewer') || 'Image' }}</DetailSummary>

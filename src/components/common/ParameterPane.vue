@@ -285,7 +285,8 @@ const createDetailBox = (): any => {
 	}
 	const tag = 'detail-box';
 	const summary = createDetailSummary();
-	const grid = document.createElement('detail-grid');
+	const grid = document.createElement('div');
+	addClass(grid, 'detail-grid');
 	const wrap = { tag, box, summary, grid, children: [] as any[] };
 	box.appendChild(summary);
 	box.appendChild(grid);
@@ -530,7 +531,8 @@ const createRepeatableGroup = (parameter: any): any => {
 				container.dispatchEvent(new Event('change', { bubbles: true }));
 			};
 			row.appendChild(removeBtn);
-			const grid = document.createElement('detail-grid');
+			const grid = document.createElement('div');
+			addClass(grid, 'detail-grid');
 			row.appendChild(grid);
 			(row as any).wraps = template.map((subParam: any) => {
 				const wrap = TypeRegistry.get(subParam.type).create(pane, subParam);

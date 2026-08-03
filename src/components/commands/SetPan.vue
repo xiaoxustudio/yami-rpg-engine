@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setPan">
 	<TitleBar>Set Pan<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Type</text><SelectBox id="setPan-type" /> <text>Pan</text
 			><NumberVar id="setPan-pan" min="-1" max="1" step="0.1" decimals="4" />
 			<text>Easing</text><SelectBox id="setPan-easingId" name="easing" />
@@ -15,10 +15,10 @@
 				unit="ms"
 			 />
 			<text>Wait</text><SelectBox id="setPan-wait" name="wait" />
-		</grid-box>
+		</div>
 		<button id="setPan-confirm" name="confirm">Confirm</button>
 		<button id="setPan-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

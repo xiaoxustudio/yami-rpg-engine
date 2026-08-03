@@ -1,20 +1,20 @@
 <template>
 		<WindowFrame id="newProject">
 		<TitleBar>New Project<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Template</text><SelectBox id="newProject-template" />
 				<text>Folder</text><TextBox id="newProject-folder" />
 				<text>Location</text>
-				<flex-box id="newProject-location-box">
+				<div class="flex-box" id="newProject-location-box">
 					<TextBox id="newProject-location" />
 					<button id="newProject-choose">…</button>
-				</flex-box>
-			</grid-box>
+				</div>
+			</div>
 			<text id="newProject-warning" />
 			<button id="newProject-confirm" name="confirm">Confirm</button>
 			<button id="newProject-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="reset">
 		<TitleBar>Reset<div class="close" /></TitleBar>
-		<content-frame>
+		<div class="content-frame">
 			<button id="reset-confirm" name="confirm">Confirm</button>
 			<button id="reset-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

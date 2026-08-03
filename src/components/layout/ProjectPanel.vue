@@ -1,7 +1,7 @@
 <template>
-	<page-frame id="project" value="project">
+	<div class="page-frame" id="project" value="project">
 		<div class="file-browser" id="project-browser"></div>
-	</page-frame>
+	</div>
 </template>
 
 <script setup lang="ts">

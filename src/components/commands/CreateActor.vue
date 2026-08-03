@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="createActor">
 	<TitleBar>Create Actor<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Actor</text
 			><CustomBox id="createActor-actorId" type="file" filter="actor" /><text>Team</text><SelectBox id="createActor-teamId" /><text>Position</text
 			><CustomBox id="createActor-position" type="position" /><text>Angle</text
@@ -12,10 +12,10 @@
 				max="360"
 				decimals="4"
 				unit="deg"
-			 /></grid-box>
+			 /></div>
 		<button id="createActor-confirm" name="confirm">Confirm</button>
 		<button id="createActor-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 

@@ -1,11 +1,11 @@
 <template>
 		<WindowFrame id="rename">
 		<TitleBar>Rename<div class="close"></div></TitleBar>
-		<content-frame>
-			<grid-box> <text>Name</text><TextBox id="rename-name" /> </grid-box>
+		<div class="content-frame">
+			<div class="grid-box"> <text>Name</text><TextBox id="rename-name" /> </div>
 			<button id="rename-confirm" name="confirm">Confirm</button>
 			<button id="rename-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<WindowFrame id="tintImage">
 		<TitleBar>Tint Image<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box id="tintImage-grid-box">
+		<div class="content-frame">
+			<div class="grid-box" id="tintImage-grid-box">
 				<text>Element</text><CustomBox id="tintImage-element" type="element" />
 				<text>Mode</text><SelectBox id="tintImage-mode" /> <text>Tint - Red</text
 				><NumberBox id="tintImage-tint-0" min="-255" max="255" step="5" />
@@ -22,11 +22,11 @@
 					unit="ms"
 				/>
 				<text>Wait</text><SelectBox id="tintImage-wait" name="wait" />
-			</grid-box>
+			</div>
 			<FilterBox id="tintImage-filter" width="96" height="208" />
 			<button id="tintImage-confirm" name="confirm">Confirm</button>
 			<button id="tintImage-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

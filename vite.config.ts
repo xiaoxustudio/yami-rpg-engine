@@ -7,19 +7,7 @@ import { fileURLToPath } from 'url';
 
 // 伪元素/未迁移 CE 标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
 // 结构伪元素（box/item/text/page-frame/detail-grid/grid-box 等）+ 非 Wave 3 CE（file-*/flex-* 等）
-const CUSTOM_ELEMENT_TAGS = new Set([
-	'box',
-	'item',
-	'text',
-	'page-frame',
-	'detail-grid',
-	'flex-box',
-	'content-frame',
-	'grid-box',
-	'field-set',
-	'legend',
-	'flex-item'
-]);
+const CUSTOM_ELEMENT_TAGS = new Set(['box', 'item', 'text']);
 
 // 递归复制目录（保留静态资源到 dist）
 const copyDirRecursive = (src: string, dest: string) => {

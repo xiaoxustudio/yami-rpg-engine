@@ -2,8 +2,8 @@
 	<!-- 匹配 - 条件 -->
 	<WindowFrame id="switch-condition">
 		<TitleBar>Condition<div class="close" /></TitleBar>
-		<content-frame>
-			<grid-box>
+		<div class="content-frame">
+			<div class="grid-box">
 				<text>Condition Type</text><SelectBox id="switch-condition-type" />
 				<text>Boolean</text><SelectBox id="switch-condition-boolean-value" />
 				<text>Number</text
@@ -27,10 +27,10 @@
 					type="variable"
 					filter="all"
 				/>
-			</grid-box>
+			</div>
 			<button id="switch-condition-confirm" name="confirm">Confirm</button>
 			<button id="switch-condition-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

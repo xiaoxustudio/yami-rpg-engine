@@ -1,7 +1,7 @@
 <template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiReference-properties-grid') || 'Reference Properties' }}</DetailSummary>
-		<detail-grid id="uiReference-properties-grid">
+		<div class="detail-grid" id="uiReference-properties-grid">
 			<text>{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</text
 			><CustomBox
 				id="uiReference-prefabId"
@@ -12,7 +12,7 @@
 				id="uiReference-synchronous"
 				class="standard large"
 			></CheckBox>
-		</detail-grid>
+		</div>
 	</DetailBox>
 </template>
 

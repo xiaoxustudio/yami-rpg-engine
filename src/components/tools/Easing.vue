@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame id="easing">
 		<TitleBar>Easing<div class="close" /></TitleBar>
-		<content-frame>
-			<field-set id="easing-list-fieldset" class="input pad">
-				<legend>List</legend>
+		<div class="content-frame">
+			<div class="field-set input pad" id="easing-list-fieldset">
+				<div class="legend">List</div>
 				<TreeList id="easing-list" padded />
-			</field-set>
-			<field-set id="easing-points-fieldset">
-				<legend>Points</legend>
-				<grid-box id="easing-points-grid">
+			</div>
+			<div class="field-set" id="easing-points-fieldset">
+				<div class="legend">Points</div>
+				<div class="grid-box" id="easing-points-grid">
 					<text>Mode</text><SelectBox id="easing-mode" />
 					<text id="easing-points-0">Point 1</text>
 					<NumberBox id="easing-points-0-x" min="0" max="1" step="0.01" decimals="2"
@@ -66,18 +66,18 @@
 					<NumberBox id="easing-points-7-y" min="-5" max="5" step="0.01" decimals="2"
 						><text class="label">Y</text></NumberBox
 					>
-				</grid-box>
-			</field-set>
-			<field-set id="easing-curve-fieldset">
-				<legend>Curve</legend>
+				</div>
+			</div>
+			<div class="field-set" id="easing-curve-fieldset">
+				<div class="legend">Curve</div>
 				<canvas id="easing-curve-canvas" width="0" height="0" tabindex="-1" />
 				<RadioBox name="easing-scale" value="1">100%</RadioBox>
 				<RadioBox name="easing-scale" value="0.5">50%</RadioBox>
-			</field-set>
-			<field-set id="easing-preview-fieldset">
-				<legend>Preview</legend>
+			</div>
+			<div class="field-set" id="easing-preview-fieldset">
+				<div class="legend">Preview</div>
 				<canvas id="easing-preview-canvas" width="0" height="0" />
-				<grid-box id="easing-preview-grid">
+				<div class="grid-box" id="easing-preview-grid">
 					<text>Reverse</text><SelectBox id="easing-preview-reverse" />
 					<text>Duration</text
 					><NumberBox
@@ -88,11 +88,11 @@
 					/>
 					<text>Wait</text
 					><NumberBox id="easing-preview-delay" min="0" max="5000" unit="ms" />
-				</grid-box>
-			</field-set>
+				</div>
+			</div>
 			<button id="easing-confirm" name="confirm">Confirm</button>
 			<button id="easing-cancel" name="cancel">Cancel</button>
-		</content-frame>
+		</div>
 	</WindowFrame>
 </template>
 

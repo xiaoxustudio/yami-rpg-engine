@@ -1,8 +1,8 @@
 <template>
 <WindowFrame id="setEvent">
 	<TitleBar>Set Event<div class="close" /></TitleBar>
-	<content-frame>
-		<grid-box>
+	<div class="content-frame">
+		<div class="grid-box">
 			<text>Operation</text><SelectBox id="setEvent-operation" />
 			<text>Variable</text
 			><CustomBox id="setEvent-variable" type="variable" filter="object" />
@@ -10,10 +10,10 @@
 			><CustomBox id="setEvent-eventId" type="file" filter="event" />
 			<text>Choice Index</text
 			><NumberVar id="setEvent-choiceIndex" min="0" max="255" />
-		</grid-box>
+		</div>
 		<button id="setEvent-confirm" name="confirm">Confirm</button>
 		<button id="setEvent-cancel" name="cancel">Cancel</button>
-	</content-frame>
+	</div>
 </WindowFrame>
 </template>
 
