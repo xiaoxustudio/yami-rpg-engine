@@ -6,7 +6,7 @@
 				<div class="legend">List</div>
 				<TreeList id="localization-list" padded />
 			</div>
-			<box id="localization-inspector" />
+			<div class="box" id="localization-inspector" />
 			<TextBox id="localization-searcher" name="search" />
 			<button id="localization-from-excel" name="from-excel">from-excel</button>
 			<button id="localization-to-excel" name="to-excel">to-excel</button>

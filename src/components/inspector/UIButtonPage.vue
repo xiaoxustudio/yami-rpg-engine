@@ -79,9 +79,9 @@
 			</div>
 			<text>{{ local.getLabel('uiButton-imageEffect') || 'Effect' }}</text><SelectBox id="uiButton-imageEffect"></SelectBox>
 			<text>{{ local.getLabel('uiButton-normalTint-box') || 'Normal Tint' }}</text>
-			<box
+			<div
 				id="uiButton-normalTint-box"
-				class="uiElement-grid-box with-4-columns"
+				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
 					id="uiButton-normalTint-0"
@@ -107,11 +107,11 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiButton-hoverTint-box') || 'Hover Tint' }}</text>
-			<box
+			<div
 				id="uiButton-hoverTint-box"
-				class="uiElement-grid-box with-4-columns"
+				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
 					id="uiButton-hoverTint-0"
@@ -137,11 +137,11 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiButton-activeTint-box') || 'Active Tint' }}</text>
-			<box
+			<div
 				id="uiButton-activeTint-box"
-				class="uiElement-grid-box with-4-columns"
+				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
 					id="uiButton-activeTint-0"
@@ -167,7 +167,7 @@
 					max="255"
 					step="5"
 				></NumberBox>
-			</box>
+			</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>

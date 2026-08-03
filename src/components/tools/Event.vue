@@ -11,11 +11,11 @@
 			</div>
 			<div class="field-set input pad" id="event-commands-fieldset">
 				<div class="legend">Content</div>
-				<box id="event-commands-gutter-background" />
+				<div class="box" id="event-commands-gutter-background" />
 				<CommandList id="event-commands" />
-				<box id="event-commands-gutter-outer">
-					<box id="event-commands-gutter-inner" />
-				</box>
+				<div class="box" id="event-commands-gutter-outer">
+					<div class="box" id="event-commands-gutter-inner" />
+				</div>
 			</div>
 			<SelectBox id="event-type" />
 			<button id="event-confirm" name="confirm">Confirm</button>

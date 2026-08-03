@@ -1,27 +1,27 @@
 <template>
 			<div class="page-frame" id="ui" value="ui">
-				<box id="ui-head">
-					<box id="ui-head-start">
-						<item id="ui-switch-settings" class="toolbar-item" value="settings" />
-					</box>
-					<box id="ui-head-center">
-						<item id="ui-element-image" class="toolbar-item" value="image" />
-						<item id="ui-element-text" class="toolbar-item" value="text" />
-						<item id="ui-element-textbox" class="toolbar-item" value="textbox" />
-						<item id="ui-element-dialogbox" class="toolbar-item" value="dialogbox" />
-						<item
+				<div class="box" id="ui-head">
+					<div class="box" id="ui-head-start">
+						<div class="item toolbar-item" id="ui-switch-settings" value="settings" />
+					</div>
+					<div class="box" id="ui-head-center">
+						<div class="item toolbar-item" id="ui-element-image" value="image" />
+						<div class="item toolbar-item" id="ui-element-text" value="text" />
+						<div class="item toolbar-item" id="ui-element-textbox" value="textbox" />
+						<div class="item toolbar-item" id="ui-element-dialogbox" value="dialogbox" />
+						<div
+							class="item toolbar-item"
 							id="ui-element-progressbar"
-							class="toolbar-item"
 							value="progressbar"
 						/>
-						<item id="ui-element-button" class="toolbar-item" value="button" />
-						<item id="ui-element-animation" class="toolbar-item" value="animation" />
-						<item id="ui-element-video" class="toolbar-item" value="video" />
-						<item id="ui-element-window" class="toolbar-item" value="window" />
-						<item id="ui-element-container" class="toolbar-item" value="container" />
-						<item id="ui-element-reference" class="toolbar-item" value="reference" />
-					</box>
-					<box id="ui-head-end">
+						<div class="item toolbar-item" id="ui-element-button" value="button" />
+						<div class="item toolbar-item" id="ui-element-animation" value="animation" />
+						<div class="item toolbar-item" id="ui-element-video" value="video" />
+						<div class="item toolbar-item" id="ui-element-window" value="window" />
+						<div class="item toolbar-item" id="ui-element-container" value="container" />
+						<div class="item toolbar-item" id="ui-element-reference" value="reference" />
+					</div>
+					<div class="box" id="ui-head-end">
 						<SliderBox
 							id="ui-zoom"
 							name="zoom"
@@ -30,13 +30,13 @@
 							hotkey="-/+"
 							active-wheel
 						/>
-					</box>
-				</box>
-				<box id="ui-body">
-					<box id="ui-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="ui-body">
+					<div class="box" id="ui-screen" tabindex="-1">
 						<MarqueeArea id="ui-marquee" />
-					</box>
-				</box>
+					</div>
+				</div>
 			</div>
 </template>
 

@@ -127,9 +127,11 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 
-	const background = document.createElement('box');
+	const background = document.createElement('div');
+	addClass(background, 'box');
 	addClass(background, 'color-box-background');
-	const foregroundEl = document.createElement('box');
+	const foregroundEl = document.createElement('div');
+	addClass(foregroundEl, 'box');
 	addClass(foregroundEl, 'color-box-foreground');
 
 	foreground = foregroundEl;

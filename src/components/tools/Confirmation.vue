@@ -5,11 +5,11 @@
 		</TitleBar>
 		<div class="content-frame">
 			<text id="confirmation-message" />
-			<box id="confirmation-button-frame">
+			<div class="box" id="confirmation-button-frame">
 				<button id="confirmation-button-0" />
 				<button id="confirmation-button-1" />
 				<button id="confirmation-button-2" />
-			</box>
+			</div>
 		</div>
 	</WindowFrame>
 </template>

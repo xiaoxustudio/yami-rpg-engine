@@ -1981,7 +1981,8 @@ PluginManager.list_updateToggleStyle = function (item) {
 
 // 列表 - 创建编辑图标
 PluginManager.list_createEditIcon = function (item) {
-	const box = document.createElement('box');
+	const box = document.createElement('div');
+	addClass(box, 'box');
 	box.textContent = '\uf044';
 	addClass(box, 'script-edit-button');
 	addClass(box, 'plugin-item-button');

@@ -1,5 +1,5 @@
 import { File } from '@/file/file-system-core.ts';
-import { addClass, removeClass } from '@/util/element-utils';
+import { addClass, hasClass, removeClass } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Inspector } from '@/inspector/inspector.ts';
@@ -41,7 +41,8 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	parse(script: any): any {
-		const box = document.createElement('box');
+		const box = document.createElement('div');
+		addClass(box, 'box');
 		box.textContent = '\uf044';
 		addClass(box, 'script-edit-button');
 		Command.invalid = false;
@@ -107,7 +108,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			element = null;
 		};
 		return function (event) {
-			if (event.button === 0 && event.target.tagName === 'BOX') {
+			if (event.button === 0 && hasClass(event.target, 'box')) {
 				element = event.target;
 				// 自动过滤重复侦听器，无需额外检查
 				window.addEventListener('pointerup', pointerup, once);

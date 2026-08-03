@@ -2,8 +2,8 @@
 		<WindowFrame id="project-settings">
 		<TitleBar>Project Settings<div class="close"></div></TitleBar>
 		<div class="content-frame">
-			<box id="project-page">
-				<box id="project-grid-box">
+			<div class="box" id="project-page">
+				<div class="box" id="project-grid-box">
 					<text id="config-window-summary" class="project-summary">Window</text>
 					<text class="project-label">Title</text
 					><TextBox id="config-window-title" />
@@ -233,8 +233,8 @@
 						step="0.01"
 						decimals="4"
 					/>
-				</box>
-			</box>
+				</div>
+			</div>
 			<button id="project-confirm" name="confirm">Confirm</button>
 			<button id="project-cancel" name="cancel">Cancel</button>
 		</div>

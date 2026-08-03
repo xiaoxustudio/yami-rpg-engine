@@ -6,10 +6,10 @@
 				<div class="legend">List</div>
 				<TreeList id="command-list" padded />
 			</div>
-			<box id="command-inspector">
+			<div class="box" id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-					<box id="command-overview" />
+					<div class="box" id="command-overview" />
 				</DetailBox>
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
@@ -18,7 +18,7 @@
 						><TextBox id="command-keywords" />
 					</div>
 				</DetailBox>
-			</box>
+			</div>
 			<button id="command-confirm" name="confirm">Confirm</button>
 			<button id="command-cancel" name="cancel">Cancel</button>
 			<button id="command-apply" name="apply">Apply</button>

@@ -5,10 +5,10 @@
 			<div class="close"></div>
 		</TitleBar>
 		<div class="content-frame">
-			<box id="imageClip-screen" tabindex="-1">
+			<div class="box" id="imageClip-screen" tabindex="-1">
 				<img id="imageClip-image" />
 				<MarqueeArea id="imageClip-marquee" />
-			</box>
+			</div>
 			<div class="flex-box" id="imageClip-flex">
 				<NumberBox id="imageClip-x" min="0" max="10000"
 					><text class="label">X:</text></NumberBox

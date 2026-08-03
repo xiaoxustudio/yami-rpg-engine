@@ -55,14 +55,14 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileAudio-progress-box') || 'Progress' }}</DetailSummary>
-		<box id="fileAudio-progress-box">
-			<box id="fileAudio-progress">
-				<box id="fileAudio-progress-filler"></box>
-			</box>
-			<box id="fileAudio-progress-pointer"></box>
+		<div class="box" id="fileAudio-progress-box">
+			<div class="box" id="fileAudio-progress">
+				<div class="box" id="fileAudio-progress-filler"></div>
+			</div>
+			<div class="box" id="fileAudio-progress-pointer"></div>
 			<text id="fileAudio-currentTime"></text>
 			<text id="fileAudio-pointerTime"></text>
-		</box>
+		</div>
 	</DetailBox>
 	<DetailBox id="fileAudio-frequency-detail" open>
 		<DetailSummary>{{ local.getLabel('fileAudio-frequency-canvas') || 'Frequency' }}</DetailSummary>

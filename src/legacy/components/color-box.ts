@@ -31,9 +31,11 @@ interface ColorBoxElement extends HTMLElement {
 export function attachColorBoxApi(el: HTMLElement): void {
 	const box = el as ColorBoxElement;
 
-	const background = document.createElement('box');
+	const background = document.createElement('div');
+	addClass(background, 'box');
 	addClass(background, 'color-box-background');
-	const foreground = document.createElement('box');
+	const foreground = document.createElement('div');
+	addClass(foreground, 'box');
 	addClass(foreground, 'color-box-foreground');
 
 	box.foreground = foreground;

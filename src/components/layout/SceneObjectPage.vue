@@ -1,8 +1,8 @@
 <template>
 			<div class="page-frame" id="scene-object" value="scene-object">
-				<box id="scene-list-head">
+				<div class="box" id="scene-list-head">
 					<TextBox id="scene-searcher" name="search" />
-				</box>
+				</div>
 				<TreeList id="scene-list" padded />
 			</div>
 </template>

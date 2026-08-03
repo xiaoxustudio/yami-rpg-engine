@@ -1,55 +1,55 @@
 <template>
 			<div class="page-frame" id="animation-timeline" value="animation-timeline">
-				<box id="animation-timeline-head">
-					<box id="animation-timeline-toolbar">
-						<item
+				<div class="box" id="animation-timeline-head">
+					<div class="box" id="animation-timeline-toolbar">
+						<div
+							class="item toolbar-item"
 							id="animation-timeline-previousKey"
-							class="toolbar-item"
 							value="previousKey"
 							hotkey="Z"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-timeline-previous"
-							class="toolbar-item"
 							value="previous"
 							hotkey="Q"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-timeline-play"
-							class="toolbar-item"
 							value="play"
 							hotkey="R"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-timeline-next"
-							class="toolbar-item"
 							value="next"
 							hotkey="E"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-timeline-nextKey"
-							class="toolbar-item"
 							value="nextKey"
 							hotkey="X"
 						/>
-						<item id="animation-timeline-loop" class="toolbar-item" value="loop" />
-					</box>
-					<box id="animation-timeline-ruler-outer">
-						<box id="animation-timeline-ruler-inner" />
-					</box>
-				</box>
+						<div class="item toolbar-item" id="animation-timeline-loop" value="loop" />
+					</div>
+					<div class="box" id="animation-timeline-ruler-outer">
+						<div class="box" id="animation-timeline-ruler-inner" />
+					</div>
+				</div>
 				<TreeList id="animation-layer-list" />
-				<box id="animation-timeline-list-outer" tabindex="0">
-					<box id="animation-timeline-list-inner" />
-					<box id="animation-timeline-cursor" />
-					<box id="animation-timeline-marquee" />
-					<box id="animation-timeline-marquee-shift" />
-				</box>
-				<box id="animation-timeline-pointer-area-outer">
-					<box id="animation-timeline-pointer-area-inner">
-						<box id="animation-timeline-pointer" />
-					</box>
-				</box>
+				<div class="box" id="animation-timeline-list-outer" tabindex="0">
+					<div class="box" id="animation-timeline-list-inner" />
+					<div class="box" id="animation-timeline-cursor" />
+					<div class="box" id="animation-timeline-marquee" />
+					<div class="box" id="animation-timeline-marquee-shift" />
+				</div>
+				<div class="box" id="animation-timeline-pointer-area-outer">
+					<div class="box" id="animation-timeline-pointer-area-inner">
+						<div class="box" id="animation-timeline-pointer" />
+					</div>
+				</div>
 			</div>
 </template>
 

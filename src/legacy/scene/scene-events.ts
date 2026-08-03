@@ -123,7 +123,7 @@ Scene.switchPointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'grid':
 						return Scene.switchGrid();
@@ -145,7 +145,7 @@ Scene.layerPointerdown = function (event) {
 		case 0:
 			if (!Scene.dragging) {
 				const element = event.target;
-				if (element.tagName === 'ITEM' && !hasClass(element, 'selected')) {
+				if (hasClass(element, 'item') && !hasClass(element, 'selected')) {
 					const value = element.getAttribute('value');
 					switch (value) {
 						case 'object':
@@ -167,7 +167,7 @@ Scene.brushPointerdown = function (event) {
 		case 0:
 			if (!Scene.dragging) {
 				const element = event.target;
-				if (element.tagName === 'ITEM' && !hasClass(element, 'selected')) {
+				if (hasClass(element, 'item') && !hasClass(element, 'selected')) {
 					Scene.switchBrush(element.getAttribute('value'));
 				}
 			}

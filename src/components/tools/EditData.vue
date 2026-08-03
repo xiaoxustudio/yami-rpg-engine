@@ -6,7 +6,7 @@
 			<div class="close" />
 		</TitleBar>
 		<div class="content-frame">
-			<box id="edit-data-current"> </box>
+			<div class="box" id="edit-data-current"> </div>
 			<button id="edit-data-confirm" name="confirm">Confirm</button>
 			<button id="edit-data-cancel" name="cancel">Cancel</button>
 		</div>

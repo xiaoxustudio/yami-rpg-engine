@@ -86,7 +86,8 @@ Home.parseRecentProjects = function () {
 			show(node);
 		}
 
-		const eBar = document.createElement('box');
+		const eBar = document.createElement('div');
+		addClass(eBar, 'box');
 		addClass(eBar, 'home-recent-bar');
 		node.appendChild(eBar);
 
@@ -112,7 +113,8 @@ Home.parseRecentProjects = function () {
 		ePath.textContent = Path.normalize(path);
 		node.appendChild(ePath);
 
-		const eStat = document.createElement('box');
+		const eStat = document.createElement('div');
+		addClass(eStat, 'box');
 		addClass(eStat, 'home-recent-stat');
 		node.appendChild(eStat);
 

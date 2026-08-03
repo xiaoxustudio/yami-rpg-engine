@@ -198,7 +198,8 @@ const addCloseButton = (): void => {
 	};
 	onElement(el, 'keydown', keydown);
 	onElement(el, 'input', input);
-	const closeButton = document.createElement('box');
+	const closeButton = document.createElement('div');
+	addClass(closeButton, 'box');
 	addClass(closeButton, 'close-button');
 	closeButton.textContent = '\u2716';
 	onElement(closeButton, 'pointerdown', closeButtonPointerdown);

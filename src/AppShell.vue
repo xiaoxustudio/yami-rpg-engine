@@ -1,21 +1,21 @@
 <template>
-	<box id="title">
-		<box id="menu">
-			<item id="menu-file" class="menu-item" value="file">File</item>
-			<item id="menu-edit" class="menu-item" value="edit">Edit</item>
-			<item id="menu-view" class="menu-item" value="view">View</item>
-			<item id="menu-window" class="menu-item" value="window">Window</item>
-			<item id="menu-help" class="menu-item" value="help">Help</item>
-			<item id="menu-open-yami" class="menu-item" value="openYami">Open Yami</item>
-		</box>
+	<div class="box" id="title">
+		<div class="box" id="menu">
+			<div class="item menu-item" id="menu-file" value="file">File</div>
+			<div class="item menu-item" id="menu-edit" value="edit">Edit</div>
+			<div class="item menu-item" id="menu-view" value="view">View</div>
+			<div class="item menu-item" id="menu-window" value="window">Window</div>
+			<div class="item menu-item" id="menu-help" value="help">Help</div>
+			<div class="item menu-item" id="menu-open-yami" value="openYami">Open Yami</div>
+		</div>
 		<TabBar id="title-tabBar" />
-		<box id="title-buttons">
-			<box id="title-play" hotkey="F4">&#xf04b;</box>
+		<div class="box" id="title-buttons">
+			<div class="box" id="title-play" hotkey="F4">&#xf04b;</div>
 			<div class="minimize" id="title-minimize"></div>
 			<div class="maximize" id="title-maximize"></div>
 			<div class="close" id="title-close"></div>
-		</box>
-	</box>
+		</div>
+	</div>
 	<LayoutPanel />
 	<Teleport to="#project-browser">
 		<FileBrowser />

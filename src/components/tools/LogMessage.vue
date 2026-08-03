@@ -1,5 +1,5 @@
 <template>
-	<box id="log-message" />
+	<div class="box" id="log-message" />
 </template>
 
 <script setup lang="ts">

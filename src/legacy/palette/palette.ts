@@ -4,6 +4,7 @@ import {
 	addScrollbars,
 	clear,
 	focus,
+	hasClass,
 	hide,
 	off,
 	on,
@@ -1586,7 +1587,7 @@ Palette.toolbarPointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'scroll':
 						return Palette.switchScroll();

@@ -1059,7 +1059,7 @@ Menubar.pointerdown = function (event) {
 		case 0:
 		case -1: {
 			const target = event.target;
-			if (target.tagName === 'ITEM' && !hasClass(target, 'selected')) {
+			if (hasClass(target, 'item') && !hasClass(target, 'selected')) {
 				switch (target.getAttribute('value')) {
 					case 'file':
 						return Menubar.popupFileMenu(target);
@@ -1085,7 +1085,7 @@ Menubar.pointerup = function (event) {
 	switch (event.button) {
 		case 0: {
 			const target = event.target;
-			if (target.tagName === 'ITEM' && hasClass(target, 'selected')) {
+			if (hasClass(target, 'item') && hasClass(target, 'selected')) {
 				event.stopPropagation();
 			}
 			break;
@@ -1096,7 +1096,7 @@ Menubar.pointerup = function (event) {
 // 指针进入事件
 Menubar.pointerover = function (event) {
 	const element = event.target;
-	if (element.tagName === 'ITEM') {
+	if (hasClass(element, 'item')) {
 		const parent = element.parentNode;
 		const selected = parent.querySelector('.selected');
 		if (selected !== null && selected !== element) {

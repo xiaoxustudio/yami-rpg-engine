@@ -1,22 +1,22 @@
 <template>
-	<box id="palette-head">
-		<box id="palette-head-start">
-			<item id="palette-scroll" class="toolbar-item" value="scroll"></item>
-			<item
+	<div class="box" id="palette-head">
+		<div class="box" id="palette-head-start">
+			<div id="palette-scroll" class="item toolbar-item" value="scroll"></div>
+			<div
 				id="palette-priority"
-				class="toolbar-item"
+				class="item toolbar-item"
 				value="priority"
-			></item>
-			<item id="palette-tag" class="toolbar-item" value="tag"></item>
-			<item id="palette-terrain" class="toolbar-item" value="terrain"></item>
-			<item id="palette-edit" class="toolbar-item" value="edit"></item>
-			<item
+			></div>
+			<div id="palette-tag" class="item toolbar-item" value="tag"></div>
+			<div id="palette-terrain" class="item toolbar-item" value="terrain"></div>
+			<div id="palette-edit" class="item toolbar-item" value="edit"></div>
+			<div
 				id="palette-flip"
-				class="toolbar-item"
+				class="item toolbar-item"
 				value="flip"
 				hotkey="F"
-			></item>
-		</box>
+			></div>
+		</div>
 		<SliderBox
 			id="palette-zoom"
 			name="zoom"
@@ -24,16 +24,16 @@
 			max="4"
 			hotkey="-/+"
 		/>
-	</box>
-	<box id="palette-body">
-		<box id="palette-frame">
+	</div>
+	<div class="box" id="palette-body">
+		<div class="box" id="palette-frame">
 			<canvas id="palette-canvas" width="0" height="0"></canvas>
-			<box id="palette-screen" tabindex="-1">
+			<div class="box" id="palette-screen" tabindex="-1">
 				<MarqueeArea id="palette-marquee"></MarqueeArea>
-			</box>
-		</box>
+			</div>
+		</div>
 		<text id="palette-info"></text>
-	</box>
+	</div>
 	<DetailBox id="fileTileset-general-detail" open>
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">

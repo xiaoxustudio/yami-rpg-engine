@@ -430,7 +430,7 @@ export const Resources = new (class {
 		const get = Local.createGetter('confirmation');
 
 		const domPase = new DOMParser().parseFromString(
-			`<box id="resource-item-${value}" class='resource-item' style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
+			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
           <text style="flex: 0 0 auto;">${value}:&emsp;</text>
           <div class="text-box" style="flex: 1;"><input class="text-box-input" type="text" readonly /></div>
@@ -448,7 +448,7 @@ export const Resources = new (class {
           <text id='resource-item-${value}-speed' style="font-size: 12px; color: #888;">速度: 0 KB/s</text>
         </div>
         <text id='resource-item-${value}-size' style="font-size: 12px; color: #888; margin-top: 4px;">大小: 获取中...</text>
-        </box>`,
+        </div>`,
 			'text/html'
 		);
 		const boxDom = domPase.body.firstChild!;

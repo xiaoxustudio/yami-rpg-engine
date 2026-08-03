@@ -3,9 +3,9 @@
 		<TitleBar>Tile Node<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
-			<box id="autoTile-selectNode-screen">
+			<div class="box" id="autoTile-selectNode-screen">
 				<MarqueeArea id="autoTile-selectNode-marquee" />
-			</box>
+			</div>
 		</div>
 	</WindowFrame>
 </template>

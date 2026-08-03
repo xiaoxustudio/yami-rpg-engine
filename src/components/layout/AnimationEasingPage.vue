@@ -1,9 +1,9 @@
 <template>
 			<div class="page-frame" id="animation-easing" value="animation-easing">
-				<box id="animation-easing-head">
-					<item id="animation-easing-settings" class="toolbar-item" value="bezier" />
+				<div class="box" id="animation-easing-head">
+					<div class="item toolbar-item" id="animation-easing-settings" value="bezier" />
 					<SelectBox id="animation-easing-id" />
-				</box>
+				</div>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
 			</div>
 </template>

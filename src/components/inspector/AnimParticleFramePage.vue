@@ -3,9 +3,9 @@
 		<DetailSummary>{{ local.getLabel('animParticleFrame-properties-grid') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animParticleFrame-properties-grid">
 			<text>{{ local.getLabel('animParticleFrame-position-box') || 'Position' }}</text>
-			<box
+			<div
 				id="animParticleFrame-position-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="animParticleFrame-x"
@@ -21,11 +21,11 @@
 					decimals="4"
 					unit="px"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('animParticleFrame-rotation-box') || 'Rotation' }}</text>
-			<box
+			<div
 				id="animParticleFrame-rotation-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="animParticleFrame-rotation"
@@ -34,11 +34,11 @@
 					decimals="4"
 					unit="deg"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('animParticleFrame-scale-box') || 'Scale' }}</text>
-			<box
+			<div
 				id="animParticleFrame-scale-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="animParticleFrame-scaleX"
@@ -54,11 +54,11 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('animParticleFrame-opacity-box') || 'Opacity' }}</text>
-			<box
+			<div
 				id="animParticleFrame-opacity-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="animParticleFrame-opacity"
@@ -67,7 +67,7 @@
 					step="0.05"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</text
 			><NumberBox
 				id="animParticleFrame-scale"

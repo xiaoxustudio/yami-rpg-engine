@@ -1,34 +1,34 @@
 <template>
 			<div class="page-frame" id="particle" value="particle">
-				<box id="particle-head">
-					<box id="particle-head-start">
-						<item
+				<div class="box" id="particle-head">
+					<div class="box" id="particle-head-start">
+						<div
+							class="item toolbar-item"
 							id="particle-view-wireframe"
-							class="toolbar-item"
 							value="wireframe"
 						/>
-						<item id="particle-view-anchor" class="toolbar-item" value="anchor" />
-					</box>
-					<box id="particle-head-center">
-						<box id="particle-control">
-							<item
+						<div class="item toolbar-item" id="particle-view-anchor" value="anchor" />
+					</div>
+					<div class="box" id="particle-head-center">
+						<div class="box" id="particle-control">
+							<div
+								class="item toolbar-item"
 								id="particle-control-restart"
-								class="toolbar-item"
 								value="restart"
 								hotkey="R"
 							/>
-							<item
+							<div
+								class="item toolbar-item"
 								id="particle-control-pause"
-								class="toolbar-item"
 								value="pause"
 								hotkey="P"
 							/>
-						</box>
+						</div>
 						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"
 							><text class="label">speed:</text></NumberBox
 						>
-					</box>
-					<box id="particle-head-end">
+					</div>
+					<div class="box" id="particle-head-end">
 						<SliderBox
 							id="particle-zoom"
 							name="zoom"
@@ -37,14 +37,14 @@
 							hotkey="-/+"
 							active-wheel
 						/>
-					</box>
-				</box>
-				<box id="particle-body">
-					<box id="particle-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="particle-body">
+					<div class="box" id="particle-screen" tabindex="-1">
 						<MarqueeArea id="particle-marquee" />
-					</box>
+					</div>
 					<text id="particle-info" />
-				</box>
+				</div>
 			</div>
 </template>
 

@@ -224,7 +224,8 @@ export function attachTextBoxApi(el: HTMLElement): void {
 		};
 		on(el, 'keydown', keydown);
 		on(el, 'input', input);
-		const closeButton = document.createElement('box');
+		const closeButton = document.createElement('div');
+		addClass(closeButton, 'box');
 		addClass(closeButton, 'close-button');
 		closeButton.textContent = '\u2716';
 		on(closeButton, 'pointerdown', closeButtonPointerdown as (event: EditorEvent) => void);

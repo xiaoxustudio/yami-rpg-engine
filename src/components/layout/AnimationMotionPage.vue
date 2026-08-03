@@ -1,8 +1,8 @@
 <template>
 			<div class="page-frame" id="animation-motion" value="animation-motion">
-				<box id="animation-list-head">
+				<div class="box" id="animation-list-head">
 					<TextBox id="animation-searcher" name="search" />
-				</box>
+				</div>
 				<TreeList id="animation-list" padded />
 			</div>
 </template>

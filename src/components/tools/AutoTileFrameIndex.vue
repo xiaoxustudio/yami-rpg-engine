@@ -2,14 +2,14 @@
 	<WindowFrame id="autoTile-frameIndex">
 		<TitleBar>Tile Index<div class="close" /></TitleBar>
 		<div class="content-frame">
-			<box id="autoTile-frameIndex-screen">
-				<box id="autoTile-frameIndex-image-clip">
+			<div class="box" id="autoTile-frameIndex-screen">
+				<div class="box" id="autoTile-frameIndex-image-clip">
 					<img id="autoTile-frameIndex-image" />
-					<box id="autoTile-frameIndex-mask" />
-				</box>
+					<div class="box" id="autoTile-frameIndex-mask" />
+				</div>
 				<MarqueeArea id="autoTile-frameIndex-marquee" />
 				<text id="autoTile-frameIndex-info" />
-			</box>
+			</div>
 		</div>
 	</WindowFrame>
 </template>

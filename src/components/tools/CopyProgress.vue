@@ -4,9 +4,9 @@
 		<div class="content-frame">
 			<div class="flex-box" id="copyProgress-flex">
 				<text>Copying Files...</text>
-				<box id="copyProgress-box">
-					<box id="copyProgress-bar" />
-				</box>
+				<div class="box" id="copyProgress-box">
+					<div class="box" id="copyProgress-bar" />
+				</div>
 				<text id="copyProgress-info" />
 			</div>
 		</div>

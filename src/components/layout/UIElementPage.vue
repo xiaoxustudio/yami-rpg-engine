@@ -1,8 +1,8 @@
 <template>
 			<div class="page-frame" id="ui-element" value="ui-element">
-				<box id="ui-list-head">
+				<div class="box" id="ui-list-head">
 					<TextBox id="ui-searcher" name="search" />
-				</box>
+				</div>
 				<TreeList id="ui-list" padded />
 			</div>
 </template>

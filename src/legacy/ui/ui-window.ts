@@ -1995,7 +1995,7 @@ UI.switchPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'settings':
 						return UI.switchSettings();
@@ -2010,7 +2010,7 @@ UI.shortcutPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				UI.create(element.getAttribute('value'), 0, 0);
 			}
 			break;

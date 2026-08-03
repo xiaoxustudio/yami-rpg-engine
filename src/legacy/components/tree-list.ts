@@ -1407,7 +1407,8 @@ export class TreeList extends HTMLElement {
 	}
 
 	static padding = (function IIFE() {
-		const padding = document.createElement('box');
+		const padding = document.createElement('div');
+		addClass(padding, 'box');
 		padding.style.display = 'block';
 		padding.style.width = '1px';
 		return padding;

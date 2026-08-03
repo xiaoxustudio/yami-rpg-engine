@@ -1,32 +1,32 @@
 <template>
 			<div class="page-frame" id="animation" value="animation">
-				<box id="animation-head">
-					<box id="animation-head-start">
-						<item id="animation-switch-mark" class="toolbar-item" value="mark" />
-						<item
+				<div class="box" id="animation-head">
+					<div class="box" id="animation-head-start">
+						<div class="item toolbar-item" id="animation-switch-mark" value="mark" />
+						<div
+							class="item toolbar-item"
 							id="animation-switch-onionskin"
-							class="toolbar-item"
 							value="onionskin"
 							hotkey="O"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-switch-mirror"
-							class="toolbar-item"
 							value="mirror"
 							hotkey="M"
 						/>
-						<item
+						<div
+							class="item toolbar-item"
 							id="animation-switch-settings"
-							class="toolbar-item"
 							value="settings"
 						/>
-					</box>
-					<box id="animation-head-center">
+					</div>
+					<div class="box" id="animation-head-center">
 						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"
 							><text class="label">speed:</text></NumberBox
 						>
-					</box>
-					<box id="animation-head-end">
+					</div>
+					<div class="box" id="animation-head-end">
 						<SliderBox
 							id="animation-zoom"
 							name="zoom-0-6"
@@ -35,14 +35,14 @@
 							hotkey="-/+"
 							active-wheel
 						/>
-					</box>
-				</box>
-				<box id="animation-body">
-					<box id="animation-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="animation-body">
+					<div class="box" id="animation-screen" tabindex="-1">
 						<MarqueeArea id="animation-marquee" />
-					</box>
-					<box id="animation-dirList" />
-				</box>
+					</div>
+					<div class="box" id="animation-dirList" />
+				</div>
 			</div>
 </template>
 

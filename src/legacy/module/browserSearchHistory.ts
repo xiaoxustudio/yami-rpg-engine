@@ -1,4 +1,5 @@
 import { SettingConfig } from './settingconfig';
+import { addClass } from '@/util/element-utils';
 export const BrowserSearchHistory: any = {
 	histories: [],
 	input: null,
@@ -176,8 +177,9 @@ BrowserSearchHistory.createItem = function (input: any, keyword: any, styles: an
 	});
 	const text = document.createElement('span');
 	text.textContent = keyword;
-	const deleteButton = document.createElement('box');
-	deleteButton.className = 'close-button browser-search-delete-button';
+	const deleteButton = document.createElement('div');
+	addClass(deleteButton, 'box');
+	deleteButton.className = 'box close-button browser-search-delete-button';
 	deleteButton.textContent = '\u2716';
 	Object.assign(deleteButton.style, {
 		top: '50%',

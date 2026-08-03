@@ -7,7 +7,7 @@
 			<div class="close" />
 		</TitleBar>
 		<div class="content-frame">
-			<box id="script-script"> </box>
+			<div class="box" id="script-script"> </div>
 			<button id="script-confirm" name="confirm">Confirm</button>
 			<button id="script-cancel" name="cancel">Cancel</button>
 		</div>

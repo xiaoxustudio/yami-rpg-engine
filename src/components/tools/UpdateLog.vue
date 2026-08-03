@@ -3,14 +3,14 @@
 	<WindowFrame id="update-log">
 		<TitleBar>Update Log<div class="close" /></TitleBar>
 		<div class="content-frame">
-			<box id="update-log-tabs">
+			<div class="box" id="update-log-tabs">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>
 				<button id="update-log-tab-community" class="update-log-tab">Community</button>
 				<button id="update-log-tab-donation" class="update-log-tab">捐赠名单</button>
-			</box>
-			<box id="update-log-container">
-				<box id="update-log-content" />
-			</box>
+			</div>
+			<div class="box" id="update-log-container">
+				<div class="box" id="update-log-content" />
+			</div>
 		</div>
 	</WindowFrame>
 </template>

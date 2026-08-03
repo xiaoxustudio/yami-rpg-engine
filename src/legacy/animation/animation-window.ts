@@ -2043,7 +2043,8 @@ Animation.updateRuler = function () {
 				const start = innerRuler.start ?? 0;
 				let number = (start + i) * 5;
 				while (i < length) {
-					const node = document.createElement('box');
+					const node = document.createElement('div');
+					addClass(node, 'box');
 					addClass(node, 'timeline-number');
 					node.textContent = number.toString();
 					innerRuler.appendChild(node);
@@ -3156,7 +3157,8 @@ Animation.createTimelines = (function IIFE() {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
-				timeline = document.createElement('box');
+				timeline = document.createElement('div');
+				addClass(timeline, 'box');
 				addClass(timeline, 'timeline-frames');
 				timeline.layer = layer;
 				Object.defineProperty(layer, 'timeline', {
@@ -3175,7 +3177,8 @@ Animation.createTimelines = (function IIFE() {
 				const easing = !!frame.easingId;
 				let { key } = frame;
 				if (key === undefined) {
-					key = document.createElement('box');
+					key = document.createElement('div');
+					addClass(key, 'box');
 					addClass(key, 'timeline-key');
 					Object.defineProperty(frame, 'key', {
 						configurable: true,
@@ -4185,7 +4188,7 @@ Animation.switchPointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'mark':
 						return Animation.switchMark();
@@ -4910,7 +4913,7 @@ Animation.timelineToolbarPointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'previousKey':
 						return Animation.previousKeyFrame();

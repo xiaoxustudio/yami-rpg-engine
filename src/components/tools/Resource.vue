@@ -4,8 +4,8 @@
 			<div class="close"></div>
 		</TitleBar>
 		<div class="content-frame">
-			<box style="display: flex; flex-direction: column; height: 100%">
-				<box
+			<div class="box" style="display: flex; flex-direction: column; height: 100%">
+				<div class="box"
 					id="resource-node-info"
 					style="
 						padding: 12px;
@@ -33,13 +33,13 @@
 					>
 						Ping: --
 					</div>
-				</box>
-				<box id="resource-content" style="flex: 1; overflow: auto" />
+				</div>
+				<div class="box" id="resource-content" style="flex: 1; overflow: auto" />
 				<div class="grid-box" style="flex-shrink: 0">
 					<button id="resource-check-version">check version</button>
 					<button id="resource-open-dir">open dir</button>
 				</div>
-			</box>
+			</div>
 		</div>
 	</WindowFrame>
 </template>

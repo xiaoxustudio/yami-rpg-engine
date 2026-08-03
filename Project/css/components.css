@@ -1051,6 +1051,7 @@ slider-filler {
 }
 
 .nav-text {
+	display: inline;
 	pointer-events: none;
 }
 

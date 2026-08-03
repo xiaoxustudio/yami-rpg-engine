@@ -1,7 +1,7 @@
 <template>
 	<div class="file-head-pane" ref="el">
 		<div class="file-head-address" ref="addressEl"></div>
-		<item ref="backEl" class="upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</item>
+		<div ref="backEl" class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</div>
 		<TextBox ref="searcherEl" class="file-head-searcher" name="search"></TextBox>
 		<SliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></SliderBox>
 	</div>

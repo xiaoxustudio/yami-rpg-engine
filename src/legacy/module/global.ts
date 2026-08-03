@@ -573,7 +573,8 @@ UpdateLog.displayDonationList = function (this: any) {
 	addClass(donationTitle, 'update-log-title');
 	this.content.appendChild(donationTitle);
 
-	const donationList = document.createElement('box');
+	const donationList = document.createElement('div');
+	addClass(donationList, 'box');
 	addClass(donationList, 'donation-list');
 
 	for (const donor of donationData) {

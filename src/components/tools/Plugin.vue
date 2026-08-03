@@ -6,10 +6,10 @@
 				<div class="legend">List</div>
 				<TreeList id="plugin-list" padded />
 			</div>
-			<box id="plugin-inspector">
+			<div class="box" id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-					<box id="plugin-overview" />
+					<div class="box" id="plugin-overview" />
 				</DetailBox>
 				<ParameterPane id="plugin-parameter-pane">
 				<DetailBox id="plugin-parameter-detail" open>
@@ -17,7 +17,7 @@
 					<div class="detail-grid" id="plugin-parameter-grid" />
 				</DetailBox>
 			</ParameterPane>
-			</box>
+			</div>
 			<button id="plugin-confirm" name="confirm">Confirm</button>
 			<button id="plugin-cancel" name="cancel">Cancel</button>
 			<button id="plugin-apply" name="apply">Apply</button>

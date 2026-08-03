@@ -3,9 +3,9 @@
 		<TitleBar>Color Picker<div class="close" /></TitleBar>
 		<div class="content-frame">
 			<canvas id="color-palette-canvas" width="256" height="194" />
-			<box id="color-palette-frame">
-				<box id="color-palette-cursor" />
-			</box>
+			<div class="box" id="color-palette-frame">
+				<div class="box" id="color-palette-cursor" />
+			</div>
 			<div class="grid-box" id="color-index-grid">
 				<RadioBox name="color-index" value="0" />
 				<RadioBox name="color-index" value="1" />
@@ -25,12 +25,12 @@
 				<RadioBox name="color-index" value="15" />
 			</div>
 			<canvas id="color-pillar-canvas" width="20" height="256" />
-			<box id="color-pillar-frame">
-				<box id="color-pillar-cursor" />
-			</box>
-			<box id="color-viewer-frame">
-				<box id="color-viewer" />
-			</box>
+			<div class="box" id="color-pillar-frame">
+				<div class="box" id="color-pillar-cursor" />
+			</div>
+			<div class="box" id="color-viewer-frame">
+				<div class="box" id="color-viewer" />
+			</div>
 			<div class="grid-box" id="color-rgba-grid">
 				<text>#</text><TextBox id="color-hex" /> <text>R</text
 				><NumberBox id="color-r" min="0" max="255" /> <text>G</text

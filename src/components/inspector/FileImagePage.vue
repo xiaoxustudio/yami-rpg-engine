@@ -9,9 +9,9 @@
 	</DetailBox>
 	<DetailBox id="fileImage-image-detail" open>
 		<DetailSummary>{{ local.getLabel('fileImage-image-viewer') || 'Image' }}</DetailSummary>
-		<box id="fileImage-image-viewer">
+		<div class="box" id="fileImage-image-viewer">
 			<img id="fileImage-image" />
-		</box>
+		</div>
 	</DetailBox>
 </template>
 

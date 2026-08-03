@@ -8,7 +8,7 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScript-overview') || 'Overview' }}</DetailSummary>
-		<box id="fileScript-overview"></box>
+		<div class="box" id="fileScript-overview"></div>
 	</DetailBox>
 </template>
 

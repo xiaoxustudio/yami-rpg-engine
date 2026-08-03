@@ -2,10 +2,10 @@
 		<WindowFrame id="qr-code">
 		<TitleBar>本地服务预览<div class="close"></div></TitleBar>
 		<div class="content-frame">
-			<box>
-				<box id="qr-img-container"><img id="qr-code-img" /></box><br />
-				<box id="qr-code-content" />
-			</box>
+			<div class="box">
+				<div class="box" id="qr-img-container"><img id="qr-code-img" /></div><br />
+				<div class="box" id="qr-code-content" />
+			</div>
 			<button id="qr-start-button" name="start-qr-code" />
 			<button id="qr-close-button" name="close-qr-code" />
 			<button id="qr-update-button" name="update-qr-code" />

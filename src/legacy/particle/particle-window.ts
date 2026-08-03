@@ -3,6 +3,7 @@ import {
 	addClass,
 	addSetScrollMethod,
 	dispatchChangeEvent,
+	hasClass,
 	hide,
 	on,
 	read,
@@ -1330,7 +1331,7 @@ Particle.viewPointerdown = function (event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'wireframe':
 						return Particle.switchWireframe!();
@@ -1347,7 +1348,7 @@ Particle.controlPointerdown = function (event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
-			if (element.tagName === 'ITEM') {
+			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'restart':
 						return Particle.restart!();

@@ -1,24 +1,24 @@
 <template>
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
-			<box id="home-content">
+			<div class="box" id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
 				<text id="home-version"></text>
-				<box id="home-start-list">
-					<item id="home-start-label" class="home-list-label">Start</item>
-					<item id="home-start-new" class="home-start-item" value="new">New Project</item>
-					<item id="home-start-open" class="home-start-item" value="open">Open Project</item>
-				</box>
-				<box id="home-recent-list" tabindex="-1">
-					<item id="home-recent-label" class="home-list-label">Recent</item>
-					<item class="home-recent-item" value="0"></item>
-					<item class="home-recent-item" value="1"></item>
-					<item class="home-recent-item" value="2"></item>
-				</box>
-			</box>
+				<div class="box" id="home-start-list">
+					<div class="item home-list-label" id="home-start-label">Start</div>
+					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
+					<div class="item home-start-item" id="home-start-open" value="open">Open Project</div>
+				</div>
+				<div class="box" id="home-recent-list" tabindex="-1">
+					<div class="item home-list-label" id="home-recent-label">Recent</div>
+					<div class="item home-recent-item" value="0"></div>
+					<div class="item home-recent-item" value="1"></div>
+					<div class="item home-recent-item" value="2"></div>
+				</div>
+			</div>
 		</div>
 		<div class="page-frame" value="directory">
-			<box id="layout-content">
+			<div class="box" id="layout-content">
 				<NavBar id="layout-nav">
 			<div class="nav-item" value="project"><div class="nav-icon">&#xf07b;</div><div class="nav-text" id="nav-project">Project</div></div>
 			<div class="nav-item" value="scene"><div class="nav-icon">&#xf26c;</div><div class="nav-text" id="nav-scene">Scene</div></div>
@@ -38,168 +38,168 @@
 				<div class="file-browser" id="project-browser"></div>
 			</div>
 			<div class="page-frame" id="scene" value="scene">
-				<box id="scene-head">
-					<box id="scene-head-start">
-						<item id="scene-switch-grid" class="toolbar-item" value="grid"></item>
-						<item id="scene-switch-light" class="toolbar-item" value="light"></item>
-						<item id="scene-switch-animation" class="toolbar-item" value="animation"></item>
-						<item id="scene-switch-settings" class="toolbar-item" value="settings" hotkey="Alt+S"></item>
-					</box>
-					<box id="scene-head-center">
-						<box id="scene-layer">
-							<item id="scene-layer-object" class="toolbar-item" value="object" hotkey="`"></item>
-							<item id="scene-layer-tilemap-1" class="toolbar-item hidden" value="1" hotkey="1"></item>
-							<item id="scene-layer-tilemap-2" class="toolbar-item hidden" value="2" hotkey="2"></item>
-							<item id="scene-layer-tilemap-3" class="toolbar-item hidden" value="3" hotkey="3"></item>
-							<item id="scene-layer-tilemap-4" class="toolbar-item hidden" value="4" hotkey="4"></item>
-							<item id="scene-layer-tilemap-5" class="toolbar-item hidden" value="5" hotkey="5"></item>
-							<item id="scene-layer-tilemap-6" class="toolbar-item hidden" value="6" hotkey="6"></item>
-							<item id="scene-layer-terrain" class="toolbar-item" value="terrain" hotkey="`"></item>
-						</box>
-						<box id="scene-brush">
-							<item id="scene-brush-eraser" class="toolbar-item" value="eraser" hotkey="Q"></item>
-							<item id="scene-brush-pencil" class="toolbar-item" value="pencil" hotkey="E"></item>
-							<item id="scene-brush-rect" class="toolbar-item" value="rect" hotkey="R"></item>
-							<item id="scene-brush-oval" class="toolbar-item" value="oval" hotkey="T"></item>
-							<item id="scene-brush-fill" class="toolbar-item" value="fill" hotkey="Y"></item>
-						</box>
-					</box>
-					<box id="scene-head-end">
+				<div class="box" id="scene-head">
+					<div class="box" id="scene-head-start">
+						<div class="item toolbar-item" id="scene-switch-grid" value="grid"></div>
+						<div class="item toolbar-item" id="scene-switch-light" value="light"></div>
+						<div class="item toolbar-item" id="scene-switch-animation" value="animation"></div>
+						<div class="item toolbar-item" id="scene-switch-settings" value="settings" hotkey="Alt+S"></div>
+					</div>
+					<div class="box" id="scene-head-center">
+						<div class="box" id="scene-layer">
+							<div class="item toolbar-item" id="scene-layer-object" value="object" hotkey="`"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-1" value="1" hotkey="1"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-2" value="2" hotkey="2"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-3" value="3" hotkey="3"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-4" value="4" hotkey="4"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-5" value="5" hotkey="5"></div>
+							<div class="item toolbar-item hidden" id="scene-layer-tilemap-6" value="6" hotkey="6"></div>
+							<div class="item toolbar-item" id="scene-layer-terrain" value="terrain" hotkey="`"></div>
+						</div>
+						<div class="box" id="scene-brush">
+							<div class="item toolbar-item" id="scene-brush-eraser" value="eraser" hotkey="Q"></div>
+							<div class="item toolbar-item" id="scene-brush-pencil" value="pencil" hotkey="E"></div>
+							<div class="item toolbar-item" id="scene-brush-rect" value="rect" hotkey="R"></div>
+							<div class="item toolbar-item" id="scene-brush-oval" value="oval" hotkey="T"></div>
+							<div class="item toolbar-item" id="scene-brush-fill" value="fill" hotkey="Y"></div>
+						</div>
+					</div>
+					<div class="box" id="scene-head-end">
 						<SliderBox id="scene-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
-					</box>
-				</box>
-				<box id="scene-body">
-					<box id="scene-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="scene-body">
+					<div class="box" id="scene-screen" tabindex="-1">
 						<MarqueeArea id="scene-marquee"></MarqueeArea>
-					</box>
+					</div>
 					<text id="scene-info"></text>
-				</box>
+				</div>
 			</div>
 			<div class="page-frame" id="scene-object" value="scene-object">
-				<box id="scene-list-head">
+				<div class="box" id="scene-list-head">
 					<TextBox id="scene-searcher" name="search"></TextBox>
-				</box>
+				</div>
 				<TreeList id="scene-list" padded></TreeList>
 			</div>
 			<div class="page-frame" id="ui" value="ui">
-				<box id="ui-head">
-					<box id="ui-head-start">
-						<item id="ui-switch-settings" class="toolbar-item" value="settings"></item>
-					</box>
-					<box id="ui-head-center">
-						<item id="ui-element-image" class="toolbar-item" value="image"></item>
-						<item id="ui-element-text" class="toolbar-item" value="text"></item>
-						<item id="ui-element-textbox" class="toolbar-item" value="textbox"></item>
-						<item id="ui-element-dialogbox" class="toolbar-item" value="dialogbox"></item>
-						<item id="ui-element-progressbar" class="toolbar-item" value="progressbar"></item>
-						<item id="ui-element-button" class="toolbar-item" value="button"></item>
-						<item id="ui-element-animation" class="toolbar-item" value="animation"></item>
-						<item id="ui-element-video" class="toolbar-item" value="video"></item>
-						<item id="ui-element-window" class="toolbar-item" value="window"></item>
-						<item id="ui-element-container" class="toolbar-item" value="container"></item>
-						<item id="ui-element-reference" class="toolbar-item" value="reference"></item>
-					</box>
-					<box id="ui-head-end">
+				<div class="box" id="ui-head">
+					<div class="box" id="ui-head-start">
+						<div class="item toolbar-item" id="ui-switch-settings" value="settings"></div>
+					</div>
+					<div class="box" id="ui-head-center">
+						<div class="item toolbar-item" id="ui-element-image" value="image"></div>
+						<div class="item toolbar-item" id="ui-element-text" value="text"></div>
+						<div class="item toolbar-item" id="ui-element-textbox" value="textbox"></div>
+						<div class="item toolbar-item" id="ui-element-dialogbox" value="dialogbox"></div>
+						<div class="item toolbar-item" id="ui-element-progressbar" value="progressbar"></div>
+						<div class="item toolbar-item" id="ui-element-button" value="button"></div>
+						<div class="item toolbar-item" id="ui-element-animation" value="animation"></div>
+						<div class="item toolbar-item" id="ui-element-video" value="video"></div>
+						<div class="item toolbar-item" id="ui-element-window" value="window"></div>
+						<div class="item toolbar-item" id="ui-element-container" value="container"></div>
+						<div class="item toolbar-item" id="ui-element-reference" value="reference"></div>
+					</div>
+					<div class="box" id="ui-head-end">
 						<SliderBox id="ui-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
-					</box>
-				</box>
-				<box id="ui-body">
-					<box id="ui-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="ui-body">
+					<div class="box" id="ui-screen" tabindex="-1">
 						<MarqueeArea id="ui-marquee"></MarqueeArea>
-					</box>
-				</box>
+					</div>
+				</div>
 			</div>
 			<div class="page-frame" id="ui-element" value="ui-element">
-				<box id="ui-list-head">
+				<div class="box" id="ui-list-head">
 					<TextBox id="ui-searcher" name="search"></TextBox>
-				</box>
+				</div>
 				<TreeList id="ui-list" padded></TreeList>
 			</div>
 			<div class="page-frame" id="animation" value="animation">
-				<box id="animation-head">
-					<box id="animation-head-start">
-						<item id="animation-switch-mark" class="toolbar-item" value="mark"></item>
-						<item id="animation-switch-onionskin" class="toolbar-item" value="onionskin" hotkey="O"></item>
-						<item id="animation-switch-mirror" class="toolbar-item" value="mirror" hotkey="M"></item>
-						<item id="animation-switch-settings" class="toolbar-item" value="settings"></item>
-					</box>
-					<box id="animation-head-center">
+				<div class="box" id="animation-head">
+					<div class="box" id="animation-head-start">
+						<div class="item toolbar-item" id="animation-switch-mark" value="mark"></div>
+						<div class="item toolbar-item" id="animation-switch-onionskin" value="onionskin" hotkey="O"></div>
+						<div class="item toolbar-item" id="animation-switch-mirror" value="mirror" hotkey="M"></div>
+						<div class="item toolbar-item" id="animation-switch-settings" value="settings"></div>
+					</div>
+					<div class="box" id="animation-head-center">
 						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
-					</box>
-					<box id="animation-head-end">
+					</div>
+					<div class="box" id="animation-head-end">
 						<SliderBox id="animation-zoom" name="zoom-0-6" min="0" max="6" hotkey="-/+" active-wheel></SliderBox>
-					</box>
-				</box>
-				<box id="animation-body">
-					<box id="animation-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="animation-body">
+					<div class="box" id="animation-screen" tabindex="-1">
 						<MarqueeArea id="animation-marquee"></MarqueeArea>
-					</box>
-					<box id="animation-dirList"></box>
-				</box>
+					</div>
+					<div class="box" id="animation-dirList"></div>
+				</div>
 			</div>
 			<div class="page-frame" id="animation-motion" value="animation-motion">
-				<box id="animation-list-head">
+				<div class="box" id="animation-list-head">
 					<TextBox id="animation-searcher" name="search"></TextBox>
-				</box>
+				</div>
 				<TreeList id="animation-list" padded></TreeList>
 			</div>
 			<div class="page-frame" id="animation-timeline" value="animation-timeline">
-				<box id="animation-timeline-head">
-					<box id="animation-timeline-toolbar">
-						<item id="animation-timeline-previousKey" class="toolbar-item" value="previousKey" hotkey="Z"></item>
-						<item id="animation-timeline-previous" class="toolbar-item" value="previous" hotkey="Q"></item>
-						<item id="animation-timeline-play" class="toolbar-item" value="play" hotkey="R"></item>
-						<item id="animation-timeline-next" class="toolbar-item" value="next" hotkey="E"></item>
-						<item id="animation-timeline-nextKey" class="toolbar-item" value="nextKey" hotkey="X"></item>
-						<item id="animation-timeline-loop" class="toolbar-item" value="loop"></item>
-					</box>
-					<box id="animation-timeline-ruler-outer">
-						<box id="animation-timeline-ruler-inner"></box>
-					</box>
-				</box>
+				<div class="box" id="animation-timeline-head">
+					<div class="box" id="animation-timeline-toolbar">
+						<div class="item toolbar-item" id="animation-timeline-previousKey" value="previousKey" hotkey="Z"></div>
+						<div class="item toolbar-item" id="animation-timeline-previous" value="previous" hotkey="Q"></div>
+						<div class="item toolbar-item" id="animation-timeline-play" value="play" hotkey="R"></div>
+						<div class="item toolbar-item" id="animation-timeline-next" value="next" hotkey="E"></div>
+						<div class="item toolbar-item" id="animation-timeline-nextKey" value="nextKey" hotkey="X"></div>
+						<div class="item toolbar-item" id="animation-timeline-loop" value="loop"></div>
+					</div>
+					<div class="box" id="animation-timeline-ruler-outer">
+						<div class="box" id="animation-timeline-ruler-inner"></div>
+					</div>
+				</div>
 				<TreeList id="animation-layer-list"></TreeList>
-				<box id="animation-timeline-list-outer" tabindex="0">
-					<box id="animation-timeline-list-inner"></box>
-					<box id="animation-timeline-cursor"></box>
-					<box id="animation-timeline-marquee"></box>
-					<box id="animation-timeline-marquee-shift"></box>
-				</box>
-				<box id="animation-timeline-pointer-area-outer">
-					<box id="animation-timeline-pointer-area-inner">
-						<box id="animation-timeline-pointer"></box>
-					</box>
-				</box>
+				<div class="box" id="animation-timeline-list-outer" tabindex="0">
+					<div class="box" id="animation-timeline-list-inner"></div>
+					<div class="box" id="animation-timeline-cursor"></div>
+					<div class="box" id="animation-timeline-marquee"></div>
+					<div class="box" id="animation-timeline-marquee-shift"></div>
+				</div>
+				<div class="box" id="animation-timeline-pointer-area-outer">
+					<div class="box" id="animation-timeline-pointer-area-inner">
+						<div class="box" id="animation-timeline-pointer"></div>
+					</div>
+				</div>
 			</div>
 			<div class="page-frame" id="animation-easing" value="animation-easing">
-				<box id="animation-easing-head">
-					<item id="animation-easing-settings" class="toolbar-item" value="bezier"></item>
+				<div class="box" id="animation-easing-head">
+					<div class="item toolbar-item" id="animation-easing-settings" value="bezier"></div>
 					<SelectBox id="animation-easing-id"></SelectBox>
-				</box>
+				</div>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
 			</div>
 			<div class="page-frame" id="particle" value="particle">
-				<box id="particle-head">
-					<box id="particle-head-start">
-						<item id="particle-view-wireframe" class="toolbar-item" value="wireframe"></item>
-						<item id="particle-view-anchor" class="toolbar-item" value="anchor"></item>
-					</box>
-					<box id="particle-head-center">
-						<box id="particle-control">
-							<item id="particle-control-restart" class="toolbar-item" value="restart" hotkey="R"></item>
-							<item id="particle-control-pause" class="toolbar-item" value="pause" hotkey="P"></item>
-						</box>
+				<div class="box" id="particle-head">
+					<div class="box" id="particle-head-start">
+						<div class="item toolbar-item" id="particle-view-wireframe" value="wireframe"></div>
+						<div class="item toolbar-item" id="particle-view-anchor" value="anchor"></div>
+					</div>
+					<div class="box" id="particle-head-center">
+						<div class="box" id="particle-control">
+							<div class="item toolbar-item" id="particle-control-restart" value="restart" hotkey="R"></div>
+							<div class="item toolbar-item" id="particle-control-pause" value="pause" hotkey="P"></div>
+						</div>
 						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><text class="label">speed:</text></NumberBox>
-					</box>
-					<box id="particle-head-end">
+					</div>
+					<div class="box" id="particle-head-end">
 						<SliderBox id="particle-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
-					</box>
-				</box>
-				<box id="particle-body">
-					<box id="particle-screen" tabindex="-1">
+					</div>
+				</div>
+				<div class="box" id="particle-body">
+					<div class="box" id="particle-screen" tabindex="-1">
 						<MarqueeArea id="particle-marquee"></MarqueeArea>
-					</box>
+					</div>
 					<text id="particle-info"></text>
-				</box>
+				</div>
 			</div>
 			<div class="page-frame" id="particle-layer" value="particle-layer">
 				<TreeList id="particle-list" padded></TreeList>
@@ -252,7 +252,7 @@
 					</PageManager>
 			</div>
 		</PageManager>
-</box>
+</div>
 </div>
 	<div class="page-frame" value="scene"></div>
 	<div class="page-frame" value="ui"></div>

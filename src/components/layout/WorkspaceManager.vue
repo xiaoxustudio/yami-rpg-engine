@@ -1,21 +1,21 @@
 <template>
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
-			<box id="home-content">
+			<div class="box" id="home-content">
 				<text id="home-title">YAMI RPG EDITOR (Open Yami)</text>
 				<text id="home-version"></text>
-				<box id="home-start-list">
-					<item id="home-start-label" class="home-list-label">Start</item>
-					<item id="home-start-new" class="home-start-item" value="new">New Project</item>
-					<item id="home-start-open" class="home-start-item" value="open">Open Project</item>
-				</box>
-				<box id="home-recent-list" tabindex="-1">
-					<item id="home-recent-label" class="home-list-label">Recent</item>
-					<item class="home-recent-item" value="0"></item>
-					<item class="home-recent-item" value="1"></item>
-					<item class="home-recent-item" value="2"></item>
-				</box>
-			</box>
+				<div class="box" id="home-start-list">
+					<div class="item home-list-label" id="home-start-label">Start</div>
+					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
+					<div class="item home-start-item" id="home-start-open" value="open">Open Project</div>
+				</div>
+				<div class="box" id="home-recent-list" tabindex="-1">
+					<div class="item home-list-label" id="home-recent-label">Recent</div>
+					<div class="item home-recent-item" value="0"></div>
+					<div class="item home-recent-item" value="1"></div>
+					<div class="item home-recent-item" value="2"></div>
+				</div>
+			</div>
 		</div>
 		<div class="page-frame" value="directory"></div>
 		<div class="page-frame" value="scene"></div>

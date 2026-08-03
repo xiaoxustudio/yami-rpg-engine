@@ -2,7 +2,7 @@
 	<WindowFrame id="export-apk">
 		<TitleBar>构建APK<div class="close"></div></TitleBar>
 		<div class="content-frame">
-			<box id="export-apk-out">
+			<div class="box" id="export-apk-out">
 				<div class="grid-box" id="export-apk-grid">
 					<text class="project-summary">应用配置</text>
 					<text>应用名称</text><TextBox id="export-apk-apkName" />
@@ -11,7 +11,7 @@
 					<text>应用版本</text><TextBox id="export-apk-apkVersionName" />
 					<text>应用版本号</text><TextBox id="export-apk-apkVersionCode" />
 				</div>
-				<box id="export-apk-PS">
+				<div class="box" id="export-apk-PS">
 					<text class="project-summary export-apk-major">PS（温馨提示）</text>
 					<text class="export-apk-major"
 						>构建前请确保您安装了Java，apktool（内置）、apksigner（内置）、zipalign（内置）工具</text
@@ -29,11 +29,11 @@
 					<text class="export-apk-major"
 						>@表示编辑器模板目录、$表示项目目录apk文件夹、~表示项目目录</text
 					>
-				</box>
-				<box id="export-apk-container">
-					<box id="export-apk-content"> </box>
-				</box>
-			</box>
+				</div>
+				<div class="box" id="export-apk-container">
+					<div class="box" id="export-apk-content"> </div>
+				</div>
+			</div>
 			<button id="export-apk-button" name="export-to-apk" />
 		</div>
 	</WindowFrame>

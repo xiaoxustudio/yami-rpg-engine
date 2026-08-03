@@ -1088,7 +1088,8 @@ EventEditor.resizeGutter = function () {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					const node = document.createElement('box') as any;
+					const node = document.createElement('div') as any;
+					addClass(node, 'box');
 					addClass(node, 'event-commands-line-number');
 					node.number = -1;
 					innerGutter.appendChild(node);

@@ -29,9 +29,9 @@
 			<text>{{ local.getLabel('uiAnimation-frame') || 'Frame' }}</text
 			><NumberBox id="uiAnimation-frame" min="0" max="10000"></NumberBox>
 			<text>{{ local.getLabel('uiAnimation-offset-box') || 'Offset' }}</text>
-			<box
+			<div
 				id="uiAnimation-offset-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiAnimation-offsetX"
@@ -45,7 +45,7 @@
 					max="10000"
 					unit="px"
 				></NumberBox>
-			</box>
+			</div>
 		</div>
 	</DetailBox>
 </template>

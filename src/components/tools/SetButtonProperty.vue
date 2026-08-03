@@ -7,14 +7,14 @@
 				<text>Image</text
 				><CustomBox id="setButton-property-image" type="file" filter="image" />
 				<text>Clip</text>
-				<box id="setButton-property-clip-box" class="uiElement-grid-box with-4-columns">
+				<div id="setButton-property-clip-box" class="box uiElement-grid-box with-4-columns">
 					<NumberBox id="setButton-property-clip-0" min="0" max="10000" />
 					<NumberBox id="setButton-property-clip-1" min="0" max="10000" />
 					<NumberBox id="setButton-property-clip-2" min="0" max="4000" />
 					<NumberBox id="setButton-property-clip-3" min="0" max="4000" />
-				</box>
+				</div>
 				<text>Tint</text>
-				<box id="setButton-property-tint-box" class="uiElement-grid-box with-4-columns">
+				<div id="setButton-property-tint-box" class="box uiElement-grid-box with-4-columns">
 					<NumberBox
 						id="setButton-property-tint-0"
 						min="-255"
@@ -34,7 +34,7 @@
 						step="5"
 					/>
 					<NumberBox id="setButton-property-tint-3" min="0" max="255" step="5" />
-				</box>
+				</div>
 				<text>Opacity</text
 				><NumberBox
 					id="setButton-property-imageOpacity"

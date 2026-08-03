@@ -56,9 +56,9 @@
 				</button>
 			</div>
 			<text>{{ local.getLabel('uiElement-transform-anchor-box') || 'Anchor' }}</text>
-			<box
+			<div
 				id="uiElement-transform-anchor-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-anchorX"
@@ -74,11 +74,11 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-x-box') || 'X' }}</text>
-			<box
+			<div
 				id="uiElement-transform-x-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-x"
@@ -95,11 +95,11 @@
 					decimals="4"
 					unit="r"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-y-box') || 'Y' }}</text>
-			<box
+			<div
 				id="uiElement-transform-y-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-y"
@@ -116,11 +116,11 @@
 					decimals="4"
 					unit="r"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-width-box') || 'Width' }}</text>
-			<box
+			<div
 				id="uiElement-transform-width-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-width"
@@ -137,11 +137,11 @@
 					decimals="4"
 					unit="r"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-height-box') || 'Height' }}</text>
-			<box
+			<div
 				id="uiElement-transform-height-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-height"
@@ -158,11 +158,11 @@
 					decimals="4"
 					unit="r"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-rotation-box') || 'Rotation' }}</text>
-			<box
+			<div
 				id="uiElement-transform-rotation-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-rotation"
@@ -171,11 +171,11 @@
 					decimals="4"
 					unit="deg"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-scale-box') || 'Scale' }}</text>
-			<box
+			<div
 				id="uiElement-transform-scale-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-scaleX"
@@ -191,11 +191,11 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-skew-box') || 'Skew' }}</text>
-			<box
+			<div
 				id="uiElement-transform-skew-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-skewX"
@@ -211,11 +211,11 @@
 					step="0.1"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiElement-transform-opacity-box') || 'Opacity' }}</text>
-			<box
+			<div
 				id="uiElement-transform-opacity-box"
-				class="uiElement-grid-box with-2-columns"
+				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
 					id="uiElement-transform-opacity"
@@ -224,7 +224,7 @@
 					step="0.05"
 					decimals="4"
 				></NumberBox>
-			</box>
+			</div>
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-events-group" open>
@@ -254,7 +254,7 @@
 			<text>{{ local.getLabel('uiImage-flip') || 'Flip' }}</text><SelectBox id="uiImage-flip"></SelectBox>
 			<text>{{ local.getLabel('uiImage-blend') || 'Blend' }}</text><SelectBox id="uiImage-blend"></SelectBox>
 			<text>{{ local.getLabel('uiImage-shift-box') || 'Shift' }}</text>
-			<box id="uiImage-shift-box" class="uiElement-grid-box with-2-columns">
+			<div id="uiImage-shift-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiImage-shiftX"
 					min="-10000"
@@ -267,7 +267,7 @@
 					max="10000"
 					unit="px"
 				></NumberBox>
-			</box>
+			</div>
 			<text>{{ local.getLabel('uiImage-clip') || 'Clip' }}</text
 			><CustomBox
 				id="uiImage-clip"
