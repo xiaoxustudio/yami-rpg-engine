@@ -60,6 +60,7 @@ export {
 } from './components/business/YMDragAndDropHint/drag-and-drop-hint-api';
 export { default as YMTitleBar } from './components/business/YMTitleBar/YMTitleBar.vue';
 export { default as YMWindowFrame } from './components/business/YMWindowFrame/YMWindowFrame.vue';
+export { default as YMTabBar } from './components/business/YMTabBar/YMTabBar.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

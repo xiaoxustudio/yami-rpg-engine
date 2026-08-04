@@ -1,62 +1,22 @@
 <template>
-	<div class="tab-bar" ref="root" :id="props.id"></div>
+	<YMTabBar ref="ym" :id="props.id" :update-app-region="updateAppRegion" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	hide,
-	show,
-	off,
-	rect
-} from '@/util/element-utils';
+import { computed, onMounted, ref } from 'vue';
+import { YMTabBar } from '@ui-kit';
 import { Title } from '@/title/title-bar';
-import { createDragAndDropHint } from '@/components/drag-and-drop-hint';
 
-interface TabHint extends HTMLElement {
-	target: HTMLElement;
-	position: 'before' | 'after';
-	measure(item: HTMLElement): { left: number; top: number; width: number; height: number };
-	set(coords: { left: number; top: number; width: number; height: number }): void;
+interface Props {
+	id?: string;
 }
 
-interface TabDraggingEvent {
-	hint: TabHint;
-	target: HTMLElement;
-	offsetX: number;
-	mode?: 'close' | 'popup';
-	relate?(event: PointerEvent): boolean;
-}
+const props = defineProps<Props>();
 
-interface TabItem {
-	item: string;
-	type?: 'directory' | 'file';
-	tab?: HTMLElement;
-	[k: string]: any;
-}
+const updateAppRegion = (): void => Title.updateAppRegion();
 
-interface TabElement extends HTMLElement {
-	item: string;
-	text: HTMLElement;
-}
-
-interface TabDragTarget extends HTMLElement {
-	item: string;
-}
-
-interface TabBarElement extends HTMLElement {
-	data: any[] | null;
-	dragging: TabDraggingEvent | null;
-	selectionIndex: number;
-	dirItem: any;
-	writeEventEnabled: boolean;
-	selectEventEnabled: boolean;
-	closedEventEnabled: boolean;
-	popupEventEnabled: boolean;
-	windowPointerup: (event: PointerEvent) => void;
+const ym = ref<{
+	root: HTMLElement | null;
 	read(): any;
 	write(value: any): void;
 	update(): void;
@@ -75,486 +35,28 @@ interface TabBarElement extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
+} | null>(null);
 
-interface Props {
-	id?: string;
-}
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const props = defineProps<Props>();
-
-const emit = defineEmits<{
-	write: [value: any];
-	select: [value: any];
-	closed: [closedItems: any[], lastValue: any];
-	popup: [value: any, clientX: number, clientY: number];
-}>();
-
-const root = ref<TabBarElement | null>(null);
-
-const read = (): any => {
-	const el = root.value;
-	if (!el) return undefined;
-	const item = el.querySelector('.selected') as HTMLElement | null;
-	return item ? (item as TabElement).item : undefined;
-};
-
-const write = (value: any): void => {
-	const el = root.value;
-	if (!el) return;
-	const items = el.childNodes;
-	const length = items.length;
-	if (length !== 0) {
-		unselect();
-		let target: HTMLElement | undefined;
-		for (let i = 0; i < length; i++) {
-			if ((items[i] as TabElement).item === value) {
-				el.selectionIndex = i;
-				target = items[i] as HTMLElement;
-				break;
-			}
-		}
-		if (target !== undefined) {
-			addClass(target, 'selected');
-		}
-		if (el.writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: any };
-			writeEvent.value = target ? value : undefined;
-			el.dispatchEvent(writeEvent);
-			emit('write', writeEvent.value);
-		}
-	}
-};
-
-const update = (): void => {
-	const el = root.value;
-	if (!el) return;
-	clear();
-	for (const item of el.data) {
-		let tab = (item as TabItem).tab;
-		if (tab === undefined) {
-			tab = (item as TabItem).tab = document.createElement('div');
-			addClass(tab, 'tab-item');
-			const text = document.createElement('div');
-			addClass(text, 'tab-text');
-			text.textContent = parseTabName(item);
-			(tab as HTMLElement & { draggable: boolean }).draggable = true;
-			(tab as TabElement).item = item;
-			(tab as TabElement & { text: HTMLElement }).text = text;
-			tab.appendChild(text);
-			if ((item as TabItem).type !== 'directory') {
-				const mark = document.createElement('div');
-				addClass(mark, 'tab-close');
-				mark.textContent = '\u2716';
-				tab.appendChild(mark);
-			}
-		}
-		el.appendChild(tab);
-	}
-};
-
-const parseTabName = (item: any): string => `${item.icon} ${item.name}`;
-
-const select = (item: any): void => {
-	const el = root.value;
-	if (!el) return;
-	if (read() !== item) {
-		write(item);
-		if (el.selectEventEnabled) {
-			const selectEvent = new Event('select') as Event & { value: any };
-			selectEvent.value = item;
-			el.dispatchEvent(selectEvent);
-			emit('select', selectEvent.value);
-		}
-	}
-};
-
-const unselect = (): void => {
-	const el = root.value;
-	if (!el) return;
-	const item = el.querySelector('.selected') as HTMLElement | null;
-	if (item) {
-		removeClass(item, 'selected');
-	}
-};
-
-const insert = (item: any): void => {
-	const el = root.value;
-	if (!el) return;
-	if (!el.data.includes(item)) {
-		el.data.splice(el.selectionIndex + 1, 0, item);
-		update();
-	}
-};
-
-const close = (item: any): void => {
-	const el = root.value;
-	if (!el) return;
-	if (item === el.dirItem) return;
-	const value = read();
-	if (el.data.remove(item)) {
-		update();
-		if (el.data.length > 0) {
-			if (value === item || value === undefined || !el.data.includes(value)) {
-				const index = Math.min(el.selectionIndex, el.data.length - 1);
-				select(el.data[index]);
-			} else {
-				write(value);
-			}
-		}
-		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
-			};
-			closedEvent.closedItems = [item];
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
-	}
-};
-
-const closeByProperty = (key: string, value: any): void => {
-	const el = root.value;
-	if (!el) return;
-	for (const context of el.data) {
-		if (context[key] === value) {
-			close(context);
-			return;
-		}
-	}
-};
-
-const closeOtherTabs = (item: any): void => {
-	const el = root.value;
-	if (!el) return;
-	const value = read();
-	const items = el.data;
-	let i = items.length;
-	if (i <= 1) return;
-	const closedItems: any[] = [];
-	while (--i >= 0) {
-		const tab = items[i];
-		if (tab === item) continue;
-		if (tab === el.dirItem) continue;
-		items.splice(i, 1);
-		closedItems.push(tab);
-	}
-	if (closedItems.length !== 0) {
-		update();
-		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
-			};
-			closedEvent.closedItems = closedItems;
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
-	}
-};
-
-const closeTabsToTheRight = (item: any): void => {
-	const el = root.value;
-	if (!el) return;
-	const value = read();
-	const items = el.data;
-	const index = items.indexOf(item);
-	if (index === -1) return;
-	const closedItems: any[] = [];
-	let i = items.length;
-	while (--i > index) {
-		const tab = items[i];
-		if (tab === el.dirItem) continue;
-		items.splice(i, 1);
-		closedItems.push(tab);
-	}
-	if (closedItems.length !== 0) {
-		update();
-		if (el.closedEventEnabled) {
-			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
-			};
-			closedEvent.closedItems = closedItems;
-			closedEvent.lastValue = value;
-			el.dispatchEvent(closedEvent);
-			emit('closed', closedEvent.closedItems, closedEvent.lastValue);
-		}
-	}
-};
-
-const find = (meta: any): any => {
-	const el = root.value;
-	if (!el) return undefined;
-	for (const node of el.childNodes as unknown as NodeListOf<any>) {
-		if (node.item && node.item.meta === meta) {
-			return node.item;
-		}
-	}
-	return undefined;
-};
-
-const clear = (): void => {
-	const el = root.value;
-	if (!el) return;
-	unselect();
-	el.textContent = '';
-};
-
+const read = (): any => ym.value?.read();
+const write = (value: any): void => ym.value?.write(value);
+const update = (): void => ym.value?.update();
+const parseTabName = (item: any): string => ym.value?.parseTabName(item) ?? '';
+const select = (item: any): void => ym.value?.select(item);
+const unselect = (): void => ym.value?.unselect();
+const insert = (item: any): void => ym.value?.insert(item);
+const close = (item: any): void => ym.value?.close(item);
+const closeByProperty = (key: string, value: any): void => ym.value?.closeByProperty(key, value);
+const closeOtherTabs = (item: any): void => ym.value?.closeOtherTabs(item);
+const closeTabsToTheRight = (item: any): void => ym.value?.closeTabsToTheRight(item);
+const find = (meta: any): any => ym.value?.find(meta);
+const clear = (): void => ym.value?.clear();
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	const el = root.value;
-	if (!el) return;
-	el.addEventListener(type, listener as EventListener, options);
-	switch (type) {
-		case 'write':
-			el.writeEventEnabled = true;
-			break;
-		case 'select':
-			el.selectEventEnabled = true;
-			break;
-		case 'closed':
-			el.closedEventEnabled = true;
-			break;
-		case 'popup':
-			el.popupEventEnabled = true;
-			break;
-	}
-};
-
-const dragend = (): void => {
-	const el = root.value;
-	if (!el || !el.parentNode) return;
-	if (el.dragging) {
-		removeClass(el, 'dragging');
-		el.parentNode.removeChild(el.dragging.hint);
-		el.dragging = null;
-		off(el, 'dragenter', dragenter as EventListener);
-		off(el, 'dragleave', dragleave as EventListener);
-		off(el, 'dragover', dragover as EventListener);
-		off(el, 'drop', drop as EventListener);
-	}
-};
-
-const pointerdown = (event: PointerEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	dragend();
-	switch (event.button) {
-		case 0: {
-			const element = event.target as HTMLElement;
-			if (hasClass(element, 'tab-close')) {
-				event.preventDefault();
-				const parent = element.parentNode as HTMLElement;
-				const dragging: TabDraggingEvent = {
-					hint: null as unknown as TabHint,
-					target: parent,
-					offsetX: event.offsetX,
-					mode: 'close',
-					relate(event: PointerEvent): boolean {
-						return (event.target as HTMLElement).closest('.tab-item') === parent;
-					}
-				};
-				el.dragging = dragging;
-				window.addEventListener('pointerup', windowPointerup);
-				return;
-			}
-			if (hasClass(element, 'tab-item') && !hasClass(element, 'selected')) {
-				select((element as TabElement).item);
-			}
-			break;
-		}
-		case 2:
-			if (el.popupEventEnabled) {
-				const target = event.target as HTMLElement;
-				if (hasClass(target, 'tab-item') || hasClass(target, 'tab-bar')) {
-					const dragging: TabDraggingEvent = {
-						hint: null as unknown as TabHint,
-						target,
-						offsetX: event.offsetX,
-						mode: 'popup'
-					};
-					el.dragging = dragging;
-					window.addEventListener('pointerup', windowPointerup);
-				}
-			}
-			break;
-	}
-};
-
-const dragstart = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el || !el.parentNode) return;
-	if (!el.dragging) {
-		const hint = createDragAndDropHint() as TabHint;
-		const dragging: TabDraggingEvent = {
-			hint,
-			target: event.target as HTMLElement,
-			offsetX: event.offsetX
-		};
-		el.dragging = dragging;
-		Object.defineProperty(event, 'offsetX', { writable: true });
-		event.preventDefault = Function.empty as unknown as () => void;
-		(event.dataTransfer as unknown as { hideDragImage(): void }).hideDragImage();
-		addClass(hint, 'for-tab');
-		el.parentNode.insertBefore(hide(hint), el);
-		addClass(el, 'dragging');
-		Title.updateAppRegion();
-		el.addEventListener('dragenter', dragenter);
-		el.addEventListener('dragleave', dragleave);
-		el.addEventListener('dragover', dragover);
-		el.addEventListener('drop', drop);
-	}
-};
-
-const dragenter = (event: DragEvent): void => {
-	if (root.value?.dragging) {
-		event.preventDefault();
-		(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
-	}
-};
-
-const dragleave = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	if (el.dragging && !el.contains(event.relatedTarget as Node)) {
-		el.dragging.offsetX = -1;
-		hide(el.dragging.hint);
-	}
-};
-
-const dragover = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el || !el.dragging) return;
-	event.preventDefault();
-	(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
-	if (el.dragging.offsetX === event.offsetX) {
-		return;
-	}
-	el.dragging.offsetX = event.offsetX;
-	const element = (event.target as HTMLElement).closest('.tab-item') as HTMLElement | null;
-	const hint = el.dragging.hint;
-	show(hint);
-	if (element && hasClass(element, 'tab-item')) {
-		const sItem = (el.dragging.target as TabDragTarget).item;
-		const dItem = (element as TabElement).item;
-		if (sItem === dItem) {
-			hide(hint);
-			return;
-		}
-		const box = rect(element);
-		const middle = box.width / 2;
-		const offsetX = event.clientX - box.left;
-		const position = offsetX < middle ? 'before' : 'after';
-		switch (position) {
-			case 'before':
-				if (hint.target !== element || hint.position !== position) {
-					if (element.previousSibling === el.dragging.target) {
-						hide(hint);
-						return;
-					}
-					const r = hint.measure(element);
-					r.left -= 1;
-					r.width = 2;
-					hint.target = element;
-					hint.position = position;
-					hint.set(r);
-				}
-				break;
-			case 'after':
-				if (hint.target !== element || hint.position !== position) {
-					if (element.nextSibling === el.dragging.target) {
-						hide(hint);
-						return;
-					}
-					const r = hint.measure(element);
-					r.left += r.width - 1;
-					r.width = 2;
-					hint.target = element;
-					hint.position = position;
-					hint.set(r);
-				}
-				break;
-		}
-	} else {
-		const elements = el.childNodes;
-		const index = elements.length - 1;
-		const last = elements[index] as HTMLElement;
-		if (last === el.dragging.target) {
-			hide(hint);
-			return;
-		}
-		if (last !== undefined && (hint.target !== last || hint.position !== 'after')) {
-			const r = hint.measure(last);
-			r.left += r.width - 1;
-			r.width = 2;
-			hint.target = last;
-			hint.position = 'after';
-			hint.set(r);
-		}
-	}
-};
-
-const drop = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el || !el.dragging) return;
-	event.stopPropagation();
-	const hint = el.dragging.hint;
-	if (!hasClass(hint, 'hidden')) {
-		const items = el.data;
-		const sItem = (el.dragging.target as TabDragTarget).item;
-		const dItem = (hint.target as TabDragTarget).item;
-		if (items.remove(sItem)) {
-			let dIndex = items.indexOf(dItem);
-			if (hint.position === 'after') {
-				dIndex++;
-			}
-			items.splice(dIndex, 0, sItem);
-			el.selectionIndex = dIndex;
-			update();
-		}
-	}
-	dragend();
-};
-
-const windowPointerup = (event: PointerEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	if (el.dragging && el.dragging.relate!(event)) {
-		switch (el.dragging.mode) {
-			case 'close': {
-				const target = (event.target as HTMLElement).closest('.tab-item') as TabDragTarget | null;
-				if (target && el.dragging.target === target) {
-					close(target.item);
-				}
-				break;
-			}
-			case 'popup':
-				if (el.dragging.target === event.target) {
-					const popupEvent = new Event('popup') as Event & {
-						value: any;
-						clientX: number;
-						clientY: number;
-					};
-					const item = (event.target as TabElement).item;
-					popupEvent.value = item ?? null;
-					popupEvent.clientX = event.clientX;
-					popupEvent.clientY = event.clientY;
-					el.dispatchEvent(popupEvent);
-					emit('popup', popupEvent.value, popupEvent.clientX, popupEvent.clientY);
-				}
-				break;
-		}
-		el.dragging = null;
-		window.removeEventListener('pointerup', windowPointerup);
-	}
-};
+): void => ym.value?.on(type, listener, options);
 
 defineExpose({
 	read,
@@ -575,17 +77,8 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as any;
 	if (!el) return;
-	el.data = null;
-	el.dragging = null;
-	el.selectionIndex = 0;
-	el.writeEventEnabled = false;
-	el.selectEventEnabled = false;
-	el.closedEventEnabled = false;
-	el.popupEventEnabled = false;
-	el.dirItem = null;
-	el.windowPointerup = windowPointerup;
 	el.read = read;
 	el.write = write;
 	el.update = update;
@@ -600,8 +93,5 @@ onMounted(() => {
 	el.find = find;
 	el.clear = clear;
 	el.on = on;
-	el.addEventListener('pointerdown', pointerdown);
-	el.addEventListener('dragstart', dragstart);
-	el.addEventListener('dragend', dragend);
 });
 </script>

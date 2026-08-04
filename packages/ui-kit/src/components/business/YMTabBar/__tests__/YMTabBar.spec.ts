@@ -1,0 +1,165 @@
+import { describe, expect, it } from 'vitest';
+import { mount } from '@vue/test-utils';
+import YMTabBar from '../YMTabBar.vue';
+
+const makeData = (): any[] => [
+	{ icon: 'A', name: 'Alpha', type: 'file', meta: 'm1' },
+	{ icon: 'B', name: 'Beta', type: 'file', meta: 'm2' },
+	{ icon: 'D', name: 'Dir', type: 'directory', meta: 'm3' }
+];
+
+describe('YMTabBar', () => {
+	it('mounts and exposes api', () => {
+		const wrapper = mount(YMTabBar);
+		expect(wrapper.element.classList.contains('tab-bar')).toBe(true);
+		const el = wrapper.element as any;
+		for (const name of [
+			'read',
+			'write',
+			'update',
+			'parseTabName',
+			'select',
+			'unselect',
+			'insert',
+			'close',
+			'closeByProperty',
+			'closeOtherTabs',
+			'closeTabsToTheRight',
+			'find',
+			'clear',
+			'on'
+		]) {
+			expect(typeof el[name], name).toBe('function');
+		}
+	});
+
+	it('update renders tabs with close marks', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		const texts = Array.from(el.querySelectorAll('.tab-text')).map(
+			(n) => (n as HTMLElement).textContent
+		);
+		expect(texts).toEqual(['A Alpha', 'B Beta', 'D Dir']);
+		expect(el.querySelectorAll('.tab-item').length).toBe(3);
+		expect(el.querySelectorAll('.tab-close').length).toBe(2);
+	});
+
+	it('write selects matching tab and dispatches event', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		let written = null;
+		el.on('write', (e: any) => (written = e.value));
+		el.write(data[1]);
+		expect(el.querySelectorAll('.tab-item')[1].classList.contains('selected')).toBe(true);
+		expect(written).toBe(data[1]);
+	});
+
+	it('select dispatches select event', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		let selected = null;
+		el.on('select', (e: any) => (selected = e.value));
+		el.select(data[0]);
+		expect(selected).toBe(data[0]);
+	});
+
+	it('insert adds tab after selection', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		el.select(data[1]);
+		const node = { icon: 'C', name: 'Gamma', type: 'file', meta: 'm4' };
+		el.insert(node);
+		expect(data).toContain(node);
+		expect(data.indexOf(node)).toBe(2);
+	});
+
+	it('close removes tab and selects neighbor', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		el.select(data[1]);
+		let closed = null;
+		el.on('closed', (e: any) => (closed = e.closedItems));
+		const beta = data[1];
+		const dir = data[2];
+		el.close(beta);
+		expect(data).not.toContain(beta);
+		expect(closed).toEqual([beta]);
+		expect(el.read()).toBe(dir);
+	});
+
+	it('closeByProperty closes matching tab', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		const beta = data[1];
+		el.closeByProperty('meta', 'm2');
+		expect(data).not.toContain(beta);
+	});
+
+	it('closeOtherTabs keeps only target and dirItem', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.dirItem = data[2];
+		el.update();
+		const alpha = data[0];
+		const dir = data[2];
+		el.closeOtherTabs(alpha);
+		expect(data).toEqual([alpha, dir]);
+	});
+
+	it('find locates tab by meta', () => {
+		const wrapper = mount(YMTabBar);
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		expect(el.find('m2')).toBe(data[1]);
+		expect(el.find('none')).toBe(undefined);
+	});
+
+	it('pointerdown on close mark triggers close on pointerup', () => {
+		const wrapper = mount(YMTabBar, { attachTo: document.body });
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		const tab = el.querySelectorAll('.tab-item')[0] as HTMLElement;
+		const closeMark = tab.querySelector('.tab-close') as HTMLElement;
+		closeMark.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(el.dragging).toBeTruthy();
+		const alpha = data[0];
+		closeMark.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, button: 0 }));
+		expect(data).not.toContain(alpha);
+		expect(el.dragging).toBe(null);
+	});
+
+	it('pointerdown on tab selects it', () => {
+		const wrapper = mount(YMTabBar, { attachTo: document.body });
+		const el = wrapper.element as any;
+		const data = makeData();
+		el.data = data;
+		el.update();
+		const tab = el.querySelectorAll('.tab-item')[2] as HTMLElement;
+		tab.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
+		expect(tab.classList.contains('selected')).toBe(true);
+	});
+});
