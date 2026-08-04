@@ -246,18 +246,78 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="number-box" :class="$style.box" :id="props.id">
+	<div ref="root" class="number-box" :id="props.id">
 		<slot />
-		<input ref="inputEl" class="number-box-input" :class="$style.input" type="number" />
+		<input ref="inputEl" class="number-box-input" type="number" />
 	</div>
 </template>
 
 <style module>
-.box {
-	display: inline-block;
+:global(.number-box) {
+	display: block;
+	position: relative;
+	width: auto;
+	min-width: 60px;
+	height: 20px;
+	background-color: var(--ym-color-input-bg);
+	border-top: 1px solid var(--ym-color-input-border);
+	border-left: 1px solid var(--ym-color-input-border);
+	border-right: 1px solid var(--ym-color-input-border);
+	border-bottom: 1px solid var(--ym-color-input-border);
+	border-radius: 2px;
+	overflow: hidden;
 }
 
-.input {
+:global(.number-box.disabled) {
+	pointer-events: none;
+	background-color: var(--ym-color-input-bg-disabled);
+}
+
+:global(.number-box:focus-within) {
+	border-color: var(--ym-color-input-border-focus);
+}
+
+:global(.number-box > .label) {
+	position: absolute;
+	padding: 0 4px;
+	left: 0;
+	line-height: 18px;
+	font-family: var(--ym-font-mono);
+	color: var(--ym-color-text-unit);
+}
+
+:global(.number-box > .label.red) {
+	color: var(--ym-color-danger);
+}
+
+:global(.number-box > .label.green) {
+	color: #00c000;
+}
+
+:global(.number-box > .label.blue) {
+	color: #0000ff;
+}
+
+:global(.number-box > .unit) {
+	position: absolute;
+	padding: 0 4px;
+	right: 0;
+	line-height: 18px;
+	font-family: var(--ym-font-mono);
+	color: var(--ym-color-text-unit);
+}
+
+:global(.number-box-input) {
+	position: absolute;
+	margin: 0;
+	padding: 4px;
 	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	border: none;
+}
+
+:global(::-webkit-inner-spin-button) {
+	appearance: none;
 }
 </style>

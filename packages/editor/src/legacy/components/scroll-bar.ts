@@ -110,8 +110,12 @@ export function attachScrollBarApi(el: HTMLElement): void {
 	};
 
 	bar.bind = function (target: HTMLElement, type: string): void {
-		el.appendChild((bar.thumb = document.createElement('scroll-thumb') as ScrollThumb));
-		bar.thumb.appendChild(document.createElement('scroll-thumb-inner'));
+		const thumb = document.createElement('div');
+		addClass(thumb, 'scroll-thumb');
+		const inner = document.createElement('div');
+		addClass(inner, 'scroll-thumb-inner');
+		thumb.appendChild(inner);
+		el.appendChild((bar.thumb = thumb as unknown as ScrollThumb));
 		bar.target = target;
 		bar.type = type;
 		addClass(el, type);

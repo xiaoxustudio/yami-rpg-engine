@@ -1,0 +1,401 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+
+interface Props {
+	id?: string;
+}
+
+const props = defineProps<Props>();
+
+const root = ref<HTMLElement | null>(null);
+
+interface DragState extends PointerEvent {
+	mode: 'scroll' | 'repeat';
+	scrollLeft: number;
+	scrollTop: number;
+	clientX: number;
+	clientY: number;
+}
+
+const state = {
+	target: null as HTMLElement | null,
+	type: null as string | null,
+	thumb: null as HTMLElement | null,
+	dragging: null as DragState | null,
+	visible: false,
+	animFrame: null as number | null,
+	animState: null as {
+		type: string;
+		target: HTMLElement;
+		start: number;
+		end: number;
+		offset: number;
+		elapsed: number;
+		duration: number;
+		phase: 'first' | 'repeat' | 'delay' | 'wait';
+	} | null
+};
+
+const roundTo = (value: number, decimals: number): number => {
+	const factor = Math.pow(10, decimals);
+	return Math.round(value * factor) / factor;
+};
+
+const rectOf = (el: HTMLElement): DOMRect => el.getBoundingClientRect();
+
+const updateHorizontalThumb = (left: number, width: number): void => {
+	const thumb = state.thumb;
+	if (!thumb) return;
+	if ((thumb as any).left !== left) {
+		(thumb as any).left = left;
+		thumb.style.left = `${left}%`;
+	}
+	if ((thumb as any).width !== width) {
+		(thumb as any).width = width;
+		thumb.style.width = `${width}%`;
+	}
+};
+
+const updateVerticalThumb = (top: number, height: number): void => {
+	const thumb = state.thumb;
+	if (!thumb) return;
+	if ((thumb as any).top !== top) {
+		(thumb as any).top = top;
+		thumb.style.top = `${top}%`;
+	}
+	if ((thumb as any).height !== height) {
+		(thumb as any).height = height;
+		thumb.style.height = `${height}%`;
+	}
+};
+
+const updateDisplay = (value: boolean): void => {
+	const element = root.value;
+	if (!element) return;
+	if (state.visible !== value) {
+		state.visible = value;
+		element.classList.toggle('visible', value);
+	}
+};
+
+const updateHorizontalBar = (): void => {
+	const target = state.target;
+	if (!target) return;
+	const cw = target.clientWidth;
+	const sw = target.scrollWidth;
+	if (cw < sw) {
+		const sl = target.scrollLeft;
+		const p1 = roundTo((sl / sw) * 100, 6);
+		const p2 = roundTo((cw / sw) * 100, 6);
+		updateHorizontalThumb(p1, p2);
+		updateDisplay(true);
+	} else {
+		updateDisplay(false);
+	}
+};
+
+const updateVerticalBar = (): void => {
+	const target = state.target;
+	if (!target) return;
+	const ch = target.clientHeight;
+	const sh = target.scrollHeight;
+	if (ch < sh) {
+		const st = target.scrollTop;
+		const p1 = roundTo((st / sh) * 100, 6);
+		const p2 = roundTo((ch / sh) * 100, 6);
+		updateVerticalThumb(p1, p2);
+		updateDisplay(true);
+	} else {
+		updateDisplay(false);
+	}
+};
+
+const bind = (target: HTMLElement, type: string): void => {
+	const element = root.value;
+	if (!element) return;
+	const thumb = document.createElement('div');
+	thumb.className = 'scroll-thumb';
+	const inner = document.createElement('div');
+	inner.className = 'scroll-thumb-inner';
+	thumb.appendChild(inner);
+	element.appendChild((state.thumb = thumb));
+	state.target = target;
+	state.type = type;
+	element.classList.add(type);
+	switch (type) {
+		case 'horizontal':
+			thumb.style.height = '100%';
+			break;
+		case 'vertical':
+			thumb.style.width = '100%';
+			break;
+	}
+	element.classList.add('visible');
+	state.visible = true;
+};
+
+const stopAnimation = (): void => {
+	if (state.animFrame !== null) {
+		cancelAnimationFrame(state.animFrame);
+		state.animFrame = null;
+	}
+	state.animState = null;
+};
+
+const scrollRelative = (sign: number): void => {
+	const { target, type } = state;
+	if (!target || !type) return;
+	let start = 0;
+	let offset = 0;
+	switch (type) {
+		case 'horizontal':
+			start = target.scrollLeft;
+			offset = target.clientWidth * sign;
+			break;
+		case 'vertical':
+			start = target.scrollTop;
+			offset = target.clientHeight * sign;
+			break;
+	}
+	stopAnimation();
+	const anim = (state.animState = {
+		type,
+		target,
+		start,
+		end: start + offset,
+		offset,
+		elapsed: 0,
+		duration: Math.abs(offset) / 10,
+		phase: 'first' as 'first' | 'repeat' | 'delay' | 'wait'
+	});
+	const step = (now: number): void => {
+		if (state.animState !== anim) return;
+		const dt = anim.elapsed === 0 ? 0 : now - (anim as any)._last;
+		(anim as any)._last = now;
+		anim.elapsed += dt;
+		const time = Math.min(anim.elapsed / anim.duration, 1);
+		const value = anim.start * (1 - time) + anim.end * time;
+		let max = 0;
+		switch (anim.type) {
+			case 'horizontal':
+				max = anim.target.scrollWidth - anim.target.clientWidth;
+				anim.target.scrollLeft = value;
+				break;
+			case 'vertical':
+				max = anim.target.scrollHeight - anim.target.clientHeight;
+				anim.target.scrollTop = value;
+				break;
+		}
+		if ((anim.offset < 0 && value <= 0) || (anim.offset > 0 && value >= max)) {
+			stopAnimation();
+			return;
+		}
+		if (time < 1) {
+			state.animFrame = requestAnimationFrame(step);
+		} else if (anim.phase === 'first' && state.dragging) {
+			// hold briefly then repeat while dragging outside the thumb
+			anim.phase = 'delay';
+			anim.elapsed = 0;
+			anim.duration = 100;
+			state.animFrame = requestAnimationFrame(step);
+		} else if (anim.phase === 'delay' && state.dragging) {
+			anim.phase = 'wait';
+			state.animFrame = requestAnimationFrame(step);
+		} else if (anim.phase === 'wait' && state.dragging) {
+			// restart scroll in the same direction
+			anim.elapsed = 0;
+			anim.start = anim.end;
+			anim.end += anim.offset;
+			anim.duration = Math.abs(anim.offset) / 5;
+			state.animFrame = requestAnimationFrame(step);
+		} else {
+			stopAnimation();
+		}
+	};
+	(anim as any)._last = performance.now();
+	state.animFrame = requestAnimationFrame(step);
+};
+
+const windowPointerup = (event: PointerEvent): void => {
+	const { dragging } = state;
+	if (dragging && (dragging as any).relate?.(event)) {
+		state.dragging = null;
+		window.removeEventListener('pointerup', windowPointerup);
+		window.removeEventListener('pointermove', windowPointermove);
+	}
+};
+
+const windowPointermove = (event: PointerEvent): void => {
+	const { dragging } = state;
+	if (!dragging || !(dragging as any).relate?.(event)) return;
+	switch (dragging.mode) {
+		case 'scroll': {
+			const target = state.target;
+			const element = root.value;
+			if (!target || !element) break;
+			switch (state.type) {
+				case 'horizontal':
+					if (element.clientWidth !== 0) {
+						target.scrollLeft =
+							dragging.scrollLeft +
+							((event.clientX - dragging.clientX) * target.scrollWidth) /
+								element.clientWidth;
+					}
+					break;
+				case 'vertical':
+					if (element.clientHeight !== 0) {
+						target.scrollTop =
+							dragging.scrollTop +
+							((event.clientY - dragging.clientY) * target.scrollHeight) /
+								element.clientHeight;
+					}
+					break;
+			}
+			break;
+		}
+		case 'repeat':
+			state.dragging = event as typeof dragging;
+			state.dragging.mode = 'repeat';
+			break;
+	}
+};
+
+const pointerdown = (event: PointerEvent): void => {
+	if (state.dragging) return;
+	if (event.button !== 0) return;
+	const target = state.target;
+	if (!target) return;
+	target.focus();
+	event.preventDefault();
+	event.stopImmediatePropagation();
+	const thumb = state.thumb;
+	if (!thumb) return;
+	if (event.target === thumb) {
+		state.dragging = event as unknown as DragState;
+		state.dragging.mode = 'scroll';
+		state.dragging.scrollLeft = target.scrollLeft;
+		state.dragging.scrollTop = target.scrollTop;
+		window.addEventListener('pointerup', windowPointerup);
+		window.addEventListener('pointermove', windowPointermove);
+	} else {
+		const r = rectOf(thumb);
+		switch (state.type) {
+			case 'horizontal':
+				scrollRelative(event.clientX < r.left ? -1 : 1);
+				break;
+			case 'vertical':
+				scrollRelative(event.clientY < r.top ? -1 : 1);
+				break;
+		}
+		state.dragging = event as unknown as DragState;
+		state.dragging.mode = 'repeat';
+		window.addEventListener('pointerup', windowPointerup);
+		window.addEventListener('pointermove', windowPointermove);
+	}
+};
+
+onMounted(() => {
+	const element = root.value as any;
+	if (!element) return;
+	injectStyles();
+	element.bind = bind;
+	element.updateHorizontalBar = updateHorizontalBar;
+	element.updateVerticalBar = updateVerticalBar;
+	element.updateDisplay = updateDisplay;
+	element.addEventListener('pointerdown', pointerdown);
+});
+
+const STYLE_ID = 'ym-scrollbar-styles';
+const injectStyles = (): void => {
+	if (typeof document === 'undefined') return;
+	const existing = document.getElementById(STYLE_ID);
+	if (existing) {
+		if (existing.textContent !== SCROLLBAR_CSS) {
+			existing.textContent = SCROLLBAR_CSS;
+		}
+		return;
+	}
+	const style = document.createElement('style');
+	style.id = STYLE_ID;
+	style.textContent = SCROLLBAR_CSS;
+	document.head.appendChild(style);
+};
+
+if ((import.meta as any).hot) {
+	(import.meta as any).hot.dispose(() => {
+		const el = document.getElementById(STYLE_ID);
+		if (el) el.remove();
+	});
+}
+
+const SCROLLBAR_CSS = `
+.scroll-bar {
+	display: none;
+}
+
+.scroll-bar.visible {
+	display: block;
+}
+
+.scroll-bar.horizontal {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 12px;
+}
+
+.scroll-bar.horizontal.with-corner {
+	width: calc(100% - 12px);
+}
+
+.scroll-bar.vertical {
+	position: absolute;
+	right: 0;
+	width: 12px;
+	height: 100%;
+}
+
+.scroll-bar.vertical.with-corner {
+	height: calc(100% - 12px);
+}
+
+.scroll-thumb {
+	position: absolute;
+	opacity: 1;
+	visibility: visible;
+	transition-property: opacity, visibility;
+	transition-delay: 0.4s;
+	transition-duration: 0.8s;
+}
+
+.scroll-bar:hover > .scroll-thumb,
+.scroll-bar:active > .scroll-thumb,
+.scroll-bar.dragging > .scroll-thumb {
+	transition-delay: 0s;
+	transition-duration: 0.2s;
+}
+
+.scroll-thumb-inner {
+	position: absolute;
+	left: 1px;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	background-color: var(--custom-scrollbar-thumb-background);
+	border: var(--custom-scrollbar-thumb-border);
+	border-radius: 2px;
+	pointer-events: none;
+}
+
+.scroll-thumb:hover > .scroll-thumb-inner,
+.scroll-thumb:active > .scroll-thumb-inner {
+	background-color: var(--custom-scrollbar-thumb-background-hover);
+}
+`;
+
+defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root });
+</script>
+
+<template>
+	<div ref="root" class="scroll-bar" :id="props.id" />
+</template>

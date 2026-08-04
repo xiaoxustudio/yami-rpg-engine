@@ -3715,7 +3715,7 @@
 	display: grid;
 	margin: 10px;
 	grid-gap: 4px;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
 }
 
 #scriptCommand-confirm {

@@ -5,9 +5,6 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSyn
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-// 伪元素/未迁移 CE 标签白名单：Vue 编译器识别为原生元素，避免 "component not found" 警告
-const CUSTOM_ELEMENT_TAGS = new Set<string>();
-
 // 递归复制目录（保留静态资源到 dist）
 const copyDirRecursive = (src: string, dest: string) => {
 	if (!existsSync(src)) return;
@@ -49,13 +46,7 @@ export default defineConfig({
 	base: './',
 
 	plugins: [
-		vue({
-			template: {
-				compilerOptions: {
-					isCustomElement: (tag: string) => CUSTOM_ELEMENT_TAGS.has(tag)
-				}
-			}
-		}),
+		vue(),
 		{
 			name: 'electron-renderer-resolve',
 			transform(code: string, id: string) {
@@ -219,6 +210,7 @@ export default defineConfig({
 			generateBundle(_: any, bundle: Record<string, any>) {
 				for (const name of Object.keys(bundle)) {
 					const c = bundle[name];
+					// oxlint-disable-next-line unicorn/prefer-string-starts-ends-with
 					if (c.type !== 'asset' || !/\.html$/.test(c.fileName || '')) continue;
 					const html = String(c.source ?? '');
 					const scripts = [...html.matchAll(/src="\.\/assets\/([^"]+\.js)"/g)].map(
@@ -285,9 +277,11 @@ export default defineConfig({
 				const deadline = Date.now() + 15000;
 				while (Date.now() < deadline) {
 					try {
+						// oxlint-disable-next-line no-await-in-loop
 						await fetch('http://localhost:5173');
 						break;
 					} catch {
+						// oxlint-disable-next-line no-await-in-loop
 						await new Promise((r) => setTimeout(r, 200));
 					}
 				}

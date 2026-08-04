@@ -151,7 +151,7 @@ tooltip-line {
 	display: grid;
 	margin: 4px 4px 4px 10px;
 	grid-gap: 4px;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
 }
 
 .detail-grid > .text {

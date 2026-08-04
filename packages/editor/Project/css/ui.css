@@ -1306,7 +1306,7 @@ node-item.related-event {
 	display: grid;
 	margin: 10px 4px 10px 10px;
 	grid-gap: 4px;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	line-height: 20px;
 	white-space: nowrap;
 }
