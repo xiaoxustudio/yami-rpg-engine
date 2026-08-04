@@ -50,6 +50,7 @@ export {
 	type SelectItem,
 	type SelectTarget
 } from './components/basic/YMSelectList/select-list-api';
+export { default as YMMarqueeArea } from './components/business/YMMarqueeArea/YMMarqueeArea.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';
