@@ -53,7 +53,7 @@ defineExpose({ show, dismiss, root });
 	pointer-events: none;
 }
 
-.manager :global(.toast) {
+.manager :global(:where(.toast)) {
 	pointer-events: auto;
 	min-width: 200px;
 	padding: var(--ym-space-2) var(--ym-space-3);
@@ -71,36 +71,36 @@ defineExpose({ show, dismiss, root });
 		transform 0.2s ease;
 }
 
-.manager :global(.toast-show) {
+.manager :global(:where(.toast-show)) {
 	opacity: 1;
 	transform: none;
 }
 
-.manager :global(.toast-hide) {
+.manager :global(:where(.toast-hide)) {
 	opacity: 0;
 	transform: translateY(8px);
 }
 
-.manager :global(.toast-text) {
+.manager :global(:where(.toast-text)) {
 	display: inline-block;
 }
 
-.manager :global(.toast-close) {
+.manager :global(:where(.toast-close)) {
 	float: right;
 	margin-left: var(--ym-space-2);
 	cursor: pointer;
 	opacity: 0.6;
 }
 
-.manager :global(.toast-close):hover {
+.manager :global(:where(.toast-close)):hover {
 	opacity: 1;
 }
 
-.manager :global(.toast-error) {
+.manager :global(:where(.toast-error)) {
 	border-color: var(--ym-color-danger);
 }
 
-.manager :global(.toast-success) {
+.manager :global(:where(.toast-success)) {
 	border-color: var(--ym-color-primary);
 }
 </style>

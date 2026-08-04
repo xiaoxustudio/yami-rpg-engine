@@ -80,7 +80,7 @@ onMounted(() => {
 	display: block;
 }
 
-.box:global([open]) > :global(.detail-summary)::before {
+.box:global([open]) > :global(:where(.detail-summary))::before {
 	content: '';
 	display: block;
 	position: absolute;
@@ -90,7 +90,7 @@ onMounted(() => {
 	border-top: 8px solid var(--ym-color-text-unit);
 }
 
-.box:global(:not([open])) > :global(.detail-summary)::before {
+.box:global(:not([open])) > :global(:where(.detail-summary))::before {
 	content: '';
 	display: block;
 	position: absolute;

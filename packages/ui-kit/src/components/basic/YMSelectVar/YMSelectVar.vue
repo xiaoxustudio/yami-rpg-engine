@@ -200,7 +200,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.select-var) {
+:global(:where(.select-var)) {
 	position: relative;
 	display: block;
 }

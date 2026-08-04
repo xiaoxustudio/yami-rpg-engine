@@ -208,7 +208,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.file-var) {
+:global(:where(.file-var)) {
 	position: relative;
 	display: block;
 }

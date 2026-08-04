@@ -131,18 +131,18 @@ defineExpose({ read, write, unselect, on, root });
 	user-select: none;
 }
 
-.bar :global(.nav-item) {
+.bar :global(:where(.nav-item)) {
 	padding: var(--ym-space-1) var(--ym-space-3);
 	cursor: pointer;
 	border-radius: var(--ym-radius-sm);
 	white-space: nowrap;
 }
 
-.bar :global(.nav-item):hover {
+.bar :global(:where(.nav-item)):hover {
 	background-color: var(--ym-color-surface-hover);
 }
 
-.bar :global(.nav-item.selected) {
+.bar :global(:where(.nav-item.selected)) {
 	background-color: var(--ym-color-selected);
 	color: var(--ym-color-on-primary);
 }

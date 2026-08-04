@@ -124,7 +124,7 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 	height: 20px;
 }
 
-.box:global(.disabled) {
+.box:global(:where(.disabled)) {
 	opacity: 0.5;
 	pointer-events: none;
 }

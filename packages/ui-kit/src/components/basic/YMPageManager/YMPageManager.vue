@@ -122,13 +122,13 @@ defineExpose({ switch: switchover, on, root });
 	overflow: hidden;
 }
 
-.manager :global(.page-frame) {
+.manager :global(:where(.page-frame)) {
 	position: absolute;
 	inset: 0;
 	display: none;
 }
 
-.manager :global(.page-frame.visible) {
+.manager :global(:where(.page-frame.visible)) {
 	display: block;
 }
 </style>

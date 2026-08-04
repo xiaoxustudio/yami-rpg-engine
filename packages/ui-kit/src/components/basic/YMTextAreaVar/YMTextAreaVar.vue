@@ -214,7 +214,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.text-area-var) {
+:global(:where(.text-area-var)) {
 	position: relative;
 	display: block;
 }

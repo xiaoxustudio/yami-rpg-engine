@@ -514,14 +514,14 @@ onBeforeUnmount(() => {
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.popup :global(.select-item) {
+.popup :global(:where(.select-item)) {
 	padding: var(--ym-space-1) var(--ym-space-3);
 	cursor: pointer;
 	white-space: nowrap;
 }
 
-.popup :global(.select-item:hover),
-.popup :global(.select-item.selected) {
+.popup :global(:where(.select-item:hover)),
+.popup :global(:where(.select-item.selected)) {
 	background-color: var(--ym-color-selected);
 	color: var(--ym-color-on-primary);
 }

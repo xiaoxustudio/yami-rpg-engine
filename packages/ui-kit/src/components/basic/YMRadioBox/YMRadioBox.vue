@@ -111,13 +111,13 @@ defineExpose({ root, select });
 	user-select: none;
 }
 
-.radioBox:global(.standard) {
+.radioBox:global(:where(.standard)) {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-.radioBox:global(.standard):focus .radioMark {
+.radioBox:global(:where(.standard)):focus .radioMark {
 	border-color: var(--ym-color-input-border-focus);
 }
 
@@ -142,11 +142,11 @@ defineExpose({ root, select });
 	opacity: 0;
 }
 
-.radioBox:global(.selected) .radioMark::before {
+.radioBox:global(:where(.selected)) .radioMark::before {
 	opacity: 1;
 }
 
-.radioBox:global(.disabled) {
+.radioBox:global(:where(.disabled)) {
 	pointer-events: none;
 	opacity: 0.5;
 }

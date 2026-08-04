@@ -214,7 +214,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.string-var) {
+:global(:where(.string-var)) {
 	position: relative;
 	display: block;
 }

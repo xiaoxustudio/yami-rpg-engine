@@ -79,23 +79,23 @@ const onPointerdown = (event: PointerEvent): void => {
 	user-select: none;
 }
 
-.switchItem:global(.zero) {
+.switchItem:global(:where(.zero)) {
 	background-color: var(--ym-color-input-bg);
 }
 
-.switchItem:global(.one) {
+.switchItem:global(:where(.one)) {
 	background-color: var(--ym-color-primary);
 }
 
-.switchItem:global(.two) {
+.switchItem:global(:where(.two)) {
 	background-color: var(--ym-color-primary-hover);
 }
 
-.switchItem:global(.three) {
+.switchItem:global(:where(.three)) {
 	background-color: var(--ym-color-danger);
 }
 
-.switchItem:global(.disabled) {
+.switchItem:global(:where(.disabled)) {
 	pointer-events: none;
 	opacity: 0.5;
 }

@@ -78,13 +78,13 @@ const onKeydown = (event: KeyboardEvent): void => {
 	user-select: none;
 }
 
-.checkBox:global(.standard) {
+.checkBox:global(:where(.standard)) {
 	display: block;
 	padding: 2px 0;
 	line-height: 16px;
 }
 
-.checkBox:global(.standard):focus .checkMark {
+.checkBox:global(:where(.standard)):focus .checkMark {
 	border-color: var(--ym-color-input-border-focus);
 }
 
@@ -116,28 +116,28 @@ const onKeydown = (event: KeyboardEvent): void => {
 	opacity: 0;
 }
 
-.checkBox:global(.selected) .checkMark::before {
+.checkBox:global(:where(.selected)) .checkMark::before {
 	opacity: 1;
 }
 
-.checkBox:global(.large) {
+.checkBox:global(:where(.large)) {
 	padding: 0;
 	line-height: 20px;
 }
 
-.checkBox:global(.large) .checkMark {
+.checkBox:global(:where(.large)) .checkMark {
 	width: 20px;
 	height: 20px;
 }
 
-.checkBox:global(.large) .checkMark::before {
+.checkBox:global(:where(.large)) .checkMark::before {
 	width: 20px;
 	height: 20px;
 	line-height: 20px;
 	font-size: 1.5em;
 }
 
-.checkBox:global(.disabled) {
+.checkBox:global(:where(.disabled)) {
 	pointer-events: none;
 	opacity: 0.5;
 }

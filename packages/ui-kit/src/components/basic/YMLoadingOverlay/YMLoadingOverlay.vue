@@ -49,7 +49,7 @@ watch(
 	z-index: 9999;
 }
 
-.overlay:global(.visible) {
+.overlay:global(:where(.visible)) {
 	display: flex;
 }
 

@@ -25,6 +25,22 @@ export { default as YMStringVar } from './components/basic/YMStringVar/YMStringV
 export { default as YMTextAreaVar } from './components/basic/YMTextAreaVar/YMTextAreaVar.vue';
 export { default as YMSelectVar } from './components/basic/YMSelectVar/YMSelectVar.vue';
 export { default as YMFileVar } from './components/basic/YMFileVar/YMFileVar.vue';
+export { default as YMMenuList } from './components/basic/YMMenuList/YMMenuList.vue';
+export {
+	createMenuApi,
+	createMenuListElement,
+	type MenuApi,
+	type MenuItem,
+	type MenuOptions
+} from './components/basic/YMMenuList/menu-api';
+export { default as YMTreeList } from './components/basic/YMTreeList/YMTreeList.vue';
+export {
+	createTreeListApi,
+	createTreeListElement,
+	treeListPrototype,
+	treeListStatics,
+	type TreeListApiOptions
+} from './components/basic/YMTreeList/tree-api';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

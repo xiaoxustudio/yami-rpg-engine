@@ -245,7 +245,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.number-var) {
+:global(:where(.number-var)) {
 	position: relative;
 	display: block;
 }

@@ -253,7 +253,7 @@ onMounted(() => {
 </template>
 
 <style module>
-:global(.number-box) {
+:global(:where(.number-box)) {
 	display: block;
 	position: relative;
 	width: auto;
@@ -268,16 +268,16 @@ onMounted(() => {
 	overflow: hidden;
 }
 
-:global(.number-box.disabled) {
+:global(:where(.number-box.disabled)) {
 	pointer-events: none;
 	background-color: var(--ym-color-input-bg-disabled);
 }
 
-:global(.number-box:focus-within) {
+:global(:where(.number-box:focus-within)) {
 	border-color: var(--ym-color-input-border-focus);
 }
 
-:global(.number-box > .label) {
+:global(:where(.number-box > .label)) {
 	position: absolute;
 	padding: 0 4px;
 	left: 0;
@@ -286,19 +286,19 @@ onMounted(() => {
 	color: var(--ym-color-text-unit);
 }
 
-:global(.number-box > .label.red) {
+:global(:where(.number-box > .label.red)) {
 	color: var(--ym-color-danger);
 }
 
-:global(.number-box > .label.green) {
+:global(:where(.number-box > .label.green)) {
 	color: #00c000;
 }
 
-:global(.number-box > .label.blue) {
+:global(:where(.number-box > .label.blue)) {
 	color: #0000ff;
 }
 
-:global(.number-box > .unit) {
+:global(:where(.number-box > .unit)) {
 	position: absolute;
 	padding: 0 4px;
 	right: 0;
@@ -307,7 +307,7 @@ onMounted(() => {
 	color: var(--ym-color-text-unit);
 }
 
-:global(.number-box-input) {
+:global(:where(.number-box-input)) {
 	position: absolute;
 	margin: 0;
 	padding: 4px;
