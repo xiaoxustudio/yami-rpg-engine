@@ -20,6 +20,7 @@ export { default as YMCommonList } from './components/basic/YMCommonList/YMCommo
 export { default as YMScrollBar } from './components/basic/YMScrollBar/YMScrollBar.vue';
 export { default as YMSelectBox } from './components/basic/YMSelectBox/YMSelectBox.vue';
 export { default as YMColorBox } from './components/basic/YMColorBox/YMColorBox.vue';
+export { default as YMNumberVar } from './components/basic/YMNumberVar/YMNumberVar.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

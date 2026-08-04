@@ -39,7 +39,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 文本�? * --------------------------------
+ * 文本框 * --------------------------------
  */
 .text-box {
 	display: block;
@@ -164,7 +164,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 键盘按键�? * --------------------------------
+ * 键盘按键 * --------------------------------
  */
 .keyboard-box {
 	display: block;
@@ -199,7 +199,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 手柄按键�? * --------------------------------
+ * 手柄按键 * --------------------------------
  */
 .gamepad-box {
 	display: block;
@@ -234,7 +234,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 颜色�? * --------------------------------
+ * 颜色 * --------------------------------
  */
 .color-box {
 	display: block;
@@ -475,7 +475,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 数字�? * --------------------------------
+ * 数字 * --------------------------------
  */
 .number-box {
 	display: block;
@@ -545,22 +545,22 @@ button:focus {
 }
 
 /* --------------------------------
- * 数字变量�? * --------------------------------
+ * 数字变量 * --------------------------------
  */
-.number-var:focus-within::before {
+.number-var::before {
 	position: absolute;
 	margin-left: -2em;
-	/* 不知是何原因，即时创建的number-var元素，标签行高不�?0px */
+	/* 不知是何原因，即时创建的number-var元素，标签行高不足20px */
 	line-height: 20px;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-.number-var.constant:focus-within::before {
+.number-var.constant::before {
 	content: 'num';
 }
 
-.number-var.variable:focus-within::before {
+.number-var.variable::before {
 	content: ' var';
 }
 
@@ -568,83 +568,83 @@ button:focus {
  * 字符串变量框
  * --------------------------------
  */
-.string-var:focus-within::before {
+.string-var::before {
 	position: absolute;
 	margin-left: -2em;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-.string-var.constant:focus-within::before {
+.string-var.constant::before {
 	content: 'str';
 }
 
-.string-var.variable:focus-within::before {
+.string-var.variable::before {
 	content: ' var';
 }
 
 /* --------------------------------
- * 文本区域变量�? * --------------------------------
+ * 文本区域变量 * --------------------------------
  */
 .text-area-var > .text-area {
 	height: 100%;
 }
 
-.text-area-var:focus-within::before {
+.text-area-var::before {
 	position: absolute;
 	margin-left: -2em;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-.text-area-var.constant:focus-within::before {
+.text-area-var.constant::before {
 	content: 'str';
 }
 
-.text-area-var.variable:focus-within::before {
+.text-area-var.variable::before {
 	content: ' var';
 }
 
 /* --------------------------------
- * 选择变量�? * --------------------------------
+ * 选择变量 * --------------------------------
  */
-.select-var:focus-within::before {
+.select-var::before {
 	position: absolute;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-.select-var.constant:focus-within::before {
+.select-var.constant::before {
 	content: 'enum';
 	margin-left: -2.6em;
 }
 
-.select-var.variable:focus-within::before {
+.select-var.variable::before {
 	content: 'var';
 	margin-left: -2em;
 }
 
 /* --------------------------------
- * 文件变量�? * --------------------------------
+ * 文件变量 * --------------------------------
  */
-.file-var:focus-within::before {
+.file-var::before {
 	position: absolute;
 	font-family: var(--font-family-mono);
 	color: var(--text-color-disabled);
 }
 
-.file-var.constant:focus-within::before {
+.file-var.constant::before {
 	content: 'file';
 	margin-left: -2.6em;
 }
 
-.file-var.variable:focus-within::before {
+.file-var.variable::before {
 	content: 'var';
 	margin-left: -2em;
 }
 
 /* --------------------------------
- * 选择�? * --------------------------------
+ * 选择框 * --------------------------------
  */
 .select-box {
 	display: block;
@@ -713,7 +713,7 @@ button:focus {
 	overflow-y: auto;
 }
 
-/* 指针在列表底部边框触�?mousemove 事件�? * position: relative 事件目标为列表本�? * position: static 事件目标为列表选项
+/* 指针在列表底部边框触发 mousemove 事件\n * position: relative 事件目标为列表本体\n * position: static 事件目标为列表选项
  */
 .select-item {
 	display: block;
@@ -911,7 +911,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 滤镜�? * --------------------------------
+ * 滤镜 * --------------------------------
  */
 .filter-box {
 	display: block;
@@ -921,7 +921,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 标签�? * --------------------------------
+ * 标签框 * --------------------------------
  */
 #title-tabBar {
 	flex-grow: 1;
@@ -997,7 +997,7 @@ button:focus {
 }
 
 /* --------------------------------
- * 导航�? * --------------------------------
+ * 导航栏 * --------------------------------
  */
 /* 使用本地字体让导航项目的宽度固定 */
 .nav-bar {
@@ -1439,7 +1439,7 @@ lock-icon:hover {
 }
 
 /* --------------------------------
- * 普通列�? * --------------------------------
+ * 普通列表 * --------------------------------
  */
 .common-list {
 	overflow-x: hidden;
@@ -1514,7 +1514,7 @@ common-item:hover {
 	background-color: var(--selected-background);
 }
 
-/* display: flex 无法显示省略�?*/
+/* display: flex 无法显示省略号 */
 .param-item.one-column {
 	display: block;
 	overflow: hidden;
@@ -2386,7 +2386,7 @@ file-body-name {
 	line-height: 15px;
 }
 
-/* 必须指定file-body-item的宽�? 否则可能�?px高度 */
+/* 必须指定file-body-item的宽度，否则可能是0px高度 */
 .file-body-content.small > file-body-item {
 	width: 40px;
 	height: 72px;
@@ -2535,7 +2535,7 @@ file-body-name {
 }
 
 /* --------------------------------
- * 设置文本�? * --------------------------------
+ * 设置文本 * --------------------------------
  */
 #setTextBox {
 	width: 324px;
@@ -2557,7 +2557,7 @@ file-body-name {
 }
 
 /* --------------------------------
- * 设置文本�?- 属�? * --------------------------------
+ * 设置文本 - 属性 * --------------------------------
  */
 #setTextBox-property {
 	width: 324px;
@@ -2598,7 +2598,7 @@ file-body-name {
 }
 
 /* --------------------------------
- * 设置按钮 - 属�? * --------------------------------
+ * 设置按钮 - 属性 * --------------------------------
  */
 #setButton-property {
 	width: 324px;
