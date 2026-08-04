@@ -51,6 +51,13 @@ export const css = (el: any): CSSStyleDeclaration => getComputedStyle(el);
 
 export const rect = (el: any): DOMRect => el.getBoundingClientRect();
 
+export const read = (el: any): any => {
+	if (typeof (el as any).read === 'function') {
+		return (el as any).read();
+	}
+	return (el as any).dataValue;
+};
+
 export const hasScrollBar = (el: any): boolean =>
 	el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 
