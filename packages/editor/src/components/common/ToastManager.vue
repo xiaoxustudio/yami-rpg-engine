@@ -1,47 +1,37 @@
 <template>
-	<div class="toast-manager" ref="root"></div>
+	<YMToastManager ref="ym" />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { on } from '@/util/element-utils.ts';
+import { computed, onMounted, ref } from 'vue';
+import { YMToastManager } from '@ui-kit';
 
-const root = ref<HTMLElement | null>(null);
+interface ToastManagerElement extends HTMLElement {
+	show(message: string, type?: string, duration?: number): HTMLDivElement;
+	dismiss(el: HTMLElement | null): void;
+}
+
+const ym = ref<{
+	show(message: string, type?: string, duration?: number): HTMLDivElement;
+	dismiss(el: HTMLElement | null): void;
+	root: HTMLElement | null;
+} | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const show = (
 	message: string,
 	type: string = 'info',
 	duration: number = 4000
-): HTMLDivElement => {
-	const el = document.createElement('div');
-	el.className = `toast toast-${type}`;
-	const text = document.createElement('span');
-	text.className = 'toast-text';
-	text.textContent = message;
-	const close = document.createElement('span');
-	close.className = 'toast-close';
-	close.textContent = '×';
-	on(close, 'click', () => dismiss(el));
-	el.appendChild(text);
-	el.appendChild(close);
-	root.value?.appendChild(el);
-	requestAnimationFrame(() => el.classList.add('toast-show'));
-	if (duration > 0) {
-		(el as HTMLDivElement & { _timer: ReturnType<typeof setTimeout> })._timer = setTimeout(
-			() => dismiss(el),
-			duration
-		);
-	}
-	return el;
-};
+): HTMLDivElement => ym.value?.show(message, type, duration) as HTMLDivElement;
 
-const dismiss = (el: HTMLElement | null): void => {
-	if (!el || el.parentNode !== root.value) return;
-	clearTimeout((el as HTMLElement & { _timer: ReturnType<typeof setTimeout> })._timer);
-	el.classList.remove('toast-show');
-	el.classList.add('toast-hide');
-	setTimeout(() => el.remove(), 200);
-};
+const dismiss = (el: HTMLElement | null): void => ym.value?.dismiss(el);
 
 defineExpose({ show, dismiss, root });
+
+onMounted(() => {
+	const el = root.value as ToastManagerElement | null;
+	if (!el) return;
+	el.show = show;
+	el.dismiss = dismiss;
+});
 </script>
