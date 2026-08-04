@@ -1,5 +1,5 @@
 import { radioProxyMap, createRadioProxy, type RadioProxyElement } from './radio-proxy.ts';
-import { on, hasClass } from '@/util/element-utils.ts';
+import { on, addClass, hasClass } from '@/util/element-utils.ts';
 
 export interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;
@@ -107,7 +107,8 @@ export function attachRadioBoxApi(el: HTMLElement): void {
 	let mark: HTMLElement | null = null;
 	switch (hasClass(box, 'standard')) {
 		case true: {
-			mark = document.createElement('radio-mark');
+			mark = document.createElement('span');
+			addClass(mark, 'radio-mark');
 			on(box, 'click', mouseclick);
 			break;
 		}

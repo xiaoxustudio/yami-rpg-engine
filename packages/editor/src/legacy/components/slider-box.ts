@@ -34,8 +34,10 @@ interface SliderBoxElement extends HTMLElement {
 export function attachSliderBoxApi(el: HTMLElement): void {
 	const box = el as SliderBoxElement;
 
-	const bar = document.createElement('slider-bar');
-	const filler = document.createElement('slider-filler');
+	const bar = document.createElement('div');
+	const filler = document.createElement('div');
+	addClass(bar, 'slider-bar');
+	addClass(filler, 'slider-filler');
 	bar.appendChild(filler);
 
 	const input = document.createElement('input');

@@ -1,18 +1,21 @@
 <template>
-	<div
-		class="radio-box"
-		ref="root"
-		:id="props.id"
+	<YMRadioBox
+		ref="ym"
 		:name="props.name"
-		:class="props.standard ? 'standard' : ''"
+		:value="props.value"
+		:standard="isStandard"
+		:disabled="isDisabled"
+		:selected="isSelected"
+		:id="props.id"
+		@select="onSelect"
 	>
 		<slot />
-	</div>
+	</YMRadioBox>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
-import { on as onElement, hasClass } from '@/util/element-utils';
+import { computed, onMounted, reactive, ref, useAttrs, watch } from 'vue';
+import { YMRadioBox } from '@ui-kit';
 import {
 	createRadioProxy,
 	radioProxyMap,
@@ -55,57 +58,26 @@ const emit = defineEmits<{
 	change: [value: any];
 }>();
 
-const root = ref<RadioBoxElement | null>(null);
+const ym = ref<{
+	root: HTMLElement | null;
+	select(): void;
+} | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const state = reactive({
 	proxy: null as RadioProxyElement | null,
-	dataValue: '' as number | string | boolean,
-	mark: null as HTMLElement | null
+	dataValue: '' as number | string | boolean
 });
 
-const keydown = (event: KeyboardEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (event.code) {
-		case 'Enter':
-		case 'NumpadEnter':
-			if (!event.cmdOrCtrlKey && !hasClass(el, 'disabled')) {
-				event.stopPropagation();
-				mouseclick(event);
-			}
-			break;
-	}
-};
+const isDisabled = ref(props.disabled);
+const isSelected = ref(false);
 
-const pointerdown = (event: PointerEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (event.button) {
-		case 0:
-			if (!hasClass(el, 'selected')) {
-				if (document.activeElement !== document.body) {
-					document.activeElement.blur();
-				}
-				state.proxy?.input(state.dataValue);
-			} else if (state.proxy?.cancelable) {
-				if (document.activeElement !== document.body) {
-					document.activeElement.blur();
-				}
-				state.proxy.reset();
-			}
-			break;
-	}
-};
-
-const mouseclick = (event: Event): void => {
-	const el = root.value;
-	if (!el) return;
-	if (!hasClass(el, 'selected')) {
-		state.proxy?.input(state.dataValue);
-	} else if (state.proxy?.cancelable) {
-		state.proxy.reset();
-	}
-};
+const attrs = useAttrs();
+const isStandard = computed(
+	() =>
+		props.standard ||
+		(typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
+);
 
 const read = (): any => state.proxy?.read();
 const write = (value: any): void => {
@@ -131,12 +103,26 @@ const on = (
 	state.proxy?.on(type, listener, options);
 };
 
+const syncSelected = (): void => {
+	isSelected.value = state.proxy?.read() === state.dataValue;
+};
+
+const onSelect = (): void => {
+	const proxy = state.proxy;
+	if (!proxy) return;
+	if (!isSelected.value) {
+		proxy.input(state.dataValue);
+	} else if (proxy.cancelable) {
+		proxy.reset();
+	}
+};
+
 defineExpose({ read, write, input, enable, disable, relate, on, root });
 
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as RadioBoxElement | null;
 	if (!el) return;
 
 	const string = String(props.value ?? '');
@@ -166,21 +152,18 @@ onMounted(() => {
 		el.appendChild(proxy);
 	}
 
-	onElement(el, 'keydown', keydown);
-	if (hasClass(el, 'standard')) {
-		state.mark = document.createElement('radio-mark');
-		el.tabIndex = 0;
-		onElement(el, 'click', mouseclick);
-	} else {
-		onElement(el, 'pointerdown', pointerdown);
-	}
-	if (state.mark) {
-		el.insertBefore(state.mark, el.childNodes[0] || null);
-	}
-
-	proxy.on('write', (e: any) => emit('write', e.value));
-	proxy.on('input', (e: any) => emit('input', e.value));
-	proxy.on('change', (e: any) => emit('change', e.value));
+	proxy.on('write', (e: any) => {
+		emit('write', e.value);
+		syncSelected();
+	});
+	proxy.on('input', (e: any) => {
+		emit('input', e.value);
+		syncSelected();
+	});
+	proxy.on('change', () => {
+		emit('change', proxy.read());
+		syncSelected();
+	});
 	if (props.disabled) disable();
 
 	el.read = read;
@@ -190,5 +173,7 @@ onMounted(() => {
 	el.disable = disable;
 	el.relate = relate;
 	el.on = on;
+
+	syncSelected();
 });
 </script>

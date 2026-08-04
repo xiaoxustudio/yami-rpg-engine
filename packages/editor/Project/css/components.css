@@ -370,11 +370,11 @@ button:focus {
 	line-height: 16px;
 }
 
-.radio-box.standard:focus > radio-mark {
+.radio-box.standard:focus > .radio-mark {
 	border-color: var(--input-border-color-focus);
 }
 
-radio-mark {
+.radio-mark {
 	display: inline-block;
 	position: static;
 	vertical-align: top;
@@ -386,7 +386,7 @@ radio-mark {
 	border-radius: 50%;
 }
 
-.radio-box > radio-mark::before {
+.radio-box > .radio-mark::before {
 	content: ' ';
 	position: absolute;
 	margin: -1px;
@@ -399,11 +399,11 @@ radio-mark {
 	opacity: 0;
 }
 
-.radio-box.selected > radio-mark::before {
+.radio-box.selected > .radio-mark::before {
 	opacity: 1;
 }
 
-.radio-box:active > radio-mark::before {
+.radio-box:active > .radio-mark::before {
 	opacity: 0.5;
 }
 
@@ -428,7 +428,7 @@ radio-mark {
 	background-color: var(--input-background-disabled);
 }
 
-slider-bar {
+.slider-bar {
 	position: absolute;
 	margin-top: auto;
 	margin-bottom: auto;
@@ -441,7 +441,7 @@ slider-bar {
 	border-radius: 2px;
 }
 
-slider-filler {
+.slider-filler {
 	position: absolute;
 	height: 100%;
 	background-color: var(--slider-filler-background);

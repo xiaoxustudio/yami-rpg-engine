@@ -1,9 +1,20 @@
 <template>
-	<div ref="root" class="slider-box" :id="props.id" :hotkey="props.hotkey || undefined" />
+	<YMSliderBox
+		ref="ym"
+		:model-value="props.modelValue"
+		:min="props.min"
+		:max="props.max"
+		:step="props.step"
+		:hotkey="props.hotkey"
+		:active-wheel="props.activeWheel"
+		:disabled="isDisabled"
+		:id="props.id"
+	/>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { YMSliderBox } from '@ui-kit';
 import {
 	addClass,
 	removeClass,
@@ -61,48 +72,44 @@ const emit = defineEmits<{
 	blur: [event: FocusEvent];
 }>();
 
-const root = ref<SliderBoxElement | null>(null);
-
+const isDisabled = ref(props.disabled);
 const state = reactive({
 	focusEventEnabled: false,
 	blurEventEnabled: false
 });
 
-let filler: HTMLElement | null = null;
-let input: HTMLInputElement | null = null;
+const ym = ref<{
+	root: HTMLElement | null;
+	bar: HTMLElement | null;
+	filler: HTMLElement | null;
+	input: HTMLInputElement | null;
+	read(): number;
+	write(value: number | string): void;
+	updateFiller(): void;
+} | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
+const input = computed<HTMLInputElement | null>(() => ym.value?.input ?? null);
 
-const read = (): number => (input ? parseFloat(input.value) : 0);
+const read = (): number => ym.value?.read() ?? 0;
 
-const updateFiller = (): void => {
-	if (!filler || !input) return;
-	const value = read();
-	if ((filler as any).value !== value) {
-		(filler as any).value = value;
-		const min = parseFloat(input.min);
-		const max = parseFloat(input.max);
-		if (min !== max) {
-			const p = Math.roundTo(((value - min) * 100) / (max - min), 6);
-			filler.style.width = `${p}%`;
-		}
-	}
-};
+const write = (value: any): void => ym.value?.write(value);
 
-const write = (value: any): void => {
-	if (!input) return;
-	input.value = value;
-	updateFiller();
-};
+const updateFiller = (): void => ym.value?.updateFiller();
 
 const enable = (): void => {
 	const el = root.value;
-	if (el && removeClass(el, 'disabled')) {
+	if (el && isDisabled.value) {
+		isDisabled.value = false;
+		removeClass(el, 'disabled');
 		showChildNodes(el);
 	}
 };
 
 const disable = (): void => {
 	const el = root.value;
-	if (el && addClass(el, 'disabled')) {
+	if (el && !isDisabled.value) {
+		isDisabled.value = true;
+		addClass(el, 'disabled');
 		hideChildNodes(el);
 	}
 };
@@ -126,12 +133,12 @@ const synchronize = (target: any): void => {
 
 		const sliderInput = (event?: any) => {
 			writeNumber.call(number, readElement(slider));
-			event && number.dispatchEvent(new Event('input'));
+			if (event) number.dispatchEvent(new Event('input'));
 		};
 
 		const numberInput = (event?: any) => {
 			writeSlider.call(slider, readElement(number));
-			event && slider.dispatchEvent(new Event('input'));
+			if (event) slider.dispatchEvent(new Event('input'));
 		};
 
 		slider.synchronizer = target;
@@ -164,7 +171,7 @@ const on = (
 		case 'focus':
 			if (!state.focusEventEnabled) {
 				state.focusEventEnabled = true;
-				input?.addEventListener('focus', () => {
+				input.value?.addEventListener('focus', () => {
 					el.dispatchEvent(new FocusEvent('focus'));
 				});
 			}
@@ -172,7 +179,7 @@ const on = (
 		case 'blur':
 			if (!state.blurEventEnabled) {
 				state.blurEventEnabled = true;
-				input?.addEventListener('blur', () => {
+				input.value?.addEventListener('blur', () => {
 					el.dispatchEvent(new FocusEvent('blur'));
 				});
 			}
@@ -182,37 +189,22 @@ const on = (
 
 defineExpose({ read, write, enable, disable, synchronize, on, root });
 
-watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 watch(() => props.activeWheel, (val) => {
-	if (root.value) root.value.activeWheel = val;
+	const el = root.value as SliderBoxElement | null;
+	if (el) el.activeWheel = val;
 });
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as SliderBoxElement | null;
 	if (!el) return;
+	const inputEl = input.value;
+	const fillerEl = ym.value?.filler ?? null;
+	const barEl = ym.value?.bar ?? null;
 
-	const bar = document.createElement('slider-bar');
-	const fillerEl = document.createElement('slider-filler');
-	bar.appendChild(fillerEl);
-
-	const inputEl = document.createElement('input');
-	addClass(inputEl, 'slider-input');
-	inputEl.type = 'range';
-	inputEl.tabIndex = -1;
-	inputEl.min = String(props.min);
-	inputEl.max = String(props.max);
-	inputEl.step = String(props.step);
-
-	filler = fillerEl;
-	input = inputEl;
-
-	el.appendChild(bar);
-	el.appendChild(inputEl);
-
-	el.bar = bar;
-	el.filler = fillerEl;
-	el.input = inputEl;
+	el.bar = barEl as HTMLElement & { [k: string]: any };
+	el.filler = fillerEl as HTMLElement;
+	el.input = inputEl as HTMLInputElement;
 	el.synchronizer = null;
 	el.focusEventEnabled = false;
 	el.blurEventEnabled = false;
@@ -226,31 +218,11 @@ onMounted(() => {
 	el.on = on;
 
 	el.addEventListener('input', () => {
-		updateFiller();
 		const value = read();
 		emit('input', value);
 		emit('update:modelValue', value);
 	});
 
-	inputEl.addEventListener('wheel', (event) => {
-		if (event.deltaY === 0) return;
-		if (el.activeWheel) {
-			event.preventDefault();
-			const last = inputEl.value;
-			inputEl.value = String(
-				Math.roundTo(parseFloat(inputEl.value) + parseFloat(inputEl.step) * (event.deltaY > 0 ? -1 : 1), 2)
-			);
-			if (inputEl.value !== last) {
-				inputEl.dispatchEvent(
-					new Event('input', {
-						bubbles: true
-					})
-				);
-			}
-		}
-	});
-
-	write(props.modelValue);
 	if (props.disabled) disable();
 });
 </script>

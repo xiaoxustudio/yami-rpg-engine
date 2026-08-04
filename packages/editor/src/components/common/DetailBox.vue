@@ -1,11 +1,28 @@
 <template>
-	<div class="detail-box" ref="root" :id="props.id" :open="state.open ? '' : undefined">
+	<YMDetailBox
+		ref="ym"
+		:open="props.open"
+		:id="props.id"
+		@toggle="onToggle"
+	>
 		<slot />
-	</div>
+	</YMDetailBox>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { YMDetailBox } from '@ui-kit';
+
+interface DetailBoxElement extends HTMLElement {
+	toggle(): void;
+	open(): void;
+	close(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
 
 interface Props {
 	id?: string;
@@ -21,55 +38,26 @@ const emit = defineEmits<{
 }>();
 
 const state = reactive({
-	open: false,
 	toggleEventEnabled: false
 });
 
-const root = ref<HTMLElement | null>(null);
+const ym = ref<{ root: HTMLElement | null; toggle(): void; open(): void; close(): void } | null>(
+	null
+);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const isSummary = (node: Element): boolean =>
-	node.classList.contains('detail-summary') ||
-	node.tagName.toLowerCase() === 'detail-summary';
+const toggle = (): void => ym.value?.toggle();
+const open = (): void => ym.value?.open();
+const close = (): void => ym.value?.close();
 
-const apply = (open: boolean): void => {
-	const el = root.value;
-	if (!el) return;
-	for (const node of el.children) {
-		if (!isSummary(node)) {
-			if (open) {
-				node.classList.remove('hidden');
-			} else {
-				node.classList.add('hidden');
-			}
-		}
-	}
-};
-
-const dispatchToggle = (value: string): void => {
+const onToggle = (value: string): void => {
 	emit('toggle', value);
-	const el = root.value;
 	if (state.toggleEventEnabled) {
 		const toggle = new Event('toggle');
 		toggle.value = value;
-		el?.dispatchEvent(toggle);
+		root.value?.dispatchEvent(toggle);
 	}
 };
-
-const open = (): void => {
-	if (state.open) return;
-	state.open = true;
-	apply(true);
-	dispatchToggle('open');
-};
-
-const close = (): void => {
-	if (!state.open) return;
-	state.open = false;
-	apply(false);
-	dispatchToggle('closed');
-};
-
-const toggle = (): void => (state.open ? close() : open());
 
 const on = (
 	type: string,
@@ -86,17 +74,17 @@ const on = (
 
 defineExpose({ toggle, open, close, on, root });
 
-watch(() => props.open, (val) => (val ? open() : close()));
-
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as DetailBoxElement | null;
 	if (!el) return;
-	el.toggle = toggle;
-	el.open = open;
-	el.close = close;
-	el.on = on;
-	if (props.open) {
-		open();
-	}
+	const define = (key: string, value: unknown): void => {
+		Object.defineProperty(el, key, { value, writable: true, configurable: true, enumerable: false });
+	};
+	// note: do not expose `open` on the element because it collides with the
+	// boolean `open` DOM attribute/HTML attribute and breaks Vue's patcher
+	// (element would receive both attribute and property updates incorrectly).
+	define('toggle', toggle);
+	define('close', close);
+	define('on', on);
 });
 </script>

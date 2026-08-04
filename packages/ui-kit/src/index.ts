@@ -3,6 +3,10 @@ export { default as YMCheckBox } from './components/basic/YMCheckBox/YMCheckBox.
 export { default as YMSwitchItem } from './components/basic/YMSwitchItem/YMSwitchItem.vue';
 export { default as YMEmptyState } from './components/basic/YMEmptyState/YMEmptyState.vue';
 export { default as YMLoadingOverlay } from './components/basic/YMLoadingOverlay/YMLoadingOverlay.vue';
+export { default as YMDetailBox } from './components/basic/YMDetailBox/YMDetailBox.vue';
+export { default as YMDetailSummary } from './components/basic/YMDetailSummary/YMDetailSummary.vue';
+export { default as YMSliderBox } from './components/basic/YMSliderBox/YMSliderBox.vue';
+export { default as YMRadioBox } from './components/basic/YMRadioBox/YMRadioBox.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';
