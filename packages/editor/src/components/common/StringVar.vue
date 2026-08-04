@@ -1,43 +1,42 @@
 <template>
-	<div class="string-var" ref="root" :id="props.id">
-		<TextBox
-			v-if="state.mode === 'constant'"
-			ref="strBoxRef"
-			@update:model-value="(v: any) => (state.strValue = v)"
-		/>
-		<CustomBox
-			v-else-if="state.mode === 'variable'"
-			ref="varBoxRef"
-			type="variable"
-			filter="string"
-			:model-value="state.varValue ?? defVar"
-			@update:model-value="(v: any) => (state.varValue = v)"
-		/>
-	</div>
+	<YMStringVar ref="ym" :model-value="props.modelValue" :id="props.id">
+		<template #variable>
+			<CustomBox
+				ref="varBoxRef"
+				type="variable"
+				filter="string"
+				:model-value="state.varValue ?? defVar"
+				@update:model-value="(v: any) => (state.varValue = v)"
+			/>
+		</template>
+	</YMStringVar>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref, watch } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	getFocus as getFocusElement,
-	enable as enableElement,
-	disable as disableElement
-} from '@/util/element-utils';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { YMStringVar } from '@ui-kit';
 import { defVar } from '@/components/string-var';
-import TextBox from '@app/components/common/TextBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 
 interface Props {
 	id?: string;
+	modelValue?: any;
 }
 
-interface StringVarElement extends HTMLElement {
-	mode: string;
-	strBox: HTMLElement | null;
-	varBox: HTMLElement | null;
+const props = withDefaults(defineProps<Props>(), {
+	modelValue: null
+});
+
+const emit = defineEmits<{
+	'update:modelValue': [value: any];
+}>();
+
+const state = reactive({
+	varValue: null as any
+});
+
+const ym = ref<{
+	root: HTMLElement | null;
 	read(): any;
 	write(value: any): void;
 	switch(mode?: string): void;
@@ -49,19 +48,9 @@ interface StringVarElement extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
-
-const props = defineProps<Props>();
-
-const root = ref<StringVarElement | null>(null);
-const strBoxRef = ref<any>(null);
-const varBoxRef = ref<any>(null);
-
-const state = reactive({
-	mode: null as string | null,
-	strValue: '',
-	varValue: null as any
-});
+} | null>(null);
+const varBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const getChildRoot = (instance: any): HTMLElement | null => {
 	if (!instance) return null;
@@ -70,147 +59,36 @@ const getChildRoot = (instance: any): HTMLElement | null => {
 	return null;
 };
 
-const read = (): any => {
-	switch (state.mode) {
-		case 'constant':
-			return strBoxRef.value ? strBoxRef.value.read() : state.strValue;
-		case 'variable':
-			return varBoxRef.value ? varBoxRef.value.read() : state.varValue;
-	}
-};
+const read = (): any => ym.value?.read();
 
 const write = (value: any): void => {
-	switch (typeof value) {
-		case 'string':
-			switchMode('constant');
-			state.strValue = value;
-			strBoxRef.value?.write(value);
-			break;
-		case 'object':
-			switchMode('variable');
-			state.strValue = '';
-			strBoxRef.value?.write('');
-			break;
+	ym.value?.write(value);
+	if (typeof value === 'object' && value !== null) {
+		state.varValue = value;
+	} else {
+		state.varValue = null;
 	}
 };
 
-const switchMode = (target?: string): void => {
-	const el = root.value;
-	const focus = !target && !!el && !hasClass(el, 'disabled');
-	if (target === undefined) {
-		switch (state.mode) {
-			case 'constant':
-				target = 'variable';
-				break;
-			case 'variable':
-				target = 'constant';
-				break;
-		}
-	}
-	if (state.mode !== target) {
-		if (el) {
-			removeClass(el, state.mode as string);
-			addClass(el, target as string);
-			el.mode = target as string;
-		}
-		state.mode = target as string;
-		if (target === 'constant') {
-			nextTick(() => {
-				const input = strBoxRef.value?.input;
-				if (focus && input) {
-					input.focus();
-					input.select();
-				}
-			});
-		} else if (target === 'variable') {
-			nextTick(() => {
-				if (focus) varBoxRef.value?.focus();
-			});
-		}
-	}
-};
-
-const enable = (): void => {
-	if (removeClass(root.value, 'disabled')) {
-		enableElement(getChildRoot(strBoxRef.value));
-		enableElement(getChildRoot(varBoxRef.value));
-	}
-};
-
-const disable = (): void => {
-	if (addClass(root.value, 'disabled')) {
-		disableElement(getChildRoot(strBoxRef.value));
-		disableElement(getChildRoot(varBoxRef.value));
-	}
-};
-
-const getFocus = (mode: any): any => {
-	switch (state.mode) {
-		case 'constant':
-			return getFocusElement(getChildRoot(strBoxRef.value), mode);
-		case 'variable':
-			return getFocusElement(getChildRoot(varBoxRef.value), mode);
-	}
-};
-
+const switchMode = (target?: string): void => ym.value?.switch(target as any);
+const enable = (): void => ym.value?.enable();
+const disable = (): void => ym.value?.disable();
+const getFocus = (mode: any): any => ym.value?.getFocus(mode);
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	const el = root.value;
-	if (!el) return;
-	el.addEventListener(type, listener as EventListener, options);
-};
-
-const keydown = (event: any): void => {
-	switch (event.code) {
-		case 'Slash':
-			event.preventDefault();
-			switchMode();
-			break;
-	}
-};
-
-const pointerdown = (event: any): void => {
-	const el = root.value;
-	switch (event.button) {
-		case 0:
-			if (el && !hasClass(el, 'disabled') && event.target === el) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-		case 2:
-			if (el && !hasClass(el, 'disabled')) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-	}
-};
+): void => ym.value?.on(type, listener, options);
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 
-watch(strBoxRef, (val) => {
-	const el = root.value;
-	if (el) {
-		el.strBox = getChildRoot(val);
-		if (val) {
-			nextTick(() => {
-				val.write?.(state.strValue);
-			});
-		}
-	}
-});
-
-watch(varBoxRef, (val) => {
-	const el = root.value;
-	if (el) el.varBox = getChildRoot(val);
-});
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as any;
 	if (!el) return;
 	el.read = read;
 	el.write = write;
@@ -219,8 +97,24 @@ onMounted(() => {
 	el.disable = disable;
 	el.getFocus = getFocus;
 	el.on = on;
-	el.mode = state.mode;
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('pointerdown', pointerdown as EventListener);
+	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	watch(
+		() => root.value?.className,
+		() => {
+			const cls = root.value?.className ?? '';
+			el.mode = cls.includes('variable') ? 'variable' : 'constant';
+			el.strBox = (ym.value?.root?.querySelector('.text-box') as HTMLElement) ?? null;
+			el.varBox = getChildRoot(varBoxRef.value);
+			nextTick(() => {
+				emit('update:modelValue', read());
+			});
+		}
+	);
+	watch(varBoxRef, (val) => {
+		el.varBox = getChildRoot(val);
+	});
+	if (props.modelValue !== null && props.modelValue !== undefined) {
+		write(props.modelValue);
+	}
 });
 </script>

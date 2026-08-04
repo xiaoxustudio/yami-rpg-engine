@@ -247,6 +247,7 @@ VariableGetter._openCore = function (
 		write('global-key', globalKey);
 		write('preset-key', presetKey);
 	} else {
+		this.filter = filter;
 		let commonKey = '';
 		let presetKey = '';
 		let globalKey = '';
@@ -294,7 +295,6 @@ VariableGetter._openCore = function (
 				presetKey = key;
 				break;
 		}
-		this.keyBox.loadItems(Attribute.getAttributeItems('none'));
 		write('type', type);
 		write('actor', actor);
 		write('skill', skill);
@@ -307,7 +307,6 @@ VariableGetter._openCore = function (
 		write('global-key', globalKey);
 		// 主窗口分支保持与原 open 一致，供 typeWrite/typeInput 使用
 		this.target = target;
-		this.filter = filter;
 	}
 	getFocus($(`#${prefix}-type`));
 	getWindow().open(prefix);
@@ -332,7 +331,8 @@ VariableGetter.loadPresetKeys = function (this: VariableGetterShape, group: stri
 			type = this.filter.split('-')[1];
 			break;
 	}
-	this.keyBox.loadItems(Attribute.getAttributeItems(group, type));
+	const items = Attribute.getAttributeItems(group, type);
+	this.keyBox.loadItems(items);
 };
 
 VariableGetter.checkDataForPlugin = function (data: any): boolean {
@@ -442,6 +442,7 @@ VariableGetter.typeInput = function (event: Event & { value: string }): void {
 		case 'equipment':
 		case 'element': {
 			const { selectBox } = VariableGetter.keyBox;
+			if (!selectBox) break;
 			const attrName = selectBox.textContent;
 			selectBox.write(selectBox.read());
 			if (selectBox.invalid) {

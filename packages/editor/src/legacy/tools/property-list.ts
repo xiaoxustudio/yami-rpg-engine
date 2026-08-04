@@ -130,8 +130,14 @@ export class AttributeListInterface implements IListInterface {
 				return getFocus($('#object-attribute-number-value'), 'all');
 			case 'string':
 				return getFocus($('#object-attribute-string-value'), 'all');
-			case 'enum':
+			case 'enum': {
+				const attr = Attribute.getGroupAttribute(this.group, key);
+				const enumBox = $('#object-attribute-enum-value');
+				if (attr && enumBox) {
+					enumBox.loadItems(Enum.getStringItems(attr.enum));
+				}
 				return getFocus($('#object-attribute-enum-value'));
+			}
 		}
 	}
 

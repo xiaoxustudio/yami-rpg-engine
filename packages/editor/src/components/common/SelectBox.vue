@@ -6,7 +6,6 @@
 		:disabled="isDisabled"
 		:popup="false"
 		:id="props.id"
-		@open="openSelect"
 	/>
 </template>
 
@@ -266,5 +265,15 @@ onMounted(() => {
 	el.addEventListener('change', () => emit('change', read()));
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();
+	el.addEventListener('pointerdown', (event: PointerEvent) => {
+		if (event.button !== 0 || isDisabled.value) return;
+		Select.open(el);
+	});
+	el.addEventListener('keydown', (event: KeyboardEvent) => {
+		if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
+			event.stopPropagation();
+			Select.open(el);
+		}
+	});
 });
 </script>

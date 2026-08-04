@@ -225,7 +225,7 @@ onMounted(() => {
 		:id="props.id"
 	>
 		<YMNumberBox
-			v-if="mode === 'constant'"
+			v-show="mode === 'constant'"
 			ref="numBoxRef"
 			:min="props.min"
 			:max="props.max"
@@ -235,12 +235,12 @@ onMounted(() => {
 			:model-value="numValue"
 			@update:model-value="onNumInput"
 		/>
-		<template v-else>
+		<div v-show="mode !== 'constant'" class="number-var-variable">
 			<slot name="variable" :value="varValue" />
 			<div v-if="!$slots.variable" class="number-var-value">
 				{{ varValue && typeof varValue === 'object' ? varValue.key : varValue }}
 			</div>
-		</template>
+		</div>
 	</div>
 </template>
 

@@ -1,29 +1,45 @@
 <template>
-	<div class="select-var" ref="root" :id="props.id">
-		<SelectBox v-show="mode === 'constant'" ref="selectBoxRef" />
-		<CustomBox v-show="mode === 'variable'" ref="varBoxRef" type="variable" filter="all" />
-	</div>
+	<YMSelectVar ref="ym" :items="props.items" :model-value="props.modelValue" :popup="false" :id="props.id">
+		<template #variable>
+			<CustomBox
+				ref="varBoxRef"
+				type="variable"
+				filter="all"
+				:model-value="state.varValue ?? defVar"
+				@update:model-value="(v: any) => (state.varValue = v)"
+			/>
+		</template>
+	</YMSelectVar>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	getFocus as getFocusElement,
-	enable as enableElement,
-	disable as disableElement,
-	read as readElement,
-	write as writeElement
-} from '@/util/element-utils';
-import SelectBox from './SelectBox.vue';
-import CustomBox from './CustomBox.vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { YMSelectVar } from '@ui-kit';
+import { defVar } from '@/components/select-var';
+import { Select } from '@/components/select-list.ts';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
-interface SelectVarElement extends HTMLElement {
-	mode: string | null;
-	selectBox: HTMLElement & { [k: string]: any } | null;
-	varBox: HTMLElement & { [k: string]: any } | null;
+interface Props {
+	id?: string;
+	modelValue?: any;
+	items?: any[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	modelValue: null,
+	items: () => []
+});
+
+const emit = defineEmits<{
+	'update:modelValue': [value: any];
+}>();
+
+const state = reactive({
+	varValue: null as any
+});
+
+const ym = ref<{
+	root: HTMLElement | null;
 	read(): any;
 	write(value: any): void;
 	switch(mode?: string): void;
@@ -35,199 +51,89 @@ interface SelectVarElement extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
-
-interface Props {
-	id?: string;
-}
-
-const props = withDefaults(defineProps<Props>(), {});
-
-const root = ref<SelectVarElement | null>(null);
-const selectBoxRef = ref<InstanceType<typeof SelectBox> | null>(null);
+} | null>(null);
 const varBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const mode = ref<string | null>(null);
-
-const selectBoxEl = (): HTMLElement & { [k: string]: any } | null =>
-	(selectBoxRef.value?.root as any) ?? null;
-const varBoxEl = (): HTMLElement & { [k: string]: any } | null =>
-	(varBoxRef.value?.root as any) ?? null;
-
-const read = (): any => {
-	switch (mode.value) {
-		case 'constant': {
-			const selectBox = selectBoxEl();
-			return selectBox ? readElement(selectBox) : undefined;
-		}
-		case 'variable': {
-			const varBox = varBoxEl();
-			return varBox ? readElement(varBox) : undefined;
-		}
-	}
+const getChildRoot = (instance: any): HTMLElement | null => {
+	if (!instance) return null;
+	if (instance.$el instanceof HTMLElement) return instance.$el;
+	if (instance.root instanceof HTMLElement) return instance.root;
+	return null;
 };
+
+const read = (): any => ym.value?.read();
 
 const write = (value: any): void => {
-	switch (typeof value) {
-		case 'string':
-			switchMode('constant');
-			nextTick(() => {
-				const selectBox = selectBoxEl();
-				if (selectBox) writeElement(selectBox, value);
-			});
-			break;
-		case 'object':
-			switchMode('variable');
-			nextTick(() => {
-				const varBox = varBoxEl();
-				if (varBox) writeElement(varBox, value);
-			});
-			break;
+	ym.value?.write(value);
+	if (typeof value === 'object' && value !== null) {
+		state.varValue = value;
+	} else {
+		state.varValue = null;
 	}
 };
 
-const switchMode = (nextMode?: string): void => {
-	const el = root.value;
-	const focus = !nextMode && !!el && !hasClass(el, 'disabled');
-	let target = nextMode;
-	if (target === undefined) {
-		switch (mode.value) {
-			case 'constant':
-				target = 'variable';
-				break;
-			case 'variable':
-				target = 'constant';
-				break;
-		}
-	}
-	if (mode.value !== target) {
-		if (el) {
-			removeClass(el, mode.value as string);
-			addClass(el, target as string);
-		}
-		mode.value = target as string;
-		if (focus) {
-			nextTick(() => {
-				if (target === 'constant') {
-					selectBoxEl()?.focus();
-				} else if (target === 'variable') {
-					varBoxEl()?.focus();
-				}
-			});
-		}
-	}
-};
-
-const enable = (): void => {
-	const el = root.value;
-	if (el && removeClass(el, 'disabled')) {
-		enableElement(selectBoxEl());
-		enableElement(varBoxEl());
-	}
-};
-
-const disable = (): void => {
-	const el = root.value;
-	if (el && addClass(el, 'disabled')) {
-		disableElement(selectBoxEl());
-		disableElement(varBoxEl());
-	}
-};
-
-const getFocus = (focusMode: any): void => {
-	switch (mode.value) {
-		case 'constant':
-			if (selectBoxEl()) getFocusElement(selectBoxEl(), focusMode);
-			break;
-		case 'variable':
-			if (varBoxEl()) getFocusElement(varBoxEl(), focusMode);
-			break;
-	}
-};
-
-const loadItems = (items: any): void => {
-	selectBoxEl()?.loadItems?.(items);
-};
-
-const clear = (): void => {
-	selectBoxEl()?.clear?.();
-};
-
-const keydown = (event: KeyboardEvent): void => {
-	switch (event.code) {
-		case 'Slash':
-			event.preventDefault();
-			switchMode();
-			break;
-	}
-};
-
-const pointerdown = (event: PointerEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (event.button) {
-		case 0:
-			if (!hasClass(el, 'disabled') && event.target === el) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-		case 2:
-			if (!hasClass(el, 'disabled')) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-	}
-};
-
+const switchMode = (target?: string): void => ym.value?.switch(target as any);
+const enable = (): void => ym.value?.enable();
+const disable = (): void => ym.value?.disable();
+const getFocus = (mode: any): any => ym.value?.getFocus(mode);
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	root.value?.addEventListener(type, listener as EventListener, options);
-};
+): void => ym.value?.on(type, listener, options);
+const loadItems = (items: any[]): void => ym.value?.loadItems(items);
 
-defineExpose({
-	read,
-	write,
-	switch: switchMode,
-	enable,
-	disable,
-	getFocus,
-	loadItems,
-	clear,
-	on,
-	root
-});
+defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, loadItems, root });
 
-watch(mode, () => {
-	const el = root.value;
-	if (!el) return;
-	el.mode = mode.value;
-	nextTick(() => {
-		el.selectBox = selectBoxEl();
-		el.varBox = varBoxEl();
-	});
-});
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as any;
 	if (!el) return;
-	el.mode = mode.value;
-	el.selectBox = selectBoxEl();
-	el.varBox = varBoxEl();
 	el.read = read;
 	el.write = write;
 	el.switch = switchMode;
 	el.enable = enable;
 	el.disable = disable;
 	el.getFocus = getFocus;
-	el.loadItems = loadItems;
-	el.clear = clear;
 	el.on = on;
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('pointerdown', pointerdown as EventListener);
+	el.loadItems = loadItems;
+	el.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+	el.varBox = getChildRoot(varBoxRef.value);
+	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	watch(
+		() => root.value?.className,
+		() => {
+			const cls = root.value?.className ?? '';
+			el.mode = cls.includes('variable') ? 'variable' : 'constant';
+			el.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+			el.varBox = getChildRoot(varBoxRef.value);
+			nextTick(() => {
+				emit('update:modelValue', read());
+			});
+		}
+	);
+	watch(varBoxRef, (val) => {
+		el.varBox = getChildRoot(val);
+	});
+	el.addEventListener('pointerdown', (event: PointerEvent) => {
+		if (event.button !== 0 || event.target === el) return;
+		const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+		if (selectBox) Select.open(selectBox);
+	});
+	el.addEventListener('keydown', (event: KeyboardEvent) => {
+		if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
+			event.stopPropagation();
+			const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+			if (selectBox) Select.open(selectBox);
+		}
+	});
+	if (props.modelValue !== null && props.modelValue !== undefined) {
+		write(props.modelValue);
+	}
 });
 </script>

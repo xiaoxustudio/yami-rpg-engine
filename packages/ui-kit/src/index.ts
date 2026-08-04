@@ -21,6 +21,9 @@ export { default as YMScrollBar } from './components/basic/YMScrollBar/YMScrollB
 export { default as YMSelectBox } from './components/basic/YMSelectBox/YMSelectBox.vue';
 export { default as YMColorBox } from './components/basic/YMColorBox/YMColorBox.vue';
 export { default as YMNumberVar } from './components/basic/YMNumberVar/YMNumberVar.vue';
+export { default as YMStringVar } from './components/basic/YMStringVar/YMStringVar.vue';
+export { default as YMTextAreaVar } from './components/basic/YMTextAreaVar/YMTextAreaVar.vue';
+export { default as YMSelectVar } from './components/basic/YMSelectVar/YMSelectVar.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

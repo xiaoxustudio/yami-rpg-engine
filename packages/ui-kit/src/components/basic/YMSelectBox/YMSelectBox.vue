@@ -65,6 +65,8 @@ const update = (): void => {
 		infoEl.classList.add('invalid');
 		infoEl.textContent = String(value);
 	}
+	const el = root.value;
+	if (el) (el as any).invalid = invalid;
 };
 
 const write = (value: any): void => {
