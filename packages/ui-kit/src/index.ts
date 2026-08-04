@@ -24,6 +24,7 @@ export { default as YMNumberVar } from './components/basic/YMNumberVar/YMNumberV
 export { default as YMStringVar } from './components/basic/YMStringVar/YMStringVar.vue';
 export { default as YMTextAreaVar } from './components/basic/YMTextAreaVar/YMTextAreaVar.vue';
 export { default as YMSelectVar } from './components/basic/YMSelectVar/YMSelectVar.vue';
+export { default as YMFileVar } from './components/basic/YMFileVar/YMFileVar.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

@@ -1,33 +1,56 @@
 <template>
-	<div class="file-var" ref="root">
-		<CustomBox
-			v-if="mode === 'constant'"
-			ref="fileBoxRef"
-			type="file"
-			:filter="props.filter"
-		/>
-		<CustomBox v-else-if="mode === 'variable'" ref="varBoxRef" type="variable" filter="string" />
-	</div>
+	<YMFileVar ref="ym" :model-value="props.modelValue" :id="props.id" :disabled="props.disabled">
+		<template #file>
+			<CustomBox
+				ref="fileBoxRef"
+				type="file"
+				:filter="props.filter"
+				:model-value="state.fileValue"
+				@update:model-value="(v: any) => (state.fileValue = v)"
+			/>
+		</template>
+		<template #variable>
+			<CustomBox
+				ref="varBoxRef"
+				type="variable"
+				filter="string"
+				:model-value="state.varValue ?? defVar"
+				@update:model-value="(v: any) => (state.varValue = v)"
+			/>
+		</template>
+	</YMFileVar>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hasClass,
-	getFocus as getFocusElement,
-	enable as enableElement,
-	disable as disableElement,
-	read as readElement,
-	write as writeElement
-} from '@/util/element-utils';
-import CustomBox from './CustomBox.vue';
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import { YMFileVar } from '@ui-kit';
+import { defVar } from '@/components/file-var';
+import CustomBox from '@app/components/common/CustomBox.vue';
 
-interface FileVarElement extends HTMLElement {
-	mode: string | null;
-	fileBox: HTMLElement & { [k: string]: any } | null;
-	varBox: HTMLElement & { [k: string]: any } | null;
+interface Props {
+	id?: string;
+	filter?: string;
+	disabled?: boolean;
+	modelValue?: any;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	filter: '',
+	disabled: false,
+	modelValue: null
+});
+
+const emit = defineEmits<{
+	'update:modelValue': [value: any];
+}>();
+
+const state = reactive({
+	fileValue: '',
+	varValue: null as any
+});
+
+const ym = ref<{
+	root: HTMLElement | null;
 	read(): any;
 	write(value: any): void;
 	switch(mode?: string): void;
@@ -39,178 +62,57 @@ interface FileVarElement extends HTMLElement {
 		listener: (event: any) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
-}
-
-interface Props {
-	filter?: string;
-	modelValue?: any;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-	filter: '',
-	modelValue: null
-});
-
-const root = ref<FileVarElement | null>(null);
+} | null>(null);
 const fileBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
 const varBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const mode = ref<string | null>(null);
-
-const fileBoxEl = (): HTMLElement & { [k: string]: any } | null =>
-	(fileBoxRef.value?.root as any) ?? null;
-const varBoxEl = (): HTMLElement & { [k: string]: any } | null =>
-	(varBoxRef.value?.root as any) ?? null;
+const getChildRoot = (instance: any): HTMLElement | null => {
+	if (!instance) return null;
+	if (instance.$el instanceof HTMLElement) return instance.$el;
+	if (instance.root instanceof HTMLElement) return instance.root;
+	return null;
+};
 
 const read = (): any => {
-	switch (mode.value) {
-		case 'constant': {
-			const fileBox = fileBoxEl();
-			return fileBox ? readElement(fileBox) : undefined;
-		}
-		case 'variable': {
-			const varBox = varBoxEl();
-			return varBox ? readElement(varBox) : undefined;
-		}
-	}
+	const isVariable = (root.value?.className ?? '').includes('variable');
+	return isVariable ? (state.varValue ?? null) : state.fileValue;
 };
 
 const write = (value: any): void => {
-	switch (typeof value) {
-		case 'string':
-			switchMode('constant');
-			nextTick(() => {
-				const fileBox = fileBoxEl();
-				if (fileBox) writeElement(fileBox, value);
-			});
-			break;
-		case 'object':
-			switchMode('variable');
-			nextTick(() => {
-				const varBox = varBoxEl();
-				if (varBox) writeElement(varBox, value);
-			});
-			break;
+	ym.value?.write(value);
+	if (typeof value === 'string') {
+		state.fileValue = value;
+		state.varValue = defVar;
+	} else if (typeof value === 'object' && value !== null) {
+		state.fileValue = '';
+		state.varValue = value;
 	}
 };
 
-const switchMode = (nextMode?: string): void => {
-	const el = root.value;
-	const focus = !nextMode && !!el && !hasClass(el, 'disabled');
-	let target = nextMode;
-	if (target === undefined) {
-		switch (mode.value) {
-			case 'constant':
-				target = 'variable';
-				break;
-			case 'variable':
-				target = 'constant';
-				break;
-		}
-	}
-	if (mode.value !== target) {
-		if (el) {
-			removeClass(el, mode.value as string);
-			addClass(el, target as string);
-		}
-		mode.value = target as string;
-		if (focus) {
-			nextTick(() => {
-				if (target === 'constant') {
-					fileBoxEl()?.focus();
-				} else if (target === 'variable') {
-					varBoxEl()?.focus();
-				}
-			});
-		}
-	}
-};
-
-const enable = (): void => {
-	const el = root.value;
-	if (el && removeClass(el, 'disabled')) {
-		enableElement(fileBoxEl());
-		enableElement(varBoxEl());
-	}
-};
-
-const disable = (): void => {
-	const el = root.value;
-	if (el && addClass(el, 'disabled')) {
-		disableElement(fileBoxEl());
-		disableElement(varBoxEl());
-	}
-};
-
-const getFocus = (focusMode: any): void => {
-	switch (mode.value) {
-		case 'constant':
-			if (fileBoxEl()) getFocusElement(fileBoxEl(), focusMode);
-			break;
-		case 'variable':
-			if (varBoxEl()) getFocusElement(varBoxEl(), focusMode);
-			break;
-	}
-};
-
-const keydown = (event: KeyboardEvent): void => {
-	switch (event.code) {
-		case 'Slash':
-			event.preventDefault();
-			switchMode();
-			break;
-	}
-};
-
-const pointerdown = (event: PointerEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (event.button) {
-		case 0:
-			if (!hasClass(el, 'disabled') && event.target === el) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-		case 2:
-			if (!hasClass(el, 'disabled')) {
-				event.preventDefault();
-				switchMode();
-			}
-			break;
-	}
-};
-
+const switchMode = (target?: string): void => ym.value?.switch(target as any);
+const enable = (): void => ym.value?.enable();
+const disable = (): void => ym.value?.disable();
+const getFocus = (mode: any): any => ym.value?.getFocus(mode);
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	root.value?.addEventListener(type, listener as EventListener, options);
-};
+): void => ym.value?.on(type, listener, options);
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 
-watch(() => props.modelValue, (val) => {
-	if (val !== null && val !== undefined) write(val);
-});
-
-watch(mode, () => {
-	const el = root.value;
-	if (!el) return;
-	el.mode = mode.value;
-	nextTick(() => {
-		el.fileBox = fileBoxEl();
-		el.varBox = varBoxEl();
-	});
-});
+watch(
+	() => props.modelValue,
+	(val) => write(val)
+);
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as any;
 	if (!el) return;
-	el.mode = mode.value;
-	el.fileBox = fileBoxEl();
-	el.varBox = varBoxEl();
+	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	el.fileBox = getChildRoot(fileBoxRef.value);
+	el.varBox = getChildRoot(varBoxRef.value);
 	el.read = read;
 	el.write = write;
 	el.switch = switchMode;
@@ -218,7 +120,27 @@ onMounted(() => {
 	el.disable = disable;
 	el.getFocus = getFocus;
 	el.on = on;
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('pointerdown', pointerdown as EventListener);
+	watch(
+		() => root.value?.className,
+		() => {
+			const cls = root.value?.className ?? '';
+			el.mode = cls.includes('variable') ? 'variable' : 'constant';
+			el.fileBox = getChildRoot(fileBoxRef.value);
+			el.varBox = getChildRoot(varBoxRef.value);
+			nextTick(() => {
+				emit('update:modelValue', read());
+			});
+		},
+		{ immediate: true }
+	);
+	watch(fileBoxRef, (val) => {
+		el.fileBox = getChildRoot(val);
+	});
+	watch(varBoxRef, (val) => {
+		el.varBox = getChildRoot(val);
+	});
+	if (props.modelValue !== null && props.modelValue !== undefined) {
+		write(props.modelValue);
+	}
 });
 </script>
