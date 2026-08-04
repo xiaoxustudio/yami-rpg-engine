@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMSliderBox from './YMSliderBox.vue';
+import YMSliderBox from '../YMSliderBox.vue';
 
 describe('YMSliderBox', () => {
 	it('renders bar, filler and range input', () => {

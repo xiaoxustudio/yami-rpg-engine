@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMDetailBox from '../YMDetailBox/YMDetailBox.vue';
-import YMDetailSummary from './YMDetailSummary.vue';
+import YMDetailBox from '../../YMDetailBox/YMDetailBox.vue';
+import YMDetailSummary from '../YMDetailSummary.vue';
 
 const pointerdown = (el: Element) =>
 	el.dispatchEvent(new PointerEvent('pointerdown', { button: 0, bubbles: true }));

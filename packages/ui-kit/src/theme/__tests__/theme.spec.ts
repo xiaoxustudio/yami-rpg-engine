@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultTheme } from './theme';
+import { defaultTheme } from '../theme';
 
 describe('theme tokens', () => {
 	it('all token references use --ym- prefix', () => {

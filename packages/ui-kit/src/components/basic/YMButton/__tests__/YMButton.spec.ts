@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMButton from './YMButton.vue';
+import YMButton from '../YMButton.vue';
 
 describe('YMButton', () => {
 	it('renders slot content', () => {

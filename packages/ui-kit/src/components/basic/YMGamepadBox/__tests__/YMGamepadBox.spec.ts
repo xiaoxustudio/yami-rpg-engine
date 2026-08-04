@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMGamepadBox from './YMGamepadBox.vue';
+import YMGamepadBox from '../YMGamepadBox.vue';
 
 describe('YMGamepadBox', () => {
 	it('read/write roundtrip with button name', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMNavBar from './YMNavBar.vue';
+import YMNavBar from '../YMNavBar.vue';
 
 const mountNav = () =>
 	mount(YMNavBar, {

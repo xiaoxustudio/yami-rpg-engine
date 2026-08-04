@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMToastManager from './YMToastManager.vue';
+import YMToastManager from '../YMToastManager.vue';
 
 describe('YMToastManager', () => {
 	it('shows a toast with message and type class', async () => {

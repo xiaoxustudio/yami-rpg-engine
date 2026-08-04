@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMPageManager from './YMPageManager.vue';
+import YMPageManager from '../YMPageManager.vue';
 
 describe('YMPageManager', () => {
 	const mountWithPages = () =>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMCheckBox from './YMCheckBox.vue';
+import YMCheckBox from '../YMCheckBox.vue';
 
 const pointerdown = (el: Element, button: number) =>
 	el.dispatchEvent(new PointerEvent('pointerdown', { button, bubbles: true }));

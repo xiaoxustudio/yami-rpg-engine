@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMLoadingOverlay from './YMLoadingOverlay.vue';
+import YMLoadingOverlay from '../YMLoadingOverlay.vue';
 
 describe('YMLoadingOverlay', () => {
 	it('hidden by default', () => {

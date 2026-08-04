@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMRadioBox from './YMRadioBox.vue';
+import YMRadioBox from '../YMRadioBox.vue';
 
 const pointerdown = (el: Element, button: number) =>
 	el.dispatchEvent(new PointerEvent('pointerdown', { button, bubbles: true }));

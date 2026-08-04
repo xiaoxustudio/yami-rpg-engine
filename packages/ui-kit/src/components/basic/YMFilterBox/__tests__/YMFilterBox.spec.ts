@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMFilterBox from './YMFilterBox.vue';
+import YMFilterBox from '../YMFilterBox.vue';
 
 const createFakeContext = () => {
 	const gradient = { addColorStop: () => {} };

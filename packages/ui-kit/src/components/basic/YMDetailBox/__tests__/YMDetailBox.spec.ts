@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMDetailBox from './YMDetailBox.vue';
+import YMDetailBox from '../YMDetailBox.vue';
 
 describe('YMDetailBox', () => {
 	it('renders slot content', () => {

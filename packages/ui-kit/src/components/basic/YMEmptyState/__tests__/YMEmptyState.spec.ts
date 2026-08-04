@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import YMEmptyState from './YMEmptyState.vue';
+import YMEmptyState from '../YMEmptyState.vue';
 
 describe('YMEmptyState', () => {
 	it('renders message text', () => {
