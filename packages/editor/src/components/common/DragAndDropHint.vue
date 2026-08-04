@@ -1,40 +1,47 @@
 <template>
-	<div ref="root" class="drag-and-drop-hint" :id="props.id" />
+	<YMDragAndDropHint ref="ym" :id="props.id" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { attachDragAndDropHintApi } from '@/components/drag-and-drop-hint';
+import { computed, onMounted, ref } from 'vue';
+import { YMDragAndDropHint } from '@ui-kit';
 
-interface DragAndDropHintElement extends HTMLElement {
+interface DragAndDropHintCoords {
 	left: number;
 	top: number;
 	width: number;
 	height: number;
-	upper: boolean;
-	measure(item: HTMLElement): { left: number; top: number; width: number; height: number };
-	moveUp(): DragAndDropHintElement;
-	moveDown(): DragAndDropHintElement;
-	set(coords: { left: number; top: number; width: number; height: number }): void;
 }
 
 interface Props {
 	id?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {});
+const props = defineProps<Props>();
 
-const root = ref<DragAndDropHintElement | null>(null);
+const ym = ref<{
+	root: HTMLElement | null;
+	measure(item: HTMLElement): DragAndDropHintCoords;
+	moveUp(): unknown;
+	moveDown(): unknown;
+	set(coords: DragAndDropHintCoords): void;
+} | null>(null);
 
-onMounted(() => {
-	attachDragAndDropHintApi(root.value!);
-});
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const measure = (item: HTMLElement) => root.value!.measure(item);
-const moveUp = () => root.value!.moveUp();
-const moveDown = () => root.value!.moveDown();
-const set = (coords: { left: number; top: number; width: number; height: number }) =>
-	root.value!.set(coords);
+const measure = (item: HTMLElement): DragAndDropHintCoords => ym.value!.measure(item);
+const moveUp = (): unknown => ym.value?.moveUp();
+const moveDown = (): unknown => ym.value?.moveDown();
+const set = (coords: DragAndDropHintCoords): void => ym.value?.set(coords);
 
 defineExpose({ measure, moveUp, moveDown, set, root });
+
+onMounted(() => {
+	const el = root.value as any;
+	if (!el) return;
+	el.measure = measure;
+	el.moveUp = moveUp;
+	el.moveDown = moveDown;
+	el.set = set;
+});
 </script>

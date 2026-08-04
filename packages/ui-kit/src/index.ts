@@ -51,6 +51,14 @@ export {
 	type SelectTarget
 } from './components/basic/YMSelectList/select-list-api';
 export { default as YMMarqueeArea } from './components/business/YMMarqueeArea/YMMarqueeArea.vue';
+export { default as YMDragAndDropHint } from './components/business/YMDragAndDropHint/YMDragAndDropHint.vue';
+export {
+	attachDragAndDropHintApi,
+	createDragAndDropHintElement,
+	type DragAndDropHintApi,
+	type DragAndDropHintCoords
+} from './components/business/YMDragAndDropHint/drag-and-drop-hint-api';
+export { default as YMTitleBar } from './components/business/YMTitleBar/YMTitleBar.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';
