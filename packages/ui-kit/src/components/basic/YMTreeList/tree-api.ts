@@ -1,266 +1,25 @@
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
-const addClass = (el: any, className: string): boolean => {
-	if (!el || !el.classList) return false;
-	if (!el.classList.contains(className)) {
-		el.classList.add(className);
-		return true;
-	}
-	return false;
-};
-
-const removeClass = (el: any, className: string): boolean => {
-	if (!el || !el.classList) return false;
-	if (el.classList.contains(className)) {
-		el.classList.remove(className);
-		return true;
-	}
-	return false;
-};
-
-const hasClass = (el: any, className: string): boolean =>
-	!!el && !!el.classList && el.classList.contains(className);
-
-const hide = (el: any): HTMLElement => {
-	if (el) addClass(el, 'hidden');
-	return el;
-};
-
-const show = (el: any): HTMLElement => {
-	if (el) removeClass(el, 'hidden');
-	return el;
-};
-
-const seek = (el: any, tagName: string, count = 1): HTMLElement => {
-	let element: HTMLElement = el;
-	while (count-- > 0) {
-		if (
-			element.tagName !== tagName.toUpperCase() &&
-			element.parentNode instanceof HTMLElement
-		) {
-			element = element.parentNode;
-			continue;
-		}
-		break;
-	}
-	return element;
-};
-
-const css = (el: any): CSSStyleDeclaration => getComputedStyle(el);
-
-const rect = (el: any): DOMRect => el.getBoundingClientRect();
-
-const hasScrollBar = (el: any): boolean =>
-	el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
-
-const changeEvent = new Event('change');
-const dispatchChangeEvent = (el: any, index = 0): void => {
-	el.dispatchEvent(changeEvent);
-};
-
-const updateEvent = new Event('update');
-const dispatchUpdateEvent = (el: any): void => {
-	el.dispatchEvent(updateEvent);
-};
-
-const getRelativeCoords = (event: PointerEvent, el: any): { x: number; y: number } => {
-	const r = rect(el);
-	return { x: event.clientX - r.left, y: event.clientY - r.top };
-};
-
-const isInContent = (el: any, event: PointerEvent): boolean => {
-	const coords = getRelativeCoords(event, el);
-	const x = coords.x - el.scrollLeft;
-	const y = coords.y - el.scrollTop;
-	return x >= 0 && x < el.clientWidth && y >= 0 && y < el.clientHeight;
-};
-
-const debounce = <T extends (...args: any[]) => void>(callback: T, delay: number): T => {
-	let timer: ReturnType<typeof setTimeout> | null = null;
-	return ((...args: any[]) => {
-		if (timer !== null) {
-			clearTimeout(timer);
-		}
-		timer = setTimeout(() => {
-			timer = null;
-			callback(...args);
-		}, delay);
-	}) as T;
-};
-
-let lastDoubleclick: PointerEvent | null = null;
-
-const doubleclickPointerdown = function (
-	this: any,
-	event: PointerEvent & { cmdOrCtrlKey?: boolean; doubleclickProcessed?: boolean }
-): void {
-	if (!event.cmdOrCtrlKey && !event.altKey && !event.shiftKey && !event.doubleclickProcessed) {
-		event.doubleclickProcessed = true;
-		switch (event.button) {
-			case 0:
-				if (
-					lastDoubleclick !== null &&
-					event.target === lastDoubleclick.target &&
-					event.timeStamp - lastDoubleclick.timeStamp < 500 &&
-					Math.abs(event.clientX - lastDoubleclick.clientX) < 4 &&
-					Math.abs(event.clientY - lastDoubleclick.clientY) < 4 &&
-					isInContent(this, event)
-				) {
-					if (!event.target!.dispatchEvent(new PointerEvent('doubleclick', event))) {
-						event.preventDefault();
-					}
-					lastDoubleclick = null;
-				} else {
-					lastDoubleclick = event;
-				}
-				break;
-			default:
-				lastDoubleclick = null;
-				break;
-		}
-	}
-};
-
-const attachDoubleclick = (
-	element: EventTarget,
-	listener: (event: any) => void,
-	options?: boolean | AddEventListenerOptions
-): void => {
-	element.addEventListener('pointerdown', doubleclickPointerdown as any);
-	element.addEventListener('doubleclick', listener, options);
-};
-
-const attachDragAndDropHintApi = (el: HTMLElement): void => {
-	const hint = el as any;
-
-	hint.left = 0;
-	hint.top = 0;
-	hint.width = 0;
-	hint.height = 0;
-
-	hint.measure = function (item: HTMLElement): {
-		left: number;
-		top: number;
-		width: number;
-		height: number;
-	} {
-		const parent = hint.parentNode as HTMLElement & { borderLeft?: number; borderTop?: number };
-		let bl = parent.borderLeft;
-		let bt = parent.borderTop;
-		if (bl === undefined) {
-			const style = css(parent as HTMLElement);
-			bl = parseInt(style.borderLeftWidth);
-			bt = parseInt(style.borderTopWidth);
-			parent.borderLeft = bl;
-			parent.borderTop = bt;
-		}
-		const pRect = rect(parent as HTMLElement);
-		const tRect = rect(item);
-		const left = tRect.left - pRect.left - bl;
-		const top = tRect.top - pRect.top - (bt ?? 0);
-		const width = tRect.width;
-		const height = tRect.height;
-		return { left, top, width, height };
-	};
-
-	hint.moveUp = function (): HTMLElement {
-		if (!hint.upper) {
-			hint.upper = true;
-			hint.style.zIndex = '1';
-		}
-		return hint;
-	};
-
-	hint.moveDown = function (): HTMLElement {
-		if (hint.upper) {
-			hint.upper = false;
-			hint.style.zIndex = '';
-		}
-		return hint;
-	};
-
-	hint.set = function ({
-		left,
-		top,
-		width,
-		height
-	}: {
-		left: number;
-		top: number;
-		width: number;
-		height: number;
-	}): void {
-		if (
-			hint.left !== left ||
-			hint.top !== top ||
-			hint.width !== width ||
-			hint.height !== height
-		) {
-			hint.left = left;
-			hint.top = top;
-			hint.width = width;
-			hint.height = height;
-			hint.style.left = `${left}px`;
-			hint.style.top = `${top}px`;
-			hint.style.width = `${width}px`;
-			hint.style.height = `${height}px`;
-		}
-	};
-};
-
-const createDragAndDropHint = (): HTMLElement => {
-	const el = document.createElement('div');
-	el.className = 'drag-and-drop-hint';
-	attachDragAndDropHintApi(el);
-	return el;
-};
-
-class Timer {
-	target: any = null;
-	running = false;
-	elapsed = 0;
-	playbackRate = 1;
-	private timeoutId: ReturnType<typeof setTimeout> | null = null;
-	private duration: number;
-	private callback: (timer: Timer) => void;
-
-	constructor({ duration, callback }: { duration: number; callback: (timer: Timer) => void }) {
-		this.duration = duration;
-		this.callback = callback;
-	}
-
-	add(): Timer {
-		this.timeoutId = setTimeout(() => {
-			this.timeoutId = null;
-			this.elapsed = this.duration;
-			this.callback(this);
-		}, this.duration);
-		return this;
-	}
-
-	finish(): void {
-		if (this.timeoutId !== null) {
-			clearTimeout(this.timeoutId);
-			this.timeoutId = null;
-			this.elapsed = this.duration;
-			this.callback(this);
-		}
-	}
-
-	remove(): Timer {
-		if (this.timeoutId !== null) {
-			clearTimeout(this.timeoutId);
-			this.timeoutId = null;
-		}
-		return this;
-	}
-}
-
-export interface TreeListApiOptions {
-	getMenuState?: () => string;
-}
-
+import {
+	clamp,
+	addClass,
+	removeClass,
+	hasClass,
+	hide,
+	show,
+	seek,
+	rect,
+	hasScrollBar,
+	debounce,
+	dispatchChangeEvent,
+	dispatchUpdateEvent,
+	attachDoubleclick
+} from '../../../utils/dom';
+import { Timer } from '../../../utils/timer';
+import {
+	commonListClearElements,
+	commonListUpdateHeadAndFoot,
+	commonListResize
+} from '../../../utils/common-list';
+import { createDragAndDropHintElement } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
 export const treeListStatics = {
 	createParents: (function IIFE() {
 		const descriptor = {
@@ -426,78 +185,9 @@ export const treeListStatics = {
 	})()
 };
 
-const commonListClearElements = (list: any, start: number): void => {
-	let i = start;
-	while (list.elements[i] !== undefined) {
-		list.elements[i++] = undefined;
-	}
-};
-
-const commonListUpdateHeadAndFoot = (list: any): void => {
-	const el = list;
-	if (list.elements.head) {
-		list.elements.head.style.marginTop = '';
-		list.elements.head = null;
-	}
-	if (list.elements.foot) {
-		list.elements.foot.style.marginBottom = '';
-		list.elements.foot = null;
-	}
-	const { count, start, end } = list.elements;
-	if (count !== 0) {
-		const pad = el.padded ? 1 : 0;
-		const mt = start * 20;
-		const mb = (count - end + pad) * 20;
-		list.elements.head = list.elements[start];
-		list.elements.head!.style.marginTop = `${mt}px`;
-		list.elements.foot = list.elements[end - 1];
-		list.elements.foot!.style.marginBottom = `${mb}px`;
-	}
-};
-
-const commonListResize = (list: any): void => {
-	const el = list;
-	const st = el.scrollTop;
-	const ch = el.clientHeight;
-	const count = list.elements.count;
-	if (ch === 0) return;
-	if (count === 0) {
-		el.textContent = '';
-		return;
-	}
-	const start = Math.min(Math.floor(st / 20), count - 1);
-	const length = Math.ceil(ch / 20) + 1;
-	const end = Math.min(start + length, count);
-	if (list.elements.start !== start || list.elements.end !== end) {
-		list.elements.start = start;
-		list.elements.end = end;
-		commonListUpdateHeadAndFoot(list);
-		const versionId = list.elements.versionId++;
-		for (let i = start; i < end; i++) {
-			const element = list.elements[i];
-			element.versionId = versionId;
-			list.updateOnResize(element);
-		}
-		const nodes = el.childNodes;
-		const last = nodes.length - 1;
-		for (let i = last; i >= 0; i--) {
-			const element = nodes[i];
-			if (element.versionId !== versionId) {
-				element.remove();
-			}
-		}
-		if (list.elements.foot && !list.elements.foot.parentNode) {
-			el.appendChild(list.elements.foot);
-		}
-		for (let i = end - 2; i >= start; i--) {
-			const element = list.elements[i];
-			if (element.parentNode === null) {
-				const next = list.elements[i + 1];
-				el.insertBefore(element, next);
-			}
-		}
-	}
-};
+export interface TreeListApiOptions {
+	getMenuState?: () => string;
+}
 
 const cloneNode = (node: any): any => {
 	const copy: any = {};
@@ -1634,7 +1324,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			Object.defineProperty(event, 'offsetY', { writable: true });
 			event.preventDefault = () => {};
 			event.dataTransfer.hideDragImage();
-			event.hint = createDragAndDropHint();
+			event.hint = createDragAndDropHintElement();
 			addClass(event.hint, 'for-list');
 			this.parentNode!.insertBefore(hide(event.hint), this);
 			addClass(this, 'dragging');

@@ -1,20 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
-const hasClass = (el: any, className: string): boolean =>
-	!!el && !!el.classList && el.classList.contains(className);
-
-const rect = (el: any): DOMRect => el.getBoundingClientRect();
-
-const rasterize = (csspx: number): number => {
-	const dpr = window.devicePixelRatio;
-	return Math.round(csspx * dpr) / dpr;
-};
-
-const relate = (a: PointerEvent, b: PointerEvent): boolean => a.pointerId === b.pointerId;
+import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 
 function getWindow(): any {
 	return (window as any).Window;

@@ -1,7 +1,4 @@
-const css = (el: any): CSSStyleDeclaration => getComputedStyle(el);
-
-const rect = (el: any): DOMRect => el.getBoundingClientRect();
-
+import { css, rect } from '../../../utils/dom';
 export interface DragAndDropHintCoords {
 	left: number;
 	top: number;

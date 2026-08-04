@@ -1,4 +1,6 @@
-﻿export interface MenuItem {
+import { getWindowFramesLength } from '../../../utils/dom';
+import { Timer as MenuTimer } from '../../../utils/timer';
+export interface MenuItem {
 	type?: string;
 	label?: string;
 	accelerator?: string;
@@ -48,46 +50,6 @@ export interface MenuApi {
 	popupSubmenu(delay: number): void;
 	closeSubmenu(delay: number): void;
 	pointerenter(event: PointerEvent): void;
-}
-
-class MenuTimer {
-	private timeoutId: ReturnType<typeof setTimeout> | null = null;
-	private duration: number;
-	private callback: () => void;
-
-	constructor(duration: number, callback: () => void) {
-		this.duration = duration;
-		this.callback = callback;
-	}
-
-	add(): MenuTimer {
-		this.timeoutId = setTimeout(() => {
-			this.timeoutId = null;
-			this.callback();
-		}, this.duration);
-		return this;
-	}
-
-	finish(): void {
-		if (this.timeoutId !== null) {
-			clearTimeout(this.timeoutId);
-			this.timeoutId = null;
-			this.callback();
-		}
-	}
-
-	remove(): MenuTimer {
-		if (this.timeoutId !== null) {
-			clearTimeout(this.timeoutId);
-			this.timeoutId = null;
-		}
-		return this;
-	}
-}
-
-function getWindowFramesLength(): number {
-	const win = (window as any).Window;
-	return (win?.frames?.length ?? 0) + 1;
 }
 
 export function createMenuApi(el: HTMLElement): MenuApi {
@@ -325,32 +287,35 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			const node = (element as any).dataValue as MenuItem;
 			if (node.submenu) {
 				if (!menu.popupTimer) {
-					menu.popupTimer = new MenuTimer(delay, () => {
-						menu.popupTimer = null;
-						if (element === menu.selection) {
-							const r = rect(element);
-							let x = r.right;
-							let y = r.top - 5;
-							let width = r.width + 2;
-							if (x + width > window.innerWidth) {
-								x = r.left - width;
+					menu.popupTimer = new MenuTimer({
+						duration: delay,
+						callback: () => {
+							menu.popupTimer = null;
+							if (element === menu.selection) {
+								const r = rect(element);
+								let x = r.right;
+								let y = r.top - 5;
+								let width = r.width + 2;
+								if (x + width > window.innerWidth) {
+									x = r.left - width;
+								}
+								menu.submenu?.close();
+								const subEl = document.createElement('div');
+								subEl.classList.add('menu-list');
+								menu.submenu = createMenuApi(subEl);
+								menu.submenu.parentMenuItem = element;
+								menu.submenu.popup(
+									{
+										x,
+										y,
+										parent: menu,
+										close: () => {
+											menu.submenu = null;
+										}
+									},
+									node.submenu!
+								);
 							}
-							menu.submenu?.close();
-							const subEl = document.createElement('div');
-							subEl.classList.add('menu-list');
-							menu.submenu = createMenuApi(subEl);
-							menu.submenu.parentMenuItem = element;
-							menu.submenu.popup(
-								{
-									x,
-									y,
-									parent: menu,
-									close: () => {
-										menu.submenu = null;
-									}
-								},
-								node.submenu!
-							);
 						}
 					}).add();
 				}
@@ -365,10 +330,13 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		const { submenu, selection } = menu;
 		if (submenu?.parentMenuItem === selection) {
 			if (!menu.closeTimer) {
-				menu.closeTimer = new MenuTimer(delay, () => {
-					menu.closeTimer = null;
-					if (submenu === menu.submenu && selection !== menu.selection) {
-						submenu.close();
+				menu.closeTimer = new MenuTimer({
+					duration: delay,
+					callback: () => {
+						menu.closeTimer = null;
+						if (submenu === menu.submenu && selection !== menu.selection) {
+							submenu.close();
+						}
 					}
 				}).add();
 			}

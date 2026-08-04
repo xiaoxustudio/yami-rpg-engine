@@ -1,36 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
-const addClass = (el: any, className: string): boolean => {
-	if (!el || !el.classList) return false;
-	if (!el.classList.contains(className)) {
-		el.classList.add(className);
-		return true;
-	}
-	return false;
-};
-
-const removeClass = (el: any, className: string): boolean => {
-	if (!el || !el.classList) return false;
-	if (el.classList.contains(className)) {
-		el.classList.remove(className);
-		return true;
-	}
-	return false;
-};
-
-const hasClass = (el: any, className: string): boolean =>
-	!!el && !!el.classList && el.classList.contains(className);
-
-const rect = (el: any): DOMRect => el.getBoundingClientRect();
-
-const rasterize = (csspx: number): number => {
-	const dpr = window.devicePixelRatio;
-	return Math.round(csspx * dpr) / dpr;
-};
+import { clamp, addClass, removeClass, hasClass, rect, rasterize } from '../../../utils/dom';
 
 function getWindow(): any {
 	return (window as any).Window;

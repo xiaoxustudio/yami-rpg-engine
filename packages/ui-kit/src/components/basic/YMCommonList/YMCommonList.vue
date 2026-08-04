@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { clamp, hasClass, seek } from '../../../utils/dom';
 
 interface Props {
 	id?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {});
 
 const emit = defineEmits<{
 	write: [value: any];
@@ -35,23 +36,6 @@ let selection: HTMLElement | null = null;
 let writeEventEnabled = false;
 let selectEventEnabled = false;
 let popupEventEnabled = false;
-
-const clamp = (value: number, min: number, max: number): number =>
-	Math.min(Math.max(value, min), max);
-
-const hasClass = (el: unknown, cls: string): boolean =>
-	el instanceof Element && el.classList.contains(cls);
-
-const seek = (el: Element | null, tag: string): HTMLElement | null => {
-	let node: Element | null = el;
-	while (node) {
-		if (node.tagName.toLowerCase() === tag.toLowerCase()) {
-			return node as HTMLElement;
-		}
-		node = node.parentElement;
-	}
-	return null;
-};
 
 const read = (): any => (selection as any)?.dataValue;
 
