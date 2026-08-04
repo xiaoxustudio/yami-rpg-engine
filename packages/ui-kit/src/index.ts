@@ -11,6 +11,8 @@ export { default as YMToastManager } from './components/basic/YMToastManager/YMT
 export { default as YMPageManager } from './components/basic/YMPageManager/YMPageManager.vue';
 export { default as YMNavBar } from './components/basic/YMNavBar/YMNavBar.vue';
 export { default as YMFilterBox } from './components/basic/YMFilterBox/YMFilterBox.vue';
+export { default as YMKeyboardBox } from './components/basic/YMKeyboardBox/YMKeyboardBox.vue';
+export { default as YMGamepadBox } from './components/basic/YMGamepadBox/YMGamepadBox.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

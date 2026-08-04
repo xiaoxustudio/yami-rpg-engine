@@ -1,19 +1,31 @@
 <template>
-	<div class="keyboard-box" ref="root">
-		<input class="keyboard-box-input" ref="input" type="text" />
-	</div>
+	<YMKeyboardBox ref="ym" :id="props.id" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import {
-	addClass,
-	removeClass,
-	hideChildNodes,
-	showChildNodes,
-	getFocus as getFocusElement,
-	dispatchChangeEvent
-} from '@/util/element-utils';
+import { computed, onMounted, ref } from 'vue';
+import { YMKeyboardBox } from '@ui-kit';
+
+interface KeyboardBoxElement extends HTMLElement {
+	input: HTMLInputElement;
+	read(): number;
+	write(code: number): void;
+	inputCode(code: number): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: string): HTMLInputElement | null;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
+
+interface Props {
+	id?: string;
+}
+
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
 	input: [value: number];
@@ -21,102 +33,40 @@ const emit = defineEmits<{
 	blur: [];
 }>();
 
-const root = ref<HTMLElement | null>(null);
-const input = ref<HTMLInputElement | null>(null);
+const ym = ref<{
+	root: HTMLElement | null;
+	input: HTMLInputElement | null;
+	read(): number;
+	write(code: number): void;
+	inputCode(code: number): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: string): HTMLInputElement | null;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+} | null>(null);
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-let dataValue = 0;
-let inputEventEnabled = false;
-let focusEventEnabled = false;
-let blurEventEnabled = false;
-
-const read = (): number => dataValue;
-
-const write = (code: number): void => {
-	dataValue = code;
-	if (input.value) {
-		input.value.value = String(code);
-	}
-};
-
-const inputCode = (code: number): void => {
-	if (dataValue !== code) {
-		write(code);
-		if (inputEventEnabled) {
-			const inputEvent = new InputEvent('input') as InputEvent & {
-				value: number;
-			};
-			inputEvent.value = dataValue;
-			root.value?.dispatchEvent(inputEvent);
-		}
-		dispatchChangeEvent(root.value);
-	}
-};
-
-const enable = (): void => {
-	if (removeClass(root.value, 'disabled')) {
-		showChildNodes(root.value);
-	}
-};
-
-const disable = (): void => {
-	if (addClass(root.value, 'disabled')) {
-		hideChildNodes(root.value);
-	}
-};
-
-const getFocus = (mode: string): HTMLInputElement => getFocusElement(input.value, mode) as any;
-
+const read = (): number => ym.value?.read() ?? 0;
+const write = (code: number): void => ym.value?.write(code);
+const inputCode = (code: number): void => ym.value?.inputCode(code);
+const enable = (): void => ym.value?.enable();
+const disable = (): void => ym.value?.disable();
+const getFocus = (mode: string): HTMLInputElement | null => ym.value?.getFocus(mode) ?? null;
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	root.value?.addEventListener(type, listener, options);
-	switch (type) {
-		case 'input':
-			inputEventEnabled = true;
-			break;
-		case 'focus':
-			if (!focusEventEnabled) {
-				focusEventEnabled = true;
-				input.value?.addEventListener('focus', () => {
-					root.value?.dispatchEvent(new FocusEvent('focus'));
-				});
-			}
-			break;
-		case 'blur':
-			if (!blurEventEnabled) {
-				blurEventEnabled = true;
-				input.value?.addEventListener('blur', () => {
-					root.value?.dispatchEvent(new FocusEvent('blur'));
-				});
-			}
-			break;
-	}
-};
+): void => ym.value?.on(type, listener, options);
 
-const inputKeydown = (event: KeyboardEvent): void => {
-	event.stopPropagation();
-	event.preventDefault();
-	switch (event.code) {
-		case 'Backspace':
-			inputCode(0);
-			break;
-		case 'Enter':
-		case 'NumpadEnter':
-			event.stopImmediatePropagation();
-		default:
-			inputCode(parseInt(event.code) || 0);
-			break;
-	}
-};
+defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 
 onMounted(() => {
-	input.value?.addEventListener('keydown', inputKeydown);
-	const el = root.value as any;
-	if (!el) {
-		return;
-	}
+	const el = root.value as KeyboardBoxElement | null;
+	if (!el) return;
 	el.read = read;
 	el.write = write;
 	el.inputCode = inputCode;
@@ -124,11 +74,9 @@ onMounted(() => {
 	el.disable = disable;
 	el.getFocus = getFocus;
 	el.on = on;
-	el.input = input.value;
+	el.input = ym.value?.input as HTMLInputElement;
 	on('input', (event: any) => emit('input', event.value));
 	on('focus', () => emit('focus'));
 	on('blur', () => emit('blur'));
 });
-
-defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 </script>
