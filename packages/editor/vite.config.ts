@@ -4,6 +4,7 @@ import electron from 'vite-plugin-electron';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'fs';
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import vueDevTools from 'vite-plugin-vue-devtools';
 
 // 递归复制目录（保留静态资源到 dist）
 const copyDirRecursive = (src: string, dest: string) => {
@@ -47,6 +48,7 @@ export default defineConfig({
 
 	plugins: [
 		vue(),
+		vueDevTools(),
 		{
 			name: 'electron-renderer-resolve',
 			transform(code: string, id: string) {
