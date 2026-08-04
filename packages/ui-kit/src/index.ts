@@ -41,6 +41,15 @@ export {
 	treeListStatics,
 	type TreeListApiOptions
 } from './components/basic/YMTreeList/tree-api';
+export { default as YMSelectList } from './components/basic/YMSelectList/YMSelectList.vue';
+export {
+	createSelectListApi,
+	createSelectListElement,
+	type SelectListApi,
+	type SelectListApiOptions,
+	type SelectItem,
+	type SelectTarget
+} from './components/basic/YMSelectList/select-list-api';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';
