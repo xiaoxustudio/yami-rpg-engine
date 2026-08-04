@@ -80,10 +80,10 @@ const on = (
 onMounted(() => {
 	const element = root.value;
 	if (!element) return;
-	const nodes = Array.from(element.children);
+	const nodes = Array.from(element.childNodes);
 	for (const child of nodes) {
-		const node = child as HTMLElement & { dataValue?: any };
 		if (hasClass(child, 'page-frame')) {
+			const node = child as HTMLElement & { dataValue?: any };
 			node.dataValue = node.getAttribute('value');
 		} else {
 			element.removeChild(child);
