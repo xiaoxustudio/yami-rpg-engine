@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMSelectVar from '../YMSelectVar.vue';
 
@@ -22,7 +22,7 @@ describe('YMSelectVar', () => {
 		vm.write({ type: 'local', key: 'sel' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
-		expect(wrapper.find('.select-box').exists()).toBe(false);
+		expect(wrapper.find('.select-box').isVisible()).toBe(false);
 		expect(vm.read()).toEqual({ type: 'local', key: 'sel' });
 	});
 

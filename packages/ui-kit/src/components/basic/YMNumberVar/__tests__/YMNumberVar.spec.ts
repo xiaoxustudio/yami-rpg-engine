@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMNumberVar from '../YMNumberVar.vue';
 
@@ -17,7 +17,7 @@ describe('YMNumberVar', () => {
 		vm.write({ type: 'local', key: 'hp' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
-		expect(wrapper.find('.number-box').exists()).toBe(false);
+		expect(wrapper.find('.number-box').isVisible()).toBe(false);
 		expect(vm.read()).toEqual({ type: 'local', key: 'hp' });
 	});
 

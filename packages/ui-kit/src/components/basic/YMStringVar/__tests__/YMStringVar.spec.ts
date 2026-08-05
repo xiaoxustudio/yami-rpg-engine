@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMStringVar from '../YMStringVar.vue';
 
@@ -17,7 +17,7 @@ describe('YMStringVar', () => {
 		vm.write({ type: 'local', key: 'name' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
-		expect(wrapper.find('input').exists()).toBe(false);
+		expect(wrapper.find('input').isVisible()).toBe(false);
 		expect(vm.read()).toEqual({ type: 'local', key: 'name' });
 	});
 

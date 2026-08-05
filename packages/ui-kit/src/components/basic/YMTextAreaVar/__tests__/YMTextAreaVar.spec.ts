@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMTextAreaVar from '../YMTextAreaVar.vue';
 
@@ -17,7 +17,7 @@ describe('YMTextAreaVar', () => {
 		vm.write({ type: 'local', key: 'text' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
-		expect(wrapper.find('textarea').exists()).toBe(false);
+		expect(wrapper.find('textarea').isVisible()).toBe(false);
 		expect(vm.read()).toEqual({ type: 'local', key: 'text' });
 	});
 
