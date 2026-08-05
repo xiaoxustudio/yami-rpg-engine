@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { clamp, addClass, removeClass, hasClass, rect, rasterize } from '../../../utils/dom';
+import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
 function getWindow(): any {
 	return (window as any).Window;
@@ -15,11 +16,17 @@ interface Props {
 	id?: string;
 	focusableSelector?: string;
 	localize?: LocalizeAdapter | null;
+	showApply?: boolean;
+	buttonsIdPrefix?: string;
+	noButtons?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	focusableSelector: 'input, select, textarea, button',
-	localize: null
+	localize: null,
+	showApply: false,
+	buttonsIdPrefix: '',
+	noButtons: false
 });
 
 const emit = defineEmits<{
@@ -397,7 +404,15 @@ onUnmounted(() => {
 
 <template>
 	<div class="window-frame" ref="root" :id="props.id">
-		<slot />
+		<slot name="title" />
+		<div class="content-frame">
+			<slot />
+		</div>
+		<YMFormButtons
+			v-if="!props.noButtons"
+			:id-prefix="props.buttonsIdPrefix || props.id || ''"
+			:show-apply="props.showApply"
+		/>
 	</div>
 </template>
 
@@ -410,5 +425,12 @@ onUnmounted(() => {
 
 :global(:where(.window-frame.open)) {
 	display: block;
+}
+
+:global(:where(.window-frame > .content-frame)) {
+	position: absolute;
+	top: 28px;
+	bottom: 0;
+	width: 100%;
 }
 </style>

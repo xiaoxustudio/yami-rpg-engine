@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="forEach">
-	<TitleBar>For Each<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>For Each<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Data</div><SelectBox id="forEach-data" /> <div class="text">List Variable</div
 			><CustomBox id="forEach-list" type="variable" filter="object" />
@@ -18,9 +18,7 @@
 			<div class="text">Touch Id</div
 			><CustomBox id="forEach-touchId" type="variable" filter="number" />
 		</div>
-		<button id="forEach-confirm" name="confirm">Confirm</button>
-		<button id="forEach-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

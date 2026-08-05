@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="choice">
-		<TitleBar>Choice<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Choice<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Content</div
 				><TextBox
@@ -9,9 +9,7 @@
 					menu="tag-local-var tag-global-var tag-localization"
 				/>
 			</div>
-			<button id="choice-confirm" name="confirm">Confirm</button>
-			<button id="choice-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

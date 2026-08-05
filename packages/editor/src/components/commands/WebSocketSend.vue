@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="webSocketSend">
-		<TitleBar>webSocketSend<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>webSocketSend<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">ID</div><StringVar id="webSocketSend-id" /> <div class="text">Data</div
 				><StringVar id="webSocketSend-data" />
 			</div>
-			<button id="webSocketSend-confirm" name="confirm">Confirm</button>
-			<button id="webSocketSend-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

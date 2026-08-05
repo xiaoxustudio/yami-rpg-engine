@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="fixAngle">
-	<TitleBar>Fix Angle<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Fix Angle<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="fixAngle-actor" type="actor" /><div class="text">State</div><SelectBox id="fixAngle-fixed" /></div>
-		<button id="fixAngle-confirm" name="confirm">Confirm</button>
-		<button id="fixAngle-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

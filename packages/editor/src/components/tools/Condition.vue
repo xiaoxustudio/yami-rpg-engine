@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="condition">
-		<TitleBar>Condition<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Condition<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Condition Type</div><SelectBox id="condition-type" />
 			<div class="text">Variable</div
@@ -19,9 +19,7 @@
 				<div class="text">Operation</div><SelectBox id="condition-string-operation" />
 				<div class="text">String</div><TextArea id="condition-string-value" />
 			</div>
-			<button id="condition-confirm" name="confirm">Confirm</button>
-			<button id="condition-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="positionGetter">
-		<TitleBar>Position<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Position<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="positionGetter-type" /> <div class="text">X</div
 				><NumberVar
@@ -31,9 +31,7 @@
 					filter="any"
 				/>
 			</div>
-			<button id="positionGetter-confirm" name="confirm">Confirm</button>
-			<button id="positionGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

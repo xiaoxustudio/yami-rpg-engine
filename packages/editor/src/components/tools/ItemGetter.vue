@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="itemGetter">
-		<TitleBar>Actor<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Actor<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="itemGetter-type" /> <div class="text">Actor</div
 				><CustomBox id="itemGetter-actor" type="actor" /> <div class="text">Shortcut Key</div
@@ -10,9 +10,7 @@
 				<div class="text">Variable</div
 				><CustomBox id="itemGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="itemGetter-confirm" name="confirm">Confirm</button>
-			<button id="itemGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

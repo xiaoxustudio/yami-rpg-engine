@@ -1,7 +1,7 @@
 <template>
-		<WindowFrame id="project-settings">
-		<TitleBar>Project Settings<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<WindowFrame id="project-settings" buttons-id-prefix="project">
+		<template #title><TitleBar>Project Settings<div class="close"></div></TitleBar></template>
+		
 			<div class="box" id="project-page">
 				<div class="box" id="project-grid-box">
 					<div class="text project-summary" id="config-window-summary">Window</div>
@@ -235,9 +235,7 @@
 					/>
 				</div>
 			</div>
-			<button id="project-confirm" name="confirm">Confirm</button>
-			<button id="project-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

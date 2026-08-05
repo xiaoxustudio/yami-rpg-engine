@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="attribute">
-		<TitleBar>Attribute<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="attribute" show-apply>
+		<template #title><TitleBar>Attribute<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="attribute-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="attribute-list" padded />
@@ -60,10 +60,7 @@
 				</div>
 			</div>
 			<TextBox id="attribute-searcher" name="search" />
-			<button id="attribute-confirm" name="confirm">Confirm</button>
-			<button id="attribute-cancel" name="cancel">Cancel</button>
-			<button id="attribute-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

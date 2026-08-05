@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setAmbientLight">
-		<TitleBar>Set Ambient Light<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Ambient Light<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Red</div
 				><NumberVar id="setAmbientLight-red" min="0" max="255" step="5" />
@@ -20,9 +20,7 @@
 				 />
 				<div class="text">Wait</div><SelectBox id="setAmbientLight-wait" name="wait" />
 			</div>
-			<button id="setAmbientLight-confirm" name="confirm">Confirm</button>
-			<button id="setAmbientLight-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

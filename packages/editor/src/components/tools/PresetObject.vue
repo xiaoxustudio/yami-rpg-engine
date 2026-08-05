@@ -1,13 +1,11 @@
 <template>
 		<WindowFrame id="presetObject" mode="center">
-		<TitleBar>Object<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Object<div class="close"></div></TitleBar></template>
+		
 			<CustomBox id="presetObject-sceneId" type="file" filter="scene" />
 			<TreeList id="presetObject-list" />
 			<TextBox id="presetObject-searcher" name="search" />
-			<button id="presetObject-confirm" name="confirm">Confirm</button>
-			<button id="presetObject-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

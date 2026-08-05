@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="addAnimationComponent">
-	<TitleBar>Add Animation Component<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Add Animation Component<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div
 			><CustomBox id="addAnimationComponent-actor" type="actor" /><div class="text">Animation</div
@@ -17,9 +17,7 @@
 				max="100"
 				unit="px"
 			 /></div>
-		<button id="addAnimationComponent-confirm" name="confirm">Confirm</button>
-		<button id="addAnimationComponent-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

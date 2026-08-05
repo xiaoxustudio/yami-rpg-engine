@@ -1,10 +1,8 @@
 <template>
 	<WindowFrame id="deleteScene">
-		<TitleBar>Delete Scene<div class="close" /></TitleBar>
-		<div class="content-frame">
-			<button id="deleteScene-confirm" name="confirm">Confirm</button>
-			<button id="deleteScene-cancel" name="cancel">Cancel</button>
-		</div>
+		<template #title><TitleBar>Delete Scene<div class="close" /></TitleBar></template>
+		
+		
 	</WindowFrame>
 </template>
 

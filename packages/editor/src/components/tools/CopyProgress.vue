@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="copyProgress">
-		<TitleBar>New Project</TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="copyProgress" no-buttons>
+		<template #title><TitleBar>New Project</TitleBar></template>
+		
 			<div class="flex-box" id="copyProgress-flex">
 				<div class="text">Copying Files...</div>
 				<div class="box" id="copyProgress-box">
@@ -9,7 +9,7 @@
 				</div>
 				<div class="text" id="copyProgress-info" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

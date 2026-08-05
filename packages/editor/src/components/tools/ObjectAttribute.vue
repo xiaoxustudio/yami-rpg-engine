@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="object-attribute">
-		<TitleBar>Attribute<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Attribute<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Key</div><SelectBox id="object-attribute-key" /> <div class="text">Boolean</div
 				><SelectBox id="object-attribute-boolean-value" /> <div class="text">Number</div
@@ -15,9 +15,7 @@
 				><TextArea id="object-attribute-string-value" menu="tag-localization" />
 				<div class="text">Option</div><SelectBox id="object-attribute-enum-value" />
 			</div>
-			<button id="object-attribute-confirm" name="confirm">Confirm</button>
-			<button id="object-attribute-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

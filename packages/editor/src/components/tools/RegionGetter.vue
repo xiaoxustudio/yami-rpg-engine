@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="regionGetter">
-		<TitleBar>Region<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Region<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="regionGetter-type" /> <div class="text">Region</div
 				><CustomBox
@@ -10,9 +10,7 @@
 					filter="region"
 				/>
 			</div>
-			<button id="regionGetter-confirm" name="confirm">Confirm</button>
-			<button id="regionGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

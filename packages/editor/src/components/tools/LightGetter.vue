@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="lightGetter">
-		<TitleBar>Light<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Light<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="lightGetter-type" /> <div class="text">Light</div
 				><CustomBox id="lightGetter-presetId" type="preset-object" filter="light" />
 				<div class="text">Variable</div
 				><CustomBox id="lightGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="lightGetter-confirm" name="confirm">Confirm</button>
-			<button id="lightGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

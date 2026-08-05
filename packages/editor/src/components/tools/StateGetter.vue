@@ -1,8 +1,8 @@
 <template>
 	<!-- 状态访问器窗口 -->
 	<WindowFrame id="stateGetter">
-		<TitleBar>Actor<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Actor<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="stateGetter-type" /> <div class="text">Actor</div
 				><CustomBox id="stateGetter-actor" type="actor" /> <div class="text">State</div
@@ -10,9 +10,7 @@
 				<div class="text">Variable</div
 				><CustomBox id="stateGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="stateGetter-confirm" name="confirm">Confirm</button>
-			<button id="stateGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

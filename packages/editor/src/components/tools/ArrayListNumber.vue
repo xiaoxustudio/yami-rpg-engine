@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="arrayList-number">
-		<TitleBar>Number<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Number<div class="close" /></TitleBar></template>
+		
 			<NumberBox
 				id="arrayList-number-value"
 				min="-1000000000"
 				max="1000000000"
 				decimals="10"
 			/>
-			<button id="arrayList-number-confirm" name="confirm">Confirm</button>
-			<button id="arrayList-number-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

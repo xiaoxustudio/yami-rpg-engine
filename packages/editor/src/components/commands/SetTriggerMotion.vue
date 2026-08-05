@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="setTriggerMotion">
-		<TitleBar>Set Trigger Motion<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Trigger Motion<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Trigger</div
 				><CustomBox id="setTriggerMotion-trigger" type="trigger" />
 				<div class="text">Motion</div
 				><CustomBox id="setTriggerMotion-motion" type="enum-string" />
 			</div>
-			<button id="setTriggerMotion-confirm" name="confirm">Confirm</button>
-			<button id="setTriggerMotion-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

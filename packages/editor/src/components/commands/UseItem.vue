@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="useItem">
-	<TitleBar>Use Item<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Use Item<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" />
 			<div class="text">Mode</div><SelectBox id="useItem-mode" /> <div class="text">Shortcut Key</div
@@ -10,9 +10,7 @@
 			<div class="text">Item</div><CustomBox id="useItem-item" type="item" />
 			<div class="text">Wait</div><SelectBox id="useItem-wait" name="wait" />
 		</div>
-		<button id="useItem-confirm" name="confirm">Confirm</button>
-		<button id="useItem-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

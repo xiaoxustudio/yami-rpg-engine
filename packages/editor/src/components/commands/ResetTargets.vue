@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="resetTargets">
-	<TitleBar>Reset Targets<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Reset Targets<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="resetTargets-actor" type="actor" /></div>
-		<button id="resetTargets-confirm" name="confirm">Confirm</button>
-		<button id="resetTargets-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

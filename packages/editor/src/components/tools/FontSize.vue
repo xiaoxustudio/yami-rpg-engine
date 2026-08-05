@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="fontSize">
-		<TitleBar>Set Font Size<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Font Size<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Size</div
 				><NumberBox id="fontSize-size" min="10" max="400" unit="px" />
 			</div>
-			<button id="fontSize-confirm" name="confirm">Confirm</button>
-			<button id="fontSize-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

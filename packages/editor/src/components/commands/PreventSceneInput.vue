@@ -1,10 +1,8 @@
 <template>
 	<WindowFrame id="preventSceneInput">
-		<TitleBar>Prevent Scene Input<div class="close" /></TitleBar>
-		<div class="content-frame">
-			<button id="preventSceneInput-confirm" name="confirm">Confirm</button>
-			<button id="preventSceneInput-cancel" name="cancel">Cancel</button>
-		</div>
+		<template #title><TitleBar>Prevent Scene Input<div class="close" /></TitleBar></template>
+		
+		
 	</WindowFrame>
 	
 </template>

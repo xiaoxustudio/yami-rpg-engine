@@ -55,6 +55,42 @@ describe('YMWindowFrame', () => {
 		expect(typeof el.setPosition).toBe('function');
 	});
 
+	it('renders confirm/cancel buttons by default', () => {
+		const wrapper = mount(YMWindowFrame, {
+			props: { id: 'testWin' },
+			slots: { default: '<div>X</div>' }
+		});
+		const buttons = wrapper.element.querySelectorAll('button');
+		expect(buttons.length).toBe(2);
+		expect(buttons[0].id).toBe('testWin-confirm');
+		expect(buttons[0].getAttribute('name')).toBe('confirm');
+		expect(buttons[1].id).toBe('testWin-cancel');
+	});
+
+	it('renders apply button when showApply', () => {
+		const wrapper = mount(YMWindowFrame, {
+			props: { id: 'w', showApply: true }
+		});
+		const buttons = wrapper.element.querySelectorAll('button');
+		expect(buttons.length).toBe(3);
+		expect(wrapper.element.querySelector('#w-apply')).toBeTruthy();
+	});
+
+	it('supports buttonsIdPrefix override', () => {
+		const wrapper = mount(YMWindowFrame, {
+			props: { id: 'win', buttonsIdPrefix: 'prefix' }
+		});
+		expect(wrapper.element.querySelector('#prefix-confirm')).toBeTruthy();
+		expect(wrapper.element.querySelector('#win-confirm')).toBeNull();
+	});
+
+	it('omits buttons when noButtons', () => {
+		const wrapper = mount(YMWindowFrame, {
+			props: { id: 'w', noButtons: true }
+		});
+		expect(wrapper.element.querySelectorAll('button').length).toBe(0);
+	});
+
 	it('open adds open class and dispatches open event', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
@@ -140,7 +176,7 @@ describe('YMWindowFrame', () => {
 		const wrapper = mount(YMWindowFrame, {
 			attachTo: document.body,
 			slots: {
-				default: '<div class="title-bar">Original<div class="close" /></div>'
+				title: '<div class="title-bar">Original<div class="close" /></div>'
 			}
 		});
 		const el = wrapper.element as any;

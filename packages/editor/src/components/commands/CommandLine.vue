@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="commandLine">
-		<TitleBar>Command Line<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Command Line<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="commandLine-type" /> <div class="text">Key</div
 				><StringVar id="commandLine-key" /> <div class="text">Value</div
 				><StringVar id="commandLine-value" /> <div class="text">Variable</div
 				><CustomBox id="commandLine-variable" type="variable" filter="object" />
 			</div>
-			<button id="commandLine-confirm" name="confirm">Confirm</button>
-			<button id="commandLine-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

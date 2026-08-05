@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setVideo">
-		<TitleBar>Set Video<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Video<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setVideo-element" type="element" />
 				<div class="text">Properties</div><ParamList id="setVideo-properties" />
 			</div>
-			<button id="setVideo-confirm" name="confirm">Confirm</button>
-			<button id="setVideo-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

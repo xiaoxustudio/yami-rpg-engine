@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="elementGetter">
-		<TitleBar>Element<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Element<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="elementGetter-type" /> <div class="text">Ancestor</div
 				><CustomBox id="elementGetter-ancestor" type="ancestor-element" />
@@ -11,9 +11,7 @@
 				<div class="text">Variable</div
 				><CustomBox id="elementGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="elementGetter-confirm" name="confirm">Confirm</button>
-			<button id="elementGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

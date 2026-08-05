@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="fileAnimation-sprite">
-		<TitleBar>Sprite<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Sprite<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Name</div><TextBox id="fileAnimation-sprite-name" /> <div class="text">Image</div
 				><CustomBox id="fileAnimation-sprite-image" type="file" filter="image" />
@@ -10,9 +10,7 @@
 				<div class="text">Vert Frames</div
 				><NumberBox id="fileAnimation-sprite-vframes" min="1" max="256" />
 			</div>
-			<button id="fileAnimation-sprite-confirm" name="confirm">Confirm</button>
-			<button id="fileAnimation-sprite-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

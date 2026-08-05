@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setTriggerSpeed">
-		<TitleBar>Set Trigger Speed<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Trigger Speed<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Trigger</div
 				><CustomBox id="setTriggerSpeed-trigger" type="trigger" /> <div class="text">Speed</div
@@ -13,9 +13,7 @@
 					unit="t/s"
 				 />
 			</div>
-			<button id="setTriggerSpeed-confirm" name="confirm">Confirm</button>
-			<button id="setTriggerSpeed-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

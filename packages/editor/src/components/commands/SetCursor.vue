@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setCursor">
-		<TitleBar>Set Cursor<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Cursor<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Image</div
 				><CustomBox id="setCursor-image" type="file" filter="image" />
 			</div>
-			<button id="setCursor-confirm" name="confirm">Confirm</button>
-			<button id="setCursor-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

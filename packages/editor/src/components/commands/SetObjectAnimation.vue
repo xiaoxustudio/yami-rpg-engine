@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setObjectAnimation">
-		<TitleBar>Set Object Animation<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Object Animation<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box" id="setObjectAnimation-grid-box">
 				<div class="text">Sort</div><SelectBox id="setObjectAnimation-sort" />
 				<div class="text">Actor</div><CustomBox id="setObjectAnimation-actor" type="actor" />
@@ -54,9 +54,7 @@
 				 />
 				<div class="text">Wait</div><SelectBox id="setObjectAnimation-wait" name="wait" />
 			</div>
-			<button id="setObjectAnimation-confirm" name="confirm">Confirm</button>
-			<button id="setObjectAnimation-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="fileActor-sprite">
-		<TitleBar>Sprite<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Sprite<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Name</div><SelectBox id="fileActor-sprite-id" /> <div class="text">Image</div
 				><CustomBox id="fileActor-sprite-image" type="file" filter="image" />
 			</div>
-			<button id="fileActor-sprite-confirm" name="confirm">Confirm</button>
-			<button id="fileActor-sprite-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

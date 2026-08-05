@@ -1,14 +1,12 @@
 <template>
 		<WindowFrame id="scene-shift">
-		<TitleBar>Shift<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Shift<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Shift X</div><NumberBox id="scene-shift-x" min="-512" max="512" />
 				<div class="text">Shift Y</div><NumberBox id="scene-shift-y" min="-512" max="512" />
 			</div>
-			<button id="scene-shift-confirm" name="confirm">Confirm</button>
-			<button id="scene-shift-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

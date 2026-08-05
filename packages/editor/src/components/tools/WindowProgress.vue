@@ -1,12 +1,12 @@
 <template>
 	<!-- 进度窗口 -->
-	<WindowFrame id="windowProgress">
-		<TitleBar>进度</TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="windowProgress" no-buttons>
+		<template #title><TitleBar>进度</TitleBar></template>
+		
 			<div class="flex-box" id="windowProgress-flex">
 				<div class="text" id="windowProgress-info" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

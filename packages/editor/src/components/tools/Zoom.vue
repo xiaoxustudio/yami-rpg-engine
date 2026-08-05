@@ -1,15 +1,13 @@
 <template>
 	<!-- 缩放窗口 -->
 	<WindowFrame id="zoom">
-		<TitleBar>Zoom<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Zoom<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Zoom Factor</div
 				><NumberBox id="zoom-factor" min="0.6666" max="2" decimals="4" />
 			</div>
-			<button id="zoom-confirm" name="confirm">Confirm</button>
-			<button id="zoom-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

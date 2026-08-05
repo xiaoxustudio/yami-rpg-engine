@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="event-search-string">
-		<TitleBar>Search String<div class="close"></div></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="event-search-string" no-buttons>
+		<template #title><TitleBar>Search String<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text"></div><TextBox id="event-search-string-search" /> <div class="text"></div
 				><CheckBox id="event-search-string-case-insensitive" class="standard" />
@@ -12,7 +12,7 @@
 			</div>
 			<button id="event-search-string-previous" name="previous">上一个</button>
 			<button id="event-search-string-next" name="next">下一个</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

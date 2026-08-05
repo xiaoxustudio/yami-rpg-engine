@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="fileEvent-parameter">
-		<TitleBar>Parameter<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Parameter<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="fileEvent-parameter-type" /> <div class="text">Key</div
 				><TextBox id="fileEvent-parameter-key" /> <div class="text">Note</div
 				><TextArea id="fileEvent-parameter-note" />
 			</div>
-			<button id="fileEvent-parameter-confirm" name="confirm">Confirm</button>
-			<button id="fileEvent-parameter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

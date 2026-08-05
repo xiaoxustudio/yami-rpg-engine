@@ -1,14 +1,12 @@
 <template>
 	<!-- 队伍窗口 -->
 	<WindowFrame id="team">
-		<TitleBar>Team<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Team<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="team-list-fieldset">
 				<TreeList id="team-list" />
 			</div>
-			<button id="team-confirm" name="confirm">Confirm</button>
-			<button id="team-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="setMovementSpeed">
-	<TitleBar>Set Movement Speed<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Set Movement Speed<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setMovementSpeed-actor" type="actor" /><div class="text">Property</div><SelectBox id="setMovementSpeed-property" /><div class="text">Base Speed</div
 			><NumberVar
@@ -12,9 +12,7 @@
 				unit="t/s"
 			 /><div class="text">Speed Factor</div
 			><NumberVar id="setMovementSpeed-factor" min="0" max="4" decimals="4" /></div>
-		<button id="setMovementSpeed-confirm" name="confirm">Confirm</button>
-		<button id="setMovementSpeed-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

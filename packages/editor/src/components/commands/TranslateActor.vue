@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="translateActor">
-	<TitleBar>Translate Actor<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Translate Actor<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="translateActor-actor" type="actor" />
 			<div class="text">Angle</div><CustomBox id="translateActor-angle" type="angle" />
@@ -24,9 +24,7 @@
 			 />
 			<div class="text">Wait</div><SelectBox id="translateActor-wait" name="wait" />
 		</div>
-		<button id="translateActor-confirm" name="confirm">Confirm</button>
-		<button id="translateActor-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

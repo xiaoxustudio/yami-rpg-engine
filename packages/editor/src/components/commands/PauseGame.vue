@@ -1,10 +1,8 @@
 <template>
 	<WindowFrame id="pauseGame">
-		<TitleBar>Pause Game<div class="close" /></TitleBar>
-		<div class="content-frame">
-			<button id="pauseGame-confirm" name="confirm">Confirm</button>
-			<button id="pauseGame-cancel" name="cancel">Cancel</button>
-		</div>
+		<template #title><TitleBar>Pause Game<div class="close" /></TitleBar></template>
+		
+		
 	</WindowFrame>
 	
 </template>

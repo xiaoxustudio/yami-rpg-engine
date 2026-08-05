@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="edit-data">
-		<TitleBar
+		<template #title><TitleBar
 			>edit data<div class="text hidden" id="edit-data-mark">✱</div>
 			<div class="maximize" id="edit-data-maximize" />
 			<div class="close" />
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="box" id="edit-data-current"> </div>
-			<button id="edit-data-confirm" name="confirm">Confirm</button>
-			<button id="edit-data-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

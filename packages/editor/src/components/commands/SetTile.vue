@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setTile">
-		<TitleBar>Set Tile<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Tile<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Tilemap</div><CustomBox id="setTile-tilemap" type="tilemap" />
 				<div class="text">Tilemap X</div><NumberVar id="setTile-tilemapX" min="0" max="511" />
@@ -11,9 +11,7 @@
 				<div class="text">Tileset X</div><NumberVar id="setTile-tilesetX" min="0" max="255" />
 				<div class="text">Tileset Y</div><NumberVar id="setTile-tilesetY" min="0" max="255" />
 			</div>
-			<button id="setTile-confirm" name="confirm">Confirm</button>
-			<button id="setTile-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

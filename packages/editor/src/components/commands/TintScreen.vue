@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="tintScreen">
-		<TitleBar>Tint Screen<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Tint Screen<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box" id="tintScreen-grid-box">
 				<div class="text">Tint - Red</div
 				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" />
@@ -23,9 +23,7 @@
 				<div class="text">Wait</div><SelectBox id="tintScreen-wait" name="wait" />
 			</div>
 			<FilterBox id="tintScreen-filter" width="96" height="160" />
-			<button id="tintScreen-confirm" name="confirm">Confirm</button>
-			<button id="tintScreen-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

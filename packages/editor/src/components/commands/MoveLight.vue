@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="moveLight">
-		<TitleBar>Move Light<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Move Light<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Light</div><CustomBox id="moveLight-light" type="light" />
 				<div class="text">Properties</div><ParamList id="moveLight-properties" />
@@ -16,9 +16,7 @@
 				 />
 				<div class="text">Wait</div><SelectBox id="moveLight-wait" name="wait" />
 			</div>
-			<button id="moveLight-confirm" name="confirm">Confirm</button>
-			<button id="moveLight-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

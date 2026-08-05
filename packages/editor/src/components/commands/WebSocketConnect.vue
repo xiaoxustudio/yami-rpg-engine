@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="webSocketConnect">
-		<TitleBar>webSocketConnect<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>webSocketConnect<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">URL</div><StringVar id="webSocketConnect-url" /> <div class="text">ID</div
 				><StringVar id="webSocketConnect-id" /> <div class="text">Protocols</div
@@ -14,9 +14,7 @@
 				<div class="text">OnClose</div
 				><CustomBox id="webSocketConnect-onClose" type="file" filter="event" />
 			</div>
-			<button id="webSocketConnect-confirm" name="confirm">Confirm</button>
-			<button id="webSocketConnect-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

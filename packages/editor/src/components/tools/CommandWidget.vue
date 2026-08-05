@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="command-widget">
+	<WindowFrame id="command-widget" no-buttons>
 		<TextBox id="command-searcher" />
 	</WindowFrame>
 </template>

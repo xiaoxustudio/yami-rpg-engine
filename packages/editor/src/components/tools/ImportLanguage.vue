@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="importLanguage">
-		<TitleBar>Import Language Pack<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Import Language Pack<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Import to</div><SelectBox id="importLanguage-language" />
 			</div>
-			<button id="importLanguage-confirm" name="confirm">Confirm</button>
-			<button id="importLanguage-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setObjectProperty">
-		<TitleBar>setObjectProperty<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>setObjectProperty<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Variable</div
 				><CustomBox
@@ -17,9 +17,7 @@
 					filter="all"
 				/>
 			</div>
-			<button id="setObjectProperty-confirm" name="confirm">Confirm</button>
-			<button id="setObjectProperty-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

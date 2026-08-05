@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="httpRequest">
-	<TitleBar>httpRequest<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>httpRequest<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">URL</div><StringVar id="httpRequest-url" /> <div class="text">Method</div
 			><SelectBox id="httpRequest-method" /> <div class="text">Header</div
@@ -15,9 +15,7 @@
 			<div class="text">CallBack</div
 			><CustomBox id="httpRequest-callback" type="file" filter="event" />
 		</div>
-		<button id="httpRequest-confirm" name="confirm">Confirm</button>
-		<button id="httpRequest-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

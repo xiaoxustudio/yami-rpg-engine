@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="setTileTag">
-		<TitleBar>Set Tile Tag<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Tile Tag<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Tag</div><NumberBox id="setTileTag-tag" min="0" max="99999" />
 			</div>
-			<button id="setTileTag-confirm" name="confirm">Confirm</button>
-			<button id="setTileTag-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<!-- 设置文字效果 -->
 	<WindowFrame id="textEffect">
-		<TitleBar>Set Text Effect<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Text Effect<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Effect</div><SelectBox id="textEffect-type" /> <div class="text">Shadow X</div
 				><NumberBox id="textEffect-shadowOffsetX" min="-9" max="9" unit="px" />
@@ -12,9 +12,7 @@
 				><NumberBox id="textEffect-strokeWidth" min="1" max="20" unit="px" />
 				<div class="text">Effect Color</div><ColorBox id="textEffect-color" />
 			</div>
-			<button id="textEffect-confirm" name="confirm">Confirm</button>
-			<button id="textEffect-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

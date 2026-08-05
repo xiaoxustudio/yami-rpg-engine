@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="fileActor-skill">
-		<TitleBar>Skill<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Skill<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Skill</div
 				><CustomBox id="fileActor-skill-id" type="file" filter="skill" />
 				<div class="text">Shortcut Key</div><SelectBox id="fileActor-skill-key" />
 			</div>
-			<button id="fileActor-skill-confirm" name="confirm">Confirm</button>
-			<button id="fileActor-skill-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

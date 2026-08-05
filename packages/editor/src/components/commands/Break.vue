@@ -1,10 +1,8 @@
 <template>
 <WindowFrame id="break">
-	<TitleBar>Break<div class="close" /></TitleBar>
-	<div class="content-frame">
-		<button id="break-confirm" name="confirm">Confirm</button>
-		<button id="break-cancel" name="cancel">Cancel</button>
-	</div>
+	<template #title><TitleBar>Break<div class="close" /></TitleBar></template>
+	
+	
 </WindowFrame>
 </template>
 

@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="webSocketClose">
-		<TitleBar>webSocketClose<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>webSocketClose<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">ID</div><StringVar id="webSocketClose-id" /> <div class="text">Code</div
 				><NumberBox id="webSocketClose-code" min="1000" max="4999" />
 				<div class="text">Reason</div><StringVar id="webSocketClose-reason" />
 			</div>
-			<button id="webSocketClose-confirm" name="confirm">Confirm</button>
-			<button id="webSocketClose-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

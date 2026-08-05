@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="removeAnimationComponent">
-	<TitleBar>Remove Animation Component<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Remove Animation Component<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div
 			><CustomBox id="removeAnimationComponent-actor" type="actor" /><div class="text">Animation</div
@@ -10,9 +10,7 @@
 				type="file"
 				filter="animation"
 			 /><div class="text">Motion</div><SelectBox id="removeAnimationComponent-motion" /></div>
-		<button id="removeAnimationComponent-confirm" name="confirm">Confirm</button>
-		<button id="removeAnimationComponent-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

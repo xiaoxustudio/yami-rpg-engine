@@ -1,8 +1,8 @@
 <template>
 	<!-- 匹配 - 条件 -->
 	<WindowFrame id="switch-condition">
-		<TitleBar>Condition<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Condition<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Condition Type</div><SelectBox id="switch-condition-type" />
 				<div class="text">Boolean</div><SelectBox id="switch-condition-boolean-value" />
@@ -28,9 +28,7 @@
 					filter="all"
 				/>
 			</div>
-			<button id="switch-condition-confirm" name="confirm">Confirm</button>
-			<button id="switch-condition-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

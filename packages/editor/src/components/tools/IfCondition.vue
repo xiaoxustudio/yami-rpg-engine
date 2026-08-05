@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="if-condition">
-		<TitleBar>Condition<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Condition<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Condition Type</div><SelectBox id="if-condition-type" />
 				<div class="text">Variable</div
@@ -75,9 +75,7 @@
 				<div class="text">State</div><SelectBox id="if-condition-mouse-state" />
 				<div class="text">Other</div><SelectBox id="if-condition-other-key" />
 			</div>
-			<button id="if-condition-confirm" name="confirm">Confirm</button>
-			<button id="if-condition-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,11 +1,11 @@
 <template>
 	<!-- Open设置窗口 -->
 	<WindowFrame id="setting">
-		<TitleBar id="setting-title"
+		<template #title><TitleBar id="setting-title"
 			>Setting<div class="maximize" />
 			<div class="close" />
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="grid-box" id="setting-grid">
 				<div class="text setting-title" id="setting-title-server">Server</div>
 				<div class="text" /><NumberBox id="setting-server-port" min="0" max="65535" />
@@ -35,9 +35,7 @@
 				<div class="text" id="setting-update-checkOnStart-label" />
 				<CheckBox id="setting-update-checkOnStart" class="standard" />
 			</div>
-			<button id="setting-confirm" name="confirm">Confirm</button>
-			<button id="setting-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

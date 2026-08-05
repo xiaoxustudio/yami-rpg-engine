@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="moveElement">
-		<TitleBar>Move Element<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Move Element<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="moveElement-element" type="element" />
 				<div class="text">Properties</div><ParamList id="moveElement-properties" />
@@ -16,9 +16,7 @@
 				/>
 				<div class="text">Wait</div><SelectBox id="moveElement-wait" name="wait" />
 			</div>
-			<button id="moveElement-confirm" name="confirm">Confirm</button>
-			<button id="moveElement-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="moveLight-property">
-		<TitleBar>Point Light Property<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Point Light Property<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="moveLight-property-key" /> <div class="text">X</div
 				><NumberVar
@@ -83,9 +83,7 @@
 				<div class="text">Blue</div
 				><NumberVar id="moveLight-property-blue" min="0" max="255" step="5" />
 			</div>
-			<button id="moveLight-property-confirm" name="confirm">Confirm</button>
-			<button id="moveLight-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

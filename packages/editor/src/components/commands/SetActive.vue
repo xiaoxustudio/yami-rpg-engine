@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="setActive">
-	<TitleBar>Set Active<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Set Active<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setActive-actor" type="actor" /><div class="text">State</div><SelectBox id="setActive-active" /></div>
-		<button id="setActive-confirm" name="confirm">Confirm</button>
-		<button id="setActive-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

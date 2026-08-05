@@ -1,7 +1,7 @@
 <template>
-		<WindowFrame id="qr-code">
-		<TitleBar>本地服务预览<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<WindowFrame id="qr-code" no-buttons>
+		<template #title><TitleBar>本地服务预览<div class="close"></div></TitleBar></template>
+		
 			<div class="box">
 				<div class="box" id="qr-img-container"><img id="qr-code-img" /></div><br />
 				<div class="box" id="qr-code-content" />
@@ -9,7 +9,7 @@
 			<button id="qr-start-button" name="start-qr-code" />
 			<button id="qr-close-button" name="close-qr-code" />
 			<button id="qr-update-button" name="update-qr-code" />
-		</div>
+		
 	</WindowFrame>
 </template>
 

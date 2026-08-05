@@ -1,10 +1,8 @@
 <template>
 	<WindowFrame id="relaunchApp">
-		<TitleBar>Relaunch App<div class="close" /></TitleBar>
-		<div class="content-frame">
-			<button id="relaunchApp-confirm" name="confirm">Confirm</button>
-			<button id="relaunchApp-cancel" name="cancel">Cancel</button>
-		</div>
+		<template #title><TitleBar>Relaunch App<div class="close" /></TitleBar></template>
+		
+		
 	</WindowFrame>
 	
 </template>

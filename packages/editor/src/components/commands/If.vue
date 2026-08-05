@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="if">
-	<TitleBar>If<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>If<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box"> <div class="text">Branches</div><ParamList id="if-branches" /> </div>
 		<CheckBox id="if-else" class="standard"><div class="text" id="if-else-label">Else</div></CheckBox>
-		<button id="if-confirm" name="confirm">Confirm</button>
-		<button id="if-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

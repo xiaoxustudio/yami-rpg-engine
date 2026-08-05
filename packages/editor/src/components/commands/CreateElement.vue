@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="createElement">
-		<TitleBar>Create Element<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Create Element<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="createElement-operation" />
 				<div class="text">Parent</div><CustomBox id="createElement-parent" type="element" />
@@ -10,9 +10,7 @@
 				<div class="text">UI Element</div
 				><CustomBox id="createElement-presetId" type="preset-element" />
 			</div>
-			<button id="createElement-confirm" name="confirm">Confirm</button>
-			<button id="createElement-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

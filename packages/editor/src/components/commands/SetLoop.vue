@@ -1,14 +1,12 @@
 <template>
 <WindowFrame id="setLoop">
-	<TitleBar>Set Loop<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Set Loop<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="setLoop-type" /> <div class="text">Loop</div
 			><SelectBox id="setLoop-loop" />
 		</div>
-		<button id="setLoop-confirm" name="confirm">Confirm</button>
-		<button id="setLoop-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

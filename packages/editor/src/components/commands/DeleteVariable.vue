@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="deleteVariable">
-		<TitleBar>Delete Variable<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Delete Variable<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Variable</div
 				><CustomBox
@@ -10,9 +10,7 @@
 					filter="deletable"
 				/>
 			</div>
-			<button id="deleteVariable-confirm" name="confirm">Confirm</button>
-			<button id="deleteVariable-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

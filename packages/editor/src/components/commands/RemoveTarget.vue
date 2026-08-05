@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="removeTarget">
-	<TitleBar>Remove Target<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Remove Target<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="removeTarget-actor" type="actor" /><div class="text">Target</div><CustomBox id="removeTarget-target" type="actor" /></div>
-		<button id="removeTarget-confirm" name="confirm">Confirm</button>
-		<button id="removeTarget-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

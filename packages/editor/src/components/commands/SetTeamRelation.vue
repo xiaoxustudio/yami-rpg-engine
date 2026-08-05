@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="setTeamRelation">
-		<TitleBar>Change Team Relation<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Change Team Relation<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Team A</div><SelectBox id="setTeamRelation-teamId1" />
 				<div class="text">Team B</div><SelectBox id="setTeamRelation-teamId2" />
 				<div class="text">Relation</div><SelectBox id="setTeamRelation-relation" />
 			</div>
-			<button id="setTeamRelation-confirm" name="confirm">Confirm</button>
-			<button id="setTeamRelation-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

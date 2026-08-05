@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="nestElement">
-		<TitleBar>Nest Element<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Nest Element<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Parent Element</div
 				><CustomBox id="nestElement-parent" type="element" />
 				<div class="text">Child Element</div
 				><CustomBox id="nestElement-child" type="element" />
 			</div>
-			<button id="nestElement-confirm" name="confirm">Confirm</button>
-			<button id="nestElement-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

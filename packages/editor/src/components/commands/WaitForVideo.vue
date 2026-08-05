@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="waitForVideo">
-		<TitleBar>Wait For Video<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Wait For Video<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="waitForVideo-element" type="element" />
 			</div>
-			<button id="waitForVideo-confirm" name="confirm">Confirm</button>
-			<button id="waitForVideo-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

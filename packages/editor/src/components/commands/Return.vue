@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="return">
-	<TitleBar>Return<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Return<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="return-type" /> <div class="text">Boolean</div
 			><SelectBox id="return-boolean" /> <div class="text">Number</div
@@ -22,9 +22,7 @@
 			<div class="text">Light</div><CustomBox id="return-light" type="light" />
 			<div class="text">Element</div><CustomBox id="return-element" type="element" />
 		</div>
-		<button id="return-confirm" name="confirm">Confirm</button>
-		<button id="return-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

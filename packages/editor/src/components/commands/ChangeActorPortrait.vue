@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="changeActorPortrait">
-	<TitleBar>Change Actor Portrait<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Change Actor Portrait<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" /><div class="text">Portrait</div
 			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" /><div class="text">Clip</div
@@ -10,9 +10,7 @@
 				type="clip"
 				image="changeActorPortrait-portrait"
 			 /></div>
-		<button id="changeActorPortrait-confirm" name="confirm">Confirm</button>
-		<button id="changeActorPortrait-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

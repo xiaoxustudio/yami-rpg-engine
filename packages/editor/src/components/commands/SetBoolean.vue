@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setBoolean">
-		<TitleBar>Set Boolean<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Boolean<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Variable</div
 				><CustomBox
@@ -19,9 +19,7 @@
 				<div class="text">Param Name</div><StringVar id="setBoolean-parameter-key" />
 				<div class="text">Script</div><TextBox id="setBoolean-script" />
 			</div>
-			<button id="setBoolean-confirm" name="confirm">Confirm</button>
-			<button id="setBoolean-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

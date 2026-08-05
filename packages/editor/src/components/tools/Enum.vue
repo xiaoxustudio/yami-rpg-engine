@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="enum" mode="center">
-		<TitleBar>Enumeration<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="enum" show-apply mode="center">
+		<template #title><TitleBar>Enumeration<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="enum-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="enum-list" padded />
@@ -18,10 +18,7 @@
 				</div>
 			</div>
 			<TextBox id="enum-searcher" name="search" />
-			<button id="enum-confirm" name="confirm">Confirm</button>
-			<button id="enum-cancel" name="cancel">Cancel</button>
-			<button id="enum-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

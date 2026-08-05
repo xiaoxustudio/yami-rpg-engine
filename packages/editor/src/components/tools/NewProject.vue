@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="newProject">
-		<TitleBar>New Project<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>New Project<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Template</div><SelectBox id="newProject-template" />
 				<div class="text">Folder</div><TextBox id="newProject-folder" />
@@ -12,9 +12,7 @@
 				</div>
 			</div>
 			<div class="text" id="newProject-warning" />
-			<button id="newProject-confirm" name="confirm">Confirm</button>
-			<button id="newProject-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

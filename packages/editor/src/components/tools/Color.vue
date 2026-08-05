@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="color">
-		<TitleBar>Color Picker<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Color Picker<div class="close" /></TitleBar></template>
+		
 			<canvas id="color-palette-canvas" width="256" height="194" />
 			<div class="box" id="color-palette-frame">
 				<div class="box" id="color-palette-cursor" />
@@ -38,9 +38,7 @@
 				><NumberBox id="color-b" min="0" max="255" /> <div class="text">A</div
 				><NumberBox id="color-a" min="0" max="255" />
 			</div>
-			<button id="color-confirm" name="confirm">Confirm</button>
-			<button id="color-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

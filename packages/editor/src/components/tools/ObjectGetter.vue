@@ -1,16 +1,14 @@
 <template>
 		<WindowFrame id="objectGetter">
-		<TitleBar>Scene Object<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Scene Object<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="objectGetter-type" /> <div class="text">Object</div
 				><CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
 				<div class="text">Variable</div
 				><CustomBox id="objectGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="objectGetter-confirm" name="confirm">Confirm</button>
-			<button id="objectGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

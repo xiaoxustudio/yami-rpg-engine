@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="setTriggerAngle">
-		<TitleBar>Set Trigger Angle<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Trigger Angle<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Trigger</div
 				><CustomBox id="setTriggerAngle-trigger" type="trigger" /> <div class="text">Angle</div
 				><CustomBox id="setTriggerAngle-angle" type="angle" />
 			</div>
-			<button id="setTriggerAngle-confirm" name="confirm">Confirm</button>
-			<button id="setTriggerAngle-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

@@ -1,9 +1,9 @@
 <template>
-		<WindowFrame id="resource">
-		<TitleBar>
+		<WindowFrame id="resource" no-buttons>
+		<template #title><TitleBar>
 			<div class="close"></div>
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="box" style="display: flex; flex-direction: column; height: 100%">
 				<div class="box"
 					id="resource-node-info"
@@ -40,7 +40,7 @@
 					<button id="resource-open-dir">open dir</button>
 				</div>
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

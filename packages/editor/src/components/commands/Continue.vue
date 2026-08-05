@@ -1,10 +1,8 @@
 <template>
 <WindowFrame id="continue">
-	<TitleBar>Continue<div class="close" /></TitleBar>
-	<div class="content-frame">
-		<button id="continue-confirm" name="confirm">Confirm</button>
-		<button id="continue-cancel" name="cancel">Cancel</button>
-	</div>
+	<template #title><TitleBar>Continue<div class="close" /></TitleBar></template>
+	
+	
 </WindowFrame>
 </template>
 

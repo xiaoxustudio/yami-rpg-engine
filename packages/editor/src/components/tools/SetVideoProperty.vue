@@ -1,8 +1,8 @@
 <template>
 	<!-- 设置视频 - 属性 -->
 	<WindowFrame id="setVideo-property">
-		<TitleBar>Image Property<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Image Property<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="setVideo-property-key" />
 				<div class="text">Video</div
@@ -18,9 +18,7 @@
 				><SelectBox id="setVideo-property-flip" /> <div class="text">Blend</div
 				><SelectBox id="setVideo-property-blend" />
 			</div>
-			<button id="setVideo-property-confirm" name="confirm">Confirm</button>
-			<button id="setVideo-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

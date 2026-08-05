@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setButton">
-		<TitleBar>Set Button<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Button<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setButton-element" type="element" />
 				<div class="text">Properties</div><ParamList id="setButton-properties" />
 			</div>
-			<button id="setButton-confirm" name="confirm">Confirm</button>
-			<button id="setButton-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

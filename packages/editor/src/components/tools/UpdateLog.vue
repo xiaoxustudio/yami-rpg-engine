@@ -1,8 +1,8 @@
 <template>
 	<!-- 公告窗口 -->
-	<WindowFrame id="update-log">
-		<TitleBar>Update Log<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="update-log" no-buttons>
+		<template #title><TitleBar>Update Log<div class="close" /></TitleBar></template>
+		
 			<div class="box" id="update-log-tabs">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>
 				<button id="update-log-tab-community" class="update-log-tab">Community</button>
@@ -11,7 +11,7 @@
 			<div class="box" id="update-log-container">
 				<div class="box" id="update-log-content" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

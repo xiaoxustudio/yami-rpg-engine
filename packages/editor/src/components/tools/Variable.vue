@@ -1,8 +1,8 @@
 <template>
 	<!-- 变量窗口 -->
-	<WindowFrame id="variable" mode="center">
-		<TitleBar>Variable<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="variable" show-apply mode="center">
+		<template #title><TitleBar>Variable<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="variable-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="variable-list" padded />
@@ -102,10 +102,7 @@
 				</div>
 			</div>
 			<TextBox id="variable-searcher" name="search" />
-			<button id="variable-confirm" name="confirm">Confirm</button>
-			<button id="variable-cancel" name="cancel">Cancel</button>
-			<button id="variable-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

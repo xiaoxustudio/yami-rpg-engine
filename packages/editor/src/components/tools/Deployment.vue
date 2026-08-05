@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="deployment">
-		<TitleBar>Deployment<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Deployment<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Platform</div><SelectBox id="deployment-platform" />
 				<div class="text">Folder</div><TextBox id="deployment-folder" />
@@ -14,9 +14,7 @@
 			<CheckBox id="deployment-compress" standard />
 			</div>
 			<div class="text" id="deployment-warning" />
-			<button id="deployment-confirm" name="confirm">Confirm</button>
-			<button id="deployment-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

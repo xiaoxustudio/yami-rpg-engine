@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="localization" mode="center">
-		<TitleBar>Localization<div class="close"></div></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="localization" show-apply mode="center">
+		<template #title><TitleBar>Localization<div class="close"></div></TitleBar></template>
+		
 			<div class="field-set input pad" id="localization-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="localization-list" padded />
@@ -10,10 +10,7 @@
 			<TextBox id="localization-searcher" name="search" />
 			<button id="localization-from-excel" name="from-excel">from-excel</button>
 			<button id="localization-to-excel" name="to-excel">to-excel</button>
-			<button id="localization-confirm" name="confirm">Confirm</button>
-			<button id="localization-cancel" name="cancel">Cancel</button>
-			<button id="localization-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
-	<WindowFrame id="event" class="opaque">
-		<TitleBar id="event-title"
+	<WindowFrame id="event" show-apply class="opaque">
+		<template #title><TitleBar id="event-title"
 			>Event<div class="maximize"></div>
 			<div class="close"></div>
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="field-set input pad" id="event-open-fieldset">
 				<div class="legend">Event</div>
 				<TreeList id="event-open-list" />
@@ -18,10 +18,7 @@
 				</div>
 			</div>
 			<SelectBox id="event-type" />
-			<button id="event-confirm" name="confirm">Confirm</button>
-			<button id="event-cancel" name="cancel">Cancel</button>
-			<button id="event-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

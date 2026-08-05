@@ -1,13 +1,11 @@
 <template>
 <WindowFrame id="createGlobalActor">
-	<TitleBar>Create Global Actor<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Create Global Actor<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div
 			><CustomBox id="createGlobalActor-actorId" type="file" filter="actor" /><div class="text">Team</div><SelectBox id="createGlobalActor-teamId" /></div>
-		<button id="createGlobalActor-confirm" name="confirm">Confirm</button>
-		<button id="createGlobalActor-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

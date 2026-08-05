@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="command">
-		<TitleBar>Custom Command<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="command" show-apply>
+		<template #title><TitleBar>Custom Command<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="command-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="command-list" padded />
@@ -19,10 +19,7 @@
 					</div>
 				</DetailBox>
 			</div>
-			<button id="command-confirm" name="confirm">Confirm</button>
-			<button id="command-cancel" name="cancel">Cancel</button>
-			<button id="command-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

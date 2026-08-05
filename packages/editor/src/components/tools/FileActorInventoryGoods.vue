@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="fileActor-inventory-goods">
-		<TitleBar>Inventory<div class="close"></div></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="fileActor-inventory-goods" buttons-id-prefix="fileActor-inventory">
+		<template #title><TitleBar>Inventory<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="fileActor-inventory-type" />
 				<div class="text">Item</div
@@ -17,9 +17,7 @@
 				<div class="text">Money</div
 				><NumberBox id="fileActor-inventory-money" min="1" max="100000000" />
 			</div>
-			<button id="fileActor-inventory-confirm" name="confirm">Confirm</button>
-			<button id="fileActor-inventory-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

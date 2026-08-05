@@ -1,15 +1,13 @@
 <template>
 	<WindowFrame id="setPointerEventRoot">
-		<TitleBar>Set Pointer Event Root<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Pointer Event Root<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="setPointerEventRoot-operation" />
 				<div class="text">Element</div
 				><CustomBox id="setPointerEventRoot-element" type="element" />
 			</div>
-			<button id="setPointerEventRoot-confirm" name="confirm">Confirm</button>
-			<button id="setPointerEventRoot-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

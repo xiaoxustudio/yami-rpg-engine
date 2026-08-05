@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="language">
-		<TitleBar>Language<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Language<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Name</div><SelectBox id="language-name" /> <div class="text">Font</div
 				><CustomBox id="language-font" type="file" filter="font" />
 				<div class="text">Font Size Scaling</div
 				><NumberBox id="language-scale" min="0.5" max="2" decimals="10" />
 			</div>
-			<button id="language-confirm" name="confirm">Confirm</button>
-			<button id="language-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,15 +1,13 @@
 <template>
 		<WindowFrame id="scriptCommand">
-		<TitleBar>Custom Command<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Custom Command<div class="close"></div></TitleBar></template>
+		
 			<ParameterPane id="scriptCommand-parameter-pane">
 				<DetailBox id="scriptCommand-parameter-detail" open>
 					<div class="detail-grid" id="scriptCommand-parameter-grid" />
 				</DetailBox>
 			</ParameterPane>
-			<button id="scriptCommand-confirm" name="confirm">Confirm</button>
-			<button id="scriptCommand-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

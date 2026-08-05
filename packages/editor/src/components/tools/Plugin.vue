@@ -1,7 +1,7 @@
 <template>
-		<WindowFrame id="plugin">
-		<TitleBar>Plugin<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<WindowFrame id="plugin" show-apply>
+		<template #title><TitleBar>Plugin<div class="close"></div></TitleBar></template>
+		
 			<div class="field-set input pad" id="plugin-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="plugin-list" padded />
@@ -18,10 +18,7 @@
 				</DetailBox>
 			</ParameterPane>
 			</div>
-			<button id="plugin-confirm" name="confirm">Confirm</button>
-			<button id="plugin-cancel" name="cancel">Cancel</button>
-			<button id="plugin-apply" name="apply">Apply</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

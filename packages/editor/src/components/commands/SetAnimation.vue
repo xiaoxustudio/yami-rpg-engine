@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setAnimation">
-		<TitleBar>Set Animation<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Animation<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setAnimation-element" type="element" />
 				<div class="text">Properties</div><ParamList id="setAnimation-properties" />
 			</div>
-			<button id="setAnimation-confirm" name="confirm">Confirm</button>
-			<button id="setAnimation-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

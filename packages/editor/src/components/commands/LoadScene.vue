@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="loadScene">
-		<TitleBar>Load Scene<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Load Scene<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Scene</div
 				><FileVar id="loadScene-sceneId" type="file" filter="scene" />
@@ -11,9 +11,7 @@
 				<div class="text">Y</div
 				><NumberVar id="loadScene-y" min="0" max="512" step="0.5" decimals="4" />
 			</div>
-			<button id="loadScene-confirm" name="confirm">Confirm</button>
-			<button id="loadScene-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

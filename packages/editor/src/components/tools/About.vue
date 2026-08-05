@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="about">
-		<TitleBar>Yami RPG Editor<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="about" no-buttons>
+		<template #title><TitleBar>Yami RPG Editor<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text" id="about-credits">Credits</div
 				><div class="text">
@@ -25,7 +25,7 @@
 				<div class="text">V8</div><div class="text" id="v8-version"></div> <div class="text">OS</div
 				><div class="text" id="os-version"></div>
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

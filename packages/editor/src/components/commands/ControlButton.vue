@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="controlButton">
-		<TitleBar>Control Button<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Control Button<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="controlButton-operation" />
 				<div class="text">Element</div><CustomBox id="controlButton-element" type="element" />
 			</div>
-			<button id="controlButton-confirm" name="confirm">Confirm</button>
-			<button id="controlButton-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

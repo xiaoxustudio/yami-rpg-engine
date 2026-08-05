@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="autoTile">
-		<TitleBar>Auto Tile<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Auto Tile<div class="close" /></TitleBar></template>
+		
 			<div class="field-set" id="autoTile-general-fieldset">
 				<div class="legend">General</div>
 				<div class="grid-box" id="autoTile-general-grid">
@@ -73,9 +73,7 @@
 				<div class="legend">Frames</div>
 				<CommonList id="autoTile-frames" />
 			</div>
-			<button id="autoTile-confirm" name="confirm">Confirm</button>
-			<button id="autoTile-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

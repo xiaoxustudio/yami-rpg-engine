@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="shakeScreen">
-		<TitleBar>Tint Screen<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Tint Screen<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Shake Mode</div><SelectBox id="shakeScreen-mode" /> <div class="text">Power</div
 				><NumberBox id="shakeScreen-power" min="1" max="10" /> <div class="text">Speed</div
@@ -16,9 +16,7 @@
 				 />
 				<div class="text">Wait</div><SelectBox id="shakeScreen-wait" name="wait" />
 			</div>
-			<button id="shakeScreen-confirm" name="confirm">Confirm</button>
-			<button id="shakeScreen-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

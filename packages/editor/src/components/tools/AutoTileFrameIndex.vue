@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="autoTile-frameIndex">
-		<TitleBar>Tile Index<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="autoTile-frameIndex" no-buttons>
+		<template #title><TitleBar>Tile Index<div class="close" /></TitleBar></template>
+		
 			<div class="box" id="autoTile-frameIndex-screen">
 				<div class="box" id="autoTile-frameIndex-image-clip">
 					<img id="autoTile-frameIndex-image" />
@@ -10,7 +10,7 @@
 				<MarqueeArea id="autoTile-frameIndex-marquee" />
 				<div class="text" id="autoTile-frameIndex-info" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

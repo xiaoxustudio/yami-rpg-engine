@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="getTarget">
-	<TitleBar>Get Target<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Get Target<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" /></div>
-		<button id="getTarget-confirm" name="confirm">Confirm</button>
-		<button id="getTarget-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
 	<!-- 设置文本 - 属性 -->
 	<WindowFrame id="setText-property">
-		<TitleBar>Text Property<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Text Property<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="setText-property-key" />
 				<div class="text">Content</div
@@ -52,9 +52,7 @@
 				<div class="text">Effect Color</div><ColorBox id="setText-property-effect-color" />
 				<div class="text">Blend</div><SelectBox id="setText-property-blend" />
 			</div>
-			<button id="setText-property-confirm" name="confirm">Confirm</button>
-			<button id="setText-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,16 +1,14 @@
 <template>
 		<WindowFrame id="selector" mode="center">
-		<TitleBar
+		<template #title><TitleBar
 			>Select File<div class="maximize"></div>
 			<div class="close"></div>
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="file-browser" id="selector-browser">
 				<FileBrowser />
 			</div>
-			<button id="selector-confirm" name="confirm">Confirm</button>
-			<button id="selector-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

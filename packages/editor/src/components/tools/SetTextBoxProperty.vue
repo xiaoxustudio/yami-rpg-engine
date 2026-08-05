@@ -1,8 +1,8 @@
 <template>
 	<!-- 设置文本框 - 属性 -->
 	<WindowFrame id="setTextBox-property">
-		<TitleBar>Text Property<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Text Property<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="setTextBox-property-key" />
 				<div class="text">Type</div><SelectBox id="setTextBox-property-type" />
@@ -32,9 +32,7 @@
 				><NumberBox id="setTextBox-property-decimals" min="0" max="10" />
 				<div class="text">Color</div><ColorBox id="setTextBox-property-color" />
 			</div>
-			<button id="setTextBox-property-confirm" name="confirm">Confirm</button>
-			<button id="setTextBox-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

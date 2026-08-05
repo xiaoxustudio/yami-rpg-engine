@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="tintImage">
-		<TitleBar>Tint Image<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Tint Image<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box" id="tintImage-grid-box">
 				<div class="text">Element</div><CustomBox id="tintImage-element" type="element" />
 				<div class="text">Mode</div><SelectBox id="tintImage-mode" /> <div class="text">Tint - Red</div
@@ -24,9 +24,7 @@
 				<div class="text">Wait</div><SelectBox id="tintImage-wait" name="wait" />
 			</div>
 			<FilterBox id="tintImage-filter" width="96" height="208" />
-			<button id="tintImage-confirm" name="confirm">Confirm</button>
-			<button id="tintImage-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

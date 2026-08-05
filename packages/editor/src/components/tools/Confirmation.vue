@@ -1,16 +1,16 @@
 <template>
-	<WindowFrame id="confirmation" mode="center">
-		<TitleBar>
+	<WindowFrame id="confirmation" no-buttons mode="center">
+		<template #title><TitleBar>
 			<div class="close" />
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="text" id="confirmation-message" />
 			<div class="box" id="confirmation-button-frame">
 				<button id="confirmation-button-0" />
 				<button id="confirmation-button-1" />
 				<button id="confirmation-button-2" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

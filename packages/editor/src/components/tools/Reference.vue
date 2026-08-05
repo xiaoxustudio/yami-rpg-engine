@@ -1,9 +1,9 @@
 <template>
-		<WindowFrame id="reference">
-		<TitleBar>Reference<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<WindowFrame id="reference" no-buttons>
+		<template #title><TitleBar>Reference<div class="close"></div></TitleBar></template>
+		
 			<CommonList id="reference-list" />
-		</div>
+		
 	</WindowFrame>
 </template>
 

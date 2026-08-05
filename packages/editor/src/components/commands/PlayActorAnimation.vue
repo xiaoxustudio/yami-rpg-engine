@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="playActorAnimation">
-	<TitleBar>Play Actor Animation<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Play Actor Animation<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="playActorAnimation-actor" type="actor" /><div class="text">Motion</div
 			><CustomBox id="playActorAnimation-motion" type="enum-string" /><div class="text">Speed</div
@@ -12,9 +12,7 @@
 				step="0.1"
 				decimals="4"
 			 /><div class="text">Wait</div><SelectBox id="playActorAnimation-wait" name="wait" /></div>
-		<button id="playActorAnimation-confirm" name="confirm">Confirm</button>
-		<button id="playActorAnimation-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

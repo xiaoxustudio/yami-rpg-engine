@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="loadImage">
-		<TitleBar>Load Image<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Load Image<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="loadImage-element" type="element" />
 				<div class="text">Type</div><SelectBox id="loadImage-type" /> <div class="text">Actor</div
@@ -13,9 +13,7 @@
 				><SelectVar id="loadImage-key" /> <div class="text">Base64 Coding</div
 				><CustomBox id="loadImage-variable" type="variable" filter="string" />
 			</div>
-			<button id="loadImage-confirm" name="confirm">Confirm</button>
-			<button id="loadImage-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
-	<WindowFrame id="log">
-		<TitleBar>Log<div class="close"></div></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="log" no-buttons>
+		<template #title><TitleBar>Log<div class="close"></div></TitleBar></template>
+		
 			<CommonList id="log-list" />
-		</div>
+		
 	</WindowFrame>
 </template>
 

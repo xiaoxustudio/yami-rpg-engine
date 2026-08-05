@@ -1,14 +1,12 @@
 <template>
 <WindowFrame id="wait">
-	<TitleBar>Wait<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Wait<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Duration</div
 			><NumberVar id="wait-duration" min="1" max="3600000" unit="ms" />
 		</div>
-		<button id="wait-confirm" name="confirm">Confirm</button>
-		<button id="wait-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

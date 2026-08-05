@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setProgressBar">
-		<TitleBar>Set Progress Bar<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Progress Bar<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setProgressBar-element" type="element" />
 				<div class="text">Properties</div><ParamList id="setProgressBar-properties" />
 			</div>
-			<button id="setProgressBar-confirm" name="confirm">Confirm</button>
-			<button id="setProgressBar-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

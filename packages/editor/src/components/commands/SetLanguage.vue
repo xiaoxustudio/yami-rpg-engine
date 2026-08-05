@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="setLanguage">
-		<TitleBar>Set Language<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Language<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Language</div><SelectBox id="setLanguage-language" />
 			</div>
-			<button id="setLanguage-confirm" name="confirm">Confirm</button>
-			<button id="setLanguage-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

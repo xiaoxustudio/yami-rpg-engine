@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="switch">
-	<TitleBar>Switch<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Switch<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Variable</div
 			><CustomBox id="switch-variable" type="variable" filter="all" />
@@ -10,9 +10,7 @@
 		<CheckBox id="switch-default" class="standard"
 			><div class="text" id="switch-default-label">Default</div></CheckBox
 		>
-		<button id="switch-confirm" name="confirm">Confirm</button>
-		<button id="switch-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

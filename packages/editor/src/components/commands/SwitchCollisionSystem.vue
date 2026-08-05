@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="switchCollisionSystem">
-		<TitleBar>Switch Collision System<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Switch Collision System<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="switchCollisionSystem-operation" />
 			</div>
-			<button id="switchCollisionSystem-confirm" name="confirm">Confirm</button>
-			<button id="switchCollisionSystem-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

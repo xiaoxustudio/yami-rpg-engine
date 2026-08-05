@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="createTrigger">
-		<TitleBar>Create Trigger<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Create Trigger<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Trigger</div
 				><FileVar id="createTrigger-triggerId" type="file" filter="trigger" />
@@ -33,9 +33,7 @@
 					decimals="4"
 				 />
 			</div>
-			<button id="createTrigger-confirm" name="confirm">Confirm</button>
-			<button id="createTrigger-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

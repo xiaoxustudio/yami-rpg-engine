@@ -1,12 +1,12 @@
 <template>
-	<WindowFrame id="autoTile-selectNode">
-		<TitleBar>Tile Node<div class="close" /></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="autoTile-selectNode" no-buttons>
+		<template #title><TitleBar>Tile Node<div class="close" /></TitleBar></template>
+		
 			<canvas id="autoTile-selectNode-canvas" width="0" height="0" />
 			<div class="box" id="autoTile-selectNode-screen">
 				<MarqueeArea id="autoTile-selectNode-marquee" />
 			</div>
-		</div>
+		
 	</WindowFrame>
 </template>
 

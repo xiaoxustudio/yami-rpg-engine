@@ -4,7 +4,13 @@
 		:id="props.id"
 		:focusable-selector="focusableSelector"
 		:localize="localizeAdapter"
+		:show-apply="showApply"
+		:buttons-id-prefix="buttonsIdPrefix"
+		:no-buttons="noButtons"
 	>
+		<template #title>
+			<slot name="title" />
+		</template>
 		<slot />
 	</YMWindowFrame>
 </template>
@@ -17,9 +23,16 @@ import { Local } from '@/tools/localization';
 
 interface Props {
 	id?: string;
+	showApply?: boolean;
+	buttonsIdPrefix?: string;
+	noButtons?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+	showApply: false,
+	buttonsIdPrefix: '',
+	noButtons: false
+});
 
 const focusableSelector = computed<string>(() => Layout.focusableSelector as string);
 const localizeAdapter = computed(() => Local);

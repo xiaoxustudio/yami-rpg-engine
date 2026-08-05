@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="discardTargets">
-	<TitleBar>Discard Targets<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Discard Targets<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="discardTargets-actor" type="actor" /><div class="text">Selector</div><SelectBox id="discardTargets-selector" /><div class="text">Distance</div
 			><NumberVar
@@ -11,9 +11,7 @@
 				decimals="4"
 				unit="tile"
 			 /></div>
-		<button id="discardTargets-confirm" name="confirm">Confirm</button>
-		<button id="discardTargets-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

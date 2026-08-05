@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="setVolume">
-	<TitleBar>Set Volume<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Set Volume<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="setVolume-type" /> <div class="text">Volume</div
 			><NumberVar id="setVolume-volume" min="0" max="1" step="0.1" decimals="4" />
@@ -16,9 +16,7 @@
 			 />
 			<div class="text">Wait</div><SelectBox id="setVolume-wait" name="wait" />
 		</div>
-		<button id="setVolume-confirm" name="confirm">Confirm</button>
-		<button id="setVolume-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

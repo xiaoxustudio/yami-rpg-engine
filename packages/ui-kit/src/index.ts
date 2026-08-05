@@ -1,4 +1,4 @@
-export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
+﻿export { default as YMButton } from './components/basic/YMButton/YMButton.vue';
 export { default as YMCheckBox } from './components/basic/YMCheckBox/YMCheckBox.vue';
 export { default as YMSwitchItem } from './components/basic/YMSwitchItem/YMSwitchItem.vue';
 export { default as YMEmptyState } from './components/basic/YMEmptyState/YMEmptyState.vue';
@@ -110,3 +110,4 @@ export { default as YMFileHeadPane } from './components/business/YMFileHeadPane/
 export { default as YMFileNavPane } from './components/business/YMFileNavPane/YMFileNavPane.vue';
 export { default as YMFileBodyPane } from './components/business/YMFileBodyPane/YMFileBodyPane.vue';
 export { default as YMFileBrowser } from './components/business/YMFileBrowser/YMFileBrowser.vue';
+export { default as YMFormButtons } from './components/basic/YMFormButtons/YMFormButtons.vue';

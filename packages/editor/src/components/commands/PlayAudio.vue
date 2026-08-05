@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="playAudio">
-	<TitleBar>Play Audio<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Play Audio<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="playAudio-type" /> <div class="text">Audio</div
 			><CustomBox id="playAudio-audio" type="file" filter="audio" />
@@ -10,9 +10,7 @@
 			<div class="text">Sound Location</div
 			><CustomBox id="playAudio-location" type="position" />
 		</div>
-		<button id="playAudio-confirm" name="confirm">Confirm</button>
-		<button id="playAudio-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

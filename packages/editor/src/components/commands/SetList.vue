@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setList">
-		<TitleBar>Set List<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set List<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Variable</div
 				><CustomBox id="setList-variable" type="variable" filter="object" />
@@ -28,9 +28,7 @@
 				><CustomBox id="setList-actor" type="actor" /> <div class="text">Default</div
 				><CheckBox id="setList-index-skip-check" class="standard" />
 			</div>
-			<button id="setList-confirm" name="confirm">Confirm</button>
-			<button id="setList-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

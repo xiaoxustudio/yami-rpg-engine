@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="setButton-property">
-		<TitleBar>Set Button<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Button<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="setButton-property-key" />
 				<div class="text">Image</div
@@ -58,9 +58,7 @@
 					unit="px"
 				/>
 			</div>
-			<button id="setButton-property-confirm" name="confirm">Confirm</button>
-			<button id="setButton-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

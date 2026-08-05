@@ -1,7 +1,7 @@
 <template>
-	<WindowFrame id="export-apk">
-		<TitleBar>构建APK<div class="close"></div></TitleBar>
-		<div class="content-frame">
+	<WindowFrame id="export-apk" no-buttons>
+		<template #title><TitleBar>构建APK<div class="close"></div></TitleBar></template>
+		
 			<div class="box" id="export-apk-out">
 				<div class="grid-box" id="export-apk-grid">
 					<div class="text project-summary">应用配置</div>
@@ -34,7 +34,7 @@
 				</div>
 			</div>
 			<button id="export-apk-button" name="export-to-apk" />
-		</div>
+		
 	</WindowFrame>
 </template>
 

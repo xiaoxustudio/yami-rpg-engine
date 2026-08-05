@@ -1,13 +1,11 @@
 <template>
 <WindowFrame id="changeActorMotion">
-	<TitleBar>Change Actor Motion<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Change Actor Motion<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeActorMotion-actor" type="actor" /><div class="text">Type</div><SelectBox id="changeActorMotion-type" /><div class="text">Motion</div
 			><CustomBox id="changeActorMotion-motion" type="enum-string" /></div>
-		<button id="changeActorMotion-confirm" name="confirm">Confirm</button>
-		<button id="changeActorMotion-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

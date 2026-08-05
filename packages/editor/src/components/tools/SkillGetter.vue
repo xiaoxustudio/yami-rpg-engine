@@ -1,8 +1,8 @@
 <template>
 	<!-- 技能访问器窗口 -->
 	<WindowFrame id="skillGetter">
-		<TitleBar>Actor<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Actor<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="skillGetter-type" /> <div class="text">Actor</div
 				><CustomBox id="skillGetter-actor" type="actor" /> <div class="text">Shortcut Key</div
@@ -11,9 +11,7 @@
 				<div class="text">Variable</div
 				><CustomBox id="skillGetter-variable" type="variable" filter="object" />
 			</div>
-			<button id="skillGetter-confirm" name="confirm">Confirm</button>
-			<button id="skillGetter-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

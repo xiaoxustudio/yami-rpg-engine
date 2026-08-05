@@ -1,13 +1,11 @@
 <template>
 	<WindowFrame id="localVariable">
-		<TitleBar>Set Local Variable<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Local Variable<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Local Variable</div><TextBox id="localVariable-key" />
 			</div>
-			<button id="localVariable-confirm" name="confirm">Confirm</button>
-			<button id="localVariable-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

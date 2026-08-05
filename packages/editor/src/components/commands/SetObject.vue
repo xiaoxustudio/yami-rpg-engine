@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="setObject">
-		<TitleBar>Set Object<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Object<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Variable</div
 				><CustomBox id="setObject-variable" type="variable" filter="object" />
@@ -27,9 +27,7 @@
 				<div class="text">Index</div
 				><NumberVar id="setObject-operand-list-index" min="0" max="1000000000" />
 			</div>
-			<button id="setObject-confirm" name="confirm">Confirm</button>
-			<button id="setObject-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

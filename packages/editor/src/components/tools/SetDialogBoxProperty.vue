@@ -1,7 +1,7 @@
 <template>
 		<WindowFrame id="setDialogBox-property">
-		<TitleBar>Dialog Box Property<div class="close"></div></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Dialog Box Property<div class="close"></div></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Property</div><SelectBox id="setDialogBox-property-key" />
 				<div class="text">Content</div
@@ -59,9 +59,7 @@
 				<div class="text">Effect Color</div><ColorBox id="setDialogBox-property-effect-color" />
 				<div class="text">Blend</div><SelectBox id="setDialogBox-property-blend" />
 			</div>
-			<button id="setDialogBox-property-confirm" name="confirm">Confirm</button>
-			<button id="setDialogBox-property-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="setTerrain">
-		<TitleBar>Set Terrain<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Terrain<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Position</div><CustomBox id="setTerrain-position" type="position" />
 				<div class="text">Terrain</div><SelectBox id="setTerrain-terrain" />
 			</div>
-			<button id="setTerrain-confirm" name="confirm">Confirm</button>
-			<button id="setTerrain-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

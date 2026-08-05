@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="imageClip">
-		<TitleBar
+		<template #title><TitleBar
 			>Image Clip<div class="maximize"></div>
 			<div class="close"></div>
-		</TitleBar>
-		<div class="content-frame">
+		</TitleBar></template>
+		
 			<div class="box" id="imageClip-screen" tabindex="-1">
 				<img id="imageClip-image" />
 				<MarqueeArea id="imageClip-marquee" />
@@ -23,9 +23,7 @@
 					><div class="text label">H:</div></NumberBox
 				>
 			</div>
-			<button id="imageClip-confirm" name="confirm">Confirm</button>
-			<button id="imageClip-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

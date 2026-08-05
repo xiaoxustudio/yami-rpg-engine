@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="registerEvent">
-	<TitleBar>Register Event<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Register Event<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Target</div><SelectBox id="registerEvent-target" /> <div class="text">Actor</div
 			><CustomBox id="registerEvent-actor" type="actor" /> <div class="text">Element</div
@@ -13,9 +13,7 @@
 			><CheckBox id="registerEvent-namespace" class="standard large" />
 			<div class="text">Tag Name</div><StringVar id="registerEvent-tag" />
 		</div>
-		<button id="registerEvent-confirm" name="confirm">Confirm</button>
-		<button id="registerEvent-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

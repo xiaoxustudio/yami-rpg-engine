@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="getActor">
-	<TitleBar>Get Actor<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Get Actor<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Write to Variable</div
 			><CustomBox id="getActor-variable" type="variable" filter="object" /><div class="text">Position</div><CustomBox id="getActor-position" type="position" /><div class="text">Area</div><SelectBox id="getActor-area" /><div class="text">Size</div
@@ -20,9 +20,7 @@
 			><SelectBox id="getActor-activation" /><div class="text">Exclusion</div
 			><SelectBox id="getActor-exclusion" /><div class="text">Exclusion Actor</div
 			><CustomBox id="getActor-exclusionActor" type="actor" /><div class="text">Exclusion Team</div><SelectVar id="getActor-exclusionTeamId" /></div>
-		<button id="getActor-confirm" name="confirm">Confirm</button>
-		<button id="getActor-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

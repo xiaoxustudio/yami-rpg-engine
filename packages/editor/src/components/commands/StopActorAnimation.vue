@@ -1,12 +1,10 @@
 <template>
 <WindowFrame id="stopActorAnimation">
-	<TitleBar>Stop Actor Animation<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>Stop Actor Animation<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="stopActorAnimation-actor" type="actor" /></div>
-		<button id="stopActorAnimation-confirm" name="confirm">Confirm</button>
-		<button id="stopActorAnimation-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

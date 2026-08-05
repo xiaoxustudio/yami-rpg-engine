@@ -1,8 +1,8 @@
 <template>
 	<!-- 变量访问器窗口2 -->
 	<WindowFrame id="variableGetter2">
-		<TitleBar>Variable<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Variable<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Type</div><SelectBox id="variableGetter2-type" /> <div class="text">Element</div
 				><CustomBox id="variableGetter2-element" type="element" /> <div class="text">Key</div
@@ -10,9 +10,7 @@
 				><SelectBox id="variableGetter2-preset-key" /> <div class="text">Key</div
 				><CustomBox id="variableGetter2-global-key" type="global-variable" />
 			</div>
-			<button id="variableGetter2-confirm" name="confirm">Confirm</button>
-			<button id="variableGetter2-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

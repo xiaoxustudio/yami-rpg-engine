@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="setFocus">
-		<TitleBar>Set Focus<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Focus<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="setFocus-operation" />
 				<div class="text">Element</div><CustomBox id="setFocus-element" type="element" />
 				<div class="text">Mode</div><SelectBox id="setFocus-mode" /> <div class="text">Cancelable</div
 				><CheckBox id="setFocus-cancelable" class="standard large" />
 			</div>
-			<button id="setFocus-confirm" name="confirm">Confirm</button>
-			<button id="setFocus-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

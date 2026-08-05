@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="setSkill">
-		<TitleBar>Set Skill<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Set Skill<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Skill</div><CustomBox id="setSkill-skill" type="skill" />
 				<div class="text">Operation</div><SelectBox id="setSkill-operation" />
 				<div class="text">Cooldown</div
 				><NumberVar id="setSkill-cooldown" min="1" max="3600000" unit="ms" />
 			</div>
-			<button id="setSkill-confirm" name="confirm">Confirm</button>
-			<button id="setSkill-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

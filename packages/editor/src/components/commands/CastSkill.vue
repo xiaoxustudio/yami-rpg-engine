@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="castSkill">
-		<TitleBar>Cast Skill<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Cast Skill<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Actor</div><CustomBox id="castSkill-actor" type="actor" />
 				<div class="text">Mode</div><SelectBox id="castSkill-mode" /> <div class="text">Shortcut Key</div
@@ -11,9 +11,7 @@
 				<div class="text">Skill</div><CustomBox id="castSkill-skill" type="skill" />
 				<div class="text">Wait</div><SelectBox id="castSkill-wait" name="wait" />
 			</div>
-			<button id="castSkill-confirm" name="confirm">Confirm</button>
-			<button id="castSkill-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 	
 </template>

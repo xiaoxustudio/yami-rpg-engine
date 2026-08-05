@@ -1,14 +1,12 @@
 <template>
 	<WindowFrame id="deleteElement">
-		<TitleBar>Delete Element<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Delete Element<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="deleteElement-operation" />
 				<div class="text">Element</div><CustomBox id="deleteElement-element" type="element" />
 			</div>
-			<button id="deleteElement-confirm" name="confirm">Confirm</button>
-			<button id="deleteElement-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

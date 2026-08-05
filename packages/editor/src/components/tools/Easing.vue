@@ -1,7 +1,7 @@
 <template>
 	<WindowFrame id="easing">
-		<TitleBar>Easing<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Easing<div class="close" /></TitleBar></template>
+		
 			<div class="field-set input pad" id="easing-list-fieldset">
 				<div class="legend">List</div>
 				<TreeList id="easing-list" padded />
@@ -90,9 +90,7 @@
 					><NumberBox id="easing-preview-delay" min="0" max="5000" unit="ms" />
 				</div>
 			</div>
-			<button id="easing-confirm" name="confirm">Confirm</button>
-			<button id="easing-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 

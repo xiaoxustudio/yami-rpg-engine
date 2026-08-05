@@ -1,7 +1,7 @@
 <template>
 <WindowFrame id="requestURL">
-	<TitleBar>requestURL<div class="close" /></TitleBar>
-	<div class="content-frame">
+	<template #title><TitleBar>requestURL<div class="close" /></TitleBar></template>
+	
 		<div class="grid-box">
 			<div class="text">URL</div><StringVar id="requestURL-url" /> <div class="text">Header</div
 			><ParamList id="requestURL-header" /> <div class="text">Method</div
@@ -9,9 +9,7 @@
 			><ParamList id="requestURL-data" /> <div class="text">CallBack</div
 			><CustomBox id="requestURL-callback" type="file" filter="event" />
 		</div>
-		<button id="requestURL-confirm" name="confirm">Confirm</button>
-		<button id="requestURL-cancel" name="cancel">Cancel</button>
-	</div>
+	
 </WindowFrame>
 </template>
 

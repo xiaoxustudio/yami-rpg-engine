@@ -1,16 +1,14 @@
 <template>
 	<WindowFrame id="createObject">
-		<TitleBar>Create Object<div class="close" /></TitleBar>
-		<div class="content-frame">
+		<template #title><TitleBar>Create Object<div class="close" /></TitleBar></template>
+		
 			<div class="grid-box">
 				<div class="text">Object</div
 				><CustomBox id="createObject-presetId" type="preset-object" filter="any" />
 				<div class="text">Position</div
 				><CustomBox id="createObject-position" type="position" />
 			</div>
-			<button id="createObject-confirm" name="confirm">Confirm</button>
-			<button id="createObject-cancel" name="cancel">Cancel</button>
-		</div>
+		
 	</WindowFrame>
 </template>
 
