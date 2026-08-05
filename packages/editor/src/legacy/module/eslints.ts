@@ -21,15 +21,14 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 		e.remove();
 	});
 
-	let pre = document.createElement('div');
-	pre.textContent = '';
+	let pre = document.createElement('command-mark-major');
 	addClass(pre, 'command-mark-major');
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
 	element.lines = [];
 	for (let i = element.dataIndent; i >= 0; i--) {
-		let line = document.createElement('div');
+		let line = document.createElement('command-line');
 		addClass(line, 'command-line');
 		line.style.marginLeft = this.computeTextIndent(i);
 		element.insertBefore(line, element.firstElementChild);
@@ -76,9 +75,14 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 
 EventBus.once('editor_loaded', () => {
 	// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
+	ensureUpdateCommandElementOverride();
+});
+
+export function ensureUpdateCommandElementOverride(): void {
+	if (_origUpdateCommandElement) return;
 	_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
 	CommandList.prototype.updateCommandElement = updateCommandElement;
-});
+}
 
 export function applyCommandListInstanceOverride(commandList: any): void {
 	if (!commandList) return;

@@ -1,22 +1,22 @@
 <template>
-	<div
-		ref="root"
-		class="custom-box"
+	<YMCustomBox
+		ref="ym"
 		:id="props.id"
-		:type="props.type || undefined"
-		:filter="props.filter || undefined"
+		:type="props.type"
+		:filter="props.filter"
+		:disabled="props.disabled"
+		:model-value="props.modelValue"
+		:getters="getters"
+		:parsers="parsers"
+		:file-dialog="fileDialog"
+		:browser="browser"
+		:localize="localize"
 	/>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue';
-import {
-	addClass,
-	removeClass,
-	dispatchChangeEvent,
-	hideChildNodes,
-	showChildNodes
-} from '@/util/element-utils';
+import { computed, onMounted, ref } from 'vue';
+import { YMCustomBox } from '@ui-kit';
 import { Command } from '@/command/command-object';
 import { Attribute } from '@/attribute/attribute-window';
 import { ActorGetter } from '@/command/actor-accessor-window';
@@ -35,7 +35,6 @@ import { TilemapGetter } from '@/command/tilemap-accessor-window';
 import { TriggerGetter } from '@/command/trigger-accessor-window';
 import { VariableGetter } from '@/command/variable-accessor-window';
 import { Enum } from '@/enum/enum-window';
-import { FileItem } from '@/file/file-item';
 import { File } from '@/file/file-system-core';
 import { GameLocal } from '@/local/local-object';
 import { ArrayList } from '@/tools/array-window';
@@ -44,31 +43,6 @@ import { Local } from '@/tools/localization';
 import { PresetElement } from '@/tools/preset-element-window';
 import { PresetObject } from '@/tools/scene-preset-window';
 import { Variable } from '@/variable/variable';
-
-interface CustomBoxElement extends HTMLElement {
-	info: HTMLElement;
-	dataValue: any;
-	writeEventEnabled: boolean;
-	inputEventEnabled: boolean;
-	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
-	update(): void;
-	enable(): void;
-	disable(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
-	keydown(event: KeyboardEvent): void;
-	click(event?: Event): void;
-	dragenter(event: DragEvent): void;
-	dragleave(event: DragEvent): void;
-	dragover(event: DragEvent): void;
-	drop(event: DragEvent): void;
-}
 
 interface Props {
 	id?: string;
@@ -85,504 +59,149 @@ const props = withDefaults(defineProps<Props>(), {
 	modelValue: null
 });
 
-const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	write: [value: any];
-}>();
+const parseWithInvalid = (fn: (value: any) => string) => {
+	return (value: any) => {
+		Command.invalid = false;
+		const text = fn(value);
+		return { text: Command.removeTextTags!(text), invalid: Command.invalid };
+	};
+};
 
-const root = ref<CustomBoxElement | null>(null);
+const getters = {
+	file: (el: any) => (window as any).Selector.open(el),
+	'dialog-dir': (el: any) => File.showOpenDialog!({ defaultPath: el.read(), properties: ['openDirectory'] }).then(({ filePaths }: { filePaths: string[] }) => {
+		if (filePaths.length === 1) el.write(filePaths[0]);
+	}),
+	clip: (el: any) => (ImageClip as any).open(el),
+	variable: (el: any) => (VariableGetter as any).open(el),
+	'global-variable': (el: any) => (Variable as any).open(el),
+	actor: (el: any) => (ActorGetter as any).open(el),
+	skill: (el: any) => (SkillGetter as any).open(el),
+	state: (el: any) => (StateGetter as any).open(el),
+	equipment: (el: any) => (EquipmentGetter as any).open(el),
+	item: (el: any) => (ItemGetter as any).open(el),
+	position: (el: any) => (PositionGetter as any).open(el),
+	angle: (el: any) => (AngleGetter as any).open(el),
+	trigger: (el: any) => (TriggerGetter as any).open(el),
+	light: (el: any) => (LightGetter as any).open(el),
+	region: (el: any) => (RegionGetter as any).open(el),
+	tilemap: (el: any) => (TilemapGetter as any).open(el),
+	object: (el: any) => (ObjectGetter as any).open(el),
+	element: (el: any) => (ElementGetter as any).open(el),
+	'ancestor-element': (el: any) => (AncestorGetter as any).open(el),
+	'preset-object': (el: any) => (PresetObject as any).open(el),
+	'preset-element': (el: any) => (PresetElement as any).open(el),
+	array: (el: any) => (ArrayList as any).open(el),
+	attribute: (el: any) => (Attribute as any).open(el, 'attribute'),
+	'attribute-group': (el: any) => (Attribute as any).open(el, 'group'),
+	'enum-group': (el: any) => (Enum as any).open(el, 'group'),
+	'enum-string': (el: any) => (Enum as any).open(el, 'string')
+};
 
-const state = reactive({
-	dataValue: null as any,
-	writeEventEnabled: false,
-	inputEventEnabled: false
+const parsers = {
+	file: parseWithInvalid((guid: string) => Command.parseFileName!(guid)),
+	'dialog-dir': (path: string) => ({ text: path }),
+	clip: (clip: number[]) => ({ text: clip.join(', ') }),
+	variable: (variable: any) => {
+		if (variable.type === 'self' || variable.key) {
+			return { text: Command.removeTextTags!(Command.parseVariable!(variable)) };
+		}
+		return { text: Local.get('common.none') };
+	},
+	'global-variable': (id: any) => ({ text: Command.removeTextTags!(Command.parseGlobalVariable!(id)) }),
+	actor: (actor: any) => ({ text: Command.removeTextTags!(Command.parseActor!(actor)) }),
+	skill: (skill: any) => ({ text: Command.removeTextTags!(Command.parseSkill!(skill)) }),
+	state: (stateData: any) => ({ text: Command.removeTextTags!(Command.parseState!(stateData)) }),
+	equipment: (equipment: any) => ({ text: Command.removeTextTags!(Command.parseEquipment!(equipment)) }),
+	item: (item: any) => ({ text: Command.removeTextTags!(Command.parseItem!(item)) }),
+	position: (point: any) => ({ text: Command.removeTextTags!(Command.parsePosition!(point)) }),
+	angle: (angle: any) => ({ text: Command.removeTextTags!(Command.parseAngle!(angle)) }),
+	trigger: (trigger: any) => ({ text: Command.removeTextTags!(Command.parseTrigger!(trigger)) }),
+	light: (light: any) => ({ text: Command.removeTextTags!(Command.parseLight!(light)) }),
+	region: (region: any) => ({ text: Command.removeTextTags!(Command.parseRegion!(region)) }),
+	tilemap: (tilemap: any) => ({ text: Command.removeTextTags!(Command.parseTilemap!(tilemap)) }),
+	object: (object: any) => ({ text: Command.removeTextTags!(Command.parseObject!(object)) }),
+	element: parseWithInvalid((element: any) => Command.parseElement!(element)),
+	'preset-object': (preset: any) => ({ text: Command.removeTextTags!(Command.parsePresetObject!(preset)) }),
+	'preset-element': parseWithInvalid((preset: any) => Command.parsePresetElement!(preset)),
+	array: (array: any[]) => ({
+		text:
+			array.length !== 0
+				? Command.parseMultiLineString!(array.join(', '))
+				: Local.get('common.empty')
+	}),
+	'attribute-group': parseWithInvalid((groupId: string) => Command.parseAttributeGroup!(groupId)),
+	attribute: (attrId: string) => {
+		if (attrId === '') return { text: Local.get('common.none') };
+		const attribute = (Attribute as any).getAttribute(attrId);
+		if (attribute) {
+			return { text: GameLocal.replace(attribute.name) };
+		}
+		return { text: Command.parseUnlinkedId!(attrId), invalid: true };
+	},
+	'enum-group': parseWithInvalid((groupId: string) => Command.parseEnumGroup!(groupId)),
+	'enum-string': (stringId: string) => {
+		if (stringId === '') return { text: Local.get('common.none') };
+		const string = (Enum as any).getString(stringId);
+		if (string) {
+			return { text: GameLocal.replace(string.name) };
+		}
+		return { text: Command.parseUnlinkedId!(stringId), invalid: true };
+	}
+};
+
+const fileDialog = (defaultPath: any): Promise<{ filePaths: string[] }> =>
+	File.showOpenDialog!({
+		defaultPath,
+		properties: ['openDirectory']
+	});
+
+const browser = (): any => ({
+	dragging: (window as any).Browser?.dragging,
+	body: (window as any).Browser?.body
 });
 
-let info: HTMLElement | null = null;
+const localize = (key: string): string => Local.get(key);
 
-const getType = (): string | null => (root.value ? (root.value as any).type : null);
-const getFilter = (): string | null => (root.value ? (root.value as any).filter : null);
+const ym = ref<{
+	root: HTMLElement | null;
+	read(): any;
+	write(value: any): void;
+	input(value: any): void;
+	enable(): void;
+	disable(): void;
+	focus(): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+} | null>(null);
 
-const read = (): any => state.dataValue;
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const updateFile = (guid: string): void => {
-	if (!info) return;
-	Command.invalid = false;
-	info.textContent = Command.removeTextTags!(Command.parseFileName!(guid));
-	if (Command.invalid) addClass(info, 'invalid');
-};
-
-const updateDialogDir = (path: string): void => {
-	if (!info) return;
-	info.textContent = path;
-};
-
-const updateClip = (clip: number[]): void => {
-	if (!info) return;
-	info.textContent = clip.join(', ');
-};
-
-const updateVariable = (variable: any): void => {
-	if (!info) return;
-	if (variable.type === 'self' || variable.key) {
-		info.textContent = Command.removeTextTags!(Command.parseVariable!(variable));
-	} else {
-		info.textContent = (Local.get as any)('common.none');
-	}
-};
-
-const updateGlobalVariable = (id: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseGlobalVariable!(id));
-};
-
-const updateActor = (actor: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseActor!(actor));
-};
-
-const updateSkill = (skill: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseSkill!(skill));
-};
-
-const updateState = (stateData: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseState!(stateData));
-};
-
-const updateEquipment = (equipment: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseEquipment!(equipment));
-};
-
-const updateItem = (item: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseItem!(item));
-};
-
-const updatePosition = (point: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parsePosition!(point));
-};
-
-const updateAngle = (angle: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseAngle!(angle));
-};
-
-const updateTrigger = (trigger: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseTrigger!(trigger));
-};
-
-const updateLight = (light: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseLight!(light));
-};
-
-const updateRegion = (region: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseRegion!(region));
-};
-
-const updateTilemap = (tilemap: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseTilemap!(tilemap));
-};
-
-const updateObject = (object: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parseObject!(object));
-};
-
-const updateElement = (element: any): void => {
-	if (!info) return;
-	Command.invalid = false;
-	info.textContent = Command.removeTextTags!(Command.parseElement!(element));
-	if (Command.invalid) addClass(info, 'invalid');
-};
-
-const updatePresetObject = (preset: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parsePresetObject!(preset));
-};
-
-const updatePresetElement = (preset: any): void => {
-	if (!info) return;
-	info.textContent = Command.removeTextTags!(Command.parsePresetElement!(preset));
-	if (Command.invalid) addClass(info, 'invalid');
-};
-
-const updateArray = (array: any[]): void => {
-	if (!info) return;
-	info.textContent =
-		array.length !== 0
-			? Command.parseMultiLineString!(array.join(', '))
-			: (Local.get as any)('common.empty');
-};
-
-const updateAttributeGroup = (groupId: string): void => {
-	if (!info) return;
-	Command.invalid = false;
-	info.textContent = Command.removeTextTags!(Command.parseAttributeGroup!(groupId));
-	if (Command.invalid) addClass(info, 'invalid');
-};
-
-const updateAttribute = (attrId: string): void => {
-	if (!info) return;
-	if (attrId === '') {
-		info.textContent = (Local.get as any)('common.none');
-		return;
-	}
-	const attribute = (Attribute as any).getAttribute(attrId);
-	if (attribute) {
-		info.textContent = GameLocal.replace(attribute.name);
-	} else {
-		info.textContent = Command.parseUnlinkedId!(attrId);
-		addClass(info, 'invalid');
-	}
-};
-
-const updateEnumGroup = (groupId: string): void => {
-	if (!info) return;
-	Command.invalid = false;
-	info.textContent = Command.removeTextTags!(Command.parseEnumGroup!(groupId));
-	if (Command.invalid) addClass(info, 'invalid');
-};
-
-const updateEnumString = (stringId: string): void => {
-	if (!info) return;
-	if (stringId === '') {
-		info.textContent = (Local.get as any)('common.none');
-		return;
-	}
-	const string = (Enum as any).getString(stringId);
-	if (string) {
-		info.textContent = GameLocal.replace(string.name);
-	} else {
-		info.textContent = Command.parseUnlinkedId!(stringId);
-		addClass(info, 'invalid');
-	}
-};
-
-const update = (): void => {
-	if (!info) return;
-	removeClass(info, 'invalid');
-	const value = state.dataValue;
-	switch (getType()) {
-		case 'file':
-			return updateFile(value);
-		case 'dialog-dir':
-			return updateDialogDir(value);
-		case 'clip':
-			return updateClip(value);
-		case 'variable':
-			return updateVariable(value);
-		case 'global-variable':
-			return updateGlobalVariable(value);
-		case 'actor':
-			return updateActor(value);
-		case 'skill':
-			return updateSkill(value);
-		case 'state':
-			return updateState(value);
-		case 'equipment':
-			return updateEquipment(value);
-		case 'item':
-			return updateItem(value);
-		case 'position':
-			return updatePosition(value);
-		case 'angle':
-			return updateAngle(value);
-		case 'trigger':
-			return updateTrigger(value);
-		case 'light':
-			return updateLight(value);
-		case 'region':
-			return updateRegion(value);
-		case 'tilemap':
-			return updateTilemap(value);
-		case 'object':
-			return updateObject(value);
-		case 'element':
-		case 'ancestor-element':
-			return updateElement(value);
-		case 'preset-object':
-			return updatePresetObject(value);
-		case 'preset-element':
-			return updatePresetElement(value);
-		case 'array':
-			return updateArray(value);
-		case 'attribute':
-			return updateAttribute(value);
-		case 'attribute-group':
-			return updateAttributeGroup(value);
-		case 'enum-group':
-			return updateEnumGroup(value);
-		case 'enum-string':
-			return updateEnumString(value);
-	}
-};
-
-const write = (value: any): void => {
-	state.dataValue = value;
-	if (value !== null && value !== undefined) {
-		update();
-	}
-	const el = root.value;
-	if (el) {
-		el.dataValue = value;
-		if (state.writeEventEnabled) {
-			const write: any = new Event('write');
-			write.value = state.dataValue;
-			el.dispatchEvent(write);
-		}
-	}
-	emit('write', state.dataValue);
-};
-
-const input = (value: any): void => {
-	if (state.dataValue !== value) {
-		write(value);
-		const el = root.value;
-		if (el) {
-			if (state.inputEventEnabled) {
-				const input: any = new Event('input');
-				input.value = state.dataValue;
-				el.dispatchEvent(input);
-			}
-			dispatchChangeEvent(el);
-		}
-		emit('input', state.dataValue);
-		emit('update:modelValue', state.dataValue);
-	} else {
-		if (getType() === 'file') {
-			update();
-		}
-	}
-};
-
-const openDialogDir = (input: { read(): any; write(v: any): void }): void => {
-	File.showOpenDialog!({
-		defaultPath: input.read(),
-		properties: ['openDirectory']
-	}).then(({ filePaths }: { filePaths: string[] }) => {
-		if (filePaths.length === 1) {
-			input.write(filePaths[0]);
-		}
-	});
-};
-
-const enable = (): void => {
-	const el = root.value;
-	if (el && removeClass(el, 'disabled')) {
-		el.tabIndex += 1;
-		showChildNodes(el);
-	}
-};
-
-const disable = (): void => {
-	const el = root.value;
-	if (el && addClass(el, 'disabled')) {
-		el.tabIndex -= 1;
-		hideChildNodes(el);
-	}
-};
-
+const read = (): any => ym.value?.read();
+const write = (value: any): void => ym.value?.write(value);
+const input = (value: any): void => ym.value?.input(value);
+const enable = (): void => ym.value?.enable();
+const disable = (): void => ym.value?.disable();
+const focus = (): void => ym.value?.focus();
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
-): void => {
-	const el = root.value;
-	if (!el) return;
-	el.addEventListener(type, listener as EventListener, options);
-	switch (type) {
-		case 'write':
-			state.writeEventEnabled = true;
-			break;
-		case 'input':
-			state.inputEventEnabled = true;
-			break;
-	}
-};
-
-const click = (event?: Event): void => {
-	const el = root.value;
-	if (!el) return;
-	switch (getType()) {
-		case 'file':
-			return ((window as any).Selector as any).open(el);
-		case 'dialog-dir':
-			return openDialogDir(el as any);
-		case 'clip':
-			return (ImageClip as any).open(el);
-		case 'variable':
-			return (VariableGetter as any).open(el);
-		case 'global-variable':
-			return (Variable as any).open(el);
-		case 'actor':
-			return (ActorGetter as any).open(el);
-		case 'skill':
-			return (SkillGetter as any).open(el);
-		case 'state':
-			return (StateGetter as any).open(el);
-		case 'equipment':
-			return (EquipmentGetter as any).open(el);
-		case 'item':
-			return (ItemGetter as any).open(el);
-		case 'position':
-			return (PositionGetter as any).open(el);
-		case 'angle':
-			return (AngleGetter as any).open(el);
-		case 'trigger':
-			return (TriggerGetter as any).open(el);
-		case 'light':
-			return (LightGetter as any).open(el);
-		case 'region':
-			return (RegionGetter as any).open(el);
-		case 'tilemap':
-			return (TilemapGetter as any).open(el);
-		case 'object':
-			return (ObjectGetter as any).open(el);
-		case 'element':
-			return (ElementGetter as any).open(el);
-		case 'ancestor-element':
-			return (AncestorGetter as any).open(el);
-		case 'preset-object':
-			return (PresetObject as any).open(el);
-		case 'preset-element':
-			return (PresetElement as any).open(el);
-		case 'array':
-			return (ArrayList as any).open(el);
-		case 'attribute':
-			return (Attribute as any).open(el, 'attribute');
-		case 'attribute-group':
-			return (Attribute as any).open(el, 'group');
-		case 'enum-group':
-			return (Enum as any).open(el, 'group');
-		case 'enum-string':
-			return (Enum as any).open(el, 'string');
-	}
-};
-
-const focus = (): void => root.value?.focus();
-
-const keydown = (event: KeyboardEvent): void => {
-	switch (event.code) {
-		case 'Enter':
-		case 'NumpadEnter':
-			if (!event.cmdOrCtrlKey) {
-				event.stopPropagation();
-				click(event);
-			}
-			break;
-	}
-};
-
-const dragenter = (event: DragEvent): void => {
-	dragover(event);
-};
-
-const dragleave = (event: DragEvent): void => {
-	const el = root.value;
-	if (el && !el.contains(event.relatedTarget as Node)) {
-		removeClass(el, 'dragover');
-	}
-};
-
-const dragover = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	if (getType() === 'file' && (window as any).Browser?.dragging) {
-		const file = ((window as any).Browser?.body as any)?.activeFile;
-		if (
-			file instanceof FileItem &&
-			(!getFilter() || getFilter()!.indexOf((file as any).type) !== -1)
-		) {
-			(event as any).dataTransfer.dropEffect = 'move';
-			event.preventDefault();
-			addClass(el, 'dragover');
-		}
-	}
-};
-
-const drop = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el) return;
-	const file = ((window as any).Browser?.body as any)?.activeFile;
-	if (file instanceof FileItem) {
-		el.focus();
-		input((file.meta as any).guid);
-		removeClass(el, 'dragover');
-	}
-};
+): void => ym.value?.on(type, listener, options);
 
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
-watch(() => props.modelValue, (val) => write(val));
-watch(() => props.disabled, (val) => (val ? disable() : enable()));
-watch(() => props.type, (val) => {
-	if (root.value) (root.value as any).type = val;
-});
-watch(() => props.filter, (val) => {
-	if (root.value) (root.value as any).filter = val;
-});
-
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as any;
 	if (!el) return;
-
-	const text = document.createElement('div');
-	addClass(text, 'custom-box-text');
-	addClass(text, 'text');
-	info = text;
-
-	el.appendChild(text);
-	el.tabIndex = 0;
-
-	Object.defineProperty(el, 'type', {
-		get: (): string | null => el.getAttribute('type'),
-		set: (value: string): void => {
-			el.setAttribute('type', value);
-		}
-	});
-	Object.defineProperty(el, 'filter', {
-		get: (): string | null => el.getAttribute('filter'),
-		set: (value: string): void => {
-			el.setAttribute('filter', value);
-		}
-	});
-
-	el.info = text;
-	el.dataValue = state.dataValue;
-	el.writeEventEnabled = false;
-	el.inputEventEnabled = false;
-	el._initialized = true;
 	el.read = read;
 	el.write = write;
 	el.input = input;
-	el.update = update;
 	el.enable = enable;
 	el.disable = disable;
 	el.on = on;
-	el.keydown = keydown;
-	el.click = click;
-	el.dragenter = dragenter;
-	el.dragleave = dragleave;
-	el.dragover = dragover;
-	el.drop = drop;
-
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('click', click as EventListener);
-	el.addEventListener('dragenter', dragenter as EventListener);
-	el.addEventListener('dragleave', dragleave as EventListener);
-	el.addEventListener('dragover', dragover as EventListener);
-	el.addEventListener('drop', drop as EventListener);
-
-	write(props.modelValue);
-	if (props.disabled) disable();
 });
 </script>

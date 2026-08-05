@@ -64,6 +64,15 @@ export { default as YMTabBar } from './components/business/YMTabBar/YMTabBar.vue
 export { default as YMParamList } from './components/business/YMParamList/YMParamList.vue';
 export { ParamListHistory } from './components/business/YMParamList/param-history';
 export { default as YMParameterPane } from './components/business/YMParameterPane/YMParameterPane.vue';
+export { default as YMCommandList } from './components/business/YMCommandList/YMCommandList.vue';
+export {
+	createCommandListApi,
+	createCommandListElement,
+	commandListPrototype,
+	commandListStatics,
+	type CommandListApiOptions
+} from './components/business/YMCommandList/command-api';
+export { default as YMCustomBox } from './components/business/YMCustomBox/YMCustomBox.vue';
 export { default as ThemeProvider } from './theme/ThemeProvider.vue';
 export { ThemeKey, defaultTheme } from './theme/theme';
 export type { Theme } from './theme/theme';

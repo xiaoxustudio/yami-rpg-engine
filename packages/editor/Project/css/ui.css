@@ -1182,7 +1182,7 @@ node-item.related-event {
 	bottom: 10px;
 	width: 48px;
 	pointer-events: none;
-	border-right: none;
+	border-right: var(--command-line-number-color);
 }
 
 #event-commands-gutter-outer {

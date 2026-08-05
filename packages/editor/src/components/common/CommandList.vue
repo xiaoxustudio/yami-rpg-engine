@@ -1,11 +1,12 @@
 <template>
-	<div class="command-list" ref="root" :id="props.id"></div>
+	<YMCommandList ref="ym" :id="props.id" :options="commandListOptions" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { CommandList, attachCommandListApi } from '@/components/command-list';
-import { applyCommandListInstanceOverride } from '@/module/eslints';
+import { computed, onMounted, ref } from 'vue';
+import { YMCommandList } from '@ui-kit';
+import { commandListOptions } from '@/components/command-list';
+import { applyCommandListInstanceOverride, ensureUpdateCommandElementOverride } from '@/module/eslints';
 
 interface Props {
 	id?: string;
@@ -13,7 +14,11 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const root = ref<HTMLElement | null>(null);
+const ym = ref<{
+	root: HTMLElement | null;
+} | null>(null);
+
+const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const method = (name: string) => {
 	return (...args: any[]): any => (root.value as any)?.[name](...args);
@@ -76,25 +81,24 @@ defineExpose({
 	scheduleCheckVariables: method('scheduleCheckVariables'),
 	checkVariables: method('checkVariables'),
 	tryGetEventId: method('tryGetEventId'),
-	findString: method('findString'),
-	scrollToRow: method('scrollToRow'),
 	listFocus: method('listFocus'),
 	listBlur: method('listBlur'),
+	findString: method('findString'),
+	scrollToRow: method('scrollToRow'),
 	keydown: method('keydown'),
 	pointerdown: method('pointerdown'),
 	pointerup: method('pointerup'),
 	doubleclick: method('doubleclick'),
-	history: () => (root.value as any)?.history,
-	paddingTop: () => (root.value as any)?.paddingTop
+	windowPointerup: method('windowPointerup'),
+	windowPointermove: method('windowPointermove'),
+	windowVariableChange: method('windowVariableChange'),
+	on: method('on')
 });
 
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	Object.setPrototypeOf(el, CommandList.prototype);
-	attachCommandListApi(el);
-	el.tabIndex = 0;
-	(el as any)._initialized = true;
+	ensureUpdateCommandElementOverride();
 	applyCommandListInstanceOverride(el);
 });
 </script>
