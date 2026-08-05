@@ -107,3 +107,4 @@ export type {
 	RadioRelationTarget
 } from './utils/radio-proxy';
 export { default as YMFileHeadPane } from './components/business/YMFileHeadPane/YMFileHeadPane.vue';
+export { default as YMFileNavPane } from './components/business/YMFileNavPane/YMFileNavPane.vue';
