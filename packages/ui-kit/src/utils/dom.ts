@@ -58,6 +58,14 @@ export const read = (el: any): any => {
 	return (el as any).dataValue;
 };
 
+export const write = (el: any, value: any): void => {
+	if (typeof (el as any).write === 'function') {
+		(el as any).write(value);
+	} else {
+		(el as any).dataValue = value;
+	}
+};
+
 export const hasScrollBar = (el: any): boolean =>
 	el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 
