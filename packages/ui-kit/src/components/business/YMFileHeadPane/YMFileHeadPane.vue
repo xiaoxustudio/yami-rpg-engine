@@ -225,7 +225,7 @@ onMounted(() => {
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput as any);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput as any);
 	const viewRoot = viewEl.value?.root;
-	const viewInput = viewEl.value?.input ?? viewRoot?.querySelector('input');
+	const viewInputEl = viewEl.value?.input ?? viewRoot?.querySelector('input');
 	if (viewRoot) {
 		const viewApi = viewEl.value as any;
 		for (const key of ['read', 'write', 'updateFiller', 'bar', 'filler']) {
@@ -233,9 +233,9 @@ onMounted(() => {
 				(viewRoot as any)[key] = viewApi[key];
 			}
 		}
-		if (viewInput) {
-			(viewRoot as any).input = viewInput;
-			viewInput.max = '4';
+		if (viewInputEl) {
+			(viewRoot as any).input = viewInputEl;
+			viewInputEl.max = '4';
 		}
 		viewRoot.activeWheel = true;
 		viewRoot.addEventListener('focus', viewFocus as any);

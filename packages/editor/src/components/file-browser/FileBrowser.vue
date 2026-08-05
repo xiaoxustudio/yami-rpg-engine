@@ -1,551 +1,142 @@
 <template>
-	<FileNavPane ref="navEl" :links="links" />
-	<FileHeadPane ref="headEl" :links="links" />
-	<FileBodyPane ref="bodyEl" :links="links" />
+	<YMFileBrowser
+		ref="ym"
+		:id="props.id"
+		:menu-popup="menuPopup"
+		:directory-api="directoryApi"
+		:file-system-api="fileSystemApi"
+		:path-util="pathUtil"
+		:localize="localize"
+		:file-classes="fileClasses"
+		:menu-state="menuState"
+		:create-text-box="createTextBoxFactory"
+		:data-api="dataApi"
+		:window-api="windowApi"
+		:gl-api="glApi"
+		:clipboard-api="clipboardApi"
+		:reference-api="referenceApi"
+		:editor-api="editorApi"
+		:set-icon-clip="setIconClipAdapter"
+		:on-browser-mount="onBrowserMount"
+		:on-selector-mount="onSelectorMount"
+	/>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { addClass, hasClass, removeClass } from '@/util/element-utils';
+import { computed, ref } from 'vue';
+import { YMFileBrowser } from '@ui-kit';
 import { Menu } from '@/components/menu-list.ts';
+import { Data } from '@/data/data-object.ts';
+import { Window } from '@/tools/window-object.ts';
+import { GL } from '@/webgl/webgl-init.ts';
+import { Reference } from '@/log/related-references.ts';
+import { Editor } from '@/main/editor.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
+import { FSP } from '@/file/file-system.ts';
 import { FolderItem } from '@/file/folder-item.ts';
 import { Local } from '@/tools/localization.ts';
 import { Path } from '@/util/config.ts';
-import { FileBrowserLinks } from '@/types/file-browser-links.ts';
+import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
+import { setIconClip } from '@/util/icon-clip.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
-import FileNavPane from './FileNavPane.vue';
-import FileHeadPane from './FileHeadPane.vue';
-import FileBodyPane from './FileBodyPane.vue';
 
-const props = defineProps<{
-	links?: FileBrowserLinks;
-}>();
-
-const el = ref<HTMLElement>();
-const navEl = ref<InstanceType<typeof FileNavPane>>();
-const headEl = ref<InstanceType<typeof FileHeadPane>>();
-const bodyEl = ref<InstanceType<typeof FileBodyPane>>();
-
-let display: 'normal' | 'search' = 'normal';
-let directory: string | null = null;
-let keyword: RegExp | null = null;
-let dragging: DragEvent | PointerEvent | null = null;
-let filters: any[] | null = null;
-let backupFolders: any[] = [];
-let searchResults: any[] = [];
-let links: FileBrowserLinks = {} as FileBrowserLinks;
-
-function update(): void {
-	const body = bodyEl.value?.el as any;
-	body?.updateFiles?.();
-	(headEl.value as any)?.updateAddress?.();
+interface Props {
+	id?: string;
 }
 
-function searchFiles(kw: RegExp | string): void {
-	const nav = navEl.value?.el as any;
-	if (kw instanceof RegExp || kw.length !== 0) {
-		if (display === 'normal') {
-			display = 'search';
-			backupFolders = nav.selections;
-			nav.unselect();
-		}
-		if (typeof kw === 'string') {
-			kw = kw.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
-			kw = new RegExp(kw, 'i');
-		}
-		(Directory as any).searchFiles(filters, (keyword = kw as RegExp), directory, (searchResults = []));
-		update();
-	} else {
-		if (display === 'search') {
-			display = 'normal';
-			nav.load(...backupFolders);
-			keyword = null;
-			backupFolders = [];
-			searchResults = [];
-		}
+const props = defineProps<Props>();
+
+const Clipboard = (window as any).Clipboard;
+
+const menuPopup = (options: any, items: any[]) => Menu.popup(options, items);
+const directoryApi = {
+	sortFiles: (dir: any) => (Directory as any).sortFiles(dir),
+	getFolder: (path: string) => (Directory as any).getFolder(path),
+	update: () => (Directory as any).update(),
+	deleteFiles: (files: any[]) => (Directory as any).deleteFiles(files),
+	moveFiles: (path: string, dir: any[]) => (Directory as any).moveFiles(path, dir),
+	copyFiles: (path: string, dir: any[], prefix?: string) =>
+		(Directory as any).copyFiles(path, dir, prefix),
+	saveFiles: (files: any[]) => (Directory as any).saveFiles(files),
+	readdir: (paths: string[]) => (Directory as any).readdir(paths),
+	searchFiles: (filters: any[], kw: RegExp, directory: string, results: any[]) =>
+		(Directory as any).searchFiles(filters, kw, directory, results),
+	existFiles: (path: string, dir: any[]) => (Directory as any).existFiles(path, dir),
+	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
+	existsSync: (p: string) => FSP.existsSync(p),
+	get assets() {
+		return (Directory as any).assets;
+	},
+	get inoMap() {
+		return (Directory as any).inoMap;
 	}
-}
-
-function restoreDisplay(): void {
-	switch (display) {
-		case 'normal':
-			break;
-		case 'search':
-			display = 'normal';
-			backupFolders = [];
-			searchResults = [];
-			(headEl.value as any)?.el?.querySelector?.('.file-head-searcher');
-			break;
+};
+const fileSystemApi = {
+	path: (p: string) => File.path(p),
+	route: (p: string) => (File as any).route(p),
+	getPath: (guid: string) => (File as any).getPath(guid),
+	getFileName: (dir: string, name: string, ext?: string) =>
+		(File as any).getFileName(dir, name, ext),
+	getImageResolution: (p: string) => (File as any).getImageResolution(p),
+	showInExplorer: (p: string) => (File as any).showInExplorer(p),
+	showOpenDialog: (options: any) => (File as any).showOpenDialog(options),
+	showSaveDialog: (options: any) => (File as any).showSaveDialog(options),
+	mkdir: (p: string, options?: any) => FSP.mkdir(p, options),
+	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
+	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
+	addOversizeImagePaths: (p: string) => (FileItem as any).addOversizeImagePaths(p)
+};
+const pathUtil = {
+	dirname: (p: string) => Path.dirname(p),
+	normalize: (p: string) => Path.normalize(p),
+	slash: (p: string) => Path.slash(p),
+	extname: (p: string) => Path.extname(p),
+	basename: (p: string, ext?: string) => Path.basename(p, ext),
+	resolve: (...paths: string[]) => Path.resolve(...paths)
+};
+const localize = { createGetter: (key: string) => Local.createGetter(key) };
+const fileClasses = { FileItem, FolderItem };
+const menuState = () => (Menu as any).state;
+const dataApi = {
+	get manifest() {
+		return Data.manifest;
 	}
-}
+};
+const windowApi = {
+	confirm: (options: any, items: any[]) => Window.confirm(options, items),
+	getTopWindow: () => Window.getTopWindow()
+};
+const glApi = { maxTexSize: GL.maxTexSize };
+const clipboardApi = {
+	write: (type: string, data: any) => Clipboard.write(type, data),
+	read: (type: string) => Clipboard.read(type)
+};
+const referenceApi = {
+	findRelated: (guid: string) => (Reference as any).findRelated(guid),
+	openList: (list: any) => (Reference as any).openList(list),
+	openRelated: (guid: string) => (Reference as any).openRelated(guid)
+};
+const editorApi = { config: Editor.config };
+const setIconClipAdapter = (icon: HTMLElement, path: string, cx: number, cy: number, cw: number, ch: number) =>
+	setIconClip(icon, path, cx, cy, cw, ch);
 
-function backToParentFolder(): boolean {
-	const nav = navEl.value?.el as any;
-	switch (display) {
-		case 'normal': {
-			const folders = nav.selections;
-			if (folders.length === 1) {
-				const path = folders[0].path;
-				const index = path.lastIndexOf('/');
-				if (index !== -1) {
-					nav.load((Directory as any).getFolder(path.slice(0, index)));
-					return true;
-				}
-			}
-			return false;
-		}
-		case 'search': {
-			const active = document.activeElement as HTMLElement;
-			(headEl.value as any)?.searcherEl?.deleteInputContent?.();
-			active.focus();
-			return true;
-		}
-	}
-	return false;
-}
+const onBrowserMount = (): void => useBrowserStore().initialize();
+const onSelectorMount = (): void => useSelectorStore().initialize();
 
-function dirchange(event: Event): void {
-	const body = bodyEl.value?.el as any;
-	switch (display) {
-		case 'normal':
-			break;
-		case 'search':
-			searchFiles(keyword!);
-			break;
-	}
-	const files = Array.from((body as any).selections);
-	if (files.length !== 0) {
-		const { inoMap } = Directory as any;
-		let modified = false;
-		let i = files.length;
-		while (--i >= 0) {
-			const sFile = files[i];
-			const ino = (sFile as any).stats.ino;
-			const dFile = inoMap[ino];
-			if (sFile !== dFile) {
-				modified = true;
-				if (dFile) {
-					files[i] = dFile;
-				} else {
-					files.splice(i, 1);
-				}
-			}
-		}
-		if (modified) {
-			(body as any).select(...files);
-		}
-	}
-}
+const ym = ref<{
+	el: HTMLElement | null;
+	update(): void;
+	searchFiles(kw: RegExp | string): void;
+	backToParentFolder(): boolean;
+} | null>(null);
 
-function close(): void {
-	const node = el.value as any;
-	if (directory) {
-		directory = null;
-		restoreDisplay();
-		(navEl.value?.el as any).clear();
-		(headEl.value as any)?.el?.querySelector?.('.file-head-address');
-		(bodyEl.value?.el as any).clear();
-	}
-}
-
-function getActivePage(event: Event): HTMLElement | null {
-	const nav = navEl.value?.el as any;
-	const body = bodyEl.value?.el as any;
-	return nav.contains(event.target as Node)
-		? nav
-		: body.contains(event.target as Node)
-			? body
-			: null;
-}
-
-function getFilePaths(files: FileItem[]): { relativePaths: string[]; absolutePaths: string[] } {
-	const relativePaths = files.map((file) => file.path);
-	const absolutePaths = relativePaths.map((path) => File.path(path));
-	return { relativePaths, absolutePaths };
-}
-
-function pointerdown(event: PointerEvent): void {
-	const node = el.value as any;
-	switch ((dragging as any)?.mode) {
-		case 'drag':
-			dragend();
-			return;
-		case 'os-drag':
-			osDragend();
-			return;
-	}
-}
-
-function dragstart(event: DragEvent): void {
-	const node = el.value as any;
-	const page = getActivePage(event) as any;
-	if (page && !dragging) {
-		if (page.pressing) {
-			page.pressing = null;
-		}
-		const files = page.activeFile ? [page.activeFile] : page.selections;
-		if (!files.includes((Directory as any).assets) && !page.textBox.parentNode) {
-			const { relativePaths, absolutePaths } = getFilePaths(files as FileItem[]);
-			dragging = event;
-			(event as any).mode = 'drag';
-			(event as any).preventDefault = Function.empty as any;
-			(event as any).allowMove = false;
-			(event as any).allowCopy = false;
-			(event as any).dragLeaved = false;
-			(event as any).dropTarget = null;
-			(event as any).dropPath = null;
-			(event as any).dropMode = null;
-			(event as any).page = page;
-			(event as any).files = files;
-			(event as any).filePaths = relativePaths;
-			(event as any).promise = (Directory as any).readdir(absolutePaths);
-			(event as any).promise.then((dir: any[]) => {
-				if (dir.length === 0) {
-					dragend();
-				}
-			});
-			(event as any).dataTransfer.effectAllowed = 'copyMove';
-			(event as any).dataTransfer.hideDragImage();
-			node.on('dragenter', dragover);
-			node.on('dragleave', dragleave);
-			node.on('dragover', dragover);
-			node.on('drop', drop);
-			if (files.length === 1 && files[0] instanceof FileItem) {
-				const name = files[0].basename + files[0].extname;
-				(event as any).dataTransfer.setData(
-					'DownloadURL',
-					`application/octet-stream:${name}:${absolutePaths[0]}`
-				);
-			}
-		}
-	}
-}
-
-function dragend(event?: DragEvent): void {
-	const node = el.value as any;
-	if (dragging) {
-		const { dropTarget, page } = dragging as any;
-		if (dropTarget instanceof HTMLElement) {
-			removeClass(dropTarget, 'drop-target');
-		}
-		if ((dragging as any).dragLeaved) {
-			page.deactivateFile?.();
-		} else {
-			page.selectActiveFile?.();
-		}
-		dragging = null;
-		node.off('dragenter', dragover);
-		node.off('dragleave', dragleave);
-		node.off('dragover', dragover);
-		node.off('drop', drop);
-	}
-}
-
-function dragleave(event: DragEvent): void {
-	const d = dragging as any;
-	if (d?.dropTarget && !(el.value as any).contains(event.relatedTarget as Node)) {
-		removeClass(d.dropTarget, 'drop-target');
-		d.dropTarget = null;
-		if (event.relatedTarget) {
-			d.dragLeaved = true;
-		}
-	}
-}
-
-function dragover(event: DragEvent): void {
-	const node = el.value as any;
-	const d = dragging as any;
-	if (d) {
-		const { dropTarget } = d;
-		let element = event.target as HTMLElement;
-		if (!d.allowCopy && !(d as any).target.contains(element)) {
-			d.allowCopy = true;
-		}
-		while (
-			!(
-				hasClass(element, 'file-browser') ||
-				hasClass(element, 'file-nav-pane') ||
-				hasClass(element, 'file-body-pane') ||
-				(element as any).file instanceof FolderItem
-			)
-		) {
-			element = element.parentNode as HTMLElement;
-		}
-		if (dropTarget !== element) {
-			if (dropTarget instanceof HTMLElement) {
-				removeClass(dropTarget, 'drop-target');
-			}
-			d.allowMove = false;
-			d.dropTarget = element;
-			if ((element as any).file instanceof FolderItem) {
-				addClass(element, 'drop-target');
-				d.dropPath = (element as any).file.path;
-				d.promise
-					.then((dir: any[]) => {
-						const { path } = (element as any).file;
-						const { filePaths } = d;
-						for (const filePath of filePaths) {
-							if (
-								path === filePath ||
-								(path.indexOf(filePath) === 0 && path[filePath.length] === '/')
-							) {
-								return true;
-							}
-						}
-						return (Directory as any).existFiles(path, dir);
-					})
-					.then((existed: boolean) => {
-						if (!existed && d.dropTarget === element) {
-							d.allowMove = true;
-						}
-					});
-			} else {
-				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as any;
-					const { selections } = nav;
-					d.dropPath = selections.length === 1 ? selections[0].path : null;
-				} else {
-					d.dropPath = null;
-				}
-			}
-		}
-		if (!d.dropPath) return;
-		if ((event as any).cmdOrCtrlKey) {
-			if (d.allowCopy) {
-				d.dropMode = 'copy';
-				(event as any).dataTransfer.dropEffect = 'copy';
-				event.preventDefault();
-			}
-		} else {
-			if (d.allowMove) {
-				d.dropMode = 'move';
-				(event as any).dataTransfer.dropEffect = 'move';
-				event.preventDefault();
-			}
-		}
-	}
-}
-
-function drop(event: DragEvent): void {
-	const node = el.value as any;
-	const d = dragging as any;
-	if (d) {
-		event.stopPropagation();
-		if (!d.dropPath) return;
-		const dropPath = File.path(d.dropPath);
-		const dropName = Path.basename(dropPath);
-		const get = (Local as any).createGetter('menuFileOnDrop');
-		const menuItems: any[] = [];
-		switch (d.dropMode) {
-			case 'move':
-				menuItems.push({
-					label: get('moveTo').replace('<dirName>', dropName),
-					click: () => {
-						d.promise
-							.then((dir: any[]) => (Directory as any).moveFiles(dropPath, dir))
-							.finally(() => {
-								(Directory as any).update();
-							});
-					}
-				});
-				break;
-			case 'copy':
-				menuItems.push({
-					label: get('copyTo').replace('<dirName>', dropName),
-					click: () => {
-						d.promise
-							.then((dir: any[]) =>
-								(Directory as any)
-									.saveFiles(d.files)
-									.then(() => (Directory as any).copyFiles(dropPath, dir))
-							)
-							.finally(() => {
-								(Directory as any).update();
-							});
-					}
-				});
-				break;
-		}
-		(Menu as any).popup({ x: event.clientX, y: event.clientY }, menuItems);
-		dragend();
-	}
-}
-
-function osDragstart(event: DragEvent): void {
-	const node = el.value as any;
-	if (!dragging) {
-		dragging = event;
-		(event as any).mode = 'os-drag';
-		(event as any).dropTarget = null;
-		(event as any).dropPath = null;
-		node.on('dragenter', osDragover);
-		node.on('dragleave', osDragleave);
-		node.on('dragover', osDragover);
-		node.on('drop', osDrop);
-	}
-}
-
-function osDragend(event?: DragEvent): void {
-	const node = el.value as any;
-	if (dragging) {
-		const { dropTarget } = dragging as any;
-		if (dropTarget instanceof HTMLElement) {
-			removeClass(dropTarget, 'drop-target');
-		}
-		dragging = null;
-		node.off('dragenter', osDragover);
-		node.off('dragleave', osDragleave);
-		node.off('dragover', osDragover);
-		node.off('drop', osDrop);
-	}
-}
-
-function osDragleave(event: DragEvent): void {
-	return dragleave(event);
-}
-
-function osDragover(event: DragEvent): void {
-	const node = el.value as any;
-	const d = dragging as any;
-	if (d) {
-		const { dropTarget } = d;
-		let element = event.target as HTMLElement;
-		while (
-			!(
-				hasClass(element, 'file-browser') ||
-				hasClass(element, 'file-nav-pane') ||
-				hasClass(element, 'file-body-pane') ||
-				(element as any).file instanceof FolderItem
-			)
-		) {
-			element = element.parentNode as HTMLElement;
-		}
-		if (dropTarget !== element) {
-			if (dropTarget instanceof HTMLElement) {
-				removeClass(dropTarget, 'drop-target');
-			}
-			d.dropTarget = element;
-			if ((element as any).file instanceof FolderItem) {
-				addClass(element, 'drop-target');
-				d.dropPath = (element as any).file.path;
-			} else {
-				if (hasClass(element, 'file-body-pane')) {
-					const nav = navEl.value?.el as any;
-					const { selections } = nav;
-					d.dropPath = selections.length === 1 ? selections[0].path : null;
-				} else {
-					d.dropPath = null;
-				}
-			}
-		}
-		if (d.dropPath) {
-			event.preventDefault();
-			(event as any).dataTransfer.dropEffect = 'copy';
-		}
-	}
-}
-
-function osDrop(event: DragEvent): void {
-	const node = el.value as any;
-	const { files } = (event as any).dataTransfer;
-	if (files.length === 0) return;
-	const d = dragging as any;
-	if (d) {
-		let { dropPath } = d;
-		if (!dropPath) return;
-		dropPath = File.path(dropPath);
-		const map = Array.prototype.map;
-		const paths = map.call(files, (file: any) => file.path);
-		(Directory as any)
-			.readdir(paths)
-			.then((dir: any[]) => {
-				return (Directory as any).copyFiles(dropPath, dir, '');
-			})
-			.finally(() => {
-				(Directory as any).update();
-			});
-	}
-}
-
-function setupLinks() {
-	const nav = navEl.value?.el as any;
-	const node = nav?.closest('.file-browser') as any;
-	const head = (headEl.value?.el as any) || (node?.querySelector('.file-head-pane') as any);
-	const body = (bodyEl.value?.el as any) || (node?.querySelector('.file-body-pane') as any);
-	el.value = node;
-	links.browser = node;
-	links.nav = nav;
-	links.head = head;
-	links.body = body;
-	nav.links = links;
-	head.links = links;
-	body.links = links;
-	node.links = links;
-	Object.defineProperty(node, 'nav', {
-		get: () => node.querySelector('.file-nav-pane'),
-		configurable: true
-	});
-	Object.defineProperty(node, 'head', {
-		get: () => node.querySelector('.file-head-pane'),
-		configurable: true
-	});
-	Object.defineProperty(node, 'body', {
-		get: () => node.querySelector('.file-body-pane'),
-		configurable: true
-	});
-}
-
-let dirchangeHandler: (event: Event) => void;
-
-onMounted(() => {
-	setupLinks();
-	const node = el.value as any;
-	node.addEventListener('pointerdown', pointerdown as any);
-	node.addEventListener('dragstart', dragstart as any);
-	node.addEventListener('dragend', dragend as any);
-	window.addEventListener('os-dragstart', osDragstart as any);
-	window.addEventListener('os-dragend', osDragend as any);
-	dirchangeHandler = dirchange;
-	window.addEventListener('dirchange', dirchangeHandler as any);
-
-	if (node.id === 'project-browser') {
-		useBrowserStore().initialize();
-	} else if (node.id === 'selector-browser') {
-		const selectorStore = useSelectorStore();
-		selectorStore.initialize();
-		(node as any).open = selectorStore.open;
-	}
-
-	(node as any).display = 'normal';
-	(node as any).update = update;
-	(node as any).searchFiles = searchFiles;
-	(node as any).restoreDisplay = restoreDisplay;
-	(node as any).backToParentFolder = backToParentFolder;
-	(node as any).close = close;
-	(node as any).getActivePage = getActivePage;
-	(node as any).getFilePaths = getFilePaths;
-	(node as any).dragstart = dragstart;
-	(node as any).dragend = dragend;
-	(node as any).dragleave = dragleave;
-	(node as any).dragover = dragover;
-	(node as any).drop = drop;
-	(node as any).osDragstart = osDragstart;
-	(node as any).osDragend = osDragend;
-	(node as any).osDragleave = osDragleave;
-	(node as any).osDragover = osDragover;
-	(node as any).osDrop = osDrop;
-	(node as any).links = links;
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener('os-dragstart', osDragstart as any);
-	window.removeEventListener('os-dragend', osDragend as any);
-	window.removeEventListener('dirchange', dirchangeHandler as any);
-});
+const el = computed<HTMLElement | null>(() => ym.value?.el ?? null);
+const update = (): void => ym.value?.update();
+const searchFiles = (kw: RegExp | string): void => ym.value?.searchFiles(kw);
+const backToParentFolder = (): boolean => ym.value?.backToParentFolder() ?? false;
 
 defineExpose({ update, searchFiles, backToParentFolder, el });
 </script>
