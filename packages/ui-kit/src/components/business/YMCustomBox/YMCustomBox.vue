@@ -87,7 +87,7 @@ const write = (value: any): void => {
 	if (value !== null && value !== undefined) {
 		update();
 	}
-	const el = root.value;
+	const el = root.value as (HTMLElement & { [k: string]: any }) | null;
 	if (el) {
 		el.dataValue = value;
 		if (state.writeEventEnabled) {
@@ -185,7 +185,7 @@ const keydown = (event: KeyboardEvent): void => {
 	switch (event.code) {
 		case 'Enter':
 		case 'NumpadEnter':
-			if (!event.cmdOrCtrlKey) {
+			if (!(event as any).cmdOrCtrlKey) {
 				event.stopPropagation();
 				click(event);
 			}
@@ -244,7 +244,7 @@ watch(() => props.filter, (val) => {
 });
 
 onMounted(() => {
-	const el = root.value;
+	const el = root.value as HTMLElement & { [k: string]: any } | null;
 	if (!el) return;
 
 	const text = document.createElement('div');
@@ -282,10 +282,10 @@ onMounted(() => {
 	el.on = on;
 	el.keydown = keydown;
 	el.click = click;
-	el.dragenter = dragenter;
-	el.dragleave = dragleave;
-	el.dragover = dragover;
-	el.drop = drop;
+	(el as any).dragenter = dragenter;
+	(el as any).dragleave = dragleave;
+	(el as any).dragover = dragover;
+	(el as any).drop = drop;
 
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('click', click as EventListener);

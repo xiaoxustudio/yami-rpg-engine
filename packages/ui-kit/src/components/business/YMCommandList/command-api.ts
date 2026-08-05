@@ -381,7 +381,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if (buffer[0].dataIndex !== index) {
 			for (const target of buffer) {
 				if (target instanceof HTMLElement) {
-					target.dataIndex = index;
+					(target as any).dataIndex = index;
 				}
 			}
 		}
@@ -425,7 +425,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 
 		for (const content of element.contents) {
 			if (content.text !== undefined) {
-				const text = document.createElement('div');
+				const text = document.createElement('div') as HTMLDivElement & { [k: string]: any };
 				addClass(text, 'command-text');
 				text.textContent = content.text;
 				addClass(text, content.color);
@@ -1535,7 +1535,7 @@ try {
 		const varTypes = ['boolean', 'number', 'string', 'object', 'any'];
 		for (const text of this.getElementsByClassName(
 			'local-variable-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		) as HTMLCollectionOf<HTMLElement & { [k: string]: any }>) {
 			const type = text.varType;
 			const key = text.varKey;
 			if (!key) continue;
@@ -1569,7 +1569,7 @@ try {
 		const lookup = options.dataLookup;
 		for (const text of this.getElementsByClassName(
 			'global-variable-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		) as HTMLCollectionOf<HTMLElement & { [k: string]: any }>) {
 			const key = text.varKey;
 			if (key === '') continue;
 			const variable = options.getVariable ? options.getVariable(key) : null;
@@ -1586,9 +1586,9 @@ try {
 			}
 		}
 
-		for (const text of this.getElementsByClassName(
-			'attribute-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		for (const text of this.getElementsByClassName('attribute-identifier') as HTMLCollectionOf<
+			HTMLElement & { [k: string]: any }
+		>) {
 			const id = text.varId;
 			const attr = lookup?.attribute(id);
 			if (attr) {
@@ -1606,9 +1606,9 @@ try {
 			}
 		}
 
-		for (const text of this.getElementsByClassName(
-			'enum-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		for (const text of this.getElementsByClassName('enum-identifier') as HTMLCollectionOf<
+			HTMLElement & { [k: string]: any }
+		>) {
 			const id = text.varId;
 			const string = lookup?.enumString(id);
 			if (string) {
@@ -1624,9 +1624,9 @@ try {
 			}
 		}
 
-		for (const text of this.getElementsByClassName(
-			'file-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		for (const text of this.getElementsByClassName('file-identifier') as HTMLCollectionOf<
+			HTMLElement & { [k: string]: any }
+		>) {
 			const fileId = text.varKey;
 			if (fileId === '') continue;
 			const guidMap =
@@ -1645,9 +1645,9 @@ try {
 			}
 		}
 
-		for (const text of this.getElementsByClassName(
-			'scene-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		for (const text of this.getElementsByClassName('scene-identifier') as HTMLCollectionOf<
+			HTMLElement & { [k: string]: any }
+		>) {
 			const presetId = text.varKey;
 			if (presetId === '') continue;
 			const scenePresets =
@@ -1662,9 +1662,9 @@ try {
 			}
 		}
 
-		for (const text of this.getElementsByClassName(
-			'ui-identifier'
-		) as HTMLCollectionOf<HTMLElement>) {
+		for (const text of this.getElementsByClassName('ui-identifier') as HTMLCollectionOf<
+			HTMLElement & { [k: string]: any }
+		>) {
 			const presetId = text.varKey;
 			if (presetId === '') continue;
 			const uiPresets =
