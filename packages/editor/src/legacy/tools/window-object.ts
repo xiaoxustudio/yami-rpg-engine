@@ -65,11 +65,15 @@ Window.open = function (id) {
 
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
 		Title.target.tabIndex = -1;
-		Title.target.focus();
+		(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+			preventScroll: true
+		});
 		setTimeout(() => {
 			const active = document.activeElement;
 			if (active === activeElement && frames[frames.length - 1] === element) {
-				Title.target.focus();
+				(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+					preventScroll: true
+				});
 			}
 		});
 		(element as any).open();
@@ -88,20 +92,27 @@ Window.close = function (id = null) {
 	}
 
 	if (element.close()) {
-		if (frames.length > 0) {
-			frames[frames.length - 1].focus();
-		} else {
-			Title.pointerenter();
-			Window.restoreActiveElement();
-			Layout.enableFocusableElements();
-			document.body.style.pointerEvents = 'inherit';
-			window.addEventListener('keydown', Menubar.keydown);
-			window.addEventListener('keydown', Scene.keydown);
-			window.addEventListener('keydown', UI.keydown);
-			window.addEventListener('keydown', Animation.keydown);
-			window.addEventListener('keydown', Particle.keydown);
-			window.removeEventListener('keydown', Window.keydown);
+		document.body.style.pointerEvents = 'inherit';
+		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
+		window.scrollTo(0, 0);
+		try {
+			if (frames.length > 0) {
+				frames[frames.length - 1].focus();
+			} else {
+				Title.pointerenter();
+				Window.restoreActiveElement();
+				Layout.enableFocusableElements();
+				window.addEventListener('keydown', Menubar.keydown);
+				window.addEventListener('keydown', Scene.keydown);
+				window.addEventListener('keydown', UI.keydown);
+				window.addEventListener('keydown', Animation.keydown);
+				window.addEventListener('keydown', Particle.keydown);
+				window.removeEventListener('keydown', Window.keydown);
+			}
+		} catch (error) {
+			console.error('[window] close restore error:', error);
 		}
+		window.scrollTo(0, 0);
 		if (this.overlapRoot === element) {
 			this.setPositionMode('center');
 		}
@@ -167,7 +178,8 @@ Window.saveActiveElement = function () {
 
 Window.restoreActiveElement = function () {
 	if (this.activeElement) {
-		this.activeElement.focus();
+		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
+		this.activeElement.focus({ preventScroll: true });
 		this.activeElement = null;
 	}
 };

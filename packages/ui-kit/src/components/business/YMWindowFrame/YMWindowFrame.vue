@@ -175,22 +175,29 @@ const close = (): boolean => {
 	if (!element) {
 		return false;
 	}
-	if (
-		state.closeEventEnabled &&
-		!element.dispatchEvent(
-			new Event('close', {
-				cancelable: true
-			})
-		)
-	) {
-		return false;
+	if (state.closeEventEnabled) {
+		try {
+			if (!element.dispatchEvent(
+				new Event('close', {
+					cancelable: true
+				})
+			)) {
+				return false;
+			}
+		} catch (error) {
+			console.error('[window-frame] close event handler error:', error);
+		}
 	}
 	const W = getWindow();
 	if (W?.frames.remove(element)) {
 		W.ambient?.update();
 		removeClass(element, 'open');
 		if (state.closedEventEnabled) {
-			element.dispatchEvent(new Event('closed'));
+			try {
+				element.dispatchEvent(new Event('closed'));
+			} catch (error) {
+				console.error('[window-frame] closed event handler error:', error);
+			}
 		}
 		if (state.resizeEventEnabled && hasClass(element, 'maximized')) {
 			window.removeEventListener('resize', state.windowResize!);
@@ -253,7 +260,7 @@ const focus = (): void => {
 		}
 		state.focusableElements = null;
 		if (state.activeElement) {
-			state.activeElement.focus();
+			state.activeElement.focus({ preventScroll: true });
 			state.activeElement = null;
 		}
 	}
