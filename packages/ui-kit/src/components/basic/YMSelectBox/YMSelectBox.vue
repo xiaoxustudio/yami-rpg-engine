@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -411,7 +411,8 @@ defineExpose({
 	enableElement,
 	disableElement,
 	on,
-	root
+	root,
+	initializeApi
 });
 
 watch(
@@ -427,10 +428,10 @@ watch(
 	(val) => (val ? disable() : enable())
 );
 
-onMounted(() => {
+function initializeApi(): void {
 	const el = root.value;
 	const infoEl = info.value;
-	if (!el || !infoEl) return;
+	if (!el || !infoEl || (el as any)._initialized) return;
 	el.tabIndex = 0;
 	(el as any).info = infoEl;
 	(el as any).dataItems = dataItems;
@@ -468,7 +469,10 @@ onMounted(() => {
 	el.addEventListener('change', () => emit('change', read()));
 	if (props.modelValue !== null) write(props.modelValue);
 	if (props.disabled) disable();
-});
+	(el as any)._initialized = true;
+};
+
+onMounted(initializeApi);
 
 onBeforeUnmount(() => {
 	closeBuiltin();
@@ -526,3 +530,4 @@ onBeforeUnmount(() => {
 	color: var(--ym-color-on-primary);
 }
 </style>
+

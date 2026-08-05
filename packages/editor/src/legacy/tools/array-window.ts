@@ -5,7 +5,9 @@ import { Local } from './localization.ts';
 import { Window } from './window-object.ts';
 
 export const ArrayList = {
-	list: $('#arrayList-list'),
+	get list() {
+		return $('#arrayList-list');
+	},
 	target: null,
 	changed: false,
 	interface: null,
@@ -91,8 +93,12 @@ ArrayList.interface = {
 		string: 'arrayList-string'
 	},
 	inputs: {
-		number: $('#arrayList-number-value'),
-		string: $('#arrayList-string-value')
+		get number() {
+			return $('#arrayList-number-value');
+		},
+		get string() {
+			return $('#arrayList-string-value');
+		}
 	},
 	initialize: function (list) {
 		on($('#arrayList-number-confirm'), 'click', () => list.save());

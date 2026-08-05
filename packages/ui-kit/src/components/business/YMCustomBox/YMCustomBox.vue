@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 
@@ -232,7 +232,7 @@ const drop = (event: DragEvent): void => {
 	}
 };
 
-defineExpose({ read, write, input, enable, disable, focus, on, root });
+defineExpose({ read, write, input, enable, disable, focus, on, root, initializeApi });
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
@@ -243,9 +243,9 @@ watch(() => props.filter, (val) => {
 	if (root.value) (root.value as any).filter = val;
 });
 
-onMounted(() => {
-	const el = root.value as HTMLElement & { [k: string]: any } | null;
-	if (!el) return;
+function initializeApi(): void {
+	const el = root.value as (HTMLElement & { [k: string]: any }) | null;
+	if (!el || el._initialized) return;
 
 	const text = document.createElement('div');
 	addClass(text, 'custom-box-text');
@@ -296,7 +296,9 @@ onMounted(() => {
 
 	write(props.modelValue);
 	if (props.disabled) disable();
-});
+};
+
+onMounted(initializeApi);
 </script>
 
 <template>
@@ -317,3 +319,4 @@ onMounted(() => {
 	cursor: pointer;
 }
 </style>
+

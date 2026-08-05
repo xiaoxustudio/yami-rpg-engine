@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { YMFileBrowser } from '@ui-kit';
 import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
@@ -139,4 +139,15 @@ const searchFiles = (kw: RegExp | string): void => ym.value?.searchFiles(kw);
 const backToParentFolder = (): boolean => ym.value?.backToParentFolder() ?? false;
 
 defineExpose({ update, searchFiles, backToParentFolder, el });
+
+watch(
+	() => ym.value?.el,
+	(node) => {
+		if (!node) return;
+		const anyNode = node as any;
+		const selector = useSelectorStore();
+		anyNode.open = (target: any, allowNone = true) => selector.open(target, allowNone);
+		anyNode.close = () => selector.close();
+	}
+);
 </script>

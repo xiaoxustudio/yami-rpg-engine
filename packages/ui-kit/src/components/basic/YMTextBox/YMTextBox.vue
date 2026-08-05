@@ -230,16 +230,17 @@ defineExpose({
 	addKeydownFilter,
 	on,
 	input: inputEl,
-	root
+	root,
+	initializeApi
 });
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
-onMounted(() => {
+function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
-	if (!el || !input) return;
+	if (!el || !input || (el as any)._initialized) return;
 	input.addEventListener('compositionstart', () => {
 		isEditing = true;
 	});
@@ -286,7 +287,10 @@ onMounted(() => {
 	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	write(props.modelValue);
 	if (props.disabled) disable();
-});
+	(el as any)._initialized = true;
+};
+
+onMounted(initializeApi);
 </script>
 
 <template>
@@ -304,4 +308,5 @@ onMounted(() => {
 	width: 100%;
 }
 </style>
+
 

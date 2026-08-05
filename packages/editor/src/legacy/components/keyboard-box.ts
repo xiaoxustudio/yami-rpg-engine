@@ -27,6 +27,14 @@ interface KeyboardBoxElement extends HTMLElement {
 	): void;
 }
 
+const codeToKey = (code: string): string => {
+	if (code.startsWith('Key')) return code.slice(3);
+	if (code.startsWith('Digit')) return code.slice(5);
+	if (code.startsWith('Numpad')) return code.slice(6);
+	if (code.startsWith('Arrow')) return code.slice(5);
+	return code;
+};
+
 export function attachKeyboardBoxApi(el: HTMLElement): void {
 	const box = el as KeyboardBoxElement;
 	const input = document.createElement('input');
@@ -42,8 +50,10 @@ export function attachKeyboardBoxApi(el: HTMLElement): void {
 			case 'Enter':
 			case 'NumpadEnter':
 				event.stopImmediatePropagation();
+				break;
 			default:
-				box.inputCode(parseInt(event.code) || 0);
+				box.inputCode((event as any).keyCode || 0);
+				input.value = codeToKey(event.code);
 				break;
 		}
 	});
