@@ -64,18 +64,23 @@ Window.open = function (id) {
 		}
 
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
-		Title.target.tabIndex = -1;
-		(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
-			preventScroll: true
-		});
-		setTimeout(() => {
-			const active = document.activeElement;
-			if (active === activeElement && frames[frames.length - 1] === element) {
-				(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
-					preventScroll: true
-				});
-			}
-		});
+		if (!Title.target) {
+			Title.target = $('#title');
+		}
+		if (Title.target) {
+			Title.target.tabIndex = -1;
+			(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+				preventScroll: true
+			});
+			setTimeout(() => {
+				const active = document.activeElement;
+				if (active === activeElement && frames[frames.length - 1] === element) {
+					(Title.target as HTMLElement & { focus(options?: FocusOptions): void }).focus({
+						preventScroll: true
+					});
+				}
+			});
+		}
 		(element as any).open();
 	}
 };

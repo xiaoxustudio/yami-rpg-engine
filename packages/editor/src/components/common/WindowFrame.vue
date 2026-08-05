@@ -33,6 +33,8 @@ const ym = ref<{
 	focus(): void;
 	blur(): void;
 	setTitle(text: string): void;
+	absolute(left: number, top: number): void;
+	setPosition(x: number, y: number, r: DOMRect): void;
 	on(
 		type: string,
 		listener: (event: any) => void,
@@ -49,13 +51,15 @@ const unmaximize = (): void => ym.value?.unmaximize();
 const focus = (): void => ym.value?.focus();
 const blur = (): void => ym.value?.blur();
 const setTitle = (text: string): void => ym.value?.setTitle(text);
+const absolute = (left: number, top: number): void => ym.value?.absolute(left, top);
+const setPosition = (x: number, y: number, r: DOMRect): void => ym.value?.setPosition(x, y, r);
 const on = (
 	type: string,
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, on, root });
+defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
 
 onMounted(() => {
 	const el = root.value as any;
@@ -67,6 +71,8 @@ onMounted(() => {
 	el.focus = focus;
 	el.blur = blur;
 	el.setTitle = setTitle;
+	el.absolute = absolute;
+	el.setPosition = setPosition;
 	el.on = on;
 });
 </script>

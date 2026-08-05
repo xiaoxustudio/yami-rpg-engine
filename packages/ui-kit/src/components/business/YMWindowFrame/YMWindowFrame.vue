@@ -307,7 +307,7 @@ const setTitle = (text: string): void => {
 	}
 };
 
-defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, on, root });
+defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
 
 const applyLocalization = (): void => {
 	const element = root.value as any;
@@ -345,6 +345,7 @@ onMounted(() => {
 	element.blur = blur;
 	element.setPosition = setPosition;
 	element.setTitle = setTitle;
+	element.absolute = absolute;
 	element.on = on;
 	Object.defineProperty(element, 'closeEventEnabled', {
 		get: () => state.closeEventEnabled,
