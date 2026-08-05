@@ -631,11 +631,11 @@ function createTextBox(): HTMLElement {
 		event.stopPropagation();
 	});
 
-	tb.addEventListener('blur', function (this: any) {
-		const item = this.parentNode as any;
+	tb.input.addEventListener('blur', function () {
+		const item = tb.parentNode as any;
 		const file = item.file;
-		const name = this.read().trim();
-		this.remove();
+		const name = tb.read().trim();
+		tb.remove();
 		if (name && name !== file.name) {
 			const dir = props.pathUtil?.dirname(file.path) ?? '';
 			const path = props.fileSystem!.path(`${dir}/${name}`);

@@ -108,3 +108,4 @@ export type {
 } from './utils/radio-proxy';
 export { default as YMFileHeadPane } from './components/business/YMFileHeadPane/YMFileHeadPane.vue';
 export { default as YMFileNavPane } from './components/business/YMFileNavPane/YMFileNavPane.vue';
+export { default as YMFileBodyPane } from './components/business/YMFileBodyPane/YMFileBodyPane.vue';

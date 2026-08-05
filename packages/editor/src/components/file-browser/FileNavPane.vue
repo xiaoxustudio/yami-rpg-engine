@@ -31,8 +31,12 @@ const directoryApi = {
 	sortFiles: (dir: any) => (Directory as any).sortFiles(dir),
 	getFolder: (path: string) => (Directory as any).getFolder(path),
 	update: () => (Directory as any).update(),
-	assets: (Directory as any).assets,
-	inoMap: (Directory as any).inoMap
+	get assets() {
+		return (Directory as any).assets;
+	},
+	get inoMap() {
+		return (Directory as any).inoMap;
+	}
 };
 
 const fileSystem = {
