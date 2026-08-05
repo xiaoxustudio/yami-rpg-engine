@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
 interface Props {
@@ -158,10 +158,11 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root, inpu
 
 <style module>
 .box {
-	display: inline-block;
+	display: block;
 }
 
 .input {
 	width: 100%;
 }
 </style>
+

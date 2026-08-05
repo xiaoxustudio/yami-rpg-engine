@@ -80,3 +80,29 @@ export { useTheme } from './composables/useTheme';
 
 export { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from './utils/history';
 export type { HistoryOperation, IEditableHistory, ICapacityHistory } from './utils/history';
+export { INTRGBA, CSSRGBA } from './utils/color';
+export {
+	TreeDataContext,
+	type TreeDataItem,
+	type TreeDataGroup,
+	type TreeDataCache,
+	type TreeDataLists,
+	type LocalizeAdapter
+} from './utils/tree-data-context';
+export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
+export {
+	createTypeRegistry,
+	type TypeRegistryApi,
+	type TypeRegistryDataSource
+} from './components/business/type-registry';
+export {
+	attachRadioProxyApi,
+	createRadioProxy,
+	radioProxyMap,
+	RadioProxy
+} from './utils/radio-proxy';
+export type {
+	RadioProxyElement,
+	RadioRelationEntry,
+	RadioRelationTarget
+} from './utils/radio-proxy';

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -297,10 +297,11 @@ onMounted(() => {
 
 <style module>
 .box {
-	display: inline-block;
+	display: block;
 }
 
 .input {
 	width: 100%;
 }
 </style>
+
