@@ -227,7 +227,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		const options = this.__options;
 		const command = commands[index];
 		let buffer = command.buffer;
-		if (buffer === undefined) {
+		if (buffer === undefined || buffer[0]?.contents === null) {
+			// contents 为 null 说明已渲染过但 DOM 可能已被 clear 清空（窗口关闭重开等场景），强制重建避免复用后文本缺失
+			if (buffer !== undefined) {
+				delete command.buffer;
+				buffer = undefined;
+			}
 			buffer = [];
 			buffer.enabled = true;
 			Object.defineProperty(command, 'buffer', {

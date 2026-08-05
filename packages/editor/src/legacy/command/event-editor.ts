@@ -747,12 +747,15 @@ EventEditor.openGlobalEvent = function (guid) {
 		list.expandToSelection(false);
 		list.update();
 		list.restoreScroll();
+		// select 事件可能因选中状态相同不触发（重开场景），显式写入保证指令列表渲染
+		this.openCommandList(item);
 	} else {
 		const item = list.createGlobalEventItem(guid);
 		list.addNodeTo(item, null);
 		list.update();
 		list.select(item);
 		list.restoreScroll();
+		this.openCommandList(item);
 	}
 	list.scrollToSelection('middle');
 
@@ -1041,6 +1044,14 @@ EventEditor.openCommandList = function (item) {
 	const write = getElementWriter('event');
 	write('commands', commands);
 	write('type', item.type);
+
+	// 窗口刚打开时布局可能未就绪（clientHeight 0），resize 会跳过渲染，延迟刷新确保指令显示
+	const { commandList } = this;
+	if (commandList) {
+		setTimeout(() => {
+			commandList.resize();
+		}, 0);
+	}
 };
 
 EventEditor.closeCommandList = function () {
