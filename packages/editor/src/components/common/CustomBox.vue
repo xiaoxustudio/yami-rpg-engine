@@ -11,6 +11,8 @@
 		:file-dialog="fileDialog"
 		:browser="browser"
 		:localize="localize"
+		@write="onWrite"
+		@input="onInput"
 	/>
 </template>
 
@@ -33,6 +35,18 @@ const props = withDefaults(defineProps<Props>(), {
 	disabled: false,
 	modelValue: null
 });
+
+const emit = defineEmits<{
+	write: [value: any];
+	input: [value: any];
+}>();
+
+const onWrite = (value: any) => {
+	emit('write', value);
+};
+const onInput = (value: any) => {
+	emit('input', value);
+};
 
 const getters = customBoxOptions.getters ?? null;
 const parsers = customBoxOptions.parsers ?? null;

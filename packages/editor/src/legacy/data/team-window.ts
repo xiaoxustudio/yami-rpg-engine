@@ -299,12 +299,13 @@ Team.listPointerdown = function (event) {
 };
 
 Team.listSelect = function (event) {
-	for (const team of this.data) {
+	const list = Team.list;
+	for (const team of list.data) {
 		const element = team.element;
 		if (element !== undefined) {
 			element.changed = true;
 			if (element.parentNode) {
-				this.updateMarks(team);
+				list.updateMarks(team);
 			}
 		}
 	}

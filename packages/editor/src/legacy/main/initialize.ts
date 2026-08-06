@@ -20,6 +20,7 @@ import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';
 import { UpdateLog } from '@/log/update-log-window.ts';
 import { Editor } from './editor.ts';
+import { Data } from '@/data/data-object.ts';
 import { EventBus } from '@/module/eventbus.ts';
 import { SetTileTag } from '@/module/global.ts';
 import { Palette } from '@/palette/palette.ts';
@@ -51,6 +52,7 @@ import { UI } from '@/ui/ui-window.ts';
 
 Object.assign(window as any, {
 	Timer,
+	Data,
 	Variable,
 	Animation,
 	Attribute,

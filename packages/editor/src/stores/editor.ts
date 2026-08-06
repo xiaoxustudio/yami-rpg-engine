@@ -11,8 +11,23 @@ export interface EditorConfigShape {
 	projectPath?: string;
 	zoom?: number;
 	recent?: any[];
+	theme?: string;
+	layout?: any;
+	colors?: {
+		sceneBackground?: string;
+		uiBackground?: string;
+		uiForeground?: string;
+		animationBackground?: string;
+		particleBackground?: string;
+	};
+	dialogs?: {
+		new?: string;
+		open?: string;
+		deploy?: string;
+		import?: string;
+		export?: string;
+	};
 	scriptEditor?: { mode?: string; path?: string };
-	dialogs?: Record<string, any>;
 	[key: string]: any;
 }
 
@@ -23,6 +38,8 @@ export interface EditorProjectShape {
 	uiPrefabs?: any;
 	openEvents?: any;
 	recentTabs?: any;
+	openTabs?: any;
+	activeTab?: any;
 	[key: string]: any;
 }
 

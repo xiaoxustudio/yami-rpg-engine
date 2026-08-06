@@ -1359,6 +1359,7 @@ Scene.listSelect = function (event) {
 };
 
 Scene.listRecord = function (event) {
+	const list = Scene.list;
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
@@ -1369,8 +1370,8 @@ Scene.listRecord = function (event) {
 			if (parent.class !== 'folder') {
 				parent = parent.parent ?? parent;
 			}
-			this.updateFolderState(parent, 'hidden');
-			this.updateFolderState(parent, 'locked');
+			list.updateFolderState(parent, 'hidden');
+			list.updateFolderState(parent, 'locked');
 			Scene.history.save({
 				type: 'scene-object-create',
 				response: response,
@@ -1380,8 +1381,8 @@ Scene.listRecord = function (event) {
 		}
 		case 'delete': {
 			const parent = response.item.parent;
-			this.updateFolderState(parent, 'hidden');
-			this.updateFolderState(parent, 'locked');
+			list.updateFolderState(parent, 'hidden');
+			list.updateFolderState(parent, 'locked');
 			Scene.history.save({
 				type: 'scene-object-delete',
 				response: response
@@ -1391,11 +1392,11 @@ Scene.listRecord = function (event) {
 		case 'remove': {
 			const sParent = response.source.parent;
 			const dParent = response.destination.parent;
-			this.updateFolderState(sParent, 'hidden');
-			this.updateFolderState(sParent, 'locked');
+			list.updateFolderState(sParent, 'hidden');
+			list.updateFolderState(sParent, 'locked');
 			if (sParent !== dParent) {
-				this.updateFolderState(dParent, 'hidden');
-				this.updateFolderState(dParent, 'locked');
+				list.updateFolderState(dParent, 'hidden');
+				list.updateFolderState(dParent, 'locked');
 			}
 			Scene.history.save({
 				type: 'scene-object-remove',

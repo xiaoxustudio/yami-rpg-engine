@@ -1808,7 +1808,7 @@ PluginManager.listPopup = function (event) {
 };
 
 PluginManager.listOpen = function (event) {
-	this.edit(event.value);
+	PluginManager.list.edit(event.value);
 };
 
 PluginManager.overviewPointerdown = (function IIFE() {

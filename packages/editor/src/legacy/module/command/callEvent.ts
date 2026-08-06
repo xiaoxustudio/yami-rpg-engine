@@ -78,47 +78,50 @@ import { Selection } from '@/tools/text-capture.ts';
 			this.eventArgs = [];
 			this.clearGlobalEventElements();
 		});
-
-		$('#callEvent-type').on('write', (event: any) => {
-			const type = event.value;
-			if (type !== 'inherited') {
-				const elEventType = $('#callEvent-eventType');
-				const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
-				elEventType.loadItems(eventTypes);
-				elEventType.createTooltip();
-				write(elEventType, eventTypes[0].value);
-			}
-			for (const element of $('.call-event-component')) {
-				type === 'global' ? show(element) : hide(element);
-			}
-			this.resizeWindow();
-		});
-
-		$('#callEvent-eventId').on('write', (event: any) => {
-			this.eventArgs = this.readEventArgs();
-			this.clearGlobalEventElements();
-			const id = event.value;
-			if (id !== '') {
-				const flags = {};
-				const globalEvent = Data.events[id];
-				for (const parameter of globalEvent.parameters) {
-					if (parameter.key in flags) {
-						continue;
-					}
-					flags[parameter.key] = true;
-					this.createParameterElements(parameter);
+	},
+	typeWrite(event: any) {
+		const type = event.value;
+		if (type !== 'inherited') {
+			const elEventType = $('#callEvent-eventType');
+			const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
+			elEventType.loadItems(eventTypes);
+			elEventType.createTooltip();
+			write(elEventType, eventTypes[0].value);
+		}
+		for (const element of $('.call-event-component')) {
+			type === 'global' ? show(element) : hide(element);
+		}
+		this.resizeWindow();
+	},
+	eventIdWrite(event: any) {
+		this.eventArgs = this.readEventArgs();
+		this.clearGlobalEventElements();
+		const id = event.value;
+		if (id) {
+			const flags = {};
+			const globalEvent = Data.events[id];
+			for (const parameter of globalEvent.parameters) {
+				if (parameter.key in flags) {
+					continue;
 				}
-				this.createEventResultElements(globalEvent.returnType);
+				flags[parameter.key] = true;
+				this.createParameterElements(parameter);
 			}
-			this.resizeWindow();
-		});
-
-		$('#callEvent-eventId').on('input', (event: any) => {
+			this.createEventResultElements(globalEvent.returnType);
+		}
+		this.resizeWindow();
+	},
+	eventIdInput(event: any) {
+		if (this.eventArgs) {
 			this.writeEventArgs(this.eventArgs);
-		});
+		}
 	},
 	resizeWindow() {
-		this.windowFrame.style.height = `${this.gridBox.clientHeight + 78}px`;
+		const frame = this.windowFrame;
+		const gridBox = this.gridBox;
+		if (frame && gridBox) {
+			frame.style.height = `${gridBox.clientHeight + 78}px`;
+		}
 	},
 	clearGlobalEventElements() {
 		const { parameters } = this;
