@@ -3,10 +3,12 @@ type EditorState = 'closed' | 'open';
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type EditorMethod = ((...args: any[]) => any) | null;
 
+import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
+
 interface EditorShape {
 	state: EditorState;
-	config: any | null;
-	project: any | null;
+	config: EditorConfigShape | null;
+	project: EditorProjectShape | null;
 	initialize: (() => void) | null;
 	open: EditorMethod;
 	close: EditorMethod;
@@ -26,18 +28,23 @@ interface EditorShape {
 import { getEditorStore } from '@app/stores/editor';
 
 export const Editor: EditorShape = {
-	state: 'closed',
+	get state(): EditorState {
+		return getEditorStore().state;
+	},
+	set state(value: EditorState) {
+		getEditorStore().setState(value);
+	},
 	// config/project 经 Pinia store 承载（Phase 10——DOM 全面 Vue 化——状态先行）
-	get config(): any {
+	get config(): EditorConfigShape | null {
 		return getEditorStore().config;
 	},
-	set config(value: any) {
+	set config(value: EditorConfigShape | null) {
 		getEditorStore().setConfig(value);
 	},
-	get project(): any {
+	get project(): EditorProjectShape | null {
 		return getEditorStore().project;
 	},
-	set project(value: any) {
+	set project(value: EditorProjectShape | null) {
 		getEditorStore().setProject(value);
 	},
 	initialize: null,

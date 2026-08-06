@@ -4,6 +4,7 @@ import { RadioProxy } from '@/components/radio-proxy.ts';
 import { History } from '@/tools/history.ts';
 import { Reference } from '@/log/related-references.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { variableStateKeys, getVariableStore } from '@app/stores/variable';
 
 export const Variable = {
 	list: null as any,
@@ -282,3 +283,14 @@ Variable.initialize = function () {
 	on($('#variable-confirm'), 'click', this.confirm);
 	on($('#variable-apply'), 'click', this.apply);
 };
+
+// Phase 10——状态先行：Variable 窗口状态经 Pinia store 承载（legacy Variable.xxx 访问零改动）
+for (const key of variableStateKeys) {
+	Object.defineProperty(Variable, key, {
+		get: () => getVariableStore().state[key],
+		set: (value: any) => {
+			(getVariableStore().state as any)[key] = value;
+		},
+		configurable: true
+	});
+}

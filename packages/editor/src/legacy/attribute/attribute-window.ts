@@ -16,6 +16,7 @@ function getWindow() {
 }
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
+import { attributeStateKeys, getAttributeStore } from '@app/stores/attribute';
 
 export const Attribute = {
 	list: null as any,
@@ -1099,3 +1100,14 @@ Attribute.list_onDelete = function (item) {
 Attribute.list_onResume = function (item) {
 	Attribute.register(item);
 };
+
+// Phase 10——状态先行：Attribute 窗口状态经 Pinia store 承载（legacy Attribute.xxx 访问零改动）
+for (const key of attributeStateKeys) {
+	Object.defineProperty(Attribute, key, {
+		get: () => getAttributeStore().state[key],
+		set: (value: any) => {
+			(getAttributeStore().state as any)[key] = value;
+		},
+		configurable: true
+	});
+}

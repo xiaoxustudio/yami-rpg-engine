@@ -65,6 +65,8 @@ function walk(dir, out = []) {
 	for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
 		const full = path.join(dir, entry.name);
 		if (entry.isDirectory()) {
+			// __tests__/ 为 vitest 测试目录，非运行时模块（不经 module-init 加载）
+			if (entry.name === '__tests__') continue;
 			walk(full, out);
 		} else if (entry.isFile() && entry.name.endsWith('.ts')) {
 			out.push(full);

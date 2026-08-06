@@ -15,6 +15,7 @@ function getWindow() {
 	return (window as any).Window;
 }
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { enumStateKeys, getEnumStore } from '@app/stores/enum';
 
 export const Enum = {
 	list: null as any,
@@ -940,3 +941,14 @@ Enum.apply = function (event) {
 		window.dispatchEvent(new Event('enumchange'));
 	}
 }.bind(Enum);
+
+// Phase 10——状态先行：Enum 窗口状态经 Pinia store 承载（legacy Enum.xxx 访问零改动）
+for (const key of enumStateKeys) {
+	Object.defineProperty(Enum, key, {
+		get: () => getEnumStore().state[key],
+		set: (value: any) => {
+			(getEnumStore().state as any)[key] = value;
+		},
+		configurable: true
+	});
+}

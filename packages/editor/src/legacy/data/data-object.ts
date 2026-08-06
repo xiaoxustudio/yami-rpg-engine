@@ -9,6 +9,7 @@ import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';
 
 import { PluginManager } from '@/plugin/plugin.ts';
+import { dataKeys, getDataStore } from '@app/stores/data';
 
 export const Data: any = {
 	manifest: null,
@@ -694,3 +695,13 @@ Data.loadScript = async function (file) {
 			});
 	}
 };
+
+for (const key of dataKeys) {
+	Object.defineProperty(Data, key, {
+		get: () => getDataStore().data[key],
+		set: (value: any) => {
+			getDataStore().data[key] = value;
+		},
+		configurable: true
+	});
+}
