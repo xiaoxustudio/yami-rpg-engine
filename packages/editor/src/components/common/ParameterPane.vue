@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMParameterPane
 		ref="ym"
 		:id="props.id"
@@ -22,13 +22,10 @@ import { YMParameterPane } from '@ui-kit';
 import { createCheckBox as createCheckBoxElement } from '@/components/check-box';
 import { createColorBox as createColorBoxElement } from '@/components/color-box';
 import { createKeyboardBox as createKeyboardBoxElement } from '@/components/keyboard-box';
-import { createCustomBox as createCustomBoxElement } from '@/components/custom-box';
+import { customBoxFactory, numberBoxFactory, selectBoxFactory, textBoxFactory } from '@/components/var-factories';
 import { createDetailBox as createDetailBoxElement } from '@/components/detail-box';
 import { createDetailSummary } from '@/components/detail-summary';
-import { createNumberBox as createNumberBoxElement } from '@/components/number-box';
 import { createNumberVar as createNumberVarElement } from '@/components/number-var';
-import { createSelectBox as createSelectBoxElement } from '@/components/select-box';
-import { createTextBox as createTextBoxElement } from '@/components/text-box';
 import { TypeRegistry } from '@/components/type-registry';
 import { Select } from '@/components/select-list';
 import { Data } from '@/data/data-object';
@@ -48,13 +45,13 @@ const controls = {
 	checkBox: () => createCheckBoxElement(true),
 	colorBox: () => createColorBoxElement(),
 	keyboardBox: () => createKeyboardBoxElement(),
-	customBox: () => createCustomBoxElement(),
+	customBox: () => customBoxFactory(),
 	detailBox: () => createDetailBoxElement(),
 	detailSummary: () => createDetailSummary(),
-	numberBox: () => createNumberBoxElement(),
+	numberBox: () => numberBoxFactory(),
 	numberVar: () => createNumberVarElement(),
-	selectBox: () => createSelectBoxElement(),
-	textBox: () => createTextBoxElement()
+	selectBox: () => selectBoxFactory(),
+	textBox: () => textBoxFactory()
 };
 
 const dataManifest = (): any => (Data as any).manifest;
@@ -103,3 +100,4 @@ onMounted(() => {
 	el.on = on;
 });
 </script>
+

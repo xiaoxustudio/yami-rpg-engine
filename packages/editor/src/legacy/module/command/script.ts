@@ -21,7 +21,9 @@ Command.cases.script = new CommandSchema({
 	changed: false,
 	fontSize: 14,
 	lineHeight: 14,
-	mark: $('#script-mark'),
+	get mark() {
+		return $('#script-mark');
+	},
 	colorOptions: {
 		mimeType: 'javascript',
 		tabSize: 2,

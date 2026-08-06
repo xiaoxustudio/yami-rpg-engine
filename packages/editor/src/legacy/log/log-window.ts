@@ -6,7 +6,9 @@ import { Editor } from '@/main/editor.ts';
 import { ipcRenderer } from 'electron';
 
 export const Log = {
-	box: $('#log-message'),
+	get box() {
+		return $('#log-message');
+	},
 	list: [] as any[],
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,

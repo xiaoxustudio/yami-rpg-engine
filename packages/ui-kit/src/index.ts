@@ -80,6 +80,80 @@ export {
 	type CustomBoxParseResult
 } from './components/business/YMCustomBox/custom-box-api';
 export {
+	createCheckBoxElement,
+	type CheckBoxApi,
+	type CheckBoxApiOptions
+} from './components/basic/YMCheckBox/check-box-api';
+export {
+	createColorBoxElement,
+	type ColorBoxApi,
+	type ColorBoxApiOptions
+} from './components/basic/YMColorBox/color-box-api';
+export {
+	createRadioBoxElement,
+	type RadioBoxApi,
+	type RadioBoxApiOptions
+} from './components/basic/YMRadioBox/radio-box-api';
+export {
+	createDetailBoxElement,
+	type DetailBoxApi
+} from './components/basic/YMDetailBox/detail-box-api';
+export {
+	createDetailSummaryElement,
+	type DetailSummaryApi
+} from './components/basic/YMDetailSummary/detail-summary-api';
+export {
+	createPageManagerElement,
+	type PageManagerApi
+} from './components/basic/YMPageManager/page-manager-api';
+export {
+	createToastManagerElement,
+	type ToastManagerApi
+} from './components/basic/YMToastManager/toast-api';
+export {
+	createNumberBoxElement,
+	type NumberBoxApi,
+	type NumberBoxApiOptions
+} from './components/basic/YMNumberBox/number-box-api';
+export {
+	createTextAreaElement,
+	type TextAreaApi,
+	type TextAreaApiOptions
+} from './components/basic/YMTextArea/text-area-api';
+export { createNavBarElement, type NavBarApi } from './components/basic/YMNavBar/nav-bar-api';
+export {
+	createNumberVarElement,
+	defVar,
+	defVarForPlugin,
+	type NumberVarApi,
+	type NumberVarApiOptions
+} from './components/basic/YMNumberVar/number-var-api';
+export {
+	createSelectVarElement,
+	type SelectVarApi,
+	type SelectVarApiOptions
+} from './components/basic/YMSelectVar/select-var-api';
+export {
+	createStringVarElement,
+	type StringVarApi,
+	type StringVarApiOptions
+} from './components/basic/YMStringVar/string-var-api';
+export {
+	createFileVarElement,
+	type FileVarApi,
+	type FileVarApiOptions
+} from './components/basic/YMFileVar/file-var-api';
+export {
+	createTextAreaVarElement,
+	type TextAreaVarApi,
+	type TextAreaVarApiOptions
+} from './components/basic/YMTextAreaVar/textarea-var-api';
+export {
+	createKeyboardBoxElement,
+	type KeyboardBoxApi,
+	type KeyboardBoxApiOptions
+} from './components/basic/YMKeyboardBox/keyboard-box-api';
+export {
 	createSelectBoxElement,
 	type SelectBoxApi,
 	type SelectBoxApiOptions

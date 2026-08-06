@@ -493,6 +493,7 @@ node-icon.icon-note {
 	position: absolute;
 	margin-right: 0;
 	right: 0;
+	top: 0;
 }
 
 #plugin-inspector {

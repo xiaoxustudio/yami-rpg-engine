@@ -9,7 +9,9 @@ import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';
 
 export const Window = {
-	ambient: $('#window-ambient'),
+	get ambient() {
+		return $('#window-ambient');
+	},
 	frames: [],
 	positionMode: 'center',
 	absolutePos: { x: 0, y: 0 },

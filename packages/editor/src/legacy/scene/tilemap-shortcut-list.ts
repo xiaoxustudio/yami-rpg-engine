@@ -63,12 +63,24 @@ export class TilemapShortcuts {
 
 	static initialize(): void {
 		this.elements = {
-			1: $('#scene-layer-tilemap-1'),
-			2: $('#scene-layer-tilemap-2'),
-			3: $('#scene-layer-tilemap-3'),
-			4: $('#scene-layer-tilemap-4'),
-			5: $('#scene-layer-tilemap-5'),
-			6: $('#scene-layer-tilemap-6')
+			get 1() {
+				return $('#scene-layer-tilemap-1');
+			},
+			get 2() {
+				return $('#scene-layer-tilemap-2');
+			},
+			get 3() {
+				return $('#scene-layer-tilemap-3');
+			},
+			get 4() {
+				return $('#scene-layer-tilemap-4');
+			},
+			get 5() {
+				return $('#scene-layer-tilemap-5');
+			},
+			get 6() {
+				return $('#scene-layer-tilemap-6');
+			}
 		};
 		const { elements } = this;
 		for (let i = 1; i <= 6; i++) {

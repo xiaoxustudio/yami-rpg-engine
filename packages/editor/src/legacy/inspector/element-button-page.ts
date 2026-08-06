@@ -286,7 +286,9 @@ import { UI } from '@/ui/ui-window.ts';
 							target: this.target,
 							changes: [
 								{
-									input: $('#uiButton-horizontalAlign'),
+									get input() {
+										return $('#uiButton-horizontalAlign');
+									},
 									oldValue: node.horizontalAlign,
 									newValue: value
 								}
@@ -308,7 +310,9 @@ import { UI } from '@/ui/ui-window.ts';
 							target: this.target,
 							changes: [
 								{
-									input: $('#uiButton-verticalAlign'),
+									get input() {
+										return $('#uiButton-verticalAlign');
+									},
 									oldValue: node.verticalAlign,
 									newValue: value
 								}

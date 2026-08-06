@@ -3,7 +3,9 @@
 import { $ } from '@/util/dom.ts';
 import { addClass, removeClass } from '@/util/element-utils';
 export const Cursor = {
-	region: $('#cursor-region'),
+	get region() {
+		return $('#cursor-region');
+	},
 	open: null as any,
 	close: null as any
 };

@@ -9,10 +9,16 @@ function getWindow() {
 }
 
 export const TileNode = {
-	canvas: $('#autoTile-selectNode-canvas'),
+	get canvas() {
+		return $('#autoTile-selectNode-canvas');
+	},
 	context: null,
-	screen: $('#autoTile-selectNode-screen'),
-	marquee: $('#autoTile-selectNode-marquee'),
+	get screen() {
+		return $('#autoTile-selectNode-screen');
+	},
+	get marquee() {
+		return $('#autoTile-selectNode-marquee');
+	},
 	dragging: null,
 	nodes: null,
 	image: null,

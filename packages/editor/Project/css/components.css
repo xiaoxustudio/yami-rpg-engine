@@ -1080,6 +1080,7 @@ button:focus {
 
 node-item {
 	display: block;
+	position: relative;
 	padding-right: 32px;
 	height: 20px;
 	line-height: 20px;
@@ -1576,7 +1577,7 @@ common-item:hover {
 
 .script-edit-button {
 	flex-shrink: 0;
-	margin-right: -10px;
+	margin-right: 0;
 	width: 20px;
 	text-align: center;
 	font-size: 1.2em;

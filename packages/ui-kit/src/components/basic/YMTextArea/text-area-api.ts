@@ -1,0 +1,206 @@
+import { addClass, removeClass } from '../../../utils/dom';
+import { TextHistory } from '../../../utils/history';
+import { Timer } from '../../../utils/timer';
+
+export interface TextAreaApiOptions {
+	disabled?: boolean;
+	modelValue?: string;
+	listenDraggingScrollbarEvent?: ((el: any) => void) | null;
+}
+
+export interface TextAreaApi extends HTMLElement {
+	language: string;
+	input: HTMLTextAreaElement;
+	focusEventEnabled: boolean;
+	blurEventEnabled: boolean;
+	_initialized: boolean;
+	read(): string;
+	write(value: string): void;
+	insert(value: string): void;
+	enable(): void;
+	disable(): void;
+	getFocus(mode: any): void;
+	on(
+		type: string,
+		listener: (event: any) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
+
+let target: HTMLElement | null = null;
+
+const timer = new Timer({
+	duration: 0,
+	callback: () => {
+		removeClass(target, 'inputting');
+		target = null;
+	}
+});
+
+const macInputKeydown = (event: KeyboardEvent): void => {
+	if (event.metaKey) {
+		switch (event.code) {
+			case 'KeyC':
+				document.execCommand('copy');
+				break;
+			case 'KeyV':
+				document.execCommand('paste');
+				break;
+			case 'KeyX':
+				document.execCommand('cut');
+				break;
+		}
+	}
+};
+
+const showChildNodes = (el: HTMLElement): void => {
+	for (const child of Array.from(el.children)) {
+		(child as HTMLElement).style.display = '';
+	}
+};
+
+const hideChildNodes = (el: HTMLElement): void => {
+	for (const child of Array.from(el.children)) {
+		(child as HTMLElement).style.display = 'none';
+	}
+};
+
+const getFocus = (input: HTMLTextAreaElement, mode: any): void => {
+	setTimeout(() => {
+		input.focus();
+		switch (mode) {
+			case 'all':
+				input.select();
+				break;
+			case 'end':
+				if (typeof input.selectionStart === 'number') {
+					input.setSelectionRange(input.value.length, input.value.length);
+				}
+				break;
+		}
+	});
+};
+
+export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions = {}): TextAreaApi {
+	const box = el as TextAreaApi;
+	if (box._initialized) return box;
+
+	const input = document.createElement('textarea');
+	(input as any).history = new TextHistory(input);
+	input.addEventListener('keydown', inputKeydown);
+	input.addEventListener('input', inputInput);
+	options.listenDraggingScrollbarEvent?.(input);
+
+	box.input = input;
+	box.focusEventEnabled = false;
+	box.blurEventEnabled = false;
+
+	if (/Mac|iPhone|iPad/.test(navigator.platform)) {
+		input.addEventListener('keydown', macInputKeydown as EventListener);
+	}
+
+	el.appendChild(input);
+
+	box.read = function (): string {
+		return input.value;
+	};
+
+	box.write = function (value: string): void {
+		input.value = value;
+		(input as any).history.reset();
+	};
+
+	box.insert = function (value: string): void {
+		input.dispatchEvent(
+			new InputEvent('beforeinput', {
+				inputType: 'insertFromPaste',
+				data: value,
+				bubbles: true
+			})
+		);
+		document.execCommand('insertText', false, value);
+	};
+
+	box.enable = function (): void {
+		if (removeClass(el, 'disabled')) {
+			showChildNodes(el);
+		}
+	};
+
+	box.disable = function (): void {
+		if (addClass(el, 'disabled')) {
+			hideChildNodes(el);
+		}
+	};
+
+	box.getFocus = function (mode: any): void {
+		getFocus(input, mode);
+	};
+
+	box.on = function (
+		type: string,
+		listener: (event: any) => void,
+		listenerOptions?: boolean | AddEventListenerOptions
+	): void {
+		el.addEventListener(type, listener as EventListener, listenerOptions);
+		switch (type) {
+			case 'focus':
+				if (!box.focusEventEnabled) {
+					box.focusEventEnabled = true;
+					input.addEventListener('focus', () => {
+						el.dispatchEvent(new FocusEvent('focus'));
+					});
+				}
+				break;
+			case 'blur':
+				if (!box.blurEventEnabled) {
+					box.blurEventEnabled = true;
+					input.addEventListener('blur', () => {
+						el.dispatchEvent(new FocusEvent('blur'));
+					});
+				}
+				break;
+		}
+	};
+
+	function inputKeydown(event: any): void {
+		switch (event.code) {
+			case 'Enter':
+			case 'NumpadEnter':
+				if (!event.cmdOrCtrlKey) {
+					event.stopPropagation();
+				}
+				break;
+		}
+		if (!target) {
+			target = el;
+			timer.add();
+			addClass(el, 'inputting');
+		}
+	}
+
+	function inputInput(event: any): void {
+		if (!target) {
+			target = el;
+			timer.add();
+			addClass(el, 'inputting');
+		}
+	}
+
+	box._initialized = true;
+
+	if (options.modelValue !== undefined) {
+		box.write(options.modelValue);
+	}
+	if (options.disabled) {
+		box.disable();
+	}
+
+	return box;
+}
+
+export function createTextAreaElement(options?: TextAreaApiOptions): TextAreaApi {
+	const el = document.createElement('div');
+	el.className = 'text-area';
+	return attachTextAreaApi(el, options);
+}

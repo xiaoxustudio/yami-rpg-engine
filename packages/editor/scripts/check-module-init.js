@@ -28,6 +28,7 @@ const EXCLUDE = [
 	'components/common-list.ts',
 	'components/custom-box.ts',
 	'components/custom-box-opts.ts',
+	'components/var-factories.ts',
 	'components/drag-and-drop-hint.ts',
 	'components/file-var.ts',
 	'components/keyboard-box.ts',

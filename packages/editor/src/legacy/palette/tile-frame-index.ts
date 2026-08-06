@@ -8,13 +8,27 @@ import { Palette } from './palette.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 
 export const TileFrame = {
-	window: $('#autoTile-frameIndex'),
-	screen: $('#autoTile-frameIndex-screen'),
-	clip: $('#autoTile-frameIndex-image-clip'),
-	mask: $('#autoTile-frameIndex-mask'),
-	image: $('#autoTile-frameIndex-image'),
-	marquee: $('#autoTile-frameIndex-marquee'),
-	info: $('#autoTile-frameIndex-info'),
+	get window() {
+		return $('#autoTile-frameIndex');
+	},
+	get screen() {
+		return $('#autoTile-frameIndex-screen');
+	},
+	get clip() {
+		return $('#autoTile-frameIndex-image-clip');
+	},
+	get mask() {
+		return $('#autoTile-frameIndex-mask');
+	},
+	get image() {
+		return $('#autoTile-frameIndex-image');
+	},
+	get marquee() {
+		return $('#autoTile-frameIndex-marquee');
+	},
+	get info() {
+		return $('#autoTile-frameIndex-info');
+	},
 	dragging: null,
 	hframes: null,
 	vframes: null,

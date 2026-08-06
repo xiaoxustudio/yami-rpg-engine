@@ -1,52 +1,7 @@
-import { on } from '@/util/element-utils.ts';
+import { createToastManagerElement, type ToastManagerApi } from '@ui-kit';
 
-interface ToastManagerElement extends HTMLElement {
-	show(message: string, type?: string, duration?: number): HTMLDivElement;
-	dismiss(el: HTMLElement | null): void;
-}
-
-export function attachToastManagerApi(el: HTMLElement): void {
-	const manager = el as ToastManagerElement;
-
-	manager.show = function (
-		message: string,
-		type: string = 'info',
-		duration: number = 4000
-	): HTMLDivElement {
-		const toast = document.createElement('div');
-		toast.className = `toast toast-${type}`;
-		const text = document.createElement('span');
-		text.className = 'toast-text';
-		text.textContent = message;
-		const close = document.createElement('span');
-		close.className = 'toast-close';
-		close.textContent = '×';
-		on(close, 'click', () => manager.dismiss(toast));
-		toast.appendChild(text);
-		toast.appendChild(close);
-		manager.appendChild(toast);
-		requestAnimationFrame(() => toast.classList.add('toast-show'));
-		if (duration > 0) {
-			(toast as HTMLDivElement & { _timer: ReturnType<typeof setTimeout> })._timer =
-				setTimeout(() => manager.dismiss(toast), duration);
-		}
-		return toast;
-	};
-
-	manager.dismiss = function (toast: HTMLElement | null): void {
-		if (!toast || toast.parentNode !== manager) return;
-		clearTimeout((toast as HTMLElement & { _timer: ReturnType<typeof setTimeout> })._timer);
-		toast.classList.remove('toast-show');
-		toast.classList.add('toast-hide');
-		setTimeout(() => toast.remove(), 200);
-	};
-}
-
-export function createToastManager(): HTMLElement {
-	const el = document.createElement('div');
-	el.className = 'toast-manager';
-	attachToastManagerApi(el);
-	return el;
+export function createToastManager(): ToastManagerApi {
+	return createToastManagerElement();
 }
 
 export const Toast = {
@@ -59,11 +14,7 @@ export const Toast = {
 		return m as HTMLElement;
 	},
 	show(message: string, type?: string, duration?: number): HTMLDivElement {
-		return (this._manager() as ToastManagerElement).show(
-			message,
-			type ?? 'info',
-			duration ?? 4000
-		);
+		return (this._manager() as ToastManagerApi).show(message, type ?? 'info', duration ?? 4000);
 	},
 	error(message: string): HTMLDivElement {
 		return this.show(message, 'error');

@@ -22,6 +22,7 @@ export interface CustomBoxApi extends HTMLElement {
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
+	isPluginInput?: boolean;
 	type: string | null;
 	filter: string | null;
 	read(): any;
