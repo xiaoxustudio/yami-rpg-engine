@@ -38,15 +38,15 @@
 				<div class="file-browser" id="project-browser"></div>
 			</div>
 			<div class="page-frame" id="scene" value="scene">
-				<div class="box" id="scene-head">
-					<div class="box" id="scene-head-start">
+				<div class="box" id="scene-head" @pointerdown="onSceneHeadPointerdown">
+					<div class="box" id="scene-head-start" @pointerdown="onSceneSwitchPointerdown">
 						<div class="item toolbar-item" id="scene-switch-grid" value="grid"></div>
 						<div class="item toolbar-item" id="scene-switch-light" value="light"></div>
 						<div class="item toolbar-item" id="scene-switch-animation" value="animation"></div>
 						<div class="item toolbar-item" id="scene-switch-settings" value="settings" hotkey="Alt+S"></div>
 					</div>
 					<div class="box" id="scene-head-center">
-						<div class="box" id="scene-layer">
+						<div class="box" id="scene-layer" @pointerdown="onSceneLayerPointerdown">
 							<div class="item toolbar-item" id="scene-layer-object" value="object" hotkey="`"></div>
 							<div class="item toolbar-item hidden" id="scene-layer-tilemap-1" value="1" hotkey="1"></div>
 							<div class="item toolbar-item hidden" id="scene-layer-tilemap-2" value="2" hotkey="2"></div>
@@ -56,7 +56,7 @@
 							<div class="item toolbar-item hidden" id="scene-layer-tilemap-6" value="6" hotkey="6"></div>
 							<div class="item toolbar-item" id="scene-layer-terrain" value="terrain" hotkey="`"></div>
 						</div>
-						<div class="box" id="scene-brush">
+						<div class="box" id="scene-brush" @pointerdown="onSceneBrushPointerdown">
 							<div class="item toolbar-item" id="scene-brush-eraser" value="eraser" hotkey="Q"></div>
 							<div class="item toolbar-item" id="scene-brush-pencil" value="pencil" hotkey="E"></div>
 							<div class="item toolbar-item" id="scene-brush-rect" value="rect" hotkey="R"></div>
@@ -65,12 +65,31 @@
 						</div>
 					</div>
 					<div class="box" id="scene-head-end">
-						<SliderBox id="scene-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
+						<SliderBox
+							id="scene-zoom"
+							name="zoom"
+							min="0"
+							max="4"
+							hotkey="-/+"
+							active-wheel
+							@input="onSceneZoomInput"
+							@focus="onSceneZoomFocus"
+						></SliderBox>
 					</div>
 				</div>
 				<div class="box" id="scene-body">
-					<div class="box" id="scene-screen" tabindex="-1">
-						<MarqueeArea id="scene-marquee"></MarqueeArea>
+					<div
+						class="box"
+						id="scene-screen"
+						tabindex="-1"
+						@keydown="onSceneScreenKeydown"
+						@wheel="onSceneScreenWheel"
+					>
+						<MarqueeArea
+							id="scene-marquee"
+							@pointerdown="onSceneMarqueePointerdown"
+							@doubleclick="onSceneMarqueeDoubleclick"
+						></MarqueeArea>
 					</div>
 					<div class="text" id="scene-info"></div>
 				</div>
@@ -270,4 +289,35 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const onSceneHeadPointerdown = (event: PointerEvent) => {
+	(window as any).Scene?.headPointerdown?.(event);
+};
+const onSceneSwitchPointerdown = (event: PointerEvent) => {
+	(window as any).Scene?.switchPointerdown?.(event);
+};
+const onSceneLayerPointerdown = (event: PointerEvent) => {
+	(window as any).Scene?.layerPointerdown?.(event);
+};
+const onSceneBrushPointerdown = (event: PointerEvent) => {
+	(window as any).Scene?.brushPointerdown?.(event);
+};
+const onSceneZoomInput = (value: number) => {
+	(window as any).Scene?.setZoom?.(value);
+};
+const onSceneZoomFocus = () => {
+	(window as any).Scene?.zoomFocus?.();
+};
+const onSceneScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).Scene?.screenKeydown?.(event);
+};
+const onSceneScreenWheel = (event: WheelEvent) => {
+	(window as any).Scene?.screenWheel?.(event);
+};
+const onSceneMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).Scene?.marqueePointerdown?.(event);
+};
+const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
+	(window as any).Scene?.marqueeDoubleclick?.(event);
+};
 </script>
