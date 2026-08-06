@@ -3,7 +3,7 @@
 	<template #title><TitleBar>Stop Event<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="stopEvent-type" /> <div class="text">Actor</div
+			<div class="text">Type</div><SelectBox id="stopEvent-type" @write="onWrite" /> <div class="text">Actor</div
 			><CustomBox id="stopEvent-actor" type="actor" /> <div class="text">Skill</div
 			><CustomBox id="stopEvent-skill" type="skill" /> <div class="text">State</div
 			><CustomBox id="stopEvent-state" type="state" /> <div class="text">Equipment</div
@@ -28,6 +28,10 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
+const onWrite = (value: any) => {
+	(window as any).Command?.cases?.stopEvent?.writeHandler?.({ value });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

@@ -10,7 +10,7 @@
 					filter="writable-boolean"
 				/>
 				<div class="text">Operation</div><SelectBox id="setBoolean-operation" />
-				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" />
+				<div class="text">Type</div><SelectBox id="setBoolean-operand-type" @write="onWrite" />
 				<div class="text">Constant</div><SelectBox id="setBoolean-constant-value" />
 				<div class="text">Variable</div
 				><CustomBox id="setBoolean-common-variable" type="variable" filter="all" />
@@ -36,6 +36,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
+const onWrite = (value: any) => {
+	(window as any).Command?.cases?.setBoolean?.writeHandler?.({ value });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

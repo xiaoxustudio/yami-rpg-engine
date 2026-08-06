@@ -27,11 +27,12 @@ Command.cases.addAnimationComponent = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#addAnimationComponent-animationId').on('write', (event: any) => {
-			const elMotion = $('#addAnimationComponent-motion');
-			elMotion.loadItems(Animation.getMotionListItems(event.value));
-			elMotion.write2(read(elMotion));
-		});
+		// addAnimationComponent-animationId write 经 Vue 模板转发（addAnimationComponent.vue @write → Command.cases.addAnimationComponent.writeHandler）
+	},
+	writeHandler(event: any) {
+		const elMotion = $('#addAnimationComponent-motion');
+		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.write2(read(elMotion));
 	},
 	parseRotatable(rotatable: any) {
 		return rotatable ? Local.get('command.addAnimationComponent.rotatable') : '';

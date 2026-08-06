@@ -27,6 +27,8 @@ import { Palette } from '@/palette/palette.ts';
 import { AutoTile } from '@/palette/auto-tile.ts';
 import { Sprite } from '@/sprite/sprite.ts';
 import { Curve } from '@/animation/curve-window.ts';
+import { NewProject } from '@/title/new-project-window.ts';
+import { Deployment } from '@/title/deploy-project-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Printer } from '@/printer/printer.ts';
@@ -74,6 +76,8 @@ Object.assign(window as any, {
 	AutoTile,
 	Sprite,
 	Curve,
+	NewProject,
+	Deployment,
 	Particle,
 	PluginManager,
 	Printer,

@@ -83,22 +83,7 @@ import { Local } from '@/tools/localization.ts';
 				{ case: 'script', targets: [$('#setString-operand-script')] },
 				{ case: 'other', targets: [$('#setString-operand-other-data')] }
 			]);
-		$('#setString-operand-type').on('write', (event: any) => {
-			let filter = 'all';
-			switch (event.value) {
-				case 'variable':
-					filter = 'all';
-					break;
-				case 'string':
-					filter = 'string';
-					break;
-				case 'object':
-				case 'list':
-					filter = 'object';
-					break;
-			}
-			$('#setString-operand-common-variable').filter = filter;
-		});
+		// setString-operand-type write 经 Vue 模板转发（setString.vue @write → Command.cases.setString.writeHandler）
 		$('#setString-operand-string-method').loadItems([
 			{ name: 'Char', value: 'char' },
 			{ name: 'Slice', value: 'slice' },
@@ -221,6 +206,22 @@ import { Local } from '@/tools/localization.ts';
 					]
 				}
 			]);
+	},
+	writeHandler(event: any) {
+		let filter = 'all';
+		switch (event.value) {
+			case 'variable':
+				filter = 'all';
+				break;
+			case 'string':
+				filter = 'string';
+				break;
+			case 'object':
+			case 'list':
+				filter = 'object';
+				break;
+		}
+		$('#setString-operand-common-variable').filter = filter;
 	},
 	parseOperation(operation: any) {
 		switch (operation) {

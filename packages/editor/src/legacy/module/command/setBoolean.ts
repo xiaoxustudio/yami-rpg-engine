@@ -48,18 +48,19 @@ import { Local } from '@/tools/localization.ts';
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
-		$('#setBoolean-operand-type').on('write', (event: any) => {
-			let filter = 'all';
-			switch (event.value) {
-				case 'variable':
-					filter = 'boolean';
-					break;
-				case 'list':
-					filter = 'object';
-					break;
-			}
-			$('#setBoolean-common-variable').filter = filter;
-		});
+		// setBoolean-operand-type write 经 Vue 模板转发（setBoolean.vue @write → Command.cases.setBoolean.writeHandler）
+	},
+	writeHandler(event: any) {
+		let filter = 'all';
+		switch (event.value) {
+			case 'variable':
+				filter = 'boolean';
+				break;
+			case 'list':
+				filter = 'object';
+				break;
+		}
+		$('#setBoolean-common-variable').filter = filter;
 	},
 	parseOperation(operation: any) {
 		switch (operation) {

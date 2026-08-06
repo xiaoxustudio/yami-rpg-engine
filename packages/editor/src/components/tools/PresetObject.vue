@@ -2,8 +2,13 @@
 		<WindowFrame id="presetObject" mode="center">
 		<template #title><TitleBar>Object<div class="close"></div></TitleBar></template>
 		
-			<CustomBox id="presetObject-sceneId" type="file" filter="scene" />
-			<TreeList id="presetObject-list" />
+			<CustomBox
+				id="presetObject-sceneId"
+				type="file"
+				filter="scene"
+				@write="onSceneIdWrite"
+			/>
+			<TreeList id="presetObject-list" @open="onListOpen" />
 			<TextBox id="presetObject-searcher" name="search" />
 		
 	</WindowFrame>
@@ -21,6 +26,13 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onSceneIdWrite = (value: any) => {
+	(window as any).PresetObject?.sceneIdWrite?.({ value });
+};
+const onListOpen = (event: any) => {
+	(window as any).PresetObject?.listOpen?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

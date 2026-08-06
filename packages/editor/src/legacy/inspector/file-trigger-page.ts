@@ -97,15 +97,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#fileTrigger-parameter-pane').bind($('#fileTrigger-scripts'));
 
-		$('#fileTrigger-animationId').on('write', this.animationIdWrite);
-		$(`#fileTrigger-selector, #fileTrigger-onHitWalls, #fileTrigger-onHitActors, #fileTrigger-hitCount,
-    #fileTrigger-shape-type, #fileTrigger-shape-width, #fileTrigger-shape-height,
-    #fileTrigger-shape-anchor, #fileTrigger-shape-radius, #fileTrigger-shape-centralAngle,
-    #fileTrigger-speed, #fileTrigger-hitMode, #fileTrigger-hitInterval,
-    #fileTrigger-initialDelay, #fileTrigger-effectiveTime, #fileTrigger-duration,
-    #fileTrigger-inherit, #fileTrigger-animationId, #fileTrigger-motion,
-    #fileTrigger-priority, #fileTrigger-offsetY, #fileTrigger-rotatable
-  `).on('input', this.paramInput);
+		// animationId write + 22 控件 input 经 Vue 模板转发（FileTriggerPage.vue @write/@input → FileTrigger.*）
 		$('#fileTrigger-events, #fileTrigger-scripts').on('change', this.listChange);
 	};
 
@@ -258,6 +250,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileTrigger.animationIdWrite = function (event) {
+		if (!event.value) return;
 		const elMotion = $('#fileTrigger-motion');
 		elMotion.loadItems(Animation.getMotionListItems(event.value));
 		write(elMotion, read(elMotion));

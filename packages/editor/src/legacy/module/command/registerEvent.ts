@@ -24,30 +24,29 @@ Command.cases.registerEvent = new CommandSchema({
 				{ case: 'actor', targets: [$('#registerEvent-actor')] },
 				{ case: 'element', targets: [$('#registerEvent-element')] }
 			]);
-		$('#registerEvent-target').on('write', (event: any) => {
-			const type = event.value;
-			const elEventType = $('#registerEvent-type');
-			const registerType = 'register_' + type;
-			const eventTypes = Enum.getMergedItems(
-				EventEditor.types[registerType],
-				type + '-event'
-			);
-			this.switchTypeAndTagInput();
-			elEventType.loadItems(eventTypes);
-			elEventType.createTooltip();
-			write(elEventType, eventTypes[0].value);
-		});
 		$('#registerEvent-operation').loadItems([
 			{ name: 'Register', value: 'register' },
 			{ name: 'Unregister', value: 'unregister' },
 			{ name: 'Reset', value: 'reset' }
 		]);
-		$('#registerEvent-operation').on('write', () => {
-			this.switchTypeAndTagInput();
-			this.switchPriority();
-			this.switchNamespace();
-		});
-		$('#registerEvent-type').on('write', () => this.switchPriority());
+	},
+	targetWrite(event: any) {
+		const type = event.value;
+		const elEventType = $('#registerEvent-type');
+		const registerType = 'register_' + type;
+		const eventTypes = Enum.getMergedItems(EventEditor.types[registerType], type + '-event');
+		this.switchTypeAndTagInput();
+		elEventType.loadItems(eventTypes);
+		elEventType.createTooltip();
+		write(elEventType, eventTypes[0].value);
+	},
+	operationWrite() {
+		this.switchTypeAndTagInput();
+		this.switchPriority();
+		this.switchNamespace();
+	},
+	typeWrite() {
+		this.switchPriority();
 	},
 	switchTypeAndTagInput(event: any) {
 		const showElement = (input: any) => {

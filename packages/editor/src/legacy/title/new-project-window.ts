@@ -66,11 +66,7 @@ NewProject.initialize = function () {
 	]);
 
 	template.addEventListener('input', this.templateInput);
-	$('#newProject-folder').on('beforeinput', this.folderBeforeinput, {
-		capture: true
-	});
-	$('#newProject-folder').on('input', this.folderInput);
-	$('#newProject-location').on('input', this.locationInput);
+	// folder/location input 经 Vue 模板转发（NewProject.vue @input/@beforeinput → NewProject.*）
 	$('#newProject-choose').addEventListener('click', this.chooseClick);
 	$('#newProject-confirm').addEventListener('click', this.confirm);
 };
@@ -242,11 +238,12 @@ NewProject.folderBeforeinput = function (event) {
 };
 
 NewProject.folderInput = function (event) {
+	const el = $('#newProject-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
-	const oldName = read(this);
+	const oldName = read(el);
 	const newName = oldName.replace(regexp, '');
 	if (oldName !== newName) {
-		write(this, newName);
+		write(el, newName);
 	}
 	NewProject.check();
 };

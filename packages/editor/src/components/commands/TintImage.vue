@@ -4,14 +4,15 @@
 		
 			<div class="grid-box" id="tintImage-grid-box">
 				<div class="text">Element</div><CustomBox id="tintImage-element" type="element" />
-				<div class="text">Mode</div><SelectBox id="tintImage-mode" /> <div class="text">Tint - Red</div
-				><NumberBox id="tintImage-tint-0" min="-255" max="255" step="5" />
+				<div class="text">Mode</div
+				><SelectBox id="tintImage-mode" @input="onInput" /> <div class="text">Tint - Red</div
+				><NumberBox id="tintImage-tint-0" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Green</div
-				><NumberBox id="tintImage-tint-1" min="-255" max="255" step="5" />
+				><NumberBox id="tintImage-tint-1" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Blue</div
-				><NumberBox id="tintImage-tint-2" min="-255" max="255" step="5" />
+				><NumberBox id="tintImage-tint-2" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Grayscale</div
-				><NumberBox id="tintImage-tint-3" min="0" max="255" step="5" />
+				><NumberBox id="tintImage-tint-3" min="0" max="255" step="5" @input="onInput" />
 				<div class="text">Easing</div><SelectBox id="tintImage-easingId" name="easing" />
 				<div class="text">Duration</div
 				><NumberBox
@@ -41,6 +42,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onInput = () => {
+	(window as any).Command?.cases?.tintImage?.input?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

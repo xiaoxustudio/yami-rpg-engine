@@ -4,7 +4,14 @@
 		
 			<div class="field-set input pad" id="command-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="command-list" padded />
+				<TreeList
+					id="command-list"
+					padded
+					@select="onListSelect"
+					@popup="onListPopup"
+					@open="onListOpen"
+					@change="onListChange"
+				/>
 			</div>
 			<div class="box" id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
@@ -36,6 +43,19 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onListSelect = (event: any) => {
+	(window as any).CustomCommand?.listSelect?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).CustomCommand?.listPopup?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).CustomCommand?.listOpen?.(event);
+};
+const onListChange = (event: any) => {
+	(window as any).CustomCommand?.listChange?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

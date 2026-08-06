@@ -85,11 +85,7 @@ Deployment.initialize = function () {
 	]);
 
 	platform.addEventListener('input', this.platformInput);
-	$('#deployment-folder').on('beforeinput', this.folderBeforeinput, {
-		capture: true
-	});
-	$('#deployment-folder').on('input', this.folderInput);
-	$('#deployment-location').on('input', this.locationInput);
+	// folder/location input 经 Vue 模板转发（Deployment.vue @input/@beforeinput → Deployment.*）
 	on($('#deployment-choose'), 'click', this.chooseClick);
 	on($('#deployment-confirm'), 'click', this.confirm);
 	$('#deployment-compress').addEventListener('change', (e) => {
@@ -578,11 +574,12 @@ Deployment.folderBeforeinput = function (event) {
 };
 
 Deployment.folderInput = function (event) {
+	const el = $('#deployment-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
-	const oldName = read(this);
+	const oldName = read(el);
 	const newName = oldName.replace(regexp, '');
 	if (oldName !== newName) {
-		write(this, newName);
+		write(el, newName);
 	}
 	Deployment.check();
 };

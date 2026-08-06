@@ -67,19 +67,20 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setAnimationComponent-animationId').on('write', (event: any) => {
-			const elMotion = $('#setAnimationComponent-motion');
-			const elPlayMotion = $('#setAnimationComponent-playMotion');
-			const elSpriteId = $('#setAnimationComponent-spriteId');
-			const motionItems = Animation.getMotionListItems(event.value);
-			const spriteItems = Animation.getSpriteListItems(event.value);
-			elMotion.loadItems(motionItems);
-			elPlayMotion.loadItems(motionItems);
-			elSpriteId.loadItems(spriteItems);
-			elMotion.write2(read(elMotion));
-			elPlayMotion.write2(read(elPlayMotion));
-			elSpriteId.write2(read(elSpriteId));
-		});
+		// setAnimationComponent-animationId write 经 Vue 模板转发（setAnimationComponent.vue @write → Command.cases.setAnimationComponent.writeHandler）
+	},
+	writeHandler(event: any) {
+		const elMotion = $('#setAnimationComponent-motion');
+		const elPlayMotion = $('#setAnimationComponent-playMotion');
+		const elSpriteId = $('#setAnimationComponent-spriteId');
+		const motionItems = Animation.getMotionListItems(event.value);
+		const spriteItems = Animation.getSpriteListItems(event.value);
+		elMotion.loadItems(motionItems);
+		elPlayMotion.loadItems(motionItems);
+		elSpriteId.loadItems(spriteItems);
+		elMotion.write2(read(elMotion));
+		elPlayMotion.write2(read(elPlayMotion));
+		elSpriteId.write2(read(elSpriteId));
 	},
 	parsePriority(priority: any) {
 		const abs = Command.setNumberColor(Math.abs(priority));

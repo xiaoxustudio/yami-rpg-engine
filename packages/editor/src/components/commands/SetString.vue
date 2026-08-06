@@ -10,7 +10,7 @@
 					filter="writable-string"
 				/>
 				<div class="text">Operation</div><SelectBox id="setString-operation" />
-				<div class="text">Type</div><SelectBox id="setString-operand-type" />
+				<div class="text">Type</div><SelectBox id="setString-operand-type" @write="onWrite" />
 				<div class="text">String</div
 				><TextArea
 					id="setString-operand-common-value"
@@ -126,6 +126,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
+const onWrite = (value: any) => {
+	(window as any).Command?.cases?.setString?.writeHandler?.({ value });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

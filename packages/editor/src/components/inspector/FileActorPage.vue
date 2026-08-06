@@ -7,26 +7,28 @@
 				id="fileActor-portrait"
 				type="file"
 				filter="image"
-			/>
+			 @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileActor-clip') || 'Clip' }}</div
 			><CustomBox
 				id="fileActor-clip"
 				type="clip"
 				image="fileActor-portrait"
-			/>
+			 @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileActor-animationId') || 'Animation' }}</div
 			><CustomBox
 				id="fileActor-animationId"
 				type="file"
 				filter="animation"
+				@input="onParamInput"
+				@write="onAnimationIdWrite"
 			/>
 				<div class="text">Idle Motion</div
-				><SelectBox id="fileActor-idleMotion" />
+				><SelectBox id="fileActor-idleMotion"  @input="onParamInput" />
 				<div class="text">Move Motion</div
-				><SelectBox id="fileActor-moveMotion" />
-				<div class="text">Rotatable</div><SelectBox id="fileActor-rotatable" />
+				><SelectBox id="fileActor-moveMotion"  @input="onParamInput" />
+				<div class="text">Rotatable</div><SelectBox id="fileActor-rotatable"  @input="onParamInput" />
 				<div class="text">Passage Terrain</div
-				><SelectBox id="fileActor-passage" />
+				><SelectBox id="fileActor-passage"  @input="onParamInput" />
 				<div class="text">Movement Speed</div
 				><NumberBox
 					id="fileActor-speed"
@@ -34,9 +36,9 @@
 					max="32"
 					decimals="4"
 					unit="t/s"
-				/>
+				 @input="onParamInput" />
 				<div class="text">Collision Shape</div
-				><SelectBox id="fileActor-shape" />
+				><SelectBox id="fileActor-shape"  @input="onParamInput" />
 				<div class="text">Collision Size</div
 				><NumberBox
 					id="fileActor-size"
@@ -45,7 +47,7 @@
 					step="0.1"
 					decimals="4"
 					unit="t"
-				/>
+				 @input="onParamInput" />
 				<div class="text">Collision Weight</div
 				><NumberBox
 					id="fileActor-weight"
@@ -53,8 +55,8 @@
 					max="8"
 					step="0.1"
 					decimals="4"
-				/>
-				<div class="text">Immovable</div><SelectBox id="fileActor-immovable" />
+				 @input="onParamInput" />
+				<div class="text">Immovable</div><SelectBox id="fileActor-immovable"  @input="onParamInput" />
 				<div class="text">Scale</div
 				><NumberBox
 					id="fileActor-scale"
@@ -62,20 +64,20 @@
 					max="10"
 					step="0.1"
 					decimals="4"
-				/>
+				 @input="onParamInput" />
 				<div class="text">Priority</div
 				><NumberBox
 					id="fileActor-priority"
 					min="-512"
 					max="512"
 					decimals="4"
-				/>
+				 @input="onParamInput" />
 				<div class="text">Inherit</div
 				><CustomBox
 					id="fileActor-inherit"
 					type="file"
 					filter="actor"
-				/>
+				 @input="onParamInput" />
 			</div>
 		</DetailBox>
 		<DetailBox open>
@@ -153,6 +155,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onParamInput = () => {
+	(window as any).Inspector?.fileActor?.paramInput?.();
+};
+const onAnimationIdWrite = (value: any) => {
+	(window as any).Inspector?.fileActor?.animationIdWrite?.({ value });
+};
 
 onMounted(() => {
 	inspector.syncState();

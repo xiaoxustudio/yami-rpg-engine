@@ -48,29 +48,27 @@ Command.cases.tintImage = new CommandSchema({
 			clear($('#tintImage-easingId'));
 			clear($('#tintImage-filter'));
 		});
-		$(
-			'#tintImage-mode, #tintImage-tint-0, #tintImage-tint-1, #tintImage-tint-2, #tintImage-tint-3'
-		).on('input', () => {
-			const tint = [0, 0, 0, 0];
-			const read = getElementReader('tintImage');
-			switch (read('mode')) {
-				case 'full':
-					tint[0] = read('tint-0');
-					tint[1] = read('tint-1');
-					tint[2] = read('tint-2');
-					tint[3] = read('tint-3');
-					break;
-				case 'rgb':
-					tint[0] = read('tint-0');
-					tint[1] = read('tint-1');
-					tint[2] = read('tint-2');
-					break;
-				case 'gray':
-					tint[3] = read('tint-3');
-					break;
-			}
-			write($('#tintImage-filter'), tint);
-		});
+	},
+	input() {
+		const tint = [0, 0, 0, 0];
+		const read = getElementReader('tintImage');
+		switch (read('mode')) {
+			case 'full':
+				tint[0] = read('tint-0');
+				tint[1] = read('tint-1');
+				tint[2] = read('tint-2');
+				tint[3] = read('tint-3');
+				break;
+			case 'rgb':
+				tint[0] = read('tint-0');
+				tint[1] = read('tint-1');
+				tint[2] = read('tint-2');
+				break;
+			case 'gray':
+				tint[3] = read('tint-3');
+				break;
+		}
+		write($('#tintImage-filter'), tint);
 	},
 	parseTint(mode: any, [red, green, blue, gray]: any[]) {
 		const label = Local.get('command.tintImage.' + mode);

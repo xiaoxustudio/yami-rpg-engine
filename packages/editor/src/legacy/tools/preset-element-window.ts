@@ -40,8 +40,7 @@ PresetElement.initialize = function () {
 	// 列表 - 重写创建图标方法
 	this.list.createIcon = UI.list.createIcon;
 
-	this.ui.on('write', this.uiIdWrite);
-	this.list.on('open', this.listOpen);
+	// ui write/list open 经 Vue 模板转发（PresetElement.vue @write/@open → PresetElement.*）
 	this.searcher.on('keydown', this.searcherKeydown);
 	this.searcher.on('input', this.searcherInput);
 	this.searcher.on('compositionend', this.searcherInput);
@@ -99,6 +98,7 @@ PresetElement.windowClosed = function (event) {
 };
 
 PresetElement.uiIdWrite = function (event) {
+	if (!event.value) return;
 	const ui = Data.ui[event.value];
 	const nodes = ui ? PresetElement.buildNodes(ui.nodes) : Array.empty;
 	PresetElement.nodes = nodes;

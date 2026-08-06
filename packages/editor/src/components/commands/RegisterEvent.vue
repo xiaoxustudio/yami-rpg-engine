@@ -3,11 +3,13 @@
 	<template #title><TitleBar>Register Event<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Target</div><SelectBox id="registerEvent-target" /> <div class="text">Actor</div
+			<div class="text">Target</div
+			><SelectBox id="registerEvent-target" @write="onTargetWrite" /> <div class="text">Actor</div
 			><CustomBox id="registerEvent-actor" type="actor" /> <div class="text">Element</div
 			><CustomBox id="registerEvent-element" type="element" />
-			<div class="text">Operation</div><SelectBox id="registerEvent-operation" />
-			<div class="text">Type</div><SelectBox id="registerEvent-type" /> <div class="text">Priority</div
+			<div class="text">Operation</div
+			><SelectBox id="registerEvent-operation" @write="onOperationWrite" />
+			<div class="text">Type</div><SelectBox id="registerEvent-type" @write="onTypeWrite" /> <div class="text">Priority</div
 			><CheckBox id="registerEvent-priority" class="standard large" />
 			<div class="text">Namespace</div
 			><CheckBox id="registerEvent-namespace" class="standard large" />
@@ -30,6 +32,16 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onTargetWrite = (value: any) => {
+	(window as any).Command?.cases?.registerEvent?.targetWrite?.({ value });
+};
+const onOperationWrite = () => {
+	(window as any).Command?.cases?.registerEvent?.operationWrite?.();
+};
+const onTypeWrite = () => {
+	(window as any).Command?.cases?.registerEvent?.typeWrite?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

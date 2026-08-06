@@ -57,16 +57,17 @@ Command.cases.stopEvent = new CommandSchema({
 					targets: [$('#stopEvent-element'), $('#stopEvent-eventType')]
 				}
 			]);
-		$('#stopEvent-type').on('write', (event: any) => {
-			const type = event.value;
-			if (type !== 'current') {
-				const elEventType = $('#stopEvent-eventType');
-				const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
-				elEventType.loadItems(eventTypes);
-				elEventType.createTooltip();
-				write(elEventType, eventTypes[0].value);
-			}
-		});
+		// stopEvent-type write 经 Vue 模板转发（stopEvent.vue @write → Command.cases.stopEvent.writeHandler）
+	},
+	writeHandler(event: any) {
+		const type = event.value;
+		if (type !== 'current') {
+			const elEventType = $('#stopEvent-eventType');
+			const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
+			elEventType.loadItems(eventTypes);
+			elEventType.createTooltip();
+			write(elEventType, eventTypes[0].value);
+		}
 	},
 	customParse({
 		type,

@@ -32,6 +32,10 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
+const onWrite = (value: any) => {
+	(window as any).Command?.cases?.addAnimationComponent?.writeHandler?.({ value });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

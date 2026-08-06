@@ -49,10 +49,7 @@ function getWindow() {
 
 		$('#fileEvent-parameters').bind(this.parameters);
 
-		$(
-			`#fileEvent-type, #fileEvent-enabled, #fileEvent-priority, #fileEvent-namespace, #fileEvent-returnType, #fileEvent-description`
-		).on('input', this.paramInput);
-		$('#fileEvent-type').on('write', this.typeWrite);
+		// 6 控件 input + type write 经 Vue 模板转发（FileEventPage.vue @input/@write → FileEvent.*）
 		$('#fileEvent-parameters').on('change', this.listChange);
 	};
 

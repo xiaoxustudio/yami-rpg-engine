@@ -2,21 +2,21 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileTrigger-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileTrigger-general-grid">
-			<div class="text">{{ local.getLabel('fileTrigger-selector') || 'Selector' }}</div><SelectBox id="fileTrigger-selector" />
+			<div class="text">{{ local.getLabel('fileTrigger-selector') || 'Selector' }}</div><SelectBox id="fileTrigger-selector" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-onHitWalls') || 'On Hit Walls' }}</div
-			><SelectBox id="fileTrigger-onHitWalls" />
+			><SelectBox id="fileTrigger-onHitWalls" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-onHitActors') || 'On Hit Actors' }}</div
-			><SelectBox id="fileTrigger-onHitActors" />
+			><SelectBox id="fileTrigger-onHitActors" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-hitCount') || 'Hit Count' }}</div
-			><NumberBox id="fileTrigger-hitCount" min="2" max="10000" />
-			<div class="text">{{ local.getLabel('fileTrigger-shape-type') || 'Shape' }}</div><SelectBox id="fileTrigger-shape-type" />
+			><NumberBox id="fileTrigger-hitCount" min="2" max="10000" @input="onParamInput" />
+			<div class="text">{{ local.getLabel('fileTrigger-shape-type') || 'Shape' }}</div><SelectBox id="fileTrigger-shape-type" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-shape-width') || 'Width' }}</div
 			><NumberBox
 				id="fileTrigger-shape-width"
 				min="0"
 				max="512"
 				decimals="4"
-				unit="tile"
+				unit="tile" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-shape-height') || 'Height' }}</div
 			><NumberBox
@@ -24,14 +24,14 @@
 				min="0"
 				max="512"
 				decimals="4"
-				unit="tile"
+				unit="tile" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-shape-anchor') || 'Anchor' }}</div
 			><NumberBox
 				id="fileTrigger-shape-anchor"
 				min="-4"
 				max="5"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-shape-radius') || 'Radius' }}</div
 			><NumberBox
@@ -39,7 +39,7 @@
 				min="0"
 				max="512"
 				decimals="4"
-				unit="tile"
+				unit="tile" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-shape-centralAngle') || 'Central Angle' }}</div
 			><NumberBox
@@ -47,7 +47,7 @@
 				min="0"
 				max="360"
 				decimals="4"
-				unit="deg"
+				unit="deg" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-speed') || 'Speed' }}</div
 			><NumberBox
@@ -55,39 +55,39 @@
 				min="0"
 				max="512"
 				decimals="4"
-				unit="t/s"
+				unit="t/s" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTrigger-hitMode') || 'Hit Mode' }}</div><SelectBox id="fileTrigger-hitMode" />
+			<div class="text">{{ local.getLabel('fileTrigger-hitMode') || 'Hit Mode' }}</div><SelectBox id="fileTrigger-hitMode" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-hitInterval') || 'Hit Interval' }}</div
 			><NumberBox
 				id="fileTrigger-hitInterval"
 				min="0"
 				max="10000"
-				unit="ms"
+				unit="ms" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-initialDelay') || 'Initial Delay' }}</div
 			><NumberBox
 				id="fileTrigger-initialDelay"
 				min="0"
 				max="10000"
-				unit="ms"
+				unit="ms" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-effectiveTime') || 'Effective Time' }}</div
 			><NumberBox
 				id="fileTrigger-effectiveTime"
 				min="0"
 				max="10000"
-				unit="ms"
+				unit="ms" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-duration') || 'Duration' }}</div
 			><NumberBox
 				id="fileTrigger-duration"
 				min="0"
 				max="1000000000"
-				unit="ms"
+				unit="ms" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTrigger-inherit') || 'Inherit' }}</div
-			><CustomBox id="fileTrigger-inherit" type="file" filter="trigger" />
+			><CustomBox id="fileTrigger-inherit" type="file" filter="trigger" @input="onParamInput" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -98,18 +98,20 @@
 				id="fileTrigger-animationId"
 				type="file"
 				filter="animation"
+				@input="onParamInput"
+				@write="onAnimationIdWrite"
 			/>
-			<div class="text">{{ local.getLabel('fileTrigger-motion') || 'Motion' }}</div><SelectBox id="fileTrigger-motion" />
+			<div class="text">{{ local.getLabel('fileTrigger-motion') || 'Motion' }}</div><SelectBox id="fileTrigger-motion" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-priority') || 'Priority' }}</div
-			><NumberBox id="fileTrigger-priority" min="-100" max="100" />
+			><NumberBox id="fileTrigger-priority" min="-100" max="100" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTrigger-offsetY') || 'Offset Y' }}</div
 			><NumberBox
 				id="fileTrigger-offsetY"
 				min="-100"
 				max="100"
-				unit="px"
+				unit="px" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTrigger-rotatable') || 'Rotatable' }}</div><SelectBox id="fileTrigger-rotatable" />
+			<div class="text">{{ local.getLabel('fileTrigger-rotatable') || 'Rotatable' }}</div><SelectBox id="fileTrigger-rotatable" @input="onParamInput" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -146,6 +148,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onParamInput = () => {
+	(window as any).Inspector?.fileTrigger?.paramInput?.();
+};
+const onAnimationIdWrite = (value: any) => {
+	(window as any).Inspector?.fileTrigger?.animationIdWrite?.({ value });
+};
 
 onMounted(() => {
 	inspector.syncState();

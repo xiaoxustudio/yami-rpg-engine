@@ -42,8 +42,7 @@ PresetObject.initialize = function () {
 
 	this.searcher.addCloseButton();
 
-	this.scene.on('write', this.sceneIdWrite);
-	this.list.on('open', this.listOpen);
+	// scene write/list open 经 Vue 模板转发（PresetObject.vue @write/@open → PresetObject.*）
 	this.searcher.on('keydown', this.searcherKeydown);
 	this.searcher.on('input', this.searcherInput);
 	this.searcher.on('compositionend', this.searcherInput);
@@ -118,6 +117,7 @@ PresetObject.windowClosed = function (event) {
 };
 
 PresetObject.sceneIdWrite = function (event) {
+	if (!event.value) return;
 	const scene = Data.scenes[event.value];
 	const filter = PresetObject.target.filter;
 	const nodes = scene ? PresetObject.buildNodes(scene.objects, filter) : Array.empty;

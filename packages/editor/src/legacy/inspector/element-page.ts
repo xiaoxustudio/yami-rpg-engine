@@ -55,14 +55,14 @@ import { UI } from '@/ui/ui-window.ts';
 
 		Inspector.manager.on('switch', this.pageSwitch);
 		const alignElements = $('.uiElement-transform-align');
+		alignElements.on('click', this.alignmentClick);
+		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
 		const otherElements = $(`#uiElement-name,
     #uiElement-pointerEvents, #uiElement-transform-anchorX, #uiElement-transform-anchorY,
     #uiElement-transform-x, #uiElement-transform-x2, #uiElement-transform-y, #uiElement-transform-y2,
     #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
     #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
     #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`);
-		alignElements.on('click', this.alignmentClick);
-		otherElements.on('input', this.paramInput);
 		otherElements.on('focus', Inspector.inputFocus);
 		otherElements.on('blur', Inspector.inputBlur(this, UI));
 		$('#uiElement-events, #uiElement-scripts').on('change', UI.listChange);

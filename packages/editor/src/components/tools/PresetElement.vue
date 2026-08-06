@@ -2,8 +2,13 @@
 		<WindowFrame id="presetElement" mode="center">
 		<template #title><TitleBar>Element<div class="close"></div></TitleBar></template>
 		
-			<CustomBox id="presetElement-uiId" type="file" filter="ui" />
-			<TreeList id="presetElement-list" />
+			<CustomBox
+				id="presetElement-uiId"
+				type="file"
+				filter="ui"
+				@write="onUiIdWrite"
+			/>
+			<TreeList id="presetElement-list" @open="onListOpen" />
 			<TextBox id="presetElement-searcher" name="search" />
 		
 	</WindowFrame>
@@ -20,6 +25,13 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
+const onUiIdWrite = (value: any) => {
+	(window as any).PresetElement?.uiIdWrite?.({ value });
+};
+const onListOpen = (event: any) => {
+	(window as any).PresetElement?.listOpen?.(event);
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

@@ -2,9 +2,9 @@
 	<DetailBox id="uiElement-general-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
-			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name"></TextBox>
+			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</div
-			><SelectBox id="uiElement-pointerEvents"></SelectBox>
+			><SelectBox id="uiElement-pointerEvents" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-transform-group" open>
@@ -65,14 +65,14 @@
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-anchorY"
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-x-box') || 'X' }}</div>
@@ -85,7 +85,7 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-x2"
@@ -93,7 +93,7 @@
 					max="100"
 					step="0.1"
 					decimals="4"
-					unit="r"
+					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-y-box') || 'Y' }}</div>
@@ -106,7 +106,7 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-y2"
@@ -114,7 +114,7 @@
 					max="100"
 					step="0.1"
 					decimals="4"
-					unit="r"
+					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-width-box') || 'Width' }}</div>
@@ -127,7 +127,7 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-width2"
@@ -135,7 +135,7 @@
 					max="100"
 					step="0.1"
 					decimals="4"
-					unit="r"
+					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-height-box') || 'Height' }}</div>
@@ -148,7 +148,7 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-height2"
@@ -156,7 +156,7 @@
 					max="100"
 					step="0.1"
 					decimals="4"
-					unit="r"
+					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-rotation-box') || 'Rotation' }}</div>
@@ -169,7 +169,7 @@
 					min="-36000"
 					max="36000"
 					decimals="4"
-					unit="deg"
+					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-scale-box') || 'Scale' }}</div>
@@ -182,14 +182,14 @@
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-skew-box') || 'Skew' }}</div>
@@ -202,14 +202,14 @@
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiElement-transform-skewY"
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiElement-transform-opacity-box') || 'Opacity' }}</div>
@@ -222,7 +222,7 @@
 					min="0"
 					max="1"
 					step="0.05"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 		</div>
@@ -361,6 +361,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();
+
+const onParamInput = () => {
+	(window as any).Inspector?.uiElement?.paramInput?.();
+};
 
 onMounted(() => {
 	ui.syncState();

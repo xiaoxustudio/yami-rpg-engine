@@ -4,10 +4,15 @@
 		
 			<div class="grid-box">
 				<div class="text">Template</div><SelectBox id="newProject-template" />
-				<div class="text">Folder</div><TextBox id="newProject-folder" />
+				<div class="text">Folder</div
+				><TextBox
+					id="newProject-folder"
+					@beforeinput="onFolderBeforeinput"
+					@input="onFolderInput"
+				/>
 				<div class="text">Location</div>
 				<div class="flex-box" id="newProject-location-box">
-					<TextBox id="newProject-location" />
+					<TextBox id="newProject-location" @input="onLocationInput" />
 					<button id="newProject-choose">…</button>
 				</div>
 			</div>
@@ -27,6 +32,16 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onFolderBeforeinput = (event: any) => {
+	(window as any).NewProject?.folderBeforeinput?.(event);
+};
+const onFolderInput = () => {
+	(window as any).NewProject?.folderInput?.();
+};
+const onLocationInput = () => {
+	(window as any).NewProject?.locationInput?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

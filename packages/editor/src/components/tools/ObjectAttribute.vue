@@ -3,7 +3,8 @@
 		<template #title><TitleBar>Attribute<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Key</div><SelectBox id="object-attribute-key" /> <div class="text">Boolean</div
+				<div class="text">Key</div
+				><SelectBox id="object-attribute-key" @write="onKeyWrite" /> <div class="text">Boolean</div
 				><SelectBox id="object-attribute-boolean-value" /> <div class="text">Number</div
 				><NumberBox
 					id="object-attribute-number-value"
@@ -31,6 +32,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onKeyWrite = (value: any) => {
+	(window as any).AttributeListInterface?.keyWrite?.({ value });
+};
 
 onMounted(() => {
 	inspector.syncState();

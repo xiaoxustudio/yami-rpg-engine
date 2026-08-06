@@ -72,11 +72,7 @@ function getWindow() {
 
 		$('#fileActor-parameter-pane').bind($('#fileActor-scripts'));
 
-		$('#fileActor-animationId').on('write', this.animationIdWrite);
-		$(`#fileActor-portrait, #fileActor-clip, #fileActor-animationId, #fileActor-idleMotion,
-    #fileActor-moveMotion, #fileActor-rotatable, #fileActor-passage, #fileActor-speed,
-    #fileActor-shape, #fileActor-size, #fileActor-weight, #fileActor-immovable, #fileActor-scale,
-    #fileActor-priority, #fileActor-inherit`).on('input', this.paramInput);
+		// animationId write + 15 控件 input 经 Vue 模板转发（FileActorPage.vue @write/@input → FileActor.*）
 		$(`#fileActor-sprites, #fileActor-attributes, #fileActor-skills, #fileActor-equipments,
     #fileActor-inventory, #fileActor-events, #fileActor-scripts
   `).on('change', this.listChange);
@@ -251,6 +247,7 @@ function getWindow() {
 	};
 
 	FileActor.animationIdWrite = function (event) {
+		if (!event.value) return;
 		const elIdleMotion = $('#fileActor-idleMotion');
 		const elMoveMotion = $('#fileActor-moveMotion');
 		const items = Animation.getMotionListItems(event.value);

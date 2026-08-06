@@ -193,11 +193,8 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	($('#command') as HTMLElement).addEventListener('close', this.windowClose!);
 	($('#command') as HTMLElement).addEventListener('closed', this.windowClosed!);
 	list.on('keydown', this.listKeydown!);
-	list.on('select', this.listSelect!);
+	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	list.on('unselect', this.listUnselect!);
-	list.on('change', this.listChange!);
-	list.on('popup', this.listPopup!);
-	list.on('open', this.listOpen!);
 	list.on('pointerdown', ScriptListInterface.listPointerdown);
 	$('#command-alias, #command-keywords').forEach((el: HTMLElement) =>
 		el.addEventListener('input', this.paramInput!)
@@ -360,6 +357,7 @@ CustomCommand.listPopup = function (
 		clientY: number;
 	}
 ): void {
+	const list = CustomCommand.list;
 	const item = event.value;
 	const selected = !!item;
 	const pastable = (Clipboard as any).has('yami.data.customCommand');
@@ -376,14 +374,14 @@ CustomCommand.listPopup = function (
 				accelerator: 'Enter',
 				enabled: selected,
 				click: () => {
-					this.edit(item!);
+					list.edit(item!);
 				}
 			},
 			{
 				label: get('insert'),
 				accelerator: 'Insert',
 				click: () => {
-					this.insert!(item);
+					list.insert!(item);
 				}
 			},
 			{
@@ -391,7 +389,7 @@ CustomCommand.listPopup = function (
 				accelerator: '/',
 				enabled: selected,
 				click: () => {
-					this.toggle!(item);
+					list.toggle!(item);
 				}
 			},
 			{
@@ -399,7 +397,7 @@ CustomCommand.listPopup = function (
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					this.copy!(item);
+					list.copy!(item);
 				}
 			},
 			{
@@ -407,7 +405,7 @@ CustomCommand.listPopup = function (
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste!(item);
+					list.paste!(item);
 				}
 			},
 			{
@@ -415,7 +413,7 @@ CustomCommand.listPopup = function (
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					this.delete(item);
+					list.delete(item);
 				}
 			}
 		]
@@ -424,9 +422,12 @@ CustomCommand.listPopup = function (
 
 CustomCommand.listOpen = function (
 	this: CustomCommandList,
-	event: Event & { value: CustomCommandData }
+	event: Event & {
+		value: CustomCommandData;
+	}
 ): void {
-	this.edit(event.value);
+	const list = CustomCommand.list;
+	list.edit(event.value);
 };
 
 CustomCommand.paramInput = function (

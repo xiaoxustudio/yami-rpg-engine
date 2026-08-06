@@ -19,10 +19,7 @@ import { Scene } from '@/scene/scene-window.ts';
 
 	FileTileset.initialize = function () {
 		if (!$('#fileTileset-image')) return;
-		$(`#fileTileset-image, #fileTileset-tileWidth, #fileTileset-tileHeight,
-    #fileTileset-globalOffsetX, #fileTileset-globalOffsetY,
-    #fileTileset-globalPriority`).on('input', this.paramInput);
-		$('#fileTileset-width, #fileTileset-height').on('change', this.paramInput);
+		// 6 控件 input + width/height change 经 Vue 模板转发（FileTilesetPage.vue @input/@change → FileTileset.*）
 
 		Palette.initialize();
 	};

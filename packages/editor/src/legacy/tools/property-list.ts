@@ -197,7 +197,7 @@ export class AttributeListInterface implements IListInterface {
 			{ name: 'True', value: true }
 		]);
 
-		$('#object-attribute-key')?.on('write', this.keyWrite);
+		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
 		$('#object-attribute-confirm')?.on('click', (event) => {
 			AttributeListInterface.target.save();
 		});

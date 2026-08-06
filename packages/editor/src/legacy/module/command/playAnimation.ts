@@ -28,11 +28,12 @@ Command.cases.playAnimation = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#playAnimation-animationId').on('write', (event: any) => {
-			const elMotion = $('#playAnimation-motion');
-			elMotion.loadItems(Animation.getMotionListItems(event.value));
-			elMotion.write2(read(elMotion));
-		});
+		// playAnimation-animationId write 经 Vue 模板转发（playAnimation.vue @write → Command.cases.playAnimation.writeHandler）
+	},
+	writeHandler(event: any) {
+		const elMotion = $('#playAnimation-motion');
+		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.write2(read(elMotion));
 	},
 	parseRotatable(rotatable: any) {
 		return rotatable ? Local.get('command.playAnimation.rotatable') : '';

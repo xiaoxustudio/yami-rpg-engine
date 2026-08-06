@@ -71,45 +71,45 @@
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">
 			<div class="text">{{ local.getLabel('fileTileset-image') || 'Image' }}</div
-			><CustomBox id="fileTileset-image" type="file" filter="image" />
+			><CustomBox id="fileTileset-image" type="file" filter="image" @input="onParamInput" />
 			<div class="text">{{ local.getLabel('fileTileset-width') || 'Width' }}</div
-			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" />
+			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" @change="onParamChange" />
 			<div class="text">{{ local.getLabel('fileTileset-height') || 'Height' }}</div
-			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" />
+			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" @change="onParamChange" />
 			<div class="text">{{ local.getLabel('fileTileset-tileWidth') || 'Tile Width' }}</div
 			><NumberBox
 				id="fileTileset-tileWidth"
 				min="16"
 				max="256"
-				unit="px"
+				unit="px" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTileset-tileHeight') || 'Tile Height' }}</div
 			><NumberBox
 				id="fileTileset-tileHeight"
 				min="16"
 				max="256"
-				unit="px"
+				unit="px" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTileset-globalOffsetX') || 'Tile Offset X' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetX"
 				min="-256"
 				max="256"
-				unit="px"
+				unit="px" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTileset-globalOffsetY') || 'Tile Offset Y' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetY"
 				min="-256"
 				max="256"
-				unit="px"
+				unit="px" @input="onParamInput"
 			/>
 			<div class="text">{{ local.getLabel('fileTileset-globalPriority') || 'Tile Priority' }}</div
 			><NumberBox
 				id="fileTileset-globalPriority"
 				min="-10"
 				max="10"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			/>
 		</div>
 	</DetailBox>
@@ -131,6 +131,13 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 const scene = useSceneStore();
 const local = useLocalStore();
 const palette = usePaletteStore();
+
+const onParamInput = () => {
+	(window as any).Inspector?.fileTileset?.paramInput?.();
+};
+const onParamChange = () => {
+	(window as any).Inspector?.fileTileset?.paramInput?.();
+};
 
 const onHeadPointerdown = (event: PointerEvent) => {
 	if (!(event.target instanceof HTMLInputElement)) {

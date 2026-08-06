@@ -4,10 +4,15 @@
 		
 			<div class="grid-box">
 				<div class="text">Platform</div><SelectBox id="deployment-platform" />
-				<div class="text">Folder</div><TextBox id="deployment-folder" />
+				<div class="text">Folder</div
+				><TextBox
+					id="deployment-folder"
+					@beforeinput="onFolderBeforeinput"
+					@input="onFolderInput"
+				/>
 				<div class="text">Output Location</div>
 				<div class="flex-box" id="deployment-location-box">
-					<TextBox id="deployment-location" />
+					<TextBox id="deployment-location" @input="onLocationInput" />
 					<button id="deployment-choose">…</button>
 				</div>
 				<div class="text">Compress Resources</div>
@@ -30,6 +35,16 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onFolderBeforeinput = (event: any) => {
+	(window as any).Deployment?.folderBeforeinput?.(event);
+};
+const onFolderInput = () => {
+	(window as any).Deployment?.folderInput?.();
+};
+const onLocationInput = () => {
+	(window as any).Deployment?.locationInput?.();
+};
 
 onMounted(() => {
 	inspector.syncState();
