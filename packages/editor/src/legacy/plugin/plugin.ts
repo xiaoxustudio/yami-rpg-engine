@@ -138,7 +138,7 @@ PluginManager.initialize = function () {
 	on(list, 'keydown', this.listKeydown);
 	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect);
-	on(list, 'change', this.listChange);
+	// list change 经 Vue 模板转发（Plugin.vue @change → PluginManager.listChange）
 	on(list, 'pointerdown', ScriptListInterface.listPointerdown);
 	on(this.overview, 'pointerdown', this.overviewPointerdown);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate);

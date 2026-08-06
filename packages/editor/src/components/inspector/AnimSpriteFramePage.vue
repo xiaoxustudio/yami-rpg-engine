@@ -180,13 +180,24 @@
 				min="0"
 				max="4"
 				hotkey="-/+"
+				@input="onZoomInput"
+				@focus="onZoomFocus"
 			></SliderBox>
 		</DetailSummary>
 		<div class="box" id="sprite-body">
 			<div class="box" id="sprite-frame">
 				<canvas id="sprite-canvas" width="0" height="0"></canvas>
-				<div class="box" id="sprite-screen" tabindex="-1">
-					<MarqueeArea id="sprite-marquee"></MarqueeArea>
+				<div
+					class="box"
+					id="sprite-screen"
+					tabindex="-1"
+					@keydown="onScreenKeydown"
+					@wheel="onScreenWheel"
+				>
+					<MarqueeArea
+						id="sprite-marquee"
+						@pointerdown="onMarqueePointerdown"
+					></MarqueeArea>
 				</div>
 			</div>
 		</div>
@@ -205,6 +216,22 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();
+
+const onZoomInput = (value: number) => {
+	(window as any).Sprite?.setZoom?.(value);
+};
+const onZoomFocus = () => {
+	(window as any).Sprite?.zoomFocus?.();
+};
+const onScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).Sprite?.screenKeydown?.(event);
+};
+const onScreenWheel = (event: WheelEvent) => {
+	(window as any).Sprite?.screenWheel?.(event);
+};
+const onMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).Sprite?.marqueePointerdown?.(event);
+};
 
 onMounted(() => {
 	animation.syncState();

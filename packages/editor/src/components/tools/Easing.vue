@@ -10,6 +10,7 @@
 					@select="onListSelect"
 					@open="onListOpen"
 					@popup="onListPopup"
+					@change="onListChange"
 				/>
 			</div>
 			<div class="field-set" id="easing-points-fieldset">
@@ -120,6 +121,9 @@ const onListOpen = (event: any) => {
 };
 const onListPopup = (event: any) => {
 	(window as any).Easing?.listPopup?.(event);
+};
+const onListChange = (event: any) => {
+	(window as any).Easing?.dataChange?.(event);
 };
 
 const local = useLocalStore();

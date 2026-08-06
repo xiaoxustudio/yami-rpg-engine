@@ -115,12 +115,7 @@ Sprite.initialize = function () {
 	on($('#animSpriteFrame-vue-mount'), 'resize', this.windowResize);
 	on($('#animSpriteFrame-properties-detail'), 'toggle', this.windowResize);
 	on($('#animSpriteFrame-sprite-detail'), 'toggle', this.windowResize);
-	on(this.slider, 'focus', this.zoomFocus);
-	on(this.slider, 'input', this.zoomInput);
-	on(this.screen, 'keydown', this.screenKeydown);
-	on(this.screen, 'wheel', this.screenWheel);
 	on(this.screen, 'userscroll', this.screenUserscroll);
-	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 };
 
 Sprite.open = function (target: any) {

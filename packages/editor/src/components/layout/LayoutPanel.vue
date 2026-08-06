@@ -105,6 +105,7 @@
 					@record="onSceneListRecord"
 					@popup="onSceneListPopup"
 					@open="onSceneListOpen"
+					@change="onSceneListChange"
 				></TreeList>
 			</div>
 			<div class="page-frame" id="ui" value="ui">
@@ -165,6 +166,7 @@
 					@record="onUiListRecord"
 					@popup="onUiListPopup"
 					@open="onUiListOpen"
+					@change="onUiListChange"
 				></TreeList>
 			</div>
 			<div class="page-frame" id="animation" value="animation">
@@ -212,11 +214,23 @@
 				<div class="box" id="animation-list-head">
 					<TextBox id="animation-searcher" name="search"></TextBox>
 				</div>
-				<TreeList id="animation-list" padded></TreeList>
+				<TreeList
+					id="animation-list"
+					padded
+					@select="onAnimationListSelect"
+					@record="onAnimationListRecord"
+					@open="onAnimationListOpen"
+					@popup="onAnimationListPopup"
+					@change="onAnimationListChange"
+				></TreeList>
 			</div>
 			<div class="page-frame" id="animation-timeline" value="animation-timeline">
 				<div class="box" id="animation-timeline-head">
-					<div class="box" id="animation-timeline-toolbar">
+					<div
+						class="box"
+						id="animation-timeline-toolbar"
+						@pointerdown="onTimelineToolbarPointerdown"
+					>
 						<div class="item toolbar-item" id="animation-timeline-previousKey" value="previousKey" hotkey="Z"></div>
 						<div class="item toolbar-item" id="animation-timeline-previous" value="previous" hotkey="Q"></div>
 						<div class="item toolbar-item" id="animation-timeline-play" value="play" hotkey="R"></div>
@@ -228,7 +242,13 @@
 						<div class="box" id="animation-timeline-ruler-inner"></div>
 					</div>
 				</div>
-				<TreeList id="animation-layer-list"></TreeList>
+				<TreeList
+					id="animation-layer-list"
+					@select="onLayerListSelect"
+					@record="onLayerListRecord"
+					@popup="onLayerListPopup"
+					@change="onLayerListChange"
+				></TreeList>
 				<div class="box" id="animation-timeline-list-outer" tabindex="0">
 					<div class="box" id="animation-timeline-list-inner"></div>
 					<div class="box" id="animation-timeline-cursor"></div>
@@ -244,7 +264,11 @@
 			<div class="page-frame" id="animation-easing" value="animation-easing">
 				<div class="box" id="animation-easing-head">
 					<div class="item toolbar-item" id="animation-easing-settings" value="bezier"></div>
-					<SelectBox id="animation-easing-id"></SelectBox>
+					<SelectBox
+					id="animation-easing-id"
+					@write="onEasingIdWrite"
+					@input="onEasingIdInput"
+				></SelectBox>
 				</div>
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
 			</div>
@@ -390,6 +414,45 @@ const onSceneMarqueePointerdown = (event: PointerEvent) => {
 const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
 	(window as any).Scene?.marqueeDoubleclick?.(event);
 };
+const onEasingIdWrite = (value: any) => {
+	(window as any).Curve?.easingIdWrite?.({ value });
+};
+const onEasingIdInput = (value: any) => {
+	(window as any).Curve?.easingIdInput?.({ value });
+};
+const onUiListChange = (event: any) => {
+	(window as any).UI?.listChange?.(event);
+};
+const onAnimationListSelect = (event: any) => {
+	(window as any).Animation?.listSelect?.(event);
+};
+const onAnimationListRecord = (event: any) => {
+	(window as any).Animation?.listRecord?.(event);
+};
+const onAnimationListOpen = (event: any) => {
+	(window as any).Animation?.listOpen?.(event);
+};
+const onAnimationListPopup = (event: any) => {
+	(window as any).Animation?.listPopup?.(event);
+};
+const onAnimationListChange = (event: any) => {
+	(window as any).Animation?.listChange?.(event);
+};
+const onLayerListSelect = (event: any) => {
+	(window as any).Animation?.layerListSelect?.(event);
+};
+const onLayerListRecord = (event: any) => {
+	(window as any).Animation?.layerListRecord?.(event);
+};
+const onLayerListPopup = (event: any) => {
+	(window as any).Animation?.layerListPopup?.(event);
+};
+const onLayerListChange = (event: any) => {
+	(window as any).Animation?.layerListChange?.(event);
+};
+const onTimelineToolbarPointerdown = (event: PointerEvent) => {
+	(window as any).Animation?.timelineToolbarPointerdown?.(event);
+};
 const onUiHeadPointerdown = (event: PointerEvent) => {
 	(window as any).UI?.headPointerdown?.(event);
 };
@@ -476,6 +539,9 @@ const onSceneListPopup = (event: any) => {
 };
 const onSceneListOpen = (event: any) => {
 	(window as any).Scene?.listOpen?.(event);
+};
+const onSceneListChange = (event: any) => {
+	(window as any).Scene?.listChange?.(event);
 };
 const onUiListSelect = (event: any) => {
 	(window as any).UI?.listSelect?.(event);

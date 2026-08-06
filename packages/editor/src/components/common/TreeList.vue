@@ -21,6 +21,7 @@ const emit = defineEmits<{
 	record: [event: any];
 	popup: [event: any];
 	open: [event: any];
+	change: [event: any];
 }>();
 
 const ym = ref<{ $el: HTMLElement | null } | null>(null);
@@ -37,5 +38,6 @@ onMounted(() => {
 	el.on('record', (event: any) => emit('record', event));
 	el.on('popup', (event: any) => emit('popup', event));
 	el.on('open', (event: any) => emit('open', event));
+	el.on('change', (event: any) => emit('change', event));
 });
 </script>

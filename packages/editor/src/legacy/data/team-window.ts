@@ -94,7 +94,7 @@ Team.initialize = function () {
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	// list select/popup 经 Vue 模板转发（Team.vue @select/@popup → Team.list*）
-	on(list, 'change', this.listChange);
+	// list change 经 Vue 模板转发（Team.vue @change → Team.listChange）
 	on($('#team-confirm'), 'click', this.confirm);
 };
 

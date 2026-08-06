@@ -8,6 +8,7 @@
 					id="team-list"
 					@select="onListSelect"
 					@popup="onListPopup"
+					@change="onListChange"
 				/>
 			</div>
 		
@@ -30,6 +31,9 @@ const onListSelect = (event: any) => {
 };
 const onListPopup = (event: any) => {
 	(window as any).Team?.listPopup?.(event);
+};
+const onListChange = (event: any) => {
+	(window as any).Team?.listChange?.(event);
 };
 
 onMounted(() => {

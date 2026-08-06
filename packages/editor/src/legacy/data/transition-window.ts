@@ -214,7 +214,7 @@ Easing.initialize = () => {
 	on($('#easing-points-grid'), 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
 	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
-	on(list, 'change', Easing.dataChange);
+	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
 	on($('#easing-mode'), 'input', Easing.modeSelect);
 	$(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
     #easing-points-2-x, #easing-points-2-y, #easing-points-3-x, #easing-points-3-y,

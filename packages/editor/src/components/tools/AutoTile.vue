@@ -13,7 +13,13 @@
 			</div>
 			<div class="field-set input pad" id="autoTile-templates-fieldset">
 				<div class="legend">Templates</div>
-				<TreeList id="autoTile-templates" padded />
+				<TreeList
+					id="autoTile-templates"
+					padded
+					@select="onTemplatesSelect"
+					@popup="onTemplatesPopup"
+					@change="onTemplatesChange"
+				/>
 			</div>
 			<div class="field-set input pad" id="autoTile-nodes-fieldset">
 				<div class="legend">Tiles</div>
@@ -91,6 +97,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onTemplatesSelect = (event: any) => {
+	(window as any).AutoTile?.templatesSelect?.(event);
+};
+const onTemplatesPopup = (event: any) => {
+	(window as any).AutoTile?.templatesPopup?.(event);
+};
+const onTemplatesChange = (event: any) => {
+	(window as any).AutoTile?.templatesChange?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

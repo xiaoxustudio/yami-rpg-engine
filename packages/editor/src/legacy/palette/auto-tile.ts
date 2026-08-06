@@ -124,9 +124,8 @@ AutoTile.initialize = function () {
 	on($('#autoTile'), 'close', this.windowClose);
 	on($('#autoTile'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.templatesKeydown);
-	on(list, 'select', this.templatesSelect);
-	on(list, 'change', this.templatesChange);
-	on(list, 'popup', this.templatesPopup);
+	// list select/popup 经 Vue 模板转发（AutoTile.vue @select/@popup → AutoTile.templates*）
+	// list change 经 Vue 模板转发（AutoTile.vue @change → AutoTile.templatesChange）
 	on(this.nodeList, 'write', this.nodesWrite);
 	on(this.nodeList, 'popup', this.nodesPopup);
 	on(this.nodeList, 'keydown', this.nodesKeydown);
@@ -618,6 +617,7 @@ AutoTile.templatesChange = function (event) {
 }.bind(AutoTile);
 
 AutoTile.templatesPopup = function (event) {
+	const list = AutoTile.templateList;
 	const item = event.value;
 	const selected = !!item;
 	const pastable = (Clipboard as any).has('yami.ruletile.template');
@@ -665,7 +665,7 @@ AutoTile.templatesPopup = function (event) {
 				accelerator: 'F2',
 				enabled: selected,
 				click: () => {
-					this.rename(item);
+					list.rename(item);
 				}
 			},
 			{

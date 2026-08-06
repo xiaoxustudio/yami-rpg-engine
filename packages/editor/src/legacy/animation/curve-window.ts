@@ -105,8 +105,7 @@ Curve.initialize = function () {
 	window.addEventListener('themechange', this.themechange);
 	window.addEventListener('datachange', this.datachange);
 	on(this.page, 'resize', this.windowResize);
-	on(this.list, 'write', this.easingIdWrite);
-	on(this.list, 'input', this.easingIdInput);
+	// list write/input 经 Vue 模板转发（AnimationEasingPage.vue @write/@input → Curve.easingId*）
 	on($('#animation-easing-settings'), 'pointerdown', this.settingsPointerdown);
 };
 

@@ -768,7 +768,7 @@ Scene.initialize = function () {
 		capture: true
 	});
 	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → Scene.list*）
-	on(list, 'change', this.listChange);
+	// list change 经 Vue 模板转发（LayoutPanel @change → Scene.listChange）
 	on(list.page, 'resize', this.listPageResize);
 
 	ObjectFolder.initialize!();

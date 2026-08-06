@@ -23,6 +23,9 @@ import { Editor } from './editor.ts';
 import { EventBus } from '@/module/eventbus.ts';
 import { SetTileTag } from '@/module/global.ts';
 import { Palette } from '@/palette/palette.ts';
+import { AutoTile } from '@/palette/auto-tile.ts';
+import { Sprite } from '@/sprite/sprite.ts';
+import { Curve } from '@/animation/curve-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Printer } from '@/printer/printer.ts';
@@ -66,6 +69,9 @@ Object.assign(window as any, {
 	UpdateLog,
 	SetTileTag,
 	Palette,
+	AutoTile,
+	Sprite,
+	Curve,
 	Particle,
 	PluginManager,
 	Printer,

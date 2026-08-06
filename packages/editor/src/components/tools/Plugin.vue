@@ -10,6 +10,7 @@
 					@select="onListSelect"
 					@popup="onListPopup"
 					@open="onListOpen"
+					@change="onListChange"
 				/>
 			</div>
 			<div class="box" id="plugin-inspector">
@@ -46,6 +47,9 @@ const onListSelect = (event: any) => {
 };
 const onListPopup = (event: any) => {
 	(window as any).PluginManager?.listPopup?.(event);
+};
+const onListChange = (event: any) => {
+	(window as any).PluginManager?.listChange?.(event);
 };
 const onListOpen = (event: any) => {
 	(window as any).PluginManager?.listOpen?.(event);

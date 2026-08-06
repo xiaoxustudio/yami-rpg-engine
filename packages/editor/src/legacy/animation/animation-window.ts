@@ -800,23 +800,18 @@ Animation.initialize = function () {
 	this.searcher.addEventListener('compositionend', this.searcherInput);
 	list.on('keydown', this.listKeydown);
 	list.on('pointerdown', this.listPointerdown);
-	list.on('select', this.listSelect);
-	list.on('record', this.listRecord);
-	list.on('open', this.listOpen);
-	list.on('popup', this.listPopup);
-	list.on('change', this.listChange);
+	// list select/record/open/popup 经 Vue 模板转发（LayoutPanel @select/@record/@open/@popup → Animation.list*）
+	// list change 经 Vue 模板转发（LayoutPanel @change → Animation.listChange）
 	on(list.page, 'resize', this.listPageResize);
 	on(this.dirList, 'pointerdown', this.dirListPointerdown);
 	on(this.timeline, 'resize', this.timelinePageResize);
-	on(this.toolbar, 'pointerdown', this.timelineToolbarPointerdown);
+	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
 	this.layerList.on('wheel', this.layerListWheel);
 	this.layerList.on('scroll', this.layerListScroll);
 	this.layerList.on('keydown', this.layerListKeydown, { capture: true });
 	this.layerList.on('pointerdown', this.layerListPointerdown);
-	this.layerList.on('select', this.layerListSelect);
-	this.layerList.on('record', this.layerListRecord);
-	this.layerList.on('popup', this.layerListPopup);
-	this.layerList.on('change', this.layerListChange);
+	// layerList select/record/popup 经 Vue 模板转发（LayoutPanel @select/@record/@popup → Animation.layerList*）
+	// layerList change 经 Vue 模板转发（LayoutPanel @change → Animation.layerListChange）
 	on(this.outerTimelineList, 'keydown', this.outerTimelineListKeydown);
 	on(this.outerTimelineList, 'wheel', this.outerTimelineListWheel);
 	on(this.outerTimelineList, 'scroll', this.outerTimelineListScroll);
@@ -4796,6 +4791,7 @@ Animation.listOpen = function (event) {
 };
 
 Animation.listPopup = function (event) {
+	const list = Animation.list;
 	const item = event.value;
 	const get = Local.createGetter('menuAnimationList');
 	let copyable;
@@ -4834,7 +4830,7 @@ Animation.listPopup = function (event) {
 				click: () => {
 					Animation.getNewMotionId((motionId) => {
 						const motion = Inspector.animMotion.create(motionId);
-						this.addNodeTo(motion, item);
+						list.addNodeTo(motion, item);
 						Inspector.open('animMotion', motion);
 					});
 				}
@@ -4847,8 +4843,8 @@ Animation.listPopup = function (event) {
 				accelerator: ctrl('X'),
 				enabled: copyable,
 				click: () => {
-					this.copy(item);
-					this.delete(item);
+					list.copy(item);
+					list.delete(item);
 				}
 			},
 			{
@@ -4856,7 +4852,7 @@ Animation.listPopup = function (event) {
 				accelerator: ctrl('C'),
 				enabled: copyable,
 				click: () => {
-					this.copy(item);
+					list.copy(item);
 				}
 			},
 			{
@@ -4864,7 +4860,7 @@ Animation.listPopup = function (event) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste(item);
+					list.paste(item);
 				}
 			},
 			{
@@ -4872,7 +4868,7 @@ Animation.listPopup = function (event) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					this.delete(item);
+					list.delete(item);
 				}
 			}
 		]
@@ -5048,6 +5044,7 @@ Animation.layerListRecord = function (event) {
 };
 
 Animation.layerListPopup = function (event) {
+	const list = Animation.layerList;
 	const item = event.value;
 	const get = Local.createGetter('menuAnimationLayerList');
 	let copyable;
@@ -5077,25 +5074,25 @@ Animation.layerListPopup = function (event) {
 					{
 						label: get('create.joint'),
 						click: () => {
-							this.create(item, 'joint');
+							list.create(item, 'joint');
 						}
 					},
 					{
 						label: get('create.sprite'),
 						click: () => {
-							this.create(item, 'sprite');
+							list.create(item, 'sprite');
 						}
 					},
 					{
 						label: get('create.particle'),
 						click: () => {
-							this.create(item, 'particle');
+							list.create(item, 'particle');
 						}
 					},
 					{
 						label: get('create.sound'),
 						click: () => {
-							this.create(item, 'sound');
+							list.create(item, 'sound');
 						}
 					}
 				]
@@ -5108,8 +5105,8 @@ Animation.layerListPopup = function (event) {
 				accelerator: ctrl('X'),
 				enabled: copyable,
 				click: () => {
-					this.copy(item);
-					this.delete(item);
+					list.copy(item);
+					list.delete(item);
 				}
 			},
 			{
@@ -5117,7 +5114,7 @@ Animation.layerListPopup = function (event) {
 				accelerator: ctrl('C'),
 				enabled: copyable,
 				click: () => {
-					this.copy(item);
+					list.copy(item);
 				}
 			},
 			{
@@ -5125,7 +5122,7 @@ Animation.layerListPopup = function (event) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste(item);
+					list.paste(item);
 				}
 			},
 			{
@@ -5133,7 +5130,7 @@ Animation.layerListPopup = function (event) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					this.delete(item);
+					list.delete(item);
 				}
 			},
 			{
@@ -5141,7 +5138,7 @@ Animation.layerListPopup = function (event) {
 				accelerator: 'F2',
 				enabled: renamable,
 				click: () => {
-					this.rename(item);
+					list.rename(item);
 				}
 			},
 			{
