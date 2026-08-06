@@ -4,16 +4,16 @@ import { UI } from '@/ui/ui-window.ts';
 {
 	const UIContainer = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any
 	};
 
-	UIContainer.initialize = function () {};
+	UIContainer.initialize = function (this: any) {};
 
-	UIContainer.create = function () {
+	UIContainer.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -33,17 +33,17 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIContainer.open = function (node) {
+	UIContainer.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 			Inspector.uiElement.open(node);
 		}
 	};
 
-	UIContainer.close = function () {
+	UIContainer.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}

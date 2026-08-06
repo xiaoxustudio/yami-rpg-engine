@@ -21,14 +21,14 @@ export class Parallax {
 	data: ParallaxData;
 	shiftX: number;
 	shiftY: number;
-	texture: ImageTexture | null;
+	texture: any;
 
 	constructor(data: ParallaxData) {
 		this.data = data;
 		this.shiftX = 0;
 		this.shiftY = 0;
 		this.texture = null;
-		this.loadTexture();
+		this.loadTexture!();
 	}
 
 	update(deltaTime: number): void {
@@ -54,7 +54,7 @@ export class Parallax {
 			const oy = parallax.offsetY;
 			const ax = parallax.anchorX * pw;
 			const ay = parallax.anchorY * ph;
-			const anchor = Scene.getParallaxAnchor(parallax);
+			const anchor = Scene.getParallaxAnchor!(parallax);
 			const dl = anchor.x - ax + ox;
 			const dt = anchor.y - ay + oy;
 			const dr = dl + pw;
@@ -98,7 +98,7 @@ export class Parallax {
 				const gray = tint[3] / 255;
 				const modeMap = Parallax.lightSamplingModes;
 				const lightMode = Scene.showLight ? parallax.light : 'raw';
-				const lightModeIndex = modeMap[lightMode];
+				const lightModeIndex = (modeMap as Record<string, any>)[lightMode];
 				const matrix = gl.matrix.project(gl.flip, cr - cl, cb - ct).translate(-cl, -ct);
 				gl.bindVertexArray(program.vao);
 				gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
@@ -114,7 +114,7 @@ export class Parallax {
 				gl.blend = 'normal';
 			}
 		} else {
-			this.drawDefaultImage();
+			this.drawDefaultImage!();
 		}
 	}
 
@@ -126,13 +126,13 @@ export class Parallax {
 		const oy = parallax.offsetY;
 		const ax = parallax.anchorX * width;
 		const ay = parallax.anchorY * height;
-		const anchor = Scene.getParallaxAnchor(parallax);
+		const anchor = Scene.getParallaxAnchor!(parallax);
 		const x = anchor.x - ax + ox;
 		const y = anchor.y - ay + oy;
 		GL.matrix.set(Scene.matrix);
 		GL.alpha = parallax.opacity;
 		GL.blend = parallax.blend;
-		GL.fillRect(x, y, width, height, 0x80ffffff);
+		GL.fillRect!(x, y, width, height, 0x80ffffff);
 	}
 
 	loadTexture() {
@@ -146,9 +146,9 @@ export class Parallax {
 			this.update = Function.empty;
 			this.draw = Function.empty;
 			texture.on('load', () => {
-				Scene.requestRendering();
-				delete this.update;
-				delete this.draw;
+				Scene.requestRendering!();
+				delete (this as any).update;
+				delete (this as any).draw;
 			});
 		}
 	}

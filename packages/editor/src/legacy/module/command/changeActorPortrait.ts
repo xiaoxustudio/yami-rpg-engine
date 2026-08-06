@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorPortrait = new CommandSchema({
 	name: 'changeActorPortrait',
 	onInitialize() {
-		$('#changeActorPortrait-confirm').on('click', () => this.save());
+		$('#changeActorPortrait-confirm').on('click', () => this.save!());
 		$('#changeActorPortrait-mode').loadItems([
 			{ name: 'Full Mode', value: 'full' },
 			{ name: 'Image Mode', value: 'portrait' },
@@ -29,11 +29,11 @@ Command.cases.changeActorPortrait = new CommandSchema({
 			]);
 	},
 	parsePortraitClip(clip: any) {
-		const label = Local.get('command.changeActorPortrait.clip');
-		const x = Command.setNumberColor(clip[0]);
-		const y = Command.setNumberColor(clip[1]);
-		const width = Command.setNumberColor(clip[2]);
-		const height = Command.setNumberColor(clip[3]);
+		const label = Local.get!('command.changeActorPortrait.clip');
+		const x = Command.setNumberColor!(clip[0]);
+		const y = Command.setNumberColor!(clip[1]);
+		const width = Command.setNumberColor!(clip[2]);
+		const height = Command.setNumberColor!(clip[3]);
 		return (
 			label +
 			Token('(') +
@@ -48,21 +48,21 @@ Command.cases.changeActorPortrait = new CommandSchema({
 		);
 	},
 	customParse({ actor, mode, portrait, clip }: any) {
-		const words = Command.words.push(Command.parseActor(actor));
+		const words = Command.words.push(Command.parseActor!(actor));
 		switch (mode) {
 			case 'full':
-				words.push(Command.parseFileName(portrait)).push(this.parsePortraitClip(clip));
+				words.push(Command.parseFileName!(portrait)).push(this.parsePortraitClip!(clip));
 				break;
 			case 'portrait':
-				words.push(Command.parseFileName(portrait));
+				words.push(Command.parseFileName!(portrait));
 				break;
 			case 'clip':
-				words.push(this.parsePortraitClip(clip));
+				words.push(this.parsePortraitClip!(clip));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorPortrait') + Token(': ') },
+			{ text: Local.get!('command.changeActorPortrait') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -87,11 +87,11 @@ Command.cases.changeActorPortrait = new CommandSchema({
 		const clip = read('clip');
 		switch (mode) {
 			case 'full':
-				return Command.save({ actor, mode, portrait, clip });
+				return Command.save!({ actor, mode, portrait, clip });
 			case 'portrait':
-				return Command.save({ actor, mode, portrait });
+				return Command.save!({ actor, mode, portrait });
 			case 'clip':
-				return Command.save({ actor, mode, clip });
+				return Command.save!({ actor, mode, clip });
 		}
 	}
 });

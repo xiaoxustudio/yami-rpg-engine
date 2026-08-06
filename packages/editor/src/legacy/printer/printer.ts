@@ -3,15 +3,14 @@ import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { GL } from '@/webgl/webgl-init.ts';
-import { Texture } from '@/webgl/texture.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Title } from '@/title/title-bar.ts';
 
 export class Printer {
-	texture: any | null;
+	texture!: any | null;
 	// images 运行时挂载 .changed 标志（L56/L200/L469 读写）
-	images: any[] & { changed?: boolean };
-	canvas: HTMLCanvasElement;
+	images!: any[] & { changed?: boolean };
+	canvas!: HTMLCanvasElement;
 	// CanvasRenderingContext2D 运行时挂载 .paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
 	context:
 		| (CanvasRenderingContext2D & {
@@ -21,45 +20,45 @@ export class Printer {
 				[k: string]: any;
 		  })
 		| null;
-	content: string;
-	buffer: string;
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	index: number;
-	wrapEnd: number;
-	commands: any[] | null;
-	paddingLeft: number;
-	paddingTop: number;
-	paddingRight: number;
-	paddingBottom: number;
-	lineHeight: number;
-	lineSpacing: number;
-	letterSpacing: number;
-	breakable: boolean;
-	_direction: string;
-	_horizontalAlign: string;
-	_verticalAlign: string;
-	horizontal: boolean;
-	alignmentFactorX: number;
-	alignmentFactorY: number;
-	wordWrap: boolean;
-	truncate: boolean;
-	printWidth: number;
-	printHeight: number;
-	fonts: any[];
-	styles: any[];
-	weights: any[];
-	sizes: any[];
-	colors: any[];
-	effects: any[];
+	content!: string;
+	buffer!: string;
+	x!: number;
+	y!: number;
+	width!: number;
+	height!: number;
+	index!: number;
+	wrapEnd!: number;
+	commands!: any[] | null;
+	paddingLeft!: number;
+	paddingTop!: number;
+	paddingRight!: number;
+	paddingBottom!: number;
+	lineHeight!: number;
+	lineSpacing!: number;
+	letterSpacing!: number;
+	breakable!: boolean;
+	_direction!: string;
+	_horizontalAlign!: string;
+	_verticalAlign!: string;
+	horizontal!: boolean;
+	alignmentFactorX!: number;
+	alignmentFactorY!: number;
+	wordWrap!: boolean;
+	truncate!: boolean;
+	printWidth!: number;
+	printHeight!: number;
+	fonts!: any[];
+	styles!: any[];
+	weights!: any[];
+	sizes!: any[];
+	colors!: any[];
+	effects!: any[];
 
-	constructor(texture: Texture) {
+	constructor(texture: any) {
 		texture.base.printer = this;
 		texture.base.onRestore = Printer.restoreTexture;
 		this.texture = texture;
-		this.images = [];
+		this.images = [] as any[];
 		this.images.changed = false;
 		this.canvas = document.createElement('canvas');
 		this.canvas.width = 0;
@@ -153,7 +152,7 @@ export class Printer {
 	}
 
 	reset() {
-		this.destroy();
+		this.destroy!();
 		this.content = '';
 		this.x = 0;
 		this.y = 0;
@@ -243,7 +242,7 @@ export class Printer {
 	updateFont() {
 		const style = this.styles[0];
 		const weight = this.weights[0];
-		const size = this.getScaledSize();
+		const size = this.getScaledSize!();
 		const family = this.fonts.join(', ');
 		const context = this.context!;
 		context.font = `${style} normal ${weight} ${size}px ${family}`;
@@ -312,13 +311,13 @@ export class Printer {
 		if (this.horizontal) {
 			return this.context!.measureText(string).width;
 		} else {
-			return this.getScaledSize() * string.length;
+			return this.getScaledSize!() * string.length;
 		}
 	}
 
 	measureHeight(string: any) {
 		if (this.horizontal) {
-			return this.getScaledSize();
+			return this.getScaledSize!();
 		} else {
 			let height = 0;
 			const context = this.context!;
@@ -333,7 +332,7 @@ export class Printer {
 	drawBuffer() {
 		const string = this.buffer;
 		if (string === '') return;
-		this.calculatePadding();
+		this.calculatePadding!();
 
 		const context = this.context!;
 		const color = this.colors[0];
@@ -341,9 +340,9 @@ export class Printer {
 		const horizontal = this.horizontal;
 		let measureWidth = Printer.lineWidth;
 		if (measureWidth === 0) {
-			measureWidth = this.measureWidth(string);
+			measureWidth = this.measureWidth!(string);
 		}
-		const measureHeight = this.measureHeight(string);
+		const measureHeight = this.measureHeight!(string);
 		const commands = this.commands!;
 		const command = Printer.fetchCommand();
 		commands.push(command);
@@ -380,20 +379,20 @@ export class Printer {
 		const horizontal = this.horizontal;
 		const imageWidth = width * Printer.scale;
 		const imageHeight = height * Printer.scale;
-		const letterSpacing = this.getScaledLetterSpacing();
+		const letterSpacing = this.getScaledLetterSpacing!();
 		if (
 			this.wordWrap &&
 			this.breakable &&
 			(horizontal
-				? this.x + Printer.lineWidth + imageWidth > this.getScaledPrintWidth()
-				: this.y + Printer.lineWidth + imageHeight > this.getScaledPrintHeight())
+				? this.x + Printer.lineWidth + imageWidth > this.getScaledPrintWidth!()
+				: this.y + Printer.lineWidth + imageHeight > this.getScaledPrintHeight!())
 		) {
-			this.newLine();
+			this.newLine!();
 		}
 
 		const imageElement = new (UI.Image as any)(new (Inspector.uiText as any).create());
-		imageElement.startX = this.getRawX();
-		imageElement.startY = this.getRawY();
+		imageElement.startX = this.getRawX!();
+		imageElement.startY = this.getRawY!();
 		imageElement.image = guid;
 		imageElement.transform.x = imageElement.startX;
 		imageElement.transform.y = imageElement.startY;
@@ -478,7 +477,7 @@ export class Printer {
 			const factor = this.alignmentFactorX;
 			if (factor !== 0) {
 				const commands = this.commands!;
-				const letterSpacing = this.getScaledLetterSpacing();
+				const letterSpacing = this.getScaledLetterSpacing!();
 				const lineWidth = this.width + letterSpacing;
 				let lineX!: number;
 				let lineY!: number;
@@ -504,7 +503,7 @@ export class Printer {
 			const factor = this.alignmentFactorY;
 			if (factor !== 0) {
 				const commands = this.commands!;
-				const letterSpacing = this.getScaledLetterSpacing();
+				const letterSpacing = this.getScaledLetterSpacing!();
 				const lineWidth = this.height + letterSpacing;
 				let lineX!: number;
 				let lineY!: number;
@@ -536,7 +535,7 @@ export class Printer {
 		const horizontal = this.horizontal;
 		const paddingLeft = this.paddingLeft;
 		const paddingTop = this.paddingTop;
-		const letterSpacing = this.getScaledLetterSpacing();
+		const letterSpacing = this.getScaledLetterSpacing!();
 		const charWidths = Printer.charWidths!;
 		let charIndex = 0;
 		for (let i = 0; i < length; i++) {
@@ -593,10 +592,10 @@ export class Printer {
 		return string === ''
 			? false
 			: this.horizontal
-				? this.x + Printer.lineWidth + this.measureWidth(string) >
-					this.getScaledPrintWidth()
-				: this.y + Printer.lineWidth + this.measureWidth(string) >
-					this.getScaledPrintHeight();
+				? this.x + Printer.lineWidth + this.measureWidth!(string) >
+					this.getScaledPrintWidth!()
+				: this.y + Printer.lineWidth + this.measureWidth!(string) >
+					this.getScaledPrintHeight!();
 	}
 
 	newLine() {
@@ -604,10 +603,10 @@ export class Printer {
 			this.breakable = false;
 			if (this.horizontal) {
 				this.x = 0;
-				this.y += (this.lineHeight || this.getScaledSize()) + this.getScaledLineSpacing();
+				this.y += (this.lineHeight || this.getScaledSize!()) + this.getScaledLineSpacing!();
 				this.lineHeight = 0;
 			} else {
-				this.x += (this.lineHeight || this.getScaledSize()) + this.getScaledLineSpacing();
+				this.x += (this.lineHeight || this.getScaledSize!()) + this.getScaledLineSpacing!();
 				this.y = 0;
 				this.lineHeight = 0;
 			}
@@ -619,21 +618,21 @@ export class Printer {
 		this.index = 0;
 		this.wrapEnd = 0;
 
-		this.commands = [];
+		this.commands = [] as any[];
 
 		this.paddingLeft = 0;
 		this.paddingTop = 0;
 		this.paddingRight = 0;
 		this.paddingBottom = 0;
 
-		this.updateFont();
+		this.updateFont!();
 
 		const wordWrap = this.wordWrap;
 		const truncate = this.truncate;
 		const horizontal = this.horizontal;
-		const printWidth = this.getScaledPrintWidth();
-		const printHeight = this.getScaledPrintHeight();
-		const letterSpacing = this.getScaledLetterSpacing();
+		const printWidth = this.getScaledPrintWidth!();
+		const printHeight = this.getScaledPrintHeight!();
+		const letterSpacing = this.getScaledLetterSpacing!();
 		const charWidths = Printer.charWidths!;
 		const length = content.length;
 		let charIndex = 0;
@@ -641,13 +640,13 @@ export class Printer {
 
 		while (this.index < length) {
 			const char = content[this.index];
-			if (char === '<' && this.matchTag()) {
+			if (char === '<' && this.matchTag!()) {
 				continue;
 			}
 
 			if (char === '\n') {
-				this.drawBuffer();
-				this.newLine();
+				this.drawBuffer!();
+				this.newLine!();
 				this.index += 1;
 				continue;
 			}
@@ -656,40 +655,40 @@ export class Printer {
 				wordWrap &&
 				Printer.wordWrap === 'keep' &&
 				this.index >= this.wrapEnd &&
-				this.isWrapOverflowing()
+				this.isWrapOverflowing!()
 			) {
-				this.drawBuffer();
-				this.newLine();
+				this.drawBuffer!();
+				this.newLine!();
 				continue;
 			}
 
 			if (
 				truncate &&
 				(horizontal
-					? this.y + Math.max(this.lineHeight, this.measureHeight(char)) > printHeight
-					: this.x + Math.max(this.lineHeight, this.measureHeight(char)) > printWidth)
+					? this.y + Math.max(this.lineHeight, this.measureHeight!(char)) > printHeight
+					: this.x + Math.max(this.lineHeight, this.measureHeight!(char)) > printWidth)
 			) {
-				this.drawBuffer();
+				this.drawBuffer!();
 				break;
 			}
 
 			if (
 				wordWrap &&
 				(horizontal
-					? this.x + Printer.lineWidth + (charWidth = this.measureWidth(char)) >
+					? this.x + Printer.lineWidth + (charWidth = this.measureWidth!(char)) >
 						printWidth
-					: this.y + Printer.lineWidth + (charWidth = this.measureWidth(char)) >
+					: this.y + Printer.lineWidth + (charWidth = this.measureWidth!(char)) >
 						printHeight) &&
 				(this.breakable || this.buffer.length !== 0)
 			) {
-				this.drawBuffer();
-				this.newLine();
+				this.drawBuffer!();
+				this.newLine!();
 				continue;
 			}
 
 			if (letterSpacing !== 0) {
 				if (wordWrap === false) {
-					charWidth = this.measureWidth(char);
+					charWidth = this.measureWidth!(char);
 				}
 				charWidths[charIndex++] = charWidth;
 				Printer.lineWidth += letterSpacing;
@@ -700,7 +699,7 @@ export class Printer {
 			this.index += 1;
 		}
 
-		this.drawBuffer();
+		this.drawBuffer!();
 
 		if (horizontal) {
 			this.width = Math.max(this.width - letterSpacing, 0);
@@ -717,9 +716,9 @@ export class Printer {
 		);
 		this.context!.resize(width, height);
 
-		this.computeTextPosition();
+		this.computeTextPosition!();
 
-		this.executeCommands();
+		this.executeCommands!();
 	}
 
 	matchTag() {
@@ -732,7 +731,7 @@ export class Printer {
 			const index = parseInt(match[1]);
 			const hex = Data.config.indexedColors[index].code;
 			const color = CSSRGBA(hex);
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.colors.unshift(color);
 			this.index += match[0].length;
 			return true;
@@ -740,72 +739,72 @@ export class Printer {
 		if ((match = string.match(regexps.color))) {
 			const hex = match[1] + match[2] + match[3] + (match[4] ?? 'ff');
 			const color = CSSRGBA(hex);
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.colors.unshift(color);
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.colorRestore)) && this.colors.length > 1) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.colors.shift();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.font))) {
 			const font = `${match[1]}${match[2] ? `, ${match[2]}` : ''}`;
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.fonts.unshift(font);
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.fontRestore)) && this.fonts.length > 1) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.fonts.shift();
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.italic))) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.styles.unshift('italic');
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.italicRestore)) && this.styles.length > 1) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.styles.shift();
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.bold))) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.weights.unshift('bold');
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.boldRestore)) && this.weights.length > 1) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.weights.shift();
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.fontSize))) {
 			const size = parseInt(match[1]);
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.sizes.unshift(size);
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.fontSizeRestore)) && this.sizes.length > 1) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.sizes.shift();
-			this.updateFont();
+			this.updateFont!();
 			this.index += match[0].length;
 			return true;
 		}
@@ -813,7 +812,7 @@ export class Printer {
 			const axis = match[1].toLowerCase();
 			const operation = match[2] || 'set';
 			const value = parseInt(match[3]);
-			this.drawBuffer();
+			this.drawBuffer!();
 			const position =
 				operation === 'set'
 					? value
@@ -835,7 +834,7 @@ export class Printer {
 				shadowOffsetY: parseInt(match[2]),
 				color: r + (g + (b + a * 256) * 256) * 256
 			};
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.unshift(effect);
 			this.index += match[0].length;
 			return true;
@@ -845,7 +844,7 @@ export class Printer {
 			this.effects.length > 1 &&
 			this.effects[0].type === 'shadow'
 		) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.shift();
 			this.index += match[0].length;
 			return true;
@@ -860,7 +859,7 @@ export class Printer {
 				strokeWidth: parseInt(match[1]),
 				color: r + (g + (b + a * 256) * 256) * 256
 			};
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.unshift(effect);
 			this.index += match[0].length;
 			return true;
@@ -870,7 +869,7 @@ export class Printer {
 			this.effects.length > 1 &&
 			this.effects[0].type === 'stroke'
 		) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.shift();
 			this.index += match[0].length;
 			return true;
@@ -884,7 +883,7 @@ export class Printer {
 				type: 'outline',
 				color: r + (g + (b + a * 256) * 256) * 256
 			};
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.unshift(effect);
 			this.index += match[0].length;
 			return true;
@@ -894,14 +893,14 @@ export class Printer {
 			this.effects.length > 1 &&
 			this.effects[0].type === 'outline'
 		) {
-			this.drawBuffer();
+			this.drawBuffer!();
 			this.effects.shift();
 			this.index += match[0].length;
 			return true;
 		}
 		if ((match = string.match(regexps.image))) {
 			const guid = match[1];
-			let clip = null;
+			let clip: any = null;
 			let width = 0;
 			let height = 0;
 			if (!match[2]) {
@@ -923,8 +922,8 @@ export class Printer {
 				width = parseInt(match[6] ?? this.sizes[0]);
 				height = parseInt(match[7] ?? this.sizes[0]);
 			}
-			this.drawBuffer();
-			this.loadImage(guid, clip, width, height);
+			this.drawBuffer!();
+			this.loadImage!(guid, clip, width, height);
 			this.index += match[0].length;
 			return true;
 		}
@@ -946,8 +945,8 @@ export class Printer {
 	static commandCount = 0;
 	static commandMaximum = 0;
 	static drawingMethods = null as Record<string, string> | null;
-	static imported: any[] = [];
-	static importing: any[] = [];
+	static imported: any[] = [] as any[];
+	static importing: any[] = [] as any[];
 
 	static regexps: any = {
 		// 使用索引颜色: [1]:Index(0-15)
@@ -1004,23 +1003,23 @@ export class Printer {
 
 	static loadDefault() {
 		const text = Data.config.text;
-		this.updateFont();
+		this.updateFont!();
 		this.size = 16;
 		this.color = CSSRGBA('ffffffff');
 		this.effect = { type: 'none' };
 		this.highDefinition = text.highDefinition;
 
-		this.updateScale();
+		this.updateScale!();
 
 		(this.imported as unknown as { signature: string }).signature = text.importedFonts.join();
-		return this.importFonts(text.importedFonts);
+		return this.importFonts!(text.importedFonts);
 	}
 
 	static importFonts(imports: any) {
 		const imported = this.imported;
 		const importing = this.importing;
 		const regexp = /([^/]+)\.\S+\.\S+$/;
-		const promises = [];
+		const promises = [] as any[];
 		for (const guid of imports) {
 			const path = File.getPath!(guid);
 			const name = path.match(regexp)?.[1];
@@ -1036,7 +1035,7 @@ export class Printer {
 				}).then(
 					(buffer: any) => {
 						new FontFace(name, buffer).load().then(
-							(font) => {
+							(font: any) => {
 								if (importing.remove(name)) {
 									document.fonts.add(font);
 									(
@@ -1062,7 +1061,7 @@ export class Printer {
 									).name = name;
 								}
 							},
-							(error) => {
+							(error: any) => {
 								importing.remove(name);
 							}
 						);
@@ -1146,8 +1145,8 @@ export class Printer {
 				font: '',
 				size: 0,
 				color: 0,
-				effect: null,
-				image: null,
+				effect: null as any,
+				image: null as any,
 				imageWidth: 0,
 				imageHeight: 0,
 				imageSpacing: 0,
@@ -1243,9 +1242,9 @@ export class Printer {
 
 	static setLanguageFont(guid: any) {
 		if (this.languageFont !== guid) {
-			this.deleteFont(this.languageFont);
+			this.deleteFont!(this.languageFont);
 			this.languageFont = guid;
-			this.updateFont();
+			this.updateFont!();
 		}
 	}
 
@@ -1258,7 +1257,7 @@ export class Printer {
 			const path = File.getPath!(guid);
 			const name = path.match(/([^/]+)\.\S+\.\S+$/)?.[1];
 			if (name) {
-				this.importFonts([guid]).then(() => {
+				this.importFonts!([guid]).then(() => {
 					this.font = `${name}, ${fontFamily}`;
 					(UI.updateElementFont as any)();
 				});

@@ -5,20 +5,20 @@ import { Inspector } from './inspector.ts';
 
 {
 	const FileFont = {
-		target: null,
-		meta: null,
-		symbol: null,
-		font: null,
-		input: null,
-		previews: null,
-		initialize: null,
-		open: null,
-		close: null,
-		windowResize: null,
-		textInput: null
+		target: null as any,
+		meta: null as any,
+		symbol: null as any,
+		font: null as any,
+		input: null as any,
+		previews: null as any,
+		initialize: null as any,
+		open: null as any,
+		close: null as any,
+		windowResize: null as any,
+		textInput: null as any
 	};
 
-	FileFont.initialize = function () {
+	FileFont.initialize = function (this: any) {
 		if (!$('#fileFont-content')) return;
 		this.previews = $('.fileFont-preview');
 
@@ -30,7 +30,7 @@ import { Inspector } from './inspector.ts';
 		this.input.addEventListener('input', this.textInput);
 	};
 
-	FileFont.open = function (file, meta) {
+	FileFont.open = function (this: any, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -39,10 +39,10 @@ import { Inspector } from './inspector.ts';
 			const elSize = $('#fileFont-size');
 			const size = Number(file.stats.size);
 			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize(size);
+			elSize.textContent = File.parseFileSize!(size);
 
 			const previews = this.previews;
-			const path = File.route(file.path);
+			const path = File.route!(file.path);
 			const url = CSS.encodeURL(path);
 			const font = new FontFace('preview', url);
 			for (const preview of previews) {
@@ -65,7 +65,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.close = function () {
+	FileFont.close = function (this: any) {
 		if (this.target) {
 			if (this.font instanceof FontFace) {
 				document.fonts.delete(this.font);
@@ -78,7 +78,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.windowResize = function (event) {
+	FileFont.windowResize = function (this: any, event: any) {
 		const previews = FileFont.previews;
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
@@ -87,7 +87,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.textInput = function (event) {
+	FileFont.textInput = function (this: any, event: any) {
 		const text = event.target.value;
 		for (const element of FileFont.previews) {
 			element.textContent = text;

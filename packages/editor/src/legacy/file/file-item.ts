@@ -21,7 +21,7 @@ export class FileItem {
 	path: string;
 	type: string;
 	stats: any | null;
-	promise: Promise<any> | null;
+	promise!: Promise<any> | null;
 	contexts: any | null;
 
 	constructor(name: string, extname: string, path: string, type: string, stats: any) {

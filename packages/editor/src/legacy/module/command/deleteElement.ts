@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.deleteElement = new CommandSchema({
 	name: 'deleteElement',
 	onInitialize() {
-		$('#deleteElement-confirm').on('click', () => this.save());
+		$('#deleteElement-confirm').on('click', () => this.save!());
 		$('#deleteElement-operation').loadItems([
 			{ name: 'Delete Element', value: 'delete-element' },
 			{ name: 'Delete Children', value: 'delete-children' },
@@ -27,21 +27,21 @@ Command.cases.deleteElement = new CommandSchema({
 		let info;
 		switch (operation) {
 			case 'delete-element':
-				info = Command.parseElement(element);
+				info = Command.parseElement!(element);
 				break;
 			case 'delete-children':
 				info =
-					Command.parseElement(element) +
+					Command.parseElement!(element) +
 					Token(' -> ') +
-					Local.get('command.deleteElement.children');
+					Local.get!('command.deleteElement.children');
 				break;
 			case 'delete-all':
-				info = Local.get('command.deleteElement.all-elements');
+				info = Local.get!('command.deleteElement.all-elements');
 				break;
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.deleteElement') + Token(': ') },
+			{ text: Local.get!('command.deleteElement') + Token(': ') },
 			{ text: info }
 		];
 	},
@@ -55,14 +55,14 @@ Command.cases.deleteElement = new CommandSchema({
 		switch (operation) {
 			case 'delete-element':
 			case 'delete-children': {
-				Command.save({
+				Command.save!({
 					operation,
 					element: read($('#deleteElement-element'))
 				});
 				break;
 			}
 			case 'delete-all':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 		}
 	}

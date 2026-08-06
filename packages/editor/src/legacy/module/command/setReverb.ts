@@ -17,7 +17,7 @@ Command.cases.setReverb = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setReverb-confirm').on('click', () => this.save());
+		$('#setReverb-confirm').on('click', () => this.save!());
 		$('#setReverb-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -29,7 +29,7 @@ Command.cases.setReverb = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#setReverb').on('open', function (event: any) {
-			$('#setReverb-easingId').loadItems(Data.createEasingItems());
+			$('#setReverb-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setReverb').on('closed', function (event: any) {
 			clear($('#setReverb-easingId'));
@@ -37,13 +37,13 @@ Command.cases.setReverb = new CommandSchema({
 	},
 	customParse({ type, dry, wet, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseAudioType(type))
-			.push(Command.parseVariableNumber(dry))
-			.push(Command.parseVariableNumber(wet))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseAudioType!(type))
+			.push(Command.parseVariableNumber!(dry))
+			.push(Command.parseVariableNumber!(wet))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.setReverb') + Token(': ') },
+			{ text: Local.get!('command.setReverb') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

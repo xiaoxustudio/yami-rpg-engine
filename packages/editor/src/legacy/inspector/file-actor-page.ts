@@ -17,23 +17,23 @@ function getWindow() {
 
 {
 	const FileActor = {
-		target: null,
-		meta: null,
-		sprites: null,
-		skills: null,
-		equipments: null,
-		inventory: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		animationIdWrite: null,
-		paramInput: null,
-		listChange: null
+		target: null as any,
+		meta: null as any,
+		sprites: null as any,
+		skills: null as any,
+		equipments: null as any,
+		inventory: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		animationIdWrite: null as any,
+		paramInput: null as any,
+		listChange: null as any
 	};
 
-	FileActor.initialize = function () {
+	FileActor.initialize = function (this: any) {
 		if (!$('#fileActor-rotatable')) return;
 		$('#fileActor-rotatable').loadItems([
 			{ name: 'Yes', value: true },
@@ -78,7 +78,7 @@ function getWindow() {
   `).on('change', this.listChange);
 	};
 
-	FileActor.create = function () {
+	FileActor.create = function (this: any) {
 		return {
 			portrait: '',
 			clip: [0, 0, 64, 64],
@@ -105,7 +105,7 @@ function getWindow() {
 		};
 	};
 
-	FileActor.open = function (actor, meta) {
+	FileActor.open = function (this: any, actor: any, meta: any) {
 		if (this.meta !== meta) {
 			this.target = actor;
 			this.meta = meta;
@@ -136,7 +136,7 @@ function getWindow() {
 		}
 	};
 
-	FileActor.close = function () {
+	FileActor.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -152,8 +152,8 @@ function getWindow() {
 		}
 	};
 
-	FileActor.update = function (actor, key, value) {
-		File.planToSave(this.meta);
+	FileActor.update = function (this: any, actor: any, key: any, value: any) {
+		File.planToSave!(this.meta);
 		switch (key) {
 			case 'portrait':
 			case 'clip':
@@ -170,11 +170,11 @@ function getWindow() {
 						const animation = Data.animations[id];
 						for (const actor of Scene.actors) {
 							if (actor.player?.data === animation) {
-								Scene.destroyObjectContext(actor);
-								Scene.loadActorContext(actor);
+								Scene.destroyObjectContext!(actor);
+								Scene.loadActorContext!(actor);
 							}
 						}
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 				}
 				break;
@@ -190,7 +190,7 @@ function getWindow() {
 								player.setMotion(value);
 							}
 						}
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 				}
 				break;
@@ -206,7 +206,7 @@ function getWindow() {
 								player.setAngle(player.angle);
 							}
 						}
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 				}
 				break;
@@ -231,7 +231,7 @@ function getWindow() {
 								node.player.setScale(value * node.scale);
 							}
 						}
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 				}
 				break;
@@ -239,72 +239,72 @@ function getWindow() {
 				if (actor.priority !== value) {
 					actor.priority = value;
 					if (Scene.actors instanceof Array) {
-						Scene.requestRendering();
+						Scene.requestRendering!();
 					}
 				}
 				break;
 		}
 	};
 
-	FileActor.animationIdWrite = function (event) {
+	FileActor.animationIdWrite = function (this: any, event: any) {
 		if (!event.value) return;
 		const elIdleMotion = $('#fileActor-idleMotion');
 		const elMoveMotion = $('#fileActor-moveMotion');
-		const items = Animation.getMotionListItems(event.value);
+		const items = Animation.getMotionListItems!(event.value);
 		elIdleMotion.loadItems(items);
 		elMoveMotion.loadItems(items);
 		elIdleMotion.write2(read(elIdleMotion));
 		elMoveMotion.write2(read(elMoveMotion));
 	};
 
-	FileActor.paramInput = function (event: any) {
+	FileActor.paramInput = function (this: any, event: any) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileActor-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileActor.update(FileActor.target, Inspector.getKey(element), read(element));
+		FileActor.update(FileActor.target, Inspector.getKey!(element), read(element));
 	};
 
-	FileActor.listChange = function (event) {
-		File.planToSave(FileActor.meta);
+	FileActor.listChange = function (this: any, event: any) {
+		File.planToSave!(FileActor.meta);
 	};
 
 	FileActor.sprites = {
-		initialize: function (list) {
+		initialize: function (this, list: any) {
 			$('#fileActor-sprite-confirm')?.on('click', () => list.save());
 
 			// 重载场景角色动画 - 改变事件
-			list.on('change', (event) => {
+			list.on('change', (event: any) => {
 				const guid = FileActor.meta.guid;
 				if (Scene.actors instanceof Array) {
 					for (const actor of Scene.actors) {
 						if (actor.actorId === guid) {
-							Scene.destroyObjectContext(actor);
-							Scene.loadActorContext(actor);
+							Scene.destroyObjectContext!(actor);
+							Scene.loadActorContext!(actor);
 						}
 					}
 				}
 			});
 		},
-		parse: function ({ id, image }) {
+		parse: function ({ id, image }: any) {
 			Command.invalid = false;
 			const animationId = FileActor.target.animationId;
-			const spriteName = Command.parseSpriteName(animationId, id);
+			const spriteName = Command.parseSpriteName!(animationId, id);
 			const spriteClass = Command.invalid ? 'invalid' : '';
 			Command.invalid = false;
-			const fileName = Command.parseFileName(image);
+			const fileName = Command.parseFileName!(image);
 			const fileClass = Command.invalid ? 'invalid' : '';
 			return [
 				{ content: spriteName, class: spriteClass },
-				{ content: Command.removeTextTags(fileName), class: fileClass }
+				{ content: Command.removeTextTags!(fileName), class: fileClass }
 			];
 		},
 		open: function ({ id = '', image = '' } = {}) {
 			getWindow().open('fileActor-sprite');
 			const animationId = FileActor.target.animationId;
-			const items = Animation.getSpriteListItems(animationId);
+			const items = Animation.getSpriteListItems!(animationId);
 			$('#fileActor-sprite-id').loadItems(items);
 			const write = getElementWriter('fileActor-sprite');
 			write('id', id);
@@ -328,23 +328,23 @@ function getWindow() {
 	};
 
 	FileActor.skills = {
-		initialize: function (list) {
+		initialize: function (this, list: any) {
 			$('#fileActor-skill-confirm')?.on('click', () => list.save());
 		},
-		parse: function ({ id, key }) {
+		parse: function ({ id, key }: any) {
 			Command.invalid = false;
-			const skillName = Command.parseFileName(id);
+			const skillName = Command.parseFileName!(id);
 			const skillClass = Command.invalid ? 'invalid' : '';
 			Command.invalid = false;
-			const shortcutKey = key ? Command.parseGroupEnumString('shortcut-key', key) : '';
+			const shortcutKey = key ? Command.parseGroupEnumString!('shortcut-key', key) : '';
 			const shortcutClass = Command.invalid ? 'invalid' : 'weak';
 			return [
 				{
-					content: Command.removeTextTags(skillName),
+					content: Command.removeTextTags!(skillName),
 					class: skillClass
 				},
 				{
-					content: Command.removeTextTags(shortcutKey),
+					content: Command.removeTextTags!(shortcutKey),
 					class: shortcutClass
 				}
 			];
@@ -353,7 +353,7 @@ function getWindow() {
 			getWindow().open('fileActor-skill');
 			const elSkillId = $('#fileActor-skill-id');
 			const elSkillKey = $('#fileActor-skill-key');
-			const items = Enum.getStringItems('shortcut-key', true);
+			const items = Enum.getStringItems!('shortcut-key', true);
 			elSkillKey.loadItems(items);
 			write(elSkillId, id);
 			write(elSkillKey, key);
@@ -373,32 +373,32 @@ function getWindow() {
 	};
 
 	FileActor.equipments = {
-		initialize: function (list) {
+		initialize: function (this, list: any) {
 			$('#fileActor-equipment-confirm')?.on('click', () => list.save());
 		},
-		parse: function ({ id, slot }) {
+		parse: function ({ id, slot }: any) {
 			Command.invalid = false;
-			const equipmentName = Command.parseFileName(id);
+			const equipmentName = Command.parseFileName!(id);
 			const equipmentClass = Command.invalid ? 'invalid' : '';
 			Command.invalid = false;
-			const shortcutKey = slot ? Command.parseGroupEnumString('equipment-slot', slot) : '';
+			const shortcutKey = slot ? Command.parseGroupEnumString!('equipment-slot', slot) : '';
 			const shortcutClass = Command.invalid ? 'invalid' : 'weak';
 			return [
 				{
-					content: Command.removeTextTags(equipmentName),
+					content: Command.removeTextTags!(equipmentName),
 					class: equipmentClass
 				},
 				{
-					content: Command.removeTextTags(shortcutKey),
+					content: Command.removeTextTags!(shortcutKey),
 					class: shortcutClass
 				}
 			];
 		},
-		open: function ({ id = '', slot = Enum.getDefStringId('equipment-slot') } = {}) {
+		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
 			getWindow().open('fileActor-equipment');
 			const elEquipmentId = $('#fileActor-equipment-id');
 			const elEquipmentKey = $('#fileActor-equipment-slot');
-			const items = Enum.getStringItems('equipment-slot');
+			const items = Enum.getStringItems!('equipment-slot');
 			elEquipmentKey.loadItems(items);
 			write(elEquipmentId, id);
 			write(elEquipmentKey, slot);
@@ -421,7 +421,7 @@ function getWindow() {
 	};
 
 	FileActor.inventory = {
-		initialize: function (list) {
+		initialize: function (this, list: any) {
 			$('#fileActor-inventory-confirm')?.on('click', () => list.save());
 
 			const invTypeEl = $('#fileActor-inventory-type');
@@ -450,15 +450,15 @@ function getWindow() {
 				}
 			]);
 		},
-		parse: function ({ type, id, quantity, money }) {
+		parse: function ({ type, id, quantity, money }: any) {
 			switch (type) {
 				case 'item': {
 					Command.invalid = false;
-					const goodsName = Command.parseFileName(id);
+					const goodsName = Command.parseFileName!(id);
 					const goodsClass = Command.invalid ? 'invalid' : '';
 					return [
 						{
-							content: Command.removeTextTags(goodsName),
+							content: Command.removeTextTags!(goodsName),
 							class: goodsClass
 						},
 						{ content: quantity.toString(), class: 'weak' }
@@ -466,11 +466,11 @@ function getWindow() {
 				}
 				case 'equipment': {
 					Command.invalid = false;
-					const goodsName = Command.parseFileName(id);
+					const goodsName = Command.parseFileName!(id);
 					const goodsClass = Command.invalid ? 'invalid' : '';
 					return [
 						{
-							content: Command.removeTextTags(goodsName),
+							content: Command.removeTextTags!(goodsName),
 							class: goodsClass
 						},
 						{ content: '1', class: 'weak' }
@@ -478,7 +478,7 @@ function getWindow() {
 				}
 				case 'money':
 					return [
-						{ content: Local.get('common.money') },
+						{ content: Local.get!('common.money') },
 						{ content: money.toString(), class: 'weak' }
 					];
 			}

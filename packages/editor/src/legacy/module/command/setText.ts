@@ -13,20 +13,20 @@ Command.cases.setText = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setText-confirm').on('click', () => this.save());
+		$('#setText-confirm').on('click', () => this.save!());
 		$('#setText-properties').bind(TextProperty);
 		$('#setText').on('closed', (event: any) => {
 			clear($('#setText-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(TextProperty.parse(property));
+			words.push(TextProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setText') + Token(': ') },
+			{ text: Local.get!('command.setText') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setText = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setText-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

@@ -26,7 +26,7 @@ Command.cases.downloadFile = new CommandSchema({
 		write($('#downloadFile-isBackground-path'), '');
 		$('#downloadFile-header').bind(RequestkeyValueBind);
 		$('#downloadFile-data').bind(RequestkeyValueBind);
-		$('#downloadFile-confirm')?.on('click', () => this.save());
+		$('#downloadFile-confirm')?.on('click', () => this.save!());
 	},
 	customParse({
 		url = '',
@@ -40,7 +40,7 @@ Command.cases.downloadFile = new CommandSchema({
 	}: any) {
 		const head = [
 			{ color: 'network' },
-			{ text: Local.get('command.downloadFile') },
+			{ text: Local.get!('command.downloadFile') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -49,7 +49,7 @@ Command.cases.downloadFile = new CommandSchema({
 						? url.length > 20
 							? url.substring(0, 20) + '...'
 							: url
-						: Command.parseVariable(url, 'any')
+						: Command.parseVariable!(url, 'any')
 			},
 			{ text: ' , ' },
 			{ text: method },
@@ -59,29 +59,29 @@ Command.cases.downloadFile = new CommandSchema({
 			{ text: rateCallback },
 			{ text: ' -> ' }
 		];
-		const contents = [];
+		const contents = [] as any[];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable(i.value, 'any')}`
+					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable!(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable!(i.value, 'any')}`
 				}
 			);
 		}
-		const datas = [];
+		const datas = [] as any[];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable(i.value, 'any')}`
+					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable!(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable!(i.value, 'any')}`
 				}
 			);
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get('command.downloadFileData')} = ` },
+			{ text: `, ${Local.get!('command.downloadFileData')} = ` },
 			datas.slice(1),
 			{ text: ' , ' },
 			{ color: 'normal' },
@@ -119,11 +119,11 @@ Command.cases.downloadFile = new CommandSchema({
 	customSave() {
 		const elVariable = $('#downloadFile-url');
 		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone(variable)) {
+		if (!variable || VariableGetter.isNone!(variable)) {
 			return getFocus(elVariable);
 		}
 		const elementReader = getElementReader('downloadFile');
-		Command.save({
+		Command.save!({
 			url: variable,
 			method: elementReader('method'),
 			headers: elementReader('header'),

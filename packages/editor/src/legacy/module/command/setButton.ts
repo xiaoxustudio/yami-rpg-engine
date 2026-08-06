@@ -13,20 +13,20 @@ Command.cases.setButton = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setButton-confirm').on('click', () => this.save());
+		$('#setButton-confirm').on('click', () => this.save!());
 		$('#setButton-properties').bind(ButtonProperty);
 		$('#setButton').on('closed', (event: any) => {
 			clear($('#setButton-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(ButtonProperty.parse(property));
+			words.push(ButtonProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setButton') + Token(': ') },
+			{ text: Local.get!('command.setButton') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setButton = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setButton-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

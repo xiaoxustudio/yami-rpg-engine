@@ -16,9 +16,9 @@ export const WebServer = new (class {
 		const startBtn = $('#qr-start-button');
 		if (!startBtn) return;
 		on(startBtn, 'click', () => {
-			this.start(Path.slash(Editor.config.project));
+			this.start!(Path.slash((Editor.config as any).project));
 		});
-		on($('#qr-close-button'), 'click', () => this.stop());
+		on($('#qr-close-button'), 'click', () => this.stop!());
 	}
 	get enable() {
 		return ipcRenderer.sendSync('get-server-state');
@@ -29,7 +29,7 @@ export const WebServer = new (class {
 			path
 		});
 		window.addEventListener('beforeunload', this.stop);
-		this.load();
+		this.load!();
 	}
 	toDataUrl(url: any) {
 		return ipcRenderer.invoke('to-qrcode', url);
@@ -41,7 +41,7 @@ export const WebServer = new (class {
 		if (!this.enable) return;
 		ipcRenderer.invoke('stop-server');
 		window.removeEventListener('beforeunload', this.stop);
-		this.load();
+		this.load!();
 	}
 	load() {
 		if (this.enable) {
@@ -53,7 +53,7 @@ export const WebServer = new (class {
 		}
 	}
 	async open() {
-		this.bindButtons();
+		this.bindButtons!();
 		getWindow().open('qr-code');
 		const ips = await WebServer.getIp();
 		let index = 0;
@@ -70,14 +70,14 @@ export const WebServer = new (class {
 				`<div>IP：${url}</div><div>扫描二维码打开网页</div><div style='color:red'>PS：注意需在同一局域网下扫描二维码</div>
 		<div style='color:red'>如果内容没刷新，请Ctrl+S保存场景</div>`;
 		});
-		this.load();
+		this.load!();
 	}
 	update(projectPath: any) {
 		if (!this.enable) return;
 		const path = Path.dirname(projectPath);
 		const location = Path.join(path, '.preview');
 		return FSP.mkdir(path, { recursive: true })
-			.then((done) => {
+			.then((done: any) => {
 				write($('#deployment-platform'), 'web');
 				return (Deployment as any).copyFilesTo(location);
 			})
@@ -89,9 +89,9 @@ export const WebServer = new (class {
 				}
 			})
 			.then(() => {
-				Editor.config.dialogs.deploy = Path.slash(Path.resolve(location));
+				(Editor.config as any).dialogs.deploy = Path.slash(Path.resolve(location));
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				(Log as any).throw(error);
 				getWindow().confirm(
 					{

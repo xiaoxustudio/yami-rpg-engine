@@ -6,16 +6,16 @@ import { read } from '@/util/element-utils.ts';
 {
 	const UIImage = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	UIImage.initialize = function () {
+	UIImage.initialize = function (this: any) {
 		if (!$('#uiImage-display')) return;
 		$('#uiImage-display').loadItems([
 			{ name: 'Stretch', value: 'stretch' },
@@ -68,12 +68,12 @@ import { read } from '@/util/element-utils.ts';
     #uiImage-tint-0-slider, #uiImage-tint-1-slider,
     #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
 		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.on('blur', Inspector.inputBlur!(this, UI));
 		sliders.on('focus', Inspector.sliderFocus);
 		sliders.on('blur', Inspector.sliderBlur);
 	};
 
-	UIImage.create = function () {
+	UIImage.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -102,7 +102,7 @@ import { read } from '@/util/element-utils.ts';
 		};
 	};
 
-	UIImage.open = function (node) {
+	UIImage.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -123,17 +123,17 @@ import { read } from '@/util/element-utils.ts';
 		}
 	};
 
-	UIImage.close = function () {
+	UIImage.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
 	};
 
-	UIImage.update = function (node, key, value) {
-		UI.planToSave();
+	UIImage.update = function (this: any, node: any, key: any, value: any) {
+		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'image':
@@ -164,11 +164,11 @@ import { read } from '@/util/element-utils.ts';
 				break;
 			}
 		}
-		UI.requestRendering();
+		UI.requestRendering!();
 	};
 
-	UIImage.paramInput = function (event) {
-		UIImage.update(UIImage.target, Inspector.getKey(this), read(this));
+	UIImage.paramInput = function (this: any, event: any) {
+		UIImage.update(UIImage.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiImage = UIImage;

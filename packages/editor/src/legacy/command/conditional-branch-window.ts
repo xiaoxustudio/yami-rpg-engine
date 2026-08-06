@@ -14,10 +14,10 @@ export const IfBranch = {
 	open: null as any,
 	save: null as any,
 	windowClosed: null as any,
-	confirm: null
+	confirm: null as any
 };
 
-IfBranch.initialize = function () {
+IfBranch.initialize = function (this: any) {
 	if (!$('#if-branch-mode')) return;
 	$('#if-branch-mode').loadItems([
 		{ name: 'Meet All', value: 'all' },
@@ -28,31 +28,31 @@ IfBranch.initialize = function () {
 	on($('#if-branch-confirm'), 'click', this.confirm);
 };
 
-IfBranch.parse = function (branch, listData) {
+IfBranch.parse = function (this: any, branch: any, listData: any) {
 	const words = Command.words;
 	let joint;
 	switch (branch.mode) {
 		case 'all':
-			joint = Command.setOperatorColor(' && ');
+			joint = Command.setOperatorColor!(' && ');
 			break;
 		case 'any':
-			joint = Command.setOperatorColor(' || ');
+			joint = Command.setOperatorColor!(' || ');
 			break;
 	}
 	for (const condition of branch.conditions) {
-		words.push(IfCondition.parse(condition));
+		words.push(IfCondition.parse!(condition));
 	}
 	let string = words.join(joint);
 	if (listData) {
-		string = Command.removeTextTags(string);
+		string = Command.removeTextTags!(string);
 	}
 	return string;
 };
 
-IfBranch.open = function (branch) {
+IfBranch.open = function (this: any, branch: any) {
 	if (this.target.inserting) {
 		IfCondition.target = this.target;
-		IfCondition.open();
+		IfCondition.open!();
 	} else {
 		getWindow().open('if-branch');
 		write($('#if-branch-mode'), branch.mode);
@@ -62,13 +62,13 @@ IfBranch.open = function (branch) {
 	}
 };
 
-IfBranch.save = function () {
+IfBranch.save = function (this: any) {
 	if (this.target.inserting) {
-		const condition = IfCondition.save();
+		const condition = IfCondition.save!();
 		if (condition !== undefined) {
 			const mode = 'all';
 			const conditions = [condition];
-			const commands = [];
+			const commands = [] as any[];
 			return { mode, conditions, commands };
 		}
 	} else {
@@ -84,11 +84,11 @@ IfBranch.save = function () {
 	}
 };
 
-IfBranch.windowClosed = function (event) {
+IfBranch.windowClosed = function (this: any, event: any) {
 	IfBranch.commands = null;
 	clear($('#if-branch-conditions'));
 };
 
-IfBranch.confirm = function (event) {
+IfBranch.confirm = function (this: any, event: any) {
 	return IfBranch.target.save();
 };

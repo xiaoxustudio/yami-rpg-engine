@@ -12,10 +12,10 @@ export const Local = {
 	dirname: '',
 	language: null as any,
 	languages: null as any,
-	properties: {},
+	properties: {} as Record<string, any>,
 	// 保存最近一次 update() 的 components 表，供延迟创建的元素（如动态渲染的设置项）按 id 取回 label/tip/content
 	components: {} as Record<string, any>,
-	saveItems: {},
+	saveItems: {} as Record<string, any>,
 	saveTagExp: /^#(\S+)$/,
 	titleTagExp: /\$([\S ]+)(?=\n|$)/g,
 	initialize: null as any,
@@ -27,10 +27,10 @@ export const Local = {
 	parseTip: null as any,
 	createGetter: null as any,
 	get: null as any,
-	showInExplorer: null
+	showInExplorer: null as (() => string | undefined) | null
 };
 
-Local.initialize = function () {
+Local.initialize = function (this: any) {
 	for (const button of document.getElementsByName('confirm')) {
 		button.setAttribute('hotkey', 'Ctrl+Enter');
 	}
@@ -44,37 +44,37 @@ Local.initialize = function () {
 			? fileURLToPath(_moduleURL)
 			: '';
 	const _moduleDir = _modulePath
-		? Path.dirname(Path.dirname(_modulePath))
+		? Path.dirname!(Path.dirname!(_modulePath))
 		: typeof process !== 'undefined' &&
 			  typeof process.cwd === 'function' &&
 			  typeof Path.resolve === 'function'
-			? Path.resolve(process.cwd(), 'Project')
+			? Path.resolve!(process.cwd(), 'Project')
 			: '';
-	this.dirname = _moduleDir ? Path.resolve(_moduleDir, 'Locales') : '';
-	this.readLanguageList()
+	this.dirname = _moduleDir ? Path.resolve!(_moduleDir, 'Locales') : '';
+	this.readLanguageList!()
 		.then(() => {
-			return this.setLanguage(Editor.config.language);
+			return this.setLanguage!((Editor.config as any).language);
 		})
 		.then(() => {
 			addClass($('#menu'), 'visible');
 		});
 };
 
-Local.readLanguageList = function () {
-	const languages = (this.languages = []);
-	return FSP.readdir(this.dirname, { withFileTypes: true })
-		.then((files) => {
+Local.readLanguageList = function (this: any) {
+	const languages = (this.languages = [] as any[]);
+	return FSP.readdir!(this.dirname, { withFileTypes: true })
+		.then((files: any) => {
 			const regexp = /\.(.+)$/;
 			for (const file of files) {
 				if (file.isDirectory()) {
 					continue;
 				}
 				const name = file.name;
-				const extname = Path.extname(name);
+				const extname = Path.extname!(name);
 				if (extname.toLowerCase() !== '.json') {
 					continue;
 				}
-				const basename = Path.basename(name, extname);
+				const basename = Path.basename!(name, extname);
 				const match = basename.match(regexp);
 				if (match) {
 					languages.push({
@@ -92,14 +92,14 @@ Local.readLanguageList = function () {
 			}
 			return languages;
 		})
-		.catch((error) => {
-			Log.throw(error);
+		.catch((error: any) => {
+			Log.throw!(error);
 			return languages;
 		});
 };
 
-Local.setLanguage = async function (language) {
-	Editor.config.language = language;
+Local.setLanguage = async function (this: any, language: any) {
+	(Editor.config as any).language = language;
 	if (language === '') {
 		language = 'en-US';
 		let matchedWeight = 0;
@@ -124,28 +124,28 @@ Local.setLanguage = async function (language) {
 		if (key !== language) continue;
 		if (this.active !== filename) {
 			try {
-				const path = Path.resolve(this.dirname, filename);
-				this.update(await File.get({ local: path, type: 'json' }));
+				const path = Path.resolve!(this.dirname, filename);
+				this.update!(await File.get!({ local: path, type: 'json' }));
 				this.active = filename;
 				this.language = language;
 				window.dispatchEvent(new Event('localize'));
 			} catch (error: any) {
 				console.error(new Error('Failed to load language pack'));
-				Log.throw(error);
+				Log.throw!(error);
 			}
 		}
 		return;
 	}
 	// 找不到语言包时切换到自动模式
-	if (Editor.config.language) {
-		return this.setLanguage('');
+	if ((Editor.config as any).language) {
+		return this.setLanguage!('');
 	}
 };
 
 Local.update = (function IIFE() {
-	const throwError = (_message) => {};
-	return function (data) {
-		this.setProperties(data.properties);
+	const throwError = (_message: any) => {};
+	return function (this: any, data: any) {
+		this.setProperties!(data.properties);
 		this.components = data.components ?? {};
 		const setElement = this.setElement;
 		const entries = Object.entries(data.components);
@@ -175,12 +175,12 @@ Local.update = (function IIFE() {
 				}
 			}
 		}
-		this.saveItems = {};
+		this.saveItems = {} as Record<string, any>;
 	};
 })();
 
 Local.setProperties = (function IIFE() {
-	const setProperty = (map, path, value) => {
+	const setProperty = (map: any, path: any, value: any) => {
 		map[path] = value;
 		if (value instanceof Object) {
 			for (const key of Object.keys(value)) {
@@ -188,7 +188,7 @@ Local.setProperties = (function IIFE() {
 			}
 		}
 	};
-	return function (data) {
+	return function (this: any, data: any) {
 		const map = this.properties;
 		if (data instanceof Object) {
 			for (const key of Object.keys(data)) {
@@ -199,8 +199,8 @@ Local.setProperties = (function IIFE() {
 })();
 
 Local.setElement = (function IIFE() {
-	const throwError = (_element, _message) => {};
-	return function (element, item) {
+	const throwError = (_element: any, _message: any) => {};
+	return function (this: any, element: any, item: any) {
 		if (item.save !== undefined) {
 			Local.saveItems[item.save] = item;
 		}
@@ -225,7 +225,7 @@ Local.setElement = (function IIFE() {
 			}
 		}
 		if (item.tip !== undefined) {
-			setTooltip(element, Local.parseTip(item.tip, item.label ?? item.content));
+			setTooltip(element, Local.parseTip!(item.tip, item.label ?? item.content));
 		}
 		if (item.placeholder !== undefined) {
 			if ((element as HTMLElement).classList.contains('text-box')) {
@@ -244,7 +244,7 @@ Local.setElement = (function IIFE() {
 	};
 })();
 
-Local.parseTip = function (tip, title) {
+Local.parseTip = function (this: any, tip: any, title: any) {
 	const match = this.saveTagExp.exec(tip);
 	let string = match ? this.saveItems[match[1]].tip : tip;
 	if (title && tip[0] !== '$') {
@@ -253,12 +253,12 @@ Local.parseTip = function (tip, title) {
 	return string.replace(this.titleTagExp, '<b>$1</b>');
 };
 
-Local.createGetter = function (path) {
+Local.createGetter = function (this: any, path: any) {
 	const prefix = path + '.';
-	return (key) => this.get(prefix + key);
+	return (key: any) => this.get!(prefix + key);
 };
 
-Local.get = function (key) {
+Local.get = function (this: any, key: any) {
 	const property = this.properties[key];
 	if (property === undefined) {
 		const index = key.lastIndexOf('.');
@@ -271,7 +271,7 @@ Local.get = function (key) {
 	return property;
 };
 
-Local.showInExplorer = function () {
+Local.showInExplorer = function (this: any) {
 	switch (typeof process !== 'undefined' ? process.platform : '') {
 		case 'win32':
 			return 'showInExplorer';

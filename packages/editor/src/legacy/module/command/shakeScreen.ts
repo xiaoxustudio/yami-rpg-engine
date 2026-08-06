@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.shakeScreen = new CommandSchema({
 	name: 'shakeScreen',
 	onInitialize() {
-		$('#shakeScreen-confirm').on('click', () => this.save());
+		$('#shakeScreen-confirm').on('click', () => this.save!());
 		$('#shakeScreen-mode').loadItems([
 			{ name: 'Random', value: 'random' },
 			{ name: 'Horizontal', value: 'horizontal' },
@@ -20,7 +20,7 @@ Command.cases.shakeScreen = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#shakeScreen').on('open', function (event: any) {
-			$('#shakeScreen-easingId').loadItems(Data.createEasingItems());
+			$('#shakeScreen-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#shakeScreen').on('closed', function (event: any) {
 			clear($('#shakeScreen-easingId'));
@@ -28,13 +28,13 @@ Command.cases.shakeScreen = new CommandSchema({
 	},
 	customParse({ mode, power, speed, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Local.get('command.shakeScreen.' + mode))
-			.push(Command.setNumberColor(power))
-			.push(Command.setNumberColor(speed))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Local.get!('command.shakeScreen.' + mode))
+			.push(Command.setNumberColor!(power))
+			.push(Command.setNumberColor!(speed))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.shakeScreen') + Token(': ') },
+			{ text: Local.get!('command.shakeScreen') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -57,7 +57,7 @@ Command.cases.shakeScreen = new CommandSchema({
 	},
 	customSave() {
 		const read = getElementReader('shakeScreen');
-		Command.save({
+		Command.save!({
 			mode: read('mode'),
 			power: read('power'),
 			speed: read('speed'),

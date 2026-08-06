@@ -13,20 +13,20 @@ Command.cases.setTextBox = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setTextBox-confirm').on('click', () => this.save());
+		$('#setTextBox-confirm').on('click', () => this.save!());
 		$('#setTextBox-properties').bind(TextBoxProperty);
 		$('#setTextBox').on('closed', (event: any) => {
 			clear($('#setTextBox-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(TextBoxProperty.parse(property));
+			words.push(TextBoxProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setTextBox') + Token(': ') },
+			{ text: Local.get!('command.setTextBox') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setTextBox = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setTextBox-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

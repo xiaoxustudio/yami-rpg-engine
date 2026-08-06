@@ -11,13 +11,13 @@ Command.cases.showText = new CommandSchema({
 	latinCharWidth: 0,
 	otherCharWidth: 0,
 	onInitialize() {
-		$('#showText-confirm').on('click', () => this.save());
+		$('#showText-confirm').on('click', () => this.save!());
 	},
 	customParse({ target, parameters, content }: any) {
-		const alias = Local.get('command.showText.alias');
+		const alias = Local.get!('command.showText.alias');
 		const words = Command.words
-			.push(Command.parseActor(target))
-			.push(Command.setCommaColors(parameters));
+			.push(Command.parseActor!(target))
+			.push(Command.setCommaColors!(parameters));
 		const contents = [
 			{ fold: true },
 			{ color: 'element' },
@@ -26,9 +26,9 @@ Command.cases.showText = new CommandSchema({
 			{ color: 'save' },
 			{ text: words.join() }
 		];
-		content = GameLocal.replace(content);
-		content = Command.parseVariableTag(content);
-		this.appendTextLines(contents, alias, content);
+		content = GameLocal.replace!(content);
+		content = Command.parseVariableTag!(content);
+		this.appendTextLines!(contents, alias, content);
 		return contents;
 	},
 	customLoad({ target = { type: 'trigger' }, parameters = '', content = '' }) {
@@ -48,7 +48,7 @@ Command.cases.showText = new CommandSchema({
 		if (content === '') {
 			return getFocus($('#showText-content'));
 		}
-		Command.save({ target, parameters, content });
+		Command.save!({ target, parameters, content });
 	},
 	updateCharWidth() {
 		if (this.latinCharWidth === 0) {
@@ -84,9 +84,9 @@ Command.cases.showText = new CommandSchema({
 		const tooltipTag = /^\$_tooltip_\$(?:\S+?)_\/_\$/;
 		const classTag = /^\$_class_\$(?:\S+?)_\/_\$/;
 		const colorTag = /^\$_\S+?_\$([\s\S]*?)\$_\/_\$/;
-		return function (contents: any, tag: any, text: any) {
+		return function (this: any, contents: any, tag: any, text: any) {
 			if (!text) return;
-			this.updateCharWidth();
+			this.updateCharWidth!();
 			const MAX_LINES = 10;
 			const MAX_LINE_WIDTH = 500;
 			const length = text.length;

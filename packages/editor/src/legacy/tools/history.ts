@@ -42,7 +42,7 @@ export class History extends Array implements IArrayHistory {
 		const index =
 			operation === 'undo' ? this.index : operation === 'redo' ? this.index + 1 : null;
 
-		if (index >= 0 && index < this.length) {
+		if (index !== null && index >= 0 && index < this.length) {
 			const data = this[index];
 			const processors = History.processors;
 			const processor = processors[data.type];

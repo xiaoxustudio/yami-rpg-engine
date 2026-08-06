@@ -9,18 +9,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneParticle = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	SceneParticle.initialize = function () {
+	SceneParticle.initialize = function (this: any) {
 		if (!$('#sceneParticle-name')) return;
 		this.nameBox = $('#sceneParticle-name');
 		$('#sceneParticle-conditions').bind(new ConditionListInterface(this, Scene));
@@ -46,7 +46,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -55,7 +55,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 	};
 
-	SceneParticle.create = function () {
+	SceneParticle.create = function (this: any) {
 		return {
 			class: 'particle',
 			name: 'Particle',
@@ -77,7 +77,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneParticle.open = function (particle) {
+	SceneParticle.open = function (this: any, particle: any) {
 		if (this.target !== particle) {
 			this.target = particle;
 
@@ -97,10 +97,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.close = function () {
+	SceneParticle.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			clear($('#sceneParticle-conditions'));
 			clear($('#sceneParticle-events'));
@@ -109,7 +109,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.write = function (options) {
+	SceneParticle.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneParticle-x'), options.x);
 		}
@@ -118,21 +118,21 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.update = function (particle, key, value) {
-		Scene.planToSave();
+	SceneParticle.update = function (this: any, particle: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (particle.name !== value) {
 					particle.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(particle);
 				}
 				break;
 			case 'particleId':
 				if (particle.particleId !== value) {
 					particle.particleId = value;
-					Scene.loadParticleContext(particle);
-					Scene.list.updateIcon(particle);
+					Scene.loadParticleContext!(particle);
+					Scene.list.updateIcon!(particle);
 				}
 				break;
 			case 'x':
@@ -141,7 +141,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				if (particle[key] !== value) {
 					// const {x, y} = particle
 					particle[key] = value;
-					// particle.emitter?.shift(Scene.getConvertedCoords({ x: particle.x - x, y: particle.y - y, }))
+					// particle.emitter?.shift(Scene.getConvertedCoords!({ x: particle.x - x, y: particle.y - y, }))
 				}
 				break;
 			case 'angle':
@@ -177,11 +177,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 				break;
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneParticle.paramInput = function (event) {
-		SceneParticle.update(SceneParticle.target, Inspector.getKey(this), read(this));
+	SceneParticle.paramInput = function (this: any, event: any) {
+		SceneParticle.update!(SceneParticle.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.sceneParticle = SceneParticle;

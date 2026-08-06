@@ -70,7 +70,7 @@ export class Manifest {
 		}
 		const { dataMap } = meta;
 		if (dataMap) {
-			File.cancelSave(meta);
+			File.cancelSave!(meta);
 			switch (dataMap) {
 				case Data.scenes:
 				case Data.ui:

@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.useItem = new CommandSchema({
 	name: 'useItem',
 	onInitialize() {
-		$('#useItem-confirm').on('click', () => this.save());
+		$('#useItem-confirm').on('click', () => this.save!());
 		$('#useItem-mode').loadItems([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Item ID', value: 'by-id' },
@@ -28,34 +28,34 @@ Command.cases.useItem = new CommandSchema({
 		]);
 	},
 	customParse({ actor, mode, key, itemId, item, wait }: any) {
-		const words = Command.words.push(Command.parseActor(actor));
+		const words = Command.words.push(Command.parseActor!(actor));
 		switch (mode) {
 			case 'by-key':
-				words.push(Command.parseGroupEnumString('shortcut-key', key));
+				words.push(Command.parseGroupEnumString!('shortcut-key', key));
 				break;
 			case 'by-id':
-				words.push(Command.parseFileName(itemId));
+				words.push(Command.parseFileName!(itemId));
 				break;
 			case 'by-item':
-				words.push(Command.parseItem(item));
+				words.push(Command.parseItem!(item));
 				break;
 		}
-		words.push(Command.parseWait(wait));
+		words.push(Command.parseWait!(wait));
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get('command.useItem') + Token(': ') },
+			{ text: Local.get!('command.useItem') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
 	customLoad({
 		actor = { type: 'trigger' },
 		mode = 'by-key',
-		key = Enum.getDefStringId('shortcut-key'),
+		key = Enum.getDefStringId!('shortcut-key'),
 		itemId = '',
 		item = { type: 'trigger' },
 		wait = false
 	}) {
-		$('#useItem-key').loadItems(Enum.getStringItems('shortcut-key'));
+		$('#useItem-key').loadItems(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('useItem');
 		write('actor', actor);
 		write('mode', mode);
@@ -76,7 +76,7 @@ Command.cases.useItem = new CommandSchema({
 				if (key === '') {
 					return getFocus($('#useItem-key'));
 				}
-				Command.save({ actor, mode, key, wait });
+				Command.save!({ actor, mode, key, wait });
 				break;
 			}
 			case 'by-id': {
@@ -84,11 +84,11 @@ Command.cases.useItem = new CommandSchema({
 				if (itemId === '') {
 					return getFocus($('#useItem-itemId'));
 				}
-				Command.save({ actor, mode, itemId, wait });
+				Command.save!({ actor, mode, itemId, wait });
 				break;
 			}
 			case 'by-item': {
-				Command.save({
+				Command.save!({
 					actor,
 					mode,
 					item: read('item'),

@@ -105,237 +105,237 @@ export const Animation: AnimationShape = {
 	outerPointerArea: $('#animation-timeline-pointer-area-outer'),
 	innerPointerArea: $('#animation-timeline-pointer-area-inner'),
 	pointer: $('#animation-timeline-pointer'),
-	dirTags: null,
-	dragging: null,
+	dirTags: null as any,
+	dragging: null as any,
 	playing: false,
-	motion: null,
+	motion: null as any,
 	direction: 0,
-	target: null,
-	hover: null,
-	history: null,
+	target: null as any,
+	hover: null as any,
+	history: null as any,
 	contextLoaded: false,
 	particleUpdating: false,
-	targetContext: null,
-	controlPoints: null,
+	targetContext: null as any,
+	controlPoints: null as any,
 	controlPointVisible: false,
-	controlPointActive: null,
-	controlPointRotation: null,
+	controlPointActive: null as any,
+	controlPointRotation: null as any,
 	translationKey: 0b0000,
-	translationTimer: null,
+	translationTimer: null as any,
 	showMark: false,
 	showOnionskin: false,
 	mirror: false,
 	loop: false,
-	background: null,
-	matrix: null,
-	speed: null,
-	zoom: null,
-	zoomTimer: null,
-	scale: null,
-	scaleX: null,
-	scaleY: null,
-	outerWidth: null,
-	outerHeight: null,
-	scrollLeft: null,
-	scrollTop: null,
-	scrollRight: null,
-	scrollBottom: null,
-	centerX: null,
-	centerY: null,
-	centerOffsetX: null,
-	centerOffsetY: null,
-	padding: null,
-	inspectorTypeMap: null,
-	context: null,
-	meta: null,
-	player: null,
-	mode: null,
-	sprites: null,
-	motions: null,
-	layers: null,
-	animIndex: null,
-	frameMax: null,
-	initialize: null,
-	open: null,
-	load: null,
-	save: null,
-	close: null,
-	destroy: null,
-	play: null,
-	stop: null,
-	copy: null,
-	paste: null,
-	delete: null,
-	undo: null,
-	redo: null,
-	openLayer: null,
-	previousFrame: null,
-	nextFrame: null,
-	previousKeyFrame: null,
-	nextKeyFrame: null,
-	setSpeed: null,
-	setZoom: null,
-	setHover: null,
-	setMotion: null,
-	setMotionMode: null,
-	setDirection: null,
-	createDirItems: null,
-	editMotion: null,
-	getNewMotionId: null,
-	revealTarget: null,
-	shiftTarget: null,
-	resizeTarget: null,
-	rotateTarget: null,
-	setControlPoint: null,
-	updateMotion: null,
-	updateMotionItem: null,
-	updateTarget: null,
-	updateTargetContext: null,
-	updatePlayerMotion: null,
-	updateFrameContexts: null,
-	updateSoundContexts: null,
-	resetSoundContexts: null,
-	stopPlayingSound: null,
-	updateControlPoints: null,
-	updateHead: null,
-	resize: null,
-	getPointerCoords: null,
-	getFrameCoords: null,
-	getKeyFrame: null,
-	getLayerIndex: null,
-	getMotionListItems: null,
-	getSpriteListItems: null,
-	updateCamera: null,
-	updateTransform: null,
-	updateMatrix: null,
-	updateRuler: null,
-	updateTimeline: null,
-	updateTimelineLength: null,
-	updatePointerArea: null,
-	updatePointer: null,
-	updateCursor: null,
-	selectFrame: null,
-	selectMarquee: null,
-	unselectMarquee: null,
-	updateMarquee: null,
-	scrollToMarquee: null,
-	updateMarqueeShift: null,
-	selectFrameRelative: null,
-	selectFrameAtHomeEnd: null,
-	selectAllFramesOfKey: null,
-	multiSelectFramesRelative: null,
-	multiSelectFramesToHomeEnd: null,
-	openFrame: null,
-	loadTextures: null,
-	loadFrames: null,
-	drawBackground: null,
-	drawOnionskins: null,
-	drawSpriteLayers: null,
-	drawEmitters: null,
-	emitParticles: null,
-	updateParticles: null,
-	drawBackParticles: null,
-	drawFrontParticles: null,
-	drawCoordinateAxes: null,
-	drawJointNodes: null,
-	drawJointArrows: null,
-	drawJointSpinner: null,
-	drawHoverWireframe: null,
-	drawTargetWireframe: null,
-	drawSpriteWireframe: null,
-	drawEmitterWireframe: null,
-	drawTargetAnchor: null,
-	drawSpriteControlPoints: null,
-	createTimelines: null,
-	getFrame: null,
-	sortFrames: null,
-	shiftFrames: null,
-	saveFrames: null,
-	cloneFrame: null,
-	insertFrame: null,
-	extendFrame: null,
-	deleteFrame: null,
-	copyFrame: null,
-	pasteFrame: null,
-	selectAllFrames: null,
-	dragAndDropFrame: null,
-	adjustMarquee: null,
-	shiftLayerPosition: null,
-	shiftSelectedFrames: null,
-	selectControlPoint: null,
-	selectObject: null,
-	isPointInFrame: null,
-	getAnimationRange: null,
-	requestRefreshingList: null,
-	requestAnimation: null,
-	updateAnimation: null,
-	stopAnimation: null,
-	requestRendering: null,
-	renderingFunction: null,
-	stopRendering: null,
-	switchMark: null,
-	switchOnionskin: null,
-	switchMirror: null,
-	switchSettings: null,
-	switchLoop: null,
-	planToSave: null,
-	saveToConfig: null,
-	loadFromConfig: null,
-	saveToProject: null,
-	loadFromProject: null,
-	webglRestored: null,
-	windowResize: null,
-	themechange: null,
-	datachange: null,
-	enumchange: null,
-	keydown: null,
-	headPointerdown: null,
-	switchPointerdown: null,
-	speedInput: null,
-	zoomFocus: null,
-	zoomInput: null,
-	screenKeydown: null,
-	translationKeyup: null,
-	screenWheel: null,
-	screenUserscroll: null,
-	screenBlur: null,
-	marqueePointerdown: null,
-	marqueePointermove: null,
-	marqueePointerleave: null,
-	marqueeDoubleclick: null,
-	pointerup: null,
-	pointermove: null,
-	searcherInput: null,
-	listKeydown: null,
-	listPointerdown: null,
-	listSelect: null,
-	listRecord: null,
-	listOpen: null,
-	listPopup: null,
-	listChange: null,
-	listPageResize: null,
-	dirListPointerdown: null,
-	timelinePageResize: null,
-	timelineToolbarPointerdown: null,
-	layerListWheel: null,
-	layerListScroll: null,
-	layerListKeydown: null,
-	layerListPointerdown: null,
-	layerListSelect: null,
-	layerListRecord: null,
-	layerListPopup: null,
-	layerListChange: null,
-	outerTimelineListKeydown: null,
-	outerTimelineListWheel: null,
-	outerTimelineListScroll: null,
-	outerTimelineListBlur: null,
-	outerTimelineListPointerdown: null,
-	outerTimelineListPointerup: null,
-	outerTimelineListPointermove: null,
-	innerTimelineListPointermove: null,
-	innerTimelineListPointerleave: null,
-	innerTimelineListDblclick: null,
-	Player: null
+	background: null as any,
+	matrix: null as any,
+	speed: null as any,
+	zoom: null as any,
+	zoomTimer: null as any,
+	scale: null as any,
+	scaleX: null as any,
+	scaleY: null as any,
+	outerWidth: null as any,
+	outerHeight: null as any,
+	scrollLeft: null as any,
+	scrollTop: null as any,
+	scrollRight: null as any,
+	scrollBottom: null as any,
+	centerX: null as any,
+	centerY: null as any,
+	centerOffsetX: null as any,
+	centerOffsetY: null as any,
+	padding: null as any,
+	inspectorTypeMap: null as any,
+	context: null as any,
+	meta: null as any,
+	player: null as any,
+	mode: null as any,
+	sprites: null as any,
+	motions: null as any,
+	layers: null as any,
+	animIndex: null as any,
+	frameMax: null as any,
+	initialize: null as any,
+	open: null as any,
+	load: null as any,
+	save: null as any,
+	close: null as any,
+	destroy: null as any,
+	play: null as any,
+	stop: null as any,
+	copy: null as any,
+	paste: null as any,
+	delete: null as any,
+	undo: null as any,
+	redo: null as any,
+	openLayer: null as any,
+	previousFrame: null as any,
+	nextFrame: null as any,
+	previousKeyFrame: null as any,
+	nextKeyFrame: null as any,
+	setSpeed: null as any,
+	setZoom: null as any,
+	setHover: null as any,
+	setMotion: null as any,
+	setMotionMode: null as any,
+	setDirection: null as any,
+	createDirItems: null as any,
+	editMotion: null as any,
+	getNewMotionId: null as any,
+	revealTarget: null as any,
+	shiftTarget: null as any,
+	resizeTarget: null as any,
+	rotateTarget: null as any,
+	setControlPoint: null as any,
+	updateMotion: null as any,
+	updateMotionItem: null as any,
+	updateTarget: null as any,
+	updateTargetContext: null as any,
+	updatePlayerMotion: null as any,
+	updateFrameContexts: null as any,
+	updateSoundContexts: null as any,
+	resetSoundContexts: null as any,
+	stopPlayingSound: null as any,
+	updateControlPoints: null as any,
+	updateHead: null as any,
+	resize: null as any,
+	getPointerCoords: null as any,
+	getFrameCoords: null as any,
+	getKeyFrame: null as any,
+	getLayerIndex: null as any,
+	getMotionListItems: null as any,
+	getSpriteListItems: null as any,
+	updateCamera: null as any,
+	updateTransform: null as any,
+	updateMatrix: null as any,
+	updateRuler: null as any,
+	updateTimeline: null as any,
+	updateTimelineLength: null as any,
+	updatePointerArea: null as any,
+	updatePointer: null as any,
+	updateCursor: null as any,
+	selectFrame: null as any,
+	selectMarquee: null as any,
+	unselectMarquee: null as any,
+	updateMarquee: null as any,
+	scrollToMarquee: null as any,
+	updateMarqueeShift: null as any,
+	selectFrameRelative: null as any,
+	selectFrameAtHomeEnd: null as any,
+	selectAllFramesOfKey: null as any,
+	multiSelectFramesRelative: null as any,
+	multiSelectFramesToHomeEnd: null as any,
+	openFrame: null as any,
+	loadTextures: null as any,
+	loadFrames: null as any,
+	drawBackground: null as any,
+	drawOnionskins: null as any,
+	drawSpriteLayers: null as any,
+	drawEmitters: null as any,
+	emitParticles: null as any,
+	updateParticles: null as any,
+	drawBackParticles: null as any,
+	drawFrontParticles: null as any,
+	drawCoordinateAxes: null as any,
+	drawJointNodes: null as any,
+	drawJointArrows: null as any,
+	drawJointSpinner: null as any,
+	drawHoverWireframe: null as any,
+	drawTargetWireframe: null as any,
+	drawSpriteWireframe: null as any,
+	drawEmitterWireframe: null as any,
+	drawTargetAnchor: null as any,
+	drawSpriteControlPoints: null as any,
+	createTimelines: null as any,
+	getFrame: null as any,
+	sortFrames: null as any,
+	shiftFrames: null as any,
+	saveFrames: null as any,
+	cloneFrame: null as any,
+	insertFrame: null as any,
+	extendFrame: null as any,
+	deleteFrame: null as any,
+	copyFrame: null as any,
+	pasteFrame: null as any,
+	selectAllFrames: null as any,
+	dragAndDropFrame: null as any,
+	adjustMarquee: null as any,
+	shiftLayerPosition: null as any,
+	shiftSelectedFrames: null as any,
+	selectControlPoint: null as any,
+	selectObject: null as any,
+	isPointInFrame: null as any,
+	getAnimationRange: null as any,
+	requestRefreshingList: null as any,
+	requestAnimation: null as any,
+	updateAnimation: null as any,
+	stopAnimation: null as any,
+	requestRendering: null as any,
+	renderingFunction: null as any,
+	stopRendering: null as any,
+	switchMark: null as any,
+	switchOnionskin: null as any,
+	switchMirror: null as any,
+	switchSettings: null as any,
+	switchLoop: null as any,
+	planToSave: null as any,
+	saveToConfig: null as any,
+	loadFromConfig: null as any,
+	saveToProject: null as any,
+	loadFromProject: null as any,
+	webglRestored: null as any,
+	windowResize: null as any,
+	themechange: null as any,
+	datachange: null as any,
+	enumchange: null as any,
+	keydown: null as any,
+	headPointerdown: null as any,
+	switchPointerdown: null as any,
+	speedInput: null as any,
+	zoomFocus: null as any,
+	zoomInput: null as any,
+	screenKeydown: null as any,
+	translationKeyup: null as any,
+	screenWheel: null as any,
+	screenUserscroll: null as any,
+	screenBlur: null as any,
+	marqueePointerdown: null as any,
+	marqueePointermove: null as any,
+	marqueePointerleave: null as any,
+	marqueeDoubleclick: null as any,
+	pointerup: null as any,
+	pointermove: null as any,
+	searcherInput: null as any,
+	listKeydown: null as any,
+	listPointerdown: null as any,
+	listSelect: null as any,
+	listRecord: null as any,
+	listOpen: null as any,
+	listPopup: null as any,
+	listChange: null as any,
+	listPageResize: null as any,
+	dirListPointerdown: null as any,
+	timelinePageResize: null as any,
+	timelineToolbarPointerdown: null as any,
+	layerListWheel: null as any,
+	layerListScroll: null as any,
+	layerListKeydown: null as any,
+	layerListPointerdown: null as any,
+	layerListSelect: null as any,
+	layerListRecord: null as any,
+	layerListPopup: null as any,
+	layerListChange: null as any,
+	outerTimelineListKeydown: null as any,
+	outerTimelineListWheel: null as any,
+	outerTimelineListScroll: null as any,
+	outerTimelineListBlur: null as any,
+	outerTimelineListPointerdown: null as any,
+	outerTimelineListPointerup: null as any,
+	outerTimelineListPointermove: null as any,
+	innerTimelineListPointermove: null as any,
+	innerTimelineListPointerleave: null as any,
+	innerTimelineListDblclick: null as any,
+	Player: null as any
 };
 
 Animation.marquee.resize = null;
@@ -390,7 +390,7 @@ Animation.timelineMarquee.isSelected = null;
 Animation.timelineMarquee.isExtendable = null;
 Animation.timelineMarquee.isShrinkable = null;
 
-Animation.initialize = function () {
+Animation.initialize = function (this: any) {
 	this.page = $('#animation');
 	this.head = $('#animation-head');
 	this.screen = $('#animation-screen');
@@ -481,7 +481,7 @@ Animation.initialize = function () {
 			BL: { x: 0, y: 0, angle: 135 },
 			BR: { x: 0, y: 0, angle: 45 }
 		},
-		rectList: null
+		rectList: null as any
 	};
 	// 控制点按优先级从低到高排序
 	points.rectList = [
@@ -502,7 +502,7 @@ Animation.initialize = function () {
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer) => {
+		update: (timer: any) => {
 			if (this.state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
@@ -525,10 +525,10 @@ Animation.initialize = function () {
 				const st = screen.scrollTop;
 				const cx = Math.roundTo(this.centerX + x, 4);
 				const cy = Math.roundTo(this.centerY + y, 4);
-				this.updateCamera(cx, cy);
-				this.updateTransform();
+				this.updateCamera!(cx, cy);
+				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					this.requestRendering();
+					this.requestRendering!();
 					this.marquee.resize();
 				}
 			} else {
@@ -539,13 +539,13 @@ Animation.initialize = function () {
 
 	this.zoomTimer = new Timer({
 		duration: 80,
-		update: (timer) => {
+		update: (timer: any) => {
 			if (this.state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
-				this.resize();
-				this.requestRendering();
+				this.resize!();
+				this.requestRendering!();
 			} else {
 				this.scale = timer.end;
 				return false;
@@ -598,28 +598,28 @@ Animation.initialize = function () {
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
 
-	History.processors['animation-object-create'] = (operation, data) => {
+	History.processors['animation-object-create'] = (operation: any, data: any) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-object-delete'] = (operation, data) => {
+	History.processors['animation-object-delete'] = (operation: any, data: any) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-object-remove'] = (operation, data) => {
+	History.processors['animation-object-remove'] = (operation: any, data: any) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-motion-id-change'] = (operation, data) => {
+	History.processors['animation-motion-id-change'] = (operation: any, data: any) => {
 		const { motion, id } = data;
 		data.id = motion.id;
 		motion.id = id;
 		list.update();
 		list.select(motion);
 		list.scrollToSelection();
-		Animation.planToSave();
+		Animation.planToSave!();
 	};
-	History.processors['animation-motion-mode-change'] = (operation, data) => {
+	History.processors['animation-motion-mode-change'] = (operation: any, data: any) => {
 		const { motion, direction, mode, dirCases } = data;
 		data.mode = motion.mode;
 		data.dirCases = motion.dirCases;
@@ -628,69 +628,69 @@ Animation.initialize = function () {
 		list.update();
 		list.select(motion);
 		list.scrollToSelection();
-		Inspector.open('animMotion', motion);
+		Inspector.open!('animMotion', motion);
 		write(Inspector.animMotion, { mode });
-		Animation.createDirItems();
-		Animation.setDirection(direction);
-		Animation.planToSave();
+		Animation.createDirItems!();
+		Animation.setDirection!(direction);
+		Animation.planToSave!();
 	};
-	History.processors['animation-layer-rename'] = (operation, data) => {
+	History.processors['animation-layer-rename'] = (operation: any, data: any) => {
 		const { motion, direction, response } = data;
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
 		layerList.restore(operation, response);
 	};
 	History.processors['animation-layer-create'] =
 		History.processors['animation-layer-delete'] =
 		History.processors['animation-layer-remove'] =
-			(operation, data) => {
+			(operation: any, data: any) => {
 				const { motion, direction, response } = data;
 				Animation.contextLoaded = false;
-				Animation.setMotion(motion);
-				Animation.setDirection(direction);
+				Animation.setMotion!(motion);
+				Animation.setDirection!(direction);
 				layerList.restore(operation, response);
 			};
-	History.processors['animation-layer-hidden'] = (operation, data) => {
+	History.processors['animation-layer-hidden'] = (operation: any, data: any) => {
 		const { motion, direction, item, oldValues, newValue } = data;
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
 		if (operation === 'undo') {
 			layerList.restoreRecursiveStates(item, 'hidden', oldValues);
 		} else {
 			layerList.setRecursiveStates(item, 'hidden', newValue);
 		}
 		layerList.update();
-		Animation.requestRendering();
-		Animation.planToSave();
+		Animation.requestRendering!();
+		Animation.planToSave!();
 	};
-	History.processors['animation-layer-locked'] = (operation, data) => {
+	History.processors['animation-layer-locked'] = (operation: any, data: any) => {
 		const { motion, direction, item, oldValues, newValue } = data;
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
 		if (operation === 'undo') {
 			layerList.restoreRecursiveStates(item, 'locked', oldValues);
 		} else {
 			layerList.setRecursiveStates(item, 'locked', newValue);
 		}
 		layerList.update();
-		Animation.planToSave();
+		Animation.planToSave!();
 	};
-	History.processors['animation-layer-shift'] = (operation, data) => {
+	History.processors['animation-layer-shift'] = (operation: any, data: any) => {
 		const { motion, direction, layer, shiftX, shiftY } = data;
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
 		if (operation === 'undo') {
-			Animation.shiftLayerPosition(layer, -shiftX, -shiftY);
+			Animation.shiftLayerPosition!(layer, -shiftX, -shiftY);
 		} else {
-			Animation.shiftLayerPosition(layer, shiftX, shiftY);
+			Animation.shiftLayerPosition!(layer, shiftX, shiftY);
 		}
 		layerList.select(layer);
 		layerList.expandToSelection(false);
 		layerList.update();
 		layerList.scrollToSelection();
-		Animation.planToSave();
+		Animation.planToSave!();
 	};
-	History.processors['animation-frames-change'] = (operation, data) => {
+	History.processors['animation-frames-change'] = (operation: any, data: any) => {
 		const { motion, direction, changes, sMarquee, dMarquee } = data;
 		for (const change of changes) {
 			const { layer, frames } = change;
@@ -700,29 +700,29 @@ Animation.initialize = function () {
 		const { layer, x, length } = operation === 'undo' ? sMarquee : dMarquee;
 		Animation.outerTimelineList.restoreMotionAndLayer(motion, direction, layer);
 		Animation.player.index = x;
-		Animation.unselectMarquee();
-		Animation.updateTimeline();
-		const y = Animation.getLayerIndex(layer);
-		Animation.selectMarquee(x, y, length, x);
-		Animation.scrollToMarquee(false);
-		Animation.planToSave();
+		Animation.unselectMarquee!();
+		Animation.updateTimeline!();
+		const y = Animation.getLayerIndex!(layer);
+		Animation.selectMarquee!(x, y, length, x);
+		Animation.scrollToMarquee!(false);
+		Animation.planToSave!();
 	};
-	History.processors['animation-easing-change'] = (operation, data) => {
+	History.processors['animation-easing-change'] = (operation: any, data: any) => {
 		const { motion, direction, target, easingId } = data;
 		data.easingId = target.easingId;
 		target.easingId = easingId;
 		if (Curve.target === target) {
 			write(Curve.list, easingId);
 		}
-		Curve.updateTimeline(target);
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
-		Animation.selectFrame(target);
-		Animation.updateFrameContexts();
-		Animation.requestRendering();
-		Animation.planToSave();
+		Curve.updateTimeline!(target);
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
+		Animation.selectFrame!(target);
+		Animation.updateFrameContexts!();
+		Animation.requestRendering!();
+		Animation.planToSave!();
 	};
-	History.processors['animation-target-shift'] = (operation, data) => {
+	History.processors['animation-target-shift'] = (operation: any, data: any) => {
 		const { editor, motion, direction, target, x, y } = data;
 		data.x = target.x;
 		data.y = target.y;
@@ -731,14 +731,14 @@ Animation.initialize = function () {
 		if (editor.target === target) {
 			write(editor, { x, y });
 		}
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
-		Animation.selectFrame(target);
-		Animation.updateFrameContexts();
-		Animation.requestRendering();
-		Animation.planToSave();
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
+		Animation.selectFrame!(target);
+		Animation.updateFrameContexts!();
+		Animation.requestRendering!();
+		Animation.planToSave!();
 	};
-	History.processors['animation-target-resize'] = (operation, data) => {
+	History.processors['animation-target-resize'] = (operation: any, data: any) => {
 		const { editor, motion, direction, target, scaleX, scaleY } = data;
 		data.scaleX = target.scaleX;
 		data.scaleY = target.scaleY;
@@ -747,42 +747,42 @@ Animation.initialize = function () {
 		if (editor.target === target) {
 			write(editor, { scaleX, scaleY });
 		}
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
-		Animation.selectFrame(target);
-		Animation.updateFrameContexts();
-		Animation.requestRendering();
-		Animation.planToSave();
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
+		Animation.selectFrame!(target);
+		Animation.updateFrameContexts!();
+		Animation.requestRendering!();
+		Animation.planToSave!();
 	};
-	History.processors['animation-target-rotate'] = (operation, data) => {
+	History.processors['animation-target-rotate'] = (operation: any, data: any) => {
 		const { editor, motion, direction, target, rotation } = data;
 		data.rotation = target.rotation;
 		target.rotation = rotation;
 		if (editor.target === target) {
 			write(editor, { rotation });
 		}
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
-		Animation.selectFrame(target);
-		Animation.updateFrameContexts();
-		Animation.requestRendering();
-		Animation.planToSave();
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
+		Animation.selectFrame!(target);
+		Animation.updateFrameContexts!();
+		Animation.requestRendering!();
+		Animation.planToSave!();
 	};
-	History.processors['animation-target-index'] = (operation, data) => {
+	History.processors['animation-target-index'] = (operation: any, data: any) => {
 		const { motion, direction, target, hindex, vindex } = data;
 		data.hindex = target.spriteX;
 		data.vindex = target.spriteY;
 		target.spriteX = hindex;
 		target.spriteY = vindex;
-		Animation.setMotion(motion);
-		Animation.setDirection(direction);
-		Animation.selectFrame(target);
-		Animation.requestRendering();
+		Animation.setMotion!(motion);
+		Animation.setDirection!(direction);
+		Animation.selectFrame!(target);
+		Animation.requestRendering!();
 		if (Sprite.state !== 'closed') {
 			Sprite.marquee.select(hindex, vindex, 1, 1);
 			Sprite.updateTargetInfo();
 		}
-		Animation.planToSave();
+		Animation.planToSave!();
 	};
 
 	window.addEventListener('themechange', this.themechange);
@@ -822,15 +822,15 @@ Animation.initialize = function () {
 	on(this.innerTimelineList, 'pointerleave', this.innerTimelineListPointerleave);
 	on(this.innerTimelineList, 'dblclick', this.innerTimelineListDblclick);
 
-	Curve.initialize();
+	Curve.initialize!();
 };
 
-Animation.open = function (context) {
+Animation.open = function (this: any, context: any) {
 	if (this.context === context) {
 		return;
 	}
-	this.save();
-	this.close();
+	this.save!();
+	this.close!();
 
 	Particle.Element.stage = this;
 
@@ -843,9 +843,9 @@ Animation.open = function (context) {
 		this.context = context;
 		this.meta = meta;
 		show(this.body);
-		this.load(context);
-		this.resize();
-		this.requestRendering();
+		this.load!(context);
+		this.resize!();
+		this.requestRendering!();
 	} else {
 		Layout.manager.switch('directory');
 		getWindow().confirm(
@@ -861,15 +861,15 @@ Animation.open = function (context) {
 	}
 };
 
-Animation.load = function (context) {
+Animation.load = function (this: any, context: any) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
 		const data = { mode: '1-dir', sprites: [], motions: [] };
-		const player = new Animation.Player(data);
+		const player = new Animation.Player!(data);
 		player.onionskin = { prev: [], next: [] };
 		context.editor = {
-			motion: null,
-			target: null,
+			motion: null as any,
+			target: null as any,
 			player: player,
 			history: new History(100),
 			centerX: 0,
@@ -893,22 +893,22 @@ Animation.load = function (context) {
 	Animation.Player.matrix.reset();
 
 	if (firstLoad) {
-		this.loadTextures();
+		this.loadTextures!();
 	}
 
 	this.list.update();
 	// this.list.scrollTop = editor.listScrollTop
 
-	this.setMotion(editor.motion);
+	this.setMotion!(editor.motion);
 
 	if (editor.target) {
-		this.selectFrame(editor.target, editor.selectionX, editor.selectionLength);
+		this.selectFrame!(editor.target, editor.selectionX, editor.selectionLength);
 	}
 
-	UndoManager.setActive(Animation);
+	UndoManager.setActive!(Animation);
 };
 
-Animation.save = function () {
+Animation.save = function (this: any) {
 	if (this.state === 'open') {
 		const { animation, editor } = this.context;
 
@@ -928,12 +928,12 @@ Animation.save = function () {
 	}
 };
 
-Animation.close = function () {
+Animation.close = function (this: any) {
 	if (this.state !== 'closed') {
 		this.screen.blur();
-		this.setMotion(null);
+		this.setMotion!(null);
 		if (Inspector.type === 'fileAnimation') {
-			Inspector.close();
+			Inspector.close!();
 		}
 		this.state = 'closed';
 		this.context = null;
@@ -948,30 +948,30 @@ Animation.close = function () {
 		clear(this.layerList);
 		clear(this.innerTimelineList);
 		hide(this.body);
-		this.stop();
-		this.stopAnimation();
-		this.stopRendering();
-		this.stopPlayingSound();
-		UndoManager.setActive(null);
+		this.stop!();
+		this.stopAnimation!();
+		this.stopRendering!();
+		this.stopPlayingSound!();
+		UndoManager.setActive!(null);
 	}
 };
 
-Animation.destroy = function (context) {
+Animation.destroy = function (this: any, context: any) {
 	if (!context.editor) return;
 	if (this.context === context) {
-		this.save();
-		this.close();
+		this.save!();
+		this.close!();
 	}
 	context.editor.player.destroy();
-	TreeList.deleteCaches(context.animation.motions);
+	TreeList.deleteCaches!(context.animation.motions);
 };
 
-Animation.play = function () {
+Animation.play = function (this: any) {
 	if (this.playing) {
-		return this.stop();
+		return this.stop!();
 	}
 	if (this.motion === null) return;
-	const range = this.getAnimationRange();
+	const range = this.getAnimationRange!();
 	const player = this.player;
 	// 使用animIndex属性来避免加载最后一帧时被取整的情况
 	if (player.index < range.end - 1) {
@@ -980,97 +980,97 @@ Animation.play = function () {
 		this.animIndex = -1;
 	}
 	this.playing = true;
-	this.requestAnimation();
+	this.requestAnimation!();
 	player.clearParticles();
 	addClass($('#animation-timeline-play'), 'playing');
 };
 
-Animation.stop = function () {
+Animation.stop = function (this: any) {
 	if (this.playing) {
 		this.playing = false;
-		this.resetSoundContexts();
-		this.loadFrames(Math.floor(this.animIndex));
+		this.resetSoundContexts!();
+		this.loadFrames!(Math.floor(this.animIndex));
 		removeClass($('#animation-timeline-play'), 'playing');
 	}
 };
 
-Animation.copy = function () {
+Animation.copy = function (this: any) {
 	if (this.state === 'open' && this.motion !== null) {
 		this.list.copy(this.motion);
 	}
 };
 
-Animation.paste = function () {
+Animation.paste = function (this: any) {
 	if (this.state === 'open' && this.dragging === null) {
 		this.list.paste(null);
 	}
 };
 
-Animation.delete = function () {
+Animation.delete = function (this: any) {
 	if (this.state === 'open' && this.motion !== null && this.dragging === null) {
 		this.list.delete(this.motion);
 	}
 };
 
-Animation.undo = function () {
+Animation.undo = function (this: any) {
 	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
-Animation.redo = function () {
+Animation.redo = function (this: any) {
 	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
 	}
 };
 
-Animation.openLayer = function (layer) {
+Animation.openLayer = function (this: any, layer: any) {
 	this.layerList.selectWithNoEvent(layer);
 	switch (layer.class) {
 		case 'joint':
-			Inspector.close();
+			Inspector.close!();
 			break;
 		case 'sprite':
-			Inspector.open('animSpriteLayer', layer);
+			Inspector.open!('animSpriteLayer', layer);
 			break;
 		case 'particle':
-			Inspector.open('animParticleLayer', layer);
+			Inspector.open!('animParticleLayer', layer);
 			break;
 		case 'sound':
-			Inspector.open('animSoundLayer', layer);
+			Inspector.open!('animSoundLayer', layer);
 			break;
 	}
 };
 
-Animation.previousFrame = function () {
+Animation.previousFrame = function (this: any) {
 	const { length } = this.player;
 	if (length <= 1) return;
 	const i = this.player.index;
 	const y = this.timelineMarquee.y;
 	const x = (i - 1 + length) % length;
 	if (y !== -1) {
-		this.selectMarquee(x, y, 1, x);
-		this.scrollToMarquee(false);
+		this.selectMarquee!(x, y, 1, x);
+		this.scrollToMarquee!(false);
 	}
-	this.loadFrames(x);
+	this.loadFrames!(x);
 };
 
-Animation.nextFrame = function () {
+Animation.nextFrame = function (this: any) {
 	const { length } = this.player;
 	if (length <= 1) return;
 	const i = this.player.index;
 	const y = this.timelineMarquee.y;
 	const x = (i + 1) % length;
 	if (y !== -1) {
-		this.selectMarquee(x, y, 1, x);
-		this.scrollToMarquee(false);
+		this.selectMarquee!(x, y, 1, x);
+		this.scrollToMarquee!(false);
 	}
-	this.loadFrames(x);
+	this.loadFrames!(x);
 };
 
-Animation.previousKeyFrame = function () {
+Animation.previousKeyFrame = function (this: any) {
 	if (this.player.length <= 1) return;
 	const contexts = this.player.contexts;
 	const index = this.player.index;
@@ -1089,9 +1089,9 @@ Animation.previousKeyFrame = function () {
 			x = frames[frames.length - 1].start;
 		}
 		if (x !== -1) {
-			this.selectMarquee(x, y, 1, x);
-			this.scrollToMarquee(false);
-			this.loadFrames(x);
+			this.selectMarquee!(x, y, 1, x);
+			this.scrollToMarquee!(false);
+			this.loadFrames!(x);
 		}
 	} else {
 		let x = -Infinity;
@@ -1115,12 +1115,12 @@ Animation.previousKeyFrame = function () {
 			}
 		}
 		if (x !== -Infinity) {
-			this.loadFrames(x);
+			this.loadFrames!(x);
 		}
 	}
 };
 
-Animation.nextKeyFrame = function () {
+Animation.nextKeyFrame = function (this: any) {
 	if (this.player.length <= 1) return;
 	const contexts = this.player.contexts;
 	const index = this.player.index;
@@ -1138,9 +1138,9 @@ Animation.nextKeyFrame = function () {
 			x = frames[0].start;
 		}
 		if (x !== -1) {
-			this.selectMarquee(x, y, 1, x);
-			this.scrollToMarquee(false);
-			this.loadFrames(x);
+			this.selectMarquee!(x, y, 1, x);
+			this.scrollToMarquee!(false);
+			this.loadFrames!(x);
 		}
 	} else {
 		let x = Infinity;
@@ -1163,13 +1163,13 @@ Animation.nextKeyFrame = function () {
 			}
 		}
 		if (x !== Infinity) {
-			this.loadFrames(x);
+			this.loadFrames!(x);
 		}
 	}
 };
 
 Animation.setSpeed = (function IIFE() {
-	return function (speed) {
+	return function (this: any, speed: any) {
 		this.speed = speed;
 		const numberBox = $('#animation-speed');
 		if (numberBox) write(numberBox, speed);
@@ -1177,7 +1177,7 @@ Animation.setSpeed = (function IIFE() {
 })();
 
 Animation.setZoom = (function IIFE() {
-	return function (zoom) {
+	return function (this: any, zoom: any) {
 		const slider = $('#animation-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -1221,42 +1221,42 @@ Animation.setZoom = (function IIFE() {
 	};
 })();
 
-Animation.setHover = function (hover) {
+Animation.setHover = function (this: any, hover: any) {
 	if (this.hover !== hover) {
 		this.hover = hover;
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
-Animation.setMotion = function (motion) {
+Animation.setMotion = function (this: any, motion: any) {
 	if (this.motion !== motion) {
 		this.motion = motion;
-		this.updateMotionItem();
-		this.createDirItems();
-		this.stop();
-		this.stopAnimation();
-		this.stopPlayingSound();
-		this.requestRendering();
+		this.updateMotionItem!();
+		this.createDirItems!();
+		this.stop!();
+		this.stopAnimation!();
+		this.stopPlayingSound!();
+		this.requestRendering!();
 		this.player.destroyUpdatingEmitters();
 		if (motion) {
 			show(this.timeline);
 			this.timeline.updateHead();
-			Curve.open();
-			this.setDirection(this.direction);
+			Curve.open!();
+			this.setDirection!(this.direction);
 		} else {
 			this.layers = null;
 			hide(this.timeline);
 			clear(this.layerList);
 			clear(this.innerTimelineList);
-			this.updatePlayerMotion();
-			this.unselectMarquee();
-			Inspector.close();
-			Curve.close();
+			this.updatePlayerMotion!();
+			this.unselectMarquee!();
+			Inspector.close!();
+			Curve.close!();
 		}
 	}
 };
 
-Animation.setMotionMode = function (mode) {
+Animation.setMotionMode = function (this: any, mode: any) {
 	if (!this.motion) return;
 	const dirCases = this.motion.dirCases;
 	this.history.save({
@@ -1277,14 +1277,14 @@ Animation.setMotionMode = function (mode) {
 	}
 };
 
-Animation.setDirection = function (direction) {
+Animation.setDirection = function (this: any, direction: any) {
 	if (!this.motion) return;
 	const dirCases = this.motion.dirCases;
 	const dirIndex = Math.min(direction, dirCases.length - 1);
 	const dirCase = this.motion.dirCases[dirIndex];
 	this.direction = dirIndex;
 	this.layers = dirCase.layers;
-	this.updatePlayerMotion();
+	this.updatePlayerMotion!();
 	this.contextLoaded = false;
 	this.layerList.update();
 	const selected = this.dirList.querySelector('.selected');
@@ -1299,7 +1299,7 @@ Animation.setDirection = function (direction) {
 	}
 };
 
-Animation.createDirItems = function () {
+Animation.createDirItems = function (this: any) {
 	const dirList = this.dirList;
 	const motion = this.motion;
 	const mode = motion?.mode ?? 'none';
@@ -1326,7 +1326,7 @@ Animation.createDirItems = function () {
 	}
 };
 
-Animation.editMotion = function (motion) {
+Animation.editMotion = function (this: any, motion: any) {
 	const proxy = {
 		read() {
 			return motion.id;
@@ -1339,15 +1339,15 @@ Animation.editMotion = function (motion) {
 					id: motion.id
 				});
 				motion.id = id;
-				Animation.planToSave();
-				Animation.requestRefreshingList();
+				Animation.planToSave!();
+				Animation.requestRefreshingList!();
 			}
 		}
 	};
-	Enum.open(proxy, 'string');
+	Enum.open!(proxy, 'string');
 };
 
-Animation.getNewMotionId = function (callback) {
+Animation.getNewMotionId = function (this: any, callback: any) {
 	const proxy = {
 		read() {
 			return '';
@@ -1356,13 +1356,13 @@ Animation.getNewMotionId = function (callback) {
 			callback(id);
 		}
 	};
-	Enum.open(proxy, 'string');
+	Enum.open!(proxy, 'string');
 };
 
 Animation.revealTarget = (function IIFE() {
 	const timer = new Timer({
 		duration: 200,
-		update: (timer) => {
+		update: (timer: any) => {
 			const { target } = timer;
 			if (target === Animation.target) {
 				const easing = Easing.EasingMap.easeInOut;
@@ -1372,10 +1372,10 @@ Animation.revealTarget = (function IIFE() {
 				const screen = Animation.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				Animation.updateCamera(x, y);
-				Animation.updateTransform();
+				Animation.updateCamera!(x, y);
+				Animation.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					Animation.requestRendering();
+					Animation.requestRendering!();
 					Animation.marquee.resize();
 				}
 			} else {
@@ -1383,11 +1383,11 @@ Animation.revealTarget = (function IIFE() {
 				return false;
 			}
 		},
-		callback: (timer) => {
+		callback: (timer: any) => {
 			timer.target = null;
 		}
 	});
-	return function () {
+	return function (this: any) {
 		const target = this.target;
 		if (target && !timer.target) {
 			const matrix = GL.matrix.reset().multiply(this.targetContext.matrix);
@@ -1410,11 +1410,11 @@ Animation.revealTarget = (function IIFE() {
 	};
 })();
 
-Animation.shiftTarget = function (x, y) {
+Animation.shiftTarget = function (this: any, x: any, y: any) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const map = this.inspectorTypeMap;
 		const key = map[context.layer.class];
 		const editor = Inspector[key];
@@ -1441,8 +1441,8 @@ Animation.shiftTarget = function (x, y) {
 		}
 		target.x = x;
 		target.y = y;
-		this.updateFrameContexts();
-		this.requestRendering();
+		this.updateFrameContexts!();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, { x, y });
@@ -1450,11 +1450,11 @@ Animation.shiftTarget = function (x, y) {
 	}
 };
 
-Animation.resizeTarget = function (scaleX, scaleY) {
+Animation.resizeTarget = function (this: any, scaleX: any, scaleY: any) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const map = this.inspectorTypeMap;
 		const key = map[context.layer.class];
 		const editor = Inspector[key];
@@ -1485,8 +1485,8 @@ Animation.resizeTarget = function (scaleX, scaleY) {
 		if (scaleY !== undefined) {
 			target.scaleY = scaleY;
 		}
-		this.updateFrameContexts();
-		this.requestRendering();
+		this.updateFrameContexts!();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, { scaleX, scaleY });
@@ -1494,11 +1494,11 @@ Animation.resizeTarget = function (scaleX, scaleY) {
 	}
 };
 
-Animation.rotateTarget = function (rotation) {
+Animation.rotateTarget = function (this: any, rotation: any) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const map = this.inspectorTypeMap;
 		const key = map[context.layer.class];
 		const editor = Inspector[key];
@@ -1523,8 +1523,8 @@ Animation.rotateTarget = function (rotation) {
 			});
 		}
 		target.rotation = rotation;
-		this.updateFrameContexts();
-		this.requestRendering();
+		this.updateFrameContexts!();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, { rotation });
@@ -1532,7 +1532,7 @@ Animation.rotateTarget = function (rotation) {
 	}
 };
 
-Animation.setControlPoint = function (point) {
+Animation.setControlPoint = function (this: any, point: any) {
 	if (this.controlPointActive !== point) {
 		this.controlPointActive = point;
 		const points = this.controlPoints;
@@ -1582,14 +1582,14 @@ Animation.setControlPoint = function (point) {
 	}
 };
 
-Animation.updateMotion = function () {
+Animation.updateMotion = function (this: any) {
 	const item = read(this.list);
 	if (item !== this.motion) {
-		this.setMotion(item);
+		this.setMotion!(item);
 	}
 };
 
-Animation.updateMotionItem = function () {
+Animation.updateMotionItem = function (this: any) {
 	const { motion } = this;
 	if (motion !== null) {
 		const { list } = this;
@@ -1599,16 +1599,16 @@ Animation.updateMotionItem = function () {
 	}
 };
 
-Animation.updateTarget = function () {
+Animation.updateTarget = function (this: any) {
 	if (this.target !== null) {
 		const { layer } = this.timelineMarquee;
 		if (read(this.layerList) !== layer) {
-			this.unselectMarquee();
+			this.unselectMarquee!();
 		}
 	}
 };
 
-Animation.updateTargetContext = function () {
+Animation.updateTargetContext = function (this: any) {
 	const target = this.target;
 	if (target !== null) {
 		const { contexts } = this.player;
@@ -1624,13 +1624,13 @@ Animation.updateTargetContext = function () {
 	this.targetContext = null;
 };
 
-Animation.updatePlayerMotion = function () {
+Animation.updatePlayerMotion = function (this: any) {
 	this.player.motion = this.motion;
 	this.player.direction = this.direction;
 	this.player.layers = this.layers;
 };
 
-Animation.updateFrameContexts = function () {
+Animation.updateFrameContexts = function (this: any) {
 	const player = this.player;
 	const fi = player.index;
 	player.updateFrameParameters(player.contexts, fi);
@@ -1650,7 +1650,7 @@ Animation.updateFrameContexts = function () {
 	}
 };
 
-Animation.updateSoundContexts = function () {
+Animation.updateSoundContexts = function (this: any) {
 	const player = this.player;
 	const index = Math.floor(player.index);
 	const contexts = player.contexts;
@@ -1659,7 +1659,7 @@ Animation.updateSoundContexts = function () {
 		const context = contexts[i];
 		const layer = context.layer;
 		if (layer.class === 'sound') {
-			const frame = Animation.getFrame(layer.frames, index);
+			const frame = Animation.getFrame!(layer.frames, index);
 			// 如果当前帧是关键帧且未播放过，则播放动画音效
 			if (frame && frame.start === index && context.version !== index) {
 				context.version = index;
@@ -1671,7 +1671,7 @@ Animation.updateSoundContexts = function () {
 	}
 };
 
-Animation.resetSoundContexts = function () {
+Animation.resetSoundContexts = function (this: any) {
 	const player = this.player;
 	const contexts = player.contexts;
 	const count = contexts.count;
@@ -1684,11 +1684,11 @@ Animation.resetSoundContexts = function () {
 	}
 };
 
-Animation.stopPlayingSound = function () {
+Animation.stopPlayingSound = function (this: any) {
 	AudioManager.se?.stop();
 };
 
-Animation.updateControlPoints = function (context) {
+Animation.updateControlPoints = function (this: any, context: any) {
 	let L, T, R, B;
 	const { layer, frame } = context;
 	switch (layer.class) {
@@ -1722,7 +1722,7 @@ Animation.updateControlPoints = function (context) {
 			break;
 		}
 	}
-	if (L === undefined) {
+	if (L === undefined || T === undefined || R === undefined || B === undefined) {
 		this.controlPointVisible = false;
 		return false;
 	}
@@ -1795,7 +1795,7 @@ Animation.updateControlPoints = function (context) {
 	return true;
 };
 
-Animation.updateHead = function () {
+Animation.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -1822,7 +1822,7 @@ Animation.updateHead = function () {
 	}
 };
 
-Animation.resize = function () {
+Animation.resize = function (this: any) {
 	if (this.state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
@@ -1843,16 +1843,16 @@ Animation.resize = function () {
 		this.scaleY = innerHeight / stageHeight;
 		this.marquee.style.width = `${outerWidth / dpr}px`;
 		this.marquee.style.height = `${outerHeight / dpr}px`;
-		GL.resize(screenWidth, screenHeight);
-		this.updateCamera();
-		this.updateTransform();
+		GL.resize!(screenWidth, screenHeight);
+		this.updateCamera!();
+		this.updateTransform!();
 		this.marquee.resize();
 	}
 };
 
 Animation.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (event) {
+	return function (this: any, event: any) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - (this.outerWidth >> 1)) / this.scaleX;
@@ -1866,7 +1866,7 @@ Animation.getPointerCoords = (function IIFE() {
 
 Animation.getFrameCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (event, clamp = false) {
+	return function (this: any, event: any, clamp: any = false) {
 		const list = this.outerTimelineList;
 		const coords = getRelativeCoords(event, list);
 		let x = Math.floor(coords.x / 16);
@@ -1885,7 +1885,7 @@ Animation.getFrameCoords = (function IIFE() {
 	};
 })();
 
-Animation.getKeyFrame = function (x, y) {
+Animation.getKeyFrame = function (this: any, x: any, y: any) {
 	if (this.timelineMarquee.isPointIn(x, y)) {
 		const { layer, x: sx, length } = this.timelineMarquee;
 		const ex = sx + length;
@@ -1901,7 +1901,7 @@ Animation.getKeyFrame = function (x, y) {
 	return null;
 };
 
-Animation.getLayerIndex = function (layer) {
+Animation.getLayerIndex = function (this: any, layer: any) {
 	const timelines = this.innerTimelineList.childNodes;
 	const length = timelines.length;
 	for (let i = 0; i < length; i++) {
@@ -1912,12 +1912,12 @@ Animation.getLayerIndex = function (layer) {
 	return -1;
 };
 
-Animation.getMotionListItems = function (animationId) {
+Animation.getMotionListItems = function (this: any, animationId: any) {
 	const motions = Data.animations[animationId]?.motions;
 	if (!motions)
 		return [
 			{
-				name: Local.get('common.none'),
+				name: Local.get!('common.none'),
 				value: ''
 			}
 		];
@@ -1928,28 +1928,28 @@ Animation.getMotionListItems = function (animationId) {
 			value: undefined
 		});
 	}
-	const items = [];
-	const flags = {};
+	const items = [] as any[];
+	const flags = {} as Record<string, any>;
 	for (const motion of motions) {
 		const enumId = motion.id;
 		if (enumId in flags) continue;
 		flags[enumId] = true;
-		const name = Enum.getString(enumId)?.name ?? Command.parseUnlinkedId(enumId);
+		const name = Enum.getString!(enumId)?.name ?? Command.parseUnlinkedId!(enumId);
 		items.push({
-			name: GameLocal.replace(name),
+			name: GameLocal.replace!(name),
 			value: enumId
 		});
 	}
 	if (items.length === 0) {
 		items.push({
-			name: Local.get('common.none'),
+			name: Local.get!('common.none'),
 			value: ''
 		});
 	}
 	return items;
 };
 
-Animation.getSpriteListItems = function (animationId) {
+Animation.getSpriteListItems = function (this: any, animationId: any) {
 	const sprites = Data.animations[animationId]?.sprites;
 	if (!sprites) return [{ name: 'No Image', value: '' }];
 
@@ -1978,7 +1978,7 @@ Animation.getSpriteListItems = function (animationId) {
 	return items;
 };
 
-Animation.updateCamera = function (x = this.centerX, y = this.centerY) {
+Animation.updateCamera = function (this: any, x = this.centerX, y = this.centerY) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
 	const scrollX = x * this.scaleX + this.outerWidth / 2;
@@ -1992,7 +1992,7 @@ Animation.updateCamera = function (x = this.centerX, y = this.centerY) {
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
 
-Animation.updateTransform = function () {
+Animation.updateTransform = function (this: any) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
 	const left = Math.roundTo(screen.scrollLeft * dpr - (this.outerWidth >> 1), 4);
@@ -2003,14 +2003,14 @@ Animation.updateTransform = function () {
 	this.scrollTop = top / this.scaleY;
 	this.scrollRight = right / this.scaleX;
 	this.scrollBottom = bottom / this.scaleY;
-	this.updateMatrix();
+	this.updateMatrix!();
 	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
 	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
 	this.centerX = Math.roundTo((scrollX - this.outerWidth / 2) / this.scaleX, 4);
 	this.centerY = Math.roundTo((scrollY - this.outerHeight / 2) / this.scaleY, 4);
 };
 
-Animation.updateMatrix = function () {
+Animation.updateMatrix = function (this: any) {
 	const matrix = this.matrix
 		.reset()
 		.scale(this.scaleX, this.scaleY)
@@ -2020,7 +2020,7 @@ Animation.updateMatrix = function () {
 	}
 };
 
-Animation.updateRuler = function () {
+Animation.updateRuler = function (this: any) {
 	const { outerRuler, innerRuler } = this;
 	const width = outerRuler.clientWidth;
 	if (width !== 0) {
@@ -2049,19 +2049,19 @@ Animation.updateRuler = function () {
 	}
 };
 
-Animation.updateTimeline = function () {
-	Animation.createTimelines();
+Animation.updateTimeline = function (this: any) {
+	Animation.createTimelines!();
 
-	Animation.updateTimelineLength();
+	Animation.updateTimelineLength!();
 
-	Animation.updateMarquee();
+	Animation.updateMarquee!();
 
-	Animation.updatePointerArea();
+	Animation.updatePointerArea!();
 
-	Animation.loadFrames(Animation.player.index, true);
+	Animation.loadFrames!(Animation.player.index, true);
 };
 
-Animation.updateTimelineLength = function () {
+Animation.updateTimelineLength = function (this: any) {
 	this.player.computeLength();
 	const end = this.player.length;
 	const max = Math.floor(end / 100 + 1) * 100;
@@ -2071,7 +2071,7 @@ Animation.updateTimelineLength = function () {
 	}
 };
 
-Animation.updatePointerArea = function () {
+Animation.updatePointerArea = function (this: any) {
 	const list = this.outerTimelineList;
 	const area = this.outerPointerArea;
 	if (list.clientWidth !== 0) {
@@ -2084,7 +2084,7 @@ Animation.updatePointerArea = function () {
 	}
 };
 
-Animation.updatePointer = function () {
+Animation.updatePointer = function (this: any) {
 	const x = Math.floor(this.player.index);
 	const { pointer } = this;
 	if (pointer.x !== x) {
@@ -2093,7 +2093,7 @@ Animation.updatePointer = function () {
 	}
 };
 
-Animation.updateCursor = function (x, y) {
+Animation.updateCursor = function (this: any, x: any, y: any) {
 	const { timelineCursor } = this;
 	if (timelineCursor.x !== x || timelineCursor.y !== y) {
 		timelineCursor.x = x;
@@ -2108,9 +2108,9 @@ Animation.updateCursor = function (x, y) {
 	}
 };
 
-Animation.selectFrame = function (frame, fStart, fLength) {
+Animation.selectFrame = function (this: any, frame: any, fStart: any, fLength: any) {
 	if (!frame) {
-		return this.unselectMarquee();
+		return this.unselectMarquee!();
 	}
 	let layer;
 	const { contexts } = this.player;
@@ -2135,18 +2135,18 @@ Animation.selectFrame = function (frame, fStart, fLength) {
 				const x = fStart ?? frame.start;
 				const w = fLength ?? 1;
 				const i = this.player.index;
-				this.selectMarquee(x, y, w, x);
-				this.scrollToMarquee(false);
+				this.selectMarquee!(x, y, w, x);
+				this.scrollToMarquee!(false);
 				if (i < x || i >= x + w) {
-					this.loadFrames(x);
+					this.loadFrames!(x);
 				}
 			}
 		}
 	}
 };
 
-Animation.selectMarquee = function (x, y, length, origin) {
-	this.stop();
+Animation.selectMarquee = function (this: any, x: any, y: any, length: any, origin: any) {
+	this.stop!();
 	const timelines = this.innerTimelineList.childNodes;
 	const ex = this.frameMax;
 	const ey = timelines.length;
@@ -2157,9 +2157,9 @@ Animation.selectMarquee = function (x, y, length, origin) {
 			marquee.layer = layer;
 			marquee.x = x;
 			marquee.length = length;
-			this.updateMarquee();
+			this.updateMarquee!();
 
-			this.openFrame();
+			this.openFrame!();
 
 			this.layerList.selectWithNoEvent(layer);
 		}
@@ -2169,28 +2169,28 @@ Animation.selectMarquee = function (x, y, length, origin) {
 	}
 };
 
-Animation.unselectMarquee = function (frame) {
+Animation.unselectMarquee = function (this: any, frame: any) {
 	const marquee = this.timelineMarquee;
 	if (frame !== undefined ? this.target === frame : marquee.layer !== null) {
 		marquee.layer = null;
 		if (this.target !== null) {
 			this.target = null;
-			this.updateTargetContext();
-			this.requestRendering();
-			Inspector.close();
+			this.updateTargetContext!();
+			this.requestRendering!();
+			Inspector.close!();
 		}
 		marquee.x = -1;
 		marquee.length = -1;
 		marquee.origin = -1;
-		this.updateMarquee();
+		this.updateMarquee!();
 	}
 };
 
-Animation.updateMarquee = function () {
+Animation.updateMarquee = function (this: any) {
 	const marquee = this.timelineMarquee;
 	const { layer } = marquee;
 	if (layer !== null) {
-		const y = this.getLayerIndex(layer);
+		const y = this.getLayerIndex!(layer);
 		if (y !== -1) {
 			const { x, length } = marquee;
 			marquee.y = y;
@@ -2205,7 +2205,7 @@ Animation.updateMarquee = function () {
 	hide(marquee);
 };
 
-Animation.scrollToMarquee = function (shiftKey) {
+Animation.scrollToMarquee = function (this: any, shiftKey: any) {
 	const { x, y, length, origin } = this.timelineMarquee;
 	if (y !== -1) {
 		const list = this.outerTimelineList;
@@ -2226,7 +2226,7 @@ Animation.scrollToMarquee = function (shiftKey) {
 	}
 };
 
-Animation.updateMarqueeShift = function (x, y, length) {
+Animation.updateMarqueeShift = function (this: any, x: any, y: any, length: any) {
 	const timelines = this.innerTimelineList.childNodes;
 	const marquee = this.timelineMarqueeShift;
 	marquee.layer = timelines[y]?.layer ?? null;
@@ -2244,7 +2244,7 @@ Animation.updateMarqueeShift = function (x, y, length) {
 	}
 };
 
-Animation.selectFrameRelative = function (direction) {
+Animation.selectFrameRelative = function (this: any, direction: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2267,12 +2267,12 @@ Animation.selectFrameRelative = function (direction) {
 			break;
 		}
 	}
-	this.selectMarquee(x, y, 1, x);
-	this.scrollToMarquee(false);
-	this.loadFrames(x);
+	this.selectMarquee!(x, y, 1, x);
+	this.scrollToMarquee!(false);
+	this.loadFrames!(x);
 };
 
-Animation.selectFrameAtHomeEnd = function (direction) {
+Animation.selectFrameAtHomeEnd = function (this: any, direction: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2298,12 +2298,12 @@ Animation.selectFrameAtHomeEnd = function (direction) {
 			}
 			break;
 	}
-	this.selectMarquee(x, y, 1, x);
-	this.scrollToMarquee(false);
-	this.loadFrames(x);
+	this.selectMarquee!(x, y, 1, x);
+	this.scrollToMarquee!(false);
+	this.loadFrames!(x);
 };
 
-Animation.selectAllFramesOfKey = function () {
+Animation.selectAllFramesOfKey = function (this: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2314,13 +2314,13 @@ Animation.selectAllFramesOfKey = function () {
 		const end = frame.end;
 		if (origin >= end) continue;
 		if (origin < start) break;
-		this.selectMarquee(start, y, end - start, origin);
-		this.scrollToMarquee(false);
+		this.selectMarquee!(start, y, end - start, origin);
+		this.scrollToMarquee!(false);
 		return;
 	}
 };
 
-Animation.multiSelectFramesRelative = function (direction) {
+Animation.multiSelectFramesRelative = function (this: any, direction: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2345,12 +2345,12 @@ Animation.multiSelectFramesRelative = function (direction) {
 			}
 			break;
 	}
-	this.selectMarquee(x, y, length);
-	this.scrollToMarquee(true);
-	this.loadFrames(forward ? x + length - 1 : x);
+	this.selectMarquee!(x, y, length);
+	this.scrollToMarquee!(true);
+	this.loadFrames!(forward ? x + length - 1 : x);
 };
 
-Animation.multiSelectFramesToHomeEnd = function (direction) {
+Animation.multiSelectFramesToHomeEnd = function (this: any, direction: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2380,12 +2380,12 @@ Animation.multiSelectFramesToHomeEnd = function (direction) {
 	}
 	const mx = Math.min(x, origin);
 	const mw = Math.abs(x - origin) + 1;
-	this.selectMarquee(mx, y, mw, origin);
-	this.scrollToMarquee(true);
-	this.loadFrames(x);
+	this.selectMarquee!(mx, y, mw, origin);
+	this.scrollToMarquee!(true);
+	this.loadFrames!(x);
 };
 
-Animation.openFrame = function () {
+Animation.openFrame = function (this: any) {
 	const marquee = this.timelineMarquee;
 	const { layer, x } = marquee;
 	for (const frame of layer.frames) {
@@ -2395,23 +2395,23 @@ Animation.openFrame = function () {
 		if (x < start) break;
 		if (this.target !== frame) {
 			this.target = frame;
-			this.updateTargetContext();
-			this.requestRendering();
+			this.updateTargetContext!();
+			this.requestRendering!();
 			const map = this.inspectorTypeMap;
 			const key = map[layer.class];
-			Inspector.open(key, frame);
+			Inspector.open!(key, frame);
 		}
 		return;
 	}
 	if (this.target !== null) {
 		this.target = null;
-		this.updateTargetContext();
-		this.requestRendering();
-		Inspector.close();
+		this.updateTargetContext!();
+		this.requestRendering!();
+		Inspector.close!();
 	}
 };
 
-Animation.loadTextures = function () {
+Animation.loadTextures = function (this: any) {
 	if (this.state === 'closed') return;
 	const { floor, max } = Math;
 	const player = this.player;
@@ -2430,8 +2430,8 @@ Animation.loadTextures = function () {
 			texture.vframes = vframes;
 			texture.width = width;
 			texture.height = height;
-			textures[spriteId] = texture;
-			this.requestRendering();
+			(textures as any)![spriteId] = texture;
+			this.requestRendering!();
 			continue;
 		}
 		if (imageId) {
@@ -2445,8 +2445,8 @@ Animation.loadTextures = function () {
 					texture.vframes = vframes;
 					texture.width = width;
 					texture.height = height;
-					textures[spriteId] = texture;
-					this.requestRendering();
+					(textures as any)![spriteId] = texture;
+					this.requestRendering!();
 				} else {
 					texture.destroy();
 				}
@@ -2455,46 +2455,46 @@ Animation.loadTextures = function () {
 	}
 	for (const spriteId of Object.keys(last)) {
 		const texture = last[spriteId];
-		if (texture !== textures[spriteId] && texture instanceof ImageTexture) {
+		if (texture !== (textures as any)![spriteId] && texture instanceof ImageTexture) {
 			texture.destroy();
 		}
 	}
 };
 
-Animation.loadFrames = function (index, forceReload = false) {
+Animation.loadFrames = function (this: any, index: any, forceReload = false) {
 	const player = this.player;
 	const fe = player.length;
 	const fi = Math.min(Math.max(index, 0), fe - 1);
 	if (player.index !== fi || forceReload) {
 		player.index = fi;
 
-		this.updateFrameContexts();
+		this.updateFrameContexts!();
 
-		this.updateTargetContext();
+		this.updateTargetContext!();
 
-		this.updatePointer();
+		this.updatePointer!();
 
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
-Animation.drawBackground = function () {
+Animation.drawBackground = function (this: any) {
 	const gl = GL;
 	gl.clearColor(...this.background.getGLRGBA());
 	gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
-Animation.drawOnionskins = function () {
+Animation.drawOnionskins = function (this: any) {
 	if (this.showOnionskin) {
 		GL.alpha = 0.25;
 		const { prev, next } = this.player.onionskin;
-		this.drawSpriteLayers(prev);
-		this.drawSpriteLayers(next);
+		this.drawSpriteLayers!(prev);
+		this.drawSpriteLayers!(next);
 		GL.alpha = 1;
 	}
 };
 
-Animation.drawSpriteLayers = function (contexts = this.player.contexts) {
+Animation.drawSpriteLayers = function (this: any, contexts = this.player.contexts) {
 	const { player } = this;
 	const { count } = contexts;
 	const gl = GL;
@@ -2524,7 +2524,7 @@ Animation.drawSpriteLayers = function (contexts = this.player.contexts) {
 	gl.batchRenderer.draw();
 };
 
-Animation.drawEmitters = function () {
+Animation.drawEmitters = function (this: any) {
 	if (!this.showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -2578,7 +2578,7 @@ Animation.drawEmitters = function () {
 	}
 };
 
-Animation.emitParticles = function (deltaTime) {
+Animation.emitParticles = function (this: any, deltaTime: any) {
 	const { player } = this;
 	const { contexts } = player;
 	const { count } = contexts;
@@ -2606,7 +2606,7 @@ Animation.emitParticles = function (deltaTime) {
 	}
 };
 
-Animation.updateParticles = function (deltaTime) {
+Animation.updateParticles = function (this: any, deltaTime: any) {
 	this.particleUpdating = false;
 	const { emitters } = this.player;
 	let i = emitters.length;
@@ -2621,7 +2621,7 @@ Animation.updateParticles = function (deltaTime) {
 	}
 };
 
-Animation.drawBackParticles = function () {
+Animation.drawBackParticles = function (this: any) {
 	if (this.particleUpdating) {
 		const { emitters } = this.player;
 		for (const emitter of emitters) {
@@ -2632,7 +2632,7 @@ Animation.drawBackParticles = function () {
 	}
 };
 
-Animation.drawFrontParticles = function () {
+Animation.drawFrontParticles = function (this: any) {
 	if (this.particleUpdating) {
 		const { emitters } = this.player;
 		for (const emitter of emitters) {
@@ -2643,7 +2643,7 @@ Animation.drawFrontParticles = function () {
 	}
 };
 
-Animation.drawCoordinateAxes = function () {
+Animation.drawCoordinateAxes = function (this: any) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix.set(Animation.matrix);
@@ -2689,7 +2689,7 @@ Animation.drawCoordinateAxes = function () {
 	gl.drawArrays(gl.LINES, 0, 4);
 };
 
-Animation.drawJointNodes = function () {
+Animation.drawJointNodes = function (this: any) {
 	if (!this.showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -2742,7 +2742,7 @@ Animation.drawJointNodes = function () {
 	}
 };
 
-Animation.drawJointArrows = function () {
+Animation.drawJointArrows = function (this: any) {
 	if (!this.showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -2812,7 +2812,7 @@ Animation.drawJointArrows = function () {
 	}
 };
 
-Animation.drawJointSpinner = function () {
+Animation.drawJointSpinner = function (this: any) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (
@@ -2881,7 +2881,7 @@ Animation.drawJointSpinner = function () {
 	}
 };
 
-Animation.drawHoverWireframe = function () {
+Animation.drawHoverWireframe = function (this: any) {
 	const hover = this.hover;
 	if (hover !== null && hover !== this.target) {
 		const { contexts } = this.player;
@@ -2894,10 +2894,10 @@ Animation.drawHoverWireframe = function () {
 					case 'sound':
 						break;
 					case 'sprite':
-						this.drawSpriteWireframe(context, 0xffffffff);
+						this.drawSpriteWireframe!(context, 0xffffffff);
 						break;
 					case 'particle':
-						this.drawEmitterWireframe(context, 0xffffffff);
+						this.drawEmitterWireframe!(context, 0xffffffff);
 						break;
 				}
 				return;
@@ -2906,7 +2906,7 @@ Animation.drawHoverWireframe = function () {
 	}
 };
 
-Animation.drawTargetWireframe = function () {
+Animation.drawTargetWireframe = function (this: any) {
 	const context = this.targetContext;
 	if (context !== null && this.target !== null) {
 		switch (context.layer.class) {
@@ -2914,16 +2914,16 @@ Animation.drawTargetWireframe = function () {
 			case 'sound':
 				break;
 			case 'sprite':
-				this.drawSpriteWireframe(context, 0xffc0ff00);
+				this.drawSpriteWireframe!(context, 0xffc0ff00);
 				break;
 			case 'particle':
-				this.drawEmitterWireframe(context, 0xffc0ff00);
+				this.drawEmitterWireframe!(context, 0xffc0ff00);
 				break;
 		}
 	}
 };
 
-Animation.drawSpriteWireframe = function (context, color) {
+Animation.drawSpriteWireframe = function (this: any, context: any, color: any) {
 	const key = context.layer.sprite;
 	const texture = this.player.textures[key];
 	if (!texture) return;
@@ -2991,7 +2991,7 @@ Animation.drawSpriteWireframe = function (context, color) {
 	gl.drawArrays(gl.LINE_LOOP, 0, 4);
 };
 
-Animation.drawEmitterWireframe = function (context, color) {
+Animation.drawEmitterWireframe = function (this: any, context: any, color: any) {
 	const emitter = context.emitter;
 	if (!emitter?.hasArea) return;
 	const gl = GL;
@@ -3058,7 +3058,7 @@ Animation.drawEmitterWireframe = function (context, color) {
 	gl.drawArrays(gl.LINE_LOOP, 0, 4);
 };
 
-Animation.drawTargetAnchor = function () {
+Animation.drawTargetAnchor = function (this: any) {
 	const context = this.targetContext;
 	if (context !== null && this.target !== null) {
 		const gl = GL;
@@ -3091,12 +3091,12 @@ Animation.drawTargetAnchor = function () {
 	}
 };
 
-Animation.drawSpriteControlPoints = function () {
+Animation.drawSpriteControlPoints = function (this: any) {
 	const context = this.targetContext;
 	const target = this.target;
 	const texture = UI.controlPointTexture;
 	if (!context || !target || !texture) return;
-	if (this.updateControlPoints(context)) {
+	if (this.updateControlPoints!(context)) {
 		const POINT_RADIUS = 4 / this.scale;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
@@ -3142,7 +3142,7 @@ Animation.drawSpriteControlPoints = function () {
 };
 
 Animation.createTimelines = (function IIFE() {
-	const createTimelines = (layers) => {
+	const createTimelines = (layers: any) => {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
@@ -3203,13 +3203,13 @@ Animation.createTimelines = (function IIFE() {
 			}
 		}
 	};
-	return function () {
+	return function (this: any) {
 		clear(this.innerTimelineList);
 		createTimelines(this.layers);
 	};
 })();
 
-Animation.getFrame = function (frames, x) {
+Animation.getFrame = function (this: any, frames: any, x: any) {
 	const length = frames.length;
 	for (let i = 0; i < length; i++) {
 		const frame = frames[i];
@@ -3222,14 +3222,14 @@ Animation.getFrame = function (frames, x) {
 	return null;
 };
 
-Animation.sortFrames = function (frames) {
+Animation.sortFrames = function (this: any, frames: any) {
 	let end = 0;
 	const length = frames.length;
 	for (let i = 0; i < length; i++) {
 		let frame = frames[i];
 		const start = frame.start;
 		if (start < end) {
-			frame = this.cloneFrame(frames, i);
+			frame = this.cloneFrame!(frames, i);
 			frame.start = end;
 			frame.end += end - start;
 		}
@@ -3237,22 +3237,22 @@ Animation.sortFrames = function (frames) {
 	}
 };
 
-Animation.shiftFrames = function (frames, start, offset) {
+Animation.shiftFrames = function (this: any, frames: any, start: any, offset: any) {
 	const length = frames.length;
 	for (let i = start; i < length; i++) {
-		const frame = this.cloneFrame(frames, i);
+		const frame = this.cloneFrame!(frames, i);
 		frame.start += offset;
 		frame.end += offset;
 	}
 };
 
-Animation.saveFrames = function (layers, sMarquee, dMarquee = sMarquee) {
-	const changes = [];
+Animation.saveFrames = function (this: any, layers: any, sMarquee: any, dMarquee = sMarquee) {
+	const changes = [] as any[];
 	for (const layer of layers) {
 		const frames = layer.frames.slice();
 		changes.push({ layer, frames });
 	}
-	this.planToSave();
+	this.planToSave!();
 	this.history.save({
 		type: 'animation-frames-change',
 		motion: Animation.motion,
@@ -3263,7 +3263,7 @@ Animation.saveFrames = function (layers, sMarquee, dMarquee = sMarquee) {
 	});
 };
 
-Animation.cloneFrame = function (frames, index) {
+Animation.cloneFrame = function (this: any, frames: any, index: any) {
 	const frame = frames[index];
 	const clone = (frames[index] = Object.clone(frame));
 	return Object.defineProperty(clone, 'key', {
@@ -3272,7 +3272,7 @@ Animation.cloneFrame = function (frames, index) {
 	});
 };
 
-Animation.insertFrame = function () {
+Animation.insertFrame = function (this: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -3281,7 +3281,7 @@ Animation.insertFrame = function () {
 	const ex = x + length;
 	const frames = layer.frames;
 	const fLength = frames.length;
-	this.saveFrames([layer], { layer, x, length });
+	this.saveFrames!([layer], { layer, x, length });
 	for (let i = 0; i < fLength; i++) {
 		const frame = frames[i];
 		const start = frame.start;
@@ -3291,7 +3291,7 @@ Animation.insertFrame = function () {
 			const insert = Object.clone(frame);
 			insert.start = x;
 			insert.end = Math.max(ex, end);
-			this.cloneFrame(frames, i).end = x;
+			this.cloneFrame!(frames, i).end = x;
 			frames.splice(i + 1, 0, insert);
 		} else if (x === start) {
 			const proto = frames[i - 1] ?? frame;
@@ -3301,16 +3301,16 @@ Animation.insertFrame = function () {
 			frames.splice(i, 0, insert);
 		} else {
 			if (i !== 0) {
-				this.cloneFrame(frames, i - 1).end = x;
+				this.cloneFrame!(frames, i - 1).end = x;
 			}
 			const insert = Object.clone(frame);
 			insert.start = x;
 			insert.end = ex;
 			frames.splice(i, 0, insert);
 		}
-		this.sortFrames(frames);
-		this.updateTimeline();
-		this.openFrame();
+		this.sortFrames!(frames);
+		this.updateTimeline!();
+		this.openFrame!();
 		return;
 	}
 	const last = frames[fLength - 1];
@@ -3323,17 +3323,17 @@ Animation.insertFrame = function () {
 		insert = Inspector[key].create();
 	}
 	if (last && last.end !== x) {
-		this.cloneFrame(frames, fLength - 1).end = x;
+		this.cloneFrame!(frames, fLength - 1).end = x;
 	}
 	insert.start = x;
 	insert.end = ex;
 	frames.push(insert);
-	this.updateTimeline();
-	this.loadFrames(x);
-	this.openFrame();
+	this.updateTimeline!();
+	this.loadFrames!(x);
+	this.openFrame!();
 };
 
-Animation.extendFrame = function () {
+Animation.extendFrame = function (this: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1 || !marquee.isExtendable()) {
 		return;
@@ -3342,33 +3342,33 @@ Animation.extendFrame = function () {
 	const ex = x + length;
 	const frames = layer.frames;
 	const fLength = frames.length;
-	this.saveFrames([layer], { layer, x, length });
+	this.saveFrames!([layer], { layer, x, length });
 	for (let i = 0; i < fLength; i++) {
 		const frame = frames[i];
 		const start = frame.start;
 		const end = frame.end;
 		if (x >= end) continue;
 		if (x >= start) {
-			this.cloneFrame(frames, i).end += length;
-			// const next = frames[i + 1] if (next && frame.end > next.start) { this.shiftFrames(frames, i + 1, frame.end - next.start) }
+			this.cloneFrame!(frames, i).end += length;
+			// const next = frames[i + 1] if (next && frame.end > next.start) { this.shiftFrames!(frames, i + 1, frame.end - next.start) }
 		} else {
 			if (i === 0) return;
-			this.cloneFrame(frames, i - 1).end = ex;
-			// if (ex > start) { this.shiftFrames(frames, i, ex - start) }
+			this.cloneFrame!(frames, i - 1).end = ex;
+			// if (ex > start) { this.shiftFrames!(frames, i, ex - start) }
 		}
-		this.sortFrames(frames);
-		this.updateTimeline();
-		this.openFrame();
+		this.sortFrames!(frames);
+		this.updateTimeline!();
+		this.openFrame!();
 		return;
 	}
 	if (fLength !== 0) {
-		this.cloneFrame(frames, fLength - 1).end = ex;
-		this.updateTimeline();
-		this.openFrame();
+		this.cloneFrame!(frames, fLength - 1).end = ex;
+		this.updateTimeline!();
+		this.openFrame!();
 	}
 };
 
-Animation.deleteFrame = function (shrink = false) {
+Animation.deleteFrame = function (this: any, shrink = false) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1 || (!shrink && !marquee.isSelected())) {
 		return;
@@ -3377,7 +3377,7 @@ Animation.deleteFrame = function (shrink = false) {
 	const ex = x + length;
 	const frames = layer.frames;
 	let i = frames.length;
-	this.saveFrames([layer], { layer, x, length });
+	this.saveFrames!([layer], { layer, x, length });
 	if (shrink)
 		block: {
 			while (--i >= 0) {
@@ -3387,14 +3387,14 @@ Animation.deleteFrame = function (shrink = false) {
 					if (x <= start) {
 						const end = frame.end;
 						const extra = Math.max(end - ex, 0);
-						this.shiftFrames(frames, ++i, -length - extra);
+						this.shiftFrames!(frames, ++i, -length - extra);
 					} else {
-						this.shiftFrames(frames, ++i, -length);
+						this.shiftFrames!(frames, ++i, -length);
 					}
 					break block;
 				}
 			}
-			this.shiftFrames(frames, 0, -length);
+			this.shiftFrames!(frames, 0, -length);
 		}
 	while (--i >= 0) {
 		const frame = frames[i];
@@ -3405,20 +3405,20 @@ Animation.deleteFrame = function (shrink = false) {
 		if (x <= start) {
 			frames.splice(i, 1);
 		} else {
-			this.cloneFrame(frames, i).end = x + Math.max(end - ex, 0);
+			this.cloneFrame!(frames, i).end = x + Math.max(end - ex, 0);
 		}
 	}
-	this.updateTimeline();
-	this.openFrame();
+	this.updateTimeline!();
+	this.openFrame!();
 };
 
-Animation.copyFrame = function (returnData = false) {
+Animation.copyFrame = function (this: any, returnData = false) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
 	}
 	let { layer, x, length } = marquee;
-	const copies = [];
+	const copies = [] as any[];
 	const ex = x + length;
 	const frames = layer.frames;
 	const fLength = frames.length;
@@ -3454,15 +3454,15 @@ Animation.copyFrame = function (returnData = false) {
 	}
 };
 
-Animation.pasteFrame = function (data, destination) {
+Animation.pasteFrame = function (this: any, data: any, destination: any) {
 	const { layer, x, y, length: sLength } = destination ?? this.timelineMarquee;
 	if (!data) data = (Clipboard as any).read(`yami.animFrame.${layer.class}`);
 	if (!data || y === -1) {
 		return;
 	}
 	const { copies, length: dLength } = data;
-	this.selectMarquee(x, y, dLength, x);
-	this.saveFrames([layer], { layer, x, length: sLength }, { layer, x, length: dLength });
+	this.selectMarquee!(x, y, dLength, x);
+	this.saveFrames!([layer], { layer, x, length: sLength }, { layer, x, length: dLength });
 	for (const frame of copies) {
 		frame.start += x;
 		frame.end += x;
@@ -3475,30 +3475,30 @@ Animation.pasteFrame = function (data, destination) {
 		const end = frame.end;
 		if (x >= end) continue;
 		if (x > start) {
-			// 插入到关键帧中间 const next = frames[i + 1] if (next && ex > next.start) { this.shiftFrames(frames, i + 1, ex - next.start) }
+			// 插入到关键帧中间 const next = frames[i + 1] if (next && ex > next.start) { this.shiftFrames!(frames, i + 1, ex - next.start) }
 			if (x < end) {
-				this.cloneFrame(frames, i).end = x;
+				this.cloneFrame!(frames, i).end = x;
 			}
 			frames.splice(i + 1, 0, ...copies);
 		} else if (x === start) {
-			// 插入到关键帧之前 this.shiftFrames(frames, i, dLength)
+			// 插入到关键帧之前 this.shiftFrames!(frames, i, dLength)
 			frames.splice(i, 0, ...copies);
 		} else {
-			// 插入到空白帧 if (ex > start) { this.shiftFrames(frames, i, ex - start) }
+			// 插入到空白帧 if (ex > start) { this.shiftFrames!(frames, i, ex - start) }
 			frames.splice(i, 0, ...copies);
 		}
-		this.sortFrames(frames);
-		this.updateTimeline();
-		this.openFrame();
+		this.sortFrames!(frames);
+		this.updateTimeline!();
+		this.openFrame!();
 		return;
 	}
 	frames.push(...copies);
-	this.updateTimeline();
-	this.loadFrames(x);
-	this.openFrame();
+	this.updateTimeline!();
+	this.loadFrames!(x);
+	this.openFrame!();
 };
 
-Animation.selectAllFrames = function () {
+Animation.selectAllFrames = function (this: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -3509,39 +3509,39 @@ Animation.selectAllFrames = function () {
 	if (length !== 0) {
 		const start = frames[0].start;
 		const end = frames[length - 1].end;
-		this.selectMarquee(start, y, end - start, start);
+		this.selectMarquee!(start, y, end - start, start);
 	}
 };
 
-Animation.dragAndDropFrame = function () {
+Animation.dragAndDropFrame = function (this: any) {
 	const { layer: sLayer, x: sx, y: sy, length } = this.timelineMarquee;
 	const { layer: dLayer, x: dx, y: dy } = this.timelineMarqueeShift;
 	if (sx !== dx || (sy !== dy && sLayer.class === dLayer.class)) {
-		const data = this.copyFrame(true);
+		const data = this.copyFrame!(true);
 		if (data) {
 			const { updateTimeline, openFrame, saveFrames } = this;
 			const sMarquee = { layer: sLayer, x: sx, length: length };
 			const dMarquee = { layer: dLayer, x: dx, length: 0 };
 			const layers = [sLayer];
 			layers.push(dLayer);
-			this.saveFrames(layers, sMarquee, dMarquee);
+			this.saveFrames!(layers, sMarquee, dMarquee);
 			this.updateTimeline = Function.empty;
 			this.openFrame = Function.empty;
 			this.saveFrames = Function.empty;
-			this.deleteFrame();
-			this.pasteFrame(data, this.timelineMarqueeShift);
+			this.deleteFrame!();
+			this.pasteFrame!(data, this.timelineMarqueeShift);
 			this.updateTimeline = updateTimeline;
 			this.openFrame = openFrame;
 			this.saveFrames = saveFrames;
 			this.player.index = dx;
-			this.updateTimeline();
-			this.openFrame();
+			this.updateTimeline!();
+			this.openFrame!();
 			dMarquee.length = this.timelineMarquee.length;
 		}
 	}
 };
 
-Animation.adjustMarquee = function () {
+Animation.adjustMarquee = function (this: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -3577,11 +3577,11 @@ Animation.adjustMarquee = function () {
 		break;
 	}
 	if (changed) {
-		this.selectMarquee(x, y, length, x);
+		this.selectMarquee!(x, y, length, x);
 	}
 };
 
-Animation.shiftLayerPosition = function (layer, x, y) {
+Animation.shiftLayerPosition = function (this: any, layer: any, x: any, y: any) {
 	let editor;
 	if (Inspector.animJointFrame.target) {
 		editor = Inspector.animJointFrame;
@@ -3603,16 +3603,16 @@ Animation.shiftLayerPosition = function (layer, x, y) {
 			});
 		}
 	}
-	this.updateFrameContexts();
-	this.requestRendering();
+	this.updateFrameContexts!();
+	this.requestRendering!();
 };
 
-Animation.shiftSelectedFrames = function (mode) {
+Animation.shiftSelectedFrames = function (this: any, mode: any) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
 	}
-	this.adjustMarquee();
+	this.adjustMarquee!();
 	const { layer: sLayer, x: sx, y: sy, length } = marquee;
 	const timelines = this.innerTimelineList.childNodes;
 	const ex = this.frameMax;
@@ -3622,7 +3622,7 @@ Animation.shiftSelectedFrames = function (mode) {
 	switch (mode) {
 		case 'left': {
 			const frames = sLayer.frames;
-			const frame = this.getFrame(frames, dx - 1);
+			const frame = this.getFrame!(frames, dx - 1);
 			dx = frame ? frame.start : dx - 1;
 			break;
 		}
@@ -3647,7 +3647,7 @@ Animation.shiftSelectedFrames = function (mode) {
 			break;
 	}
 	if (dx >= 0 && dx < ex && dy >= 0 && dy < ey) {
-		const data = this.copyFrame(true);
+		const data = this.copyFrame!(true);
 		if (data) {
 			const { updateTimeline, openFrame, saveFrames } = this;
 			const dLayer = timelines[dy].layer;
@@ -3656,25 +3656,25 @@ Animation.shiftSelectedFrames = function (mode) {
 			const dMarquee = { layer: dLayer, x: dx, length: 0 };
 			const layers = [sLayer];
 			layers.push(dLayer);
-			this.saveFrames(layers, sMarquee, dMarquee);
+			this.saveFrames!(layers, sMarquee, dMarquee);
 			this.updateTimeline = Function.empty;
 			this.openFrame = Function.empty;
 			this.saveFrames = Function.empty;
-			this.deleteFrame();
-			this.pasteFrame(data, destination);
+			this.deleteFrame!();
+			this.pasteFrame!(data, destination);
 			this.updateTimeline = updateTimeline;
 			this.openFrame = openFrame;
 			this.saveFrames = saveFrames;
 			this.player.index = dx;
-			this.updateTimeline();
-			this.openFrame();
-			this.scrollToMarquee(false);
+			this.updateTimeline!();
+			this.openFrame!();
+			this.scrollToMarquee!(false);
 			dMarquee.length = this.timelineMarquee.length;
 		}
 	}
 };
 
-Animation.selectControlPoint = function (x, y) {
+Animation.selectControlPoint = function (this: any, x: any, y: any) {
 	const target = this.target;
 	const context = this.targetContext;
 	if (target !== null && context !== null) {
@@ -3682,7 +3682,7 @@ Animation.selectControlPoint = function (x, y) {
 		switch (context.layer.class) {
 			case 'joint': {
 				const radius = 10 / Math.max(this.scale, 1);
-				if (target === this.selectObject(x, y)) {
+				if (target === this.selectObject!(x, y)) {
 					const ox = context.matrix[6];
 					const oy = context.matrix[7];
 					if (Math.dist(ox, oy, x, y) > radius) {
@@ -3716,10 +3716,10 @@ Animation.selectControlPoint = function (x, y) {
 	return null;
 };
 
-Animation.selectObject = function (x, y) {
+Animation.selectObject = function (this: any, x: any, y: any) {
 	const { contexts } = this.player;
 	const last = contexts.count - 1;
-	let target = null;
+	let target: any = null;
 	let weight = 0;
 
 	// 选择关节对象 - 节点
@@ -3828,7 +3828,7 @@ Animation.selectObject = function (x, y) {
 				frame !== null &&
 				!layer.hidden &&
 				!layer.locked &&
-				this.isPointInFrame(context, x, y)
+				this.isPointInFrame!(context, x, y)
 			) {
 				target = frame;
 				break;
@@ -3839,7 +3839,7 @@ Animation.selectObject = function (x, y) {
 	return target;
 };
 
-Animation.isPointInFrame = function (context, x, y) {
+Animation.isPointInFrame = function (this: any, context: any, x: any, y: any) {
 	const key = context.layer.sprite;
 	const texture = this.player.textures[key];
 	if (!texture) return false;
@@ -3883,7 +3883,7 @@ Animation.isPointInFrame = function (context, x, y) {
 Animation.getAnimationRange = (function IIFE() {
 	const marquee = Animation.timelineMarquee;
 	const range = { start: 0, end: 0 };
-	return function () {
+	return function (this: any) {
 		const end = this.player.length;
 		if (marquee.y !== -1) {
 			const { x, length } = marquee;
@@ -3897,7 +3897,7 @@ Animation.getAnimationRange = (function IIFE() {
 	};
 })();
 
-Animation.requestRefreshingList = function () {
+Animation.requestRefreshingList = function (this: any) {
 	if (this.state === 'open') {
 		const list = this.list;
 		if (!list.refreshing) {
@@ -3910,16 +3910,16 @@ Animation.requestRefreshingList = function () {
 	}
 };
 
-Animation.requestAnimation = function () {
+Animation.requestAnimation = function (this: any) {
 	if (this.state === 'open') {
-		Timer.appendUpdater('stageAnimation', this.updateAnimation);
+		Timer.appendUpdater!('stageAnimation', this.updateAnimation);
 	}
 };
 
-Animation.updateAnimation = function (deltaTime) {
+Animation.updateAnimation = function (this: any, deltaTime: any) {
 	deltaTime *= Animation.speed;
 	if (Animation.playing) {
-		const { start, end } = Animation.getAnimationRange();
+		const { start, end } = Animation.getAnimationRange!();
 		const offset = deltaTime / Animation.Player.step;
 		let index = Math.max(Animation.animIndex + offset, start);
 		if (index >= end) {
@@ -3927,64 +3927,64 @@ Animation.updateAnimation = function (deltaTime) {
 				do {
 					index += start - end;
 				} while (index >= end);
-				Animation.resetSoundContexts();
+				Animation.resetSoundContexts!();
 			} else {
 				Animation.animIndex = index;
-				Animation.stop();
+				Animation.stop!();
 				return;
 			}
 		}
 		Animation.animIndex = index;
-		Animation.loadFrames(index);
-		Animation.emitParticles(deltaTime);
-		Animation.updateSoundContexts(index);
+		Animation.loadFrames!(index);
+		Animation.emitParticles!(deltaTime);
+		Animation.updateSoundContexts!(index);
 	}
-	Animation.updateParticles(deltaTime);
+	Animation.updateParticles!(deltaTime);
 	// 不能保证加载帧的时候一定会请求渲染(尾帧截止) 所以在播放状态时再次请求渲染
 	if (Animation.playing || Animation.particleUpdating) {
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	} else {
-		Animation.stopAnimation();
+		Animation.stopAnimation!();
 	}
 };
 
-Animation.stopAnimation = function () {
-	Timer.removeUpdater('stageAnimation', this.updateAnimation);
+Animation.stopAnimation = function (this: any) {
+	Timer.removeUpdater!('stageAnimation', this.updateAnimation);
 };
 
-Animation.requestRendering = function () {
+Animation.requestRendering = function (this: any) {
 	if (this.state === 'open') {
-		Timer.appendUpdater('stageRendering', this.renderingFunction);
+		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
 
-Animation.renderingFunction = function () {
+Animation.renderingFunction = function (this: any) {
 	if (GL.width * GL.height !== 0) {
-		Animation.drawBackground();
+		Animation.drawBackground!();
 		if (Animation.layers !== null) {
-			Animation.drawOnionskins();
-			Animation.drawBackParticles();
-			Animation.drawSpriteLayers();
-			Animation.drawFrontParticles();
-			Animation.drawCoordinateAxes();
-			Animation.drawEmitters();
-			Animation.drawJointNodes();
-			Animation.drawJointArrows();
-			Animation.drawJointSpinner();
-			Animation.drawHoverWireframe();
-			Animation.drawTargetWireframe();
-			Animation.drawTargetAnchor();
-			Animation.drawSpriteControlPoints();
+			Animation.drawOnionskins!();
+			Animation.drawBackParticles!();
+			Animation.drawSpriteLayers!();
+			Animation.drawFrontParticles!();
+			Animation.drawCoordinateAxes!();
+			Animation.drawEmitters!();
+			Animation.drawJointNodes!();
+			Animation.drawJointArrows!();
+			Animation.drawJointSpinner!();
+			Animation.drawHoverWireframe!();
+			Animation.drawTargetWireframe!();
+			Animation.drawTargetAnchor!();
+			Animation.drawSpriteControlPoints!();
 		}
 	}
 };
 
-Animation.stopRendering = function () {
-	Timer.removeUpdater('stageRendering', this.renderingFunction);
+Animation.stopRendering = function (this: any) {
+	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
 
 Animation.switchMark = (function IIFE() {
-	return function (enabled = !this.showMark) {
+	return function (this: any, enabled = !this.showMark) {
 		const item = $('#animation-switch-mark');
 		if (enabled) {
 			addClass(item, 'selected');
@@ -3992,15 +3992,15 @@ Animation.switchMark = (function IIFE() {
 			removeClass(item, 'selected');
 		}
 		this.showMark = enabled;
-		this.requestRendering();
+		this.requestRendering!();
 	};
 })();
 
 Animation.switchOnionskin = (function IIFE() {
-	return function (enabled = !this.showOnionskin) {
+	return function (this: any, enabled = !this.showOnionskin) {
 		const item = $('#animation-switch-onionskin');
 		this.showOnionskin = enabled;
-		this.requestRendering();
+		this.requestRendering!();
 		if (enabled) {
 			addClass(item, 'selected');
 			if (this.motion) {
@@ -4008,7 +4008,7 @@ Animation.switchOnionskin = (function IIFE() {
 				const { prev, next } = player.onionskin;
 				player.loadContexts(prev);
 				player.loadContexts(next);
-				this.updateFrameContexts();
+				this.updateFrameContexts!();
 			}
 		} else {
 			removeClass(item, 'selected');
@@ -4017,7 +4017,7 @@ Animation.switchOnionskin = (function IIFE() {
 })();
 
 Animation.switchMirror = (function IIFE() {
-	return function (enabled = !this.mirror) {
+	return function (this: any, enabled = !this.mirror) {
 		const item = $('#animation-switch-mirror');
 		if (enabled) {
 			addClass(item, 'selected');
@@ -4025,23 +4025,23 @@ Animation.switchMirror = (function IIFE() {
 			removeClass(item, 'selected');
 		}
 		this.mirror = enabled;
-		this.requestRendering();
+		this.requestRendering!();
 		if (this.state === 'open') {
-			this.updateMatrix();
+			this.updateMatrix!();
 		}
 	};
 })();
 
-Animation.switchSettings = function () {
+Animation.switchSettings = function (this: any) {
 	if (!hasClass(Inspector.fileAnimation.button, 'selected')) {
-		Inspector.open('fileAnimation', Animation);
+		Inspector.open!('fileAnimation', Animation);
 	} else {
-		Inspector.close();
+		Inspector.close!();
 	}
 };
 
 Animation.switchLoop = (function IIFE() {
-	return function (enabled = !this.loop) {
+	return function (this: any, enabled = !this.loop) {
 		const item = $('#animation-timeline-loop');
 		if (enabled) {
 			addClass(item, 'selected');
@@ -4051,27 +4051,27 @@ Animation.switchLoop = (function IIFE() {
 		this.loop = enabled;
 		// 在开启残影的情况下应该刷新
 		if (this.showOnionskin && this.state === 'open') {
-			this.updateFrameContexts();
-			this.requestRendering();
+			this.updateFrameContexts!();
+			this.requestRendering!();
 		}
 	};
 })();
 
-Animation.planToSave = function () {
-	File.planToSave(this.meta);
+Animation.planToSave = function (this: any) {
+	File.planToSave!(this.meta);
 };
 
-Animation.saveToConfig = function (config) {
+Animation.saveToConfig = function (this: any, config: any) {
 	config.colors.animationBackground = this.background.hex;
 };
 
-Animation.loadFromConfig = function (config) {
+Animation.loadFromConfig = function (this: any, config: any) {
 	this.background = new StageColor(config.colors.animationBackground, () =>
-		this.requestRendering()
+		this.requestRendering!()
 	);
 };
 
-Animation.saveToProject = function (project) {
+Animation.saveToProject = function (this: any, project: any) {
 	const { animation } = project;
 	animation.mark = this.showMark ?? animation.mark;
 	animation.onionskin = this.showOnionskin ?? animation.onionskin;
@@ -4081,36 +4081,36 @@ Animation.saveToProject = function (project) {
 	animation.zoom = this.zoom ?? animation.zoom;
 };
 
-Animation.loadFromProject = function (project) {
+Animation.loadFromProject = function (this: any, project: any) {
 	const { animation } = project;
-	this.switchMark(animation.mark);
-	this.switchOnionskin(animation.onionskin);
-	this.switchMirror(animation.mirror);
-	this.switchLoop(animation.loop);
-	this.setSpeed(animation.speed);
-	this.setZoom(animation.zoom);
+	this.switchMark!(animation.mark);
+	this.switchOnionskin!(animation.onionskin);
+	this.switchMirror!(animation.mirror);
+	this.switchLoop!(animation.loop);
+	this.setSpeed!(animation.speed);
+	this.setZoom!(animation.zoom);
 };
 
-Animation.webglRestored = function (event) {
+Animation.webglRestored = function (this: any, event: any) {
 	if (Animation.state === 'open') {
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	}
 };
 
-Animation.windowResize = function (event) {
-	this.updateHead();
+Animation.windowResize = function (this: any, event: any) {
+	this.updateHead!();
 	if (this.state === 'open') {
-		this.resize();
-		this.updateCamera();
-		this.requestRendering();
+		this.resize!();
+		this.updateCamera!();
+		this.requestRendering!();
 	}
 }.bind(Animation);
 
-Animation.themechange = function (event) {
-	this.requestRendering();
+Animation.themechange = function (this: any, event: any) {
+	this.requestRendering!();
 }.bind(Animation);
 
-Animation.datachange = function (event) {
+Animation.datachange = function (this: any, event: any) {
 	switch (event.key) {
 		case 'config':
 			this.Player.updateStep();
@@ -4118,16 +4118,16 @@ Animation.datachange = function (event) {
 	}
 }.bind(Animation);
 
-Animation.enumchange = function (event) {
-	this.requestRefreshingList();
+Animation.enumchange = function (this: any, event: any) {
+	this.requestRefreshingList!();
 }.bind(Animation);
 
-Animation.keydown = function (event) {
+Animation.keydown = function (this: any, event: any) {
 	if (Animation.state === 'open' && Animation.dragging === null) {
 		if (event.altKey) {
 			switch (event.code) {
 				case 'KeyS':
-					Animation.switchSettings();
+					Animation.switchSettings!();
 					break;
 			}
 		}
@@ -4139,32 +4139,32 @@ Animation.keydown = function (event) {
 		} else {
 			switch (event.code) {
 				case 'KeyQ':
-					Animation.previousFrame();
+					Animation.previousFrame!();
 					break;
 				case 'KeyE':
-					Animation.nextFrame();
+					Animation.nextFrame!();
 					break;
 				case 'KeyZ':
-					Animation.previousKeyFrame();
+					Animation.previousKeyFrame!();
 					break;
 				case 'KeyX':
-					Animation.nextKeyFrame();
+					Animation.nextKeyFrame!();
 					break;
 				case 'KeyO':
-					Animation.switchOnionskin();
+					Animation.switchOnionskin!();
 					break;
 				case 'KeyM':
-					Animation.switchMirror();
+					Animation.switchMirror!();
 					break;
 				case 'KeyR':
-					Animation.play();
+					Animation.play!();
 					break;
 			}
 		}
 	}
 };
 
-Animation.headPointerdown = function (event) {
+Animation.headPointerdown = function (this: any, event: any) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== Animation.screen) {
@@ -4173,20 +4173,20 @@ Animation.headPointerdown = function (event) {
 	}
 };
 
-Animation.switchPointerdown = function (event) {
+Animation.switchPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'mark':
-						return Animation.switchMark();
+						return Animation.switchMark!();
 					case 'onionskin':
-						return Animation.switchOnionskin();
+						return Animation.switchOnionskin!();
 					case 'mirror':
-						return Animation.switchMirror();
+						return Animation.switchMirror!();
 					case 'settings':
-						return Animation.switchSettings();
+						return Animation.switchSettings!();
 				}
 			}
 			break;
@@ -4194,19 +4194,19 @@ Animation.switchPointerdown = function (event) {
 	}
 };
 
-Animation.speedInput = function (event) {
+Animation.speedInput = function (this: any, event: any) {
 	Animation.speed = read(this);
 };
 
-Animation.zoomFocus = function (event) {
+Animation.zoomFocus = function (this: any, event: any) {
 	Animation.screen.focus();
 };
 
-Animation.zoomInput = function (event) {
-	Animation.setZoom(read(this));
+Animation.zoomInput = function (this: any, event: any) {
+	Animation.setZoom!(read(this));
 };
 
-Animation.screenKeydown = function (event) {
+Animation.screenKeydown = function (this: any, event: any) {
 	if (this.state === 'open' && this.motion !== null && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -4225,10 +4225,10 @@ Animation.screenKeydown = function (event) {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				this.revealTarget();
+				this.revealTarget!();
 				break;
 			case 'Escape':
-				this.unselectMarquee();
+				this.unselectMarquee!();
 				break;
 			case 'KeyA':
 				if ((this.translationKey & 0b0001) === 0) {
@@ -4287,26 +4287,26 @@ Animation.screenKeydown = function (event) {
 					}
 					const x = Math.roundTo(target.x + offsetX, 4);
 					const y = Math.roundTo(target.y + offsetY, 4);
-					this.shiftTarget(x, y);
+					this.shiftTarget!(x, y);
 				}
 				break;
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom(this.zoom - 1);
+				this.setZoom!(this.zoom - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom(this.zoom + 1);
+				this.setZoom!(this.zoom + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
-				this.setZoom(2);
+				this.setZoom!(2);
 				break;
 		}
 	}
 }.bind(Animation);
 
-Animation.translationKeyup = function (event) {
+Animation.translationKeyup = function (this: any, event: any) {
 	if (this.translationKey === 0b0000) {
 		return;
 	}
@@ -4334,32 +4334,32 @@ Animation.translationKeyup = function (event) {
 	}
 }.bind(Animation);
 
-Animation.screenWheel = function (event) {
+Animation.screenWheel = function (this: any, event: any) {
 	if (this.state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom(this.zoom + step);
+			this.setZoom!(this.zoom + step);
 		}
 	}
 }.bind(Animation);
 
-Animation.screenUserscroll = function (event) {
+Animation.screenUserscroll = function (this: any, event: any) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
-		this.updateTransform();
-		this.requestRendering();
+		this.updateTransform!();
+		this.requestRendering!();
 	}
 }.bind(Animation);
 
-Animation.screenBlur = function (event) {
-	this.translationKeyup();
-	this.pointerup();
-	// this.marqueePointerleave()
+Animation.screenBlur = function (this: any, event: any) {
+	this.translationKeyup!();
+	this.pointerup!();
+	// this.marqueePointerleave!()
 }.bind(Animation);
 
-Animation.marqueePointerdown = function (event) {
+Animation.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging || !this.motion) {
 		return;
 	}
@@ -4436,13 +4436,13 @@ Animation.marqueePointerdown = function (event) {
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			const { x, y } = this.getPointerCoords(event);
+			const { x, y } = this.getPointerCoords!(event);
 			let object;
 			if ((event.ctrlKey || event.metaKey) && this.target) {
 				object = this.target;
 			}
 			if (object === undefined) {
-				object = this.selectObject(x, y);
+				object = this.selectObject!(x, y);
 			}
 			if (object) {
 				this.dragging = event;
@@ -4453,7 +4453,7 @@ Animation.marqueePointerdown = function (event) {
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 			}
-			this.selectFrame(object);
+			this.selectFrame!(object);
 			break;
 		}
 		case 2:
@@ -4467,41 +4467,41 @@ Animation.marqueePointerdown = function (event) {
 	}
 }.bind(Animation);
 
-Animation.marqueePointermove = function (event) {
+Animation.marqueePointermove = function (this: any, event: any) {
 	if (!this.dragging && this.motion) {
 		this.marquee.pointerevent = event;
-		const { x, y } = this.getPointerCoords(event);
+		const { x, y } = this.getPointerCoords!(event);
 		if (this.target) {
-			const point = this.selectControlPoint(x, y);
+			const point = this.selectControlPoint!(x, y);
 			if (point) {
-				this.setHover(null);
-				this.setControlPoint(point);
+				this.setHover!(null);
+				this.setControlPoint!(point);
 				return;
 			}
 		}
 		if (this.controlPointActive) {
-			this.setControlPoint(null);
+			this.setControlPoint!(null);
 		}
-		const object = this.selectObject(x, y);
-		this.setHover(object);
+		const object = this.selectObject!(x, y);
+		this.setHover!(object);
 	}
 }.bind(Animation);
 
-Animation.marqueePointerleave = function (event) {
+Animation.marqueePointerleave = function (this: any, event: any) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
-		this.setHover(null);
+		this.setHover!(null);
 	}
 }.bind(Animation);
 
-Animation.marqueeDoubleclick = function (event) {
+Animation.marqueeDoubleclick = function (this: any, event: any) {
 	if (this.target) {
-		this.screenBlur();
-		this.revealTarget();
+		this.screenBlur!();
+		this.revealTarget!();
 	}
 }.bind(Animation);
 
-Animation.pointerup = function (event) {
+Animation.pointerup = function (this: any, event: any) {
 	const { dragging } = Animation;
 	if (dragging === null) {
 		return;
@@ -4527,7 +4527,7 @@ Animation.pointerup = function (event) {
 	}
 };
 
-Animation.pointermove = function (event) {
+Animation.pointermove = function (this: any, event: any) {
 	const { dragging } = Animation;
 	if (relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
@@ -4548,7 +4548,7 @@ Animation.pointermove = function (event) {
 						rotation = Math.round(rotation / 15) * 15;
 					}
 					if (Animation.target.rotation !== rotation) {
-						Animation.rotateTarget(rotation);
+						Animation.rotateTarget!(rotation);
 					}
 					dragging.lastAngle = currentAngle;
 				}
@@ -4602,7 +4602,7 @@ Animation.pointermove = function (event) {
 										startAngle = angle + Math.PI / 4 - aspectAngle;
 										break;
 								}
-								const includedAngle = distAngle - startAngle;
+								const includedAngle = distAngle - startAngle!;
 								const offset = dist * Math.cos(includedAngle);
 								const offsetX = offset * Math.cos(aspectAngle);
 								const offsetY = offset * Math.sin(aspectAngle);
@@ -4642,7 +4642,7 @@ Animation.pointermove = function (event) {
 						(scaleX !== undefined && Animation.target.scaleX !== scaleX) ||
 						(scaleY !== undefined && Animation.target.scaleY !== scaleY)
 					) {
-						Animation.resizeTarget(scaleX, scaleY);
+						Animation.resizeTarget!(scaleX, scaleY);
 					}
 				}
 				break;
@@ -4689,7 +4689,7 @@ Animation.pointermove = function (event) {
 						y = Math.round(dragging.startY + distY);
 					}
 					if (target.x !== x || target.y !== y) {
-						Animation.shiftTarget(x, y);
+						Animation.shiftTarget!(x, y);
 					}
 				}
 				break;
@@ -4713,14 +4713,14 @@ Animation.pointermove = function (event) {
 	}
 };
 
-Animation.searcherInput = function (event) {
+Animation.searcherInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input.value;
 		Animation.list.searchNodesDebounced(text);
 	}
 };
 
-Animation.listKeydown = function (event) {
+Animation.listKeydown = function (this: any, event: any) {
 	if (!this.data) {
 		return;
 	}
@@ -4729,50 +4729,50 @@ Animation.listKeydown = function (event) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {
-					this.copy(item);
-					this.delete(item);
+					this.copy!(item);
+					this.delete!(item);
 				}
 				break;
 			case 'KeyC':
-				this.copy(item);
+				this.copy!(item);
 				break;
 			case 'KeyV':
-				this.paste(null);
+				this.paste!(null);
 				break;
 		}
 	} else {
 		switch (event.code) {
 			case 'Delete':
-				this.delete(item);
+				this.delete!(item);
 				break;
 			case 'Backspace':
-				this.cancelSearch();
+				this.cancelSearch!();
 				break;
-			// case 'Escape': Animation.setMotion(null) break
+			// case 'Escape': Animation.setMotion!(null) break
 		}
 	}
 };
 
-Animation.listPointerdown = function (event) {
+Animation.listPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
 			if (element.tagName === 'NODE-ITEM' && hasClass(element, 'selected')) {
-				Inspector.open('animMotion', element.item);
+				Inspector.open!('animMotion', element.item);
 			}
 			break;
 		}
 		case 3:
-			this.cancelSearch();
+			this.cancelSearch!();
 			break;
 	}
 };
 
-Animation.listSelect = function (event) {
-	Animation.setMotion(event.value);
+Animation.listSelect = function (this: any, event: any) {
+	Animation.setMotion!(event.value);
 };
 
-Animation.listRecord = function (event) {
+Animation.listRecord = function (this: any, event: any) {
 	const response = event.value;
 	const { type } = response;
 	switch (type) {
@@ -4787,14 +4787,14 @@ Animation.listRecord = function (event) {
 	}
 };
 
-Animation.listOpen = function (event) {
-	Animation.editMotion(event.value);
+Animation.listOpen = function (this: any, event: any) {
+	Animation.editMotion!(event.value);
 };
 
-Animation.listPopup = function (event) {
+Animation.listPopup = function (this: any, event: any) {
 	const list = Animation.list;
 	const item = event.value;
-	const get = Local.createGetter('menuAnimationList');
+	const get = Local.createGetter!('menuAnimationList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -4814,12 +4814,12 @@ Animation.listPopup = function (event) {
 				label: get('edit'),
 				accelerator: 'Enter',
 				click: () => {
-					Animation.editMotion(item);
+					Animation.editMotion!(item);
 				}
 			}
 		];
 	}
-	Menu.popup(
+	Menu.popup!(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -4829,10 +4829,10 @@ Animation.listPopup = function (event) {
 			{
 				label: get('insert'),
 				click: () => {
-					Animation.getNewMotionId((motionId) => {
+					Animation.getNewMotionId!((motionId: any) => {
 						const motion = Inspector.animMotion.create(motionId);
 						list.addNodeTo(motion, item);
-						Inspector.open('animMotion', motion);
+						Inspector.open!('animMotion', motion);
 					});
 				}
 			},
@@ -4876,47 +4876,47 @@ Animation.listPopup = function (event) {
 	);
 };
 
-Animation.listChange = function (event) {
-	Animation.planToSave();
+Animation.listChange = function (this: any, event: any) {
+	Animation.planToSave!();
 };
 
-Animation.listPageResize = function (event) {
+Animation.listPageResize = function (this: any, event: any) {
 	Animation.list.updateHead();
 	Animation.list.resize();
 };
 
-Animation.dirListPointerdown = function (event) {
+Animation.dirListPointerdown = function (this: any, event: any) {
 	const element = event.target;
 	if (element.tagName === 'ANIM-DIR' && !hasClass(element, 'selected')) {
-		Animation.setDirection(element.direction);
-		Inspector.close();
+		Animation.setDirection!(element.direction);
+		Inspector.close!();
 	}
 };
 
-Animation.timelinePageResize = function (event) {
-	Animation.updatePointerArea();
+Animation.timelinePageResize = function (this: any, event: any) {
+	Animation.updatePointerArea!();
 	Animation.timeline.updateHead();
 	Animation.layerList.resize();
 };
 
-Animation.timelineToolbarPointerdown = function (event) {
+Animation.timelineToolbarPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'previousKey':
-						return Animation.previousKeyFrame();
+						return Animation.previousKeyFrame!();
 					case 'previous':
-						return Animation.previousFrame();
+						return Animation.previousFrame!();
 					case 'play':
-						return Animation.play();
+						return Animation.play!();
 					case 'next':
-						return Animation.nextFrame();
+						return Animation.nextFrame!();
 					case 'nextKey':
-						return Animation.nextKeyFrame();
+						return Animation.nextKeyFrame!();
 					case 'loop':
-						return Animation.switchLoop();
+						return Animation.switchLoop!();
 				}
 			}
 			break;
@@ -4924,14 +4924,14 @@ Animation.timelineToolbarPointerdown = function (event) {
 	}
 };
 
-Animation.layerListWheel = function (event) {
+Animation.layerListWheel = function (this: any, event: any) {
 	event.preventDefault();
 	if (event.deltaY !== 0) {
 		this.scrollTop += event.deltaY > 0 ? 20 : -20;
 	}
 };
 
-Animation.layerListScroll = function (event) {
+Animation.layerListScroll = function (this: any, event: any) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
 	this.lastScrollTop = scrollTop;
@@ -4940,7 +4940,7 @@ Animation.layerListScroll = function (event) {
 	}
 };
 
-Animation.layerListKeydown = function (event) {
+Animation.layerListKeydown = function (this: any, event: any) {
 	// 避免重命名输入框键盘按下事件
 	if (event.target !== this || !this.data) {
 		return;
@@ -4950,15 +4950,15 @@ Animation.layerListKeydown = function (event) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {
-					this.copy(item);
-					this.delete(item);
+					this.copy!(item);
+					this.delete!(item);
 				}
 				break;
 			case 'KeyC':
-				this.copy(item);
+				this.copy!(item);
 				break;
 			case 'KeyV':
-				this.paste(null);
+				this.paste!(null);
 				break;
 		}
 	} else if (event.shiftKey) {
@@ -4966,29 +4966,29 @@ Animation.layerListKeydown = function (event) {
 	} else {
 		switch (event.code) {
 			case 'Delete':
-				this.delete(item);
+				this.delete!(item);
 				break;
 		}
 	}
 };
 
-Animation.layerListPointerdown = function (event) {
+Animation.layerListPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
 			switch (element.tagName) {
 				case 'NODE-ITEM':
 					if (hasClass(element, 'selected')) {
-						Animation.openLayer(element.item);
+						Animation.openLayer!(element.item);
 					}
 					break;
 				case 'VISIBILITY-ICON': {
 					const { item } = element.parentNode;
 					const { hidden } = item;
-					const backups = this.setRecursiveStates(item, 'hidden', !hidden);
-					this.update();
+					const backups = this.setRecursiveStates!(item, 'hidden', !hidden);
+					this.update!();
 					dispatchChangeEvent(this);
-					Animation.requestRendering();
+					Animation.requestRendering!();
 					Animation.history.save({
 						type: 'animation-layer-hidden',
 						motion: Animation.motion,
@@ -5002,8 +5002,8 @@ Animation.layerListPointerdown = function (event) {
 				case 'LOCK-ICON': {
 					const { item } = element.parentNode;
 					const { locked } = item;
-					const backups = this.setRecursiveStates(item, 'locked', !locked);
-					this.update();
+					const backups = this.setRecursiveStates!(item, 'locked', !locked);
+					this.update!();
 					dispatchChangeEvent(this);
 					Animation.history.save({
 						type: 'animation-layer-locked',
@@ -5021,11 +5021,11 @@ Animation.layerListPointerdown = function (event) {
 	}
 };
 
-Animation.layerListSelect = function (event) {
-	Animation.openLayer(event.value);
+Animation.layerListSelect = function (this: any, event: any) {
+	Animation.openLayer!(event.value);
 };
 
-Animation.layerListRecord = function (event) {
+Animation.layerListRecord = function (this: any, event: any) {
 	const response = event.value;
 	const { type } = response;
 	switch (type) {
@@ -5044,10 +5044,10 @@ Animation.layerListRecord = function (event) {
 	}
 };
 
-Animation.layerListPopup = function (event) {
+Animation.layerListPopup = function (this: any, event: any) {
 	const list = Animation.layerList;
 	const item = event.value;
-	const get = Local.createGetter('menuAnimationLayerList');
+	const get = Local.createGetter!('menuAnimationLayerList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -5063,7 +5063,7 @@ Animation.layerListPopup = function (event) {
 		deletable = false;
 		renamable = false;
 	}
-	Menu.popup(
+	Menu.popup!(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -5146,7 +5146,7 @@ Animation.layerListPopup = function (event) {
 				label: get('shift'),
 				enabled: 0 < item?.frames.length,
 				click: () => {
-					SceneShift.open((x, y) => {
+					SceneShift.open!((x: any, y: any) => {
 						Animation.history.save({
 							type: 'animation-layer-shift',
 							motion: Animation.motion,
@@ -5155,8 +5155,8 @@ Animation.layerListPopup = function (event) {
 							shiftX: x,
 							shiftY: y
 						});
-						Animation.shiftLayerPosition(item, x, y);
-						Animation.planToSave();
+						Animation.shiftLayerPosition!(item, x, y);
+						Animation.planToSave!();
 					});
 				}
 			}
@@ -5164,81 +5164,81 @@ Animation.layerListPopup = function (event) {
 	);
 };
 
-Animation.layerListChange = function (event) {
-	Animation.planToSave();
+Animation.layerListChange = function (this: any, event: any) {
+	Animation.planToSave!();
 };
 
-Animation.outerTimelineListKeydown = function (event) {
+Animation.outerTimelineListKeydown = function (this: any, event: any) {
 	if (this.dragging !== null) return;
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyA':
-				Animation.selectAllFrames();
+				Animation.selectAllFrames!();
 				break;
 			case 'KeyX':
-				Animation.copyFrame();
-				Animation.deleteFrame();
+				Animation.copyFrame!();
+				Animation.deleteFrame!();
 				break;
 			case 'KeyC':
-				Animation.copyFrame();
+				Animation.copyFrame!();
 				break;
 			case 'KeyV':
-				Animation.pasteFrame();
+				Animation.pasteFrame!();
 				break;
 			case 'ArrowUp':
 			case 'ArrowDown':
 			case 'ArrowLeft':
 			case 'ArrowRight':
-				Animation.shiftSelectedFrames(event.code.slice(5).toLowerCase());
+				Animation.shiftSelectedFrames!(event.code.slice(5).toLowerCase());
 				break;
 		}
 	} else if (event.shiftKey) {
 		switch (event.code) {
 			case 'Delete':
-				Animation.deleteFrame(true);
+				Animation.deleteFrame!(true);
 				break;
 			case 'ArrowUp':
 			case 'ArrowDown':
-				Animation.selectAllFramesOfKey();
+				Animation.selectAllFramesOfKey!();
 				break;
 			case 'ArrowLeft':
 			case 'ArrowRight':
-				Animation.multiSelectFramesRelative(event.code.slice(5).toLowerCase());
+				Animation.multiSelectFramesRelative!(event.code.slice(5).toLowerCase());
 				break;
 			case 'Home':
 			case 'End':
-				Animation.multiSelectFramesToHomeEnd(event.code.toLowerCase());
+				Animation.multiSelectFramesToHomeEnd!(event.code.toLowerCase());
 				break;
 		}
 	} else {
 		switch (event.code) {
 			case 'Space':
 				event.preventDefault();
-				Animation.play();
+				Animation.play!();
 				break;
 			case 'Escape':
-				Animation.unselectMarquee();
+				Animation.unselectMarquee!();
 				break;
 			case 'KeyF':
-				Animation.insertFrame();
+				Animation.insertFrame!();
 				break;
 			case 'KeyG':
-				Animation.extendFrame();
+				Animation.extendFrame!();
 				break;
 			case 'Delete':
-				Animation.deleteFrame();
+				Animation.deleteFrame!();
 				break;
 			case 'ArrowLeft':
 			case 'ArrowUp':
 			case 'ArrowRight':
 			case 'ArrowDown':
 				event.preventDefault();
-				Animation.selectFrameRelative(event.code.slice(5).toLowerCase());
+				Animation.selectFrameRelative!(event.code.slice(5).toLowerCase());
 				break;
 			case 'Home':
 			case 'End':
 				event.preventDefault();
-				Animation.selectFrameAtHomeEnd(event.code.toLowerCase());
+				Animation.selectFrameAtHomeEnd!(event.code.toLowerCase());
 				break;
 			case 'PageUp':
 				event.preventDefault();
@@ -5250,14 +5250,14 @@ Animation.outerTimelineListKeydown = function (event) {
 	}
 };
 
-Animation.outerTimelineListWheel = function (event) {
+Animation.outerTimelineListWheel = function (this: any, event: any) {
 	event.preventDefault();
 	if (event.deltaY !== 0) {
 		this.scrollTop += event.deltaY > 0 ? 20 : -20;
 	}
 };
 
-Animation.outerTimelineListScroll = function (event) {
+Animation.outerTimelineListScroll = function (this: any, event: any) {
 	const { scrollLeft, scrollTop } = this;
 	if (this.lastScrollLeft !== scrollLeft) {
 		this.lastScrollLeft = scrollLeft;
@@ -5285,15 +5285,15 @@ Animation.outerTimelineListScroll = function (event) {
 	}
 	const { pointerevent } = Animation.timelineCursor;
 	if (pointerevent !== null) {
-		Animation.innerTimelineListPointermove(pointerevent);
+		Animation.innerTimelineListPointermove!(pointerevent);
 	}
 };
 
-Animation.outerTimelineListBlur = function (event) {
-	Animation.outerTimelineListPointerup();
+Animation.outerTimelineListBlur = function (this: any, event: any) {
+	Animation.outerTimelineListPointerup!();
 };
 
-Animation.outerTimelineListPointerdown = function (event) {
+Animation.outerTimelineListPointerdown = function (this: any, event: any) {
 	if (Animation.dragging) {
 		return;
 	}
@@ -5311,7 +5311,7 @@ Animation.outerTimelineListPointerdown = function (event) {
 			}
 			if (event.target === Animation.innerTimelineList) {
 				const marquee = Animation.timelineMarquee;
-				let { x, y } = Animation.getFrameCoords(event);
+				let { x, y } = Animation.getFrameCoords!(event);
 				let length = 1;
 				let origin = x;
 				if (event.shiftKey) {
@@ -5322,13 +5322,13 @@ Animation.outerTimelineListPointerdown = function (event) {
 						origin = mo;
 					}
 				} else {
-					const frame = Animation.getKeyFrame(x, y);
+					const frame = Animation.getKeyFrame!(x, y);
 					if (frame !== null) {
-						Animation.adjustMarquee();
+						Animation.adjustMarquee!();
 						const { layer, length } = marquee;
-						Animation.updateMarqueeShift(x, y, length);
+						Animation.updateMarqueeShift!(x, y, length);
 						show(Animation.timelineMarqueeShift);
-						Animation.loadFrames(x);
+						Animation.loadFrames!(x);
 						this.dragging = event;
 						event.mode = 'shift';
 						event.layer = layer;
@@ -5340,15 +5340,15 @@ Animation.outerTimelineListPointerdown = function (event) {
 							'pointermove',
 							Animation.outerTimelineListPointermove
 						);
-						this.addScrollListener('both', 1, true, () => {
-							Animation.outerTimelineListPointermove(event.latest);
+						this.addScrollListener!('both', 1, true, () => {
+							Animation.outerTimelineListPointermove!(event.latest);
 						});
 						return;
 					}
 				}
-				Animation.selectMarquee(x, y, length, origin);
-				Animation.scrollToMarquee(false);
-				Animation.loadFrames(x);
+				Animation.selectMarquee!(x, y, length, origin);
+				Animation.scrollToMarquee!(false);
+				Animation.loadFrames!(x);
 				this.dragging = event;
 				event.mode = 'select';
 				event.pointerdownX = origin;
@@ -5356,8 +5356,8 @@ Animation.outerTimelineListPointerdown = function (event) {
 				event.enableDblclickEvent = true;
 				window.addEventListener('pointerup', Animation.outerTimelineListPointerup);
 				window.addEventListener('pointermove', Animation.outerTimelineListPointermove);
-				this.addScrollListener('horizontal', 1, true, () => {
-					Animation.outerTimelineListPointermove(event.latest);
+				this.addScrollListener!('horizontal', 1, true, () => {
+					Animation.outerTimelineListPointermove!(event.latest);
 				});
 			}
 			break;
@@ -5373,7 +5373,7 @@ Animation.outerTimelineListPointerdown = function (event) {
 	}
 };
 
-Animation.outerTimelineListPointerup = function (event) {
+Animation.outerTimelineListPointerup = function (this: any, event: any) {
 	const { dragging } = Animation.outerTimelineList;
 	if (!dragging) {
 		return;
@@ -5389,7 +5389,7 @@ Animation.outerTimelineListPointerup = function (event) {
 			case 'shift': {
 				const marquee = Animation.timelineMarqueeShift;
 				if (!hasClass(marquee, 'disabled')) {
-					Animation.dragAndDropFrame();
+					Animation.dragAndDropFrame!();
 				}
 				hide(marquee);
 				marquee.layer = null;
@@ -5399,12 +5399,12 @@ Animation.outerTimelineListPointerup = function (event) {
 			}
 			case 'ready-to-scroll':
 				if (event.target === Animation.innerTimelineList) {
-					const { x, y } = Animation.getFrameCoords(event);
+					const { x, y } = Animation.getFrameCoords!(event);
 					const marquee = Animation.timelineMarquee;
 					if (!marquee.isPointIn(x, y)) {
-						Animation.selectMarquee(x, y, 1, x);
-						Animation.scrollToMarquee(false);
-						Animation.loadFrames(x);
+						Animation.selectMarquee!(x, y, 1, x);
+						Animation.scrollToMarquee!(false);
+						Animation.loadFrames!(x);
 					}
 					if (marquee.isPointIn(x, y)) {
 						const key = marquee.layer.class;
@@ -5412,8 +5412,8 @@ Animation.outerTimelineListPointerup = function (event) {
 						const pastable = (Clipboard as any).has(`yami.animFrame.${key}`);
 						const extendable = selected || marquee.isExtendable();
 						const shrinkable = selected || marquee.isShrinkable();
-						const get = Local.createGetter('menuAnimationTimeline');
-						Menu.popup(
+						const get = Local.createGetter!('menuAnimationTimeline');
+						Menu.popup!(
 							{
 								x: event.clientX,
 								y: event.clientY
@@ -5423,7 +5423,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									label: get('insert'),
 									accelerator: 'F',
 									click: () => {
-										Animation.insertFrame();
+										Animation.insertFrame!();
 									}
 								},
 								{
@@ -5431,7 +5431,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: 'G',
 									enabled: extendable,
 									click: () => {
-										Animation.extendFrame();
+										Animation.extendFrame!();
 									}
 								},
 								{
@@ -5439,8 +5439,8 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: ctrl('X'),
 									enabled: selected,
 									click: () => {
-										Animation.copyFrame();
-										Animation.deleteFrame();
+										Animation.copyFrame!();
+										Animation.deleteFrame!();
 									}
 								},
 								{
@@ -5448,7 +5448,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: ctrl('C'),
 									enabled: selected,
 									click: () => {
-										Animation.copyFrame();
+										Animation.copyFrame!();
 									}
 								},
 								{
@@ -5456,7 +5456,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									enabled: pastable,
 									accelerator: ctrl('V'),
 									click: () => {
-										Animation.pasteFrame();
+										Animation.pasteFrame!();
 									}
 								},
 								{
@@ -5464,7 +5464,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: 'Delete',
 									enabled: selected,
 									click: () => {
-										Animation.deleteFrame();
+										Animation.deleteFrame!();
 									}
 								},
 								{
@@ -5472,7 +5472,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: 'Shift+Del',
 									enabled: shrinkable,
 									click: () => {
-										Animation.deleteFrame(true);
+										Animation.deleteFrame!(true);
 									}
 								},
 								{
@@ -5480,7 +5480,7 @@ Animation.outerTimelineListPointerup = function (event) {
 									accelerator: ctrl('A'),
 									enabled: marquee.layer.frames.length !== 0,
 									click: () => {
-										Animation.selectAllFrames();
+										Animation.selectAllFrames!();
 									}
 								}
 							]
@@ -5499,7 +5499,7 @@ Animation.outerTimelineListPointerup = function (event) {
 	}
 };
 
-Animation.outerTimelineListPointermove = function (event) {
+Animation.outerTimelineListPointermove = function (this: any, event: any) {
 	const { dragging } = Animation.outerTimelineList;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -5512,12 +5512,12 @@ Animation.outerTimelineListPointermove = function (event) {
 						dragging.enableDblclickEvent = false;
 					}
 				}
-				const coords = Animation.getFrameCoords(event, true);
+				const coords = Animation.getFrameCoords!(event, true);
 				const x = Math.clamp(coords.x, 0, Animation.frameMax - 1);
 				const mx = Math.min(x, dragging.pointerdownX);
 				const mw = Math.abs(x - dragging.pointerdownX) + 1;
-				Animation.selectMarquee(mx, dragging.pointerdownY, mw);
-				Animation.loadFrames(x);
+				Animation.selectMarquee!(mx, dragging.pointerdownY, mw);
+				Animation.loadFrames!(x);
 				break;
 			}
 			case 'shift': {
@@ -5529,13 +5529,13 @@ Animation.outerTimelineListPointermove = function (event) {
 						dragging.enableDblclickEvent = false;
 					}
 				}
-				const coords = Animation.getFrameCoords(event, true);
+				const coords = Animation.getFrameCoords!(event, true);
 				const marquee = Animation.timelineMarqueeShift;
 				const right = Animation.frameMax - marquee.length;
 				const bottom = Animation.innerTimelineList.childNodes.length - 1;
 				const x = Math.clamp(coords.x, 0, right);
 				const y = Math.clamp(coords.y, 0, bottom);
-				Animation.updateMarqueeShift(x, y);
+				Animation.updateMarqueeShift!(x, y);
 				dragging.layer.class === marquee.layer?.class
 					? removeClass(marquee, 'disabled')
 					: addClass(marquee, 'disabled');
@@ -5567,26 +5567,26 @@ Animation.outerTimelineListPointermove = function (event) {
 	}
 };
 
-Animation.innerTimelineListPointermove = function (event) {
+Animation.innerTimelineListPointermove = function (this: any, event: any) {
 	// 本事件可能被直接调用 因此不使用this来获取元素
-	const { x, y } = Animation.getFrameCoords(event);
+	const { x, y } = Animation.getFrameCoords!(event);
 	const list = Animation.innerTimelineList;
 	const ex = Animation.frameMax;
 	const ey = list.childNodes.length;
 	x >= 0 && x < ex && y >= 0 && y < ey
-		? Animation.updateCursor(x, y)
-		: Animation.updateCursor(-1, -1);
+		? Animation.updateCursor!(x, y)
+		: Animation.updateCursor!(-1, -1);
 	Animation.timelineCursor.pointerevent = event;
 };
 
-Animation.innerTimelineListPointerleave = function (event) {
+Animation.innerTimelineListPointerleave = function (this: any, event: any) {
 	Animation.timelineCursor.pointerevent = null;
-	Animation.updateCursor(-1, -1);
+	Animation.updateCursor!(-1, -1);
 };
 
-Animation.innerTimelineListDblclick = function (event) {
+Animation.innerTimelineListDblclick = function (this: any, event: any) {
 	if (this.pointerevent.enableDblclickEvent) {
-		const { x, y } = Animation.getFrameCoords(event);
+		const { x, y } = Animation.getFrameCoords!(event);
 		const timelines = Animation.innerTimelineList.childNodes;
 		const layer = (timelines[y] as HTMLElement & { layer?: any })?.layer;
 		if (layer !== undefined) {
@@ -5595,8 +5595,8 @@ Animation.innerTimelineListDblclick = function (event) {
 				const end = frame.end;
 				if (x >= end) continue;
 				if (x < start) break;
-				Animation.selectMarquee(start, y, end - start, x);
-				Animation.scrollToMarquee(false);
+				Animation.selectMarquee!(start, y, end - start, x);
+				Animation.scrollToMarquee!(false);
 				return;
 			}
 		}
@@ -5604,47 +5604,47 @@ Animation.innerTimelineListDblclick = function (event) {
 };
 
 // 选框 - 调整目标
-Animation.marquee.resize = function () {
+Animation.marquee.resize = function (this: any) {
 	if (this.pointerevent) {
-		Animation.marqueePointermove(this.pointerevent);
+		Animation.marqueePointermove!(this.pointerevent);
 	}
 };
 
 // 列表 - 复制
-Animation.list.copy = function (item) {
+Animation.list.copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.animation.object', item);
 	}
 };
 
 // 列表 - 粘贴
-Animation.list.paste = function (dItem) {
+Animation.list.paste = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.animation.object');
 	if (copy && this.data) {
-		this.addNodeTo(copy, dItem);
+		this.addNodeTo!(copy, dItem);
 	}
 };
 
 // 列表 - 删除
-Animation.list.delete = function (item) {
+Animation.list.delete = function (this: any, item: any) {
 	if (item) {
-		this.deleteNode(item);
+		this.deleteNode!(item);
 	}
 };
 
 // 列表 - 取消搜索
-Animation.list.cancelSearch = function () {
+Animation.list.cancelSearch = function (this: any) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		Animation.searcher.deleteInputContent();
-		this.expandToSelection();
-		this.scrollToSelection();
-		active.focus();
+		this.expandToSelection!();
+		this.scrollToSelection!();
+		active!.focus();
 	}
 };
 
 // 列表 - 更新头部位置
-Animation.list.updateHead = function () {
+Animation.list.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -5659,14 +5659,14 @@ Animation.list.updateHead = function () {
 };
 
 // 列表 - 重写创建图标方法
-Animation.list.createIcon = function () {
+Animation.list.createIcon = function (this: any) {
 	const icon = document.createElement('node-icon');
 	addClass(icon, 'icon-string');
 	return icon;
 };
 
 // 列表 - 重写创建文本方法
-Animation.list.createText = function (item) {
+Animation.list.createText = function (this: any, item: any) {
 	const textNode = document.createElement('div');
 	addClass(textNode, 'text');
 	textNode.style.pointerEvents = 'none';
@@ -5674,19 +5674,19 @@ Animation.list.createText = function (item) {
 };
 
 // 列表 - 更新文本
-Animation.list.updateText = function (item) {
+Animation.list.updateText = function (this: any, item: any) {
 	const { element } = item;
 	if (element.enumId !== item.id) {
 		element.enumId = item.id;
-		const enumString = Enum.getString(item.id);
+		const enumString = Enum.getString!(item.id);
 		element.textNode.textContent = enumString
-			? GameLocal.replace(enumString.name)
-			: Command.parseUnlinkedId(item.id);
+			? GameLocal.replace!(enumString.name)
+			: Command.parseUnlinkedId!(item.id);
 	}
 };
 
 // 列表 - 创建循环图标
-Animation.list.createLoopIcon = function (item) {
+Animation.list.createLoopIcon = function (this: any, item: any) {
 	const { element } = item;
 	const loopIcon = document.createElement('node-icon');
 	addClass(loopIcon, 'icon-loop');
@@ -5697,7 +5697,7 @@ Animation.list.createLoopIcon = function (item) {
 };
 
 // 列表 - 更新循环图标
-Animation.list.updateLoopIcon = function (item) {
+Animation.list.updateLoopIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.loopIcon !== undefined) {
 		const loop = item.loop;
@@ -5709,12 +5709,12 @@ Animation.list.updateLoopIcon = function (item) {
 };
 
 // 列表 - 在删除数据时回调
-Animation.list.onDelete = function () {
-	Animation.updateMotion();
+Animation.list.onDelete = function (this: any) {
+	Animation.updateMotion!();
 };
 
 // 图层列表 - 重写更新方法
-Animation.layerList.update = function () {
+Animation.layerList.update = function (this: any) {
 	TreeList.prototype.update.call(this);
 	if (!Animation.contextLoaded) {
 		Animation.contextLoaded = true;
@@ -5728,12 +5728,12 @@ Animation.layerList.update = function () {
 			player.loadContexts(next);
 		}
 	}
-	Animation.updateTarget();
-	Animation.updateTimeline();
+	Animation.updateTarget!();
+	Animation.updateTimeline!();
 };
 
 // 图层列表 - 创建图层
-Animation.layerList.create = function (dItem, type) {
+Animation.layerList.create = function (this: any, dItem: any, type: any) {
 	let data;
 	switch (type) {
 		case 'joint':
@@ -5749,28 +5749,28 @@ Animation.layerList.create = function (dItem, type) {
 			data = Inspector.animSoundLayer.create();
 			break;
 	}
-	this.addNodeTo(data, dItem);
+	this.addNodeTo!(data, dItem);
 };
 
 // 图层列表 - 复制
-Animation.layerList.copy = function (item) {
+Animation.layerList.copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.animation.layer', item);
 	}
 };
 
 // 图层列表 - 粘贴
-Animation.layerList.paste = function (dItem) {
+Animation.layerList.paste = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.animation.layer');
 	if (copy && this.data) {
-		this.addNodeTo(copy, dItem);
+		this.addNodeTo!(copy, dItem);
 	}
 };
 
 // 图层列表 - 删除
-Animation.layerList.delete = function (item) {
+Animation.layerList.delete = function (this: any, item: any) {
 	if (item) {
-		this.deleteNode(item);
+		this.deleteNode!(item);
 	}
 };
 
@@ -5798,21 +5798,21 @@ Animation.layerList.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (item) {
-		return iconCreators[item.class]();
+	return function (this: any, item: any) {
+		return (iconCreators as Record<string, any>)[item.class]();
 	};
 })();
 
 // 图层列表 - 在删除数据时回调
-Animation.layerList.onDelete = function (item) {
+Animation.layerList.onDelete = function (this: any, item: any) {
 	const editor = Inspector[Inspector.type];
 	if (editor?.target === item) {
-		Inspector.close();
+		Inspector.close!();
 	}
 };
 
 // 时间轴 - 更新头部位置
-Animation.timeline.updateHead = function () {
+Animation.timeline.updateHead = function (this: any) {
 	const { head } = this;
 	if (this.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -5830,27 +5830,32 @@ Animation.timeline.updateHead = function () {
 			Animation.toolbar.style.width = `${padding}px`;
 			Animation.outerRuler.style.left = `${padding}px`;
 		}
-		Animation.updateRuler();
+		Animation.updateRuler!();
 	}
 };
 
 // 时间轴列表 - 恢复动作和图层对象
-Animation.outerTimelineList.restoreMotionAndLayer = function (motion, direction, layer) {
+Animation.outerTimelineList.restoreMotionAndLayer = function (
+	this: any,
+	motion: any,
+	direction: any,
+	layer: any
+) {
 	const { updateTimeline } = Animation;
 	Animation.updateTimeline = Function.empty;
-	Animation.setMotion(motion);
-	Animation.setDirection(direction);
+	Animation.setMotion!(motion);
+	Animation.setDirection!(direction);
 	Animation.layerList.expandToItem(layer);
 	Animation.updateTimeline = updateTimeline;
 };
 
 // 时间轴选框 - 判断点是否在选框区域内
-Animation.timelineMarquee.isPointIn = function (x, y) {
+Animation.timelineMarquee.isPointIn = function (this: any, x: any, y: any) {
 	return x >= this.x && x < this.x + this.length && y === this.y;
 };
 
 // 时间轴选框 - 判断帧是否已选中
-Animation.timelineMarquee.isSelected = function () {
+Animation.timelineMarquee.isSelected = function (this: any) {
 	const { layer, x, length } = this;
 	const ex = x + length;
 	const frames = layer.frames;
@@ -5867,14 +5872,14 @@ Animation.timelineMarquee.isSelected = function () {
 };
 
 // 时间轴选框 - 判断是否可延长
-Animation.timelineMarquee.isExtendable = function () {
+Animation.timelineMarquee.isExtendable = function (this: any) {
 	const frames = this.layer.frames;
 	const frame = frames[0];
 	return frame ? this.x >= frame.start : false;
 };
 
 // 时间轴选框 - 判断是否可收缩
-Animation.timelineMarquee.isShrinkable = function () {
+Animation.timelineMarquee.isShrinkable = function (this: any) {
 	const frames = this.layer.frames;
 	const frame = frames[frames.length - 1];
 	return frame ? this.x < frame.end : false;

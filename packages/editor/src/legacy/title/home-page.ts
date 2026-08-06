@@ -28,20 +28,20 @@ interface HomeShape {
 }
 
 export const Home: HomeShape = {
-	initialize: null,
-	updateCenterPosition: null,
-	parseRecentProjects: null,
-	removeRecentProject: null,
-	readFileList: null,
-	countFileList: null,
-	windowResize: null,
-	windowLocalize: null,
-	startClick: null,
-	recentClick: null,
-	recentPointerup: null
+	initialize: null as any,
+	updateCenterPosition: null as any,
+	parseRecentProjects: null as any,
+	removeRecentProject: null as any,
+	readFileList: null as any,
+	countFileList: null as any,
+	windowResize: null as any,
+	windowLocalize: null as any,
+	startClick: null as any,
+	recentClick: null as any,
+	recentPointerup: null as any
 };
 
-Home.initialize = function () {
+Home.initialize = function (this: any) {
 	window.addEventListener('resize', this.windowResize);
 	window.addEventListener('localize', this.windowLocalize);
 	$('#home-start-list').addEventListener('click', this.startClick);
@@ -49,7 +49,7 @@ Home.initialize = function () {
 	$('#home-recent-list').addEventListener('pointerup', this.recentPointerup);
 };
 
-Home.updateCenterPosition = function () {
+Home.updateCenterPosition = function (this: any) {
 	if (Layout.manager.index === 'home') {
 		const elPage = $('#home');
 		const elContent = $('#home-content');
@@ -62,22 +62,22 @@ Home.updateCenterPosition = function () {
 	}
 };
 
-Home.windowResize = function (event) {
+Home.windowResize = function (this: any, event: any) {
 	// 不支持page(home):resize事件 先用window:resize代替
-	Home.updateCenterPosition();
+	Home.updateCenterPosition!();
 };
 
-Home.parseRecentProjects = function () {
+Home.parseRecentProjects = function (this: any) {
 	const nodes = $('.home-recent-item');
-	const items = Editor.config.recent;
+	const items = (Editor.config as any).recent;
 	const statsMode =
 		typeof SettingConfig !== 'undefined' && SettingConfig.config.recent
 			? SettingConfig.config.recent.statsMode
 			: 'count';
 
 	for (let i = 0; i < nodes.length; i++) {
-		const node = clear(nodes[i]);
-		const item = items[i];
+		const node = clear((nodes as Record<string, any>)[i]);
+		const item = items![i];
 		removeClass(node, 'disabled');
 		if (!item) {
 			hide(node);
@@ -113,7 +113,7 @@ Home.parseRecentProjects = function () {
 		const path = item.path;
 		addClass(ePath, 'home-recent-path');
 		addClass(ePath, 'text');
-		ePath.textContent = Path.normalize(path);
+		ePath.textContent = Path.normalize!(path);
 		node.appendChild(ePath);
 
 		const eStat = document.createElement('div');
@@ -121,27 +121,27 @@ Home.parseRecentProjects = function () {
 		addClass(eStat, 'home-recent-stat');
 		node.appendChild(eStat);
 
-		const dirname = Path.dirname(path);
-		new Promise((resolve, reject) => {
-			if (FS.existsSync(path)) {
+		const dirname = Path.dirname!(path);
+		new Promise((resolve: any, reject: any) => {
+			if (FS.existsSync!(path)) {
 				const dPath = `${dirname}/data/config.json`;
-				resolve(FSP.readFile(dPath, 'utf8'));
+				resolve(FSP.readFile!(dPath, 'utf8'));
 			} else {
 				reject(new URIError());
 			}
 		})
-			.then((data) => {
+			.then((data: any) => {
 				const { window } = JSON.parse(data as any);
 				eTitle.textContent = window.title;
 
 				// 根据配置选择使用readFileList或countFileList
 				if (statsMode === 'size') {
-					return this.readFileList(dirname);
+					return this.readFileList!(dirname);
 				} else {
-					return this.countFileList(dirname);
+					return this.countFileList!(dirname);
 				}
 			})
-			.then((list) => {
+			.then((list: any) => {
 				const counts = {
 					folder: 0,
 					data: 0,
@@ -162,14 +162,14 @@ Home.parseRecentProjects = function () {
 				};
 				const length = list.length;
 				for (let i = 0; i < length; i++) {
-					const { type, size } = list[i];
-					counts[type] += 1;
-					sizes[type] += size;
+					const { type, size } = (list as Record<string, any>)[i];
+					(counts as Record<string, any>)[type] += 1;
+					(sizes as Record<string, any>)[type] += size;
 				}
 				counts.total =
 					counts.data + counts.script + counts.image + counts.media + counts.other;
 				sizes.total = sizes.data + sizes.script + sizes.image + sizes.media + sizes.other;
-				const get = Local.createGetter('stats');
+				const get = Local.createGetter!('stats');
 				for (const { type, name } of [
 					{ type: 'data', name: get('data') },
 					{ type: 'script', name: get('script') },
@@ -178,8 +178,8 @@ Home.parseRecentProjects = function () {
 					{ type: 'other', name: get('other') },
 					{ type: 'total', name: get('total') }
 				]) {
-					const count = counts[type];
-					const size = File.parseFileSize(sizes[type]);
+					const count = (counts as Record<string, any>)[type];
+					const size = File.parseFileSize!((sizes as Record<string, any>)[type]);
 
 					const eText = document.createElement('div');
 					addClass(eText, 'home-recent-data');
@@ -195,7 +195,7 @@ Home.parseRecentProjects = function () {
 				}
 				show(node);
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				addClass(node, 'disabled');
 				if (error instanceof URIError) {
 					eTitle.textContent = 'Project does not exist';
@@ -206,18 +206,18 @@ Home.parseRecentProjects = function () {
 	}
 };
 
-Home.removeRecentProject = function (index) {
+Home.removeRecentProject = function (this: any, index: any) {
 	const nodes = $('.home-recent-item');
-	const items = Editor.config.recent;
-	const item = items[index];
-	const node = nodes[index];
+	const items = (Editor.config as any).recent;
+	const item = (items as Record<string, any>)[index];
+	const node = (nodes as Record<string, any>)[index];
 	if (item && node) {
 		items.remove(item);
 		clear(node);
 		const end = nodes.length - 1;
 		for (let i = index; i < end; i++) {
-			const sNode = nodes[i + 1];
-			const dNode = nodes[i];
+			const sNode = (nodes as Record<string, any>)[i + 1];
+			const dNode = (nodes as Record<string, any>)[i];
 			const array = Array.from(sNode.childNodes);
 			for (const node of array) {
 				dNode.appendChild(node);
@@ -226,7 +226,7 @@ Home.removeRecentProject = function (index) {
 				? addClass(dNode, 'disabled')
 				: removeClass(dNode, 'disabled');
 		}
-		hide(nodes[items.length]);
+		hide((nodes as Record<string, any>)[items.length]);
 	}
 };
 
@@ -266,12 +266,12 @@ Home.countFileList = (function IIFE() {
 		'.woff2': 'other'
 	};
 	const options: any = { withFileTypes: true };
-	const read = (path, list) => {
-		return FSP.readdir(path, options).then(async (files: any[]) => {
+	const read = (path: any, list: any) => {
+		return FSP.readdir!(path, options).then(async (files: any[]) => {
 			if (path) {
 				path += '/';
 			}
-			const promises = [];
+			const promises = [] as any[];
 			for (const file of files) {
 				const name = file.name;
 				const newPath = `${path}${name}`;
@@ -282,8 +282,9 @@ Home.countFileList = (function IIFE() {
 					});
 					promises.push(read(newPath, list));
 				} else {
-					const extname = Path.extname(name);
-					const type = extnameToTypeMap[extname.toLowerCase()] ?? 'other';
+					const extname = Path.extname!(name);
+					const type =
+						(extnameToTypeMap as Record<string, any>)[extname.toLowerCase()] ?? 'other';
 					list.push({
 						type: type,
 						size: 0
@@ -296,7 +297,7 @@ Home.countFileList = (function IIFE() {
 			return list;
 		});
 	};
-	return function (path) {
+	return function (this: any, path: any) {
 		return read(path, []);
 	};
 })();
@@ -337,12 +338,12 @@ Home.readFileList = (function IIFE() {
 		'.woff2': 'other'
 	};
 	const options: any = { withFileTypes: true };
-	const read = (path, list) => {
-		return FSP.readdir(path, options).then(async (files: any[]) => {
+	const read = (path: any, list: any) => {
+		return FSP.readdir!(path, options).then(async (files: any[]) => {
 			if (path) {
 				path += '/';
 			}
-			const promises = [];
+			const promises = [] as any[];
 			for (const file of files) {
 				const name = file.name;
 				const newPath = `${path}${name}`;
@@ -353,15 +354,16 @@ Home.readFileList = (function IIFE() {
 					});
 					promises.push(read(newPath, list));
 				} else {
-					const extname = Path.extname(name);
-					const type = extnameToTypeMap[extname.toLowerCase()] ?? 'other';
+					const extname = Path.extname!(name);
+					const type =
+						(extnameToTypeMap as Record<string, any>)[extname.toLowerCase()] ?? 'other';
 					const item = {
 						type: type,
 						size: 0
 					};
 					list.push(item);
 					promises.push(
-						FSP.stat(newPath).then((stats) => {
+						FSP.stat!(newPath).then((stats: any) => {
 							item.size = stats.size;
 						})
 					);
@@ -373,42 +375,42 @@ Home.readFileList = (function IIFE() {
 			return list;
 		});
 	};
-	return function (path) {
+	return function (this: any, path: any) {
 		return read(path, []);
 	};
 })();
 
-Home.windowLocalize = function (event) {
+Home.windowLocalize = function (this: any, event: any) {
 	if (Layout.manager.index === 'home') {
-		Home.parseRecentProjects();
+		Home.parseRecentProjects!();
 	}
 };
 
-Home.startClick = function (event) {
+Home.startClick = function (this: any, event: any) {
 	const element = event.target;
 	if (hasClass(element, 'home-start-item')) {
 		switch (element.getAttribute('value')) {
 			case 'new':
-				Title.newProject();
+				Title.newProject!();
 				break;
 			case 'open':
-				Title.openProject();
+				Title.openProject!();
 				break;
 		}
 	}
 };
 
-Home.recentClick = function (event) {
+Home.recentClick = function (this: any, event: any) {
 	const element = event.target;
 	if (hasClass(element, 'home-recent-item') && !hasClass(element, 'disabled')) {
 		const index = element.getAttribute('value');
-		const items = Editor.config.recent;
-		const item = items[parseInt(index)];
-		if (item) Editor.open(item.path);
+		const items = (Editor.config as any).recent;
+		const item = (items as Record<string, any>)[parseInt(index)];
+		if (item) Editor.open!(item.path);
 	}
 };
 
-Home.recentPointerup = function (event) {
+Home.recentPointerup = function (this: any, event: any) {
 	switch (event.button) {
 		case 2: {
 			const element = event.target;
@@ -420,8 +422,8 @@ Home.recentPointerup = function (event) {
 				addClass(element, 'hover');
 				const index = parseInt(element.getAttribute('value'));
 				const enabled = !hasClass(element, 'disabled');
-				const get = Local.createGetter('menuRecent');
-				Menu.popup(
+				const get = Local.createGetter!('menuRecent');
+				Menu.popup!(
 					{
 						x: event.clientX,
 						y: event.clientY,
@@ -434,28 +436,28 @@ Home.recentPointerup = function (event) {
 							label: get('openProject'),
 							enabled: enabled,
 							click: () => {
-								const items = Editor.config.recent;
-								const item = items[index];
+								const items = (Editor.config as any).recent;
+								const item = (items as Record<string, any>)[index];
 								if (item) {
-									Editor.open(item.path);
+									Editor.open!(item.path);
 								}
 							}
 						},
 						{
-							label: get(Local.showInExplorer()),
+							label: get(Local.showInExplorer!()),
 							enabled: enabled,
 							click: () => {
-								const items = Editor.config.recent;
-								const item = items[index];
+								const items = (Editor.config as any).recent;
+								const item = (items as Record<string, any>)[index];
 								if (item) {
-									File.showInExplorer(item.path);
+									File.showInExplorer!(item.path);
 								}
 							}
 						},
 						{
 							label: get('removeFromList'),
 							click: () => {
-								Home.removeRecentProject(index);
+								Home.removeRecentProject!(index);
 							}
 						}
 					]

@@ -7,18 +7,18 @@ function getWindow() {
 }
 
 export const AncestorGetter = {
-	target: null,
+	target: null as any,
 	dependsOn: ['ElementGetter'],
-	initialize: null,
-	open: null,
-	confirm: null
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-AncestorGetter.initialize = function () {
+AncestorGetter.initialize = function (this: any) {
 	if (!$('#ancestorGetter-type')) return;
 	const inclusions = new Set(['trigger', 'latest', 'by-id', 'variable']);
 	$('#ancestorGetter-type').loadItems(
-		$('#elementGetter-type').dataItems.filter((a) => inclusions.has(a.value))
+		$('#elementGetter-type').dataItems.filter((a: any) => inclusions.has(a.value))
 	);
 
 	$('#ancestorGetter-type')
@@ -31,7 +31,7 @@ AncestorGetter.initialize = function () {
 	on($('#ancestorGetter-confirm'), 'click', this.confirm);
 };
 
-AncestorGetter.open = function (target) {
+AncestorGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('ancestorGetter');
 
@@ -55,7 +55,7 @@ AncestorGetter.open = function (target) {
 	getFocus($('#ancestorGetter-type'));
 };
 
-AncestorGetter.confirm = function (event) {
+AncestorGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('ancestorGetter');
 	const type = read('type');
 	let getter;

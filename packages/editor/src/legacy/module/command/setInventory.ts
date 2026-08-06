@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setInventory = new CommandSchema({
 	name: 'setInventory',
 	onInitialize() {
-		$('#setInventory-confirm').on('click', () => this.save());
+		$('#setInventory-confirm').on('click', () => this.save!());
 		$('#setInventory-operation').loadItems([
 			{ name: 'Increase Money', value: 'increase-money' },
 			{ name: 'Decrease Money', value: 'decrease-money' },
@@ -64,39 +64,39 @@ Command.cases.setInventory = new CommandSchema({
 		refActor
 	}: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.setInventory.' + operation));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.setInventory.' + operation));
 		switch (operation) {
 			case 'increase-money':
 			case 'decrease-money':
-				words.push(Command.parseVariableNumber(money));
+				words.push(Command.parseVariableNumber!(money));
 				break;
 			case 'increase-items':
 			case 'decrease-items':
-				words.push(Command.parseVariableFile(itemId));
-				words.push(Command.parseVariableNumber(quantity));
+				words.push(Command.parseVariableFile!(itemId));
+				words.push(Command.parseVariableNumber!(quantity));
 				break;
 			case 'gain-equipment':
 			case 'lose-equipment':
-				words.push(Command.parseVariableFile(equipmentId));
+				words.push(Command.parseVariableFile!(equipmentId));
 				break;
 			case 'gain-equipment-instance':
 			case 'lose-equipment-instance':
-				words.push(Command.parseEquipment(equipment));
+				words.push(Command.parseEquipment!(equipment));
 				break;
 			case 'swap': {
-				const a = Command.parseVariableNumber(order1);
-				const b = Command.parseVariableNumber(order2);
+				const a = Command.parseVariableNumber!(order1);
+				const b = Command.parseVariableNumber!(order2);
 				words.push(a + Token(' <-> ') + b);
 				break;
 			}
 			case 'reference':
-				words.push(Command.parseActor(refActor));
+				words.push(Command.parseActor!(refActor));
 				break;
 		}
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get('command.setInventory') + Token(': ') },
+			{ text: Local.get!('command.setInventory') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -132,7 +132,7 @@ Command.cases.setInventory = new CommandSchema({
 		switch (operation) {
 			case 'increase-money':
 			case 'decrease-money': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					money: read('money')
@@ -145,7 +145,7 @@ Command.cases.setInventory = new CommandSchema({
 				if (itemId === '') {
 					return getFocus($('#setInventory-itemId'));
 				}
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					itemId,
@@ -159,12 +159,12 @@ Command.cases.setInventory = new CommandSchema({
 				if (equipmentId === '') {
 					return getFocus($('#setInventory-equipmentId'));
 				}
-				Command.save({ actor, operation, equipmentId });
+				Command.save!({ actor, operation, equipmentId });
 				break;
 			}
 			case 'gain-equipment-instance':
 			case 'lose-equipment-instance': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					equipment: read('equipment')
@@ -172,7 +172,7 @@ Command.cases.setInventory = new CommandSchema({
 				break;
 			}
 			case 'swap': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					order1: read('order1'),
@@ -184,10 +184,10 @@ Command.cases.setInventory = new CommandSchema({
 			case 'sort-by-order':
 			case 'reset':
 			case 'dereference':
-				Command.save({ actor, operation });
+				Command.save!({ actor, operation });
 				break;
 			case 'reference': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					refActor: read('refActor')

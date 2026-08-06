@@ -6,16 +6,16 @@ import { UI } from '@/ui/ui-window.ts';
 {
 	const UITextBox = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	UITextBox.initialize = function () {
+	UITextBox.initialize = function (this: any) {
 		if (!$('#uiTextBox-type')) return;
 		$('#uiTextBox-type').loadItems([
 			{ name: 'Text', value: 'text' },
@@ -51,10 +51,10 @@ import { UI } from '@/ui/ui-window.ts';
     #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
     #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
 		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.on('blur', Inspector.inputBlur!(this, UI));
 	};
 
-	UITextBox.create = function () {
+	UITextBox.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 24;
@@ -88,7 +88,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UITextBox.open = function (node) {
+	UITextBox.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -115,17 +115,17 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UITextBox.close = function () {
+	UITextBox.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
 	};
 
-	UITextBox.update = function (node, key, value) {
-		UI.planToSave();
+	UITextBox.update = function (this: any, node: any, key: any, value: any) {
+		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'type':
@@ -169,11 +169,11 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 		}
-		UI.requestRendering();
+		UI.requestRendering!();
 	};
 
-	UITextBox.paramInput = function (event) {
-		UITextBox.update(UITextBox.target, Inspector.getKey(this), read(this));
+	UITextBox.paramInput = function (this: any, event: any) {
+		UITextBox.update(UITextBox.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiTextBox = UITextBox;

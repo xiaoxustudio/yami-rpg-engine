@@ -112,7 +112,7 @@ export class CommandSchema {
 	createDefault() {
 		const data: Record<string, any> = {};
 		for (const field of this.fields) {
-			const value = this._getDefault(field);
+			const value = this._getDefault!(field);
 			if (value !== undefined) {
 				data[field.key] = value;
 			}
@@ -122,14 +122,14 @@ export class CommandSchema {
 
 	initialize() {
 		if (this.onInitialize) {
-			return this.onInitialize();
+			return this.onInitialize!();
 		}
-		on($(`#${this.confirmId}`), 'click', () => this.save());
+		on($(`#${this.confirmId}`), 'click', () => this.save!());
 	}
 
 	parse(data: any) {
 		if (this.customParse) {
-			return this.customParse(data);
+			return this.customParse!(data);
 		}
 		const alias = Local.get!(`command.${this.name}.alias`);
 		const contents = [
@@ -140,27 +140,27 @@ export class CommandSchema {
 			{ color: 'save' }
 		];
 		if (this.onParse) {
-			this.onParse(data, contents);
+			this.onParse!(data, contents);
 		}
 		return contents;
 	}
 
 	load(data: any) {
 		if (this.customLoad) {
-			return this.customLoad(data);
+			return this.customLoad!(data);
 		}
 		for (const field of this.fields) {
-			const value = data[field.key] ?? this._getDefault(field);
+			const value = data[field.key] ?? this._getDefault!(field);
 			write($(`#${this.name}-${field.domId ?? field.key}`), value);
 		}
 		if (this.onLoad) {
-			this.onLoad(data);
+			this.onLoad!(data);
 		}
 	}
 
 	save() {
 		if (this.customSave) {
-			return this.customSave();
+			return this.customSave!();
 		}
 		const data: Record<string, any> = {};
 		let focusTarget = null;
@@ -176,7 +176,7 @@ export class CommandSchema {
 			return getFocus(focusTarget);
 		}
 		if (this.onSave) {
-			this.onSave(data);
+			this.onSave!(data);
 		}
 		Command.save?.(data);
 	}

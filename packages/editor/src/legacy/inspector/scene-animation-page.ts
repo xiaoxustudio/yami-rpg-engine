@@ -10,20 +10,20 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneAnimation = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		motions: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		animationIdWrite: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		motions: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		animationIdWrite: null as any,
+		paramInput: null as any
 	};
 
-	SceneAnimation.initialize = function () {
+	SceneAnimation.initialize = function (this: any) {
 		if (!$('#sceneAnimation-name')) return;
 		this.nameBox = $('#sceneAnimation-name');
 		$('#sceneAnimation-rotatable').loadItems([
@@ -56,7 +56,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -65,7 +65,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 	};
 
-	SceneAnimation.create = function () {
+	SceneAnimation.create = function (this: any) {
 		return {
 			class: 'animation',
 			name: 'Animation',
@@ -89,7 +89,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneAnimation.open = function (animation) {
+	SceneAnimation.open = function (this: any, animation: any) {
 		if (this.target !== animation) {
 			this.target = animation;
 
@@ -111,10 +111,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.close = function () {
+	SceneAnimation.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			this.motions = null;
 			clear($('#sceneAnimation-conditions'));
@@ -124,7 +124,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.write = function (options) {
+	SceneAnimation.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneAnimation-x'), options.x);
 		}
@@ -136,13 +136,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.update = function (animation, key, value) {
-		Scene.planToSave();
+	SceneAnimation.update = function (this: any, animation: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (animation.name !== value) {
 					animation.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(animation);
 				}
 				break;
@@ -150,8 +150,8 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				if (animation.animationId !== value) {
 					animation.animationId = value;
 					SceneAnimation.motions = null;
-					Scene.destroyObjectContext(animation);
-					Scene.loadAnimationContext(animation);
+					Scene.destroyObjectContext!(animation);
+					Scene.loadAnimationContext!(animation);
 				}
 				break;
 			case 'motion':
@@ -202,18 +202,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 				break;
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneAnimation.animationIdWrite = function (event) {
+	SceneAnimation.animationIdWrite = function (this: any, event: any) {
 		const elMotion = $('#sceneAnimation-motion');
-		const items = Animation.getMotionListItems(event.value);
+		const items = Animation.getMotionListItems!(event.value);
 		elMotion.loadItems(items);
 		write(elMotion, read(elMotion) ?? items[0].value);
 	};
 
-	SceneAnimation.paramInput = function (event) {
-		SceneAnimation.update(SceneAnimation.target, Inspector.getKey(this), read(this));
+	SceneAnimation.paramInput = function (this: any, event: any) {
+		SceneAnimation.update!(SceneAnimation.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.sceneAnimation = SceneAnimation;

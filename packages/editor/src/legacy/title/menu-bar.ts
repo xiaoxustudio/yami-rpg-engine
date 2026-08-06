@@ -80,29 +80,29 @@ interface MenubarShape {
 
 export const Menubar: MenubarShape = {
 	// methods
-	initialize: null,
-	toggleFullScreen: null,
-	popupFileMenu: null,
-	popupEditMenu: null,
-	popupViewMenu: null,
-	popupWindowMenu: null,
-	popupHelpMenu: null,
-	popupOpenYamiMenu: null,
-	createRecentItems: null,
-	createLanguageItems: null,
-	createColorIcon: null,
-	revealSaveDirectory: null,
-	sanitizeFolderName: null,
+	initialize: null as any,
+	toggleFullScreen: null as any,
+	popupFileMenu: null as any,
+	popupEditMenu: null as any,
+	popupViewMenu: null as any,
+	popupWindowMenu: null as any,
+	popupHelpMenu: null as any,
+	popupOpenYamiMenu: null as any,
+	createRecentItems: null as any,
+	createLanguageItems: null as any,
+	createColorIcon: null as any,
+	revealSaveDirectory: null as any,
+	sanitizeFolderName: null as any,
 	// events
-	keydown: null,
-	pointerdown: null,
-	pointerup: null,
-	pointerover: null,
-	hrefClick: null
+	keydown: null as any,
+	pointerdown: null as any,
+	pointerup: null as any,
+	pointerover: null as any,
+	hrefClick: null as any
 };
 
 // 初始化
-Menubar.initialize = function () {
+Menubar.initialize = function (this: any) {
 	// 侦听事件
 	window.addEventListener('keydown', this.keydown);
 	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
@@ -110,18 +110,18 @@ Menubar.initialize = function () {
 };
 
 // 开关全屏模式
-Menubar.toggleFullScreen = function () {
+Menubar.toggleFullScreen = function (this: any) {
 	ipcRenderer.send('toggle-full-screen');
 };
 
 // 弹出文件菜单
-Menubar.popupFileMenu = function (target) {
+Menubar.popupFileMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = Local.createGetter('menuFile');
-		Menu.popup(
+		const get = Local.createGetter!('menuFile');
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -134,47 +134,47 @@ Menubar.popupFileMenu = function (target) {
 					label: get('newProject'),
 					accelerator: ctrl('N'),
 					click: () => {
-						Title.newProject();
+						Title.newProject!();
 					}
 				},
 				{
 					label: get('openProject'),
 					accelerator: ctrl('O'),
 					click: () => {
-						Title.openProject();
+						Title.openProject!();
 					}
 				},
 				{
 					label: get('revealProject'),
 					enabled: open,
 					click: () => {
-						File.openPath(Path.dirname(Editor.config.project));
+						File.openPath!(Path.dirname!((Editor.config as any).project));
 					}
 				},
 				{
 					label: get('revealSaveDirectory'),
 					enabled: open,
 					click: () => {
-						Menubar.revealSaveDirectory();
+						Menubar.revealSaveDirectory!();
 					}
 				},
 				{
 					label: get('openRecent'),
 					enabled: open,
-					submenu: this.createRecentItems()
+					submenu: this.createRecentItems!()
 				},
 				{
 					label: get('exportLanguage'),
 					enabled: open && Data.config.localization.languages.length !== 0,
 					click: () => {
-						ExportLanguage.open();
+						ExportLanguage.open!();
 					}
 				},
 				{
 					label: get('importLanguage'),
 					enabled: open && Data.config.localization.languages.length !== 0,
 					click: () => {
-						ImportLanguage.open();
+						ImportLanguage.open!();
 					}
 				},
 				{
@@ -182,21 +182,21 @@ Menubar.popupFileMenu = function (target) {
 					accelerator: ctrl('S'),
 					enabled: open,
 					click: () => {
-						File.save();
+						File.save!();
 					}
 				},
 				{
 					label: get('closeProject'),
 					enabled: open,
 					click: () => {
-						Title.closeProject();
+						Title.closeProject!();
 					}
 				},
 				{
 					label: get('deployment'),
 					enabled: open,
 					click: () => {
-						Title.deployment();
+						Title.deployment!();
 					}
 				},
 				{
@@ -205,7 +205,7 @@ Menubar.popupFileMenu = function (target) {
 				{
 					label: get('exit'),
 					click: () => {
-						Title.closeClick();
+						Title.closeClick!();
 					}
 				}
 			]
@@ -214,51 +214,51 @@ Menubar.popupFileMenu = function (target) {
 };
 
 // 弹出编辑菜单
-Menubar.popupEditMenu = function (target) {
+Menubar.popupEditMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = Local.createGetter('menuEdit');
+		const get = Local.createGetter!('menuEdit');
 		const items = {
 			cut: {
 				label: get('cut'),
 				accelerator: ctrl('X'),
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			},
 			copy: {
 				label: get('copy'),
 				accelerator: ctrl('C'),
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			},
 			paste: {
 				label: get('paste'),
 				accelerator: ctrl('V'),
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			},
 			delete: {
 				label: get('delete'),
 				accelerator: 'Delete',
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			},
 			undo: {
 				label: get('undo'),
 				accelerator: ctrl('Z'),
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			},
 			redo: {
 				label: get('redo'),
 				accelerator: ctrl('Y'),
 				enabled: false,
-				click: null
+				click: null as (() => void) | null
 			}
 		};
 		// 提前触发检查器输入框的blur事件
-		document.activeElement.blur();
+		document.activeElement!.blur();
 		switch (Layout.manager.index) {
 			case 'scene':
 				if (Scene.state === 'open') {
@@ -269,17 +269,17 @@ Menubar.popupEditMenu = function (target) {
 					items.paste.enabled = pastable;
 					items.delete.enabled = selected;
 					items.cut.click = () => {
-						Scene.copy();
-						Scene.delete();
+						Scene.copy!();
+						Scene.delete!();
 					};
 					items.copy.click = () => {
-						Scene.copy();
+						Scene.copy!();
 					};
 					items.paste.click = () => {
-						Scene.paste();
+						Scene.paste!();
 					};
 					items.delete.click = () => {
-						Scene.delete();
+						Scene.delete!();
 					};
 				}
 				break;
@@ -292,17 +292,17 @@ Menubar.popupEditMenu = function (target) {
 					items.paste.enabled = pastable;
 					items.delete.enabled = selected;
 					items.cut.click = () => {
-						UI.copy();
-						UI.delete();
+						UI.copy!();
+						UI.delete!();
 					};
 					items.copy.click = () => {
-						UI.copy();
+						UI.copy!();
 					};
 					items.paste.click = () => {
-						UI.paste();
+						UI.paste!();
 					};
 					items.delete.click = () => {
-						UI.delete();
+						UI.delete!();
 					};
 				}
 				break;
@@ -315,28 +315,28 @@ Menubar.popupEditMenu = function (target) {
 					items.paste.enabled = pastable;
 					items.delete.enabled = selected;
 					items.cut.click = () => {
-						Animation.copy();
-						Animation.delete();
+						Animation.copy!();
+						Animation.delete!();
 					};
 					items.copy.click = () => {
-						Animation.copy();
+						Animation.copy!();
 					};
 					items.paste.click = () => {
-						Animation.paste();
+						Animation.paste!();
 					};
 					items.delete.click = () => {
-						Animation.delete();
+						Animation.delete!();
 					};
 				}
 				break;
 			case 'particle':
 				break;
 		}
-		items.undo.enabled = UndoManager.canUndo();
-		items.redo.enabled = UndoManager.canRedo();
-		items.undo.click = () => UndoManager.undo();
-		items.redo.click = () => UndoManager.redo();
-		Menu.popup(
+		items.undo.enabled = UndoManager.canUndo!();
+		items.redo.enabled = UndoManager.canRedo!();
+		items.undo.click = () => UndoManager.undo!();
+		items.redo.click = () => UndoManager.redo!();
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -344,13 +344,13 @@ Menubar.popupEditMenu = function (target) {
 					removeClass(target, 'selected');
 				}
 			},
-			[items.cut, items.copy, items.paste, items.delete, items.undo, items.redo]
+			[items.cut, items.copy, items.paste, items.delete, items.undo, items.redo] as any[]
 		);
 	}
 };
 
 // 弹出视图菜单
-Menubar.popupViewMenu = function (target) {
+Menubar.popupViewMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -361,8 +361,8 @@ Menubar.popupViewMenu = function (target) {
 		const isAnimationOpen = Scene.showAnimation;
 		const isDarkTheme = hasClass(document.documentElement, 'dark');
 		const isLightTheme = !isDarkTheme;
-		const get = Local.createGetter('menuView');
-		Menu.popup(
+		const get = Local.createGetter!('menuView');
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -376,7 +376,7 @@ Menubar.popupViewMenu = function (target) {
 					accelerator: process.platform === 'darwin' ? '' : 'F11',
 					checked: isFullScreen,
 					click: () => {
-						Menubar.toggleFullScreen();
+						Menubar.toggleFullScreen!();
 					}
 				},
 				{
@@ -387,26 +387,26 @@ Menubar.popupViewMenu = function (target) {
 							label: get('scene.grid'),
 							checked: isGridOpen,
 							click: () => {
-								Scene.switchGrid();
+								Scene.switchGrid!();
 							}
 						},
 						{
 							label: get('scene.light'),
 							checked: isLightOpen,
 							click: () => {
-								Scene.switchLight();
+								Scene.switchLight!();
 							}
 						},
 						{
 							label: get('scene.animation'),
 							checked: isAnimationOpen,
 							click: () => {
-								Scene.switchAnimation();
+								Scene.switchAnimation!();
 							}
 						},
 						{
 							label: get('scene.background'),
-							icon: this.createColorIcon(Scene.background.hex),
+							icon: this.createColorIcon!(Scene.background.hex),
 							click: () => {
 								Color.open(Scene.background);
 							}
@@ -419,14 +419,14 @@ Menubar.popupViewMenu = function (target) {
 					submenu: [
 						{
 							label: get('ui.background'),
-							icon: this.createColorIcon(UI.background.hex),
+							icon: this.createColorIcon!(UI.background.hex),
 							click: () => {
 								Color.open(UI.background);
 							}
 						},
 						{
 							label: get('ui.foreground'),
-							icon: this.createColorIcon(UI.foreground.hex),
+							icon: this.createColorIcon!(UI.foreground.hex),
 							click: () => {
 								Color.open(UI.foreground);
 							}
@@ -439,7 +439,7 @@ Menubar.popupViewMenu = function (target) {
 					submenu: [
 						{
 							label: get('animation.background'),
-							icon: this.createColorIcon(Animation.background.hex),
+							icon: this.createColorIcon!(Animation.background.hex),
 							click: () => {
 								Color.open(Animation.background);
 							}
@@ -452,7 +452,7 @@ Menubar.popupViewMenu = function (target) {
 					submenu: [
 						{
 							label: get('particle.background'),
-							icon: this.createColorIcon(Particle.background.hex),
+							icon: this.createColorIcon!(Particle.background.hex),
 							click: () => {
 								Color.open(Particle.background);
 							}
@@ -470,9 +470,9 @@ Menubar.popupViewMenu = function (target) {
 							}
 						},
 						{
-							label: `${get('layout.zoom')}: ${Zoom.getFactor()}`,
+							label: `${get('layout.zoom')}: ${(Zoom.getFactor as any)()}`,
 							click: () => {
-								Zoom.open();
+								(Zoom.open as any)();
 							}
 						}
 					]
@@ -484,21 +484,21 @@ Menubar.popupViewMenu = function (target) {
 							label: get('theme.light'),
 							checked: isLightTheme,
 							click: () => {
-								Title.switchTheme('light');
+								Title.switchTheme!('light');
 							}
 						},
 						{
 							label: get('theme.dark'),
 							checked: isDarkTheme,
 							click: () => {
-								Title.switchTheme('dark');
+								Title.switchTheme!('dark');
 							}
 						}
 					]
 				},
 				{
 					label: get('language'),
-					submenu: this.createLanguageItems()
+					submenu: this.createLanguageItems!()
 				}
 			]
 		);
@@ -506,13 +506,13 @@ Menubar.popupViewMenu = function (target) {
 };
 
 // 弹出窗口菜单
-Menubar.popupWindowMenu = function (target) {
+Menubar.popupWindowMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = Local.createGetter('menuWindow');
-		Menu.popup(
+		const get = Local.createGetter!('menuWindow');
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -526,7 +526,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F1',
 					enabled: open,
 					click: () => {
-						Project.open();
+						Project.open!();
 					}
 				},
 				{
@@ -542,7 +542,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F6',
 					enabled: open,
 					click: () => {
-						Attribute.open();
+						Attribute.open!();
 					}
 				},
 				{
@@ -550,7 +550,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F7',
 					enabled: open,
 					click: () => {
-						Enum.open();
+						Enum.open!();
 					}
 				},
 				{
@@ -565,7 +565,7 @@ Menubar.popupWindowMenu = function (target) {
 					label: get('easing'),
 					enabled: open,
 					click: () => {
-						Easing.open();
+						Easing.open!();
 					}
 				},
 				{
@@ -580,7 +580,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F9',
 					enabled: open,
 					click: () => {
-						PluginManager.open();
+						PluginManager.open!();
 					}
 				},
 				{
@@ -588,7 +588,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F10',
 					enabled: open,
 					click: () => {
-						CustomCommand.open();
+						CustomCommand.open!();
 					}
 				},
 				{
@@ -596,7 +596,7 @@ Menubar.popupWindowMenu = function (target) {
 					accelerator: 'F4',
 					enabled: open,
 					click: () => {
-						Title.playGame();
+						Title.playGame!();
 					}
 				}
 			]
@@ -605,12 +605,12 @@ Menubar.popupWindowMenu = function (target) {
 };
 
 // 弹出帮助菜单
-Menubar.popupHelpMenu = function (target) {
+Menubar.popupHelpMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = Local.createGetter('menuHelp');
-		Menu.popup(
+		const get = Local.createGetter!('menuHelp');
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -622,7 +622,7 @@ Menubar.popupHelpMenu = function (target) {
 				{
 					label: get('documentation'),
 					click: () => {
-						File.openURL(
+						File.openURL!(
 							Local.language.slice(0, 2) === 'zh'
 								? 'https://open-yami-community.github.io/open-yami-doc/'
 								: 'https://open-yami-community.github.io/open-yami-doc/' // 锁死中文
@@ -641,7 +641,7 @@ Menubar.popupHelpMenu = function (target) {
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
 						getWindow().open('about');
-						$('#editor-version').textContent = Editor.config.version;
+						$('#editor-version').textContent = (Editor.config as any).version;
 						$('#electron-version').textContent = process.versions.electron;
 						$('#chrome-version').textContent = process.versions.chrome;
 						$('#node-version').textContent = process.versions.node;
@@ -652,7 +652,7 @@ Menubar.popupHelpMenu = function (target) {
 				{
 					label: get('updateLog'),
 					click: () => {
-						UpdateLog.open();
+						UpdateLog.open!();
 					}
 				},
 				{
@@ -661,13 +661,13 @@ Menubar.popupHelpMenu = function (target) {
 						{
 							label: 'Yami RPG Editor',
 							click: () => {
-								File.openURL('https://github.com/yami-pro/yami-rpg-editor');
+								File.openURL!('https://github.com/yami-pro/yami-rpg-editor');
 							}
 						},
 						{
 							label: 'Open Yami Community',
 							click: () => {
-								File.openURL('https://github.com/Open-Yami-Community');
+								File.openURL!('https://github.com/Open-Yami-Community');
 							}
 						}
 					]
@@ -677,13 +677,13 @@ Menubar.popupHelpMenu = function (target) {
 	}
 };
 // 弹出OpenYami菜单
-Menubar.popupOpenYamiMenu = function (target) {
+Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const open = Editor.state === 'open';
 		const bounds = rect(target);
-		const get = Local.createGetter('menuOpenYami');
-		Menu.popup(
+		const get = Local.createGetter!('menuOpenYami');
+		Menu.popup!(
 			{
 				x: bounds.left,
 				y: bounds.bottom,
@@ -708,7 +708,7 @@ Menubar.popupOpenYamiMenu = function (target) {
 					label: get('qr'),
 					enabled: open,
 					click: () => {
-						WebServer.open();
+						WebServer.open!();
 					}
 				},
 				{
@@ -722,13 +722,13 @@ Menubar.popupOpenYamiMenu = function (target) {
 						$('#export-apk').addEventListener(
 							'closed',
 							() => {
-								ApkBuilder.reset();
+								ApkBuilder.reset!();
 							},
 							{ once: true }
 						);
 						// 解析本地构建APK配置
-						const pConfig = Path.resolve(
-							Path.dirname(Editor.config.project),
+						const pConfig = Path.resolve!(
+							Path.dirname!((Editor.config as any).project),
 							'apk',
 							'./config.json'
 						);
@@ -742,71 +742,71 @@ Menubar.popupOpenYamiMenu = function (target) {
 						};
 						const apkConfigSave = () => {
 							// 没有则创建父级文件夹
-							if (!FS.existsSync(Path.dirname(pConfig))) {
-								FS.mkdirSync(Path.dirname(pConfig));
+							if (!FS.existsSync!(Path.dirname!(pConfig))) {
+								FS.mkdirSync!(Path.dirname!(pConfig));
 							}
-							FSP.writeFile(pConfig, JSON.stringify(config), {});
+							FSP.writeFile!(pConfig, JSON.stringify(config), {});
 						};
-						const InputEvent = (e, name) => {
-							config[name] = e.target.value;
+						const InputEvent = (e: any, name: any) => {
+							(config as Record<string, any>)[name] = e.target.value;
 							apkConfigSave();
 						};
-						await new Promise(async (resolve, reject) => {
-							if (FS.existsSync(pConfig)) {
+						await new Promise(async (resolve: any, reject: any) => {
+							if (FS.existsSync!(pConfig)) {
 								resolve(
-									(config = JSON.parse((await FSP.readFile(pConfig)).toString()))
+									(config = JSON.parse((await FSP.readFile!(pConfig)).toString()))
 								);
 							} else {
 								// 配置不存在
-								if (!FS.existsSync(Path.dirname(pConfig))) {
-									FS.mkdirSync(Path.dirname(pConfig));
+								if (!FS.existsSync!(Path.dirname!(pConfig))) {
+									FS.mkdirSync!(Path.dirname!(pConfig));
 								}
-								resolve(FSP.writeFile(pConfig, JSON.stringify(config)));
+								resolve(FSP.writeFile!(pConfig, JSON.stringify(config)));
 							}
 						}).then(() => {
 							// 初始化
 							write($('#export-apk-apkName'), config.appName);
-							$('#export-apk-apkName').addEventListener('input', (e) =>
+							$('#export-apk-apkName').addEventListener('input', (e: any) =>
 								InputEvent(e, 'appName')
 							);
 							write($('#export-apk-apkIcon'), config.iconPath);
-							$('#export-apk-apkIcon').addEventListener('input', (e) =>
+							$('#export-apk-apkIcon').addEventListener('input', (e: any) =>
 								InputEvent(e, 'iconPath')
 							);
-							$('#export-apk-apkIcon').addEventListener('mouseenter', (e) =>
+							$('#export-apk-apkIcon').addEventListener('mouseenter', (e: any) =>
 								setTooltip(
 									$('#export-apk-apkIcon'),
-									ApkBuilder.processPathOnly(config.iconPath)
+									ApkBuilder.processPathOnly!(config.iconPath)
 								)
 							);
 							write($('#export-apk-apkPackageName'), config.packageName);
-							$('#export-apk-apkPackageName').addEventListener('input', (e) =>
+							$('#export-apk-apkPackageName').addEventListener('input', (e: any) =>
 								InputEvent(e, 'packageName')
 							);
 							write($('#export-apk-apkVersionName'), config.versionName);
-							$('#export-apk-apkVersionName').addEventListener('input', (e) =>
+							$('#export-apk-apkVersionName').addEventListener('input', (e: any) =>
 								InputEvent(e, 'versionName')
 							);
 							write($('#export-apk-apkVersionCode'), config.versionCode);
-							$('#export-apk-apkVersionCode').addEventListener('input', (e) =>
+							$('#export-apk-apkVersionCode').addEventListener('input', (e: any) =>
 								InputEvent(e, 'versionCode')
 							);
 
-							$('#export-apk-button').addEventListener('click', (e) => {
+							$('#export-apk-button').addEventListener('click', (e: any) => {
 								disable($('#export-apk-button'));
 								apkConfigSave();
 								SettingConfig.load(); // 更新配置
-								ApkBuilder.build({
+								ApkBuilder.build!({
 									...config,
 									...SettingConfig.config.apkbuild,
 									...SettingConfig.config.signed
 								});
 							});
 							// 加载状态
-							if (ApkBuilder.isBuilding()) {
+							if (ApkBuilder.isBuilding!()) {
 								disable($('#export-apk-button'));
-								ApkBuilder.logs.forEach((log) => {
-									ApkBuilder.apkLog(log);
+								ApkBuilder.logs.forEach((log: any) => {
+									ApkBuilder.apkLog!(log);
 								});
 							} else {
 								enable($('#export-apk-button'));
@@ -821,25 +821,25 @@ Menubar.popupOpenYamiMenu = function (target) {
 };
 
 // 创建最近的文件项目
-Menubar.createRecentItems = function () {
+Menubar.createRecentItems = function (this: any) {
 	if (Editor.state === 'closed') {
 		return [];
 	}
-	const { recentTabs } = Editor.project;
-	const items: any[] = [];
-	const get = Local.createGetter('menuFile');
+	const { recentTabs } = Editor.project as any;
+	const items: any[] = [] as any[];
+	const get = Local.createGetter!('menuFile');
 	items.push({
 		label: get('openRecent.reopenClosedFile'),
-		enabled: !!Title.getClosedTabMeta(),
+		enabled: !!Title.getClosedTabMeta!(),
 		accelerator: ctrl('Shift+T'),
 		click: () => {
-			Title.reopenClosedTab();
+			Title.reopenClosedTab!();
 		}
 	});
 	// 添加最近的标签选项
 	if (recentTabs.length !== 0) {
-		const click = function () {
-			Title.reopenClosedTab(this.meta);
+		const click = function (this: any) {
+			Title.reopenClosedTab!(this.meta);
 		};
 		items.push({ type: 'separator' });
 		const map = Data.manifest.guidMap;
@@ -847,7 +847,7 @@ Menubar.createRecentItems = function () {
 			const meta = map[guid];
 			if (meta !== undefined) {
 				items.push({
-					label: File.filterGUID(meta.path),
+					label: File.filterGUID!(meta.path),
 					meta: meta,
 					click: click
 				});
@@ -866,9 +866,9 @@ Menubar.createRecentItems = function () {
 };
 
 // 创建语言项目
-Menubar.createLanguageItems = function () {
-	const get = Local.createGetter('menuView.language');
-	const autoChecked = Editor.config.language === '';
+Menubar.createLanguageItems = function (this: any) {
+	const get = Local.createGetter!('menuView.language');
+	const autoChecked = (Editor.config as any).language === '';
 	const autoLabel = get('auto');
 	const items: any[] = [
 		{
@@ -876,12 +876,12 @@ Menubar.createLanguageItems = function () {
 			checked: autoChecked,
 			click: () => {
 				if (!autoChecked) {
-					Local.setLanguage('');
+					Local.setLanguage!('');
 				}
 			}
 		}
 	];
-	Local.readLanguageList().then((languages) => {
+	Local.readLanguageList!().then((languages: any) => {
 		const active = Local.active;
 		if (languages.length !== 0) {
 			items.push({ type: 'separator' });
@@ -897,16 +897,16 @@ Menubar.createLanguageItems = function () {
 				checked: checked,
 				click: () => {
 					if (!checked) {
-						Local.setLanguage(key);
+						Local.setLanguage!(key);
 					}
 				}
 			});
 		}
 		items.push({ type: 'separator' });
 		items.push({
-			label: get(Local.showInExplorer()),
+			label: get(Local.showInExplorer!()),
 			click: () => {
-				File.openPath(Local.dirname);
+				File.openPath!(Local.dirname);
 			}
 		});
 	});
@@ -914,7 +914,7 @@ Menubar.createLanguageItems = function () {
 };
 
 // 创建颜色图标
-Menubar.createColorIcon = function (color) {
+Menubar.createColorIcon = function (this: any, color: any) {
 	const icon = document.createElement('menu-icon');
 	const r = parseInt(color.slice(0, 2), 16);
 	const g = parseInt(color.slice(2, 4), 16);
@@ -929,21 +929,21 @@ Menubar.createColorIcon = function (color) {
 };
 
 // 显示存档目录
-Menubar.revealSaveDirectory = async function () {
+Menubar.revealSaveDirectory = async function (this: any) {
 	let saveDir;
 	const { location, subdir } = Data.config.save;
 	if (location !== 'local') {
 		const dirname = await ipcRenderer.invoke('get-dir-path', location);
-		const folder = this.sanitizeFolderName(subdir);
-		saveDir = Path.resolve(dirname, folder);
+		const folder = this.sanitizeFolderName!(subdir);
+		saveDir = Path.resolve!(dirname, folder);
 	} else {
-		saveDir = File.path('Save');
+		saveDir = File.path!('Save');
 	}
-	File.openPath(saveDir);
+	File.openPath!(saveDir);
 };
 
 // 规范化文件夹名称
-Menubar.sanitizeFolderName = function (name) {
+Menubar.sanitizeFolderName = function (this: any, name: any) {
 	// 移除Windows/macOS/Linux不允许的字符
 	name = name.replace(/[/:*?"<>|]/g, '');
 	// 去掉开头和结尾的空格
@@ -961,22 +961,22 @@ Menubar.sanitizeFolderName = function (name) {
 };
 
 // 键盘按下事件
-Menubar.keydown = function (event) {
+Menubar.keydown = function (this: any, event: any) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyN':
-				Title.newProject();
+				Title.newProject!();
 				break;
 			case 'KeyO':
-				Title.openProject();
+				Title.openProject!();
 				break;
 			case 'KeyS':
-				File.save();
-				WebServer.update(Editor.config.project);
+				File.save!();
+				WebServer.update!((Editor.config as any).project);
 				break;
 			case 'KeyT':
 				if (event.shiftKey) {
-					Title.reopenClosedTab();
+					Title.reopenClosedTab!();
 				}
 				break;
 			case 'KeyW':
@@ -984,17 +984,17 @@ Menubar.keydown = function (event) {
 				break;
 			case 'KeyZ':
 				if (!macRedoKey(event)) {
-					Scene.undo();
-					UI.undo();
-					Animation.undo();
-					Particle.undo();
+					Scene.undo!();
+					UI.undo!();
+					Animation.undo!();
+					Particle.undo!();
 					break;
 				}
 			case 'KeyY':
-				Scene.redo();
-				UI.redo();
-				Animation.redo();
-				Particle.redo();
+				Scene.redo!();
+				UI.redo!();
+				Animation.redo!();
+				Particle.redo!();
 				break;
 		}
 	} else if (event.altKey) {
@@ -1019,31 +1019,31 @@ Menubar.keydown = function (event) {
 	} else {
 		switch (event.code) {
 			case 'F1':
-				Project.open();
+				Project.open!();
 				break;
 			case 'F3':
 				Variable.open();
 				break;
 			case 'F6':
-				Attribute.open();
+				Attribute.open!();
 				break;
 			case 'F7':
-				Enum.open();
+				Enum.open!();
 				break;
 			case 'F8':
 				Localization.open();
 				break;
 			case 'F9':
-				PluginManager.open();
+				PluginManager.open!();
 				break;
 			case 'F4':
-				Title.playGame();
+				Title.playGame!();
 				break;
 			case 'F10':
-				CustomCommand.open();
+				CustomCommand.open!();
 				break;
 			case 'KeyF':
-				Palette.flipTiles();
+				Palette.flipTiles!();
 				break;
 			// case 'Pause':
 			//   GL.WEBGL_lose_context.loseContext()
@@ -1053,7 +1053,7 @@ Menubar.keydown = function (event) {
 };
 
 // 指针按下事件
-Menubar.pointerdown = function (event) {
+Menubar.pointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 		case -1: {
@@ -1061,17 +1061,17 @@ Menubar.pointerdown = function (event) {
 			if (hasClass(target, 'item') && !hasClass(target, 'selected')) {
 				switch (target.getAttribute('value')) {
 					case 'file':
-						return Menubar.popupFileMenu(target);
+						return Menubar.popupFileMenu!(target);
 					case 'edit':
-						return Menubar.popupEditMenu(target);
+						return Menubar.popupEditMenu!(target);
 					case 'view':
-						return Menubar.popupViewMenu(target);
+						return Menubar.popupViewMenu!(target);
 					case 'window':
-						return Menubar.popupWindowMenu(target);
+						return Menubar.popupWindowMenu!(target);
 					case 'help':
-						return Menubar.popupHelpMenu(target);
+						return Menubar.popupHelpMenu!(target);
 					case 'openYami':
-						return Menubar.popupOpenYamiMenu(target);
+						return Menubar.popupOpenYamiMenu!(target);
 				}
 			}
 			break;
@@ -1080,7 +1080,7 @@ Menubar.pointerdown = function (event) {
 };
 
 // 指针弹起事件
-Menubar.pointerup = function (event) {
+Menubar.pointerup = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const target = event.target;
@@ -1093,18 +1093,18 @@ Menubar.pointerup = function (event) {
 };
 
 // 指针进入事件
-Menubar.pointerover = function (event) {
+Menubar.pointerover = function (this: any, event: any) {
 	const element = event.target;
 	if (hasClass(element, 'item')) {
 		const parent = element.parentNode;
 		const selected = parent.querySelector('.selected');
 		if (selected !== null && selected !== element) {
-			Menubar.pointerdown(event);
+			Menubar.pointerdown!(event);
 		}
 	}
 };
 
 // 超链接 - 点击事件
-Menubar.hrefClick = function (event) {
-	File.openURL(event.target.getAttribute('href'));
+Menubar.hrefClick = function (this: any, event: any) {
+	File.openURL!(event.target.getAttribute('href'));
 };

@@ -35,27 +35,27 @@ Command.cases.commandLine = new CommandSchema({
 				}
 			]);
 		write($('#commandLine-type'), 'get');
-		$('#commandLine-confirm').on('click', () => this.save());
+		$('#commandLine-confirm').on('click', () => this.save!());
 	},
 	customParse({ type = 'get', key = '', value = '', variable = { type: 'local', key: '' } }) {
 		const head = [
 			{ color: 'system' },
-			{ text: Local.get('command.commandLine') },
+			{ text: Local.get!('command.commandLine') },
 			{ color: 'normal' },
 			{ text: ' ' }
 		];
 		switch (type) {
 			case 'set':
 				const raw_value =
-					typeof value == 'string' ? value : Command.parseVariable(value, 'string');
+					typeof value == 'string' ? value : Command.parseVariable!(value, 'string');
 				return head.concat(
 					{ color: 'flow' },
-					{ text: Local.get('command.commandLine.set') },
+					{ text: Local.get!('command.commandLine.set') },
 					{ text: ' ' },
 					{ color: 'text' },
 					{ color: 'save' },
 					{
-						text: typeof key == 'string' ? key : Command.parseVariable(key, 'string')
+						text: typeof key == 'string' ? key : Command.parseVariable!(key, 'string')
 					},
 					{ text: ' ' },
 					...(raw_value.length
@@ -81,26 +81,26 @@ Command.cases.commandLine = new CommandSchema({
 					{
 						text:
 							type === 'get'
-								? Local.get('command.commandLine.get')
+								? Local.get!('command.commandLine.get')
 								: type === 'rm'
-									? Local.get('command.commandLine.rm')
-									: Local.get('command.commandLine.has')
+									? Local.get!('command.commandLine.rm')
+									: Local.get!('command.commandLine.has')
 					},
 					{ text: ' ' },
 					{ color: 'text' },
 					{ color: 'save' },
 					{
-						text: typeof key == 'string' ? key : Command.parseVariable(key, 'string')
+						text: typeof key == 'string' ? key : Command.parseVariable!(key, 'string')
 					},
 					{ text: ' ' },
 					{ color: 'gray' },
 					{ color: 'save' },
 					{
-						text: Local.get('command.commandLine.variable')
+						text: Local.get!('command.commandLine.variable')
 					},
 					{ text: ' ' },
 					{
-						text: Command.parseVariable(variable, 'string')
+						text: Command.parseVariable!(variable, 'string')
 					}
 				);
 				break;
@@ -120,15 +120,15 @@ Command.cases.commandLine = new CommandSchema({
 		const key = read('key');
 		if (
 			(typeof key == 'string' && key.trim() === '') ||
-			(typeof key === 'object' && VariableGetter.isNone(key))
+			(typeof key === 'object' && VariableGetter.isNone!(key))
 		) {
 			return getFocus($('#commandLine-key'));
 		}
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#commandLine-variable'));
 		}
-		Command.save({
+		Command.save!({
 			type: read('type'),
 			key,
 			value: read('value') ?? '',

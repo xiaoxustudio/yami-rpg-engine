@@ -8,15 +8,15 @@ import { Local } from './localization.ts';
 import { IListInterface } from '@/types/list-interface.ts';
 
 export class EventListInterface implements IListInterface {
-	target: HTMLElement | null;
-	type: string;
-	filter: string;
-	editor: any | null;
-	owner: any | null;
-	eventItem: any | null;
-	editCallback: (() => void) | null;
-	insertCallback: (() => void) | null;
-	history: any | null;
+	target!: HTMLElement | null;
+	type!: string;
+	filter!: string;
+	editor!: any | null;
+	owner!: any | null;
+	eventItem!: any | null;
+	editCallback!: (() => void) | null;
+	insertCallback!: (() => void) | null;
+	history!: any | null;
 
 	constructor(editor?: any, owner?: any) {
 		this.editor = editor ?? null;
@@ -41,11 +41,11 @@ export class EventListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			this.history = new Inspector.ParamHistory(editor, owner, list);
+			this.history = new Inspector.ParamHistory!(editor, owner, list);
 			this.history.save = EventListInterface.historySave;
 		}
 
-		window.addEventListener('localize', (event) => {
+		window.addEventListener('localize', (event: any) => {
 			if (list.data) list.update();
 		});
 	}
@@ -55,15 +55,15 @@ export class EventListInterface implements IListInterface {
 		if (EventListInterface.guidRegExp.test(type)) {
 			Command.invalid = false;
 			const groupKey = this.filter + '-event';
-			const eventType = Command.parseGroupEnumString(groupKey, type);
+			const eventType = Command.parseGroupEnumString!(groupKey, type);
 			const eventClass = Command.invalid ? 'invalid' : event.enabled ? '' : 'weak';
 			return {
-				content: Command.removeTextTags(eventType),
+				content: Command.removeTextTags!(eventType),
 				class: eventClass
 			};
 		}
 		return {
-			content: Local.get('eventTypes.' + type),
+			content: Local.get!('eventTypes.' + type),
 			class: event.enabled ? '' : 'weak'
 		};
 	}
@@ -73,7 +73,7 @@ export class EventListInterface implements IListInterface {
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
-			const flags = {};
+			const flags = {} as Record<string, any>;
 			for (let i = length - 1; i >= 0; i--) {
 				const { type } = items[i];
 				if (flags[type]) {
@@ -107,7 +107,7 @@ export class EventListInterface implements IListInterface {
 		if (target.guid) {
 			const id = target.guid;
 			const fileName = Data.manifest.guidMap[id]?.file.basename;
-			this.eventItem = EventEditor.openLocalEvent(
+			this.eventItem = EventEditor.openLocalEvent!(
 				inserting,
 				filter,
 				fileName,
@@ -121,7 +121,7 @@ export class EventListInterface implements IListInterface {
 				const rootId = preset.sceneId ?? preset.uiId;
 				const rootName = Data.manifest.guidMap[rootId]?.file.basename;
 				const eventName = `${rootName}.${preset.data.name}`;
-				this.eventItem = EventEditor.openLocalEvent(
+				this.eventItem = EventEditor.openLocalEvent!(
 					inserting,
 					filter,
 					eventName,
@@ -133,7 +133,7 @@ export class EventListInterface implements IListInterface {
 	}
 
 	save() {
-		return EventEditor.save(this.eventItem);
+		return EventEditor.save!(this.eventItem);
 	}
 
 	static guidRegExp = /^[0-9a-f]{16}$/;

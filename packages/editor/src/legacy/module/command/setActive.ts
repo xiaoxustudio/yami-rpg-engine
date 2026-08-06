@@ -12,7 +12,7 @@ Command.cases.setActive = new CommandSchema({
 		{ key: 'active', default: false }
 	],
 	onInitialize() {
-		$('#setActive-confirm').on('click', () => this.save());
+		$('#setActive-confirm').on('click', () => this.save!());
 		$('#setActive-active').loadItems([
 			{ name: 'Active', value: true },
 			{ name: 'Inactive', value: false }
@@ -20,11 +20,11 @@ Command.cases.setActive = new CommandSchema({
 	},
 	customParse({ actor, active }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.setActive.active.' + active));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.setActive.active.' + active));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setActive') + Token(': ') },
+			{ text: Local.get!('command.setActive') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

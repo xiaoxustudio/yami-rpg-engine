@@ -150,7 +150,7 @@ window.addEventListener('localize', () => {
 });
 
 const newProjectConfirm = $('#newProject-confirm');
-if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm);
+if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm!);
 export const TitleConfirmOld = NewProject.confirm;
 NewProject.confirm = function (this: any) {
 	const template = read($('#newProject-template'));
@@ -231,7 +231,7 @@ EventBus.once('editor_loaded', () => {
 	};
 });
 
-export function find_dItem(fn: any) {
+export function find_dItem(this: any, fn: any) {
 	var list = this.selections || [];
 	var cur = list[list.length - 1];
 	var next = cur?.element?.nextSibling?.item;
@@ -640,8 +640,8 @@ export const SetTileTag: {
 
 SetTileTag.initialize = function () {
 	if (!$('#setTileTag')) return;
-	on($('#setTileTag'), 'closed', this.windowClosed);
-	on($('#setTileTag-confirm'), 'click', this.confirm);
+	on($('#setTileTag'), 'closed', this.windowClosed!);
+	on($('#setTileTag-confirm'), 'click', this.confirm!);
 };
 
 SetTileTag.open = function (tag: any, callback: any) {

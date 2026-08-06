@@ -9,18 +9,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneRegion = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	SceneRegion.initialize = function () {
+	SceneRegion.initialize = function (this: any) {
 		if (!$('#sceneRegion-name')) return;
 		this.nameBox = $('#sceneRegion-name');
 		$('#sceneRegion-conditions').bind(new ConditionListInterface(this, Scene));
@@ -36,14 +36,14 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		$('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts').forEach(
 			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
 		);
 	};
 
-	SceneRegion.create = function () {
+	SceneRegion.create = function (this: any) {
 		return {
 			class: 'region',
 			name: 'Region',
@@ -62,7 +62,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneRegion.open = function (region) {
+	SceneRegion.open = function (this: any, region: any) {
 		if (this.target !== region) {
 			this.target = region;
 
@@ -79,10 +79,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.close = function () {
+	SceneRegion.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			clear($('#sceneRegion-conditions'));
 			clear($('#sceneRegion-events'));
@@ -91,7 +91,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.write = function (options) {
+	SceneRegion.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneRegion-x'), options.x);
 		}
@@ -100,13 +100,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.update = function (region, key, value) {
-		Scene.planToSave();
+	SceneRegion.update = function (this: any, region: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (region.name !== value) {
 					region.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(region);
 				}
 				break;
@@ -121,15 +121,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'color':
 				if (region.color !== value) {
 					region.color = value;
-					Scene.list.updateIcon(region);
+					Scene.list.updateIcon!(region);
 				}
 				break;
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneRegion.paramInput = function (event) {
-		SceneRegion.update(SceneRegion.target, Inspector.getKey(this), read(this));
+	SceneRegion.paramInput = function (this: any, event: any) {
+		SceneRegion.update(SceneRegion.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.sceneRegion = SceneRegion;

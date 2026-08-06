@@ -12,7 +12,7 @@ Command.cases.fixAngle = new CommandSchema({
 		{ key: 'fixed', default: true }
 	],
 	onInitialize() {
-		$('#fixAngle-confirm').on('click', () => this.save());
+		$('#fixAngle-confirm').on('click', () => this.save!());
 		$('#fixAngle-fixed').loadItems([
 			{ name: 'Fixed', value: true },
 			{ name: 'Unfixed', value: false }
@@ -20,11 +20,11 @@ Command.cases.fixAngle = new CommandSchema({
 	},
 	customParse({ actor, fixed }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.fixAngle.fixed.' + fixed));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.fixAngle.fixed.' + fixed));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.fixAngle') + Token(': ') },
+			{ text: Local.get!('command.fixAngle') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

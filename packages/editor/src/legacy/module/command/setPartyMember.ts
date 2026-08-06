@@ -12,7 +12,7 @@ Command.cases.setPartyMember = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } }
 	],
 	onInitialize() {
-		$('#setPartyMember-confirm').on('click', () => this.save());
+		$('#setPartyMember-confirm').on('click', () => this.save!());
 		$('#setPartyMember-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' }
@@ -20,11 +20,11 @@ Command.cases.setPartyMember = new CommandSchema({
 	},
 	customParse({ operation, actor }: any) {
 		const words = Command.words
-			.push(Local.get('command.setPartyMember.' + operation))
-			.push(Command.parseActor(actor));
+			.push(Local.get!('command.setPartyMember.' + operation))
+			.push(Command.parseActor!(actor));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setPartyMember') + Token(': ') },
+			{ text: Local.get!('command.setPartyMember') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

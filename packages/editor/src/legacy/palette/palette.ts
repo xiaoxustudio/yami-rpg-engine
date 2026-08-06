@@ -32,123 +32,123 @@ import { Timer } from '@/util/timer.ts';
 
 export const Palette = {
 	state: 'closed',
-	page: null,
-	head: null,
-	body: null,
-	window: null,
-	canvas: null,
-	context: null,
-	screen: null,
-	marquee: null,
-	info: null,
-	itemScroll: null,
-	itemPriority: null,
-	itemTag: null,
-	itemTerrain: null,
-	itemEdit: null,
-	zoomSlider: null,
-	symbol: null,
-	meta: null,
-	tileset: null,
-	images: null,
-	priorities: null,
-	terrains: null,
-	dragging: null,
+	page: null as any,
+	head: null as any,
+	body: null as any,
+	window: null as any,
+	canvas: null as any,
+	context: null as any,
+	screen: null as any,
+	marquee: null as any,
+	info: null as any,
+	itemScroll: null as any,
+	itemPriority: null as any,
+	itemTag: null as any,
+	itemTerrain: null as any,
+	itemEdit: null as any,
+	zoomSlider: null as any,
+	symbol: null as any,
+	meta: null as any,
+	tileset: null as any,
+	images: null as any,
+	priorities: null as any,
+	terrains: null as any,
+	dragging: null as any,
 	explicit: false,
 	mode: 'normal',
 	scrollable: false,
 	showGrid: true,
-	activeIndex: null,
-	openIndex: null,
-	gridColor: null,
-	zoom: null,
-	zoomTimer: null,
-	scale: null,
-	scaleX: null,
-	scaleY: null,
-	scaledTileWidth: null,
-	scaledTileHeight: null,
-	outerWidth: null,
-	outerHeight: null,
-	screenWidth: null,
-	screenHeight: null,
-	scrollLeft: null,
-	scrollTop: null,
-	scrollRight: null,
-	scrollBottom: null,
-	centerOffsetX: null,
-	centerOffsetY: null,
-	paddingLeft: null,
-	paddingTop: null,
-	centerX: null,
-	centerY: null,
-	markCanvas: null,
+	activeIndex: null as any,
+	openIndex: null as any,
+	gridColor: null as any,
+	zoom: null as any,
+	zoomTimer: null as any,
+	scale: null as any,
+	scaleX: null as any,
+	scaleY: null as any,
+	scaledTileWidth: null as any,
+	scaledTileHeight: null as any,
+	outerWidth: null as any,
+	outerHeight: null as any,
+	screenWidth: null as any,
+	screenHeight: null as any,
+	scrollLeft: null as any,
+	scrollTop: null as any,
+	scrollRight: null as any,
+	scrollBottom: null as any,
+	centerOffsetX: null as any,
+	centerOffsetY: null as any,
+	paddingLeft: null as any,
+	paddingTop: null as any,
+	centerX: null as any,
+	centerY: null as any,
+	markCanvas: null as any,
 	tilesetMap: {},
-	initialize: null,
-	open: null,
-	close: null,
-	suspend: null,
-	resume: null,
-	setZoom: null,
-	setImage: null,
-	setSize: null,
-	setTileSize: null,
-	setTerrain: null,
-	loadImages: null,
-	updateHead: null,
-	resize: null,
-	getTileCoords: null,
-	updateCamera: null,
-	updateTransform: null,
-	updateBackground: null,
-	updateInfo: null,
-	createMarkCanvas: null,
-	rebuildMarkCanvas: null,
-	ensureMarkPosition: null,
-	drawTileset: null,
-	drawTiles: null,
-	drawTileGrid: null,
-	drawPriorities: null,
-	drawTags: null,
-	drawTerrains: null,
-	editAutoTile: null,
-	copyAutoTile: null,
-	pasteAutoTile: null,
-	deleteAutoTile: null,
-	selectTiles: null,
-	copyTilesFromScene: null,
-	flipTiles: null,
-	openSelection: null,
-	editSelection: null,
-	editTagAt: null,
-	scrollToSelection: null,
-	requestRendering: null,
-	renderingFunction: null,
-	stopRendering: null,
-	skipScrollEvent: null,
-	switchScroll: null,
-	switchPriority: null,
-	switchTag: null,
-	switchTerrain: null,
-	switchEdit: null,
-	saveToProject: null,
-	loadFromProject: null,
-	windowResize: null,
-	themechange: null,
-	screenKeydown: null,
-	screenWheel: null,
-	screenUserscroll: null,
-	screenBlur: null,
-	marqueePointerdown: null,
-	marqueePointermove: null,
-	marqueePointerleave: null,
-	marqueeDoubleclick: null,
-	marqueePopup: null,
-	pointerup: null,
-	pointermove: null
+	initialize: null as any,
+	open: null as any,
+	close: null as any,
+	suspend: null as any,
+	resume: null as any,
+	setZoom: null as any,
+	setImage: null as any,
+	setSize: null as any,
+	setTileSize: null as any,
+	setTerrain: null as any,
+	loadImages: null as any,
+	updateHead: null as any,
+	resize: null as any,
+	getTileCoords: null as any,
+	updateCamera: null as any,
+	updateTransform: null as any,
+	updateBackground: null as any,
+	updateInfo: null as any,
+	createMarkCanvas: null as any,
+	rebuildMarkCanvas: null as any,
+	ensureMarkPosition: null as any,
+	drawTileset: null as any,
+	drawTiles: null as any,
+	drawTileGrid: null as any,
+	drawPriorities: null as any,
+	drawTags: null as any,
+	drawTerrains: null as any,
+	editAutoTile: null as any,
+	copyAutoTile: null as any,
+	pasteAutoTile: null as any,
+	deleteAutoTile: null as any,
+	selectTiles: null as any,
+	copyTilesFromScene: null as any,
+	flipTiles: null as any,
+	openSelection: null as any,
+	editSelection: null as any,
+	editTagAt: null as any,
+	scrollToSelection: null as any,
+	requestRendering: null as any,
+	renderingFunction: null as any,
+	stopRendering: null as any,
+	skipScrollEvent: null as any,
+	switchScroll: null as any,
+	switchPriority: null as any,
+	switchTag: null as any,
+	switchTerrain: null as any,
+	switchEdit: null as any,
+	saveToProject: null as any,
+	loadFromProject: null as any,
+	windowResize: null as any,
+	themechange: null as any,
+	screenKeydown: null as any,
+	screenWheel: null as any,
+	screenUserscroll: null as any,
+	screenBlur: null as any,
+	marqueePointerdown: null as any,
+	marqueePointermove: null as any,
+	marqueePointerleave: null as any,
+	marqueeDoubleclick: null as any,
+	marqueePopup: null as any,
+	pointerup: null as any,
+	pointermove: null as any
 };
 
-Palette.initialize = function () {
+Palette.initialize = function (this: any) {
 	if (!$('#palette-frame')) return;
 	this.page = $('#fileTileset');
 	this.head = $('#palette-head');
@@ -168,11 +168,11 @@ Palette.initialize = function () {
 
 	this.context = this.canvas.getContext('2d', { desynchronized: true });
 
-	this.images = {};
+	this.images = {} as Record<string, any>;
 
 	this.zoomTimer = new Timer({
 		duration: 80,
-		update: (timer) => {
+		update: (timer: any) => {
 			if (this.state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
@@ -189,11 +189,11 @@ Palette.initialize = function () {
 	const marquee = this.marquee;
 	const source: any = document.createElement('selection');
 	const destination: any = document.createElement('selection');
-	const selections = { source, destination };
+	const selections = { source, destination } as Record<string, any>;
 	source.id = 'source-selection';
 	destination.id = 'destination-selection';
 
-	marquee.customSelect = function (key, x, y) {
+	marquee.customSelect = function (this: any, key: any, x: any, y: any) {
 		const selection = selections[key];
 		const scaleX = this.scaleX;
 		const scaleY = this.scaleY;
@@ -216,11 +216,11 @@ Palette.initialize = function () {
 	};
 
 	// 选框区域自定义方法 - 取消选择
-	marquee.customUnselect = function (key) {
+	marquee.customUnselect = function (this: any, key: any) {
 		selections[key].remove();
 	};
 
-	marquee.customShiftAutoTile = function () {
+	marquee.customShiftAutoTile = function (this: any) {
 		source.remove();
 		destination.remove();
 		const { x: sx, y: sy } = source as HTMLElement & {
@@ -270,13 +270,13 @@ Palette.initialize = function () {
 	on(this.screen, 'blur', this.screenBlur);
 	// marquee pointerdown/doubleclick 经 Vue 模板转发（FileTilesetPage @pointerdown/@doubleclick）；pointermove/pointerleave 仍由 switch 系列动态挂接
 
-	AutoTile.initialize();
-	FrameGenerator.initialize();
-	TileFrame.initialize();
-	TileNode.initialize();
+	AutoTile.initialize!();
+	FrameGenerator.initialize!();
+	TileFrame.initialize!();
+	TileNode.initialize!();
 };
 
-Palette.open = function (meta) {
+Palette.open = function (this: any, meta: any) {
 	if (!meta || meta === this.meta) {
 		return;
 	}
@@ -306,7 +306,7 @@ Palette.open = function (meta) {
 	}
 };
 
-Palette.close = function () {
+Palette.close = function (this: any) {
 	if (this.state !== 'closed') {
 		this.state = 'closed';
 		this.symbol = null;
@@ -318,14 +318,14 @@ Palette.close = function () {
 	}
 };
 
-Palette.suspend = function () {
+Palette.suspend = function (this: any) {
 	if (this.state === 'open') {
 		this.state = 'suspended';
 		this.stopRendering();
 	}
 };
 
-Palette.resume = function () {
+Palette.resume = function (this: any) {
 	if (this.state === 'suspended') {
 		this.state = 'open';
 		this.resize();
@@ -334,7 +334,7 @@ Palette.resume = function () {
 };
 
 Palette.setZoom = (function IIFE() {
-	return function (zoom) {
+	return function (this: any, zoom: any) {
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -371,12 +371,12 @@ Palette.setZoom = (function IIFE() {
 	};
 })();
 
-Palette.setImage = function (image) {
+Palette.setImage = function (this: any, image: any) {
 	this.tileset.image = image;
 	this.loadImages();
 };
 
-Palette.setSize = function (width, height) {
+Palette.setSize = function (this: any, width: any, height: any) {
 	const length = width * height;
 	const tileset = this.tileset;
 	switch (tileset.type) {
@@ -436,7 +436,7 @@ Palette.setSize = function (width, height) {
 	this.requestRendering();
 };
 
-Palette.setTileSize = function (tileWidth, tileHeight) {
+Palette.setTileSize = function (this: any, tileWidth: any, tileHeight: any) {
 	const tileset = this.tileset;
 	tileset.tileWidth = tileWidth;
 	tileset.tileHeight = tileHeight;
@@ -445,21 +445,21 @@ Palette.setTileSize = function (tileWidth, tileHeight) {
 	this.requestRendering();
 };
 
-Palette.setTerrain = function (x, y, offset) {
+Palette.setTerrain = function (this: any, x: any, y: any, offset: any) {
 	const tileset = this.tileset;
 	const terrains = tileset.terrains;
 	const i = x + y * tileset.width;
 	if (tileset.type === 'normal' || tileset.tiles[i] !== 0) {
 		terrains[i] = (terrains[i] + 3 + offset) % 3;
 		this.requestRendering();
-		File.planToSave(this.meta);
+		File.planToSave!(this.meta);
 	}
 };
 
-Palette.loadImages = async function () {
+Palette.loadImages = async function (this: any) {
 	const last = this.images;
-	const images = { '': null };
-	const promises = [];
+	const images = { '': null } as Record<string, any>;
+	const promises = [] as any[];
 	const tileset = this.tileset;
 	switch (tileset.type) {
 		case 'normal': {
@@ -470,10 +470,10 @@ Palette.loadImages = async function () {
 				} else {
 					const symbol = (images[guid] = Symbol());
 					promises.push(
-						File.get({
+						File.get!({
 							guid: guid,
 							type: 'image'
-						}).then((image) => {
+						}).then((image: any) => {
 							if (images[guid] === symbol) {
 								images[guid] = image;
 							}
@@ -496,10 +496,10 @@ Palette.loadImages = async function () {
 						} else {
 							const symbol = (images[guid] = Symbol());
 							promises.push(
-								File.get({
+								File.get!({
 									guid: guid,
 									type: 'image'
-								}).then((image) => {
+								}).then((image: any) => {
 									if (images[guid] === symbol) {
 										images[guid] = image;
 									}
@@ -530,7 +530,7 @@ Palette.loadImages = async function () {
 	}
 };
 
-Palette.updateHead = function () {
+Palette.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -544,7 +544,7 @@ Palette.updateHead = function () {
 	}
 };
 
-Palette.resize = function () {
+Palette.resize = function (this: any) {
 	if (this.state === 'open') {
 		const tileset = this.tileset;
 		const scale = this.scale;
@@ -611,7 +611,7 @@ Palette.resize = function () {
 
 Palette.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (event, clamp = false) {
+	return function (this: any, event: any, clamp: any = false) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const tileset = this.tileset;
 		const stw = this.scaledTileWidth;
@@ -629,7 +629,7 @@ Palette.getTileCoords = (function IIFE() {
 	};
 })();
 
-Palette.updateCamera = function (x = this.meta.x, y = this.meta.y) {
+Palette.updateCamera = function (this: any, x = this.meta.x, y = this.meta.y) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const scrollX = x * this.scaledTileWidth + this.paddingLeft;
@@ -644,7 +644,7 @@ Palette.updateCamera = function (x = this.meta.x, y = this.meta.y) {
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
 };
 
-Palette.updateTransform = function () {
+Palette.updateTransform = function (this: any) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const left = Math.roundTo(screen.scrollLeft * dpr, 4);
@@ -664,7 +664,7 @@ Palette.updateTransform = function () {
 };
 
 // 保持图像与网格背景的相对位置 避免视觉干扰并且可以测量位置
-Palette.updateBackground = function () {
+Palette.updateBackground = function (this: any) {
 	const style = this.canvas.style;
 	const x = -this.screen.scrollLeft;
 	const y = -this.screen.scrollTop;
@@ -675,11 +675,11 @@ Palette.updateBackground = function () {
 	}
 };
 
-Palette.updateInfo = function (index = this.activeIndex) {
+Palette.updateInfo = function (this: any, index = this.activeIndex) {
 	getPaletteStore().setActiveIndex(index);
 };
 
-Palette.createMarkCanvas = function () {
+Palette.createMarkCanvas = function (this: any) {
 	let canvas = this.markCanvas;
 	if (canvas === null) {
 		const size = 128;
@@ -687,7 +687,7 @@ Palette.createMarkCanvas = function () {
 		canvas.width = 0;
 		canvas.height = size * 3;
 		canvas.fontSize = size;
-		canvas.entries = [];
+		canvas.entries = [] as any[];
 		canvas.totalWidth = 0;
 		const positions: Record<string, any> = (canvas.positions = {} as Record<string, any>);
 		const context = canvas.getContext('2d');
@@ -724,7 +724,7 @@ Palette.createMarkCanvas = function () {
 	return canvas;
 };
 
-Palette.rebuildMarkCanvas = function (canvas) {
+Palette.rebuildMarkCanvas = function (this: any, canvas: any) {
 	const size = canvas.fontSize;
 	canvas.width = canvas.totalWidth;
 	canvas.height = size * 3;
@@ -747,7 +747,7 @@ Palette.rebuildMarkCanvas = function (canvas) {
 	}
 };
 
-Palette.ensureMarkPosition = function (canvas, text, key = text) {
+Palette.ensureMarkPosition = function (this: any, canvas: any, text: any, key: any = text) {
 	const positions = canvas.positions;
 	const existing = positions[key];
 	if (existing) return existing;
@@ -764,7 +764,7 @@ Palette.ensureMarkPosition = function (canvas, text, key = text) {
 	return position;
 };
 
-Palette.drawTileset = function () {
+Palette.drawTileset = function (this: any) {
 	if (this.body.clientWidth > 0 && this.canvas.width !== 0 && this.canvas.height !== 0) {
 		const context = this.context;
 		const sl = this.scrollLeft;
@@ -781,7 +781,7 @@ Palette.drawTileset = function () {
 	}
 };
 
-Palette.drawTiles = function () {
+Palette.drawTiles = function (this: any) {
 	const context = this.context;
 	const tileset = this.tileset;
 	const images = this.images;
@@ -804,10 +804,10 @@ Palette.drawTiles = function () {
 			} else if (image === undefined) {
 				const guid = tileset.image;
 				const symbol = (images[guid] = Symbol());
-				File.get({
+				File.get!({
 					guid: guid,
 					type: 'image'
-				}).then((image) => {
+				}).then((image: any) => {
 					if (images[guid] === symbol) {
 						images[guid] = image;
 						this.requestRendering();
@@ -851,10 +851,10 @@ Palette.drawTiles = function () {
 						} else if (image === undefined) {
 							const guid = tile.image;
 							const symbol = (images[guid] = Symbol());
-							File.get({
+							File.get!({
 								guid: guid,
 								type: 'image'
-							}).then((image) => {
+							}).then((image: any) => {
 								if (images[guid] === symbol) {
 									images[guid] = image;
 									this.requestRendering();
@@ -869,7 +869,7 @@ Palette.drawTiles = function () {
 	}
 };
 
-Palette.drawTileGrid = function () {
+Palette.drawTileGrid = function (this: any) {
 	if (this.showGrid) {
 		const context = this.context;
 		const sl = this.scrollLeft;
@@ -897,7 +897,7 @@ Palette.drawTileGrid = function () {
 	}
 };
 
-Palette.drawPriorities = function () {
+Palette.drawPriorities = function (this: any) {
 	if (this.mode === 'priority') {
 		const context = this.context;
 		const tileset = this.tileset;
@@ -977,7 +977,7 @@ Palette.drawPriorities = function () {
 	}
 };
 
-Palette.drawTags = function () {
+Palette.drawTags = function (this: any) {
 	if (this.mode === 'tag') {
 		const context = this.context;
 		const tileset = this.tileset;
@@ -1059,7 +1059,7 @@ Palette.drawTags = function () {
 	}
 };
 
-Palette.drawTerrains = function () {
+Palette.drawTerrains = function (this: any) {
 	if (this.mode === 'terrain') {
 		const context = this.context;
 		const tileset = this.tileset;
@@ -1095,18 +1095,18 @@ Palette.drawTerrains = function () {
 	}
 };
 
-Palette.editAutoTile = function (index) {
+Palette.editAutoTile = function (this: any, index: any) {
 	if (this.tileset.type === 'auto') {
 		const tiles = this.tileset.tiles;
 		if (index < tiles.length) {
 			const tile = tiles[index];
 			this.openIndex = index;
-			AutoTile.open(tile || AutoTile.create());
+			AutoTile.open!(tile || AutoTile.create!());
 		}
 	}
 };
 
-Palette.copyAutoTile = function (index) {
+Palette.copyAutoTile = function (this: any, index: any) {
 	if (this.tileset.type === 'auto') {
 		const tileset = this.tileset;
 		const tiles = tileset.tiles;
@@ -1122,7 +1122,7 @@ Palette.copyAutoTile = function (index) {
 	}
 };
 
-Palette.pasteAutoTile = function (index) {
+Palette.pasteAutoTile = function (this: any, index: any) {
 	if (this.tileset.type === 'auto') {
 		const tileset = this.tileset;
 		const tiles = tileset.tiles;
@@ -1134,12 +1134,12 @@ Palette.pasteAutoTile = function (index) {
 			priorities[index] = copy.priority;
 			terrains[index] = copy.terrain;
 			this.requestRendering();
-			File.planToSave(this.meta);
+			File.planToSave!(this.meta);
 		}
 	}
 };
 
-Palette.deleteAutoTile = function (index) {
+Palette.deleteAutoTile = function (this: any, index: any) {
 	if (this.tileset.type === 'auto') {
 		const tileset = this.tileset;
 		const tiles = tileset.tiles;
@@ -1150,12 +1150,12 @@ Palette.deleteAutoTile = function (index) {
 			priorities[index] = 0;
 			terrains[index] = 0;
 			this.requestRendering();
-			File.planToSave(this.meta);
+			File.planToSave!(this.meta);
 		}
 	}
 };
 
-Palette.selectTiles = function (x, y, width, height) {
+Palette.selectTiles = function (this: any, x: any, y: any, width: any, height: any) {
 	if (Scene.brush === 'eraser') {
 		Scene.switchBrush('pencil');
 	}
@@ -1210,7 +1210,7 @@ Palette.selectTiles = function (x, y, width, height) {
 	dTiles.standard = dTiles;
 };
 
-Palette.copyTilesFromScene = function (x, y, width, height) {
+Palette.copyTilesFromScene = function (this: any, x: any, y: any, width: any, height: any) {
 	const sTiles = Scene.tilemap.tiles;
 	const sro = sTiles.rowOffset;
 	const dTiles = Scene.createTiles(width, height);
@@ -1241,7 +1241,7 @@ Palette.copyTilesFromScene = function (x, y, width, height) {
 	clear(this.marquee);
 };
 
-Palette.flipTiles = function () {
+Palette.flipTiles = function (this: any) {
 	const marquee = Scene.marquee;
 	if (Scene.state !== 'open' || Scene.dragging !== null || marquee.key !== 'tile') {
 		return;
@@ -1281,7 +1281,7 @@ Palette.flipTiles = function () {
 	}
 };
 
-Palette.openSelection = function () {
+Palette.openSelection = function (this: any) {
 	const { tileset, marquee } = this;
 	if (tileset.type === 'auto' && marquee.visible) {
 		const { x, y, width, height } = marquee;
@@ -1291,13 +1291,13 @@ Palette.openSelection = function () {
 			const template = Data.autotiles.map[tile.template];
 			const image = this.images[tile.image];
 			if (width === 1 && height === 1 && template !== undefined && image instanceof Image) {
-				TileNode.open(template.nodes, image, tile.x, tile.y);
+				TileNode.open!(template.nodes, image, tile.x, tile.y);
 			}
 		}
 	}
 };
 
-Palette.editSelection = function () {
+Palette.editSelection = function (this: any) {
 	const { tileset, marquee } = this;
 	if (tileset.type === 'auto' && marquee.visible) {
 		const { x, y, width, height } = marquee;
@@ -1308,23 +1308,23 @@ Palette.editSelection = function () {
 	}
 };
 
-Palette.editTagAt = function (x, y) {
+Palette.editTagAt = function (this: any, x: any, y: any) {
 	const tileset = this.tileset;
 	const tags = tileset?.tags;
 	if (!tags) return;
 	const i = x + y * tileset.width;
 	if (i < 0 || i >= tags.length) return;
-	SetTileTag.open(tags[i], (tag) => {
+	SetTileTag.open!(tags[i], (tag: any) => {
 		if (tags[i] === tag) return;
 		tags[i] = tag;
 		this.updateInfo();
 		this.requestRendering();
 		Scene.requestRendering();
-		File.planToSave(this.meta);
+		File.planToSave!(this.meta);
 	});
 };
 
-Palette.scrollToSelection = function (shiftKey) {
+Palette.scrollToSelection = function (this: any, shiftKey: any) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const stw = this.scaledTileWidth;
@@ -1363,18 +1363,18 @@ Palette.scrollToSelection = function (shiftKey) {
 	}
 };
 
-Palette.requestRendering = function () {
+Palette.requestRendering = function (this: any) {
 	if (this.state === 'open') {
-		Timer.appendUpdater('sharedRendering', this.renderingFunction);
+		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
 
-Palette.renderingFunction = function () {
+Palette.renderingFunction = function (this: any) {
 	Palette.drawTileset();
 };
 
-Palette.stopRendering = function () {
-	Timer.removeUpdater('sharedRendering', this.renderingFunction);
+Palette.stopRendering = function (this: any) {
+	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
 Palette.skipScrollEvent = (function IIFE() {
@@ -1398,7 +1398,7 @@ Palette.skipScrollEvent = (function IIFE() {
 })();
 
 Palette.switchScroll = (function IIFE() {
-	return function (enabled = !this.scrollable) {
+	return function (this: any, enabled = !this.scrollable) {
 		if (enabled) {
 			addClass(this.itemScroll, 'selected');
 			addClass(this.screen, 'scrollable');
@@ -1415,7 +1415,7 @@ Palette.switchScroll = (function IIFE() {
 })();
 
 Palette.switchPriority = (function IIFE() {
-	return function (enabled = this.mode !== 'priority') {
+	return function (this: any, enabled = this.mode !== 'priority') {
 		if (enabled) {
 			addClass(this.itemPriority, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1438,7 +1438,7 @@ Palette.switchPriority = (function IIFE() {
 })();
 
 Palette.switchTag = (function IIFE() {
-	return function (enabled = this.mode !== 'tag') {
+	return function (this: any, enabled = this.mode !== 'tag') {
 		if (enabled) {
 			addClass(this.itemTag, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1461,7 +1461,7 @@ Palette.switchTag = (function IIFE() {
 })();
 
 Palette.switchTerrain = (function IIFE() {
-	return function (enabled = this.mode !== 'terrain') {
+	return function (this: any, enabled = this.mode !== 'terrain') {
 		if (enabled) {
 			addClass(this.itemTerrain, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1484,7 +1484,7 @@ Palette.switchTerrain = (function IIFE() {
 })();
 
 Palette.switchEdit = (function IIFE() {
-	return function (enabled = this.mode !== 'edit') {
+	return function (this: any, enabled = this.mode !== 'edit') {
 		if (enabled) {
 			addClass(this.itemEdit, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1506,7 +1506,7 @@ Palette.switchEdit = (function IIFE() {
 	};
 })();
 
-Palette.saveToProject = function (project) {
+Palette.saveToProject = function (this: any, project: any) {
 	const { palette } = project;
 	const zoom = this.zoom;
 	if (zoom !== null) {
@@ -1514,12 +1514,12 @@ Palette.saveToProject = function (project) {
 	}
 };
 
-Palette.loadFromProject = function (project) {
+Palette.loadFromProject = function (this: any, project: any) {
 	const { palette } = project;
 	this.setZoom(palette.zoom);
 };
 
-Palette.windowResize = function (event) {
+Palette.windowResize = function (this: any, event: any) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -1535,7 +1535,7 @@ Palette.windowResize = function (event) {
 	}
 }.bind(Palette);
 
-Palette.themechange = function (event) {
+Palette.themechange = function (this: any, event: any) {
 	switch (event.value) {
 		case 'light':
 			this.gridColor = 'rgba(0, 0, 0, 0.5)';
@@ -1547,7 +1547,7 @@ Palette.themechange = function (event) {
 	this.requestRendering();
 }.bind(Palette);
 
-Palette.screenKeydown = function (event) {
+Palette.screenKeydown = function (this: any, event: any) {
 	switch (event.code) {
 		case 'Space':
 			event.preventDefault();
@@ -1672,12 +1672,12 @@ Palette.screenWheel = (function IIFE() {
 	let timerIsWorking = false;
 	const timer = new Timer({
 		duration: 400,
-		callback: (timer) => {
+		callback: (timer: any) => {
 			timerIsWorking = false;
 			Palette.screen.endScrolling();
 		}
 	});
-	return function (event) {
+	return function (this: any, event: any) {
 		if (this.scrollable) {
 			timer.elapsed = 0;
 			if (!timerIsWorking) {
@@ -1694,7 +1694,7 @@ Palette.screenWheel = (function IIFE() {
 	}.bind(Palette);
 })();
 
-Palette.screenUserscroll = function (event) {
+Palette.screenUserscroll = function (this: any, event: any) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -1705,13 +1705,13 @@ Palette.screenUserscroll = function (event) {
 	}
 }.bind(Palette);
 
-Palette.screenBlur = function (event) {
+Palette.screenBlur = function (this: any, event: any) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
 }.bind(Palette);
 
-Palette.marqueePointerdown = function (event) {
+Palette.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
@@ -1719,7 +1719,7 @@ Palette.marqueePointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
 			// 如果正在修改图块组宽高，让它立即生效
-			document.activeElement.blur();
+			document.activeElement!.blur();
 			if (event.dragKey) {
 				this.dragging = event;
 				event.mode = 'scroll';
@@ -1915,7 +1915,7 @@ Palette.marqueePointerdown = function (event) {
 	}
 }.bind(Palette);
 
-Palette.marqueePointermove = function (event) {
+Palette.marqueePointermove = function (this: any, event: any) {
 	if (this.dragging === null) {
 		const { x, y } = this.getTileCoords(event, true);
 		const index = x + y * this.tileset.width;
@@ -1927,7 +1927,7 @@ Palette.marqueePointermove = function (event) {
 	}
 }.bind(Palette);
 
-Palette.marqueePointerleave = function (event) {
+Palette.marqueePointerleave = function (this: any, event: any) {
 	if (this.activeIndex !== null) {
 		this.activeIndex = null;
 		this.updateInfo(null);
@@ -1935,7 +1935,7 @@ Palette.marqueePointerleave = function (event) {
 	}
 }.bind(Palette);
 
-Palette.marqueeDoubleclick = function (event) {
+Palette.marqueeDoubleclick = function (this: any, event: any) {
 	if (this.mode === 'tag') {
 		const { x, y } = this.getTileCoords(event, true);
 		this.editTagAt(x, y);
@@ -1944,7 +1944,7 @@ Palette.marqueeDoubleclick = function (event) {
 	this.openSelection();
 }.bind(Palette);
 
-Palette.marqueePopup = function (event) {
+Palette.marqueePopup = function (this: any, event: any) {
 	if (this.mode === 'edit' && this.tileset.type === 'auto') {
 		const { x, y } = this.getTileCoords(event, true);
 		const tiles = this.tileset.tiles;
@@ -2003,7 +2003,7 @@ Palette.marqueePopup = function (event) {
 	}
 };
 
-Palette.pointerup = function (event) {
+Palette.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
@@ -2041,7 +2041,7 @@ Palette.pointerup = function (event) {
 					priorities[i] = (priorities[i] + step) % 10;
 					this.requestRendering();
 					Scene.requestRendering();
-					File.planToSave(this.meta);
+					File.planToSave!(this.meta);
 				}
 				break;
 			case 'increase-tag':
@@ -2061,7 +2061,7 @@ Palette.pointerup = function (event) {
 				this.requestRendering();
 				Scene.requestRendering();
 				Scene.marquee.style.pointerEvents = 'inherit';
-				File.planToSave(this.meta);
+				File.planToSave!(this.meta);
 				break;
 		}
 		window.removeEventListener('pointerup', this.pointerup);
@@ -2069,7 +2069,7 @@ Palette.pointerup = function (event) {
 	}
 }.bind(Palette);
 
-Palette.pointermove = function (event) {
+Palette.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {

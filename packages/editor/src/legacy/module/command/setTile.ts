@@ -8,19 +8,19 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setTile = new CommandSchema({
 	name: 'setTile',
 	onInitialize() {
-		$('#setTile-confirm').on('click', () => this.save());
+		$('#setTile-confirm').on('click', () => this.save!());
 	},
 	customParse({ tilemap, tilemapX, tilemapY, tilesetId, tilesetX, tilesetY }: any) {
 		const words = Command.words
-			.push(Command.parseTilemap(tilemap))
-			.push(Command.parseVariableNumber(tilemapX))
-			.push(Command.parseVariableNumber(tilemapY))
-			.push(Command.parseFileName(tilesetId))
-			.push(Command.parseVariableNumber(tilesetX))
-			.push(Command.parseVariableNumber(tilesetY));
+			.push(Command.parseTilemap!(tilemap))
+			.push(Command.parseVariableNumber!(tilemapX))
+			.push(Command.parseVariableNumber!(tilemapY))
+			.push(Command.parseFileName!(tilesetId))
+			.push(Command.parseVariableNumber!(tilesetX))
+			.push(Command.parseVariableNumber!(tilesetY));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.setTile') + Token(': ') },
+			{ text: Local.get!('command.setTile') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -47,7 +47,7 @@ Command.cases.setTile = new CommandSchema({
 		if (tilesetId === '') {
 			return getFocus($('#setTile-tilesetId'));
 		}
-		Command.save({
+		Command.save!({
 			tilemap: read('tilemap'),
 			tilemapX: read('tilemapX'),
 			tilemapY: read('tilemapY'),

@@ -16,7 +16,7 @@ Command.cases.setVolume = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setVolume-confirm').on('click', () => this.save());
+		$('#setVolume-confirm').on('click', () => this.save!());
 		$('#setVolume-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -28,7 +28,7 @@ Command.cases.setVolume = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#setVolume').on('open', function (event: any) {
-			$('#setVolume-easingId').loadItems(Data.createEasingItems());
+			$('#setVolume-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setVolume').on('closed', function (event: any) {
 			clear($('#setVolume-easingId'));
@@ -36,12 +36,12 @@ Command.cases.setVolume = new CommandSchema({
 	},
 	customParse({ type, volume, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseAudioType(type))
-			.push(Command.parseVariableNumber(volume))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseAudioType!(type))
+			.push(Command.parseVariableNumber!(volume))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.setVolume') + Token(': ') },
+			{ text: Local.get!('command.setVolume') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

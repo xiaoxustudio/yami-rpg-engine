@@ -114,9 +114,9 @@ interface CommandSuggestionShape {
 }
 
 export const CommandSuggestion: CommandSuggestionShape = {
-	widget: null,
-	searcher: null,
-	list: null,
+	widget: null as any,
+	searcher: null as any,
+	list: null as any,
 	data: null,
 	initialize: null,
 	open: null,
@@ -293,7 +293,7 @@ CommandSuggestion.initialize = function (): void {
 	list.creators.push(list.createComment!);
 	list.creators.push(list.createCommandTip!);
 
-	this.data = File.get({
+	this.data = File.get!({
 		local: 'commands.json',
 		type: 'json'
 	}).then((data: CommandSuggestionItem[]) => {
@@ -437,7 +437,7 @@ CommandSuggestion.listPointerdown = function (event: PointerEvent): void {
 			if (this.pressing === pointerup) {
 				this.pressing = null;
 				if (element.contains(event.target as Node)) {
-					CommandSuggestion.select(element.item);
+					CommandSuggestion.select!(element.item);
 				}
 			}
 		};
@@ -468,6 +468,6 @@ CommandSuggestion.listUpdate = function (event: Event): void {
 CommandSuggestion.listOpen = function (event: Event & { value: CommandSuggestionItem }): void {
 	const item = event.value;
 	if (item.class !== 'folder' && item.element!.parentNode) {
-		CommandSuggestion.select(item);
+		CommandSuggestion.select!(item);
 	}
 };

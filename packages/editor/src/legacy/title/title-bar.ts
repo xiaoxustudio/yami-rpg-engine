@@ -74,74 +74,74 @@ interface TitleShape {
 }
 
 export const Title: TitleShape = {
-	target: null,
-	tabBar: null,
-	theme: null,
+	target: null as any,
+	tabBar: null as any,
+	theme: null as any,
 	maximized: false,
 	fullscreen: false,
-	initialize: null,
-	newProject: null,
-	openProject: null,
-	closeProject: null,
-	deployment: null,
-	addRecentTab: null,
-	getClosedTabMeta: null,
-	openTab: null,
-	reopenClosedTab: null,
-	askWhetherToSave: null,
-	updateTitleName: null,
-	updateBodyClass: null,
-	updateAppRegion: null,
-	switchTheme: null,
-	dispatchThemechangeEvent: null,
-	playGame: null,
-	saveToConfig: null,
-	loadFromConfig: null,
-	saveToProject: null,
-	loadFromProject: null,
-	windowBeforeClose: null,
-	windowMaximize: null,
-	windowUnmaximize: null,
-	windowEnterFullScreen: null,
-	windowLeaveFullScreen: null,
-	windowDrop: null,
-	windowDirchange: null,
-	windowLocalize: null,
-	pointerenter: null,
-	pointermove: null,
-	tabBarPointerdown: null,
-	tabBarSelect: null,
-	tabBarClosed: null,
-	tabBarPopup: null,
-	playClick: null,
-	minimizeClick: null,
-	maximizeClick: null,
-	closeClick: null
+	initialize: null as any,
+	newProject: null as any,
+	openProject: null as any,
+	closeProject: null as any,
+	deployment: null as any,
+	addRecentTab: null as any,
+	getClosedTabMeta: null as any,
+	openTab: null as any,
+	reopenClosedTab: null as any,
+	askWhetherToSave: null as any,
+	updateTitleName: null as any,
+	updateBodyClass: null as any,
+	updateAppRegion: null as any,
+	switchTheme: null as any,
+	dispatchThemechangeEvent: null as any,
+	playGame: null as any,
+	saveToConfig: null as any,
+	loadFromConfig: null as any,
+	saveToProject: null as any,
+	loadFromProject: null as any,
+	windowBeforeClose: null as any,
+	windowMaximize: null as any,
+	windowUnmaximize: null as any,
+	windowEnterFullScreen: null as any,
+	windowLeaveFullScreen: null as any,
+	windowDrop: null as any,
+	windowDirchange: null as any,
+	windowLocalize: null as any,
+	pointerenter: null as any,
+	pointermove: null as any,
+	tabBarPointerdown: null as any,
+	tabBarSelect: null as any,
+	tabBarClosed: null as any,
+	tabBarPopup: null as any,
+	playClick: null as any,
+	minimizeClick: null as any,
+	maximizeClick: null as any,
+	closeClick: null as any
 };
 
-Title.initialize = function () {
+Title.initialize = function (this: any) {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar');
-	ipcRenderer?.invoke?.('update-max-min-icon').then((mode) => {
+	ipcRenderer?.invoke?.('update-max-min-icon').then((mode: any) => {
 		switch (mode) {
 			case 'maximize':
-				this.windowMaximize(event);
+				this.windowMaximize!(event);
 				break;
 			case 'unmaximize':
-				this.windowUnmaximize(event);
+				this.windowUnmaximize!(event);
 				break;
 			case 'enter-full-screen':
-				this.windowEnterFullScreen(event);
+				this.windowEnterFullScreen!(event);
 				break;
 		}
 	});
 
 	this.target.element = this.target.appendChild(document.createElement('div'));
 
-	this.pointerenter();
+	this.pointerenter!();
 
 	// 标签栏扩展方法 - 解析图标
-	this.tabBar.parseIcon = function (type) {
+	this.tabBar.parseIcon = function (this: any, type: any) {
 		switch (type) {
 			case 'scene':
 				return '\uf0ac';
@@ -155,7 +155,7 @@ Title.initialize = function () {
 	};
 
 	// 标签栏扩展方法 - 解析名称
-	this.tabBar.parseName = function (meta) {
+	this.tabBar.parseName = function (this: any, meta: any) {
 		return (File as any).parseMetaName(meta);
 	};
 
@@ -170,21 +170,21 @@ Title.initialize = function () {
 	ipcRenderer?.on?.('unmaximize', this.windowUnmaximize);
 	ipcRenderer?.on?.('enter-full-screen', this.windowEnterFullScreen);
 	ipcRenderer?.on?.('leave-full-screen', this.windowLeaveFullScreen);
-	NewProject.initialize();
-	Deployment.initialize();
+	NewProject.initialize!();
+	Deployment.initialize!();
 };
 
-Title.newProject = function () {
-	this.askWhetherToSave(() => {
-		NewProject.open();
+Title.newProject = function (this: any) {
+	this.askWhetherToSave!(() => {
+		NewProject.open!();
 	});
 };
 
-Title.openProject = function () {
-	this.askWhetherToSave(() => {
-		const dialogs = Editor.config.dialogs;
-		const location = Path.normalize(dialogs.open);
-		File.showOpenDialog({
+Title.openProject = function (this: any) {
+	this.askWhetherToSave!(() => {
+		const dialogs = (Editor.config as any).dialogs;
+		const location = Path.normalize!(dialogs.open);
+		File.showOpenDialog!({
 			defaultPath: location,
 			filters: [
 				{
@@ -192,32 +192,32 @@ Title.openProject = function () {
 					extensions: ['yamirpg']
 				}
 			]
-		}).then(({ filePaths }) => {
+		}).then(({ filePaths }: any) => {
 			if (filePaths.length === 1) {
-				Editor.open(filePaths[0]);
+				Editor.open!(filePaths[0]);
 			}
 		});
 	});
 };
 
-Title.closeProject = function () {
-	this.askWhetherToSave(() => {
-		Editor.close();
-		WebServer.stop();
-		ApkBuilder.stopBuild();
-		ApkBuilder.clearLog();
+Title.closeProject = function (this: any) {
+	this.askWhetherToSave!(() => {
+		Editor.close!();
+		WebServer.stop!();
+		ApkBuilder.stopBuild!();
+		ApkBuilder.clearLog!();
 		Layout.manager.switch('home');
 	});
 };
 
-Title.deployment = function () {
-	this.askWhetherToSave(() => {
-		Deployment.open();
+Title.deployment = function (this: any) {
+	this.askWhetherToSave!(() => {
+		Deployment.open!();
 	});
 };
 
-Title.addRecentTab = function (guid) {
-	const tabs = Editor.project.recentTabs;
+Title.addRecentTab = function (this: any, guid: any) {
+	const tabs = (Editor.project as any).recentTabs;
 	if (tabs.remove(guid)) {
 		tabs.unshift(guid);
 	} else {
@@ -228,8 +228,8 @@ Title.addRecentTab = function (guid) {
 	}
 };
 
-Title.getClosedTabMeta = function () {
-	const { recentTabs } = Editor.project;
+Title.getClosedTabMeta = function (this: any) {
+	const { recentTabs } = Editor.project as any;
 	outer: for (const guid of recentTabs) {
 		for (const item of this.tabBar?.data ?? []) {
 			if (item.meta.guid === guid) {
@@ -241,7 +241,7 @@ Title.getClosedTabMeta = function () {
 	return undefined;
 };
 
-Title.openTab = function (file) {
+Title.openTab = function (this: any, file: any) {
 	const { tabBar } = this;
 	const { meta, type } = file;
 	let context = tabBar.find(meta);
@@ -253,19 +253,19 @@ Title.openTab = function (file) {
 	tabBar.select(context);
 };
 
-Title.reopenClosedTab = function (meta) {
-	meta = meta ?? this.getClosedTabMeta();
+Title.reopenClosedTab = function (this: any, meta: any) {
+	meta = meta ?? this.getClosedTabMeta!();
 	if (meta) {
-		const file = Directory.getFile(meta.path);
+		const file = Directory.getFile!(meta.path);
 		if (file instanceof FileItem) {
-			this.openTab(file);
+			this.openTab!(file);
 		}
 	}
 };
 
-Title.askWhetherToSave = function (callback) {
+Title.askWhetherToSave = function (this: any, callback: any) {
 	if (Data.manifest?.changes.length > 0) {
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		getWindow().confirm(
 			{
 				message: get('closeUnsavedProject')
@@ -274,7 +274,7 @@ Title.askWhetherToSave = function (callback) {
 				{
 					label: get('yes'),
 					click: () => {
-						File.save();
+						File.save!();
 						callback();
 					}
 				},
@@ -296,7 +296,7 @@ Title.askWhetherToSave = function (callback) {
 
 Title.updateTitleName = (function IIFE() {
 	const title = $('title')[0];
-	return function () {
+	return function (this: any) {
 		let text = 'Yami RPG Editor';
 		if (Editor.state === 'open') {
 			text = Data.config.window.title + ' - ' + text;
@@ -305,7 +305,7 @@ Title.updateTitleName = (function IIFE() {
 	};
 })();
 
-Title.updateBodyClass = function () {
+Title.updateBodyClass = function (this: any) {
 	if (this.maximized || this.fullscreen) {
 		addClass(document.body, 'maximized');
 		removeClass(document.body, 'border');
@@ -316,23 +316,23 @@ Title.updateBodyClass = function () {
 };
 
 // 应用拖拽区域无法自动更新 需要通过开关元素的显示来手动刷新
-Title.updateAppRegion = function () {
+Title.updateAppRegion = function (this: any) {
 	const { target } = this;
 	show(target.element);
 	// 强制刷新样式 target.element.css().display
 	setTimeout(() => hide(target.element));
 };
 
-Title.switchTheme = function (scheme) {
+Title.switchTheme = function (this: any, scheme: any) {
 	switch (scheme) {
 		case 'light':
 			if (removeClass(document.documentElement, 'dark')) {
-				this.dispatchThemechangeEvent('light');
+				this.dispatchThemechangeEvent!('light');
 			}
 			break;
 		case 'dark':
 			if (addClass(document.documentElement, 'dark')) {
-				this.dispatchThemechangeEvent('dark');
+				this.dispatchThemechangeEvent!('dark');
 			}
 			break;
 	}
@@ -340,41 +340,41 @@ Title.switchTheme = function (scheme) {
 
 Title.dispatchThemechangeEvent = (function IIFE() {
 	const themechange = new Event('themechange');
-	return function (theme) {
+	return function (this: any, theme: any) {
 		this.theme = theme;
 		themechange.value = theme;
 		window.dispatchEvent(themechange);
 	};
 })();
 
-Title.playGame = async function () {
+Title.playGame = async function (this: any) {
 	const element = $('#title-play');
 	if (Editor.state === 'open' && !getTitleStore().playing) {
 		getTitleStore().setPlaying(true);
 		addClass(element, 'selected');
 
 		const { activeElement } = document;
-		activeElement.blur();
-		activeElement.focus();
+		activeElement!.blur();
+		activeElement!.focus();
 
-		AudioManager.player.stop();
+		AudioManager.player!.stop();
 
-		await File.save(false);
+		await File.save!(false);
 
 		ipcRenderer.send('create-player-window', File.root);
 
-		ipcRenderer.once('player-window-closed', (event) => {
+		ipcRenderer.once('player-window-closed', (event: any) => {
 			removeClass(element, 'selected');
 			getTitleStore().setPlaying(false);
 		});
 	}
 };
 
-Title.saveToConfig = function (config) {
+Title.saveToConfig = function (this: any, config: any) {
 	config.theme = this.theme;
 };
 
-Title.loadFromConfig = function (config) {
+Title.loadFromConfig = function (this: any, config: any) {
 	// theme 兜底：缺失或非法值时按当前 DOM 状态推断（html.dark 类 ⇒ dark，否则 light） 避免向下游派发 undefined 主题导致 webgl background[undefined] 解构炸
 	let { theme } = config;
 	if (theme !== 'light' && theme !== 'dark') {
@@ -388,10 +388,10 @@ Title.loadFromConfig = function (config) {
 			addClass(document.documentElement, 'dark');
 			break;
 	}
-	this.dispatchThemechangeEvent(theme);
+	this.dispatchThemechangeEvent!(theme);
 };
 
-Title.saveToProject = function (project) {
+Title.saveToProject = function (this: any, project: any) {
 	const items = this.tabBar.data;
 	const length = items.length;
 	const tabs = new Array(length);
@@ -404,12 +404,12 @@ Title.saveToProject = function (project) {
 	project.activeTab = tab?.meta.guid ?? '';
 };
 
-Title.loadFromProject = function (project) {
+Title.loadFromProject = function (this: any, project: any) {
 	const { openTabs, activeTab } = project;
 
 	const dirItem = {
 		icon: '\uf07c',
-		name: Local.get('common.directory'),
+		name: Local.get!('common.directory'),
 		meta: { guid: '' },
 		type: 'directory'
 	};
@@ -421,7 +421,7 @@ Title.loadFromProject = function (project) {
 		const meta = map[guid];
 		if (!meta) continue;
 		let type;
-		switch (Path.extname(meta.path).toLowerCase()) {
+		switch (Path.extname!(meta.path).toLowerCase()) {
 			case '.scene':
 				type = 'scene';
 				break;
@@ -460,49 +460,49 @@ Title.loadFromProject = function (project) {
 	Layout.manager.switch('directory');
 };
 
-Title.windowBeforeClose = function (event) {
+Title.windowBeforeClose = function (this: any, event: any) {
 	if ((getWindow().frames?.length ?? 0) === 0) {
 		ipcRenderer.send('prevent-close-window');
-		Title.askWhetherToSave(() => {
-			Editor.quit();
+		Title.askWhetherToSave!(() => {
+			Editor.quit!();
 		});
 	}
 };
 
-Title.windowMaximize = function (event) {
+Title.windowMaximize = function (this: any, event: any) {
 	this.maximized = true;
-	this.updateBodyClass();
+	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowUnmaximize = function (event) {
+Title.windowUnmaximize = function (this: any, event: any) {
 	this.maximized = false;
-	this.updateBodyClass();
+	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowEnterFullScreen = function (event) {
+Title.windowEnterFullScreen = function (this: any, event: any) {
 	this.fullscreen = true;
-	this.updateBodyClass();
+	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowLeaveFullScreen = function (event) {
+Title.windowLeaveFullScreen = function (this: any, event: any) {
 	this.fullscreen = false;
-	this.updateBodyClass();
+	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowDrop = function (event) {
+Title.windowDrop = function (this: any, event: any) {
 	if ((getWindow().frames?.length ?? 0) === 0) {
 		const { files } = event.dataTransfer;
 		for (const file of files) {
 			if (/\.yamirpg$/i.test(file.name)) {
-				this.askWhetherToSave(() => {
-					Editor.open(file.path);
+				this.askWhetherToSave!(() => {
+					Editor.open!(file.path);
 				});
 			}
 		}
 	}
 }.bind(Title);
 
-Title.windowDirchange = function (event) {
+Title.windowDirchange = function (this: any, event: any) {
 	const { tabBar } = Title;
 	if (!tabBar?.data) return;
 	for (const item of tabBar.data) {
@@ -517,24 +517,24 @@ Title.windowDirchange = function (event) {
 	}
 };
 
-Title.windowLocalize = function (event) {
+Title.windowLocalize = function (this: any, event: any) {
 	const text = Title.tabBar.dirItem?.tab?.text;
 	if (text instanceof HTMLElement) {
-		text.textContent = Local.get('common.directory');
+		text.textContent = Local.get!('common.directory');
 	}
 };
 
-Title.pointerenter = function (event) {
+Title.pointerenter = function (this: any, event: any) {
 	const { target } = this;
 	if (!target.active) {
 		target.active = true;
 		target.style.WebkitAppRegion = 'drag';
-		this.updateAppRegion();
+		this.updateAppRegion!();
 		window.addEventListener('pointermove', this.pointermove);
 	}
 }.bind(Title);
 
-Title.pointermove = function (event) {
+Title.pointermove = function (this: any, event: any) {
 	const { target } = this;
 	if (target.active) {
 		let element = event.target;
@@ -548,14 +548,14 @@ Title.pointermove = function (event) {
 		if (!element) {
 			target.active = false;
 			target.style.WebkitAppRegion = 'no-drag';
-			this.updateAppRegion();
+			this.updateAppRegion!();
 			window.removeEventListener('pointermove', this.pointermove);
 		}
 	}
 }.bind(Title);
 
-Title.tabBarPointerdown = function (event) {
-	switch (this.read()?.type) {
+Title.tabBarPointerdown = function (this: any, event: any) {
+	switch (this.read!()?.type) {
 		case 'scene':
 			Layout.readyToFocus(Scene.screen);
 			break;
@@ -570,7 +570,7 @@ Title.tabBarPointerdown = function (event) {
 	}
 };
 
-Title.tabBarSelect = function (event) {
+Title.tabBarSelect = function (this: any, event: any) {
 	if (Layout.resizing) {
 		Layout.pointerup();
 	}
@@ -581,46 +581,46 @@ Title.tabBarSelect = function (event) {
 			break;
 		case 'scene':
 			Layout.manager.switch('scene');
-			Scene.open(context);
+			Scene.open!(context);
 			Scene.screen.focus();
 			break;
 		case 'ui':
 			Layout.manager.switch('ui');
-			UI.open(context);
+			UI.open!(context);
 			UI.screen.focus();
 			break;
 		case 'animation':
 			Layout.manager.switch('animation');
-			Animation.open(context);
+			Animation.open!(context);
 			Animation.screen.focus();
 			break;
 		case 'particle':
 			Layout.manager.switch('particle');
-			Particle.open(context);
+			Particle.open!(context);
 			Particle.screen.focus();
 			break;
 	}
 };
 
-Title.tabBarClosed = function (event) {
+Title.tabBarClosed = function (this: any, event: any) {
 	const { closedItems, lastValue } = event;
 	for (const context of closedItems) {
 		switch (context.type) {
 			case 'scene':
-				Scene.destroy(context);
+				Scene.destroy!(context);
 				break;
 			case 'ui':
-				UI.destroy(context);
+				UI.destroy!(context);
 				break;
 			case 'animation':
-				Animation.destroy(context);
+				Animation.destroy!(context);
 				break;
 			case 'particle':
-				Particle.destroy(context);
+				Particle.destroy!(context);
 				break;
 		}
 		if (context.meta.guid) {
-			Title.addRecentTab(context.meta.guid);
+			Title.addRecentTab!(context.meta.guid);
 		}
 	}
 	if (closedItems.includes(lastValue)) {
@@ -628,20 +628,20 @@ Title.tabBarClosed = function (event) {
 		const index = Math.min(this.selectionIndex, items.length - 1);
 		const item = items[index];
 		if (item instanceof Object) {
-			this.select(item);
+			this.select!(item);
 		} else {
 			Layout.manager.switch('directory');
 		}
 	}
 };
 
-Title.tabBarPopup = function (event) {
+Title.tabBarPopup = function (this: any, event: any) {
 	const item = event.value;
 	if (!item) return;
 	const items = this.data;
 	const last = items[items.length - 1];
-	const get = Local.createGetter('menuTab');
-	Menu.popup(
+	const get = Local.createGetter!('menuTab');
+	Menu.popup!(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -652,41 +652,41 @@ Title.tabBarPopup = function (event) {
 				accelerator: ctrl('W'),
 				enabled: item.type !== 'directory',
 				click: () => {
-					this.close(item);
+					this.close!(item);
 				}
 			},
 			{
 				label: get('closeOtherTabs'),
 				enabled: items.length > 1,
 				click: () => {
-					this.closeOtherTabs(item);
+					this.closeOtherTabs!(item);
 				}
 			},
 			{
 				label: get('closeTabsToTheRight'),
 				enabled: item !== last,
 				click: () => {
-					this.closeTabsToTheRight(item);
+					this.closeTabsToTheRight!(item);
 				}
 			}
 		]
 	);
 };
 
-Title.playClick = function (event) {
-	Title.playGame();
+Title.playClick = function (this: any, event: any) {
+	Title.playGame!();
 };
 
-Title.minimizeClick = function (event) {
+Title.minimizeClick = function (this: any, event: any) {
 	ipcRenderer.send('minimize-window');
 };
 
-Title.maximizeClick = function (event) {
+Title.maximizeClick = function (this: any, event: any) {
 	ipcRenderer.send('maximize-window');
 };
 
-Title.closeClick = function (event) {
-	Title.windowBeforeClose();
+Title.closeClick = function (this: any, event: any) {
+	Title.windowBeforeClose!();
 };
 
 import { titleStateKeys, getTitleStore } from '@app/stores/title';

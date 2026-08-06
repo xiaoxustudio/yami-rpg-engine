@@ -33,21 +33,21 @@ interface NumberOperandShape {
 }
 
 export const NumberOperand: NumberOperandShape = {
-	target: null,
-	initialize: null,
-	parseMathMethod: null,
-	parseStringMethod: null,
-	parseObjectProperty: null,
-	parseElementProperty: null,
-	parseOther: null,
-	parseOperand: null,
-	parse: null,
-	open: null,
-	save: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	parseMathMethod: null as any,
+	parseStringMethod: null as any,
+	parseObjectProperty: null as any,
+	parseElementProperty: null as any,
+	parseOther: null as any,
+	parseOperand: null as any,
+	parse: null as any,
+	open: null as any,
+	save: null as any,
+	confirm: null as any
 };
 
-NumberOperand.initialize = function () {
+NumberOperand.initialize = function (this: any) {
 	const opEl = $('#setNumber-operation');
 	if (!opEl) return;
 	opEl.loadItems([
@@ -130,7 +130,7 @@ NumberOperand.initialize = function () {
 			{ case: 'other', targets: [$('#setNumber-operand-other-data')] }
 		]);
 
-	on($('#setNumber-operand-type'), 'write', (event) => {
+	on($('#setNumber-operand-type'), 'write', (event: any) => {
 		let filter = 'all';
 		switch (event.value) {
 			case 'variable':
@@ -477,11 +477,11 @@ NumberOperand.initialize = function () {
 			}
 		]);
 
-	on($('#setNumber-operand'), 'open', (event) => {
-		$('#setNumber-operand-other-teamId').loadItems(Data.createTeamItems());
+	on($('#setNumber-operand'), 'open', (event: any) => {
+		$('#setNumber-operand-other-teamId').loadItems(Data.createTeamItems!());
 	});
 
-	on($('#setNumber-operand'), 'closed', (event) => {
+	on($('#setNumber-operand'), 'closed', (event: any) => {
 		clear($('#setNumber-operand-other-teamId'));
 		$('#setNumber-operation').restore();
 	});
@@ -489,15 +489,15 @@ NumberOperand.initialize = function () {
 	on($('#setNumber-operand-confirm'), 'click', this.confirm);
 };
 
-NumberOperand.parseMathMethod = function (operand) {
+NumberOperand.parseMathMethod = function (this: any, operand: any): any {
 	const method = operand.method;
-	const label = Local.get('command.setNumber.math.' + method);
+	const label = Local.get!('command.setNumber.math.' + method);
 	switch (method) {
 		case 'round': {
-			const varName = Command.parseVariable(operand.variable, 'number');
+			const varName = Command.parseVariable!(operand.variable, 'number');
 			const decimals = operand.decimals;
 			return `${label}${Token('(')}${varName}${
-				decimals ? `${Token(', ')}${Command.setNumberColor(decimals)}` : ''
+				decimals ? `${Token(', ')}${Command.setNumberColor!(decimals)}` : ''
 			}${Token(')')}`;
 		}
 		case 'floor':
@@ -507,51 +507,51 @@ NumberOperand.parseMathMethod = function (operand) {
 		case 'cos':
 		case 'sin':
 		case 'tan': {
-			const varName = Command.parseVariable(operand.variable, 'number');
+			const varName = Command.parseVariable!(operand.variable, 'number');
 			return `${label}${Token('(')}${varName}${Token(')')}`;
 		}
 		case 'random': {
-			const min = Command.setNumberColor(0);
-			const max = Command.setNumberColor(1);
+			const min = Command.setNumberColor!(0);
+			const max = Command.setNumberColor!(1);
 			return `${label}${Token('[')}${min}${Token(', ')}${max}${Token(')')}`;
 		}
 		case 'random-int': {
-			const min = Command.parseVariableNumber(operand.min);
-			const max = Command.parseVariableNumber(operand.max);
+			const min = Command.parseVariableNumber!(operand.min);
+			const max = Command.parseVariableNumber!(operand.max);
 			return `${label}${Token('[')}${min}${Token(', ')}${max}${Token(']')}`;
 		}
 		case 'distance':
 		case 'distance-x':
 		case 'distance-y':
 		case 'relative-angle': {
-			const start = Command.parsePosition(operand.start);
-			const end = Command.parsePosition(operand.end);
+			const start = Command.parsePosition!(operand.start);
+			const end = Command.parsePosition!(operand.end);
 			return `${label}${Token('(')}${start}${Token(', ')}${end}${Token(')')}`;
 		}
 	}
 };
 
-NumberOperand.parseStringMethod = function (operand) {
+NumberOperand.parseStringMethod = function (this: any, operand: any): any {
 	const method = operand.method;
-	const methodName = Local.get('command.setNumber.string.' + method);
+	const methodName = Local.get!('command.setNumber.string.' + method);
 	switch (method) {
 		case 'length':
 		case 'parse': {
 			const variable = operand.variable;
-			const varName = Command.parseVariable(variable, 'string');
+			const varName = Command.parseVariable!(variable, 'string');
 			return methodName + Token('(') + varName + Token(')');
 		}
 		case 'search': {
 			const { variable, search } = operand;
-			const varName = Command.parseVariable(variable, 'string');
-			const searchName = Command.parseVariableString(search);
+			const varName = Command.parseVariable!(variable, 'string');
+			const searchName = Command.parseVariableString!(search);
 			return methodName + Token('(') + varName + Token(', ') + searchName + Token(')');
 		}
 	}
 };
 
-NumberOperand.parseObjectProperty = function (operand) {
-	const property = Local.get('command.setNumber.object.' + operand.property);
+NumberOperand.parseObjectProperty = function (this: any, operand: any): any {
+	const property = Local.get!('command.setNumber.object.' + operand.property);
 	switch (operand.property) {
 		case 'actor-x':
 		case 'actor-y':
@@ -576,32 +576,32 @@ NumberOperand.parseObjectProperty = function (operand) {
 		case 'actor-animation-duration':
 		case 'actor-animation-progress':
 			return (
-				Command.parseActor(operand.actor) +
+				Command.parseActor!(operand.actor) +
 				Token(' -> ') +
 				property.replace('.', Token('.'))
 			);
 		case 'actor-inventory-item-quantity':
 			return (
-				Command.parseActor(operand.actor) +
+				Command.parseActor!(operand.actor) +
 				Token(' -> ') +
-				Command.parseVariableFile(operand.itemId) +
+				Command.parseVariableFile!(operand.itemId) +
 				Token('.') +
 				property
 			);
 		case 'actor-inventory-equipment-quantity':
 			return (
-				Command.parseActor(operand.actor) +
+				Command.parseActor!(operand.actor) +
 				Token(' -> ') +
-				Command.parseVariableFile(operand.equipmentId) +
+				Command.parseVariableFile!(operand.equipmentId) +
 				Token('.') +
 				property
 			);
 		case 'actor-cooldown-time':
 		case 'actor-cooldown-duration':
 		case 'actor-cooldown-progress': {
-			const key = Command.parseVariableEnum('cooldown-key', operand.key);
+			const key = Command.parseVariableEnum!('cooldown-key', operand.key);
 			return (
-				Command.parseActor(operand.actor) +
+				Command.parseActor!(operand.actor) +
 				Token(' -> ') +
 				property +
 				Token('(') +
@@ -612,45 +612,45 @@ NumberOperand.parseObjectProperty = function (operand) {
 		case 'skill-cooldown-time':
 		case 'skill-cooldown-duration':
 		case 'skill-cooldown-progress':
-			return Command.parseSkill(operand.skill) + Token(' -> ') + property;
+			return Command.parseSkill!(operand.skill) + Token(' -> ') + property;
 		case 'state-current-time':
 		case 'state-duration':
 		case 'state-progress':
-			return Command.parseState(operand.state) + Token(' -> ') + property;
+			return Command.parseState!(operand.state) + Token(' -> ') + property;
 		case 'equipment-order':
-			return Command.parseEquipment(operand.equipment) + Token(' -> ') + property;
+			return Command.parseEquipment!(operand.equipment) + Token(' -> ') + property;
 		case 'item-order':
 		case 'item-quantity':
-			return Command.parseItem(operand.item) + Token(' -> ') + property;
+			return Command.parseItem!(operand.item) + Token(' -> ') + property;
 		case 'trigger-speed':
 		case 'trigger-angle':
-			return Command.parseTrigger(operand.trigger) + Token(' -> ') + property;
+			return Command.parseTrigger!(operand.trigger) + Token(' -> ') + property;
 		case 'tilemap-width':
 		case 'tilemap-height':
-			return Command.parseTilemap(operand.tilemap) + Token(' -> ') + property;
+			return Command.parseTilemap!(operand.tilemap) + Token(' -> ') + property;
 		case 'tilemap-tag': {
 			return (
-				Command.parseTilemap(operand.tilemap) +
+				Command.parseTilemap!(operand.tilemap) +
 				Token(' -> ') +
 				property +
 				Token('(') +
-				Command.parsePosition(operand.tilemapPosition) +
+				Command.parsePosition!(operand.tilemapPosition) +
 				Token(')')
 			);
 		}
 		case 'list-length':
-			return Command.parseVariable(operand.variable, 'object') + Token(' -> ') + property;
+			return Command.parseVariable!(operand.variable, 'object') + Token(' -> ') + property;
 	}
 };
 
-NumberOperand.parseElementProperty = function (operand) {
-	const element = Command.parseElement(operand.element);
-	const property = Local.get('command.setNumber.element.' + operand.property);
+NumberOperand.parseElementProperty = function (this: any, operand: any) {
+	const element = Command.parseElement!(operand.element);
+	const property = Local.get!('command.setNumber.element.' + operand.property);
 	return element + Token(' -> ') + property.replace('.', Token('.'));
 };
 
-NumberOperand.parseOther = function (operand) {
-	const label = Local.get('command.setNumber.other.' + operand.data);
+NumberOperand.parseOther = function (this: any, operand: any) {
+	const label = Local.get!('command.setNumber.other.' + operand.data);
 	switch (operand.data) {
 		case 'touch-screen-x':
 		case 'touch-screen-y':
@@ -664,45 +664,45 @@ NumberOperand.parseOther = function (operand) {
 			return (
 				head +
 				Token('[') +
-				Command.parseVariableNumber(operand.touchId) +
+				Command.parseVariableNumber!(operand.touchId) +
 				Token(']') +
 				Token('.') +
 				end
 			);
 		}
 		case 'actor-count':
-			return label + Token('(') + Command.parseTeam(operand.teamId) + Token(')');
+			return label + Token('(') + Command.parseTeam!(operand.teamId) + Token(')');
 		default:
 			return label.replace('.', Token('.'));
 	}
 };
 
-NumberOperand.parseOperand = function (operand) {
+NumberOperand.parseOperand = function (this: any, operand: any) {
 	switch (operand.type) {
 		case 'constant':
-			return Command.setNumberColor(operand.value.toString());
+			return Command.setNumberColor!(operand.value.toString());
 		case 'variable':
-			return Command.parseVariable(operand.variable, 'number');
+			return Command.parseVariable!(operand.variable, 'number');
 		case 'math':
-			return this.parseMathMethod(operand);
+			return this.parseMathMethod!(operand);
 		case 'string':
-			return this.parseStringMethod(operand);
+			return this.parseStringMethod!(operand);
 		case 'object':
-			return this.parseObjectProperty(operand);
+			return this.parseObjectProperty!(operand);
 		case 'element':
-			return this.parseElementProperty(operand);
+			return this.parseElementProperty!(operand);
 		case 'list':
-			return Command.parseListItem(operand.variable, operand.index);
+			return Command.parseListItem!(operand.variable, operand.index);
 		case 'parameter':
-			return Command.parseParameter(operand.key);
+			return Command.parseParameter!(operand.key);
 		case 'script':
-			return Command.setScriptColor(operand.script);
+			return Command.setScriptColor!(operand.script);
 		case 'other':
-			return this.parseOther(operand);
+			return this.parseOther!(operand);
 	}
 };
 
-NumberOperand.parse = function (operand, data, index) {
+NumberOperand.parse = function (this: any, operand: any, data: any, index: any) {
 	let operation;
 	let operator;
 	if (index === 0) {
@@ -747,7 +747,7 @@ NumberOperand.parse = function (operand, data, index) {
 				break;
 		}
 	}
-	let operandName = Command.removeTextTags(this.parseOperand(operand));
+	let operandName = Command.removeTextTags!(this.parseOperand!(operand));
 	const currentPriority = operation.includes('()');
 	const nextPriority = data[index + 1]?.operation.includes('()');
 	if (!currentPriority && nextPriority) {
@@ -760,6 +760,7 @@ NumberOperand.parse = function (operand, data, index) {
 };
 
 NumberOperand.open = function (
+	this: any,
 	operand = {
 		operation: 'add',
 		type: 'constant',
@@ -779,7 +780,7 @@ NumberOperand.open = function (
 		getFocus($('#setNumber-operand-operation'));
 	}
 
-	$('#setNumber-operand-cooldown-key').loadItems(Enum.getStringItems('cooldown-key'));
+	$('#setNumber-operand-cooldown-key').loadItems(Enum.getStringItems!('cooldown-key'));
 
 	const write = getElementWriter('setNumber-operand');
 	let constantValue = 0;
@@ -805,7 +806,7 @@ NumberOperand.open = function (
 	let commonTrigger = { type: 'trigger' };
 	let commonTilemap = { type: 'trigger' };
 	let tilemapPosition = { type: 'absolute', x: 0, y: 0 };
-	let cooldownKey = Enum.getDefStringId('cooldown-key');
+	let cooldownKey = Enum.getDefStringId!('cooldown-key');
 	let listIndex = 0;
 	let parameterKey = '';
 	let script = '';
@@ -902,7 +903,7 @@ NumberOperand.open = function (
 	write('other-teamId', otherTeamId);
 };
 
-NumberOperand.save = function () {
+NumberOperand.save = function (this: any) {
 	const read = getElementReader('setNumber-operand');
 	const operation = read('operation');
 	const type = read('type');
@@ -915,7 +916,7 @@ NumberOperand.save = function () {
 		}
 		case 'variable': {
 			const variable = read('common-variable');
-			if (VariableGetter.isNone(variable)) {
+			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
 			operand = { operation, type, variable };
@@ -926,7 +927,7 @@ NumberOperand.save = function () {
 			switch (method) {
 				case 'round': {
 					const variable = read('common-variable');
-					if (VariableGetter.isNone(variable)) {
+					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
 					const decimals = read('math-decimals');
@@ -941,7 +942,7 @@ NumberOperand.save = function () {
 				case 'sin':
 				case 'tan': {
 					const variable = read('common-variable');
-					if (VariableGetter.isNone(variable)) {
+					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
 					operand = { operation, type, method, variable };
@@ -971,7 +972,7 @@ NumberOperand.save = function () {
 		case 'string': {
 			const method = read('string-method');
 			const variable = read('common-variable');
-			if (VariableGetter.isNone(variable)) {
+			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
 			switch (method) {
@@ -1099,7 +1100,7 @@ NumberOperand.save = function () {
 				}
 				case 'list-length': {
 					const variable = read('common-variable');
-					if (VariableGetter.isNone(variable)) {
+					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
 					operand = { operation, type, property, variable };
@@ -1117,7 +1118,7 @@ NumberOperand.save = function () {
 		case 'list': {
 			const variable = read('common-variable');
 			const index = read('list-index');
-			if (VariableGetter.isNone(variable)) {
+			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
 			operand = { operation, type, variable, index };
@@ -1169,6 +1170,6 @@ NumberOperand.save = function () {
 	return operand;
 };
 
-NumberOperand.confirm = function (event) {
-	return NumberOperand.target.save();
+NumberOperand.confirm = function (this: any, event: any) {
+	return NumberOperand.target!.save();
 };

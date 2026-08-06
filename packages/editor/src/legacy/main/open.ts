@@ -20,8 +20,8 @@ function getWindow() {
 }
 import { Updater } from '@/update/updater.ts';
 
-Editor.open = async function (path, agreed = false) {
-	path = Path.slash(path ?? this.config.project);
+Editor.open = async function (this: any, path, agreed = false) {
+	path = Path.slash!(path ?? this.config.project);
 
 	if (!path) {
 		(Layout.manager as any).switch('home');
@@ -29,7 +29,7 @@ Editor.open = async function (path, agreed = false) {
 	}
 
 	try {
-		if (!FS.statSync(path).isFile()) {
+		if (!FS.statSync!(path).isFile()) {
 			throw new Error('Invalid project path');
 		}
 	} catch (error: any) {
@@ -44,7 +44,7 @@ Editor.open = async function (path, agreed = false) {
 	const get = (Local.createGetter as any)('confirmation');
 
 	try {
-		const json = FS.readFileSync(path, 'utf8');
+		const json = FS.readFileSync!(path, 'utf8');
 		this.project = JSON.parse(json);
 		Object.defineProperty(this.project, 'code', { value: json });
 		const verNum = (Updater.getVersionNumber as any)(this.project.version);
@@ -111,11 +111,11 @@ Editor.open = async function (path, agreed = false) {
 		const ver = this.project.version;
 		const verNum = (Updater.getVersionNumber as any)(ver);
 		await (Updater.createLocalization as any)(verNum);
-		const loadData = Data.loadAll();
+		const loadData = Data.loadAll!();
 		const loadDir = (Directory.read as any)();
 		await loadData;
 		await loadDir;
-		Data.inheritMetaData();
+		Data.inheritMetaData!();
 	} catch (error: any) {
 		(Log.throw as any)(error);
 		const type =
@@ -125,7 +125,7 @@ Editor.open = async function (path, agreed = false) {
 					? 'Syntax error'
 					: 'Error';
 		(Directory.close as any)();
-		Data.close();
+		Data.close!();
 		return (getWindow().confirm as any)(
 			{
 				message: `${type}: ${error.message}`,
@@ -155,7 +155,7 @@ Editor.open = async function (path, agreed = false) {
 		const index = path.lastIndexOf('/') + 1;
 		const message = path.slice(index);
 		(Directory.close as any)();
-		Data.close();
+		Data.close!();
 		(getWindow().confirm as any)(
 			{
 				message: `Failed to read file: ${message}`,

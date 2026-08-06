@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.forEach = new CommandSchema({
 	name: 'forEach',
 	onInitialize() {
-		$('#forEach-confirm').on('click', () => this.save());
+		$('#forEach-confirm').on('click', () => this.save!());
 		$('#forEach-data').loadItems([
 			{ name: 'List', value: 'list' },
 			{ name: 'Skill', value: 'skill' },
@@ -69,12 +69,12 @@ Command.cases.forEach = new CommandSchema({
 		touchId,
 		commands
 	}: any) {
-		const dataInfo = Local.get('command.forEach.' + data);
+		const dataInfo = Local.get!('command.forEach.' + data);
 		const words = Command.words;
 		switch (data) {
 			case 'list': {
-				const varName = Command.parseVariable(variable, 'any', true);
-				const listName = Command.parseVariable(list, 'object');
+				const varName = Command.parseVariable!(variable, 'any', true);
+				const listName = Command.parseVariable!(list, 'object');
 				words.push(varName + Token(' = ') + listName + Token(' -> ') + dataInfo);
 				break;
 			}
@@ -82,40 +82,40 @@ Command.cases.forEach = new CommandSchema({
 			case 'state':
 			case 'equipment':
 			case 'inventory': {
-				const varName = Command.parseVariable(variable, 'object', true);
-				const actorInfo = Command.parseActor(actor);
+				const varName = Command.parseVariable!(variable, 'object', true);
+				const actorInfo = Command.parseActor!(actor);
 				words.push(varName + Token(' = ') + actorInfo + Token(' -> ') + dataInfo);
 				break;
 			}
 			case 'element': {
-				const varName = Command.parseVariable(variable, 'object', true);
-				const elInfo = Command.parseElement(element);
+				const varName = Command.parseVariable!(variable, 'object', true);
+				const elInfo = Command.parseElement!(element);
 				words.push(varName + Token(' = ') + elInfo + Token(' -> ') + dataInfo);
 				break;
 			}
 			case 'member': {
-				const varName = Command.parseVariable(variable, 'object', true);
+				const varName = Command.parseVariable!(variable, 'object', true);
 				words.push(varName + Token(' = ') + dataInfo);
 				break;
 			}
 			case 'attribute': {
-				const varName = Command.parseVariable(variable, 'string', true);
-				const group = Command.parseAttributeGroup(groupId);
+				const varName = Command.parseVariable!(variable, 'string', true);
+				const group = Command.parseAttributeGroup!(groupId);
 				words.push(varName + Token(' = ') + group + Token(' -> ') + dataInfo);
 				break;
 			}
 			case 'enum': {
-				const varName = Command.parseVariable(variable, 'string', true);
-				const group = Command.parseEnumGroup(groupId);
+				const varName = Command.parseVariable!(variable, 'string', true);
+				const group = Command.parseEnumGroup!(groupId);
 				words.push(varName + Token(' = ') + group + Token(' -> ') + dataInfo);
 				break;
 			}
 			case 'save': {
-				const varName = Command.parseVariable(saveIndex, 'number', true);
+				const varName = Command.parseVariable!(saveIndex, 'number', true);
 				words.push(
 					Token('{') +
 						varName +
-						Command.setDelimiterColor(', ...}') +
+						Command.setDelimiterColor!(', ...}') +
 						Token(' = ') +
 						dataInfo
 				);
@@ -123,7 +123,7 @@ Command.cases.forEach = new CommandSchema({
 			}
 			case 'touch':
 			case 'changed-touch': {
-				const varName = Command.parseVariable(touchId, 'number', true);
+				const varName = Command.parseVariable!(touchId, 'number', true);
 				words.push(varName + Token(' = ') + dataInfo);
 				break;
 			}
@@ -131,12 +131,12 @@ Command.cases.forEach = new CommandSchema({
 		return [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.forEach') + ' ' },
+			{ text: Local.get!('command.forEach') + ' ' },
 			{ color: 'restore' },
 			{ text: words.join() },
 			{ children: commands },
 			{ color: 'flow' },
-			{ text: Local.get('command.forEach.end') }
+			{ text: Local.get!('command.forEach.end') }
 		];
 	},
 	customLoad({
@@ -180,14 +180,14 @@ Command.cases.forEach = new CommandSchema({
 		switch (data) {
 			case 'list': {
 				const list = read('list');
-				if (VariableGetter.isNone(list)) {
+				if (VariableGetter.isNone!(list)) {
 					return getFocus($('#forEach-list'));
 				}
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, list, variable, commands });
+				Command.save!({ data, list, variable, commands });
 				break;
 			}
 			case 'skill':
@@ -196,27 +196,27 @@ Command.cases.forEach = new CommandSchema({
 			case 'inventory': {
 				const actor = read('actor');
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, actor, variable, commands });
+				Command.save!({ data, actor, variable, commands });
 				break;
 			}
 			case 'element': {
 				const element = read('element');
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, element, variable, commands });
+				Command.save!({ data, element, variable, commands });
 				break;
 			}
 			case 'member':
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, variable, commands });
+				Command.save!({ data, variable, commands });
 				break;
 			case 'attribute': {
 				const groupId = read('attribute-groupId');
@@ -224,10 +224,10 @@ Command.cases.forEach = new CommandSchema({
 					return getFocus($('#forEach-attribute-groupId'));
 				}
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, groupId, variable, commands });
+				Command.save!({ data, groupId, variable, commands });
 				break;
 			}
 			case 'enum': {
@@ -236,27 +236,27 @@ Command.cases.forEach = new CommandSchema({
 					return getFocus($('#forEach-enum-groupId'));
 				}
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
-				Command.save({ data, groupId, variable, commands });
+				Command.save!({ data, groupId, variable, commands });
 				break;
 			}
 			case 'save': {
 				const saveIndex = read('saveIndex');
-				if (VariableGetter.isNone(saveIndex)) {
+				if (VariableGetter.isNone!(saveIndex)) {
 					return getFocus($('#forEach-saveIndex'));
 				}
-				Command.save({ data, saveIndex, commands });
+				Command.save!({ data, saveIndex, commands });
 				break;
 			}
 			case 'touch':
 			case 'changed-touch': {
 				const touchId = read('touchId');
-				if (VariableGetter.isNone(touchId)) {
+				if (VariableGetter.isNone!(touchId)) {
 					return getFocus($('#forEach-touchId'));
 				}
-				Command.save({ data, touchId, commands });
+				Command.save!({ data, touchId, commands });
 				break;
 			}
 		}

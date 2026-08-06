@@ -13,11 +13,11 @@ interface CommandItemElement extends HTMLElement {
 export function updateCommandElement(this: any, element: CommandItemElement): any {
 	const ret = _origUpdateCommandElement.call(this, element);
 
-	element.querySelectorAll('.command-mark-major').forEach((e) => {
+	element.querySelectorAll('.command-mark-major').forEach((e: any) => {
 		e.remove();
 	});
 
-	element.querySelectorAll('.command-mark-minor').forEach((e) => {
+	element.querySelectorAll('.command-mark-minor').forEach((e: any) => {
 		e.remove();
 	});
 
@@ -26,19 +26,19 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
-	element.lines = [];
+	element.lines = [] as any[];
 	for (let i = element.dataIndent; i >= 0; i--) {
 		let line = document.createElement('command-line');
 		addClass(line, 'command-line');
-		line.style.marginLeft = this.computeTextIndent(i);
+		line.style.marginLeft = this.computeTextIndent!(i);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
 	}
 
-	const list = this.elements;
+	const list = (this as any).elements;
 	if (!element?.eventBinding) {
 		on(element, 'mouseenter', function () {
-			let indent = null;
+			let indent: any = null;
 			const { start, end } = range(
 				list,
 				list.findIndex((v: any) => v === element)
@@ -53,7 +53,7 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 			}
 		});
 		on(element, 'mouseleave', function () {
-			let indent = null;
+			let indent: any = null;
 			const { start, end } = range(
 				list,
 				list.findIndex((v: any) => v === element)
@@ -86,10 +86,10 @@ export function ensureUpdateCommandElementOverride(): void {
 
 export function applyCommandListInstanceOverride(commandList: any): void {
 	if (!commandList) return;
-	commandList.getSelectionPosition = function () {
+	commandList.getSelectionPosition = function (this: any) {
 		return this.elements[this.active].pre.getBoundingClientRect();
 	};
-	on(commandList, 'update', function () {
+	on(commandList, 'update', function (this: any) {
 		const list = this.elements;
 		for (let i = 0; i < list.count; i++) {
 			const e = list[i];

@@ -9,7 +9,7 @@ Command.cases.switchCollisionSystem = new CommandSchema({
 	name: 'switchCollisionSystem',
 	fields: [{ key: 'operation', default: 'enable-actor-collision' }],
 	onInitialize() {
-		$('#switchCollisionSystem-confirm').on('click', () => this.save());
+		$('#switchCollisionSystem-confirm').on('click', () => this.save!());
 		$('#switchCollisionSystem-operation').loadItems([
 			{ name: 'Enable Actor Collision', value: 'enable-actor-collision' },
 			{
@@ -26,8 +26,8 @@ Command.cases.switchCollisionSystem = new CommandSchema({
 	customParse({ operation }: any) {
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.switchCollisionSystem') + Token(': ') },
-			{ text: Local.get('command.switchCollisionSystem.' + operation) }
+			{ text: Local.get!('command.switchCollisionSystem') + Token(': ') },
+			{ text: Local.get!('command.switchCollisionSystem.' + operation) }
 		];
 	},
 	onLoad() {

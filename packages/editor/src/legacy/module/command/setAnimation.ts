@@ -13,20 +13,20 @@ Command.cases.setAnimation = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setAnimation-confirm').on('click', () => this.save());
+		$('#setAnimation-confirm').on('click', () => this.save!());
 		$('#setAnimation-properties').bind(AnimationProperty);
 		$('#setAnimation').on('closed', (event: any) => {
 			clear($('#setAnimation-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(AnimationProperty.parse(property));
+			words.push(AnimationProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setAnimation') + Token(': ') },
+			{ text: Local.get!('command.setAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setAnimation = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setAnimation-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

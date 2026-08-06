@@ -7,15 +7,15 @@ function getWindow() {
 }
 
 export const EquipmentGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-EquipmentGetter.initialize = function () {
+EquipmentGetter.initialize = function (this: any) {
 	if (!$('#equipmentGetter-type')) return;
 	$('#equipmentGetter-type').loadItems([
 		{ name: 'Event Trigger Equipment', value: 'trigger' },
@@ -43,7 +43,7 @@ EquipmentGetter.initialize = function () {
 	$('#equipmentGetter-confirm').on('click', this.confirm);
 };
 
-EquipmentGetter.open = function (target) {
+EquipmentGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('equipmentGetter');
 	$('#equipmentGetter-slot').loadItems(Enum.getStringItems('equipment-slot'));
@@ -78,18 +78,18 @@ EquipmentGetter.open = function (target) {
 	getFocus($('#equipmentGetter-type'));
 };
 
-EquipmentGetter.checkDataForPlugin = function (data) {
+EquipmentGetter.checkDataForPlugin = function (this: any, data: any) {
 	if (data instanceof Object) {
 		return data.getter === 'equipment';
 	}
 	return false;
 };
 
-EquipmentGetter.createDefaultForPlugin = function () {
+EquipmentGetter.createDefaultForPlugin = function (this: any) {
 	return { getter: 'equipment', type: 'trigger' };
 };
 
-EquipmentGetter.confirm = function (event) {
+EquipmentGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('equipmentGetter');
 	const type = read('type');
 	let getter;

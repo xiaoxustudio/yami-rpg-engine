@@ -5,7 +5,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 Scene.setZoom = (function IIFE() {
-	return function (zoom) {
+	return function (this: any, zoom: any) {
 		const slider = $('#scene-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -43,7 +43,7 @@ Scene.setZoom = (function IIFE() {
 	};
 })();
 
-Scene.setSize = function (width, height) {
+Scene.setSize = function (this: any, width: any, height: any) {
 	if (this.width === width && this.height === height) {
 		return;
 	}
@@ -76,14 +76,14 @@ Scene.setSize = function (width, height) {
 	this.requestRendering();
 };
 
-Scene.setTileSize = function (tileWidth, tileHeight) {
+Scene.setTileSize = function (this: any, tileWidth: any, tileHeight: any) {
 	this.tileWidth = tileWidth;
 	this.tileHeight = tileHeight;
 	this.resize();
 	this.requestRendering();
 };
 
-Scene.setTilemapSize = function (tilemap, width, height) {
+Scene.setTilemapSize = function (this: any, tilemap: any, width: any, height: any) {
 	if (tilemap.width === width && tilemap.height === height) {
 		return;
 	}
@@ -116,7 +116,7 @@ Scene.setTilemapSize = function (tilemap, width, height) {
 	this.marquee.resize();
 };
 
-Scene.resize = function () {
+Scene.resize = function (this: any) {
 	if (this.state === 'open' && this.screen && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const scaledPadding = Math.round(this.padding * scale);
@@ -149,8 +149,8 @@ Scene.resize = function () {
 		this.paddingTop = paddingTop;
 		this.marquee.style.width = `${outerWidth / dpr}px`;
 		this.marquee.style.height = `${outerHeight / dpr}px`;
-		GL.resize(screenWidth, screenHeight);
-		GL.resizeLightMap();
+		GL.resize!(screenWidth, screenHeight);
+		GL.resizeLightMap!();
 		this.updateLightTexParameters();
 		this.updateCamera();
 		this.updateTransform();
@@ -161,7 +161,7 @@ Scene.resize = function () {
 
 Scene.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (event, integer = false) {
+	return function (this: any, event: any, integer = false) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const stw = this.scaledTileWidth;
 		const sth = this.scaledTileHeight;
@@ -187,7 +187,7 @@ Scene.getTileCoords = (function IIFE() {
 
 Scene.getConvertedCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return (tile) => {
+	return (tile: any) => {
 		point.x = tile.x * Scene.tileWidth;
 		point.y = tile.y * Scene.tileHeight;
 		return point;
@@ -196,7 +196,7 @@ Scene.getConvertedCoords = (function IIFE() {
 
 Scene.getParallaxAnchor = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (parallax, tiled = false) {
+	return function (this: any, parallax: any, tiled = false) {
 		const tw = this.tileWidth;
 		const th = this.tileHeight;
 		const cx = this.scrollCenterX;
@@ -220,7 +220,7 @@ Scene.getParallaxAnchor = (function IIFE() {
 
 Scene.getGridContext = (function IIFE() {
 	const context = { width: 0, height: 0, offsetX: 0, offsetY: 0 };
-	return function () {
+	return function (this: any) {
 		if (this.layer === 'tilemap') {
 			const tilemap = this.tilemap;
 			const anchor = this.getParallaxAnchor(tilemap);
@@ -249,7 +249,7 @@ Scene.getGridContext = (function IIFE() {
 // 光栅化滚动位置 - 对齐到像素 避免瓦片地图视差模式下图块|网格|选框位置不同步的现象
 Scene.rasterizeScrollPosition = (function IIFE() {
 	const scroll = { left: 0, top: 0, right: 0, bottom: 0 };
-	return function (ox, oy) {
+	return function (this: any, ox: any, oy: any) {
 		const sx = this.scaleX;
 		const sy = this.scaleY;
 		const sl = this.scrollLeft;
@@ -264,7 +264,7 @@ Scene.rasterizeScrollPosition = (function IIFE() {
 	};
 })();
 
-Scene.updateLightTexParameters = function () {
+Scene.updateLightTexParameters = function (this: any) {
 	const light = Data.config.lightArea;
 	const texture = GL.reflectedLightMap;
 	const scaleX = this.scaleX;
@@ -296,7 +296,7 @@ Scene.updateLightTexParameters = function () {
 	}
 };
 
-Scene.updateCamera = function (x = this.meta.x, y = this.meta.y) {
+Scene.updateCamera = function (this: any, x = this.meta.x, y = this.meta.y) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const scrollX = x * this.scaledTileWidth + this.paddingLeft;
@@ -311,7 +311,7 @@ Scene.updateCamera = function (x = this.meta.x, y = this.meta.y) {
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceY) / dpr;
 };
 
-Scene.updateTransform = function () {
+Scene.updateTransform = function (this: any) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const left = Math.roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);

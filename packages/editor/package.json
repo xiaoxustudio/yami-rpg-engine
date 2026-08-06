@@ -32,9 +32,9 @@
 		"typecheck:strict": "tsc --noEmit -p tsconfig.strict.json"
 	},
 	"dependencies": {
-		"@typescript/typescript-win32-x64": "7.1.0-dev.20260802.1",
+		"@typescript/typescript-win32-x64": "7.1.0-dev.20260806.1",
 		"@vueuse/core": "^14.3.0",
-		"axios": "^1.16.1",
+		"axios": "^1.19.0",
 		"exceljs": "^4.4.0",
 		"fs-extra": "^11.3.5",
 		"koa": "^3.2.1",
@@ -46,7 +46,7 @@
 		"qrcode": "^1.5.4",
 		"sharp": "^0.34.5",
 		"steamworks.js": "^0.4.0",
-		"typescript": "7.1.0-dev.20260802.1",
+		"typescript": "7.1.0-dev.20260806.1",
 		"uglify-js": "^3.19.3",
 		"vue": "^3.5.40",
 		"xml2js": "^0.6.2",
@@ -54,6 +54,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.19",
+		"@types/uglify-js":"^3.17.5",
 		"@vitejs/plugin-legacy": "^8.2.1",
 		"@vitejs/plugin-vue": "^6.0.8",
 		"@vue/test-utils": "^2.4.11",

@@ -12,7 +12,7 @@ Command.cases.registerEvent = new CommandSchema({
 	commands: [],
 	priorityEnabled: false,
 	onInitialize() {
-		$('#registerEvent-confirm').on('click', () => this.save());
+		$('#registerEvent-confirm').on('click', () => this.save!());
 		$('#registerEvent-target').loadItems([
 			{ name: 'Global', value: 'global' },
 			{ name: 'Actor', value: 'actor' },
@@ -34,19 +34,19 @@ Command.cases.registerEvent = new CommandSchema({
 		const type = event.value;
 		const elEventType = $('#registerEvent-type');
 		const registerType = 'register_' + type;
-		const eventTypes = Enum.getMergedItems(EventEditor.types[registerType], type + '-event');
-		this.switchTypeAndTagInput();
+		const eventTypes = Enum.getMergedItems!(EventEditor.types[registerType], type + '-event');
+		this.switchTypeAndTagInput!();
 		elEventType.loadItems(eventTypes);
 		elEventType.createTooltip();
 		write(elEventType, eventTypes[0].value);
 	},
 	operationWrite() {
-		this.switchTypeAndTagInput();
-		this.switchPriority();
-		this.switchNamespace();
+		this.switchTypeAndTagInput!();
+		this.switchPriority!();
+		this.switchNamespace!();
 	},
 	typeWrite() {
-		this.switchPriority();
+		this.switchPriority!();
 	},
 	switchTypeAndTagInput(event: any) {
 		const showElement = (input: any) => {
@@ -153,22 +153,26 @@ Command.cases.registerEvent = new CommandSchema({
 			case 'global':
 				switch (operation) {
 					case 'register': {
-						const priorityFlag = priority ? Command.setOperatorColor('*') : '';
+						const priorityFlag = priority ? Command.setOperatorColor!('*') : '';
 						const tagName = tag
-							? Token('(') + Command.parseVariableString(tag) + Token(')')
+							? Token('(') + Command.parseVariableString!(tag) + Token(')')
 							: '';
 						words.push(
-							Command.parseEventType(target + '-event', type) + priorityFlag + tagName
+							Command.parseEventType!(target + '-event', type) +
+								priorityFlag +
+								tagName
 						);
 						break;
 					}
 					case 'unregister': {
-						const tagName = Token('(') + Command.parseVariableString(tag) + Token(')');
-						words.push(Local.get('command.registerEvent.reset.global-event') + tagName);
+						const tagName = Token('(') + Command.parseVariableString!(tag) + Token(')');
+						words.push(
+							Local.get!('command.registerEvent.reset.global-event') + tagName
+						);
 						break;
 					}
 					case 'reset':
-						words.push(Local.get('command.registerEvent.reset.global-events'));
+						words.push(Local.get!('command.registerEvent.reset.global-events'));
 						break;
 				}
 				break;
@@ -176,14 +180,14 @@ Command.cases.registerEvent = new CommandSchema({
 				switch (operation) {
 					case 'register':
 					case 'unregister':
-						words.push(Command.parseActor(actor));
-						words.push(Command.parseEventType(target + '-event', type));
+						words.push(Command.parseActor!(actor));
+						words.push(Command.parseEventType!(target + '-event', type));
 						break;
 					case 'reset':
 						words.push(
-							Command.parseActor(actor) +
+							Command.parseActor!(actor) +
 								Token(' -> ') +
-								Local.get('command.registerEvent.reset.events')
+								Local.get!('command.registerEvent.reset.events')
 						);
 						break;
 				}
@@ -192,27 +196,27 @@ Command.cases.registerEvent = new CommandSchema({
 				switch (operation) {
 					case 'register':
 					case 'unregister':
-						words.push(Command.parseElement(element));
-						words.push(Command.parseEventType(target + '-event', type));
+						words.push(Command.parseElement!(element));
+						words.push(Command.parseEventType!(target + '-event', type));
 						break;
 					case 'reset':
 						words.push(
-							Command.parseElement(element) +
+							Command.parseElement!(element) +
 								Token(' -> ') +
-								Local.get('command.registerEvent.reset.events')
+								Local.get!('command.registerEvent.reset.events')
 						);
 						break;
 				}
 				break;
 		}
 		if (operation === 'register' && namespace) {
-			words.push(Local.get('command.registerEvent.namespace'));
+			words.push(Local.get!('command.registerEvent.namespace'));
 		}
 
 		const contents: any[] = [
 			{ color: 'flow' },
 			{
-				text: Local.get('command.registerEvent.alias.' + operation) + Token(': ')
+				text: Local.get!('command.registerEvent.alias.' + operation) + Token(': ')
 			},
 			{ text: words.join() }
 		];
@@ -221,7 +225,7 @@ Command.cases.registerEvent = new CommandSchema({
 			contents.push(
 				{ children: commands },
 				{ color: 'flow' },
-				{ text: Local.get('command.registerEvent.end') }
+				{ text: Local.get!('command.registerEvent.end') }
 			);
 		}
 		return contents;
@@ -247,7 +251,7 @@ Command.cases.registerEvent = new CommandSchema({
 		write('namespace', namespace);
 		write('tag', tag);
 		this.commands = commands;
-		this.switchNamespace();
+		this.switchNamespace!();
 		getFocus($('#registerEvent-target'));
 	},
 	customSave() {
@@ -266,7 +270,7 @@ Command.cases.registerEvent = new CommandSchema({
 							tag = tag.trim();
 						}
 						const priority = this.priorityEnabled ? read('priority') : false;
-						Command.save({
+						Command.save!({
 							target,
 							operation,
 							type,
@@ -282,11 +286,11 @@ Command.cases.registerEvent = new CommandSchema({
 						if (typeof tag === 'string' && (tag = tag.trim()) === '') {
 							return getFocus($('#registerEvent-tag'));
 						}
-						Command.save({ target, operation, tag });
+						Command.save!({ target, operation, tag });
 						break;
 					}
 					case 'reset':
-						Command.save({ target, operation });
+						Command.save!({ target, operation });
 						break;
 				}
 				break;
@@ -294,7 +298,7 @@ Command.cases.registerEvent = new CommandSchema({
 				const actor = read('actor');
 				switch (operation) {
 					case 'register':
-						Command.save({
+						Command.save!({
 							target,
 							actor,
 							operation,
@@ -304,10 +308,10 @@ Command.cases.registerEvent = new CommandSchema({
 						});
 						break;
 					case 'unregister':
-						Command.save({ target, actor, operation, type });
+						Command.save!({ target, actor, operation, type });
 						break;
 					case 'reset':
-						Command.save({ target, actor, operation });
+						Command.save!({ target, actor, operation });
 						break;
 				}
 				break;
@@ -316,7 +320,7 @@ Command.cases.registerEvent = new CommandSchema({
 				const element = read('element');
 				switch (operation) {
 					case 'register':
-						Command.save({
+						Command.save!({
 							target,
 							element,
 							operation,
@@ -326,10 +330,10 @@ Command.cases.registerEvent = new CommandSchema({
 						});
 						break;
 					case 'unregister':
-						Command.save({ target, element, operation, type });
+						Command.save!({ target, element, operation, type });
 						break;
 					case 'reset':
-						Command.save({ target, element, operation });
+						Command.save!({ target, element, operation });
 						break;
 				}
 				break;

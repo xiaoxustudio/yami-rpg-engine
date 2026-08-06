@@ -8,21 +8,21 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.block = new CommandSchema({
 	name: 'block',
 	onInitialize() {
-		on($('#block-confirm'), 'click', () => this.save());
+		on($('#block-confirm'), 'click', () => this.save!());
 	},
 	customParse({ note, asynchronous, commands }: any) {
 		if (asynchronous === undefined) {
 			asynchronous = false;
 		}
-		const asyncFlag = asynchronous ? Command.setOperatorColor('*') : '';
+		const asyncFlag = asynchronous ? Command.setOperatorColor!('*') : '';
 		const blockNote = note || asyncFlag ? Token(': ') + note + asyncFlag : '';
 		return [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.block') + blockNote },
+			{ text: Local.get!('command.block') + blockNote },
 			{ children: commands },
 			{ color: 'flow' },
-			{ text: Local.get('command.block.end') }
+			{ text: Local.get!('command.block.end') }
 		];
 	},
 	customLoad({ note = '', asynchronous = false, commands = [] }) {
@@ -34,6 +34,6 @@ Command.cases.block = new CommandSchema({
 	customSave() {
 		const note = read($('#block-note')).trim();
 		const asynchronous = read($('#block-asynchronous'));
-		Command.save({ note, asynchronous, commands: this.commands });
+		Command.save!({ note, asynchronous, commands: this.commands });
 	}
 });

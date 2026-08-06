@@ -7,15 +7,15 @@ function getWindow() {
 }
 
 export const ItemGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-ItemGetter.initialize = function () {
+ItemGetter.initialize = function (this: any) {
 	if (!$('#itemGetter-type')) return;
 	$('#itemGetter-type').loadItems([
 		{ name: 'Event Trigger Item', value: 'trigger' },
@@ -42,7 +42,7 @@ ItemGetter.initialize = function () {
 	$('#itemGetter-confirm').on('click', this.confirm);
 };
 
-ItemGetter.open = function (target) {
+ItemGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('itemGetter');
 
@@ -77,18 +77,18 @@ ItemGetter.open = function (target) {
 	getFocus($('#itemGetter-type'));
 };
 
-ItemGetter.checkDataForPlugin = function (data) {
+ItemGetter.checkDataForPlugin = function (this: any, data: any) {
 	if (data instanceof Object) {
 		return data.getter === 'item';
 	}
 	return false;
 };
 
-ItemGetter.createDefaultForPlugin = function () {
+ItemGetter.createDefaultForPlugin = function (this: any) {
 	return { getter: 'item', type: 'trigger' };
 };
 
-ItemGetter.confirm = function (event) {
+ItemGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('itemGetter');
 	const type = read('type');
 	let getter;

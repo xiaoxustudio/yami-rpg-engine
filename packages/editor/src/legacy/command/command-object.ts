@@ -14,7 +14,7 @@ export const Command: {
 	eventName: string;
 	eventIndex: number;
 	variables: any[];
-	varMap: Record<string, CommandSchema>;
+	varMap: Record<string, any>;
 	dependsOn: string[];
 	currentCommand: any;
 	setClass: (className: string) => string;
@@ -92,7 +92,7 @@ export const Command: {
 	setInvalid: CommandMethod;
 	forEachCommand: CommandMethod;
 	WordList: any;
-	cases: Record<string, CommandSchema>;
+	cases: Record<string, any>;
 	custom: any;
 } = {
 	target: null as any,
@@ -184,7 +184,7 @@ export const Command: {
 	setInvalid: null as any,
 	forEachCommand: null as any,
 	WordList: null as any,
-	cases: {} as Record<string, CommandSchema>,
+	cases: {} as Record<string, any>,
 	custom: null
 };
 

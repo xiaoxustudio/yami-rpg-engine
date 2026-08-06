@@ -59,60 +59,60 @@ interface ParticleElementLayer {
 }
 
 Particle.Element = class ParticleElement {
-	emitter: any;
-	layer: ParticleElementLayer;
-	data: ParticleElementLayerData;
-	elapsed: number;
-	appeared: boolean;
-	lifetime: number;
-	fadeout: number;
-	fadeoutTime: number;
-	globalAngle: number;
-	x: number;
-	y: number;
-	anchorX: number;
-	anchorY: number;
-	anchorSpeedX: number;
-	anchorSpeedY: number;
-	movementSpeedX: number;
-	movementSpeedY: number;
-	movementAccelX: number;
-	movementAccelY: number;
-	rotationAngle: number;
-	rotationSpeed: number;
-	rotationAccel: number;
-	hRotationOffsetX: number;
-	hRotationOffsetY: number;
-	hRotationRadius: number;
-	hRotationExpansionSpeed: number;
-	hRotationExpansionAccel: number;
-	hRotationAngle: number;
-	hRotationAngularSpeed: number;
-	hRotationAngularAccel: number;
-	scaleFactor: number;
-	scaleSpeed: number;
-	scaleAccel: number;
-	spriteMode: string;
-	spriteHframes: number;
-	spriteVframes: number;
-	spriteInterval: number;
-	spriteElapsed: number;
-	spriteFrame: number;
-	spriteCount: number;
-	spriteX: number;
-	spriteY: number;
-	opacity: number;
+	emitter!: any;
+	layer!: ParticleElementLayer;
+	data!: ParticleElementLayerData;
+	elapsed!: number;
+	appeared!: boolean;
+	lifetime!: number;
+	fadeout!: number;
+	fadeoutTime!: number;
+	globalAngle!: number;
+	x!: number;
+	y!: number;
+	anchorX!: number;
+	anchorY!: number;
+	anchorSpeedX!: number;
+	anchorSpeedY!: number;
+	movementSpeedX!: number;
+	movementSpeedY!: number;
+	movementAccelX!: number;
+	movementAccelY!: number;
+	rotationAngle!: number;
+	rotationSpeed!: number;
+	rotationAccel!: number;
+	hRotationOffsetX!: number;
+	hRotationOffsetY!: number;
+	hRotationRadius!: number;
+	hRotationExpansionSpeed!: number;
+	hRotationExpansionAccel!: number;
+	hRotationAngle!: number;
+	hRotationAngularSpeed!: number;
+	hRotationAngularAccel!: number;
+	scaleFactor!: number;
+	scaleSpeed!: number;
+	scaleAccel!: number;
+	spriteMode!: string;
+	spriteHframes!: number;
+	spriteVframes!: number;
+	spriteInterval!: number;
+	spriteElapsed!: number;
+	spriteFrame!: number;
+	spriteCount!: number;
+	spriteX!: number;
+	spriteY!: number;
+	opacity!: number;
 	// color 是 Uint32Array(5)，但运行时额外挂载 .start/.end/.changed 字段（setStartColor/updateColor 用） 注：.start/.end 运行时挂的是 Uint8Array(4)（非 number[]）
-	color: Uint32Array & {
+	color!: Uint32Array & {
 		start?: Uint8Array | number[];
 		end?: Uint8Array | number[];
 		changed?: boolean;
 	};
 	// 运行时挂载的方法（updateMethods 内赋值）
-	setStartPosition: ((...args: any[]) => any) | null;
-	postProcessing: (() => void) | null;
-	setStartColor: ((...args: any[]) => any) | null;
-	updateColor: (() => void) | null;
+	setStartPosition!: ((...args: any[]) => any) | null;
+	postProcessing!: (() => void) | null;
+	setStartColor!: ((...args: any[]) => any) | null;
+	updateColor!: (() => void) | null;
 
 	constructor(layer: ParticleElementLayer) {
 		this.emitter = layer.emitter;
@@ -158,8 +158,8 @@ Particle.Element = class ParticleElement {
 		this.spriteY = 0;
 		this.opacity = 0;
 		this.color = new Uint32Array(5);
-		this.updateMethods();
-		this.initialize();
+		this.updateMethods!();
+		this.initialize!();
 	}
 
 	initialize() {
@@ -227,7 +227,7 @@ Particle.Element = class ParticleElement {
 		switch (this.spriteMode) {
 			case 'random':
 				this.spriteFrame = Math.floor(Math.random() * this.spriteCount);
-				this.updateSpriteFrame();
+				this.updateSpriteFrame!();
 				break;
 			case 'animation':
 			case 'animation-loop':
@@ -277,14 +277,14 @@ Particle.Element = class ParticleElement {
 				) {
 					this.spriteElapsed -= this.spriteInterval;
 					this.spriteFrame++;
-					this.updateSpriteFrame();
+					this.updateSpriteFrame!();
 				}
 				break;
 			case 'animation-loop':
 				if ((this.spriteElapsed += deltaTime) >= this.spriteInterval) {
 					this.spriteElapsed -= this.spriteInterval;
 					this.spriteFrame = (this.spriteFrame + 1) % this.spriteCount;
-					this.updateSpriteFrame();
+					this.updateSpriteFrame!();
 				}
 				break;
 		}
@@ -320,7 +320,7 @@ Particle.Element = class ParticleElement {
 		const f = matrix[7];
 		const sx = this.spriteX * sw;
 		const sy = this.spriteY * sh;
-		const color = this.getColorInt();
+		const color = this.getColorInt!();
 		const sl = sx / tw;
 		const st = sy / th;
 		const sr = (sx + sw) / tw;
@@ -441,36 +441,36 @@ Particle.Element = class ParticleElement {
 
 	setStartPositionPoint() {
 		const { emitter } = this;
-		const pos = this.getAreaPosition();
+		const pos = this.getAreaPosition!();
 		this.x = emitter.startX + pos[0];
 		this.y = emitter.startY + pos[1];
-		this.transformStartPosition();
+		this.transformStartPosition!();
 	}
 
 	setStartPositionRectangle() {
 		const { emitter } = this;
 		const { area } = this.data;
-		const pos = this.getAreaPosition();
+		const pos = this.getAreaPosition!();
 		const x = emitter.startX + pos[0];
 		const y = emitter.startY + pos[1];
 		const wh = (area.width * emitter.scale) / 2;
 		const hh = (area.height * emitter.scale) / 2;
 		this.x = Math.randomBetween(x - wh, x + wh);
 		this.y = Math.randomBetween(y - hh, y + hh);
-		this.transformStartPosition();
+		this.transformStartPosition!();
 	}
 
 	setStartPositionCircle() {
 		const { emitter } = this;
 		const { area } = this.data;
-		const pos = this.getAreaPosition();
+		const pos = this.getAreaPosition!();
 		const x = emitter.startX + pos[0];
 		const y = emitter.startY + pos[1];
 		const angle = Math.random() * Math.PI * 2;
 		const distance = Math.random() * area.radius * emitter.scale;
 		this.x = x + distance * Math.cos(angle);
 		this.y = y + distance * Math.sin(angle);
-		this.transformStartPosition();
+		this.transformStartPosition!();
 	}
 
 	setStartPositionEdge(movementAngle: any) {
@@ -489,14 +489,14 @@ Particle.Element = class ParticleElement {
 			const forward = this.movementSpeedY >= 0;
 			this.x = scrollLeft + (random / threshold) * width;
 			this.y = forward ? scrollTop : scrollBottom;
-			const vertices = this.computeBoundingRectangle();
+			const vertices = this.computeBoundingRectangle!();
 			this.x -= (vertices[0] + vertices[2]) / 2 - this.x;
 			this.y -= forward ? vertices[3] - this.y : vertices[1] - this.y;
 		} else {
 			const forward = this.movementSpeedX >= 0;
 			this.y = scrollTop + ((random - threshold) / (1 - threshold)) * height;
 			this.x = forward ? scrollLeft : scrollRight;
-			const vertices = this.computeBoundingRectangle();
+			const vertices = this.computeBoundingRectangle!();
 			this.y -= (vertices[1] + vertices[3]) / 2 - this.y;
 			this.x -= forward ? vertices[2] - this.x : vertices[0] - this.x;
 		}
@@ -519,7 +519,7 @@ Particle.Element = class ParticleElement {
 	// 后期处理 - 屏幕边缘
 	postProcessingEdge() {
 		const stage = ParticleElement.stage;
-		const vertices = this.computeBoundingRectangle();
+		const vertices = this.computeBoundingRectangle!();
 		if (
 			vertices[0] < stage.scrollRight &&
 			vertices[1] < stage.scrollBottom &&

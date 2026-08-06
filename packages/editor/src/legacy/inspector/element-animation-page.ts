@@ -7,17 +7,17 @@ import { UI } from '@/ui/ui-window.ts';
 {
 	const UIAnimation = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null,
-		animationIdWrite: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any,
+		animationIdWrite: null as any
 	};
 
-	UIAnimation.initialize = function () {
+	UIAnimation.initialize = function (this: any) {
 		if (!$('#uiAnimation-animation')) return;
 		$('#uiAnimation-animation').on('write', this.animationIdWrite);
 		const elements = $(`#uiAnimation-animation, #uiAnimation-motion,
@@ -26,11 +26,11 @@ import { UI } from '@/ui/ui-window.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, UI))
+			el.addEventListener('blur', Inspector.inputBlur!(this, UI))
 		);
 	};
 
-	UIAnimation.create = function () {
+	UIAnimation.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -58,7 +58,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIAnimation.open = function (node) {
+	UIAnimation.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -75,17 +75,17 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIAnimation.close = function () {
+	UIAnimation.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
 	};
 
-	UIAnimation.update = function (node, key, value) {
-		UI.planToSave();
+	UIAnimation.update = function (this: any, node: any, key: any, value: any) {
+		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'animation':
@@ -103,16 +103,16 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 		}
-		UI.requestRendering();
+		UI.requestRendering!();
 	};
 
-	UIAnimation.paramInput = function (event) {
-		UIAnimation.update(UIAnimation.target, Inspector.getKey(this), read(this));
+	UIAnimation.paramInput = function (this: any, event: any) {
+		UIAnimation.update!(UIAnimation.target, Inspector.getKey!(this), read(this));
 	};
 
-	UIAnimation.animationIdWrite = function (event) {
+	UIAnimation.animationIdWrite = function (this: any, event: any) {
 		const elMotion = $('#uiAnimation-motion');
-		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};
 

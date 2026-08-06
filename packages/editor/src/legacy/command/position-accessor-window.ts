@@ -33,15 +33,15 @@ interface PositionGetterShape {
 }
 
 export const PositionGetter: PositionGetterShape = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-PositionGetter.initialize = function (): void {
+PositionGetter.initialize = function (this: any): void {
 	if (!$('#positionGetter-type')) return;
 	($('#positionGetter-type') as any).loadItems([
 		{ name: 'Absolute Coordinates', value: 'absolute' },
@@ -95,7 +95,7 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	let light = { type: 'trigger' };
 	let region = { type: 'trigger' };
 	let regionMode = 'center';
-	let objectId = PresetObject.getDefaultPresetId('any');
+	let objectId = PresetObject.getDefaultPresetId!('any');
 	const position = target.dataValue;
 	switch (position.type) {
 		case 'absolute':
@@ -135,14 +135,14 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	getFocus($('#positionGetter-type'));
 };
 
-PositionGetter.checkDataForPlugin = function (data: any): boolean {
+PositionGetter.checkDataForPlugin = function (this: any, data: any): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'position';
 	}
 	return false;
 };
 
-PositionGetter.createDefaultForPlugin = function (): {
+PositionGetter.createDefaultForPlugin = function (this: any): {
 	getter: string;
 	type: string;
 	x: number;

@@ -15,20 +15,20 @@ const _modulePath =
 		: typeof process !== 'undefined' &&
 			  typeof process.cwd === 'function' &&
 			  typeof Path.resolve === 'function'
-			? Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
+			? Path.resolve!(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
 			: '';
-const __dirname = _modulePath ? Path.dirname(Path.dirname(_modulePath)) : '';
+const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-Updater.updateIncrementalChanges = function (version: any) {
-	const verNum = Updater.getVersionNumber(version);
-	const dstProjectDir = Path.dirname(Editor.config.project);
-	const srcProjectDir = Path.resolve(__dirname, 'Templates/arpg-ts-update');
-	const srcScriptDir = Path.resolve(__dirname, 'Templates/arpg-ts-update/script');
-	const srcPluginDir = Path.resolve(__dirname, 'Templates/arpg-ts-update/plugins');
-	const dstScriptDir = Path.resolve(dstProjectDir, 'Script');
-	const bakFolderDir = Path.resolve(dstProjectDir, `${version}.bak`);
-	const messages: any[] = [];
-	const copyedFiles = {};
+Updater.updateIncrementalChanges = function (this: any, version: any) {
+	const verNum = Updater.getVersionNumber!(version);
+	const dstProjectDir = Path.dirname!((Editor.config as any).project);
+	const srcProjectDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update');
+	const srcScriptDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/script');
+	const srcPluginDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/plugins');
+	const dstScriptDir = Path.resolve!(dstProjectDir, 'Script');
+	const bakFolderDir = Path.resolve!(dstProjectDir, `${version}.bak`);
+	const messages: any[] = [] as any[];
+	const copyedFiles = {} as Record<string, any>;
 	let isBackupFolderCreated = false;
 
 	const updater = new (class VersionUpdater {
@@ -47,9 +47,9 @@ Updater.updateIncrementalChanges = function (version: any) {
 		}
 
 		logReplace(dstPath: any) {
-			const path = Path.relative(dstProjectDir, dstPath);
+			const path = Path.relative!(dstProjectDir, dstPath);
 			const message = `write: ${path}`;
-			messages.push({ minor: this.capitalize(message) });
+			messages.push({ minor: this.capitalize!(message) });
 			console.log(message);
 		}
 
@@ -60,10 +60,10 @@ Updater.updateIncrementalChanges = function (version: any) {
 		makeBakupFolder() {
 			if (!isBackupFolderCreated) {
 				isBackupFolderCreated = true;
-				FS.mkdirSync(bakFolderDir, { recursive: true });
-				const folderName = Path.basename(bakFolderDir);
+				FS.mkdirSync!(bakFolderDir, { recursive: true });
+				const folderName = Path.basename!(bakFolderDir);
 				const message = `backup: ${folderName}`;
-				messages.push({ minor: this.capitalize(message) });
+				messages.push({ minor: this.capitalize!(message) });
 				console.log(message);
 			}
 		}
@@ -74,13 +74,13 @@ Updater.updateIncrementalChanges = function (version: any) {
 			}
 			(copyedFiles as any)[dstPath] = true;
 			try {
-				if (FS.statSync(dstPath).isFile()) {
-					this.makeBakupFolder();
-					const dstName = Path.basename(dstPath);
-					const bakPath = Path.resolve(bakFolderDir, dstName);
-					FS.copyFileSync(dstPath, bakPath);
-					FS.copyFileSync(srcPath, dstPath);
-					this.logReplace(dstPath);
+				if (FS.statSync!(dstPath).isFile()) {
+					this.makeBakupFolder!();
+					const dstName = Path.basename!(dstPath);
+					const bakPath = Path.resolve!(bakFolderDir, dstName);
+					FS.copyFileSync!(dstPath, bakPath);
+					FS.copyFileSync!(srcPath, dstPath);
+					this.logReplace!(dstPath);
 				}
 			} catch (error: any) {
 				console.error(error);
@@ -89,77 +89,77 @@ Updater.updateIncrementalChanges = function (version: any) {
 
 		copyFiles(...fileNames: any[]) {
 			for (const fileName of fileNames) {
-				const srcFilePath = Path.resolve(srcProjectDir, fileName);
-				const dstFilePath = Path.resolve(dstProjectDir, fileName);
-				this.copyFile(srcFilePath, dstFilePath);
+				const srcFilePath = Path.resolve!(srcProjectDir, fileName);
+				const dstFilePath = Path.resolve!(dstProjectDir, fileName);
+				this.copyFile!(srcFilePath, dstFilePath);
 			}
 		}
 
 		copyScripts(...fileNames: any[]) {
 			for (const fileName of fileNames) {
-				const srcScriptPath = Path.resolve(srcScriptDir, fileName);
-				const dstScriptPath = Path.resolve(dstScriptDir, fileName);
-				this.copyFile(srcScriptPath, dstScriptPath);
+				const srcScriptPath = Path.resolve!(srcScriptDir, fileName);
+				const dstScriptPath = Path.resolve!(dstScriptDir, fileName);
+				this.copyFile!(srcScriptPath, dstScriptPath);
 			}
 		}
 
 		copyPlugins(...filters: any[]) {
 			const guidRegExp = /(?<=\.)[0-9a-f]{16}(?=\.\w+$)/;
-			const files = FS.readdirSync(srcPluginDir, { withFileTypes: true });
+			const files = FS.readdirSync!(srcPluginDir, { withFileTypes: true });
 			for (const file of files) {
 				const guid = guidRegExp.exec(file.name)?.[0];
 				if (filters.length === 0 || filters.includes(guid)) {
 					const meta = Data.manifest.guidMap[guid as string];
 					if (meta) {
-						const sPath = Path.resolve(srcPluginDir, file.name);
+						const sPath = Path.resolve!(srcPluginDir, file.name);
 						const dPath = (File.path as any)(meta.path);
-						this.copyFile(sPath, dPath);
+						this.copyFile!(sPath, dPath);
 					}
 				}
 			}
 		}
 
 		'1.0.122'() {
-			this.logMessage(
+			this.logMessage!(
 				'Rewrite the game script in TypeScript and replace all built-in script and plugin files.'
 			);
 		}
 
 		'1.0.123'(update: any) {
-			this.logMessage('Fix the bug where the scene terrain was not applied.');
+			this.logMessage!('Fix the bug where the scene terrain was not applied.');
 			if (!update) return;
-			this.copyScripts('scene.ts', 'actor.ts');
+			this.copyScripts!('scene.ts', 'actor.ts');
 		}
 
 		'1.0.124'(update: any) {
-			this.logMessage('Add some event types to the global event script.');
+			this.logMessage!('Add some event types to the global event script.');
 			if (!update) return;
-			this.copyScripts('event.ts', 'yami/yami.script.d.ts');
+			this.copyScripts!('event.ts', 'yami/yami.script.d.ts');
 		}
 
 		'1.0.125'(update: any) {
-			this.logMessage('Fix a bug where a "touch event" was not mapped to a "mouse event".');
+			this.logMessage!('Fix a bug where a "touch event" was not mapped to a "mouse event".');
 			if (!update) return;
-			this.copyScripts('util.ts', 'input.ts');
+			this.copyScripts!('util.ts', 'input.ts');
 		}
 
 		'1.0.126'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fix the incorrect behavior of the "mouse leave element" event in a special case.'
 			);
 			if (!update) return;
-			this.copyScripts('ui.ts');
+			this.copyScripts!('ui.ts');
 		}
 
 		'1.0.127'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Prioritize the loading order of plugin scripts.',
 				'Add project settings options: Preload, Texture Sampling Mode.',
 				'Add touch events to the global event script.',
 				'Fix the bug where two immovable circular actors may move when they collide.'
 			);
 			if (!update) return;
-			this.copyScripts(
+			this.copyScripts!(
 				'actor.ts',
 				'audio.ts',
 				'input.ts',
@@ -180,34 +180,34 @@ Updater.updateIncrementalChanges = function (version: any) {
 				'yami/yami.script.d.ts',
 				'yami/yami.webgl.d.ts'
 			);
-			this.copyPlugins('78ad4052c278d184', 'ad08a4def6200207', 'bc72195fc998f0af');
+			this.copyPlugins!('78ad4052c278d184', 'ad08a4def6200207', 'bc72195fc998f0af');
 		}
 
 		'1.0.128'(update: any) {
-			this.logMessage('Secret!');
+			this.logMessage!('Secret!');
 			if (!update) return;
-			this.copyScripts('audio.ts', 'loader.ts', 'data.ts', 'yami/yami.data.d.ts');
+			this.copyScripts!('audio.ts', 'loader.ts', 'data.ts', 'yami/yami.data.d.ts');
 		}
 
 		'1.0.129'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'The objects read in the event will undergo a validity check, and destroyed objects will no longer be retrieved.',
 				'Add "destroyed" property to element objects in code.'
 			);
 			if (!update) return;
-			this.copyScripts('ui.ts', 'command.ts');
+			this.copyScripts!('ui.ts', 'command.ts');
 		}
 
 		'1.0.130'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Extends the "Block" command with a new asynchronous execution option.',
 				'A warning is issued to the user for "Independent" commands running in the background for over 1 minute.',
 				'Delayed the camera update timing within the current frame, allowing it to lock onto the target more quickly.',
 				'Optimized the tilemap loading process. When preloading images, loading is no longer required, enabling seamless map transitions.'
 			);
 			if (!update) return;
-			this.copyFiles('tsconfig.json');
-			this.copyScripts(
+			this.copyFiles!('tsconfig.json');
+			this.copyScripts!(
 				'scene.ts',
 				'camera.ts',
 				'animation.ts',
@@ -218,14 +218,14 @@ Updater.updateIncrementalChanges = function (version: any) {
 		}
 
 		'1.0.131'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed the bug where touch events on UI elements were incorrectly triggered.',
 				'Fixed the bug where immovable actors could still be pushed.',
 				'Fixed the bug where the dialog plugin could still be triggered while the game was paused.',
 				'Added the camera update function to the update loop to ensure object positions can be retrieved accurately during element events.'
 			);
 			if (!update) return;
-			this.copyScripts(
+			this.copyScripts!(
 				'main.ts',
 				'camera.ts',
 				'actor.ts',
@@ -234,26 +234,26 @@ Updater.updateIncrementalChanges = function (version: any) {
 				'event.ts',
 				'webgl.ts'
 			);
-			this.copyPlugins('aa20eb36e72e9e90');
+			this.copyPlugins!('aa20eb36e72e9e90');
 		}
 
 		'1.0.134'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug in the pathfinding system where partial paths around obstacles were calculated incorrectly.',
 				'Fixed a bug where calling Flow.waitRaw could cause inaccurate timing in Flow.wait and Flow.transition.',
 				'Updated the Russian language pack.'
 			);
 			if (!update) return;
-			this.copyScripts('scene.ts', 'event.ts', 'flow.ts', 'time.ts', 'util.ts');
+			this.copyScripts!('scene.ts', 'event.ts', 'flow.ts', 'time.ts', 'util.ts');
 		}
 
 		'1.0.135'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Strictly limit the number of trigger hits to prevent exceeding the allowed count when multiple targets are hit simultaneously.',
 				'Removed some redundant code and corrected several incorrect comment names.'
 			);
 			if (!update) return;
-			this.copyScripts(
+			this.copyScripts!(
 				'scene.ts',
 				'trigger.ts',
 				'command.ts',
@@ -265,26 +265,26 @@ Updater.updateIncrementalChanges = function (version: any) {
 		}
 
 		'1.0.136'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Removed the Steam online verification feature, allowing the editor to be opened directly without launching Steam.',
 				'Add a "Find in Project" menu item for applicable scene objects (Actor, Animation, Particle, Parallax).',
 				'Upgraded the "Trigger_PointLight.ts" script by adding a "Direct Light Ratio" property to enhance the lighting effect.'
 			);
 			if (!update) return;
-			this.copyPlugins('4acd97b2c159796f');
+			this.copyPlugins!('4acd97b2c159796f');
 		}
 
 		'1.0.137'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug caused by version 1.0.131 where files were not automatically saved when closing the editor.',
 				'Fixed the trigger malfunction caused by version 1.0.135.'
 			);
 			if (!update) return;
-			this.copyScripts('trigger.ts');
+			this.copyScripts!('trigger.ts');
 		}
 
 		'1.0.139'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug where the application would forcibly exit after a 2-second timeout if no action was taken on the save prompt at exit.',
 				'Fixed a bug where UI animation elements with opacity less than 1 did not affect particles.',
 				'Fixed a bug where executing a "Break" command inside nested "For Each" loops caused incorrect execution flow.',
@@ -295,7 +295,7 @@ Updater.updateIncrementalChanges = function (version: any) {
 				"Added a GitHub submenu under the editor's Help menu linking to the open-source projects."
 			);
 			if (!update) return;
-			this.copyScripts(
+			this.copyScripts!(
 				'actor.ts',
 				'animation.ts',
 				'command.ts',
@@ -303,28 +303,28 @@ Updater.updateIncrementalChanges = function (version: any) {
 				'yami/yami.animation.d.ts',
 				'yami/yami.command.d.ts'
 			);
-			Updater.updateAnimations();
+			Updater.updateAnimations!();
 		}
 
 		'1.0.140'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug where accessing a light source object through a variable in an event command caused an error.'
 			);
 			if (!update) return;
-			this.copyScripts('command.ts');
+			this.copyScripts!('command.ts');
 		}
 
 		'1.0.145'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug where entering conditional branches in the synchronous "Block" command caused an error.',
 				'Improved the implementation of "For Each" command to make it more reliable during jumps and exits.'
 			);
 			if (!update) return;
-			this.copyScripts('ui.ts', 'event.ts', 'command.ts', 'yami/yami.command.d.ts');
+			this.copyScripts!('ui.ts', 'event.ts', 'command.ts', 'yami/yami.command.d.ts');
 		}
 
 		'1.0.146'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Fixed a bug where using numeric variables in the "Discard Targets" command had no effect.',
 				'Fixed a bug where the "Reference Element" was still created even when disabled.',
 				"Fixed a bug that could cause an error when saving the game if one actor referenced another actor's inventory.",
@@ -336,7 +336,7 @@ Updater.updateIncrementalChanges = function (version: any) {
 				'Updated the Russian language packs for the editor and plugins, and included them in the new project.'
 			);
 			if (!update) return;
-			this.copyScripts(
+			this.copyScripts!(
 				'actor.ts',
 				'audio.ts',
 				'command.ts',
@@ -349,18 +349,18 @@ Updater.updateIncrementalChanges = function (version: any) {
 		}
 
 		'1.0.147'(update: any) {
-			this.logMessage(
+			this.logMessage!(
 				'Improved the English and Simplified Chinese language packs.',
 				'Added the Traditional Chinese language pack.',
 				'Added the tilemap\'s "getTile" method.',
 				'Improved the tilemap\'s "setTile" method so that setting a tile now updates surrounding autotiles.'
 			);
 			if (!update) return;
-			this.copyScripts('scene.ts', 'time.ts', 'ui.ts', 'yami/yami.scene.d.ts');
+			this.copyScripts!('scene.ts', 'time.ts', 'ui.ts', 'yami/yami.scene.d.ts');
 		}
 	})();
 
-	const verLatest = Updater.getVersionNumber(Updater.latestProjectVersion);
+	const verLatest = Updater.getVersionNumber!(Updater.latestProjectVersion);
 	const currentMinorVer = verNum % 10000;
 	const latestMinorVer = verLatest % 10000;
 	const initialMinorVer = 122;

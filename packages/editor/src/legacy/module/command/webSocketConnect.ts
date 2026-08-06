@@ -11,7 +11,7 @@ Command.cases.webSocketConnect = new CommandSchema({
 		write($('#webSocketConnect-url'), '');
 		write($('#webSocketConnect-id'), '');
 		write($('#webSocketConnect-protocols'), '');
-		$('#webSocketConnect-confirm').on('click', () => this.save());
+		$('#webSocketConnect-confirm').on('click', () => this.save!());
 	},
 	customParse({
 		url = '',
@@ -24,7 +24,7 @@ Command.cases.webSocketConnect = new CommandSchema({
 	}) {
 		return [
 			{ color: 'network' },
-			{ text: Local.get('command.webSocketConnect') },
+			{ text: Local.get!('command.webSocketConnect') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -33,7 +33,7 @@ Command.cases.webSocketConnect = new CommandSchema({
 						? url.length > 20
 							? url.substring(0, 20) + '...'
 							: url
-						: Command.parseVariable(url, 'any')
+						: Command.parseVariable!(url, 'any')
 			},
 			{ text: ' , ' },
 			{ text: id }
@@ -60,16 +60,16 @@ Command.cases.webSocketConnect = new CommandSchema({
 	customSave() {
 		const elUrl = $('#webSocketConnect-url');
 		const url = read(elUrl);
-		if (!url || VariableGetter.isNone(url)) {
+		if (!url || VariableGetter.isNone!(url)) {
 			return getFocus(elUrl);
 		}
 		const elId = $('#webSocketConnect-id');
 		const id = read(elId);
-		if (!id || VariableGetter.isNone(id)) {
+		if (!id || VariableGetter.isNone!(id)) {
 			return getFocus(elId);
 		}
 		const reader = getElementReader('webSocketConnect');
-		Command.save({
+		Command.save!({
 			url: url,
 			id: id,
 			protocols: reader('protocols'),

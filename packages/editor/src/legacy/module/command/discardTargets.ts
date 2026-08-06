@@ -13,7 +13,7 @@ Command.cases.discardTargets = new CommandSchema({
 		{ key: 'distance', default: 0 }
 	],
 	onInitialize() {
-		$('#discardTargets-confirm').on('click', () => this.save());
+		$('#discardTargets-confirm').on('click', () => this.save!());
 		$('#discardTargets-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
@@ -25,14 +25,14 @@ Command.cases.discardTargets = new CommandSchema({
 	},
 	customParse({ actor, selector, distance }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseActorSelector(selector));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseActorSelector!(selector));
 		if (distance !== 0) {
-			words.push(Token('>=') + Command.parseVariableNumber(distance, 't'));
+			words.push(Token('>=') + Command.parseVariableNumber!(distance, 't'));
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.discardTargets') + Token(': ') },
+			{ text: Local.get!('command.discardTargets') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

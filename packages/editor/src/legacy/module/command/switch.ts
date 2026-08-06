@@ -9,11 +9,11 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.switch = new CommandSchema({
 	name: 'switch',
-	defaultCommands: null,
+	defaultCommands: null as any,
 	onInitialize() {
 		const confirmEl = $('#switch-confirm');
 		if (!confirmEl) return;
-		confirmEl.addEventListener('click', () => this.save());
+		confirmEl.addEventListener('click', () => this.save!());
 		$('#switch-branches')?.bind(SwitchBranch);
 		$('#switch-branch-conditions')?.bind(SwitchCondition);
 		$('#switch')?.addEventListener('closed', () => {
@@ -25,12 +25,12 @@ Command.cases.switch = new CommandSchema({
 		const contents: any[] = [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.switch') + ' ' },
+			{ text: Local.get!('command.switch') + ' ' },
 			{ color: 'normal' },
-			{ text: Command.parseVariable(variable, 'any') },
+			{ text: Command.parseVariable!(variable, 'any') },
 			{ break: true }
 		];
-		const textCase = Local.get('command.switch.case');
+		const textCase = Local.get!('command.switch.case');
 		for (const branch of branches) {
 			contents.push(
 				{ color: 'flow' },
@@ -43,11 +43,11 @@ Command.cases.switch = new CommandSchema({
 		if (defaultCommands) {
 			contents.push(
 				{ color: 'flow' },
-				{ text: Local.get('command.switch.default') },
+				{ text: Local.get!('command.switch.default') },
 				{ children: defaultCommands }
 			);
 		}
-		contents.push({ color: 'flow' }, { text: Local.get('command.switch.end') });
+		contents.push({ color: 'flow' }, { text: Local.get!('command.switch.end') });
 		return contents;
 	},
 	customLoad({ variable = { type: 'local', key: '' }, branches = [], defaultCommands = null }) {
@@ -61,7 +61,7 @@ Command.cases.switch = new CommandSchema({
 	customSave() {
 		const read = getElementReader('switch');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#switch-variable'));
 		}
 		const branches = read('branches');
@@ -71,11 +71,11 @@ Command.cases.switch = new CommandSchema({
 		switch (read('default')) {
 			case true: {
 				const defaultCommands = this.defaultCommands ?? [];
-				Command.save({ variable, branches, defaultCommands });
+				Command.save!({ variable, branches, defaultCommands });
 				break;
 			}
 			case false:
-				Command.save({ variable, branches });
+				Command.save!({ variable, branches });
 				break;
 		}
 	}

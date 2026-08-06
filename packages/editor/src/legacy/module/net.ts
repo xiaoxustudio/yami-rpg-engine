@@ -1,7 +1,5 @@
 import { fs } from './global.ts';
-// axios 是 Node 模块，浏览器 ESM 下裸 import 'axios' 解析不了；Electron nodeIntegration:true 下用 window.__nodeRequire 桥调 Node require
 import axios from 'axios';
-export { axios };
 
 const proxyRewrite = (url: any) => {
 	if (typeof url !== 'string' || !(import.meta as any).env?.DEV) return url;
@@ -12,15 +10,10 @@ const proxyRewrite = (url: any) => {
 	return url;
 };
 
-const _axiosGet = axios.get;
-const _axiosPost = axios.post;
-axios.get = (url: any, config: any) => _axiosGet.call(axios, proxyRewrite(url), config) as any;
-axios.post = (url: any, data: any, config: any) =>
-	_axiosPost.call(axios, proxyRewrite(url), data, config) as any;
-
-export const Net = new (class {
-	get = (url: any, config: any) => axios.get(url, config);
-	post = (url: any, data: any, config: any) => axios.post(url, data, config);
+class _NetInstance {
+	public get = (url: any, config: any) => axios.get(proxyRewrite(url), config);
+	public post = (url: any, data: any, config: any) => axios.post(proxyRewrite(url), data, config);
+	public isCancel = (token: any) => axios.isCancel(token);
 	cancelQueue: any[] = [];
 
 	constructor() {
@@ -89,4 +82,6 @@ export const Net = new (class {
 		});
 		this.cancelQueue = [];
 	}
-})();
+}
+
+export const Net = new _NetInstance();

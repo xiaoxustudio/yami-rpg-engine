@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.renderOutline = new CommandSchema({
 	name: 'renderOutline',
 	onInitialize() {
-		$('#renderOutline-confirm').on('click', () => this.save());
+		$('#renderOutline-confirm').on('click', () => this.save!());
 		$('#renderOutline-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
@@ -26,17 +26,17 @@ Command.cases.renderOutline = new CommandSchema({
 			]);
 	},
 	customParse({ operation, actor, color }: any) {
-		const label = Local.get('command.renderOutline.' + operation);
+		const label = Local.get!('command.renderOutline.' + operation);
 		const words = Command.words;
 		switch (operation) {
 			case 'add':
 				words
 					.push(label)
-					.push(Command.parseActor(actor))
-					.push(Command.parseHexColor(Color.simplifyHexColor(color)));
+					.push(Command.parseActor!(actor))
+					.push(Command.parseHexColor!(Color.simplifyHexColor(color)));
 				break;
 			case 'remove':
-				words.push(label).push(Command.parseActor(actor));
+				words.push(label).push(Command.parseActor!(actor));
 				break;
 			case 'reset':
 				words.push(label);
@@ -44,7 +44,7 @@ Command.cases.renderOutline = new CommandSchema({
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.renderOutline') + Token(': ') },
+			{ text: Local.get!('command.renderOutline') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -58,7 +58,7 @@ Command.cases.renderOutline = new CommandSchema({
 		const operation = read($('#renderOutline-operation'));
 		switch (operation) {
 			case 'add': {
-				Command.save({
+				Command.save!({
 					operation,
 					actor: read($('#renderOutline-actor')),
 					color: read($('#renderOutline-color'))
@@ -66,14 +66,14 @@ Command.cases.renderOutline = new CommandSchema({
 				break;
 			}
 			case 'remove': {
-				Command.save({
+				Command.save!({
 					operation,
 					actor: read($('#renderOutline-actor'))
 				});
 				break;
 			}
 			case 'reset':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 		}
 	}

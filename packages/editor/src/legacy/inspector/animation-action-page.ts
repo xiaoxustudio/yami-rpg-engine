@@ -5,24 +5,24 @@ import { read, write } from '@/util/element-utils.ts';
 
 {
 	const AnimMotion = {
-		owner: null,
-		target: null,
-		initialize: null,
-		create: null,
-		createDir: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		owner: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		createDir: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimMotion.initialize = function () {
+	AnimMotion.initialize = function (this: any) {
 		if (!$('#animMotion-mode')) return;
 		this.owner = {
-			setTarget: (motion) => {
-				Animation.setMotion(motion);
-				Inspector.open('animMotion', motion);
+			setTarget: (motion: any) => {
+				Animation.setMotion!(motion);
+				Inspector.open!('animMotion', motion);
 			}
 		};
 
@@ -45,11 +45,11 @@ import { read, write } from '@/util/element-utils.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Animation))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Animation))
 		);
 	};
 
-	AnimMotion.create = function (motionId) {
+	AnimMotion.create = function (this: any, motionId: any) {
 		return {
 			class: 'motion',
 			id: motionId,
@@ -61,11 +61,11 @@ import { read, write } from '@/util/element-utils.ts';
 		};
 	};
 
-	AnimMotion.createDir = function () {
+	AnimMotion.createDir = function (this: any) {
 		return { layers: [] };
 	};
 
-	AnimMotion.open = function (motion) {
+	AnimMotion.open = function (this: any, motion: any) {
 		if (this.target !== motion) {
 			this.target = motion;
 
@@ -77,26 +77,26 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimMotion.close = function () {
+	AnimMotion.close = function (this: any) {
 		if (this.target) {
-			// 此处不能unselect并update Animation.list.unselect(this.target) Animation.updateTarget()
+			// 此处不能unselect并update Animation.list.unselect(this.target) Animation.updateTarget!()
 			this.target = null;
 		}
 	};
 
-	AnimMotion.write = function (options) {
+	AnimMotion.write = function (this: any, options: any) {
 		if (options.mode !== undefined) {
 			write($('#animMotion-mode'), options.mode);
 		}
 	};
 
-	AnimMotion.update = function (motion, key, value) {
-		Animation.planToSave();
+	AnimMotion.update = function (this: any, motion: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'mode':
 				if (motion.mode !== value) {
-					Animation.setMotionMode(value);
-					Animation.createDirItems();
+					Animation.setMotionMode!(value);
+					Animation.createDirItems!();
 				}
 				break;
 			case 'skip':
@@ -114,8 +114,8 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimMotion.paramInput = function (event) {
-		AnimMotion.update(AnimMotion.target, Inspector.getKey(this), read(this));
+	AnimMotion.paramInput = function (this: any, event: any) {
+		AnimMotion.update(AnimMotion.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.animMotion = AnimMotion;

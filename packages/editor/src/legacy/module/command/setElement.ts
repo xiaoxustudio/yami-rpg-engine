@@ -12,7 +12,7 @@ Command.cases.setElement = new CommandSchema({
 		{ key: 'operation', default: 'hide' }
 	],
 	onInitialize() {
-		$('#setElement-confirm').on('click', () => this.save());
+		$('#setElement-confirm').on('click', () => this.save!());
 		$('#setElement-operation').loadItems([
 			{ name: 'Hide', value: 'hide' },
 			{ name: 'Show', value: 'show' },
@@ -25,11 +25,11 @@ Command.cases.setElement = new CommandSchema({
 	},
 	customParse({ element, operation }: any) {
 		const words = Command.words
-			.push(Command.parseElement(element))
-			.push(Local.get('command.setElement.' + operation));
+			.push(Command.parseElement!(element))
+			.push(Local.get!('command.setElement.' + operation));
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setElement.alias') + Token(': ') },
+			{ text: Local.get!('command.setElement.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

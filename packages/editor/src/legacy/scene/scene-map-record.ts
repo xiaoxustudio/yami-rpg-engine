@@ -1,14 +1,14 @@
 import { Scene } from './scene-window.ts';
 import { History } from '@/tools/history.ts';
 (() => {
-	let tilemap = null;
-	let mapData = null;
-	let changes = null;
-	let states = null;
+	let tilemap: any = null;
+	let mapData: any = null;
+	let changes: any = null;
+	let states: any = null;
 	let count = 0;
 	let length = 0;
 
-	Scene.beginMapRecord = function () {
+	Scene.beginMapRecord = function (this: any) {
 		switch (this.layer) {
 			case 'tilemap':
 				tilemap = this.tilemap;
@@ -26,7 +26,7 @@ import { History } from '@/tools/history.ts';
 		}
 	};
 
-	Scene.closeMapRecord = function () {
+	Scene.closeMapRecord = function (this: any) {
 		if (mapData !== null) {
 			tilemap = null;
 			mapData = null;
@@ -37,7 +37,7 @@ import { History } from '@/tools/history.ts';
 		}
 	};
 
-	Scene.saveMapRecord = function () {
+	Scene.saveMapRecord = function (this: any) {
 		if (count === 0) return;
 		if (tilemap) {
 			tilemap.changed = true;
@@ -61,7 +61,7 @@ import { History } from '@/tools/history.ts';
 		count = 0;
 	};
 
-	Scene.recordMapData = function (index) {
+	Scene.recordMapData = function (this: any, index: any) {
 		if (states[index] === 0) {
 			states[index] = 1;
 			changes[count] = index;
@@ -70,7 +70,7 @@ import { History } from '@/tools/history.ts';
 		}
 	};
 
-	Scene.restoreMapData = function () {
+	Scene.restoreMapData = function (this: any) {
 		for (let i = count - 2; i >= 0; i -= 2) {
 			const index = changes[i];
 			mapData[index] = changes[i + 1];
@@ -79,7 +79,7 @@ import { History } from '@/tools/history.ts';
 		count = 0;
 	};
 
-	Scene.undoMapData = function (mapData, changes) {
+	Scene.undoMapData = function (this: any, mapData: any, changes: any) {
 		const length = changes.length;
 		for (let i = length - 1; i > 0; i -= 2) {
 			const ti = changes[i - 1];
@@ -89,7 +89,7 @@ import { History } from '@/tools/history.ts';
 		}
 	};
 
-	Scene.redoMapData = function (mapData, changes) {
+	Scene.redoMapData = function (this: any, mapData: any, changes: any) {
 		const length = changes.length;
 		for (let i = 1; i < length; i += 2) {
 			const ti = changes[i - 1];
@@ -101,22 +101,22 @@ import { History } from '@/tools/history.ts';
 })();
 
 Scene.createHistory = (function IIFE() {
-	const onSave = (data) => {
+	const onSave = (data: any) => {
 		data.layer = Scene.tilemap ?? Scene.layer;
 	};
-	const onRestore = (data) => {
+	const onRestore = (data: any) => {
 		const { layer } = data;
 		switch (layer) {
 			case 'object':
 			case 'terrain':
-				Scene.switchLayer(layer);
+				Scene.switchLayer!(layer);
 				break;
 			default:
-				Scene.openTilemap(layer);
+				Scene.openTilemap!(layer);
 				break;
 		}
 	};
-	return function () {
+	return function (this: any) {
 		const history = new History(100);
 		history.onSave = onSave;
 		history.onRestore = onRestore;

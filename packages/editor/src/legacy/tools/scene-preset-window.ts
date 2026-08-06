@@ -5,21 +5,21 @@ import { Scene } from '@/scene/scene-window.ts';
 import { Window } from './window-object.ts';
 
 export const PresetObject = {
-	scene: null,
-	list: null,
-	searcher: null,
-	target: null,
-	nodes: null,
-	initialize: null,
-	open: null,
-	buildNodes: null,
-	getDefaultPresetId: null,
-	windowClosed: null,
-	sceneIdWrite: null,
-	listOpen: null,
-	searcherKeydown: null,
-	searcherInput: null,
-	confirm: null
+	scene: null as any,
+	list: null as any,
+	searcher: null as any,
+	target: null as any,
+	nodes: null as any,
+	initialize: null as any,
+	open: null as any,
+	buildNodes: null as any,
+	getDefaultPresetId: null as any,
+	windowClosed: null as any,
+	sceneIdWrite: null as any,
+	listOpen: null as any,
+	searcherKeydown: null as any,
+	searcherInput: null as any,
+	confirm: null as any
 };
 
 function ensureDomBound() {
@@ -32,7 +32,7 @@ function ensureDomBound() {
 	PresetObject.list.createIcon = null;
 }
 
-PresetObject.initialize = function () {
+PresetObject.initialize = function (this: any) {
 	ensureDomBound();
 	if (!this.list) return;
 	this.list.bind(() => this.nodes);
@@ -50,9 +50,9 @@ PresetObject.initialize = function () {
 	$('#presetObject-confirm').addEventListener('click', this.confirm);
 };
 
-PresetObject.open = function (target) {
+PresetObject.open = function (this: any, target: any) {
 	this.target = target;
-	Window.open('presetObject');
+	Window.open!('presetObject');
 
 	const { scene, list } = this;
 	const presetId = read(target) || (Scene.target?.presetId ?? '');
@@ -69,8 +69,8 @@ PresetObject.open = function (target) {
 
 // 构造简化的对象节点(避免影响对象数据)
 PresetObject.buildNodes = (function IIFE() {
-	const build = (nodes, className) => {
-		const list = [];
+	const build = (nodes: any, className: any) => {
+		const list = [] as any[];
 		for (const node of nodes) {
 			if (node.class === 'folder') {
 				list.push({
@@ -97,26 +97,26 @@ PresetObject.buildNodes = (function IIFE() {
 		}
 		return list;
 	};
-	return function (nodes, className) {
+	return function (this: any, nodes: any, className: any) {
 		return build(nodes, className);
 	};
 })();
 
-PresetObject.getDefaultPresetId = function (className = 'any') {
+PresetObject.getDefaultPresetId = function (this: any, className = 'any') {
 	if (Scene.target && (className === 'any' || Scene.target.class === className)) {
 		return Scene.target.presetId;
 	}
 	return '';
 };
 
-PresetObject.windowClosed = function (event) {
+PresetObject.windowClosed = function (this: any, event: any) {
 	PresetObject.target = null;
 	PresetObject.nodes = null;
 	PresetObject.searcher.write('');
 	PresetObject.list.clear();
 };
 
-PresetObject.sceneIdWrite = function (event) {
+PresetObject.sceneIdWrite = function (this: any, event: any) {
 	if (!event.value) return;
 	const scene = Data.scenes[event.value];
 	const filter = PresetObject.target.filter;
@@ -131,11 +131,11 @@ PresetObject.sceneIdWrite = function (event) {
 	}
 };
 
-PresetObject.listOpen = function (event) {
+PresetObject.listOpen = function (this: any, event: any) {
 	PresetObject.confirm();
 };
 
-PresetObject.searcherKeydown = function (event) {
+PresetObject.searcherKeydown = function (this: any, event: any) {
 	switch (event.code) {
 		case 'ArrowUp':
 		case 'ArrowDown':
@@ -151,7 +151,7 @@ PresetObject.searcherKeydown = function (event) {
 	}
 };
 
-PresetObject.searcherInput = function (event) {
+PresetObject.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
@@ -168,12 +168,12 @@ PresetObject.searcherInput = function (event) {
 	}
 };
 
-PresetObject.confirm = function (event) {
+PresetObject.confirm = function (this: any, event: any) {
 	const node = this.list.read();
 	const presetId = node?.presetId;
 	if (!presetId) {
 		return getFocus(this.list);
 	}
 	this.target.input(presetId);
-	Window.close('presetObject');
+	Window.close!('presetObject');
 }.bind(PresetObject);

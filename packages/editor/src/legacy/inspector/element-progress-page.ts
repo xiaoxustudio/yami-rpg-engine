@@ -6,16 +6,16 @@ import { UI } from '@/ui/ui-window.ts';
 {
 	const UIProgressBar = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	UIProgressBar.initialize = function () {
+	UIProgressBar.initialize = function (this: any) {
 		if (!$('#uiProgressBar-display')) return;
 		$('#uiProgressBar-display').loadItems([
 			{ name: 'Stretch', value: 'stretch' },
@@ -87,12 +87,12 @@ import { UI } from '@/ui/ui-window.ts';
     #uiProgressBar-color-0-slider, #uiProgressBar-color-1-slider,
     #uiProgressBar-color-2-slider, #uiProgressBar-color-3-slider`);
 		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.on('blur', Inspector.inputBlur!(this, UI));
 		sliders.on('focus', Inspector.sliderFocus);
 		sliders.on('blur', Inspector.sliderBlur);
 	};
 
-	UIProgressBar.create = function () {
+	UIProgressBar.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -125,7 +125,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIProgressBar.open = function (node) {
+	UIProgressBar.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -150,17 +150,17 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIProgressBar.close = function () {
+	UIProgressBar.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
 	};
 
-	UIProgressBar.update = function (node, key, value) {
-		UI.planToSave();
+	UIProgressBar.update = function (this: any, node: any, key: any, value: any) {
+		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'image':
@@ -195,11 +195,11 @@ import { UI } from '@/ui/ui-window.ts';
 				break;
 			}
 		}
-		UI.requestRendering();
+		UI.requestRendering!();
 	};
 
-	UIProgressBar.paramInput = function (event) {
-		UIProgressBar.update(UIProgressBar.target, Inspector.getKey(this), read(this));
+	UIProgressBar.paramInput = function (this: any, event: any) {
+		UIProgressBar.update(UIProgressBar.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiProgressBar = UIProgressBar;

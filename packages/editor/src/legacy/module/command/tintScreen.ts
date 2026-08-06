@@ -9,13 +9,13 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintScreen = new CommandSchema({
 	name: 'tintScreen',
 	onInitialize() {
-		$('#tintScreen-confirm').on('click', () => this.save());
+		$('#tintScreen-confirm').on('click', () => this.save!());
 		$('#tintScreen-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#tintScreen').on('open', function (event: any) {
-			$('#tintScreen-easingId').loadItems(Data.createEasingItems());
+			$('#tintScreen-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#tintScreen').on('closed', function (event: any) {
 			clear($('#tintScreen-easingId'));
@@ -34,10 +34,10 @@ Command.cases.tintScreen = new CommandSchema({
 		);
 	},
 	parseTint([red, green, blue, gray]: any[]) {
-		const _red = Command.setNumberColor(red);
-		const _green = Command.setNumberColor(green);
-		const _blue = Command.setNumberColor(blue);
-		const _gray = Command.setNumberColor(gray);
+		const _red = Command.setNumberColor!(red);
+		const _green = Command.setNumberColor!(green);
+		const _blue = Command.setNumberColor!(blue);
+		const _gray = Command.setNumberColor!(gray);
 		return (
 			Token('(') +
 			_red +
@@ -52,11 +52,11 @@ Command.cases.tintScreen = new CommandSchema({
 	},
 	customParse({ tint, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(this.parseTint(tint))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(this.parseTint!(tint))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.tintScreen') + Token(': ') },
+			{ text: Local.get!('command.tintScreen') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -75,7 +75,7 @@ Command.cases.tintScreen = new CommandSchema({
 	customSave() {
 		const read = getElementReader('tintScreen');
 		const tint = [read('tint-0'), read('tint-1'), read('tint-2'), read('tint-3')];
-		Command.save({
+		Command.save!({
 			tint,
 			easingId: read('easingId'),
 			duration: read('duration'),

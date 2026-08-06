@@ -212,7 +212,7 @@ TextSuggestion.createData = function (this: TextSuggestionShape): void {
 
 TextSuggestion.textBoxFocus = function (this: TextSuggestionTarget, event: Event): void {
 	const text = this.read().trim();
-	TextSuggestion.open(this);
+	TextSuggestion.open!(this);
 	TextSuggestion.list.searchNodes(text);
 	TextSuggestion.list.selectDefaultCommand!();
 };
@@ -259,7 +259,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 		event.inputType !== 'insertCompositionText'
 	) {
 		const text = this.read().trim();
-		TextSuggestion.open(this);
+		TextSuggestion.open!(this);
 		TextSuggestion.list.searchNodes(text);
 		TextSuggestion.list.selectDefaultCommand!();
 	}
@@ -277,7 +277,7 @@ TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Poin
 			if (pressing === pointerup) {
 				this.pressing = null;
 				if (element.contains(event.target as Node)) {
-					TextSuggestion.select(element.item);
+					TextSuggestion.select!(element.item);
 				}
 			}
 		};
@@ -319,7 +319,7 @@ TextSuggestion.listOpen = function (
 ): void {
 	const item = event.value;
 	if (item.element!.parentNode) {
-		TextSuggestion.select(item);
+		TextSuggestion.select!(item);
 	}
 };
 

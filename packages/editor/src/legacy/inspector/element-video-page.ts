@@ -6,16 +6,16 @@ import { UI } from '@/ui/ui-window.ts';
 {
 	const UIVideo = {
 		owner: UI,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	UIVideo.initialize = function () {
+	UIVideo.initialize = function (this: any) {
 		if (!$('#uiVideo-loop')) return;
 		$('#uiVideo-loop').loadItems([
 			{ name: 'Once', value: false },
@@ -39,10 +39,10 @@ import { UI } from '@/ui/ui-window.ts';
 			'#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend'
 		);
 		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur(this, UI));
+		elements.on('blur', Inspector.inputBlur!(this, UI));
 	};
 
-	UIVideo.create = function () {
+	UIVideo.create = function (this: any) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -67,7 +67,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIVideo.open = function (node) {
+	UIVideo.open = function (this: any, node: any) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -81,17 +81,17 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIVideo.close = function () {
+	UIVideo.close = function (this: any) {
 		if (this.target) {
 			UI.list.unselect(this.target);
-			UI.updateTarget();
+			UI.updateTarget!();
 			Inspector.uiElement.close();
 			this.target = null;
 		}
 	};
 
-	UIVideo.update = function (node, key, value) {
-		UI.planToSave();
+	UIVideo.update = function (this: any, node: any, key: any, value: any) {
+		UI.planToSave!();
 		switch (key) {
 			case 'video':
 			case 'playbackRate':
@@ -103,11 +103,11 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 		}
-		UI.requestRendering();
+		UI.requestRendering!();
 	};
 
-	UIVideo.paramInput = function (event) {
-		UIVideo.update(UIVideo.target, Inspector.getKey(this), read(this));
+	UIVideo.paramInput = function (this: any, event: any) {
+		UIVideo.update(UIVideo.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiVideo = UIVideo;

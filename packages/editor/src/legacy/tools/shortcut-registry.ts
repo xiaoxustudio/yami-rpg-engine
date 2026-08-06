@@ -1,6 +1,6 @@
 import { macRedoKey } from '@/util/event-accessors';
 export const ShortcutRegistry = {
-	shortcuts: {},
+	shortcuts: {} as Record<string, any>,
 
 	register(id: any, handler: any) {
 		this.shortcuts[id] = handler;
@@ -13,7 +13,7 @@ export const ShortcutRegistry = {
 
 export const Shortcuts = {
 	createClipboard(target: any) {
-		return function (event) {
+		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyC':
@@ -48,7 +48,7 @@ export const Shortcuts = {
 	},
 
 	createUndoRedo(target: any) {
-		return function (event) {
+		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyZ':
@@ -68,7 +68,7 @@ export const Shortcuts = {
 	},
 
 	createListOps(target: any) {
-		return function (event) {
+		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyC':
@@ -130,7 +130,7 @@ export const Shortcuts = {
 
 	createScroll(target: any) {
 		let scrollKeys = 0;
-		let scrollTimer = null;
+		let scrollTimer: any = null;
 
 		function updateScroll() {
 			if (scrollKeys === 0) {
@@ -148,7 +148,7 @@ export const Shortcuts = {
 			scrollTimer = requestAnimationFrame(updateScroll);
 		}
 
-		return function (event) {
+		return function (event: any) {
 			if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
 				return false;
 			}

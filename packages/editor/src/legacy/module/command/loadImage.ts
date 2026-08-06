@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadImage = new CommandSchema({
 	name: 'loadImage',
 	onInitialize() {
-		$('#loadImage-confirm').on('click', () => this.save());
+		$('#loadImage-confirm').on('click', () => this.save!());
 		$('#loadImage-type').loadItems([
 			{ name: 'Actor Portrait', value: 'actor-portrait' },
 			{ name: 'Skill Icon', value: 'skill-icon' },
@@ -39,39 +39,39 @@ Command.cases.loadImage = new CommandSchema({
 			]);
 	},
 	customParse({ element, type, actor, skill, state, equipment, item, key, variable }: any) {
-		const words = Command.words.push(Command.parseElement(element));
-		const label = Local.get('command.loadImage.' + type);
+		const words = Command.words.push(Command.parseElement!(element));
+		const label = Local.get!('command.loadImage.' + type);
 		let content;
 		switch (type) {
 			case 'actor-portrait':
-				content = Command.parseActor(actor);
+				content = Command.parseActor!(actor);
 				break;
 			case 'skill-icon':
-				content = Command.parseSkill(skill);
+				content = Command.parseSkill!(skill);
 				break;
 			case 'state-icon':
-				content = Command.parseState(state);
+				content = Command.parseState!(state);
 				break;
 			case 'equipment-icon':
-				content = Command.parseEquipment(equipment);
+				content = Command.parseEquipment!(equipment);
 				break;
 			case 'item-icon':
-				content = Command.parseItem(item);
+				content = Command.parseItem!(item);
 				break;
 			case 'shortcut-icon': {
-				const actorInfo = Command.parseActor(actor);
-				const shortcutKey = Command.parseVariableEnum('shortcut-key', key);
+				const actorInfo = Command.parseActor!(actor);
+				const shortcutKey = Command.parseVariableEnum!('shortcut-key', key);
 				content = actorInfo + Token(' -> ') + shortcutKey;
 				break;
 			}
 			case 'base64':
-				content = Command.parseVariable(variable, 'string');
+				content = Command.parseVariable!(variable, 'string');
 				break;
 		}
 		words.push(label + Token('(') + content + Token(')'));
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.loadImage') + Token(': ') },
+			{ text: Local.get!('command.loadImage') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -83,10 +83,10 @@ Command.cases.loadImage = new CommandSchema({
 		state = { type: 'trigger' },
 		equipment = { type: 'trigger' },
 		item = { type: 'trigger' },
-		key = Enum.getDefStringId('shortcut-key'),
+		key = Enum.getDefStringId!('shortcut-key'),
 		variable = { type: 'local', key: '' }
 	}) {
-		$('#loadImage-key').loadItems(Enum.getStringItems('shortcut-key'));
+		$('#loadImage-key').loadItems(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('loadImage');
 		write('element', element);
 		write('type', type);
@@ -105,27 +105,27 @@ Command.cases.loadImage = new CommandSchema({
 		const type = read('type');
 		switch (type) {
 			case 'actor-portrait': {
-				Command.save({ element, type, actor: read('actor') });
+				Command.save!({ element, type, actor: read('actor') });
 				break;
 			}
 			case 'skill-icon': {
-				Command.save({ element, type, skill: read('skill') });
+				Command.save!({ element, type, skill: read('skill') });
 				break;
 			}
 			case 'state-icon': {
-				Command.save({ element, type, state: read('state') });
+				Command.save!({ element, type, state: read('state') });
 				break;
 			}
 			case 'equipment-icon': {
-				Command.save({ element, type, equipment: read('equipment') });
+				Command.save!({ element, type, equipment: read('equipment') });
 				break;
 			}
 			case 'item-icon': {
-				Command.save({ element, type, item: read('item') });
+				Command.save!({ element, type, item: read('item') });
 				break;
 			}
 			case 'shortcut-icon': {
-				Command.save({
+				Command.save!({
 					element,
 					type,
 					actor: read('actor'),
@@ -135,10 +135,10 @@ Command.cases.loadImage = new CommandSchema({
 			}
 			case 'base64': {
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#loadImage-variable'));
 				}
-				Command.save({ element, type, variable });
+				Command.save!({ element, type, variable });
 				break;
 			}
 		}

@@ -9,18 +9,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneLight = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	SceneLight.initialize = function () {
+	SceneLight.initialize = function (this: any) {
 		if (!$('#sceneLight-name')) return;
 		this.nameBox = $('#sceneLight-name');
 		$('#sceneLight-type').loadItems([
@@ -90,7 +90,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -99,7 +99,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 	};
 
-	SceneLight.create = function () {
+	SceneLight.create = function (this: any) {
 		return {
 			class: 'light',
 			name: 'Light',
@@ -129,7 +129,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneLight.open = function (light) {
+	SceneLight.open = function (this: any, light: any) {
 		if (this.target !== light) {
 			this.target = light;
 
@@ -157,10 +157,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.close = function () {
+	SceneLight.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			clear($('#sceneLight-conditions'));
 			clear($('#sceneLight-events'));
@@ -169,7 +169,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.write = function (options) {
+	SceneLight.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneLight-x'), options.x);
 		}
@@ -178,13 +178,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.update = function (light, key, value) {
-		Scene.planToSave();
+	SceneLight.update = function (this: any, light: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (light.name !== value) {
 					light.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(light);
 				}
 				break;
@@ -219,7 +219,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'blue':
 				if (light[key] !== value) {
 					light[key] = value;
-					Scene.list.updateIcon(light);
+					Scene.list.updateIcon!(light);
 				}
 				break;
 			case 'direct':
@@ -228,11 +228,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 				break;
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneLight.paramInput = function (event) {
-		SceneLight.update(SceneLight.target, Inspector.getKey(this), read(this));
+	SceneLight.paramInput = function (this: any, event: any) {
+		SceneLight.update!(SceneLight.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.sceneLight = SceneLight;

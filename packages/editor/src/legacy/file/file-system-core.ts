@@ -72,9 +72,9 @@ function getFallbackRoot(): string {
 File.get = function (descriptor) {
 	let path: any;
 	if (descriptor.path) {
-		path = File.path!(descriptor.path);
+		path = File.path?.(descriptor.path);
 	} else if (descriptor.guid) {
-		path = File.path!(this.getPath(descriptor.guid));
+		path = (File.path as FileMethod)(this.getPath!(descriptor.guid));
 	} else if (descriptor.local) {
 		// local 指编辑器自带资源（Images/*.png、default.json 等），固定解析到编辑器根，避免被项目根污染；绝对路径（语言包）直接使用
 		const localPath = String(descriptor.local);
@@ -215,12 +215,12 @@ File.saveFile = function (meta) {
 			return Promise.resolve();
 	}
 	const path = meta.path;
-	const route = File.path!(path);
+	const route = File.path?.(path);
 	return FSP.writeFile(route, text, true as any)
 		.then(() => {
 			console.log(`write: ${path}`);
 		})
-		.catch((error) => {
+		.catch((error: any) => {
 			console.warn(error);
 		});
 };
@@ -278,11 +278,11 @@ File.getFileName = (function IIFE() {
 	const struct = { path: '', route: '' };
 	return function (dir, base, ext = '') {
 		let path = `${dir}/${base}${ext}`;
-		let route = File.path!(path);
+		let route = File.path?.(path);
 		if (FS.existsSync(route)) {
 			for (let i = 1; true; i++) {
 				path = `${dir}/${base} ${i}${ext}`;
-				route = File.path!(path);
+				route = File.path?.(path);
 				if (!FS.existsSync(route)) {
 					break;
 				}

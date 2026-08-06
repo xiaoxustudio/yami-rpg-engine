@@ -17,42 +17,42 @@ import { Rename } from './rename-window.ts';
 import { Window } from './window-object.ts';
 
 export const Color = {
-	target: null,
-	dragging: null,
-	paletteX: null,
-	paletteY: null,
-	pillarY: null,
-	indexEnabled: null,
-	initialize: null,
-	open: null,
-	drawPalette: null,
-	drawPillar: null,
-	drawViewer: null,
-	setPaletteCursor: null,
-	setPillarCursor: null,
-	getRGBFromPalette: null,
-	getRGBFromPillar: null,
-	getRGBAFromHex: null,
-	getHexFromRGBA: null,
-	getCSSColorFromRGBA: null,
-	writeRGBAToInputs: null,
-	readRGBAFromInputs: null,
-	loadIndexedColors: null,
-	simplifyHexColor: null,
-	windowClosed: null,
-	palettePointerdown: null,
-	pillarPointerdown: null,
-	indexedColorInput: null,
-	indexedColorPointerdown: null,
-	pointerup: null,
-	pointermove: null,
-	hexBeforeinput: null,
-	hexInput: null,
-	rgbaInput: null,
-	confirm: null
+	target: null as any,
+	dragging: null as any,
+	paletteX: null as any,
+	paletteY: null as any,
+	pillarY: null as any,
+	indexEnabled: null as any,
+	initialize: null as any,
+	open: null as any,
+	drawPalette: null as any,
+	drawPillar: null as any,
+	drawViewer: null as any,
+	setPaletteCursor: null as any,
+	setPillarCursor: null as any,
+	getRGBFromPalette: null as any,
+	getRGBFromPillar: null as any,
+	getRGBAFromHex: null as any,
+	getHexFromRGBA: null as any,
+	getCSSColorFromRGBA: null as any,
+	writeRGBAToInputs: null as any,
+	readRGBAFromInputs: null as any,
+	loadIndexedColors: null as any,
+	simplifyHexColor: null as any,
+	windowClosed: null as any,
+	palettePointerdown: null as any,
+	pillarPointerdown: null as any,
+	indexedColorInput: null as any,
+	indexedColorPointerdown: null as any,
+	pointerup: null as any,
+	pointermove: null as any,
+	hexBeforeinput: null as any,
+	hexInput: null as any,
+	rgbaInput: null as any,
+	confirm: null as any
 };
 
-Color.initialize = function () {
+Color.initialize = function (this: any) {
 	if (!$('#color-hex')) return;
 	$('#color-hex').setMaxLength(8);
 
@@ -74,10 +74,10 @@ Color.initialize = function () {
 	on($('#color-confirm'), 'click', this.confirm);
 };
 
-Color.open = function (target, indexEnabled = false) {
+Color.open = function (this: any, target: any, indexEnabled: any = false) {
 	this.target = target;
 	this.indexEnabled = indexEnabled;
-	Window.open('color');
+	Window.open!('color');
 	let color = read(target);
 	switch (typeof color) {
 		case 'string':
@@ -97,7 +97,7 @@ Color.open = function (target, indexEnabled = false) {
 	getFocus($('#color-hex'), 'all');
 };
 
-Color.drawPalette = function () {
+Color.drawPalette = function (this: any) {
 	const canvas = $('#color-palette-canvas');
 	if (!canvas.initialized) {
 		canvas.initialized = true;
@@ -144,7 +144,7 @@ Color.drawPalette = function () {
 	}
 };
 
-Color.drawPillar = function ([r, g, b]) {
+Color.drawPillar = function (this: any, [r, g, b]: any) {
 	const canvas = $('#color-pillar-canvas');
 	const context = canvas.getContext('2d');
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
@@ -154,11 +154,11 @@ Color.drawPillar = function ([r, g, b]) {
 	context.fillRect(0, 0, 20, 256);
 };
 
-Color.drawViewer = function ([r, g, b, a]) {
+Color.drawViewer = function (this: any, [r, g, b, a]: any) {
 	$('#color-viewer').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
-Color.setPaletteCursor = function (x, y) {
+Color.setPaletteCursor = function (this: any, x: any, y: any) {
 	const cursor = $('#color-palette-cursor');
 	this.paletteX = x;
 	this.paletteY = y;
@@ -166,13 +166,13 @@ Color.setPaletteCursor = function (x, y) {
 	cursor.style.top = `${y - 5}px`;
 };
 
-Color.setPillarCursor = function (y) {
+Color.setPillarCursor = function (this: any, y: any) {
 	const cursor = $('#color-pillar-cursor');
 	this.pillarY = y;
 	cursor.style.top = `${y}px`;
 };
 
-Color.getRGBFromPalette = function () {
+Color.getRGBFromPalette = function (this: any) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
 	const canvas = $('#color-palette-canvas');
@@ -181,7 +181,7 @@ Color.getRGBFromPalette = function () {
 	return [r, g, b];
 };
 
-Color.getRGBFromPillar = function () {
+Color.getRGBFromPillar = function (this: any) {
 	const y = Math.round(this.pillarY);
 	const canvas = $('#color-pillar-canvas');
 	const context = canvas.getContext('2d');
@@ -189,7 +189,7 @@ Color.getRGBFromPillar = function () {
 	return [r, g, b];
 };
 
-Color.getRGBAFromHex = function (hex) {
+Color.getRGBAFromHex = function (this: any, hex: any) {
 	const r = parseInt(hex.slice(0, 2) || '00', 16);
 	const g = parseInt(hex.slice(2, 4) || '00', 16);
 	const b = parseInt(hex.slice(4, 6) || '00', 16);
@@ -197,7 +197,7 @@ Color.getRGBAFromHex = function (hex) {
 	return [r, g, b, a];
 };
 
-Color.getHexFromRGBA = function (rgba) {
+Color.getHexFromRGBA = function (this: any, rgba: any) {
 	const r = rgba[0].toString(16).padStart(2, '0');
 	const g = rgba[1].toString(16).padStart(2, '0');
 	const b = rgba[2].toString(16).padStart(2, '0');
@@ -205,12 +205,12 @@ Color.getHexFromRGBA = function (rgba) {
 	return `${r}${g}${b}${a}`;
 };
 
-Color.getCSSColorFromRGBA = function (rgba) {
+Color.getCSSColorFromRGBA = function (this: any, rgba: any) {
 	const [r, g, b, a] = rgba;
 	return `rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
-Color.writeRGBAToInputs = function ([r, g, b, a]) {
+Color.writeRGBAToInputs = function (this: any, [r, g, b, a]: any) {
 	const writer = getElementWriter('color');
 	const hex = this.getHexFromRGBA([r, g, b, a]);
 	writer('hex', this.simplifyHexColor(hex));
@@ -220,7 +220,7 @@ Color.writeRGBAToInputs = function ([r, g, b, a]) {
 	writer('a', a);
 };
 
-Color.readRGBAFromInputs = function () {
+Color.readRGBAFromInputs = function (this: any) {
 	const reader = getElementReader('color');
 	const r = reader('r');
 	const g = reader('g');
@@ -229,7 +229,7 @@ Color.readRGBAFromInputs = function () {
 	return [r, g, b, a];
 };
 
-Color.loadIndexedColors = function () {
+Color.loadIndexedColors = function (this: any) {
 	const radios = document.getElementsByName('color-index');
 	const colors = Data.config.indexedColors;
 	const length = colors.length;
@@ -245,19 +245,19 @@ Color.loadIndexedColors = function () {
 
 Color.simplifyHexColor = (function IIFE() {
 	const regexp = /^([0-9a-f]{6})ff$/i;
-	return function (hex) {
+	return function (this: any, hex: any) {
 		return hex.replace(regexp, '$1');
 	};
 })();
 
-Color.windowClosed = function (event) {
+Color.windowClosed = function (this: any, event: any) {
 	$('#color-index').reset();
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
 }.bind(Color);
 
-Color.palettePointerdown = function (event) {
+Color.palettePointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 		case -1: {
@@ -286,7 +286,7 @@ Color.palettePointerdown = function (event) {
 	}
 }.bind(Color);
 
-Color.pillarPointerdown = function (event) {
+Color.pillarPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 		case -1: {
@@ -312,7 +312,7 @@ Color.pillarPointerdown = function (event) {
 	}
 }.bind(Color);
 
-Color.indexedColorInput = function (event) {
+Color.indexedColorInput = function (this: any, event: any) {
 	const index = event.value;
 	const hex = Data.config.indexedColors[index].code;
 	const rgba = this.getRGBAFromHex(hex);
@@ -325,7 +325,7 @@ Color.indexedColorInput = function (event) {
 	}
 }.bind(Color);
 
-Color.indexedColorPointerdown = function (event) {
+Color.indexedColorPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 2: {
 			const element = event.target;
@@ -348,17 +348,17 @@ Color.indexedColorPointerdown = function (event) {
 								indexedColor.code = hex;
 								element.style.backgroundColor = csscolor;
 								UI.updateIndexedColor(index);
-								File.planToSave(Data.manifest.project.config);
+								File.planToSave!(Data.manifest.project.config);
 							}
 						}
 					},
 					{
 						label: get('rename'),
 						click: () => {
-							Rename.open(indexedColor.name, (name) => {
+							Rename.open(indexedColor.name, (name: any) => {
 								indexedColor.name = name;
 								setTooltip(element, name);
-								File.planToSave(Data.manifest.project.config);
+								File.planToSave!(Data.manifest.project.config);
 							});
 						}
 					}
@@ -369,7 +369,7 @@ Color.indexedColorPointerdown = function (event) {
 	}
 }.bind(Color);
 
-Color.pointerup = function (event) {
+Color.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		this.dragging = null;
@@ -378,7 +378,7 @@ Color.pointerup = function (event) {
 	}
 }.bind(Color);
 
-Color.pointermove = function (event) {
+Color.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -390,7 +390,7 @@ Color.pointermove = function (event) {
 	}
 }.bind(Color);
 
-Color.hexBeforeinput = function (event) {
+Color.hexBeforeinput = function (this: any, event: any) {
 	if (event.inputType === 'insertText' && typeof event.data === 'string') {
 		const regexp = /[^0-9a-f]/i;
 		if (regexp.test(event.data)) {
@@ -400,7 +400,7 @@ Color.hexBeforeinput = function (event) {
 	}
 };
 
-Color.hexInput = function (event) {
+Color.hexInput = function (this: any, event: any) {
 	const reader = getElementReader('color');
 	const writer = getElementWriter('color');
 	const oldHex = reader('hex');
@@ -419,7 +419,7 @@ Color.hexInput = function (event) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.rgbaInput = function (event) {
+Color.rgbaInput = function (this: any, event: any) {
 	const reader = getElementReader('color');
 	const writer = getElementWriter('color');
 	const r = reader('r');
@@ -434,7 +434,7 @@ Color.rgbaInput = function (event) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.confirm = function (event) {
+Color.confirm = function (this: any, event: any) {
 	const index = read($('#color-index'));
 	if (this.indexEnabled && index !== null) {
 		this.target.input(index);
@@ -443,5 +443,5 @@ Color.confirm = function (event) {
 		const hex = this.getHexFromRGBA(rgba);
 		this.target.input(hex);
 	}
-	Window.close('color');
+	Window.close!('color');
 }.bind(Color);

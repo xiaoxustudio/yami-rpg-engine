@@ -13,44 +13,44 @@ export const TileNode = {
 	get canvas() {
 		return $('#autoTile-selectNode-canvas');
 	},
-	context: null,
+	context: null as any,
 	get screen() {
 		return $('#autoTile-selectNode-screen');
 	},
 	get marquee() {
 		return $('#autoTile-selectNode-marquee');
 	},
-	dragging: null,
-	nodes: null,
-	image: null,
-	offsetX: null,
-	offsetY: null,
-	hframes: null,
-	vframes: null,
-	scrollLeft: null,
-	scrollTop: null,
-	scrollRight: null,
-	scrollBottom: null,
-	initialize: null,
-	open: null,
-	updateTransform: null,
-	updateBackground: null,
-	drawNodes: null,
-	requestRendering: null,
-	renderingFunction: null,
-	stopRendering: null,
-	scrollToSelection: null,
-	getDevicePixelClientBoxSize: null,
-	dprchange: null,
-	windowClosed: null,
-	keydown: null,
-	screenScroll: null,
-	marqueePointerdown: null,
-	pointerup: null,
-	pointermove: null
+	dragging: null as any,
+	nodes: null as any,
+	image: null as any,
+	offsetX: null as any,
+	offsetY: null as any,
+	hframes: null as any,
+	vframes: null as any,
+	scrollLeft: null as any,
+	scrollTop: null as any,
+	scrollRight: null as any,
+	scrollBottom: null as any,
+	initialize: null as any,
+	open: null as any,
+	updateTransform: null as any,
+	updateBackground: null as any,
+	drawNodes: null as any,
+	requestRendering: null as any,
+	renderingFunction: null as any,
+	stopRendering: null as any,
+	scrollToSelection: null as any,
+	getDevicePixelClientBoxSize: null as any,
+	dprchange: null as any,
+	windowClosed: null as any,
+	keydown: null as any,
+	screenScroll: null as any,
+	marqueePointerdown: null as any,
+	pointerup: null as any,
+	pointermove: null as any
 };
 
-TileNode.initialize = function () {
+TileNode.initialize = function (this: any) {
 	if (!this.canvas) return;
 	this.context = this.canvas.getContext('2d');
 
@@ -60,7 +60,7 @@ TileNode.initialize = function () {
 	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 };
 
-TileNode.open = function (nodes, image, offsetX, offsetY) {
+TileNode.open = function (this: any, nodes: any, image: any, offsetX: any, offsetY: any) {
 	const MAX_CONTENT_WIDTH = 1180;
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
@@ -135,7 +135,7 @@ TileNode.open = function (nodes, image, offsetX, offsetY) {
 	this.requestRendering();
 };
 
-TileNode.updateTransform = function () {
+TileNode.updateTransform = function (this: any) {
 	const dpr = window.devicePixelRatio;
 	this.scrollLeft = this.screen.scrollLeft * dpr;
 	this.scrollTop = this.screen.scrollTop * dpr;
@@ -144,11 +144,11 @@ TileNode.updateTransform = function () {
 	this.context.setTransform(1, 0, 0, 1, -this.scrollLeft, -this.scrollTop);
 };
 
-TileNode.updateBackground = function (...args) {
+TileNode.updateBackground = function (this: any, ...args: any[]) {
 	return Palette.updateBackground(...args);
 };
 
-TileNode.drawNodes = function () {
+TileNode.drawNodes = function (this: any) {
 	if (!this.nodes) return;
 	const context = this.context;
 	const tileset = Palette.tileset;
@@ -183,21 +183,21 @@ TileNode.drawNodes = function () {
 	}
 };
 
-TileNode.requestRendering = function () {
+TileNode.requestRendering = function (this: any) {
 	if (this.nodes !== null) {
-		Timer.appendUpdater('sharedRendering', this.renderingFunction);
+		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
 
-TileNode.renderingFunction = function () {
-	TileNode.drawNodes();
+TileNode.renderingFunction = function (this: any) {
+	TileNode.drawNodes!();
 };
 
-TileNode.stopRendering = function () {
-	Timer.removeUpdater('sharedRendering', this.renderingFunction);
+TileNode.stopRendering = function (this: any) {
+	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-TileNode.scrollToSelection = function () {
+TileNode.scrollToSelection = function (this: any) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const screen = this.screen;
@@ -219,7 +219,7 @@ TileNode.scrollToSelection = function () {
 	}
 };
 
-TileNode.getDevicePixelClientBoxSize = function (element) {
+TileNode.getDevicePixelClientBoxSize = function (this: any, element: any) {
 	const elementRect = rect(element);
 	const elementCss = css(element);
 	if (elementCss.overflowX === 'scroll') {
@@ -242,7 +242,7 @@ TileNode.getDevicePixelClientBoxSize = function (element) {
 	return { width, height };
 };
 
-TileNode.dprchange = function (event) {
+TileNode.dprchange = function (this: any, event: any) {
 	if (this.nodes !== null) {
 		const marquee = this.marquee;
 		const { x, y, width, height } = marquee;
@@ -251,7 +251,7 @@ TileNode.dprchange = function (event) {
 	}
 }.bind(TileNode);
 
-TileNode.windowClosed = function (event) {
+TileNode.windowClosed = function (this: any, event: any) {
 	this.nodes = null;
 	this.image = null;
 	this.canvas.width = 0;
@@ -263,7 +263,7 @@ TileNode.windowClosed = function (event) {
 	window.removeEventListener('keydown', this.keydown);
 }.bind(TileNode);
 
-TileNode.keydown = function (event) {
+TileNode.keydown = function (this: any, event: any) {
 	event.preventDefault();
 	if (this.dragging) {
 		return;
@@ -324,13 +324,13 @@ TileNode.keydown = function (event) {
 	}
 }.bind(TileNode);
 
-TileNode.screenScroll = function (event) {
+TileNode.screenScroll = function (this: any, event: any) {
 	this.updateTransform();
 	this.updateBackground();
 	this.requestRendering();
 }.bind(TileNode);
 
-TileNode.marqueePointerdown = function (event) {
+TileNode.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
@@ -373,7 +373,7 @@ TileNode.marqueePointerdown = function (event) {
 	}
 }.bind(TileNode);
 
-TileNode.pointerup = function (event) {
+TileNode.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -414,7 +414,7 @@ TileNode.pointerup = function (event) {
 	}
 }.bind(TileNode);
 
-TileNode.pointermove = function (event) {
+TileNode.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {

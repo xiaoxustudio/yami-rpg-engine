@@ -9,20 +9,20 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setVideo = new CommandSchema({
 	name: 'setVideo',
 	onInitialize() {
-		$('#setVideo-confirm').on('click', () => this.save());
+		$('#setVideo-confirm').on('click', () => this.save!());
 		$('#setVideo-properties').bind(VideoProperty);
 		$('#setVideo').on('closed', (event: any) => {
 			clear($('#setVideo-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(VideoProperty.parse(property));
+			words.push(VideoProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setVideo') + Token(': ') },
+			{ text: Local.get!('command.setVideo') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -39,6 +39,6 @@ Command.cases.setVideo = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setVideo-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

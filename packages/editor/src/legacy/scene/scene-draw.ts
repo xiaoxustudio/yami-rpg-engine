@@ -8,58 +8,58 @@ import { Matrix } from '@/webgl/matrix2.ts';
 import { Texture } from '@/webgl/texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
-Scene.drawScene = function () {
+Scene.drawScene = function (this: any) {
 	if (GL.width * GL.height === 0) {
 		return;
 	}
 	switch (this.layer) {
 		case 'object':
-			this.drawLightTextures();
-			this.drawBackgrounds();
-			this.drawRegionLayer();
-			this.drawStartPosition();
-			this.drawGridLayer();
-			this.drawAnimationWireframe();
-			this.drawObjectLayer();
-			this.drawDirectLightLayer();
-			this.drawForegrounds();
-			this.drawRegionBorders();
-			this.drawRegionWireframe();
-			this.drawLightWireframe();
-			this.drawAnimationAnchor();
-			this.drawParticleEmitterWireframe();
-			this.drawTilemapWireframe();
-			this.drawParallaxWireframe();
-			this.drawNameLayer();
+			this.drawLightTextures!();
+			this.drawBackgrounds!();
+			this.drawRegionLayer!();
+			this.drawStartPosition!();
+			this.drawGridLayer!();
+			this.drawAnimationWireframe!();
+			this.drawObjectLayer!();
+			this.drawDirectLightLayer!();
+			this.drawForegrounds!();
+			this.drawRegionBorders!();
+			this.drawRegionWireframe!();
+			this.drawLightWireframe!();
+			this.drawAnimationAnchor!();
+			this.drawParticleEmitterWireframe!();
+			this.drawTilemapWireframe!();
+			this.drawParallaxWireframe!();
+			this.drawNameLayer!();
 			break;
 		case 'tilemap':
-			this.drawLightTextures();
-			this.drawBackgrounds();
-			this.drawObjectLayer();
-			this.drawDirectLightLayer();
-			this.drawForegrounds();
+			this.drawLightTextures!();
+			this.drawBackgrounds!();
+			this.drawObjectLayer!();
+			this.drawDirectLightLayer!();
+			this.drawForegrounds!();
 			GL.alpha = 0.25;
-			this.drawTilePreview();
+			this.drawTilePreview!();
 			GL.alpha = 1;
-			this.drawGridLayer();
-			this.drawTileMarquee();
+			this.drawGridLayer!();
+			this.drawTileMarquee!();
 			break;
 		case 'terrain':
-			this.drawLightTextures();
-			this.drawBackgrounds();
-			this.drawObjectLayer();
-			this.drawDirectLightLayer();
-			this.drawForegrounds();
-			this.drawGridLayer();
-			this.drawTerrainLayer();
-			this.drawTerrainMarquee();
+			this.drawLightTextures!();
+			this.drawBackgrounds!();
+			this.drawObjectLayer!();
+			this.drawDirectLightLayer!();
+			this.drawForegrounds!();
+			this.drawGridLayer!();
+			this.drawTerrainLayer!();
+			this.drawTerrainMarquee!();
 			break;
 	}
 };
 
-Scene.drawBackgrounds = function () {
-	GL.clearColor(...this.background.getGLRGBA());
-	GL.clear(GL.COLOR_BUFFER_BIT);
+Scene.drawBackgrounds = function (this: any) {
+	GL.clearColor!(...this.background.getGLRGBA());
+	GL.clear!(GL.COLOR_BUFFER_BIT);
 	const activeId = this.activeTilemapId;
 	const backgrounds = this.backgrounds;
 	const length = backgrounds.length;
@@ -73,14 +73,14 @@ Scene.drawBackgrounds = function () {
 				object.player.draw(i);
 				continue;
 			case 'tilemap':
-				this.drawTilemap(object, i);
+				this.drawTilemap!(object, i);
 				continue;
 		}
 	}
 	GL.alpha = 1;
 };
 
-Scene.drawForegrounds = function () {
+Scene.drawForegrounds = function (this: any) {
 	const activeId = this.activeTilemapId;
 	const foregrounds = this.foregrounds;
 	const length = foregrounds.length;
@@ -95,14 +95,14 @@ Scene.drawForegrounds = function () {
 				object.player.draw(id);
 				continue;
 			case 'tilemap':
-				this.drawTilemap(object, id);
+				this.drawTilemap!(object, id);
 				continue;
 		}
 	}
 	GL.alpha = 1;
 };
 
-Scene.updateAnimations = function (deltaTime) {
+Scene.updateAnimations = function (this: any, deltaTime: any) {
 	const lightmap = GL.reflectedLightMap;
 	const area = Data.config.animationArea;
 	const th = this.tileHeight;
@@ -128,7 +128,7 @@ Scene.updateAnimations = function (deltaTime) {
 			const player = object.player;
 			if (player.motion !== null) {
 				player.update(deltaTime);
-				const { x, y } = this.getConvertedCoords(object);
+				const { x, y } = this.getConvertedCoords!(object);
 				if (x >= sl && x < sr && y >= st && y < sb) {
 					const priority = (object.priority ?? object.data?.priority ?? 0) * pFactor;
 					player.setPosition(x, y);
@@ -156,7 +156,7 @@ Scene.updateAnimations = function (deltaTime) {
 	}
 };
 
-Scene.updateParticles = function (deltaTime) {
+Scene.updateParticles = function (this: any, deltaTime: any) {
 	if (this.showAnimation) {
 		const lightmap = GL.reflectedLightMap;
 		const area = Data.config.animationArea;
@@ -175,7 +175,7 @@ Scene.updateParticles = function (deltaTime) {
 			if (particle.hidden) continue;
 			const emitter = particle.emitter;
 			if (emitter === undefined) continue;
-			const { x, y } = this.getConvertedCoords(particle);
+			const { x, y } = this.getConvertedCoords!(particle);
 			// 如果粒子发射器在屏幕中可见，或始终发射
 			if ((x >= al && x < ar && y >= at && y < ab) || emitter.alwaysEmit) {
 				const priority = particle.priority * pFactor;
@@ -193,7 +193,7 @@ Scene.updateParticles = function (deltaTime) {
 	}
 };
 
-Scene.drawTilemap = function (tilemap, id) {
+Scene.drawTilemap = function (this: any, tilemap: any, id: any) {
 	let layer, opacity;
 	const activeId = this.activeTilemapId;
 	if (activeId === -1 || id === activeId) {
@@ -206,7 +206,7 @@ Scene.drawTilemap = function (tilemap, id) {
 		layer = 'upper';
 		opacity = 0.25;
 	}
-	const anchor = this.getParallaxAnchor(tilemap);
+	const anchor = this.getParallaxAnchor!(tilemap);
 	const tw = this.tileWidth;
 	const th = this.tileHeight;
 	const pw = tilemap.width * tw;
@@ -215,11 +215,11 @@ Scene.drawTilemap = function (tilemap, id) {
 	const ay = tilemap.anchorY * ph;
 	const ox = anchor.x - ax + tilemap.offsetX;
 	const oy = anchor.y - ay + tilemap.offsetY;
-	return this.drawTileLayer(
+	return this.drawTileLayer!(
 		layer,
 		tilemap.light,
 		tilemap.blend,
-		tilemap.opacity * opacity * (tilemap.enabled ? 1 : 0.3),
+		tilemap.opacity * opacity! * (tilemap.enabled ? 1 : 0.3),
 		tilemap.tilesetMap,
 		tilemap.tiles,
 		ox,
@@ -227,25 +227,35 @@ Scene.drawTilemap = function (tilemap, id) {
 	);
 };
 
-Scene.drawTilePreview = function () {
+Scene.drawTilePreview = function (this: any) {
 	const marquee = this.marquee;
 	if (marquee.visible && marquee.previewTiles) {
 		const mm = marquee.tilesetMap;
 		const mt = marquee.tiles;
-		const coords = this.getConvertedCoords(marquee);
+		const coords = this.getConvertedCoords!(marquee);
 		let ox = coords.x;
 		let oy = coords.y;
 		if (this.layer === 'tilemap') {
-			const context = this.getGridContext();
+			const context = this.getGridContext!();
 			ox += context.offsetX;
 			oy += context.offsetY;
 		}
-		this.drawTileLayer('upper', 'global', 'normal', 0.6, mm, mt, ox, oy);
+		this.drawTileLayer!('upper', 'global', 'normal', 0.6, mm, mt, ox, oy);
 		GL.alpha = 1;
 	}
 };
 
-Scene.drawTileLayer = function (layer, light, blend, opacity, tilesetMap, tiles, ox, oy) {
+Scene.drawTileLayer = function (
+	this: any,
+	layer: any,
+	light: any,
+	blend: any,
+	opacity: any,
+	tilesetMap: any,
+	tiles: any,
+	ox: any,
+	oy: any
+) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const push = gl.batchRenderer.push;
@@ -258,7 +268,7 @@ Scene.drawTileLayer = function (layer, light, blend, opacity, tilesetMap, tiles,
 	const th = this.tileHeight;
 	const tilesets = Data.tilesets;
 	const templates = Data.autotiles.map;
-	const scroll = this.rasterizeScrollPosition(-ox, -oy);
+	const scroll = this.rasterizeScrollPosition!(-ox, -oy);
 	const sl = scroll.left;
 	const st = scroll.top;
 	const sr = scroll.right;
@@ -436,18 +446,18 @@ Scene.drawTileLayer = function (layer, light, blend, opacity, tilesetMap, tiles,
 	}
 };
 
-Scene.drawGridLayer = function () {
+Scene.drawGridLayer = function (this: any) {
 	if (this.showGrid && this.width * this.height) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
-		const context = this.getGridContext();
+		const context = this.getGridContext!();
 		const width = context.width;
 		const height = context.height;
 		const sx = context.offsetX;
 		const sy = context.offsetY;
 		const tw = this.tileWidth;
 		const th = this.tileHeight;
-		const scroll = this.rasterizeScrollPosition(-sx, -sy);
+		const scroll = this.rasterizeScrollPosition!(-sx, -sy);
 		const sl = scroll.left;
 		const st = scroll.top;
 		const sr = scroll.right;
@@ -492,7 +502,7 @@ Scene.drawGridLayer = function () {
 	}
 };
 
-Scene.drawRegionLayer = function () {
+Scene.drawRegionLayer = function (this: any) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
@@ -565,7 +575,7 @@ Scene.drawRegionLayer = function () {
 	}
 };
 
-Scene.drawRegionBorders = function () {
+Scene.drawRegionBorders = function (this: any) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const tw = this.tileWidth;
@@ -645,7 +655,7 @@ Scene.drawRegionBorders = function () {
 	}
 };
 
-Scene.drawObjectLayer = function () {
+Scene.drawObjectLayer = function (this: any) {
 	const { max, min, floor, ceil, round } = Math;
 	const activeId = this.activeTilemapId;
 	const translucent = activeId !== -1 && activeId < 0x20000;
@@ -697,12 +707,12 @@ Scene.drawObjectLayer = function () {
 		const width = tiles.width;
 		const height = tiles.height;
 		const tro = tiles.rowOffset;
-		const anchor = this.getParallaxAnchor(tilemap);
+		const anchor = this.getParallaxAnchor!(tilemap);
 		const ax = tilemap.anchorX * width * tw;
 		const ay = tilemap.anchorY * height * th;
 		const sox = anchor.x - ax + tilemap.offsetX;
 		const soy = anchor.y - ay + tilemap.offsetY;
-		const scroll = this.rasterizeScrollPosition(-sox, -soy);
+		const scroll = this.rasterizeScrollPosition!(-sox, -soy);
 		const left = scroll.left - area.expansionLeft;
 		const top = scroll.top - area.expansionTop;
 		const right = scroll.right + area.expansionRight;
@@ -1013,16 +1023,16 @@ Scene.drawObjectLayer = function () {
 	}
 };
 
-Scene.drawDirectLightLayer = function () {
+Scene.drawDirectLightLayer = function (this: any) {
 	if (this.showLight) {
 		GL.matrix.reset();
 		GL.blend = 'additive';
-		GL.drawImage(GL.directLightMap, 0, 0, GL.width, GL.height);
+		GL.drawImage!(GL.directLightMap, 0, 0, GL.width, GL.height);
 		GL.blend = 'normal';
 	}
 };
 
-Scene.drawNameLayer = function () {
+Scene.drawNameLayer = function (this: any) {
 	if (this.target?.name) {
 		const gl = GL;
 		const sl = this.scrollLeft * this.scaleX;
@@ -1039,7 +1049,7 @@ Scene.drawNameLayer = function () {
 	}
 };
 
-Scene.drawTerrainLayer = function () {
+Scene.drawTerrainLayer = function (this: any) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const terrains = this.terrains;
@@ -1276,7 +1286,7 @@ Scene.drawTerrainLayer = function () {
 	}
 };
 
-Scene.drawLightTextures = function () {
+Scene.drawLightTextures = function (this: any) {
 	if (this.showLight) {
 		const gl = GL;
 		const ambient = this.ambient;
@@ -1412,17 +1422,17 @@ Scene.drawLightTextures = function () {
 	}
 };
 
-Scene.drawTileMarquee = function () {
+Scene.drawTileMarquee = function (this: any) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
-		const grid = this.getGridContext();
+		const grid = this.getGridContext!();
 		const sx = grid.offsetX;
 		const sy = grid.offsetY;
 		const tw = this.tileWidth;
 		const th = this.tileHeight;
-		const scroll = this.rasterizeScrollPosition(-sx, -sy);
+		const scroll = this.rasterizeScrollPosition!(-sx, -sy);
 		const sl = scroll.left;
 		const st = scroll.top;
 		const sr = scroll.right;
@@ -1443,8 +1453,8 @@ Scene.drawTileMarquee = function () {
 		vertices[6] = dr + ox;
 		vertices[7] = dt + oy;
 		let vi = 8;
-		let valid = null;
-		let invalid = null;
+		let valid: any = null;
+		let invalid: any = null;
 		const context = Scene.tilemap ?? Scene;
 		const sw = context.width;
 		const sh = context.height;
@@ -1564,7 +1574,7 @@ Scene.drawTileMarquee = function () {
 	}
 };
 
-Scene.drawTerrainMarquee = function () {
+Scene.drawTerrainMarquee = function (this: any) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const gl = GL;
@@ -1614,10 +1624,10 @@ Scene.drawTerrainMarquee = function () {
 	}
 };
 
-Scene.drawTilemapWireframe = function () {
+Scene.drawTilemapWireframe = function (this: any) {
 	if (this.target?.class === 'tilemap') {
 		const tilemap = this.target;
-		const anchor = this.getParallaxAnchor(tilemap);
+		const anchor = this.getParallaxAnchor!(tilemap);
 		const sl = this.scrollLeft;
 		const st = this.scrollTop;
 		const sr = this.scrollRight;
@@ -1641,13 +1651,13 @@ Scene.drawTilemapWireframe = function () {
 		if (dl < sr && dt < sb && dr > sl && db > st) {
 			const ml = dl / tw;
 			const mt = dt / th;
-			this.drawRectWireframeOnTilemap(ml, mt, mw, mh, mx, my, 0);
-			this.drawTargetAnchor(tilemap, 0);
+			this.drawRectWireframeOnTilemap!(ml, mt, mw, mh, mx, my, 0);
+			this.drawTargetAnchor!(tilemap, 0);
 		}
 	}
 };
 
-Scene.drawAnimationWireframe = function () {
+Scene.drawAnimationWireframe = function (this: any) {
 	switch (this.target?.class) {
 		case 'actor':
 		case 'animation': {
@@ -1671,28 +1681,28 @@ Scene.drawAnimationWireframe = function () {
 			const mr = (ax + ar) * tw;
 			const mb = (ay + ar) * th;
 			if (mr > sl && ml < sr && mb > st && mt < sb) {
-				this.drawRectWireframeOnTilemap(ax - ar, ay - ar, as, as, ax, ay, 0);
+				this.drawRectWireframeOnTilemap!(ax - ar, ay - ar, as, as, ax, ay, 0);
 			}
 			break;
 		}
 	}
 };
 
-Scene.drawAnimationAnchor = function () {
+Scene.drawAnimationAnchor = function (this: any) {
 	switch (this.target?.class) {
 		case 'actor': {
 			const team = Data.teams.map[this.target.teamId];
 			const color = INTRGBA(team?.color ?? 'ffffffff');
-			this.drawTargetAnchor(this.target, 0, color);
+			this.drawTargetAnchor!(this.target, 0, color);
 			break;
 		}
 		case 'animation':
-			this.drawTargetAnchor(this.target, 0);
+			this.drawTargetAnchor!(this.target, 0);
 			break;
 	}
 };
 
-Scene.drawLightWireframe = function () {
+Scene.drawLightWireframe = function (this: any) {
 	if (this.target?.class === 'light') {
 		const light = this.target;
 		const tw = this.tileWidth;
@@ -1711,8 +1721,8 @@ Scene.drawLightWireframe = function () {
 				const py = oy < st ? st : oy > sb ? sb : oy;
 				if ((px - ox) ** 2 + ((py - oy) * vs) ** 2 < hr ** 2) {
 					const vr = (light.range / 2) * th;
-					this.drawOvalWireframe(ox, oy, hr, vr, 0xffffffff);
-					this.drawTargetAnchor(light, 0);
+					this.drawOvalWireframe!(ox, oy, hr, vr, 0xffffffff);
+					this.drawTargetAnchor!(light, 0);
 				}
 				break;
 			}
@@ -1732,8 +1742,8 @@ Scene.drawLightWireframe = function () {
 					const rw = light.width;
 					const rh = light.height;
 					const angle = instance.angle;
-					this.drawRectWireframeOnTilemap(rl, rt, rw, rh, ax, ay, angle);
-					this.drawTargetAnchor(light, angle);
+					this.drawRectWireframeOnTilemap!(rl, rt, rw, rh, ax, ay, angle);
+					this.drawTargetAnchor!(light, angle);
 				}
 				break;
 			}
@@ -1741,7 +1751,7 @@ Scene.drawLightWireframe = function () {
 	}
 };
 
-Scene.drawRegionWireframe = function () {
+Scene.drawRegionWireframe = function (this: any) {
 	if (this.target?.class === 'region') {
 		const region = this.target;
 		const tw = this.tileWidth;
@@ -1761,32 +1771,32 @@ Scene.drawRegionWireframe = function () {
 		const dr = (rl + rw) * tw;
 		const db = (rt + rh) * th;
 		if (dl < sr && dt < sb && dr > sl && db > st) {
-			this.drawRectWireframeOnTilemap(rl, rt, rw, rh, rx, ry, 0);
-			this.drawTargetAnchor(region, 0);
+			this.drawRectWireframeOnTilemap!(rl, rt, rw, rh, rx, ry, 0);
+			this.drawTargetAnchor!(region, 0);
 		}
 	}
 };
 
-Scene.drawParticleEmitterWireframe = function () {
+Scene.drawParticleEmitterWireframe = function (this: any) {
 	if (this.target?.class === 'particle') {
 		const particle = this.target;
 		const rect = particle.emitter?.bounding;
 		const angle = Math.radians(particle.angle);
 		if (rect?.hasArea) {
-			const coords = this.getConvertedCoords(particle);
+			const coords = this.getConvertedCoords!(particle);
 			const ax = coords.x;
 			const ay = coords.y;
 			const rl = ax + rect.left * particle.scale;
 			const rt = ay + rect.top * particle.scale;
 			const rr = ax + rect.right * particle.scale;
 			const rb = ay + rect.bottom * particle.scale;
-			this.drawRectWireframe(rl, rt, rr, rb, ax, ay, angle);
+			this.drawRectWireframe!(rl, rt, rr, rb, ax, ay, angle);
 		}
-		this.drawTargetAnchor(particle, angle);
+		this.drawTargetAnchor!(particle, angle);
 	}
 };
 
-Scene.drawParallaxWireframe = function () {
+Scene.drawParallaxWireframe = function (this: any) {
 	if (this.target?.class === 'parallax') {
 		const parallax = this.target;
 		const sl = this.scrollLeft;
@@ -1796,7 +1806,7 @@ Scene.drawParallaxWireframe = function () {
 		const texture = parallax.player.texture;
 		const width = texture?.width ?? 128;
 		const height = texture?.height ?? 128;
-		const anchor = this.getParallaxAnchor(parallax);
+		const anchor = this.getParallaxAnchor!(parallax);
 		const pw = parallax.scaleX * parallax.repeatX * width;
 		const ph = parallax.scaleY * parallax.repeatY * height;
 		const ox = parallax.offsetX;
@@ -1808,20 +1818,20 @@ Scene.drawParallaxWireframe = function () {
 		const dr = dl + pw;
 		const db = dt + ph;
 		if (dl < sr && dt < sb && dr > sl && db > st) {
-			const { x, y } = this.getConvertedCoords(parallax);
-			this.drawRectWireframe(dl, dt, dr, db, x, y, 0);
-			this.drawTargetAnchor(parallax, 0);
+			const { x, y } = this.getConvertedCoords!(parallax);
+			this.drawRectWireframe!(dl, dt, dr, db, x, y, 0);
+			this.drawTargetAnchor!(parallax, 0);
 		}
 	}
 };
 
-Scene.createStartPositionTexture = function () {
+Scene.createStartPositionTexture = function (this: any) {
 	let texture = this.startPositionTexture;
 	if (texture === null) {
 		const canvas = document.createElement('canvas');
 		canvas.width = 256;
 		canvas.height = 256;
-		const context = canvas.getContext('2d');
+		const context = canvas.getContext('2d')!;
 		const y = (canvas.height - 160) / 2 + 160 * 0.85;
 		context.fillStyle = 'rgba(0, 255, 255, 0.5)';
 		context.fillRect(0, 0, 256, 256);
@@ -1840,7 +1850,7 @@ Scene.createStartPositionTexture = function () {
 	return texture;
 };
 
-Scene.drawStartPosition = function () {
+Scene.drawStartPosition = function (this: any) {
 	const { startPosition } = Data.config;
 	if (startPosition.sceneId === this.meta.guid) {
 		const tw = this.tileWidth;
@@ -1874,7 +1884,7 @@ Scene.drawStartPosition = function () {
 			vertices[15] = 0;
 
 			gl.alpha = 0.5;
-			const texture = this.createStartPositionTexture();
+			const texture = this.createStartPositionTexture!();
 			const program = gl.imageProgram.use();
 			gl.matrix.project(gl.flip, sr - sl, sb - st).translate(-sl, -st);
 			gl.bindVertexArray(program.vao);

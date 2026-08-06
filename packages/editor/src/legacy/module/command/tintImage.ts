@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
 	onInitialize() {
-		$('#tintImage-confirm').on('click', () => this.save());
+		$('#tintImage-confirm').on('click', () => this.save!());
 		$('#tintImage-mode').loadItems([
 			{ name: 'Full', value: 'full' },
 			{ name: 'RGB', value: 'rgb' },
@@ -42,7 +42,7 @@ Command.cases.tintImage = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#tintImage').on('open', () => {
-			$('#tintImage-easingId').loadItems(Data.createEasingItems());
+			$('#tintImage-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#tintImage').on('closed', () => {
 			clear($('#tintImage-easingId'));
@@ -71,11 +71,11 @@ Command.cases.tintImage = new CommandSchema({
 		write($('#tintImage-filter'), tint);
 	},
 	parseTint(mode: any, [red, green, blue, gray]: any[]) {
-		const label = Local.get('command.tintImage.' + mode);
-		const _red = Command.setNumberColor(red);
-		const _green = Command.setNumberColor(green);
-		const _blue = Command.setNumberColor(blue);
-		const _gray = Command.setNumberColor(gray);
+		const label = Local.get!('command.tintImage.' + mode);
+		const _red = Command.setNumberColor!(red);
+		const _green = Command.setNumberColor!(green);
+		const _blue = Command.setNumberColor!(blue);
+		const _gray = Command.setNumberColor!(gray);
 		switch (mode) {
 			case 'full':
 				return (
@@ -107,12 +107,12 @@ Command.cases.tintImage = new CommandSchema({
 	},
 	customParse({ element, mode, tint, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseElement(element))
-			.push(this.parseTint(mode, tint))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseElement!(element))
+			.push(this.parseTint!(mode, tint))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.tintImage') + Token(': ') },
+			{ text: Local.get!('command.tintImage') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -161,6 +161,6 @@ Command.cases.tintImage = new CommandSchema({
 		const duration = read('duration');
 		const wait = read('wait');
 		const tint = [red, green, blue, gray];
-		Command.save({ element, mode, tint, easingId, duration, wait });
+		Command.save!({ element, mode, tint, easingId, duration, wait });
 	}
 });

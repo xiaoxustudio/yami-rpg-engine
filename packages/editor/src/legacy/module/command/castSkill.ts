@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.castSkill = new CommandSchema({
 	name: 'castSkill',
 	onInitialize() {
-		$('#castSkill-confirm').on('click', () => this.save());
+		$('#castSkill-confirm').on('click', () => this.save!());
 		$('#castSkill-mode').loadItems([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Skill ID', value: 'by-id' },
@@ -30,38 +30,38 @@ Command.cases.castSkill = new CommandSchema({
 		]);
 	},
 	customParse({ actor, mode, key, skillId, skill, keyVar, wait }: any) {
-		const words = Command.words.push(Command.parseActor(actor));
+		const words = Command.words.push(Command.parseActor!(actor));
 		switch (mode) {
 			case 'by-key':
-				words.push(Command.parseGroupEnumString('shortcut-key', key));
+				words.push(Command.parseGroupEnumString!('shortcut-key', key));
 				break;
 			case 'by-id':
-				words.push(Command.parseFileName(skillId));
+				words.push(Command.parseFileName!(skillId));
 				break;
 			case 'by-skill':
-				words.push(Command.parseSkill(skill));
+				words.push(Command.parseSkill!(skill));
 				break;
 			case 'by-variable':
-				words.push(Command.parseVariableString(keyVar));
+				words.push(Command.parseVariableString!(keyVar));
 				break;
 		}
-		words.push(Command.parseWait(wait));
+		words.push(Command.parseWait!(wait));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get('command.castSkill') + Token(': ') },
+			{ text: Local.get!('command.castSkill') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
 	customLoad({
 		actor = { type: 'trigger' },
 		mode = 'by-key',
-		key = Enum.getDefStringId('shortcut-key'),
+		key = Enum.getDefStringId!('shortcut-key'),
 		skillId = '',
 		skill = { type: 'trigger' },
 		keyVar = '',
 		wait = false
 	}) {
-		$('#castSkill-key').loadItems(Enum.getStringItems('shortcut-key'));
+		$('#castSkill-key').loadItems(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('castSkill');
 		write('actor', actor);
 		write('mode', mode);
@@ -83,7 +83,7 @@ Command.cases.castSkill = new CommandSchema({
 				if (key === '') {
 					return getFocus($('#castSkill-key'));
 				}
-				Command.save({ actor, mode, key, wait });
+				Command.save!({ actor, mode, key, wait });
 				break;
 			}
 			case 'by-id': {
@@ -91,11 +91,11 @@ Command.cases.castSkill = new CommandSchema({
 				if (skillId === '') {
 					return getFocus($('#castSkill-skillId'));
 				}
-				Command.save({ actor, mode, skillId, wait });
+				Command.save!({ actor, mode, skillId, wait });
 				break;
 			}
 			case 'by-skill': {
-				Command.save({
+				Command.save!({
 					actor,
 					mode,
 					skill: read('skill'),
@@ -105,7 +105,7 @@ Command.cases.castSkill = new CommandSchema({
 			}
 			case 'by-variable': {
 				const keyVar = read('keyVar');
-				Command.save({ actor, mode, keyVar, wait });
+				Command.save!({ actor, mode, keyVar, wait });
 				break;
 			}
 		}

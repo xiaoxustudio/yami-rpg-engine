@@ -8,8 +8,8 @@ function getWindow() {
 	return (window as any).Window;
 }
 export const IndexBind = {
-	target: null,
-	type: null,
+	target: null as any,
+	type: null as any,
 	initialize() {
 		this.target = null;
 		this.type = 'get-object-index';
@@ -42,22 +42,22 @@ export const IndexBind = {
 Command.cases.getObjectProperty = new CommandSchema({
 	name: 'getObjectProperty',
 	onInitialize() {
-		$('#getObjectProperty-confirm').on('click', () => this.save());
+		$('#getObjectProperty-confirm').on('click', () => this.save!());
 		$('#getObjectProperty-list').bind(IndexBind);
 		$('#getObjectProperty').on('closed', () => {
 			clear($('#getObjectProperty-list'));
 		});
 	},
 	customParse({ variable, saveVariable, properties }: any) {
-		const contents = [];
+		const contents = [] as any[];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.getObjectProperty') + ' ' },
-			{ text: Command.parseVariable(saveVariable, 'any') + '=' },
-			{ text: Command.parseVariable(variable, 'any') + '.' }
+			{ text: Local.get!('command.getObjectProperty') + ' ' },
+			{ text: Command.parseVariable!(saveVariable, 'any') + '=' },
+			{ text: Command.parseVariable!(variable, 'any') + '.' }
 		].concat(contents.slice(1));
 	},
 	customLoad({
@@ -74,12 +74,12 @@ Command.cases.getObjectProperty = new CommandSchema({
 	customSave() {
 		const elVariable = $('#getObjectProperty-variable');
 		const variable = read(elVariable);
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus(elVariable);
 		}
 		const elsaveVariable = $('#getObjectProperty-save-variable');
 		const saveVariable = read(elsaveVariable);
-		if (VariableGetter.isNone(saveVariable)) {
+		if (VariableGetter.isNone!(saveVariable)) {
 			return getFocus(elsaveVariable);
 		}
 		const elementReader = getElementReader('getObjectProperty');
@@ -87,31 +87,31 @@ Command.cases.getObjectProperty = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#getObjectProperty-list'));
 		}
-		Command.save({ variable, saveVariable, properties });
+		Command.save!({ variable, saveVariable, properties });
 	}
 });
 
 Command.cases.setObjectProperty = new CommandSchema({
 	name: 'setObjectProperty',
 	onInitialize() {
-		$('#setObjectProperty-confirm').on('click', () => this.save());
+		$('#setObjectProperty-confirm').on('click', () => this.save!());
 		$('#setObjectProperty-list').bind(IndexBind);
 		$('#setObjectProperty').on('closed', () => {
 			clear($('#setObjectProperty-list'));
 		});
 	},
 	customParse({ variable, valueVariable, properties }: any) {
-		const contents = [];
+		const contents = [] as any[];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.setObjectProperty') + ' ' },
-			{ text: Command.parseVariable(variable, 'any') + '.' }
+			{ text: Local.get!('command.setObjectProperty') + ' ' },
+			{ text: Command.parseVariable!(variable, 'any') + '.' }
 		]
 			.concat(contents.slice(1))
-			.concat([{ text: '=' + Command.parseVariable(valueVariable, 'any') }]);
+			.concat([{ text: '=' + Command.parseVariable!(valueVariable, 'any') }]);
 	},
 	customLoad({
 		variable = { type: 'local', key: '' },
@@ -127,12 +127,12 @@ Command.cases.setObjectProperty = new CommandSchema({
 	customSave() {
 		const elVariable = $('#setObjectProperty-variable');
 		const variable = read(elVariable);
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus(elVariable);
 		}
 		const elvalueVariable = $('#setObjectProperty-value-variable');
 		const valueVariable = read(elvalueVariable);
-		if (VariableGetter.isNone(valueVariable)) {
+		if (VariableGetter.isNone!(valueVariable)) {
 			return getFocus(elvalueVariable);
 		}
 		const elementReader = getElementReader('setObjectProperty');
@@ -140,6 +140,6 @@ Command.cases.setObjectProperty = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setObjectProperty-list'));
 		}
-		Command.save({ variable, valueVariable, properties });
+		Command.save!({ variable, valueVariable, properties });
 	}
 });

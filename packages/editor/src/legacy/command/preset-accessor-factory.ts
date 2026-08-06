@@ -22,14 +22,14 @@ function createPresetAccessor(config: AccessorConfig) {
 		confirm: null
 	} as any;
 
-	accessor.initialize = function () {
+	accessor.initialize = function (this: any) {
 		if (!$(`#${domKey}-type`)) return;
 		$(`#${domKey}-type`).loadItems(items);
 		$(`#${domKey}-type`).enableHiddenMode().relate(relate);
 		$(`#${domKey}-confirm`).on('click', this.confirm);
 	};
 
-	accessor.open = function (target) {
+	accessor.open = function (this: any, target: any) {
 		this.target = target;
 		getWindow().open(domKey);
 
@@ -53,7 +53,7 @@ function createPresetAccessor(config: AccessorConfig) {
 		getFocus($(`#${domKey}-type`));
 	};
 
-	accessor.confirm = function (event) {
+	accessor.confirm = function (this: any, event: any) {
 		const read = getElementReader(domKey);
 		const type = read('type');
 		let getter;

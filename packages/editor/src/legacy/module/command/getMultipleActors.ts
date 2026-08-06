@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getMultipleActors = new CommandSchema({
 	name: 'getMultipleActors',
 	onInitialize() {
-		$('#getMultipleActors-confirm').on('click', () => this.save());
+		$('#getMultipleActors-confirm').on('click', () => this.save!());
 		$('#getMultipleActors-area').loadItems([
 			{ name: 'Rectangle', value: 'rectangle' },
 			{ name: 'Circle', value: 'circle' }
@@ -44,7 +44,7 @@ Command.cases.getMultipleActors = new CommandSchema({
 			{ name: 'Either', value: 'either' }
 		]);
 		$('#getMultipleActors').on('open', function (event: any) {
-			const items = Data.createTeamItems();
+			const items = Data.createTeamItems!();
 			$('#getMultipleActors-teamId').loadItems(items);
 		});
 		$('#getMultipleActors').on('closed', function (event: any) {
@@ -62,36 +62,36 @@ Command.cases.getMultipleActors = new CommandSchema({
 		teamId,
 		activation
 	}: any) {
-		const actors = Command.parseVariable(variable, 'object', true);
+		const actors = Command.parseVariable!(variable, 'object', true);
 		const words = Command.words
-			.push(Command.parsePosition(position))
-			.push(Local.get('command.getMultipleActors.' + area));
+			.push(Command.parsePosition!(position))
+			.push(Local.get!('command.getMultipleActors.' + area));
 		switch (area) {
 			case 'rectangle':
-				words.push(Command.parseVariableNumber(width, 't'));
-				words.push(Command.parseVariableNumber(height, 't'));
+				words.push(Command.parseVariableNumber!(width, 't'));
+				words.push(Command.parseVariableNumber!(height, 't'));
 				break;
 			case 'circle':
-				words.push(Command.parseVariableNumber(radius, 't'));
+				words.push(Command.parseVariableNumber!(radius, 't'));
 				break;
 		}
-		const selectorLabel = Command.parseActorSelector(selector);
+		const selectorLabel = Command.parseActorSelector!(selector);
 		switch (selector) {
 			case 'enemy':
 			case 'friend':
 			case 'team':
 				words.push(
-					selectorLabel + Token('(') + Command.parseVariableTeam(teamId) + Token(')')
+					selectorLabel + Token('(') + Command.parseVariableTeam!(teamId) + Token(')')
 				);
 				break;
 			case 'any':
 				words.push(selectorLabel);
 				break;
 		}
-		words.push(Local.get('command.getMultipleActors.' + activation));
+		words.push(Local.get!('command.getMultipleActors.' + activation));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.getMultipleActors') + Token(': ') },
+			{ text: Local.get!('command.getMultipleActors') + Token(': ') },
 			{ text: actors + Token(' = ') + words.join() }
 		];
 	},
@@ -121,7 +121,7 @@ Command.cases.getMultipleActors = new CommandSchema({
 	customSave() {
 		const read = getElementReader('getMultipleActors');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#getMultipleActors-variable'));
 		}
 		const position = read('position');
@@ -152,6 +152,6 @@ Command.cases.getMultipleActors = new CommandSchema({
 				params2 = { selector };
 				break;
 		}
-		Command.save({ ...params1, ...params2, activation });
+		Command.save!({ ...params1, ...params2, activation });
 	}
 });

@@ -10,7 +10,8 @@ import {
 	isInContent,
 	read as readElement,
 	removeClass,
-	getRelativeCoords
+	getRelativeCoords,
+	relate
 } from '../../../utils/dom';
 import { ParamListHistory, type HistoryData } from './param-history';
 import { attachScrollListener } from './scroll-listener';
@@ -988,7 +989,7 @@ const doubleclick = (event: Event): void => {
 const windowPointerup = (event: PointerEvent): void => {
 	const self = el!;
 	const { dragging } = self;
-	if (dragging?.relate(event)) {
+	if (dragging && relate(dragging, event)) {
 		if (dragging.mode === 'select') {
 			self.scrollListener.removeScrollListener();
 		}
@@ -1001,7 +1002,7 @@ const windowPointerup = (event: PointerEvent): void => {
 const windowPointermove = (event: PointerEvent): void => {
 	const self = el!;
 	const { dragging } = self;
-	if (dragging?.relate(event)) {
+	if (dragging && relate(dragging, event)) {
 		if (dragging.mode === 'select') {
 			dragging.latest = event;
 			const elements = self.elements;

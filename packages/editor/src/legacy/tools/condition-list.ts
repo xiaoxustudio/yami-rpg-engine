@@ -8,11 +8,11 @@ import { Local } from './localization.ts';
 import { Window } from './window-object.ts';
 
 export class ConditionListInterface implements IListInterface {
-	target: HTMLElement | null;
-	type: string;
-	history: any | null;
-	editor: any | null;
-	owner: any | null;
+	target!: HTMLElement | null;
+	type!: string;
+	history!: any | null;
+	editor!: any | null;
+	owner!: any | null;
 
 	constructor(editor?: any, owner?: any) {
 		this.editor = editor ?? null;
@@ -25,7 +25,7 @@ export class ConditionListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			this.history = new Inspector.ParamHistory(editor, owner, list);
+			this.history = new Inspector.ParamHistory!(editor, owner, list);
 		}
 	}
 
@@ -34,39 +34,39 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-boolean':
 			case 'global-number':
 			case 'global-string':
-				return Command.parseGlobalVariable(condition.key);
+				return Command.parseGlobalVariable!(condition.key);
 			case 'self-boolean':
 			case 'self-number':
 			case 'self-string':
-				return Local.get('variable.self');
+				return Local.get!('variable.self');
 		}
 	}
 
 	parse(condition: any) {
-		const variable = this.parseVariable(condition);
+		const variable = this.parseVariable!(condition);
 		switch (condition.type) {
 			case 'global-boolean':
 			case 'self-boolean': {
-				const operator = Command.removeTextTags(
-					IfCondition.parseBooleanOperation(condition)
+				const operator = Command.removeTextTags!(
+					IfCondition.parseBooleanOperation!(condition)
 				);
 				const value = condition.value.toString();
 				return `${variable} ${operator} ${value}`;
 			}
 			case 'global-number':
 			case 'self-number': {
-				const operator = Command.removeTextTags(
-					IfCondition.parseNumberOperation(condition)
+				const operator = Command.removeTextTags!(
+					IfCondition.parseNumberOperation!(condition)
 				);
 				const value = condition.value.toString();
 				return `${variable} ${operator} ${value}`;
 			}
 			case 'global-string':
 			case 'self-string': {
-				const operator = Command.removeTextTags(
-					IfCondition.parseStringOperation(condition)
+				const operator = Command.removeTextTags!(
+					IfCondition.parseStringOperation!(condition)
 				);
-				const value = `"${Command.parseMultiLineString(condition.value)}"`;
+				const value = `"${Command.parseMultiLineString!(condition.value)}"`;
 				return `${variable} ${operator} ${value}`;
 			}
 		}
@@ -91,8 +91,8 @@ export class ConditionListInterface implements IListInterface {
 			value: true
 		}
 	) {
-		Window.open('condition');
-		ConditionListInterface.target = this.target;
+		Window.open!('condition');
+		(ConditionListInterface as any).target = this.target;
 		const write = getElementWriter('condition');
 		let booleanOperation = 'equal';
 		let booleanValue = true;
@@ -166,7 +166,7 @@ export class ConditionListInterface implements IListInterface {
 				condition = { type, operation, value };
 				break;
 		}
-		Window.close('condition');
+		Window.close!('condition');
 		return condition;
 	}
 
@@ -248,7 +248,7 @@ export class ConditionListInterface implements IListInterface {
 		]);
 
 		// 条件类型写入事件
-		$('#condition-type').on('write', (event) => {
+		$('#condition-type').on('write', (event: any) => {
 			const type = event.value;
 			switch (type) {
 				case 'global-boolean':
@@ -260,8 +260,8 @@ export class ConditionListInterface implements IListInterface {
 		});
 
 		// 确定按钮 - 鼠标点击事件
-		$('#condition-confirm').on('click', (event) => {
-			ConditionListInterface.target.save();
+		$('#condition-confirm').on('click', (event: any) => {
+			(ConditionListInterface as any).target!.save();
 		});
 	}
 }

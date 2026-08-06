@@ -1,12 +1,12 @@
 import { Path } from '@/util/config.ts';
 import { Editor } from './editor.ts';
 
-Editor.updatePath = function (path) {
+Editor.updatePath = function (this: any, path: any) {
 	const { config } = this;
 
 	config.project = path;
 
-	config.dialogs.open = Path.dirname(path);
+	config.dialogs.open = Path.dirname!(path);
 
 	const items = config.recent;
 	const date = Date.now();

@@ -7,24 +7,24 @@ import { PluginManager } from '@/plugin/plugin.ts';
 
 {
 	const FileScript = {
-		target: null,
-		meta: null,
-		overview: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		windowLocalize: null
+		target: null as any,
+		meta: null as any,
+		overview: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		windowLocalize: null as any
 	};
 
-	FileScript.initialize = function () {
+	FileScript.initialize = function (this: any) {
 		if (!$('#fileScript-overview')) return;
 		this.overview = $('#fileScript-overview');
 
 		window.addEventListener('localize', this.windowLocalize);
 	};
 
-	FileScript.create = function () {
+	FileScript.create = function (this: any) {
 		return `/* @plugin @version @author @link @desc */
 
 export default class Plugin {
@@ -32,7 +32,7 @@ export default class Plugin {
 }`;
 	};
 
-	FileScript.open = async function (file, meta) {
+	FileScript.open = async function (this: any, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -41,10 +41,10 @@ export default class Plugin {
 			const elSize = $('#fileScript-size');
 			const size = Number(file.stats.size);
 			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize(size);
+			elSize.textContent = File.parseFileSize!(size);
 
 			await Data.scripts[meta.guid];
-			const elements = PluginManager.createOverview(meta, true);
+			const elements = PluginManager.createOverview!(meta, true);
 			const overview = clear(this.overview);
 			for (const element of elements) {
 				overview.appendChild(element);
@@ -52,7 +52,7 @@ export default class Plugin {
 		}
 	};
 
-	FileScript.close = function () {
+	FileScript.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -61,7 +61,7 @@ export default class Plugin {
 		}
 	};
 
-	FileScript.windowLocalize = function (event) {
+	FileScript.windowLocalize = function (this, event: any) {
 		if (FileScript.target) {
 			const { target, meta } = FileScript;
 			FileScript.target = null;

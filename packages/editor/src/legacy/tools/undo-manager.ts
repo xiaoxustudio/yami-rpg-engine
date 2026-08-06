@@ -1,5 +1,5 @@
 export const UndoManager = {
-	active: null,
+	active: null as any,
 
 	setActive(editor: any) {
 		this.active = editor;

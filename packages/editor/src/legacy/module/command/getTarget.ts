@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getTarget = new CommandSchema({
 	name: 'getTarget',
 	onInitialize() {
-		$('#getTarget-confirm').on('click', () => this.save());
+		$('#getTarget-confirm').on('click', () => this.save!());
 		$('#getTarget-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
@@ -42,7 +42,7 @@ Command.cases.getTarget = new CommandSchema({
 			]);
 	},
 	parseCondition(condition: any, attribute: any, divisor: any) {
-		const label = Local.get('command.getTarget.condition.' + condition);
+		const label = Local.get!('command.getTarget.condition.' + condition);
 		switch (condition) {
 			case 'max-threat':
 			case 'nearest':
@@ -52,28 +52,28 @@ Command.cases.getTarget = new CommandSchema({
 			case 'min-attribute-value':
 			case 'max-attribute-value':
 				return (
-					label + Token('(') + Command.parseAttributeKey('actor', attribute) + Token(')')
+					label + Token('(') + Command.parseAttributeKey!('actor', attribute) + Token(')')
 				);
 			case 'min-attribute-ratio':
 			case 'max-attribute-ratio':
 				return (
 					label +
 					Token('(') +
-					Command.parseAttributeKey('actor', attribute) +
+					Command.parseAttributeKey!('actor', attribute) +
 					Token(' / ') +
-					Command.parseAttributeKey('actor', divisor) +
+					Command.parseAttributeKey!('actor', divisor) +
 					Token(')')
 				);
 		}
 	},
 	customParse({ actor, selector, condition, attribute, divisor }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseActorSelector(selector))
-			.push(this.parseCondition(condition, attribute, divisor));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseActorSelector!(selector))
+			.push(this.parseCondition!(condition, attribute, divisor));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.getTarget') + Token(': ') },
+			{ text: Local.get!('command.getTarget') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -81,10 +81,10 @@ Command.cases.getTarget = new CommandSchema({
 		actor = { type: 'trigger' },
 		selector = 'enemy',
 		condition = 'max-threat',
-		attribute = Attribute.getDefAttributeId('actor', 'number'),
-		divisor = Attribute.getDefAttributeId('actor', 'number')
+		attribute = Attribute.getDefAttributeId!('actor', 'number'),
+		divisor = Attribute.getDefAttributeId!('actor', 'number')
 	}) {
-		const attrItems = Attribute.getAttributeItems('actor', 'number');
+		const attrItems = Attribute.getAttributeItems!('actor', 'number');
 		$('#getTarget-attribute').loadItems(attrItems);
 		$('#getTarget-divisor').loadItems(attrItems);
 		const write = getElementWriter('getTarget');
@@ -105,7 +105,7 @@ Command.cases.getTarget = new CommandSchema({
 			case 'nearest':
 			case 'farthest':
 			case 'random':
-				Command.save({ actor, selector, condition });
+				Command.save!({ actor, selector, condition });
 				break;
 			case 'min-attribute-value':
 			case 'max-attribute-value': {
@@ -113,7 +113,7 @@ Command.cases.getTarget = new CommandSchema({
 				if (attribute === '') {
 					return getFocus($('#getTarget-attribute'));
 				}
-				Command.save({ actor, selector, condition, attribute });
+				Command.save!({ actor, selector, condition, attribute });
 				break;
 			}
 			case 'min-attribute-ratio':
@@ -126,7 +126,7 @@ Command.cases.getTarget = new CommandSchema({
 				if (divisor === '') {
 					return getFocus($('#getTarget-divisor'));
 				}
-				Command.save({
+				Command.save!({
 					actor,
 					selector,
 					condition,

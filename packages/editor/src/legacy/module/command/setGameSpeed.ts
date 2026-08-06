@@ -15,13 +15,13 @@ Command.cases.setGameSpeed = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setGameSpeed-confirm').on('click', () => this.save());
+		$('#setGameSpeed-confirm').on('click', () => this.save!());
 		$('#setGameSpeed-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#setGameSpeed').on('open', function (event: any) {
-			$('#setGameSpeed-easingId').loadItems(Data.createEasingItems());
+			$('#setGameSpeed-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setGameSpeed').on('closed', function (event: any) {
 			clear($('#setGameSpeed-easingId'));
@@ -29,11 +29,11 @@ Command.cases.setGameSpeed = new CommandSchema({
 	},
 	customParse({ speed, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseVariableNumber(speed))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseVariableNumber!(speed))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.setGameSpeed') + Token(': ') },
+			{ text: Local.get!('command.setGameSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

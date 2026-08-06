@@ -4,13 +4,13 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
 Scene.createDefaultAnimation = (function IIFE() {
-	let DefaultPlayer;
-	let texture;
+	let DefaultPlayer: any;
+	let texture: any;
 
-	File.get({
+	File.get!({
 		local: 'Images/default_actor.png',
 		type: 'image'
-	}).then((image) => {
+	}).then((image: any) => {
 		if (!image) return;
 		const width = image.naturalWidth;
 		const height = image.naturalHeight / 2;
@@ -21,7 +21,7 @@ Scene.createDefaultAnimation = (function IIFE() {
 		texture.base.protected = true;
 	});
 
-	return function (target) {
+	return function (this: any, target: any) {
 		if (!DefaultPlayer) {
 			const motion = Inspector.animMotion.create('ffffffffffffffff');
 			const data = { mode: '1-dir', sprites: [], motions: [motion] };
@@ -40,7 +40,7 @@ Scene.createDefaultAnimation = (function IIFE() {
 				constructor(target: any) {
 					super(data);
 					this.target = target;
-					this.setMotion(motion.id);
+					this.setMotion!(motion.id);
 				}
 
 				setScale() {}

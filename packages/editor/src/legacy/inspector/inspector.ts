@@ -15,70 +15,70 @@ interface InspectorShape {
 }
 
 export const Inspector: InspectorShape = {
-	manager: null,
-	type: null,
-	meta: null,
-	fileScene: null,
-	fileUI: null,
-	fileAnimation: null,
-	fileParticle: null,
-	fileTileset: null,
-	fileActor: null,
-	fileSkill: null,
-	fileTrigger: null,
-	fileItem: null,
-	fileEquipment: null,
-	fileState: null,
-	fileEvent: null,
-	fileImage: null,
-	fileAudio: null,
-	fileVideo: null,
-	fileFont: null,
-	fileScript: null,
-	sceneActor: null,
-	sceneRegion: null,
-	sceneLight: null,
-	sceneAnimation: null,
-	sceneParticle: null,
-	sceneParallax: null,
-	sceneTilemap: null,
-	uiElement: null,
-	uiImage: null,
-	uiText: null,
-	uiTextBox: null,
-	uiDialogBox: null,
-	uiProgressBar: null,
-	uiButton: null,
-	uiAnimation: null,
-	uiVideo: null,
-	uiWindow: null,
-	uiContainer: null,
-	uiReference: null,
-	animMotion: null,
-	animJointLayer: null,
-	animJointFrame: null,
-	animSpriteLayer: null,
-	animSpriteFrame: null,
-	animParticleLayer: null,
-	animParticleFrame: null,
-	animSoundLayer: null,
-	animSoundFrame: null,
-	particleLayer: null,
-	initialize: null,
-	open: null,
-	close: null,
-	getKey: null,
-	inspectorResize: null,
-	managerKeydown: null,
-	scrollPointerdown: null,
-	inputFocus: null,
-	inputBlur: null,
-	sliderFocus: null,
-	sliderBlur: null,
-	ParamHistory: null
+	manager: null as any,
+	type: null as any,
+	meta: null as any,
+	fileScene: null as any,
+	fileUI: null as any,
+	fileAnimation: null as any,
+	fileParticle: null as any,
+	fileTileset: null as any,
+	fileActor: null as any,
+	fileSkill: null as any,
+	fileTrigger: null as any,
+	fileItem: null as any,
+	fileEquipment: null as any,
+	fileState: null as any,
+	fileEvent: null as any,
+	fileImage: null as any,
+	fileAudio: null as any,
+	fileVideo: null as any,
+	fileFont: null as any,
+	fileScript: null as any,
+	sceneActor: null as any,
+	sceneRegion: null as any,
+	sceneLight: null as any,
+	sceneAnimation: null as any,
+	sceneParticle: null as any,
+	sceneParallax: null as any,
+	sceneTilemap: null as any,
+	uiElement: null as any,
+	uiImage: null as any,
+	uiText: null as any,
+	uiTextBox: null as any,
+	uiDialogBox: null as any,
+	uiProgressBar: null as any,
+	uiButton: null as any,
+	uiAnimation: null as any,
+	uiVideo: null as any,
+	uiWindow: null as any,
+	uiContainer: null as any,
+	uiReference: null as any,
+	animMotion: null as any,
+	animJointLayer: null as any,
+	animJointFrame: null as any,
+	animSpriteLayer: null as any,
+	animSpriteFrame: null as any,
+	animParticleLayer: null as any,
+	animParticleFrame: null as any,
+	animSoundLayer: null as any,
+	animSoundFrame: null as any,
+	particleLayer: null as any,
+	initialize: null as any,
+	open: null as any,
+	close: null as any,
+	getKey: null as any,
+	inspectorResize: null as any,
+	managerKeydown: null as any,
+	scrollPointerdown: null as any,
+	inputFocus: null as any,
+	inputBlur: null as any,
+	sliderFocus: null as any,
+	sliderBlur: null as any,
+	ParamHistory: null as any
 };
 
-Inspector.initialize = function () {
+Inspector.initialize = function (this: any) {
 	this.manager = $('#inspector-page-manager');
 	this.manager.focusing = null;
 	this.manager.oldValue = null;
@@ -89,7 +89,7 @@ Inspector.initialize = function () {
 	// this.manager.switch('fileTrigger')
 
 	const processors = History.processors as Record<string, (operation: string, data: any) => void>;
-	processors['inspector-change'] = (operation, data) => {
+	processors['inspector-change'] = (operation: any, data: any) => {
 		const { editor, target, changes } = data;
 		for (const change of changes) {
 			const input = change.input;
@@ -98,55 +98,55 @@ Inspector.initialize = function () {
 				write(input, value);
 				input.dispatchEvent(new Event('input'));
 			} else {
-				const key = Inspector.getKey(input);
+				const key = Inspector.getKey!(input);
 				editor.update(target, key, value);
 			}
 		}
 		editor.owner?.setTarget(target);
 	};
-	processors['inspector-layer-change'] = (operation, data) => {
+	processors['inspector-layer-change'] = (operation: any, data: any) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
 		Animation.setMotion(motion);
 		Animation.setDirection(direction);
 		Animation.openLayer(target);
 	};
-	processors['inspector-frame-change'] = (operation, data) => {
+	processors['inspector-frame-change'] = (operation: any, data: any) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
 		Animation.setMotion(motion);
 		Animation.setDirection(direction);
 		Animation.selectFrame(target);
 	};
-	processors['inspector-param-insert'] = (operation, data) => {
+	processors['inspector-param-insert'] = (operation: any, data: any) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'insert', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-replace'] = (operation, data) => {
+	processors['inspector-param-replace'] = (operation: any, data: any) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'replace', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-delete'] = (operation, data) => {
+	processors['inspector-param-delete'] = (operation: any, data: any) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'delete', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-toggle'] = (operation, data) => {
+	processors['inspector-param-toggle'] = (operation: any, data: any) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'toggle', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['script-parameter-change'] = (operation, data) => {
+	processors['script-parameter-change'] = (operation: any, data: any) => {
 		const { editor, target, meta, list, parameters, key, value } = data;
 		data.value = parameters[key];
 		parameters[key] = value;
@@ -230,7 +230,7 @@ Inspector.initialize = function () {
 	}
 };
 
-Inspector.open = function (type: string, target: any, meta?: any) {
+Inspector.open = function (this: any, type: string, target: any, meta?: any) {
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -253,7 +253,7 @@ Inspector.open = function (type: string, target: any, meta?: any) {
 	}
 };
 
-Inspector.close = function (type?: string) {
+Inspector.close = function (this: any, type?: string) {
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -268,7 +268,7 @@ Inspector.close = function (type?: string) {
 	}
 };
 
-Inspector.getKey = function (element: any) {
+Inspector.getKey = function (this: any, element: any) {
 	let key = element.key;
 	if (key === undefined) {
 		const id = element.id;
@@ -280,7 +280,7 @@ Inspector.getKey = function (element: any) {
 
 Inspector.inspectorResize = (function IIFE() {
 	const resize = new Event('resize');
-	return function (event: any) {
+	return function (this: any, event: any) {
 		const page = Inspector.manager.active;
 		if (page instanceof HTMLElement) {
 			page.dispatchEvent(resize);
@@ -288,7 +288,7 @@ Inspector.inspectorResize = (function IIFE() {
 	};
 })();
 
-Inspector.managerKeydown = function (event: any) {
+Inspector.managerKeydown = function (this: any, event: any) {
 	const element = event.target;
 	switch (element.tagName) {
 		case 'INPUT':
@@ -374,6 +374,7 @@ Inspector.inputFocus = function (this: any, event: any) {
 };
 
 Inspector.inputBlur = function (
+	this: any,
 	editor: any,
 	owner: any,
 	callback: ((data: any) => void) | null = null
@@ -389,7 +390,7 @@ Inspector.inputBlur = function (
 			const oldValue = manager.oldValue;
 			const newValue = read(this);
 			if (target !== null) {
-				const changes = [];
+				const changes = [] as any[];
 				if (oldValue !== newValue) {
 					changes.push({
 						input: this,

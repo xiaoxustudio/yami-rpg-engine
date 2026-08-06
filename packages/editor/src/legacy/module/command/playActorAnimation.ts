@@ -14,7 +14,7 @@ Command.cases.playActorAnimation = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#playActorAnimation-confirm').on('click', () => this.save());
+		$('#playActorAnimation-confirm').on('click', () => this.save!());
 		$('#playActorAnimation-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
@@ -22,17 +22,17 @@ Command.cases.playActorAnimation = new CommandSchema({
 	},
 	parseSpeed(speed: any) {
 		if (speed === 1) return '';
-		return Command.parseVariableNumber(speed);
+		return Command.parseVariableNumber!(speed);
 	},
 	customParse({ actor, motion, speed, wait }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseEnumString(motion))
-			.push(this.parseSpeed(speed))
-			.push(Command.parseWait(wait));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseEnumString!(motion))
+			.push(this.parseSpeed!(speed))
+			.push(Command.parseWait!(wait));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.playActorAnimation') + Token(': ') },
+			{ text: Local.get!('command.playActorAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

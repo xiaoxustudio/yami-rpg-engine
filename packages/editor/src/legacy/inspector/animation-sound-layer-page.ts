@@ -5,17 +5,17 @@ import { Inspector } from './inspector.ts';
 
 {
 	const AnimSoundLayer = {
-		motion: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		motion: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimSoundLayer.initialize = function () {
+	AnimSoundLayer.initialize = function (this: any) {
 		if (!$('#animSoundLayer-playbackRate')) return;
 		$('#animSoundLayer-playbackRate').loadItems([
 			{ name: 'Default', value: 'default' },
@@ -27,7 +27,7 @@ import { Inspector } from './inspector.ts';
 		element.on('focus', Inspector.inputFocus);
 		element.on(
 			'blur',
-			Inspector.inputBlur(this, Animation, (data) => {
+			Inspector.inputBlur!(this, Animation, (data: any) => {
 				data.type = 'inspector-layer-change';
 				data.motion = this.motion;
 				data.direction = Animation.direction;
@@ -35,7 +35,7 @@ import { Inspector } from './inspector.ts';
 		);
 	};
 
-	AnimSoundLayer.create = function () {
+	AnimSoundLayer.create = function (this: any) {
 		return {
 			class: 'sound',
 			name: 'Sound',
@@ -46,7 +46,7 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	AnimSoundLayer.open = function (layer) {
+	AnimSoundLayer.open = function (this: any, layer: any) {
 		if (this.target !== layer) {
 			this.target = layer;
 			this.motion = Animation.motion;
@@ -56,15 +56,15 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundLayer.close = function () {
+	AnimSoundLayer.close = function (this: any) {
 		if (this.target) {
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimSoundLayer.update = function (layer, key, value) {
-		Animation.planToSave();
+	AnimSoundLayer.update = function (this: any, layer: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'playbackRate':
 				if (layer[key] !== value) {
@@ -74,8 +74,8 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundLayer.paramInput = function (event) {
-		AnimSoundLayer.update(AnimSoundLayer.target, Inspector.getKey(this), read(this));
+	AnimSoundLayer.paramInput = function (this: any, event: any) {
+		AnimSoundLayer.update(AnimSoundLayer.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.animSoundLayer = AnimSoundLayer;

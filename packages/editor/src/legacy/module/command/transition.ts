@@ -9,33 +9,33 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.transition = new CommandSchema({
 	name: 'transition',
-	commands: null,
-	onInitialize() {
-		$('#transition-confirm').on('click', () => this.save());
+	commands: null as any,
+	onInitialize(this: any) {
+		$('#transition-confirm').on('click', () => this.save!());
 		$('#transition').on('open', function (event: any) {
-			$('#transition-easingId').loadItems(Data.createEasingItems());
+			$('#transition-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#transition').on('closed', function (event: any) {
+		$('#transition').on('closed', function (this: any, event: any) {
 			clear($('#transition-easingId'));
 			this.commands = null;
 		});
 	},
 	customParse({ variable, start, end, easingId, duration, commands }: any) {
-		const varName = Command.parseVariable(variable, 'number', true);
-		const from = Command.parseVariableNumber(start);
-		const to = Command.parseVariableNumber(end);
-		const easing = Command.parseEasing(easingId, duration);
+		const varName = Command.parseVariable!(variable, 'number', true);
+		const from = Command.parseVariableNumber!(start);
+		const to = Command.parseVariableNumber!(end);
+		const easing = Command.parseEasing!(easingId, duration);
 		const expression = varName + Token(' = ') + from + Token(' -> ') + to;
 		const words = Command.words.push(expression).push(easing);
 		return [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.transition') + ' ' },
+			{ text: Local.get!('command.transition') + ' ' },
 			{ color: 'restore' },
 			{ text: words.join() },
 			{ children: commands },
 			{ color: 'flow' },
-			{ text: Local.get('command.transition.end') }
+			{ text: Local.get!('command.transition.end') }
 		];
 	},
 	customLoad({
@@ -55,17 +55,17 @@ Command.cases.transition = new CommandSchema({
 		this.commands = commands;
 		getFocus($('#transition-variable'));
 	},
-	customSave() {
+	customSave(this: any) {
 		const read = getElementReader('transition');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#transition-variable'));
 		}
 		const duration = read('duration');
 		if (duration === 0) {
 			return getFocus($('#transition-duration'), 'all');
 		}
-		Command.save({
+		Command.save!({
 			variable,
 			start: read('start'),
 			end: read('end'),

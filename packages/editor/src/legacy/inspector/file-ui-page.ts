@@ -6,28 +6,28 @@ import { UI } from '@/ui/ui-window.ts';
 
 {
 	const FileUI = {
-		button: null,
-		owner: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		button: null as any,
+		owner: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	FileUI.initialize = function () {
+	FileUI.initialize = function (this: any) {
 		if (!$('#ui-switch-settings')) return;
 		this.button = $('#ui-switch-settings');
 		this.owner = {
-			setTarget: (target) => {
+			setTarget: (target: any) => {
 				if (this.target !== target) {
-					Inspector.open('fileUI', target);
+					Inspector.open!('fileUI', target);
 				}
 			},
 			planToSave: () => {
-				UI.planToSave();
+				UI.planToSave!();
 			},
 			get history() {
 				return UI.history;
@@ -38,11 +38,11 @@ import { UI } from '@/ui/ui-window.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, this.owner))
+			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
 		);
 	};
 
-	FileUI.create = function () {
+	FileUI.create = function (this: any) {
 		const { resolution } = Data.config;
 		return {
 			width: resolution.width,
@@ -51,7 +51,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	FileUI.open = function (ui) {
+	FileUI.open = function (this: any, ui: any) {
 		if (this.target !== ui) {
 			this.target = ui;
 
@@ -63,7 +63,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	FileUI.close = function () {
+	FileUI.close = function (this: any) {
 		if (this.target) {
 			this.target = null;
 
@@ -71,8 +71,8 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	FileUI.update = function (ui, key, value) {
-		UI.planToSave();
+	FileUI.update = function (this: any, ui: any, key: any, value: any) {
+		UI.planToSave!();
 		switch (key) {
 			case 'width':
 				if (ui.width !== value) {
@@ -87,8 +87,8 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	FileUI.paramInput = function (event) {
-		FileUI.update(FileUI.target, Inspector.getKey(this), read(this));
+	FileUI.paramInput = function (this: any, event: any) {
+		FileUI.update!(FileUI.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.fileUI = FileUI;

@@ -12,7 +12,7 @@ Command.cases.changePassableTerrain = new CommandSchema({
 		{ key: 'passage', default: 'land' }
 	],
 	onInitialize() {
-		$('#changePassableTerrain-confirm').on('click', () => this.save());
+		$('#changePassableTerrain-confirm').on('click', () => this.save!());
 		$('#changePassableTerrain-passage').loadItems([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },
@@ -21,11 +21,11 @@ Command.cases.changePassableTerrain = new CommandSchema({
 	},
 	customParse({ actor, passage }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.changePassableTerrain.' + passage));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.changePassableTerrain.' + passage));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changePassableTerrain') + Token(': ') },
+			{ text: Local.get!('command.changePassableTerrain') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

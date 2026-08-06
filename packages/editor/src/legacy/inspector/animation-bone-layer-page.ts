@@ -2,10 +2,10 @@
 
 {
 	const AnimJointLayer = {
-		create: null
+		create: null as any
 	};
 
-	AnimJointLayer.create = function () {
+	AnimJointLayer.create = function (this: any) {
 		return {
 			class: 'joint',
 			name: 'Joint',

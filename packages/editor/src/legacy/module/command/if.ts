@@ -11,7 +11,7 @@ Command.cases.if = new CommandSchema({
 	onInitialize() {
 		const confirmEl = $('#if-confirm');
 		if (!confirmEl) return;
-		confirmEl.on('click', () => this.save());
+		confirmEl.on('click', () => this.save!());
 		$('#if-branches')?.bind(IfBranch);
 		$('#if-branch-conditions')?.bind(IfCondition);
 		$('#if')?.on('closed', () => {
@@ -21,8 +21,8 @@ Command.cases.if = new CommandSchema({
 	},
 	customParse({ branches, elseCommands }: any) {
 		const contents: any[] = [{ fold: true }];
-		const textIf = Local.get('command.if');
-		const textElse = Local.get('command.if.else');
+		const textIf = Local.get!('command.if');
+		const textElse = Local.get!('command.if.else');
 		for (let index = 0; index < branches.length; index++) {
 			const branch = branches[index];
 			contents.push(
@@ -37,11 +37,11 @@ Command.cases.if = new CommandSchema({
 		if (elseCommands) {
 			contents.push(
 				{ color: 'flow' },
-				{ text: Local.get('command.if.else') },
+				{ text: Local.get!('command.if.else') },
 				{ children: elseCommands }
 			);
 		}
-		contents.push({ color: 'flow' }, { text: Local.get('command.if.end') });
+		contents.push({ color: 'flow' }, { text: Local.get!('command.if.end') });
 		return contents;
 	},
 	customLoad({ branches = [], elseCommands = null }) {
@@ -60,11 +60,11 @@ Command.cases.if = new CommandSchema({
 		switch (read('else')) {
 			case true: {
 				const elseCommands = this.elseCommands ?? [];
-				Command.save({ branches, elseCommands });
+				Command.save!({ branches, elseCommands });
 				break;
 			}
 			case false:
-				Command.save({ branches });
+				Command.save!({ branches });
 				break;
 		}
 	}

@@ -16,13 +16,13 @@ Command.cases.setAngle = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAngle-confirm').on('click', () => this.save());
+		$('#setAngle-confirm').on('click', () => this.save!());
 		$('#setAngle-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#setAngle').on('open', function (event: any) {
-			$('#setAngle-easingId').loadItems(Data.createEasingItems());
+			$('#setAngle-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setAngle').on('closed', function (event: any) {
 			clear($('#setAngle-easingId'));
@@ -30,12 +30,12 @@ Command.cases.setAngle = new CommandSchema({
 	},
 	customParse({ actor, angle, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseAngle(angle))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseAngle!(angle))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setAngle') + Token(': ') },
+			{ text: Local.get!('command.setAngle') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

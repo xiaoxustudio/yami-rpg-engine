@@ -102,14 +102,14 @@ Object.assign(window as any, {
 	UI
 });
 
-Editor.initialize = async function () {
+Editor.initialize = async function (this: any) {
 	this.switchHotkey(false);
 
 	// 等待 AppShell 懒加载的命令/工具弹窗组件挂载完成，保证 initAll 能拿到 DOM
 	// 首次冷启动时 145+ 个异步组件编译较慢，8s 超时太短会提前 initAll 导致元素缺失，放宽到 60s
 	await Promise.race([
 		(window as any).__lazyComponentsReady__ ?? Promise.resolve(),
-		new Promise((resolve) => setTimeout(resolve, 60000))
+		new Promise((resolve: any) => setTimeout(resolve, 60000))
 	]);
 
 	try {
@@ -171,10 +171,10 @@ Editor.initialize = async function () {
 		};
 		const singletons = singletonMap as Record<string, any>;
 		const initNames = Object.keys(singletons).filter(
-			(n) => singletons[n] != null && typeof singletons[n].initialize === 'function'
+			(n: any) => singletons[n] != null && typeof singletons[n].initialize === 'function'
 		);
-		const graph = new Map<string, string[]>(initNames.map((n) => [n, [] as string[]]));
-		const inDegree = new Map<string, number>(initNames.map((n) => [n, 0]));
+		const graph = new Map<string, string[]>(initNames.map((n: any) => [n, [] as string[]]));
+		const inDegree = new Map<string, number>(initNames.map((n: any) => [n, 0]));
 		for (const name of initNames) {
 			const deps = singletons[name].dependsOn ?? [];
 			for (const dep of deps) {
@@ -183,7 +183,7 @@ Editor.initialize = async function () {
 				inDegree.set(name, (inDegree.get(name) ?? 0) + 1);
 			}
 		}
-		const queue = initNames.filter((n) => inDegree.get(n) === 0);
+		const queue = initNames.filter((n: any) => inDegree.get(n) === 0);
 		while (queue.length) {
 			const node = queue.shift()!;
 			const singleton = singletons[node];
@@ -202,7 +202,7 @@ Editor.initialize = async function () {
 		for (const name of initNames) {
 			if (!initializedSet.has(name)) {
 				if (typeof Log !== 'undefined' && Log.warn) {
-					Log.warn(`初始化循环依赖：${name} 未被初始化`, singletons[name].dependsOn);
+					Log.warn!(`初始化循环依赖：${name} 未被初始化`, singletons[name].dependsOn);
 				}
 				try {
 					singletons[name].initialize.call(singletons[name]);

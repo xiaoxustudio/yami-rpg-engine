@@ -18,7 +18,7 @@ Command.cases.setLanguage = new CommandSchema({
 	},
 	onLoad(data: any) {
 		const el = $('#setLanguage-language');
-		el.loadItems(this.createLanguageItems());
+		el.loadItems(this.createLanguageItems!());
 		write(el, data.language ?? 'auto');
 		getFocus(el);
 	},

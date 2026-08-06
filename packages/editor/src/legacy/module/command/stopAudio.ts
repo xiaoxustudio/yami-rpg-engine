@@ -9,7 +9,7 @@ Command.cases.stopAudio = new CommandSchema({
 	name: 'stopAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#stopAudio-confirm').on('click', () => this.save());
+		$('#stopAudio-confirm').on('click', () => this.save!());
 		$('#stopAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -19,10 +19,10 @@ Command.cases.stopAudio = new CommandSchema({
 		]);
 	},
 	customParse({ type }: any) {
-		const words = Command.words.push(Command.parseAudioType(type));
+		const words = Command.words.push(Command.parseAudioType!(type));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.stopAudio') + Token(': ') },
+			{ text: Local.get!('command.stopAudio') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

@@ -34,44 +34,44 @@ function getWindow() {
 }
 
 export const PluginManager = {
-	list: null,
-	overviewPane: null,
-	overview: null,
-	parameterPane: null,
-	data: null,
-	meta: null,
-	symbol: null,
+	list: null as any,
+	overviewPane: null as any,
+	overview: null as any,
+	parameterPane: null as any,
+	data: null as any,
+	meta: null as any,
+	symbol: null as any,
 	detailed: false,
 	changed: false,
-	initialize: null,
-	open: null,
-	load: null,
-	unload: null,
-	loadOverview: null,
-	createOverview: null,
-	createData: null,
-	getItemById: null,
-	switchOverviewMode: null,
-	parseMeta: null,
-	reconstruct: null,
-	saveToProject: null,
-	loadFromProject: null,
-	windowClose: null,
-	windowClosed: null,
-	keydown: null,
-	pointerdown: null,
-	scriptChange: null,
-	listKeydown: null,
-	listSelect: null,
-	listUnselect: null,
-	listChange: null,
-	listPopup: null,
-	listOpen: null,
-	overviewPointerdown: null,
-	parameterPaneUpdate: null,
-	confirm: null,
-	apply: null,
-	checkValidate: null,
+	initialize: null as any,
+	open: null as any,
+	load: null as any,
+	unload: null as any,
+	loadOverview: null as any,
+	createOverview: null as any,
+	createData: null as any,
+	getItemById: null as any,
+	switchOverviewMode: null as any,
+	parseMeta: null as any,
+	reconstruct: null as any,
+	saveToProject: null as any,
+	loadFromProject: null as any,
+	windowClose: null as any,
+	windowClosed: null as any,
+	keydown: null as any,
+	pointerdown: null as any,
+	scriptChange: null as any,
+	listKeydown: null as any,
+	listSelect: null as any,
+	listUnselect: null as any,
+	listChange: null as any,
+	listPopup: null as any,
+	listOpen: null as any,
+	overviewPointerdown: null as any,
+	parameterPaneUpdate: null as any,
+	confirm: null as any,
+	apply: null as any,
+	checkValidate: null as any,
 	list_edit: null as any,
 	list_insert: null as any,
 	list_toggle: null as any,
@@ -120,7 +120,7 @@ function ensureDomBound() {
 
 // pane methods 注意：不再重写 ParameterPane.createDetailBox / clear，因为它们在 ParameterPane.initialize 中被重写
 
-PluginManager.initialize = function () {
+PluginManager.initialize = function (this: any) {
 	ensureDomBound();
 	if (!PluginManager.list) return;
 	const { list } = this;
@@ -146,7 +146,7 @@ PluginManager.initialize = function () {
 	on($('#plugin-apply'), 'click', this.apply);
 };
 
-PluginManager.open = function () {
+PluginManager.open = function (this: any) {
 	getWindow().open('plugin');
 
 	this.data = Object.clone(Data.plugins);
@@ -160,7 +160,7 @@ PluginManager.open = function () {
 	window.addEventListener('script-change', this.scriptChange);
 };
 
-PluginManager.load = async function (item) {
+PluginManager.load = async function (this: any, item: any) {
 	const symbol = (this.symbol = Symbol());
 	const meta = await Data.scripts[item.id];
 	if (this.symbol === symbol) {
@@ -171,7 +171,7 @@ PluginManager.load = async function (item) {
 	}
 };
 
-PluginManager.unload = function () {
+PluginManager.unload = function (this: any) {
 	this.meta = null;
 	this.symbol = null;
 	clear(this.overview);
@@ -180,7 +180,7 @@ PluginManager.unload = function () {
 	clear(this.parameterPane);
 };
 
-PluginManager.loadOverview = function () {
+PluginManager.loadOverview = function (this: any) {
 	const { meta, detailed } = this;
 	if (!meta) return;
 	const elements = this.createOverview(meta, detailed);
@@ -191,8 +191,8 @@ PluginManager.loadOverview = function () {
 	show(this.overviewPane);
 };
 
-PluginManager.createOverview = function (meta, detailed) {
-	const elements = [];
+PluginManager.createOverview = function (this: any, meta: any, detailed: any) {
+	const elements = [] as any[];
 	const get = Local.createGetter('plugin');
 	const langMap = meta.langMap.update();
 	const { plugin, author, link, version, desc } = meta.overview;
@@ -239,7 +239,7 @@ PluginManager.createOverview = function (meta, detailed) {
 		addClass(text, 'text');
 		if (link) {
 			addClass(text, 'plugin-link');
-			text.onclick = () => File.openURL(link);
+			text.onclick = () => File.openURL!(link);
 		}
 		elements.push(text);
 	}
@@ -257,7 +257,7 @@ PluginManager.createOverview = function (meta, detailed) {
 			const p = guidMap[id]?.overview?.plugin;
 			if (p) loaded.add(p);
 		}
-		const missing = meta.overview.requires.filter((req) => !loaded.has(req.plugin));
+		const missing = meta.overview.requires.filter((req: any) => !loaded.has(req.plugin));
 		if (missing.length) {
 			if (elements.length) {
 				elements.push(document.createTextNode('\n\n'));
@@ -265,7 +265,8 @@ PluginManager.createOverview = function (meta, detailed) {
 			const warn = document.createElement('div');
 			addClass(warn, 'plugin-require-warn');
 			addClass(warn, 'text');
-			warn.textContent = get('requireMissing') + missing.map((req) => req.plugin).join(', ');
+			warn.textContent =
+				get('requireMissing') + missing.map((req: any) => req.plugin).join(', ');
 			elements.push(warn);
 		}
 	}
@@ -401,7 +402,7 @@ PluginManager.createOverview = function (meta, detailed) {
 	return elements;
 };
 
-PluginManager.createData = function (id) {
+PluginManager.createData = function (this: any, id: any) {
 	return {
 		id: id ?? '',
 		enabled: true,
@@ -411,7 +412,7 @@ PluginManager.createData = function (id) {
 
 PluginManager.getItemById = Easing.getItemById;
 
-PluginManager.switchOverviewMode = function () {
+PluginManager.switchOverviewMode = function (this: any) {
 	if (this.meta) {
 		this.detailed = !this.detailed;
 		this.loadOverview();
@@ -443,28 +444,28 @@ PluginManager.parseMeta = (function IIFE() {
 				return 'ffffffff';
 			case 'variable-getter':
 			case 'variable-setter':
-				return VariableGetter.createDefaultForPlugin();
+				return VariableGetter.createDefaultForPlugin!();
 			case 'actor-getter':
-				return ActorGetter.createDefaultForPlugin();
+				return ActorGetter.createDefaultForPlugin!();
 			case 'skill-getter':
-				return SkillGetter.createDefaultForPlugin();
+				return SkillGetter.createDefaultForPlugin!();
 			case 'state-getter':
-				return StateGetter.createDefaultForPlugin();
+				return StateGetter.createDefaultForPlugin!();
 			case 'equipment-getter':
-				return EquipmentGetter.createDefaultForPlugin();
+				return EquipmentGetter.createDefaultForPlugin!();
 			case 'item-getter':
-				return ItemGetter.createDefaultForPlugin();
+				return ItemGetter.createDefaultForPlugin!();
 			case 'element-getter':
-				return ElementGetter.createDefaultForPlugin();
+				return ElementGetter.createDefaultForPlugin!();
 			case 'position-getter':
-				return PositionGetter.createDefaultForPlugin();
+				return PositionGetter.createDefaultForPlugin!();
 			case 'repeatable-group':
 				return [];
 			default:
 				return '';
 		}
 	};
-	const parseBoolean = (string) => {
+	const parseBoolean = (string: any) => {
 		switch (string) {
 			case 'true':
 				return true;
@@ -474,14 +475,14 @@ PluginManager.parseMeta = (function IIFE() {
 				return null;
 		}
 	};
-	const parseNumber = (string) => {
+	const parseNumber = (string: any) => {
 		const number = parseFloat(string);
 		if (!isNaN(number)) {
 			return number;
 		}
 		return null;
 	};
-	const parseString = (string) => {
+	const parseString = (string: any) => {
 		const last = string.length - 1;
 		const head = string[0];
 		const foot = string[last];
@@ -492,7 +493,7 @@ PluginManager.parseMeta = (function IIFE() {
 	};
 	const parseNumberList = () => {
 		if (content[0] === '[' && content[content.length - 1] === ']') {
-			const numbers = [];
+			const numbers = [] as any[];
 			const slices = content.slice(1, -1).split(separator);
 			for (const slice of slices) {
 				const number = parseNumber(slice);
@@ -506,7 +507,7 @@ PluginManager.parseMeta = (function IIFE() {
 	};
 	const parseStringList = () => {
 		if (content[0] === '[' && content[content.length - 1] === ']') {
-			const strings = [];
+			const strings = [] as any[];
 			let match;
 			while ((match = strExp.exec(content))) {
 				const string = parseString(match[0]);
@@ -529,7 +530,7 @@ PluginManager.parseMeta = (function IIFE() {
 		if (match) {
 			const key = match[1].trim();
 			const set = match[2].trim();
-			const values = [];
+			const values = [] as any[];
 			const slices = set.split(separator);
 			for (const slice of slices) {
 				const value = parseString(slice) ?? parseNumber(slice) ?? parseBoolean(slice);
@@ -686,7 +687,7 @@ PluginManager.parseMeta = (function IIFE() {
 			};
 			Object.defineProperty(parameter, 'dataItems', {
 				configurable: true,
-				value: values.map((value) => {
+				value: values.map((value: any) => {
 					return {
 						name: value.toString(),
 						value: value
@@ -735,7 +736,7 @@ PluginManager.parseMeta = (function IIFE() {
 			paramMap[content] = parameter;
 		}
 	};
-	const fileFilters = {
+	const fileFilters: Record<string, any> = {
 		actor: true,
 		skill: true,
 		trigger: true,
@@ -755,7 +756,7 @@ PluginManager.parseMeta = (function IIFE() {
 		font: true,
 		other: true
 	};
-	const attrFilters = {
+	const attrFilters: Record<string, any> = {
 		actor: 1,
 		skill: 1,
 		state: 1,
@@ -763,7 +764,7 @@ PluginManager.parseMeta = (function IIFE() {
 		equipment: 1,
 		element: 1
 	};
-	const enumFilters = {
+	const enumFilters: Record<string, any> = {
 		'shortcut-key': 1,
 		'cooldown-key': 1,
 		'equipment-slot': 1,
@@ -904,7 +905,7 @@ PluginManager.parseMeta = (function IIFE() {
 	};
 	const setValidate = () => {
 		if (parameter === null) return;
-		const validate = { pattern: null, notEmpty: null };
+		const validate: Record<string, any> = { pattern: null, notEmpty: null };
 		const parts = content.split(/\s+/);
 		for (let i = 0; i < parts.length; i++) {
 			const part = parts[i];
@@ -960,8 +961,8 @@ PluginManager.parseMeta = (function IIFE() {
 	const setGroupRepeatable = () => {
 		const groupName = content || null;
 		if (!groupName) return;
-		const groupParams = [];
-		const remaining = [];
+		const groupParams = [] as any[];
+		const remaining = [] as any[];
 		for (const p of parameters) {
 			if (p.group === groupName) {
 				groupParams.push(p);
@@ -1000,7 +1001,7 @@ PluginManager.parseMeta = (function IIFE() {
 			this.states = {};
 		}
 
-		append({ key, values }) {
+		append({ key, values }: any) {
 			const { wraps, states } = this;
 			const pKey = parameter.key;
 			const owner = paramMap[key];
@@ -1041,7 +1042,7 @@ PluginManager.parseMeta = (function IIFE() {
 			}
 		}
 
-		static sorter = (a, b) => b.priority - a.priority;
+		static sorter = (a: any, b: any) => b.priority - a.priority;
 	}
 
 	class ConditionWrap {
@@ -1104,7 +1105,7 @@ PluginManager.parseMeta = (function IIFE() {
 		constructor() {
 			this.language = '';
 			this.active = {};
-			this.packs = [];
+			this.packs = [] as any[];
 		}
 
 		update() {
@@ -1143,7 +1144,7 @@ PluginManager.parseMeta = (function IIFE() {
 				delete pack.code;
 				let match;
 				const base = pack.base;
-				const map = (pack.map = {});
+				const map = (pack.map = {} as Record<string, any>);
 				while ((match = langProp.exec(code))) {
 					map[match[1]] = match[2];
 				}
@@ -1179,7 +1180,7 @@ PluginManager.parseMeta = (function IIFE() {
 		}
 	}
 
-	const processors = {
+	const processors: Record<string, any> = {
 		plugin: setPlugin,
 		author: setAuthor,
 		link: setLink,
@@ -1242,19 +1243,19 @@ PluginManager.parseMeta = (function IIFE() {
 		'group[]': setGroupRepeatable
 	};
 
-	let overview = null;
-	let parameters = null;
-	let paramMap = null;
-	let langMap = null;
-	let manager = null;
-	let parameter = null;
+	let overview: any = null;
+	let parameters: any = null;
+	let paramMap: any = null;
+	let langMap: any = null;
+	let manager: any = null;
+	let parameter: any = null;
 	let type = '';
 	let content = '';
-	let currentGroup = null;
+	let currentGroup: any = null;
 
-	return function (meta, code) {
+	return function (this: any, meta: any, code: any) {
 		overview = { requires: [] };
-		parameters = [];
+		parameters = [] as any[];
 		paramMap = {};
 		langMap = new LanguageMap();
 		manager = new OptionManager();
@@ -1312,7 +1313,7 @@ PluginManager.parseMeta = (function IIFE() {
 PluginManager.reconstruct = (function IIFE() {
 	const guidRegExp = /^[0-9a-f]{16}$/;
 	const colorRegExp = /^[0-9a-f]{8}$/;
-	const checkValue = (parameter, key, value) => {
+	const checkValue = (parameter: any, key: any, value: any) => {
 		if (parameter.key !== key) {
 			return false;
 		}
@@ -1346,7 +1347,7 @@ PluginManager.reconstruct = (function IIFE() {
 						return Math.clamp(Math.roundTo(n, decimals), min, max) === n;
 					}
 				}
-				return VariableGetter.checkDataForPlugin(value);
+				return VariableGetter.checkDataForPlugin!(value);
 			case 'option':
 				return parameter.options.includes(value);
 			case 'easing':
@@ -1383,21 +1384,21 @@ PluginManager.reconstruct = (function IIFE() {
 				return value === '' || guidRegExp.test(value);
 			case 'variable-getter':
 			case 'variable-setter':
-				return VariableGetter.checkDataForPlugin(value);
+				return VariableGetter.checkDataForPlugin!(value);
 			case 'actor-getter':
-				return ActorGetter.checkDataForPlugin(value);
+				return ActorGetter.checkDataForPlugin!(value);
 			case 'skill-getter':
-				return SkillGetter.checkDataForPlugin(value);
+				return SkillGetter.checkDataForPlugin!(value);
 			case 'state-getter':
-				return StateGetter.checkDataForPlugin(value);
+				return StateGetter.checkDataForPlugin!(value);
 			case 'equipment-getter':
-				return EquipmentGetter.checkDataForPlugin(value);
+				return EquipmentGetter.checkDataForPlugin!(value);
 			case 'item-getter':
-				return ItemGetter.checkDataForPlugin(value);
+				return ItemGetter.checkDataForPlugin!(value);
 			case 'element-getter':
-				return ElementGetter.checkDataForPlugin(value);
+				return ElementGetter.checkDataForPlugin!(value);
 			case 'position-getter':
-				return PositionGetter.checkDataForPlugin(value);
+				return PositionGetter.checkDataForPlugin!(value);
 			case 'number[]':
 			case 'string[]':
 				if (value instanceof Array) {
@@ -1427,7 +1428,7 @@ PluginManager.reconstruct = (function IIFE() {
 		return true;
 	};
 
-	const readValue = (parameter, value) => {
+	const readValue = (parameter: any, value: any) => {
 		const { type } = parameter;
 		switch (type) {
 			case 'boolean':
@@ -1457,7 +1458,7 @@ PluginManager.reconstruct = (function IIFE() {
 						const { min, max, decimals } = parameter;
 						return Math.clamp(Math.roundTo(n, decimals), min, max);
 					}
-				} else if (VariableGetter.checkDataForPlugin(value)) {
+				} else if (VariableGetter.checkDataForPlugin!(value)) {
 					return value;
 				}
 				return parameter.value;
@@ -1524,34 +1525,34 @@ PluginManager.reconstruct = (function IIFE() {
 				return '';
 			case 'variable-getter':
 			case 'variable-setter':
-				if (VariableGetter.checkDataForPlugin(value)) return value;
-				return VariableGetter.createDefaultForPlugin();
+				if (VariableGetter.checkDataForPlugin!(value)) return value;
+				return VariableGetter.createDefaultForPlugin!();
 			case 'actor-getter':
-				if (ActorGetter.checkDataForPlugin(value)) return value;
-				return ActorGetter.createDefaultForPlugin();
+				if (ActorGetter.checkDataForPlugin!(value)) return value;
+				return ActorGetter.createDefaultForPlugin!();
 			case 'skill-getter':
-				if (SkillGetter.checkDataForPlugin(value)) return value;
-				return SkillGetter.createDefaultForPlugin();
+				if (SkillGetter.checkDataForPlugin!(value)) return value;
+				return SkillGetter.createDefaultForPlugin!();
 			case 'state-getter':
-				if (StateGetter.checkDataForPlugin(value)) return value;
-				return StateGetter.createDefaultForPlugin();
+				if (StateGetter.checkDataForPlugin!(value)) return value;
+				return StateGetter.createDefaultForPlugin!();
 			case 'equipment-getter':
-				if (EquipmentGetter.checkDataForPlugin(value)) return value;
-				return EquipmentGetter.createDefaultForPlugin();
+				if (EquipmentGetter.checkDataForPlugin!(value)) return value;
+				return EquipmentGetter.createDefaultForPlugin!();
 			case 'item-getter':
-				if (ItemGetter.checkDataForPlugin(value)) return value;
-				return ItemGetter.createDefaultForPlugin();
+				if (ItemGetter.checkDataForPlugin!(value)) return value;
+				return ItemGetter.createDefaultForPlugin!();
 			case 'element-getter':
-				if (ElementGetter.checkDataForPlugin(value)) return value;
-				return ElementGetter.createDefaultForPlugin();
+				if (ElementGetter.checkDataForPlugin!(value)) return value;
+				return ElementGetter.createDefaultForPlugin!();
 			case 'position-getter':
-				if (PositionGetter.checkDataForPlugin(value)) return value;
-				return PositionGetter.createDefaultForPlugin();
+				if (PositionGetter.checkDataForPlugin!(value)) return value;
+				return PositionGetter.createDefaultForPlugin!();
 			case 'number[]':
 			case 'string[]':
 				if (value instanceof Array) {
 					const t = type.slice(0, -2);
-					const arr = [];
+					const arr = [] as any[];
 					for (const item of value) {
 						if (typeof item !== t) {
 							if (
@@ -1582,7 +1583,7 @@ PluginManager.reconstruct = (function IIFE() {
 				return parameter.value;
 		}
 	};
-	return function (script) {
+	return function (this: any, script: any) {
 		const { id, parameters } = script;
 		const oEntries = Object.entries(parameters);
 		const meta = Data.manifest.guidMap[id];
@@ -1597,7 +1598,7 @@ PluginManager.reconstruct = (function IIFE() {
 		if (length !== oEntries.length) {
 			reconstruct = true;
 		} else {
-			const oMap = {};
+			const oMap = {} as Record<string, any>;
 			for (const [k, v] of oEntries) {
 				oMap[k] = v;
 			}
@@ -1609,10 +1610,10 @@ PluginManager.reconstruct = (function IIFE() {
 			}
 		}
 		if (reconstruct) {
-			const newParameters = {};
+			const newParameters = {} as Record<string, any>;
 			for (const mParam of mParameters) {
 				const key = mParam.key;
-				const arg = parameters[key];
+				const arg = (parameters as any)[key];
 				const value = readValue(mParam, arg);
 				newParameters[key] = value;
 			}
@@ -1623,7 +1624,7 @@ PluginManager.reconstruct = (function IIFE() {
 	};
 })();
 
-PluginManager.checkValidate = function (parameter, value) {
+PluginManager.checkValidate = function (this: any, parameter: any, value: any) {
 	if (!parameter.validate) return true;
 	const v = parameter.validate;
 	if (v.notEmpty && (value === '' || value == null)) return false;
@@ -1635,17 +1636,17 @@ PluginManager.checkValidate = function (parameter, value) {
 	return true;
 };
 
-PluginManager.saveToProject = function (project) {
+PluginManager.saveToProject = function (this: any, project: any) {
 	const { plugin } = project;
 	plugin.detailed = this.detailed;
 };
 
-PluginManager.loadFromProject = function (project) {
+PluginManager.loadFromProject = function (this: any, project: any) {
 	const { plugin } = project;
 	this.detailed = plugin.detailed;
 };
 
-PluginManager.windowClose = function (event) {
+PluginManager.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
@@ -1669,7 +1670,7 @@ PluginManager.windowClose = function (event) {
 	}
 }.bind(PluginManager);
 
-PluginManager.windowClosed = function (event) {
+PluginManager.windowClosed = function (this: any, event: any) {
 	this.list.saveSelection();
 	this.data = null;
 	clear(this.list);
@@ -1678,7 +1679,7 @@ PluginManager.windowClosed = function (event) {
 	window.removeEventListener('script-change', this.scriptChange);
 }.bind(PluginManager);
 
-PluginManager.keydown = function (event) {
+PluginManager.keydown = function (this: any, event: any) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyD':
@@ -1688,21 +1689,21 @@ PluginManager.keydown = function (event) {
 	}
 };
 
-PluginManager.pointerdown = function (event) {
+PluginManager.pointerdown = function (this: any, event: any) {
 	// 阻止鼠标在窗口外部双击会选中概述内容的行为 并且调用失去焦点方法避免阻止后失效
 	if (event.target === document.documentElement) {
 		event.preventDefault();
-		document.activeElement.blur();
+		document.activeElement!.blur();
 	}
 };
 
-PluginManager.scriptChange = function (event) {
+PluginManager.scriptChange = function (this: any, event: any) {
 	if (PluginManager.meta === event.changedMeta) {
 		PluginManager.loadOverview();
 	}
 };
 
-PluginManager.listKeydown = function (event) {
+PluginManager.listKeydown = function (this: any, event: any) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -1730,20 +1731,20 @@ PluginManager.listKeydown = function (event) {
 	}
 };
 
-PluginManager.listSelect = function (event) {
+PluginManager.listSelect = function (this: any, event: any) {
 	PluginManager.load(event.value);
 };
 
 // 列表 - 取消选择事件
-PluginManager.listUnselect = function (event) {
+PluginManager.listUnselect = function (this: any, event: any) {
 	PluginManager.unload();
 };
 
-PluginManager.listChange = function (event) {
+PluginManager.listChange = function (this: any, event: any) {
 	PluginManager.changed = true;
 };
 
-PluginManager.listPopup = function (event) {
+PluginManager.listPopup = function (this: any, event: any) {
 	const list = PluginManager.list;
 	const item = event.value;
 	const selected = !!item;
@@ -1807,13 +1808,13 @@ PluginManager.listPopup = function (event) {
 	);
 };
 
-PluginManager.listOpen = function (event) {
+PluginManager.listOpen = function (this: any, event: any) {
 	PluginManager.list.edit(event.value);
 };
 
 PluginManager.overviewPointerdown = (function IIFE() {
 	const once = { once: true };
-	const pointerup = (event) => {
+	const pointerup = (event: any) => {
 		if (PluginManager.overview.contains(event.target)) {
 			Menu.popup(
 				{
@@ -1833,7 +1834,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 			);
 		}
 	};
-	return function (event) {
+	return function (this: any, event: any) {
 		switch (event.button) {
 			case 2:
 				window.addEventListener('pointerup', pointerup, once);
@@ -1842,7 +1843,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 	};
 })();
 
-PluginManager.parameterPaneUpdate = function (event) {
+PluginManager.parameterPaneUpdate = function (this: any, event: any) {
 	if (this.wraps.length !== 0) {
 		show(this);
 	} else {
@@ -1850,12 +1851,12 @@ PluginManager.parameterPaneUpdate = function (event) {
 	}
 };
 
-PluginManager.confirm = function (event) {
+PluginManager.confirm = function (this: any, event: any) {
 	this.apply();
 	getWindow().close('plugin');
 }.bind(PluginManager);
 
-PluginManager.apply = function (event) {
+PluginManager.apply = function (this: any, event: any) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -1866,17 +1867,17 @@ PluginManager.apply = function (event) {
 			TreeList.deleteCaches(plugins);
 		}
 		Data.plugins = plugins;
-		File.planToSave(Data.manifest.project.plugins);
+		File.planToSave!(Data.manifest.project.plugins);
 	}
 }.bind(PluginManager);
 
 // 列表 - 编辑
-PluginManager.list_edit = function (item) {
+PluginManager.list_edit = function (this: any, item: any) {
 	(window as any).Selector?.open?.(
 		{
 			filter: 'script',
 			read: () => item.id,
-			input: (id) => {
+			input: (id: any) => {
 				if (item.id !== id) {
 					item.id = id;
 					item.parameters = {};
@@ -1891,12 +1892,12 @@ PluginManager.list_edit = function (item) {
 };
 
 // 列表 - 插入
-PluginManager.list_insert = function (dItem) {
+PluginManager.list_insert = function (this: any, dItem: any) {
 	(window as any).Selector?.open?.(
 		{
 			filter: 'script',
 			read: () => '',
-			input: (id) => {
+			input: (id: any) => {
 				this.addNodeTo(PluginManager.createData(id), dItem);
 			}
 		},
@@ -1905,7 +1906,7 @@ PluginManager.list_insert = function (dItem) {
 };
 
 // 列表 - 开关
-PluginManager.list_toggle = function (item) {
+PluginManager.list_toggle = function (this: any, item: any) {
 	if (item) {
 		item.enabled = !item.enabled;
 		this.updateToggleStyle(item);
@@ -1914,14 +1915,14 @@ PluginManager.list_toggle = function (item) {
 };
 
 // 列表 - 复制
-PluginManager.list_copy = function (item) {
+PluginManager.list_copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.data.plugin', item);
 	}
 };
 
 // 列表 - 粘贴
-PluginManager.list_paste = function (dItem) {
+PluginManager.list_paste = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.data.plugin');
 	if (copy) {
 		this.addNodeTo(copy, dItem);
@@ -1929,7 +1930,7 @@ PluginManager.list_paste = function (dItem) {
 };
 
 // 列表 - 删除
-PluginManager.list_delete = function (item) {
+PluginManager.list_delete = function (this: any, item: any) {
 	const get = Local.createGetter('confirmation');
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
 	getWindow().confirm(
@@ -1955,7 +1956,7 @@ PluginManager.list_delete = function (item) {
 };
 
 // 列表 - 保存选项状态
-PluginManager.list_saveSelection = function () {
+PluginManager.list_saveSelection = function (this: any) {
 	const { plugins } = Data;
 	// 将数据保存在外部可以切换项目后重置
 	if (plugins.selection === undefined) {
@@ -1971,7 +1972,7 @@ PluginManager.list_saveSelection = function () {
 };
 
 // 列表 - 恢复选项状态
-PluginManager.list_restoreSelection = function () {
+PluginManager.list_restoreSelection = function (this: any) {
 	const id = Data.plugins.selection;
 	const item = PluginManager.getItemById(id) ?? this.data[0];
 	this.select(item);
@@ -1980,12 +1981,12 @@ PluginManager.list_restoreSelection = function () {
 };
 
 // 列表 - 添加元素类名
-PluginManager.list_addElementClass = function (item) {
+PluginManager.list_addElementClass = function (this: any, item: any) {
 	addClass(item.element, 'plugin-item');
 };
 
 // 列表 - 更新文本节点
-PluginManager.list_updateTextNode = function (item) {
+PluginManager.list_updateTextNode = function (this: any, item: any) {
 	const textNode = item.element.textNode;
 	const text = Command.removeTextTags(Command.parseFileName(item.id));
 	if (textNode.nodeValue !== text) {
@@ -1994,12 +1995,12 @@ PluginManager.list_updateTextNode = function (item) {
 };
 
 // 列表 - 更新开关样式
-PluginManager.list_updateToggleStyle = function (item) {
+PluginManager.list_updateToggleStyle = function (this: any, item: any) {
 	return item.enabled ? removeClass(item.element, 'weak') : addClass(item.element, 'weak');
 };
 
 // 列表 - 创建编辑图标
-PluginManager.list_createEditIcon = function (item) {
+PluginManager.list_createEditIcon = function (this: any, item: any) {
 	const box = document.createElement('div');
 	addClass(box, 'box');
 	box.textContent = '\uf044';

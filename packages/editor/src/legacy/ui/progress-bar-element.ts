@@ -1,10 +1,9 @@
 import { UI } from './ui-window.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Texture } from '@/webgl/texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
 UI.ProgressBar = class ProgressBarElement extends UI.Element {
-	texture: Texture | null;
+	texture: any;
 	_image!: string;
 	display: string;
 	clip: number[];
@@ -51,7 +50,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 			if (value) {
 				this.texture = new ImageTexture(value);
 				this.texture.on('load', () => {
-					UI.requestRendering();
+					UI.requestRendering!();
 				});
 			}
 		}
@@ -59,12 +58,12 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 
 	draw() {
 		if (this.visible === false) {
-			return this.drawChildren();
+			return this.drawChildren!();
 		}
 
 		const { texture } = this;
 		if (texture === null) {
-			this.drawDefaultImage();
+			this.drawDefaultImage!();
 		} else if (texture.complete) {
 			const { base } = texture;
 			switch (this.display) {
@@ -77,7 +76,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 			}
 			const scaleX = this.width / texture.width;
 			const scaleY = this.height / texture.height;
-			const { vertices, vertexLength, drawingLength } = this.calculateProgressVertices();
+			const { vertices, vertexLength, drawingLength } = this.calculateProgressVertices!();
 
 			GL.alpha = this.opacity;
 			GL.blend = this.blend;
@@ -88,13 +87,13 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 				.translate(this.x, this.y)
 				.scale(scaleX, scaleY);
 			const program = GL.imageProgram.use();
-			GL.bindVertexArray(program.vao);
-			GL.uniformMatrix3fv(program.u_Matrix, false, GL.matrix);
-			GL.uniform1i(program.u_LightMode, 0);
+			GL.bindVertexArray!(program.vao);
+			GL.uniformMatrix3fv!(program.u_Matrix, false, GL.matrix);
+			GL.uniform1i!(program.u_LightMode, 0);
 			switch (this.colorMode) {
 				case 'texture':
-					GL.uniform1i(program.u_ColorMode, 0);
-					GL.uniform4f(program.u_Tint, 0, 0, 0, 0);
+					GL.uniform1i!(program.u_ColorMode, 0);
+					GL.uniform4f!(program.u_Tint, 0, 0, 0, 0);
 					break;
 				case 'fixed': {
 					const color = this.color;
@@ -102,17 +101,17 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 					const green = color[1] / 255;
 					const blue = color[2] / 255;
 					const alpha = color[3] / 255;
-					GL.uniform1i(program.u_ColorMode, 1);
-					GL.uniform4f(program.u_Color, red, green, blue, alpha);
+					GL.uniform1i!(program.u_ColorMode, 1);
+					GL.uniform4f!(program.u_Color, red, green, blue, alpha);
 					break;
 				}
 			}
-			GL.bufferData(GL.ARRAY_BUFFER, vertices, GL.STREAM_DRAW, 0, vertexLength);
-			GL.bindTexture(GL.TEXTURE_2D, base.glTexture);
-			GL.drawArrays(GL.TRIANGLE_FAN, 0, drawingLength);
+			GL.bufferData!(GL.ARRAY_BUFFER, vertices, GL.STREAM_DRAW, 0, vertexLength);
+			GL.bindTexture!(GL.TEXTURE_2D, base.glTexture);
+			GL.drawArrays!(GL.TRIANGLE_FAN, 0, drawingLength);
 		}
 
-		this.drawChildren();
+		this.drawChildren!();
 	}
 
 	calculateProgressVertices() {
@@ -350,21 +349,21 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 		if (this.parent instanceof UI.Window) {
 			return this.parent.requestResizing();
 		}
-		this.calculatePosition();
-		this.resizeChildren();
+		this.calculatePosition!();
+		this.resizeChildren!();
 	}
 
 	destroy() {
 		super.destroy();
 		this.texture?.destroy();
-		this.destroyChildren();
+		this.destroyChildren!();
 	}
 
 	static response = {
 		vertices: new Float32Array(28),
 		angles: new Float64Array(4),
 		array: new Float64Array(6),
-		vertexLength: null,
-		drawingLength: null
+		vertexLength: null as any,
+		drawingLength: null as any
 	};
 };

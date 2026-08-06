@@ -19,34 +19,34 @@ interface AnimationData {
 }
 
 Animation.Player = class AnimationPlayer {
-	visible: boolean;
-	index: number;
-	cycleIndex: number;
-	length: number;
-	end: number;
-	loopStart: number;
-	speed: number;
-	anchorX: number;
-	anchorY: number;
-	rotatable: boolean;
-	rotation: number;
-	opacity: number;
-	angle: number;
-	scale: number;
-	direction: number;
-	mirror: string | boolean;
-	data: AnimationData;
-	dirMap: any[];
-	dirCases: any[] | null;
-	layers: any[] | null;
-	motion: any | null;
-	motions: Record<string, AnimationMotion>;
-	sprites: Record<string, AnimationSprite>;
-	images: AnimationImageMap;
-	textures: AnimationTextureMap;
-	contexts: any[] & { count?: number };
-	emitters: any[] & { count?: number };
-	isUIComponent: boolean;
+	visible!: boolean;
+	index!: number;
+	cycleIndex!: number;
+	length!: number;
+	end!: number;
+	loopStart!: number;
+	speed!: number;
+	anchorX!: number;
+	anchorY!: number;
+	rotatable!: boolean;
+	rotation!: number;
+	opacity!: number;
+	angle!: number;
+	scale!: number;
+	direction!: number;
+	mirror!: string | boolean;
+	data!: AnimationData;
+	dirMap!: any[];
+	dirCases!: any[] | null;
+	layers!: any[] | null;
+	motion!: any | null;
+	motions!: Record<string, AnimationMotion>;
+	sprites!: Record<string, AnimationSprite>;
+	images!: AnimationImageMap;
+	textures!: AnimationTextureMap | null;
+	contexts!: any[] & { count?: number };
+	emitters!: any[] & { count?: number };
+	isUIComponent!: boolean;
 
 	constructor(animation: AnimationData) {
 		this.index = 0;
@@ -67,12 +67,12 @@ Animation.Player = class AnimationPlayer {
 		this.dirCases = null;
 		this.layers = null;
 		this.motion = null;
-		this.motions = {};
-		this.sprites = {};
-		this.images = {};
-		this.textures = {};
-		this.contexts = [];
-		this.emitters = [];
+		this.motions = {} as Record<string, any>;
+		this.sprites = {} as Record<string, any>;
+		this.images = {} as Record<string, any>;
+		this.textures = {} as Record<string, any>;
+		this.contexts = [] as any[];
+		this.emitters = [] as any[];
 		this.isUIComponent = false;
 		this.loadSprites();
 		this.loadMotions();
@@ -84,7 +84,7 @@ Animation.Player = class AnimationPlayer {
 		if (motion !== undefined && this.motion !== motion) {
 			this.motion = motion;
 			this.dirCases = motion.dirCases;
-			const dirMap = AnimationPlayer.dirMaps[motion.mode];
+			const dirMap = (AnimationPlayer.dirMaps as Record<string, any>)[motion.mode];
 			if (this.dirMap !== dirMap) {
 				this.dirMap = dirMap;
 				this.direction = -1;
@@ -100,7 +100,7 @@ Animation.Player = class AnimationPlayer {
 	loadDirCase() {
 		const params = this.dirMap[this.direction];
 		if (params) {
-			const dirCase = this.dirCases[params.index];
+			const dirCase = this.dirCases![params.index];
 			this.layers = dirCase.layers;
 			this.destroyContextEmitters();
 			this.loadContexts(this.contexts);
@@ -174,7 +174,7 @@ Animation.Player = class AnimationPlayer {
 		this.length = 0;
 		this.end = 0;
 		this.motion = null;
-		this.contexts = [];
+		this.contexts = [] as any[];
 		this.destroyUpdatingEmitters();
 		this.destroyContextEmitters();
 	}
@@ -200,7 +200,7 @@ Animation.Player = class AnimationPlayer {
 	}
 
 	updateFrameParameters(contexts: any, index: any) {
-		const { count } = contexts;
+		const { count } = contexts as { count: number };
 		outer: for (let i = 0; i < count; i++) {
 			const context = contexts[i];
 			const frames = context.layer.frames;
@@ -213,7 +213,7 @@ Animation.Player = class AnimationPlayer {
 					const easingId = frame.easingId;
 					if (easingId && i < last) {
 						const next = frames[i + 1];
-						const time = Easing.get(easingId).ease(
+						const time = Easing.get!(easingId).ease(
 							(index - start) / (next.start - start)
 						);
 						context.update(frame, time, next);
@@ -269,7 +269,7 @@ Animation.Player = class AnimationPlayer {
 	computeLength() {
 		let length = 0;
 		const { contexts, motion } = this;
-		const { count } = contexts;
+		const { count } = contexts as { count: number };
 		for (let i = 0; i < count; i++) {
 			const frames = contexts[i].layer.frames;
 			const frame = frames[frames.length - 1];
@@ -286,7 +286,7 @@ Animation.Player = class AnimationPlayer {
 	emitParticles(deltaTime: any) {
 		deltaTime *= this.speed;
 		const { contexts } = this;
-		const { count } = contexts;
+		const { count } = contexts as { count: number };
 		for (let i = 0; i < count; i++) {
 			const context = contexts[i];
 			const { layer } = context;
@@ -341,7 +341,7 @@ Animation.Player = class AnimationPlayer {
 			}
 		}
 		const { contexts } = this;
-		const { count } = contexts;
+		const { count } = contexts as { count: number };
 		for (let i = 0; i < count; i++) {
 			const context = contexts[i];
 			const { layer } = context;
@@ -409,8 +409,8 @@ Animation.Player = class AnimationPlayer {
 		if (light === undefined) {
 			light = Scene.showLight ? layer.light : 'raw';
 		}
-		const vi = response[0] * 8;
-		const mode = AnimationPlayer.lightSamplingModes[light];
+		const vi = (response as any[])[0] * 8;
+		const mode = (AnimationPlayer.lightSamplingModes as Record<string, any>)[light];
 		const alpha = Math.round(context.opacity * 255);
 		const param = response[1] | (alpha << 8) | (mode << 16);
 		const redGreen = tint[0] + (tint[1] << 16) + 0x00ff00ff;
@@ -456,13 +456,13 @@ Animation.Player = class AnimationPlayer {
 
 	getTexture(spriteId: any) {
 		const textures = this.textures;
-		const texture = textures[spriteId];
+		const texture = textures![spriteId];
 		if (texture === undefined) {
 			const sprite = this.sprites[spriteId];
 			const imageId = this.images[spriteId];
 			if (sprite !== undefined && imageId) {
 				const texture = new ImageTexture(imageId);
-				textures[spriteId] = null;
+				textures![spriteId] = null;
 				texture.on('load', () => {
 					if (this.textures === textures) {
 						const { floor, max } = Math;
@@ -472,11 +472,11 @@ Animation.Player = class AnimationPlayer {
 						const height = floor(max(base.height / vframes, 1));
 						texture.width = width;
 						texture.height = height;
-						textures[spriteId] = texture;
+						textures![spriteId] = texture;
 						if (this.isUIComponent) {
-							UI.requestRendering();
+							UI.requestRendering!();
 						} else {
-							Scene.requestRendering();
+							Scene.requestRendering!();
 						}
 					} else {
 						texture.destroy();
@@ -492,7 +492,7 @@ Animation.Player = class AnimationPlayer {
 	}
 
 	destroy() {
-		for (const texture of Object.values(this.textures)) {
+		for (const texture of Object.values(this.textures!)) {
 			if (texture instanceof ImageTexture) {
 				texture.destroy();
 			}
@@ -525,7 +525,7 @@ Animation.Player = class AnimationPlayer {
 
 	destroyContextEmitters() {
 		const { contexts } = this;
-		const { count } = contexts;
+		const { count } = contexts as { count: number };
 		for (let i = 0; i < count; i++) {
 			const context = contexts[i];
 			const emitter = context.emitter;
@@ -558,7 +558,7 @@ Animation.Player = class AnimationPlayer {
 	static step = 0;
 	static matrix = new Matrix();
 	static lightSamplingModes = { raw: 0, global: 1, anchor: 2 };
-	static stage;
+	static stage: any;
 
 	static dirMaps = {
 		'1-dir': [{ index: 0, mirror: false }],
@@ -636,22 +636,22 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	static #loadContext(animation, layers, parent, contexts) {
+	static #loadContext(animation: any, layers: any, parent: any, contexts: any) {
 		for (const layer of layers) {
 			let context = contexts[contexts.count];
 			if (context === undefined) {
 				context = contexts[contexts.count] = {
 					animation: animation,
-					parent: null,
-					layer: null,
-					frame: null,
+					parent: null as any,
+					layer: null as any,
+					frame: null as any,
 					matrix: new Matrix(),
 					anchorX: 0,
 					anchorY: 0,
 					pivotX: 0,
 					pivotY: 0,
 					opacity: 0,
-					update: null,
+					update: null as any,
 					reset: AnimationPlayer.contextReset
 				};
 			}
@@ -691,7 +691,7 @@ Animation.Player = class AnimationPlayer {
 		this.frame = null;
 	}
 
-	static contextUpdate(this: any, frame, time, next) {
+	static contextUpdate(this: any, frame: any, time: any, next: any) {
 		const parent = this.parent;
 		const matrix = this.matrix;
 		if (parent !== null) {
@@ -721,7 +721,7 @@ Animation.Player = class AnimationPlayer {
 		this.frame = frame;
 	}
 
-	static contextUpdateSprite(this: any, frame, time, next) {
+	static contextUpdateSprite(this: any, frame: any, time: any, next: any) {
 		AnimationPlayer.contextUpdate.call(this, frame, time, next);
 		let anchorX = frame.anchorX;
 		let anchorY = frame.anchorY;
@@ -756,14 +756,14 @@ Animation.Player = class AnimationPlayer {
 		tint[3] = gray;
 	}
 
-	static contextUpdateParticle(this: any, frame, time, next) {
+	static contextUpdateParticle(this: any, frame: any, time: any, next: any) {
 		AnimationPlayer.contextUpdate.call(this, frame, time, next);
 		let emitter = this.emitter;
 		if (emitter === undefined) {
 			const guid = this.layer.particleId;
 			const data = Data.particles[guid];
 			if (!data) return;
-			emitter = new Particle.Emitter(data);
+			emitter = new Particle.Emitter!(data);
 			emitter.matrix = this.matrix;
 			emitter.layer = this.layer;
 			this.emitter = emitter;

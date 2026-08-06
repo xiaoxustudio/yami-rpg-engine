@@ -16,7 +16,7 @@ function getWindow() {
 import { UI } from '@/ui/ui-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
-Editor.close = function (save = true) {
+Editor.close = function (this: any, save = true) {
 	(Layout.manager as any).switch(null);
 	if (this.state === 'open') {
 		this.state = 'closed';
@@ -28,13 +28,13 @@ Editor.close = function (save = true) {
 		this.config.project = '';
 		this.project = null;
 		(getWindow().closeAll as any)();
-		Scene.close();
+		Scene.close!();
 		(UI.close as any)();
 		(Directory.close as any)();
 		(Inspector.close as any)();
 		(window as any).Browser?.close?.();
 		(window as any).Selector?.close?.();
-		Data.close();
+		Data.close!();
 		(AudioManager.close as any)();
 		Printer.clearFonts();
 		(Project.stopTSC as any)();
@@ -44,7 +44,7 @@ Editor.close = function (save = true) {
 	}
 };
 
-Editor.quit = function () {
+Editor.quit = function (this: any) {
 	this.saveConfig();
 	this.saveProject();
 	this.saveManifest();

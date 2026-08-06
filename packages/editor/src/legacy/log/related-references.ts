@@ -35,9 +35,9 @@ export const Reference = {
 Reference.initialize = function () {
 	const refEl = $('#reference');
 	if (!refEl) return;
-	on(refEl, 'closed', this.windowClosed);
+	on(refEl, 'closed', this.windowClosed!);
 	const refListEl = $('#reference-list');
-	if (refListEl) on(refListEl, 'popup', this.listPopup);
+	if (refListEl) on(refListEl, 'popup', this.listPopup!);
 };
 
 Reference.findAllGuids = function (targetGuid = '') {

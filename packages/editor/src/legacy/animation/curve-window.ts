@@ -38,7 +38,7 @@ interface CurveShape {
 	requestRendering: (() => void) | null;
 	renderingFunction: (() => void) | null;
 	stopRendering: (() => void) | null;
-	windowResize: (() => void) | null;
+	windowResize: ((event?: any) => void) | null;
 	themechange: ((event: Event) => void) | null;
 	datachange: ((event: Event) => void) | null;
 	easingIdWrite: ((event: Event) => void) | null;
@@ -48,36 +48,36 @@ interface CurveShape {
 
 export const Curve: CurveShape = {
 	state: 'closed',
-	page: null,
-	head: null,
-	list: null,
-	canvas: null,
-	target: null,
-	index: null,
-	curveMap: null,
-	initialize: null,
-	open: null,
-	load: null,
-	close: null,
-	suspend: null,
-	resume: null,
-	updateHead: null,
-	updateEasingOptions: null,
-	updateTimeline: null,
-	resize: null,
-	drawCurve: null,
-	requestRendering: null,
-	renderingFunction: null,
-	stopRendering: null,
-	windowResize: null,
-	themechange: null,
-	datachange: null,
-	easingIdWrite: null,
-	easingIdInput: null,
-	settingsPointerdown: null
+	page: null as any,
+	head: null as any,
+	list: null as any,
+	canvas: null as any,
+	target: null as any,
+	index: null as any,
+	curveMap: null as any,
+	initialize: null as any,
+	open: null as any,
+	load: null as any,
+	close: null as any,
+	suspend: null as any,
+	resume: null as any,
+	updateHead: null as any,
+	updateEasingOptions: null as any,
+	updateTimeline: null as any,
+	resize: null as any,
+	drawCurve: null as any,
+	requestRendering: null as any,
+	renderingFunction: null as any,
+	stopRendering: null as any,
+	windowResize: null as any,
+	themechange: null as any,
+	datachange: null as any,
+	easingIdWrite: null as any,
+	easingIdInput: null as any,
+	settingsPointerdown: null as any
 };
 
-Curve.initialize = function () {
+Curve.initialize = function (this: any) {
 	this.page = $('#animation-easing');
 	this.head = $('#animation-easing-head');
 	this.list = $('#animation-easing-id');
@@ -85,12 +85,12 @@ Curve.initialize = function () {
 	hide(this.page);
 	hide(this.list);
 
-	this.curveMap = new Easing.CurveMap();
+	this.curveMap = new Easing.CurveMap!();
 
 	this.list.defaultItem = { name: 'No Easing', value: '' };
 
 	// 过渡方式 - 重写设置选项名字方法
-	this.list.setItemNames = function (options) {
+	this.list.setItemNames = function (this: any, options: any) {
 		const item = this.defaultItem;
 		const key = item.value;
 		const name = options[key];
@@ -98,7 +98,7 @@ Curve.initialize = function () {
 			item.name = name;
 		}
 		if (this.dataValue !== null) {
-			this.update();
+			this.update!();
 		}
 	};
 
@@ -109,16 +109,16 @@ Curve.initialize = function () {
 	on($('#animation-easing-settings'), 'pointerdown', this.settingsPointerdown);
 };
 
-Curve.open = function () {
+Curve.open = function (this: any) {
 	if (this.state === 'closed') {
 		this.state = 'open';
 		show(this.page);
-		this.windowResize();
-		this.updateEasingOptions();
+		this.windowResize!();
+		this.updateEasingOptions!();
 	}
 };
 
-Curve.load = function (frame) {
+Curve.load = function (this: any, frame: any) {
 	if (this.target !== frame) {
 		this.target = frame;
 		if (frame) {
@@ -127,35 +127,35 @@ Curve.load = function (frame) {
 		} else {
 			hide(this.list);
 			this.index = null;
-			this.requestRendering();
+			this.requestRendering!();
 		}
 	}
 };
 
-Curve.close = function () {
+Curve.close = function (this: any) {
 	if (this.state !== 'closed') {
 		this.state = 'closed';
 		hide(this.page);
-		this.stopRendering();
+		this.stopRendering!();
 	}
 };
 
-Curve.suspend = function () {
+Curve.suspend = function (this: any) {
 	if (this.state === 'open') {
 		this.state = 'suspended';
-		this.stopRendering();
+		this.stopRendering!();
 	}
 };
 
-Curve.resume = function () {
+Curve.resume = function (this: any) {
 	if (this.state === 'suspended') {
 		this.state = 'open';
-		this.resize();
-		this.requestRendering();
+		this.resize!();
+		this.requestRendering!();
 	}
 };
 
-Curve.updateHead = function () {
+Curve.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -169,18 +169,18 @@ Curve.updateHead = function () {
 	}
 };
 
-Curve.updateEasingOptions = function () {
+Curve.updateEasingOptions = function (this: any) {
 	const { list } = this;
 	const { easings } = Data;
 	if (list.data !== easings) {
 		list.data = easings;
 		const head = list.defaultItem;
-		const items = Data.createEasingItems();
+		const items = Data.createEasingItems!();
 		list.loadItems([head, ...items]);
 	}
 };
 
-Curve.updateTimeline = function (target) {
+Curve.updateTimeline = function (this: any, target: any) {
 	const easing = !!target.easingId;
 	const { key } = target;
 	if (key.easing !== easing) {
@@ -193,7 +193,7 @@ Curve.updateTimeline = function (target) {
 	}
 };
 
-Curve.resize = function () {
+Curve.resize = function (this: any) {
 	if (this.state === 'open') {
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.page);
 		const screenWidth = screenBox.width;
@@ -206,7 +206,7 @@ Curve.resize = function () {
 	}
 };
 
-Curve.drawCurve = function () {
+Curve.drawCurve = function (this: any) {
 	const canvas = this.canvas;
 	const width = canvas.width;
 	const height = canvas.height;
@@ -301,37 +301,37 @@ Curve.drawCurve = function () {
 	}
 };
 
-Curve.requestRendering = function () {
+Curve.requestRendering = function (this: any) {
 	if (this.state === 'open') {
-		Timer.appendUpdater('sharedRendering2', this.renderingFunction);
+		Timer.appendUpdater!('sharedRendering2', this.renderingFunction);
 	}
 };
 
-Curve.renderingFunction = function () {
-	Curve.drawCurve();
+Curve.renderingFunction = function (this: any) {
+	Curve.drawCurve!();
 };
 
-Curve.stopRendering = function () {
-	Timer.removeUpdater('sharedRendering2', this.renderingFunction);
+Curve.stopRendering = function (this: any) {
+	Timer.removeUpdater!('sharedRendering2', this.renderingFunction);
 };
 
-Curve.windowResize = function (event) {
+Curve.windowResize = function (this: any, event: any) {
 	if (this.page.clientWidth === 0) {
-		return this.suspend();
+		return this.suspend!();
 	}
-	this.updateHead();
+	this.updateHead!();
 	switch (this.state) {
 		case 'open':
-			this.resize();
-			this.requestRendering();
+			this.resize!();
+			this.requestRendering!();
 			break;
 		case 'suspended':
-			this.resume();
+			this.resume!();
 			break;
 	}
 }.bind(Curve);
 
-Curve.themechange = function (event) {
+Curve.themechange = function (this: any, event: any) {
 	const { canvas } = this;
 	switch (event.value) {
 		case 'light':
@@ -347,12 +347,12 @@ Curve.themechange = function (event) {
 			canvas.curveColor = '#d8d8d8';
 			break;
 	}
-	this.requestRendering();
+	this.requestRendering!();
 }.bind(Curve);
 
-Curve.datachange = function (event) {
+Curve.datachange = function (this: any, event: any) {
 	if (Curve.state === 'open' && event.key === 'easings') {
-		Curve.updateEasingOptions();
+		Curve.updateEasingOptions!();
 		const { index } = Curve;
 		if (index !== null) {
 			Curve.index = null;
@@ -361,11 +361,11 @@ Curve.datachange = function (event) {
 	}
 };
 
-Curve.easingIdWrite = function (event) {
+Curve.easingIdWrite = function (this: any, event: any) {
 	const id = event.value;
 	if (Curve.index !== id) {
 		Curve.index = id;
-		Curve.requestRendering();
+		Curve.requestRendering!();
 		if (id !== '') {
 			const easing = Data.easings.map[id];
 			const points = easing?.points ?? [
@@ -378,8 +378,8 @@ Curve.easingIdWrite = function (event) {
 	}
 };
 
-Curve.easingIdInput = function (event) {
-	Animation.planToSave();
+Curve.easingIdInput = function (this: any, event: any) {
+	Animation.planToSave!();
 	Animation.history.save({
 		type: 'animation-easing-change',
 		motion: Animation.motion,
@@ -388,9 +388,9 @@ Curve.easingIdInput = function (event) {
 		easingId: Curve.target.easingId
 	});
 	Curve.target.easingId = event.value;
-	Curve.updateTimeline(Curve.target);
+	Curve.updateTimeline!(Curve.target);
 };
 
-Curve.settingsPointerdown = function () {
-	Easing.open();
+Curve.settingsPointerdown = function (this: any) {
+	Easing.open!();
 };

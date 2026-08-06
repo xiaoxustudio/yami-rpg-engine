@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveActor = new CommandSchema({
 	name: 'moveActor',
 	onInitialize() {
-		$('#moveActor-confirm').on('click', () => this.save());
+		$('#moveActor-confirm').on('click', () => this.save!());
 		$('#moveActor-mode').loadItems([
 			{ name: 'Stop', value: 'stop' },
 			{ name: 'Keep', value: 'keep' },
@@ -33,33 +33,33 @@ Command.cases.moveActor = new CommandSchema({
 		]);
 	},
 	parseMode(mode: any) {
-		let string = Local.get('command.moveActor.mode.' + mode);
+		let string = Local.get!('command.moveActor.mode.' + mode);
 		if (mode === 'navigate-bypass') {
 			string = string.replace('(', Token('(')).replace(')', Token(')'));
 		}
 		return string;
 	},
 	customParse({ actor, mode, angle, destination, wait }: any) {
-		const words = Command.words.push(Command.parseActor(actor)).push(this.parseMode(mode));
+		const words = Command.words.push(Command.parseActor!(actor)).push(this.parseMode!(mode));
 		switch (mode) {
 			case 'stop':
 				break;
 			case 'keep':
-				words.push(Command.parseVariableNumber(angle, '°'));
+				words.push(Command.parseVariableNumber!(angle, '°'));
 				break;
 			case 'straight':
 			case 'navigate':
 			case 'navigate-bypass':
-				words.push(Command.parsePosition(destination));
-				words.push(Command.parseWait(wait));
+				words.push(Command.parsePosition!(destination));
+				words.push(Command.parseWait!(wait));
 				break;
 			case 'teleport':
-				words.push(Command.parsePosition(destination));
+				words.push(Command.parsePosition!(destination));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.moveActor') + Token(': ') },
+			{ text: Local.get!('command.moveActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -84,16 +84,16 @@ Command.cases.moveActor = new CommandSchema({
 		const mode = read('mode');
 		switch (mode) {
 			case 'stop':
-				Command.save({ actor, mode });
+				Command.save!({ actor, mode });
 				break;
 			case 'keep': {
-				Command.save({ actor, mode, angle: read('angle') });
+				Command.save!({ actor, mode, angle: read('angle') });
 				break;
 			}
 			case 'straight':
 			case 'navigate':
 			case 'navigate-bypass': {
-				Command.save({
+				Command.save!({
 					actor,
 					mode,
 					destination: read('destination'),
@@ -102,7 +102,7 @@ Command.cases.moveActor = new CommandSchema({
 				break;
 			}
 			case 'teleport': {
-				Command.save({
+				Command.save!({
 					actor,
 					mode,
 					destination: read('destination')

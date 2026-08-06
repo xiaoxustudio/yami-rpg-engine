@@ -10,26 +10,26 @@ function getWindow() {
 
 {
 	const FileAnimation = {
-		button: null,
-		owner: null,
-		target: null,
-		sprites: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null
+		button: null as any,
+		owner: null as any,
+		target: null as any,
+		sprites: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any
 	};
 
-	FileAnimation.initialize = function () {
+	FileAnimation.initialize = function (this: any) {
 		this.button = $('#animation-switch-settings');
 		this.owner = {
-			setTarget: (target) => {
+			setTarget: (target: any) => {
 				if (this.target !== target) {
-					Inspector.open('fileAnimation', target);
+					Inspector.open!('fileAnimation', target);
 				}
 			},
 			planToSave: () => {
-				Animation.planToSave();
+				Animation.planToSave!();
 			},
 			get history() {
 				return Animation.history;
@@ -41,14 +41,14 @@ function getWindow() {
 		$('#fileAnimation-sprites')?.on('change', Animation.listChange);
 	};
 
-	FileAnimation.create = function () {
+	FileAnimation.create = function (this: any) {
 		return {
 			sprites: [],
 			motions: []
 		};
 	};
 
-	FileAnimation.open = function (animation) {
+	FileAnimation.open = function (this: any, animation: any) {
 		if (this.target !== animation) {
 			this.target = animation;
 
@@ -59,7 +59,7 @@ function getWindow() {
 		}
 	};
 
-	FileAnimation.close = function () {
+	FileAnimation.close = function (this: any) {
 		if (this.target) {
 			this.target = null;
 
@@ -68,57 +68,54 @@ function getWindow() {
 	};
 
 	FileAnimation.sprites = {
-		list: null,
+		list: null as any,
 		spriteId: '',
-		initialize: function (list) {
+		initialize: function (this: any, list: any) {
 			$('#fileAnimation-sprite-confirm')?.on('click', () => list.save());
 
 			this.list = list;
 
-			this.history = new Inspector.ParamHistory(FileAnimation, FileAnimation.owner, list);
+			this.history = new Inspector.ParamHistory!(FileAnimation, FileAnimation.owner, list);
 
 			// 重载动画纹理 - 改变事件
-			list.on('change', (event) => {
+			list.on('change', (event: any) => {
 				if (Animation.sprites) {
 					if (Animation.sprites.listItems) {
 						Animation.sprites.listItems = undefined;
 					}
-					Animation.loadTextures();
+					Animation.loadTextures!();
 				}
 			});
 		},
-		parse: function ({ name, image, hframes, vframes }) {
-			const fileName = Command.removeTextTags(Command.parseFileName(image));
+		parse: function ({ name, image, hframes, vframes }: any) {
+			const fileName = Command.removeTextTags!(Command.parseFileName!(image));
 			return [name, `${fileName} [${hframes}x${vframes}]`];
 		},
 		createExclusionMap: function () {
-			const exclusions = {};
+			const exclusions = {} as Record<string, any>;
 			for (const sprite of this.list.data) {
 				exclusions[sprite.id] = true;
 			}
 			return exclusions;
 		},
-		createSpriteId: function (exclusions = this.createExclusionMap()) {
+		createSpriteId: function (this: any, exclusions: any = this.createExclusionMap!()) {
 			let id;
 			do {
 				id = GUID.generate64bit();
 			} while (exclusions[id]);
 			return id;
 		},
-		open: function ({
-			name = '',
-			id = this.createSpriteId(),
-			image = '',
-			hframes = 1,
-			vframes = 1
-		} = {}) {
+		open: function (
+			this: any,
+			{ name = '', id = this.createSpriteId!(), image = '', hframes = 1, vframes = 1 } = {}
+		) {
 			getWindow().open('fileAnimation-sprite');
 			const write = getElementWriter('fileAnimation-sprite');
 			write('name', name);
 			write('image', image);
 			write('hframes', hframes);
 			write('vframes', vframes);
-			this.spriteId = id;
+			(this as any).spriteId = id;
 			if (!name) {
 				getFocus($('#fileAnimation-sprite-name'));
 			} else {
@@ -138,11 +135,11 @@ function getWindow() {
 			getWindow().close('fileAnimation-sprite');
 			return { name, id, image, hframes, vframes };
 		},
-		onPaste: function (list, copies) {
-			const exclusions = this.createExclusionMap();
+		onPaste: function (this: any, list: any, copies: any) {
+			const exclusions = this.createExclusionMap!();
 			for (const sprite of copies) {
 				if (sprite.id in exclusions) {
-					const id = this.createSpriteId(exclusions);
+					const id = this.createSpriteId!(exclusions);
 					sprite.id = id;
 				}
 				exclusions[sprite.id] = true;

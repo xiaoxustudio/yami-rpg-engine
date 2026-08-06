@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setObjectAnimation = new CommandSchema({
 	name: 'setObjectAnimation',
 	onInitialize() {
-		$('#setObjectAnimation-confirm').on('click', () => this.save());
+		$('#setObjectAnimation-confirm').on('click', () => this.save!());
 		$('#setObjectAnimation-sort').loadItems([
 			{ name: 'Only Actor Animation', value: 'actor' },
 			{ name: 'All Animation Components', value: 'components' },
@@ -82,18 +82,18 @@ Command.cases.setObjectAnimation = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#setObjectAnimation').on('open', function (event: any) {
-			$('#setObjectAnimation-easingId').loadItems(Data.createEasingItems());
+			$('#setObjectAnimation-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setObjectAnimation').on('closed', function (event: any) {
 			clear($('#setObjectAnimation-easingId'));
 		});
 	},
 	parseTint(operation: any, [red, green, blue, gray]: any[]) {
-		const label = Local.get('command.setObjectAnimation.' + operation);
-		const _red = Command.setNumberColor(red);
-		const _green = Command.setNumberColor(green);
-		const _blue = Command.setNumberColor(blue);
-		const _gray = Command.setNumberColor(gray);
+		const label = Local.get!('command.setObjectAnimation.' + operation);
+		const _red = Command.setNumberColor!(red);
+		const _green = Command.setNumberColor!(green);
+		const _blue = Command.setNumberColor!(blue);
+		const _gray = Command.setNumberColor!(gray);
 		switch (operation) {
 			case 'set-tint':
 				return (
@@ -124,8 +124,8 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		}
 	},
 	parseProperty(operation: any, property: any) {
-		const label = Local.get('command.setObjectAnimation.' + operation);
-		return label + Token('(') + Command.parseVariableNumber(property) + Token(')');
+		const label = Local.get!('command.setObjectAnimation.' + operation);
+		return label + Token('(') + Command.parseVariableNumber!(property) + Token(')');
 	},
 	customParse({
 		sort,
@@ -140,39 +140,39 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		wait
 	}: any) {
 		const words = Command.words;
-		words.push(Local.get('command.setObjectAnimation.sort.' + sort));
+		words.push(Local.get!('command.setObjectAnimation.sort.' + sort));
 		switch (sort) {
 			case 'actor':
 			case 'components':
-				words.push(Command.parseActor(object));
+				words.push(Command.parseActor!(object));
 				break;
 			case 'trigger':
-				words.push(Command.parseTrigger(object));
+				words.push(Command.parseTrigger!(object));
 				break;
 			case 'animation':
-				words.push(Command.parseObject(object));
+				words.push(Command.parseObject!(object));
 				break;
 		}
 		switch (operation) {
 			case 'set-tint':
 			case 'set-rgb':
 			case 'set-gray':
-				words.push(this.parseTint(operation, tint));
+				words.push(this.parseTint!(operation, tint));
 				break;
 			case 'set-opacity':
-				words.push(this.parseProperty(operation, opacity));
+				words.push(this.parseProperty!(operation, opacity));
 				break;
 			case 'set-offsetY':
-				words.push(this.parseProperty(operation, offsetY));
+				words.push(this.parseProperty!(operation, offsetY));
 				break;
 			case 'set-rotation':
-				words.push(this.parseProperty(operation, rotation));
+				words.push(this.parseProperty!(operation, rotation));
 				break;
 		}
-		words.push(Command.parseEasing(easingId, duration, wait));
+		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.setObjectAnimation') + Token(': ') },
+			{ text: Local.get!('command.setObjectAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -259,7 +259,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		const wait = read('wait');
 		if ('set-tint|set-rgb|set-gray'.includes(operation)) {
 			const tint = [red, green, blue, gray];
-			Command.save({
+			Command.save!({
 				sort,
 				object,
 				operation,
@@ -269,7 +269,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 				wait
 			});
 		} else if (operation === 'set-opacity') {
-			Command.save({
+			Command.save!({
 				sort,
 				object,
 				operation,
@@ -279,7 +279,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 				wait
 			});
 		} else if (operation === 'set-offsetY') {
-			Command.save({
+			Command.save!({
 				sort,
 				object,
 				operation,
@@ -289,7 +289,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 				wait
 			});
 		} else if (operation === 'set-rotation') {
-			Command.save({
+			Command.save!({
 				sort,
 				object,
 				operation,

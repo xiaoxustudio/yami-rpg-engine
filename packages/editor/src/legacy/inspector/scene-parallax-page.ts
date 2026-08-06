@@ -9,18 +9,18 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneParallax = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	SceneParallax.initialize = function () {
+	SceneParallax.initialize = function (this: any) {
 		if (!$('#sceneParallax-name')) return;
 		this.nameBox = $('#sceneParallax-name');
 		$('#sceneParallax-layer').loadItems([
@@ -72,7 +72,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -81,7 +81,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 	};
 
-	SceneParallax.create = function () {
+	SceneParallax.create = function (this: any) {
 		return {
 			class: 'parallax',
 			name: 'Parallax',
@@ -116,7 +116,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneParallax.open = function (parallax) {
+	SceneParallax.open = function (this: any, parallax: any) {
 		if (this.target !== parallax) {
 			this.target = parallax;
 
@@ -152,10 +152,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.close = function () {
+	SceneParallax.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			clear($('#sceneParallax-conditions'));
 			clear($('#sceneParallax-events'));
@@ -164,7 +164,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.write = function (options) {
+	SceneParallax.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneParallax-x'), options.x);
 		}
@@ -173,13 +173,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.update = function (parallax, key, value) {
-		Scene.planToSave();
+	SceneParallax.update = function (this: any, parallax: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (parallax.name !== value) {
 					parallax.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(parallax);
 				}
 				break;
@@ -188,14 +188,14 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 					parallax.image = value;
 					parallax.player.destroy();
 					parallax.player.loadTexture();
-					Scene.list.updateIcon(parallax);
+					Scene.list.updateIcon!(parallax);
 				}
 				break;
 			case 'layer':
 			case 'order':
 				if (parallax[key] !== value) {
 					parallax[key] = value;
-					Scene.loadObjects();
+					Scene.loadObjects!();
 				}
 				break;
 			case 'light':
@@ -245,11 +245,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 			}
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneParallax.paramInput = function (event) {
-		SceneParallax.update(SceneParallax.target, Inspector.getKey(this), read(this));
+	SceneParallax.paramInput = function (this: any, event: any) {
+		SceneParallax.update!(SceneParallax.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.sceneParallax = SceneParallax;

@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorState = new CommandSchema({
 	name: 'changeActorState',
 	onInitialize() {
-		$('#changeActorState-confirm').on('click', () => this.save());
+		$('#changeActorState-confirm').on('click', () => this.save!());
 		$('#changeActorState-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
@@ -28,24 +28,24 @@ Command.cases.changeActorState = new CommandSchema({
 			]);
 	},
 	parseOperation(operation: any) {
-		return Local.get('command.changeActorState.' + operation);
+		return Local.get!('command.changeActorState.' + operation);
 	},
 	customParse({ actor, operation, stateId, state }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(this.parseOperation(operation));
+			.push(Command.parseActor!(actor))
+			.push(this.parseOperation!(operation));
 		switch (operation) {
 			case 'add':
 			case 'remove':
-				words.push(Command.parseFileName(stateId));
+				words.push(Command.parseFileName!(stateId));
 				break;
 			case 'remove-instance':
-				words.push(Command.parseState(state));
+				words.push(Command.parseState!(state));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorState') + Token(': ') },
+			{ text: Local.get!('command.changeActorState') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -73,11 +73,11 @@ Command.cases.changeActorState = new CommandSchema({
 				if (stateId === '') {
 					return getFocus($('#changeActorState-stateId'));
 				}
-				Command.save({ actor, operation, stateId });
+				Command.save!({ actor, operation, stateId });
 				break;
 			}
 			case 'remove-instance': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					state: read('state')

@@ -345,10 +345,10 @@ UI.initialize = function (this: any) {
 				const st = screen.scrollTop;
 				const cx = Math.roundTo(this.centerX + x, 4);
 				const cy = Math.roundTo(this.centerY + y, 4);
-				this.updateCamera(cx, cy);
-				this.updateTransform();
+				this.updateCamera!(cx, cy);
+				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					this.requestRendering();
+					this.requestRendering!();
 					this.marquee.resize();
 					this.screen.updateScrollbars();
 				}
@@ -365,8 +365,8 @@ UI.initialize = function (this: any) {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
-				this.resize();
-				this.requestRendering();
+				this.resize!();
+				this.requestRendering!();
 			} else {
 				this.scale = timer.end;
 				return false;
@@ -416,7 +416,7 @@ UI.initialize = function (this: any) {
 		const { response } = data;
 		const { item } = response;
 		list.restore(operation, response);
-		UI.updateElement(item);
+		UI.updateElement!(item);
 	};
 	History.processors['ui-object-toggle'] = (operation: any, data: any) => {
 		const { item, oldValue, newValue } = data;
@@ -426,7 +426,7 @@ UI.initialize = function (this: any) {
 			item.enabled = newValue;
 		}
 		list.updateConditionIcon(item);
-		UI.planToSave();
+		UI.planToSave!();
 	};
 	History.processors['ui-object-hidden'] = (operation: any, data: any) => {
 		const { item, oldValues1, oldValues2, newValue } = data;
@@ -439,8 +439,8 @@ UI.initialize = function (this: any) {
 			list.setRecursiveStates(instance, 'visible', !newValue);
 		}
 		list.update();
-		UI.requestRendering();
-		UI.planToSave();
+		UI.requestRendering!();
+		UI.planToSave!();
 	};
 	History.processors['ui-object-locked'] = (operation: any, data: any) => {
 		const { item, oldValues, newValue } = data;
@@ -450,7 +450,7 @@ UI.initialize = function (this: any) {
 			list.setRecursiveStates(item, 'locked', newValue);
 		}
 		list.update();
-		UI.planToSave();
+		UI.planToSave!();
 	};
 	History.processors['ui-target-anchor'] = (operation: any, data: any) => {
 		const { editor, target, anchorX, anchorY } = data;
@@ -464,9 +464,9 @@ UI.initialize = function (this: any) {
 			write(editor, { anchorX, anchorY });
 		}
 		instances.resize();
-		UI.setTarget(target);
-		UI.requestRendering();
-		UI.planToSave();
+		UI.setTarget!(target);
+		UI.requestRendering!();
+		UI.planToSave!();
 	};
 	History.processors['ui-target-shift'] = (operation: any, data: any) => {
 		const { editor, target, x, y } = data;
@@ -480,9 +480,9 @@ UI.initialize = function (this: any) {
 			write(editor, { x, y });
 		}
 		instances.resize();
-		UI.setTarget(target);
-		UI.requestRendering();
-		UI.planToSave();
+		UI.setTarget!(target);
+		UI.requestRendering!();
+		UI.planToSave!();
 	};
 	History.processors['ui-target-resize'] = (operation: any, data: any) => {
 		const { editor, target, width, height } = data;
@@ -496,9 +496,9 @@ UI.initialize = function (this: any) {
 			write(editor, { width, height });
 		}
 		instances.resize();
-		UI.setTarget(target);
-		UI.requestRendering();
-		UI.planToSave();
+		UI.setTarget!(target);
+		UI.requestRendering!();
+		UI.planToSave!();
 	};
 	History.processors['ui-target-rotate'] = (operation: any, data: any) => {
 		const { editor, target, rotation } = data;
@@ -510,9 +510,9 @@ UI.initialize = function (this: any) {
 			write(editor, { rotation });
 		}
 		instances.resize();
-		UI.setTarget(target);
-		UI.requestRendering();
-		UI.planToSave();
+		UI.setTarget!(target);
+		UI.requestRendering!();
+		UI.planToSave!();
 	};
 
 	window.addEventListener('themechange', this.themechange);
@@ -542,8 +542,8 @@ UI.open = function (this: any, context: any) {
 	if (this.context === context) {
 		return;
 	}
-	this.save();
-	this.close();
+	this.save!();
+	this.close!();
 
 	Particle.Element.stage = this;
 
@@ -556,9 +556,9 @@ UI.open = function (this: any, context: any) {
 		this.context = context;
 		this.meta = meta;
 		show(this.body);
-		this.load(context);
-		this.resize();
-		this.requestRendering();
+		this.load!(context);
+		this.resize!();
+		this.requestRendering!();
 	} else {
 		Layout.manager.switch('directory');
 		getWindow().confirm(
@@ -579,7 +579,7 @@ UI.load = function (this: any, context: any) {
 	if (firstLoad) {
 		context.editor = {
 			target: null as any,
-			root: new UI.Root(),
+			root: new UI.Root!(),
 			history: new History(100),
 			centerX: context.ui.width / 2,
 			centerY: context.ui.height / 2
@@ -601,30 +601,30 @@ UI.load = function (this: any, context: any) {
 		const nodes = this.nodes;
 		const length = nodes.length;
 		for (let i = 0; i < length; i++) {
-			this.loadElement(nodes[i], this.root);
+			this.loadElement!(nodes[i], this.root);
 		}
 	} else {
-		this.updateAllReferences();
+		this.updateAllReferences!();
 	}
 
 	this.list.update();
 	// this.list.scrollTop = editor.listScrollTop
 
-	this.setTarget(editor.target);
+	this.setTarget!(editor.target);
 
 	if (this.context.fontChanged) {
-		this.updateElementFont();
+		this.updateElementFont!();
 	}
 
 	if (this.context.languageChanged) {
-		this.updateElementLanguage();
+		this.updateElementLanguage!();
 	}
 
 	if (this.context.scalingChanged) {
-		this.updateElementTextScaling();
+		this.updateElementTextScaling!();
 	}
 
-	UndoManager.setActive(UI);
+	UndoManager.setActive!(UI);
 };
 
 UI.save = function (this: any) {
@@ -648,9 +648,9 @@ UI.close = function (this: any) {
 	if (this.state !== 'closed') {
 		this.screen.blur();
 		if (Inspector.type === 'fileUI') {
-			Inspector.close();
+			Inspector.close!();
 		}
-		this.setTarget(null);
+		this.setTarget!(null);
 		this.state = 'closed';
 		this.context = null;
 		this.meta = null;
@@ -660,20 +660,20 @@ UI.close = function (this: any) {
 		write(this.searcher, '');
 		clear(this.list);
 		hide(this.body);
-		this.stopRendering();
-		UndoManager.setActive(null);
+		this.stopRendering!();
+		UndoManager.setActive!(null);
 	}
 };
 
 UI.destroy = function (this: any, context: any) {
 	if (!context.editor) return;
 	if (this.context === context) {
-		this.save();
-		this.close();
+		this.save!();
+		this.close!();
 	}
 	// 销毁UI组件实例
 	context.editor.root.destroy();
-	TreeList.deleteCaches(context.ui.nodes);
+	TreeList.deleteCaches!(context.ui.nodes);
 };
 
 UI.copy = function (this: any) {
@@ -715,7 +715,7 @@ UI.create = function (this: any, kind: any, x: any, y: any) {
 };
 
 UI.createPrefab = function (this: any, prefab: any, parent: any, x: any, y: any) {
-	const reference = Inspector.uiReference.create();
+	const reference = Inspector.uiReference.create!();
 	reference.name = prefab.name;
 	reference.prefabId = prefab.presetId;
 	reference.synchronous = true;
@@ -732,7 +732,7 @@ UI.createPrefab = function (this: any, prefab: any, parent: any, x: any, y: any)
 };
 
 UI.createShortcut = function (this: any, item: any) {
-	const reference = Inspector.uiReference.create();
+	const reference = Inspector.uiReference.create!();
 	reference.name = this.list.generateUniqueName(item);
 	reference.prefabId = item.presetId;
 	reference.synchronous = true;
@@ -818,28 +818,28 @@ UI.setSize = function (this: any, width: any, height: any) {
 		this.centerY = (this.centerY * height) / this.height;
 		this.height = height;
 	}
-	this.resize();
-	this.requestRendering();
+	this.resize!();
+	this.requestRendering!();
 };
 
 UI.setHover = function (this: any, hover: any) {
 	if (this.hover !== hover) {
 		this.hover = hover;
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
 UI.setTarget = function (this: any, target: any) {
 	if (this.target !== target) {
 		this.target = target;
-		this.updateTargetItem();
-		this.requestRendering();
+		this.updateTargetItem!();
+		this.requestRendering!();
 		if (target) {
 			const map = this.inspectorTypeMap;
 			const key = map[target.class];
-			Inspector.open(key, target);
+			Inspector.open!(key, target);
 		} else {
-			Inspector.close();
+			Inspector.close!();
 		}
 	}
 };
@@ -857,10 +857,10 @@ UI.revealTarget = (function IIFE() {
 				const screen = UI.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				UI.updateCamera(x, y);
-				UI.updateTransform();
+				UI.updateCamera!(x, y);
+				UI.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					UI.requestRendering();
+					UI.requestRendering!();
 					UI.marquee.resize();
 					UI.screen.updateScrollbars();
 				}
@@ -918,7 +918,7 @@ UI.revealTarget = (function IIFE() {
 UI.shiftAnchor = function (this: any, anchorX: any, anchorY: any) {
 	const target = this.target;
 	if (target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
@@ -945,7 +945,7 @@ UI.shiftAnchor = function (this: any, anchorX: any, anchorY: any) {
 		instances.setProperty('transform-anchorX', anchorX);
 		instances.setProperty('transform-anchorY', anchorY);
 		instances.resize();
-		this.requestRendering();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, { anchorX, anchorY });
@@ -956,7 +956,7 @@ UI.shiftAnchor = function (this: any, anchorX: any, anchorY: any) {
 UI.shiftTarget = function (this: any, x: any, y: any) {
 	const target = this.target;
 	if (target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
@@ -1006,7 +1006,7 @@ UI.shiftTarget = function (this: any, x: any, y: any) {
 			);
 		}
 		instances.resize();
-		this.requestRendering();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, {
@@ -1020,7 +1020,7 @@ UI.shiftTarget = function (this: any, x: any, y: any) {
 UI.resizeTarget = function (this: any, width: any, height: any) {
 	const target = this.target;
 	if (target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
@@ -1052,7 +1052,7 @@ UI.resizeTarget = function (this: any, width: any, height: any) {
 			instances.setProperty('transform-height', height);
 		}
 		instances.resize();
-		this.requestRendering();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, {
@@ -1066,7 +1066,7 @@ UI.resizeTarget = function (this: any, width: any, height: any) {
 UI.rotateTarget = function (this: any, rotation: any) {
 	const target = this.target;
 	if (target !== null) {
-		this.planToSave();
+		this.planToSave!();
 		const instances = target.instances;
 		const transform = target.transform;
 		const editor = Inspector.uiElement;
@@ -1091,7 +1091,7 @@ UI.rotateTarget = function (this: any, rotation: any) {
 		// transform.rotation = rotation
 		instances.setProperty('transform-rotation', rotation);
 		instances.resize();
-		this.requestRendering();
+		this.requestRendering!();
 
 		if (editor.target === target) {
 			write(editor, { rotation });
@@ -1141,18 +1141,18 @@ UI.setControlPoint = function (this: any, point: any) {
 
 UI.updateHover = function (this: any) {
 	if (this.hover && !this.hover.instance) {
-		this.setHover(null);
+		this.setHover!(null);
 	}
 };
 
 UI.updateTarget = function (this: any) {
 	const item = read(this.list);
 	if (item !== this.target) {
-		this.setTarget(item);
+		this.setTarget!(item);
 	}
 };
 
-UI.updateTargetItem = function () {
+UI.updateTargetItem = function (this: any) {
 	const { target } = this;
 	if (target !== null) {
 		const { list } = this;
@@ -1188,7 +1188,7 @@ UI.updateElementFont = function (this: any) {
 						el._font = undefined;
 						el.font = '';
 					}
-					this.requestRendering();
+					this.requestRendering!();
 				}
 			}
 			const children = element.children;
@@ -1213,7 +1213,7 @@ UI.updateElementLanguage = function (this: any) {
 			}
 		};
 		update(this.root.children);
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
@@ -1229,7 +1229,7 @@ UI.updateElementTextScaling = function (this: any) {
 			}
 		};
 		update(this.root.children);
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
@@ -1240,7 +1240,7 @@ UI.updateIndexedColor = function (this: any, index: any) {
 		const update = (element: any): void => {
 			if (element instanceof TextElement && regexp.test(element.content)) {
 				element.printer.reset();
-				this.requestRendering();
+				this.requestRendering!();
 			}
 			const children = element.children;
 			const length = children.length;
@@ -1331,7 +1331,7 @@ UI.updateAllTexts = function (this: any) {
 			context.languageChanged = true;
 		}
 	}
-	this.updateElementLanguage();
+	this.updateElementLanguage!();
 };
 
 UI.updateAllPrinters = function (this: any) {
@@ -1341,7 +1341,7 @@ UI.updateAllPrinters = function (this: any) {
 			context.scalingChanged = true;
 		}
 	}
-	this.updateElementTextScaling();
+	this.updateElementTextScaling!();
 };
 
 UI.updateAllReferences = function (this: any) {
@@ -1391,15 +1391,15 @@ UI.updateElement = function (this: any, target: any) {
 	if (instance) {
 		instance.appendChildTo(target.instance, nodes.indexOf(target));
 	}
-	this.requestRendering();
+	this.requestRendering!();
 };
 
-UI.deleteElement = function (target: any) {
+UI.deleteElement = function (this: any, target: any) {
 	target.instance.remove();
 	target.instance.destroy();
 };
 
-UI.updateHead = function () {
+UI.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement!(head) as any;
@@ -1442,9 +1442,9 @@ UI.resize = function (this: any) {
 		this.paddingTop = paddingTop;
 		this.marquee.style.width = `${outerWidth / dpr}px`;
 		this.marquee.style.height = `${outerHeight / dpr}px`;
-		GL.resize(screenWidth, screenHeight);
-		this.updateCamera();
-		this.updateTransform();
+		GL.resize!(screenWidth, screenHeight);
+		this.updateCamera!();
+		this.updateTransform!();
 		this.root.resize();
 		this.marquee.resize();
 		this.screen.updateScrollbars();
@@ -1520,24 +1520,24 @@ UI.registerPreset = (function IIFE() {
 			registerPreset(child);
 		}
 	};
-	return function (node: any) {
+	return function (this: any, node: any) {
 		registerPreset(node);
 	};
 })();
 
-UI.unregisterPreset = function (node: any) {
+UI.unregisterPreset = function (this: any, node: any) {
 	delete Data.uiPresets[node.presetId];
 	for (const child of node.children) {
-		UI.unregisterPreset(child);
+		UI.unregisterPreset!(child);
 	}
 };
 
 UI.createPrefabItem = function (this: any, parent: any, x: any, y: any) {
-	const { uiPrefabs } = Editor.project;
-	const items = [];
+	const { uiPrefabs } = Editor.project as any;
+	const items = [] as any[];
 	if (uiPrefabs.length !== 0) {
 		const click = function (this: any) {
-			UI.createPrefab(this.data, parent, x, y);
+			UI.createPrefab!(this.data, parent, x, y);
 		};
 		const map = Data.uiPresets;
 		for (const guid of uiPrefabs) {
@@ -1552,29 +1552,34 @@ UI.createPrefabItem = function (this: any, parent: any, x: any, y: any) {
 		}
 	}
 	return {
-		label: Local.get('menuUIList.create.prefab'),
+		label: Local.get!('menuUIList.create.prefab'),
 		enabled: items.length !== 0,
 		submenu: items.sort((a: any, b: any) => a.label.localeCompare(b.label))
 	};
 };
 
-UI.hasPrefab = function (node: any) {
-	return Editor.project.uiPrefabs.includes(node.presetId);
+UI.hasPrefab = function (this: any, node: any) {
+	return (Editor.project as any).uiPrefabs.includes(node.presetId);
 };
 
-UI.setAsPrefab = function (node: any) {
-	if (Editor.project.uiPrefabs.push(node.presetId)) {
+UI.setAsPrefab = function (this: any, node: any) {
+	if ((Editor.project as any).uiPrefabs.push(node.presetId)) {
 		UI.list.updateIcon(node);
 	}
 };
 
-UI.unsetAsPrefab = function (node: any) {
-	if (Editor.project.uiPrefabs.splice(Editor.project.uiPrefabs.indexOf(node.presetId), 1)) {
+UI.unsetAsPrefab = function (this: any, node: any) {
+	if (
+		(Editor.project as any).uiPrefabs.splice(
+			(Editor.project as any).uiPrefabs.indexOf(node.presetId),
+			1
+		)
+	) {
 		UI.list.updateIcon(node);
 	}
 };
 
-UI.clearInvalidPrefabs = function (uiPrefabs: any) {
+UI.clearInvalidPrefabs = function (this: any, uiPrefabs: any) {
 	let i = uiPrefabs.length;
 	while (--i >= 0) {
 		const guid = uiPrefabs[i];
@@ -1584,41 +1589,41 @@ UI.clearInvalidPrefabs = function (uiPrefabs: any) {
 	}
 };
 
-UI.createElement = function (node: any, main: any) {
+UI.createElement = function (this: any, node: any, main: any) {
 	let instance;
 	switch (node.class) {
 		case 'image':
-			instance = new UI.Image(node);
+			instance = new UI.Image!(node);
 			break;
 		case 'text':
-			instance = new UI.Text(node);
+			instance = new UI.Text!(node);
 			break;
 		case 'textbox':
-			instance = new UI.TextBox(node);
+			instance = new UI.TextBox!(node);
 			break;
 		case 'dialogbox':
-			instance = new UI.DialogBox(node);
+			instance = new UI.DialogBox!(node);
 			break;
 		case 'progressbar':
-			instance = new UI.ProgressBar(node);
+			instance = new UI.ProgressBar!(node);
 			break;
 		case 'button':
-			instance = new UI.Button(node);
+			instance = new UI.Button!(node);
 			break;
 		case 'animation':
-			instance = new UI.Animation(node);
+			instance = new UI.Animation!(node);
 			break;
 		case 'video':
-			instance = new UI.Video(node);
+			instance = new UI.Video!(node);
 			break;
 		case 'window':
-			instance = new UI.Window(node);
+			instance = new UI.Window!(node);
 			break;
 		case 'container':
-			instance = new UI.Container(node);
+			instance = new UI.Container!(node);
 			break;
 		case 'reference':
-			instance = new UI.Reference(node);
+			instance = new UI.Reference!(node);
 			break;
 	}
 	instance.node = node;
@@ -1639,12 +1644,12 @@ UI.createElement = function (node: any, main: any) {
 };
 
 UI.loadElement = function (this: any, node: any, parent: any) {
-	const instance = this.createElement(node, true);
+	const instance = this.createElement!(node, true);
 	if (parent !== undefined) {
 		parent.appendChild(instance);
 	}
 	for (const child of node.children) {
-		UI.loadElement(child, instance);
+		UI.loadElement!(child, instance);
 	}
 };
 
@@ -1787,7 +1792,7 @@ UI.drawControlPoints = function (this: any) {
 	const target = this.target;
 	const texture = this.controlPointTexture;
 	if (target !== null && texture !== null) {
-		this.updateControlPoints();
+		this.updateControlPoints!();
 		const POINT_RADIUS = 4 / this.scale;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
@@ -1879,15 +1884,15 @@ UI.requestRendering = function (this: any) {
 	}
 };
 
-UI.renderingFunction = function () {
+UI.renderingFunction = function (this: any) {
 	if (GL.width * GL.height !== 0) {
-		UI.drawBackground();
-		UI.drawElements();
-		UI.drawCoordinateAxes();
-		UI.drawHoverWireframe();
-		UI.drawTargetWireframe();
-		UI.drawTargetAnchor();
-		UI.drawControlPoints();
+		UI.drawBackground!();
+		UI.drawElements!();
+		UI.drawCoordinateAxes!();
+		UI.drawHoverWireframe!();
+		UI.drawTargetWireframe!();
+		UI.drawTargetAnchor!();
+		UI.drawControlPoints!();
 	}
 };
 
@@ -1895,11 +1900,11 @@ UI.stopRendering = function (this: any) {
 	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
 
-UI.switchSettings = function () {
+UI.switchSettings = function (this: any) {
 	if (!hasClass(Inspector.fileUI.button, 'selected')) {
-		Inspector.open('fileUI', UI);
+		Inspector.open!('fileUI', UI);
 	} else {
-		Inspector.close();
+		Inspector.close!();
 	}
 };
 
@@ -1913,11 +1918,11 @@ UI.saveToConfig = function (this: any, config: any) {
 };
 
 UI.loadFromConfig = function (this: any, config: any) {
-	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering());
+	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
 		if (this.state === 'open') {
 			this.root.resize();
-			this.requestRendering();
+			this.requestRendering!();
 		}
 	});
 };
@@ -1925,35 +1930,35 @@ UI.loadFromConfig = function (this: any, config: any) {
 UI.saveToProject = function (this: any, project: any) {
 	const { ui, uiPrefabs } = project;
 	ui.zoom = this.zoom ?? ui.zoom;
-	UI.clearInvalidPrefabs(uiPrefabs ?? []);
+	UI.clearInvalidPrefabs!(uiPrefabs ?? []);
 };
 
 UI.loadFromProject = function (this: any, project: any) {
 	const { ui } = project;
-	this.setZoom(ui.zoom);
+	this.setZoom!(ui.zoom);
 };
 
 UI.webglRestored = function (this: any, event: any) {
 	if (UI.state === 'open') {
-		UI.requestRendering();
+		UI.requestRendering!();
 	}
 };
 
 UI.windowResize = function (this: any, event: any) {
-	this.updateHead();
+	this.updateHead!();
 	if (this.state === 'open') {
-		this.resize();
-		this.updateCamera();
-		this.requestRendering();
+		this.resize!();
+		this.updateCamera!();
+		this.requestRendering!();
 	}
 }.bind(UI);
 
 UI.themechange = function (this: any, event: any) {
-	this.requestRendering();
+	this.requestRendering!();
 }.bind(UI);
 
 UI.localizationchange = function (this: any, event: any) {
-	this.updateAllTexts();
+	this.updateAllTexts!();
 }.bind(UI);
 
 UI.keydown = function (this: any, event: any) {
@@ -1963,7 +1968,7 @@ UI.keydown = function (this: any, event: any) {
 		} else if (event.altKey) {
 			switch (event.code) {
 				case 'KeyS':
-					UI.switchSettings();
+					UI.switchSettings!();
 					break;
 			}
 		} else {
@@ -1988,7 +1993,7 @@ UI.switchPointerdown = function (this: any, event: any) {
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'settings':
-						return UI.switchSettings();
+						return UI.switchSettings!();
 				}
 			}
 			break;
@@ -2001,7 +2006,7 @@ UI.shortcutPointerdown = function (this: any, event: any) {
 		case 0: {
 			const element = event.target;
 			if (hasClass(element, 'item')) {
-				UI.create(element.getAttribute('value'), 0, 0);
+				UI.create!(element.getAttribute('value'), 0, 0);
 			}
 			break;
 		}
@@ -2013,7 +2018,7 @@ UI.zoomFocus = function (this: any, event: any) {
 };
 
 UI.zoomInput = function (this: any, event: any) {
-	UI.setZoom(read(this));
+	UI.setZoom!(read(this));
 };
 
 UI.screenKeydown = function (this: any, event: any) {
@@ -2021,17 +2026,17 @@ UI.screenKeydown = function (this: any, event: any) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
-					this.copy();
-					this.delete();
+					this.copy!();
+					this.delete!();
 					return;
 				case 'KeyC':
-					this.copy();
+					this.copy!();
 					return;
 				case 'KeyV':
-					this.paste();
+					this.paste!();
 					return;
 				case 'KeyD':
-					this.duplicate();
+					this.duplicate!();
 					return;
 				case 'ArrowLeft':
 				case 'ArrowUp':
@@ -2048,16 +2053,16 @@ UI.screenKeydown = function (this: any, event: any) {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				this.revealTarget();
+				this.revealTarget!();
 				break;
 			case 'Slash':
-				this.toggle();
+				this.toggle!();
 				break;
 			case 'Delete':
-				this.delete();
+				this.delete!();
 				break;
 			case 'Escape':
-				this.setTarget(null);
+				this.setTarget!(null);
 				break;
 			case 'KeyA':
 				if ((this.translationKey & 0b0001) === 0) {
@@ -2117,7 +2122,7 @@ UI.screenKeydown = function (this: any, event: any) {
 					if (event.ctrlKey || event.metaKey) {
 						const ax = Math.roundTo(transform.anchorX - offsetX * 0.5, 4);
 						const ay = Math.roundTo(transform.anchorY - offsetY * 0.5, 4);
-						return this.shiftAnchor(ax, ay);
+						return this.shiftAnchor!(ax, ay);
 					}
 					if (event.shiftKey) {
 						offsetX *= 10;
@@ -2125,20 +2130,20 @@ UI.screenKeydown = function (this: any, event: any) {
 					}
 					const x = Math.roundTo(transform.x + offsetX, 4);
 					const y = Math.roundTo(transform.y + offsetY, 4);
-					this.shiftTarget(x, y);
+					this.shiftTarget!(x, y);
 				}
 				break;
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom(this.zoom - 1);
+				this.setZoom!(this.zoom - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom(this.zoom + 1);
+				this.setZoom!(this.zoom + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
-				this.setZoom(2);
+				this.setZoom!(2);
 				break;
 		}
 	}
@@ -2178,7 +2183,7 @@ UI.screenWheel = function (this: any, event: any) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom(this.zoom + step);
+			this.setZoom!(this.zoom + step);
 		}
 	}
 }.bind(UI);
@@ -2187,17 +2192,17 @@ UI.screenUserscroll = function (this: any, event: any) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
-		this.updateTransform();
-		this.requestRendering();
+		this.updateTransform!();
+		this.requestRendering!();
 		this.marquee.resize();
 		this.screen.updateScrollbars();
 	}
 }.bind(UI);
 
 UI.screenBlur = function (this: any, event: any) {
-	this.translationKeyup();
-	this.pointerup();
-	// this.marqueePointerleave()
+	this.translationKeyup!();
+	this.pointerup!();
+	// this.marqueePointerleave!()
 }.bind(UI);
 
 UI.marqueePointerdown = function (this: any, event: any) {
@@ -2264,13 +2269,13 @@ UI.marqueePointerdown = function (this: any, event: any) {
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			const { x, y } = this.getPointerCoords(event);
+			const { x, y } = this.getPointerCoords!(event);
 			let object;
 			if ((event.ctrlKey || event.metaKey) && this.target) {
 				object = this.target;
 			}
 			if (object === undefined) {
-				object = this.selectObject(x, y);
+				object = this.selectObject!(x, y);
 			}
 			if (object) {
 				this.dragging = event;
@@ -2281,9 +2286,9 @@ UI.marqueePointerdown = function (this: any, event: any) {
 				event.startY = object.transform.y;
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
-				this.requestRendering();
+				this.requestRendering!();
 			}
-			this.setTarget(object);
+			this.setTarget!(object);
 			break;
 		}
 		case 2:
@@ -2300,34 +2305,34 @@ UI.marqueePointerdown = function (this: any, event: any) {
 UI.marqueePointermove = function (this: any, event: any) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
-		const { x, y } = this.getPointerCoords(event);
+		const { x, y } = this.getPointerCoords!(event);
 		if (this.target) {
-			const point = this.selectControlPoint(x, y);
+			const point = this.selectControlPoint!(x, y);
 			if (point) {
-				this.setHover(null);
-				this.setControlPoint(point);
+				this.setHover!(null);
+				this.setControlPoint!(point);
 				return;
 			}
 		}
 		if (this.controlPointActive) {
-			this.setControlPoint(null);
+			this.setControlPoint!(null);
 		}
-		const object = this.selectObject(x, y);
-		this.setHover(object);
+		const object = this.selectObject!(x, y);
+		this.setHover!(object);
 	}
 }.bind(UI);
 
 UI.marqueePointerleave = function (this: any, event: any) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
-		this.setHover(null);
+		this.setHover!(null);
 	}
 }.bind(UI);
 
 UI.marqueeDoubleclick = function (this: any, event: any) {
 	if (this.target) {
-		this.screenBlur();
-		this.revealTarget();
+		this.screenBlur!();
+		this.revealTarget!();
 	}
 }.bind(UI);
 
@@ -2345,14 +2350,14 @@ UI.pointerup = function (this: any, event: any) {
 			case 'object-resize':
 				break;
 			case 'object-move':
-				this.requestRendering();
+				this.requestRendering!();
 				break;
 			case 'ready-to-scroll':
 				if (event.target === this.marquee) {
-					const { x, y } = this.getPointerCoords(event);
-					const object = this.selectObject(x, y);
-					this.setTarget(object);
-					this.menuPopup(event);
+					const { x, y } = this.getPointerCoords!(event);
+					const object = this.selectObject!(x, y);
+					this.setTarget!(object);
+					this.menuPopup!(event);
 				}
 				break;
 			case 'scroll':
@@ -2387,7 +2392,7 @@ UI.pointermove = function (this: any, event: any) {
 					}
 					const transform = this.target.transform;
 					if (transform.rotation !== rotation) {
-						this.rotateTarget(rotation);
+						this.rotateTarget!(rotation);
 					}
 					dragging.lastAngle = currentAngle;
 				}
@@ -2484,7 +2489,7 @@ UI.pointermove = function (this: any, event: any) {
 						(width !== undefined && transform.width !== width) ||
 						(height !== undefined && transform.height !== height)
 					) {
-						this.resizeTarget(width, height);
+						this.resizeTarget!(width, height);
 					}
 				}
 				break;
@@ -2529,7 +2534,7 @@ UI.pointermove = function (this: any, event: any) {
 						y = Math.round(dragging.startY + distY);
 					}
 					if (transform.x !== x || transform.y !== y) {
-						this.shiftTarget(x, y);
+						this.shiftTarget!(x, y);
 					}
 				}
 				break;
@@ -2555,12 +2560,12 @@ UI.pointermove = function (this: any, event: any) {
 }.bind(UI);
 
 UI.menuPopup = function (this: any, event: any) {
-	this.translationKeyup();
-	const { x, y } = this.getPointerCoords(event);
+	this.translationKeyup!();
+	const { x, y } = this.getPointerCoords!(event);
 	const target = this.target;
 	const selected = !!target;
 	const pastable = (Clipboard as any).has('yami.ui.object');
-	const get = Local.createGetter('menuUIList');
+	const get = Local.createGetter!('menuUIList');
 	const items = [
 		{
 			label: get('create'),
@@ -2568,77 +2573,77 @@ UI.menuPopup = function (this: any, event: any) {
 				{
 					label: get('create.image'),
 					click: () => {
-						this.create('image', x, y);
+						this.create!('image', x, y);
 					}
 				},
 				{
 					label: get('create.text'),
 					click: () => {
-						this.create('text', x, y);
+						this.create!('text', x, y);
 					}
 				},
 				{
 					label: get('create.textBox'),
 					click: () => {
-						this.create('textbox', x, y);
+						this.create!('textbox', x, y);
 					}
 				},
 				{
 					label: get('create.dialogBox'),
 					click: () => {
-						this.create('dialogbox', x, y);
+						this.create!('dialogbox', x, y);
 					}
 				},
 				{
 					label: get('create.progressBar'),
 					click: () => {
-						this.create('progressbar', x, y);
+						this.create!('progressbar', x, y);
 					}
 				},
 				{
 					label: get('create.button'),
 					click: () => {
-						this.create('button', x, y);
+						this.create!('button', x, y);
 					}
 				},
 				{
 					label: get('create.animation'),
 					click: () => {
-						this.create('animation', x, y);
+						this.create!('animation', x, y);
 					}
 				},
 				{
 					label: get('create.video'),
 					click: () => {
-						this.create('video', x, y);
+						this.create!('video', x, y);
 					}
 				},
 				{
 					label: get('create.window'),
 					click: () => {
-						this.create('window', x, y);
+						this.create!('window', x, y);
 					}
 				},
 				{
 					label: get('create.container'),
 					click: () => {
-						this.create('container', x, y);
+						this.create!('container', x, y);
 					}
 				},
 				{
 					label: get('create.reference'),
 					click: () => {
-						this.create('reference', x, y);
+						this.create!('reference', x, y);
 					}
 				},
 				{
 					label: get('create.shortcut'),
 					enabled: selected && target.class !== 'reference',
 					click: () => {
-						this.createShortcut(target);
+						this.createShortcut!(target);
 					}
 				},
-				UI.createPrefabItem(null, x, y)
+				UI.createPrefabItem!(null, x, y)
 			]
 		},
 		{
@@ -2646,7 +2651,7 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: '/',
 			enabled: selected,
 			click: () => {
-				this.toggle();
+				this.toggle!();
 			}
 		},
 		{
@@ -2657,8 +2662,8 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: ctrl('X'),
 			enabled: selected,
 			click: () => {
-				this.copy();
-				this.delete();
+				this.copy!();
+				this.delete!();
 			}
 		},
 		{
@@ -2666,7 +2671,7 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: ctrl('C'),
 			enabled: selected,
 			click: () => {
-				this.copy();
+				this.copy!();
 			}
 		},
 		{
@@ -2674,7 +2679,7 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(x, y);
+				this.paste!(x, y);
 			}
 		},
 		{
@@ -2682,7 +2687,7 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: ctrl('D'),
 			enabled: selected,
 			click: () => {
-				this.duplicate();
+				this.duplicate!();
 			}
 		},
 		{
@@ -2690,7 +2695,7 @@ UI.menuPopup = function (this: any, event: any) {
 			accelerator: 'Delete',
 			enabled: selected,
 			click: () => {
-				this.delete();
+				this.delete!();
 			}
 		},
 		{
@@ -2709,12 +2714,12 @@ UI.menuPopup = function (this: any, event: any) {
 		}
 	];
 	if (selected) {
-		if (!UI.hasPrefab(target)) {
+		if (!UI.hasPrefab!(target)) {
 			items.push({
 				label: get('set-as-prefab'),
 				enabled: target.class !== 'reference',
 				click: () => {
-					UI.setAsPrefab(target);
+					UI.setAsPrefab!(target);
 				}
 			});
 		} else {
@@ -2722,12 +2727,12 @@ UI.menuPopup = function (this: any, event: any) {
 				label: get('unset-as-prefab'),
 				enabled: target.class !== 'reference',
 				click: () => {
-					UI.unsetAsPrefab(target);
+					UI.unsetAsPrefab!(target);
 				}
 			});
 		}
 	}
-	Menu.popup(
+	Menu.popup!(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -2752,33 +2757,33 @@ UI.listKeydown = function (this: any, event: any) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {
-					this.copy(item);
-					this.delete(item);
+					this.copy!(item);
+					this.delete!(item);
 				}
 				break;
 			case 'KeyC':
-				this.copy(item);
+				this.copy!(item);
 				break;
 			case 'KeyV':
-				this.paste(null);
+				this.paste!(null);
 				break;
 			case 'KeyD':
-				this.duplicate(item);
+				this.duplicate!(item);
 				break;
 		}
 	} else {
 		switch (event.code) {
 			case 'Slash':
-				this.toggle(item);
+				this.toggle!(item);
 				break;
 			case 'Delete':
-				this.delete(item);
+				this.delete!(item);
 				break;
 			case 'Backspace':
-				this.cancelSearch();
+				this.cancelSearch!();
 				break;
 			case 'Escape':
-				UI.setTarget(null);
+				UI.setTarget!(null);
 				break;
 		}
 	}
@@ -2792,17 +2797,17 @@ UI.listPointerdown = function (this: any, event: any) {
 				case 'VISIBILITY-ICON': {
 					const { item } = element.parentNode;
 					const { instance, hidden } = item;
-					const backups1 = this.setRecursiveStates(item, 'hidden', !hidden);
-					const backups2 = this.setRecursiveStates(instance, 'visible', hidden);
+					const backups1 = this.setRecursiveStates!(item, 'hidden', !hidden);
+					const backups2 = this.setRecursiveStates!(instance, 'visible', hidden);
 					const length = Math.max(backups1.length, backups2.length);
 					for (let i = 0; i < length; i++) {
 						if (backups1[i] === backups2[i]) {
 							throw new Error('Failed to switch hidden state');
 						}
 					}
-					this.update();
+					this.update!();
 					dispatchChangeEvent(this);
-					UI.requestRendering();
+					UI.requestRendering!();
 					UI.history.save({
 						type: 'ui-object-hidden',
 						item: item,
@@ -2815,8 +2820,8 @@ UI.listPointerdown = function (this: any, event: any) {
 				case 'LOCK-ICON': {
 					const { item } = element.parentNode;
 					const { locked } = item;
-					const backups = this.setRecursiveStates(item, 'locked', !locked);
-					this.update();
+					const backups = this.setRecursiveStates!(item, 'locked', !locked);
+					this.update!();
 					dispatchChangeEvent(this);
 					UI.history.save({
 						type: 'ui-object-locked',
@@ -2830,20 +2835,20 @@ UI.listPointerdown = function (this: any, event: any) {
 			break;
 		}
 		case 3:
-			this.cancelSearch();
+			this.cancelSearch!();
 			break;
 	}
 };
 
 UI.listSelect = function (this: any, event: any) {
-	UI.setTarget(event.value);
+	UI.setTarget!(event.value);
 };
 
 UI.listRecord = function (this: any, event: any) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
-			UI.listRename(response);
+			UI.listRename!(response);
 			break;
 		case 'create':
 			UI.history.save({
@@ -2869,8 +2874,8 @@ UI.listRecord = function (this: any, event: any) {
 UI.listPopup = function (this: any, event: any) {
 	const list = UI.list;
 	const item = event.value;
-	const menuItems = [];
-	const get = Local.createGetter('menuUIList');
+	const menuItems = [] as any[];
+	const get = Local.createGetter!('menuUIList');
 	const selected = !!item;
 	const copyable = selected;
 	const pastable = (Clipboard as any).has('yami.ui.object');
@@ -2918,7 +2923,7 @@ UI.listPopup = function (this: any, event: any) {
 			{
 				label: get('create.animation'),
 				click: () => {
-					list.addNodeTo(Inspector.uiAnimation.create(), item);
+					list.addNodeTo(Inspector.uiAnimation.create!(), item);
 				}
 			},
 			{
@@ -2930,7 +2935,7 @@ UI.listPopup = function (this: any, event: any) {
 			{
 				label: get('create.window'),
 				click: () => {
-					list.addNodeTo(Inspector.uiWindow.create(), item);
+					list.addNodeTo(Inspector.uiWindow.create!(), item);
 				}
 			},
 			{
@@ -2942,17 +2947,17 @@ UI.listPopup = function (this: any, event: any) {
 			{
 				label: get('create.reference'),
 				click: () => {
-					list.addNodeTo(Inspector.uiReference.create(), item);
+					list.addNodeTo(Inspector.uiReference.create!(), item);
 				}
 			},
 			{
 				label: get('create.shortcut'),
 				enabled: selected && item.class !== 'reference',
 				click: () => {
-					UI.createShortcut(item);
+					UI.createShortcut!(item);
 				}
 			},
-			UI.createPrefabItem(item)
+			UI.createPrefabItem!(item)
 		]
 	});
 	if (selected) {
@@ -2961,7 +2966,7 @@ UI.listPopup = function (this: any, event: any) {
 				label: get('reveal'),
 				accelerator: 'Enter',
 				click: () => {
-					UI.revealTarget(item);
+					UI.revealTarget!(item);
 				}
 			},
 			{
@@ -3045,12 +3050,12 @@ UI.listPopup = function (this: any, event: any) {
 		});
 	}
 	if (selected) {
-		if (!UI.hasPrefab(item)) {
+		if (!UI.hasPrefab!(item)) {
 			menuItems.push({
 				label: get('set-as-prefab'),
 				enabled: item.class !== 'reference',
 				click: () => {
-					UI.setAsPrefab(item);
+					UI.setAsPrefab!(item);
 				}
 			});
 		} else {
@@ -3058,12 +3063,12 @@ UI.listPopup = function (this: any, event: any) {
 				label: get('unset-as-prefab'),
 				enabled: item.class !== 'reference',
 				click: () => {
-					UI.unsetAsPrefab(item);
+					UI.unsetAsPrefab!(item);
 				}
 			});
 		}
 	}
-	Menu.popup(
+	Menu.popup!(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -3073,10 +3078,10 @@ UI.listPopup = function (this: any, event: any) {
 };
 
 UI.listOpen = function (this: any, event: any) {
-	UI.revealTarget(event.value);
+	UI.revealTarget!(event.value);
 };
 
-UI.listRename = function (response: any) {
+UI.listRename = function (this: any, response: any) {
 	const editor = Inspector.uiElement;
 	const target = response.item;
 	const input = editor.nameBox;
@@ -3097,7 +3102,7 @@ UI.listRename = function (response: any) {
 };
 
 UI.listChange = function (this: any, event: any) {
-	UI.planToSave();
+	UI.planToSave!();
 };
 
 UI.listPageResize = function (this: any, event: any) {
@@ -3108,12 +3113,12 @@ UI.listPageResize = function (this: any, event: any) {
 // 选框 - 调整目标
 UI.marquee.resize = function (this: any) {
 	if (this.pointerevent) {
-		UI.marqueePointermove(this.pointerevent);
+		UI.marqueePointermove!(this.pointerevent);
 	}
 };
 
 // 列表 - 复制
-UI.list.copy = function (item: any) {
+UI.list.copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.ui.object', item);
 	}
@@ -3124,16 +3129,16 @@ UI.list.paste = function (this: any, dItem: any, callback: any) {
 	const copy = (Clipboard as any).read('yami.ui.object');
 	if (copy && this.data) {
 		callback?.(copy);
-		this.addNodeTo(copy, dItem);
-		UI.requestRendering();
+		this.addNodeTo!(copy, dItem);
+		UI.requestRendering!();
 	}
 };
 
 // 列表 - 删除
 UI.list.delete = function (this: any, item: any) {
 	if (item) {
-		this.deleteNode(item);
-		UI.requestRendering();
+		this.deleteNode!(item);
+		UI.requestRendering!();
 	}
 };
 
@@ -3147,7 +3152,7 @@ UI.list.toggle = function (this: any, item: any) {
 			newValue: !item.enabled
 		});
 		item.enabled = !item.enabled;
-		this.updateConditionIcon(item);
+		this.updateConditionIcon!(item);
 		dispatchChangeEvent(this);
 	}
 };
@@ -3157,8 +3162,8 @@ UI.list.cancelSearch = function (this: any) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		UI.searcher.deleteInputContent();
-		this.expandToSelection();
-		this.scrollToSelection();
+		this.expandToSelection!();
+		this.scrollToSelection!();
 		active!.focus();
 	}
 };
@@ -3260,9 +3265,9 @@ UI.list.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (item: any) {
+	return function (this: any, item: any) {
 		const icon = (iconCreators as any)[item.class](item);
-		if (UI.hasPrefab(item)) {
+		if (UI.hasPrefab!(item)) {
 			addClass(icon, 'icon-ui-set-as-prefab');
 		}
 		return icon;
@@ -3273,14 +3278,14 @@ UI.list.createIcon = (function IIFE() {
 UI.list.updateIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element?.nodeIcon) {
-		const icon = this.createIcon(item);
+		const icon = this.createIcon!(item);
 		element.replaceChild(icon, element.nodeIcon);
 		element.nodeIcon = icon;
 	}
 };
 
 // 列表 - 更新头部位置
-UI.list.updateHead = function () {
+UI.list.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement!(head) as any;
@@ -3295,7 +3300,7 @@ UI.list.updateHead = function () {
 };
 
 // 列表 - 创建条件图标
-UI.list.createConditionIcon = function (item: any) {
+UI.list.createConditionIcon = function (this: any, item: any) {
 	const { element } = item;
 	const conditionIcon = document.createElement('node-icon');
 	addClass(conditionIcon, 'icon-conditional');
@@ -3305,7 +3310,7 @@ UI.list.createConditionIcon = function (item: any) {
 };
 
 // 列表 - 更新条件图标
-UI.list.updateConditionIcon = function (item: any) {
+UI.list.updateConditionIcon = function (this: any, item: any) {
 	const { element, enabled } = item;
 	const condition = enabled ? 'none' : 'absent';
 	if (element.condition !== condition) {
@@ -3326,29 +3331,29 @@ UI.list.updateConditionIcon = function (item: any) {
 };
 
 // 列表 - 在创建数据时回调
-UI.list.onCreate = function (item: any) {
-	UI.registerPreset(item);
-	UI.loadElement(item);
-	UI.updateElement(item);
+UI.list.onCreate = function (this: any, item: any) {
+	UI.registerPreset!(item);
+	UI.loadElement!(item);
+	UI.updateElement!(item);
 };
 
 // 列表 - 在迁移数据时回调
-UI.list.onRemove = function (item: any) {
-	UI.updateElement(item);
+UI.list.onRemove = function (this: any, item: any) {
+	UI.updateElement!(item);
 };
 
 // 列表 - 在删除数据时回调
-UI.list.onDelete = function (item: any) {
-	UI.unregisterPreset(item);
-	UI.deleteElement(item);
-	UI.updateHover();
-	UI.updateTarget();
-	UI.requestRendering();
+UI.list.onDelete = function (this: any, item: any) {
+	UI.unregisterPreset!(item);
+	UI.deleteElement!(item);
+	UI.updateHover!();
+	UI.updateTarget!();
+	UI.requestRendering!();
 };
 
 // 列表 - 在恢复数据时回调
-UI.list.onResume = function (item: any) {
-	UI.registerPreset(item);
-	UI.loadElement(item);
-	UI.updateElement(item);
+UI.list.onResume = function (this: any, item: any) {
+	UI.registerPreset!(item);
+	UI.loadElement!(item);
+	UI.updateElement!(item);
 };

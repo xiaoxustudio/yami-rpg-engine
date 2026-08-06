@@ -13,9 +13,9 @@ Command.cases.createGlobalActor = new CommandSchema({
 		{ key: 'teamId', default: () => Data.teams.list[0].id }
 	],
 	onInitialize() {
-		$('#createGlobalActor-confirm').on('click', () => this.save());
+		$('#createGlobalActor-confirm').on('click', () => this.save!());
 		$('#createGlobalActor').on('open', function (event: any) {
-			$('#createGlobalActor-teamId').loadItems(Data.createTeamItems());
+			$('#createGlobalActor-teamId').loadItems(Data.createTeamItems!());
 		});
 		$('#createGlobalActor').on('closed', function (event: any) {
 			clear($('#createGlobalActor-teamId'));
@@ -23,11 +23,11 @@ Command.cases.createGlobalActor = new CommandSchema({
 	},
 	customParse({ actorId, teamId }: any) {
 		const words = Command.words
-			.push(Command.parseFileName(actorId))
-			.push(Command.parseTeam(teamId));
+			.push(Command.parseFileName!(actorId))
+			.push(Command.parseTeam!(teamId));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.createGlobalActor') + Token(': ') },
+			{ text: Local.get!('command.createGlobalActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

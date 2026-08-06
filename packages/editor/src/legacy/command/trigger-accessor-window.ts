@@ -6,13 +6,13 @@ function getWindow() {
 }
 
 export const TriggerGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-TriggerGetter.initialize = function () {
+TriggerGetter.initialize = function (this: any) {
 	if (!$('#triggerGetter-type')) return;
 	$('#triggerGetter-type').loadItems([
 		{ name: 'Event Trigger', value: 'trigger' },
@@ -27,7 +27,7 @@ TriggerGetter.initialize = function () {
 	on($('#triggerGetter-confirm'), 'click', this.confirm);
 };
 
-TriggerGetter.open = function (target) {
+TriggerGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('triggerGetter');
 
@@ -46,7 +46,7 @@ TriggerGetter.open = function (target) {
 	getFocus($('#triggerGetter-type'));
 };
 
-TriggerGetter.confirm = function (event) {
+TriggerGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('triggerGetter');
 	const type = read('type');
 	let getter;

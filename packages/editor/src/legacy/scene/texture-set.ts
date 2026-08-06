@@ -6,30 +6,30 @@ Scene.Textures = class Textures {
 
 	constructor() {
 		this.state = 'open';
-		this[''] = null;
+		(this as any)[''] = null;
 	}
 
 	append(texture: any) {
 		if (this.state === 'open') {
-			this[texture.base.guid] = texture;
+			(this as any)[texture.base.guid] = texture;
 		}
 	}
 
 	load(guid: any) {
-		if (!this[guid]) {
+		if (!(this as any)[guid]) {
 			const texture = new ImageTexture(guid);
 			if (texture.complete) {
-				this[guid] = texture;
+				(this as any)[guid] = texture;
 				return Promise.resolve().then(() => {
-					Scene.requestRendering();
+					Scene.requestRendering!();
 					return texture;
 				});
 			}
-			this[guid] = new Promise((resolve) => {
+			(this as any)[guid] = new Promise((resolve: any) => {
 				texture.on('load', () => {
-					if (this.state === 'open' && this[guid] instanceof Promise) {
-						this[guid] = texture;
-						Scene.requestRendering();
+					if (this.state === 'open' && (this as any)[guid] instanceof Promise) {
+						(this as any)[guid] = texture;
+						Scene.requestRendering!();
 						return resolve(texture);
 					}
 					texture.destroy();
@@ -37,7 +37,7 @@ Scene.Textures = class Textures {
 				});
 			});
 		}
-		return this[guid];
+		return (this as any)[guid];
 	}
 
 	destroy() {

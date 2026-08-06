@@ -4,7 +4,7 @@ import nodeFs from 'node:fs';
 export const FS = nodeFs;
 export const FSP = (FS as any).promises ?? ({} as any);
 
-FSP.writeFile = function (path, text, check = false as any) {
+FSP.writeFile = function (path: any, text: any, check = false as any) {
 	const { invoke } = ipcRenderer;
 	return invoke('write-file', path, text, check);
 };

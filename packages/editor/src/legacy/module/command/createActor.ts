@@ -9,9 +9,9 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.createActor = new CommandSchema({
 	name: 'createActor',
 	onInitialize() {
-		$('#createActor-confirm').on('click', () => this.save());
+		$('#createActor-confirm').on('click', () => this.save!());
 		$('#createActor').on('open', function (event: any) {
-			$('#createActor-teamId').loadItems(Data.createTeamItems());
+			$('#createActor-teamId').loadItems(Data.createTeamItems!());
 		});
 		$('#createActor').on('closed', function (event: any) {
 			clear($('#createActor-teamId'));
@@ -19,13 +19,13 @@ Command.cases.createActor = new CommandSchema({
 	},
 	customParse({ actorId, teamId, position, angle }: any) {
 		const words = Command.words
-			.push(Command.parseFileName(actorId))
-			.push(Command.parseTeam(teamId))
-			.push(Command.parsePosition(position))
-			.push(Command.parseVariableNumber(angle, '°'));
+			.push(Command.parseFileName!(actorId))
+			.push(Command.parseTeam!(teamId))
+			.push(Command.parsePosition!(position))
+			.push(Command.parseVariableNumber!(angle, '°'));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.createActor') + Token(': ') },
+			{ text: Local.get!('command.createActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -48,7 +48,7 @@ Command.cases.createActor = new CommandSchema({
 		if (actorId === '') {
 			return getFocus($('#createActor-actorId'));
 		}
-		Command.save({
+		Command.save!({
 			actorId,
 			teamId: read('teamId'),
 			position: read('position'),

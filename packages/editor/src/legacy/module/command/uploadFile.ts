@@ -18,7 +18,7 @@ Command.cases.uploadFile = new CommandSchema({
 		write($('#uploadFile-path'), '');
 		$('#uploadFile-header').bind(RequestkeyValueBind);
 		write($('#uploadFile-field'), 'file');
-		$('#uploadFile-confirm')?.on('click', () => this.save());
+		$('#uploadFile-confirm')?.on('click', () => this.save!());
 	},
 	customParse({
 		url = '',
@@ -31,7 +31,7 @@ Command.cases.uploadFile = new CommandSchema({
 	}: any) {
 		const head = [
 			{ color: 'network' },
-			{ text: Local.get('command.uploadFile') },
+			{ text: Local.get!('command.uploadFile') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -40,7 +40,7 @@ Command.cases.uploadFile = new CommandSchema({
 						? url.length > 20
 							? url.substring(0, 20) + '...'
 							: url
-						: Command.parseVariable(url, 'any')
+						: Command.parseVariable!(url, 'any')
 			},
 			{ text: ' , ' },
 			{ text: method },
@@ -48,22 +48,22 @@ Command.cases.uploadFile = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents = [];
+		const contents = [] as any[];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable(i.value, 'any')}`
+					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable!(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable!(i.value, 'any')}`
 				}
 			);
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get('command.uploadFilePath')} = ` },
+			{ text: `, ${Local.get!('command.uploadFilePath')} = ` },
 			{ color: 'normal' },
 			{
-				text: typeof path === 'string' ? path : Command.parseVariable(path, 'any')
+				text: typeof path === 'string' ? path : Command.parseVariable!(path, 'any')
 			},
 			{ text: ' , ' },
 			{ color: 'normal' },
@@ -94,16 +94,16 @@ Command.cases.uploadFile = new CommandSchema({
 	customSave() {
 		const elVariable = $('#uploadFile-url');
 		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone(variable)) {
+		if (!variable || VariableGetter.isNone!(variable)) {
 			return getFocus(elVariable);
 		}
 		const elPath = $('#uploadFile-path');
 		const path = read(elPath);
-		if (!path || VariableGetter.isNone(path)) {
+		if (!path || VariableGetter.isNone!(path)) {
 			return getFocus(elPath);
 		}
 		const reader = getElementReader('uploadFile');
-		Command.save({
+		Command.save!({
 			url: variable,
 			method: reader('method'),
 			path: path,

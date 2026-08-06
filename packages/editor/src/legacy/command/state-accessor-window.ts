@@ -6,15 +6,15 @@ function getWindow() {
 }
 
 export const StateGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-StateGetter.initialize = function () {
+StateGetter.initialize = function (this: any) {
 	if (!$('#stateGetter-type')) return;
 	$('#stateGetter-type').loadItems([
 		{ name: 'Event Trigger State', value: 'trigger' },
@@ -36,7 +36,7 @@ StateGetter.initialize = function () {
 	on($('#stateGetter-confirm'), 'click', this.confirm);
 };
 
-StateGetter.open = function (target) {
+StateGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('stateGetter');
 
@@ -63,18 +63,18 @@ StateGetter.open = function (target) {
 	getFocus($('#stateGetter-type'));
 };
 
-StateGetter.checkDataForPlugin = function (data) {
+StateGetter.checkDataForPlugin = function (this: any, data: any) {
 	if (data instanceof Object) {
 		return data.getter === 'state';
 	}
 	return false;
 };
 
-StateGetter.createDefaultForPlugin = function () {
+StateGetter.createDefaultForPlugin = function (this: any) {
 	return { getter: 'state', type: 'trigger' };
 };
 
-StateGetter.confirm = function (event) {
+StateGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('stateGetter');
 	const type = read('type');
 	let getter;

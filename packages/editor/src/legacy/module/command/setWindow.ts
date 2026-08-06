@@ -13,20 +13,20 @@ Command.cases.setWindow = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setWindow-confirm').on('click', () => this.save());
+		$('#setWindow-confirm').on('click', () => this.save!());
 		$('#setWindow-properties').bind(WindowProperty);
 		$('#setWindow').on('closed', (event: any) => {
 			clear($('#setWindow-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(WindowProperty.parse(property));
+			words.push(WindowProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setWindow') + Token(': ') },
+			{ text: Local.get!('command.setWindow') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setWindow = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setWindow-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

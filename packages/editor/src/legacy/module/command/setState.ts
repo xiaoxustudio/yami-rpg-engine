@@ -13,7 +13,7 @@ Command.cases.setState = new CommandSchema({
 		{ key: 'time', default: 0 }
 	],
 	onInitialize() {
-		$('#setState-confirm').on('click', () => this.save());
+		$('#setState-confirm').on('click', () => this.save!());
 		$('#setState-operation').loadItems([
 			{ name: 'Set Time', value: 'set-time' },
 			{ name: 'Increase Time', value: 'increase-time' },
@@ -21,16 +21,16 @@ Command.cases.setState = new CommandSchema({
 		]);
 	},
 	parseOperation(operation: any) {
-		return Local.get('command.setState.' + operation);
+		return Local.get!('command.setState.' + operation);
 	},
 	customParse({ state, operation, time }: any) {
 		const words = Command.words
-			.push(Command.parseState(state))
-			.push(this.parseOperation(operation))
-			.push(Command.parseVariableNumber(time, 'ms'));
+			.push(Command.parseState!(state))
+			.push(this.parseOperation!(operation))
+			.push(Command.parseVariableNumber!(time, 'ms'));
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.setState') + Token(': ') },
+			{ text: Local.get!('command.setState') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

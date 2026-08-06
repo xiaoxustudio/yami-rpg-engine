@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.playAudio = new CommandSchema({
 	name: 'playAudio',
 	onInitialize() {
-		$('#playAudio-confirm').on('click', () => this.save());
+		$('#playAudio-confirm').on('click', () => this.save!());
 		$('#playAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -22,17 +22,17 @@ Command.cases.playAudio = new CommandSchema({
 	},
 	customParse({ type, audio, volume, location }: any) {
 		const words = Command.words
-			.push(Command.parseAudioType(type))
-			.push(Command.parseFileName(audio))
-			.push(Command.setNumberColor(volume));
+			.push(Command.parseAudioType!(type))
+			.push(Command.parseFileName!(audio))
+			.push(Command.setNumberColor!(volume));
 		switch (type) {
 			case 'se-attenuated':
-				words.push(Command.parsePosition(location));
+				words.push(Command.parsePosition!(location));
 				break;
 		}
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.playAudio') + Token(': ') },
+			{ text: Local.get!('command.playAudio') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -62,11 +62,11 @@ Command.cases.playAudio = new CommandSchema({
 			case 'bgs':
 			case 'cv':
 			case 'se':
-				Command.save({ type, audio, volume });
+				Command.save!({ type, audio, volume });
 				break;
 			case 'se-attenuated': {
 				const location = read('location');
-				Command.save({ type, audio, volume, location });
+				Command.save!({ type, audio, volume, location });
 				break;
 			}
 		}

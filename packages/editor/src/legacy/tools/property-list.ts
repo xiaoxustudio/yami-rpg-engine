@@ -11,9 +11,9 @@ import { Window } from './window-object.ts';
 import { IListInterface } from '@/types/list-interface.ts';
 
 export class AttributeListInterface implements IListInterface {
-	target: HTMLElement | null;
-	type: string;
-	group: string;
+	target!: HTMLElement | null;
+	type!: string;
+	group!: string;
 	history: any | null;
 	editor: any | null;
 	owner: any | null;
@@ -26,7 +26,7 @@ export class AttributeListInterface implements IListInterface {
 	initialize(list: HTMLElement): void {
 		this.target = null;
 		this.type = 'object-attribute';
-		this.group = list.getAttribute('group');
+		this.group = list.getAttribute('group') ?? '';
 
 		const { editor, owner } = this;
 		if (editor && owner) {
@@ -82,8 +82,7 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	open(item: any = { key: '', value: 0 }) {
-		Window.open('object-attribute');
-		AttributeListInterface.target = this.target;
+		Window.open!('object-attribute');
 		const isNew = item.key === '';
 		if (isNew) {
 			item.key = Attribute.getDefAttributeId(this.group);
@@ -166,7 +165,7 @@ export class AttributeListInterface implements IListInterface {
 				}
 				break;
 		}
-		Window.close('object-attribute');
+		Window.close!('object-attribute');
 		return { key, value };
 	}
 
@@ -198,13 +197,13 @@ export class AttributeListInterface implements IListInterface {
 		]);
 
 		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
-		$('#object-attribute-confirm')?.on('click', (event) => {
-			AttributeListInterface.target.save();
+		$('#object-attribute-confirm')?.on('click', (event: any) => {
+			(this.target as any)!.save();
 		});
 	}
 
 	static keyWrite(event: any) {
-		const group = AttributeListInterface.target.getAttribute('group');
+		const group = (this as any).target?.getAttribute('group');
 		const attr = Attribute.getGroupAttribute(group, event.value);
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);

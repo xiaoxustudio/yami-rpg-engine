@@ -6,7 +6,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 
 UI.TextBox = class TextBoxElement extends UI.Element {
 	focusing: boolean;
-	texture: Texture | null;
+	texture: any;
 	_type!: string;
 	_align!: string;
 	content!: string;
@@ -91,7 +91,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 	set align(value: any) {
 		this._align = value;
 		if (this.connected) {
-			this.calculateTextPosition();
+			this.calculateTextPosition!();
 		}
 	}
 
@@ -103,7 +103,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		if (this._padding !== value) {
 			this._padding = value;
 			if (this.connected) {
-				this.calculateTextPosition();
+				this.calculateTextPosition!();
 			}
 		}
 	}
@@ -183,7 +183,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			this.printer = printer;
 		}
 		if (printer.content !== this.content) {
-			this.updatePrinter();
+			this.updatePrinter!();
 		}
 	}
 
@@ -195,17 +195,17 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			}
 			printer.draw(this.content);
 			if (this.connected) {
-				this.calculateTextPosition();
+				this.calculateTextPosition!();
 			}
 		}
 	}
 
 	draw() {
 		if (this.visible === false) {
-			return this.drawChildren();
+			return this.drawChildren!();
 		}
 
-		this.update();
+		this.update!();
 
 		GL.alpha = this.opacity;
 		GL.blend = 'normal';
@@ -219,12 +219,12 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 				const dy = this.selectionY;
 				const dw = this.selectionWidth;
 				const dh = this.selectionHeight;
-				GL.fillRect(dx, dy, dw, dh, this._selectionBgColorInt);
+				GL.fillRect!(dx, dy, dw, dh, this._selectionBgColorInt);
 				const sy = this.textShiftY;
 				const sw = Math.min(this.textWidth, this.innerWidth);
 				const sh = this.innerHeight;
 				texture.clip(0, sy * scale, sw * scale, sh * scale);
-				GL.drawImageWithColor(
+				GL.drawImageWithColor!(
 					texture,
 					this.textX,
 					this.textY,
@@ -238,21 +238,21 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 					const sw = Math.min(this.textWidth, this.innerWidth);
 					const sh = this.innerHeight;
 					texture.clip(0, sy * scale, sw * scale, sh * scale);
-					GL.drawImageWithColor(texture, this.textX, this.textY, sw, sh, this._colorInt);
+					GL.drawImageWithColor!(texture, this.textX, this.textY, sw, sh, this._colorInt);
 				}
 			}
 		}
 
-		this.drawChildren();
+		this.drawChildren!();
 	}
 
 	resize() {
 		if (this.parent instanceof UI.Window) {
 			return this.parent.requestResizing();
 		}
-		this.calculatePosition();
-		this.calculateTextPosition();
-		this.resizeChildren();
+		this.calculatePosition!();
+		this.calculateTextPosition!();
+		this.resizeChildren!();
 	}
 
 	calculateTextPosition() {
@@ -295,6 +295,6 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 	destroy() {
 		super.destroy();
 		this.texture?.destroy();
-		this.destroyChildren();
+		this.destroyChildren!();
 	}
 };

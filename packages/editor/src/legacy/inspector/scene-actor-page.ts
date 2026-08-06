@@ -10,20 +10,20 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 {
 	const SceneActor = {
 		owner: Scene,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		datachange: null,
-		paramInput: null,
-		typeWrite: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		datachange: null as any,
+		paramInput: null as any,
+		typeWrite: null as any
 	};
 
-	SceneActor.initialize = function () {
+	SceneActor.initialize = function (this: any) {
 		if (!$('#sceneActor-name')) return;
 		this.nameBox = $('#sceneActor-name');
 		$('#sceneActor-type').loadItems([
@@ -50,7 +50,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, Scene))
+			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -60,7 +60,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 	};
 
-	SceneActor.create = function () {
+	SceneActor.create = function (this: any) {
 		return {
 			class: 'actor',
 			name: 'Actor',
@@ -81,12 +81,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneActor.open = function (actor) {
+	SceneActor.open = function (this: any, actor: any) {
 		if (this.target !== actor) {
 			this.target = actor;
 
 			const elTeamId = $('#sceneActor-teamId');
-			elTeamId.loadItems(Data.createTeamItems());
+			elTeamId.loadItems(Data.createTeamItems!());
 
 			const write = getElementWriter('sceneActor', actor);
 			write('name');
@@ -103,10 +103,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.close = function () {
+	SceneActor.close = function (this: any) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
-			Scene.updateTarget();
+			Scene.updateTarget!();
 			this.target = null;
 			clear($('#sceneActor-conditions'));
 			clear($('#sceneActor-events'));
@@ -115,7 +115,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.write = function (options) {
+	SceneActor.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#sceneActor-x'), options.x);
 		}
@@ -127,13 +127,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.update = function (actor, key, value) {
-		Scene.planToSave();
+	SceneActor.update = function (this: any, actor: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'name':
 				if (actor.name !== value) {
 					actor.name = value;
-					Scene.updateTargetInfo();
+					Scene.updateTargetInfo!();
 					Scene.list.updateItemName(actor);
 				}
 				break;
@@ -150,13 +150,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 					actor.player.destroy();
 					delete actor.data;
 					delete actor.player;
-					Scene.loadActorContext(actor);
+					Scene.loadActorContext!(actor);
 				}
 				break;
 			case 'teamId':
 				if (actor.teamId !== value) {
 					actor.teamId = value;
-					Scene.list.updateIcon(actor);
+					Scene.list.updateIcon!(actor);
 				}
 				break;
 			case 'angle':
@@ -174,24 +174,24 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 				break;
 		}
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	};
 
-	SceneActor.datachange = function (event) {
+	SceneActor.datachange = function (this: any, event: any) {
 		if (this.target && event.key === 'teams') {
 			const elTeamId = $('#sceneActor-teamId');
-			elTeamId.loadItems(Data.createTeamItems());
+			elTeamId.loadItems(Data.createTeamItems!());
 			this.target.teamId = '';
 			elTeamId.update();
 			elTeamId.dispatchEvent(new Event('input'));
 		}
 	}.bind(SceneActor);
 
-	SceneActor.paramInput = function (event) {
-		SceneActor.update(SceneActor.target, Inspector.getKey(this), read(this));
+	SceneActor.paramInput = function (this: any, event: any) {
+		SceneActor.update(SceneActor.target, Inspector.getKey!(this), read(this));
 	};
 
-	SceneActor.typeWrite = function (event) {
+	SceneActor.typeWrite = function (this: any, event: any) {
 		switch (event.value) {
 			case 'local':
 				show($('#sceneActor-scripts-detail'));

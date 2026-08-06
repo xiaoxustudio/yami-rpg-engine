@@ -6,7 +6,7 @@ import { disable, enable, on, write } from '@/util/element-utils.ts';
 function getWindow() {
 	return (window as any).Window;
 }
-import { Net, axios } from './net.ts';
+import { Net } from './net.ts';
 import {
 	fs,
 	CommunityVersion,
@@ -69,7 +69,7 @@ export const Resources = new (class {
 	loaded = false;
 
 	constructor() {
-		this.updateFastGithubArray().then((data) => {
+		void this.updateFastGithubArray().then((data) => {
 			this._fastGithubArray = data;
 		});
 	}
@@ -401,7 +401,7 @@ export const Resources = new (class {
 				!NoResourceObj['arpg-ts-english'].check &&
 				!NoResourceObj['arpg-ts-chinese'].check
 			) {
-				Resources.open();
+				void Resources.open();
 			}
 
 			getWindow().confirm({ message: versionString }, [
@@ -410,7 +410,7 @@ export const Resources = new (class {
 				}
 			]);
 		}
-		this.checkEditorVersion();
+		void this.checkEditorVersion();
 	}
 
 	temp(val: any) {
@@ -493,7 +493,7 @@ export const Resources = new (class {
 				sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
 			});
 
-		let cancelDownload = null;
+		let cancelDownload: any = null;
 		let isDownloading = false;
 		let isDecompressing = false;
 		let lastLoaded = 0;
@@ -608,7 +608,7 @@ export const Resources = new (class {
 					pauseButton.style.display = 'none';
 					progressContainer.style.display = 'none';
 
-					if (!axios.isCancel(e)) {
+					if (!Net.isCancel(e)) {
 						getWindow().confirm({ message: e.message }, [
 							{
 								label: get('yes')
@@ -653,7 +653,7 @@ export const Resources = new (class {
 
 	async open() {
 		getWindow().open('resource');
-		this.updateNodeInfo();
+		void this.updateNodeInfo();
 		this.load();
 	}
 })();

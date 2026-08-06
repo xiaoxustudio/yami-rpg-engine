@@ -13,7 +13,7 @@ export const Meta = (function IIFE() {
 		font: 'fonts',
 		other: 'others'
 	};
-	const loaderDescriptor = { path: null, type: 'json' };
+	const loaderDescriptor = { path: null as string | null, type: 'json' };
 	const fileDescriptor = { writable: true, value: null };
 	const guidDescriptor = { writable: true, value: '' };
 	const codeDescriptor = { writable: true, value: '' };
@@ -30,7 +30,7 @@ export const Meta = (function IIFE() {
 		path: string;
 		size: number;
 		// 以下字段用 `declare` 仅作类型声明，运行期完全由 Object.defineProperties(this, descriptors) 定义为不可枚举属性。切勿写成类字段（如 `file;` 或 `file = null`）——useDefineForClassFields:true 下 TS 会发射 `Object.defineProperty(this,'file',{enumerable:true,...})`，使 JSON.stringify 看到 file -> FileItem.meta 循环引用。
-		declare file: FileItem;
+		declare file: any;
 		declare guid: string;
 		declare mtimeMs: number | null;
 		declare versionId: number;
@@ -42,7 +42,7 @@ export const Meta = (function IIFE() {
 		// script 类型运行时由 Object.defineProperty 挂载（非枚举）
 		declare code: string;
 
-		constructor(file: FileItem, guid: string) {
+		constructor(file: any, guid: string) {
 			const { type, path } = file;
 			this.path = path;
 			this.size = Number(file.stats.size);
@@ -62,7 +62,7 @@ export const Meta = (function IIFE() {
 					break;
 			}
 
-			const name = FileItem.dataMapNames[type];
+			const name = (FileItem.dataMapNames as Record<string, any>)[type];
 			if (name !== undefined) {
 				dataMapDescriptor.value = Data[name];
 				Object.defineProperty(this, 'dataMap', dataMapDescriptor);
@@ -71,12 +71,12 @@ export const Meta = (function IIFE() {
 				file.promise = promise
 					.then(async () => {
 						loaderDescriptor.path = this.path;
-						const data = await File.get(loaderDescriptor);
+						const data = await File.get!(loaderDescriptor);
 						if (data) {
 							guidDescriptor.value = guid;
 							Object.defineProperty(data, 'guid', guidDescriptor);
 						}
-						this.dataMap[guid] = data;
+						this.dataMap![guid] = data;
 						switch (type) {
 							case 'event':
 								Updater.updateGlobalEvent(this);
@@ -89,12 +89,12 @@ export const Meta = (function IIFE() {
 								break;
 						}
 					})
-					.catch((error) => {
+					.catch((error: any) => {
 						console.log(`读取失败: ${error.message}`);
 					});
 			}
 
-			const key = typeMapToGroupName[type];
+			const key = (typeMapToGroupName as Record<string, any>)[type];
 			if (key === undefined) {
 				throw new Error('Unknown meta type');
 			}

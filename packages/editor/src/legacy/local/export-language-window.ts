@@ -24,15 +24,15 @@ export const ExportLanguage: {
 	confirm: () => {}
 };
 
-ExportLanguage.initialize = function () {
+ExportLanguage.initialize = function (this: any) {
 	if (!$('#exportLanguage-confirm')) return;
 	on($('#exportLanguage-confirm'), 'click', this.confirm);
 };
 
-ExportLanguage.open = function () {
+ExportLanguage.open = function (this: any) {
 	getWindow().open('exportLanguage');
 
-	const items = [];
+	const items = [] as any[];
 	const none = { name: (Local.get as any)('common.none'), value: '' };
 	for (const language of Data.config.localization.languages) {
 		items.push({
@@ -46,8 +46,8 @@ ExportLanguage.open = function () {
 	$('#exportLanguage-second').writeDefault();
 };
 
-ExportLanguage.exportLanguagePack = function (first: string, second: string) {
-	const pack: Record<string, string> = {};
+ExportLanguage.exportLanguagePack = function (this: any, first: string, second: string) {
+	const pack: Record<string, string> = {} as Record<string, any>;
 	const loadText = (items: any[]) => {
 		for (const item of items) {
 			if (item.class === 'folder') {
@@ -59,10 +59,10 @@ ExportLanguage.exportLanguagePack = function (first: string, second: string) {
 		}
 	};
 	loadText(Data.localization.list);
-	return this.stringifyLanguagePack(pack);
+	return this.stringifyLanguagePack!(pack);
 };
 
-ExportLanguage.stringifyLanguagePack = function (map: Record<string, string>) {
+ExportLanguage.stringifyLanguagePack = function (this: any, map: Record<string, string>) {
 	const entries = Object.entries(map);
 	const length = entries.length;
 	const strings = new Array(length);
@@ -73,18 +73,18 @@ ExportLanguage.stringifyLanguagePack = function (map: Record<string, string>) {
 	return strings.join('\n\n');
 };
 
-ExportLanguage.confirm = function (event: any) {
+ExportLanguage.confirm = function (this: any, event: any) {
 	getWindow().close('exportLanguage');
-	const dialogs = Editor.config.dialogs;
+	const dialogs = (Editor.config as any).dialogs;
 	const first = read($('#exportLanguage-first'));
 	const second = read($('#exportLanguage-second'));
 	File.showSaveDialog!({
-		defaultPath: Path.resolve(dialogs.export, first + '.txt')
+		defaultPath: Path.resolve!(dialogs.export, first + '.txt')
 	}).then(({ filePath }: any) => {
 		if (filePath) {
-			dialogs.export = Path.slash(Path.dirname(filePath));
-			const string = ExportLanguage.exportLanguagePack(first, second);
-			return FSP.writeFile(filePath, string);
+			dialogs.export = Path.slash!(Path.dirname!(filePath));
+			const string = ExportLanguage.exportLanguagePack!(first, second);
+			return FSP.writeFile!(filePath, string);
 		}
 	});
 };

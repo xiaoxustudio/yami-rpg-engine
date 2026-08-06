@@ -21,77 +21,77 @@ function getWindow() {
 }
 
 export const AutoTile = {
-	canvas: null,
-	templateList: null,
-	nodeList: null,
-	frameList: null,
-	templates: null,
-	template: null,
-	nodes: null,
-	node: null,
-	nodeIndex: null,
-	nodeMaximum: null,
-	frames: null,
-	frameIndex: null,
-	frameMaximum: null,
+	canvas: null as any,
+	templateList: null as any,
+	nodeList: null as any,
+	frameList: null as any,
+	templates: null as any,
+	template: null as any,
+	nodes: null as any,
+	node: null as any,
+	nodeIndex: null as any,
+	nodeMaximum: null as any,
+	frames: null as any,
+	frameIndex: null as any,
+	frameMaximum: null as any,
 	noImage: Symbol(),
-	imageId: null,
-	image: null,
-	offsetX: null,
-	offsetY: null,
+	imageId: null as any,
+	image: null as any,
+	offsetX: null as any,
+	offsetY: null as any,
 	changed: false,
-	initialize: null,
-	open: null,
-	create: null,
-	insertTemplate: null,
-	copyTemplate: null,
-	pasteTemplate: null,
-	deleteTemplate: null,
-	shiftTemplateFrames: null,
-	createTemplateId: null,
-	createTemplateData: null,
-	getTemplateById: null,
-	insertNode: null,
-	cutNode: null,
-	copyNode: null,
-	pasteNode: null,
-	deleteNode: null,
-	setNodeQuantity: null,
-	createNodeData: null,
-	createNodeItems: null,
-	editFrame: null,
-	insertFrame: null,
-	cutFrame: null,
-	copyFrame: null,
-	pasteFrame: null,
-	deleteFrame: null,
-	setFrameQuantity: null,
-	generateFrames: null,
-	createFrameData: null,
-	createFrameItems: null,
-	updateFrameItem: null,
-	updateCanvas: null,
-	drawFrame: null,
-	windowClose: null,
-	windowClosed: null,
-	dprchange: null,
-	templatesKeydown: null,
-	templatesSelect: null,
-	templatesChange: null,
-	templatesPopup: null,
-	nodesWrite: null,
-	nodesPopup: null,
-	nodesKeydown: null,
-	ruleNeighborInput: null,
-	framesWrite: null,
-	framesPopup: null,
-	framesKeydown: null,
-	framesDoubleclick: null,
-	canvasClick: null,
-	imageInput: null,
-	offsetXInput: null,
-	offsetYInput: null,
-	confirm: null
+	initialize: null as any,
+	open: null as any,
+	create: null as any,
+	insertTemplate: null as any,
+	copyTemplate: null as any,
+	pasteTemplate: null as any,
+	deleteTemplate: null as any,
+	shiftTemplateFrames: null as any,
+	createTemplateId: null as any,
+	createTemplateData: null as any,
+	getTemplateById: null as any,
+	insertNode: null as any,
+	cutNode: null as any,
+	copyNode: null as any,
+	pasteNode: null as any,
+	deleteNode: null as any,
+	setNodeQuantity: null as any,
+	createNodeData: null as any,
+	createNodeItems: null as any,
+	editFrame: null as any,
+	insertFrame: null as any,
+	cutFrame: null as any,
+	copyFrame: null as any,
+	pasteFrame: null as any,
+	deleteFrame: null as any,
+	setFrameQuantity: null as any,
+	generateFrames: null as any,
+	createFrameData: null as any,
+	createFrameItems: null as any,
+	updateFrameItem: null as any,
+	updateCanvas: null as any,
+	drawFrame: null as any,
+	windowClose: null as any,
+	windowClosed: null as any,
+	dprchange: null as any,
+	templatesKeydown: null as any,
+	templatesSelect: null as any,
+	templatesChange: null as any,
+	templatesPopup: null as any,
+	nodesWrite: null as any,
+	nodesPopup: null as any,
+	nodesKeydown: null as any,
+	ruleNeighborInput: null as any,
+	framesWrite: null as any,
+	framesPopup: null as any,
+	framesKeydown: null as any,
+	framesDoubleclick: null as any,
+	canvasClick: null as any,
+	imageInput: null as any,
+	offsetXInput: null as any,
+	offsetYInput: null as any,
+	confirm: null as any
 };
 
 function ensureDomBound() {
@@ -108,7 +108,7 @@ function ensureDomBound() {
 	templateList.updateTextNode = Easing.list_updateTextNode;
 }
 
-AutoTile.initialize = function () {
+AutoTile.initialize = function (this: any) {
 	ensureDomBound();
 	if (!AutoTile.templateList) return;
 	this.nodeMaximum = 64;
@@ -144,7 +144,7 @@ AutoTile.initialize = function () {
 	on($('#autoTile-confirm'), 'click', this.confirm);
 };
 
-AutoTile.open = function ({ template, image, x, y }) {
+AutoTile.open = function (this: any, { template, image, x, y }: any) {
 	getWindow().open('autoTile');
 	write($('#autoTile-image'), image);
 	write($('#autoTile-x'), x);
@@ -162,7 +162,7 @@ AutoTile.open = function ({ template, image, x, y }) {
 	getFocus($('#autoTile-image'));
 };
 
-AutoTile.create = function () {
+AutoTile.create = function (this: any) {
 	return {
 		template: Data.autotiles[0].id,
 		image: '',
@@ -171,17 +171,17 @@ AutoTile.create = function () {
 	};
 };
 
-AutoTile.insertTemplate = function (dItem) {
+AutoTile.insertTemplate = function (this: any, dItem: any) {
 	this.templateList.addNodeTo(this.createTemplateData(), dItem);
 };
 
-AutoTile.copyTemplate = function (item) {
+AutoTile.copyTemplate = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.ruletile.template', item);
 	}
 };
 
-AutoTile.pasteTemplate = function (dItem) {
+AutoTile.pasteTemplate = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.ruletile.template');
 	if (copy) {
 		copy.name += ' - Copy';
@@ -190,7 +190,7 @@ AutoTile.pasteTemplate = function (dItem) {
 	}
 };
 
-AutoTile.deleteTemplate = function (item) {
+AutoTile.deleteTemplate = function (this: any, item: any) {
 	const items = this.templates;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
@@ -217,7 +217,7 @@ AutoTile.deleteTemplate = function (item) {
 	}
 };
 
-AutoTile.shiftTemplateFrames = function (template, offsetX, offsetY) {
+AutoTile.shiftTemplateFrames = function (this: any, template: any, offsetX: any, offsetY: any) {
 	const sprite = this.image;
 	if (!(sprite instanceof Image)) {
 		return;
@@ -244,7 +244,7 @@ AutoTile.shiftTemplateFrames = function (template, offsetX, offsetY) {
 	this.changed = true;
 };
 
-AutoTile.createTemplateId = function () {
+AutoTile.createTemplateId = function (this: any) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -252,7 +252,7 @@ AutoTile.createTemplateId = function () {
 	return id;
 };
 
-AutoTile.createTemplateData = function () {
+AutoTile.createTemplateData = function (this: any) {
 	return {
 		id: this.createTemplateId(),
 		name: '',
@@ -261,7 +261,7 @@ AutoTile.createTemplateData = function () {
 	};
 };
 
-AutoTile.getTemplateById = function (id) {
+AutoTile.getTemplateById = function (this: any, id: any) {
 	const { templates } = this;
 	const { length } = templates;
 	for (let i = 0; i < length; i++) {
@@ -272,7 +272,7 @@ AutoTile.getTemplateById = function (id) {
 	return undefined;
 };
 
-AutoTile.insertNode = function (id = this.nodeIndex) {
+AutoTile.insertNode = function (this: any, id = this.nodeIndex) {
 	if (id <= this.nodes.length) {
 		this.nodes.splice(id, 0, this.createNodeData());
 		if (this.template.cover >= id) {
@@ -283,20 +283,20 @@ AutoTile.insertNode = function (id = this.nodeIndex) {
 	}
 };
 
-AutoTile.cutNode = function (id = this.nodeIndex) {
+AutoTile.cutNode = function (this: any, id = this.nodeIndex) {
 	if (this.nodes.length > 1) {
 		this.copyNode(id);
 		this.deleteNode(id);
 	}
 };
 
-AutoTile.copyNode = function (id = this.nodeIndex) {
+AutoTile.copyNode = function (this: any, id = this.nodeIndex) {
 	if (id < this.nodes.length) {
 		(Clipboard as any).write('yami.ruletile.node', this.nodes[id]);
 	}
 };
 
-AutoTile.pasteNode = function (id = this.nodes.length) {
+AutoTile.pasteNode = function (this: any, id = this.nodes.length) {
 	const copy = (Clipboard as any).read('yami.ruletile.node');
 	if (copy && id <= this.nodes.length) {
 		this.nodes.splice(id, 0, copy);
@@ -305,7 +305,7 @@ AutoTile.pasteNode = function (id = this.nodes.length) {
 	}
 };
 
-AutoTile.deleteNode = function (id = this.nodeIndex) {
+AutoTile.deleteNode = function (this: any, id = this.nodeIndex) {
 	if (id < this.nodes.length && this.nodes.length > 1) {
 		this.nodes.splice(id, 1);
 		if (this.template.cover >= id) {
@@ -320,7 +320,7 @@ AutoTile.deleteNode = function (id = this.nodeIndex) {
 	}
 };
 
-AutoTile.setNodeQuantity = function (count) {
+AutoTile.setNodeQuantity = function (this: any, count: any) {
 	const nodes = this.nodes;
 	const length = nodes.length;
 	if (length !== count) {
@@ -338,14 +338,14 @@ AutoTile.setNodeQuantity = function (count) {
 	}
 };
 
-AutoTile.createNodeData = function () {
+AutoTile.createNodeData = function (this: any) {
 	return {
 		rule: 0,
 		frames: [this.createFrameData()]
 	};
 };
 
-AutoTile.createNodeItems = function (id = this.nodeIndex) {
+AutoTile.createNodeItems = function (this: any, id = this.nodeIndex) {
 	const list = this.nodeList.reload();
 	const cover = this.template.cover;
 	const nodes = this.nodes;
@@ -362,13 +362,13 @@ AutoTile.createNodeItems = function (id = this.nodeIndex) {
 	write(list, Math.min(id, length - 1));
 };
 
-AutoTile.editFrame = function () {
+AutoTile.editFrame = function (this: any) {
 	if (this.image !== null) {
-		TileFrame.open();
+		(TileFrame.open as any)();
 	}
 };
 
-AutoTile.insertFrame = function (id = this.frameIndex) {
+AutoTile.insertFrame = function (this: any, id = this.frameIndex) {
 	if (id <= this.frames.length) {
 		this.frames.splice(id, 0, this.createFrameData());
 		this.createFrameItems(id);
@@ -376,14 +376,14 @@ AutoTile.insertFrame = function (id = this.frameIndex) {
 	}
 };
 
-AutoTile.cutFrame = function (id = this.frameIndex) {
+AutoTile.cutFrame = function (this: any, id = this.frameIndex) {
 	if (this.frames.length > 1) {
 		this.copyFrame(id);
 		this.deleteFrame(id);
 	}
 };
 
-AutoTile.copyFrame = function (id = this.frameIndex) {
+AutoTile.copyFrame = function (this: any, id = this.frameIndex) {
 	if (id < this.frames.length) {
 		(Clipboard as any).write('yami.ruletile.frame', {
 			frame: this.frames[id]
@@ -391,7 +391,7 @@ AutoTile.copyFrame = function (id = this.frameIndex) {
 	}
 };
 
-AutoTile.pasteFrame = function (id = this.frames.length) {
+AutoTile.pasteFrame = function (this: any, id = this.frames.length) {
 	const copy = (Clipboard as any).read('yami.ruletile.frame');
 	if (copy && id <= this.frames.length) {
 		this.frames.splice(id, 0, copy.frame);
@@ -400,7 +400,7 @@ AutoTile.pasteFrame = function (id = this.frames.length) {
 	}
 };
 
-AutoTile.deleteFrame = function (id = this.frameIndex) {
+AutoTile.deleteFrame = function (this: any, id = this.frameIndex) {
 	if (id < this.frames.length && this.frames.length > 1) {
 		this.frames.splice(id, 1);
 		this.createFrameItems();
@@ -408,7 +408,7 @@ AutoTile.deleteFrame = function (id = this.frameIndex) {
 	}
 };
 
-AutoTile.setFrameQuantity = function (count) {
+AutoTile.setFrameQuantity = function (this: any, count: any) {
 	const frames = this.frames;
 	const length = frames.length;
 	if (length !== count) {
@@ -423,7 +423,7 @@ AutoTile.setFrameQuantity = function (count) {
 	}
 };
 
-AutoTile.generateFrames = function (id, strideX, strideY, count) {
+AutoTile.generateFrames = function (this: any, id: any, strideX: any, strideY: any, count: any) {
 	const sprite = this.image;
 	if (!(sprite instanceof Image)) {
 		return;
@@ -449,11 +449,11 @@ AutoTile.generateFrames = function (id, strideX, strideY, count) {
 	this.changed = true;
 };
 
-AutoTile.createFrameData = function () {
+AutoTile.createFrameData = function (this: any) {
 	return 0;
 };
 
-AutoTile.createFrameItems = function (id = this.frameIndex) {
+AutoTile.createFrameItems = function (this: any, id = this.frameIndex) {
 	const list = this.frameList.reload();
 	const frames = this.frames;
 	const length = frames.length;
@@ -472,7 +472,7 @@ AutoTile.createFrameItems = function (id = this.frameIndex) {
 	write(list, Math.min(id, frames.length - 1));
 };
 
-AutoTile.updateFrameItem = function () {
+AutoTile.updateFrameItem = function (this: any) {
 	const frames = this.frames;
 	const index = this.frameIndex;
 	const length = frames.length;
@@ -484,7 +484,7 @@ AutoTile.updateFrameItem = function () {
 	this.drawFrame();
 };
 
-AutoTile.updateCanvas = function () {
+AutoTile.updateCanvas = function (this: any) {
 	const canvas = this.canvas;
 	const { width, height } = CSS.getDevicePixelContentBoxSize(canvas);
 	if (canvas.width !== width) {
@@ -495,7 +495,7 @@ AutoTile.updateCanvas = function () {
 	}
 };
 
-AutoTile.drawFrame = function () {
+AutoTile.drawFrame = function (this: any) {
 	const canvas = this.canvas;
 	const context = canvas.getContext('2d');
 	const width = canvas.width;
@@ -510,10 +510,10 @@ AutoTile.drawFrame = function () {
 			return;
 		}
 		const symbol = (this.image = Symbol());
-		return File.get({
+		return File.get!({
 			guid: guid,
 			type: 'image'
-		}).then((image) => {
+		}).then((image: any) => {
 			if (this.image === symbol) {
 				if (image) {
 					this.image = image;
@@ -536,7 +536,7 @@ AutoTile.drawFrame = function () {
 	drawAndFitImage(context, image, x, y, tileWidth, tileHeight);
 };
 
-AutoTile.windowClose = function (event) {
+AutoTile.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
@@ -560,7 +560,7 @@ AutoTile.windowClose = function (event) {
 	}
 }.bind(AutoTile);
 
-AutoTile.windowClosed = function (event) {
+AutoTile.windowClosed = function (this: any, event: any) {
 	this.templates = null;
 	this.template = null;
 	this.nodes = null;
@@ -573,22 +573,22 @@ AutoTile.windowClosed = function (event) {
 	clear(this.frameList);
 }.bind(AutoTile);
 
-AutoTile.dprchange = function (event) {
+AutoTile.dprchange = function (this: any, event: any) {
 	if (this.nodes !== null) {
 		this.updateCanvas();
 		this.drawFrame();
 	}
 }.bind(AutoTile);
 
-AutoTile.templatesKeydown = function (event) {
+AutoTile.templatesKeydown = function (this: any, event: any) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
-				AutoTile.copyTemplate(item);
+				AutoTile.copyTemplate!(item);
 				break;
 			case 'KeyV':
-				AutoTile.pasteTemplate();
+				AutoTile.pasteTemplate!();
 				break;
 		}
 	} else if (event.altKey) {
@@ -596,16 +596,16 @@ AutoTile.templatesKeydown = function (event) {
 	} else {
 		switch (event.code) {
 			case 'Insert':
-				AutoTile.insertTemplate(item);
+				AutoTile.insertTemplate!(item);
 				break;
 			case 'Delete':
-				AutoTile.deleteTemplate(item);
+				AutoTile.deleteTemplate!(item);
 				break;
 		}
 	}
 };
 
-AutoTile.templatesSelect = function (event) {
+AutoTile.templatesSelect = function (this: any, event: any) {
 	const item = event.value;
 	this.template = item;
 	this.nodes = item.nodes;
@@ -613,11 +613,11 @@ AutoTile.templatesSelect = function (event) {
 	this.createNodeItems();
 }.bind(AutoTile);
 
-AutoTile.templatesChange = function (event) {
+AutoTile.templatesChange = function (this: any, event: any) {
 	this.changed = true;
 }.bind(AutoTile);
 
-AutoTile.templatesPopup = function (event) {
+AutoTile.templatesPopup = function (this: any, event: any) {
 	const list = AutoTile.templateList;
 	const item = event.value;
 	const selected = !!item;
@@ -634,7 +634,7 @@ AutoTile.templatesPopup = function (event) {
 				label: get('insert'),
 				accelerator: 'Insert',
 				click: () => {
-					AutoTile.insertTemplate(item);
+					AutoTile.insertTemplate!(item);
 				}
 			},
 			{
@@ -642,7 +642,7 @@ AutoTile.templatesPopup = function (event) {
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					AutoTile.copyTemplate(item);
+					AutoTile.copyTemplate!(item);
 				}
 			},
 			{
@@ -650,7 +650,7 @@ AutoTile.templatesPopup = function (event) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					AutoTile.pasteTemplate(item);
+					AutoTile.pasteTemplate!(item);
 				}
 			},
 			{
@@ -658,7 +658,7 @@ AutoTile.templatesPopup = function (event) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					AutoTile.deleteTemplate(item);
+					AutoTile.deleteTemplate!(item);
 				}
 			},
 			{
@@ -676,8 +676,8 @@ AutoTile.templatesPopup = function (event) {
 				label: get('shift'),
 				enabled: selected,
 				click: () => {
-					SceneShift.open((x, y) => {
-						AutoTile.shiftTemplateFrames(item, x, y);
+					(SceneShift.open as any)((x: any, y: any) => {
+						AutoTile.shiftTemplateFrames!(item, x, y);
 					});
 				}
 			}
@@ -685,7 +685,7 @@ AutoTile.templatesPopup = function (event) {
 	);
 };
 
-AutoTile.nodesWrite = function (event) {
+AutoTile.nodesWrite = function (this: any, event: any) {
 	const nodeIndex = event.value;
 	this.nodeIndex = nodeIndex;
 	this.node = this.nodes[nodeIndex];
@@ -704,7 +704,7 @@ AutoTile.nodesWrite = function (event) {
 	this.createFrameItems();
 }.bind(AutoTile);
 
-AutoTile.nodesPopup = function (event) {
+AutoTile.nodesPopup = function (this: any, event: any) {
 	const id = event.value;
 	const cover = this.template.cover;
 	const nodes = this.nodes;
@@ -764,7 +764,7 @@ AutoTile.nodesPopup = function (event) {
 			{
 				label: get('setQuantity'),
 				click: () => {
-					SetQuantity.open(
+					SetQuantity.open!(
 						nodes.length,
 						this.nodeMaximum,
 						this.setNodeQuantity.bind(this)
@@ -787,17 +787,17 @@ AutoTile.nodesPopup = function (event) {
 	);
 }.bind(AutoTile);
 
-AutoTile.nodesKeydown = function (event) {
+AutoTile.nodesKeydown = function (this: any, event: any) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
-				AutoTile.cutNode();
+				AutoTile.cutNode!();
 				break;
 			case 'KeyC':
-				AutoTile.copyNode();
+				AutoTile.copyNode!();
 				break;
 			case 'KeyV':
-				AutoTile.pasteNode();
+				AutoTile.pasteNode!();
 				break;
 		}
 	} else if (event.altKey) {
@@ -805,16 +805,16 @@ AutoTile.nodesKeydown = function (event) {
 	} else {
 		switch (event.code) {
 			case 'Insert':
-				AutoTile.insertNode();
+				AutoTile.insertNode!();
 				break;
 			case 'Delete':
-				AutoTile.deleteNode();
+				AutoTile.deleteNode!();
 				break;
 		}
 	}
 };
 
-AutoTile.ruleNeighborInput = function (event) {
+AutoTile.ruleNeighborInput = function (this: any, event: any) {
 	const read = getElementReader('autoTile-rule');
 	const rule =
 		read('0') |
@@ -829,12 +829,12 @@ AutoTile.ruleNeighborInput = function (event) {
 	AutoTile.changed = true;
 };
 
-AutoTile.framesWrite = function (event) {
+AutoTile.framesWrite = function (this: any, event: any) {
 	this.frameIndex = event.value;
 	this.drawFrame();
 }.bind(AutoTile);
 
-AutoTile.framesPopup = function (event) {
+AutoTile.framesPopup = function (this: any, event: any) {
 	const id = event.value;
 	const frames = this.frames;
 	const selected = id !== null;
@@ -901,7 +901,7 @@ AutoTile.framesPopup = function (event) {
 			{
 				label: get('setQuantity'),
 				click: () => {
-					SetQuantity.open(
+					SetQuantity.open!(
 						frames.length,
 						this.frameMaximum,
 						this.setFrameQuantity.bind(this)
@@ -915,7 +915,7 @@ AutoTile.framesPopup = function (event) {
 				label: get('generate'),
 				enabled: editable && insertable,
 				click: () => {
-					FrameGenerator.open((x, y, count) => {
+					FrameGenerator.open!((x: any, y: any, count: any) => {
 						this.generateFrames(id, x, y, count);
 					});
 				}
@@ -924,17 +924,17 @@ AutoTile.framesPopup = function (event) {
 	);
 }.bind(AutoTile);
 
-AutoTile.framesKeydown = function (event) {
+AutoTile.framesKeydown = function (this: any, event: any) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
-				AutoTile.cutFrame();
+				AutoTile.cutFrame!();
 				break;
 			case 'KeyC':
-				AutoTile.copyFrame();
+				AutoTile.copyFrame!();
 				break;
 			case 'KeyV':
-				AutoTile.pasteFrame();
+				AutoTile.pasteFrame!();
 				break;
 		}
 	} else if (event.altKey) {
@@ -944,59 +944,59 @@ AutoTile.framesKeydown = function (event) {
 			case 'Enter':
 			case 'NumpadEnter':
 				event.stopPropagation();
-				AutoTile.editFrame();
+				AutoTile.editFrame!();
 				break;
 			case 'Insert':
-				AutoTile.insertFrame();
+				AutoTile.insertFrame!();
 				break;
 			case 'Delete':
-				AutoTile.deleteFrame();
+				AutoTile.deleteFrame!();
 				break;
 		}
 	}
 };
 
-AutoTile.framesDoubleclick = function (event) {
+AutoTile.framesDoubleclick = function (this: any, event: any) {
 	const element = event.target;
 	if (element.tagName === 'COMMON-ITEM' && hasClass(element, 'selected')) {
 		this.editFrame();
 	}
 }.bind(AutoTile);
 
-AutoTile.canvasClick = function (event) {
+AutoTile.canvasClick = function (this: any, event: any) {
 	this.editFrame();
 }.bind(AutoTile);
 
-AutoTile.imageInput = function (event) {
+AutoTile.imageInput = function (this: any, event: any) {
 	AutoTile.imageId = read(this);
 	AutoTile.image = null;
-	AutoTile.drawFrame();
+	AutoTile.drawFrame!();
 };
 
-AutoTile.offsetXInput = function (event) {
+AutoTile.offsetXInput = function (this: any, event: any) {
 	const x = read(this);
 	if (AutoTile.offsetX !== x) {
 		AutoTile.offsetX = x;
-		AutoTile.drawFrame();
+		AutoTile.drawFrame!();
 	}
 };
 
-AutoTile.offsetYInput = function (event) {
+AutoTile.offsetYInput = function (this: any, event: any) {
 	const y = read(this);
 	if (AutoTile.offsetY !== y) {
 		AutoTile.offsetY = y;
-		AutoTile.drawFrame();
+		AutoTile.drawFrame!();
 	}
 };
 
-AutoTile.confirm = function (event) {
+AutoTile.confirm = function (this: any, event: any) {
 	if (this.changed) {
 		this.changed = false;
 		const templates = this.templates;
 		TreeList.deleteCaches(templates);
 		Data.autotiles = templates;
 		Data.createGUIDMap(templates);
-		File.planToSave(Data.manifest.project.autotiles);
+		File.planToSave!(Data.manifest.project.autotiles);
 	}
 	const tiles = Palette.tileset.tiles;
 	const index = Palette.openIndex;
@@ -1014,7 +1014,7 @@ AutoTile.confirm = function (event) {
 			Palette.selectTiles(x, y, width, height);
 		}
 	}
-	File.planToSave(Palette.meta);
+	File.planToSave!(Palette.meta);
 	Palette.requestRendering();
 	Scene.requestRendering();
 	getWindow().close('autoTile');

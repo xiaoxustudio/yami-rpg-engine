@@ -14,13 +14,13 @@ Command.cases.setTeamRelation = new CommandSchema({
 		{ key: 'relation', default: 0 }
 	],
 	onInitialize() {
-		$('#setTeamRelation-confirm').on('click', () => this.save());
+		$('#setTeamRelation-confirm').on('click', () => this.save!());
 		$('#setTeamRelation-relation').loadItems([
 			{ name: 'Enemy', value: 0 },
 			{ name: 'Friend', value: 1 }
 		]);
 		$('#setTeamRelation').on('open', function (event: any) {
-			const items = Data.createTeamItems();
+			const items = Data.createTeamItems!();
 			$('#setTeamRelation-teamId1').loadItems(items);
 			$('#setTeamRelation-teamId2').loadItems(items);
 		});
@@ -30,16 +30,16 @@ Command.cases.setTeamRelation = new CommandSchema({
 		});
 	},
 	parseRelation(relation: any) {
-		return Local.get('command.setTeamRelation.relation.' + relation);
+		return Local.get!('command.setTeamRelation.relation.' + relation);
 	},
 	customParse({ teamId1, teamId2, relation }: any) {
 		const words = Command.words
-			.push(Command.parseTeam(teamId1))
-			.push(Command.parseTeam(teamId2))
-			.push(this.parseRelation(relation));
+			.push(Command.parseTeam!(teamId1))
+			.push(Command.parseTeam!(teamId2))
+			.push(this.parseRelation!(relation));
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.setTeamRelation') + Token(': ') },
+			{ text: Local.get!('command.setTeamRelation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

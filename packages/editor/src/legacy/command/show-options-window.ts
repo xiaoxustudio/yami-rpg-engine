@@ -7,35 +7,35 @@ function getWindow() {
 }
 
 export const Choices = {
-	target: null,
-	commands: null,
-	initialize: null,
-	parse: null,
-	open: null,
-	save: null,
-	windowClosed: null,
-	confirm: null
+	target: null as any,
+	commands: null as any,
+	initialize: null as any,
+	parse: null as any,
+	open: null as any,
+	save: null as any,
+	windowClosed: null as any,
+	confirm: null as any
 };
 
-Choices.initialize = function () {
+Choices.initialize = function (this: any) {
 	const choiceEl = $('#choice');
 	if (!choiceEl) return;
 	on(choiceEl, 'closed', this.windowClosed);
 	on($('#choice-confirm'), 'click', this.confirm);
 };
 
-Choices.parse = function (choice) {
-	return Command.removeTextTags(Command.parseVariableTag(GameLocal.replace(choice.content)));
+Choices.parse = function (this: any, choice: any) {
+	return Command.removeTextTags!(Command.parseVariableTag!(GameLocal.replace!(choice.content)));
 };
 
-Choices.open = function (choice = { content: '', commands: [] }) {
+Choices.open = function (this: any, choice = { content: '', commands: [] }) {
 	getWindow().open('choice');
 	write($('#choice-content'), choice.content);
 	getFocus($('#choice-content'), 'all');
 	this.commands = choice.commands;
 };
 
-Choices.save = function () {
+Choices.save = function (this: any) {
 	const commands = this.commands;
 	const content = read($('#choice-content')).trim();
 	if (content === '') {
@@ -45,10 +45,10 @@ Choices.save = function () {
 	return { content, commands };
 };
 
-Choices.windowClosed = function (event) {
+Choices.windowClosed = function (this: any, event: any) {
 	Choices.commands = null;
 };
 
-Choices.confirm = function (event) {
+Choices.confirm = function (this: any, event: any) {
 	return Choices.target.save();
 };

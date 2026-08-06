@@ -6,18 +6,18 @@ import { read, write } from '@/util/element-utils.ts';
 
 {
 	const AnimParticleFrame = {
-		motion: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		motion: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimParticleFrame.initialize = function () {
+	AnimParticleFrame.initialize = function (this: any) {
 		if (!$('#animParticleFrame-x')) return;
 		const elements = $(`#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation,
     #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity,
@@ -27,7 +27,7 @@ import { read, write } from '@/util/element-utils.ts';
 		elements.forEach((el: HTMLElement) =>
 			el.addEventListener(
 				'blur',
-				Inspector.inputBlur(this, Animation, (data) => {
+				Inspector.inputBlur!(this, Animation, (data: any) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -36,7 +36,7 @@ import { read, write } from '@/util/element-utils.ts';
 		);
 	};
 
-	AnimParticleFrame.create = function () {
+	AnimParticleFrame.create = function (this: any) {
 		return {
 			start: 0,
 			end: 1,
@@ -52,11 +52,11 @@ import { read, write } from '@/util/element-utils.ts';
 		};
 	};
 
-	AnimParticleFrame.open = function (frame) {
+	AnimParticleFrame.open = function (this: any, frame: any) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
-			Curve.load(frame);
+			Curve.load!(frame);
 
 			const write = getElementWriter('animParticleFrame', frame);
 			write('x');
@@ -70,16 +70,16 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimParticleFrame.close = function () {
+	AnimParticleFrame.close = function (this: any) {
 		if (this.target) {
-			Animation.unselectMarquee(this.target);
-			Curve.load(null);
+			Animation.unselectMarquee!(this.target);
+			Curve.load!(null);
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimParticleFrame.write = function (options) {
+	AnimParticleFrame.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#animParticleFrame-x'), options.x);
 		}
@@ -97,8 +97,8 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimParticleFrame.update = function (frame, key, value) {
-		Animation.planToSave();
+	AnimParticleFrame.update = function (this: any, frame: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'x':
 			case 'y':
@@ -109,7 +109,7 @@ import { read, write } from '@/util/element-utils.ts';
 			case 'scale':
 				if (frame[key] !== value) {
 					frame[key] = value;
-					Animation.updateFrameContexts();
+					Animation.updateFrameContexts!();
 				}
 				break;
 			case 'speed':
@@ -118,11 +118,11 @@ import { read, write } from '@/util/element-utils.ts';
 				}
 				break;
 		}
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	};
 
-	AnimParticleFrame.paramInput = function (event) {
-		AnimParticleFrame.update(AnimParticleFrame.target, Inspector.getKey(this), read(this));
+	AnimParticleFrame.paramInput = function (this: any, event: any) {
+		AnimParticleFrame.update(AnimParticleFrame.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.animParticleFrame = AnimParticleFrame;

@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
 	onInitialize() {
-		$('#setMovementSpeed-confirm').on('click', () => this.save());
+		$('#setMovementSpeed-confirm').on('click', () => this.save!());
 		$('#setMovementSpeed-property').loadItems([
 			{ name: 'Base Speed', value: 'base' },
 			{ name: 'Speed Factor', value: 'factor' },
@@ -25,22 +25,22 @@ Command.cases.setMovementSpeed = new CommandSchema({
 			]);
 	},
 	customParse({ actor, property, base, factor }: any) {
-		const label = Local.get('command.setMovementSpeed.' + property);
+		const label = Local.get!('command.setMovementSpeed.' + property);
 		const words = Command.words
-			.push(Command.parseActor(actor))
+			.push(Command.parseActor!(actor))
 			.push(label.replace('(', Token('(')).replace(')', Token(')')));
 		switch (property) {
 			case 'base':
-				words.push(Command.parseVariableNumber(base, 't/s'));
+				words.push(Command.parseVariableNumber!(base, 't/s'));
 				break;
 			case 'factor':
 			case 'factor-temp':
-				words.push(Command.parseVariableNumber(factor));
+				words.push(Command.parseVariableNumber!(factor));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setMovementSpeed') + Token(': ') },
+			{ text: Local.get!('command.setMovementSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -58,12 +58,12 @@ Command.cases.setMovementSpeed = new CommandSchema({
 		const property = read('property');
 		switch (property) {
 			case 'base': {
-				Command.save({ actor, property, base: read('base') });
+				Command.save!({ actor, property, base: read('base') });
 				break;
 			}
 			case 'factor':
 			case 'factor-temp': {
-				Command.save({ actor, property, factor: read('factor') });
+				Command.save!({ actor, property, factor: read('factor') });
 				break;
 			}
 		}

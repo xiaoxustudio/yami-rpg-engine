@@ -14,7 +14,7 @@ Command.cases.detectTargets = new CommandSchema({
 		{ key: 'inSight', default: false }
 	],
 	onInitialize() {
-		$('#detectTargets-confirm').on('click', () => this.save());
+		$('#detectTargets-confirm').on('click', () => this.save!());
 		$('#detectTargets-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
@@ -31,20 +31,20 @@ Command.cases.detectTargets = new CommandSchema({
 	parseInSight(inSight: any) {
 		switch (inSight) {
 			case true:
-				return Local.get('command.detectTargets.inSight');
+				return Local.get!('command.detectTargets.inSight');
 			case false:
 				return '';
 		}
 	},
 	customParse({ actor, distance, selector, inSight }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Token('≤') + Command.parseVariableNumber(distance, 't'))
-			.push(Command.parseActorSelector(selector))
-			.push(this.parseInSight(inSight));
+			.push(Command.parseActor!(actor))
+			.push(Token('≤') + Command.parseVariableNumber!(distance, 't'))
+			.push(Command.parseActorSelector!(selector))
+			.push(this.parseInSight!(inSight));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.detectTargets') + Token(': ') },
+			{ text: Local.get!('command.detectTargets') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -57,7 +57,7 @@ Command.cases.detectTargets = new CommandSchema({
 		if (distance === 0) {
 			return getFocus($('#detectTargets-distance'), 'all');
 		}
-		Command.save({
+		Command.save!({
 			actor: read('actor'),
 			distance,
 			selector: read('selector'),

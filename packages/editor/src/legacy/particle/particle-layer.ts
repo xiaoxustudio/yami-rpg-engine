@@ -22,7 +22,7 @@ interface ParticleElement {
 Particle.Layer = class ParticleLayer {
 	emitter: any;
 	data: ParticleLayerData;
-	texture: ImageTexture | null;
+	texture: any;
 	textureWidth: number;
 	textureHeight: number;
 	unitWidth: number;
@@ -52,11 +52,11 @@ Particle.Layer = class ParticleLayer {
 		this.reserves = [] as unknown as ParticleElement[] & { count: number };
 		this.reserves.count = 0;
 
-		this.updateCount();
+		this.updateCount!();
 
-		this.updateEasing();
+		this.updateEasing!();
 
-		this.loadTexture();
+		this.loadTexture!();
 	}
 
 	emitParticles(deltaTime: any) {
@@ -88,7 +88,7 @@ Particle.Layer = class ParticleLayer {
 					}
 				}
 				for (let i = this.capacity; i < maximum; i++) {
-					elements[eCount++] = new Particle.Element(this);
+					elements[eCount++] = new Particle.Element!(this);
 					this.capacity = i + 1;
 					count--;
 					stocks--;
@@ -229,7 +229,7 @@ Particle.Layer = class ParticleLayer {
 		const texture = this.texture;
 		if (texture instanceof ImageTexture) {
 			if (texture.complete && texture.base.guid === guid) {
-				this.calculateElementSize();
+				this.calculateElementSize!();
 				return;
 			}
 			texture.destroy();
@@ -241,7 +241,7 @@ Particle.Layer = class ParticleLayer {
 			const texture = new ImageTexture(guid);
 			if (texture.complete) {
 				this.texture = texture;
-				this.calculateElementSize();
+				this.calculateElementSize!();
 				Particle.Element.stage.requestRendering();
 				delete (this as any).draw;
 				return;
@@ -250,7 +250,7 @@ Particle.Layer = class ParticleLayer {
 			texture.on('load', () => {
 				if (this.texture === texture) {
 					this.texture = texture;
-					this.calculateElementSize();
+					this.calculateElementSize!();
 					Particle.Element.stage.requestRendering();
 					delete (this as any).draw;
 				} else {
@@ -300,7 +300,7 @@ Particle.Layer = class ParticleLayer {
 	}
 
 	updateElementMethods() {
-		this.clear();
+		this.clear!();
 		const reserves = this.reserves;
 		const count = reserves.count;
 		for (let i = 0; i < count; i++) {

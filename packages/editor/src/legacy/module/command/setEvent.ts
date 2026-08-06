@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setEvent = new CommandSchema({
 	name: 'setEvent',
 	onInitialize() {
-		$('#setEvent-confirm').on('click', () => this.save());
+		$('#setEvent-confirm').on('click', () => this.save!());
 		$('#setEvent-operation').loadItems([
 			{ name: 'Stop Propagation', value: 'stop-propagation' },
 			{ name: 'Pause and Save to Variable', value: 'pause' },
@@ -37,26 +37,26 @@ Command.cases.setEvent = new CommandSchema({
 			]);
 	},
 	customParse({ operation, variable, eventId, choiceIndex }: any) {
-		const words = Command.words.push(Local.get('command.setEvent.' + operation));
+		const words = Command.words.push(Local.get!('command.setEvent.' + operation));
 		switch (operation) {
 			case 'pause':
-				words.push(Command.parseVariable(variable, 'object', true));
+				words.push(Command.parseVariable!(variable, 'object', true));
 				break;
 			case 'continue':
-				words.push(Command.parseVariable(variable, 'object'));
+				words.push(Command.parseVariable!(variable, 'object'));
 				break;
 			case 'enable':
 			case 'disable':
 			case 'highest-priority':
-				words.push(Command.parseFileName(eventId));
+				words.push(Command.parseFileName!(eventId));
 				break;
 			case 'goto-choice-branch':
-				words.push(Command.parseVariableNumber(choiceIndex));
+				words.push(Command.parseVariableNumber!(choiceIndex));
 				break;
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.setEvent.alias') + Token(': ') },
+			{ text: Local.get!('command.setEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -84,15 +84,15 @@ Command.cases.setEvent = new CommandSchema({
 		const operation = read('operation');
 		switch (operation) {
 			case 'stop-propagation':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 			case 'pause':
 			case 'continue': {
 				const variable = read('variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setEvent-variable'));
 				}
-				Command.save({ operation, variable });
+				Command.save!({ operation, variable });
 				break;
 			}
 			case 'enable':
@@ -102,12 +102,12 @@ Command.cases.setEvent = new CommandSchema({
 				if (eventId === '') {
 					return getFocus($('#setEvent-eventId'));
 				}
-				Command.save({ operation, eventId });
+				Command.save!({ operation, eventId });
 				break;
 			}
 			case 'goto-choice-branch': {
 				const choiceIndex = read('choiceIndex');
-				Command.save({ operation, choiceIndex });
+				Command.save!({ operation, choiceIndex });
 				break;
 			}
 		}

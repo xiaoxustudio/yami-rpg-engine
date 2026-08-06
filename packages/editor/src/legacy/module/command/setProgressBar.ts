@@ -9,20 +9,20 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setProgressBar = new CommandSchema({
 	name: 'setProgressBar',
 	onInitialize() {
-		$('#setProgressBar-confirm').on('click', () => this.save());
+		$('#setProgressBar-confirm').on('click', () => this.save!());
 		$('#setProgressBar-properties').bind(ProgressBarProperty);
 		$('#setProgressBar').on('closed', (event: any) => {
 			clear($('#setProgressBar-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(ProgressBarProperty.parse(property));
+			words.push(ProgressBarProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setProgressBar') + Token(': ') },
+			{ text: Local.get!('command.setProgressBar') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -39,6 +39,6 @@ Command.cases.setProgressBar = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setProgressBar-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

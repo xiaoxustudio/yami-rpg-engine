@@ -15,24 +15,24 @@ Command.cases.changeActorSprite = new CommandSchema({
 		{ key: 'image', default: '' }
 	],
 	onInitialize() {
-		$('#changeActorSprite-confirm').on('click', () => this.save());
+		$('#changeActorSprite-confirm').on('click', () => this.save!());
 		// changeActorSprite-animationId write 经 Vue 模板转发（changeActorSprite.vue @write → Command.cases.changeActorSprite.writeHandler）
 	},
 	writeHandler(event: any) {
-		const items = Animation.getSpriteListItems(event.value);
+		const items = Animation.getSpriteListItems!(event.value);
 		const elSpriteId = $('#changeActorSprite-spriteId');
 		elSpriteId.loadItems(items);
 		write(elSpriteId, read(elSpriteId));
 	},
 	customParse({ actor, animationId, spriteId, image }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseFileName(animationId))
-			.push(Command.parseSpriteName(animationId, spriteId))
-			.push(Command.parseFileName(image));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseFileName!(animationId))
+			.push(Command.parseSpriteName!(animationId, spriteId))
+			.push(Command.parseFileName!(image));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorSprite') + Token(': ') },
+			{ text: Local.get!('command.changeActorSprite') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

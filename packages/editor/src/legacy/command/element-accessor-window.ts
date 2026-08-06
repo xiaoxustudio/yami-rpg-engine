@@ -42,15 +42,15 @@ interface ElementGetterShape {
 }
 
 export const ElementGetter: ElementGetterShape = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-ElementGetter.initialize = function (): void {
+ElementGetter.initialize = function (this: any): void {
 	if (!$('#elementGetter-type')) return;
 	($('#elementGetter-type') as any).loadItems([
 		{ name: 'Event Trigger Element', value: 'trigger' },
@@ -93,7 +93,7 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	getWindow().open('elementGetter');
 
 	let index = 0;
-	let presetId = PresetElement.getDefaultPresetId();
+	let presetId = PresetElement.getDefaultPresetId!();
 	let ancestor = { type: 'trigger' };
 	let variable = { type: 'local', key: '' };
 	const element = target.dataValue;
@@ -133,14 +133,14 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	getFocus($('#elementGetter-type'));
 };
 
-ElementGetter.checkDataForPlugin = function (data: any): boolean {
+ElementGetter.checkDataForPlugin = function (this: any, data: any): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'element';
 	}
 	return false;
 };
 
-ElementGetter.createDefaultForPlugin = function (): {
+ElementGetter.createDefaultForPlugin = function (this: any): {
 	getter: string;
 	type: string;
 } {

@@ -11,7 +11,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getActor = new CommandSchema({
 	name: 'getActor',
 	onInitialize() {
-		$('#getActor-confirm').on('click', () => this.save());
+		$('#getActor-confirm').on('click', () => this.save!());
 		$('#getActor-area').loadItems([
 			{ name: 'Square', value: 'square' },
 			{ name: 'Circle', value: 'circle' }
@@ -74,7 +74,7 @@ Command.cases.getActor = new CommandSchema({
 				{ case: 'team', targets: [$('#getActor-exclusionTeamId')] }
 			]);
 		$('#getActor').on('open', function (event: any) {
-			const items = Data.createTeamItems();
+			const items = Data.createTeamItems!();
 			$('#getActor-teamId').loadItems(items);
 			$('#getActor-exclusionTeamId').loadItems(items);
 		});
@@ -106,7 +106,7 @@ Command.cases.getActor = new CommandSchema({
 		}
 	},
 	parseCondition(condition: any, attribute: any, divisor: any) {
-		const label = Local.get('command.getActor.condition.' + condition);
+		const label = Local.get!('command.getActor.condition.' + condition);
 		switch (condition) {
 			case 'nearest':
 			case 'farthest':
@@ -115,16 +115,16 @@ Command.cases.getActor = new CommandSchema({
 			case 'min-attribute-value':
 			case 'max-attribute-value':
 				return (
-					label + Token('(') + Command.parseAttributeKey('actor', attribute) + Token(')')
+					label + Token('(') + Command.parseAttributeKey!('actor', attribute) + Token(')')
 				);
 			case 'min-attribute-ratio':
 			case 'max-attribute-ratio':
 				return (
 					label +
 					Token('(') +
-					Command.parseAttributeKey('actor', attribute) +
+					Command.parseAttributeKey!('actor', attribute) +
 					Token(' / ') +
-					Command.parseAttributeKey('actor', divisor) +
+					Command.parseAttributeKey!('actor', divisor) +
 					Token(')')
 				);
 		}
@@ -146,47 +146,47 @@ Command.cases.getActor = new CommandSchema({
 		exclusionTeamId,
 		active
 	}: any) {
-		selector = this.remapSelectorPatch(selector);
-		activation = this.remapActivationPatch(activation, active);
+		selector = this.remapSelectorPatch!(selector);
+		activation = this.remapActivationPatch!(activation, active);
 		condition = condition ?? 'nearest';
 		exclusion = exclusion ?? 'none';
-		const actor = Command.parseVariable(variable, 'object', true);
+		const actor = Command.parseVariable!(variable, 'object', true);
 		const words = Command.words
-			.push(Command.parsePosition(position))
-			.push(Local.get('command.getActor.' + area))
-			.push(Command.parseVariableNumber(size ?? radius, 't'));
-		const selectorLabel = Command.parseActorSelector(selector);
+			.push(Command.parsePosition!(position))
+			.push(Local.get!('command.getActor.' + area))
+			.push(Command.parseVariableNumber!(size ?? radius, 't'));
+		const selectorLabel = Command.parseActorSelector!(selector);
 		switch (selector) {
 			case 'enemy':
 			case 'friend':
 			case 'team':
 				words.push(
-					selectorLabel + Token('(') + Command.parseVariableTeam(teamId) + Token(')')
+					selectorLabel + Token('(') + Command.parseVariableTeam!(teamId) + Token(')')
 				);
 				break;
 			case 'any':
 				words.push(selectorLabel);
 				break;
 		}
-		words.push(this.parseCondition(condition, attribute, divisor));
-		words.push(Local.get('command.getActor.' + activation));
+		words.push(this.parseCondition!(condition, attribute, divisor));
+		words.push(Local.get!('command.getActor.' + activation));
 		switch (exclusion) {
 			case 'actor': {
-				const label = Local.get('command.getActor.exclude');
-				words.push(label + Token('(') + Command.parseActor(exclusionActor) + Token(')'));
+				const label = Local.get!('command.getActor.exclude');
+				words.push(label + Token('(') + Command.parseActor!(exclusionActor) + Token(')'));
 				break;
 			}
 			case 'team': {
-				const label = Local.get('command.getActor.exclude');
+				const label = Local.get!('command.getActor.exclude');
 				words.push(
-					label + Token('(') + Command.parseVariableTeam(exclusionTeamId) + Token(')')
+					label + Token('(') + Command.parseVariableTeam!(exclusionTeamId) + Token(')')
 				);
 				break;
 			}
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.getActor') + Token(': ') },
+			{ text: Local.get!('command.getActor') + Token(': ') },
 			{ text: actor + Token(' = ') + words.join() }
 		];
 	},
@@ -199,17 +199,17 @@ Command.cases.getActor = new CommandSchema({
 		selector = 'enemy',
 		teamId = Data.teams.list[0].id,
 		condition = 'nearest',
-		attribute = Attribute.getDefAttributeId('actor', 'number'),
-		divisor = Attribute.getDefAttributeId('actor', 'number'),
+		attribute = Attribute.getDefAttributeId!('actor', 'number'),
+		divisor = Attribute.getDefAttributeId!('actor', 'number'),
 		activation = 'active',
 		exclusion = 'none',
 		exclusionActor = { type: 'trigger' },
 		exclusionTeamId = Data.teams.list[0].id,
 		active
 	}: any) {
-		selector = this.remapSelectorPatch(selector);
-		activation = this.remapActivationPatch(activation, active);
-		const attrItems = Attribute.getAttributeItems('actor', 'number');
+		selector = this.remapSelectorPatch!(selector);
+		activation = this.remapActivationPatch!(activation, active);
+		const attrItems = Attribute.getAttributeItems!('actor', 'number');
 		$('#getActor-attribute').loadItems(attrItems);
 		$('#getActor-divisor').loadItems(attrItems);
 		const write = getElementWriter('getActor');
@@ -232,7 +232,7 @@ Command.cases.getActor = new CommandSchema({
 	customSave() {
 		const read = getElementReader('getActor');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#getActor-variable'));
 		}
 		const position = read('position');
@@ -305,6 +305,6 @@ Command.cases.getActor = new CommandSchema({
 				params4 = { activation, exclusion, exclusionTeamId };
 				break;
 		}
-		Command.save({ ...params1, ...params2, ...params3, ...params4 });
+		Command.save!({ ...params1, ...params2, ...params3, ...params4 });
 	}
 });

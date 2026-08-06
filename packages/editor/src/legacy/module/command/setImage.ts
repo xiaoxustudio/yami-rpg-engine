@@ -13,20 +13,20 @@ Command.cases.setImage = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setImage-confirm').on('click', () => this.save());
+		$('#setImage-confirm').on('click', () => this.save!());
 		$('#setImage-properties').bind(ImageProperty);
 		$('#setImage').on('closed', (event: any) => {
 			clear($('#setImage-properties'));
 		});
 	},
 	customParse({ element, properties }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(ImageProperty.parse(property));
+			words.push(ImageProperty.parse!(property));
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setImage') + Token(': ') },
+			{ text: Local.get!('command.setImage') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -40,6 +40,6 @@ Command.cases.setImage = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#setImage-properties'));
 		}
-		Command.save({ element, properties });
+		Command.save!({ element, properties });
 	}
 });

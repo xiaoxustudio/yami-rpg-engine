@@ -111,34 +111,34 @@ interface CustomCommandShape {
 }
 
 export const CustomCommand: CustomCommandShape = {
-	list: null,
-	overviewPane: null,
-	overview: null,
-	settingsPane: null,
-	data: null,
-	meta: null,
-	symbol: null,
+	list: null as any,
+	overviewPane: null as any,
+	overview: null as any,
+	settingsPane: null as any,
+	data: null as any,
+	meta: null as any,
+	symbol: null as any,
 	changed: false,
-	initialize: null,
-	open: null,
-	load: null,
-	unload: null,
-	loadOverview: null,
-	createData: null,
-	getItemById: null,
-	windowClose: null,
-	windowClosed: null,
-	pointerdown: null,
-	scriptChange: null,
-	listKeydown: null,
-	listSelect: null,
-	listUnselect: null,
-	listChange: null,
-	listPopup: null,
-	listOpen: null,
-	paramInput: null,
-	confirm: null,
-	apply: null,
+	initialize: null as any,
+	open: null as any,
+	load: null as any,
+	unload: null as any,
+	loadOverview: null as any,
+	createData: null as any,
+	getItemById: null as any,
+	windowClose: null as any,
+	windowClosed: null as any,
+	pointerdown: null as any,
+	scriptChange: null as any,
+	listKeydown: null as any,
+	listSelect: null as any,
+	listUnselect: null as any,
+	listChange: null as any,
+	listPopup: null as any,
+	listOpen: null as any,
+	paramInput: null as any,
+	confirm: null as any,
+	apply: null as any,
 	list_edit: null as any,
 	list_insert: null as any,
 	list_toggle: null as any,
@@ -213,7 +213,7 @@ CustomCommand.open = function (this: CustomCommandShape): void {
 	getFocus(this.list);
 
 	window.addEventListener('pointerdown', this.pointerdown!);
-	window.addEventListener('script-change', this.scriptChange!);
+	window.addEventListener('script-change', this.scriptChange! as EventListener);
 };
 
 CustomCommand.load = async function (
@@ -295,7 +295,7 @@ CustomCommand.windowClosed = function (this: CustomCommandShape, event: Event): 
 	this.data = null;
 	this.list.clear();
 	window.removeEventListener('pointerdown', this.pointerdown!);
-	window.removeEventListener('script-change', this.scriptChange!);
+	window.removeEventListener('script-change', this.scriptChange! as EventListener);
 }.bind(CustomCommand);
 
 CustomCommand.pointerdown = PluginManager.pointerdown;
@@ -462,7 +462,7 @@ CustomCommand.apply = function (this: CustomCommandShape, event: any): void {
 			TreeList.deleteCaches(commands);
 		}
 		Data.commands = commands;
-		File.planToSave(Data.manifest.project.commands);
+		File.planToSave!(Data.manifest.project.commands);
 		Command.custom.loadCommandList!();
 	}
 }.bind(CustomCommand);

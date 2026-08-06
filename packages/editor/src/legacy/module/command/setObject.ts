@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 (Command.cases as any).setObject = new CommandSchema({
 	name: 'setObject',
 	onInitialize() {
-		$('#setObject-confirm').on('click', () => this.save());
+		$('#setObject-confirm').on('click', () => this.save!());
 		$('#setObject-operand-type').loadItems([
 			{ name: 'None', value: 'none' },
 			{ name: 'Actor', value: 'actor' },
@@ -54,35 +54,35 @@ import { Local } from '@/tools/localization.ts';
 			case 'none':
 				return Token('null');
 			case 'actor':
-				return Command.parseActor(operand.actor);
+				return Command.parseActor!(operand.actor);
 			case 'skill':
-				return Command.parseSkill(operand.skill);
+				return Command.parseSkill!(operand.skill);
 			case 'state':
-				return Command.parseState(operand.state);
+				return Command.parseState!(operand.state);
 			case 'equipment':
-				return Command.parseEquipment(operand.equipment);
+				return Command.parseEquipment!(operand.equipment);
 			case 'item':
-				return Command.parseItem(operand.item);
+				return Command.parseItem!(operand.item);
 			case 'trigger':
-				return Command.parseTrigger(operand.trigger);
+				return Command.parseTrigger!(operand.trigger);
 			case 'light':
-				return Command.parseLight(operand.light);
+				return Command.parseLight!(operand.light);
 			case 'object':
-				return Command.parseObject(operand.object);
+				return Command.parseObject!(operand.object);
 			case 'element':
-				return Command.parseElement(operand.element);
+				return Command.parseElement!(operand.element);
 			case 'variable':
-				return Command.parseVariable(operand.variable, 'object');
+				return Command.parseVariable!(operand.variable, 'object');
 			case 'list':
-				return Command.parseListItem(operand.variable, operand.index);
+				return Command.parseListItem!(operand.variable, operand.index);
 		}
 	},
 	customParse({ variable, operand }: any) {
-		const varDesc = Command.parseVariable(variable, 'object', true);
-		const object = this.parseOperand(operand);
+		const varDesc = Command.parseVariable!(variable, 'object', true);
+		const object = this.parseOperand!(operand);
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.setObject.alias') + ' ' },
+			{ text: Local.get!('command.setObject.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: `${varDesc} ${Token('=')} ${object}` }
 		];
@@ -91,17 +91,17 @@ import { Local } from '@/tools/localization.ts';
 		variable = { type: 'local', key: '' },
 		operand = {
 			type: 'none',
-			actor: null,
-			skill: null,
-			state: null,
-			equipment: null,
-			item: null,
-			trigger: null,
-			light: null,
-			object: null,
-			element: null,
-			variable: null,
-			index: null
+			actor: null as any,
+			skill: null as any,
+			state: null as any,
+			equipment: null as any,
+			item: null as any,
+			trigger: null as any,
+			light: null as any,
+			object: null as any,
+			element: null as any,
+			variable: null as any,
+			index: null as any
 		}
 	}: any) {
 		const write = getElementWriter('setObject');
@@ -170,7 +170,7 @@ import { Local } from '@/tools/localization.ts';
 	customSave() {
 		const read = getElementReader('setObject');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setObject-variable'));
 		}
 		const type = read('operand-type');
@@ -226,7 +226,7 @@ import { Local } from '@/tools/localization.ts';
 			}
 			case 'variable': {
 				const variable = read('operand-variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setObject-operand-variable'));
 				}
 				operand = { type, variable };
@@ -234,7 +234,7 @@ import { Local } from '@/tools/localization.ts';
 			}
 			case 'list': {
 				const variable = read('operand-variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setObject-operand-variable'));
 				}
 				const index = read('operand-list-index');
@@ -242,6 +242,6 @@ import { Local } from '@/tools/localization.ts';
 				break;
 			}
 		}
-		Command.save({ variable, operand });
+		Command.save!({ variable, operand });
 	}
 });

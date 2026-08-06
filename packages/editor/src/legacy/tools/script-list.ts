@@ -8,9 +8,9 @@ import { PluginManager } from '@/plugin/plugin.ts';
 import { IScriptListInterface } from '@/types/list-interface.ts';
 
 export class ScriptListInterface implements IScriptListInterface {
-	target: (HTMLElement & { [k: string]: any }) | null;
-	type: string;
-	filter: string;
+	target!: (HTMLElement & { [k: string]: any }) | null;
+	type!: string;
+	filter!: string;
 	script: any | null;
 	editor: any | null;
 	owner: any | null;
@@ -56,7 +56,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
-			const flags = {};
+			const flags = {} as Record<string, any>;
 			for (let i = length - 1; i >= 0; i--) {
 				const { id } = items[i];
 				if (flags[id]) {
@@ -92,22 +92,22 @@ export class ScriptListInterface implements IScriptListInterface {
 
 	input(scriptId: any) {
 		this.script.id = scriptId;
-		this.target.save();
+		this.target!.save();
 	}
 
 	static listPointerdown = (function IIFE() {
-		let element = null;
+		let element: any = null;
 		const once = { once: true };
-		const pointerup = (event) => {
+		const pointerup = (event: any) => {
 			if (element.contains(event.target)) {
 				const el = element.parentNode;
 				const item = el.dataItem ?? el.item;
-				const path = File.getPath(item.id);
+				const path = File.getPath!(item.id);
 				if (path) (window as any).Browser?.openScript?.(path);
 			}
 			element = null;
 		};
-		return function (event) {
+		return function (event: any) {
 			if (event.button === 0 && hasClass(event.target, 'box')) {
 				element = event.target;
 				// 自动过滤重复侦听器，无需额外检查

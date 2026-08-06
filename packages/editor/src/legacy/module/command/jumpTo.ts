@@ -10,8 +10,8 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.jumpTo = new CommandSchema({
 	name: 'jumpTo',
 	onInitialize() {
-		$('#jumpTo-confirm').on('click', () => this.save());
-		TextSuggestion.listen($('#jumpTo-label'), this.loadLabels);
+		$('#jumpTo-confirm').on('click', () => this.save!());
+		TextSuggestion.listen!($('#jumpTo-label'), this.loadLabels);
 		$('#jumpTo-operation').loadItems([
 			{ name: 'Jump to Label', value: 'jump' },
 			{ name: 'Save and Jump to Label', value: 'save-jump' },
@@ -22,10 +22,10 @@ Command.cases.jumpTo = new CommandSchema({
 			.relate([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
 	},
 	loadLabels() {
-		const items = [];
+		const items = [] as any[];
 		const commands = read(EventEditor.commandList);
 		if (!commands) return items;
-		Command.forEachCommand(commands, (command: any) => {
+		Command.forEachCommand!(commands, (command: any) => {
 			if (command.id === 'label') {
 				items.push({
 					name: command.params.name,
@@ -33,7 +33,7 @@ Command.cases.jumpTo = new CommandSchema({
 				});
 			}
 		});
-		return items.sort((a, b) => a.name.localeCompare(b.name));
+		return items.sort((a: any, b: any) => a.name.localeCompare(b.name));
 	},
 	customParse({ operation, label }: any) {
 		const words = Command.words;
@@ -42,15 +42,15 @@ Command.cases.jumpTo = new CommandSchema({
 				words.push(label);
 				break;
 			case 'save-jump':
-				words.push(label).push(Local.get('command.jumpTo.save'));
+				words.push(label).push(Local.get!('command.jumpTo.save'));
 				break;
 			case 'return':
-				words.push(Local.get('command.jumpTo.savedLocation'));
+				words.push(Local.get!('command.jumpTo.savedLocation'));
 				break;
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.jumpTo.alias') + Token(': ') },
+			{ text: Local.get!('command.jumpTo.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -68,11 +68,11 @@ Command.cases.jumpTo = new CommandSchema({
 				if (label === '') {
 					return getFocus($('#jumpTo-label'));
 				}
-				Command.save({ operation, label });
+				Command.save!({ operation, label });
 				break;
 			}
 			case 'return':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 		}
 	}

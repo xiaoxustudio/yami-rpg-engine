@@ -10,19 +10,19 @@ export const ObjectFolder: {
 	open: ((...args: any[]) => any) | null;
 	confirm: ((...args: any[]) => any) | null;
 } = {
-	initialize: null,
-	open: null,
-	confirm: null
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-ObjectFolder.initialize = function () {
+ObjectFolder.initialize = function (this: any) {
 	const el = $('#object-folder-confirm');
-	if (el) on(el, 'click', this.confirm);
+	if (el) on(el, 'click', this.confirm!);
 };
 
-ObjectFolder.open = function () {
+ObjectFolder.open = function (this: any) {
 	getWindow().open('object-folder');
-	const data = Editor.project.scene.defaultFolders;
+	const data = (Editor.project as any).scene.defaultFolders;
 	const write = getElementWriter('object-folder', data);
 	write('tilemap');
 	write('actor');
@@ -33,9 +33,9 @@ ObjectFolder.open = function () {
 	write('parallax');
 };
 
-ObjectFolder.confirm = function (event: any) {
+ObjectFolder.confirm = function (this: any, event: any) {
 	const read = getElementReader('object-folder');
-	Editor.project.scene.defaultFolders = {
+	(Editor.project as any).scene.defaultFolders = {
 		tilemap: read('tilemap'),
 		actor: read('actor'),
 		region: read('region'),

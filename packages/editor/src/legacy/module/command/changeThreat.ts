@@ -14,28 +14,28 @@ Command.cases.changeThreat = new CommandSchema({
 		{ key: 'threat', default: 0 }
 	],
 	onInitialize() {
-		$('#changeThreat-confirm').on('click', () => this.save());
+		$('#changeThreat-confirm').on('click', () => this.save!());
 		$('#changeThreat-operation').loadItems([
 			{ name: 'Increase', value: 'increase' },
 			{ name: 'Decrease', value: 'decrease' }
 		]);
 	},
 	parseActors(actor: any, target: any) {
-		const sActor = Command.parseActor(actor);
-		const dActor = Command.parseActor(target);
+		const sActor = Command.parseActor!(actor);
+		const dActor = Command.parseActor!(target);
 		return sActor + Token(' -> ') + dActor;
 	},
 	parseOperation(operation: any) {
-		return Local.get('command.changeThreat.' + operation);
+		return Local.get!('command.changeThreat.' + operation);
 	},
 	customParse({ actor, target, operation, threat }: any) {
 		const words = Command.words
-			.push(this.parseActors(actor, target))
-			.push(this.parseOperation(operation))
-			.push(Command.parseVariableNumber(threat));
+			.push(this.parseActors!(actor, target))
+			.push(this.parseOperation!(operation))
+			.push(Command.parseVariableNumber!(threat));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeThreat') + Token(': ') },
+			{ text: Local.get!('command.changeThreat') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

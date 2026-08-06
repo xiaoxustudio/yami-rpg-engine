@@ -56,7 +56,7 @@ const options = {
 		searcher: () => CommandSuggestion.searcher
 	},
 	eventEditor: {
-		openGlobalEvent: (id: string) => EventEditor.openGlobalEvent(id)
+		openGlobalEvent: (id: string) => EventEditor.openGlobalEvent!(id)
 	},
 	searchString: {
 		open: (list: any) => SearchString.open(list)

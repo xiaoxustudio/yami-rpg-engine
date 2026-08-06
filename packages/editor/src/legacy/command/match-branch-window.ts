@@ -7,38 +7,38 @@ function getWindow() {
 }
 
 export const SwitchBranch = {
-	target: null,
-	commands: null,
-	initialize: null,
-	parse: null,
-	open: null,
-	save: null,
-	windowClosed: null,
-	confirm: null
+	target: null as any,
+	commands: null as any,
+	initialize: null as any,
+	parse: null as any,
+	open: null as any,
+	save: null as any,
+	windowClosed: null as any,
+	confirm: null as any
 };
 
-SwitchBranch.initialize = function () {
+SwitchBranch.initialize = function (this: any) {
 	if (!$('#switch-branch')) return;
 	on($('#switch-branch'), 'closed', this.windowClosed);
 	on($('#switch-branch-confirm'), 'click', this.confirm);
 };
 
-SwitchBranch.parse = function (branch, listData) {
+SwitchBranch.parse = function (this: any, branch: any, listData: any) {
 	const words = Command.words;
 	for (const condition of branch.conditions) {
-		words.push(SwitchCondition.parse(condition));
+		words.push(SwitchCondition.parse!(condition));
 	}
 	let string = words.join();
 	if (listData) {
-		string = Command.removeTextTags(string);
+		string = Command.removeTextTags!(string);
 	}
 	return string;
 };
 
-SwitchBranch.open = function (branch) {
+SwitchBranch.open = function (this: any, branch: any) {
 	if (this.target.inserting) {
 		SwitchCondition.target = this.target;
-		SwitchCondition.open();
+		SwitchCondition.open!();
 	} else {
 		getWindow().open('switch-branch');
 		write($('#switch-branch-conditions'), branch.conditions.slice());
@@ -46,12 +46,12 @@ SwitchBranch.open = function (branch) {
 		this.commands = branch.commands;
 	}
 };
-SwitchBranch.save = function () {
+SwitchBranch.save = function (this: any) {
 	if (this.target.inserting) {
-		const condition = SwitchCondition.save();
+		const condition = SwitchCondition.save!();
 		if (condition !== undefined) {
 			const conditions = [condition];
-			const commands = [];
+			const commands = [] as any[];
 			return { conditions, commands };
 		}
 	} else {
@@ -66,11 +66,11 @@ SwitchBranch.save = function () {
 	}
 };
 
-SwitchBranch.windowClosed = function (event) {
+SwitchBranch.windowClosed = function (this: any, event: any) {
 	SwitchBranch.commands = null;
 	clear($('#switch-branch-conditions'));
 };
 
-SwitchBranch.confirm = function (event) {
+SwitchBranch.confirm = function (this: any, event: any) {
 	return SwitchBranch.target.save();
 };

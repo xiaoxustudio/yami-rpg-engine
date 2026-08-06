@@ -13,24 +13,24 @@ Command.cases.changeActorMotion = new CommandSchema({
 		{ key: 'motion', default: '', required: true }
 	],
 	onInitialize() {
-		$('#changeActorMotion-confirm').on('click', () => this.save());
+		$('#changeActorMotion-confirm').on('click', () => this.save!());
 		$('#changeActorMotion-type').loadItems([
 			{ name: 'Idle', value: 'idle' },
 			{ name: 'Move', value: 'move' }
 		]);
 	},
 	parseMapping(type: any, motion: any) {
-		const motionType = Local.get('command.changeActorMotion.type.' + type);
-		const motionName = Command.parseEnumString(motion);
+		const motionType = Local.get!('command.changeActorMotion.type.' + type);
+		const motionName = Command.parseEnumString!(motion);
 		return motionType + Token(' -> ') + motionName;
 	},
 	customParse({ actor, type, motion }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(this.parseMapping(type, motion));
+			.push(Command.parseActor!(actor))
+			.push(this.parseMapping!(type, motion));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorMotion') + Token(': ') },
+			{ text: Local.get!('command.changeActorMotion') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

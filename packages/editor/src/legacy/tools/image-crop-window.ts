@@ -9,32 +9,32 @@ import { Window } from './window-object.ts';
 import { Path } from '@/util/config.ts';
 
 export const ImageClip = {
-	window: null,
-	screen: null,
-	image: null,
-	marquee: null,
-	target: null,
-	symbol: null,
-	dragging: null,
-	initialize: null,
-	open: null,
-	loadImage: null,
-	updateImage: null,
-	updateTitle: null,
-	updateMarquee: null,
-	shiftMarquee: null,
-	scrollToMarquee: null,
-	startDragging: null,
-	dprchange: null,
-	windowClosed: null,
-	windowResize: null,
-	screenKeydown: null,
-	marqueePointerdown: null,
-	marqueeDoubleclick: null,
-	pointerup: null,
-	pointermove: null,
-	paramInput: null,
-	confirm: null
+	window: null as any,
+	screen: null as any,
+	image: null as any,
+	marquee: null as any,
+	target: null as any,
+	symbol: null as any,
+	dragging: null as any,
+	initialize: null as any,
+	open: null as any,
+	loadImage: null as any,
+	updateImage: null as any,
+	updateTitle: null as any,
+	updateMarquee: null as any,
+	shiftMarquee: null as any,
+	scrollToMarquee: null as any,
+	startDragging: null as any,
+	dprchange: null as any,
+	windowClosed: null as any,
+	windowResize: null as any,
+	screenKeydown: null as any,
+	marqueePointerdown: null as any,
+	marqueeDoubleclick: null as any,
+	pointerup: null as any,
+	pointermove: null as any,
+	paramInput: null as any,
+	confirm: null as any
 };
 
 function ensureDomBound() {
@@ -49,7 +49,7 @@ function ensureDomBound() {
 	hide(ImageClip.marquee!);
 }
 
-ImageClip.initialize = function () {
+ImageClip.initialize = function (this: any) {
 	ensureDomBound();
 	if (!this.window) return;
 	window.addEventListener('dprchange', this.dprchange);
@@ -64,9 +64,9 @@ ImageClip.initialize = function () {
 	on($('#imageClip-confirm'), 'click', this.confirm);
 };
 
-ImageClip.open = async function (target) {
+ImageClip.open = async function (this: any, target: any) {
 	this.target = target;
-	Window.open('imageClip');
+	Window.open!('imageClip');
 
 	const write = getElementWriter('imageClip');
 	const [x, y, width, height] = read(target);
@@ -75,27 +75,27 @@ ImageClip.open = async function (target) {
 	write('width', width);
 	write('height', height);
 
-	this.loadImage();
+	this.loadImage!();
 };
 
-ImageClip.loadImage = function () {
+ImageClip.loadImage = function (this: any) {
 	this.window.setTitle('');
 
 	const id = this.target.getAttribute('image');
 	const guid = read($('#' + id));
-	const path = File.getPath(guid);
+	const path = File.getPath!(guid);
 	if (path) {
 		const image = this.image;
-		image.src = File.route(path);
+		image.src = File.route!(path);
 
 		const symbol = (this.symbol = Symbol());
-		new Promise((resolve) => {
+		new Promise((resolve: any) => {
 			const intervalIndex = setInterval(() => {
 				if (image.naturalWidth !== 0) {
 					if (this.symbol === symbol) {
-						this.updateImage();
-						this.updateMarquee();
-						this.scrollToMarquee('center');
+						this.updateImage!();
+						this.updateMarquee!();
+						this.scrollToMarquee!('center');
 					}
 					clearInterval(intervalIndex);
 					resolve(image);
@@ -104,18 +104,18 @@ ImageClip.loadImage = function () {
 					resolve(null);
 				}
 			});
-		}).then((image) => {
+		}).then((image: any) => {
 			if (this.symbol === symbol) {
 				this.symbol = null;
-				this.updateTitle(path, image);
+				this.updateTitle!(path, image);
 			}
 		});
 	} else {
-		this.updateTitle();
+		this.updateTitle!();
 	}
 };
 
-ImageClip.updateImage = function () {
+ImageClip.updateImage = function (this: any) {
 	const screen = this.screen;
 	const image = hide(this.image) as HTMLImageElement;
 	const marquee = hide(this.marquee) as HTMLElement & { scaleX: number; scaleY: number };
@@ -139,21 +139,21 @@ ImageClip.updateImage = function () {
 	show(marquee);
 };
 
-ImageClip.updateTitle = function (path, image) {
+ImageClip.updateTitle = function (this: any, path: any, image: any) {
 	let info;
 	if (path && image) {
-		const name = Path.basename(path);
-		const alias = File.filterGUID(name);
+		const name = Path.basename!(path);
+		const alias = File.filterGUID!(name);
 		const width = image.naturalWidth;
 		const height = image.naturalHeight;
 		info = `${alias} - ${width}x${height}`;
 	} else {
-		info = Local.get('common.none');
+		info = Local.get!('common.none');
 	}
 	this.window.setTitle(info);
 };
 
-ImageClip.updateMarquee = function () {
+ImageClip.updateMarquee = function (this: any) {
 	const read = getElementReader('imageClip');
 	const x = read('x');
 	const y = read('y');
@@ -162,7 +162,7 @@ ImageClip.updateMarquee = function () {
 	this.marquee.select(x, y, width, height);
 };
 
-ImageClip.shiftMarquee = function (ox, oy) {
+ImageClip.shiftMarquee = function (this: any, ox: any, oy: any) {
 	const image = this.image;
 	const iw = image.naturalWidth;
 	const ih = image.naturalHeight;
@@ -177,11 +177,11 @@ ImageClip.shiftMarquee = function (ox, oy) {
 	const dy = Math.clamp(sy + oy * sh, 0, ih - sh);
 	if (sx !== dx) write('x', dx);
 	if (sy !== dy) write('y', dy);
-	this.updateMarquee();
-	this.scrollToMarquee('active');
+	this.updateMarquee!();
+	this.scrollToMarquee!('active');
 };
 
-ImageClip.scrollToMarquee = function (mode) {
+ImageClip.scrollToMarquee = function (this: any, mode: any) {
 	const screen = this.screen;
 	const marquee = this.marquee;
 	const dpr = window.devicePixelRatio;
@@ -213,7 +213,7 @@ ImageClip.scrollToMarquee = function (mode) {
 	}
 };
 
-ImageClip.startDragging = function (event) {
+ImageClip.startDragging = function (this: any, event: any) {
 	Cursor.open('cursor-grab');
 	this.dragging = event;
 	event.mode = 'scroll';
@@ -223,16 +223,16 @@ ImageClip.startDragging = function (event) {
 	window.addEventListener('pointermove', this.pointermove);
 };
 
-ImageClip.dprchange = function (event) {
+ImageClip.dprchange = function (this: any, event: any) {
 	if (!hasClass(this.image, 'hidden')) {
-		this.updateImage();
-		this.updateMarquee();
+		this.updateImage!();
+		this.updateMarquee!();
 	}
 }.bind(ImageClip);
 
-ImageClip.windowClosed = function (event) {
+ImageClip.windowClosed = function (this: any, event: any) {
 	if (this.dragging) {
-		this.pointerup(this.dragging);
+		this.pointerup!(this.dragging);
 	}
 	this.target = null;
 	this.symbol = null;
@@ -241,13 +241,13 @@ ImageClip.windowClosed = function (event) {
 	hide(this.marquee);
 }.bind(ImageClip);
 
-ImageClip.windowResize = function (event) {
+ImageClip.windowResize = function (this: any, event: any) {
 	if (!hasClass(this.image, 'hidden')) {
-		this.updateImage();
+		this.updateImage!();
 	}
 }.bind(ImageClip);
 
-ImageClip.screenKeydown = function (event) {
+ImageClip.screenKeydown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
@@ -259,32 +259,32 @@ ImageClip.screenKeydown = function (event) {
 		switch (event.code) {
 			case 'ArrowLeft':
 				event.preventDefault();
-				this.shiftMarquee(-1, 0);
+				this.shiftMarquee!(-1, 0);
 				break;
 			case 'ArrowUp':
 				event.preventDefault();
-				this.shiftMarquee(0, -1);
+				this.shiftMarquee!(0, -1);
 				break;
 			case 'ArrowRight':
 				event.preventDefault();
-				this.shiftMarquee(1, 0);
+				this.shiftMarquee!(1, 0);
 				break;
 			case 'ArrowDown':
 				event.preventDefault();
-				this.shiftMarquee(0, 1);
+				this.shiftMarquee!(0, 1);
 				break;
 		}
 	}
 }.bind(ImageClip);
 
-ImageClip.marqueePointerdown = function (event) {
+ImageClip.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0: {
 			if (event.altKey) {
-				return this.startDragging(event);
+				return this.startDragging!(event);
 			}
 			const marquee = this.marquee;
 			const coords = getRelativeCoords(event, marquee);
@@ -298,22 +298,22 @@ ImageClip.marqueePointerdown = function (event) {
 			const cy = Math.floor(y / ch) * ch;
 			write('x', cx);
 			write('y', cy);
-			this.updateMarquee();
+			this.updateMarquee!();
 			break;
 		}
 		case 2:
-			this.startDragging(event);
+			this.startDragging!(event);
 			break;
 	}
 }.bind(ImageClip);
 
-ImageClip.marqueeDoubleclick = function (event) {
+ImageClip.marqueeDoubleclick = function (this: any, event: any) {
 	if (!event.altKey) {
-		this.confirm(event);
+		this.confirm!(event);
 	}
 }.bind(ImageClip);
 
-ImageClip.pointerup = function (event) {
+ImageClip.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -327,7 +327,7 @@ ImageClip.pointerup = function (event) {
 	}
 }.bind(ImageClip);
 
-ImageClip.pointermove = function (event) {
+ImageClip.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -339,12 +339,12 @@ ImageClip.pointermove = function (event) {
 	}
 }.bind(ImageClip);
 
-ImageClip.paramInput = function (event) {
+ImageClip.paramInput = function (this: any, event: any) {
 	ImageClip.updateMarquee();
 };
 
-ImageClip.confirm = function (event) {
+ImageClip.confirm = function (this: any, event: any) {
 	const read = getElementReader('imageClip');
 	this.target.input([read('x'), read('y'), read('width'), read('height')]);
-	Window.close('imageClip');
+	Window.close!('imageClip');
 }.bind(ImageClip);

@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setShortcut = new CommandSchema({
 	name: 'setShortcut',
 	onInitialize() {
-		$('#setShortcut-confirm').on('click', () => this.save());
+		$('#setShortcut-confirm').on('click', () => this.save!());
 		$('#setShortcut-operation').loadItems([
 			{ name: 'Set Item Shortcut', value: 'set-item-shortcut' },
 			{ name: 'Set Skill Shortcut', value: 'set-skill-shortcut' },
@@ -31,30 +31,30 @@ Command.cases.setShortcut = new CommandSchema({
 			]);
 	},
 	customParse({ actor, operation, itemId, skillId, key, key2 }: any) {
-		const shortcutKey = Command.parseVariableEnum('shortcut-key', key);
+		const shortcutKey = Command.parseVariableEnum!('shortcut-key', key);
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.setShortcut.' + operation));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.setShortcut.' + operation));
 		switch (operation) {
 			case 'set-item-shortcut': {
-				words.push(shortcutKey + Token(' = ') + Command.parseVariableFile(itemId));
+				words.push(shortcutKey + Token(' = ') + Command.parseVariableFile!(itemId));
 				break;
 			}
 			case 'set-skill-shortcut':
-				words.push(shortcutKey + Token(' = ') + Command.parseVariableFile(skillId));
+				words.push(shortcutKey + Token(' = ') + Command.parseVariableFile!(skillId));
 				break;
 			case 'delete-shortcut':
 				words.push(shortcutKey);
 				break;
 			case 'swap-shortcuts':
 				words.push(
-					shortcutKey + Token(' <-> ') + Command.parseVariableEnum('shortcut-key', key2)
+					shortcutKey + Token(' <-> ') + Command.parseVariableEnum!('shortcut-key', key2)
 				);
 				break;
 		}
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get('command.setShortcut') + Token(': ') },
+			{ text: Local.get!('command.setShortcut') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -63,10 +63,10 @@ Command.cases.setShortcut = new CommandSchema({
 		operation = 'set-item-shortcut',
 		itemId = '',
 		skillId = '',
-		key = Enum.getDefStringId('shortcut-key'),
-		key2 = Enum.getDefStringId('shortcut-key')
+		key = Enum.getDefStringId!('shortcut-key'),
+		key2 = Enum.getDefStringId!('shortcut-key')
 	}) {
-		const items = Enum.getStringItems('shortcut-key');
+		const items = Enum.getStringItems!('shortcut-key');
 		$('#setShortcut-key').loadItems(items);
 		$('#setShortcut-key2').loadItems(items);
 		const write = getElementWriter('setShortcut');
@@ -92,7 +92,7 @@ Command.cases.setShortcut = new CommandSchema({
 				if (itemId === '') {
 					return getFocus($('#setShortcut-itemId'));
 				}
-				Command.save({ actor, operation, key, itemId });
+				Command.save!({ actor, operation, key, itemId });
 				break;
 			}
 			case 'set-skill-shortcut': {
@@ -100,15 +100,15 @@ Command.cases.setShortcut = new CommandSchema({
 				if (skillId === '') {
 					return getFocus($('#setShortcut-skillId'));
 				}
-				Command.save({ actor, operation, key, skillId });
+				Command.save!({ actor, operation, key, skillId });
 				break;
 			}
 			case 'delete-shortcut':
-				Command.save({ actor, operation, key });
+				Command.save!({ actor, operation, key });
 				break;
 			case 'swap-shortcuts': {
 				const key2 = read('key2');
-				Command.save({ actor, operation, key, key2 });
+				Command.save!({ actor, operation, key, key2 });
 				break;
 			}
 		}

@@ -14,23 +14,23 @@ Command.cases.removeAnimationComponent = new CommandSchema({
 		{ key: 'motion', default: '', required: true }
 	],
 	onInitialize() {
-		$('#removeAnimationComponent-confirm').on('click', () => this.save());
+		$('#removeAnimationComponent-confirm').on('click', () => this.save!());
 		// removeAnimationComponent-animationId write 经 Vue 模板转发（removeAnimationComponent.vue @write → Command.cases.removeAnimationComponent.writeHandler）
 	},
 	writeHandler(event: any) {
 		const elMotion = $('#removeAnimationComponent-motion');
-		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	},
 	customParse({ actor, animationId, motion }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseFileName(animationId))
-			.push(Command.parseEnumString(motion));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseFileName!(animationId))
+			.push(Command.parseEnumString!(motion));
 		return [
 			{ color: 'actor' },
 			{
-				text: Local.get('command.removeAnimationComponent') + Token(': ')
+				text: Local.get!('command.removeAnimationComponent') + Token(': ')
 			},
 			{ text: words.join() }
 		];

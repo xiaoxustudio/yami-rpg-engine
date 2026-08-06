@@ -16,7 +16,7 @@ Command.cases.setPan = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setPan-confirm').on('click', () => this.save());
+		$('#setPan-confirm').on('click', () => this.save!());
 		$('#setPan-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -28,7 +28,7 @@ Command.cases.setPan = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#setPan').on('open', function (event: any) {
-			$('#setPan-easingId').loadItems(Data.createEasingItems());
+			$('#setPan-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setPan').on('closed', function (event: any) {
 			clear($('#setPan-easingId'));
@@ -36,12 +36,12 @@ Command.cases.setPan = new CommandSchema({
 	},
 	customParse({ type, pan, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseAudioType(type))
-			.push(Command.parseVariableNumber(pan))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseAudioType!(type))
+			.push(Command.parseVariableNumber!(pan))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.setPan') + Token(': ') },
+			{ text: Local.get!('command.setPan') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

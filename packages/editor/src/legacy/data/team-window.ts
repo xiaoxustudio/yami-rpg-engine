@@ -15,25 +15,25 @@ function getWindow() {
 }
 
 export const Team = {
-	list: null,
-	data: null,
-	maximum: null,
+	list: null as any,
+	data: null as any,
+	maximum: null as any,
 	changed: false,
-	initialize: null,
-	open: null,
-	createId: null,
-	createData: null,
-	getItemById: null,
-	unpackTeams: null,
-	packTeams: null,
-	windowClose: null,
-	windowClosed: null,
-	listKeydown: null,
-	listPointerdown: null,
-	listSelect: null,
-	listChange: null,
-	listPopup: null,
-	confirm: null,
+	initialize: null as any,
+	open: null as any,
+	createId: null as any,
+	createData: null as any,
+	getItemById: null as any,
+	unpackTeams: null as any,
+	packTeams: null as any,
+	windowClose: null as any,
+	windowClosed: null as any,
+	listKeydown: null as any,
+	listPointerdown: null as any,
+	listSelect: null as any,
+	listChange: null as any,
+	listPopup: null as any,
+	confirm: null as any,
 	list_insert: null as any,
 	list_copy: null as any,
 	list_paste: null as any,
@@ -74,7 +74,7 @@ function ensureDomBound() {
 	list.restoreSelection = Team.list_restoreSelection;
 }
 
-Team.initialize = function () {
+Team.initialize = function (this: any) {
 	ensureDomBound();
 	if (!Team.list) return;
 	this.maximum = 256;
@@ -98,7 +98,7 @@ Team.initialize = function () {
 	on($('#team-confirm'), 'click', this.confirm);
 };
 
-Team.open = function (data) {
+Team.open = function (this: any, data: any) {
 	getWindow().open('team');
 
 	this.unpackTeams();
@@ -108,7 +108,7 @@ Team.open = function (data) {
 	getFocus(this.list);
 };
 
-Team.createId = function () {
+Team.createId = function (this: any) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -116,10 +116,10 @@ Team.createId = function () {
 	return id;
 };
 
-Team.createData = function () {
+Team.createData = function (this: any) {
 	const id = this.createId();
-	const relations = {};
-	const collisions = {};
+	const relations = {} as Record<string, any>;
+	const collisions = {} as Record<string, any>;
 	const teams = this.data;
 	for (const { id } of teams) {
 		relations[id] = 1;
@@ -138,7 +138,7 @@ Team.createData = function () {
 
 Team.getItemById = Easing.getItemById;
 
-Team.unpackTeams = function () {
+Team.unpackTeams = function (this: any) {
 	const items = Data.teams.list;
 	const length = items.length;
 	const sRelations = Codec.decodeTeamData(Data.teams.relations, length);
@@ -147,8 +147,8 @@ Team.unpackTeams = function () {
 	const a = length * 2;
 	for (let i = 0; i < length; i++) {
 		const item = items[i];
-		const dRelations = {};
-		const dCollisions = {};
+		const dRelations = {} as Record<string, any>;
+		const dCollisions = {} as Record<string, any>;
 		for (let j = 0; j < i; j++) {
 			const ri = ((a - j + 1) / 2) * j - j + i;
 			const id = items[j].id;
@@ -173,7 +173,7 @@ Team.unpackTeams = function () {
 	this.data = copies;
 };
 
-Team.packTeams = function () {
+Team.packTeams = function (this: any) {
 	const items = this.data;
 	const length = items.length;
 	const copies = new Array(length);
@@ -201,7 +201,7 @@ Team.packTeams = function () {
 	Data.createTeamMap();
 };
 
-Team.windowClose = function (event) {
+Team.windowClose = function (this: any, event: any) {
 	if (Team.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
@@ -225,12 +225,12 @@ Team.windowClose = function (event) {
 	}
 };
 
-Team.windowClosed = function (event) {
+Team.windowClosed = function (this: any, event: any) {
 	this.data = null;
 	this.list.clear();
 }.bind(Team);
 
-Team.listKeydown = function (event) {
+Team.listKeydown = function (this: any, event: any) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -255,7 +255,7 @@ Team.listKeydown = function (event) {
 	}
 };
 
-Team.listPointerdown = function (event) {
+Team.listPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
@@ -265,7 +265,7 @@ Team.listPointerdown = function (event) {
 					read: () => {
 						return team.color;
 					},
-					input: (color) => {
+					input: (color: any) => {
 						team.color = color;
 						this.updateIcon(team);
 						Team.changed = true;
@@ -298,7 +298,7 @@ Team.listPointerdown = function (event) {
 	}
 };
 
-Team.listSelect = function (event) {
+Team.listSelect = function (this: any, event: any) {
 	const list = Team.list;
 	for (const team of list.data) {
 		const element = team.element;
@@ -311,11 +311,11 @@ Team.listSelect = function (event) {
 	}
 };
 
-Team.listChange = function (event) {
+Team.listChange = function (this: any, event: any) {
 	Team.changed = true;
 };
 
-Team.listPopup = function (event) {
+Team.listPopup = function (this: any, event: any) {
 	const list = Team.list;
 	const item = event.value;
 	const length = Team.data.length;
@@ -374,11 +374,11 @@ Team.listPopup = function (event) {
 	);
 };
 
-Team.confirm = function (event) {
+Team.confirm = function (this: any, event: any) {
 	if (this.changed) {
 		this.changed = false;
 		this.packTeams();
-		File.planToSave(Data.manifest.project.teams);
+		File.planToSave!(Data.manifest.project.teams);
 		const datachange = new Event('datachange');
 		datachange.key = 'teams';
 		window.dispatchEvent(datachange);
@@ -386,7 +386,7 @@ Team.confirm = function (event) {
 	getWindow().close('team');
 }.bind(Team);
 
-Team.list_insert = function (dItem) {
+Team.list_insert = function (this: any, dItem: any) {
 	if (this.data.length < Team.maximum) {
 		const team = Team.createData();
 		const id = team.id;
@@ -398,20 +398,20 @@ Team.list_insert = function (dItem) {
 	}
 };
 
-Team.list_copy = function (item) {
+Team.list_copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.data.team', item);
 	}
 };
 
-Team.list_paste = function (dItem) {
+Team.list_paste = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.data.team');
 	if (copy) {
 		const dId = Team.createId();
 		const cRelations = copy.relations;
 		const cCollisions = copy.collisions;
-		const dRelations = {};
-		const dCollisions = {};
+		const dRelations = {} as Record<string, any>;
+		const dCollisions = {} as Record<string, any>;
 		for (const item of this.data) {
 			const sId = item.id;
 			const sRelations = item.relations;
@@ -433,7 +433,7 @@ Team.list_paste = function (dItem) {
 	}
 };
 
-Team.list_delete = function (item) {
+Team.list_delete = function (this: any, item: any) {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
@@ -463,7 +463,7 @@ Team.list_delete = function (item) {
 	}
 };
 
-Team.list_saveSelection = function () {
+Team.list_saveSelection = function (this: any) {
 	const { teams } = Data;
 	if (teams.selection === undefined) {
 		Object.defineProperty(teams, 'selection', {
@@ -477,7 +477,7 @@ Team.list_saveSelection = function () {
 	}
 };
 
-Team.list_restoreSelection = function () {
+Team.list_restoreSelection = function (this: any) {
 	const id = Data.teams.selection;
 	const item = Team.getItemById(id) ?? this.data[0];
 	this.select(item);
@@ -485,7 +485,7 @@ Team.list_restoreSelection = function () {
 	this.scrollToSelection();
 };
 
-Team.list_createIcon = function (item) {
+Team.list_createIcon = function (this: any, item: any) {
 	const { element } = item;
 	const icon = document.createElement('node-icon');
 	addClass(icon, 'team-icon');
@@ -494,7 +494,7 @@ Team.list_createIcon = function (item) {
 	Team.list_updateIcon(item);
 };
 
-Team.list_updateIcon = function (item) {
+Team.list_updateIcon = function (this: any, item: any) {
 	const icon = item.element.nodeIcon;
 	const color = item.color;
 	if (icon.color !== color) {
@@ -507,11 +507,11 @@ Team.list_updateIcon = function (item) {
 	}
 };
 
-Team.list_updateItemName = function (item) {
+Team.list_updateItemName = function (this: any, item: any) {
 	this.updateTextNode(item);
 };
 
-Team.list_createMarks = function (item) {
+Team.list_createMarks = function (this: any, item: any) {
 	const { element } = item;
 	const relationMark = document.createElement('div');
 	addClass(relationMark, 'team-relation-mark');
@@ -526,7 +526,7 @@ Team.list_createMarks = function (item) {
 	element.appendChild(collisionMark);
 };
 
-Team.list_updateMarks = function (item) {
+Team.list_updateMarks = function (this: any, item: any) {
 	const selection = Team.list.read();
 	if (selection === null) return;
 	const relationMark = item.element.relationMark;

@@ -4,7 +4,7 @@ import { addClass, read, removeClass, write } from '@/util/element-utils';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
-Scene.setTarget = function (target) {
+Scene.setTarget = function (this: any, target: any) {
 	if (this.target !== target) {
 		if (target !== null && this.tilemap !== null && this.tilemap !== target) {
 			this.closeTilemap();
@@ -16,14 +16,14 @@ Scene.setTarget = function (target) {
 		if (target) {
 			const map = this.inspectorTypeMap;
 			const key = map[target.class];
-			Inspector.open(key, target);
+			Inspector.open!(key, target);
 		} else {
-			Inspector.close();
+			Inspector.close!();
 		}
 	}
 };
 
-Scene.openTilemap = function (tilemap) {
+Scene.openTilemap = function (this: any, tilemap: any) {
 	if (tilemap instanceof Object && this.tilemap !== tilemap) {
 		this.closeTilemap(false);
 		this.tilemap = tilemap;
@@ -38,7 +38,7 @@ Scene.openTilemap = function (tilemap) {
 	}
 };
 
-Scene.closeTilemap = function (back = true) {
+Scene.closeTilemap = function (this: any, back = true) {
 	if (this.tilemap !== null) {
 		removeClass(this.tilemap.element, 'highlight');
 		if (this.tilemap.shortcut !== 0) {
@@ -52,7 +52,7 @@ Scene.closeTilemap = function (back = true) {
 	}
 };
 
-Scene.computeActiveTilemapId = function () {
+Scene.computeActiveTilemapId = function (this: any) {
 	const { tilemap } = this;
 	switch (tilemap?.layer) {
 		case 'background':
@@ -73,7 +73,7 @@ Scene.computeActiveTilemapId = function () {
 Scene.revealTarget = (function IIFE() {
 	const timer = new Timer({
 		duration: 200,
-		update: (timer) => {
+		update: (timer: any) => {
 			const { target } = timer;
 			if (target === Scene.target) {
 				const easing = Easing.EasingMap.easeInOut;
@@ -83,10 +83,10 @@ Scene.revealTarget = (function IIFE() {
 				const screen = Scene.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				Scene.updateCamera(x, y);
-				Scene.updateTransform();
+				Scene.updateCamera!(x, y);
+				Scene.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
-					Scene.requestRendering();
+					Scene.requestRendering!();
 					Scene.marquee.resize();
 					Scene.screen.updateScrollbars();
 				}
@@ -95,11 +95,11 @@ Scene.revealTarget = (function IIFE() {
 				return false;
 			}
 		},
-		callback: (timer) => {
+		callback: (timer: any) => {
 			timer.target = null;
 		}
 	});
-	return function () {
+	return function (this: any) {
 		const { target, meta } = this;
 		const toleranceX = 1 / this.scaledTileWidth / this.scaleX;
 		const toleranceY = 1 / this.scaledTileHeight / this.scaleY;
@@ -120,7 +120,7 @@ Scene.revealTarget = (function IIFE() {
 	};
 })();
 
-Scene.shiftTarget = function (x, y) {
+Scene.shiftTarget = function (this: any, x: any, y: any) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];
@@ -154,7 +154,7 @@ Scene.shiftTarget = function (x, y) {
 	}
 };
 
-Scene.redirectTarget = function (angle) {
+Scene.redirectTarget = function (this: any, angle: any) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];
@@ -188,7 +188,7 @@ Scene.redirectTarget = function (angle) {
 	}
 };
 
-Scene.updateTarget = function () {
+Scene.updateTarget = function (this: any) {
 	let item = read(this.list);
 	if (item?.class === 'folder') {
 		item = null;
@@ -198,7 +198,7 @@ Scene.updateTarget = function () {
 	}
 };
 
-Scene.updateTargetInfo = function () {
+Scene.updateTargetInfo = function (this: any) {
 	if (this.layer === 'object') {
 		switch (this.target?.class) {
 			case 'tilemap':
@@ -241,7 +241,7 @@ Scene.updateTargetInfo = function () {
 	}
 };
 
-Scene.updateTargetItem = function () {
+Scene.updateTargetItem = function (this: any) {
 	const { target } = this;
 	if (target !== null) {
 		const { list } = this;
@@ -255,7 +255,7 @@ Scene.updateTargetItem = function () {
 	}
 };
 
-Scene.updateTargetEditor = function () {
+Scene.updateTargetEditor = function (this: any) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];

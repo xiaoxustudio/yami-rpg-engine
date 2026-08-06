@@ -12,7 +12,7 @@ Command.cases.controlDialog = new CommandSchema({
 		{ key: 'operation', default: 'pause' }
 	],
 	onInitialize() {
-		$('#controlDialog-confirm').on('click', () => this.save());
+		$('#controlDialog-confirm').on('click', () => this.save!());
 		$('#controlDialog-operation').loadItems([
 			{ name: 'Pause Printing', value: 'pause' },
 			{ name: 'Continue Printing', value: 'continue' },
@@ -22,11 +22,11 @@ Command.cases.controlDialog = new CommandSchema({
 	},
 	customParse({ element, operation }: any) {
 		const words = Command.words
-			.push(Command.parseElement(element))
-			.push(Local.get('command.controlDialog.' + operation));
+			.push(Command.parseElement!(element))
+			.push(Local.get!('command.controlDialog.' + operation));
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.controlDialog') + Token(': ') },
+			{ text: Local.get!('command.controlDialog') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

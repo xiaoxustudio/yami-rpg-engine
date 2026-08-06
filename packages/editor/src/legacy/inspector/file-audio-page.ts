@@ -7,43 +7,43 @@ import { Timer } from '@/util/timer.ts';
 
 {
 	const FileAudio = {
-		target: null,
-		meta: null,
-		symbol: null,
-		promise: null,
-		progress: null,
-		progressFiller: null,
-		pointer: null,
-		currentTimeInfo: null,
-		pointerTimeInfo: null,
-		canvas: null,
-		context: null,
-		dataArray: null,
-		intervals: null,
-		intensities: null,
-		rotation: null,
-		lineColor: null,
-		initialize: null,
-		open: null,
-		close: null,
-		play: null,
-		writeParams: null,
-		updateParams: null,
-		updateParamInfos: null,
-		updateCanvas: null,
-		formatTime: null,
-		requestAnimation: null,
-		updateAnimation: null,
-		stopAnimation: null,
-		themechange: null,
-		windowResize: null,
-		paramInput: null,
-		progressPointerdown: null,
-		progressPointermove: null,
-		progressPointerleave: null
+		target: null as any,
+		meta: null as any,
+		symbol: null as any,
+		promise: null as any,
+		progress: null as any,
+		progressFiller: null as any,
+		pointer: null as any,
+		currentTimeInfo: null as any,
+		pointerTimeInfo: null as any,
+		canvas: null as any,
+		context: null as any,
+		dataArray: null as any,
+		intervals: null as any,
+		intensities: null as any,
+		rotation: null as any,
+		lineColor: null as any,
+		initialize: null as any,
+		open: null as any,
+		close: null as any,
+		play: null as any,
+		writeParams: null as any,
+		updateParams: null as any,
+		updateParamInfos: null as any,
+		updateCanvas: null as any,
+		formatTime: null as any,
+		requestAnimation: null as any,
+		updateAnimation: null as any,
+		stopAnimation: null as any,
+		themechange: null as any,
+		windowResize: null as any,
+		paramInput: null as any,
+		progressPointerdown: null as any,
+		progressPointermove: null as any,
+		progressPointerleave: null as any
 	};
 
-	FileAudio.initialize = function () {
+	FileAudio.initialize = function (this: any) {
 		if (!$('#fileAudio-progress')) return;
 		this.progress = $('#fileAudio-progress');
 		this.progressFiller = $('#fileAudio-progress-filler');
@@ -53,7 +53,7 @@ import { Timer } from '@/util/timer.ts';
 		this.canvas = $('#fileAudio-frequency-canvas');
 		this.context = this.canvas.getContext('2d', { desynchronized: true });
 
-		const analyser = AudioManager.analyser;
+		const analyser = AudioManager.analyser!;
 		analyser.fftSize = 512;
 		analyser.smoothingTimeConstant = 0;
 
@@ -76,7 +76,7 @@ import { Timer } from '@/util/timer.ts';
 		this.progress.addEventListener('pointerleave', this.progressPointerleave);
 	};
 
-	FileAudio.open = function (file, meta) {
+	FileAudio.open = function (this: any, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -87,22 +87,22 @@ import { Timer } from '@/util/timer.ts';
 			const elBitrate = $('#fileAudio-bitrate');
 			const size = Number(file.stats.size);
 			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize(size);
+			elSize.textContent = File.parseFileSize!(size);
 			elDuration.textContent = '';
 			elBitrate.textContent = '';
 
-			this.writeParams(AudioManager.player.getParams());
+			this.writeParams!(AudioManager.player!.getParams());
 
-			const audio = AudioManager.player.audio;
+			const audio = AudioManager.player!.audio;
 			const path = file.path;
 			if (audio.path !== path) {
 				audio.path = path;
-				audio.src = File.route(path);
+				audio.src = File.route!(path);
 
 				removeClass(this.progress, 'visible');
 				// 保留对返回的原始promise的引用 以便可以取消解码音频数据的操作
-				const promise = (this.promise = AudioManager.getWaveform(meta.guid));
-				promise.then((url) => {
+				const promise = (this.promise = AudioManager.getWaveform!(meta.guid));
+				promise.then((url: any) => {
 					if (this.promise === promise) {
 						this.promise = null;
 						this.progress.style.webkitMaskImage = url;
@@ -111,11 +111,11 @@ import { Timer } from '@/util/timer.ts';
 				});
 			}
 
-			this.updateCanvas();
-			this.requestAnimation();
+			this.updateCanvas!();
+			this.requestAnimation!();
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve) => {
+			new Promise<void>((resolve: any) => {
 				if (isNaN(audio.duration)) {
 					audio.addEventListener(
 						'loadedmetadata',
@@ -132,30 +132,30 @@ import { Timer } from '@/util/timer.ts';
 					this.symbol = null;
 					const duration = audio.duration;
 					const bitrate = Math.round(size / 128 / duration);
-					elDuration.textContent = this.formatTime(duration);
+					elDuration.textContent = this.formatTime!(duration);
 					elBitrate.textContent = `${bitrate}Kbps`;
 				}
 			});
 		}
 	};
 
-	FileAudio.close = function () {
+	FileAudio.close = function (this: any) {
 		if (this.target) {
 			if (this.promise) {
 				this.promise.canceled = true;
 				this.promise = null;
 			}
 			(window as any).Browser?.unselect?.(this.meta);
-			this.stopAnimation();
+			this.stopAnimation!();
 			this.target = null;
 			this.meta = null;
 			this.symbol = null;
 		}
 	};
 
-	FileAudio.play = function () {
+	FileAudio.play = function (this: any) {
 		if (this.target !== null) {
-			const { audio } = AudioManager.player;
+			const { audio } = AudioManager.player!;
 			if (audio.paused) {
 				audio.play();
 			} else {
@@ -164,28 +164,28 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.writeParams = function (params) {
+	FileAudio.writeParams = function (this: any, params: any) {
 		write($('#fileAudio-volume'), params.volume);
 		write($('#fileAudio-pan'), params.pan);
 		write($('#fileAudio-dry'), params.dry);
 		write($('#fileAudio-wet'), params.wet);
-		this.updateParamInfos(params);
+		this.updateParamInfos!(params);
 	};
 
-	FileAudio.updateParams = function (params) {
-		AudioManager.player.setVolume(params.volume);
-		AudioManager.player.setPan(params.pan);
-		AudioManager.player.setReverb(params.dry, params.wet);
+	FileAudio.updateParams = function (this: any, params: any) {
+		AudioManager.player!.setVolume(params.volume);
+		AudioManager.player!.setPan(params.pan);
+		AudioManager.player!.setReverb(params.dry, params.wet);
 	};
 
-	FileAudio.updateParamInfos = function (params) {
+	FileAudio.updateParamInfos = function (this: any, params: any) {
 		$('#fileAudio-volume-info').textContent = `${params.volume * 100}%`;
 		$('#fileAudio-pan-info').textContent = `${params.pan * 100}%`;
 		$('#fileAudio-dry-info').textContent = `${params.dry * 100}%`;
 		$('#fileAudio-wet-info').textContent = `${params.wet * 100}%`;
 	};
 
-	FileAudio.updateCanvas = function () {
+	FileAudio.updateCanvas = function (this: any) {
 		const manager = Inspector.manager;
 		const canvas = this.canvas;
 		const scrollTop = manager.scrollTop;
@@ -216,7 +216,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.formatTime = function (time) {
+	FileAudio.formatTime = function (this: any, time: any) {
 		const pad = Number.padZero;
 		const length = Math.floor(time);
 		const hours = Math.floor(length / 3600);
@@ -227,14 +227,14 @@ import { Timer } from '@/util/timer.ts';
 			: `${minutes}:${pad(seconds, 60)}`;
 	};
 
-	FileAudio.requestAnimation = function () {
+	FileAudio.requestAnimation = function (this: any) {
 		if (this.target !== null) {
-			Timer.appendUpdater('sharedAnimation', this.updateAnimation);
+			Timer.appendUpdater!('sharedAnimation', this.updateAnimation);
 		}
 	};
 
-	FileAudio.updateAnimation = function (deltaTime) {
-		const audio = AudioManager.player.audio;
+	FileAudio.updateAnimation = function (this: any, deltaTime: any) {
+		const audio = AudioManager.player!.audio;
 		const currentTime = audio.currentTime;
 		const duration = audio.duration || Infinity;
 		const cw = Inspector.manager.clientWidth;
@@ -259,7 +259,7 @@ import { Timer } from '@/util/timer.ts';
 		if (width * height === 0) {
 			return;
 		}
-		const analyser = AudioManager.analyser;
+		const analyser = AudioManager.analyser!;
 		const array = FileAudio.dataArray;
 		const aLength = array.length;
 		const start = Math.floor(aLength * 0.1);
@@ -359,11 +359,11 @@ import { Timer } from '@/util/timer.ts';
 		FileAudio.rotation -= (Math.PI * deltaTime) / 15000;
 	};
 
-	FileAudio.stopAnimation = function () {
-		Timer.removeUpdater('sharedAnimation', this.updateAnimation);
+	FileAudio.stopAnimation = function (this: any) {
+		Timer.removeUpdater!('sharedAnimation', this.updateAnimation);
 	};
 
-	FileAudio.themechange = function (event) {
+	FileAudio.themechange = function (this: any, event: any) {
 		switch (event.value) {
 			case 'light':
 				this.lineColor = '#000000';
@@ -374,13 +374,13 @@ import { Timer } from '@/util/timer.ts';
 		}
 	}.bind(FileAudio);
 
-	FileAudio.windowResize = function (event) {
+	FileAudio.windowResize = function (this: any, event: any) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
 			FileAudio.updateCanvas();
 		}
 	};
 
-	FileAudio.paramInput = function (event) {
+	FileAudio.paramInput = function (this: any, event: any) {
 		const read = getElementReader('fileAudio');
 		const params = {
 			volume: read('volume'),
@@ -388,14 +388,14 @@ import { Timer } from '@/util/timer.ts';
 			dry: read('dry'),
 			wet: read('wet')
 		};
-		this.updateParams(params);
-		this.updateParamInfos(params);
+		this.updateParams!(params);
+		this.updateParamInfos!(params);
 	}.bind(FileAudio);
 
-	FileAudio.progressPointerdown = function (event) {
+	FileAudio.progressPointerdown = function (this: any, event: any) {
 		switch (event.button) {
 			case 0: {
-				const { audio } = AudioManager.player;
+				const { audio } = AudioManager.player!;
 				const { time } = FileAudio.pointer;
 				if (time !== -1) {
 					audio.currentTime = time;
@@ -405,9 +405,9 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.progressPointermove = function (event) {
+	FileAudio.progressPointermove = function (this: any, event: any) {
 		const { pointer, pointerTimeInfo } = FileAudio;
-		const { duration } = AudioManager.player.audio;
+		const { duration } = AudioManager.player!.audio;
 		if (!isNaN(duration)) {
 			const pointerX = event.offsetX;
 			const boxWidth = this.clientWidth;
@@ -424,7 +424,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.progressPointerleave = function (event) {
+	FileAudio.progressPointerleave = function (this: any, event: any) {
 		const { pointer, pointerTimeInfo } = FileAudio;
 		if (pointer.time !== -1) {
 			pointer.time = -1;

@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setPointerEventRoot = new CommandSchema({
 	name: 'setPointerEventRoot',
 	onInitialize() {
-		$('#setPointerEventRoot-confirm').on('click', () => this.save());
+		$('#setPointerEventRoot-confirm').on('click', () => this.save!());
 		$('#setPointerEventRoot-operation').loadItems([
 			{ name: 'Add Root Element', value: 'add' },
 			{ name: 'Remove Root Element', value: 'remove' },
@@ -28,16 +28,16 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 		if (operation === 'set') {
 			operation = 'add';
 		}
-		const words = Command.words.push(Local.get('command.setPointerEventRoot.' + operation));
+		const words = Command.words.push(Local.get!('command.setPointerEventRoot.' + operation));
 		switch (operation) {
 			case 'add':
 			case 'remove':
-				words.push(Command.parseElement(element));
+				words.push(Command.parseElement!(element));
 				break;
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setPointerEventRoot') + Token(': ') },
+			{ text: Local.get!('command.setPointerEventRoot') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -55,12 +55,12 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 			case 'add':
 			case 'remove': {
 				const element = read($('#setPointerEventRoot-element'));
-				Command.save({ operation, element });
+				Command.save!({ operation, element });
 				break;
 			}
 			case 'remove-latest':
 			case 'reset':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 		}
 	}

@@ -12,35 +12,35 @@ export const Window = {
 	get ambient() {
 		return $('#window-ambient');
 	},
-	frames: [],
+	frames: [] as HTMLElement[],
 	positionMode: 'center',
 	absolutePos: { x: 0, y: 0 },
-	overlapRoot: null,
-	activeElement: null,
-	initialize: null,
-	open: null,
-	close: null,
-	closeAll: null,
-	isWindowOpen: null,
-	getTopWindow: null,
-	setPositionMode: null,
-	saveActiveElement: null,
-	restoreActiveElement: null,
-	refocus: null,
-	confirm: null,
-	keydown: null,
-	cancel: null
+	overlapRoot: null as HTMLElement | null,
+	activeElement: null as Element | null,
+	initialize: null as (() => void) | null,
+	open: null as ((id: string) => void) | null,
+	close: null as ((id?: string | null) => void) | null,
+	closeAll: null as (() => void) | null,
+	isWindowOpen: null as ((id: string) => boolean) | null,
+	getTopWindow: null as (() => HTMLElement | undefined) | null,
+	setPositionMode: null as ((mode: string) => void) | null,
+	saveActiveElement: null as (() => void) | null,
+	restoreActiveElement: null as (() => void) | null,
+	refocus: null as (() => void) | null,
+	confirm: null as ((options: any, items: any) => void) | null,
+	keydown: null as ((event: KeyboardEvent) => void) | null,
+	cancel: null as ((event: any) => void) | null
 };
 
-Window.initialize = function () {
+Window.initialize = function (this: any) {
 	const buttons = document.getElementsByName('cancel');
 	const length = buttons.length;
 	for (let i = 0; i < length; i++) {
-		buttons[i].addEventListener('click', this.cancel);
+		buttons[i].addEventListener('click', this.cancel!);
 	}
 };
 
-Window.open = function (id) {
+Window.open = function (this: any, id: string) {
 	const frames = this.frames;
 	const element = document.getElementById(id);
 	if (!element) {
@@ -52,17 +52,17 @@ Window.open = function (id) {
 		if (frames.length > 0) {
 			frames[frames.length - 1].blur();
 		} else {
-			Title.pointermove({ target: null });
-			Window.saveActiveElement();
+			Title.pointermove!({ target: null });
+			Window.saveActiveElement!();
 			Layout.disableFocusableElements();
 			document.body.style.pointerEvents = 'none';
-			document.activeElement.blur();
-			window.removeEventListener('keydown', Menubar.keydown);
+			document.activeElement!.blur();
+			window.removeEventListener('keydown', Menubar.keydown!);
 			window.removeEventListener('keydown', Scene.keydown);
 			window.removeEventListener('keydown', UI.keydown);
 			window.removeEventListener('keydown', Animation.keydown);
-			window.removeEventListener('keydown', Particle.keydown);
-			window.addEventListener('keydown', Window.keydown);
+			window.removeEventListener('keydown', Particle.keydown!);
+			window.addEventListener('keydown', Window.keydown!);
 		}
 
 		// 解决失去焦点后还能使用键盘滚动的问题 延时获得焦点是为了解决鼠标按下瞬间焦点切换被阻止的问题
@@ -87,7 +87,7 @@ Window.open = function (id) {
 	}
 };
 
-Window.close = function (id = null) {
+Window.close = function (this: any, id: string | null = null) {
 	const frames = this.frames;
 	if (!frames.length) {
 		return;
@@ -98,7 +98,7 @@ Window.close = function (id = null) {
 		return;
 	}
 
-	if (element.close()) {
+	if ((element as any).close()) {
 		document.body.style.pointerEvents = 'inherit';
 		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
@@ -106,46 +106,46 @@ Window.close = function (id = null) {
 			if (frames.length > 0) {
 				frames[frames.length - 1].focus();
 			} else {
-				Title.pointerenter();
-				Window.restoreActiveElement();
+				Title.pointerenter!();
+				Window.restoreActiveElement!();
 				Layout.enableFocusableElements();
-				window.addEventListener('keydown', Menubar.keydown);
+				window.addEventListener('keydown', Menubar.keydown!);
 				window.addEventListener('keydown', Scene.keydown);
 				window.addEventListener('keydown', UI.keydown);
 				window.addEventListener('keydown', Animation.keydown);
-				window.addEventListener('keydown', Particle.keydown);
-				window.removeEventListener('keydown', Window.keydown);
+				window.addEventListener('keydown', Particle.keydown!);
+				window.removeEventListener('keydown', Window.keydown!);
 			}
 		} catch (error) {
 			console.error('[window] close restore error:', error);
 		}
 		window.scrollTo(0, 0);
 		if (this.overlapRoot === element) {
-			this.setPositionMode('center');
+			this.setPositionMode!('center');
 		}
 	}
 };
 
-Window.closeAll = function () {
+Window.closeAll = function (this: any) {
 	const frames = this.frames;
 	let i = frames.length;
 	while (--i >= 0) {
 		const frame = frames[i];
-		const enabled = frame.closeEventEnabled;
+		const enabled = (frame as any).closeEventEnabled;
 		frame.closeEventEnabled = false;
-		this.close(frame.id);
+		this.close!(frame.id);
 		frame.closeEventEnabled = enabled;
 	}
 };
 
-Window.isWindowOpen = function (id) {
+Window.isWindowOpen = function (this: any, id) {
 	for (const frame of this.frames) {
 		if (frame.id === id) return true;
 	}
 	return false;
 };
 
-Window.getTopWindow = function () {
+Window.getTopWindow = function (this: any) {
 	const { frames } = this;
 	if (frames.length !== 0) {
 		return frames[frames.length - 1];
@@ -153,7 +153,7 @@ Window.getTopWindow = function () {
 	return undefined;
 };
 
-Window.setPositionMode = function (mode) {
+Window.setPositionMode = function (this: any, mode: string) {
 	if (this.positionMode !== mode) {
 		if (this.overlapRoot) {
 			this.overlapRoot = null;
@@ -175,7 +175,7 @@ Window.setPositionMode = function (mode) {
 	}
 };
 
-Window.saveActiveElement = function () {
+Window.saveActiveElement = function (this: any) {
 	const { activeElement } = document;
 	if (activeElement !== document.body) {
 		this.activeElement = activeElement;
@@ -183,7 +183,7 @@ Window.saveActiveElement = function () {
 	}
 };
 
-Window.restoreActiveElement = function () {
+Window.restoreActiveElement = function (this: any) {
 	if (this.activeElement) {
 		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
 		this.activeElement.focus({ preventScroll: true });
@@ -191,16 +191,16 @@ Window.restoreActiveElement = function () {
 	}
 };
 
-Window.refocus = function () {
+Window.refocus = function (this: any) {
 	const active = document.activeElement;
 	if (active !== document.body) {
-		active.blur();
-		active.focus();
+		active!.blur();
+		active!.focus();
 	}
 };
 
 Window.confirm = (function IIFE() {
-	return function (options, items) {
+	return function (options: any, items: any) {
 		const elWindow = $('#confirmation');
 		const elMessage = $('#confirmation-message');
 		const buttons = [
@@ -209,8 +209,8 @@ Window.confirm = (function IIFE() {
 			$('#confirmation-button-2')
 		];
 		const message = options.message ?? '';
-		const click = function (event) {
-			Window.close('confirmation');
+		const click = function (this: any, event: any) {
+			Window.close!('confirmation');
 			const index = buttons.indexOf(this);
 			const item = items[index];
 			item.click?.();
@@ -232,7 +232,7 @@ Window.confirm = (function IIFE() {
 		elMessage.textContent = message;
 		elWindow.addEventListener(
 			'closed',
-			(event) => {
+			(event: Event) => {
 				for (const button of buttons) {
 					button.removeEventListener('click', click);
 				}
@@ -249,17 +249,17 @@ Window.confirm = (function IIFE() {
 		const contentHeight = textHeight + 50;
 		elWindow.style.width = `${contentWidth}px`;
 		elWindow.style.height = `${contentHeight + 24}px`;
-		Window.open('confirmation');
+		Window.open!('confirmation');
 	};
 })();
 
-Window.keydown = function (event) {
+Window.keydown = function (this: any, event) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'F4':
 				event.preventDefault();
-				Window.refocus();
-				Window.close();
+				Window.refocus!();
+				Window.close!();
 				break;
 		}
 	} else {
@@ -277,7 +277,7 @@ Window.keydown = function (event) {
 				if (button instanceof HTMLButtonElement) {
 					event.preventDefault();
 					if (active !== document.body) {
-						active.blur();
+						active!.blur();
 					}
 					button.click();
 				}
@@ -293,38 +293,38 @@ Window.keydown = function (event) {
 					const active = document.activeElement;
 					if (active !== document.body) {
 						// 调用blur来触发change事件
-						active.blur();
-						active.focus();
+						active!.blur();
+						active!.focus();
 					}
 					button.click();
 				}
 				break;
 			}
 			case 'Escape':
-				Window.refocus();
-				Window.close();
+				Window.refocus!();
+				Window.close!();
 				break;
 		}
 	}
 };
 
-Window.cancel = function (event) {
+Window.cancel = function (this: any, event) {
 	let element = event.target.parentNode;
 	while (element) {
 		if ((element as HTMLElement).classList.contains('window-frame')) {
-			return Window.close(element.id);
+			return Window.close!(element.id);
 		} else {
 			element = element.parentNode;
 		}
 	}
 };
 
-Window.ambient.update = function () {
+Window.ambient.update = function (this: any) {
 	const frames = Window.frames;
 	let i = frames.length;
 	while (--i >= 0) {
 		const frame = frames[i];
-		if (frame.enableAmbient) {
+		if ((frame as any).enableAmbient) {
 			addClass(this, 'open');
 			this.style.zIndex = i + 1;
 			return;

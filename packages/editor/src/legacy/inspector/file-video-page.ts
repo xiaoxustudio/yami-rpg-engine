@@ -5,25 +5,25 @@ import { Inspector } from './inspector.ts';
 
 {
 	const FileVideo = {
-		target: null,
-		meta: null,
-		symbol: null,
-		video: null,
-		initialize: null,
-		open: null,
-		close: null,
-		play: null,
-		windowError: null
+		target: null as any,
+		meta: null as any,
+		symbol: null as any,
+		video: null as any,
+		initialize: null as any,
+		open: null as any,
+		close: null as any,
+		play: null as any,
+		windowError: null as any
 	};
 
-	FileVideo.initialize = function () {
+	FileVideo.initialize = function (this: any) {
 		if (!$('#fileVideo-video')) return;
 		this.video = $('#fileVideo-video');
 
 		window.addEventListener('error', this.windowError);
 	};
 
-	FileVideo.open = function (file, meta) {
+	FileVideo.open = function (this: any, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -35,17 +35,17 @@ import { Inspector } from './inspector.ts';
 			const elBitrate = $('#fileVideo-bitrate');
 			const size = Number(file.stats.size);
 			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize(size);
+			elSize.textContent = File.parseFileSize!(size);
 			elDuration.textContent = '';
 			elResolution.textContent = '';
 			elBitrate.textContent = '';
 
 			const video = this.video;
 			const path = file.path;
-			video.src = File.route(path);
+			video.src = File.route!(path);
 
 			const symbol = (this.symbol = Symbol());
-			new Promise((resolve) => {
+			new Promise((resolve: any) => {
 				video.addEventListener(
 					'loadedmetadata',
 					() => {
@@ -69,7 +69,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileVideo.close = function () {
+	FileVideo.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -79,9 +79,9 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileVideo.play = function () {
+	FileVideo.play = function (this: any) {
 		if (this.target !== null) {
-			AudioManager.player.stop();
+			AudioManager.player!.stop();
 			const { video } = this;
 			if (video.paused) {
 				video.play();
@@ -91,7 +91,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileVideo.windowError = function (event) {
+	FileVideo.windowError = function (this: any, event: any) {
 		if (event.message === 'ResizeObserver loop limit exceeded') {
 			event.stopImmediatePropagation();
 		}

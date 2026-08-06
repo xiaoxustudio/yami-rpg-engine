@@ -7,13 +7,13 @@ function getWindow() {
 }
 
 export const TilemapGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-TilemapGetter.initialize = function () {
+TilemapGetter.initialize = function (this: any) {
 	if (!$('#tilemapGetter-type')) return;
 	$('#tilemapGetter-type').loadItems([
 		{ name: 'Event Trigger Tilemap', value: 'trigger' },
@@ -31,7 +31,7 @@ TilemapGetter.initialize = function () {
 	on($('#tilemapGetter-confirm'), 'click', this.confirm);
 };
 
-TilemapGetter.open = function (target) {
+TilemapGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('tilemapGetter');
 
@@ -54,7 +54,7 @@ TilemapGetter.open = function (target) {
 	getFocus($('#tilemapGetter-type'));
 };
 
-TilemapGetter.confirm = function (event) {
+TilemapGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('tilemapGetter');
 	const type = read('type');
 	let getter;

@@ -7,15 +7,15 @@ function getWindow() {
 }
 
 export const ActorGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-ActorGetter.initialize = function () {
+ActorGetter.initialize = function (this: any) {
 	if (!$('#actorGetter-type')) return;
 	$('#actorGetter-type').loadItems([
 		{ name: 'Event Trigger Actor', value: 'trigger' },
@@ -41,13 +41,13 @@ ActorGetter.initialize = function () {
 	$('#actorGetter-confirm').on('click', this.confirm);
 };
 
-ActorGetter.open = function (target) {
+ActorGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('actorGetter');
 
 	let memberId = 0;
 	let actorId = '';
-	let presetId = PresetObject.getDefaultPresetId('actor');
+	let presetId = (PresetObject.getDefaultPresetId as any)('actor');
 	let variable = { type: 'local', key: '' };
 	const actor = target.dataValue;
 	switch (actor.type) {
@@ -78,18 +78,18 @@ ActorGetter.open = function (target) {
 	getFocus($('#actorGetter-type'));
 };
 
-ActorGetter.checkDataForPlugin = function (data) {
+ActorGetter.checkDataForPlugin = function (this: any, data: any) {
 	if (data instanceof Object) {
 		return data.getter === 'actor';
 	}
 	return false;
 };
 
-ActorGetter.createDefaultForPlugin = function () {
+ActorGetter.createDefaultForPlugin = function (this: any) {
 	return { getter: 'actor', type: 'trigger' };
 };
 
-ActorGetter.confirm = function (event) {
+ActorGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('actorGetter');
 	const type = read('type');
 	let getter;

@@ -16,15 +16,15 @@ import { Selection } from '@/tools/text-capture.ts';
 
 (Command.cases as any).callEvent = new CommandSchema({
 	name: 'callEvent',
-	windowFrame: null,
-	gridBox: null,
+	windowFrame: null as any,
+	gridBox: null as any,
 	eventArgs: [],
 	parameters: [],
-	eventResult: null,
+	eventResult: null as any,
 	onInitialize() {
 		this.windowFrame = $('#callEvent');
 		this.gridBox = $('#callEvent').querySelector('.grid-box');
-		$('#callEvent-confirm').on('click', () => this.save());
+		$('#callEvent-confirm').on('click', () => this.save!());
 
 		$('#callEvent-type').loadItems([
 			{ name: 'Global', value: 'global' },
@@ -75,15 +75,15 @@ import { Selection } from '@/tools/text-capture.ts';
 			]);
 
 		this.windowFrame.on('closed', () => {
-			this.eventArgs = [];
-			this.clearGlobalEventElements();
+			this.eventArgs = [] as any[];
+			this.clearGlobalEventElements!();
 		});
 	},
 	typeWrite(event: any) {
 		const type = event.value;
 		if (type !== 'inherited') {
 			const elEventType = $('#callEvent-eventType');
-			const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
+			const eventTypes = Enum.getMergedItems!(EventEditor.types[type], type + '-event');
 			elEventType.loadItems(eventTypes);
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
@@ -91,29 +91,29 @@ import { Selection } from '@/tools/text-capture.ts';
 		for (const element of $('.call-event-component')) {
 			type === 'global' ? show(element) : hide(element);
 		}
-		this.resizeWindow();
+		this.resizeWindow!();
 	},
 	eventIdWrite(event: any) {
-		this.eventArgs = this.readEventArgs();
-		this.clearGlobalEventElements();
+		this.eventArgs = this.readEventArgs!();
+		this.clearGlobalEventElements!();
 		const id = event.value;
 		if (id) {
-			const flags = {};
+			const flags = {} as Record<string, any>;
 			const globalEvent = Data.events[id];
 			for (const parameter of globalEvent.parameters) {
 				if (parameter.key in flags) {
 					continue;
 				}
 				flags[parameter.key] = true;
-				this.createParameterElements(parameter);
+				this.createParameterElements!(parameter);
 			}
-			this.createEventResultElements(globalEvent.returnType);
+			this.createEventResultElements!(globalEvent.returnType);
 		}
-		this.resizeWindow();
+		this.resizeWindow!();
 	},
 	eventIdInput(event: any) {
 		if (this.eventArgs) {
-			this.writeEventArgs(this.eventArgs);
+			this.writeEventArgs!(this.eventArgs);
 		}
 	},
 	resizeWindow() {
@@ -167,8 +167,8 @@ import { Selection } from '@/tools/text-capture.ts';
 					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
 				);
 				addClass(input, 'callEvent-argument-string');
-				input.on('change', () => this.resizeWindow());
-				Selection.addEventListeners(input.strBox);
+				input.on('change', () => this.resizeWindow!());
+				Selection.addEventListeners!(input.strBox);
 				break;
 			case 'object':
 				input = createCustomBox();
@@ -257,8 +257,8 @@ import { Selection } from '@/tools/text-capture.ts';
 		}
 		write(input, { type: 'local', key: '' });
 		const label = document.createElement('div');
-		const text = Local.get('command.callEvent.return');
-		const tip = Local.get('command.callEvent.return.tip');
+		const text = Local.get!('command.callEvent.return');
+		const tip = Local.get!('command.callEvent.return.tip');
 		label.textContent = text;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
 		addClass(label, 'call-event-component');
@@ -271,22 +271,22 @@ import { Selection } from '@/tools/text-capture.ts';
 	parseEventArgs(event: any, args: any) {
 		const words = Command.words;
 		if (event) {
-			const flags = {};
+			const flags = {} as Record<string, any>;
 			const parameters = event.parameters;
 			outer: for (const { type, key, note } of parameters) {
-				const name = note ? Command.setTooltip(`<b>${key}</b>\n${note}`) + key : key;
+				const name = note ? Command.setTooltip!(`<b>${key}</b>\n${note}`) + key : key;
 				for (const arg of args) {
 					if (arg.key === key && arg.type === type) {
 						if (key in flags) {
 							continue;
 						}
 						flags[key] = true;
-						words.push(name + Token(' = ') + this.parseEventArgInput(arg));
+						words.push(name + Token(' = ') + this.parseEventArgInput!(arg));
 						continue outer;
 					}
 				}
 				const info = `${(Command as any).setClass('error')}${name}${
-					Token(': ') + Command.setWeakColor(Local.get('eventParameterTypes.' + type))
+					Token(': ') + Command.setWeakColor!(Local.get!('eventParameterTypes.' + type))
 				}`;
 				words.push(info);
 			}
@@ -298,29 +298,29 @@ import { Selection } from '@/tools/text-capture.ts';
 	parseEventArgInput(arg: any) {
 		switch (arg.type) {
 			case 'boolean':
-				return Command.setBooleanColor(arg.value.toString());
+				return Command.setBooleanColor!(arg.value.toString());
 			case 'number':
-				return Command.parseVariableNumber(arg.value);
+				return Command.parseVariableNumber!(arg.value);
 			case 'string':
-				return Command.parseVariableTemplate(arg.value, 40);
+				return Command.parseVariableTemplate!(arg.value, 40);
 			case 'object':
-				return Command.parseVariable(arg.value, 'object');
+				return Command.parseVariable!(arg.value, 'object');
 			case 'actor':
-				return Command.parseActor(arg.value);
+				return Command.parseActor!(arg.value);
 			case 'skill':
-				return Command.parseSkill(arg.value);
+				return Command.parseSkill!(arg.value);
 			case 'state':
-				return Command.parseState(arg.value);
+				return Command.parseState!(arg.value);
 			case 'equipment':
-				return Command.parseEquipment(arg.value);
+				return Command.parseEquipment!(arg.value);
 			case 'item':
-				return Command.parseItem(arg.value);
+				return Command.parseItem!(arg.value);
 			case 'trigger':
-				return Command.parseTrigger(arg.value);
+				return Command.parseTrigger!(arg.value);
 			case 'light':
-				return Command.parseLight(arg.value);
+				return Command.parseLight!(arg.value);
 			case 'element':
-				return Command.parseElement(arg.value);
+				return Command.parseElement!(arg.value);
 		}
 	},
 	getDefaultArgValue(type: any) {
@@ -352,14 +352,14 @@ import { Selection } from '@/tools/text-capture.ts';
 					continue outer;
 				}
 			}
-			write(input, this.getDefaultArgValue(type));
+			write(input, this.getDefaultArgValue!(type));
 		}
 	},
 	readEventArgs() {
-		const args = [];
+		const args = [] as any[];
 		for (const { type, key, input } of this.parameters) {
 			const value = read(input);
-			if (type === 'object' && VariableGetter.isNone(value)) {
+			if (type === 'object' && VariableGetter.isNone!(value)) {
 				getFocus(input);
 				return null;
 			}
@@ -408,32 +408,32 @@ import { Selection } from '@/tools/text-capture.ts';
 		switch (type) {
 			case 'global': {
 				if (eventArgs === undefined) {
-					eventArgs = [];
+					eventArgs = [] as any[];
 				}
 				if (eventResult === undefined) {
 					eventResult = { type: 'none' };
 				}
 				let leftValue = '';
-				let eventName = Command.parseFileName(eventId);
+				let eventName = Command.parseFileName!(eventId);
 				const event = Data.events[eventId];
 				if (!event) break;
 				switch (eventResult.type) {
 					case 'none':
 						if (event.returnType !== 'none') {
-							leftValue = Command.setVariableColor('?');
+							leftValue = Command.setVariableColor!('?');
 						}
 						break;
 					case 'boolean':
 					case 'number':
 					case 'string':
-						leftValue = Command.parseVariable(
+						leftValue = Command.parseVariable!(
 							eventResult.variable,
 							eventResult.type,
 							true
 						);
 						break;
 					case 'object':
-						leftValue = Command.parseVariable(eventResult.variable, 'object', true);
+						leftValue = Command.parseVariable!(eventResult.variable, 'object', true);
 						break;
 					case 'actor':
 					case 'skill':
@@ -443,7 +443,7 @@ import { Selection } from '@/tools/text-capture.ts';
 					case 'trigger':
 					case 'light':
 					case 'element':
-						leftValue = Command.parseVariable(eventResult.variable, 'object', true);
+						leftValue = Command.parseVariable!(eventResult.variable, 'object', true);
 						break;
 				}
 				if (leftValue) {
@@ -454,47 +454,47 @@ import { Selection } from '@/tools/text-capture.ts';
 				}
 				if (event.description) {
 					eventName =
-						Command.setTooltip(
-							`<b>${Command.removeTextTags(eventName)}</b>\n${event.description}`
+						Command.setTooltip!(
+							`<b>${Command.removeTextTags!(eventName)}</b>\n${event.description}`
 						) + eventName;
 				}
-				words.push(leftValue + eventName + this.parseEventArgs(event, eventArgs));
+				words.push(leftValue + eventName + this.parseEventArgs!(event, eventArgs));
 				break;
 			}
 			case 'inherited':
-				words.push(Local.get('command.callEvent.inherited'));
+				words.push(Local.get!('command.callEvent.inherited'));
 				break;
 			case 'scene':
-				words.push(Local.get('command.callEvent.scene'));
+				words.push(Local.get!('command.callEvent.scene'));
 				break;
 			case 'actor':
-				words.push(Command.parseActor(actor));
+				words.push(Command.parseActor!(actor));
 				break;
 			case 'skill':
-				words.push(Command.parseSkill(skill));
+				words.push(Command.parseSkill!(skill));
 				break;
 			case 'state':
-				words.push(Command.parseState(state));
+				words.push(Command.parseState!(state));
 				break;
 			case 'equipment':
-				words.push(Command.parseEquipment(equipment));
+				words.push(Command.parseEquipment!(equipment));
 				break;
 			case 'item':
-				words.push(Command.parseItem(item));
+				words.push(Command.parseItem!(item));
 				break;
 			case 'light':
-				words.push(Command.parseLight(light));
+				words.push(Command.parseLight!(light));
 				break;
 			case 'element':
-				words.push(Command.parseElement(element));
+				words.push(Command.parseElement!(element));
 				break;
 		}
 		if (eventType) {
-			words.push(Command.parseEventType(type + '-event', eventType));
+			words.push(Command.parseEventType!(type + '-event', eventType));
 		}
 		const contents: any[] = [
 			{ color: 'flow' },
-			{ text: Local.get('command.callEvent.alias') + Token(': ') },
+			{ text: Local.get!('command.callEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 		if (type === 'global') {
@@ -527,8 +527,8 @@ import { Selection } from '@/tools/text-capture.ts';
 		write('element', element);
 		write('eventId', eventId);
 		write('eventType', eventType);
-		this.writeEventArgs(eventArgs);
-		this.writeEventResult(eventResult);
+		this.writeEventArgs!(eventArgs);
+		this.writeEventResult!(eventResult);
 		getFocus($('#callEvent-type'));
 	},
 	customSave() {
@@ -540,24 +540,24 @@ import { Selection } from '@/tools/text-capture.ts';
 				if (eventId === '') {
 					return getFocus($('#callEvent-eventId'));
 				}
-				const eventArgs = this.readEventArgs();
+				const eventArgs = this.readEventArgs!();
 				if (eventArgs === null) return;
-				const eventResult = this.readEventResult();
-				if (eventResult.type !== 'none' && VariableGetter.isNone(eventResult.variable)) {
+				const eventResult = this.readEventResult!();
+				if (eventResult.type !== 'none' && VariableGetter.isNone!(eventResult.variable)) {
 					return getFocus(this.eventResult.input);
 				}
-				Command.save({ type, eventId, eventArgs, eventResult });
+				Command.save!({ type, eventId, eventArgs, eventResult });
 				break;
 			}
 			case 'inherited':
-				Command.save({ type });
+				Command.save!({ type });
 				break;
 			case 'scene':
 				const eventType = read('eventType');
 				if (eventType === '') {
 					return getFocus($('#callEvent-eventType'));
 				}
-				Command.save({ type, eventType });
+				Command.save!({ type, eventType });
 				break;
 			default: {
 				const target = read(type);
@@ -565,7 +565,7 @@ import { Selection } from '@/tools/text-capture.ts';
 				if (eventType === '') {
 					return getFocus($('#callEvent-eventType'));
 				}
-				Command.save({
+				Command.save!({
 					type: type,
 					[type]: target,
 					eventType: eventType

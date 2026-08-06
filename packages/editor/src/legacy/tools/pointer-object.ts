@@ -10,10 +10,10 @@ export const Cursor = {
 	close: null as any
 };
 
-Cursor.open = function (className) {
+Cursor.open = function (className: string) {
 	addClass(this.region, className);
 };
 
-Cursor.close = function (className) {
+Cursor.close = function (className: string) {
 	removeClass(this.region, className);
 };

@@ -1,10 +1,9 @@
 import { UI } from './ui-window.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Texture } from '@/webgl/texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
 UI.Image = class ImageElement extends UI.Element {
-	texture: Texture | null;
+	texture: any;
 	_display!: string;
 	_image!: string;
 	flip: string;
@@ -43,7 +42,7 @@ UI.Image = class ImageElement extends UI.Element {
 			if (value) {
 				this.texture = new ImageTexture(value);
 				this.texture.on('load', () => {
-					UI.requestRendering();
+					UI.requestRendering!();
 				});
 			}
 		}
@@ -59,7 +58,7 @@ UI.Image = class ImageElement extends UI.Element {
 
 	draw() {
 		if (this.visible === false) {
-			return this.drawChildren();
+			return this.drawChildren!();
 		}
 
 		const { texture } = this;
@@ -74,10 +73,10 @@ UI.Image = class ImageElement extends UI.Element {
 						break draw;
 					}
 					if (GL.depthTest) {
-						GL.disable(GL.DEPTH_TEST);
+						GL.disable!(GL.DEPTH_TEST);
 					}
 					GL.maskTexture.binding = this;
-					GL.bindFBO(GL.maskTexture.fbo);
+					GL.bindFBO!(GL.maskTexture.fbo);
 					GL.alpha = 1;
 					GL.blend = 'normal';
 				} else {
@@ -101,7 +100,7 @@ UI.Image = class ImageElement extends UI.Element {
 						texture.clip(...(this.clip as [number, number, number, number]));
 						break;
 					case 'slice':
-						GL.drawSliceImage(
+						GL.drawSliceImage!(
 							texture,
 							dx,
 							dy,
@@ -131,22 +130,22 @@ UI.Image = class ImageElement extends UI.Element {
 						dh *= -1;
 						break;
 				}
-				GL.drawImage(texture, dx, dy, dw, dh, this.tint);
+				GL.drawImage!(texture, dx, dy, dw, dh, this.tint);
 			}
 		else if (this.blend !== 'mask') {
-			this.drawDefaultImage();
+			this.drawDefaultImage!();
 		}
 
 		if (GL.maskTexture.binding === this) {
-			GL.unbindFBO();
+			GL.unbindFBO!();
 			if (GL.depthTest) {
-				GL.enable(GL.DEPTH_TEST);
+				GL.enable!(GL.DEPTH_TEST);
 			}
 			GL.masking = true;
-			this.drawChildren();
+			this.drawChildren!();
 			GL.masking = false;
 			GL.maskTexture.binding = null;
-			const [x1, y1, x2, y2] = this.computeBoundingRectangle();
+			const [x1, y1, x2, y2] = this.computeBoundingRectangle!();
 			const sl = Math.max(Math.floor(x1 - 1), 0);
 			const st = Math.max(Math.floor(y1 - 1), 0);
 			const sr = Math.min(Math.ceil(x2 + 1), GL.maskTexture.width);
@@ -154,16 +153,16 @@ UI.Image = class ImageElement extends UI.Element {
 			const sw = sr - sl;
 			const sh = sb - st;
 			if (sw > 0 && sh > 0) {
-				GL.bindFBO(GL.maskTexture.fbo);
-				GL.enable(GL.SCISSOR_TEST);
-				GL.scissor(sl, st, sw, sh);
-				GL.clearColor(0, 0, 0, 0);
-				GL.clear(GL.COLOR_BUFFER_BIT);
-				GL.disable(GL.SCISSOR_TEST);
-				GL.unbindFBO();
+				GL.bindFBO!(GL.maskTexture.fbo);
+				GL.enable!(GL.SCISSOR_TEST);
+				GL.scissor!(sl, st, sw, sh);
+				GL.clearColor!(0, 0, 0, 0);
+				GL.clear!(GL.COLOR_BUFFER_BIT);
+				GL.disable!(GL.SCISSOR_TEST);
+				GL.unbindFBO!();
 			}
 		} else {
-			this.drawChildren();
+			this.drawChildren!();
 		}
 	}
 
@@ -171,14 +170,14 @@ UI.Image = class ImageElement extends UI.Element {
 		if (this.parent instanceof UI.Window) {
 			return this.parent.requestResizing();
 		}
-		this.calculatePosition();
-		this.resizeChildren();
+		this.calculatePosition!();
+		this.resizeChildren!();
 	}
 
 	destroy() {
 		super.destroy();
 		this.texture?.destroy();
-		this.destroyChildren();
+		this.destroyChildren!();
 	}
 
 	computeBoundingRectangle() {

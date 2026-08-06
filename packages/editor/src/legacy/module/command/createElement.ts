@@ -10,7 +10,7 @@ import { PresetElement } from '@/tools/preset-element-window.ts';
 Command.cases.createElement = new CommandSchema({
 	name: 'createElement',
 	onInitialize() {
-		$('#createElement-confirm').on('click', () => this.save());
+		$('#createElement-confirm').on('click', () => this.save!());
 		$('#createElement-operation').loadItems([
 			{ name: 'Append All to Root', value: 'append-all-to-root' },
 			{ name: 'Append One to Root', value: 'append-one-to-root' },
@@ -39,14 +39,14 @@ Command.cases.createElement = new CommandSchema({
 			]);
 	},
 	parseUIAndNodeNames(uiId: any) {
-		const uiName = Command.parseFileName(uiId);
+		const uiName = Command.parseFileName!(uiId);
 		const data = Data.ui[uiId];
 		if (data !== undefined) {
 			const words = Command.words;
 			const nodes = data.nodes;
 			for (const { name } of nodes) {
 				if (name !== '') {
-					words.push(Command.setPresetColor(name));
+					words.push(Command.setPresetColor!(name));
 				}
 				if (words.count === 5) {
 					break;
@@ -63,25 +63,25 @@ Command.cases.createElement = new CommandSchema({
 		let info;
 		switch (operation) {
 			case 'append-all-to-root':
-				info = this.parseUIAndNodeNames(uiId);
+				info = this.parseUIAndNodeNames!(uiId);
 				break;
 			case 'append-one-to-root':
-				info = Command.parsePresetElement(presetId);
+				info = Command.parsePresetElement!(presetId);
 				break;
 			case 'append-all-to-element':
 				info =
-					Command.parseElement(parent) + Token(' -> ') + this.parseUIAndNodeNames(uiId);
+					Command.parseElement!(parent) + Token(' -> ') + this.parseUIAndNodeNames!(uiId);
 				break;
 			case 'append-one-to-element':
 				info =
-					Command.parseElement(parent) +
+					Command.parseElement!(parent) +
 					Token(' -> ') +
-					Command.parsePresetElement(presetId);
+					Command.parsePresetElement!(presetId);
 				break;
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.createElement') + Token(': ') },
+			{ text: Local.get!('command.createElement') + Token(': ') },
 			{ text: info }
 		];
 	},
@@ -89,7 +89,7 @@ Command.cases.createElement = new CommandSchema({
 		operation = 'append-all-to-root',
 		parent = { type: 'trigger' },
 		uiId = '',
-		presetId = PresetElement.getDefaultPresetId()
+		presetId = PresetElement.getDefaultPresetId!()
 	}) {
 		const write = getElementWriter('createElement');
 		write('operation', operation);
@@ -107,7 +107,7 @@ Command.cases.createElement = new CommandSchema({
 				if (uiId === '') {
 					return getFocus($('#createElement-uiId'));
 				}
-				Command.save({ operation, uiId });
+				Command.save!({ operation, uiId });
 				break;
 			}
 			case 'append-one-to-root': {
@@ -115,7 +115,7 @@ Command.cases.createElement = new CommandSchema({
 				if (presetId === '') {
 					return getFocus($('#createElement-presetId'));
 				}
-				Command.save({ operation, presetId });
+				Command.save!({ operation, presetId });
 				break;
 			}
 			case 'append-all-to-element': {
@@ -123,7 +123,7 @@ Command.cases.createElement = new CommandSchema({
 				if (uiId === '') {
 					return getFocus($('#createElement-uiId'));
 				}
-				Command.save({
+				Command.save!({
 					operation,
 					parent: read('parent'),
 					uiId
@@ -135,7 +135,7 @@ Command.cases.createElement = new CommandSchema({
 				if (presetId === '') {
 					return getFocus($('#createElement-presetId'));
 				}
-				Command.save({
+				Command.save!({
 					operation,
 					parent: read('parent'),
 					presetId

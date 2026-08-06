@@ -44,15 +44,15 @@ interface SwitchConditionShape {
 }
 
 export const SwitchCondition: SwitchConditionShape = {
-	target: null,
-	initialize: null,
-	parse: null,
-	open: null,
-	save: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	parse: null as any,
+	open: null as any,
+	save: null as any,
+	confirm: null as any
 };
 
-SwitchCondition.initialize = function (): void {
+SwitchCondition.initialize = function (this: any): void {
 	if (!$('#switch-condition-type')) return;
 	($('#switch-condition-type') as any).loadItems([
 		{ name: 'None', value: 'none' },
@@ -110,7 +110,11 @@ SwitchCondition.initialize = function (): void {
 	($('#switch-condition-confirm') as HTMLElement).addEventListener('click', this.confirm!);
 };
 
-SwitchCondition.parse = function (condition: SwitchConditionData, listData?: boolean): string {
+SwitchCondition.parse = function (
+	this: any,
+	condition: SwitchConditionData,
+	listData?: boolean
+): string {
 	let string: string;
 	switch (condition.type) {
 		case 'none':
@@ -133,19 +137,19 @@ SwitchCondition.parse = function (condition: SwitchConditionData, listData?: boo
 			break;
 		case 'keyboard': {
 			const key = condition.keycode!;
-			const keyboard = Local.get('command.switch.keyboard');
+			const keyboard = Local.get!('command.switch.keyboard');
 			string = keyboard + Token('[') + Command.setStringColor!(key) + Token(']');
 			break;
 		}
 		case 'gamepad': {
 			const button = getButtonName(condition.button!);
-			const gamepad = Local.get('command.switch.gamepad');
+			const gamepad = Local.get!('command.switch.gamepad');
 			string = gamepad + Token('[') + Command.setStringColor!(button) + Token(']');
 			break;
 		}
 		case 'mouse': {
-			const button = IfCondition.parseMouseButton(condition.button!);
-			const mouse = Local.get('command.switch.mouse');
+			const button = IfCondition.parseMouseButton!(condition.button!);
+			const mouse = Local.get!('command.switch.mouse');
 			string = mouse + Token('[') + Command.setStringColor!(button) + Token(']');
 			break;
 		}
@@ -160,6 +164,7 @@ SwitchCondition.parse = function (condition: SwitchConditionData, listData?: boo
 };
 
 SwitchCondition.open = function (
+	this: any,
 	condition: SwitchConditionData = { type: 'number', value: 0 }
 ): void {
 	getWindow().open('switch-condition');
@@ -217,7 +222,7 @@ SwitchCondition.open = function (
 	getFocus($('#switch-condition-type'));
 };
 
-SwitchCondition.save = function (): SwitchConditionData {
+SwitchCondition.save = function (this: any): SwitchConditionData {
 	const read = getElementReader('switch-condition');
 	const type = read('type') as SwitchConditionData['type'];
 	let condition: SwitchConditionData | undefined;
@@ -303,6 +308,6 @@ SwitchCondition.save = function (): SwitchConditionData {
 	return condition!;
 };
 
-SwitchCondition.confirm = function (event: Event): SwitchConditionData {
+SwitchCondition.confirm = function (this: any, event: Event): SwitchConditionData {
 	return SwitchCondition.target!.save();
 };

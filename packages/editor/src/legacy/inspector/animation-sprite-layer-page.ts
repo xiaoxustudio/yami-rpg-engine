@@ -5,17 +5,17 @@ import { Inspector } from './inspector.ts';
 
 {
 	const AnimSpriteLayer = {
-		motion: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		motion: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimSpriteLayer.initialize = function () {
+	AnimSpriteLayer.initialize = function (this: any) {
 		if (!$('#animSpriteLayer-blend')) return;
 		$('#animSpriteLayer-blend').loadItems([
 			{ name: 'Normal', value: 'normal' },
@@ -36,7 +36,7 @@ import { Inspector } from './inspector.ts';
 		elements.on('focus', Inspector.inputFocus);
 		elements.on(
 			'blur',
-			Inspector.inputBlur(this, Animation, (data) => {
+			Inspector.inputBlur!(this, Animation, (data: any) => {
 				data.type = 'inspector-layer-change';
 				data.motion = this.motion;
 				data.direction = Animation.direction;
@@ -44,7 +44,7 @@ import { Inspector } from './inspector.ts';
 		);
 	};
 
-	AnimSpriteLayer.create = function () {
+	AnimSpriteLayer.create = function (this: any) {
 		return {
 			class: 'sprite',
 			name: 'Sprite',
@@ -57,13 +57,13 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	AnimSpriteLayer.open = function (layer) {
+	AnimSpriteLayer.open = function (this: any, layer: any) {
 		if (this.target !== layer) {
 			this.target = layer;
 			this.motion = Animation.motion;
 
 			const id = Animation.meta.guid;
-			const items = Animation.getSpriteListItems(id);
+			const items = Animation.getSpriteListItems!(id);
 			$('#animSpriteLayer-sprite').loadItems(items);
 
 			const write = getElementWriter('animSpriteLayer', layer);
@@ -73,15 +73,15 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSpriteLayer.close = function () {
+	AnimSpriteLayer.close = function (this: any) {
 		if (this.target) {
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimSpriteLayer.update = function (layer, key, value) {
-		Animation.planToSave();
+	AnimSpriteLayer.update = function (this: any, layer: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'sprite':
 			case 'blend':
@@ -91,11 +91,11 @@ import { Inspector } from './inspector.ts';
 				}
 				break;
 		}
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	};
 
-	AnimSpriteLayer.paramInput = function (event) {
-		AnimSpriteLayer.update(AnimSpriteLayer.target, Inspector.getKey(this), read(this));
+	AnimSpriteLayer.paramInput = function (this: any, event: any) {
+		AnimSpriteLayer.update(AnimSpriteLayer.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.animSpriteLayer = AnimSpriteLayer;

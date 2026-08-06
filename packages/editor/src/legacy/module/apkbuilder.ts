@@ -5,16 +5,16 @@ import { Path } from '@/util/config.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from './global.ts';
 export const ApkBuilder = new (class {
-	logs: any[] = [];
+	logs: any[] = [] as any[];
 	constructor() {
-		ipcRenderer?.on?.('apk-log', (_, log) => {
+		ipcRenderer?.on?.('apk-log', (_: any, log: any) => {
 			this.logs.push(log);
-			this.apkLog(log);
+			this.apkLog!(log);
 		});
 	}
 	build(cfg: any) {
 		clear($('#export-apk-content'));
-		const config = this.process(cfg);
+		const config = this.process!(cfg);
 		ipcRenderer.invoke('build-apk', config);
 	}
 	apkLog(log: any) {
@@ -35,34 +35,37 @@ export const ApkBuilder = new (class {
 		enable($('#export-apk-button'));
 	}
 	clearLog() {
-		this.logs = [];
+		this.logs = [] as any[];
 	}
 	stopBuild() {
 		ipcRenderer.invoke('stop-build-apk').then(() => {
-			this.reset();
+			this.reset!();
 		});
 	}
 	isBuilding() {
 		return ipcRenderer.sendSync('isBuilding-apk');
 	}
 	processPathOnly(line: any) {
-		const pathPrefix = Path.resolve(Path.dirname(Editor.config.project), 'apk');
+		const pathPrefix = Path.resolve!(Path.dirname!((Editor.config as any).project), 'apk');
 		if (typeof line === 'string' && line?.startsWith('@')) {
-			return Path.resolve(TemplatesPath, 'Apk', line.replace('@', '.'));
+			return Path.resolve!(TemplatesPath, 'Apk', line.replace('@', '.'));
 		} else if (typeof line === 'string' && line?.startsWith('$')) {
-			return Path.resolve(pathPrefix, line.replace('$', '.'));
+			return Path.resolve!(pathPrefix, line.replace('$', '.'));
 		} else if (typeof line === 'string' && line?.startsWith('~')) {
-			return Path.resolve(Path.dirname(Editor.config.project), line.replace('~', '.'));
+			return Path.resolve!(
+				Path.dirname!((Editor.config as any).project),
+				line.replace('~', '.')
+			);
 		}
 		return line;
 	}
 	process(cfg: any) {
 		const config = JSON.parse(JSON.stringify(cfg));
 		const list = Object.keys(config);
-		list.forEach((v) => {
-			config[v] = this.processPathOnly(config[v]);
+		list.forEach((v: any) => {
+			config[v] = this.processPathOnly!(config[v]);
 		});
-		config.projectPath = Path.dirname(Editor.config.project);
+		config.projectPath = Path.dirname!((Editor.config as any).project);
 		console.log(config);
 		return config;
 	}

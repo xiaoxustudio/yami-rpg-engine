@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.stopEvent = new CommandSchema({
 	name: 'stopEvent',
 	onInitialize() {
-		$('#stopEvent-confirm').on('click', () => this.save());
+		$('#stopEvent-confirm').on('click', () => this.save!());
 		$('#stopEvent-type').loadItems([
 			{ name: 'Current', value: 'current' },
 			{ name: 'Global', value: 'global' },
@@ -63,7 +63,7 @@ Command.cases.stopEvent = new CommandSchema({
 		const type = event.value;
 		if (type !== 'current') {
 			const elEventType = $('#stopEvent-eventType');
-			const eventTypes = Enum.getMergedItems(EventEditor.types[type], type + '-event');
+			const eventTypes = Enum.getMergedItems!(EventEditor.types[type], type + '-event');
 			elEventType.loadItems(eventTypes);
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
@@ -87,42 +87,42 @@ Command.cases.stopEvent = new CommandSchema({
 		const words = Command.words;
 		switch (type) {
 			case 'current':
-				words.push(Local.get('command.stopEvent.current'));
+				words.push(Local.get!('command.stopEvent.current'));
 				break;
 			case 'global':
-				words.push(Command.parseFileName(eventId));
+				words.push(Command.parseFileName!(eventId));
 				break;
 			case 'scene':
-				words.push(Local.get('command.stopEvent.scene'));
+				words.push(Local.get!('command.stopEvent.scene'));
 				break;
 			case 'actor':
-				words.push(Command.parseActor(actor));
+				words.push(Command.parseActor!(actor));
 				break;
 			case 'skill':
-				words.push(Command.parseSkill(skill));
+				words.push(Command.parseSkill!(skill));
 				break;
 			case 'state':
-				words.push(Command.parseState(state));
+				words.push(Command.parseState!(state));
 				break;
 			case 'equipment':
-				words.push(Command.parseEquipment(equipment));
+				words.push(Command.parseEquipment!(equipment));
 				break;
 			case 'item':
-				words.push(Command.parseItem(item));
+				words.push(Command.parseItem!(item));
 				break;
 			case 'light':
-				words.push(Command.parseLight(light));
+				words.push(Command.parseLight!(light));
 				break;
 			case 'element':
-				words.push(Command.parseElement(element));
+				words.push(Command.parseElement!(element));
 				break;
 		}
 		if (eventType) {
-			words.push(Command.parseEventType(type + '-event', eventType));
+			words.push(Command.parseEventType!(type + '-event', eventType));
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.stopEvent.alias') + Token(': ') },
+			{ text: Local.get!('command.stopEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -156,14 +156,14 @@ Command.cases.stopEvent = new CommandSchema({
 		const type = read('type');
 		switch (type) {
 			case 'current':
-				Command.save({ type });
+				Command.save!({ type });
 				break;
 			case 'global': {
 				const eventId = read('eventId');
 				if (eventId === '') {
 					return getFocus($('#stopEvent-eventId'));
 				}
-				Command.save({ type, eventId });
+				Command.save!({ type, eventId });
 				break;
 			}
 			case 'scene': {
@@ -171,7 +171,7 @@ Command.cases.stopEvent = new CommandSchema({
 				if (eventType === '') {
 					return getFocus($('#stopEvent-eventType'));
 				}
-				Command.save({ type, eventType });
+				Command.save!({ type, eventType });
 				break;
 			}
 			default: {
@@ -180,7 +180,7 @@ Command.cases.stopEvent = new CommandSchema({
 				if (eventType === '') {
 					return getFocus($('#stopEvent-eventType'));
 				}
-				Command.save({
+				Command.save!({
 					type: type,
 					[type]: target,
 					eventType: eventType

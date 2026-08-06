@@ -2,7 +2,7 @@ import { Data } from '@/data/data-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Scene } from './scene-window.ts';
 import { StageColor } from '@/util/stage-color.ts';
-Scene.getObjectFile = function (sceneObject) {
+Scene.getObjectFile = function (this: any, sceneObject: any) {
 	switch (sceneObject?.class) {
 		case 'actor':
 		case 'animation': {
@@ -22,8 +22,8 @@ Scene.getObjectFile = function (sceneObject) {
 	}
 };
 
-Scene.openFileLocation = function (sceneObject) {
-	const file = Scene.getObjectFile(sceneObject);
+Scene.openFileLocation = function (this: any, sceneObject: any) {
+	const file = Scene.getObjectFile!(sceneObject);
 	if (file instanceof FileItem) {
 		(window as any).Browser?.body?.openFileLocation?.(file);
 		(window as any).Browser?.body?.select?.(file);
@@ -31,15 +31,15 @@ Scene.openFileLocation = function (sceneObject) {
 	}
 };
 
-Scene.saveToConfig = function (config) {
+Scene.saveToConfig = function (this: any, config: any) {
 	config.colors.sceneBackground = this.background.hex;
 };
 
-Scene.loadFromConfig = function (config) {
+Scene.loadFromConfig = function (this: any, config: any) {
 	this.background = new StageColor(config.colors.sceneBackground, () => this.requestRendering());
 };
 
-Scene.saveToProject = function (project) {
+Scene.saveToProject = function (this: any, project: any) {
 	const { scene } = project;
 	this.closeTilemap();
 	scene.grid = this.showGrid ?? scene.grid;
@@ -50,7 +50,7 @@ Scene.saveToProject = function (project) {
 	scene.zoom = this.zoom ?? scene.zoom;
 };
 
-Scene.loadFromProject = function (project) {
+Scene.loadFromProject = function (this: any, project: any) {
 	const { scene } = project;
 	this.switchGrid(scene.grid);
 	this.switchLight(scene.light);

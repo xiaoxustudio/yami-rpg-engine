@@ -8,20 +8,20 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	const FileTrigger = {
-		target: null,
-		meta: null,
-		motions: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		animationIdWrite: null,
-		paramInput: null,
-		listChange: null
+		target: null as any,
+		meta: null as any,
+		motions: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		animationIdWrite: null as any,
+		paramInput: null as any,
+		listChange: null as any
 	};
 
-	FileTrigger.initialize = function () {
+	FileTrigger.initialize = function (this: any) {
 		if (!$('#fileTrigger-selector')) return;
 		$('#fileTrigger-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
@@ -101,7 +101,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#fileTrigger-events, #fileTrigger-scripts').on('change', this.listChange);
 	};
 
-	FileTrigger.create = function () {
+	FileTrigger.create = function (this: any) {
 		return {
 			selector: 'enemy',
 			onHitWalls: 'penetrate',
@@ -128,7 +128,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	FileTrigger.open = function (trigger, meta) {
+	FileTrigger.open = function (this: any, trigger: any, meta: any) {
 		if (this.meta !== meta) {
 			this.target = trigger;
 			this.meta = meta;
@@ -162,7 +162,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.close = function () {
+	FileTrigger.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -174,8 +174,8 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.update = function (trigger, key, value) {
-		File.planToSave(this.meta);
+	FileTrigger.update = function (this: any, trigger: any, key: any, value: any) {
+		File.planToSave!(this.meta);
 		switch (key) {
 			case 'selector':
 			case 'onHitWalls':
@@ -249,25 +249,25 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.animationIdWrite = function (event) {
+	FileTrigger.animationIdWrite = function (this: any, event: any) {
 		if (!event.value) return;
 		const elMotion = $('#fileTrigger-motion');
-		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};
 
-	FileTrigger.paramInput = function (event: any) {
+	FileTrigger.paramInput = function (this: any, event: any) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileTrigger-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileTrigger.update(FileTrigger.target, Inspector.getKey(element), read(element));
+		FileTrigger.update(FileTrigger.target, Inspector.getKey!(element), read(element));
 	};
 
-	FileTrigger.listChange = function (event) {
-		File.planToSave(FileTrigger.meta);
+	FileTrigger.listChange = function (this: any, event: any) {
+		File.planToSave!(FileTrigger.meta);
 	};
 
 	Inspector.fileTrigger = FileTrigger;

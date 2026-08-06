@@ -13,13 +13,13 @@ Command.cases.setCooldown = new CommandSchema({
 		{ key: 'operation', default: 'set' },
 		{
 			key: 'key',
-			default: () => Enum.getDefStringId('cooldown-key'),
+			default: () => Enum.getDefStringId!('cooldown-key'),
 			required: true
 		},
 		{ key: 'cooldown', default: 0 }
 	],
 	onInitialize() {
-		$('#setCooldown-confirm').on('click', () => this.save());
+		$('#setCooldown-confirm').on('click', () => this.save!());
 		$('#setCooldown-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Increase', value: 'increase' },
@@ -28,18 +28,18 @@ Command.cases.setCooldown = new CommandSchema({
 	},
 	customParse({ actor, operation, key, cooldown }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Local.get('command.setCooldown.' + operation))
-			.push(Command.parseVariableEnum('cooldown-key', key))
-			.push(Command.parseVariableNumber(cooldown, 'ms'));
+			.push(Command.parseActor!(actor))
+			.push(Local.get!('command.setCooldown.' + operation))
+			.push(Command.parseVariableEnum!('cooldown-key', key))
+			.push(Command.parseVariableNumber!(cooldown, 'ms'));
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get('command.setCooldown') + Token(': ') },
+			{ text: Local.get!('command.setCooldown') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
 	onLoad() {
-		$('#setCooldown-key').loadItems(Enum.getStringItems('cooldown-key'));
+		$('#setCooldown-key').loadItems(Enum.getStringItems!('cooldown-key'));
 		getFocus($('#setCooldown-actor'));
 	}
 });

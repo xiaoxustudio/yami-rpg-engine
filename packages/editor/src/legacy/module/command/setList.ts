@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setList = new CommandSchema({
 	name: 'setList',
 	onInitialize() {
-		$('#setList-confirm').on('click', () => this.save());
+		$('#setList-confirm').on('click', () => this.save!());
 		$('#setList-operation').loadItems([
 			{ name: 'Set to Empty', value: 'set-empty' },
 			{ name: 'Set Numbers', value: 'set-numbers' },
@@ -108,8 +108,8 @@ Command.cases.setList = new CommandSchema({
 				isLeftValue = false;
 				break;
 		}
-		const varName = Command.parseVariable(variable, 'object', isLeftValue);
-		const equal = Command.setOperatorColor('=');
+		const varName = Command.parseVariable!(variable, 'object', isLeftValue);
+		const equal = Command.setOperatorColor!('=');
 		switch (operation) {
 			case 'set-empty':
 				info = `${varName} ${equal} ${Token('[') + Token(']')}`;
@@ -121,7 +121,7 @@ Command.cases.setList = new CommandSchema({
 						if (values !== '') {
 							values += Token(', ');
 						}
-						values += Command.setNumberColor(number);
+						values += Command.setNumberColor!(number);
 					}
 				}
 				info = `${varName} ${equal} ${Token('[') + values + Token(']')}`;
@@ -134,93 +134,93 @@ Command.cases.setList = new CommandSchema({
 						if (values !== '') {
 							values += Token(', ');
 						}
-						values += Command.setStringColor(`"${string}"`);
+						values += Command.setStringColor!(`"${string}"`);
 					}
-					values = Command.parseMultiLineString(values);
+					values = Command.parseMultiLineString!(values);
 				}
 				info = `${varName} ${equal} ${Token('[') + values + Token(']')}`;
 				break;
 			}
 			case 'set-boolean':
 				info = `${varName}${
-					Token('[') + Command.parseVariableNumber(index) + Token(']')
-				} ${equal} ${Command.setBooleanColor(constant)}`;
+					Token('[') + Command.parseVariableNumber!(index) + Token(']')
+				} ${equal} ${Command.setBooleanColor!(constant)}`;
 				if (skipCheck) {
-					info += `, ${Local.get('command.setList.skipCheck')}`;
+					info += `, ${Local.get!('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'set-number':
 				info = `${varName}${
-					Token('[') + Command.parseVariableNumber(index) + Token(']')
-				} ${equal} ${Command.setNumberColor(constant)}`;
+					Token('[') + Command.parseVariableNumber!(index) + Token(']')
+				} ${equal} ${Command.setNumberColor!(constant)}`;
 				if (skipCheck) {
-					info += `, ${Local.get('command.setList.skipCheck')}`;
+					info += `, ${Local.get!('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'set-string': {
-				const string = Command.setStringColor(
-					'"' + Command.parseMultiLineString(constant) + '"'
+				const string = Command.setStringColor!(
+					'"' + Command.parseMultiLineString!(constant) + '"'
 				);
 				info = `${varName}${
-					Token('[') + Command.parseVariableNumber(index) + Token(']')
+					Token('[') + Command.parseVariableNumber!(index) + Token(']')
 				} ${equal} ${string}`;
 				if (skipCheck) {
-					info += `, ${Local.get('command.setList.skipCheck')}`;
+					info += `, ${Local.get!('command.setList.skipCheck')}`;
 				}
 				break;
 			}
 			case 'set-variable':
 				info = `${varName}${
-					Token('[') + Command.parseVariableNumber(index) + Token(']')
-				} ${equal} ${Command.parseVariable(operand, 'any')}`;
+					Token('[') + Command.parseVariableNumber!(index) + Token(']')
+				} ${equal} ${Command.parseVariable!(operand, 'any')}`;
 				if (skipCheck) {
-					info += `, ${Local.get('command.setList.skipCheck')}`;
+					info += `, ${Local.get!('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'split-string': {
-				const label = Local.get('command.setList.split-string');
-				const text1 = Command.parseVariable(operand, 'string');
-				const text2 = Command.parseVariableString(separator);
-				const comma = Command.setDelimiterColor(', ');
+				const label = Local.get!('command.setList.split-string');
+				const text1 = Command.parseVariable!(operand, 'string');
+				const text2 = Command.parseVariableString!(separator);
+				const comma = Command.setDelimiterColor!(', ');
 				info = `${varName} ${equal} ${label}${Token(
 					'('
 				)}${text1}${comma}${text2}${Token(')')}`;
 				break;
 			}
 			case 'push':
-				info = `${varName} ${Command.setOperatorColor(
+				info = `${varName} ${Command.setOperatorColor!(
 					'+='
-				)} ${Command.parseVariable(operand, 'any')}`;
+				)} ${Command.parseVariable!(operand, 'any')}`;
 				break;
 			case 'remove':
-				info = `${varName} ${Command.setOperatorColor(
+				info = `${varName} ${Command.setOperatorColor!(
 					'-='
-				)} ${Command.parseVariable(operand, 'any')}`;
+				)} ${Command.parseVariable!(operand, 'any')}`;
 				break;
 			case 'get-attribute-names':
 			case 'get-attribute-keys': {
-				const label = Local.get('command.setList.' + operation);
-				const group = Command.parseAttributeGroup(groupId);
+				const label = Local.get!('command.setList.' + operation);
+				const group = Command.parseAttributeGroup!(groupId);
 				info = `${varName} ${equal} ${label}${Token('(')}${group}${Token(')')}`;
 				break;
 			}
 			case 'get-enum-names':
 			case 'get-enum-values': {
-				const label = Local.get('command.setList.' + operation);
-				const group = Command.parseEnumGroup(groupId);
+				const label = Local.get!('command.setList.' + operation);
+				const group = Command.parseEnumGroup!(groupId);
 				info = `${varName} ${equal} ${label}${Token('(')}${group}${Token(')')}`;
 				break;
 			}
 			case 'get-actor-targets': {
-				const label = Local.get('command.setList.' + operation);
-				const actorInfo = Command.parseActor(actor);
+				const label = Local.get!('command.setList.' + operation);
+				const actorInfo = Command.parseActor!(actor);
 				info = `${varName} ${equal} ${label}${Token('(')}${actorInfo}${Token(')')}`;
 				break;
 			}
 		}
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.setList.alias') + ' ' },
+			{ text: Local.get!('command.setList.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: info }
 		];
@@ -237,8 +237,8 @@ Command.cases.setList = new CommandSchema({
 		actor = { type: 'trigger' },
 		skipCheck = true
 	}) {
-		let numbers = [];
-		let strings = [];
+		let numbers = [] as any[];
+		let strings = [] as any[];
 		let boolVal = false;
 		let numVal = 0;
 		let strVal = '';
@@ -289,20 +289,20 @@ Command.cases.setList = new CommandSchema({
 	customSave() {
 		const read = getElementReader('setList');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setList-variable'));
 		}
 		const operation = read('operation');
 		switch (operation) {
 			case 'set-empty':
-				Command.save({ variable, operation });
+				Command.save!({ variable, operation });
 				break;
 			case 'set-numbers': {
 				const list = read('numbers');
 				if (list.length === 0) {
 					return getFocus($('#setList-numbers'));
 				}
-				Command.save({ variable, operation, list });
+				Command.save!({ variable, operation, list });
 				break;
 			}
 			case 'set-strings': {
@@ -310,14 +310,14 @@ Command.cases.setList = new CommandSchema({
 				if (list.length === 0) {
 					return getFocus($('#setList-strings'));
 				}
-				Command.save({ variable, operation, list });
+				Command.save!({ variable, operation, list });
 				break;
 			}
 			case 'set-boolean': {
 				const index = read('index');
 				const skipCheck = read('index-skip-check');
 				const constant = read('boolean');
-				Command.save({
+				Command.save!({
 					variable,
 					operation,
 					index,
@@ -330,7 +330,7 @@ Command.cases.setList = new CommandSchema({
 				const index = read('index');
 				const skipCheck = read('index-skip-check');
 				const constant = read('number');
-				Command.save({
+				Command.save!({
 					variable,
 					operation,
 					index,
@@ -343,7 +343,7 @@ Command.cases.setList = new CommandSchema({
 				const index = read('index');
 				const skipCheck = read('index-skip-check');
 				const constant = read('string');
-				Command.save({
+				Command.save!({
 					variable,
 					operation,
 					index,
@@ -356,10 +356,10 @@ Command.cases.setList = new CommandSchema({
 				const index = read('index');
 				const skipCheck = read('index-skip-check');
 				const operand = read('operand');
-				if (VariableGetter.isNone(operand)) {
+				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
-				Command.save({
+				Command.save!({
 					variable,
 					operation,
 					index,
@@ -370,20 +370,20 @@ Command.cases.setList = new CommandSchema({
 			}
 			case 'split-string': {
 				const operand = read('operand');
-				if (VariableGetter.isNone(operand)) {
+				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
 				const separator = read('separator');
-				Command.save({ variable, operation, operand, separator });
+				Command.save!({ variable, operation, operand, separator });
 				break;
 			}
 			case 'push':
 			case 'remove': {
 				const operand = read('operand');
-				if (VariableGetter.isNone(operand)) {
+				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
-				Command.save({ variable, operation, operand });
+				Command.save!({ variable, operation, operand });
 				break;
 			}
 			case 'get-attribute-names':
@@ -392,7 +392,7 @@ Command.cases.setList = new CommandSchema({
 				if (groupId === '') {
 					return getFocus($('#setList-attribute-groupId'));
 				}
-				Command.save({ variable, operation, groupId });
+				Command.save!({ variable, operation, groupId });
 				break;
 			}
 			case 'get-enum-names':
@@ -401,12 +401,12 @@ Command.cases.setList = new CommandSchema({
 				if (groupId === '') {
 					return getFocus($('#setList-enum-groupId'));
 				}
-				Command.save({ variable, operation, groupId });
+				Command.save!({ variable, operation, groupId });
 				break;
 			}
 			case 'get-actor-targets': {
 				const actor = read('actor');
-				Command.save({ variable, operation, actor });
+				Command.save!({ variable, operation, actor });
 				break;
 			}
 		}

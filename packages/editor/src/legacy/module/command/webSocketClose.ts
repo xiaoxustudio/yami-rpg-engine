@@ -11,12 +11,12 @@ Command.cases.webSocketClose = new CommandSchema({
 		write($('#webSocketClose-id'), '');
 		write($('#webSocketClose-code'), '');
 		write($('#webSocketClose-reason'), '');
-		$('#webSocketClose-confirm').on('click', () => this.save());
+		$('#webSocketClose-confirm').on('click', () => this.save!());
 	},
 	customParse({ id = '', code = '', reason = '' }) {
 		const head = [
 			{ color: 'network' },
-			{ text: Local.get('command.webSocketClose') },
+			{ text: Local.get!('command.webSocketClose') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{ text: id }
@@ -38,12 +38,12 @@ Command.cases.webSocketClose = new CommandSchema({
 	customSave() {
 		const elId = $('#webSocketClose-id');
 		const id = read(elId);
-		if (!id || VariableGetter.isNone(id)) {
+		if (!id || VariableGetter.isNone!(id)) {
 			return getFocus(elId);
 		}
 		const reader = getElementReader('webSocketClose');
 		const code = reader('code');
-		Command.save({
+		Command.save!({
 			id: id,
 			code: code === '' ? '' : Number(code),
 			reason: reader('reason')

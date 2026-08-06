@@ -2,7 +2,7 @@ import { Data } from '@/data/data-object.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Palette } from '@/palette/palette.ts';
 import { Scene } from './scene-window.ts';
-Scene.edit = function (x, y, width, height) {
+Scene.edit = function (this: any, x: any, y: any, width: any, height: any) {
 	switch (this.brush) {
 		case 'eraser':
 		case 'pencil':
@@ -24,7 +24,7 @@ Scene.edit = function (x, y, width, height) {
 	this.planToSave();
 };
 
-Scene.editInPencilMode = function (x, y, width, height) {
+Scene.editInPencilMode = function (this: any, x: any, y: any, width: any, height: any) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -61,7 +61,7 @@ Scene.editInPencilMode = function (x, y, width, height) {
 	}
 };
 
-Scene.editInRectMode = function (x, y, width, height) {
+Scene.editInRectMode = function (this: any, x: any, y: any, width: any, height: any) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -106,7 +106,7 @@ Scene.editInRectMode = function (x, y, width, height) {
 	}
 };
 
-Scene.editInOvalMode = function (x, y, width, height) {
+Scene.editInOvalMode = function (this: any, x: any, y: any, width: any, height: any) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -122,15 +122,15 @@ Scene.editInOvalMode = function (x, y, width, height) {
 	const scale = Math.max(width, height) / Math.min(width, height);
 	const ox = x + (width - 1) / 2;
 	const oy = y + (height - 1) / 2;
-	let ovalWidth;
-	let ovalFlags;
-	let edgeFlags;
+	let ovalWidth!: number | undefined;
+	let ovalFlags: any;
+	let edgeFlags: any;
 	if (layer !== 'terrain' && !shiftKey) {
 		const bx = Math.max(x, 0) - 1;
 		const by = Math.max(y, 0) - 1;
 		const ex = Math.min(x + width, mapWidth) + 1;
 		const ey = Math.min(y + height, mapHeight) + 1;
-		ovalWidth = ex - bx;
+		ovalWidth! = ex - bx;
 		ovalFlags = new Uint8Array((ex - bx) * (ey - by));
 		edgeFlags = new Uint8Array(ovalFlags.length);
 	}
@@ -150,7 +150,7 @@ Scene.editInOvalMode = function (x, y, width, height) {
 				} else {
 					this.setTile(sTiles, x - pox, y - poy, x, y);
 					if (!shiftKey) {
-						const i = x - bx + 1 + (y - by + 1) * ovalWidth;
+						const i = x - bx + 1 + (y - by + 1) * ovalWidth!;
 						ovalFlags[i] = 1;
 					}
 				}
@@ -167,29 +167,29 @@ Scene.editInOvalMode = function (x, y, width, height) {
 		const dy = ey - 1;
 		for (let y = by; y < dy; y++) {
 			for (let x = bx; x < dx; x++) {
-				const i = x - bx + (y - by) * ovalWidth;
+				const i = x - bx + (y - by) * ovalWidth!;
 				if (x < dx && ovalFlags[i] !== ovalFlags[i + 1]) {
 					edgeFlags[i] = 1;
 					edgeFlags[i + 1] = 1;
 				}
-				if (y < dy && ovalFlags[i] !== ovalFlags[i + ovalWidth]) {
+				if (y < dy && ovalFlags[i] !== ovalFlags[i + ovalWidth!]) {
 					edgeFlags[i] = 1;
-					edgeFlags[i + ovalWidth] = 1;
+					edgeFlags[i + ovalWidth!] = 1;
 				}
-				if (x < dx && y < dy && ovalFlags[i] !== ovalFlags[i + 1 + ovalWidth]) {
+				if (x < dx && y < dy && ovalFlags[i] !== ovalFlags[i + 1 + ovalWidth!]) {
 					edgeFlags[i] = 1;
-					edgeFlags[i + 1 + ovalWidth] = 1;
+					edgeFlags[i + 1 + ovalWidth!] = 1;
 				}
-				if (x > 0 && y < dy && ovalFlags[i] !== ovalFlags[i - 1 + ovalWidth]) {
+				if (x > 0 && y < dy && ovalFlags[i] !== ovalFlags[i - 1 + ovalWidth!]) {
 					edgeFlags[i] = 1;
-					edgeFlags[i - 1 + ovalWidth] = 1;
+					edgeFlags[i - 1 + ovalWidth!] = 1;
 				}
 			}
 		}
 
 		for (let y = by; y < ey; y++) {
 			for (let x = bx; x < ex; x++) {
-				const i = x - bx + (y - by) * ovalWidth;
+				const i = x - bx + (y - by) * ovalWidth!;
 				if (edgeFlags[i] === 1) {
 					this.setTileFrame(x, y);
 				}
@@ -198,8 +198,8 @@ Scene.editInOvalMode = function (x, y, width, height) {
 	}
 };
 
-Scene.editInFillMode = function (x, y) {
-	let mapData, mapWidth, mapHeight, bitShift;
+Scene.editInFillMode = function (this: any, x: any, y: any) {
+	let mapData: any, mapWidth: any, mapHeight: any, bitShift: any;
 	let shiftKey, sTiles;
 	const layer = this.layer;
 	switch (layer) {
@@ -243,7 +243,7 @@ Scene.editInFillMode = function (x, y) {
 	const di = x + y * mapWidth;
 	const key = mapData[di] >> bitShift;
 
-	const getFlag = (x, y) => {
+	const getFlag = (x: any, y: any) => {
 		if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) {
 			minX = min(x, minX);
 			minY = min(y, minY);
@@ -378,7 +378,7 @@ Scene.editInFillMode = function (x, y) {
 	}
 };
 
-Scene.setTile = function (sTiles, sx, sy, dx, dy) {
+Scene.setTile = function (this: any, sTiles: any, sx: any, sy: any, dx: any, dy: any) {
 	const sw = sTiles.width;
 	const sh = sTiles.height;
 	const sro = sTiles.rowOffset;
@@ -416,7 +416,7 @@ Scene.setTile = function (sTiles, sx, sy, dx, dy) {
 	}
 };
 
-Scene.setTileFrame = function (x, y) {
+Scene.setTileFrame = function (this: any, x: any, y: any) {
 	const tilemap = this.tilemap;
 	const width = tilemap.width;
 	const height = tilemap.height;
@@ -488,7 +488,7 @@ Scene.setTileFrame = function (x, y) {
 	}
 };
 
-Scene.setTerrain = function (x, y) {
+Scene.setTerrain = function (this: any, x: any, y: any) {
 	const terrain = this.marquee.terrain;
 	const terrains = this.terrains;
 	const ro = terrains.rowOffset;
@@ -497,7 +497,7 @@ Scene.setTerrain = function (x, y) {
 	terrains[pi] = terrain;
 };
 
-Scene.createTiles = function (width, height) {
+Scene.createTiles = function (this: any, width: any, height: any) {
 	const tiles: any = new Uint32Array(width * height);
 	tiles.width = width;
 	tiles.height = height;
@@ -505,7 +505,7 @@ Scene.createTiles = function (width, height) {
 	return tiles;
 };
 
-Scene.cloneTiles = function (sTiles) {
+Scene.cloneTiles = function (this: any, sTiles: any) {
 	const dTiles: any = new Uint32Array(sTiles);
 	dTiles.width = sTiles.width;
 	dTiles.height = sTiles.height;
@@ -513,13 +513,13 @@ Scene.cloneTiles = function (sTiles) {
 	return dTiles;
 };
 
-Scene.createTerrains = function (width, height) {
+Scene.createTerrains = function (this: any, width: any, height: any) {
 	const terrains: any = new Uint8Array(width * height);
 	terrains.rowOffset = width;
 	return terrains;
 };
 
-Scene.getNewTilesetIndex = function (tilesetMap) {
+Scene.getNewTilesetIndex = function (this: any, tilesetMap: any) {
 	for (let i = 1; i < 256; i++) {
 		if (tilesetMap[i] === undefined) {
 			return i;

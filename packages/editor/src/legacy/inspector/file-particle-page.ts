@@ -2,10 +2,10 @@
 
 {
 	const FileParticle = {
-		create: null
+		create: null as any
 	};
 
-	FileParticle.create = function () {
+	FileParticle.create = function (this: any) {
 		return {
 			layers: []
 		};

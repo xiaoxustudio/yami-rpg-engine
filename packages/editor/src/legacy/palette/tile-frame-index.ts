@@ -30,25 +30,25 @@ export const TileFrame = {
 	get info() {
 		return $('#autoTile-frameIndex-info');
 	},
-	dragging: null,
-	hframes: null,
-	vframes: null,
-	initialize: null,
-	open: null,
-	selectTileFrame: null,
-	scrollToSelection: null,
-	getDevicePixelClientBoxSize: null,
-	dprchange: null,
-	windowClosed: null,
-	keydown: null,
-	marqueePointerdown: null,
-	marqueePointermove: null,
-	marqueePointerleave: null,
-	pointerup: null,
-	pointermove: null
+	dragging: null as any,
+	hframes: null as any,
+	vframes: null as any,
+	initialize: null as any,
+	open: null as any,
+	selectTileFrame: null as any,
+	scrollToSelection: null as any,
+	getDevicePixelClientBoxSize: null as any,
+	dprchange: null as any,
+	windowClosed: null as any,
+	keydown: null as any,
+	marqueePointerdown: null as any,
+	marqueePointermove: null as any,
+	marqueePointerleave: null as any,
+	pointerup: null as any,
+	pointermove: null as any
 };
 
-TileFrame.initialize = function () {
+TileFrame.initialize = function (this: any) {
 	if (!this.window) return;
 	window.addEventListener('dprchange', this.dprchange);
 	on(this.window, 'closed', this.windowClosed);
@@ -57,7 +57,7 @@ TileFrame.initialize = function () {
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
 };
 
-TileFrame.open = function () {
+TileFrame.open = function (this: any) {
 	const MAX_CONTENT_WIDTH = 1180;
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
@@ -141,7 +141,7 @@ TileFrame.open = function () {
 	screen.scrollTop = Math.round(y - screenHeight / 2) / dpr;
 };
 
-TileFrame.selectTileFrame = function () {
+TileFrame.selectTileFrame = function (this: any) {
 	let { x, y } = this.marquee;
 	x -= AutoTile.offsetX;
 	y -= AutoTile.offsetY;
@@ -154,7 +154,7 @@ TileFrame.selectTileFrame = function () {
 	}
 };
 
-TileFrame.scrollToSelection = function () {
+TileFrame.scrollToSelection = function (this: any) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const screen = this.screen;
@@ -176,7 +176,7 @@ TileFrame.scrollToSelection = function () {
 	}
 };
 
-TileFrame.getDevicePixelClientBoxSize = function (element) {
+TileFrame.getDevicePixelClientBoxSize = function (this: any, element: any) {
 	const elementRect = rect(element);
 	const elementCss = css(element);
 	if (elementCss.overflowX === 'scroll') {
@@ -199,7 +199,7 @@ TileFrame.getDevicePixelClientBoxSize = function (element) {
 	return { width, height };
 };
 
-TileFrame.dprchange = function (event) {
+TileFrame.dprchange = function (this: any, event: any) {
 	if (this.hframes !== null) {
 		const marquee = this.marquee;
 		const { x, y, width, height } = marquee;
@@ -208,7 +208,7 @@ TileFrame.dprchange = function (event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.windowClosed = function (event) {
+TileFrame.windowClosed = function (this: any, event: any) {
 	this.hframes = null;
 	this.vframes = null;
 	this.image.src = '';
@@ -218,7 +218,7 @@ TileFrame.windowClosed = function (event) {
 	window.removeEventListener('keydown', this.keydown);
 }.bind(TileFrame);
 
-TileFrame.keydown = function (event) {
+TileFrame.keydown = function (this: any, event: any) {
 	event.preventDefault();
 	if (this.dragging) {
 		return;
@@ -260,7 +260,7 @@ TileFrame.keydown = function (event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerdown = function (event) {
+TileFrame.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
@@ -300,7 +300,7 @@ TileFrame.marqueePointerdown = function (event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointermove = function (event) {
+TileFrame.marqueePointermove = function (this: any, event: any) {
 	const info = this.info;
 	const marquee = this.marquee;
 	const coords = getRelativeCoords(event, marquee);
@@ -313,14 +313,14 @@ TileFrame.marqueePointermove = function (event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerleave = function (event) {
+TileFrame.marqueePointerleave = function (this: any, event: any) {
 	const info = this.info;
 	info.x = -1;
 	info.y = -1;
 	info.textContent = '';
 }.bind(TileFrame);
 
-TileFrame.pointerup = function (event) {
+TileFrame.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -346,7 +346,7 @@ TileFrame.pointerup = function (event) {
 	}
 }.bind(TileFrame);
 
-TileFrame.pointermove = function (event) {
+TileFrame.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {

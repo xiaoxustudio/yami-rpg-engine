@@ -10,29 +10,29 @@ import { GL } from '@/webgl/webgl-init.ts';
 
 {
 	const FileScene = {
-		button: null,
-		owner: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		button: null as any,
+		owner: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	FileScene.initialize = function () {
+	FileScene.initialize = function (this: any) {
 		if (!$('#scene-switch-settings')) return;
 		this.button = $('#scene-switch-settings');
 		this.owner = {
-			setTarget: (target) => {
+			setTarget: (target: any) => {
 				if (this.target !== target) {
-					Inspector.open('fileScene', target);
+					Inspector.open!('fileScene', target);
 				}
 			},
 			planToSave: () => {
-				Scene.planToSave();
+				Scene.planToSave!();
 			},
 			get history() {
 				return Scene.history;
@@ -57,7 +57,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
 		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) =>
-			el.addEventListener('blur', Inspector.inputBlur(this, this.owner))
+			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
 		);
 		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
 		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
@@ -69,10 +69,10 @@ import { GL } from '@/webgl/webgl-init.ts';
 		);
 	};
 
-	FileScene.create = function () {
-		const objects = [];
-		const filters = {};
-		const folders = Editor.project.scene.defaultFolders;
+	FileScene.create = function (this: any) {
+		const objects = [] as any[];
+		const filters = {} as Record<string, any>;
+		const folders = (Editor.project as any).scene.defaultFolders;
 		for (const name of Object.values(folders)) {
 			if ((name as string) && (filters as any)[name as string] === undefined) {
 				(filters as any)[name as string] = true;
@@ -88,7 +88,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 		const WIDTH = 20;
 		const HEIGHT = 20;
-		return Codec.encodeScene(
+		return Codec.encodeScene!(
 			Object.defineProperties(
 				{
 					width: WIDTH,
@@ -104,7 +104,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 				{
 					terrainArray: {
 						writable: true,
-						value: Scene.createTerrains(WIDTH, HEIGHT)
+						value: Scene.createTerrains!(WIDTH, HEIGHT)
 					},
 					terrainChanged: {
 						writable: true,
@@ -115,7 +115,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		);
 	};
 
-	FileScene.open = function (scene) {
+	FileScene.open = function (this: any, scene: any) {
 		if (this.target !== scene) {
 			this.target = scene;
 
@@ -135,7 +135,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.close = function () {
+	FileScene.close = function (this: any) {
 		if (this.target) {
 			this.target = null;
 
@@ -146,7 +146,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.write = function (options) {
+	FileScene.write = function (this: any, options: any) {
 		if (options.width !== undefined) {
 			write($('#fileScene-width'), options.width);
 		}
@@ -155,27 +155,27 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.update = function (_, key, value) {
-		Scene.planToSave();
+	FileScene.update = function (this: any, _: any, key: any, value: any) {
+		Scene.planToSave!();
 		switch (key) {
 			case 'width':
 				if (Scene.width !== value) {
-					Scene.setSize(value, Scene.height);
+					Scene.setSize!(value, Scene.height);
 				}
 				break;
 			case 'height':
 				if (Scene.height !== value) {
-					Scene.setSize(Scene.width, value);
+					Scene.setSize!(Scene.width, value);
 				}
 				break;
 			case 'tileWidth':
 				if (Scene.tileWidth !== value) {
-					Scene.setTileSize(value, Scene.tileHeight);
+					Scene.setTileSize!(value, Scene.tileHeight);
 				}
 				break;
 			case 'tileHeight':
 				if (Scene.tileHeight !== value) {
-					Scene.setTileSize(Scene.tileWidth, value);
+					Scene.setTileSize!(Scene.tileWidth, value);
 				}
 				break;
 			case 'ambient-red':
@@ -186,16 +186,16 @@ import { GL } from '@/webgl/webgl-init.ts';
 				const color = key.slice(index);
 				if (Scene.ambient[color] !== value) {
 					Scene.ambient[color] = value;
-					Scene.requestRendering();
-					GL.setAmbientLight(Scene.ambient);
+					Scene.requestRendering!();
+					GL.setAmbientLight!(Scene.ambient);
 				}
 				break;
 			}
 		}
 	};
 
-	FileScene.paramInput = function (event) {
-		FileScene.update(FileScene.target, Inspector.getKey(this), read(this));
+	FileScene.paramInput = function (this: any, event: any) {
+		FileScene.update!(FileScene.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.fileScene = FileScene;

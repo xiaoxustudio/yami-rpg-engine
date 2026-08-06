@@ -11,21 +11,21 @@ function getWindow() {
 
 {
 	const FileEvent = {
-		target: null,
-		meta: null,
-		parameters: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null,
-		typeWrite: null,
-		listChange: null
+		target: null as any,
+		meta: null as any,
+		parameters: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any,
+		typeWrite: null as any,
+		listChange: null as any
 	};
 
-	FileEvent.initialize = function () {
+	FileEvent.initialize = function (this: any) {
 		if (!$('#fileEvent-type')) return;
 		if (!EventEditor.types) return;
 		$('#fileEvent-type').loadItems(EventEditor.types.global);
@@ -53,7 +53,7 @@ function getWindow() {
 		$('#fileEvent-parameters').on('change', this.listChange);
 	};
 
-	FileEvent.create = function (filter) {
+	FileEvent.create = function (this: any, filter: any) {
 		const type = EventEditor.types[filter][0].value;
 		switch (filter) {
 			case 'global':
@@ -76,13 +76,13 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.open = function (event, meta) {
+	FileEvent.open = function (this: any, event: any, meta: any) {
 		if (this.meta !== meta) {
 			this.target = event;
 			this.meta = meta;
 
 			$('#fileEvent-type').loadItems(
-				Enum.getMergedItems(EventEditor.types.global, 'global-event')
+				Enum.getMergedItems!(EventEditor.types.global, 'global-event')
 			);
 
 			const write = getElementWriter('fileEvent', event);
@@ -96,7 +96,7 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.close = function () {
+	FileEvent.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -105,14 +105,14 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.write = function (options) {
+	FileEvent.write = function (this: any, options: any) {
 		if (options.type !== undefined) {
 			write($('#fileEvent-type'), options.type);
 		}
 	};
 
-	FileEvent.update = function (event, key, value) {
-		File.planToSave(this.meta);
+	FileEvent.update = function (this: any, event: any, key: any, value: any) {
+		File.planToSave!(this.meta);
 		switch (key) {
 			case 'type':
 			case 'priority':
@@ -132,17 +132,17 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.paramInput = function (event: any) {
+	FileEvent.paramInput = function (this: any, event: any) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileEvent-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileEvent.update(FileEvent.target, Inspector.getKey(element), read(element));
+		FileEvent.update(FileEvent.target, Inspector.getKey!(element), read(element));
 	};
 
-	FileEvent.typeWrite = function (event) {
+	FileEvent.typeWrite = function (this: any, event: any) {
 		const enabledInput = $('#fileEvent-enabled');
 		const enabledLabel = enabledInput.previousElementSibling;
 		const priorityInput = $('#fileEvent-priority');
@@ -183,12 +183,12 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.listChange = function (event) {
-		File.planToSave(FileEvent.meta);
+	FileEvent.listChange = function (this: any, event: any) {
+		File.planToSave!(FileEvent.meta);
 	};
 
 	FileEvent.parameters = {
-		initialize: function (list) {
+		initialize: function (this: any, list: any) {
 			$('#fileEvent-parameter-confirm').on('click', () => list.save());
 
 			$('#fileEvent-parameter-type').loadItems([
@@ -206,8 +206,8 @@ function getWindow() {
 				{ name: 'Element', value: 'element' }
 			]);
 		},
-		parse: function ({ type, key, note }) {
-			return [{ content: key }, { content: Local.get('eventParameterTypes.' + type) }];
+		parse: function ({ type, key, note }: any) {
+			return [{ content: key }, { content: Local.get!('eventParameterTypes.' + type) }];
 		},
 		open: function ({ type = 'number', key = '', note = '' } = {}) {
 			getWindow().open('fileEvent-parameter');

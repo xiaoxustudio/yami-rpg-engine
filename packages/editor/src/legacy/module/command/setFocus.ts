@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setFocus = new CommandSchema({
 	name: 'setFocus',
 	onInitialize() {
-		$('#setFocus-confirm').on('click', () => this.save());
+		$('#setFocus-confirm').on('click', () => this.save!());
 		$('#setFocus-operation').loadItems([
 			{ name: 'Add Focus', value: 'add' },
 			{ name: 'Remove Focus', value: 'remove' },
@@ -37,25 +37,25 @@ Command.cases.setFocus = new CommandSchema({
 			]);
 	},
 	customParse({ operation, element, mode, cancelable }: any) {
-		const words = Command.words.push(Local.get('command.setFocus.' + operation));
+		const words = Command.words.push(Local.get!('command.setFocus.' + operation));
 		switch (operation) {
 			case 'add':
 				if (mode === undefined) {
 					mode = 'control-child-buttons';
 				}
-				words.push(Command.parseElement(element));
-				words.push(Local.get('command.setFocus.' + mode));
+				words.push(Command.parseElement!(element));
+				words.push(Local.get!('command.setFocus.' + mode));
 				if (cancelable) {
-					words.push(Local.get('command.setFocus.cancelable'));
+					words.push(Local.get!('command.setFocus.cancelable'));
 				}
 				break;
 			case 'remove':
-				words.push(Command.parseElement(element));
+				words.push(Command.parseElement!(element));
 				break;
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.setFocus') + Token(': ') },
+			{ text: Local.get!('command.setFocus') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -76,7 +76,7 @@ Command.cases.setFocus = new CommandSchema({
 		const operation = read('operation');
 		switch (operation) {
 			case 'add': {
-				Command.save({
+				Command.save!({
 					operation,
 					element: read('element'),
 					mode: read('mode'),
@@ -85,12 +85,12 @@ Command.cases.setFocus = new CommandSchema({
 				break;
 			}
 			case 'remove': {
-				Command.save({ operation, element: read('element') });
+				Command.save!({ operation, element: read('element') });
 				break;
 			}
 			case 'remove-latest':
 			case 'reset':
-				Command.save({ operation });
+				Command.save!({ operation });
 				break;
 		}
 	}

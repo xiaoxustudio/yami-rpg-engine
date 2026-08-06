@@ -21,18 +21,18 @@ interface FileEntityPage {
 function createFileEntityPage(name: string, inspectorKey: string): FileEntityPage {
 	const domKey = 'file' + name;
 	const entity = {
-		target: null,
-		meta: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null,
-		listChange: null
+		target: null as any,
+		meta: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any,
+		listChange: null as any
 	} as FileEntityPage;
 
-	entity.initialize = function () {
+	entity.initialize = function (this: any) {
 		if (!$(`#${domKey}-attributes`)) return;
 		$(`#${domKey}-attributes`).bind(new AttributeListInterface());
 		$(`#${domKey}-events`).bind(new EventListInterface(this));
@@ -45,7 +45,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		);
 	};
 
-	entity.create = function () {
+	entity.create = function (this: any) {
 		return {
 			icon: '',
 			clip: [0, 0, 32, 32],
@@ -56,7 +56,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		};
 	};
 
-	entity.open = function (target, meta) {
+	entity.open = function (this: any, target: any, meta: any) {
 		if (this.meta !== meta) {
 			this.target = target;
 			this.meta = meta;
@@ -70,7 +70,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.close = function () {
+	entity.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -82,8 +82,8 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.update = function (target, key, value) {
-		File.planToSave(this.meta);
+	entity.update = function (this: any, target: any, key: any, value: any) {
+		File.planToSave!(this.meta);
 		switch (key) {
 			case 'icon':
 			case 'clip':
@@ -100,12 +100,12 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.paramInput = function (event) {
-		entity.update(entity.target, Inspector.getKey(this), read(this));
+	entity.paramInput = function (this: any, event: any) {
+		entity.update(entity.target, Inspector.getKey!(this), read(this));
 	};
 
-	entity.listChange = function (event) {
-		File.planToSave(entity.meta);
+	entity.listChange = function (this: any, event: any) {
+		File.planToSave!(entity.meta);
 	};
 
 	Inspector[inspectorKey] = entity;

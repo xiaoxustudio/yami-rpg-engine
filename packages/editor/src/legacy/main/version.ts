@@ -3,20 +3,20 @@ import { Directory } from '@/file/directory-object.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@/update/updater.ts';
 
-Editor.checkForEditorUpdates = function () {
+Editor.checkForEditorUpdates = function (this: any) {
 	if (!Editor.config) return;
-	const ver1 = Editor.config.version;
+	const ver1 = (Editor.config as any).version;
 	const ver2 = Updater.latestEditorVersion;
 	const verNum1 = (Updater.getVersionNumber as any)(ver1);
 	const verNum2 = (Updater.getVersionNumber as any)(ver2);
 	if (verNum1 < verNum2) {
-		Editor.config.version = ver2;
+		(Editor.config as any).version = ver2;
 		console.warn(`升级编辑器版本：${ver1} -> ${ver2}`);
 	}
 };
 
-Editor.checkForProjectUpdates = async function () {
-	const ver1 = Editor.project.version;
+Editor.checkForProjectUpdates = async function (this: any) {
+	const ver1 = (Editor.project as any).version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = (Updater.getVersionNumber as any)(ver1);
 	const verNum2 = (Updater.getVersionNumber as any)(ver2);
@@ -41,15 +41,15 @@ Editor.checkForProjectUpdates = async function () {
 		(Updater.updateToLatest as any)(ver1);
 
 		await (File.save as any)(false);
-		Editor.project.version = ver2;
+		(Editor.project as any).version = ver2;
 
 		(Directory.update as any)();
 		console.log('项目升级完毕!');
 	}
 };
 
-Editor.isProjectVersionSupported = function () {
-	const ver1 = Editor.project.version;
+Editor.isProjectVersionSupported = function (this: any) {
+	const ver1 = (Editor.project as any).version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = (Updater.getVersionNumber as any)(ver1);
 	const verNum2 = (Updater.getVersionNumber as any)(ver2);

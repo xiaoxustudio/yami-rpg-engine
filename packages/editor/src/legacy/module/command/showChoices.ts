@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.showChoices = new CommandSchema({
 	name: 'showChoices',
 	onInitialize() {
-		$('#showChoices-confirm')?.on('click', () => this.save());
+		$('#showChoices-confirm')?.on('click', () => this.save!());
 		$('#showChoices-choices')?.bind(Choices);
 		$('#showChoices')?.on('closed', () => {
 			clear($('#showChoices-choices'));
@@ -19,11 +19,11 @@ Command.cases.showChoices = new CommandSchema({
 	createDefaultChoices() {
 		return [
 			{
-				content: Local.get('showChoices.yes'),
+				content: Local.get!('showChoices.yes'),
 				commands: []
 			},
 			{
-				content: Local.get('showChoices.no'),
+				content: Local.get!('showChoices.no'),
 				commands: []
 			}
 		];
@@ -32,38 +32,38 @@ Command.cases.showChoices = new CommandSchema({
 		const contents: any[] = [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.showChoices') + Token(': ') },
+			{ text: Local.get!('command.showChoices') + Token(': ') },
 			{ color: 'text' },
 			{ color: 'save' }
 		];
-		contents.push({ text: Command.setNumberColor(choices.length) });
+		contents.push({ text: Command.setNumberColor!(choices.length) });
 		if (parameters) {
 			contents.push(
 				{ color: 'gray' },
 				{ color: 'save' },
 				{
-					text: ' ' + Token('(') + Command.setCommaColors(parameters) + Token(')')
+					text: ' ' + Token('(') + Command.setCommaColors!(parameters) + Token(')')
 				}
 			);
 		}
 		contents.push({ color: 'flow' });
 		contents.push({ break: true });
-		const when = Local.get('command.showChoices.when');
+		const when = Local.get!('command.showChoices.when');
 		for (const choice of choices) {
 			contents.push(
 				{ color: 'flow' },
 				{ text: when + ' ' },
 				{ color: 'text' },
 				{
-					text: Command.parseVariableTag(GameLocal.replace(choice.content))
+					text: Command.parseVariableTag!(GameLocal.replace!(choice.content))
 				},
 				{ children: choice.commands }
 			);
 		}
-		contents.push({ color: 'flow' }, { text: Local.get('command.showChoices.end') });
+		contents.push({ color: 'flow' }, { text: Local.get!('command.showChoices.end') });
 		return contents;
 	},
-	customLoad({ choices = this.createDefaultChoices(), parameters = '' }) {
+	customLoad(this: any, { choices = this.createDefaultChoices!(), parameters = '' }: any) {
 		const write = getElementWriter('showChoices');
 		write('choices', choices.slice());
 		write('parameters', parameters);
@@ -77,6 +77,6 @@ Command.cases.showChoices = new CommandSchema({
 			return getFocus($('#showChoices-choices'));
 		}
 		const parameters = read('parameters');
-		Command.save({ choices, parameters });
+		Command.save!({ choices, parameters });
 	}
 });

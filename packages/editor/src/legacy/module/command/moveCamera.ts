@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveCamera = new CommandSchema({
 	name: 'moveCamera',
 	onInitialize() {
-		$('#moveCamera-confirm').on('click', () => this.save());
+		$('#moveCamera-confirm').on('click', () => this.save!());
 		$('#moveCamera-mode').loadItems([
 			{ name: 'Move to Position', value: 'position' },
 			{ name: 'Follow Actor', value: 'actor' }
@@ -25,26 +25,26 @@ Command.cases.moveCamera = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 		$('#moveCamera').on('open', () => {
-			$('#moveCamera-easingId').loadItems(Data.createEasingItems());
+			$('#moveCamera-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#moveCamera').on('closed', () => {
 			clear($('#moveCamera-easingId'));
 		});
 	},
 	customParse({ mode, position, actor, easingId, duration, wait }: any) {
-		const words = Command.words.push(Local.get('command.moveCamera.' + mode));
+		const words = Command.words.push(Local.get!('command.moveCamera.' + mode));
 		switch (mode) {
 			case 'position':
-				words.push(Command.parsePosition(position));
+				words.push(Command.parsePosition!(position));
 				break;
 			case 'actor':
-				words.push(Command.parseActor(actor));
+				words.push(Command.parseActor!(actor));
 				break;
 		}
-		words.push(Command.parseEasing(easingId, duration, wait));
+		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.moveCamera') + Token(': ') },
+			{ text: Local.get!('command.moveCamera') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -74,12 +74,12 @@ Command.cases.moveCamera = new CommandSchema({
 		switch (mode) {
 			case 'position': {
 				const position = read('position');
-				Command.save({ mode, position, easingId, duration, wait });
+				Command.save!({ mode, position, easingId, duration, wait });
 				break;
 			}
 			case 'actor': {
 				const actor = read('actor');
-				Command.save({ mode, actor, easingId, duration, wait });
+				Command.save!({ mode, actor, easingId, duration, wait });
 				break;
 			}
 		}

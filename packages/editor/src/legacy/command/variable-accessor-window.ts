@@ -87,7 +87,7 @@ export const VariableGetter: VariableGetterShape = {
 	typeInput: null as any,
 	confirm: null as any,
 	confirm2: null as any,
-	_confirmCore: null
+	_confirmCore: null as any
 };
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
@@ -105,9 +105,9 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 		element: { name: 'Element Attribute', value: 'element' }
 	};
 	const allTypes = Object.values(types);
-	const writableTypes = allTypes.filter((item) => item.value !== 'item');
+	const writableTypes = allTypes.filter((item: any) => item.value !== 'item');
 	const deletableTypes = writableTypes.filter(
-		(item) => item.value !== 'global' && item.value !== 'self'
+		(item: any) => item.value !== 'global' && item.value !== 'self'
 	);
 	const objectTypes = [types.local, types.global, types.element];
 	const objectTypes2 = [types.local, types.global];
@@ -141,7 +141,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 			{ case: 'element', targets: [element, presetKey] }
 		]);
 
-	$('#variableGetter-type').setItemNames = function (options) {
+	$('#variableGetter-type').setItemNames = function (this: any, options: any) {
 		const backup = this.dataItems;
 		this.dataItems = allTypes;
 		selectBoxSetItemNames(this, options);
@@ -160,8 +160,8 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 			}
 		]);
 	on($('#variableGetter2-confirm'), 'click', this.confirm2);
-	TextSuggestion.listen(
-		$('#variableGetter2-common-key'),
+	(TextSuggestion.listen as any)(
+		$('#variableGetter-common-key'),
 		VariableGetter.createVarListGenerator(this)
 	);
 
@@ -171,7 +171,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 	on($('#variableGetter-type'), 'write', this.typeWrite);
 	on($('#variableGetter-type'), 'input', this.typeInput);
 	on($('#variableGetter-confirm'), 'click', this.confirm);
-	TextSuggestion.listen(
+	(TextSuggestion.listen as any)(
 		$('#variableGetter-common-key'),
 		VariableGetter.createVarListGenerator(this)
 	);
@@ -195,7 +195,7 @@ VariableGetter._openCore = function (
 ): void {
 	// 递归状态按窗口名隔离（窗口2不污染主窗口的 target/filter）
 	this._state[prefix] = { target, filter };
-	const types = this.types;
+	const types = this.types!;
 	let items;
 	switch (filter) {
 		case 'all':
@@ -312,7 +312,7 @@ VariableGetter._openCore = function (
 	getWindow().open(prefix);
 };
 
-VariableGetter.isNone = function (variable: { key: string }): boolean {
+VariableGetter.isNone = function (this: any, variable: { key: string }): boolean {
 	return variable.key === '';
 };
 
@@ -335,14 +335,14 @@ VariableGetter.loadPresetKeys = function (this: VariableGetterShape, group: stri
 	this.keyBox.loadItems(items);
 };
 
-VariableGetter.checkDataForPlugin = function (data: any): boolean {
+VariableGetter.checkDataForPlugin = function (this: any, data: any): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'variable';
 	}
 	return false;
 };
 
-VariableGetter.createDefaultForPlugin = function (): {
+VariableGetter.createDefaultForPlugin = function (this: any): {
 	getter: string;
 	type: string;
 	key: string;
@@ -350,17 +350,20 @@ VariableGetter.createDefaultForPlugin = function (): {
 	return { getter: 'variable', type: 'local', key: '' };
 };
 
-VariableGetter.createVarListGenerator = function (filterObject: VariableGetterShape): () => any[] {
+VariableGetter.createVarListGenerator = function (
+	this: any,
+	filterObject: VariableGetterShape
+): () => any[] {
 	return function (): any[] {
 		if (!EventEditor.commandList.read()) return [];
 
-		const filter = filterObject.filter.includes('boolean')
+		const filter = (filterObject.filter as string).includes('boolean')
 			? 'boolean'
-			: filterObject.filter.includes('number')
+			: (filterObject.filter as string).includes('number')
 				? 'number'
-				: filterObject.filter.includes('string')
+				: (filterObject.filter as string).includes('string')
 					? 'string'
-					: filterObject.filter.includes('object')
+					: (filterObject.filter as string).includes('object')
 						? 'object'
 						: 'any';
 
@@ -407,7 +410,7 @@ VariableGetter.createVarListGenerator = function (filterObject: VariableGetterSh
 		const activeCommand = activeElement?.dataItem ?? activeElement?.dataParent ?? null;
 		const activeNamespace = activeCommand ? getNamespaceRoot(activeCommand) : null;
 
-		return (list.varList ?? []).filter((item) => {
+		return (list.varList ?? []).filter((item: any) => {
 			if (filter !== 'any' && item.type !== 'any' && filter !== item.type) {
 				return false;
 			}
@@ -418,7 +421,7 @@ VariableGetter.createVarListGenerator = function (filterObject: VariableGetterSh
 	};
 };
 
-VariableGetter.typeWrite = function (event: Event & { value: string }): void {
+VariableGetter.typeWrite = function (this: any, event: Event & { value: string }): void {
 	const type = event.value;
 	switch (type) {
 		case 'actor':
@@ -432,7 +435,7 @@ VariableGetter.typeWrite = function (event: Event & { value: string }): void {
 	}
 };
 
-VariableGetter.typeInput = function (event: Event & { value: string }): void {
+VariableGetter.typeInput = function (this: any, event: Event & { value: string }): void {
 	const type = event.value;
 	switch (type) {
 		case 'actor':
@@ -473,9 +476,9 @@ VariableGetter.confirm2 = function (this: VariableGetterShape, event: Event): vo
 
 // 内部：按窗口前缀执行确认（统一校验逻辑，消除双实现行为漂移）
 VariableGetter._confirmCore = function (this: VariableGetterShape, prefix: string): void {
-	const state = this._state[prefix];
-	const target = state.target;
-	const filter = state.filter;
+	const state = this._state![prefix];
+	const target = state!.target;
+	const filter = state!.filter;
 	const read = getElementReader(prefix);
 	const type = read('type');
 	let getter;

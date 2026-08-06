@@ -5,13 +5,13 @@ function getWindow() {
 }
 
 export const AngleGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-AngleGetter.initialize = function () {
+AngleGetter.initialize = function (this: any) {
 	if (!$('#angleGetter-type')) return;
 	$('#angleGetter-type').loadItems([
 		{ name: 'Towards Position', value: 'position' },
@@ -37,7 +37,7 @@ AngleGetter.initialize = function () {
 	$('#angleGetter-confirm').on('click', this.confirm);
 };
 
-AngleGetter.open = function (target) {
+AngleGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('angleGetter');
 
@@ -62,7 +62,7 @@ AngleGetter.open = function (target) {
 	getFocus($('#angleGetter-type'));
 };
 
-AngleGetter.confirm = function (event) {
+AngleGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('angleGetter');
 	const type = read('type');
 	let getter;

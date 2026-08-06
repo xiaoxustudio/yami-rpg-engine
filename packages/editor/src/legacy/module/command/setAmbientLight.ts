@@ -17,31 +17,31 @@ Command.cases.setAmbientLight = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAmbientLight-confirm').on('click', () => this.save());
+		$('#setAmbientLight-confirm').on('click', () => this.save!());
 		$('#setAmbientLight-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#setAmbientLight').on('open', function (event: any) {
-			$('#setAmbientLight-easingId').loadItems(Data.createEasingItems());
+			$('#setAmbientLight-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#setAmbientLight').on('closed', function (event: any) {
 			clear($('#setAmbientLight-easingId'));
 		});
 	},
 	parseColor(red: any, green: any, blue: any) {
-		const r = Command.parseVariableNumber(red);
-		const g = Command.parseVariableNumber(green);
-		const b = Command.parseVariableNumber(blue);
+		const r = Command.parseVariableNumber!(red);
+		const g = Command.parseVariableNumber!(green);
+		const b = Command.parseVariableNumber!(blue);
 		return 'RGB' + Token('(') + r + Token(', ') + g + Token(', ') + b + Token(')');
 	},
 	customParse({ red, green, blue, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(this.parseColor(red, green, blue))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(this.parseColor!(red, green, blue))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.setAmbientLight') + Token(': ') },
+			{ text: Local.get!('command.setAmbientLight') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

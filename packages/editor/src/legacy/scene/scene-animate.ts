@@ -4,13 +4,13 @@ import { Timer } from '@/util/timer.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
-Scene.requestAnimation = function () {
+Scene.requestAnimation = function (this: any) {
 	if (this.state === 'open' && this.showAnimation) {
-		Timer.appendUpdater('stageAnimation', this.updateAnimation);
+		Timer.appendUpdater!('stageAnimation', this.updateAnimation);
 	}
 };
 
-Scene.updateAnimation = function (deltaTime) {
+Scene.updateAnimation = function (this: any, deltaTime: any) {
 	const { animationInterval } = Scene;
 	if (animationInterval > 0) {
 		Scene.animationElapsed += deltaTime;
@@ -19,40 +19,40 @@ Scene.updateAnimation = function (deltaTime) {
 			Scene.animationFrame += 1;
 		}
 	}
-	Scene.updateParallaxes(deltaTime);
-	Scene.updateAnimations(deltaTime);
-	Scene.updateParticles(deltaTime);
+	Scene.updateParallaxes!(deltaTime);
+	Scene.updateAnimations!(deltaTime);
+	Scene.updateParticles!(deltaTime);
 	if (Timer.updaters.stageRendering !== Scene.renderingFunction) {
-		Scene.drawScene();
+		Scene.drawScene!();
 	}
 };
 
-Scene.stopAnimation = function () {
-	Timer.removeUpdater('stageAnimation', this.updateAnimation);
+Scene.stopAnimation = function (this: any) {
+	Timer.removeUpdater!('stageAnimation', this.updateAnimation);
 };
 
-Scene.requestRendering = function () {
+Scene.requestRendering = function (this: any) {
 	if (this.state === 'open') {
-		Timer.appendUpdater('stageRendering', this.renderingFunction);
+		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
 
-Scene.renderingFunction = function () {
-	Scene.updateAnimations(0);
-	Scene.drawScene();
+Scene.renderingFunction = function (this: any) {
+	Scene.updateAnimations!(0);
+	Scene.drawScene!();
 };
 
-Scene.stopRendering = function () {
-	Timer.removeUpdater('stageRendering', this.renderingFunction);
+Scene.stopRendering = function (this: any) {
+	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
 
 Scene.switchLayer = (function IIFE() {
-	let layerGroup = null;
-	let items = null;
-	let selection = undefined;
+	let layerGroup: any = null;
+	let items: any = null;
+	let selection: any = undefined;
 	const query = () => {
 		layerGroup = $('#scene-layer');
-		items = { tilemap: null };
+		items = { tilemap: null as any };
 		if (layerGroup) {
 			for (const item of layerGroup.children) {
 				const layer = item.getAttribute('value');
@@ -60,7 +60,7 @@ Scene.switchLayer = (function IIFE() {
 			}
 		}
 	};
-	return function (layer) {
+	return function (this: any, layer: any) {
 		if (items === null || layerGroup === null) {
 			query();
 		}
@@ -70,8 +70,8 @@ Scene.switchLayer = (function IIFE() {
 		}
 
 		if (selection === null) {
-			this.closeTilemap(false);
-			this.computeActiveTilemapId();
+			this.closeTilemap!(false);
+			this.computeActiveTilemapId!();
 		}
 
 		if (selection) removeClass(selection, 'selected');
@@ -82,7 +82,7 @@ Scene.switchLayer = (function IIFE() {
 		switch ((this.layer = layer)) {
 			case 'object':
 				typeof marquee?.switch === 'function' && marquee.switch('object');
-				this.updateTargetInfo();
+				this.updateTargetInfo!();
 				break;
 			case 'tilemap':
 				typeof marquee?.switch === 'function' &&
@@ -97,18 +97,18 @@ Scene.switchLayer = (function IIFE() {
 		}
 		typeof marquee?.resize === 'function' && marquee.resize();
 		if (this.state === 'open') {
-			Scene.requestRendering();
+			Scene.requestRendering!();
 		}
 	};
 })();
 
 Scene.switchBrush = (function IIFE() {
-	let list = null;
-	let items = null;
-	let selection = null;
+	let list: any = null;
+	let items: any = null;
+	let selection: any = null;
 	const query = () => {
 		list = $('#scene-brush');
-		items = {};
+		items = {} as Record<string, any>;
 		if (list) {
 			for (const item of list.children) {
 				const brush = item.getAttribute('value');
@@ -116,7 +116,7 @@ Scene.switchBrush = (function IIFE() {
 			}
 		}
 	};
-	return function (brush) {
+	return function (this: any, brush: any) {
 		if (items === null || list === null) {
 			query();
 		}
@@ -147,7 +147,7 @@ Scene.switchBrush = (function IIFE() {
 	};
 })();
 
-Scene.switchGrid = function (enabled = !this.showGrid) {
+Scene.switchGrid = function (this: any, enabled = !this.showGrid) {
 	const item = $('#scene-switch-grid');
 	if (enabled) {
 		addClass(item, 'selected');
@@ -155,10 +155,10 @@ Scene.switchGrid = function (enabled = !this.showGrid) {
 		removeClass(item, 'selected');
 	}
 	this.showGrid = enabled;
-	this.requestRendering();
+	this.requestRendering!();
 };
 
-Scene.switchLight = function (enabled = !this.showLight) {
+Scene.switchLight = function (this: any, enabled = !this.showLight) {
 	const item = $('#scene-switch-light');
 	if (enabled) {
 		addClass(item, 'selected');
@@ -166,43 +166,43 @@ Scene.switchLight = function (enabled = !this.showLight) {
 		removeClass(item, 'selected');
 	}
 	this.showLight = enabled;
-	this.requestRendering();
+	this.requestRendering!();
 };
 
-Scene.switchAnimation = function (enabled = !this.showAnimation) {
+Scene.switchAnimation = function (this: any, enabled = !this.showAnimation) {
 	const item = $('#scene-switch-animation');
 	this.showAnimation = enabled;
 	if (enabled) {
 		addClass(item, 'selected');
-		this.requestAnimation();
+		this.requestAnimation!();
 	} else {
 		removeClass(item, 'selected');
-		this.stopAnimation();
-		this.resetAnimations();
+		this.stopAnimation!();
+		this.resetAnimations!();
 	}
-	this.requestRendering();
+	this.requestRendering!();
 };
 
-Scene.switchSettings = function () {
+Scene.switchSettings = function (this: any) {
 	if (!hasClass(Inspector.fileScene.button, 'selected')) {
-		Inspector.open('fileScene', Scene.context.scene);
+		Inspector.open!('fileScene', Scene.context.scene);
 	} else {
-		Inspector.close();
+		Inspector.close!();
 	}
 };
 
-Scene.switchTerrain = function () {
+Scene.switchTerrain = function (this: any) {
 	const context = this.marquee.key === 'terrain' ? this.marquee : this.marquee.saveData.terrain;
 	context.terrain = (context.terrain + 2) % 3;
 	if (this.brush === 'eraser') {
-		this.switchBrush('pencil');
+		this.switchBrush!('pencil');
 	}
 	if (this.marquee.visible) {
-		this.requestRendering();
+		this.requestRendering!();
 	}
 };
 
-Scene.resetAnimations = function () {
+Scene.resetAnimations = function (this: any) {
 	if (this.state === 'open') {
 		for (const { player } of this.actors) {
 			player.clearParticles();
@@ -218,7 +218,7 @@ Scene.resetAnimations = function () {
 	}
 };
 
-Scene.updateFont = function () {
+Scene.updateFont = function (this: any) {
 	const context = GL.context2d;
 	const size = window.devicePixelRatio * 12;
 	if (context.size !== size) {

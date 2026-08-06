@@ -10,14 +10,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveLight = new CommandSchema({
 	name: 'moveLight',
 	onInitialize() {
-		$('#moveLight-confirm').on('click', () => this.save());
+		$('#moveLight-confirm').on('click', () => this.save!());
 		$('#moveLight-properties').bind(LightProperty);
 		$('#moveLight-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#moveLight').on('open', function (event: any) {
-			$('#moveLight-easingId').loadItems(Data.createEasingItems());
+			$('#moveLight-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#moveLight').on('closed', function (event: any) {
 			clear($('#moveLight-properties'));
@@ -25,14 +25,14 @@ Command.cases.moveLight = new CommandSchema({
 		});
 	},
 	customParse({ light, properties, easingId, duration, wait }: any) {
-		const words = Command.words.push(Command.parseLight(light));
+		const words = Command.words.push(Command.parseLight!(light));
 		for (const property of properties) {
-			words.push(LightProperty.parse(property));
+			words.push(LightProperty.parse!(property));
 		}
-		words.push(Command.parseEasing(easingId, duration, wait));
+		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.moveLight') + Token(': ') },
+			{ text: Local.get!('command.moveLight') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -57,7 +57,7 @@ Command.cases.moveLight = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#moveLight-properties'));
 		}
-		Command.save({
+		Command.save!({
 			light: read('light'),
 			properties,
 			easingId: read('easingId'),

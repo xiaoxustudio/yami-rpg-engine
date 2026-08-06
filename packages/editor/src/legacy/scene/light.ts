@@ -23,27 +23,27 @@ interface LightData {
 }
 
 export class Light {
-	data: LightData;
-	angle: number;
-	anchorOffsetX: number;
-	anchorOffsetY: number;
-	measureOffsetX: number;
-	measureOffsetY: number;
-	measureWidth: number;
-	measureHeight: number;
+	data!: LightData;
+	angle!: number;
+	anchorOffsetX!: number;
+	anchorOffsetY!: number;
+	measureOffsetX!: number;
+	measureOffsetY!: number;
+	measureWidth!: number;
+	measureHeight!: number;
 
 	constructor(data: LightData) {
 		this.data = data;
-		this.measure();
+		this.measure!();
 	}
 
 	draw(projMatrix: number[], opacity: number): void {
 		opacity *= this.data.enabled ? 1 : 0.3;
 		switch (this.data.type) {
 			case 'point':
-				return this.drawPointLight(projMatrix, opacity);
+				return this.drawPointLight!(projMatrix, opacity);
 			case 'area':
-				return this.drawAreaLight(projMatrix, opacity);
+				return this.drawAreaLight!(projMatrix, opacity);
 		}
 	}
 
@@ -104,8 +104,8 @@ export class Light {
 		const oy = light.y;
 		const dl = ox - this.anchorOffsetX;
 		const dt = oy - this.anchorOffsetY;
-		const dr = dl + light.width;
-		const db = dt + light.height;
+		const dr = dl + light.width!;
+		const db = dt + light.height!;
 		vertices[0] = dl;
 		vertices[1] = dt;
 		vertices[2] = 0;
@@ -141,15 +141,15 @@ export class Light {
 	measure() {
 		const light = this.data;
 		if (light.type !== 'area') return;
-		const width = light.width;
-		const height = light.height;
-		const anchorOffsetX = width * light.anchorX;
-		const anchorOffsetY = height * light.anchorY;
+		const width = light.width!;
+		const height = light.height!;
+		const anchorOffsetX = width * light.anchorX!;
+		const anchorOffsetY = height * light.anchorY!;
 		const a = -anchorOffsetX;
 		const b = -anchorOffsetY;
 		const c = a + width;
 		const d = b + height;
-		const angle = Math.radians(light.angle);
+		const angle = Math.radians(light.angle!);
 		const angle1 = Math.atan2(b, a) + angle;
 		const angle2 = Math.atan2(b, c) + angle;
 		const angle3 = Math.atan2(d, c) + angle;

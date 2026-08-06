@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setNumber = new CommandSchema({
 	name: 'setNumber',
 	onInitialize() {
-		$('#setNumber-confirm').on('click', () => this.save());
+		$('#setNumber-confirm').on('click', () => this.save!());
 		$('#setNumber-operands').bind(NumberOperand);
 		$('#setNumber').on('closed', (event: any) => {
 			clear($('#setNumber-operands'));
@@ -39,23 +39,23 @@ Command.cases.setNumber = new CommandSchema({
 		const length = operands.length;
 		for (let i = 0; i < length; i++) {
 			const operand = operands[i];
-			let operandName = NumberOperand.parseOperand(operand);
+			let operandName = NumberOperand.parseOperand!(operand);
 			if (i !== 0)
 				switch (operand.operation.replace('()', '')) {
 					case 'add':
-						expression += Command.setOperatorColor(' + ');
+						expression += Command.setOperatorColor!(' + ');
 						break;
 					case 'sub':
-						expression += Command.setOperatorColor(' - ');
+						expression += Command.setOperatorColor!(' - ');
 						break;
 					case 'mul':
-						expression += Command.setOperatorColor(' * ');
+						expression += Command.setOperatorColor!(' * ');
 						break;
 					case 'div':
-						expression += Command.setOperatorColor(' / ');
+						expression += Command.setOperatorColor!(' / ');
 						break;
 					case 'mod':
-						expression += Command.setOperatorColor(' % ');
+						expression += Command.setOperatorColor!(' % ');
 						break;
 				}
 			currentPriority = nextPriority;
@@ -71,12 +71,12 @@ Command.cases.setNumber = new CommandSchema({
 		return expression;
 	},
 	customParse({ variable, operation, operands }: any) {
-		const varDesc = Command.parseVariable(variable, 'number', operation === 'set');
-		const operator = Command.setOperatorColor(this.parseOperation(operation));
-		const expression = this.parseOperands(operands);
+		const varDesc = Command.parseVariable!(variable, 'number', operation === 'set');
+		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
+		const expression = this.parseOperands!(operands);
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.setNumber.alias') + ' ' },
+			{ text: Local.get!('command.setNumber.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${expression}` }
 		];
@@ -95,7 +95,7 @@ Command.cases.setNumber = new CommandSchema({
 	customSave() {
 		const read = getElementReader('setNumber');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setNumber-variable'));
 		}
 		const operation = read('operation');
@@ -104,6 +104,6 @@ Command.cases.setNumber = new CommandSchema({
 			return getFocus($('#setNumber-operands'));
 		}
 		operands[0].operation = 'add';
-		Command.save({ variable, operation, operands });
+		Command.save!({ variable, operation, operands });
 	}
 });

@@ -13,19 +13,21 @@ Command.cases.changeActorTeam = new CommandSchema({
 		{ key: 'teamId', default: () => Data.teams.list[0].id }
 	],
 	onInitialize() {
-		on($('#changeActorTeam-confirm'), 'click', () => this.save());
+		on($('#changeActorTeam-confirm'), 'click', () => this.save!());
 		on($('#changeActorTeam'), 'open', function (event: any) {
-			$('#changeActorTeam-teamId').loadItems(Data.createTeamItems());
+			$('#changeActorTeam-teamId').loadItems(Data.createTeamItems!());
 		});
 		on($('#changeActorTeam'), 'closed', function (event: any) {
 			clear($('#changeActorTeam-teamId'));
 		});
 	},
 	customParse({ actor, teamId }: any) {
-		const words = Command.words.push(Command.parseActor(actor)).push(Command.parseTeam(teamId));
+		const words = Command.words
+			.push(Command.parseActor!(actor))
+			.push(Command.parseTeam!(teamId));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorTeam') + Token(': ') },
+			{ text: Local.get!('command.changeActorTeam') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

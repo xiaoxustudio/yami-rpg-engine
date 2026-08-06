@@ -6,18 +6,18 @@ import { read, write } from '@/util/element-utils.ts';
 
 {
 	const AnimJointFrame = {
-		motion: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		motion: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimJointFrame.initialize = function () {
+	AnimJointFrame.initialize = function (this: any) {
 		if (!$('#animJointFrame-x')) return;
 		const elements = $(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
     #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
@@ -26,7 +26,7 @@ import { read, write } from '@/util/element-utils.ts';
 		elements.forEach((el: HTMLElement) =>
 			el.addEventListener(
 				'blur',
-				Inspector.inputBlur(this, Animation, (data) => {
+				Inspector.inputBlur!(this, Animation, (data: any) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -35,7 +35,7 @@ import { read, write } from '@/util/element-utils.ts';
 		);
 	};
 
-	AnimJointFrame.create = function () {
+	AnimJointFrame.create = function (this: any) {
 		return {
 			start: 0,
 			end: 1,
@@ -49,11 +49,11 @@ import { read, write } from '@/util/element-utils.ts';
 		};
 	};
 
-	AnimJointFrame.open = function (frame) {
+	AnimJointFrame.open = function (this: any, frame: any) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
-			Curve.load(frame);
+			Curve.load!(frame);
 
 			const write = getElementWriter('animJointFrame', frame);
 			write('x');
@@ -65,16 +65,16 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimJointFrame.close = function () {
+	AnimJointFrame.close = function (this: any) {
 		if (this.target) {
-			Animation.unselectMarquee(this.target);
-			Curve.load(null);
+			Animation.unselectMarquee!(this.target);
+			Curve.load!(null);
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimJointFrame.write = function (options) {
+	AnimJointFrame.write = function (this: any, options: any) {
 		if (options.x !== undefined) {
 			write($('#animJointFrame-x'), options.x);
 		}
@@ -92,8 +92,8 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimJointFrame.update = function (frame, key, value) {
-		Animation.planToSave();
+	AnimJointFrame.update = function (this: any, frame: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'x':
 			case 'y':
@@ -103,15 +103,15 @@ import { read, write } from '@/util/element-utils.ts';
 			case 'opacity':
 				if (frame[key] !== value) {
 					frame[key] = value;
-					Animation.updateFrameContexts();
+					Animation.updateFrameContexts!();
 				}
 				break;
 		}
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	};
 
-	AnimJointFrame.paramInput = function (event) {
-		AnimJointFrame.update(AnimJointFrame.target, Inspector.getKey(this), read(this));
+	AnimJointFrame.paramInput = function (this: any, event: any) {
+		AnimJointFrame.update(AnimJointFrame.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.animJointFrame = AnimJointFrame;

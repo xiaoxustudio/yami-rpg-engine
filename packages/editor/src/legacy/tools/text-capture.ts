@@ -12,42 +12,42 @@ import { Window } from './window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 
 export const Selection = {
-	target: null,
+	target: null as any,
 	inserting: false,
-	context: null,
+	context: null as any,
 	regexps: {
 		local: /<local:(.*?)>/,
 		global: /<global:([0-9a-f]{16})?>/,
 		dynamicGlobal: /<global::([0-9a-f]{16})?>/,
 		ref: /<ref:([0-9a-f]{16})?>/
 	},
-	initialize: null,
-	saveContext: null,
-	restoreContext: null,
-	addEventListeners: null,
-	match: null,
-	insert: null,
-	edit: null,
-	wrap: null,
-	inputKeydown: null,
-	inputKeyup: null,
-	inputPointerdown: null,
-	inputPointerup: null,
-	color: null,
-	font: null,
-	italic: null,
-	bold: null,
-	fontSize: null,
-	textPosition: null,
-	textEffect: null,
-	image: null,
-	localVariable: null,
-	globalVariable: null,
-	dynamicGlobalVariable: null,
-	localization: null
+	initialize: null as any,
+	saveContext: null as any,
+	restoreContext: null as any,
+	addEventListeners: null as any,
+	match: null as any,
+	insert: null as any,
+	edit: null as any,
+	wrap: null as any,
+	inputKeydown: null as any,
+	inputKeyup: null as any,
+	inputPointerdown: null as any,
+	inputPointerup: null as any,
+	color: null as any,
+	font: null as any,
+	italic: null as any,
+	bold: null as any,
+	fontSize: null as any,
+	textPosition: null as any,
+	textEffect: null as any,
+	image: null as any,
+	localVariable: null as any,
+	globalVariable: null as any,
+	dynamicGlobalVariable: null as any,
+	localization: null as any
 };
 
-Selection.initialize = function () {
+Selection.initialize = function (this: any) {
 	if (!$('#font-confirm')) return;
 	$('#font-confirm').addEventListener('click', this.font.confirm);
 	$('#fontSize-confirm').addEventListener('click', this.fontSize.confirm);
@@ -62,17 +62,17 @@ Selection.initialize = function () {
 	};
 
 	for (const textbox of $('text-box')) {
-		if (!exclusions[textbox.id]) {
-			this.addEventListeners(textbox.input);
+		if (!(exclusions as Record<string, any>)[textbox.id]) {
+			this.addEventListeners!(textbox.input);
 		}
 	}
 
 	for (const textbox of $('text-area-var')) {
-		this.addEventListeners(textbox.strBox);
+		this.addEventListeners!(textbox.strBox);
 	}
 
 	for (const textarea of $('textarea')) {
-		this.addEventListeners(textarea);
+		this.addEventListeners!(textarea);
 	}
 
 	this.textPosition.initialize();
@@ -81,28 +81,28 @@ Selection.initialize = function () {
 	this.localVariable.initialize();
 };
 
-Selection.saveContext = function () {
+Selection.saveContext = function (this: any) {
 	this.context = {
 		target: this.target,
 		inserting: this.inserting
 	};
 };
 
-Selection.restoreContext = function () {
+Selection.restoreContext = function (this: any) {
 	if (this.context) {
 		this.target = this.context.target;
 		this.inserting = this.context.inserting;
 	}
 };
 
-Selection.addEventListeners = function (element) {
+Selection.addEventListeners = function (this, element: any) {
 	element.addEventListener('keydown', this.inputKeydown);
 	element.addEventListener('keyup', this.inputKeyup);
 	element.addEventListener('pointerdown', this.inputPointerdown);
 	element.addEventListener('pointerup', this.inputPointerup);
 };
 
-Selection.match = function () {
+Selection.match = function (this: any) {
 	const target = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
 	if (typeof target.selectionStart !== 'number') {
 		return;
@@ -118,11 +118,11 @@ Selection.match = function () {
 	}
 
 	const regexps = Printer.regexps;
-	const start = text.lastIndexOf('<', selectionEnd - 1);
+	const start = text.lastIndexOf('<', selectionEnd! - 1);
 	const end = text.indexOf('>', selectionStart) + 1;
 	let tag;
 	let params;
-	if (start >= 0 && end > 0 && start < end && start <= selectionStart && end >= selectionEnd) {
+	if (start >= 0 && end > 0 && start < end && start <= selectionStart && end >= selectionEnd!) {
 		const string = text.slice(start, end);
 		let match;
 		if ((match = string.match(regexps.colorIndex))) {
@@ -258,25 +258,25 @@ Selection.match = function () {
 	}
 };
 
-Selection.insert = function (tag) {
+Selection.insert = function (this, tag: any) {
 	const target = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
 	if (typeof target.selectionStart === 'number') {
 		this.target = target;
 		this.inserting = true;
-		this[tag].open();
+		(this as any)[tag].open!();
 	}
 };
 
-Selection.edit = function () {
-	const match = this.match();
+Selection.edit = function (this: any) {
+	const match = this.match!();
 	if (match) {
 		const { tag, params } = match;
 		this.inserting = false;
-		this[tag].open(params);
+		(this as any)[tag].open!(params);
 	}
 };
 
-Selection.wrap = function ({ prefix, suffix }) {
+Selection.wrap = function (this, { prefix, suffix }: any) {
 	const input = this.target;
 	const start = input.selectionStart;
 	const end = input.selectionEnd;
@@ -298,98 +298,98 @@ Selection.wrap = function ({ prefix, suffix }) {
 	}
 };
 
-Selection.inputKeydown = function (event) {
+Selection.inputKeydown = function (this: any, event: any) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'KeyE':
-				this.match();
+				this.match!();
 				break;
 		}
 	}
 }.bind(Selection);
 
-Selection.inputKeyup = function (event) {
+Selection.inputKeyup = function (this: any, event: any) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'KeyE':
-				this.edit();
+				this.edit!();
 				break;
 		}
 	}
 }.bind(Selection);
 
-Selection.inputPointerdown = function (event) {
+Selection.inputPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 2:
-			setTimeout(() => this.match());
+			setTimeout(() => this.match!());
 			break;
 	}
 }.bind(Selection);
 
-Selection.inputPointerup = function (event) {
+Selection.inputPointerup = function (this: any, event: any) {
 	switch (event.button) {
 		case 2:
-			navigator.clipboard.readText().then((clipText) => {
+			navigator.clipboard.readText().then((clipText: any) => {
 				const element = event.target;
 				if (document.activeElement === element) {
 					const start = element.selectionStart;
 					const end = element.selectionEnd;
-					const editable = !!this.match();
+					const editable = !!this.match!();
 					const selected = start !== end;
 					const pastable = !!clipText;
 					const undoable = element.history.canUndo();
 					const redoable = element.history.canRedo();
-					const get = Local.createGetter('menuTextBox');
+					const get = Local.createGetter!('menuTextBox');
 					const wrap = element.parentNode;
 					const menu = wrap.getAttribute('menu') ?? 'tag';
-					const tagItems = [];
+					const tagItems = [] as any[];
 					tagItems.push(
 						{
 							label: get('tag.color'),
 							click: () => {
-								Selection.insert('color');
+								Selection.insert!('color');
 							}
 						},
 						{
 							label: get('tag.font'),
 							click: () => {
-								Selection.insert('font');
+								Selection.insert!('font');
 							}
 						},
 						{
 							label: get('tag.italic'),
 							click: () => {
-								Selection.insert('italic');
+								Selection.insert!('italic');
 							}
 						},
 						{
 							label: get('tag.bold'),
 							click: () => {
-								Selection.insert('bold');
+								Selection.insert!('bold');
 							}
 						},
 						{
 							label: get('tag.size'),
 							click: () => {
-								Selection.insert('fontSize');
+								Selection.insert!('fontSize');
 							}
 						},
 						{
 							label: get('tag.position'),
 							click: () => {
-								Selection.insert('textPosition');
+								Selection.insert!('textPosition');
 							}
 						},
 						{
 							label: get('tag.effect'),
 							click: () => {
-								Selection.insert('textEffect');
+								Selection.insert!('textEffect');
 							}
 						},
 						{
 							label: get('tag.image'),
 							click: () => {
-								Selection.insert('image');
+								Selection.insert!('image');
 							}
 						}
 					);
@@ -397,7 +397,7 @@ Selection.inputPointerup = function (event) {
 						tagItems.push({
 							label: get('tag.localVariable'),
 							click: () => {
-								Selection.insert('localVariable');
+								Selection.insert!('localVariable');
 							}
 						});
 					}
@@ -405,7 +405,7 @@ Selection.inputPointerup = function (event) {
 						tagItems.push({
 							label: get('tag.globalVariable'),
 							click: () => {
-								Selection.insert('globalVariable');
+								Selection.insert!('globalVariable');
 							}
 						});
 					}
@@ -413,7 +413,7 @@ Selection.inputPointerup = function (event) {
 						tagItems.push({
 							label: get('tag.dynamicGlobalVariable'),
 							click: () => {
-								Selection.insert('dynamicGlobalVariable');
+								Selection.insert!('dynamicGlobalVariable');
 							}
 						});
 					}
@@ -421,11 +421,11 @@ Selection.inputPointerup = function (event) {
 						tagItems.push({
 							label: get('tag.localization'),
 							click: () => {
-								Selection.insert('localization');
+								Selection.insert!('localization');
 							}
 						});
 					}
-					Menu.popup(
+					Menu.popup!(
 						{
 							x: event.clientX,
 							y: event.clientY
@@ -436,7 +436,7 @@ Selection.inputPointerup = function (event) {
 								accelerator: 'Alt+E',
 								enabled: editable,
 								click: () => {
-									Selection.edit();
+									Selection.edit!();
 								}
 							},
 							{
@@ -527,15 +527,15 @@ Selection.color = {
 		Color.open(this.proxy, true);
 	},
 	proxy: {
-		color: null,
+		color: null as any,
 		read: function () {
 			return this.color;
 		},
-		input: function (color) {
+		input: function (this: any, color: any) {
 			if (typeof color === 'string') {
 				color = Color.simplifyHexColor(color);
 			}
-			Selection.wrap({
+			Selection.wrap!({
 				prefix: `<color:${color}>`,
 				suffix: '</color>'
 			});
@@ -545,26 +545,26 @@ Selection.color = {
 
 Selection.font = {
 	open: function ({ font = 'sans-serif' } = {}) {
-		Window.open('font');
+		Window.open!('font');
 		write($('#font-font'), font);
 		getFocus($('#font-font'), 'all');
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const font = read($('#font-font'));
 		if (!font) {
 			return getFocus($('#font-font'), 'all');
 		}
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<font:${font}>`,
 			suffix: '</font>'
 		});
-		Window.close('font');
+		Window.close!('font');
 	}
 };
 
 Selection.italic = {
 	open: function () {
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: '<italic>',
 			suffix: '</italic>'
 		});
@@ -573,7 +573,7 @@ Selection.italic = {
 
 Selection.bold = {
 	open: function () {
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: '<bold>',
 			suffix: '</bold>'
 		});
@@ -582,17 +582,17 @@ Selection.bold = {
 
 Selection.fontSize = {
 	open: function ({ size = 12 } = {}) {
-		Window.open('fontSize');
+		Window.open!('fontSize');
 		write($('#fontSize-size'), size);
 		getFocus($('#fontSize-size'), 'all');
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const size = read($('#fontSize-size'));
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<size:${size}>`,
 			suffix: '</size>'
 		});
-		Window.close('fontSize');
+		Window.close!('fontSize');
 	}
 };
 
@@ -608,12 +608,12 @@ Selection.textPosition = {
 		]);
 	},
 	open: function ({ axis = 'x', operation = 'set', value = 0 } = {}) {
-		Window.open('textPosition');
+		Window.open!('textPosition');
 		write($('#textPosition-axis'), axis);
 		write($('#textPosition-operation'), operation);
 		write($('#textPosition-value'), value);
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const axis = read($('#textPosition-axis'));
 		const operation = read($('#textPosition-operation'));
 		const value = read($('#textPosition-value'));
@@ -626,11 +626,11 @@ Selection.textPosition = {
 				string = `${operation},${value}`;
 				break;
 		}
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<${axis}:${string}>`,
 			suffix: ''
 		});
-		Window.close('textPosition');
+		Window.close!('textPosition');
 	}
 };
 
@@ -666,14 +666,14 @@ Selection.textEffect = {
 		strokeWidth = 1,
 		color = '000000ff'
 	} = {}) {
-		Window.open('textEffect');
+		Window.open!('textEffect');
 		write($('#textEffect-type'), type);
 		write($('#textEffect-shadowOffsetX'), shadowOffsetX);
 		write($('#textEffect-shadowOffsetY'), shadowOffsetY);
 		write($('#textEffect-strokeWidth'), strokeWidth);
 		write($('#textEffect-color'), color);
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const type = read($('#textEffect-type'));
 		const color = Color.simplifyHexColor(read($('#textEffect-color')));
 		let string;
@@ -693,11 +693,11 @@ Selection.textEffect = {
 				string = `${color}`;
 				break;
 		}
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<${type}:${string}>`,
 			suffix: `</${type}>`
 		});
-		Window.close('textEffect');
+		Window.close!('textEffect');
 	}
 };
 
@@ -743,14 +743,14 @@ Selection.image = {
 		width = 64,
 		height = 64
 	} = {}) {
-		Window.open('insertImage');
+		Window.open!('insertImage');
 		write($('#insertImage-mode'), mode);
 		write($('#insertImage-image'), image);
 		write($('#insertImage-clip'), clip);
 		write($('#insertImage-width'), width);
 		write($('#insertImage-height'), height);
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const mode = read($('#insertImage-mode'));
 		const image = read($('#insertImage-image'));
 		if (image === '') return getFocus($('#insertImage-image'));
@@ -778,34 +778,37 @@ Selection.image = {
 				break;
 			}
 		}
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<image:${string}>`,
 			suffix: ''
 		});
-		Window.close('insertImage');
+		Window.close!('insertImage');
 	}
 };
 
 Selection.localVariable = {
 	filter: 'all',
 	initialize: function () {
-		TextSuggestion.listen($('#localVariable-key'), VariableGetter.createVarListGenerator(this));
+		TextSuggestion.listen!(
+			$('#localVariable-key'),
+			VariableGetter.createVarListGenerator!(this)
+		);
 	},
 	open: function ({ key = '' } = {}) {
-		Window.open('localVariable');
+		Window.open!('localVariable');
 		write($('#localVariable-key'), key);
 		getFocus($('#localVariable-key'), 'all');
 	},
-	confirm: function (event) {
+	confirm: function (this: any, event: any) {
 		const key = read($('#localVariable-key'));
 		if (!key) {
 			return getFocus($('#localVariable-key'), 'all');
 		}
-		Selection.wrap({
+		Selection.wrap!({
 			prefix: `<local:${key}>`,
 			suffix: ''
 		});
-		Window.close('localVariable');
+		Window.close!('localVariable');
 	}
 };
 
@@ -818,12 +821,12 @@ Selection.globalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null,
+		element: null as any,
 		read: function () {
 			return this.key;
 		},
-		input: function (key) {
-			Selection.wrap({
+		input: function (this: any, key: any) {
+			Selection.wrap!({
 				prefix: `<global:${key}>`,
 				suffix: ''
 			});
@@ -843,12 +846,12 @@ Selection.dynamicGlobalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null,
+		element: null as any,
 		read: function () {
 			return this.key;
 		},
-		input: function (key) {
-			Selection.wrap({
+		input: function (this: any, key: any) {
+			Selection.wrap!({
 				prefix: `<global::${key}>`,
 				suffix: ''
 			});
@@ -862,7 +865,7 @@ Selection.dynamicGlobalVariable = {
 Selection.localization = {
 	open: function ({ key = '' } = {}) {
 		this.proxy.key = key;
-		Selection.saveContext();
+		Selection.saveContext!();
 		Localization.open(this.proxy);
 	},
 	proxy: {
@@ -870,8 +873,8 @@ Selection.localization = {
 		read: function () {
 			return this.key;
 		},
-		input: function (key) {
-			Selection.wrap({
+		input: function (this: any, key: any) {
+			Selection.wrap!({
 				prefix: `<ref:${key}>`,
 				suffix: ''
 			});

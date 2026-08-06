@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setTerrain = new CommandSchema({
 	name: 'setTerrain',
 	onInitialize() {
-		$('#setTerrain-confirm').on('click', () => this.save());
+		$('#setTerrain-confirm').on('click', () => this.save!());
 		$('#setTerrain-terrain').loadItems([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },
@@ -17,11 +17,11 @@ Command.cases.setTerrain = new CommandSchema({
 	},
 	customParse({ position, terrain }: any) {
 		const words = Command.words
-			.push(Command.parsePosition(position))
-			.push(Local.get('command.setTerrain.' + terrain));
+			.push(Command.parsePosition!(position))
+			.push(Local.get!('command.setTerrain.' + terrain));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.setTerrain') + Token(': ') },
+			{ text: Local.get!('command.setTerrain') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -33,7 +33,7 @@ Command.cases.setTerrain = new CommandSchema({
 	},
 	customSave() {
 		const read = getElementReader('setTerrain');
-		Command.save({
+		Command.save!({
 			position: read('position'),
 			terrain: read('terrain')
 		});

@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.playAnimation = new CommandSchema({
 	name: 'playAnimation',
 	onInitialize() {
-		$('#playAnimation-confirm').on('click', () => this.save());
+		$('#playAnimation-confirm').on('click', () => this.save!());
 		$('#playAnimation-mode').loadItems([
 			{ name: 'Position', value: 'position' },
 			{ name: 'Actor', value: 'actor' }
@@ -32,25 +32,25 @@ Command.cases.playAnimation = new CommandSchema({
 	},
 	writeHandler(event: any) {
 		const elMotion = $('#playAnimation-motion');
-		elMotion.loadItems(Animation.getMotionListItems(event.value));
+		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	},
 	parseRotatable(rotatable: any) {
-		return rotatable ? Local.get('command.playAnimation.rotatable') : '';
+		return rotatable ? Local.get!('command.playAnimation.rotatable') : '';
 	},
 	parsePriority(priority: any) {
 		if (priority === 0) return '';
-		const abs = Command.setNumberColor(Math.abs(priority));
+		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority > 0 ? Token('+') + abs : Token('-') + abs;
 	},
 	parseOffsetY(offsetY: any) {
 		let num;
-		if (typeof offsetY === 'number') num = Command.setNumberColor(Math.abs(offsetY)) + 'px';
+		if (typeof offsetY === 'number') num = Command.setNumberColor!(Math.abs(offsetY)) + 'px';
 		return typeof offsetY === 'number'
 			? offsetY > 0
 				? num
 				: Token('-') + num
-			: Command.parseVariableNumber(offsetY);
+			: Command.parseVariableNumber!(offsetY);
 	},
 	customParse({
 		mode,
@@ -68,26 +68,26 @@ Command.cases.playAnimation = new CommandSchema({
 		const words = Command.words;
 		switch (mode) {
 			case 'position':
-				words.push(Command.parsePosition(position));
+				words.push(Command.parsePosition!(position));
 				break;
 			case 'actor': {
-				const bind = Local.get('command.playAnimation.bind');
-				words.push(bind + Token('(') + Command.parseActor(actor) + Token(')'));
+				const bind = Local.get!('command.playAnimation.bind');
+				words.push(bind + Token('(') + Command.parseActor!(actor) + Token(')'));
 				break;
 			}
 		}
 		words
-			.push(Command.parseFileName(animationId))
-			.push(Command.parseEnumString(motion))
-			.push(this.parseRotatable(rotatable))
-			.push(this.parsePriority(priority))
-			.push(this.parseOffsetY(offsetY))
-			.push(Command.parseVariableNumber(angle, '°'))
-			.push(Command.parseVariableNumber(speed))
-			.push(Command.parseWait(wait));
+			.push(Command.parseFileName!(animationId))
+			.push(Command.parseEnumString!(motion))
+			.push(this.parseRotatable!(rotatable))
+			.push(this.parsePriority!(priority))
+			.push(this.parseOffsetY!(offsetY))
+			.push(Command.parseVariableNumber!(angle, '°'))
+			.push(Command.parseVariableNumber!(speed))
+			.push(Command.parseWait!(wait));
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.playAnimation') + Token(': ') },
+			{ text: Local.get!('command.playAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -138,7 +138,7 @@ Command.cases.playAnimation = new CommandSchema({
 		switch (mode) {
 			case 'position': {
 				const position = read('position');
-				Command.save({
+				Command.save!({
 					mode,
 					position,
 					animationId,
@@ -154,7 +154,7 @@ Command.cases.playAnimation = new CommandSchema({
 			}
 			case 'actor': {
 				const actor = read('actor');
-				Command.save({
+				Command.save!({
 					mode,
 					actor,
 					animationId,

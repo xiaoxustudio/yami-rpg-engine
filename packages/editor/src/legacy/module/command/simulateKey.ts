@@ -12,7 +12,7 @@ Command.cases.simulateKey = new CommandSchema({
 		{ key: 'keycode', default: '' }
 	],
 	onInitialize() {
-		$('#simulateKey-confirm').on('click', () => this.save());
+		$('#simulateKey-confirm').on('click', () => this.save!());
 		$('#simulateKey-operation').loadItems([
 			{ name: 'Click', value: 'click' },
 			{ name: 'Press', value: 'press' },
@@ -21,11 +21,11 @@ Command.cases.simulateKey = new CommandSchema({
 	},
 	customParse({ operation, keycode }: any) {
 		const words = Command.words
-			.push(Local.get('command.simulateKey.' + operation))
-			.push(Command.setStringColor(keycode));
+			.push(Local.get!('command.simulateKey.' + operation))
+			.push(Command.setStringColor!(keycode));
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.simulateKey') + Token(': ') },
+			{ text: Local.get!('command.simulateKey') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

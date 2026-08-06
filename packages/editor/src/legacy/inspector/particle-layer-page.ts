@@ -7,17 +7,17 @@ import { Particle } from '@/particle/particle-window.ts';
 {
 	const ParticleLayer = {
 		owner: Particle,
-		target: null,
-		nameBox: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		update: null,
-		paramInput: null
+		target: null as any,
+		nameBox: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	ParticleLayer.initialize = function () {
+	ParticleLayer.initialize = function (this: any) {
 		if (!$('#particleLayer-name')) return;
 		this.nameBox = $('#particleLayer-name');
 		$('#particleLayer-area-type').loadItems([
@@ -179,7 +179,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		const sliders = $(`
     #particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider,
     #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider`);
-		const blurHandler = Inspector.inputBlur(this, Particle);
+		const blurHandler = Inspector.inputBlur!(this, Particle);
 		elements.forEach((el: HTMLElement) => on(el, 'input', this.paramInput));
 		elements.forEach((el: HTMLElement) => on(el, 'focus', Inspector.inputFocus));
 		elements.forEach((el: HTMLElement) => on(el, 'blur', blurHandler));
@@ -187,7 +187,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		sliders.forEach((el: HTMLElement) => on(el, 'blur', Inspector.sliderBlur));
 	};
 
-	ParticleLayer.create = function () {
+	ParticleLayer.create = function (this: any) {
 		return {
 			class: 'particle',
 			name: 'Layer',
@@ -251,11 +251,11 @@ import { Particle } from '@/particle/particle-window.ts';
 		};
 	};
 
-	ParticleLayer.open = function (layer) {
+	ParticleLayer.open = function (this: any, layer: any) {
 		if (this.target !== layer) {
 			this.target = layer;
 
-			$('#particleLayer-color-easingId').loadItems(Data.createEasingItems());
+			$('#particleLayer-color-easingId').loadItems(Data.createEasingItems!());
 
 			const write = getElementWriter('particleLayer', layer);
 			const { area, color } = layer;
@@ -358,23 +358,23 @@ import { Particle } from '@/particle/particle-window.ts';
 		}
 	};
 
-	ParticleLayer.close = function () {
+	ParticleLayer.close = function (this: any) {
 		if (this.target) {
-			Particle.list.unselect(this.target);
-			Particle.updateTarget();
+			Particle.list.unselect!(this.target);
+			Particle.updateTarget!();
 			this.target = null;
 		}
 	};
 
-	ParticleLayer.update = function (layer, key, value) {
+	ParticleLayer.update = function (this: any, layer: any, key: any, value: any) {
 		const layerInstance = Particle.emitter.getLayer(layer);
-		Particle.planToSave();
+		Particle.planToSave!();
 		switch (key) {
 			case 'name':
 				if (layer.name !== value) {
 					layer.name = value;
-					Particle.updateParticleInfo();
-					Particle.list.updateItemName(layer);
+					Particle.updateParticleInfo!();
+					Particle.list.updateItemName!(layer);
 				}
 				break;
 			case 'area-type': {
@@ -407,7 +407,7 @@ import { Particle } from '@/particle/particle-window.ts';
 							break;
 					}
 					layerInstance.updateElementMethods();
-					Particle.computeOuterRect();
+					Particle.computeOuterRect!();
 				}
 				break;
 			}
@@ -421,7 +421,7 @@ import { Particle } from '@/particle/particle-window.ts';
 				const property = key.slice(index);
 				if (area[property] !== value) {
 					area[property] = value;
-					Particle.computeOuterRect();
+					Particle.computeOuterRect!();
 				}
 				break;
 			}
@@ -465,7 +465,7 @@ import { Particle } from '@/particle/particle-window.ts';
 				if (layer.image !== value) {
 					layer.image = value;
 					layerInstance.loadTexture();
-					Particle.list.updateIcon(layer);
+					Particle.list.updateIcon!(layer);
 				}
 				break;
 			case 'blend':
@@ -483,7 +483,7 @@ import { Particle } from '@/particle/particle-window.ts';
 					sprite[property] = value;
 					layerInstance.calculateElementSize();
 					layerInstance.resizeElementIndices();
-					Particle.list.updateIcon(layer);
+					Particle.list.updateIcon!(layer);
 				}
 				break;
 			}
@@ -660,11 +660,11 @@ import { Particle } from '@/particle/particle-window.ts';
 				break;
 			}
 		}
-		Particle.requestRendering();
+		Particle.requestRendering!();
 	};
 
-	ParticleLayer.paramInput = function (event) {
-		ParticleLayer.update(ParticleLayer.target, Inspector.getKey(this), read(this));
+	ParticleLayer.paramInput = function (this: any, event: any) {
+		ParticleLayer.update(ParticleLayer.target, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.particleLayer = ParticleLayer;

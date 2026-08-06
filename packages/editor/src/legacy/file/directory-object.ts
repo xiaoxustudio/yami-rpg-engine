@@ -63,7 +63,7 @@ export const Directory: {
 };
 
 Directory.initialize = function () {
-	window.addEventListener('focus', this.windowFocus);
+	window.addEventListener('focus', this.windowFocus!);
 };
 
 Directory.read = function () {
@@ -78,7 +78,7 @@ Directory.read = function () {
 				.update()
 				.then(
 					async ({ promises }) => {
-						this.createInoMap();
+						this.createInoMap!();
 						if (promises.length) {
 							await Promise.all(promises);
 						}
@@ -129,7 +129,7 @@ Directory.update = function () {
 						throw new Error('Directory update timeout');
 					}
 					if (changed) {
-						this.createInoMap();
+						this.createInoMap!();
 						Data.manifest.update();
 					}
 					if (promises.length) {
@@ -173,8 +173,8 @@ Directory.getFolder = function (path) {
 
 Directory.getFile = function (path) {
 	const dirname = Path.dirname(path);
-	const folder = this.getFolder(dirname);
-	if (folder.path === dirname) {
+	const folder = this.getFolder!(dirname);
+	if (folder!.path === dirname) {
 		for (const item of folder.children) {
 			if (item.path === path && item instanceof FileItem) {
 				return item;
@@ -395,7 +395,7 @@ Directory.copyFiles = (function IIFE() {
 			existings[path] = true;
 			promises.push(
 				(existed ? Promise.resolve() : FSP.stat(path))
-					.then((stats) => {
+					.then((stats: any) => {
 						for (let i = 2; ; i++) {
 							path = `${dirPath}/${base}${suffix} (${i})${ext}`;
 							if (existings[path]) {

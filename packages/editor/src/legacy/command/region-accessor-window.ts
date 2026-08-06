@@ -6,13 +6,13 @@ function getWindow() {
 }
 
 export const RegionGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	confirm: null as any
 };
 
-RegionGetter.initialize = function () {
+RegionGetter.initialize = function (this: any) {
 	if (!$('#regionGetter-type')) return;
 	$('#regionGetter-type').loadItems([
 		{ name: 'Event Trigger Region', value: 'trigger' },
@@ -26,7 +26,7 @@ RegionGetter.initialize = function () {
 	$('#regionGetter-confirm').on('click', this.confirm);
 };
 
-RegionGetter.open = function (target) {
+RegionGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('regionGetter');
 
@@ -44,7 +44,7 @@ RegionGetter.open = function (target) {
 	getFocus($('#regionGetter-type'));
 };
 
-RegionGetter.confirm = function (event) {
+RegionGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('regionGetter');
 	const type = read('type');
 	let getter;

@@ -81,20 +81,21 @@ export const TextProperty = createPropertyWindow({
 		return read(key);
 	},
 	parsers: {
-		content: (value) => Command.parseVariableTemplate(value),
-		size: (value) => Command.setNumberColor(value),
-		lineSpacing: (value) => Command.setNumberColor(value),
-		letterSpacing: (value) => Command.setNumberColor(value),
-		color: (value) => Command.parseHexColor(Color.simplifyHexColor(value)),
-		font: (value, get) => (value ? Command.setStringColor(value) : get('font.default')),
-		effect: (value, get, name) => {
+		content: (value: any) => Command.parseVariableTemplate!(value),
+		size: (value: any) => Command.setNumberColor!(value),
+		lineSpacing: (value: any) => Command.setNumberColor!(value),
+		letterSpacing: (value: any) => Command.setNumberColor!(value),
+		color: (value: any) => Command.parseHexColor!(Color.simplifyHexColor(value)),
+		font: (value: any, get: any) =>
+			value ? Command.setStringColor!(value) : get('font.default'),
+		effect: (value: any, get: any, name: any): any => {
 			switch (value.type) {
 				case 'none':
 					return name + Token('(') + get('effect.none') + Token(')');
 				case 'shadow': {
-					const x = Command.setNumberColor(value.shadowOffsetX);
-					const y = Command.setNumberColor(value.shadowOffsetY);
-					const color = Command.parseHexColor(Color.simplifyHexColor(value.color));
+					const x = Command.setNumberColor!(value.shadowOffsetX);
+					const y = Command.setNumberColor!(value.shadowOffsetY);
+					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
 					return (
 						name +
 						Token('(') +
@@ -109,8 +110,8 @@ export const TextProperty = createPropertyWindow({
 					);
 				}
 				case 'stroke': {
-					const width = Command.setNumberColor(value.strokeWidth);
-					const color = Command.parseHexColor(Color.simplifyHexColor(value.color));
+					const width = Command.setNumberColor!(value.strokeWidth);
+					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
 					return (
 						name +
 						Token('(') +
@@ -123,13 +124,13 @@ export const TextProperty = createPropertyWindow({
 					);
 				}
 				case 'outline': {
-					const color = Command.parseHexColor(Color.simplifyHexColor(value.color));
+					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
 					return (
 						name + Token('(') + get('effect.outline') + Token(', ') + color + Token(')')
 					);
 				}
 			}
 		},
-		blend: (value) => Command.parseBlend(value)
+		blend: (value: any) => Command.parseBlend!(value)
 	}
 });

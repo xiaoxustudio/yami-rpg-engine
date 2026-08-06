@@ -23,7 +23,7 @@ Command.cases.return = new CommandSchema({
 		element: { name: 'Element', value: 'element' }
 	},
 	onInitialize() {
-		$('#return-confirm').on('click', () => this.save());
+		$('#return-confirm').on('click', () => this.save!());
 		$('#return-type').loadItems(Object.values(this.typeItems));
 		$('#return-boolean').loadItems([
 			{ name: 'False', value: false },
@@ -99,40 +99,40 @@ Command.cases.return = new CommandSchema({
 			case 'none':
 				break;
 			case 'boolean':
-				words.push(Command.setBooleanColor(value.toString()));
+				words.push(Command.setBooleanColor!(value.toString()));
 				break;
 			case 'number':
-				words.push(Command.parseVariableNumber(value));
+				words.push(Command.parseVariableNumber!(value));
 				break;
 			case 'string':
-				words.push(Command.parseVariableString(value));
+				words.push(Command.parseVariableString!(value));
 				break;
 			case 'object':
-				words.push(Command.parseVariable(value, 'object'));
+				words.push(Command.parseVariable!(value, 'object'));
 				break;
 			case 'actor':
-				words.push(Command.parseActor(value));
+				words.push(Command.parseActor!(value));
 				break;
 			case 'skill':
-				words.push(Command.parseSkill(value));
+				words.push(Command.parseSkill!(value));
 				break;
 			case 'state':
-				words.push(Command.parseState(value));
+				words.push(Command.parseState!(value));
 				break;
 			case 'equipment':
-				words.push(Command.parseEquipment(value));
+				words.push(Command.parseEquipment!(value));
 				break;
 			case 'item':
-				words.push(Command.parseItem(value));
+				words.push(Command.parseItem!(value));
 				break;
 			case 'trigger':
-				words.push(Command.parseTrigger(value));
+				words.push(Command.parseTrigger!(value));
 				break;
 			case 'light':
-				words.push(Command.parseLight(value));
+				words.push(Command.parseLight!(value));
 				break;
 			case 'element':
-				words.push(Command.parseElement(value));
+				words.push(Command.parseElement!(value));
 				break;
 		}
 		let info = words.join();
@@ -141,13 +141,13 @@ Command.cases.return = new CommandSchema({
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.return') + ' ' },
+			{ text: Local.get!('command.return') + ' ' },
 			{ color: 'restore' },
 			{ text: info }
 		];
 	},
 	customLoad({ type = Command.returnType, value = null }) {
-		this.loadTypeItems(Command.returnType);
+		this.loadTypeItems!(Command.returnType);
 		const write = getElementWriter('return');
 		write('type', type);
 		write('boolean', type === 'boolean' && value !== null ? value : false);
@@ -169,48 +169,48 @@ Command.cases.return = new CommandSchema({
 		const type = read('type');
 		switch (type) {
 			case 'none':
-				Command.save({ type });
+				Command.save!({ type });
 				break;
 			case 'boolean':
-				Command.save({ type, value: read('boolean') });
+				Command.save!({ type, value: read('boolean') });
 				break;
 			case 'number':
-				Command.save({ type, value: read('number') });
+				Command.save!({ type, value: read('number') });
 				break;
 			case 'string':
-				Command.save({ type, value: read('string') });
+				Command.save!({ type, value: read('string') });
 				break;
 			case 'object': {
 				const variable = read('object');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#return-object'));
 				}
-				Command.save({ type, value: variable });
+				Command.save!({ type, value: variable });
 				break;
 			}
 			case 'actor':
-				Command.save({ type, value: read('actor') });
+				Command.save!({ type, value: read('actor') });
 				break;
 			case 'skill':
-				Command.save({ type, value: read('skill') });
+				Command.save!({ type, value: read('skill') });
 				break;
 			case 'state':
-				Command.save({ type, value: read('state') });
+				Command.save!({ type, value: read('state') });
 				break;
 			case 'equipment':
-				Command.save({ type, value: read('equipment') });
+				Command.save!({ type, value: read('equipment') });
 				break;
 			case 'item':
-				Command.save({ type, value: read('item') });
+				Command.save!({ type, value: read('item') });
 				break;
 			case 'trigger':
-				Command.save({ type, value: read('trigger') });
+				Command.save!({ type, value: read('trigger') });
 				break;
 			case 'light':
-				Command.save({ type, value: read('light') });
+				Command.save!({ type, value: read('light') });
 				break;
 			case 'element':
-				Command.save({ type, value: read('element') });
+				Command.save!({ type, value: read('element') });
 				break;
 		}
 	}

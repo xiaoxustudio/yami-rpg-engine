@@ -78,6 +78,6 @@ AudioManager.getWaveform = function (guid: string) {
 };
 
 AudioManager.close = function () {
-	this.player.stop();
+	this.player?.stop();
 	this.waveforms = {};
 };

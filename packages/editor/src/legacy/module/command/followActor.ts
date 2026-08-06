@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.followActor = new CommandSchema({
 	name: 'followActor',
 	onInitialize() {
-		$('#followActor-confirm').on('click', () => this.save());
+		$('#followActor-confirm').on('click', () => this.save!());
 		$('#followActor-mode').loadItems([
 			{ name: 'Circle', value: 'circle' },
 			{ name: 'Rectangle', value: 'rectangle' }
@@ -43,8 +43,8 @@ Command.cases.followActor = new CommandSchema({
 		]);
 	},
 	parseActors(actor: any, target: any) {
-		const sActor = Command.parseActor(actor);
-		const dActor = Command.parseActor(target);
+		const sActor = Command.parseActor!(actor);
+		const dActor = Command.parseActor!(target);
 		return sActor + Token(' -> ') + dActor;
 	},
 	customParse({
@@ -65,35 +65,35 @@ Command.cases.followActor = new CommandSchema({
 			bufferDist = 0;
 		}
 		const words = Command.words
-			.push(this.parseActors(actor, target))
-			.push(Local.get('command.followActor.mode.' + mode))
+			.push(this.parseActors!(actor, target))
+			.push(Local.get!('command.followActor.mode.' + mode))
 			.push(
-				Command.parseVariableNumber(minDist) +
+				Command.parseVariableNumber!(minDist) +
 					Token(' ~ ') +
-					Command.parseVariableNumber(maxDist)
+					Command.parseVariableNumber!(maxDist)
 			);
 		switch (mode) {
 			case 'circle':
-				words.push(Command.setNumberColor(offset.toString()));
+				words.push(Command.setNumberColor!(offset.toString()));
 				break;
 			case 'rectangle':
-				words.push(Command.setNumberColor(vertDist.toString()));
+				words.push(Command.setNumberColor!(vertDist.toString()));
 				break;
 		}
-		words.push(Command.setNumberColor(bufferDist.toString()));
+		words.push(Command.setNumberColor!(bufferDist.toString()));
 		if (navigate) {
-			words.push(Local.get('command.followActor.navigate'));
+			words.push(Local.get!('command.followActor.navigate'));
 			if (bypass) {
-				words.push(Local.get('command.followActor.bypass'));
+				words.push(Local.get!('command.followActor.bypass'));
 			}
 		}
 		if (once) {
-			words.push(Local.get('command.followActor.once'));
-			words.push(Command.parseWait(wait));
+			words.push(Local.get!('command.followActor.once'));
+			words.push(Command.parseWait!(wait));
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.followActor') + Token(': ') },
+			{ text: Local.get!('command.followActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -140,7 +140,7 @@ Command.cases.followActor = new CommandSchema({
 		const wait = once ? read('wait') : false;
 		switch (mode) {
 			case 'circle': {
-				Command.save({
+				Command.save!({
 					actor,
 					target,
 					mode,
@@ -156,7 +156,7 @@ Command.cases.followActor = new CommandSchema({
 				break;
 			}
 			case 'rectangle': {
-				Command.save({
+				Command.save!({
 					actor,
 					target,
 					mode,

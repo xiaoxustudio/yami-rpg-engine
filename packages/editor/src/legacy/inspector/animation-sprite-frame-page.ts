@@ -7,18 +7,18 @@ import { Sprite } from '@/sprite/sprite.ts';
 
 {
 	const AnimSpriteFrame = {
-		motion: null,
-		target: null,
-		initialize: null,
-		create: null,
-		open: null,
-		close: null,
-		write: null,
-		update: null,
-		paramInput: null
+		motion: null as any,
+		target: null as any,
+		initialize: null as any,
+		create: null as any,
+		open: null as any,
+		close: null as any,
+		write: null as any,
+		update: null as any,
+		paramInput: null as any
 	};
 
-	AnimSpriteFrame.initialize = function () {
+	AnimSpriteFrame.initialize = function (this: any) {
 		if (!$('#animSpriteFrame-tint-0-slider')) return;
 		$('#animSpriteFrame-tint-0-slider').synchronize($('#animSpriteFrame-tint-0'));
 		$('#animSpriteFrame-tint-1-slider').synchronize($('#animSpriteFrame-tint-1'));
@@ -37,7 +37,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		elements.on('focus', Inspector.inputFocus);
 		elements.on(
 			'blur',
-			Inspector.inputBlur(this, Animation, (data) => {
+			Inspector.inputBlur!(this, Animation, (data: any) => {
 				data.type = 'inspector-frame-change';
 				data.motion = this.motion;
 				data.direction = Animation.direction;
@@ -49,7 +49,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		Sprite.initialize();
 	};
 
-	AnimSpriteFrame.create = function () {
+	AnimSpriteFrame.create = function (this: any) {
 		return {
 			start: 0,
 			end: 1,
@@ -70,12 +70,12 @@ import { Sprite } from '@/sprite/sprite.ts';
 		};
 	};
 
-	AnimSpriteFrame.open = function (frame) {
+	AnimSpriteFrame.open = function (this: any, frame: any) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
 			Sprite.open(frame);
-			Curve.load(frame);
+			Curve.load!(frame);
 
 			const write = getElementWriter('animSpriteFrame', frame);
 			write('anchorX');
@@ -95,17 +95,17 @@ import { Sprite } from '@/sprite/sprite.ts';
 		}
 	};
 
-	AnimSpriteFrame.close = function () {
+	AnimSpriteFrame.close = function (this: any) {
 		if (this.target) {
-			Animation.unselectMarquee(this.target);
+			Animation.unselectMarquee!(this.target);
 			Sprite.close();
-			Curve.load(null);
+			Curve.load!(null);
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimSpriteFrame.write = function (options) {
+	AnimSpriteFrame.write = function (this: any, options: any) {
 		if (options.anchorX !== undefined) {
 			write($('#animSpriteFrame-anchorX'), options.anchorX);
 		}
@@ -135,8 +135,8 @@ import { Sprite } from '@/sprite/sprite.ts';
 		}
 	};
 
-	AnimSpriteFrame.update = function (frame, key, value) {
-		Animation.planToSave();
+	AnimSpriteFrame.update = function (this: any, frame: any, key: any, value: any) {
+		Animation.planToSave!();
 		switch (key) {
 			case 'anchorX':
 			case 'anchorY':
@@ -150,7 +150,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 			case 'opacity':
 				if (frame[key] !== value) {
 					frame[key] = value;
-					Animation.updateFrameContexts();
+					Animation.updateFrameContexts!();
 				}
 				break;
 			case 'tint-0':
@@ -160,22 +160,22 @@ import { Sprite } from '@/sprite/sprite.ts';
 				const index = key.slice(-1);
 				if (frame.tint[index] !== value) {
 					frame.tint[index] = value;
-					Animation.updateFrameContexts();
+					Animation.updateFrameContexts!();
 				}
 				break;
 			}
 		}
-		Animation.requestRendering();
+		Animation.requestRendering!();
 	};
 
-	AnimSpriteFrame.paramInput = function (event: any) {
+	AnimSpriteFrame.paramInput = function (this: any, event: any) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^animSpriteFrame-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		AnimSpriteFrame.update(AnimSpriteFrame.target, Inspector.getKey(element), read(element));
+		AnimSpriteFrame.update(AnimSpriteFrame.target, Inspector.getKey!(element), read(element));
 	};
 
 	Inspector.animSpriteFrame = AnimSpriteFrame;

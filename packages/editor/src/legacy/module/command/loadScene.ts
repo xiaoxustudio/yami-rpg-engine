@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadScene = new CommandSchema({
 	name: 'loadScene',
 	onInitialize() {
-		$('#loadScene-confirm').on('click', () => this.save());
+		$('#loadScene-confirm').on('click', () => this.save!());
 		$('#loadScene-transfer').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
@@ -18,13 +18,13 @@ Command.cases.loadScene = new CommandSchema({
 			.relate([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
 	},
 	customParse({ sceneId, transfer, x, y }: any) {
-		const words = Command.words.push(Command.parseVariableFile(sceneId));
+		const words = Command.words.push(Command.parseVariableFile!(sceneId));
 		if (transfer) {
-			words.push(Command.parseVariableNumber(x)).push(Command.parseVariableNumber(y));
+			words.push(Command.parseVariableNumber!(x)).push(Command.parseVariableNumber!(y));
 		}
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.loadScene') + Token(': ') },
+			{ text: Local.get!('command.loadScene') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -45,7 +45,7 @@ Command.cases.loadScene = new CommandSchema({
 		const transfer = read('transfer');
 		switch (transfer) {
 			case true:
-				Command.save({
+				Command.save!({
 					sceneId,
 					transfer,
 					x: read('x'),
@@ -53,7 +53,7 @@ Command.cases.loadScene = new CommandSchema({
 				});
 				break;
 			case false:
-				Command.save({ sceneId, transfer });
+				Command.save!({ sceneId, transfer });
 				break;
 		}
 	}

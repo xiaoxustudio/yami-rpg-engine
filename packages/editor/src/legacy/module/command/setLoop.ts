@@ -12,7 +12,7 @@ Command.cases.setLoop = new CommandSchema({
 		{ key: 'loop', default: false }
 	],
 	onInitialize() {
-		$('#setLoop-confirm').on('click', () => this.save());
+		$('#setLoop-confirm').on('click', () => this.save!());
 		$('#setLoop-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
@@ -26,16 +26,16 @@ Command.cases.setLoop = new CommandSchema({
 	parseLoop(loop: any) {
 		switch (loop) {
 			case false:
-				return Local.get('command.setLoop.once');
+				return Local.get!('command.setLoop.once');
 			case true:
-				return Local.get('command.setLoop.loop');
+				return Local.get!('command.setLoop.loop');
 		}
 	},
 	customParse({ type, loop }: any) {
-		const words = Command.words.push(Command.parseAudioType(type)).push(this.parseLoop(loop));
+		const words = Command.words.push(Command.parseAudioType!(type)).push(this.parseLoop!(loop));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get('command.setLoop') + Token(': ') },
+			{ text: Local.get!('command.setLoop') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

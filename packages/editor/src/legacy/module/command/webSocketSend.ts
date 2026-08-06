@@ -10,12 +10,12 @@ Command.cases.webSocketSend = new CommandSchema({
 	onInitialize() {
 		write($('#webSocketSend-id'), '');
 		write($('#webSocketSend-data'), '');
-		$('#webSocketSend-confirm').on('click', () => this.save());
+		$('#webSocketSend-confirm').on('click', () => this.save!());
 	},
 	customParse({ id = '', data = '' }) {
 		return [
 			{ color: 'network' },
-			{ text: Local.get('command.webSocketSend') },
+			{ text: Local.get!('command.webSocketSend') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{ text: id },
@@ -26,7 +26,7 @@ Command.cases.webSocketSend = new CommandSchema({
 						? data.length > 20
 							? data.substring(0, 20) + '...'
 							: data
-						: Command.parseVariable(data, 'any')
+						: Command.parseVariable!(data, 'any')
 			}
 		];
 	},
@@ -38,16 +38,16 @@ Command.cases.webSocketSend = new CommandSchema({
 	customSave() {
 		const elId = $('#webSocketSend-id');
 		const id = read(elId);
-		if (!id || VariableGetter.isNone(id)) {
+		if (!id || VariableGetter.isNone!(id)) {
 			return getFocus(elId);
 		}
 		const elData = $('#webSocketSend-data');
 		const data = read(elData);
-		if (!data || VariableGetter.isNone(data)) {
+		if (!data || VariableGetter.isNone!(data)) {
 			return getFocus(elData);
 		}
 		const reader = getElementReader('webSocketSend');
-		Command.save({
+		Command.save!({
 			id: id,
 			data: data
 		});

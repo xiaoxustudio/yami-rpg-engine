@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loop = new CommandSchema({
 	name: 'loop',
 	onInitialize() {
-		$('#loop-confirm').on('click', () => this.save());
+		$('#loop-confirm').on('click', () => this.save!());
 		$('#loop-conditions').bind(IfCondition);
 		$('#loop-mode').loadItems([
 			{ name: 'Meet All', value: 'all' },
@@ -25,17 +25,17 @@ Command.cases.loop = new CommandSchema({
 		if (conditions.length !== 0) {
 			const condition = IfBranch.parse({ mode, conditions });
 			contents.push(
-				{ text: Local.get('command.loop.while') },
+				{ text: Local.get!('command.loop.while') },
 				{ color: 'restore' },
 				{ text: ' ' + condition }
 			);
 		} else {
-			contents.push({ text: Local.get('command.loop') });
+			contents.push({ text: Local.get!('command.loop') });
 		}
 		contents.push(
 			{ children: commands },
 			{ color: 'flow' },
-			{ text: Local.get('command.loop.end') }
+			{ text: Local.get!('command.loop.end') }
 		);
 		return contents;
 	},
@@ -50,6 +50,6 @@ Command.cases.loop = new CommandSchema({
 		const read = getElementReader('loop');
 		const mode = read('mode');
 		const conditions = read('conditions');
-		Command.save({ mode, conditions, commands: this.commands });
+		Command.save!({ mode, conditions, commands: this.commands });
 	}
 });

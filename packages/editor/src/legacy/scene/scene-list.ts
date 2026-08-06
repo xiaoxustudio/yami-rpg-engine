@@ -14,11 +14,11 @@ import { Editor } from '@/main/editor.ts';
 import { Scene } from './scene-window.ts';
 import { Local } from '@/tools/localization.ts';
 // 列表 - 复制
-Scene.list.copy = function (item) {
+Scene.list.copy = function (this: any, item: any) {
 	if (item) {
 		switch (item.class) {
 			case 'tilemap':
-				Codec.encodeTilemap(item);
+				Codec.encodeTilemap!(item);
 				break;
 		}
 		(Clipboard as any).write('yami.scene.object', item);
@@ -26,64 +26,64 @@ Scene.list.copy = function (item) {
 };
 
 // 列表 - 粘贴
-Scene.list.paste = function (dItem, callback) {
+Scene.list.paste = function (this: any, dItem: any, callback: any) {
 	const copy = (Clipboard as any).read('yami.scene.object');
 	if (copy && this.data) {
 		switch (copy.class) {
 			case 'tilemap':
-				Codec.decodeTilemap(copy);
+				Codec.decodeTilemap!(copy);
 				copy.shortcut = 0;
 				break;
 		}
 		if (dItem === 'auto') {
-			const folders = Editor.project.scene.defaultFolders;
+			const folders = (Editor.project as any).scene.defaultFolders;
 			const name = folders[copy.class];
 			dItem = !name
 				? null
-				: this.getItemByProperties({
+				: this.getItemByProperties!({
 						class: 'folder',
 						name: name
 					});
 		}
 		callback?.(copy);
-		this.addNodeTo(copy, dItem);
-		Scene.requestRendering();
+		this.addNodeTo!(copy, dItem);
+		Scene.requestRendering!();
 	}
 };
 
 // 列表 - 创建副本
-Scene.list.duplicate = function (item) {
+Scene.list.duplicate = function (this: any, item: any) {
 	let copy;
 	switch (item.class) {
 		case 'tilemap':
-			Codec.encodeTilemap(item);
+			Codec.encodeTilemap!(item);
 			copy = Object.clone(item);
-			Codec.decodeTilemap(copy);
+			Codec.decodeTilemap!(copy);
 			copy.shortcut = 0;
 			break;
 		default:
 			copy = Object.clone(item);
 			break;
 	}
-	copy.name = this.generateUniqueName(item);
+	copy.name = this.generateUniqueName!(item);
 	const index = item.parent.children.indexOf(item);
 	const next = item.parent.children[index + 1];
 	if (next) {
-		this.addNodeTo(copy, next, true);
+		this.addNodeTo!(copy, next, true);
 	} else {
-		this.addNodeTo(copy, item.parent);
+		this.addNodeTo!(copy, item.parent);
 	}
 };
 
 // 列表 - 删除
-Scene.list.delete = function (item) {
+Scene.list.delete = function (this: any, item: any) {
 	if (item) {
-		this.deleteNode(item);
+		this.deleteNode!(item);
 	}
 };
 
 // 列表 - 开关对象
-Scene.list.toggle = function (item) {
+Scene.list.toggle = function (this: any, item: any) {
 	if (item && 'enabled' in item) {
 		Scene.history.save({
 			type: 'scene-object-toggle',
@@ -92,25 +92,25 @@ Scene.list.toggle = function (item) {
 			newValue: !item.enabled
 		});
 		item.enabled = !item.enabled;
-		this.updateConditionIcon(item);
+		this.updateConditionIcon!(item);
 		dispatchChangeEvent(this);
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	}
 };
 
 // 列表 - 取消搜索
-Scene.list.cancelSearch = function () {
+Scene.list.cancelSearch = function (this: any) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		Scene.searcher.deleteInputContent();
-		this.expandToSelection();
-		this.scrollToSelection();
-		active.focus();
+		this.expandToSelection!();
+		this.scrollToSelection!();
+		active!.focus();
 	}
 };
 
 // 列表 - 创建文件夹
-Scene.list.createFolder = function () {
+Scene.list.createFolder = function (this: any) {
 	return {
 		class: 'folder',
 		name: 'New Folder',
@@ -122,10 +122,10 @@ Scene.list.createFolder = function () {
 };
 
 // 列表 - 创建瓦片地图快捷方式菜单选项
-Scene.list.createTilemapShortcutItems = function (tilemap) {
+Scene.list.createTilemapShortcutItems = function (this: any, tilemap: any) {
 	const { shortcuts } = Scene.tilemaps;
 	const { shortcut } = tilemap;
-	const menuItems = [];
+	const menuItems = [] as any[];
 	for (let i = 0; i < 7; i++) {
 		const target = shortcuts[i];
 		const checked = shortcut === i;
@@ -133,7 +133,7 @@ Scene.list.createTilemapShortcutItems = function (tilemap) {
 			if (shortcut !== i) {
 				tilemap.shortcut = i;
 				shortcuts.update();
-				Scene.planToSave();
+				Scene.planToSave!();
 				Scene.history.save({
 					type: 'scene-tilemap-shortcut',
 					tilemap: tilemap,
@@ -143,7 +143,7 @@ Scene.list.createTilemapShortcutItems = function (tilemap) {
 		};
 		if (i === 0) {
 			menuItems.push({
-				label: Local.get('menuSceneList.shortcut.none'),
+				label: Local.get!('menuSceneList.shortcut.none'),
 				checked: checked,
 				click: click
 			});
@@ -161,7 +161,7 @@ Scene.list.createTilemapShortcutItems = function (tilemap) {
 
 // 列表 - 恢复递归状态
 Scene.list.restoreRecursiveStates = (function IIFE() {
-	const restore = (node, key, states, index) => {
+	const restore = (node: any, key: any, states: any, index: any) => {
 		if (node[key] !== undefined) {
 			node[key] = states[index++];
 		}
@@ -174,14 +174,14 @@ Scene.list.restoreRecursiveStates = (function IIFE() {
 		}
 		return index;
 	};
-	return function (item, key, states) {
+	return function (this: any, item: any, key: any, states: any) {
 		return restore(item, key, states, 0);
 	};
 })();
 
 // 列表 - 设置递归状态
 Scene.list.setRecursiveStates = (function IIFE() {
-	const set = (node, key, state, backups) => {
+	const set = (node: any, key: any, state: any, backups: any) => {
 		if (node[key] !== undefined) {
 			backups.push(node[key]);
 			node[key] = state;
@@ -195,13 +195,13 @@ Scene.list.setRecursiveStates = (function IIFE() {
 		}
 		return backups;
 	};
-	return function (item, key, state) {
+	return function (this: any, item: any, key: any, state: any) {
 		return set(item, key, state, []);
 	};
 })();
 
 // 列表 - 更新项目类名
-Scene.list.updateItemClass = function (item) {
+Scene.list.updateItemClass = function (this: any, item: any) {
 	if (item.class !== 'folder') {
 		addClass(item.element, 'reference');
 	} else {
@@ -211,26 +211,26 @@ Scene.list.updateItemClass = function (item) {
 
 // 列表 - 更新文件夹状态
 Scene.list.updateFolderState = (function IIFE() {
-	let key;
+	let key: any;
 	const list = Scene.list;
-	const check = (item) => {
+	const check = (item: any) => {
 		if (item.class === 'folder') {
 			update(item);
 		}
 	};
-	const toggle = (folder) => {
+	const toggle = (folder: any) => {
 		folder[key] = !folder[key];
 		switch (key) {
 			case 'hidden':
-				list.updateVisibilityIcon(folder);
+				list.updateVisibilityIcon!(folder);
 				break;
 			case 'locked':
-				list.updateLockIcon(folder);
+				list.updateLockIcon!(folder);
 				break;
 		}
 		check(folder.parent);
 	};
-	const update = (folder) => {
+	const update = (folder: any) => {
 		const items = folder.children;
 		const state = folder[key];
 		if (state) {
@@ -249,7 +249,7 @@ Scene.list.updateFolderState = (function IIFE() {
 			toggle(folder);
 		}
 	};
-	return function (item, iKey) {
+	return function (this: any, item: any, iKey: any) {
 		key = iKey;
 		return check(item);
 	};
@@ -257,7 +257,7 @@ Scene.list.updateFolderState = (function IIFE() {
 
 // 列表 - 判断是否可以开关状态 因为可视和锁定状态自动更新导致了历史操作可能无法正确还原 锁死不包含场景对象的文件夹是为了保证撤消重做结果的正确性
 Scene.list.canSwitchState = (function IIFE() {
-	const check = (item) => {
+	const check = (item: any) => {
 		if (item.class === 'folder') {
 			for (const child of item.children) {
 				if (check(child)) return true;
@@ -266,7 +266,7 @@ Scene.list.canSwitchState = (function IIFE() {
 		}
 		return true;
 	};
-	return function (item) {
+	return function (this: any, item: any) {
 		return check(item);
 	};
 })();
@@ -279,7 +279,7 @@ Scene.list.createIcon = (function IIFE() {
 			addClass(icon, 'icon-folder');
 			return icon;
 		},
-		actor: (actor) => {
+		actor: (actor: any) => {
 			const teams = Data.teams.map;
 			const team = teams[actor.teamId];
 			const hex = team ? team.color : 'ffffffff';
@@ -292,7 +292,7 @@ Scene.list.createIcon = (function IIFE() {
 			icon.style.color = `rgba(${r}, ${g}, ${b}, ${a})`;
 			return icon;
 		},
-		region: (region) => {
+		region: (region: any) => {
 			const hex = region.color;
 			const r = parseInt(hex.slice(0, 2), 16);
 			const g = parseInt(hex.slice(2, 4), 16);
@@ -303,7 +303,7 @@ Scene.list.createIcon = (function IIFE() {
 			icon.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
 			return icon;
 		},
-		light: (light) => {
+		light: (light: any) => {
 			const icon = document.createElement('node-icon');
 			const r = light.red;
 			const g = light.green;
@@ -322,12 +322,12 @@ Scene.list.createIcon = (function IIFE() {
 			icon.textContent = '\uf2dc';
 			return icon;
 		},
-		parallax: (parallax) => {
+		parallax: (parallax: any) => {
 			const icon = document.createElement('node-icon');
-			const path = File.getPath(parallax.image);
+			const path = File.getPath!(parallax.image);
 			if (path) {
 				addClass(icon, 'icon-scene-parallax');
-				icon.style.backgroundImage = CSS.encodeURL(File.route(path));
+				icon.style.backgroundImage = CSS.encodeURL(File.route!(path));
 			} else {
 				icon.textContent = '\uf1c5';
 			}
@@ -339,23 +339,23 @@ Scene.list.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (item) {
-		return iconCreators[item.class](item);
+	return function (this: any, item: any) {
+		return (iconCreators as Record<string, any>)[item.class](item);
 	};
 })();
 
 // 列表 - 更新图标
-Scene.list.updateIcon = function (item) {
+Scene.list.updateIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element?.nodeIcon) {
-		const icon = this.createIcon(item);
+		const icon = this.createIcon!(item);
 		element.replaceChild(icon, element.nodeIcon);
 		element.nodeIcon = icon;
 	}
 };
 
 // 列表 - 更新头部位置
-Scene.list.updateHead = function () {
+Scene.list.updateHead = function (this: any) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement(head);
@@ -370,14 +370,14 @@ Scene.list.updateHead = function () {
 };
 
 // 列表 - 更新瓦片地图的类名
-Scene.list.updateTilemapClass = function (item) {
+Scene.list.updateTilemapClass = function (this: any, item: any) {
 	if (item === Scene.tilemap) {
 		addClass(item.element, 'highlight');
 	}
 };
 
 // 列表 - 创建条件图标
-Scene.list.createConditionIcon = function (item) {
+Scene.list.createConditionIcon = function (this: any, item: any) {
 	if (item.conditions instanceof Array) {
 		const { element } = item;
 		const conditionIcon = document.createElement('node-icon');
@@ -389,7 +389,7 @@ Scene.list.createConditionIcon = function (item) {
 };
 
 // 列表 - 更新条件图标
-Scene.list.updateConditionIcon = function (item) {
+Scene.list.updateConditionIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.conditionIcon !== undefined) {
 		const condition = item.enabled
@@ -421,7 +421,7 @@ Scene.list.updateConditionIcon = function (item) {
 };
 
 // 列表 - 创建事件图标
-Scene.list.createEventIcon = function (item) {
+Scene.list.createEventIcon = function (this: any, item: any) {
 	if (item.events instanceof Array) {
 		const { element } = item;
 		const eventIcon = document.createElement('node-icon');
@@ -434,7 +434,7 @@ Scene.list.createEventIcon = function (item) {
 };
 
 // 列表 - 更新事件图标
-Scene.list.updateEventIcon = function (item) {
+Scene.list.updateEventIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.eventIcon !== undefined) {
 		const eventEnabled = item.events.length !== 0;
@@ -446,7 +446,7 @@ Scene.list.updateEventIcon = function (item) {
 };
 
 // 列表 - 创建脚本图标
-Scene.list.createScriptIcon = function (item) {
+Scene.list.createScriptIcon = function (this: any, item: any) {
 	if (item.scripts instanceof Array) {
 		const { element } = item;
 		const scriptIcon = document.createElement('node-icon');
@@ -459,7 +459,7 @@ Scene.list.createScriptIcon = function (item) {
 };
 
 // 列表 - 更新脚本图标
-Scene.list.updateScriptIcon = function (item) {
+Scene.list.updateScriptIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.scriptIcon !== undefined) {
 		const scriptEnabled = item.scripts.length !== 0;
@@ -471,7 +471,7 @@ Scene.list.updateScriptIcon = function (item) {
 };
 
 // 列表 - 创建可见性图标
-Scene.list.createVisibilityIcon = function (item) {
+Scene.list.createVisibilityIcon = function (this: any, item: any) {
 	const { element } = item;
 	const hiddenIcon = document.createElement('visibility-icon');
 	element.appendChild(hiddenIcon);
@@ -480,7 +480,7 @@ Scene.list.createVisibilityIcon = function (item) {
 };
 
 // 列表 - 更新可见性图标
-Scene.list.updateVisibilityIcon = function (item) {
+Scene.list.updateVisibilityIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.hiddenState !== item.hidden) {
 		const { hiddenIcon } = element;
@@ -495,7 +495,7 @@ Scene.list.updateVisibilityIcon = function (item) {
 };
 
 // 列表 - 创建锁定图标
-Scene.list.createLockIcon = function (item) {
+Scene.list.createLockIcon = function (this: any, item: any) {
 	const { element } = item;
 	const lockIcon = document.createElement('lock-icon');
 	element.appendChild(lockIcon);
@@ -504,7 +504,7 @@ Scene.list.createLockIcon = function (item) {
 };
 
 // 列表 - 更新锁定图标
-Scene.list.updateLockIcon = function (item) {
+Scene.list.updateLockIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.lockState !== item.locked) {
 		const { lockIcon } = element;
@@ -519,33 +519,33 @@ Scene.list.updateLockIcon = function (item) {
 };
 
 // 列表 - 在创建数据时回调
-Scene.list.onCreate = function (item) {
+Scene.list.onCreate = function (this: any, item: any) {
 	if (item.class === 'folder') return;
-	Scene.registerPreset(item);
-	Scene.loadObjects();
-	Scene.loadObjectContext(item);
-	Scene.requestRendering();
+	Scene.registerPreset!(item);
+	Scene.loadObjects!();
+	Scene.loadObjectContext!(item);
+	Scene.requestRendering!();
 };
 
 // 列表 - 在迁移数据时回调
-Scene.list.onRemove = function () {
-	Scene.loadObjects();
-	Scene.requestRendering();
+Scene.list.onRemove = function (this: any) {
+	Scene.loadObjects!();
+	Scene.requestRendering!();
 };
 
 // 列表 - 在删除数据时回调
-Scene.list.onDelete = function (item) {
-	Scene.unregisterPreset(item);
-	Scene.updateTarget();
-	Scene.loadObjects();
-	Scene.destroyObjectContext(item);
-	Scene.requestRendering();
+Scene.list.onDelete = function (this: any, item: any) {
+	Scene.unregisterPreset!(item);
+	Scene.updateTarget!();
+	Scene.loadObjects!();
+	Scene.destroyObjectContext!(item);
+	Scene.requestRendering!();
 };
 
 // 列表 - 在恢复数据时回调
-Scene.list.onResume = function (item) {
-	Scene.registerPreset(item);
-	Scene.loadObjects();
-	Scene.reloadObjectContext(item);
-	Scene.requestRendering();
+Scene.list.onResume = function (this: any, item: any) {
+	Scene.registerPreset!(item);
+	Scene.loadObjects!();
+	Scene.reloadObjectContext!(item);
+	Scene.requestRendering!();
 };

@@ -65,7 +65,7 @@ export const Data: any = {
 	loadScript: null
 };
 
-Data.loadAll = function () {
+Data.loadAll = function (this: any) {
 	this.createDataMaps();
 
 	this.createManifest();
@@ -93,32 +93,32 @@ Data.loadAll = function () {
 	});
 };
 
-Data.loadMeta = function () {
+Data.loadMeta = function (this: any) {
 	const path = 'Data/manifest.json';
-	return File.get({
+	return File.get!({
 		path: path,
 		type: 'json'
 	}).then(
-		(data) => {
+		(data: any) => {
 			if (data === null) return;
 			Object.defineProperty(this.manifest, 'last', {
 				configurable: true,
 				value: data
 			});
 		},
-		(error) => {
+		(error: any) => {
 			error.message = path;
 			throw error;
 		}
 	);
 };
 
-Data.loadFile = function (filename) {
+Data.loadFile = function (this: any, filename: any) {
 	const path = `Data/${filename}.json`;
-	return File.get({
+	return File.get!({
 		path: path,
 		type: 'json'
-	}).then((data) => {
+	}).then((data: any) => {
 		if (!data) {
 			throw new SyntaxError(path);
 		}
@@ -133,25 +133,25 @@ Data.loadFile = function (filename) {
 	});
 };
 
-Data.loadScene = function (guid) {
+Data.loadScene = function (this: any, guid: any) {
 	const { scenes } = this;
 	if (scenes[guid]) {
-		return new Promise((resolve) => {
+		return new Promise((resolve: any) => {
 			resolve(Codec.decodeScene(scenes[guid]));
 		});
 	}
 
 	const meta = this.manifest.guidMap[guid];
 	if (!meta) {
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve: any, reject: any) => {
 			reject(new URIError('Metadata is undefined.'));
 		});
 	}
 	const path = meta.path;
-	return File.get({
+	return File.get!({
 		path: path,
 		type: 'text'
-	}).then((code) => {
+	}).then((code: any) => {
 		try {
 			return Codec.decodeScene((scenes[guid] = code));
 		} catch (error: any) {
@@ -161,7 +161,7 @@ Data.loadScene = function (guid) {
 	});
 };
 
-Data.close = function () {
+Data.close = function (this: any) {
 	this.manifest = null;
 	this.scenePresets = null;
 	this.uiPresets = null;
@@ -188,11 +188,11 @@ Data.close = function () {
 	this.tilesets = null;
 };
 
-Data.createEasingItems = function () {
+Data.createEasingItems = function (this: any) {
 	let items = this.easings.items;
 	if (items === undefined) {
 		// 把属性写入数组中不会被保存到文件
-		items = this.easings.items = [];
+		items = this.easings.items = [] as any[];
 		const easings = this.easings;
 		const length = easings.length;
 		const digits = Number.computeIndexDigits(length);
@@ -208,10 +208,10 @@ Data.createEasingItems = function () {
 	return items;
 };
 
-Data.createTeamItems = function () {
+Data.createTeamItems = function (this: any) {
 	let items = this.teams.list.items;
 	if (items === undefined) {
-		items = this.teams.list.items = [];
+		items = this.teams.list.items = [] as any[];
 		const teams = this.teams.list;
 		const length = teams.length;
 		const digits = Number.computeIndexDigits(length);
@@ -227,26 +227,26 @@ Data.createTeamItems = function () {
 	return items;
 };
 
-Data.createDataMaps = function () {
-	this.scenePresets = {};
-	this.uiPresets = {};
-	this.actors = {};
-	this.skills = {};
-	this.triggers = {};
-	this.items = {};
-	this.equipments = {};
-	this.states = {};
-	this.events = {};
-	this.scripts = {};
-	this.scenes = {};
-	this.ui = {};
-	this.animations = {};
-	this.particles = {};
-	this.tilesets = {};
+Data.createDataMaps = function (this: any) {
+	this.scenePresets = {} as Record<string, any>;
+	this.uiPresets = {} as Record<string, any>;
+	this.actors = {} as Record<string, any>;
+	this.skills = {} as Record<string, any>;
+	this.triggers = {} as Record<string, any>;
+	this.items = {} as Record<string, any>;
+	this.equipments = {} as Record<string, any>;
+	this.states = {} as Record<string, any>;
+	this.events = {} as Record<string, any>;
+	this.scripts = {} as Record<string, any>;
+	this.scenes = {} as Record<string, any>;
+	this.ui = {} as Record<string, any>;
+	this.animations = {} as Record<string, any>;
+	this.particles = {} as Record<string, any>;
+	this.tilesets = {} as Record<string, any>;
 };
 
-Data.createGUIDMap = function (list) {
-	const map = {};
+Data.createGUIDMap = function (this: any, list: any) {
+	const map = {} as Record<string, any>;
 	for (const item of list) {
 		map[item.id] = item;
 	}
@@ -256,8 +256,8 @@ Data.createGUIDMap = function (list) {
 	});
 };
 
-Data.createTeamMap = function () {
-	const map = {};
+Data.createTeamMap = function (this: any) {
+	const map = {} as Record<string, any>;
 	const teams = this.teams;
 	for (const item of teams.list) {
 		map[item.id] = item;
@@ -269,7 +269,7 @@ Data.createTeamMap = function () {
 };
 
 Data.createVariableMap = (function IIFE() {
-	const set = (items, map) => {
+	const set = (items: any, map: any) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children, map);
@@ -278,8 +278,8 @@ Data.createVariableMap = (function IIFE() {
 			}
 		}
 	};
-	return function () {
-		const map = {};
+	return function (this: any) {
+		const map = {} as Record<string, any>;
 		set(this.variables, map);
 		Object.defineProperty(this.variables, 'map', {
 			configurable: true,
@@ -288,23 +288,23 @@ Data.createVariableMap = (function IIFE() {
 	};
 })();
 
-Data.createAttributeContext = function () {
+Data.createAttributeContext = function (this: any) {
 	Object.defineProperty(this.attribute, 'context', {
 		configurable: true,
 		value: new AttributeContext(this.attribute)
 	});
 };
 
-Data.createEnumerationContext = function () {
+Data.createEnumerationContext = function (this: any) {
 	Object.defineProperty(this.enumeration, 'context', {
 		configurable: true,
 		value: new EnumerationContext(this.enumeration)
 	});
 };
 
-Data.createLocalizationMap = function () {
-	const map = {};
-	const set = (items) => {
+Data.createLocalizationMap = function (this: any) {
+	const map = {} as Record<string, any>;
+	const set = (items: any) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children);
@@ -320,8 +320,8 @@ Data.createLocalizationMap = function () {
 	});
 };
 
-Data.createReferencedFileIDMap = function () {
-	const usedMap = {};
+Data.createReferencedFileIDMap = function (this: any) {
+	const usedMap = {} as Record<string, any>;
 	const list = [
 		Object.values(this.ui),
 		Object.values(this.scenes),
@@ -341,7 +341,7 @@ Data.createReferencedFileIDMap = function () {
 		this.config
 	];
 	const { scenePresets, uiPresets } = Data;
-	const markToMap = (guid) => {
+	const markToMap = (guid: any) => {
 		usedMap[guid] = true;
 		if (guid in scenePresets) {
 			usedMap[scenePresets[guid].sceneId] = true;
@@ -373,15 +373,15 @@ Data.createReferencedFileIDMap = function () {
 	return usedMap;
 };
 
-Data.generateVariableEnumScript = function () {
+Data.generateVariableEnumScript = function (this: any) {
 	const regexp = /^[\p{ID_Start}][\p{ID_Continue}]*$/u;
 	const spaces = / +/g;
 	const wraps = /\n+/g;
-	const validItems = [];
-	const invalidItems = [];
-	const duplicateItems = [];
-	const flags = {};
-	const set = (items) => {
+	const validItems = [] as any[];
+	const invalidItems = [] as any[];
+	const duplicateItems = [] as any[];
+	const flags = {} as Record<string, any>;
+	const set = (items: any) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children);
@@ -459,18 +459,18 @@ Data.generateVariableEnumScript = function () {
 		contents.push('}');
 		const code = contents.join('\n');
 		const path = 'Script/yami.ts';
-		const route = File.path(path);
+		const route = File.path!(path);
 		FSP.writeFile(route, code)
 			.then(() => {
 				console.log(`write: ${path}`);
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				console.warn(error);
 			});
 	}
 };
 
-Data.registerScenePresets = function (sceneId) {
+Data.registerScenePresets = function (this: any, sceneId: any) {
 	const scene = this.scenes[sceneId];
 	if (scene) {
 		let changed = false;
@@ -482,7 +482,7 @@ Data.registerScenePresets = function (sceneId) {
 			} while (id in scenePresets);
 			return id;
 		};
-		const setMap = (nodes) => {
+		const setMap = (nodes: any) => {
 			for (const node of nodes) {
 				if (node.class === 'folder') {
 					setMap(node.children);
@@ -501,17 +501,17 @@ Data.registerScenePresets = function (sceneId) {
 		setMap(scene.objects);
 		// 如果发生了改变，立即写入UI文件，避免重新打开工程时影响已有预设元素的ID
 		if (changed) {
-			File.planToSave(Data.manifest.guidMap[sceneId]);
-			File.save(false);
+			File.planToSave!(Data.manifest.guidMap[sceneId]);
+			File.save!(false);
 		}
 	}
 };
 
-Data.unregisterScenePresets = function (sceneId) {
+Data.unregisterScenePresets = function (this: any, sceneId: any) {
 	const scene = this.scenes[sceneId];
 	if (scene) {
 		const { scenePresets } = this;
-		const unlink = (nodes) => {
+		const unlink = (nodes: any) => {
 			for (const node of nodes) {
 				const { presetId } = node;
 				if (scenePresets[presetId]?.sceneId === sceneId) {
@@ -526,7 +526,7 @@ Data.unregisterScenePresets = function (sceneId) {
 	}
 };
 
-Data.registerUiPresets = function (uiId) {
+Data.registerUiPresets = function (this: any, uiId: any) {
 	const ui = this.ui[uiId];
 	if (ui) {
 		let changed = false;
@@ -538,7 +538,7 @@ Data.registerUiPresets = function (uiId) {
 			} while (id in uiPresets);
 			return id;
 		};
-		const setMap = (nodes) => {
+		const setMap = (nodes: any) => {
 			for (const node of nodes) {
 				if (uiPresets[node.presetId]) {
 					node.presetId = generatePresetId();
@@ -556,17 +556,17 @@ Data.registerUiPresets = function (uiId) {
 		setMap(ui.nodes);
 		// 如果发生了改变，立即写入UI文件，避免重新打开工程时影响已有预设元素的ID
 		if (changed) {
-			File.planToSave(Data.manifest.guidMap[uiId]);
-			File.save(false);
+			File.planToSave!(Data.manifest.guidMap[uiId]);
+			File.save!(false);
 		}
 	}
 };
 
-Data.unregisterUiPresets = function (uiId) {
+Data.unregisterUiPresets = function (this: any, uiId: any) {
 	const ui = this.ui[uiId];
 	if (ui) {
 		const { uiPresets } = this;
-		const unlink = (nodes) => {
+		const unlink = (nodes: any) => {
 			for (const node of nodes) {
 				const { presetId } = node;
 				if (uiPresets[presetId]?.uiId === uiId) {
@@ -581,11 +581,11 @@ Data.unregisterUiPresets = function (uiId) {
 	}
 };
 
-Data.createManifest = function () {
+Data.createManifest = function (this: any) {
 	this.manifest = new Manifest();
 };
 
-Data.saveManifest = function () {
+Data.saveManifest = function (this: any) {
 	const manifest = this.manifest;
 	if (manifest?.changed) {
 		manifest.changed = false;
@@ -594,13 +594,13 @@ Data.saveManifest = function () {
 		const json = JSON.stringify(copy, Data.jsonReplacer, 2);
 		const last = manifest.code;
 		if (json && json !== last) {
-			const path = File.path('Data/manifest.json');
+			const path = File.path!('Data/manifest.json');
 			return FSP.writeFile(path, json)
 				.then(() => {
 					manifest.code = json;
 				})
-				.catch((error) => {
-					Log.throw(error);
+				.catch((error: any) => {
+					Log.throw!(error);
 				});
 		}
 	}
@@ -608,7 +608,7 @@ Data.saveManifest = function () {
 };
 
 // JSON.stringify replacer：丢弃 dataMap/file/group/manifest/code/meta/project/changes/metaList 运行期反引用键，阻断循环
-Data.jsonReplacer = function (key, value) {
+Data.jsonReplacer = function (this: any, key: any, value: any) {
 	switch (key) {
 		case 'dataMap':
 		case 'file':
@@ -624,14 +624,14 @@ Data.jsonReplacer = function (key, value) {
 	return value;
 };
 
-Data.filterManifest = function (manifest) {
-	const copy: any = {};
+Data.filterManifest = function (this: any, manifest: any) {
+	const copy: any = {} as Record<string, any>;
 	for (const key of Object.keys(manifest)) {
 		copy[key] = manifest[key];
 	}
 	copy.images = Object.clone(manifest.images);
 	copy.audio = Object.clone(manifest.audio);
-	const { usedMap } = Reference.findAllGuids();
+	const { usedMap } = Reference.findAllGuids!();
 	for (const list of [copy.images, copy.audio]) {
 		for (const meta of list) {
 			const guid = Data.parseGUID(meta);
@@ -643,7 +643,7 @@ Data.filterManifest = function (manifest) {
 	return copy;
 };
 
-Data.inheritMetaData = function () {
+Data.inheritMetaData = function (this: any) {
 	const manifest = this.manifest;
 	const last = manifest.last;
 	const map = manifest.guidMap;
@@ -669,28 +669,28 @@ Data.inheritMetaData = function () {
 
 Data.parseGUID = (function IIFE() {
 	const regexp = /(?<=\.)[0-9a-f]{16}(?=\.\S+$)/;
-	return function (meta) {
+	return function (this: any, meta: any) {
 		const match = meta.path.match(regexp);
 		return match ? match[0] : '';
 	};
 })();
 
-Data.loadScript = async function (file) {
+Data.loadScript = async function (this: any, file: any) {
 	const meta = file.meta;
 	if (meta !== undefined) {
 		const { scripts } = this;
 		const { guid } = meta;
 		await file.promise;
-		scripts[guid] = File.get({
+		scripts[guid] = File.get!({
 			path: file.path,
 			type: 'text'
 		})
-			.then((code) => {
+			.then((code: any) => {
 				meta.code = code;
-				PluginManager.parseMeta(meta, code);
+				PluginManager.parseMeta!(meta, code);
 				return (scripts[guid] = meta);
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				delete scripts[guid];
 			});
 	}

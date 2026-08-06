@@ -8,8 +8,8 @@ function getWindow() {
 	return (window as any).Window;
 }
 export const RequestkeyValueBind = {
-	target: null,
-	type: null,
+	target: null as any,
+	type: null as any,
 	initialize() {
 		this.target = null;
 		this.type = 'request-header';
@@ -66,16 +66,16 @@ Command.cases.requestURL = new CommandSchema({
 		write($('#requestURL-url'), '');
 		$('#requestURL-header').bind(RequestkeyValueBind);
 		$('#requestURL-data').bind(RequestkeyValueBind);
-		$('#requestURL-confirm')?.on('click', () => this.save());
+		$('#requestURL-confirm')?.on('click', () => this.save!());
 	},
 	customParse({ url = '', method = 'GET', headers = [], data = [], callback = '' }: any) {
 		const head = [
 			{ color: 'network' },
-			{ text: Local.get('command.requestURL') },
+			{ text: Local.get!('command.requestURL') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
-				text: typeof url === 'string' ? url : Command.parseVariable(url, 'any')
+				text: typeof url === 'string' ? url : Command.parseVariable!(url, 'any')
 			},
 			{ text: ' , ' },
 			{ text: method },
@@ -83,29 +83,29 @@ Command.cases.requestURL = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents = [];
+		const contents = [] as any[];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable(i.value, 'any')}`
+					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable!(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable!(i.value, 'any')}`
 				}
 			);
 		}
-		const datas = [];
+		const datas = [] as any[];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable(i.value, 'any')}`
+					text: `${typeof i.key === 'string' ? i.key : Command.parseVariable!(i.key, 'any')} = ${typeof i.value === 'string' ? i.value : Command.parseVariable!(i.value, 'any')}`
 				}
 			);
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get('command.requestURLData')} = ` },
+			{ text: `, ${Local.get!('command.requestURLData')} = ` },
 			datas.slice(1)
 		);
 	},
@@ -121,11 +121,11 @@ Command.cases.requestURL = new CommandSchema({
 	customSave() {
 		const elVariable = $('#requestURL-url');
 		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone(variable)) {
+		if (!variable || VariableGetter.isNone!(variable)) {
 			return getFocus(elVariable);
 		}
 		const reader = getElementReader('requestURL');
-		Command.save({
+		Command.save!({
 			url: variable,
 			method: reader('method'),
 			headers: reader('header'),

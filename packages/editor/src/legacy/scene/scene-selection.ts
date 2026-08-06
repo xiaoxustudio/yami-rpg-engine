@@ -1,9 +1,9 @@
 import { Scene } from './scene-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Vector } from '@/webgl/vector2.ts';
-Scene.selectObject = function (x, y) {
+Scene.selectObject = function (this: any, x: any, y: any) {
 	let precise = false;
-	let target = null;
+	let target: any = null;
 	let weight = 0;
 
 	if (!target) {
@@ -59,8 +59,8 @@ Scene.selectObject = function (x, y) {
 	return target;
 };
 
-Scene.selectRegion = function (x, y) {
-	let target = null;
+Scene.selectRegion = function (this: any, x: any, y: any) {
+	let target: any = null;
 	let weight = 0;
 	const regions = this.regions;
 	const length = regions.length;
@@ -86,8 +86,8 @@ Scene.selectRegion = function (x, y) {
 	return target;
 };
 
-Scene.selectLight = function (x, y) {
-	let target = null;
+Scene.selectLight = function (this: any, x: any, y: any) {
+	let target: any = null;
 	let weight = 0;
 	const lights = this.lights;
 	const length = lights.length;
@@ -139,8 +139,8 @@ Scene.selectLight = function (x, y) {
 	return target;
 };
 
-Scene.selectParticleEmitter = function (x, y) {
-	let target = null;
+Scene.selectParticleEmitter = function (this: any, x: any, y: any) {
+	let target: any = null;
 	let weight = 0;
 	const convert = this.getConvertedCoords;
 	const point = convert(this.sharedPoint.set(x, y));
@@ -193,7 +193,7 @@ Scene.selectParticleEmitter = function (x, y) {
 	return target;
 };
 
-Scene.selectSortedLayer = function (x, y) {
+Scene.selectSortedLayer = function (this: any, x: any, y: any) {
 	const sPoint = this.sharedPoint.set(x, y);
 	const dPoint = this.getConvertedCoords(sPoint);
 	const mx = dPoint.x;
@@ -265,7 +265,7 @@ Scene.selectSortedLayer = function (x, y) {
 	return null;
 };
 
-Scene.drawOvalWireframe = function (ox, oy, hr, vr, color) {
+Scene.drawOvalWireframe = function (this: any, ox: any, oy: any, hr: any, vr: any, color: any) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const scale = this.scale;
@@ -304,7 +304,7 @@ Scene.drawOvalWireframe = function (ox, oy, hr, vr, color) {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, vi / 2);
 };
 
-Scene.drawTargetAnchor = function (target, angle, color = 0xff00ff00) {
+Scene.drawTargetAnchor = function (this: any, target: any, angle: any, color = 0xff00ff00) {
 	const { x, y } = this.getConvertedCoords(target);
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -357,7 +357,16 @@ Scene.drawTargetAnchor = function (target, angle, color = 0xff00ff00) {
 	gl.drawArrays(gl.TRIANGLES, 0, 12);
 };
 
-Scene.drawRectWireframe = function (dl, dt, dr, db, ax, ay, angle) {
+Scene.drawRectWireframe = function (
+	this: any,
+	dl: any,
+	dt: any,
+	dr: any,
+	db: any,
+	ax: any,
+	ay: any,
+	angle: any
+) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const sl = this.scrollLeft;
@@ -379,7 +388,16 @@ Scene.drawRectWireframe = function (dl, dt, dr, db, ax, ay, angle) {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 10);
 };
 
-Scene.drawRectWireframeOnTilemap = function (rl, rt, rw, rh, ax, ay, angle) {
+Scene.drawRectWireframeOnTilemap = function (
+	this: any,
+	rl: any,
+	rt: any,
+	rw: any,
+	rh: any,
+	ax: any,
+	ay: any,
+	angle: any
+) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const tw = this.tileWidth;
@@ -408,7 +426,15 @@ Scene.drawRectWireframeOnTilemap = function (rl, rt, rw, rh, ax, ay, angle) {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, 10);
 };
 
-Scene.setRectWireframeVertices = function (vertices, dl, dt, dr, db, matrix) {
+Scene.setRectWireframeVertices = function (
+	this: any,
+	vertices: any,
+	dl: any,
+	dt: any,
+	dr: any,
+	db: any,
+	matrix: any
+) {
 	const a = matrix[0];
 	const b = matrix[1];
 	const c = matrix[3];

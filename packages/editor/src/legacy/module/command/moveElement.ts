@@ -10,14 +10,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveElement = new CommandSchema({
 	name: 'moveElement',
 	onInitialize() {
-		$('#moveElement-confirm').on('click', () => this.save());
+		$('#moveElement-confirm').on('click', () => this.save!());
 		$('#moveElement-properties').bind(TransformProperty);
 		$('#moveElement-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#moveElement').on('open', function (event: any) {
-			$('#moveElement-easingId').loadItems(Data.createEasingItems());
+			$('#moveElement-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#moveElement').on('closed', function (event: any) {
 			clear($('#moveElement-properties'));
@@ -25,14 +25,14 @@ Command.cases.moveElement = new CommandSchema({
 		});
 	},
 	customParse({ element, properties, easingId, duration, wait }: any) {
-		const words = Command.words.push(Command.parseElement(element));
+		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
-			words.push(TransformProperty.parse(property));
+			words.push(TransformProperty.parse!(property));
 		}
-		words.push(Command.parseEasing(easingId, duration, wait));
+		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.moveElement') + Token(': ') },
+			{ text: Local.get!('command.moveElement') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -57,7 +57,7 @@ Command.cases.moveElement = new CommandSchema({
 		if (properties.length === 0) {
 			return getFocus($('#moveElement-properties'));
 		}
-		Command.save({
+		Command.save!({
 			element: read('element'),
 			properties,
 			easingId: read('easingId'),

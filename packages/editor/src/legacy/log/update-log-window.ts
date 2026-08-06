@@ -21,7 +21,7 @@ export const UpdateLog = {
 UpdateLog.initialize = function () {
 	this.content = $('#update-log-content');
 	const el = $('#update-log');
-	if (el) on(el, 'closed', this.windowClosed);
+	if (el) on(el, 'closed', this.windowClosed!);
 };
 
 UpdateLog.open = function (items: any = null) {

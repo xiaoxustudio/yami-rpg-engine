@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 (Command.cases as any).setBoolean = new CommandSchema({
 	name: 'setBoolean',
 	onInitialize() {
-		$('#setBoolean-confirm').on('click', () => this.save());
+		$('#setBoolean-confirm').on('click', () => this.save!());
 		$('#setBoolean-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Not', value: 'not' },
@@ -79,24 +79,24 @@ import { Local } from '@/tools/localization.ts';
 	parseOperand(operand: any) {
 		switch (operand.type) {
 			case 'constant':
-				return Command.setBooleanColor(operand.value.toString());
+				return Command.setBooleanColor!(operand.value.toString());
 			case 'variable':
-				return Command.parseVariable(operand.variable, 'boolean');
+				return Command.parseVariable!(operand.variable, 'boolean');
 			case 'list':
-				return Command.parseListItem(operand.variable, operand.index);
+				return Command.parseListItem!(operand.variable, operand.index);
 			case 'parameter':
-				return Command.parseParameter(operand.key);
+				return Command.parseParameter!(operand.key);
 			case 'script':
-				return Command.setScriptColor(operand.script);
+				return Command.setScriptColor!(operand.script);
 		}
 	},
 	customParse({ variable, operation, operand }: any) {
-		const varDesc = Command.parseVariable(variable, 'boolean', operation === 'set');
-		const operator = Command.setOperatorColor(this.parseOperation(operation));
-		const value = this.parseOperand(operand);
+		const varDesc = Command.parseVariable!(variable, 'boolean', operation === 'set');
+		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
+		const value = this.parseOperand!(operand);
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.setBoolean.alias') + ' ' },
+			{ text: Local.get!('command.setBoolean.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${value}` }
 		];
@@ -144,7 +144,7 @@ import { Local } from '@/tools/localization.ts';
 	customSave() {
 		const read = getElementReader('setBoolean');
 		const variable = read('variable');
-		if (VariableGetter.isNone(variable)) {
+		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setBoolean-variable'));
 		}
 		const operation = read('operation');
@@ -158,7 +158,7 @@ import { Local } from '@/tools/localization.ts';
 			}
 			case 'variable': {
 				const variable = read('common-variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setBoolean-common-variable'));
 				}
 				operand = { type, variable };
@@ -166,7 +166,7 @@ import { Local } from '@/tools/localization.ts';
 			}
 			case 'list': {
 				const variable = read('common-variable');
-				if (VariableGetter.isNone(variable)) {
+				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setBoolean-common-variable'));
 				}
 				const index = read('list-index');
@@ -190,6 +190,6 @@ import { Local } from '@/tools/localization.ts';
 				break;
 			}
 		}
-		Command.save({ variable, operation, operand });
+		Command.save!({ variable, operation, operand });
 	}
 });

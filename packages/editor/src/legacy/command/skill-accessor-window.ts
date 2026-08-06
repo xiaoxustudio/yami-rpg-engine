@@ -7,15 +7,15 @@ function getWindow() {
 }
 
 export const SkillGetter = {
-	target: null,
-	initialize: null,
-	open: null,
-	checkDataForPlugin: null,
-	createDefaultForPlugin: null,
-	confirm: null
+	target: null as any,
+	initialize: null as any,
+	open: null as any,
+	checkDataForPlugin: null as any,
+	createDefaultForPlugin: null as any,
+	confirm: null as any
 };
 
-SkillGetter.initialize = function () {
+SkillGetter.initialize = function (this: any) {
 	if (!$('#skillGetter-type')) return;
 	$('#skillGetter-type').loadItems([
 		{ name: 'Event Trigger Skill', value: 'trigger' },
@@ -42,7 +42,7 @@ SkillGetter.initialize = function () {
 	on($('#skillGetter-confirm'), 'click', this.confirm);
 };
 
-SkillGetter.open = function (target) {
+SkillGetter.open = function (this: any, target: any) {
 	this.target = target;
 	getWindow().open('skillGetter');
 
@@ -77,18 +77,18 @@ SkillGetter.open = function (target) {
 	getFocus($('#skillGetter-type'));
 };
 
-SkillGetter.checkDataForPlugin = function (data) {
+SkillGetter.checkDataForPlugin = function (this: any, data: any) {
 	if (data instanceof Object) {
 		return data.getter === 'skill';
 	}
 	return false;
 };
 
-SkillGetter.createDefaultForPlugin = function () {
+SkillGetter.createDefaultForPlugin = function (this: any) {
 	return { getter: 'skill', type: 'trigger' };
 };
 
-SkillGetter.confirm = function (event) {
+SkillGetter.confirm = function (this: any, event: any) {
 	const read = getElementReader('skillGetter');
 	const type = read('type');
 	let getter;

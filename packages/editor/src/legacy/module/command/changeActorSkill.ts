@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorSkill = new CommandSchema({
 	name: 'changeActorSkill',
 	onInitialize() {
-		$('#changeActorSkill-confirm').on('click', () => this.save());
+		$('#changeActorSkill-confirm').on('click', () => this.save!());
 		$('#changeActorSkill-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
@@ -29,24 +29,24 @@ Command.cases.changeActorSkill = new CommandSchema({
 			]);
 	},
 	parseOperation(operation: any) {
-		return Local.get('command.changeActorSkill.' + operation);
+		return Local.get!('command.changeActorSkill.' + operation);
 	},
 	customParse({ actor, operation, skill, skillId }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(this.parseOperation(operation));
+			.push(Command.parseActor!(actor))
+			.push(this.parseOperation!(operation));
 		switch (operation) {
 			case 'add':
 			case 'remove':
-				words.push(Command.parseVariableFile(skillId));
+				words.push(Command.parseVariableFile!(skillId));
 				break;
 			case 'remove-instance':
-				words.push(Command.parseSkill(skill));
+				words.push(Command.parseSkill!(skill));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorSkill') + Token(': ') },
+			{ text: Local.get!('command.changeActorSkill') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -74,11 +74,11 @@ Command.cases.changeActorSkill = new CommandSchema({
 				if (skillId === '') {
 					return getFocus($('#changeActorSkill-skillId'));
 				}
-				Command.save({ actor, operation, skillId });
+				Command.save!({ actor, operation, skillId });
 				break;
 			}
 			case 'remove-instance': {
-				Command.save({
+				Command.save!({
 					actor,
 					operation,
 					skill: read('skill')
@@ -86,7 +86,7 @@ Command.cases.changeActorSkill = new CommandSchema({
 				break;
 			}
 			case 'sort-by-order':
-				Command.save({ actor, operation });
+				Command.save!({ actor, operation });
 				break;
 		}
 	}

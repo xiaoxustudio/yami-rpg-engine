@@ -9,13 +9,13 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.translateActor = new CommandSchema({
 	name: 'translateActor',
 	onInitialize() {
-		$('#translateActor-confirm').on('click', () => this.save());
+		$('#translateActor-confirm').on('click', () => this.save!());
 		$('#translateActor-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#translateActor').on('open', function (event: any) {
-			$('#translateActor-easingId').loadItems(Data.createEasingItems());
+			$('#translateActor-easingId').loadItems(Data.createEasingItems!());
 		});
 		$('#translateActor').on('closed', function (event: any) {
 			clear($('#translateActor-easingId'));
@@ -23,13 +23,13 @@ Command.cases.translateActor = new CommandSchema({
 	},
 	customParse({ actor, angle, distance, easingId, duration, wait }: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseAngle(angle))
-			.push(Command.parseVariableNumber(distance, 't'))
-			.push(Command.parseEasing(easingId, duration, wait));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseAngle!(angle))
+			.push(Command.parseVariableNumber!(distance, 't'))
+			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.translateActor') + Token(': ') },
+			{ text: Local.get!('command.translateActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -56,7 +56,7 @@ Command.cases.translateActor = new CommandSchema({
 		if (distance === 0) {
 			return getFocus($('#translateActor-distance'), 'all');
 		}
-		Command.save({
+		Command.save!({
 			actor: read('actor'),
 			angle: read('angle'),
 			distance,

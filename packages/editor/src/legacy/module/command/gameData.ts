@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.gameData = new CommandSchema({
 	name: 'gameData',
 	onInitialize() {
-		$('#gameData-confirm').on('click', () => this.save());
+		$('#gameData-confirm').on('click', () => this.save!());
 		$('#gameData-operation').loadItems([
 			{ name: 'Save', value: 'save' },
 			{ name: 'Load', value: 'load' },
@@ -26,15 +26,15 @@ Command.cases.gameData = new CommandSchema({
 	},
 	customParse({ operation, index, variables }: any) {
 		const words = Command.words
-			.push(Local.get('command.gameData.' + operation))
-			.push(Command.parseVariableNumber(index));
+			.push(Local.get!('command.gameData.' + operation))
+			.push(Command.parseVariableNumber!(index));
 		switch (operation) {
 			case 'save':
 				if (variables) {
-					const label = Local.get('command.gameData.variables');
+					const label = Local.get!('command.gameData.variables');
 					const keys = variables
 						.split(/\s*,\s*/)
-						.map((key: any) => Command.setVariableColor(key));
+						.map((key: any) => Command.setVariableColor!(key));
 					const string = keys.join(Token(', '));
 					words.push(label + ' ' + Token('{') + string + Token('}'));
 				}
@@ -42,7 +42,7 @@ Command.cases.gameData = new CommandSchema({
 		}
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.gameData') + Token(': ') },
+			{ text: Local.get!('command.gameData') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -59,13 +59,13 @@ Command.cases.gameData = new CommandSchema({
 			case 'save': {
 				const index = read('index');
 				const variables = read('variables').trim();
-				Command.save({ operation, index, variables });
+				Command.save!({ operation, index, variables });
 				break;
 			}
 			case 'load':
 			case 'delete': {
 				const index = read('index');
-				Command.save({ operation, index });
+				Command.save!({ operation, index });
 				break;
 			}
 		}

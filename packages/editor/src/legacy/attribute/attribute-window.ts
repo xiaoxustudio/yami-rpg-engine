@@ -27,7 +27,7 @@ export const Attribute = {
 		key: null as any,
 		note: null as any,
 		enum: null as any,
-		enumBox: null
+		enumBox: null as any
 	},
 	mode: null as any,
 	target: null as any,
@@ -146,7 +146,7 @@ Object.defineProperty(Attribute.inputs, 'type', {
 	configurable: true
 });
 
-Attribute.initialize = function () {
+Attribute.initialize = function (this: any) {
 	ensureDomBound();
 	if (!Attribute.list) return;
 	const { list } = this;
@@ -165,7 +165,7 @@ Attribute.initialize = function () {
 
 	this.searcher.addCloseButton();
 
-	History.processors['attribute-list-operation'] = (operation, data) => {
+	History.processors['attribute-list-operation'] = (operation: any, data: any) => {
 		const { response } = data;
 		list.restore(operation, response);
 		if (read(list) === null && this.panel.attribute !== null) {
@@ -173,14 +173,14 @@ Attribute.initialize = function () {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-settings-change'] = (operation, data) => {
+	History.processors['attribute-settings-change'] = (operation: any, data: any) => {
 		const { settings } = data;
 		data.settings = this.settings;
 		this.settings = settings;
 		list.update();
 		this.changed = true;
 	};
-	History.processors['attribute-name-change'] = (operation, data) => {
+	History.processors['attribute-name-change'] = (operation: any, data: any) => {
 		const { item, value } = data;
 		data.value = item.name;
 		item.name = value;
@@ -194,7 +194,7 @@ Attribute.initialize = function () {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-key-change'] = (operation, data) => {
+	History.processors['attribute-key-change'] = (operation: any, data: any) => {
 		const { item, value } = data;
 		data.value = item.key;
 		item.key = value;
@@ -208,7 +208,7 @@ Attribute.initialize = function () {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-type-change'] = (operation, data) => {
+	History.processors['attribute-type-change'] = (operation: any, data: any) => {
 		const { item, value } = data;
 		data.value = item.type;
 		item.type = value;
@@ -222,7 +222,7 @@ Attribute.initialize = function () {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-enum-change'] = (operation, data) => {
+	History.processors['attribute-enum-change'] = (operation: any, data: any) => {
 		const { item, value } = data;
 		data.value = item.enum;
 		item.enum = value;
@@ -235,7 +235,7 @@ Attribute.initialize = function () {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-note-change'] = (operation, data) => {
+	History.processors['attribute-note-change'] = (operation: any, data: any) => {
 		const { item, value } = data;
 		data.value = item.note;
 		item.note = value;
@@ -254,7 +254,7 @@ Attribute.initialize = function () {
 	on($('#attribute'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
-	on(list, 'pointerdown', Reference.getPointerdownListener(list), {
+	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
@@ -271,7 +271,7 @@ Attribute.initialize = function () {
 	on($('#attribute-apply'), 'click', this.apply);
 };
 
-Attribute.open = function (target = null, mode = 'normal') {
+Attribute.open = function (this: any, target: any = null, mode: any = 'normal') {
 	this.mode = mode;
 	this.target = target;
 	this._previousActive = UndoManager.getActive();
@@ -300,22 +300,22 @@ Attribute.open = function (target = null, mode = 'normal') {
 	getFocus(list);
 
 	window.addEventListener('keydown', this.keydown);
-	window.addEventListener('keydown', Reference.getKeydownListener(list, 'attribute'));
+	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'attribute'));
 };
 
-Attribute.undo = function () {
+Attribute.undo = function (this: any) {
 	if (this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
-Attribute.redo = function () {
+Attribute.redo = function (this: any) {
 	if (this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
 
-Attribute.createId = function () {
+Attribute.createId = function (this: any) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -323,7 +323,7 @@ Attribute.createId = function () {
 	return id;
 };
 
-Attribute.register = function (item) {
+Attribute.register = function (this: any, item: any) {
 	Attribute.idMap[item.id] = true;
 	if (item.class === 'folder') {
 		for (const child of item.children) {
@@ -332,7 +332,7 @@ Attribute.register = function (item) {
 	}
 };
 
-Attribute.unregister = function (item) {
+Attribute.unregister = function (this: any, item: any) {
 	delete Attribute.idMap[item.id];
 	if (item.class === 'folder') {
 		for (const child of item.children) {
@@ -342,7 +342,7 @@ Attribute.unregister = function (item) {
 };
 
 Attribute.getItemById = (function IIFE() {
-	const find = (items, id) => {
+	const find = (items: any, id: any): any => {
 		const length = items.length;
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
@@ -358,12 +358,12 @@ Attribute.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (id) {
+	return function (this: any, id: any) {
 		return find(this.data, id);
 	};
 })();
 
-Attribute.setFolderGroup = function (folder, newGroup) {
+Attribute.setFolderGroup = function (this: any, folder: any, newGroup: any) {
 	const oldGroup = folder.element.group;
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
@@ -378,27 +378,27 @@ Attribute.setFolderGroup = function (folder, newGroup) {
 	}
 };
 
-Attribute.getGroup = function (groupKey) {
+Attribute.getGroup = function (this: any, groupKey: any) {
 	return Data.attribute.context.getGroup(groupKey);
 };
 
-Attribute.getAttribute = function (attrId) {
+Attribute.getAttribute = function (this: any, attrId: any) {
 	return Data.attribute.context.getAttribute(attrId);
 };
 
-Attribute.getGroupAttribute = function (groupKey, attrId) {
+Attribute.getGroupAttribute = function (this: any, groupKey: any, attrId: any) {
 	return Data.attribute.context.getGroupAttribute(groupKey, attrId);
 };
 
-Attribute.getDefAttributeId = function (groupKey, type) {
+Attribute.getDefAttributeId = function (this: any, groupKey: any, type: any) {
 	return Data.attribute.context.getDefAttributeId(groupKey, type);
 };
 
-Attribute.getAttributeItems = function (groupKey, attrType, allowNone) {
+Attribute.getAttributeItems = function (this: any, groupKey: any, attrType: any, allowNone: any) {
 	return Data.attribute.context.getAttributeItems(groupKey, attrType, allowNone);
 };
 
-Attribute.openPropertyPanel = function (attribute) {
+Attribute.openPropertyPanel = function (this: any, attribute: any) {
 	const panel = this.panel;
 	if (panel.attribute !== attribute) {
 		panel.attribute = attribute;
@@ -412,7 +412,7 @@ Attribute.openPropertyPanel = function (attribute) {
 	}
 };
 
-Attribute.closePropertyPanel = function () {
+Attribute.closePropertyPanel = function (this: any) {
 	const panel = this.panel;
 	if (panel.attribute) {
 		panel.attribute = null;
@@ -441,10 +441,10 @@ Attribute.unpackAttribute = (function IIFE() {
 
 		set expanded(value: any) {
 			this.data.expanded = value;
-			File.planToSave(Data.manifest.project.attribute);
+			File.planToSave!(Data.manifest.project.attribute);
 		}
 	}
-	const clone = (items) => {
+	const clone = (items: any) => {
 		const length = items.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
@@ -458,8 +458,8 @@ Attribute.unpackAttribute = (function IIFE() {
 		}
 		return copies;
 	};
-	return function () {
-		this.idMap = {};
+	return function (this: any) {
+		this.idMap = {} as Record<string, any>;
 		this.data = clone(Data.attribute.keys);
 		this.settings = Object.clone(Data.attribute.settings);
 		if (!this.settingKeys) {
@@ -469,7 +469,7 @@ Attribute.unpackAttribute = (function IIFE() {
 })();
 
 Attribute.packAttribute = (function IIFE() {
-	const clone = (items) => {
+	const clone = (items: any) => {
 		const length = items.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
@@ -492,14 +492,14 @@ Attribute.packAttribute = (function IIFE() {
 		}
 		return copies;
 	};
-	return function () {
+	return function (this: any) {
 		Data.attribute.keys = clone(this.data);
 		Data.attribute.settings = Object.clone(this.settings);
 		Data.createAttributeContext();
 	};
 })();
 
-Attribute.saveHistory = function (item, key, value) {
+Attribute.saveHistory = function (this: any, item: any, key: any, value: any) {
 	const type = `attribute-${key}-change`;
 	const history = this.history;
 	const index = history.index;
@@ -519,7 +519,7 @@ Attribute.saveHistory = function (item, key, value) {
 	}
 };
 
-Attribute.windowClose = function (event) {
+Attribute.windowClose = function (this: any, event: any) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
@@ -544,7 +544,7 @@ Attribute.windowClose = function (event) {
 	}
 }.bind(Attribute);
 
-Attribute.windowClosed = function (event) {
+Attribute.windowClosed = function (this: any, event: any) {
 	this.data = null;
 	this.idMap = null;
 	UndoManager.setActive(this._previousActive);
@@ -554,12 +554,12 @@ Attribute.windowClosed = function (event) {
 	clear(this.list);
 	this.closePropertyPanel();
 	window.removeEventListener('keydown', this.keydown);
-	window.removeEventListener('keydown', Reference.getKeydownListener(this.list));
+	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list));
 }.bind(Attribute);
 
 Attribute.keydown = Shortcuts.createUndoRedo(Attribute);
 
-Attribute.listKeydown = function (event) {
+Attribute.listKeydown = function (this: any, event: any) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -587,7 +587,7 @@ Attribute.listKeydown = function (event) {
 	}
 };
 
-Attribute.listPointerdown = function (event) {
+Attribute.listPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 			if (event.target === this) {
@@ -601,7 +601,7 @@ Attribute.listPointerdown = function (event) {
 	}
 };
 
-Attribute.listDoubleclick = function (event) {
+Attribute.listDoubleclick = function (this: any, event: any) {
 	switch (Attribute.mode) {
 		case 'group':
 			if (read(Attribute.list)?.class === 'folder') {
@@ -620,14 +620,14 @@ Attribute.listDoubleclick = function (event) {
 	}
 };
 
-Attribute.listSelect = function (event) {
+Attribute.listSelect = function (this: any, event: any) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Attribute.openPropertyPanel(item)
 		: Attribute.closePropertyPanel();
 };
 
-Attribute.listRecord = function (event) {
+Attribute.listRecord = function (this: any, event: any) {
 	Attribute.changed = true;
 	const response = event.value;
 	switch (response.type) {
@@ -649,11 +649,11 @@ Attribute.listRecord = function (event) {
 	}
 };
 
-Attribute.listOpen = function (event) {
+Attribute.listOpen = function (this: any, event: any) {
 	Attribute.listDoubleclick(event);
 };
 
-Attribute.listPopup = function (event) {
+Attribute.listPopup = function (this: any, event: any) {
 	const list = Attribute.list;
 	const item = event.value;
 	const selected = !!item;
@@ -744,7 +744,7 @@ Attribute.listPopup = function (event) {
 			label: get('find-references'),
 			accelerator: 'Alt+LB',
 			click: () => {
-				Reference.openRelated(item.id);
+				Reference.openRelated!(item.id);
 			}
 		});
 	}
@@ -782,7 +782,7 @@ Attribute.listPopup = function (event) {
 	);
 };
 
-Attribute.nameInput = function (event) {
+Attribute.nameInput = function (this: any, event: any) {
 	const item = Attribute.panel.attribute;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'name', item.name);
@@ -792,7 +792,7 @@ Attribute.nameInput = function (event) {
 	}
 };
 
-Attribute.keyInput = function (event) {
+Attribute.keyInput = function (this: any, event: any) {
 	const item = Attribute.panel.attribute;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'key', item.key);
@@ -802,7 +802,7 @@ Attribute.keyInput = function (event) {
 	}
 };
 
-Attribute.typeWrite = function (event) {
+Attribute.typeWrite = function (this: any, event: any) {
 	const { style } = Attribute.inputs.enumBox;
 	switch (event.value) {
 		case 'enum':
@@ -817,7 +817,7 @@ Attribute.typeWrite = function (event) {
 	}
 };
 
-Attribute.typeInput = function (event) {
+Attribute.typeInput = function (this: any, event: any) {
 	const item = Attribute.panel.attribute;
 	if (item === null) return;
 	Attribute.saveHistory(item, 'type', item.type);
@@ -826,14 +826,14 @@ Attribute.typeInput = function (event) {
 	Attribute.changed = true;
 };
 
-Attribute.enumInput = function (event) {
+Attribute.enumInput = function (this: any, event: any) {
 	const item = Attribute.panel.attribute;
 	Attribute.saveHistory(item, 'enum', item.enum);
 	item.enum = event.value;
 	Attribute.changed = true;
 };
 
-Attribute.noteInput = function (event) {
+Attribute.noteInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
 		const item = Attribute.panel.attribute;
 		Attribute.saveHistory(item, 'note', item.note);
@@ -843,7 +843,7 @@ Attribute.noteInput = function (event) {
 	}
 };
 
-Attribute.panelKeydown = function (event) {
+Attribute.panelKeydown = function (this: any, event: any) {
 	switch (event.target.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
@@ -861,7 +861,7 @@ Attribute.panelKeydown = function (event) {
 	}
 };
 
-Attribute.searcherInput = function (event) {
+Attribute.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
@@ -869,7 +869,7 @@ Attribute.searcherInput = function (event) {
 	Attribute.list.searchNodesDebounced(text);
 };
 
-Attribute.confirm = function (event) {
+Attribute.confirm = function (this: any, event: any) {
 	switch (this.mode) {
 		case 'normal':
 			this.apply();
@@ -896,12 +896,12 @@ Attribute.confirm = function (event) {
 	getWindow().close('attribute');
 }.bind(Attribute);
 
-Attribute.apply = function (event) {
+Attribute.apply = function (this: any, event: any) {
 	if (this.changed) {
 		this.changed = false;
 
 		this.packAttribute();
-		File.planToSave(Data.manifest.project.attribute);
+		File.planToSave!(Data.manifest.project.attribute);
 
 		window.dispatchEvent(new Event('attributechange'));
 	}
@@ -910,7 +910,7 @@ Attribute.apply = function (event) {
 // bindListClipboardMethods 改为 ensureDomBound 内调用（list 顶层为 null）
 
 // 列表 - 保存滚动状态
-Attribute.list_saveScroll = function () {
+Attribute.list_saveScroll = function (this: any) {
 	const { attribute } = Data;
 	// 将数据保存在外部可以切换项目后重置
 	if (attribute.scrollTop === undefined) {
@@ -923,23 +923,23 @@ Attribute.list_saveScroll = function () {
 };
 
 // 列表 - 恢复滚动状态
-Attribute.list_restoreScroll = function () {
+Attribute.list_restoreScroll = function (this: any) {
 	this.scrollTop = Data.attribute.scrollTop ?? 0;
 };
 
 // 列表 - 取消搜索
-Attribute.list_cancelSearch = function () {
+Attribute.list_cancelSearch = function (this: any) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		Attribute.searcher.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
-		active.focus();
+		active!.focus();
 	}
 };
 
 // 列表 - 创建文件夹
-Attribute.list_createFolder = function () {
+Attribute.list_createFolder = function (this: any) {
 	return {
 		class: 'folder',
 		id: Attribute.createId(),
@@ -950,7 +950,7 @@ Attribute.list_createFolder = function () {
 };
 
 // 列表 - 创建属性
-Attribute.list_createAttribute = function () {
+Attribute.list_createAttribute = function (this: any) {
 	return {
 		id: Attribute.createId(),
 		key: '',
@@ -970,10 +970,10 @@ Attribute.list_createIcon = (function IIFE() {
 		enum: 'icon-string',
 		object: 'icon-object'
 	};
-	return function (item) {
+	return function (this: any, item: any) {
 		const icon = document.createElement('node-icon');
 		if (item.class !== 'folder') {
-			addClass(icon, classes[item.type]);
+			addClass(icon, (classes as Record<string, any>)[item.type]);
 		} else {
 			addClass(icon, 'icon-folder');
 		}
@@ -982,7 +982,7 @@ Attribute.list_createIcon = (function IIFE() {
 })();
 
 // 列表 - 更新图标
-Attribute.list_updateIcon = function (item) {
+Attribute.list_updateIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element?.nodeIcon) {
 		const icon = this.createIcon(item);
@@ -992,18 +992,18 @@ Attribute.list_updateIcon = function (item) {
 };
 
 // 列表 - 重写解析名称方法
-Attribute.list_parseName = function (item) {
+Attribute.list_parseName = function (this: any, item: any) {
 	return GameLocal.replace(item.name);
 };
 
 // 列表 - 添加元素类名
-Attribute.list_addElementClass = function (item) {
+Attribute.list_addElementClass = function (this: any, item: any) {
 	addClass(item.element, 'attribute-item');
 	addClass(item.element, 'reference');
 };
 
 // 列表 - 创建分组文本
-Attribute.list_createGroupText = function (item) {
+Attribute.list_createGroupText = function (this: any, item: any) {
 	if (item.class === 'folder') {
 		const { element } = item;
 		const groupText = document.createElement('div');
@@ -1016,7 +1016,7 @@ Attribute.list_createGroupText = function (item) {
 };
 
 // 列表 - 更新分组文本
-Attribute.list_updateGroupText = function (item) {
+Attribute.list_updateGroupText = function (this: any, item: any) {
 	const { element } = item;
 	if (element.groupText !== undefined) {
 		let group = '';
@@ -1033,7 +1033,7 @@ Attribute.list_updateGroupText = function (item) {
 };
 
 // 列表 - 创建初始化文本
-Attribute.list_createInitText = function (item) {
+Attribute.list_createInitText = function (this: any, item: any) {
 	if (item.class !== 'folder') {
 		const { element } = item;
 		const initText = document.createElement('div');
@@ -1046,7 +1046,7 @@ Attribute.list_createInitText = function (item) {
 };
 
 // 列表 - 更新初始化文本
-Attribute.list_updateInitText = function (item) {
+Attribute.list_updateInitText = function (this: any, item: any) {
 	const { element } = item;
 	if (element.initText !== undefined) {
 		const { key } = item;
@@ -1058,7 +1058,7 @@ Attribute.list_updateInitText = function (item) {
 };
 
 // 列表 - 创建笔记图标
-Attribute.list_createNoteIcon = function (item) {
+Attribute.list_createNoteIcon = function (this: any, item: any) {
 	if (item.class !== 'folder') {
 		const { element } = item;
 		const noteIcon = document.createElement('node-icon');
@@ -1071,7 +1071,7 @@ Attribute.list_createNoteIcon = function (item) {
 };
 
 // 列表 - 更新笔记图标
-Attribute.list_updateNoteIcon = function (item) {
+Attribute.list_updateNoteIcon = function (this: any, item: any) {
 	const { element } = item;
 	if (element.noteIcon !== undefined) {
 		const annotated = item.note !== '';
@@ -1083,17 +1083,17 @@ Attribute.list_updateNoteIcon = function (item) {
 };
 
 // 列表 - 在创建数据时回调
-Attribute.list_onCreate = function (item) {
+Attribute.list_onCreate = function (this: any, item: any) {
 	Attribute.register(item);
 };
 
 // 列表 - 在删除数据时回调
-Attribute.list_onDelete = function (item) {
+Attribute.list_onDelete = function (this: any, item: any) {
 	Attribute.unregister(item);
 };
 
 // 列表 - 在恢复数据时回调
-Attribute.list_onResume = function (item) {
+Attribute.list_onResume = function (this: any, item: any) {
 	Attribute.register(item);
 };
 

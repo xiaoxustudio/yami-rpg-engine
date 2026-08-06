@@ -15,13 +15,13 @@ import { Scene } from './scene-window.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
-Scene.webglRestored = function (event) {
+Scene.webglRestored = function (this: any, event: any) {
 	if (Scene.state === 'open') {
-		Scene.requestRendering();
+		Scene.requestRendering!();
 	}
 };
 
-Scene.windowResize = function (event) {
+Scene.windowResize = function (this: any, event: any) {
 	this.updateHead();
 	if (this.state === 'open') {
 		this.resize();
@@ -29,17 +29,17 @@ Scene.windowResize = function (event) {
 	}
 }.bind(Scene);
 
-Scene.themechange = function (event) {
+Scene.themechange = function (this: any, event: any) {
 	this.requestRendering();
 }.bind(Scene);
 
-Scene.dprchange = function (event) {
+Scene.dprchange = function (this: any, event: any) {
 	if (this.state === 'open') {
 		this.updateFont();
 	}
 }.bind(Scene);
 
-Scene.datachange = function (event) {
+Scene.datachange = function (this: any, event: any) {
 	if (this.state === 'open') {
 		switch (event.key) {
 			case 'config':
@@ -53,65 +53,65 @@ Scene.datachange = function (event) {
 	}
 }.bind(Scene);
 
-Scene.keydown = function (event) {
+Scene.keydown = function (this: any, event: any) {
 	if (Scene.state === 'open' && Scene.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
 			switch (event.code) {
 				case 'KeyS':
-					Scene.switchSettings();
+					Scene.switchSettings!();
 					break;
 			}
 		} else {
 			switch (event.code) {
 				case 'Escape':
-					Scene.closeTilemap();
+					Scene.closeTilemap!();
 					break;
 				case 'Backquote':
 					Scene.layer !== 'object'
-						? Scene.switchLayer('object')
-						: Scene.switchLayer('terrain');
+						? Scene.switchLayer!('object')
+						: Scene.switchLayer!('terrain');
 					break;
 				case 'Digit1':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[1]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[1]);
 					break;
 				case 'Digit2':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[2]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[2]);
 					break;
 				case 'Digit3':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[3]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[3]);
 					break;
 				case 'Digit4':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[4]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[4]);
 					break;
 				case 'Digit5':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[5]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[5]);
 					break;
 				case 'Digit6':
-					Scene.openTilemap(Scene.tilemaps.shortcuts[6]);
+					Scene.openTilemap!(Scene.tilemaps.shortcuts[6]);
 					break;
 				case 'KeyQ':
-					Scene.switchBrush('eraser');
+					Scene.switchBrush!('eraser');
 					break;
 				case 'KeyE':
-					Scene.switchBrush('pencil');
+					Scene.switchBrush!('pencil');
 					break;
 				case 'KeyR':
-					Scene.switchBrush('rect');
+					Scene.switchBrush!('rect');
 					break;
 				case 'KeyT':
-					Scene.switchBrush('oval');
+					Scene.switchBrush!('oval');
 					break;
 				case 'KeyY':
-					Scene.switchBrush('fill');
+					Scene.switchBrush!('fill');
 					break;
 			}
 		}
 	}
 };
 
-Scene.headPointerdown = function (event) {
+Scene.headPointerdown = function (this: any, event: any) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== Scene.screen) {
@@ -120,20 +120,20 @@ Scene.headPointerdown = function (event) {
 	}
 };
 
-Scene.switchPointerdown = function (event) {
+Scene.switchPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'grid':
-						return Scene.switchGrid();
+						return Scene.switchGrid!();
 					case 'light':
-						return Scene.switchLight();
+						return Scene.switchLight!();
 					case 'animation':
-						return Scene.switchAnimation();
+						return Scene.switchAnimation!();
 					case 'settings':
-						return Scene.switchSettings();
+						return Scene.switchSettings!();
 				}
 			}
 			break;
@@ -141,7 +141,7 @@ Scene.switchPointerdown = function (event) {
 	}
 };
 
-Scene.layerPointerdown = function (event) {
+Scene.layerPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 			if (!Scene.dragging) {
@@ -151,10 +151,10 @@ Scene.layerPointerdown = function (event) {
 					switch (value) {
 						case 'object':
 						case 'terrain':
-							Scene.switchLayer(value);
+							Scene.switchLayer!(value);
 							break;
 						default:
-							Scene.openTilemap(Scene.tilemaps.shortcuts[value]);
+							Scene.openTilemap!(Scene.tilemaps.shortcuts[value]);
 							break;
 					}
 				}
@@ -163,28 +163,28 @@ Scene.layerPointerdown = function (event) {
 	}
 };
 
-Scene.brushPointerdown = function (event) {
+Scene.brushPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0:
 			if (!Scene.dragging) {
 				const element = event.target;
 				if (hasClass(element, 'item') && !hasClass(element, 'selected')) {
-					Scene.switchBrush(element.getAttribute('value'));
+					Scene.switchBrush!(element.getAttribute('value'));
 				}
 			}
 			break;
 	}
 };
 
-Scene.zoomFocus = function (event) {
+Scene.zoomFocus = function (this: any, event: any) {
 	Scene.screen.focus();
 };
 
-Scene.zoomInput = function (event) {
-	Scene.setZoom(read(this));
+Scene.zoomInput = function (this: any, event: any) {
+	Scene.setZoom!(read(this));
 };
 
-Scene.screenKeydown = function (event) {
+Scene.screenKeydown = function (this: any, event: any) {
 	if (this.state === 'open' && (this.dragging === null || event.code === 'ShiftLeft')) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -374,7 +374,7 @@ Scene.screenKeydown = function (event) {
 	}
 }.bind(Scene);
 
-Scene.shiftKeyup = function (event) {
+Scene.shiftKeyup = function (this: any, event: any) {
 	if (!this.shiftKey) {
 		return;
 	}
@@ -403,7 +403,7 @@ Scene.shiftKeyup = function (event) {
 	}
 }.bind(Scene);
 
-Scene.translationKeyup = function (event) {
+Scene.translationKeyup = function (this: any, event: any) {
 	if (this.translationKey === 0b0000) {
 		return;
 	}
@@ -432,7 +432,7 @@ Scene.translationKeyup = function (event) {
 	}
 }.bind(Scene);
 
-Scene.screenWheel = function (event) {
+Scene.screenWheel = function (this: any, event: any) {
 	if (this.state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
@@ -442,7 +442,7 @@ Scene.screenWheel = function (event) {
 	}
 }.bind(Scene);
 
-Scene.screenUserscroll = function (event) {
+Scene.screenUserscroll = function (this: any, event: any) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -453,37 +453,37 @@ Scene.screenUserscroll = function (event) {
 	}
 }.bind(Scene);
 
-Scene.screenBlur = function (event) {
+Scene.screenBlur = function (this: any, event: any) {
 	this.shiftKeyup();
 	this.translationKeyup();
 	this.pointerup();
 	// this.marqueePointerleave()
 }.bind(Scene);
 
-Scene.screenDragenter = function (event) {
+Scene.screenDragenter = function (this: any, event: any) {
 	const file = (window as any).Browser?.body?.activeFile;
 	switch (file?.type) {
 		case 'actor':
 		case 'animation':
 		case 'particle':
-			Scene.createPreviewObject(file);
+			Scene.createPreviewObject!(file);
 			Scene.screenDragover.call(this, event);
 	}
 };
 
-Scene.screenDragleave = function (event) {
+Scene.screenDragleave = function (this: any, event: any) {
 	if (!this.contains(event.relatedTarget)) {
-		Scene.deletePreviewObject();
+		Scene.deletePreviewObject!();
 	}
 };
 
-Scene.screenDragover = function (event) {
+Scene.screenDragover = function (this: any, event: any) {
 	if (Scene.previewObject) {
 		event.dataTransfer.dropEffect = 'move';
 		event.preventDefault();
 		const integer = !event.shiftKey;
 		const object = Scene.previewObject;
-		let { x, y } = Scene.getTileCoords(event, integer);
+		let { x, y } = Scene.getTileCoords!(event, integer);
 		if (integer) {
 			x += 0.5;
 			y += 0.5;
@@ -491,15 +491,15 @@ Scene.screenDragover = function (event) {
 		if (object.x !== x || object.y !== y) {
 			object.x = x;
 			object.y = y;
-			Scene.requestRendering();
+			Scene.requestRendering!();
 		}
 	}
 };
 
-Scene.screenDrop = function (event) {
+Scene.screenDrop = function (this: any, event: any) {
 	if (Scene.previewObject) {
 		const kind = Scene.previewObject.class;
-		const folder = Scene.getDefaultObjectFolder(kind);
+		const folder = Scene.getDefaultObjectFolder!(kind);
 		const fn = Scene.loadObjectContext;
 		Scene.loadObjectContext = Function.empty;
 		Scene.list.addNodeTo(Scene.previewObject, folder);
@@ -508,7 +508,7 @@ Scene.screenDrop = function (event) {
 	}
 };
 
-Scene.marqueePointerdown = function (event) {
+Scene.marqueePointerdown = function (this: any, event: any) {
 	if (this.dragging) {
 		return;
 	}
@@ -676,14 +676,14 @@ Scene.marqueePointerdown = function (event) {
 		case 3:
 			switch (this.layer) {
 				case 'tilemap':
-					Palette.flipTiles();
+					Palette.flipTiles!();
 					break;
 			}
 			break;
 	}
 }.bind(Scene);
 
-Scene.marqueePointermove = function (event) {
+Scene.marqueePointermove = function (this: any, event: any) {
 	const marquee = this.marquee;
 	if (!this.dragging) {
 		marquee.pointerevent = event;
@@ -725,7 +725,7 @@ Scene.marqueePointermove = function (event) {
 	}
 }.bind(Scene);
 
-Scene.marqueePointerleave = function (event) {
+Scene.marqueePointerleave = function (this: any, event: any) {
 	if (this.marquee.pointerevent !== null) {
 		this.marquee.pointerevent = null;
 		if (!this.dragging && !(this.layer === 'object' && this.target !== null)) {
@@ -734,7 +734,7 @@ Scene.marqueePointerleave = function (event) {
 	}
 }.bind(Scene);
 
-Scene.marqueeDoubleclick = function (event) {
+Scene.marqueeDoubleclick = function (this: any, event: any) {
 	switch (this.layer) {
 		case 'object':
 			if (!this.target) return;
@@ -761,7 +761,7 @@ Scene.marqueeDoubleclick = function (event) {
 	}
 }.bind(Scene);
 
-Scene.pointerup = function (event) {
+Scene.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -809,7 +809,7 @@ Scene.pointerup = function (event) {
 				} else {
 					marquee.clear();
 				}
-				Palette.copyTilesFromScene(marquee.x, marquee.y, marquee.width, marquee.height);
+				Palette.copyTilesFromScene!(marquee.x, marquee.y, marquee.width, marquee.height);
 				break;
 			}
 			case 'object-move':
@@ -835,7 +835,7 @@ Scene.pointerup = function (event) {
 	}
 }.bind(Scene);
 
-Scene.pointermove = function (event) {
+Scene.pointermove = function (this: any, event: any) {
 	const { dragging, marquee } = this;
 	if (relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -1024,7 +1024,7 @@ Scene.pointermove = function (event) {
 	}
 }.bind(Scene);
 
-Scene.menuPopup = function (event) {
+Scene.menuPopup = function (this: any, event: any) {
 	const { x, y } = this.getTileCoords(event, true);
 	const isInScene = x >= 0 && x < this.width && y >= 0 && y < this.height;
 	if (this.target || isInScene) {
@@ -1145,7 +1145,7 @@ Scene.menuPopup = function (event) {
 				label: get('find-references'),
 				enabled: selected,
 				click: () => {
-					Reference.openRelated(target.presetId);
+					Reference.openRelated!(target.presetId);
 				}
 			},
 			{
@@ -1161,9 +1161,9 @@ Scene.menuPopup = function (event) {
 					label: get('editAnimation'),
 					enabled: !!meta,
 					click: () => {
-						const animFile = Directory.getFile(meta.path);
+						const animFile = Directory.getFile!(meta.path);
 						if (animFile) {
-							Title.openTab(animFile);
+							Title.openTab!(animFile);
 						}
 					}
 				});
@@ -1176,22 +1176,22 @@ Scene.menuPopup = function (event) {
 					label: get('editParticle'),
 					enabled: !!meta,
 					click: () => {
-						const particleFile = Directory.getFile(meta.path);
+						const particleFile = Directory.getFile!(meta.path);
 						if (particleFile) {
-							Title.openTab(particleFile);
+							Title.openTab!(particleFile);
 						}
 					}
 				});
 				break;
 			}
 		}
-		const file = Scene.getObjectFile(target);
+		const file = Scene.getObjectFile!(target);
 		if (file !== undefined) {
 			menuItems.push({
 				label: Local.get('common.findInProject'),
 				enabled: file instanceof FileItem,
 				click: () => {
-					Scene.openFileLocation(target);
+					Scene.openFileLocation!(target);
 				}
 			});
 		}
@@ -1208,7 +1208,7 @@ Scene.menuPopup = function (event) {
 					startPosition.x = 0;
 					startPosition.y = 0;
 					this.requestRendering();
-					File.planToSave(Data.manifest.project.config);
+					File.planToSave!(Data.manifest.project.config);
 				}
 			});
 		} else {
@@ -1220,7 +1220,7 @@ Scene.menuPopup = function (event) {
 					startPosition.x = x + 0.5;
 					startPosition.y = y + 0.5;
 					this.requestRendering();
-					File.planToSave(Data.manifest.project.config);
+					File.planToSave!(Data.manifest.project.config);
 				}
 			});
 		}
@@ -1234,14 +1234,14 @@ Scene.menuPopup = function (event) {
 	}
 };
 
-Scene.searcherInput = function (event) {
+Scene.searcherInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input.value;
 		Scene.list.searchNodesDebounced(text);
 	}
 };
 
-Scene.listKeydown = function (event) {
+Scene.listKeydown = function (this: any, event: any) {
 	if (!this.data) {
 		return;
 	}
@@ -1279,13 +1279,13 @@ Scene.listKeydown = function (event) {
 				this.cancelSearch();
 				break;
 			case 'Escape':
-				Scene.setTarget(null);
+				Scene.setTarget!(null);
 				break;
 		}
 	}
 };
 
-Scene.listPointerdown = function (event) {
+Scene.listPointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
@@ -1300,7 +1300,7 @@ Scene.listPointerdown = function (event) {
 					this.updateFolderState(item.parent, 'hidden');
 					this.update();
 					dispatchChangeEvent(this);
-					Scene.requestRendering();
+					Scene.requestRendering!();
 					Scene.history.save({
 						type: 'scene-object-hidden',
 						item: item,
@@ -1336,35 +1336,35 @@ Scene.listPointerdown = function (event) {
 	}
 };
 
-Scene.listSelect = function (event) {
+Scene.listSelect = function (this: any, event: any) {
 	const item = event.value;
 	switch (item.class) {
 		case 'folder':
-			Scene.setTarget(null);
+			Scene.setTarget!(null);
 			break;
 		case 'tilemap':
 			// 正在编辑图块时直接打开瓦片地图 图块组关闭时打开瓦片地图检查器
 			if (Scene.tilemap) {
 				if (Palette.state === 'closed') {
-					Scene.setTarget(item);
+					Scene.setTarget!(item);
 				}
-				Scene.openTilemap(item);
+				Scene.openTilemap!(item);
 			} else {
-				Scene.setTarget(item);
+				Scene.setTarget!(item);
 			}
 			break;
 		default:
-			Scene.setTarget(item);
+			Scene.setTarget!(item);
 			break;
 	}
 };
 
-Scene.listRecord = function (event) {
+Scene.listRecord = function (this: any, event: any) {
 	const list = Scene.list;
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
-			Scene.listRename(response);
+			Scene.listRename!(response);
 			break;
 		case 'create': {
 			let parent = response.dItem;
@@ -1408,10 +1408,10 @@ Scene.listRecord = function (event) {
 	}
 };
 
-Scene.listPopup = function (event) {
+Scene.listPopup = function (this: any, event: any) {
 	const list = Scene.list;
 	const item = event.value;
-	const menuItems: any[] = [];
+	const menuItems: any[] = [] as any[];
 	const get = Local.createGetter('menuSceneList');
 	let copyable;
 	let pastable;
@@ -1429,29 +1429,29 @@ Scene.listPopup = function (event) {
 						label: get('edit'),
 						accelerator: 'Enter',
 						click: () => {
-							Scene.openTilemap(item);
+							Scene.openTilemap!(item);
 						}
 					},
 					{
 						label: get('shift'),
 						enabled: item.tiles.length !== 0,
 						click: () => {
-							SceneShift.open((x, y) => {
+							SceneShift.open!((x: any, y: any) => {
 								Scene.history.save({
 									type: 'scene-tilemap-shift',
 									tilemap: item,
 									shiftX: x,
 									shiftY: y
 								});
-								Scene.shiftTilemap(item, x, y);
-								Scene.planToSave();
+								Scene.shiftTilemap!(item, x, y);
+								Scene.planToSave!();
 							});
 						}
 					},
 					{
 						label: get('reveal'),
 						click: () => {
-							Scene.revealTarget();
+							Scene.revealTarget!();
 						}
 					},
 					{
@@ -1471,7 +1471,7 @@ Scene.listPopup = function (event) {
 					label: get('reveal'),
 					accelerator: 'Enter',
 					click: () => {
-						Scene.revealTarget();
+						Scene.revealTarget!();
 					}
 				});
 				break;
@@ -1548,7 +1548,7 @@ Scene.listPopup = function (event) {
 			accelerator: '/',
 			enabled: copyable,
 			click: () => {
-				list.toggle(item);
+				list.toggle!(item);
 			}
 		},
 		{
@@ -1559,8 +1559,8 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('X'),
 			enabled: copyable,
 			click: () => {
-				list.copy(item);
-				list.delete(item);
+				list.copy!(item);
+				list.delete!(item);
 			}
 		},
 		{
@@ -1568,7 +1568,7 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				list.copy(item);
+				list.copy!(item);
 			}
 		},
 		{
@@ -1576,7 +1576,7 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				list.paste(item);
+				list.paste!(item);
 			}
 		},
 		{
@@ -1592,7 +1592,7 @@ Scene.listPopup = function (event) {
 			accelerator: 'Delete',
 			enabled: deletable,
 			click: () => {
-				list.delete(item);
+				list.delete!(item);
 			}
 		},
 		{
@@ -1617,17 +1617,17 @@ Scene.listPopup = function (event) {
 			accelerator: 'Alt+LB',
 			enabled: copyable,
 			click: () => {
-				Reference.openRelated(item.presetId);
+				Reference.openRelated!(item.presetId);
 			}
 		});
 	}
-	const file = Scene.getObjectFile(item);
+	const file = Scene.getObjectFile!(item);
 	if (file !== undefined) {
 		menuItems.push({
 			label: Local.get('common.findInProject'),
 			enabled: file instanceof FileItem,
 			click: () => {
-				Scene.openFileLocation(item);
+				Scene.openFileLocation!(item);
 			}
 		});
 	}
@@ -1639,24 +1639,24 @@ Scene.listPopup = function (event) {
 			{
 				label: get('shiftAll'),
 				click: () => {
-					SceneShift.open((x, y) => {
-						const changes = Scene.computeObjectShifting(x, y);
+					SceneShift.open!((x: any, y: any) => {
+						const changes = Scene.computeObjectShifting!(x, y);
 						Scene.history.save({
 							type: 'scene-shift',
 							shiftX: x,
 							shiftY: y,
 							changes: changes
 						});
-						Scene.shiftTerrains(x, y);
-						Scene.shiftObjects(changes);
-						Scene.planToSave();
+						Scene.shiftTerrains!(x, y);
+						Scene.shiftObjects!(changes);
+						Scene.planToSave!();
 					});
 				}
 			},
 			{
 				label: get('settings'),
 				click: () => {
-					ObjectFolder.open();
+					ObjectFolder.open!();
 				}
 			}
 		);
@@ -1670,11 +1670,11 @@ Scene.listPopup = function (event) {
 	);
 };
 
-Scene.listOpen = function (event) {
+Scene.listOpen = function (this: any, event: any) {
 	const item = event.value;
 	switch (item.class) {
 		case 'tilemap':
-			Scene.openTilemap(item);
+			Scene.openTilemap!(item);
 			break;
 		case 'actor':
 		case 'region':
@@ -1682,12 +1682,12 @@ Scene.listOpen = function (event) {
 		case 'animation':
 		case 'particle':
 		case 'parallax':
-			Scene.revealTarget();
+			Scene.revealTarget!();
 			break;
 	}
 };
 
-Scene.listRename = function (response) {
+Scene.listRename = function (this: any, response: any) {
 	const target = response.item;
 	switch (target.class) {
 		case 'folder':
@@ -1703,8 +1703,8 @@ Scene.listRename = function (response) {
 			const input = editor.nameBox;
 			const { oldValue, newValue } = response;
 			write(input, newValue);
-			Scene.updateTargetInfo();
-			Scene.requestRendering();
+			Scene.updateTargetInfo!();
+			Scene.requestRendering!();
 			Scene.history.save({
 				type: 'inspector-change',
 				editor: editor,
@@ -1722,11 +1722,11 @@ Scene.listRename = function (response) {
 	}
 };
 
-Scene.listChange = function (event) {
-	Scene.planToSave();
+Scene.listChange = function (this: any, event: any) {
+	Scene.planToSave!();
 };
 
-Scene.listPageResize = function (event) {
-	Scene.list.updateHead();
+Scene.listPageResize = function (this: any, event: any) {
+	Scene.list.updateHead!();
 	Scene.list.resize();
 };

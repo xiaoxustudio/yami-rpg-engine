@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setAnimationComponent = new CommandSchema({
 	name: 'setAnimationComponent',
 	onInitialize() {
-		$('#setAnimationComponent-confirm').on('click', () => this.save());
+		$('#setAnimationComponent-confirm').on('click', () => this.save!());
 		$('#setAnimationComponent-operation').loadItems([
 			{ name: 'Set Angle', value: 'set-angle' },
 			{ name: 'Set Scale', value: 'set-scale' },
@@ -73,8 +73,8 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		const elMotion = $('#setAnimationComponent-motion');
 		const elPlayMotion = $('#setAnimationComponent-playMotion');
 		const elSpriteId = $('#setAnimationComponent-spriteId');
-		const motionItems = Animation.getMotionListItems(event.value);
-		const spriteItems = Animation.getSpriteListItems(event.value);
+		const motionItems = Animation.getMotionListItems!(event.value);
+		const spriteItems = Animation.getSpriteListItems!(event.value);
 		elMotion.loadItems(motionItems);
 		elPlayMotion.loadItems(motionItems);
 		elSpriteId.loadItems(spriteItems);
@@ -83,11 +83,11 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		elSpriteId.write2(read(elSpriteId));
 	},
 	parsePriority(priority: any) {
-		const abs = Command.setNumberColor(Math.abs(priority));
+		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority === 0 ? abs : priority > 0 ? Token('+') + abs : Token('-') + abs;
 	},
 	parseOffsetY(offsetY: any) {
-		const abs = Command.setNumberColor(Math.abs(offsetY)) + 'px';
+		const abs = Command.setNumberColor!(Math.abs(offsetY)) + 'px';
 		return offsetY >= 0 ? abs : Token('-') + abs;
 	},
 	customParse({
@@ -107,41 +107,41 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		wait
 	}: any) {
 		const words = Command.words
-			.push(Command.parseActor(actor))
-			.push(Command.parseFileName(animationId))
-			.push(Command.parseEnumString(motion))
-			.push(Local.get('command.setAnimationComponent.' + operation));
+			.push(Command.parseActor!(actor))
+			.push(Command.parseFileName!(animationId))
+			.push(Command.parseEnumString!(motion))
+			.push(Local.get!('command.setAnimationComponent.' + operation));
 		switch (operation) {
 			case 'set-angle':
-				words.push(Command.parseAngle(angle));
+				words.push(Command.parseAngle!(angle));
 				break;
 			case 'set-scale':
-				words.push(Command.parseVariableNumber(scale));
+				words.push(Command.parseVariableNumber!(scale));
 				break;
 			case 'set-speed':
-				words.push(Command.parseVariableNumber(speed));
+				words.push(Command.parseVariableNumber!(speed));
 				break;
 			case 'set-opacity':
-				words.push(Command.parseVariableNumber(opacity));
+				words.push(Command.parseVariableNumber!(opacity));
 				break;
 			case 'set-priority':
-				words.push(this.parsePriority(priority));
+				words.push(this.parsePriority!(priority));
 				break;
 			case 'set-offsetY':
-				words.push(this.parseOffsetY(offsetY));
+				words.push(this.parseOffsetY!(offsetY));
 				break;
 			case 'set-sprite':
-				words.push(Command.parseSpriteName(animationId, spriteId));
-				words.push(Command.parseFileName(image));
+				words.push(Command.parseSpriteName!(animationId, spriteId));
+				words.push(Command.parseFileName!(image));
 				break;
 			case 'play-motion':
-				words.push(Command.parseEnumString(playMotion));
-				words.push(Command.parseWait(wait));
+				words.push(Command.parseEnumString!(playMotion));
+				words.push(Command.parseWait!(wait));
 				break;
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setAnimationComponent') + Token(': ') },
+			{ text: Local.get!('command.setAnimationComponent') + Token(': ') },
 			{ text: words.join() }
 		];
 	},
@@ -193,22 +193,22 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		switch (operation) {
 			case 'set-angle': {
 				const angle = read('angle');
-				Command.save({ actor, animationId, motion, operation, angle });
+				Command.save!({ actor, animationId, motion, operation, angle });
 				break;
 			}
 			case 'set-scale': {
 				const scale = read('scale');
-				Command.save({ actor, animationId, motion, operation, scale });
+				Command.save!({ actor, animationId, motion, operation, scale });
 				break;
 			}
 			case 'set-speed': {
 				const speed = read('speed');
-				Command.save({ actor, animationId, motion, operation, speed });
+				Command.save!({ actor, animationId, motion, operation, speed });
 				break;
 			}
 			case 'set-opacity': {
 				const opacity = read('opacity');
-				Command.save({
+				Command.save!({
 					actor,
 					animationId,
 					motion,
@@ -219,7 +219,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			}
 			case 'set-priority': {
 				const priority = read('priority');
-				Command.save({
+				Command.save!({
 					actor,
 					animationId,
 					motion,
@@ -230,7 +230,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			}
 			case 'set-offsetY':
 				const offsetY = read('offsetY');
-				Command.save({
+				Command.save!({
 					actor,
 					animationId,
 					motion,
@@ -244,7 +244,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 				if (spriteId === '') {
 					return getFocus($('#setAnimationComponent-spriteId'));
 				}
-				Command.save({
+				Command.save!({
 					actor,
 					animationId,
 					motion,
@@ -260,7 +260,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 					return getFocus($('#setAnimationComponent-playMotion'));
 				}
 				const wait = read('wait');
-				Command.save({
+				Command.save!({
 					actor,
 					animationId,
 					motion,
@@ -271,7 +271,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 				break;
 			}
 			case 'stop-motion':
-				Command.save({ actor, animationId, motion, operation });
+				Command.save!({ actor, animationId, motion, operation });
 				break;
 		}
 	}

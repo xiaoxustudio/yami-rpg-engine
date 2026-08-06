@@ -5,18 +5,18 @@ import { Inspector } from './inspector.ts';
 
 {
 	const FileImage = {
-		target: null,
-		meta: null,
-		symbol: null,
-		image: null,
-		initialize: null,
-		open: null,
-		close: null,
-		updateImage: null,
-		windowResize: null
+		target: null as any,
+		meta: null as any,
+		symbol: null as any,
+		image: null as any,
+		initialize: null as any,
+		open: null as any,
+		close: null as any,
+		updateImage: null as any,
+		windowResize: null as any
 	};
 
-	FileImage.initialize = function () {
+	FileImage.initialize = function (this: any) {
 		if (!$('#fileImage-image')) return;
 		this.image = $('#fileImage-image');
 
@@ -24,7 +24,7 @@ import { Inspector } from './inspector.ts';
 		$('#fileImage-image-detail').on('toggle', this.windowResize);
 	};
 
-	FileImage.open = function (file, meta) {
+	FileImage.open = function (this: any, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -34,16 +34,16 @@ import { Inspector } from './inspector.ts';
 			const elResolution = $('#fileImage-resolution');
 			const size = Number(file.stats.size);
 			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize(size);
+			elSize.textContent = File.parseFileSize!(size);
 			elResolution.textContent = '';
 
 			const image = this.image;
 			hide(image);
-			const path = File.route(file.path);
+			const path = File.route!(file.path);
 			image.src = path;
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve, reject) => {
+			new Promise<void>((resolve: any, reject: any) => {
 				const intervalIndex = setInterval(() => {
 					if (image.naturalWidth !== 0) {
 						clearInterval(intervalIndex);
@@ -65,7 +65,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileImage.close = function () {
+	FileImage.close = function (this: any) {
 		if (this.target) {
 			(window as any).Browser?.unselect?.(this.meta);
 			this.target = null;
@@ -75,7 +75,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileImage.updateImage = function () {
+	FileImage.updateImage = function (this: any) {
 		const image = this.image;
 		hide(image);
 		const frame = image.parentNode;
@@ -110,7 +110,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileImage.windowResize = function (event) {
+	FileImage.windowResize = function (this: any, event: any) {
 		if (FileImage.target !== null && FileImage.symbol === null) {
 			FileImage.updateImage();
 		}

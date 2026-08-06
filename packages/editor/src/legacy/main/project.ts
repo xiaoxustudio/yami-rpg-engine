@@ -13,15 +13,15 @@ import { UI } from '@/ui/ui-window.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
 
-Editor.saveProject = function () {
+Editor.saveProject = function (this: any) {
 	const { project } = this;
 	if (!project) {
 		return;
 	}
 	try {
-		Scene.saveToProject(project);
+		Scene.saveToProject!(project);
 		(UI.saveToProject as any)(project);
-		Animation.saveToProject(project);
+		Animation.saveToProject!(project);
 		(Particle.saveToProject as any)(project);
 		(Palette.saveToProject as any)(project);
 		Sprite.saveToProject(project);
@@ -34,7 +34,7 @@ Editor.saveProject = function () {
 		const last = project.code;
 		if (json && json !== last) {
 			const path = this.config.project;
-			FSP.writeFile(path, json).catch((error) => {
+			FSP.writeFile!(path, json).catch((error: any) => {
 				(Log.throw as any)(error);
 			});
 		}
@@ -44,11 +44,11 @@ Editor.saveProject = function () {
 	}
 };
 
-Editor.loadProject = function () {
+Editor.loadProject = function (this: any) {
 	const { project } = this;
-	Scene.loadFromProject(project);
+	Scene.loadFromProject!(project);
 	(UI.loadFromProject as any)(project);
-	Animation.loadFromProject(project);
+	Animation.loadFromProject!(project);
 	(Particle.loadFromProject as any)(project);
 	(Palette.loadFromProject as any)(project);
 	Sprite.loadFromProject(project);
@@ -58,6 +58,6 @@ Editor.loadProject = function () {
 	(Title.loadFromProject as any)(project);
 };
 
-Editor.saveManifest = function () {
-	return Data.saveManifest();
+Editor.saveManifest = function (this: any) {
+	return Data.saveManifest!();
 };

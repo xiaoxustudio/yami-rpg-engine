@@ -16,76 +16,76 @@ import { Local } from '@/tools/localization.ts';
 import { SetKey } from '@/tools/set-key-window.ts';
 
 export const Easing = {
-	list: null,
-	curve: null,
-	preview: null,
-	data: null,
-	points: null,
-	dragging: null,
-	activePoint: null,
-	scale: null,
-	originX: null,
-	originY: null,
-	timer: null,
-	reverse: null,
-	elapsed: null,
-	duration: null,
-	delay: null,
-	curveMap: null,
-	easingMap: null,
-	pointImage: null,
-	previewImage: null,
-	startPoint: null,
-	endPoint: null,
+	list: null as any,
+	curve: null as any,
+	preview: null as any,
+	data: null as any,
+	points: null as any,
+	dragging: null as any,
+	activePoint: null as any,
+	scale: null as any,
+	originX: null as any,
+	originY: null as any,
+	timer: null as any,
+	reverse: null as any,
+	elapsed: null as any,
+	duration: null as any,
+	delay: null as any,
+	curveMap: null as any,
+	easingMap: null as any,
+	pointImage: null as any,
+	previewImage: null as any,
+	startPoint: null as any,
+	endPoint: null as any,
 	changed: false,
-	initialize: null,
-	get: null,
-	clear: null,
-	open: null,
-	load: null,
-	insert: null,
-	copy: null,
-	paste: null,
-	delete: null,
-	createId: null,
-	createData: null,
-	setEasingKey: null,
-	getItemById: null,
-	updateMaps: null,
-	updateCanvases: null,
-	drawCurve: null,
-	drawPreview: null,
-	updatePoints: null,
-	selectPointByCoords: null,
-	createPointImage: null,
-	createPreviewImage: null,
-	requestRendering: null,
-	renderingFunction: null,
-	stopRendering: null,
-	windowClose: null,
-	windowClosed: null,
-	dprchange: null,
-	themechange: null,
-	dataChange: null,
-	listKeydown: null,
-	listSelect: null,
-	listOpen: null,
-	listPopup: null,
-	modeSelect: null,
-	pointInput: null,
-	scaleInput: null,
-	curveKeydown: null,
-	curvePointerdown: null,
-	curveWheel: null,
-	curveBlur: null,
-	pointerup: null,
-	pointermove: null,
-	reverseInput: null,
-	durationInput: null,
-	delayInput: null,
-	confirm: null,
-	CurveMap: null,
-	EasingMap: null,
+	initialize: null as any,
+	get: null as any,
+	clear: null as any,
+	open: null as any,
+	load: null as any,
+	insert: null as any,
+	copy: null as any,
+	paste: null as any,
+	delete: null as any,
+	createId: null as any,
+	createData: null as any,
+	setEasingKey: null as any,
+	getItemById: null as any,
+	updateMaps: null as any,
+	updateCanvases: null as any,
+	drawCurve: null as any,
+	drawPreview: null as any,
+	updatePoints: null as any,
+	selectPointByCoords: null as any,
+	createPointImage: null as any,
+	createPreviewImage: null as any,
+	requestRendering: null as any,
+	renderingFunction: null as any,
+	stopRendering: null as any,
+	windowClose: null as any,
+	windowClosed: null as any,
+	dprchange: null as any,
+	themechange: null as any,
+	dataChange: null as any,
+	listKeydown: null as any,
+	listSelect: null as any,
+	listOpen: null as any,
+	listPopup: null as any,
+	modeSelect: null as any,
+	pointInput: null as any,
+	scaleInput: null as any,
+	curveKeydown: null as any,
+	curvePointerdown: null as any,
+	curveWheel: null as any,
+	curveBlur: null as any,
+	pointerup: null as any,
+	pointermove: null as any,
+	reverseInput: null as any,
+	durationInput: null as any,
+	delayInput: null as any,
+	confirm: null as any,
+	CurveMap: null as any,
+	EasingMap: null as any,
 	list_saveSelection: null as any,
 	list_restoreSelection: null as any,
 	list_updateNodeElement: null as any,
@@ -242,9 +242,9 @@ Easing.initialize = () => {
 };
 
 (() => {
-	const maps = {};
-	const linear = { map: (a) => a };
-	const get = (id) => {
+	const maps = {} as Record<string, any>;
+	const linear = { map: (a: any) => a };
+	const get = (id: any) => {
 		const map = maps[id];
 		if (map !== undefined) {
 			return map;
@@ -272,7 +272,7 @@ Easing.initialize = () => {
 	Easing.clear = clear;
 })();
 
-Easing.open = function () {
+Easing.open = function (this: any) {
 	getWindow().open('easing');
 
 	this.data = Object.clone(Data.easings);
@@ -296,7 +296,7 @@ Easing.open = function () {
 	getFocus(this.list);
 };
 
-Easing.load = function (easing) {
+Easing.load = function (this: any, easing: any) {
 	const points = easing.points;
 	this.points = points;
 
@@ -313,20 +313,20 @@ Easing.load = function (easing) {
 	}
 
 	this.updateMaps();
-	this.requestRendering();
+	this.requestRendering!();
 };
 
-Easing.insert = function (dItem) {
+Easing.insert = function (this: any, dItem: any) {
 	this.list.addNodeTo(this.createData(), dItem);
 };
 
-Easing.copy = function (item) {
+Easing.copy = function (this: any, item: any) {
 	if (item) {
 		(Clipboard as any).write('yami.data.easing', item);
 	}
 };
 
-Easing.paste = function (dItem) {
+Easing.paste = function (this: any, dItem: any) {
 	const copy = (Clipboard as any).read('yami.data.easing');
 	if (copy) {
 		copy.name += ' - Copy';
@@ -335,7 +335,7 @@ Easing.paste = function (dItem) {
 	}
 };
 
-Easing.delete = function (item) {
+Easing.delete = function (this: any, item: any) {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
@@ -361,7 +361,7 @@ Easing.delete = function (item) {
 	}
 };
 
-Easing.createId = function () {
+Easing.createId = function (this: any) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -369,7 +369,7 @@ Easing.createId = function () {
 	return id;
 };
 
-Easing.createData = function () {
+Easing.createData = function (this: any) {
 	return {
 		id: this.createId(),
 		key: '',
@@ -381,15 +381,15 @@ Easing.createData = function () {
 	};
 };
 
-Easing.setEasingKey = function (item) {
-	SetKey.open(item.key, (key) => {
+Easing.setEasingKey = function (this: any, item: any) {
+	SetKey.open!(item.key, (key: any) => {
 		item.key = key;
 		this.changed = true;
 		this.list.updateKeyTextNode(item);
 	});
 };
 
-Easing.getItemById = function (id) {
+Easing.getItemById = function (this: any, id: any) {
 	const { data } = this;
 	const { length } = data;
 	for (let i = 0; i < length; i++) {
@@ -400,13 +400,13 @@ Easing.getItemById = function (id) {
 	return undefined;
 };
 
-Easing.updateMaps = function () {
+Easing.updateMaps = function (this: any) {
 	const { startPoint, endPoint } = this;
 	this.curveMap.update(startPoint, ...this.points, endPoint);
 	this.easingMap.update(startPoint, ...this.points, endPoint);
 };
 
-Easing.updateCanvases = function () {
+Easing.updateCanvases = function (this: any) {
 	const { curve } = this;
 	const { width: cWidth, height: cHeight } = CSS.getDevicePixelContentBoxSize(curve);
 	if (curve.width !== cWidth || curve.height !== cHeight) {
@@ -431,7 +431,7 @@ Easing.updateCanvases = function () {
 	}
 };
 
-Easing.drawCurve = function () {
+Easing.drawCurve = function (this: any) {
 	const canvas = this.curve;
 	const scale = this.scale;
 	const width = canvas.width;
@@ -566,7 +566,7 @@ Easing.drawCurve = function () {
 	}
 };
 
-Easing.drawPreview = function () {
+Easing.drawPreview = function (this: any) {
 	const canvas = this.preview;
 	const width = canvas.width;
 	const height = canvas.height;
@@ -627,7 +627,7 @@ Easing.drawPreview = function () {
 	}
 };
 
-Easing.updatePoints = function () {
+Easing.updatePoints = function (this: any) {
 	const read = getElementReader('easing');
 	const count = read('mode');
 	const points = this.points;
@@ -643,7 +643,7 @@ Easing.updatePoints = function () {
 	}
 };
 
-Easing.selectPointByCoords = function (mouseX, mouseY) {
+Easing.selectPointByCoords = function (this: any, mouseX: any, mouseY: any) {
 	let target = null;
 	let weight = 0;
 	const canvas = this.curve;
@@ -664,8 +664,8 @@ Easing.selectPointByCoords = function (mouseX, mouseY) {
 		const distY = Math.abs(point.y - y);
 		if (
 			(distX <= 0.1 && distY <= 0.1) ||
-			(ifSelectUpper && distX <= 0.1 && point.y > borderY) ||
-			(ifSelectLower && distX <= 0.1 && point.y < borderY)
+			(ifSelectUpper && distX <= 0.1 && point.y > borderY!) ||
+			(ifSelectLower && distX <= 0.1 && point.y < borderY!)
 		) {
 			const w = -Math.hypot(distX, distY);
 			if (target === null || weight < w) {
@@ -681,23 +681,23 @@ Easing.selectPointByCoords = function (mouseX, mouseY) {
 	return target;
 };
 
-Easing.createPointImage = function () {
+Easing.createPointImage = function (this: any) {
 	if (!this.pointImage) {
-		File.get({
+		File.get!({
 			local: 'Images/curve_mark.png',
 			type: 'image'
-		}).then((image) => {
+		}).then((image: any) => {
 			this.pointImage = image;
 		});
 	}
 };
 
-Easing.createPreviewImage = function () {
+Easing.createPreviewImage = function (this: any) {
 	if (!this.previewImage) {
 		const canvas = document.createElement('canvas');
 		canvas.width = 480;
 		canvas.height = 120;
-		const context = canvas.getContext('2d');
+		const context = canvas.getContext('2d')!;
 		const y = (canvas.height - 64) / 2 + 64 * 0.85;
 		context.fillStyle = '#000000';
 		context.fillRect(0, 0, 480, 120);
@@ -712,21 +712,21 @@ Easing.createPreviewImage = function () {
 	}
 };
 
-Easing.requestRendering = function () {
+Easing.requestRendering = function (this: any) {
 	if (this.data !== null) {
-		Timer.appendUpdater('sharedRendering', this.renderingFunction);
+		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
 
-Easing.renderingFunction = function () {
+Easing.renderingFunction = function (this: any) {
 	Easing.drawCurve();
 };
 
-Easing.stopRendering = function () {
-	Timer.removeUpdater('sharedRendering', this.renderingFunction);
+Easing.stopRendering = function (this: any) {
+	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-Easing.windowClose = function (event) {
+Easing.windowClose = function (this: any, event: any) {
 	if (Easing.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
@@ -750,7 +750,7 @@ Easing.windowClose = function (event) {
 	}
 };
 
-Easing.windowClosed = function (event) {
+Easing.windowClosed = function (this: any, event: any) {
 	this.list.saveSelection();
 	this.curve.blur();
 	this.timer.remove();
@@ -764,14 +764,14 @@ Easing.windowClosed = function (event) {
 	this.stopRendering();
 }.bind(Easing);
 
-Easing.dprchange = function (event) {
+Easing.dprchange = function (this: any, event: any) {
 	if (this.data !== null) {
 		this.updateCanvases();
 		this.requestRendering();
 	}
 }.bind(Easing);
 
-Easing.themechange = function (event) {
+Easing.themechange = function (this: any, event: any) {
 	const canvas = this.curve;
 	switch (event.value) {
 		case 'light':
@@ -794,11 +794,11 @@ Easing.themechange = function (event) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.dataChange = function (event) {
+Easing.dataChange = function (this: any, event: any) {
 	this.changed = true;
 }.bind(Easing);
 
-Easing.listKeydown = function (event) {
+Easing.listKeydown = function (this: any, event: any) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -823,15 +823,15 @@ Easing.listKeydown = function (event) {
 	}
 };
 
-Easing.listSelect = function (event) {
+Easing.listSelect = function (this: any, event: any) {
 	Easing.load(event.value);
 };
 
-Easing.listOpen = function (event) {
+Easing.listOpen = function (this: any, event: any) {
 	Easing.setEasingKey(event.value);
 };
 
-Easing.listPopup = function (event) {
+Easing.listPopup = function (this: any, event: any) {
 	const list = Easing.list;
 	const item = event.value;
 	const selected = !!item;
@@ -894,7 +894,7 @@ Easing.listPopup = function (event) {
 	);
 };
 
-Easing.modeSelect = function (event) {
+Easing.modeSelect = function (this: any, event: any) {
 	this.updatePoints();
 	const points = this.points;
 	const easingMap = this.easingMap;
@@ -960,7 +960,7 @@ Easing.modeSelect = function (event) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.pointInput = function (event) {
+Easing.pointInput = function (this: any, event: any) {
 	const key = Inspector.getKey(this);
 	const value = read(this);
 	const keys = key.split('-');
@@ -977,12 +977,12 @@ Easing.pointInput = function (event) {
 	Easing.requestRendering();
 };
 
-Easing.scaleInput = function (event) {
+Easing.scaleInput = function (this: any, event: any) {
 	this.scale = event.value;
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.curveKeydown = function (event) {
+Easing.curveKeydown = function (this: any, event: any) {
 	const point = this.activePoint;
 	if (point !== null) {
 		switch (event.code) {
@@ -1030,7 +1030,7 @@ Easing.curveKeydown = function (event) {
 	}
 }.bind(Easing);
 
-Easing.curvePointerdown = function (event) {
+Easing.curvePointerdown = function (this: any, event: any) {
 	switch (event.button) {
 		case 0: {
 			const coords = getRelativeCoords(event, this.curve);
@@ -1050,7 +1050,7 @@ Easing.curvePointerdown = function (event) {
 	}
 }.bind(Easing);
 
-Easing.curveWheel = function (event) {
+Easing.curveWheel = function (this: any, event: any) {
 	if (!this.dragging && event.deltaY !== 0) {
 		const radios = document.getElementsByName('easing-scale');
 		const length = radios.length;
@@ -1067,7 +1067,7 @@ Easing.curveWheel = function (event) {
 	}
 }.bind(Easing);
 
-Easing.curveBlur = function (event) {
+Easing.curveBlur = function (this: any, event: any) {
 	this.pointerup();
 	if (this.activePoint !== null) {
 		this.activePoint = null;
@@ -1075,7 +1075,7 @@ Easing.curveBlur = function (event) {
 	}
 }.bind(Easing);
 
-Easing.pointerup = function (event) {
+Easing.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -1090,7 +1090,7 @@ Easing.pointerup = function (event) {
 	}
 }.bind(Easing);
 
-Easing.pointermove = function (event) {
+Easing.pointermove = function (this: any, event: any) {
 	if (this.activePoint !== null) {
 		const dragging = this.dragging;
 		const point = this.activePoint;
@@ -1112,11 +1112,11 @@ Easing.pointermove = function (event) {
 	}
 }.bind(Easing);
 
-Easing.reverseInput = function (event) {
+Easing.reverseInput = function (this: any, event: any) {
 	Easing.reverse = read(this);
 };
 
-Easing.durationInput = function (event) {
+Easing.durationInput = function (this: any, event: any) {
 	Easing.duration = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'playing') {
@@ -1126,7 +1126,7 @@ Easing.durationInput = function (event) {
 	}
 };
 
-Easing.delayInput = function (event) {
+Easing.delayInput = function (this: any, event: any) {
 	Easing.delay = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'waiting') {
@@ -1136,7 +1136,7 @@ Easing.delayInput = function (event) {
 	}
 };
 
-Easing.confirm = function (event) {
+Easing.confirm = function (this: any, event: any) {
 	if (this.changed) {
 		this.changed = false;
 		this.clear();
@@ -1144,7 +1144,7 @@ Easing.confirm = function (event) {
 		TreeList.deleteCaches(easings);
 		Data.easings = easings;
 		Data.createGUIDMap(easings);
-		File.planToSave(Data.manifest.project.easings);
+		File.planToSave!(Data.manifest.project.easings);
 		const datachange = new Event('datachange');
 		datachange.key = 'easings';
 		window.dispatchEvent(datachange);
@@ -1154,13 +1154,13 @@ Easing.confirm = function (event) {
 
 // 三次方曲线映射表类 - 必须使用Float64 因为Float32会导致部分点参数出现绘制BUG:线条变粗 Chromium78-89都存在这个BUG而Chromium69是正常的
 Easing.CurveMap = class CurveMap extends Float64Array {
-	count: number;
+	count!: number;
 
 	constructor() {
 		super(6002);
 	}
 
-	update(...points) {
+	update(...points: any[]) {
 		const length = points.length - 1;
 		for (let i = 0; i < length; i += 3) {
 			const { x: x0, y: y0 } = points[i];
@@ -1193,7 +1193,7 @@ Easing.EasingMap = (function IIFE() {
 			super(SCALE + 1);
 		}
 
-		update(...points) {
+		update(...points: any[]) {
 			const length = points.length - 1;
 			let pos = -1;
 			for (let i = 0; i < length; i += 3) {
@@ -1244,7 +1244,7 @@ Easing.EasingMap = (function IIFE() {
 	};
 })();
 
-Easing.list_saveSelection = function () {
+Easing.list_saveSelection = function (this: any) {
 	const { easings } = Data;
 	if (easings.selection === undefined) {
 		Object.defineProperty(easings, 'selection', {
@@ -1258,7 +1258,7 @@ Easing.list_saveSelection = function () {
 	}
 };
 
-Easing.list_restoreSelection = function () {
+Easing.list_restoreSelection = function (this: any) {
 	const id = Data.easings.selection;
 	const item = Easing.getItemById(id) ?? this.data[0];
 	this.select(item);
@@ -1266,7 +1266,7 @@ Easing.list_restoreSelection = function () {
 	this.scrollToSelection();
 };
 
-Easing.list_updateNodeElement = function (element) {
+Easing.list_updateNodeElement = function (this: any, element: any) {
 	const { item } = element;
 	if (!element.textNode) {
 		const textNode = document.createTextNode('');
@@ -1285,16 +1285,16 @@ Easing.list_updateNodeElement = function (element) {
 	}
 };
 
-Easing.list_updateItemName = function (item) {
+Easing.list_updateItemName = function (this: any, item: any) {
 	this.updateTextNode(item);
 	this.updateKeyTextNode(item);
 };
 
-Easing.list_addElementClass = function (item) {
+Easing.list_addElementClass = function (this: any, item: any) {
 	addClass(item.element, 'plain');
 };
 
-Easing.list_updateTextNode = function (item) {
+Easing.list_updateTextNode = function (this: any, item: any) {
 	const textNode = item.element.textNode;
 	const items = item.parent.children;
 	const index = items.indexOf(item);
@@ -1307,7 +1307,7 @@ Easing.list_updateTextNode = function (item) {
 	}
 };
 
-Easing.list_createKeyTextNode = function (item) {
+Easing.list_createKeyTextNode = function (this: any, item: any) {
 	const keyTextNode = document.createElement('div');
 	keyTextNode.key = '';
 	addClass(keyTextNode, 'variable-init-text');
@@ -1316,7 +1316,7 @@ Easing.list_createKeyTextNode = function (item) {
 	item.element.keyTextNode = keyTextNode;
 };
 
-Easing.list_updateKeyTextNode = function (item) {
+Easing.list_updateKeyTextNode = function (this: any, item: any) {
 	const keyTextNode = item.element.keyTextNode;
 	const key = item.key;
 	if (keyTextNode.key !== key) {
