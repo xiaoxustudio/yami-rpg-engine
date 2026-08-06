@@ -48,6 +48,41 @@ export interface DataMapShape {
 	[guid: string]: any;
 }
 
+// 数组列表类数据（loadFile 从 Data/xxx.json 加载——运行期附加 map 等属性，legacy 经 Data:any 访问）
+export interface DataListShape extends Array<any> {
+	items?: { name: string; value: any }[];
+}
+
+// 变量树节点（createVariableMap 递归 map——children 表示分组）
+export interface VariableNodeShape {
+	id: string;
+	name: string;
+	value?: any;
+	note?: string;
+	sort?: number;
+	children?: VariableNodeShape[];
+}
+
+// 变量列表（树形——运行期附加 map）
+export interface VariablesShape extends Array<VariableNodeShape> {}
+
+// 队伍数据（createTeamMap：list 数组 + map）
+export interface TeamsShape {
+	list: any[];
+	map?: Record<string, any>;
+}
+
+// 本地化数据（createLocalizationMap：list 数组 + map）
+export interface LocalizationShape {
+	list: any[];
+	map?: Record<string, any>;
+}
+
+// 属性/枚举数据（createAttributeContext/createEnumerationContext：数组 + context）
+export interface ContextDataShape extends Array<any> {
+	context?: any;
+}
+
 export interface DataShape {
 	manifest: ManifestShape | null;
 	scenePresets: Record<string, ScenePresetShape> | null;
@@ -65,13 +100,13 @@ export interface DataShape {
 	animations: DataMapShape | null;
 	particles: DataMapShape | null;
 	tilesets: DataMapShape | null;
-	easings: any | null;
-	teams: any | null;
-	autotiles: any | null;
-	variables: any | null;
-	attribute: any | null;
-	enumeration: any | null;
-	localization: any | null;
+	easings: DataListShape | null;
+	teams: TeamsShape | null;
+	autotiles: DataListShape | null;
+	variables: VariablesShape | null;
+	attribute: ContextDataShape | null;
+	enumeration: ContextDataShape | null;
+	localization: LocalizationShape | null;
 	plugins: any | null;
 	commands: any | null;
 	config: any | null;

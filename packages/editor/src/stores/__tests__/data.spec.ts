@@ -43,6 +43,20 @@ describe('useDataStore（Data 状态桥接）', () => {
 		expect(store.data.tilesets?.t1.name).toBe('Grass');
 	});
 
+	it('数组列表类结构（easings/variables/teams/localization/attribute）', () => {
+		const store = getDataStore();
+		store.setData('easings', [{ id: 'e1', name: 'Linear' }]);
+		store.setData('variables', [{ id: 'v1', name: 'HP', value: 100, children: [] }]);
+		store.setData('teams', { list: [{ id: 't1', name: 'TeamA' }] });
+		store.setData('localization', { list: [{ id: 'l1', name: 'en-US' }] });
+		store.setData('attribute', [{ id: 'a1', name: 'AttrA' }]);
+		expect(store.data.easings?.[0].name).toBe('Linear');
+		expect(store.data.variables?.[0].value).toBe(100);
+		expect(store.data.teams?.list[0].name).toBe('TeamA');
+		expect(store.data.localization?.list[0].name).toBe('en-US');
+		expect(store.data.attribute?.[0].name).toBe('AttrA');
+	});
+
 	it('setData 单项赋值可读回', () => {
 		const store = getDataStore();
 		store.setData('actors', { a1: { id: 'a1' } });
