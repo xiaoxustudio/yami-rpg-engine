@@ -264,12 +264,10 @@ Palette.initialize = function () {
 	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
 	on($('#fileTileset-general-detail'), 'toggle', this.windowResize);
-	on(this.screen, 'keydown', this.screenKeydown);
-	on(this.screen, 'wheel', this.screenWheel);
+	// keydown/wheel 经 Vue 模板转发（FileTilesetPage @keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
-	on(this.marquee, 'pointerdown', this.marqueePointerdown);
-	on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
+	// marquee pointerdown/doubleclick 经 Vue 模板转发（FileTilesetPage @pointerdown/@doubleclick）；pointermove/pointerleave 仍由 switch 系列动态挂接
 
 	AutoTile.initialize();
 	FrameGenerator.initialize();

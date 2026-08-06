@@ -1,6 +1,12 @@
 <template>
 	<div class="box" id="title" @pointerenter="onTitlePointerenter">
-		<div class="box" id="menu">
+		<div
+			class="box"
+			id="menu"
+			@pointerdown="onMenuPointerdown"
+			@pointerup="onMenuPointerup"
+			@pointerover="onMenuPointerover"
+		>
 			<div class="item menu-item" id="menu-file" value="file">File</div>
 			<div class="item menu-item" id="menu-edit" value="edit">Edit</div>
 			<div class="item menu-item" id="menu-view" value="view">View</div>
@@ -84,6 +90,15 @@ const onTabBarClosed = (event: any) => {
 };
 const onTabBarPopup = (event: any) => {
 	(window as any).Title?.tabBarPopup?.(event);
+};
+const onMenuPointerdown = (event: PointerEvent) => {
+	(window as any).Menubar?.pointerdown?.(event);
+};
+const onMenuPointerup = (event: PointerEvent) => {
+	(window as any).Menubar?.pointerup?.(event);
+};
+const onMenuPointerover = (event: PointerEvent) => {
+	(window as any).Menubar?.pointerover?.(event);
 };
 
 const toolModules = import.meta.glob('./components/tools/*.vue');

@@ -104,9 +104,7 @@ export const Menubar: MenubarShape = {
 Menubar.initialize = function () {
 	// 侦听事件
 	window.addEventListener('keydown', this.keydown);
-	$('#menu').addEventListener('pointerdown', this.pointerdown);
-	$('#menu').addEventListener('pointerup', this.pointerup);
-	$('#menu').addEventListener('pointerover', this.pointerover);
+	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
 	$('.href').forEach((el: HTMLElement) => el.addEventListener('click', this.hrefClick!));
 };
 

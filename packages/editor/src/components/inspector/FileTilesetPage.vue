@@ -51,8 +51,18 @@
 	<div class="box" id="palette-body">
 		<div class="box" id="palette-frame">
 			<canvas id="palette-canvas" width="0" height="0"></canvas>
-			<div class="box" id="palette-screen" tabindex="-1">
-				<MarqueeArea id="palette-marquee"></MarqueeArea>
+			<div
+				class="box"
+				id="palette-screen"
+				tabindex="-1"
+				@keydown="onScreenKeydown"
+				@wheel="onScreenWheel"
+			>
+				<MarqueeArea
+					id="palette-marquee"
+					@pointerdown="onMarqueePointerdown"
+					@doubleclick="onMarqueeDoubleclick"
+				></MarqueeArea>
 			</div>
 		</div>
 		<div class="text" id="palette-info">{{ paletteInfo }}</div>
@@ -163,6 +173,22 @@ const onZoomInput = (value: number) => {
 const onZoomFocus = () => {
 	const P = (window as any).Palette;
 	if (P?.screen) focus(P.screen);
+};
+
+const onScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).Palette?.screenKeydown?.(event);
+};
+
+const onScreenWheel = (event: WheelEvent) => {
+	(window as any).Palette?.screenWheel?.(event);
+};
+
+const onMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).Palette?.marqueePointerdown?.(event);
+};
+
+const onMarqueeDoubleclick = (event: PointerEvent) => {
+	(window as any).Palette?.marqueeDoubleclick?.(event);
 };
 
 const paletteInfo = computed(() => {
