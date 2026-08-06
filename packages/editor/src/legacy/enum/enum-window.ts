@@ -327,8 +327,7 @@ Enum.initialize = function () {
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
 	// list select/record/open/popup 经 Vue 模板转发（Enum.vue @select/@record/@open/@popup → Enum.list*）
-	on(this.inputs.name, 'input', this.nameInput);
-	on(this.inputs.value, 'input', this.valueInput);
+	// name/value input 经 Vue 模板转发（Enum.vue @input → Enum.nameInput/valueInput）
 	on(this.inputs.note, 'input', this.noteInput);
 	on(this.inputs.note, 'compositionend', this.noteInput);
 	on(this.panel, 'keydown', this.panelKeydown);

@@ -18,8 +18,8 @@
 				<div class="flex-box" id="attribute-properties-flex">
 					<div class="flex-item"
 						><div class="text">Name</div
-						><TextBox id="attribute-name" menu="tag-localization" /></div>
-					<div class="flex-item"><div class="text">Key</div><TextBox id="attribute-key" /></div>
+						><TextBox id="attribute-name" menu="tag-localization" @input="onNameInput" /></div>
+					<div class="flex-item"><div class="text">Key</div><TextBox id="attribute-key" @input="onKeyInput" /></div>
 					<div class="flex-item" id="attribute-type-box"
 						><div class="text">Type</div>
 						<RadioBox
@@ -97,6 +97,12 @@ const onListOpen = (event: any) => {
 };
 const onListPopup = (event: any) => {
 	(window as any).Attribute?.listPopup?.(event);
+};
+const onNameInput = (value: string) => {
+	(window as any).Attribute?.nameInput?.({ target: { value } });
+};
+const onKeyInput = (value: string) => {
+	(window as any).Attribute?.keyInput?.({ target: { value } });
 };
 
 onMounted(() => {

@@ -263,7 +263,7 @@ Variable.initialize = function () {
 		capture: true
 	});
 	// list select/record/popup/open 经 Vue 模板转发（Variable.vue @select/@record/@popup/@open → Variable.list*）
-	on(this.inputs.name, 'input', this.nameInput);
+	// name input 经 Vue 模板转发（Variable.vue @input → Variable.nameInput）
 	on(this.inputs.sort, 'write', this.sortWrite);
 	on(this.inputs.sort, 'input', this.sortInput);
 	on(this.inputs.type, 'write', this.typeWrite);

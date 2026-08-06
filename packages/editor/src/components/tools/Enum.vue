@@ -17,9 +17,9 @@
 				<div class="legend">Properties</div>
 				<div class="flex-box" id="enum-properties-flex">
 					<div class="flex-item"
-						><div class="text">Name</div><TextBox id="enum-name" menu="tag-localization" /></div>
+						><div class="text">Name</div><TextBox id="enum-name" menu="tag-localization" @input="onNameInput" /></div>
 					<div class="flex-item"
-						><div class="text">Value</div><TextBox id="enum-value" menu="tag-localization" /></div>
+						><div class="text">Value</div><TextBox id="enum-value" menu="tag-localization" @input="onValueInput" /></div>
 					<div class="flex-item" id="enum-spacing-box" />
 					<div class="flex-item"><div class="text">Note</div><TextArea id="enum-note" /></div>
 				</div>
@@ -53,6 +53,12 @@ const onListOpen = (event: any) => {
 };
 const onListPopup = (event: any) => {
 	(window as any).Enum?.listPopup?.(event);
+};
+const onNameInput = (value: string) => {
+	(window as any).Enum?.nameInput?.({ target: { value } });
+};
+const onValueInput = (value: string) => {
+	(window as any).Enum?.valueInput?.({ target: { value } });
 };
 
 onMounted(() => {

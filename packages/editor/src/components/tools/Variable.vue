@@ -17,7 +17,7 @@
 			<div class="field-set" id="variable-properties-fieldset">
 				<div class="legend">Properties</div>
 				<div class="flex-box" id="variable-properties-flex">
-					<div class="flex-item"><div class="text">Name</div><TextBox id="variable-name" /></div>
+					<div class="flex-item"><div class="text">Name</div><TextBox id="variable-name" @input="onNameInput" /></div>
 					<div class="flex-item"
 						><div class="text">Sort</div>
 						<RadioBox
@@ -140,6 +140,9 @@ const onListPopup = (event: any) => {
 };
 const onListOpen = (event: any) => {
 	(window as any).Variable?.listOpen?.(event);
+};
+const onNameInput = (value: string) => {
+	(window as any).Variable?.nameInput?.({ target: { value } });
 };
 
 onMounted(() => {

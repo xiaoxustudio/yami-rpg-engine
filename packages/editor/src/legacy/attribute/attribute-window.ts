@@ -259,8 +259,7 @@ Attribute.initialize = function () {
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
 	// list select/record/open/popup 经 Vue 模板转发（Attribute.vue @select/@record/@open/@popup → Attribute.list*）
-	on(this.inputs.name, 'input', this.nameInput);
-	on(this.inputs.key, 'input', this.keyInput);
+	// name/key input 经 Vue 模板转发（Attribute.vue @input → Attribute.nameInput/keyInput）
 	on(this.inputs.type, 'write', this.typeWrite);
 	on(this.inputs.type, 'input', this.typeInput);
 	on(this.inputs.enum, 'input', this.enumInput);
