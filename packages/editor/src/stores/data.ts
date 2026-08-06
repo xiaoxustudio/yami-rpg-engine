@@ -31,19 +31,41 @@ export interface ManifestShape {
 	code: string;
 }
 
+// 场景预设映射（registerScenePresets 写入：sceneId + 数据节点）
+export interface ScenePresetShape {
+	sceneId: string;
+	data: any;
+}
+
+// UI 预设映射（registerUiPresets 写入：uiId + 数据节点）
+export interface UiPresetShape {
+	uiId: string;
+	data: any;
+}
+
+// guid → 数据对象映射（createDataMaps 初始化为 {}）
+export interface DataMapShape {
+	[guid: string]: any;
+}
+
 // Phase 10——逐步补齐类型（宽类型起步——随迁移细化）
 export interface DataShape {
 	manifest: ManifestShape | null;
-	scenePresets: any | null;
-	uiPresets: any | null;
-	actors: any | null;
-	skills: any | null;
-	triggers: any | null;
-	items: any | null;
-	equipments: any | null;
-	states: any | null;
-	events: any | null;
-	scripts: any | null;
+	scenePresets: Record<string, ScenePresetShape> | null;
+	uiPresets: Record<string, UiPresetShape> | null;
+	actors: DataMapShape | null;
+	skills: DataMapShape | null;
+	triggers: DataMapShape | null;
+	items: DataMapShape | null;
+	equipments: DataMapShape | null;
+	states: DataMapShape | null;
+	events: DataMapShape | null;
+	scripts: DataMapShape | null;
+	scenes: DataMapShape | null;
+	ui: DataMapShape | null;
+	animations: DataMapShape | null;
+	particles: DataMapShape | null;
+	tilesets: DataMapShape | null;
 	easings: any | null;
 	teams: any | null;
 	autotiles: any | null;
@@ -54,11 +76,6 @@ export interface DataShape {
 	plugins: any | null;
 	commands: any | null;
 	config: any | null;
-	scenes: any | null;
-	ui: any | null;
-	animations: any | null;
-	particles: any | null;
-	tilesets: any | null;
 }
 
 export const dataKeys: (keyof DataShape)[] = [

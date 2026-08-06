@@ -279,3 +279,16 @@ Local.showInExplorer = function () {
 			return 'showInFinder';
 	}
 };
+
+import { localStateKeys, getLocalStore } from '@app/stores/local';
+
+for (const key of localStateKeys) {
+	Object.defineProperty(Local, key, {
+		get: () => getLocalStore()[key],
+		set: (value: any) => {
+			const store = getLocalStore();
+			(store as any)[key] = value;
+		},
+		configurable: true
+	});
+}
