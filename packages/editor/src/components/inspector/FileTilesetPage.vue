@@ -1,15 +1,36 @@
 <template>
 	<div class="box" id="palette-head">
 		<div class="box" id="palette-head-start">
-			<div id="palette-scroll" class="item toolbar-item" value="scroll"></div>
+			<div
+				id="palette-scroll"
+				class="item toolbar-item"
+				value="scroll"
+				:class="{ selected: palette.scrollable }"
+			></div>
 			<div
 				id="palette-priority"
 				class="item toolbar-item"
 				value="priority"
+				:class="{ selected: palette.mode === 'priority' }"
 			></div>
-			<div id="palette-tag" class="item toolbar-item" value="tag"></div>
-			<div id="palette-terrain" class="item toolbar-item" value="terrain"></div>
-			<div id="palette-edit" class="item toolbar-item" value="edit"></div>
+			<div
+				id="palette-tag"
+				class="item toolbar-item"
+				value="tag"
+				:class="{ selected: palette.mode === 'tag' }"
+			></div>
+			<div
+				id="palette-terrain"
+				class="item toolbar-item"
+				value="terrain"
+				:class="{ selected: palette.mode === 'terrain' }"
+			></div>
+			<div
+				id="palette-edit"
+				class="item toolbar-item"
+				value="edit"
+				:class="{ selected: palette.mode === 'edit' }"
+			></div>
 			<div
 				id="palette-flip"
 				class="item toolbar-item"
@@ -32,7 +53,7 @@
 				<MarqueeArea id="palette-marquee"></MarqueeArea>
 			</div>
 		</div>
-		<div class="text" id="palette-info"></div>
+		<div class="text" id="palette-info">{{ paletteInfo }}</div>
 	</div>
 	<DetailBox id="fileTileset-general-detail" open>
 		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
@@ -83,9 +104,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { usePaletteStore } from '@app/stores/palette';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -95,9 +117,22 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+const palette = usePaletteStore();
+
+// Phase 10——info 文本移交 Vue 渲染（对齐 legacy updateInfo 逻辑）
+const paletteInfo = computed(() => {
+	const tileset = palette.tileset;
+	const index = palette.activeIndex;
+	if (!tileset || index === null || index === undefined) return '';
+	if (index < 0 || index >= tileset.tags.length) return '';
+	const x = index % tileset.width;
+	const y = (index / tileset.width) | 0;
+	return `${x},${y} tag:${tileset.tags[index]}`;
+});
 
 onMounted(() => {
 	scene.syncState();
 	local.syncState();
+	palette.syncState();
 });
 </script>

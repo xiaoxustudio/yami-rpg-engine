@@ -22,6 +22,7 @@ import { UpdateLog } from '@/log/update-log-window.ts';
 import { Editor } from './editor.ts';
 import { EventBus } from '@/module/eventbus.ts';
 import { SetTileTag } from '@/module/global.ts';
+import { Palette } from '@/palette/palette.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Printer } from '@/printer/printer.ts';
@@ -64,6 +65,7 @@ Object.assign(window as any, {
 	Reference,
 	UpdateLog,
 	SetTileTag,
+	Palette,
 	Particle,
 	PluginManager,
 	Printer,

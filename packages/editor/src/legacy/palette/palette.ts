@@ -688,22 +688,8 @@ Palette.updateBackground = function () {
 };
 
 Palette.updateInfo = function (index = this.activeIndex) {
-	const info = this.info;
-	if (!info) return;
-	const tileset = this.tileset;
-	if (!tileset || index === null || index === undefined) {
-		info.textContent = '';
-		return;
-	}
-	const width = tileset.width;
-	if (index < 0 || index >= tileset.tags.length) {
-		info.textContent = '';
-		return;
-	}
-	const x = index % width;
-	const y = (index / width) | 0;
-	const tag = tileset.tags[index];
-	info.textContent = `${x},${y} tag:${tag}`;
+	// Phase 10——info 文本渲染移交 Vue（FileTilesetPage computed），此处仅更新状态
+	getPaletteStore().setActiveIndex(index);
 };
 
 Palette.createMarkCanvas = function () {
@@ -2237,3 +2223,16 @@ Palette.pointermove = function (event) {
 		}
 	}
 }.bind(Palette);
+
+// Phase 10——状态先行：Palette 工具栏状态经 Pinia store 承载（legacy Palette.xxx 访问零改动）
+import { paletteStateKeys, getPaletteStore } from '@app/stores/palette';
+
+for (const key of paletteStateKeys) {
+	Object.defineProperty(Palette, key, {
+		get: () => getPaletteStore()[key],
+		set: (value: any) => {
+			(getPaletteStore() as any)[key] = value;
+		},
+		configurable: true
+	});
+}
