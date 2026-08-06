@@ -262,10 +262,7 @@ Variable.initialize = function () {
 	on(list, 'pointerdown', (Reference.getPointerdownListener as any)(list), {
 		capture: true
 	});
-	on(list, 'select', this.listSelect);
-	on(list, 'record', this.listRecord);
-	on(list, 'popup', this.listPopup);
-	on(list, 'open', this.listOpen);
+	// list select/record/popup/open 经 Vue 模板转发（Variable.vue @select/@record/@popup/@open → Variable.list*）
 	on(this.inputs.name, 'input', this.nameInput);
 	on(this.inputs.sort, 'write', this.sortWrite);
 	on(this.inputs.sort, 'input', this.sortInput);

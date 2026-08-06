@@ -258,10 +258,7 @@ Attribute.initialize = function () {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
-	on(list, 'select', this.listSelect);
-	on(list, 'record', this.listRecord);
-	on(list, 'open', this.listOpen);
-	on(list, 'popup', this.listPopup);
+	// list select/record/open/popup 经 Vue 模板转发（Attribute.vue @select/@record/@open/@popup → Attribute.list*）
 	on(this.inputs.name, 'input', this.nameInput);
 	on(this.inputs.key, 'input', this.keyInput);
 	on(this.inputs.type, 'write', this.typeWrite);

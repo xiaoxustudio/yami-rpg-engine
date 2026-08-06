@@ -4,7 +4,14 @@
 		
 			<div class="field-set input pad" id="enum-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="enum-list" padded />
+				<TreeList
+					id="enum-list"
+					padded
+					@select="onListSelect"
+					@record="onListRecord"
+					@open="onListOpen"
+					@popup="onListPopup"
+				/>
 			</div>
 			<div class="field-set" id="enum-properties-fieldset">
 				<div class="legend">Properties</div>
@@ -34,6 +41,19 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onListSelect = (event: any) => {
+	(window as any).Enum?.listSelect?.(event);
+};
+const onListRecord = (event: any) => {
+	(window as any).Enum?.listRecord?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).Enum?.listOpen?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).Enum?.listPopup?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

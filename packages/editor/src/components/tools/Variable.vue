@@ -5,7 +5,14 @@
 		
 			<div class="field-set input pad" id="variable-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="variable-list" padded />
+				<TreeList
+					id="variable-list"
+					padded
+					@select="onListSelect"
+					@record="onListRecord"
+					@popup="onListPopup"
+					@open="onListOpen"
+				/>
 			</div>
 			<div class="field-set" id="variable-properties-fieldset">
 				<div class="legend">Properties</div>
@@ -121,6 +128,19 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onListSelect = (event: any) => {
+	(window as any).Variable?.listSelect?.(event);
+};
+const onListRecord = (event: any) => {
+	(window as any).Variable?.listRecord?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).Variable?.listPopup?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).Variable?.listOpen?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();
