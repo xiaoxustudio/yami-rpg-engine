@@ -168,19 +168,14 @@ Localization.initialize = function () {
 	};
 
 	on($('#localization'), 'close', this.windowClose);
-	on($('#localization'), 'closed', this.windowClosed);
+
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
 	on(list, 'pointerdown', (Reference.getPointerdownListener as any)(list), {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
-	on(list, 'select', this.listSelect);
-	on(list, 'record', this.listRecord);
-	on(list, 'open', this.listOpen);
-	on(list, 'popup', this.listPopup);
-	on(this.panel, 'input', this.panelInput);
-	on(this.panel, 'keydown', this.panelKeydown);
+	// list select/record/open/popup 经 Vue 模板转发（Localization.vue @select/@record/@open/@popup → Localization.list*）
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 	on($('#localization-confirm'), 'click', this.confirm);
@@ -514,6 +509,7 @@ Localization.listOpen = function (event: any) {
 };
 
 Localization.listPopup = function (this: any, event: any) {
+	const list = Localization.list;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
@@ -528,14 +524,14 @@ Localization.listPopup = function (this: any, event: any) {
 				{
 					label: get('create.folder'),
 					click: () => {
-						this.addNodeTo(this.createFolder(), item);
+						list.addNodeTo(list.createFolder(), item);
 					}
 				},
 				{
 					label: get('create.text'),
 					accelerator: 'Insert',
 					click: () => {
-						this.addNodeTo(this.createItem(), item);
+						list.addNodeTo(list.createItem(), item);
 					}
 				}
 			]
@@ -545,7 +541,7 @@ Localization.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -553,7 +549,7 @@ Localization.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -561,7 +557,7 @@ Localization.listPopup = function (this: any, event: any) {
 			accelerator: 'Delete',
 			enabled: selected,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -569,7 +565,7 @@ Localization.listPopup = function (this: any, event: any) {
 			accelerator: 'F2',
 			enabled: selected,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

@@ -4,7 +4,13 @@
 		
 			<div class="field-set input pad" id="plugin-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="plugin-list" padded />
+				<TreeList
+					id="plugin-list"
+					padded
+					@select="onListSelect"
+					@popup="onListPopup"
+					@open="onListOpen"
+				/>
 			</div>
 			<div class="box" id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
@@ -35,6 +41,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+const onListSelect = (event: any) => {
+	(window as any).PluginManager?.listSelect?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).PluginManager?.listPopup?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).PluginManager?.listOpen?.(event);
+};
+
 
 onMounted(() => {
 	inspector.syncState();

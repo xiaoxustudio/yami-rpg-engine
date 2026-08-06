@@ -136,11 +136,9 @@ PluginManager.initialize = function () {
 	on($('#plugin'), 'close', this.windowClose);
 	on($('#plugin'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.listKeydown);
-	on(list, 'select', this.listSelect);
+	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect);
 	on(list, 'change', this.listChange);
-	on(list, 'popup', this.listPopup);
-	on(list, 'open', this.listOpen);
 	on(list, 'pointerdown', ScriptListInterface.listPointerdown);
 	on(this.overview, 'pointerdown', this.overviewPointerdown);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate);
@@ -1746,6 +1744,7 @@ PluginManager.listChange = function (event) {
 };
 
 PluginManager.listPopup = function (event) {
+	const list = PluginManager.list;
 	const item = event.value;
 	const selected = !!item;
 	const pastable = (Clipboard as any).has('yami.data.plugin');
@@ -1762,14 +1761,14 @@ PluginManager.listPopup = function (event) {
 				accelerator: 'Enter',
 				enabled: selected,
 				click: () => {
-					this.edit(item);
+					list.edit(item);
 				}
 			},
 			{
 				label: get('insert'),
 				accelerator: 'Insert',
 				click: () => {
-					this.insert(item);
+					list.insert(item);
 				}
 			},
 			{
@@ -1777,7 +1776,7 @@ PluginManager.listPopup = function (event) {
 				accelerator: '/',
 				enabled: selected,
 				click: () => {
-					this.toggle(item);
+					list.toggle(item);
 				}
 			},
 			{
@@ -1785,7 +1784,7 @@ PluginManager.listPopup = function (event) {
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					this.copy(item);
+					list.copy(item);
 				}
 			},
 			{
@@ -1793,7 +1792,7 @@ PluginManager.listPopup = function (event) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste(item);
+					list.paste(item);
 				}
 			},
 			{
@@ -1801,7 +1800,7 @@ PluginManager.listPopup = function (event) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					this.delete(item);
+					list.delete(item);
 				}
 			}
 		]

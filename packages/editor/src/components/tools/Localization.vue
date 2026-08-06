@@ -4,7 +4,14 @@
 		
 			<div class="field-set input pad" id="localization-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="localization-list" padded />
+				<TreeList
+					id="localization-list"
+					padded
+					@select="onListSelect"
+					@record="onListRecord"
+					@open="onListOpen"
+					@popup="onListPopup"
+				/>
 			</div>
 			<div class="box" id="localization-inspector" />
 			<TextBox id="localization-searcher" name="search" />
@@ -25,6 +32,19 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onListSelect = (event: any) => {
+	(window as any).Localization?.listSelect?.(event);
+};
+const onListRecord = (event: any) => {
+	(window as any).Localization?.listRecord?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).Localization?.listOpen?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).Localization?.listPopup?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

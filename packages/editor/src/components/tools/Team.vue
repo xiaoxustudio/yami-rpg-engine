@@ -4,7 +4,11 @@
 		<template #title><TitleBar>Team<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="team-list-fieldset">
-				<TreeList id="team-list" />
+				<TreeList
+					id="team-list"
+					@select="onListSelect"
+					@popup="onListPopup"
+				/>
 			</div>
 		
 	</WindowFrame>
@@ -20,6 +24,13 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onListSelect = (event: any) => {
+	(window as any).Team?.listSelect?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).Team?.listPopup?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

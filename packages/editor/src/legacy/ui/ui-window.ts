@@ -2866,6 +2866,7 @@ UI.listRecord = function (this: any, event: any) {
 };
 
 UI.listPopup = function (this: any, event: any) {
+	const list = UI.list;
 	const item = event.value;
 	const menuItems = [];
 	const get = Local.createGetter('menuUIList');
@@ -2880,67 +2881,67 @@ UI.listPopup = function (this: any, event: any) {
 			{
 				label: get('create.image'),
 				click: () => {
-					this.addNodeTo(Inspector.uiImage.create(), item);
+					list.addNodeTo(Inspector.uiImage.create(), item);
 				}
 			},
 			{
 				label: get('create.text'),
 				click: () => {
-					this.addNodeTo(Inspector.uiText.create(), item);
+					list.addNodeTo(Inspector.uiText.create(), item);
 				}
 			},
 			{
 				label: get('create.textBox'),
 				click: () => {
-					this.addNodeTo(Inspector.uiTextBox.create(), item);
+					list.addNodeTo(Inspector.uiTextBox.create(), item);
 				}
 			},
 			{
 				label: get('create.dialogBox'),
 				click: () => {
-					this.addNodeTo(Inspector.uiDialogBox.create(), item);
+					list.addNodeTo(Inspector.uiDialogBox.create(), item);
 				}
 			},
 			{
 				label: get('create.progressBar'),
 				click: () => {
-					this.addNodeTo(Inspector.uiProgressBar.create(), item);
+					list.addNodeTo(Inspector.uiProgressBar.create(), item);
 				}
 			},
 			{
 				label: get('create.button'),
 				click: () => {
-					this.addNodeTo(Inspector.uiButton.create(), item);
+					list.addNodeTo(Inspector.uiButton.create(), item);
 				}
 			},
 			{
 				label: get('create.animation'),
 				click: () => {
-					this.addNodeTo(Inspector.uiAnimation.create(), item);
+					list.addNodeTo(Inspector.uiAnimation.create(), item);
 				}
 			},
 			{
 				label: get('create.video'),
 				click: () => {
-					this.addNodeTo(Inspector.uiVideo.create(), item);
+					list.addNodeTo(Inspector.uiVideo.create(), item);
 				}
 			},
 			{
 				label: get('create.window'),
 				click: () => {
-					this.addNodeTo(Inspector.uiWindow.create(), item);
+					list.addNodeTo(Inspector.uiWindow.create(), item);
 				}
 			},
 			{
 				label: get('create.container'),
 				click: () => {
-					this.addNodeTo(Inspector.uiContainer.create(), item);
+					list.addNodeTo(Inspector.uiContainer.create(), item);
 				}
 			},
 			{
 				label: get('create.reference'),
 				click: () => {
-					this.addNodeTo(Inspector.uiReference.create(), item);
+					list.addNodeTo(Inspector.uiReference.create(), item);
 				}
 			},
 			{
@@ -2966,7 +2967,7 @@ UI.listPopup = function (this: any, event: any) {
 				label: get('toggle'),
 				accelerator: '/',
 				click: () => {
-					this.toggle(item);
+					list.toggle(item);
 				}
 			}
 		);
@@ -2980,8 +2981,8 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('X'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
-				this.delete(item);
+				list.copy(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -2989,7 +2990,7 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -2997,7 +2998,7 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -3005,7 +3006,7 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: ctrl('D'),
 			enabled: copyable,
 			click: () => {
-				this.duplicate(item);
+				list.duplicate(item);
 			}
 		},
 		{
@@ -3013,7 +3014,7 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: 'Delete',
 			enabled: deletable,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{

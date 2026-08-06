@@ -27,6 +27,8 @@
 							name="attribute-type"
 							class="standard"
 							value="boolean"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="attribute-type-boolean-label">Boolean</div></RadioBox
 						>
 						<RadioBox
@@ -34,6 +36,8 @@
 							name="attribute-type"
 							class="standard"
 							value="number"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="attribute-type-number-label">Number</div></RadioBox
 						>
 						<RadioBox
@@ -41,6 +45,8 @@
 							name="attribute-type"
 							class="standard"
 							value="string"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="attribute-type-string-label">String</div></RadioBox
 						>
 						<RadioBox
@@ -48,6 +54,8 @@
 							name="attribute-type"
 							class="standard"
 							value="enum"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="attribute-type-enum-label">String(Enum)</div></RadioBox
 						>
 						<RadioBox
@@ -55,6 +63,8 @@
 							name="attribute-type"
 							class="standard"
 							value="object"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="attribute-type-object-label"
 								>Object(For Element)</div
 							></RadioBox
@@ -103,6 +113,20 @@ const onNameInput = (value: string) => {
 };
 const onKeyInput = (value: string) => {
 	(window as any).Attribute?.keyInput?.({ target: { value } });
+};
+let lastTypeValue: any;
+let lastTypeWriteValue: any;
+const onTypeInput = (value: any) => {
+	if (lastTypeValue !== value) {
+		lastTypeValue = value;
+		(window as any).Attribute?.typeInput?.({ value });
+	}
+};
+const onTypeWrite = (value: any) => {
+	if (lastTypeWriteValue !== value) {
+		lastTypeWriteValue = value;
+		(window as any).Attribute?.typeWrite?.({ value });
+	}
 };
 
 onMounted(() => {

@@ -1407,6 +1407,7 @@ Scene.listRecord = function (event) {
 };
 
 Scene.listPopup = function (event) {
+	const list = Scene.list;
 	const item = event.value;
 	const menuItems: any[] = [];
 	const get = Local.createGetter('menuSceneList');
@@ -1453,7 +1454,7 @@ Scene.listPopup = function (event) {
 					},
 					{
 						label: get('shortcut'),
-						submenu: this.createTilemapShortcutItems(item)
+						submenu: list.createTilemapShortcutItems(item)
 					}
 				);
 				break;
@@ -1489,50 +1490,50 @@ Scene.listPopup = function (event) {
 				{
 					label: get('create.folder'),
 					click: () => {
-						this.addNodeTo(this.createFolder(), item);
+						list.addNodeTo(list.createFolder(), item);
 					}
 				},
 				{
 					label: get('create.actor'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneActor.create(), item);
+						list.addNodeTo(Inspector.sceneActor.create(), item);
 					}
 				},
 				{
 					label: get('create.region'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneRegion.create(), item);
+						list.addNodeTo(Inspector.sceneRegion.create(), item);
 					}
 				},
 				{
 					label: get('create.light'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneLight.create(), item);
+						list.addNodeTo(Inspector.sceneLight.create(), item);
 					}
 				},
 				{
 					label: get('create.animation'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneAnimation.create(), item);
+						list.addNodeTo(Inspector.sceneAnimation.create(), item);
 					}
 				},
 				{
 					label: get('create.particle'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneParticle.create(), item);
+						list.addNodeTo(Inspector.sceneParticle.create(), item);
 					}
 				},
 				{
 					label: get('create.parallax'),
 					click: () => {
-						this.addNodeTo(Inspector.sceneParallax.create(), item);
+						list.addNodeTo(Inspector.sceneParallax.create(), item);
 					}
 				},
 				{
 					label: get('create.tilemap'),
 					click: () => {
 						Inspector.fileTileset.close();
-						this.addNodeTo(
+						list.addNodeTo(
 							Inspector.sceneTilemap.create(Scene.width, Scene.height),
 							item
 						);
@@ -1545,7 +1546,7 @@ Scene.listPopup = function (event) {
 			accelerator: '/',
 			enabled: copyable,
 			click: () => {
-				this.toggle(item);
+				list.toggle(item);
 			}
 		},
 		{
@@ -1556,8 +1557,8 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('X'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
-				this.delete(item);
+				list.copy(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -1565,7 +1566,7 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -1573,7 +1574,7 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -1581,7 +1582,7 @@ Scene.listPopup = function (event) {
 			accelerator: ctrl('D'),
 			enabled: copyable,
 			click: () => {
-				this.duplicate(item);
+				list.duplicate(item);
 			}
 		},
 		{
@@ -1589,7 +1590,7 @@ Scene.listPopup = function (event) {
 			accelerator: 'Delete',
 			enabled: deletable,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -1597,7 +1598,7 @@ Scene.listPopup = function (event) {
 			accelerator: 'F2',
 			enabled: renamable,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

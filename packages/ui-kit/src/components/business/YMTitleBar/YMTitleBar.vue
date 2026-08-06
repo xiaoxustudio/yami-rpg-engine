@@ -26,10 +26,19 @@ const on = (
 
 const pointerdown = (event: PointerEvent): void => {
 	const element = root.value;
-	if (!element || dragging) {
+	if (!element) {
 		return;
 	}
-	if (event.button !== 0 || event.target !== element) {
+	if (dragging) {
+		// 防模块级 dragging 残留（拖拽中 pointerup 丢失时阻断后续所有窗口拖拽）
+		(dragging as PointerEvent & { cancel?(event?: Event): void }).cancel?.();
+		dragging = null;
+	}
+	if (event.button !== 0 || !(event.target instanceof Node) || !element.contains(event.target)) {
+		return;
+	}
+	const target = event.target as HTMLElement;
+	if (hasClass(target, 'close') || hasClass(target, 'maximize') || hasClass(target, 'minimize')) {
 		return;
 	}
 	const windowFrame = element.parentNode as HTMLElement;

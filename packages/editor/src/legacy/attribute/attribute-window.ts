@@ -260,8 +260,7 @@ Attribute.initialize = function () {
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
 	// list select/record/open/popup 经 Vue 模板转发（Attribute.vue @select/@record/@open/@popup → Attribute.list*）
 	// name/key input 经 Vue 模板转发（Attribute.vue @input → Attribute.nameInput/keyInput）
-	on(this.inputs.type, 'write', this.typeWrite);
-	on(this.inputs.type, 'input', this.typeInput);
+	// type write/input 经 Vue 模板转发（Attribute.vue @write/@input → Attribute.typeWrite/typeInput）
 	on(this.inputs.enum, 'input', this.enumInput);
 	on(this.inputs.note, 'input', this.noteInput);
 	on(this.inputs.note, 'compositionend', this.noteInput);
@@ -655,6 +654,7 @@ Attribute.listOpen = function (event) {
 };
 
 Attribute.listPopup = function (event) {
+	const list = Attribute.list;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
@@ -669,14 +669,14 @@ Attribute.listPopup = function (event) {
 				{
 					label: get('create.folder'),
 					click: () => {
-						this.addNodeTo(this.createFolder(), item);
+						list.addNodeTo(list.createFolder(), item);
 					}
 				},
 				{
 					label: get('create.attribute'),
 					accelerator: 'Insert',
 					click: () => {
-						this.addNodeTo(this.createAttribute(), item);
+						list.addNodeTo(list.createAttribute(), item);
 					}
 				}
 			]
@@ -686,7 +686,7 @@ Attribute.listPopup = function (event) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -694,7 +694,7 @@ Attribute.listPopup = function (event) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -702,7 +702,7 @@ Attribute.listPopup = function (event) {
 			accelerator: 'Delete',
 			enabled: selected,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -710,7 +710,7 @@ Attribute.listPopup = function (event) {
 			accelerator: 'F2',
 			enabled: selected,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

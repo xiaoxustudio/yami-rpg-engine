@@ -717,6 +717,7 @@ Enum.listOpen = function (event) {
 };
 
 Enum.listPopup = function (event) {
+	const list = Enum.list;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
@@ -731,14 +732,14 @@ Enum.listPopup = function (event) {
 				{
 					label: get('create.folder'),
 					click: () => {
-						this.addNodeTo(this.createFolder(), item);
+						list.addNodeTo(list.createFolder(), item);
 					}
 				},
 				{
 					label: get('create.string'),
 					accelerator: 'Insert',
 					click: () => {
-						this.addNodeTo(this.createString(), item);
+						list.addNodeTo(list.createString(), item);
 					}
 				}
 			]
@@ -748,7 +749,7 @@ Enum.listPopup = function (event) {
 			accelerator: ctrl('C'),
 			enabled: copyable,
 			click: () => {
-				this.copy(item);
+				list.copy(item);
 			}
 		},
 		{
@@ -756,7 +757,7 @@ Enum.listPopup = function (event) {
 			accelerator: ctrl('V'),
 			enabled: pastable,
 			click: () => {
-				this.paste(item);
+				list.paste(item);
 			}
 		},
 		{
@@ -764,7 +765,7 @@ Enum.listPopup = function (event) {
 			accelerator: 'Delete',
 			enabled: selected,
 			click: () => {
-				this.delete(item);
+				list.delete(item);
 			}
 		},
 		{
@@ -772,7 +773,7 @@ Enum.listPopup = function (event) {
 			accelerator: 'F2',
 			enabled: selected,
 			click: () => {
-				this.rename(item);
+				list.rename(item);
 			}
 		},
 		{

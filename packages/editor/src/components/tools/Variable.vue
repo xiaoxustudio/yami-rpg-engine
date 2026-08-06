@@ -25,6 +25,8 @@
 							name="variable-sort"
 							class="standard"
 							value="0"
+							@input="onSortInput"
+							@write="onSortWrite"
 							><div class="text" id="variable-sort-normal-label">Normal</div></RadioBox
 						>
 						<RadioBox
@@ -32,6 +34,8 @@
 							name="variable-sort"
 							class="standard"
 							value="1"
+							@input="onSortInput"
+							@write="onSortWrite"
 							><div class="text" id="variable-sort-shared-label">Shared</div></RadioBox
 						>
 						<RadioBox
@@ -39,6 +43,8 @@
 							name="variable-sort"
 							class="standard"
 							value="2"
+							@input="onSortInput"
+							@write="onSortWrite"
 							><div class="text" id="variable-sort-temporary-label">Temporary</div></RadioBox
 						>
 					</div>
@@ -49,6 +55,8 @@
 							name="variable-type"
 							class="standard"
 							value="boolean"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="variable-type-boolean-label">Boolean</div></RadioBox
 						>
 						<RadioBox
@@ -56,6 +64,8 @@
 							name="variable-type"
 							class="standard"
 							value="number"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="variable-type-number-label">Number</div></RadioBox
 						>
 						<RadioBox
@@ -63,6 +73,8 @@
 							name="variable-type"
 							class="standard"
 							value="string"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="variable-type-string-label">String</div></RadioBox
 						>
 						<RadioBox
@@ -70,6 +82,8 @@
 							name="variable-type"
 							class="standard"
 							value="object"
+							@input="onTypeInput"
+							@write="onTypeWrite"
 							><div class="text" id="variable-type-object-label">Object</div></RadioBox
 						>
 					</div>
@@ -143,6 +157,34 @@ const onListOpen = (event: any) => {
 };
 const onNameInput = (value: string) => {
 	(window as any).Variable?.nameInput?.({ target: { value } });
+};
+let lastSortValue: any;
+let lastSortWriteValue: any;
+let lastTypeValue: any;
+let lastTypeWriteValue: any;
+const onSortInput = (value: any) => {
+	if (lastSortValue !== value) {
+		lastSortValue = value;
+		(window as any).Variable?.sortInput?.({ value });
+	}
+};
+const onSortWrite = (value: any) => {
+	if (lastSortWriteValue !== value) {
+		lastSortWriteValue = value;
+		(window as any).Variable?.sortWrite?.({ value });
+	}
+};
+const onTypeInput = (value: any) => {
+	if (lastTypeValue !== value) {
+		lastTypeValue = value;
+		(window as any).Variable?.typeInput?.({ value });
+	}
+};
+const onTypeWrite = (value: any) => {
+	if (lastTypeWriteValue !== value) {
+		lastTypeWriteValue = value;
+		(window as any).Variable?.typeWrite?.({ value });
+	}
 };
 
 onMounted(() => {

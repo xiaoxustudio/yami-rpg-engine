@@ -93,9 +93,8 @@ Team.initialize = function () {
 	on($('#team'), 'closed', this.windowClosed);
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
-	on(list, 'select', this.listSelect);
+	// list select/popup 经 Vue 模板转发（Team.vue @select/@popup → Team.list*）
 	on(list, 'change', this.listChange);
-	on(list, 'popup', this.listPopup);
 	on($('#team-confirm'), 'click', this.confirm);
 };
 
@@ -316,6 +315,7 @@ Team.listChange = function (event) {
 };
 
 Team.listPopup = function (event) {
+	const list = Team.list;
 	const item = event.value;
 	const length = Team.data.length;
 	const selected = !!item;
@@ -334,7 +334,7 @@ Team.listPopup = function (event) {
 				accelerator: 'Insert',
 				enabled: insertable,
 				click: () => {
-					this.insert(item);
+					list.insert(item);
 				}
 			},
 			{
@@ -342,7 +342,7 @@ Team.listPopup = function (event) {
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					this.copy(item);
+					list.copy(item);
 				}
 			},
 			{
@@ -350,7 +350,7 @@ Team.listPopup = function (event) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					this.paste(item);
+					list.paste(item);
 				}
 			},
 			{
@@ -358,7 +358,7 @@ Team.listPopup = function (event) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					this.delete(item);
+					list.delete(item);
 				}
 			},
 			{
@@ -366,7 +366,7 @@ Team.listPopup = function (event) {
 				accelerator: 'F2',
 				enabled: selected,
 				click: () => {
-					this.rename(item);
+					list.rename(item);
 				}
 			}
 		]
