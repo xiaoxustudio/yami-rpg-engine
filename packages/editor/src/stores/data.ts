@@ -48,7 +48,6 @@ export interface DataMapShape {
 	[guid: string]: any;
 }
 
-// Phase 10——逐步补齐类型（宽类型起步——随迁移细化）
 export interface DataShape {
 	manifest: ManifestShape | null;
 	scenePresets: Record<string, ScenePresetShape> | null;

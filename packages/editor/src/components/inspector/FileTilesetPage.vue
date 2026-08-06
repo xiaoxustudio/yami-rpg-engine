@@ -1,6 +1,6 @@
 <template>
-	<div class="box" id="palette-head">
-		<div class="box" id="palette-head-start">
+	<div class="box" id="palette-head" @pointerdown="onHeadPointerdown">
+		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
 				id="palette-scroll"
 				class="item toolbar-item"
@@ -44,6 +44,8 @@
 			min="0"
 			max="4"
 			hotkey="-/+"
+			@input="onZoomInput"
+			@focus="onZoomFocus"
 		/>
 	</div>
 	<div class="box" id="palette-body">
@@ -105,6 +107,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import { focus } from '@/util/element-utils';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { usePaletteStore } from '@app/stores/palette';
@@ -119,7 +122,49 @@ const scene = useSceneStore();
 const local = useLocalStore();
 const palette = usePaletteStore();
 
-// Phase 10——info 文本移交 Vue 渲染（对齐 legacy updateInfo 逻辑）
+const onHeadPointerdown = (event: PointerEvent) => {
+	if (!(event.target instanceof HTMLInputElement)) {
+		event.preventDefault();
+		const P = (window as any).Palette;
+		if (P?.screen && document.activeElement !== P.screen) {
+			focus(P.screen);
+		}
+	}
+};
+
+const onToolbarPointerdown = (event: PointerEvent) => {
+	if (event.button !== 0) return;
+	const element = event.target as HTMLElement;
+	const P = (window as any).Palette;
+	if (!P || !element.classList.contains('item')) return;
+	switch (element.getAttribute('value')) {
+		case 'scroll':
+			return P.switchScroll();
+		case 'priority':
+			return P.switchPriority();
+		case 'tag':
+			return P.switchTag();
+		case 'terrain':
+			return P.switchTerrain();
+		case 'edit':
+			if (P.tileset?.type === 'auto') {
+				return P.switchEdit();
+			}
+			return;
+		case 'flip':
+			return P.flipTiles();
+	}
+};
+
+const onZoomInput = (value: number) => {
+	(window as any).Palette?.setZoom?.(value);
+};
+
+const onZoomFocus = () => {
+	const P = (window as any).Palette;
+	if (P?.screen) focus(P.screen);
+};
+
 const paletteInfo = computed(() => {
 	const tileset = palette.tileset;
 	const index = palette.activeIndex;

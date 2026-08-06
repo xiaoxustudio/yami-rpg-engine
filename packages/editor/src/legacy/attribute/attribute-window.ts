@@ -1101,7 +1101,6 @@ Attribute.list_onResume = function (item) {
 	Attribute.register(item);
 };
 
-// Phase 10——状态先行：Attribute 窗口状态经 Pinia store 承载（legacy Attribute.xxx 访问零改动）
 for (const key of attributeStateKeys) {
 	Object.defineProperty(Attribute, key, {
 		get: () => getAttributeStore().state[key],

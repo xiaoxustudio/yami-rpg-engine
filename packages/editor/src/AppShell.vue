@@ -10,10 +10,16 @@
 		</div>
 		<TabBar id="title-tabBar" />
 		<div class="box" id="title-buttons">
-			<div class="box" id="title-play" hotkey="F4">&#xf04b;</div>
-			<div class="minimize" id="title-minimize"></div>
-			<div class="maximize" id="title-maximize"></div>
-			<div class="close" id="title-close"></div>
+			<div
+				class="box"
+				id="title-play"
+				hotkey="F4"
+				:class="{ selected: title.playing }"
+				@click="onPlayClick"
+			>&#xf04b;</div>
+			<div class="minimize" id="title-minimize" @click="onMinimizeClick"></div>
+			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
+			<div class="close" id="title-close" @click="onCloseClick"></div>
 		</div>
 	</div>
 	<LayoutPanel />
@@ -46,6 +52,22 @@ import TabBar from './components/common/TabBar.vue';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
 import { defineAsyncComponent } from 'vue';
+import { useTitleStore } from '@app/stores/title';
+
+const title = useTitleStore();
+
+const onPlayClick = () => {
+	(window as any).Title?.playGame?.();
+};
+const onMinimizeClick = () => {
+	(window as any).Title?.minimizeClick?.();
+};
+const onMaximizeClick = () => {
+	(window as any).Title?.maximizeClick?.();
+};
+const onCloseClick = () => {
+	(window as any).Title?.closeClick?.();
+};
 
 const toolModules = import.meta.glob('./components/tools/*.vue');
 const commandModules = import.meta.glob('./components/commands/*.vue');

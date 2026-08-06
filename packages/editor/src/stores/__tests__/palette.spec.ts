@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getPaletteStore, paletteStateKeys } from '@app/stores/palette';
 
-describe('usePaletteStore（Phase 10——Palette 工具栏状态桥接）', () => {
+describe('usePaletteStore（Palette 工具栏状态桥接）', () => {
 	it('初始状态默认值', () => {
 		const store = getPaletteStore();
 		expect(store.state).toBe('closed');

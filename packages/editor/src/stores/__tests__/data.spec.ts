@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getDataStore, dataKeys } from '@app/stores/data';
 
-describe('useDataStore（Phase 10——Data 状态桥接）', () => {
+describe('useDataStore（Data 状态桥接）', () => {
 	it('setManifest 承载 manifest 且可读回', () => {
 		const store = getDataStore();
 		store.setManifest({ guidMap: { g1: { id: 'x' } } } as any);

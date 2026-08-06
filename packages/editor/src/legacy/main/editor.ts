@@ -34,7 +34,6 @@ export const Editor: EditorShape = {
 	set state(value: EditorState) {
 		getEditorStore().setState(value);
 	},
-	// config/project 经 Pinia store 承载（Phase 10——DOM 全面 Vue 化——状态先行）
 	get config(): EditorConfigShape | null {
 		return getEditorStore().config;
 	},

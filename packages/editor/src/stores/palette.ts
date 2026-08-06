@@ -2,11 +2,9 @@ import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
-// Phase 10——Palette 工具栏状态（mode/zoom/scrollable 等经 Pinia 承载——legacy Palette.xxx 访问零改动）
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';
 export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
 
-// Phase 10——逐步补齐类型（tileset 为 Data.tilesets 数据对象——随迁移细化）
 export interface PaletteShape {
 	state: PaletteState;
 	mode: PaletteMode;

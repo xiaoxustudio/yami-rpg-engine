@@ -3,12 +3,9 @@ import {
 	addClass,
 	addScrollbars,
 	clear,
-	focus,
-	hasClass,
 	hide,
 	off,
 	on,
-	read,
 	rect,
 	removeClass,
 	show,
@@ -137,10 +134,6 @@ export const Palette = {
 	loadFromProject: null,
 	windowResize: null,
 	themechange: null,
-	headPointerdown: null,
-	toolbarPointerdown: null,
-	zoomFocus: null,
-	zoomInput: null,
 	screenKeydown: null,
 	screenWheel: null,
 	screenUserscroll: null,
@@ -271,10 +264,6 @@ Palette.initialize = function () {
 	window.addEventListener('themechange', this.themechange);
 	on(this.page, 'resize', this.windowResize);
 	on($('#fileTileset-general-detail'), 'toggle', this.windowResize);
-	on($('#palette-head-start'), 'pointerdown', this.toolbarPointerdown);
-	on($('#palette-zoom'), 'focus', this.zoomFocus);
-	on($('#palette-zoom'), 'input', this.zoomInput);
-	on(this.head, 'pointerdown', this.headPointerdown);
 	on(this.screen, 'keydown', this.screenKeydown);
 	on(this.screen, 'wheel', this.screenWheel);
 	on(this.screen, 'userscroll', this.screenUserscroll);
@@ -688,7 +677,6 @@ Palette.updateBackground = function () {
 };
 
 Palette.updateInfo = function (index = this.activeIndex) {
-	// Phase 10——info 文本渲染移交 Vue（FileTilesetPage computed），此处仅更新状态
 	getPaletteStore().setActiveIndex(index);
 };
 
@@ -1560,51 +1548,6 @@ Palette.themechange = function (event) {
 	this.requestRendering();
 }.bind(Palette);
 
-Palette.headPointerdown = function (event) {
-	if (!(event.target instanceof HTMLInputElement)) {
-		event.preventDefault();
-		if (document.activeElement !== Palette.screen) {
-			focus(Palette.screen);
-		}
-	}
-};
-
-Palette.toolbarPointerdown = function (event) {
-	switch (event.button) {
-		case 0: {
-			const element = event.target;
-			if (hasClass(element, 'item')) {
-				switch (element.getAttribute('value')) {
-					case 'scroll':
-						return Palette.switchScroll();
-					case 'priority':
-						return Palette.switchPriority();
-					case 'tag':
-						return Palette.switchTag();
-					case 'terrain':
-						return Palette.switchTerrain();
-					case 'edit':
-						if (Palette.tileset.type === 'auto') {
-							return Palette.switchEdit();
-						}
-						return;
-					case 'flip':
-						return Palette.flipTiles();
-				}
-			}
-			break;
-		}
-	}
-};
-
-Palette.zoomFocus = function (event) {
-	focus(Palette.screen);
-};
-
-Palette.zoomInput = function (event) {
-	Palette.setZoom(read(this));
-};
-
 Palette.screenKeydown = function (event) {
 	switch (event.code) {
 		case 'Space':
@@ -2224,7 +2167,6 @@ Palette.pointermove = function (event) {
 	}
 }.bind(Palette);
 
-// Phase 10——状态先行：Palette 工具栏状态经 Pinia store 承载（legacy Palette.xxx 访问零改动）
 import { paletteStateKeys, getPaletteStore } from '@app/stores/palette';
 
 for (const key of paletteStateKeys) {

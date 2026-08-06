@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getLocalStore, localStateKeys } from '@app/stores/local';
 
-describe('useLocalStore（Phase 10——Local 全局状态桥接）', () => {
+describe('useLocalStore（Local 全局状态桥接）', () => {
 	it('初始状态默认值', () => {
 		const store = getLocalStore();
 		expect(store.language).toBe('en');

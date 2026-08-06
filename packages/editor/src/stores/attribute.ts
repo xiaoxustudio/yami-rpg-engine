@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 
-// Phase 10——Attribute 窗口状态（数据经 Pinia 承载——类型随迁移逐步补齐）
 export interface AttributeWindowState {
 	mode: string | null;
 	target: any | null;

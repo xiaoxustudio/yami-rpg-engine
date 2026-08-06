@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
-// Phase 10——Local 全局状态承载键（language/active/languages 经 Pinia 承载——legacy Local.xxx 访问零改动）
 export const localStateKeys = ['language', 'active', 'languages'] as const;
 
 export const useLocalStore = defineStore('local', () => {

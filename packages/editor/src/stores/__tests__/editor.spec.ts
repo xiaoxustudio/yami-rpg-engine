@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getEditorStore } from '@app/stores/editor';
 
-describe('useEditorStore（Phase 10——Editor.config 状态桥接）', () => {
+describe('useEditorStore（Editor.config 状态桥接）', () => {
 	it('setConfig 承载 config 且可读回', () => {
 		const store = getEditorStore();
 		store.setConfig({ language: 'zh-CN', version: '1.0.0' });

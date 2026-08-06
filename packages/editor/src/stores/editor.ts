@@ -4,7 +4,6 @@ import { pinia } from './pinia';
 
 type EditorState = 'closed' | 'open';
 
-// Phase 10——逐步补齐类型：Editor.config 结构（已知字段枚举——未枚举字段宽兜底，随迁移收紧）
 export interface EditorConfigShape {
 	language?: string;
 	version?: string;

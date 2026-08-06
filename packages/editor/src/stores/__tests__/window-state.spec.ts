@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 
-describe('useAttributeStore（Phase 10——Attribute 窗口状态桥接）', () => {
+describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
 		const store = getAttributeStore();
 		expect(store.state.mode).toBe(null);
@@ -30,7 +30,7 @@ describe('useAttributeStore（Phase 10——Attribute 窗口状态桥接）', ()
 	});
 });
 
-describe('useEnumStore（Phase 10——Enum 窗口状态桥接）', () => {
+describe('useEnumStore（Enum 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
 		const store = getEnumStore();
 		expect(store.state.mode).toBe(null);
@@ -55,7 +55,7 @@ describe('useEnumStore（Phase 10——Enum 窗口状态桥接）', () => {
 	});
 });
 
-describe('useVariableStore（Phase 10——Variable 窗口状态桥接）', () => {
+describe('useVariableStore（Variable 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
 		const store = getVariableStore();
 		expect(store.state.target).toBe(null);

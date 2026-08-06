@@ -284,7 +284,6 @@ Variable.initialize = function () {
 	on($('#variable-apply'), 'click', this.apply);
 };
 
-// Phase 10——状态先行：Variable 窗口状态经 Pinia store 承载（legacy Variable.xxx 访问零改动）
 for (const key of variableStateKeys) {
 	Object.defineProperty(Variable, key, {
 		get: () => getVariableStore().state[key],

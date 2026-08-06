@@ -167,10 +167,6 @@ Title.initialize = function () {
 	this.tabBar.on('select', this.tabBarSelect);
 	this.tabBar.on('closed', this.tabBarClosed);
 	this.tabBar.on('popup', this.tabBarPopup);
-	$('#title-play').addEventListener('click', this.playClick);
-	$('#title-minimize').addEventListener('click', this.minimizeClick);
-	$('#title-maximize').addEventListener('click', this.maximizeClick);
-	$('#title-close').addEventListener('click', this.closeClick);
 
 	ipcRenderer?.on?.('before-close-window', this.windowBeforeClose);
 	ipcRenderer?.on?.('maximize', this.windowMaximize);
@@ -356,7 +352,8 @@ Title.dispatchThemechangeEvent = (function IIFE() {
 
 Title.playGame = async function () {
 	const element = $('#title-play');
-	if (Editor.state === 'open' && !hasClass(element, 'selected')) {
+	if (Editor.state === 'open' && !getTitleStore().playing) {
+		getTitleStore().setPlaying(true);
 		addClass(element, 'selected');
 
 		const { activeElement } = document;
@@ -371,6 +368,7 @@ Title.playGame = async function () {
 
 		ipcRenderer.once('player-window-closed', (event) => {
 			removeClass(element, 'selected');
+			getTitleStore().setPlaying(false);
 		});
 	}
 };
@@ -693,3 +691,15 @@ Title.maximizeClick = function (event) {
 Title.closeClick = function (event) {
 	Title.windowBeforeClose();
 };
+
+import { titleStateKeys, getTitleStore } from '@app/stores/title';
+
+for (const key of titleStateKeys) {
+	Object.defineProperty(Title, key, {
+		get: () => getTitleStore()[key],
+		set: (value: any) => {
+			(getTitleStore() as any)[key] = value;
+		},
+		configurable: true
+	});
+}
