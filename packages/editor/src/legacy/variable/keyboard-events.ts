@@ -6,7 +6,7 @@ Variable.keydown = Shortcuts.createUndoRedo(Variable);
 
 Variable.listKeydown = function (this: any, event: any) {
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy(item);
@@ -44,7 +44,7 @@ Variable.panelKeydown = function (event: any) {
 	switch (event.target.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'Enter':
 					case 'NumpadEnter':

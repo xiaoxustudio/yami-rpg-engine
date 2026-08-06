@@ -1,3 +1,4 @@
+import { macRedoKey } from './dom';
 import { Timer } from './timer';
 import { dispatchChangeEvent } from './dom';
 
@@ -131,10 +132,10 @@ export class NumberHistory implements IEditableHistory {
 	}
 
 	inputKeydown(event: any) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyZ':
-					if (!event.macRedoKey) {
+					if (!macRedoKey(event)) {
 						this.history.canUndo() && this.history.restore('undo');
 						break;
 					}
@@ -398,10 +399,10 @@ export class TextHistory implements IEditableHistory {
 	}
 
 	inputKeydown(event: any) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyZ':
-					if (!event.macRedoKey) {
+					if (!macRedoKey(event)) {
 						this.history.canUndo() && this.history.restore('undo');
 						break;
 					}

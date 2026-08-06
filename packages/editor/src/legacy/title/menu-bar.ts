@@ -1,3 +1,4 @@
+import { macRedoKey } from '@/util/event-accessors';
 import { ipcRenderer } from 'electron';
 import { SettingConfig } from '@/module/settingconfig';
 import { $ } from '@/util/dom.ts';
@@ -961,7 +962,7 @@ Menubar.sanitizeFolderName = function (name) {
 
 // 键盘按下事件
 Menubar.keydown = function (event) {
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyN':
 				Title.newProject();
@@ -982,7 +983,7 @@ Menubar.keydown = function (event) {
 				Title.tabBar.close(Title.tabBar.read());
 				break;
 			case 'KeyZ':
-				if (!event.macRedoKey) {
+				if (!macRedoKey(event)) {
 					Scene.undo();
 					UI.undo();
 					Animation.undo();

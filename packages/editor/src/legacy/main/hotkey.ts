@@ -2,7 +2,7 @@ import { Editor } from './editor.ts';
 
 Editor.switchHotkey = (function IIFE() {
 	const keydown = function (event: any) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyN':
 				case 'KeyO':

@@ -1,5 +1,13 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, on, read, setTooltip, write } from '@/util/element-utils';
+import {
+	relate,
+	getRelativeCoords,
+	getFocus,
+	on,
+	read,
+	setTooltip,
+	write
+} from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -260,7 +268,7 @@ Color.palettePointerdown = function (event) {
 				window.addEventListener('pointermove', this.pointermove);
 			}
 			const canvas = $('#color-palette-canvas');
-			const coords = event.getRelativeCoords(canvas);
+			const coords = getRelativeCoords(event, canvas);
 			const x = Math.clamp(coords.x, 0, 255);
 			const y = Math.clamp(coords.y, 0, 193);
 			this.setPaletteCursor(x, y);
@@ -289,7 +297,7 @@ Color.pillarPointerdown = function (event) {
 				window.addEventListener('pointermove', this.pointermove);
 			}
 			const canvas = $('#color-pillar-canvas');
-			const coords = event.getRelativeCoords(canvas);
+			const coords = getRelativeCoords(event, canvas);
 			const y = Math.clamp(coords.y, 0, 255);
 			this.setPillarCursor(y);
 
@@ -363,7 +371,7 @@ Color.indexedColorPointerdown = function (event) {
 
 Color.pointerup = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
 		window.removeEventListener('pointermove', this.pointermove);
@@ -372,7 +380,7 @@ Color.pointerup = function (event) {
 
 Color.pointermove = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'palette':
 				return this.palettePointerdown(event);

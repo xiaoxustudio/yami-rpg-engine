@@ -1,3 +1,4 @@
+import { macRedoKey } from '@/util/event-accessors';
 export const ShortcutRegistry = {
 	shortcuts: {},
 
@@ -13,7 +14,7 @@ export const ShortcutRegistry = {
 export const Shortcuts = {
 	createClipboard(target: any) {
 		return function (event) {
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyC':
 						if (target.copy) {
@@ -48,10 +49,10 @@ export const Shortcuts = {
 
 	createUndoRedo(target: any) {
 		return function (event) {
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyZ':
-						if (!event.macRedoKey && target.undo) {
+						if (!macRedoKey(event) && target.undo) {
 							target.undo();
 						}
 						return true;
@@ -68,7 +69,7 @@ export const Shortcuts = {
 
 	createListOps(target: any) {
 		return function (event) {
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'KeyC':
 						if (target.copy) {
@@ -96,7 +97,7 @@ export const Shortcuts = {
 						}
 						return true;
 					case 'KeyZ':
-						if (!event.macRedoKey && target.undo) {
+						if (!macRedoKey(event) && target.undo) {
 							target.undo();
 						}
 						return true;
@@ -114,7 +115,7 @@ export const Shortcuts = {
 				return true;
 			}
 			if (event.code === 'Delete' || event.code === 'Backspace') {
-				if (event.cmdOrCtrlKey) {
+				if (event.ctrlKey || event.metaKey) {
 					if (target.cancelSearch) {
 						target.cancelSearch();
 					}

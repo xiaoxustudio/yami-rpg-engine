@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import { addScrollbars, on, show, hide, clear, read, write } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
@@ -313,7 +314,7 @@ Sprite.resize = function () {
 Sprite.getUnitCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (this: typeof Sprite, event: any) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const suw = this.scaledUnitWidth;
 		const suh = this.scaledUnitHeight;
 		const dpr = window.devicePixelRatio;
@@ -647,7 +648,7 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 
 Sprite.pointerup = function (this: typeof Sprite, event: any) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.screen.endScrolling();
@@ -662,7 +663,7 @@ Sprite.pointerup = function (this: typeof Sprite, event: any) {
 
 Sprite.pointermove = function (this: typeof Sprite, event: any) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll': {
 				const distX = event.clientX - dragging.clientX;

@@ -1,7 +1,7 @@
 window.addEventListener(
 	'keydown',
 	function (event: EditorEvent) {
-		if (event.cmdOrCtrlKey) {
+		if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
 			switch ((event as KeyboardEvent).code) {
 				case 'KeyZ':
 				case 'KeyY':

@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -611,7 +612,7 @@ Palette.resize = function () {
 Palette.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (event, clamp = false) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const tileset = this.tileset;
 		const stw = this.scaledTileWidth;
 		const sth = this.scaledTileHeight;
@@ -1557,7 +1558,7 @@ Palette.screenKeydown = function (event) {
 			case 'Enter':
 			case 'NumpadEnter': {
 				event.stopPropagation();
-				if (event.cmdOrCtrlKey) {
+				if (event.ctrlKey || event.metaKey) {
 					Palette.editSelection();
 				} else {
 					Palette.openSelection();
@@ -1729,7 +1730,7 @@ Palette.marqueePointerdown = function (event) {
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				const tileset = this.tileset;
 				if (tileset.type === 'auto') {
 					const i = x + y * tileset.width;
@@ -2004,7 +2005,7 @@ Palette.marqueePopup = function (event) {
 
 Palette.pointerup = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
 		this.dragging = null;
 		switch (dragging.mode) {
@@ -2070,7 +2071,7 @@ Palette.pointerup = function (event) {
 
 Palette.pointermove = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				dragging.latest = event;

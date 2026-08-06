@@ -311,7 +311,7 @@ CustomCommand.listKeydown = function (
 	event: KeyboardEvent & { cmdOrCtrlKey: boolean; altKey: boolean }
 ): void {
 	const item = this.read();
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy!(item);

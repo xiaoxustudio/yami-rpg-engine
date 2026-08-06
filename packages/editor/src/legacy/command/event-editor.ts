@@ -1305,7 +1305,7 @@ EventEditor.windowResize = function (event) {
 };
 
 EventEditor.windowKeydown = function (event) {
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyW':
 				if (Window.getTopWindow()?.id === 'event') {

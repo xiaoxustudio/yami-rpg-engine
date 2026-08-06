@@ -1,4 +1,5 @@
 import {
+	hideDragImage,
 	clamp,
 	addClass,
 	removeClass,
@@ -1323,7 +1324,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			this.dragging = event;
 			Object.defineProperty(event, 'offsetY', { writable: true });
 			event.preventDefault = () => {};
-			event.dataTransfer.hideDragImage();
+			hideDragImage(event.dataTransfer);
 			event.hint = createDragAndDropHintElement();
 			addClass(event.hint, 'for-list');
 			this.parentNode!.insertBefore(hide(event.hint), this);

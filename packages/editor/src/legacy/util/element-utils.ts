@@ -409,7 +409,7 @@ export function hasScrollBar(el: any): boolean {
 }
 
 export function isInContent(el: any, event: MouseEvent): boolean {
-	const coords = event.getRelativeCoords(el);
+	const coords = getRelativeCoords(event, el);
 	const x = coords.x - el.scrollLeft;
 	const y = coords.y - el.scrollTop;
 	return x >= 0 && x < el.clientWidth && y >= 0 && y < el.clientHeight;
@@ -535,7 +535,7 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 
 const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				(Cursor.close as any)('cursor-grab');
@@ -549,7 +549,7 @@ const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 
 const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;
@@ -567,4 +567,51 @@ export function listenDraggingScrollbarEvent(
 	el.scrollPointerup = scrollPointerup.bind(el);
 	el.scrollPointermove = scrollPointermove.bind(el);
 	on(el, 'pointerdown', pointerdown, options as AddEventListenerOptions);
+}
+
+export function getRelativeCoords(event: any, el: any): { x: number; y: number } {
+	const rect = el.getBoundingClientRect();
+	return {
+		x: event.clientX - rect.left - el.clientLeft + el.scrollLeft,
+		y: event.clientY - rect.top - el.clientTop + el.scrollTop
+	};
+}
+
+export function hideDragImage(dt: DataTransfer): void {
+	dt.setDragImage(document.createElement('no-drag-image'), 0, 0);
+}
+
+export function drawAndFitImage(
+	ctx: CanvasRenderingContext2D,
+	image: CanvasImageSource & { width: number; height: number },
+	sx: number = 0,
+	sy: number = 0,
+	sw: number = image.width,
+	sh: number = image.height
+): void {
+	const width = ctx.canvas.width;
+	const height = ctx.canvas.height;
+	let dw: number;
+	let dh: number;
+	if (sw <= width && sh <= height) {
+		dw = sw;
+		dh = sh;
+	} else {
+		const scaleX = width / sw;
+		const scaleY = height / sh;
+		if (scaleX < scaleY) {
+			dw = width;
+			dh = Math.round(sh * scaleX);
+		} else {
+			dw = Math.round(sw * scaleY);
+			dh = height;
+		}
+	}
+	const dx = (width - dw) >> 1;
+	const dy = (height - dh) >> 1;
+	ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+}
+
+export function relate(a: any, b: any): boolean {
+	return !!a && a.pointerId === b?.pointerId;
 }

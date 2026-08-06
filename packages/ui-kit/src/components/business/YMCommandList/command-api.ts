@@ -1,4 +1,5 @@
 import {
+	relate,
 	addClass,
 	attachDoubleclick,
 	clamp,
@@ -2246,7 +2247,7 @@ try {
 
 	windowPointerup: function (this: any, event: PointerEvent): void {
 		const { dragging } = this;
-		if (dragging.relate(event)) {
+		if (relate(dragging, event)) {
 			switch (dragging.mode) {
 				case 'select':
 					this.scrollListener.removeScrollListener();
@@ -2260,7 +2261,7 @@ try {
 
 	windowPointermove: function (this: any, event: PointerEvent): void {
 		const { dragging } = this;
-		if (dragging.relate(event)) {
+		if (relate(dragging, event)) {
 			switch (dragging.mode) {
 				case 'select': {
 					dragging.latest = event;

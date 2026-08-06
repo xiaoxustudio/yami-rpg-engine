@@ -1,3 +1,4 @@
+import { relate, hideDragImage, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import {
 	on,
@@ -866,7 +867,7 @@ Layout.navDragstart = function (this: HTMLElement, event: any) {
 		Object.defineProperty(event, 'clientX', { writable: true });
 		Object.defineProperty(event, 'clientY', { writable: true });
 		event.preventDefault = Function.empty;
-		event.dataTransfer.hideDragImage();
+		hideDragImage(event.dataTransfer);
 		event.group = this.parentNode;
 		event.hint = createDragAndDropHint();
 		addClass(event.hint, 'for-group');
@@ -1110,7 +1111,7 @@ Layout.regionDragover = function (this: HTMLElement, event: any) {
 		let siblings = parent.childNodes;
 		let direction;
 		if (root.split) {
-			const { x, y } = event.getRelativeCoords(root);
+			const { x, y } = getRelativeCoords(event, root);
 			const w = root.clientWidth;
 			const h = root.clientHeight;
 			const nodes = root.childNodes;
@@ -1152,7 +1153,7 @@ Layout.regionDragover = function (this: HTMLElement, event: any) {
 				}
 			}
 		}
-		const { x, y } = event.getRelativeCoords(this);
+		const { x, y } = getRelativeCoords(event, this);
 		const w = this.clientWidth;
 		const h = this.clientHeight;
 		const n = Math.min(w, h) / 4;
@@ -1319,7 +1320,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 	if (event === undefined) {
 		event = resizing;
 	}
-	if (resizing.relate(event)) {
+	if (relate(resizing, event)) {
 		switch (resizing.mode) {
 			case 'col-resize':
 				(Cursor.close as any)('cursor-col-resize');

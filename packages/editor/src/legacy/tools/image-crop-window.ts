@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { on, hide, show, hasClass, read } from '@/util/element-utils.ts';
@@ -250,7 +251,7 @@ ImageClip.screenKeydown = function (event) {
 	if (this.dragging) {
 		return;
 	}
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		return;
 	} else if (event.altKey) {
 		return;
@@ -286,7 +287,7 @@ ImageClip.marqueePointerdown = function (event) {
 				return this.startDragging(event);
 			}
 			const marquee = this.marquee;
-			const coords = event.getRelativeCoords(marquee);
+			const coords = getRelativeCoords(event, marquee);
 			const read = getElementReader('imageClip');
 			const write = getElementWriter('imageClip');
 			const x = coords.x / marquee.scaleX;
@@ -314,7 +315,7 @@ ImageClip.marqueeDoubleclick = function (event) {
 
 ImageClip.pointerup = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				Cursor.close('cursor-grab');
@@ -328,7 +329,7 @@ ImageClip.pointerup = function (event) {
 
 ImageClip.pointermove = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;

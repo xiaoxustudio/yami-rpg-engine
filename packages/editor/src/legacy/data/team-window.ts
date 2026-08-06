@@ -232,7 +232,7 @@ Team.windowClosed = function (event) {
 
 Team.listKeydown = function (event) {
 	const item = this.read();
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy(item);

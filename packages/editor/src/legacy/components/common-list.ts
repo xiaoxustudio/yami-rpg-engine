@@ -213,7 +213,7 @@ export class CommonList extends HTMLElement {
 	}
 
 	keydown(event: KeyboardEvent): void {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'ArrowUp':
 					this.scrollTop -= 20;

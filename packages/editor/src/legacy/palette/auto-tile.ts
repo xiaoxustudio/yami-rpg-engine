@@ -1,3 +1,4 @@
+import { drawAndFitImage } from '@/util/element-utils';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
@@ -532,7 +533,7 @@ AutoTile.drawFrame = function () {
 	const x = (this.offsetX + (frame & 0xff)) * tileWidth;
 	const y = (this.offsetY + (frame >> 8)) * tileHeight;
 
-	context.drawAndFitImage(image, x, y, tileWidth, tileHeight);
+	drawAndFitImage(context, image, x, y, tileWidth, tileHeight);
 };
 
 AutoTile.windowClose = function (event) {
@@ -581,7 +582,7 @@ AutoTile.dprchange = function (event) {
 
 AutoTile.templatesKeydown = function (event) {
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				AutoTile.copyTemplate(item);
@@ -787,7 +788,7 @@ AutoTile.nodesPopup = function (event) {
 }.bind(AutoTile);
 
 AutoTile.nodesKeydown = function (event) {
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				AutoTile.cutNode();
@@ -924,7 +925,7 @@ AutoTile.framesPopup = function (event) {
 }.bind(AutoTile);
 
 AutoTile.framesKeydown = function (event) {
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				AutoTile.cutFrame();

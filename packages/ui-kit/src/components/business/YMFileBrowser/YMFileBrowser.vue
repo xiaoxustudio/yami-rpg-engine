@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-import { addClass, hasClass, removeClass } from '../../../utils/dom';
+import { hideDragImage,  addClass, hasClass, removeClass } from '../../../utils/dom';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
 import YMFileHeadPane from '../YMFileHeadPane/YMFileHeadPane.vue';
 import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
@@ -267,7 +267,7 @@ function dragstart(event: DragEvent): void {
 				}
 			});
 			(event as any).dataTransfer.effectAllowed = 'copyMove';
-			(event as any).dataTransfer.hideDragImage();
+			hideDragImage(event.dataTransfer);
 			node.addEventListener('dragenter', dragover as any);
 			node.addEventListener('dragleave', dragleave as any);
 			node.addEventListener('dragover', dragover as any);

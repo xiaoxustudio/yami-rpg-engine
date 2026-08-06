@@ -267,7 +267,7 @@ Window.keydown = function (event) {
 			case 'Enter':
 			case 'NumpadEnter': {
 				const active = document.activeElement;
-				if (active instanceof HTMLButtonElement && !event.cmdOrCtrlKey) {
+				if (active instanceof HTMLButtonElement && !(event.ctrlKey || event.metaKey)) {
 					return;
 				}
 				const frames = Window.frames;
@@ -284,7 +284,7 @@ Window.keydown = function (event) {
 				break;
 			}
 			case 'KeyS': {
-				if (!event.cmdOrCtrlKey) return;
+				if (!(event.ctrlKey || event.metaKey)) return;
 				const frames = Window.frames;
 				const frame = frames[frames.length - 1];
 				const selector = `#${frame.id} > content-frame > button[name=apply]`;

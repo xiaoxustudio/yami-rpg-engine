@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import { on, rect, css, addClass } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
@@ -347,7 +348,7 @@ TileNode.marqueePointerdown = function (event) {
 				return;
 			}
 			const marquee = this.marquee;
-			const coords = event.getRelativeCoords(marquee);
+			const coords = getRelativeCoords(event, marquee);
 			const x = Math.floor(coords.x / marquee.scaleX);
 			const y = Math.floor(coords.y / marquee.scaleY);
 			const index = x | (y << 3);
@@ -374,12 +375,12 @@ TileNode.marqueePointerdown = function (event) {
 
 TileNode.pointerup = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				const marquee = this.marquee;
 				if (event.target === marquee) {
-					const coords = event.getRelativeCoords(marquee);
+					const coords = getRelativeCoords(event, marquee);
 					const x = Math.floor(coords.x / marquee.scaleX);
 					const y = Math.floor(coords.y / marquee.scaleY);
 					if (marquee.x === x && marquee.y === y) {
@@ -415,7 +416,7 @@ TileNode.pointerup = function (event) {
 
 TileNode.pointermove = function (event) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				dragging.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;

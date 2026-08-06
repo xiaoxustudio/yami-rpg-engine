@@ -7,7 +7,10 @@ import {
 	seek,
 	hasScrollBar,
 	read,
-	write
+	write,
+	addClass,
+	removeClass,
+	hasClass
 } from '@/util/element-utils';
 
 describe('element-utils 低依赖工具（回归保护）', () => {
@@ -65,5 +68,28 @@ describe('element-utils 低依赖工具（回归保护）', () => {
 		};
 		write(el2, 'x');
 		expect(el2._v).toBe('x');
+	});
+
+	it('addClass/removeClass/hasClass（含无 classList 节点保护——9.80 回归）', () => {
+		const el = document.createElement('div');
+		addClass(el, 'a');
+		expect(hasClass(el, 'a')).toBe(true);
+		removeClass(el, 'a');
+		expect(hasClass(el, 'a')).toBe(false);
+		addClass(el, 'a');
+		addClass(el, 'b');
+		expect(hasClass(el, 'b')).toBe(true);
+		const text = document.createTextNode('x');
+		expect(hasClass(text as any, 'a')).toBe(false);
+		expect(() => addClass(text as any, 'a')).not.toThrow();
+	});
+
+	it('hasScrollBar 无滚动（scrollWidth === clientWidth）', () => {
+		const el = document.createElement('div');
+		Object.defineProperty(el, 'clientWidth', { value: 100, configurable: true });
+		Object.defineProperty(el, 'clientHeight', { value: 100, configurable: true });
+		Object.defineProperty(el, 'scrollWidth', { value: 100, configurable: true });
+		Object.defineProperty(el, 'scrollHeight', { value: 100, configurable: true });
+		expect(hasScrollBar(el)).toBe(false);
 	});
 });

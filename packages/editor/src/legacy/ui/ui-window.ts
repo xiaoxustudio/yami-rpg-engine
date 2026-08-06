@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -1453,7 +1454,7 @@ UI.resize = function (this: any) {
 UI.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (this: any, event: any) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - this.paddingLeft) / this.scaleX;
 		point.y = (coords.y * dpr - this.paddingTop) / this.scaleY;
@@ -1957,7 +1958,7 @@ UI.localizationchange = function (this: any, event: any) {
 
 UI.keydown = function (this: any, event: any) {
 	if (UI.state === 'open' && UI.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
 			switch (event.code) {
@@ -2017,7 +2018,7 @@ UI.zoomInput = function (this: any, event: any) {
 
 UI.screenKeydown = function (this: any, event: any) {
 	if (this.state === 'open' && this.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
 					this.copy();
@@ -2113,7 +2114,7 @@ UI.screenKeydown = function (this: any, event: any) {
 							offsetY = +1;
 							break;
 					}
-					if (event.cmdOrCtrlKey) {
+					if (event.ctrlKey || event.metaKey) {
 						const ax = Math.roundTo(transform.anchorX - offsetX * 0.5, 4);
 						const ay = Math.roundTo(transform.anchorY - offsetY * 0.5, 4);
 						return this.shiftAnchor(ax, ay);
@@ -2236,7 +2237,7 @@ UI.marqueePointerdown = function (this: any, event: any) {
 						const f = matrix[7];
 						const ax = a * X + c * Y + e;
 						const ay = b * X + d * Y + f;
-						const { x, y } = event.getRelativeCoords(GL.canvas);
+						const { x, y } = getRelativeCoords(event, GL.canvas);
 						const dpr = window.devicePixelRatio;
 						event.mode = 'object-rotate';
 						event.absoluteAnchorX = ax;
@@ -2265,7 +2266,7 @@ UI.marqueePointerdown = function (this: any, event: any) {
 			}
 			const { x, y } = this.getPointerCoords(event);
 			let object;
-			if (event.cmdOrCtrlKey && this.target) {
+			if ((event.ctrlKey || event.metaKey) && this.target) {
 				object = this.target;
 			}
 			if (object === undefined) {
@@ -2338,7 +2339,7 @@ UI.pointerup = function (this: any, event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-rotate':
 			case 'object-resize':
@@ -2367,12 +2368,12 @@ UI.pointerup = function (this: any, event: any) {
 
 UI.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
 			case 'object-rotate':
 				if (this.target) {
-					const { x, y } = event.getRelativeCoords(GL.canvas);
+					const { x, y } = getRelativeCoords(event, GL.canvas);
 					const distX = x * dpr - dragging.absoluteAnchorX;
 					const distY = y * dpr - dragging.absoluteAnchorY;
 					const currentAngle = Math.atan2(distY, distX);
@@ -2747,7 +2748,7 @@ UI.listKeydown = function (this: any, event: any) {
 		return;
 	}
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {

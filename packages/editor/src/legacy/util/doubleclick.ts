@@ -9,7 +9,12 @@ const pointerdown = function (
 		doubleclickProcessed?: boolean;
 	}
 ) {
-	if (!event.cmdOrCtrlKey && !event.altKey && !event.shiftKey && !event.doubleclickProcessed) {
+	if (
+		!(event.ctrlKey || event.metaKey) &&
+		!event.altKey &&
+		!event.shiftKey &&
+		!event.doubleclickProcessed
+	) {
 		event.doubleclickProcessed = true;
 		switch (event.button) {
 			case 0:

@@ -1,3 +1,4 @@
+import { getRelativeCoords } from '@/util/element-utils';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { addClass, getFocus, on, read, write } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
@@ -799,7 +800,7 @@ Easing.dataChange = function (event) {
 
 Easing.listKeydown = function (event) {
 	const item = this.read();
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				Easing.copy(item);
@@ -1032,7 +1033,7 @@ Easing.curveKeydown = function (event) {
 Easing.curvePointerdown = function (event) {
 	switch (event.button) {
 		case 0: {
-			const coords = event.getRelativeCoords(this.curve);
+			const coords = getRelativeCoords(event, this.curve);
 			const dpr = window.devicePixelRatio;
 			const x = coords.x * dpr;
 			const y = coords.y * dpr;
@@ -1082,7 +1083,7 @@ Easing.pointerup = function (event) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (this.dragging.relate(event)) {
+	if (this.relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
 		window.removeEventListener('pointermove', this.pointermove);

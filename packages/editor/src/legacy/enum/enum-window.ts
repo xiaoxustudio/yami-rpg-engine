@@ -626,7 +626,7 @@ Enum.keydown = Shortcuts.createUndoRedo(Enum);
 
 Enum.listKeydown = function (event) {
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy(item);
@@ -879,7 +879,7 @@ Enum.panelKeydown = function (event) {
 	switch (event.target.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
-			if (event.cmdOrCtrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
 					case 'Enter':
 					case 'NumpadEnter':

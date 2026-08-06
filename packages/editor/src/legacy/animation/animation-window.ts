@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -1852,7 +1853,7 @@ Animation.resize = function () {
 Animation.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (event) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - (this.outerWidth >> 1)) / this.scaleX;
 		point.y = (coords.y * dpr - (this.outerHeight >> 1)) / this.scaleY;
@@ -1867,7 +1868,7 @@ Animation.getFrameCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (event, clamp = false) {
 		const list = this.outerTimelineList;
-		const coords = event.getRelativeCoords(list);
+		const coords = getRelativeCoords(event, list);
 		let x = Math.floor(coords.x / 16);
 		let y = Math.floor(coords.y / 20);
 		if (clamp) {
@@ -4131,7 +4132,7 @@ Animation.keydown = function (event) {
 			}
 		}
 		if (!Animation.motion) return;
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
 			return;
@@ -4207,7 +4208,7 @@ Animation.zoomInput = function (event) {
 
 Animation.screenKeydown = function (event) {
 	if (this.state === 'open' && this.motion !== null && this.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'ArrowLeft':
 				case 'ArrowUp':
@@ -4389,7 +4390,7 @@ Animation.marqueePointerdown = function (event) {
 						const matrix = GL.matrix.set(Animation.matrix).multiply(context.matrix);
 						const aax = matrix[6];
 						const aay = matrix[7];
-						const { x, y } = event.getRelativeCoords(GL.canvas);
+						const { x, y } = getRelativeCoords(event, GL.canvas);
 						const dpr = window.devicePixelRatio;
 						event.mode = 'object-rotate';
 						event.absoluteAnchorX = aax;
@@ -4437,7 +4438,7 @@ Animation.marqueePointerdown = function (event) {
 			}
 			const { x, y } = this.getPointerCoords(event);
 			let object;
-			if (event.cmdOrCtrlKey && this.target) {
+			if ((event.ctrlKey || event.metaKey) && this.target) {
 				object = this.target;
 			}
 			if (object === undefined) {
@@ -4508,7 +4509,7 @@ Animation.pointerup = function (event) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-rotate':
 			case 'object-resize':
@@ -4528,12 +4529,12 @@ Animation.pointerup = function (event) {
 
 Animation.pointermove = function (event) {
 	const { dragging } = Animation;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
 			case 'object-rotate':
 				if (Animation.target) {
-					const { x, y } = event.getRelativeCoords(GL.canvas);
+					const { x, y } = getRelativeCoords(event, GL.canvas);
 					const distX = x * dpr - dragging.absoluteAnchorX;
 					const distY = y * dpr - dragging.absoluteAnchorY;
 					const currentAngle = Math.atan2(distY, distX);
@@ -4724,7 +4725,7 @@ Animation.listKeydown = function (event) {
 		return;
 	}
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {
@@ -4945,7 +4946,7 @@ Animation.layerListKeydown = function (event) {
 		return;
 	}
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				if (item) {
@@ -5169,7 +5170,7 @@ Animation.layerListChange = function (event) {
 
 Animation.outerTimelineListKeydown = function (event) {
 	if (this.dragging !== null) return;
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyA':
 				Animation.selectAllFrames();
@@ -5380,7 +5381,7 @@ Animation.outerTimelineListPointerup = function (event) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select':
 				Animation.outerTimelineList.removeScrollListener();
@@ -5500,7 +5501,7 @@ Animation.outerTimelineListPointerup = function (event) {
 
 Animation.outerTimelineListPointermove = function (event) {
 	const { dragging } = Animation.outerTimelineList;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				dragging.latest = event;

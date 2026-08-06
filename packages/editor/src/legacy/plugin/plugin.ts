@@ -1679,7 +1679,7 @@ PluginManager.windowClosed = function (event) {
 }.bind(PluginManager);
 
 PluginManager.keydown = function (event) {
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyD':
 				PluginManager.switchOverviewMode();
@@ -1704,7 +1704,7 @@ PluginManager.scriptChange = function (event) {
 
 PluginManager.listKeydown = function (event) {
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy(item);

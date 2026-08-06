@@ -48,7 +48,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	function bodyKeydown(event: any) {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
 					Browser.body.copyFiles(true);

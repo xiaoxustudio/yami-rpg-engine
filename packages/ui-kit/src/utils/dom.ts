@@ -122,7 +122,12 @@ const doubleclickPointerdown = function (
 	this: any,
 	event: PointerEvent & { cmdOrCtrlKey?: boolean; doubleclickProcessed?: boolean }
 ): void {
-	if (!event.cmdOrCtrlKey && !event.altKey && !event.shiftKey && !event.doubleclickProcessed) {
+	if (
+		!(event.ctrlKey || event.metaKey) &&
+		!event.altKey &&
+		!event.shiftKey &&
+		!event.doubleclickProcessed
+	) {
 		event.doubleclickProcessed = true;
 		switch (event.button) {
 			case 0:
@@ -156,4 +161,13 @@ export const attachDoubleclick = (
 ): void => {
 	element.addEventListener('pointerdown', doubleclickPointerdown as any);
 	element.addEventListener('doubleclick', listener, options);
+};
+
+export const macRedoKey = (e: any): boolean =>
+	typeof navigator !== 'undefined' && navigator.platform.includes('Mac')
+		? e.metaKey && e.shiftKey && e.code === 'KeyZ'
+		: false;
+
+export const hideDragImage = (dt: DataTransfer | null): void => {
+	if (dt) dt.setDragImage(document.createElement('no-drag-image'), 0, 0);
 };

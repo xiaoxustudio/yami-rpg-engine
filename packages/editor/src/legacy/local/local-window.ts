@@ -440,7 +440,7 @@ Localization.keydown = Shortcuts.createUndoRedo(Localization);
 
 Localization.listKeydown = function (this: any, event: any) {
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyC':
 				this.copy(item);
@@ -641,7 +641,7 @@ Localization.panelInput = function (event: any) {
 };
 
 Localization.panelKeydown = function (event: any) {
-	if (event.target.tagName === 'TEXTAREA' && event.cmdOrCtrlKey) {
+	if (event.target.tagName === 'TEXTAREA' && (event.ctrlKey || event.metaKey)) {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':

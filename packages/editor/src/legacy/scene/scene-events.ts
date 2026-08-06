@@ -1,3 +1,4 @@
+import { relate } from '@/util/element-utils';
 import { ctrl } from '@/util/event-accessors.ts';
 import { dispatchChangeEvent, hasClass, read, write } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
@@ -54,7 +55,7 @@ Scene.datachange = function (event) {
 
 Scene.keydown = function (event) {
 	if (Scene.state === 'open' && Scene.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
 			switch (event.code) {
@@ -185,7 +186,7 @@ Scene.zoomInput = function (event) {
 
 Scene.screenKeydown = function (event) {
 	if (this.state === 'open' && (this.dragging === null || event.code === 'ShiftLeft')) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
 					this.copy();
@@ -582,7 +583,7 @@ Scene.marqueePointerdown = function (event) {
 				case 'object': {
 					const { x, y } = this.getTileCoords(event);
 					let object;
-					if (event.cmdOrCtrlKey) {
+					if (event.ctrlKey || event.metaKey) {
 						switch (this.target?.class) {
 							case 'tilemap':
 							case 'actor':
@@ -768,7 +769,7 @@ Scene.pointerup = function (event) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'eraser':
 			case 'pencil': {
@@ -836,7 +837,7 @@ Scene.pointerup = function (event) {
 
 Scene.pointermove = function (event) {
 	const { dragging, marquee } = this;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'eraser':
 			case 'pencil': {
@@ -925,7 +926,7 @@ Scene.pointermove = function (event) {
 				const coords = this.getTileCoords(event);
 				let x;
 				let y;
-				const divider = event.cmdOrCtrlKey ? 2 : 1;
+				const divider = event.ctrlKey || event.metaKey ? 2 : 1;
 				switch (this.target?.class) {
 					case 'actor': {
 						const actor = this.target;
@@ -1246,7 +1247,7 @@ Scene.listKeydown = function (event) {
 	}
 	const item = read(this);
 	const isFile = item && item.class !== 'folder';
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				if (isFile) {

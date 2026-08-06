@@ -1,3 +1,4 @@
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -708,7 +709,7 @@ Particle.resize = function () {
 Particle.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (this: ParticleShape, event) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - (this.outerWidth >> 1)) / this.scaleX;
 		point.y = (coords.y * dpr - (this.outerHeight >> 1)) / this.scaleY;
@@ -1271,7 +1272,7 @@ Particle.datachange = function (event: any) {
 
 Particle.keydown = function (event: any) {
 	if (Particle.state === 'open' && Particle.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
 			return;
@@ -1368,7 +1369,7 @@ Particle.zoomInput = function (this: any, event: any) {
 
 Particle.screenKeydown = function (this: ParticleShape, event: any) {
 	if (this.state === 'open' && this.dragging === null) {
-		if (event.cmdOrCtrlKey) {
+		if (event.ctrlKey || event.metaKey) {
 			return;
 		}
 		if (event.altKey) {
@@ -1481,7 +1482,7 @@ Particle.pointerup = function (event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-move':
 				break;
@@ -1497,7 +1498,7 @@ Particle.pointerup = function (event: any) {
 
 Particle.pointermove = function (event: any) {
 	const { dragging } = Particle;
-	if (dragging.relate(event)) {
+	if (relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-move': {
 				if (!dragging.enabled) {
@@ -1540,7 +1541,7 @@ Particle.listKeydown = function (this: any, event: any) {
 		return;
 	}
 	const item = read(this);
-	if (event.cmdOrCtrlKey) {
+	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyX':
 				this.copy(item);

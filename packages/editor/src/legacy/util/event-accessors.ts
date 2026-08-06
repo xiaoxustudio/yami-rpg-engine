@@ -3,28 +3,12 @@ Object.defineProperties(Event.prototype, {
 		get: function () {
 			return this.spaceKey || this.altKey;
 		}
-	},
-	cmdOrCtrlKey: {
-		get:
-			process.platform === 'darwin'
-				? function (this: any) {
-						return this.metaKey;
-					}
-				: function (this: any) {
-						return this.ctrlKey;
-					}
-	},
-	macRedoKey: {
-		get:
-			process.platform === 'darwin'
-				? function (this: any) {
-						return this.metaKey && this.shiftKey && this.code === 'KeyZ';
-					}
-				: function () {
-						return false;
-					}
 	}
 });
+
+export function macRedoKey(e: any): boolean {
+	return process.platform === 'darwin' ? e.metaKey && e.shiftKey && e.code === 'KeyZ' : false;
+}
 
 export const ctrl =
 	process.platform === 'darwin'

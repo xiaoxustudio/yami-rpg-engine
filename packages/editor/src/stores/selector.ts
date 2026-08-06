@@ -161,7 +161,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	function searcherKeydown(event: any) {
 		const Selector = getSelector();
 		if (!Selector) return;
-		if (event.cmdOrCtrlKey) return;
+		if (event.ctrlKey || event.metaKey) return;
 		if (event.altKey) return;
 		if (event.shiftKey) return;
 		switch (event.code) {
@@ -189,7 +189,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	function bodyKeydown(event: any) {
 		const Selector = getSelector();
 		if (!Selector) return;
-		if (event.cmdOrCtrlKey) return;
+		if (event.ctrlKey || event.metaKey) return;
 		switch (event.code) {
 			case 'Space':
 				playAudio();

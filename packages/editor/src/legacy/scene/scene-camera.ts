@@ -1,5 +1,5 @@
 import { $ } from '@/util/dom.ts';
-import { write } from '@/util/element-utils';
+import { getRelativeCoords, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Inspector } from '@/inspector/inspector.ts';
@@ -162,7 +162,7 @@ Scene.resize = function () {
 Scene.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (event, integer = false) {
-		const coords = event.getRelativeCoords(this.marquee);
+		const coords = getRelativeCoords(event, this.marquee);
 		const stw = this.scaledTileWidth;
 		const sth = this.scaledTileHeight;
 		const dpr = window.devicePixelRatio;
