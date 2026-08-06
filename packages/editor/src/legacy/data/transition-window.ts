@@ -213,10 +213,8 @@ Easing.initialize = () => {
 	on($('#easing'), 'closed', Easing.windowClosed);
 	on($('#easing-points-grid'), 'change', Easing.dataChange);
 	on(list, 'keydown', Easing.listKeydown);
-	on(list, 'select', Easing.listSelect);
+	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
 	on(list, 'change', Easing.dataChange);
-	on(list, 'open', Easing.listOpen);
-	on(list, 'popup', Easing.listPopup);
 	on($('#easing-mode'), 'input', Easing.modeSelect);
 	$(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
     #easing-points-2-x, #easing-points-2-y, #easing-points-3-x, #easing-points-3-y,
@@ -833,6 +831,7 @@ Easing.listOpen = function (event) {
 };
 
 Easing.listPopup = function (event) {
+	const list = Easing.list;
 	const item = event.value;
 	const selected = !!item;
 	const pastable = (Clipboard as any).has('yami.data.easing');
@@ -880,7 +879,7 @@ Easing.listPopup = function (event) {
 				accelerator: 'F2',
 				enabled: selected,
 				click: () => {
-					this.rename(item);
+					list.rename(item);
 				}
 			},
 			{

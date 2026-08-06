@@ -4,7 +4,13 @@
 		
 			<div class="field-set input pad" id="easing-list-fieldset">
 				<div class="legend">List</div>
-				<TreeList id="easing-list" padded />
+				<TreeList
+					id="easing-list"
+					padded
+					@select="onListSelect"
+					@open="onListOpen"
+					@popup="onListPopup"
+				/>
 			</div>
 			<div class="field-set" id="easing-points-fieldset">
 				<div class="legend">Points</div>
@@ -106,6 +112,16 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
+const onListSelect = (event: any) => {
+	(window as any).Easing?.listSelect?.(event);
+};
+const onListOpen = (event: any) => {
+	(window as any).Easing?.listOpen?.(event);
+};
+const onListPopup = (event: any) => {
+	(window as any).Easing?.listPopup?.(event);
+};
+
 const local = useLocalStore();
 
 onMounted(() => {
