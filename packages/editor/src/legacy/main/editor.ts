@@ -23,10 +23,23 @@ interface EditorShape {
 	isProjectVersionSupported: EditorMethod;
 }
 
+import { getEditorStore } from '@app/stores/editor';
+
 export const Editor: EditorShape = {
 	state: 'closed',
-	config: null,
-	project: null,
+	// config/project 经 Pinia store 承载（Phase 10——DOM 全面 Vue 化——状态先行）
+	get config(): any {
+		return getEditorStore().config;
+	},
+	set config(value: any) {
+		getEditorStore().setConfig(value);
+	},
+	get project(): any {
+		return getEditorStore().project;
+	},
+	set project(value: any) {
+		getEditorStore().setProject(value);
+	},
 	initialize: null,
 	open: null,
 	close: null,
