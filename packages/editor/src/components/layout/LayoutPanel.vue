@@ -98,14 +98,21 @@
 				<div class="box" id="scene-list-head">
 					<TextBox id="scene-searcher" name="search"></TextBox>
 				</div>
-				<TreeList id="scene-list" padded></TreeList>
+				<TreeList
+					id="scene-list"
+					padded
+					@select="onSceneListSelect"
+					@record="onSceneListRecord"
+					@popup="onSceneListPopup"
+					@open="onSceneListOpen"
+				></TreeList>
 			</div>
 			<div class="page-frame" id="ui" value="ui">
-				<div class="box" id="ui-head">
-					<div class="box" id="ui-head-start">
+				<div class="box" id="ui-head" @pointerdown="onUiHeadPointerdown">
+					<div class="box" id="ui-head-start" @pointerdown="onUiSwitchPointerdown">
 						<div class="item toolbar-item" id="ui-switch-settings" value="settings"></div>
 					</div>
-					<div class="box" id="ui-head-center">
+					<div class="box" id="ui-head-center" @pointerdown="onUiShortcutPointerdown">
 						<div class="item toolbar-item" id="ui-element-image" value="image"></div>
 						<div class="item toolbar-item" id="ui-element-text" value="text"></div>
 						<div class="item toolbar-item" id="ui-element-textbox" value="textbox"></div>
@@ -119,12 +126,31 @@
 						<div class="item toolbar-item" id="ui-element-reference" value="reference"></div>
 					</div>
 					<div class="box" id="ui-head-end">
-						<SliderBox id="ui-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
+						<SliderBox
+							id="ui-zoom"
+							name="zoom"
+							min="0"
+							max="4"
+							hotkey="-/+"
+							active-wheel
+							@input="onUiZoomInput"
+							@focus="onUiZoomFocus"
+						></SliderBox>
 					</div>
 				</div>
 				<div class="box" id="ui-body">
-					<div class="box" id="ui-screen" tabindex="-1">
-						<MarqueeArea id="ui-marquee"></MarqueeArea>
+					<div
+						class="box"
+						id="ui-screen"
+						tabindex="-1"
+						@keydown="onUiScreenKeydown"
+						@wheel="onUiScreenWheel"
+					>
+						<MarqueeArea
+							id="ui-marquee"
+							@pointerdown="onUiMarqueePointerdown"
+							@doubleclick="onUiMarqueeDoubleclick"
+						></MarqueeArea>
 					</div>
 				</div>
 			</div>
@@ -132,11 +158,18 @@
 				<div class="box" id="ui-list-head">
 					<TextBox id="ui-searcher" name="search"></TextBox>
 				</div>
-				<TreeList id="ui-list" padded></TreeList>
+				<TreeList
+					id="ui-list"
+					padded
+					@select="onUiListSelect"
+					@record="onUiListRecord"
+					@popup="onUiListPopup"
+					@open="onUiListOpen"
+				></TreeList>
 			</div>
 			<div class="page-frame" id="animation" value="animation">
-				<div class="box" id="animation-head">
-					<div class="box" id="animation-head-start">
+				<div class="box" id="animation-head" @pointerdown="onAnimationHeadPointerdown">
+					<div class="box" id="animation-head-start" @pointerdown="onAnimationSwitchPointerdown">
 						<div class="item toolbar-item" id="animation-switch-mark" value="mark"></div>
 						<div class="item toolbar-item" id="animation-switch-onionskin" value="onionskin" hotkey="O"></div>
 						<div class="item toolbar-item" id="animation-switch-mirror" value="mirror" hotkey="M"></div>
@@ -146,12 +179,31 @@
 						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
 					</div>
 					<div class="box" id="animation-head-end">
-						<SliderBox id="animation-zoom" name="zoom-0-6" min="0" max="6" hotkey="-/+" active-wheel></SliderBox>
+						<SliderBox
+							id="animation-zoom"
+							name="zoom-0-6"
+							min="0"
+							max="6"
+							hotkey="-/+"
+							active-wheel
+							@input="onAnimationZoomInput"
+							@focus="onAnimationZoomFocus"
+						></SliderBox>
 					</div>
 				</div>
 				<div class="box" id="animation-body">
-					<div class="box" id="animation-screen" tabindex="-1">
-						<MarqueeArea id="animation-marquee"></MarqueeArea>
+					<div
+						class="box"
+						id="animation-screen"
+						tabindex="-1"
+						@keydown="onAnimationScreenKeydown"
+						@wheel="onAnimationScreenWheel"
+					>
+						<MarqueeArea
+							id="animation-marquee"
+							@pointerdown="onAnimationMarqueePointerdown"
+							@doubleclick="onAnimationMarqueeDoubleclick"
+						></MarqueeArea>
 					</div>
 					<div class="box" id="animation-dirList"></div>
 				</div>
@@ -197,25 +249,43 @@
 				<canvas id="animation-easing-canvas" width="0" height="0"></canvas>
 			</div>
 			<div class="page-frame" id="particle" value="particle">
-				<div class="box" id="particle-head">
-					<div class="box" id="particle-head-start">
+				<div class="box" id="particle-head" @pointerdown="onParticleHeadPointerdown">
+					<div class="box" id="particle-head-start" @pointerdown="onParticleViewPointerdown">
 						<div class="item toolbar-item" id="particle-view-wireframe" value="wireframe"></div>
 						<div class="item toolbar-item" id="particle-view-anchor" value="anchor"></div>
 					</div>
 					<div class="box" id="particle-head-center">
-						<div class="box" id="particle-control">
+						<div class="box" id="particle-control" @pointerdown="onParticleControlPointerdown">
 							<div class="item toolbar-item" id="particle-control-restart" value="restart" hotkey="R"></div>
 							<div class="item toolbar-item" id="particle-control-pause" value="pause" hotkey="P"></div>
 						</div>
 						<NumberBox id="particle-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
 					</div>
 					<div class="box" id="particle-head-end">
-						<SliderBox id="particle-zoom" name="zoom" min="0" max="4" hotkey="-/+" active-wheel></SliderBox>
+						<SliderBox
+							id="particle-zoom"
+							name="zoom"
+							min="0"
+							max="4"
+							hotkey="-/+"
+							active-wheel
+							@input="onParticleZoomInput"
+							@focus="onParticleZoomFocus"
+						></SliderBox>
 					</div>
 				</div>
 				<div class="box" id="particle-body">
-					<div class="box" id="particle-screen" tabindex="-1">
-						<MarqueeArea id="particle-marquee"></MarqueeArea>
+					<div
+						class="box"
+						id="particle-screen"
+						tabindex="-1"
+						@keydown="onParticleScreenKeydown"
+						@wheel="onParticleScreenWheel"
+					>
+						<MarqueeArea
+							id="particle-marquee"
+							@pointerdown="onParticleMarqueePointerdown"
+						></MarqueeArea>
 					</div>
 					<div class="text" id="particle-info"></div>
 				</div>
@@ -319,5 +389,104 @@ const onSceneMarqueePointerdown = (event: PointerEvent) => {
 };
 const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
 	(window as any).Scene?.marqueeDoubleclick?.(event);
+};
+const onUiHeadPointerdown = (event: PointerEvent) => {
+	(window as any).UI?.headPointerdown?.(event);
+};
+const onUiSwitchPointerdown = (event: PointerEvent) => {
+	(window as any).UI?.switchPointerdown?.(event);
+};
+const onUiShortcutPointerdown = (event: PointerEvent) => {
+	(window as any).UI?.shortcutPointerdown?.(event);
+};
+const onUiZoomInput = (value: number) => {
+	(window as any).UI?.setZoom?.(value);
+};
+const onUiZoomFocus = () => {
+	(window as any).UI?.zoomFocus?.();
+};
+const onUiScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).UI?.screenKeydown?.(event);
+};
+const onUiScreenWheel = (event: WheelEvent) => {
+	(window as any).UI?.screenWheel?.(event);
+};
+const onUiMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).UI?.marqueePointerdown?.(event);
+};
+const onUiMarqueeDoubleclick = (event: PointerEvent) => {
+	(window as any).UI?.marqueeDoubleclick?.(event);
+};
+const onAnimationHeadPointerdown = (event: PointerEvent) => {
+	(window as any).Animation?.headPointerdown?.(event);
+};
+const onAnimationSwitchPointerdown = (event: PointerEvent) => {
+	(window as any).Animation?.switchPointerdown?.(event);
+};
+const onAnimationZoomInput = (value: number) => {
+	(window as any).Animation?.setZoom?.(value);
+};
+const onAnimationZoomFocus = () => {
+	(window as any).Animation?.zoomFocus?.();
+};
+const onAnimationScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).Animation?.screenKeydown?.(event);
+};
+const onAnimationScreenWheel = (event: WheelEvent) => {
+	(window as any).Animation?.screenWheel?.(event);
+};
+const onAnimationMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).Animation?.marqueePointerdown?.(event);
+};
+const onAnimationMarqueeDoubleclick = (event: PointerEvent) => {
+	(window as any).Animation?.marqueeDoubleclick?.(event);
+};
+const onParticleHeadPointerdown = (event: PointerEvent) => {
+	(window as any).Particle?.headPointerdown?.(event);
+};
+const onParticleViewPointerdown = (event: PointerEvent) => {
+	(window as any).Particle?.viewPointerdown?.(event);
+};
+const onParticleControlPointerdown = (event: PointerEvent) => {
+	(window as any).Particle?.controlPointerdown?.(event);
+};
+const onParticleZoomInput = (value: number) => {
+	(window as any).Particle?.setZoom?.(value);
+};
+const onParticleZoomFocus = () => {
+	(window as any).Particle?.zoomFocus?.();
+};
+const onParticleScreenKeydown = (event: KeyboardEvent) => {
+	(window as any).Particle?.screenKeydown?.(event);
+};
+const onParticleScreenWheel = (event: WheelEvent) => {
+	(window as any).Particle?.screenWheel?.(event);
+};
+const onParticleMarqueePointerdown = (event: PointerEvent) => {
+	(window as any).Particle?.marqueePointerdown?.(event);
+};
+const onSceneListSelect = (event: any) => {
+	(window as any).Scene?.listSelect?.(event);
+};
+const onSceneListRecord = (event: any) => {
+	(window as any).Scene?.listRecord?.(event);
+};
+const onSceneListPopup = (event: any) => {
+	(window as any).Scene?.listPopup?.(event);
+};
+const onSceneListOpen = (event: any) => {
+	(window as any).Scene?.listOpen?.(event);
+};
+const onUiListSelect = (event: any) => {
+	(window as any).UI?.listSelect?.(event);
+};
+const onUiListRecord = (event: any) => {
+	(window as any).UI?.listRecord?.(event);
+};
+const onUiListPopup = (event: any) => {
+	(window as any).UI?.listPopup?.(event);
+};
+const onUiListOpen = (event: any) => {
+	(window as any).UI?.listOpen?.(event);
 };
 </script>

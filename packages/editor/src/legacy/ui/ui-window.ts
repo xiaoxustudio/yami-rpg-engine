@@ -519,20 +519,12 @@ UI.initialize = function (this: any) {
 	window.addEventListener('keydown', this.keydown);
 	window.addEventListener('keydown', Reference.getKeydownListener!(list));
 	on(this.page, 'resize', this.windowResize);
-	on(this.head, 'pointerdown', this.headPointerdown);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
-	on($('#ui-head-start'), 'pointerdown', this.switchPointerdown);
-	on($('#ui-head-center'), 'pointerdown', this.shortcutPointerdown);
-	on($('#ui-zoom'), 'focus', this.zoomFocus);
-	on($('#ui-zoom'), 'input', this.zoomInput);
-	on(this.screen, 'keydown', this.screenKeydown);
-	on(this.screen, 'wheel', this.screenWheel);
+	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
-	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 	on(this.marquee, 'pointermove', this.marqueePointermove);
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
-	on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 	on(list, 'keydown', this.listKeydown);
@@ -540,10 +532,7 @@ UI.initialize = function (this: any) {
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
-	on(list, 'select', this.listSelect);
-	on(list, 'record', this.listRecord);
-	on(list, 'popup', this.listPopup);
-	on(list, 'open', this.listOpen);
+	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → UI.list*）
 	on(list, 'change', this.listChange);
 	on(list.page, 'resize', this.listPageResize);
 };

@@ -415,18 +415,11 @@ Particle.initialize = function () {
 	window.addEventListener('datachange', this.datachange!);
 	window.addEventListener('keydown', this.keydown!);
 	on(this.page, 'resize', this.windowResize!);
-	on(this.head, 'pointerdown', this.headPointerdown!);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored!);
-	on($('#particle-head-start'), 'pointerdown', this.viewPointerdown!);
-	on($('#particle-control'), 'pointerdown', this.controlPointerdown!);
+	// head/toolbar/control/zoom/screen(keydown/wheel)/marquee(pointerdown) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
 	on($('#particle-speed'), 'input', this.speedInput!);
-	on($('#particle-zoom'), 'focus', this.zoomFocus!);
-	on($('#particle-zoom'), 'input', this.zoomInput!);
-	on(this.screen, 'keydown', this.screenKeydown!);
-	on(this.screen, 'wheel', this.screenWheel!);
 	on(this.screen, 'userscroll', this.screenUserscroll!);
 	on(this.screen, 'blur', this.screenBlur!);
-	on(this.marquee, 'pointerdown', this.marqueePointerdown!);
 	on(this.marquee, 'pointermove', this.marqueePointermove!);
 	on(this.marquee, 'pointerleave', this.marqueePointerleave!);
 	on(this.list, 'keydown', this.listKeydown!);

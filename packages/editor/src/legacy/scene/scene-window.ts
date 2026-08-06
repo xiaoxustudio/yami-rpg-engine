@@ -767,10 +767,7 @@ Scene.initialize = function () {
 	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
-	on(list, 'select', this.listSelect);
-	on(list, 'record', this.listRecord);
-	on(list, 'popup', this.listPopup);
-	on(list, 'open', this.listOpen);
+	// list select/record/popup/open 经 Vue 模板转发（LayoutPanel @select/@record/@popup/@open → Scene.list*）
 	on(list, 'change', this.listChange);
 	on(list.page, 'resize', this.listPageResize);
 

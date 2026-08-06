@@ -789,20 +789,13 @@ Animation.initialize = function () {
 	window.addEventListener('enumchange', this.enumchange);
 	window.addEventListener('keydown', this.keydown);
 	on(this.page, 'resize', this.windowResize);
-	on(this.head, 'pointerdown', this.headPointerdown);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
-	on($('#animation-head-start'), 'pointerdown', this.switchPointerdown);
-	$('#animation-speed').addEventListener('input', this.speedInput);
-	$('#animation-zoom').addEventListener('focus', this.zoomFocus);
-	$('#animation-zoom').addEventListener('input', this.zoomInput);
-	on(this.screen, 'keydown', this.screenKeydown);
-	on(this.screen, 'wheel', this.screenWheel);
+	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
+	on($('#animation-speed'), 'input', this.speedInput);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
-	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 	on(this.marquee, 'pointermove', this.marqueePointermove);
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
-	on(this.marquee, 'doubleclick', this.marqueeDoubleclick);
 	this.searcher.addEventListener('input', this.searcherInput);
 	this.searcher.addEventListener('compositionend', this.searcherInput);
 	list.on('keydown', this.listKeydown);
