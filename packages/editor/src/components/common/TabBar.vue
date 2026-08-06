@@ -13,6 +13,12 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+	select: [event: any];
+	closed: [event: any];
+	popup: [event: any];
+}>();
+
 const updateAppRegion = (): void => Title.updateAppRegion();
 
 const ym = ref<{
@@ -93,5 +99,10 @@ onMounted(() => {
 	el.find = find;
 	el.clear = clear;
 	el.on = on;
+
+	// 经 el.on 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
+	el.on('select', (event: any) => emit('select', event));
+	el.on('closed', (event: any) => emit('closed', event));
+	el.on('popup', (event: any) => emit('popup', event));
 });
 </script>

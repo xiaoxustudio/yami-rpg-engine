@@ -162,11 +162,8 @@ Title.initialize = function () {
 	window.addEventListener('drop', this.windowDrop);
 	window.addEventListener('dirchange', this.windowDirchange);
 	window.addEventListener('localize', this.windowLocalize);
-	$('#title').addEventListener('pointerenter', this.pointerenter);
 	this.tabBar.on('pointerdown', this.tabBarPointerdown);
-	this.tabBar.on('select', this.tabBarSelect);
-	this.tabBar.on('closed', this.tabBarClosed);
-	this.tabBar.on('popup', this.tabBarPopup);
+	// select/closed/popup 事件经 Vue 模板转发（AppShell @select/@closed/@popup → Title.tabBar*）
 
 	ipcRenderer?.on?.('before-close-window', this.windowBeforeClose);
 	ipcRenderer?.on?.('maximize', this.windowMaximize);

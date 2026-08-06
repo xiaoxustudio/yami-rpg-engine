@@ -1,5 +1,5 @@
 <template>
-	<div class="box" id="title">
+	<div class="box" id="title" @pointerenter="onTitlePointerenter">
 		<div class="box" id="menu">
 			<div class="item menu-item" id="menu-file" value="file">File</div>
 			<div class="item menu-item" id="menu-edit" value="edit">Edit</div>
@@ -8,7 +8,12 @@
 			<div class="item menu-item" id="menu-help" value="help">Help</div>
 			<div class="item menu-item" id="menu-open-yami" value="openYami">Open Yami</div>
 		</div>
-		<TabBar id="title-tabBar" />
+		<TabBar
+			id="title-tabBar"
+			@select="onTabBarSelect"
+			@closed="onTabBarClosed"
+			@popup="onTabBarPopup"
+		/>
 		<div class="box" id="title-buttons">
 			<div
 				class="box"
@@ -67,6 +72,18 @@ const onMaximizeClick = () => {
 };
 const onCloseClick = () => {
 	(window as any).Title?.closeClick?.();
+};
+const onTitlePointerenter = () => {
+	(window as any).Title?.pointerenter?.();
+};
+const onTabBarSelect = (event: any) => {
+	(window as any).Title?.tabBarSelect?.(event);
+};
+const onTabBarClosed = (event: any) => {
+	(window as any).Title?.tabBarClosed?.(event);
+};
+const onTabBarPopup = (event: any) => {
+	(window as any).Title?.tabBarPopup?.(event);
 };
 
 const toolModules = import.meta.glob('./components/tools/*.vue');
