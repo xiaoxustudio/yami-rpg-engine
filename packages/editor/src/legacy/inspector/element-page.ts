@@ -391,8 +391,14 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.paramInput = function (event) {
-		UIElement.update(UIElement.target, Inspector.getKey(this), read(this));
+	UIElement.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (element.id.startsWith('uiElement-')) break;
+			element = element.parentElement;
+		}
+		UIElement.update(UIElement.target, Inspector.getKey(element), read(element));
 	};
 
 	Inspector.uiElement = UIElement;

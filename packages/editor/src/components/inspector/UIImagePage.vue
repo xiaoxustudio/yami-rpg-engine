@@ -249,37 +249,37 @@
 		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiImage-properties-grid">
 			<div class="text">{{ local.getLabel('uiImage-image') || 'Image' }}</div
-			><CustomBox id="uiImage-image" type="file" filter="image"></CustomBox>
-			<div class="text">{{ local.getLabel('uiImage-display') || 'Display' }}</div><SelectBox id="uiImage-display"></SelectBox>
-			<div class="text">{{ local.getLabel('uiImage-flip') || 'Flip' }}</div><SelectBox id="uiImage-flip"></SelectBox>
-			<div class="text">{{ local.getLabel('uiImage-blend') || 'Blend' }}</div><SelectBox id="uiImage-blend"></SelectBox>
+			><CustomBox id="uiImage-image" type="file" filter="image" @input="onParamInput"></CustomBox>
+			<div class="text">{{ local.getLabel('uiImage-display') || 'Display' }}</div><SelectBox id="uiImage-display" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('uiImage-flip') || 'Flip' }}</div><SelectBox id="uiImage-flip" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('uiImage-blend') || 'Blend' }}</div><SelectBox id="uiImage-blend" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiImage-shift-box') || 'Shift' }}</div>
 			<div id="uiImage-shift-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiImage-shiftX"
 					min="-10000"
 					max="10000"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="uiImage-shiftY"
 					min="-10000"
 					max="10000"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiImage-clip') || 'Clip' }}</div
 			><CustomBox
 				id="uiImage-clip"
 				type="clip"
-				image="uiImage-image"
+				image="uiImage-image" @input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiImage-border') || 'Border' }}</div
 			><NumberBox
 				id="uiImage-border"
 				min="1"
 				max="100"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiImage-tint-0-box') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="uiImage-tint-0-box">
@@ -362,8 +362,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const ui = useUIStore();
 const local = useLocalStore();
 
-const onParamInput = () => {
-	(window as any).Inspector?.uiElement?.paramInput?.();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.uiElement?.paramInput?.({ target });
 };
 
 onMounted(() => {

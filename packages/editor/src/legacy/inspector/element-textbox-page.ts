@@ -50,7 +50,6 @@ import { UI } from '@/ui/ui-window.ts';
     #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
     #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
     #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 	};

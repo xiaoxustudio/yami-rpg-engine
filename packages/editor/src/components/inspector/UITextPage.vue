@@ -2,7 +2,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiText-properties-grid') || 'Text Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiText-properties-grid">
-			<div class="text">{{ local.getLabel('uiText-direction') || 'Direction' }}</div><SelectBox id="uiText-direction"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-direction') || 'Direction' }}</div><SelectBox id="uiText-direction" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiText-align-box') || 'Align' }}</div>
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
@@ -57,7 +57,7 @@
 			<div class="text">{{ local.getLabel('uiText-content') || 'Content' }}</div
 			><TextArea
 				id="uiText-content"
-				menu="tag-global-var tag-dynamic-global-var tag-localization"
+				menu="tag-global-var tag-dynamic-global-var tag-localization" @input="onParamInput"
 			></TextArea>
 			<div class="text">{{ local.getLabel('uiText-size-box') || 'Size' }}</div>
 			<div class="flex-box" id="uiText-size-box">
@@ -72,7 +72,7 @@
 					min="10"
 					max="400"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiText-lineSpacing-box') || 'Line Spacing' }}</div>
@@ -88,7 +88,7 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiText-letterSpacing-box') || 'Letter Spacing' }}</div>
@@ -104,38 +104,38 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiText-color') || 'Color' }}</div><ColorBox id="uiText-color"></ColorBox>
-			<div class="text">{{ local.getLabel('uiText-font') || 'Font' }}</div><TextBox id="uiText-font"></TextBox>
-			<div class="text">{{ local.getLabel('uiText-typeface') || 'Typeface' }}</div><SelectBox id="uiText-typeface"></SelectBox>
-			<div class="text">{{ local.getLabel('uiText-effect-type') || 'Effect' }}</div><SelectBox id="uiText-effect-type"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-color') || 'Color' }}</div><ColorBox id="uiText-color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ local.getLabel('uiText-font') || 'Font' }}</div><TextBox id="uiText-font" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('uiText-typeface') || 'Typeface' }}</div><SelectBox id="uiText-typeface" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('uiText-effect-type') || 'Effect' }}</div><SelectBox id="uiText-effect-type" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetX"
 				min="-9"
 				max="9"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetY"
 				min="-9"
 				max="9"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiText-effect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiText-effect-strokeWidth"
 				min="1"
 				max="20"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiText-effect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiText-effect-color"></ColorBox> <div class="text">{{ local.getLabel('uiText-overflow') || 'Overflow' }}</div
-			><SelectBox id="uiText-overflow"></SelectBox> <div class="text">{{ local.getLabel('uiText-blend') || 'Blend' }}</div
-			><SelectBox id="uiText-blend"></SelectBox>
+			><ColorBox id="uiText-effect-color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiText-overflow') || 'Overflow' }}</div
+			><SelectBox id="uiText-overflow" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('uiText-blend') || 'Blend' }}</div
+			><SelectBox id="uiText-blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -155,6 +155,11 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.uiElement?.paramInput?.({ target });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

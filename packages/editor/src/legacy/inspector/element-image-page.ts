@@ -67,7 +67,6 @@ import { read } from '@/util/element-utils.ts';
 		const sliders = $(`
     #uiImage-tint-0-slider, #uiImage-tint-1-slider,
     #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 		sliders.on('focus', Inspector.sliderFocus);

@@ -137,8 +137,14 @@ import { Scene } from '@/scene/scene-window.ts';
 		Scene.requestRendering();
 	};
 
-	FileTileset.paramInput = function (event) {
-		FileTileset.update(FileTileset.target, Inspector.getKey(this), read(this));
+	FileTileset.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileTileset-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileTileset.update(FileTileset.target, Inspector.getKey(element), read(element));
 	};
 
 	Inspector.fileTileset = FileTileset;

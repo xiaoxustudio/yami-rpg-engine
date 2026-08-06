@@ -38,7 +38,6 @@ import { UI } from '@/ui/ui-window.ts';
 		const elements = $(
 			'#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend'
 		);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 	};

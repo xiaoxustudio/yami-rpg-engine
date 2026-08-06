@@ -34,7 +34,6 @@ import { Sprite } from '@/sprite/sprite.ts';
 		const sliders = $(`
     #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
     #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on(
 			'blur',
@@ -169,8 +168,14 @@ import { Sprite } from '@/sprite/sprite.ts';
 		Animation.requestRendering();
 	};
 
-	AnimSpriteFrame.paramInput = function (event) {
-		AnimSpriteFrame.update(AnimSpriteFrame.target, Inspector.getKey(this), read(this));
+	AnimSpriteFrame.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animSpriteFrame-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		AnimSpriteFrame.update(AnimSpriteFrame.target, Inspector.getKey(element), read(element));
 	};
 
 	Inspector.animSpriteFrame = AnimSpriteFrame;

@@ -156,8 +156,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onParamInput = () => {
-	(window as any).Inspector?.fileActor?.paramInput?.();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.fileActor?.paramInput?.({ target });
 };
 const onAnimationIdWrite = (value: any) => {
 	(window as any).Inspector?.fileActor?.animationIdWrite?.({ value });

@@ -5,7 +5,7 @@
 			<div class="text">{{ local.getLabel('uiDialogBox-content') || 'Content' }}</div
 			><TextArea
 				id="uiDialogBox-content"
-				menu="tag-localization"
+				menu="tag-localization" @input="onParamInput"
 			></TextArea>
 			<div class="text">{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</div
 			><NumberBox
@@ -13,7 +13,7 @@
 				min="0"
 				max="100"
 				decimals="4"
-				unit="ms"
+				unit="ms" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</div>
 			<div class="flex-box" id="uiDialogBox-size-box">
@@ -28,7 +28,7 @@
 					min="10"
 					max="400"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</div>
@@ -44,7 +44,7 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</div>
@@ -60,38 +60,38 @@
 					min="-10"
 					max="100"
 					step="1"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color"></ColorBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font"></TextBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface"></SelectBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</div
-			><SelectBox id="uiDialogBox-effect-type"></SelectBox>
+			><SelectBox id="uiDialogBox-effect-type" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetX"
 				min="-9"
 				max="9"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetY"
 				min="-9"
 				max="9"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-strokeWidth"
 				min="1"
 				max="20"
-				unit="px"
+				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiDialogBox-effect-color"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
-			><SelectBox id="uiDialogBox-blend"></SelectBox>
+			><ColorBox id="uiDialogBox-effect-color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
+			><SelectBox id="uiDialogBox-blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
@@ -110,6 +110,11 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.uiElement?.paramInput?.({ target });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

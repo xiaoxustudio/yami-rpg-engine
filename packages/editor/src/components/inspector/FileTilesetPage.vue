@@ -132,8 +132,9 @@ const scene = useSceneStore();
 const local = useLocalStore();
 const palette = usePaletteStore();
 
-const onParamInput = () => {
-	(window as any).Inspector?.fileTileset?.paramInput?.();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.fileTileset?.paramInput?.({ target });
 };
 const onParamChange = () => {
 	(window as any).Inspector?.fileTileset?.paramInput?.();

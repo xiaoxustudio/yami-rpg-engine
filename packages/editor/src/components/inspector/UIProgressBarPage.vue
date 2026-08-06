@@ -6,23 +6,23 @@
 			><CustomBox
 				id="uiProgressBar-image"
 				type="file"
-				filter="image"
+				filter="image" @input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiProgressBar-display') || 'Display' }}</div><SelectBox id="uiProgressBar-display"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-display') || 'Display' }}</div><SelectBox id="uiProgressBar-display" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-clip') || 'Clip' }}</div
 			><CustomBox
 				id="uiProgressBar-clip"
 				type="clip"
-				image="uiProgressBar-image"
+				image="uiProgressBar-image" @input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiProgressBar-type') || 'Type' }}</div><SelectBox id="uiProgressBar-type"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-type') || 'Type' }}</div><SelectBox id="uiProgressBar-type" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-centerX') || 'Center X' }}</div
 			><NumberBox
 				id="uiProgressBar-centerX"
 				min="0"
 				max="1"
 				step="0.05"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-centerY') || 'Center Y' }}</div
 			><NumberBox
@@ -30,7 +30,7 @@
 				min="0"
 				max="1"
 				step="0.05"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-startAngle') || 'Start Angle' }}</div
 			><NumberBox
@@ -39,7 +39,7 @@
 				max="360"
 				step="5"
 				decimals="4"
-				unit="deg"
+				unit="deg" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-centralAngle') || 'Central Angle' }}</div
 			><NumberBox
@@ -48,21 +48,21 @@
 				max="360"
 				step="5"
 				decimals="4"
-				unit="deg"
+				unit="deg" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-step') || 'Step' }}</div
-			><NumberBox id="uiProgressBar-step" min="0" max="100"></NumberBox>
+			><NumberBox id="uiProgressBar-step" min="0" max="100" @input="onParamInput"></NumberBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-progress') || 'Progress' }}</div
 			><NumberBox
 				id="uiProgressBar-progress"
 				min="0"
 				max="1"
 				step="0.01"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiProgressBar-blend') || 'Blend' }}</div><SelectBox id="uiProgressBar-blend"></SelectBox>
+			<div class="text">{{ local.getLabel('uiProgressBar-blend') || 'Blend' }}</div><SelectBox id="uiProgressBar-blend" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-colorMode') || 'Color Mode' }}</div
-			><SelectBox id="uiProgressBar-colorMode"></SelectBox>
+			><SelectBox id="uiProgressBar-colorMode" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiProgressBar-color-0-box') || 'Red' }}</div>
 			<div class="flex-box" id="uiProgressBar-color-0-box">
 				<SliderBox
@@ -139,6 +139,11 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.uiElement?.paramInput?.({ target });
+};
+
 const local = useLocalStore();
 
 onMounted(() => {

@@ -86,7 +86,6 @@ import { UI } from '@/ui/ui-window.ts';
 		const sliders = $(`
     #uiProgressBar-color-0-slider, #uiProgressBar-color-1-slider,
     #uiProgressBar-color-2-slider, #uiProgressBar-color-3-slider`);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 		sliders.on('focus', Inspector.sliderFocus);

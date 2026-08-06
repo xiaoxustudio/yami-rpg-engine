@@ -54,7 +54,6 @@ import { UI } from '@/ui/ui-window.ts';
     #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
     #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
     #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 	};

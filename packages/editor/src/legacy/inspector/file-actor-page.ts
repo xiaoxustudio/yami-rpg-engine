@@ -257,8 +257,14 @@ function getWindow() {
 		elMoveMotion.write2(read(elMoveMotion));
 	};
 
-	FileActor.paramInput = function (event) {
-		FileActor.update(FileActor.target, Inspector.getKey(this), read(this));
+	FileActor.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileActor-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileActor.update(FileActor.target, Inspector.getKey(element), read(element));
 	};
 
 	FileActor.listChange = function (event) {

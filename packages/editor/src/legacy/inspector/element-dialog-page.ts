@@ -69,7 +69,6 @@ import { UI } from '@/ui/ui-window.ts';
 		const sliders = $(
 			'#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider'
 		);
-		elements.on('input', this.paramInput);
 		elements.on('focus', Inspector.inputFocus);
 		elements.on('blur', Inspector.inputBlur(this, UI));
 		sliders.on('focus', Inspector.sliderFocus);

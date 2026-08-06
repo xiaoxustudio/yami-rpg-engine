@@ -38,8 +38,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onParamInput = () => {
-	(window as any).Inspector?.fileEvent?.paramInput?.();
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.fileEvent?.paramInput?.({ target });
 };
 const onTypeWrite = (value: any) => {
 	(window as any).Inspector?.fileEvent?.typeWrite?.({ value });

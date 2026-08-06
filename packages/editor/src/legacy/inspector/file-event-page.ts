@@ -132,8 +132,14 @@ function getWindow() {
 		}
 	};
 
-	FileEvent.paramInput = function (event) {
-		FileEvent.update(FileEvent.target, Inspector.getKey(this), read(this));
+	FileEvent.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileEvent-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileEvent.update(FileEvent.target, Inspector.getKey(element), read(element));
 	};
 
 	FileEvent.typeWrite = function (event) {

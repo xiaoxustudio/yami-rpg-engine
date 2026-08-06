@@ -12,14 +12,14 @@
 					min="-10"
 					max="10"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
 					min="-10"
 					max="10"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-pivot-box') || 'Pivot' }}</div>
@@ -32,14 +32,14 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-position-box') || 'Position' }}</div>
@@ -52,14 +52,14 @@
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
 					min="-10000"
 					max="10000"
 					decimals="4"
-					unit="px"
+					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-rotation-box') || 'Rotation' }}</div>
@@ -72,7 +72,7 @@
 					min="-36000"
 					max="36000"
 					decimals="4"
-					unit="deg"
+					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-scale-box') || 'Scale' }}</div>
@@ -85,14 +85,14 @@
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-opacity-box') || 'Opacity' }}</div>
@@ -105,7 +105,7 @@
 					min="0"
 					max="1"
 					step="0.05"
-					decimals="4"
+					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('animSpriteFrame-tint-0-box') || 'Tint - Red' }}</div>
@@ -216,6 +216,11 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();
+
+const onParamInput = (event: any) => {
+	const target = event?.target ?? document.activeElement;
+	(window as any).Inspector?.animSpriteFrame?.paramInput?.({ target });
+};
 
 const onZoomInput = (value: number) => {
 	(window as any).Sprite?.setZoom?.(value);

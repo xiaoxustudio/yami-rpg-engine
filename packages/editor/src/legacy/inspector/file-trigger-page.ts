@@ -256,8 +256,14 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		write(elMotion, read(elMotion));
 	};
 
-	FileTrigger.paramInput = function (event) {
-		FileTrigger.update(FileTrigger.target, Inspector.getKey(this), read(this));
+	FileTrigger.paramInput = function (event: any) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileTrigger-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileTrigger.update(FileTrigger.target, Inspector.getKey(element), read(element));
 	};
 
 	FileTrigger.listChange = function (event) {
