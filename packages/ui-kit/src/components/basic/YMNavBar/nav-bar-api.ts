@@ -4,15 +4,11 @@ export interface NavBarApi extends HTMLElement {
 	writeEventEnabled: boolean;
 	selectEventEnabled: boolean;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	unselect(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	unselect(...args: unknown[]): any;
 	pointerdown(event: PointerEvent): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 const numberRegex = /^-?\d+(?:\.\d+)?$/;

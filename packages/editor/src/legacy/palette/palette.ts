@@ -1,4 +1,5 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -25,9 +26,7 @@ import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
 import { TileNode } from './tile-node-window.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Timer } from '@/util/timer.ts';
 
 export const Palette = {
@@ -293,7 +292,7 @@ Palette.open = function (this: any, meta: any) {
 		}
 	} else {
 		Inspector.close('tileset');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},
@@ -2005,7 +2004,7 @@ Palette.marqueePopup = function (this: any, event: any) {
 
 Palette.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		// 打开窗口时触发的blur事件会导致再次执行pointerup 因此提前重置dragging来避免重复执行
 		this.dragging = null;
 		switch (dragging.mode) {
@@ -2071,7 +2070,7 @@ Palette.pointerup = function (this: any, event: any) {
 
 Palette.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				dragging.latest = event;
@@ -2166,7 +2165,8 @@ Palette.pointermove = function (this: any, event: any) {
 	}
 }.bind(Palette);
 
-import { paletteStateKeys, getPaletteStore } from '@app/stores/palette';
+const paletteStateKeys = ['state', 'mode'] as const;
+import { getPaletteStore } from '@app/stores/palette';
 
 for (const key of paletteStateKeys) {
 	Object.defineProperty(Palette, key, {

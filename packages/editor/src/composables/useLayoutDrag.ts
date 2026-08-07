@@ -1,7 +1,8 @@
+import { Layout } from '@/layout/layout.ts';
 export function useLayoutDrag() {
 	const getLayout = () => {
 		if (typeof window === 'undefined') return undefined;
-		return (window as any).Layout;
+		return Layout;
 	};
 
 	function onNavDragstart(event: any) {

@@ -1,12 +1,10 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, removeClass } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Command } from '@/command/command-object.ts';
 import { GUID } from '@/file/guid.ts';
 import { Inspector } from './inspector.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 {
 	const FileAnimation = {
@@ -109,7 +107,7 @@ function getWindow() {
 			this: any,
 			{ name = '', id = this.createSpriteId!(), image = '', hframes = 1, vframes = 1 } = {}
 		) {
-			getWindow().open('fileAnimation-sprite');
+			Window.open!('fileAnimation-sprite');
 			const write = getElementWriter('fileAnimation-sprite');
 			write('name', name);
 			write('image', image);
@@ -132,7 +130,7 @@ function getWindow() {
 			const hframes = read('hframes');
 			const vframes = read('vframes');
 			const id = this.spriteId;
-			getWindow().close('fileAnimation-sprite');
+			Window.close!('fileAnimation-sprite');
 			return { name, id, image, hframes, vframes };
 		},
 		onPaste: function (this: any, list: any, copies: any) {

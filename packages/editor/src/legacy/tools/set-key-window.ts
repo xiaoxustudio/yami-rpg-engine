@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
-import { Window } from './window-object.ts';
 
 export const SetKey = {
 	callback: null as ((key: string) => void) | null,

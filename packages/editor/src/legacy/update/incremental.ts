@@ -343,7 +343,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 				'event.ts',
 				'input.ts',
 				'ui.ts',
-				'yami/yami.input.d.ts',
+				'yami/yami.input!.d.ts',
 				'yami/yami.ui.d.ts'
 			);
 		}

@@ -1,8 +1,7 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { disable, enable, on, read, write } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 export const SearchString = new (class {
 	window = null as any;
 	current: any = null;
@@ -131,7 +130,7 @@ export const SearchString = new (class {
 
 	open(eventWindow: any) {
 		this.bindButtons();
-		getWindow().open('event-search-string');
+		Window.open!('event-search-string');
 		this.index = 0;
 		this.current = eventWindow;
 		disable($('#event-search-string-previous'));

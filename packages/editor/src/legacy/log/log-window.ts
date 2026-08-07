@@ -12,16 +12,24 @@ export const Log = {
 	list: [] as any[],
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
-	throw: null as ((error: any) => void) | null,
-	print: null as ((item: any) => void) | null,
+	throw: null as ((...args: unknown[]) => void) | null,
+	print: null as ((...args: unknown[]) => void) | null,
 	clear: null as (() => void) | null,
 	update: null as (() => void) | null,
 	tick: null as (() => void) | null,
-	// runtime 挂载: main/initialize.ts 中挂载警告输出
+	// runtime 挂载: main/initialize.ts 中挂载警告输出,
 	warn: null as ((message: string, ...args: any[]) => void) | null,
-	catchError: null as ((event: any) => void) | null,
-	catchRejection: null as ((event: any) => void) | null,
-	tscLog: null as ((event: any, tscMessage: any) => void) | null
+	catchError: null as ((...args: unknown[]) => void) | null,
+	catchRejection: null as ((...args: unknown[]) => void) | null,
+	tscLog: null as ((...args: unknown[]) => void) | null,
+	logs: null as any[] | null,
+	log: null as ((message: string) => void) | null,
+	error: null as ((message: string) => void) | null,
+	open: null as ((...args: unknown[]) => void) | null,
+	switchMode: null as ((...args: unknown[]) => void) | null,
+	loadCommunityReleases: null as ((...args: unknown[]) => void) | null,
+	displayDonationList: null as ((...args: unknown[]) => void) | null,
+	parseCommunityReleases: null as ((...args: unknown[]) => void) | null
 };
 
 Log.initialize = function () {
@@ -62,10 +70,10 @@ Log.update = function () {
 			text.innerHTML = item.message;
 			addClass(text, item.type);
 			box.appendChild(text);
-			for (const path of box.querySelectorAll('log-path')) {
+			for (const path of (box as HTMLElement).querySelectorAll<HTMLElement>('log-path')) {
 				path.onclick = () => {
-					const LINE = path.nextElementSibling;
-					const COLUMN = LINE.nextElementSibling;
+					const LINE = path.nextElementSibling!;
+					const COLUMN = LINE.nextElementSibling!;
 					const file = File.route!(path.textContent);
 					const line = parseInt(LINE.textContent);
 					const column = parseInt(COLUMN.textContent);

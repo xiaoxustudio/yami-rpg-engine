@@ -31,16 +31,20 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneRegion-parameter-pane').bind($('#sceneRegion-scripts'));
 
-		const elements = $(`#sceneRegion-name, #sceneRegion-color,
+		const elements = document.querySelectorAll(`#sceneRegion-name, #sceneRegion-color,
     #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		$('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
-		);
+		document
+			.querySelectorAll('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneRegion.create = function (this: any) {

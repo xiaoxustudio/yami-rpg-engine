@@ -19,12 +19,17 @@ import { read, write } from '@/util/element-utils.ts';
 
 	AnimParticleFrame.initialize = function (this: any) {
 		if (!$('#animParticleFrame-x')) return;
-		const elements = $(`#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation,
+		const elements =
+			document.querySelectorAll(`#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation,
     #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity,
     #animParticleFrame-scale, #animParticleFrame-speed`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener(
 				'blur',
 				Inspector.inputBlur!(this, Animation, (data: any) => {

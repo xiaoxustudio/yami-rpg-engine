@@ -1,13 +1,12 @@
 import { getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { addClass, getFocus, on, read, write } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from './data-object.ts';
 import { File } from '@/file/file-system-core.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Inspector } from '@/inspector/inspector.ts';
 import { GUID } from '@/file/guid.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -93,7 +92,12 @@ export const Easing = {
 	list_addElementClass: null as any,
 	list_updateTextNode: null as any,
 	list_createKeyTextNode: null as any,
-	list_updateKeyTextNode: null as any
+	list_updateKeyTextNode: null as any,
+	state: null as string | null,
+	target: null as Record<string, any> | null,
+	saveToProject: null as ((project: any) => void) | null,
+	loadFromProject: null as ((project: any) => void) | null,
+	close: null as (() => void) | null
 };
 
 function ensureDomBound() {
@@ -103,14 +107,20 @@ function ensureDomBound() {
 	Easing.list = list;
 	Easing.curve = $('#easing-curve-canvas');
 	Easing.preview = $('#easing-preview-canvas');
-	list.saveSelection = Easing.list_saveSelection;
-	list.restoreSelection = Easing.list_restoreSelection;
-	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.updateItemName = Easing.list_updateItemName;
-	list.addElementClass = Easing.list_addElementClass;
-	list.updateTextNode = Easing.list_updateTextNode;
-	list.createKeyTextNode = Easing.list_createKeyTextNode;
-	list.updateKeyTextNode = Easing.list_updateKeyTextNode;
+	list.saveSelection = Easing.list_saveSelection as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = Easing.list_restoreSelection as unknown as (...args: unknown[]) => any;
+	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateItemName = Easing.list_updateItemName as unknown as (...args: unknown[]) => any;
+	list.addElementClass = Easing.list_addElementClass as unknown as (...args: unknown[]) => any;
+	list.updateTextNode = Easing.list_updateTextNode as unknown as (...args: unknown[]) => any;
+	list.createKeyTextNode = Easing.list_createKeyTextNode as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateKeyTextNode = Easing.list_updateKeyTextNode as unknown as (
+		...args: unknown[]
+	) => any;
 }
 
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
@@ -124,10 +134,10 @@ Easing.initialize = () => {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => Easing.data);
-	list.creators.push(list.addElementClass);
-	list.updaters.push(list.updateTextNode);
-	list.creators.push(list.createKeyTextNode);
-	list.updaters.push(list.updateKeyTextNode);
+	list.creators?.push(list.addElementClass);
+	list.updaters?.push(list.updateTextNode);
+	list.creators?.push(list.createKeyTextNode);
+	list.updaters?.push(list.updateKeyTextNode);
 
 	$('#easing-mode').loadItems([
 		{ name: 'Use 2 Points', value: 2 },
@@ -217,12 +227,12 @@ Easing.initialize = () => {
 	// list select/open/popup 经 Vue 模板转发（Easing.vue @select/@open/@popup → Easing.list*）
 	// list change 经 Vue 模板转发（Easing.vue @change → Easing.dataChange）
 	on($('#easing-mode'), 'input', Easing.modeSelect);
-	$(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
+	document
+		.querySelectorAll(`#easing-points-0-x, #easing-points-0-y, #easing-points-1-x, #easing-points-1-y,
     #easing-points-2-x, #easing-points-2-y, #easing-points-3-x, #easing-points-3-y,
     #easing-points-4-x, #easing-points-4-y, #easing-points-5-x, #easing-points-5-y,
-    #easing-points-6-x, #easing-points-6-y, #easing-points-7-x, #easing-points-7-y`).forEach(
-		(el: HTMLElement) => on(el, 'input', Easing.pointInput)
-	);
+    #easing-points-6-x, #easing-points-6-y, #easing-points-7-x, #easing-points-7-y`)
+		.forEach((el) => on(el, 'input', Easing.pointInput));
 	const easingScale = $('#easing-scale');
 	if (easingScale) on(easingScale, 'input', Easing.scaleInput);
 	if (Easing.curve) {
@@ -273,7 +283,7 @@ Easing.initialize = () => {
 })();
 
 Easing.open = function (this: any) {
-	getWindow().open('easing');
+	Window.open!('easing');
 
 	this.data = Object.clone(Data.easings);
 
@@ -339,7 +349,7 @@ Easing.delete = function (this: any, item: any) {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
 			},
@@ -730,7 +740,7 @@ Easing.windowClose = function (this: any, event: any) {
 	if (Easing.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedEasings')
 			},
@@ -739,7 +749,7 @@ Easing.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						Easing.changed = false;
-						getWindow().close('easing');
+						Window.close!('easing');
 					}
 				},
 				{
@@ -1149,7 +1159,7 @@ Easing.confirm = function (this: any, event: any) {
 		datachange.key = 'easings';
 		window.dispatchEvent(datachange);
 	}
-	getWindow().close('easing');
+	Window.close!('easing');
 }.bind(Easing);
 
 // 三次方曲线映射表类 - 必须使用Float64 因为Float32会导致部分点参数出现绘制BUG:线条变粗 Chromium78-89都存在这个BUG而Chromium69是正常的

@@ -1,7 +1,10 @@
 import { Timer } from '@/util/timer.ts';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
+import { Window } from '@/tools/window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 import '../variable/initialize.js';
-import '@/browser/browser-bridge.ts';
+
 import { Animation } from '@/animation/animation-window.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { AudioManager } from '@/audio/audio-manager.ts';
@@ -48,7 +51,6 @@ import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { SetKey } from '@/tools/set-key-window.ts';
 import { SetQuantity } from '@/tools/set-number-window.ts';
 import { Selection } from '@/tools/text-capture.ts';
-import { Window } from '@/tools/window-object.ts';
 import { Zoom } from '@/tools/zoom-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -114,7 +116,7 @@ Editor.initialize = async function (this: any) {
 
 	try {
 		// Selector 为懒加载 Vue 组件（#selector-browser），须等 __lazyComponentsReady__ 挂载完成后再解析
-		const Selector = (window as any).Selector;
+		const Selector = getSelectorInstance();
 		(Title.initialize as any)();
 		const data = await (window as any).config;
 		const code = JSON.stringify(data);
@@ -148,7 +150,7 @@ Editor.initialize = async function (this: any) {
 			UpdateLog,
 			Reference,
 			Directory,
-			Browser: (window as any).Browser,
+			Browser: getBrowserInstance(),
 			Selector,
 			Printer,
 			Color,

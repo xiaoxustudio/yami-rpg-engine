@@ -1,10 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, read, write } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { GameLocal } from '@/local/local-object.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const Choices = {
 	target: null as any,
@@ -29,7 +27,7 @@ Choices.parse = function (this: any, choice: any) {
 };
 
 Choices.open = function (this: any, choice = { content: '', commands: [] }) {
-	getWindow().open('choice');
+	Window.open!('choice');
 	write($('#choice-content'), choice.content);
 	getFocus($('#choice-content'), 'all');
 	this.commands = choice.commands;
@@ -41,7 +39,7 @@ Choices.save = function (this: any) {
 	if (content === '') {
 		return getFocus($('#choice-content'));
 	}
-	getWindow().close('choice');
+	Window.close!('choice');
 	return { content, commands };
 };
 
@@ -50,5 +48,5 @@ Choices.windowClosed = function (this: any, event: any) {
 };
 
 Choices.confirm = function (this: any, event: any) {
-	return Choices.target.save();
+	return Choices.target?.save?.();
 };

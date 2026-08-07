@@ -63,4 +63,3 @@ export const Editor: EditorShape = {
 };
 
 // ESM 迁移兼容：恢复全局绑定（供尚未迁移的文件裸用）
-(window as any).Editor = Editor;

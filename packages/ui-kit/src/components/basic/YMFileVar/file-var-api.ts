@@ -12,21 +12,17 @@ export interface FileVarApiOptions {
 export interface FileVarApi extends HTMLElement {
 	mode: string;
 	fileBox: CustomBoxApi;
-	varBox: CustomBoxApi;
+	varBox?: CustomBoxApi | null;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	switch(mode?: string): void;
-	enable(): void;
-	disable(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	switch(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
 	getFocus(mode: any): void;
 	keydown(event: any): void;
 	pointerdown(event: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {}): FileVarApi {
@@ -39,15 +35,15 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	box.varBox = factory() as CustomBoxApi;
 	box.fileBox.type = 'file';
 	box.fileBox.filter = options.filter ?? el.getAttribute('filter');
-	box.varBox.type = 'variable';
-	box.varBox.filter = 'string';
+	box.varBox!.type = 'variable';
+	box.varBox!.filter = 'string';
 
 	box.read = function (): any {
 		switch (box.mode) {
 			case 'constant':
 				return read(box.fileBox);
 			case 'variable':
-				return box.varBox.read();
+				return box.varBox?.read();
 		}
 	};
 
@@ -56,12 +52,12 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			case 'string':
 				box.switch('constant');
 				write(box.fileBox, value);
-				box.varBox.write(defVar);
+				box.varBox?.write(defVar);
 				break;
 			case 'object':
 				box.switch('variable');
 				write(box.fileBox, '');
-				box.varBox.write(value);
+				box.varBox?.write(value);
 				break;
 		}
 	};
@@ -84,17 +80,17 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					box.varBox.remove();
-					box.appendChild(box.fileBox);
+					box.varBox?.remove();
+					box.appendChild(box.fileBox!);
 					if (focus) {
 						box.fileBox.focus();
 					}
 					break;
 				case 'variable':
 					box.fileBox.remove();
-					box.appendChild(box.varBox);
+					box.appendChild(box.varBox!);
 					if (focus) {
-						box.varBox.focus();
+						box.varBox?.focus();
 					}
 					break;
 			}
@@ -104,14 +100,14 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	box.enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			box.fileBox.enable();
-			box.varBox.enable();
+			box.varBox?.enable();
 		}
 	};
 
 	box.disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			box.fileBox.disable();
-			box.varBox.disable();
+			box.varBox?.disable();
 		}
 	};
 
@@ -120,7 +116,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 			case 'constant':
 				return box.fileBox.focus();
 			case 'variable':
-				return box.varBox.focus();
+				return box.varBox?.focus();
 		}
 	};
 

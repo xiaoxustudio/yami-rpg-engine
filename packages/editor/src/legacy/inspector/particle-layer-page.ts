@@ -130,7 +130,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		$('#particleLayer-color-tint-2-slider').synchronize($('#particleLayer-color-tint-2'));
 		$('#particleLayer-color-tint-3-slider').synchronize($('#particleLayer-color-tint-3'));
 
-		const elements = $(`#particleLayer-name,
+		const elements = document.querySelectorAll(`#particleLayer-name,
     #particleLayer-area-type, #particleLayer-area-x, #particleLayer-area-y,
     #particleLayer-area-width, #particleLayer-area-height, #particleLayer-area-radius,
     #particleLayer-count, #particleLayer-delay, #particleLayer-interval,
@@ -176,15 +176,19 @@ import { Particle } from '@/particle/particle-window.ts';
     #particleLayer-color-endMax-2, #particleLayer-color-endMax-3,
     #particleLayer-color-tint-0, #particleLayer-color-tint-1,
     #particleLayer-color-tint-2, #particleLayer-color-tint-3`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider,
     #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider`);
 		const blurHandler = Inspector.inputBlur!(this, Particle);
-		elements.forEach((el: HTMLElement) => on(el, 'input', this.paramInput));
-		elements.forEach((el: HTMLElement) => on(el, 'focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) => on(el, 'blur', blurHandler));
-		sliders.forEach((el: HTMLElement) => on(el, 'focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => on(el, 'blur', Inspector.sliderBlur));
+		(elements as unknown as HTMLElement[]).forEach((el) => on(el, 'input', this.paramInput));
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			on(el, 'focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) => on(el, 'blur', blurHandler));
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			on(el, 'focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) => on(el, 'blur', Inspector.sliderBlur));
 	};
 
 	ParticleLayer.create = function (this: any) {

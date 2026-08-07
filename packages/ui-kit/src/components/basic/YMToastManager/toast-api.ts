@@ -1,6 +1,6 @@
 export interface ToastManagerApi extends HTMLElement {
 	_initialized: boolean;
-	show(message: string, type?: string, duration?: number): HTMLDivElement;
+	show(...args: unknown[]): any;
 	dismiss(el: HTMLElement | null): void;
 }
 

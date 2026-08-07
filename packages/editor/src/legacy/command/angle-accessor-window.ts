@@ -1,8 +1,6 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const AngleGetter = {
 	target: null as any,
@@ -39,7 +37,7 @@ AngleGetter.initialize = function (this: any) {
 
 AngleGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('angleGetter');
+	Window.open!('angleGetter');
 
 	let positionPosition = { type: 'actor', actor: { type: 'trigger' } };
 	let commonDegrees = 0;
@@ -83,6 +81,6 @@ AngleGetter.confirm = function (this: any, event: any) {
 			getter = { type };
 			break;
 	}
-	this.target.input(getter);
-	getWindow().close('angleGetter');
+	this.target?.input?.(getter);
+	Window.close!('angleGetter');
 }.bind(AngleGetter);

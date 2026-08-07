@@ -1,9 +1,8 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { on, rect, css } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
@@ -106,7 +105,7 @@ TileFrame.open = function (this: any) {
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
 	window.addEventListener('keydown', this.keydown);
-	getWindow().open('autoTile-frameIndex');
+	Window.open!('autoTile-frameIndex');
 
 	const screenBox = this.getDevicePixelClientBoxSize(screen);
 	const screenWidth = screenBox.width;
@@ -150,7 +149,7 @@ TileFrame.selectTileFrame = function (this: any) {
 		frames[frameIndex] = Math.min(x | (y << 8), 0xffff);
 		AutoTile.changed = true;
 		AutoTile.updateFrameItem();
-		getWindow().close('autoTile-frameIndex');
+		Window.close!('autoTile-frameIndex');
 	}
 };
 
@@ -322,7 +321,7 @@ TileFrame.marqueePointerleave = function (this: any, event: any) {
 
 TileFrame.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				const marquee = this.marquee;
@@ -348,7 +347,7 @@ TileFrame.pointerup = function (this: any, event: any) {
 
 TileFrame.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				dragging.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;

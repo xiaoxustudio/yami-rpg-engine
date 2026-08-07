@@ -1,7 +1,6 @@
 import { Data } from '@/data/data-object.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+import { Window } from '@/tools/window-object.ts';
+
 import { show } from '@/util/element-utils';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Animation } from '@/animation/animation-window.ts';
@@ -153,7 +152,7 @@ Scene.loadTextures = async function (this: any) {
 		this.resize!();
 		this.requestAnimation!();
 		this.requestRendering!();
-		if ((getWindow().frames?.length ?? 0) === 0 && document.activeElement === document.body) {
+		if ((Window.frames?.length ?? 0) === 0 && document.activeElement === document.body) {
 			this.screen?.focus();
 		}
 	}

@@ -1,12 +1,11 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { on, getFocus, read } from '@/util/element-utils.ts';
 import { Editor } from '@/main/editor.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Path } from '@/util/config.ts';
 
 export const ImportLanguage: {
@@ -42,7 +41,7 @@ ImportLanguage.open = function (this: any) {
 		]
 	}).then(({ filePaths }: any) => {
 		if (filePaths.length === 1) {
-			getWindow().open('importLanguage');
+			Window.open!('importLanguage');
 			const items = [] as any[];
 			for (const language of Data.config.localization.languages) {
 				items.push({
@@ -90,7 +89,7 @@ ImportLanguage.confirm = function (this: any, event: any) {
 	const filename = Path.basename!(ImportLanguage.filePath);
 	const language = read($('#importLanguage-language'));
 	const langname = (Local.get as any)('languages.' + language);
-	getWindow().confirm(
+	Window.confirm!(
 		{
 			message: get('importLanguagePack')
 				.replace('<filename>', filename)
@@ -100,7 +99,7 @@ ImportLanguage.confirm = function (this: any, event: any) {
 			{
 				label: get('confirm'),
 				click: () => {
-					getWindow().close('importLanguage');
+					Window.close!('importLanguage');
 					File.get!({
 						local: ImportLanguage.filePath,
 						type: 'text'

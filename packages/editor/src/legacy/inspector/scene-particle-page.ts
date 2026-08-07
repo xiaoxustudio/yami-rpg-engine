@@ -37,22 +37,32 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#sceneParticle-opacity-slider').synchronize($('#sceneParticle-opacity'));
 		$('#sceneParticle-priority-slider').synchronize($('#sceneParticle-priority'));
 
-		const elements = $(`#sceneParticle-name, #sceneParticle-particleId,
+		const elements = document.querySelectorAll(`#sceneParticle-name, #sceneParticle-particleId,
     #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle,
     #sceneParticle-scale, #sceneParticle-speed, #sceneParticle-opacity, #sceneParticle-priority`);
-		const sliders = $(`#sceneParticle-angle-slider,
+		const sliders = document.querySelectorAll(`#sceneParticle-angle-slider,
     #sceneParticle-scale-slider, #sceneParticle-speed-slider,
     #sceneParticle-opacity-slider, #sceneParticle-priority-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+		document
+			.querySelectorAll(
+				'#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts'
+			)
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneParticle.create = function (this: any) {

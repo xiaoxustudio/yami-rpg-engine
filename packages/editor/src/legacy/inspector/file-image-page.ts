@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
@@ -67,7 +68,7 @@ import { Inspector } from './inspector.ts';
 
 	FileImage.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			this.symbol = null;

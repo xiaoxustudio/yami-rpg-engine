@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { addClass, hasClass, hide, removeClass, show } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
@@ -20,9 +21,6 @@ import { Particle } from '@/particle/particle-window.ts';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type TitleMethod = ((...args: any[]) => any) | null;
@@ -136,7 +134,7 @@ Title.initialize = function (this: any) {
 		}
 	});
 
-	this.target.element = this.target.appendChild(document.createElement('div'));
+	this.target.element = this.target?.appendChild?.(document.createElement('div'));
 
 	this.pointerenter!();
 
@@ -266,7 +264,7 @@ Title.reopenClosedTab = function (this: any, meta: any) {
 Title.askWhetherToSave = function (this: any, callback: any) {
 	if (Data.manifest?.changes.length > 0) {
 		const get = Local.createGetter!('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedProject')
 			},
@@ -461,7 +459,7 @@ Title.loadFromProject = function (this: any, project: any) {
 };
 
 Title.windowBeforeClose = function (this: any, event: any) {
-	if ((getWindow().frames?.length ?? 0) === 0) {
+	if ((Window.frames?.length ?? 0) === 0) {
 		ipcRenderer.send('prevent-close-window');
 		Title.askWhetherToSave!(() => {
 			Editor.quit!();
@@ -490,7 +488,7 @@ Title.windowLeaveFullScreen = function (this: any, event: any) {
 }.bind(Title);
 
 Title.windowDrop = function (this: any, event: any) {
-	if ((getWindow().frames?.length ?? 0) === 0) {
+	if ((Window.frames?.length ?? 0) === 0) {
 		const { files } = event.dataTransfer;
 		for (const file of files) {
 			if (/\.yamirpg$/i.test(file.name)) {
@@ -689,7 +687,8 @@ Title.closeClick = function (this: any, event: any) {
 	Title.windowBeforeClose!();
 };
 
-import { titleStateKeys, getTitleStore } from '@app/stores/title';
+const titleStateKeys = ['theme', 'playing'] as const;
+import { getTitleStore } from '@app/stores/title';
 
 for (const key of titleStateKeys) {
 	Object.defineProperty(Title, key, {

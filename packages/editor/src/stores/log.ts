@@ -1,163 +1,166 @@
 import { defineStore } from 'pinia';
+import { UpdateLog } from '@/log/update-log-window.ts';
+import { Log } from '@/log/log-window.ts';
+import { Reference } from '@/log/related-references.ts';
 import { shallowRef } from 'vue';
 
 export const useLogStore = defineStore('log', () => {
 	const logs = shallowRef<any[]>([]);
 
 	function syncState() {
-		logs.value = (window as any).Log?.logs ?? [];
+		logs.value = Log?.logs ?? [];
 	}
 
 	function log(message: string) {
-		(window as any).Log?.log?.(message);
+		Log?.log?.(message);
 	}
 
 	function warn(message: string) {
-		(window as any).Log?.warn?.(message);
+		Log?.warn?.(message);
 	}
 
 	function error(message: string) {
-		(window as any).Log?.error?.(message);
+		Log?.error?.(message);
 	}
 
 	function logInitialize() {
-		(window as any).Log?.initialize?.();
+		Log?.initialize?.();
 	}
 
 	function logThrow(...args: any[]) {
-		(window as any).Log?.throw?.(...args);
+		Log?.throw?.(...args);
 	}
 
 	function logPrint(...args: any[]) {
-		(window as any).Log?.print?.(...args);
+		Log?.print?.(...args);
 	}
 
 	function logClear() {
-		(window as any).Log?.clear?.();
+		Log?.clear?.();
 	}
 
 	function logUpdate() {
-		(window as any).Log?.update?.();
+		Log?.update?.();
 	}
 
 	function logTick() {
-		(window as any).Log?.tick?.();
+		Log?.tick?.();
 	}
 
 	function logCatchError(...args: any[]) {
-		(window as any).Log?.catchError?.(...args);
+		Log?.catchError?.(...args);
 	}
 
 	function logCatchRejection(...args: any[]) {
-		(window as any).Log?.catchRejection?.(...args);
+		Log?.catchRejection?.(...args);
 	}
 
 	function logTscLog(...args: any[]) {
-		(window as any).Log?.tscLog?.(...args);
+		Log?.tscLog?.(...args);
 	}
 
 	function updateLogInitialize() {
-		(window as any).UpdateLog?.initialize?.();
+		UpdateLog?.initialize?.();
 	}
 
 	function updateLogOpen(...args: any[]) {
-		(window as any).UpdateLog?.open?.(...args);
+		UpdateLog?.open?.(...args);
 	}
 
 	function updateLogUpdate(...args: any[]) {
-		(window as any).UpdateLog?.update?.(...args);
+		UpdateLog?.update?.(...args);
 	}
 
 	function updateLogSwitchMode(...args: any[]) {
-		(window as any).UpdateLog?.switchMode?.(...args);
+		UpdateLog?.switchMode?.(...args);
 	}
 
 	function updateLogLoadCommunityReleases(...args: any[]) {
-		(window as any).UpdateLog?.loadCommunityReleases?.(...args);
+		UpdateLog?.loadCommunityReleases?.(...args);
 	}
 
 	function updateLogDisplayDonationList(...args: any[]) {
-		(window as any).UpdateLog?.displayDonationList?.(...args);
+		UpdateLog?.displayDonationList?.(...args);
 	}
 
 	function updateLogParseCommunityReleases(...args: any[]) {
-		(window as any).UpdateLog?.parseCommunityReleases?.(...args);
+		UpdateLog?.parseCommunityReleases?.(...args);
 	}
 
 	function updateLogWindowClosed(...args: any[]) {
-		(window as any).UpdateLog?.windowClosed?.(...args);
+		UpdateLog?.windowClosed?.(...args);
 	}
 
 	function referenceInitialize() {
-		(window as any).Reference?.initialize?.();
+		Reference?.initialize?.();
 	}
 
 	function referenceFindAllGuids(...args: any[]) {
-		return (window as any).Reference?.findAllGuids?.(...args);
+		return Reference?.findAllGuids?.(...args);
 	}
 
 	function referenceFilterUselessComments(...args: any[]) {
-		return (window as any).Reference?.filterUselessComments?.(...args);
+		return Reference?.filterUselessComments?.(...args);
 	}
 
 	function referenceFindRelated(...args: any[]) {
-		return (window as any).Reference?.findRelated?.(...args);
+		return Reference?.findRelated?.(...args);
 	}
 
 	function referenceOpenRelated(...args: any[]) {
-		(window as any).Reference?.openRelated?.(...args);
+		Reference?.openRelated?.(...args);
 	}
 
 	function referenceFindInvalid() {
-		return (window as any).Reference?.findInvalid?.();
+		return Reference?.findInvalid?.();
 	}
 
 	function referenceOpenInvalid(...args: any[]) {
-		(window as any).Reference?.openInvalid?.(...args);
+		Reference?.openInvalid?.(...args);
 	}
 
 	function referenceFindUnused() {
-		return (window as any).Reference?.findUnused?.();
+		return Reference?.findUnused?.();
 	}
 
 	function referenceOpenUnused(...args: any[]) {
-		(window as any).Reference?.openUnused?.(...args);
+		Reference?.openUnused?.(...args);
 	}
 
 	function referenceOpenList(...args: any[]) {
-		(window as any).Reference?.openList?.(...args);
+		Reference?.openList?.(...args);
 	}
 
 	function referenceUpdate(...args: any[]) {
-		(window as any).Reference?.update?.(...args);
+		Reference?.update?.(...args);
 	}
 
 	function referenceWindowClosed(...args: any[]) {
-		(window as any).Reference?.windowClosed?.(...args);
+		Reference?.windowClosed?.(...args);
 	}
 
 	function referenceListSelect(...args: any[]) {
-		(window as any).Reference?.listSelect?.(...args);
+		Reference?.listSelect?.(...args);
 	}
 
 	function referenceListPopup(...args: any[]) {
-		(window as any).Reference?.listPopup?.(...args);
+		Reference?.listPopup?.(...args);
 	}
 
 	function referenceGetKeydownListener(...args: any[]) {
-		return (window as any).Reference?.getKeydownListener?.(...args);
+		return Reference?.getKeydownListener?.(...args);
 	}
 
 	function referenceGetKeyupListener(...args: any[]) {
-		return (window as any).Reference?.getKeyupListener?.(...args);
+		return Reference?.getKeyupListener?.(...args);
 	}
 
 	function referenceGetPointerdownListener(...args: any[]) {
-		return (window as any).Reference?.getPointerdownListener?.(...args);
+		return Reference?.getPointerdownListener?.(...args);
 	}
 
 	function referenceGetPointermoveListener(...args: any[]) {
-		return (window as any).Reference?.getPointermoveListener?.(...args);
+		return Reference?.getPointermoveListener?.(...args);
 	}
 
 	return {

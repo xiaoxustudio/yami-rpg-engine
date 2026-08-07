@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const EquipmentGetter = {
 	target: null as any,
@@ -45,7 +43,7 @@ EquipmentGetter.initialize = function (this: any) {
 
 EquipmentGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('equipmentGetter');
+	Window.open!('equipmentGetter');
 	$('#equipmentGetter-slot').loadItems(Enum.getStringItems('equipment-slot'));
 
 	let actor = { type: 'trigger' };
@@ -129,6 +127,6 @@ EquipmentGetter.confirm = function (this: any, event: any) {
 	if (this.target.isPluginInput) {
 		getter = { getter: 'equipment', ...getter };
 	}
-	this.target.input(getter);
-	getWindow().close('equipmentGetter');
+	this.target?.input?.(getter);
+	Window.close!('equipmentGetter');
 }.bind(EquipmentGetter);

@@ -1,9 +1,7 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface PositionGetterTarget {
 	dataValue: PositionData;
@@ -43,7 +41,7 @@ export const PositionGetter: PositionGetterShape = {
 
 PositionGetter.initialize = function (this: any): void {
 	if (!$('#positionGetter-type')) return;
-	($('#positionGetter-type') as any).loadItems([
+	$('#positionGetter-type').loadItems([
 		{ name: 'Absolute Coordinates', value: 'absolute' },
 		{ name: 'Relative Coordinates', value: 'relative' },
 		{ name: 'Position of Actor', value: 'actor' },
@@ -54,26 +52,28 @@ PositionGetter.initialize = function (this: any): void {
 		{ name: 'Position of Mouse', value: 'mouse' }
 	]);
 
-	($('#positionGetter-type') as any).enableHiddenMode().relate([
-		{
-			case: 'absolute',
-			targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
-		},
-		{
-			case: 'relative',
-			targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
-		},
-		{ case: 'actor', targets: [$('#positionGetter-actor')] },
-		{ case: 'trigger', targets: [$('#positionGetter-trigger')] },
-		{ case: 'light', targets: [$('#positionGetter-light')] },
-		{
-			case: 'region',
-			targets: [$('#positionGetter-region'), $('#positionGetter-region-mode')]
-		},
-		{ case: 'object', targets: [$('#positionGetter-objectId')] }
-	]);
+	$('#positionGetter-type')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: 'absolute',
+				targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
+			},
+			{
+				case: 'relative',
+				targets: [$('#positionGetter-common-x'), $('#positionGetter-common-y')]
+			},
+			{ case: 'actor', targets: [$('#positionGetter-actor')] },
+			{ case: 'trigger', targets: [$('#positionGetter-trigger')] },
+			{ case: 'light', targets: [$('#positionGetter-light')] },
+			{
+				case: 'region',
+				targets: [$('#positionGetter-region'), $('#positionGetter-region-mode')]
+			},
+			{ case: 'object', targets: [$('#positionGetter-objectId')] }
+		]);
 
-	($('#positionGetter-region-mode') as any).loadItems([
+	$('#positionGetter-region-mode').loadItems([
 		{ name: 'Center', value: 'center' },
 		{ name: 'Random', value: 'random' },
 		{ name: 'Random - Land', value: 'random-land' },
@@ -81,12 +81,12 @@ PositionGetter.initialize = function (this: any): void {
 		{ name: 'Random - Wall', value: 'random-wall' }
 	]);
 
-	($('#positionGetter-confirm') as HTMLElement).addEventListener('click', this.confirm!);
+	$('#positionGetter-confirm').addEventListener('click', this.confirm!);
 };
 
 PositionGetter.open = function (this: PositionGetterShape, target: PositionGetterTarget): void {
 	this.target = target;
-	getWindow().open('positionGetter');
+	Window.open!('positionGetter');
 
 	let commonX = 0;
 	let commonY = 0;
@@ -205,5 +205,5 @@ PositionGetter.confirm = function (this: PositionGetterShape, event: Event): voi
 		getter = { getter: 'position', ...getter };
 	}
 	this.target!.input(getter);
-	getWindow().close('positionGetter');
+	Window.close!('positionGetter');
 }.bind(PositionGetter);

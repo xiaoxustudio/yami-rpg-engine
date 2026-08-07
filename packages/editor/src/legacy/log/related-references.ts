@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
-import { on, addClass, removeClass, clear } from '@/util/element-utils.ts';
 import { Window } from '@/tools/window-object.ts';
+import { on, addClass, removeClass, clear } from '@/util/element-utils.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from '@/tools/localization.ts';
@@ -10,26 +10,28 @@ export const Reference = {
 	keyupMap: new Map<any, any>(),
 	pointerdownMap: new Map<any, any>(),
 	pointermoveMap: new Map<any, any>(),
-	initialize: null as (() => void) | null,
+	initialize: null as ((...args: unknown[]) => unknown) | null,
 	findAllGuids: null as
 		| ((targetGuid?: string) => { usedMap: any; innerMap: any; outerMap: any })
 		| null,
-	filterUselessComments: null as ((items: any) => any) | null,
-	findRelated: null as ((guid: any) => any) | null,
-	openRelated: null as ((guid: any) => void) | null,
-	findInvalid: null as ((guid?: any) => any) | null,
-	openInvalid: null as ((guid: any) => void) | null,
-	findUnused: null as ((guid?: any) => any) | null,
-	openUnused: null as ((guid: any) => void) | null,
-	openList: null as ((items: any) => void) | null,
-	update: null as ((items: any) => void) | null,
-	windowClosed: null as ((event: any) => void) | null,
-	listSelect: null as ((event: any) => void) | null,
-	listPopup: null as ((event: any) => void) | null,
-	getKeydownListener: null as ((list: any, winId?: string) => any) | null,
-	getKeyupListener: null as ((list: any) => any) | null,
-	getPointerdownListener: null as ((list: any) => any) | null,
-	getPointermoveListener: null as ((list: any) => any) | null
+	filterUselessComments: null as
+		| ((...args: unknown[]) => unknown[] & { isEmpty?: boolean })
+		| null,
+	findRelated: null as ((...args: unknown[]) => unknown) | null,
+	openRelated: null as ((...args: unknown[]) => unknown) | null,
+	findInvalid: null as ((...args: unknown[]) => unknown) | null,
+	openInvalid: null as ((...args: unknown[]) => unknown) | null,
+	findUnused: null as ((...args: unknown[]) => unknown) | null,
+	openUnused: null as ((...args: unknown[]) => unknown) | null,
+	openList: null as ((...args: unknown[]) => unknown) | null,
+	update: null as ((...args: unknown[]) => unknown) | null,
+	windowClosed: null as ((...args: unknown[]) => unknown) | null,
+	listSelect: null as ((...args: unknown[]) => unknown) | null,
+	listPopup: null as ((...args: unknown[]) => unknown) | null,
+	getKeydownListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
+	getKeyupListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
+	getPointerdownListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null,
+	getPointermoveListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null
 };
 
 Reference.initialize = function () {

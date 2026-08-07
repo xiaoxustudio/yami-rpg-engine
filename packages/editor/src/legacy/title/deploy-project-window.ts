@@ -1,4 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { disable, enable, getFocus, on, read, write } from '@/util/element-utils';
 import { Timer } from '@/util/timer.ts';
 import { Codec } from '@/codec/codec.ts';
@@ -10,9 +11,7 @@ import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from '@/module/global.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Path } from '@/util/config.ts';
 // @ts-ignore no declaration
 import uglifyJs from 'uglify-js';
@@ -95,7 +94,7 @@ Deployment.initialize = function (this: any) {
 };
 
 Deployment.open = function (this: any) {
-	getWindow().open('deployment');
+	Window.open!('deployment');
 	const write = getElementWriter('deployment');
 	const dialogs = (Editor.config as any).dialogs;
 	const location = Path.normalize!(dialogs.deploy);
@@ -421,7 +420,7 @@ Deployment.readTsOutDir = function (this: any) {
 };
 
 Deployment.copyFilesTo = function (this: any, dirPath: any) {
-	getWindow().open('copyProgress');
+	Window.open!('copyProgress');
 	const platform = read($('#deployment-platform'));
 	const progressBar = $('#copyProgress-bar');
 	const progressInfo = $('#copyProgress-info');
@@ -611,7 +610,7 @@ Deployment.confirm = function (this: any, event: any) {
 	const location = read($('#deployment-location'));
 	const folder = read($('#deployment-folder'));
 	let path = Path.resolve!(location, folder);
-	getWindow().close('deployment');
+	Window.close!('deployment');
 	if (platform === 'mac-universal') {
 		path += '.app';
 	}
@@ -620,7 +619,7 @@ Deployment.confirm = function (this: any, event: any) {
 			return Deployment.copyFilesTo!(path);
 		})
 		.finally(() => {
-			getWindow().close('copyProgress');
+			Window.close!('copyProgress');
 			if (Deployment.timer) {
 				Deployment.timer.remove();
 				Deployment.timer = null;
@@ -631,7 +630,7 @@ Deployment.confirm = function (this: any, event: any) {
 		})
 		.catch((error: any) => {
 			Log.throw!(error);
-			getWindow().confirm(
+			Window.confirm!(
 				{
 					message: 'Failed to deploy project:\n' + error.message
 				},

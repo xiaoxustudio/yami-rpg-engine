@@ -1,24 +1,25 @@
 import { defineStore } from 'pinia';
+import { Inspector } from '@/inspector/inspector.ts';
 import { shallowRef } from 'vue';
 
 export const useInspectorStore = defineStore('inspector', () => {
-	const inspector = shallowRef<any>((window as any).Inspector ?? null);
+	const inspector = shallowRef<any>(Inspector ?? null);
 
 	const fileActorTarget = shallowRef<any>(null);
 	const fileActorMeta = shallowRef<any>(null);
 
 	function getInspector() {
-		return (window as any).Inspector;
+		return Inspector;
 	}
 
 	function openFileActor(target: any, meta: any) {
 		fileActorTarget.value = target;
 		fileActorMeta.value = meta;
-		(window as any).Inspector?.fileActor?.open(target, meta);
+		Inspector?.fileActor?.open(target, meta);
 	}
 
 	function closeFileActor() {
-		(window as any).Inspector?.fileActor?.close();
+		Inspector?.fileActor?.close();
 		fileActorTarget.value = null;
 		fileActorMeta.value = null;
 	}

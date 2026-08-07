@@ -20,7 +20,11 @@ import { SearchString } from '@/module/searchstring.ts';
 import { Local } from '@/tools/localization.ts';
 import { setTooltip } from '@/util/element-utils.ts';
 
-const Clipboard = (window as any).Clipboard;
+const Clipboard = null as unknown as {
+	write(type: string, data: unknown): void;
+	read(type: string): unknown;
+	has(type: string): boolean;
+};
 
 const options = {
 	command: {
@@ -42,9 +46,9 @@ const options = {
 	},
 	commandHistory: CommandHistory,
 	clipboard: {
-		write: (type: string, data: any) => Clipboard.write(type, data),
-		read: (type: string) => Clipboard.read(type),
-		has: (type: string) => Clipboard.has(type)
+		write: (type: string, data: any) => Clipboard?.write?.(type, data),
+		read: (type: string) => Clipboard?.read?.(type),
+		has: (type: string) => Clipboard?.has?.(type)
 	},
 	settingConfig: SettingConfig,
 	localize: {

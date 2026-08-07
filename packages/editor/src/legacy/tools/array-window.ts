@@ -1,8 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, on, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Local } from './localization.ts';
-import { Window } from './window-object.ts';
 
 export const ArrayList = {
 	get list() {
@@ -75,7 +75,7 @@ ArrayList.listChange = function (this: any, event: any) {
 
 ArrayList.confirm = function (this: any, event: any) {
 	this.changed = false;
-	this.target.input(this.list.read());
+	this.target?.input?.(this.list.read());
 	Window.close!('arrayList');
 }.bind(ArrayList);
 

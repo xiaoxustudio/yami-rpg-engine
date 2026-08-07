@@ -1,11 +1,10 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { getMonaco } from '@/util/monaco';
 
 export const EditDataInstance = new (class {
@@ -44,7 +43,7 @@ export const EditDataInstance = new (class {
 			if (this.changed) {
 				event.preventDefault();
 				const get = Local.createGetter!('confirmation');
-				getWindow().confirm(
+				Window.confirm!(
 					{
 						message: get('closeUnsavedData'),
 						close: () => {
@@ -56,7 +55,7 @@ export const EditDataInstance = new (class {
 							label: get('yes'),
 							click: () => {
 								this.setChangeState(false);
-								getWindow().close('edit-data');
+								Window.close!('edit-data');
 							}
 						},
 						{
@@ -183,7 +182,7 @@ export const EditDataInstance = new (class {
 
 		this.currentContent = null;
 		this.setChangeState(false);
-		getWindow().close('edit-data');
+		Window.close!('edit-data');
 	}
 	async colorizeCodeLines(items: any, code: any) {
 		const monaco = await getMonaco();

@@ -7,20 +7,16 @@ export interface CheckBoxApiOptions {
 }
 
 export interface CheckBoxApi extends HTMLElement {
-	dataValue: boolean;
+	dataValue: boolean | null;
 	relations: HTMLElement[];
 	_initialized: boolean;
-	read(): boolean;
-	write(value: boolean): void;
-	input(value: boolean): void;
-	enable(): void;
-	disable(): void;
-	relate(elements: HTMLElement[]): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	input(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	relate(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 	keydown: (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }) => void;
 	pointerdown: (event: PointerEvent) => void;
 	mouseclick: (event: Event) => void;
@@ -43,7 +39,7 @@ const disableElement = (element: any): void => {
 };
 
 export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions = {}): CheckBoxApi {
-	const box = el as CheckBoxApi;
+	const box = el as unknown as CheckBoxApi;
 	if (box._initialized) return box;
 
 	const standard = options.standard ?? hasClass(box, 'standard');

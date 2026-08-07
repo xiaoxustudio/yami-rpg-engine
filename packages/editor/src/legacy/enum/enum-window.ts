@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
@@ -11,11 +12,19 @@ import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
-import { enumStateKeys, getEnumStore } from '@app/stores/enum';
+const enumStateKeys = [
+	'mode',
+	'target',
+	'data',
+	'idMap',
+	'settings',
+	'settingKeys',
+	'history',
+	'changed'
+] as const;
+import { getEnumStore } from '@app/stores/enum';
 
 export const Enum = {
 	list: null as any,
@@ -84,22 +93,22 @@ function ensureDomBound() {
 	Enum.inputs.name = $('#enum-name');
 	Enum.inputs.value = $('#enum-value');
 	Enum.inputs.note = $('#enum-note');
-	Enum.list.copy = null;
-	Enum.list.paste = null;
-	Enum.list.delete = null;
-	Enum.list.saveScroll = null;
-	Enum.list.restoreScroll = null;
-	Enum.list.cancelSearch = null;
+	Enum.list.copy = null as unknown as (...args: unknown[]) => any;
+	Enum.list.paste = null as unknown as (...args: unknown[]) => any;
+	Enum.list.delete = null as unknown as (...args: unknown[]) => any;
+	Enum.list.saveScroll = null as unknown as (...args: unknown[]) => any;
+	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => any;
+	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
 	Enum.list.createString = null;
-	Enum.list.createIcon = null;
-	Enum.list.parseName = null;
-	Enum.list.addElementClass = null;
-	Enum.list.createGroupText = null;
-	Enum.list.updateGroupText = null;
-	Enum.list.createInitText = null;
-	Enum.list.updateInitText = null;
-	Enum.list.createNoteIcon = null;
-	Enum.list.updateNoteIcon = null;
+	Enum.list.createIcon = null as unknown as (...args: unknown[]) => any;
+	Enum.list.parseName = null as unknown as (...args: unknown[]) => any;
+	Enum.list.addElementClass = null as unknown as (...args: unknown[]) => any;
+	Enum.list.createGroupText = null as unknown as (...args: unknown[]) => any;
+	Enum.list.updateGroupText = null as unknown as (...args: unknown[]) => any;
+	Enum.list.createInitText = null as unknown as (...args: unknown[]) => any;
+	Enum.list.updateInitText = null as unknown as (...args: unknown[]) => any;
+	Enum.list.createNoteIcon = null as unknown as (...args: unknown[]) => any;
+	Enum.list.updateNoteIcon = null as unknown as (...args: unknown[]) => any;
 	Enum.list.onDelete = null;
 	Enum.list.onResume = null;
 	bindListClipboardMethods({
@@ -248,13 +257,13 @@ Enum.initialize = function (this: any) {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.createGroupText);
-	list.updaters.push(list.updateGroupText);
-	list.creators.push(list.createInitText);
-	list.creators.push(list.updateInitText);
-	list.creators.push(list.createNoteIcon);
-	list.creators.push(list.updateNoteIcon);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.createGroupText);
+	list.updaters?.push(list.updateGroupText);
+	list.creators?.push(list.createInitText);
+	list.creators?.push(list.updateInitText);
+	list.creators?.push(list.createNoteIcon);
+	list.creators?.push(list.updateNoteIcon);
 
 	this.panel.enumString = null;
 
@@ -344,7 +353,7 @@ Enum.open = function (this: any, target: any = null, mode: any = 'normal') {
 	this.history = new History(100);
 	UndoManager.setActive(this);
 	this.unpackEnumeration();
-	getWindow().open('enum');
+	Window.open!('enum');
 
 	const list = this.list;
 	const item = !target ? undefined : this.getItemById(read(target));
@@ -588,7 +597,7 @@ Enum.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedEnumeration')
 			},
@@ -597,7 +606,7 @@ Enum.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('enum');
+						Window.close!('enum');
 					}
 				},
 				{
@@ -897,7 +906,7 @@ Enum.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input.value;
+	const text = this.input!.value;
 	Enum.list.searchNodesDebounced(text);
 };
 
@@ -912,7 +921,7 @@ Enum.confirm = function (this: any, event: any) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target.input(item ? item.id : '');
+			this.target?.input?.(item ? item.id : '');
 			break;
 		}
 		case 'string': {
@@ -921,11 +930,11 @@ Enum.confirm = function (this: any, event: any) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target.input(item ? item.id : '');
+			this.target?.input?.(item ? item.id : '');
 			break;
 		}
 	}
-	getWindow().close('enum');
+	Window.close!('enum');
 }.bind(Enum);
 
 Enum.apply = function (this: any, event: any) {

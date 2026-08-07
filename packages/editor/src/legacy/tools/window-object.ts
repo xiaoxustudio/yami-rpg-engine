@@ -332,5 +332,3 @@ Window.ambient.update = function (this: any) {
 	}
 	removeClass(this, 'open');
 };
-
-(window as any).Window = Window;

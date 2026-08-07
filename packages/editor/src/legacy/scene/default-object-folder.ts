@@ -1,9 +1,7 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { on } from '@/util/element-utils.ts';
 import { Editor } from '@/main/editor.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const ObjectFolder: {
 	initialize: ((...args: any[]) => any) | null;
@@ -21,7 +19,7 @@ ObjectFolder.initialize = function (this: any) {
 };
 
 ObjectFolder.open = function (this: any) {
-	getWindow().open('object-folder');
+	Window.open!('object-folder');
 	const data = (Editor.project as any).scene.defaultFolders;
 	const write = getElementWriter('object-folder', data);
 	write('tilemap');
@@ -44,5 +42,5 @@ ObjectFolder.confirm = function (this: any, event: any) {
 		particle: read('particle'),
 		parallax: read('parallax')
 	};
-	getWindow().close('object-folder');
+	Window.close!('object-folder');
 };

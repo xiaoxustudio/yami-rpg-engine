@@ -14,7 +14,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 		const el = wrapper.element as any;
 		expect(typeof el.write).toBe('function');
 		el.write('Hello');
-		el.input.dispatchEvent(new Event('input', { bubbles: true }));
+		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('input');
 		expect(emitted).toBeTruthy();
@@ -31,7 +31,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 		const el = wrapper.element as any;
 		expect(typeof el.write).toBe('function');
 		el.write(3);
-		el.input.dispatchEvent(new Event('input', { bubbles: true }));
+		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('input');
 		expect(emitted).toBeTruthy();

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Localization } from '@/local/local-window.ts';
 import { shallowRef } from 'vue';
 
 export const useLocalizationStore = defineStore('localization', () => {
@@ -6,69 +7,68 @@ export const useLocalizationStore = defineStore('localization', () => {
 	const strings = shallowRef<Record<string, any>>({});
 
 	function syncState() {
-		const Localization = (window as any).Localization;
 		state.value = Localization?.state ?? 'closed';
 		strings.value = Localization?.strings ?? {};
 	}
 
 	function initialize() {
-		(window as any).Localization?.initialize?.();
+		Localization?.initialize?.();
 	}
 
 	function open(target?: any) {
-		(window as any).Localization?.open?.(target);
+		Localization?.open?.(target);
 	}
 
 	function close() {
-		(window as any).Localization?.close?.();
+		Localization?.close?.();
 	}
 
 	function undo() {
-		(window as any).Localization?.undo?.();
+		Localization?.undo?.();
 	}
 
 	function redo() {
-		(window as any).Localization?.redo?.();
+		Localization?.redo?.();
 	}
 
 	function createId() {
-		return (window as any).Localization?.createId?.();
+		return Localization?.createId?.();
 	}
 
 	function register(item: any) {
-		(window as any).Localization?.register?.(item);
+		Localization?.register?.(item);
 	}
 
 	function unregister(item: any) {
-		(window as any).Localization?.unregister?.(item);
+		Localization?.unregister?.(item);
 	}
 
 	function openContentPanel(item: any) {
-		(window as any).Localization?.openContentPanel?.(item);
+		Localization?.openContentPanel?.(item);
 	}
 
 	function closeContentPanel() {
-		(window as any).Localization?.closeContentPanel?.();
+		Localization?.closeContentPanel?.();
 	}
 
 	function confirm(event?: any) {
-		(window as any).Localization?.confirm?.(event);
+		Localization?.confirm?.(event);
 	}
 
 	function apply(event?: any) {
-		(window as any).Localization?.apply?.(event);
+		Localization?.apply?.(event);
 	}
 
 	function toExcel(event?: any) {
-		(window as any).Localization?.toExcel?.(event);
+		Localization?.toExcel?.(event);
 	}
 
 	function saveToProject(project: any) {
-		(window as any).Localization?.saveToProject?.(project);
+		Localization?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).Localization?.loadFromProject?.(project);
+		Localization?.loadFromProject?.(project);
 	}
 
 	return {

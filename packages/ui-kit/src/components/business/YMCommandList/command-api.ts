@@ -503,7 +503,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 						element.ellipsis = document.createElement('div');
 						addClass(element.ellipsis, 'command-text');
 						element.ellipsis.textContent = ' ......';
-						element.appendChild(element.ellipsis);
+						element.appendChild(element.ellipsis!);
 					}
 				} else {
 					element.fold.textContent = '-';

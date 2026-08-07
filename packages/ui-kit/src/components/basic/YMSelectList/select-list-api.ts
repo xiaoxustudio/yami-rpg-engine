@@ -21,7 +21,7 @@ export interface SelectItem {
 export interface SelectTarget extends HTMLElement {
 	dataItems: SelectItem[];
 	dataValue: any;
-	input(value: any): void;
+	input(...args: unknown[]): any;
 }
 
 export interface SelectListApiOptions {
@@ -40,14 +40,14 @@ export interface SelectListApi extends HTMLElement {
 		foot: HTMLElement | null;
 	};
 	selection: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
-	select(element: HTMLElement): void;
-	unselect(): void;
-	reselect(offset: number): void;
-	open(target: SelectTarget): void;
-	close(): void;
-	resize(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	select(...args: unknown[]): any;
+	unselect(...args: unknown[]): any;
+	reselect(...args: unknown[]): any;
+	open(...args: unknown[]): any;
+	close(...args: unknown[]): any;
+	resize(...args: unknown[]): any;
 	updateHeadAndFoot(): void;
 	updateOnResize(): void;
 	createItems(items: SelectItem[]): void;
@@ -56,7 +56,7 @@ export interface SelectListApi extends HTMLElement {
 	getElementIndexOfSelection(defIndex: number): number;
 	scrollToSelection(): void;
 	clearElements(start: number): void;
-	clear(): HTMLElement;
+	clear(...args: unknown[]): any;
 	pointermove(event: PointerEvent): void;
 	windowKeydown(event: KeyboardEvent): void;
 	windowPointerdown(event: PointerEvent): void;

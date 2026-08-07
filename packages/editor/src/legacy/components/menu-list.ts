@@ -14,11 +14,11 @@ interface MenuListElement extends HTMLElement {
 	parentMenuItem: HTMLElement | null;
 	popup(options: MenuOptions, items: MenuItem[]): void;
 	computeMenuWidth(): void;
-	close(): void;
-	clear(): HTMLElement;
-	createItem(item: MenuItem): HTMLElement;
-	select(element: HTMLElement): void;
-	unselect(): void;
+	close(...args: unknown[]): any;
+	clear(...args: unknown[]): any;
+	createItem(...args: unknown[]): any;
+	select(...args: unknown[]): any;
+	unselect(...args: unknown[]): any;
 	reselect(offset: number): void;
 	popupSubmenu(delay: number): void;
 	closeSubmenu(delay: number): void;
@@ -32,7 +32,7 @@ export function attachMenuListApi(el: HTMLElement): void {
 	box.computeMenuWidth = menu.computeMenuWidth;
 	box.close = menu.close;
 	box.clear = menu.clear;
-	box.createItem = menu.createItem;
+	box.createItem = menu.createItem as unknown as (...args: unknown[]) => any;
 	box.select = menu.select;
 	box.unselect = menu.unselect;
 	box.reselect = menu.reselect;

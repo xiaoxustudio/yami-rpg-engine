@@ -50,23 +50,32 @@ import { GL } from '@/webgl/webgl-init.ts';
 
 		$('#fileScene-parameter-pane').bind($('#fileScene-scripts'));
 
-		const elements = $(`#fileScene-tileWidth, #fileScene-tileHeight,
+		const elements = document.querySelectorAll(`#fileScene-tileWidth, #fileScene-tileHeight,
     #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct`);
-		const sliders = $(`#fileScene-ambient-red-slider, #fileScene-ambient-green-slider,
+		const sliders =
+			document.querySelectorAll(`#fileScene-ambient-red-slider, #fileScene-ambient-green-slider,
     #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#fileScene-width, #fileScene-height').forEach((el: HTMLElement) =>
-			el.addEventListener('change', this.paramInput!)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
-		$('#fileScene-events, #fileScene-scripts').forEach((el: HTMLElement) =>
-			el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
 		);
+		document
+			.querySelectorAll('#fileScene-width, #fileScene-height')
+			.forEach((el) => el.addEventListener('change', this.paramInput!));
+		document
+			.querySelectorAll('#fileScene-events, #fileScene-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	FileScene.create = function (this: any) {

@@ -19,21 +19,17 @@ export interface RadioBoxApi extends HTMLElement {
 	proxy: RadioProxyElement;
 	dataValue: number | string | boolean;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
-	enable(): void;
-	disable(): void;
-	relate(entries: any[]): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	input(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	relate(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 }
 
 export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions = {}): RadioBoxApi {
-	const box = el as RadioBoxApi;
+	const box = el as unknown as RadioBoxApi;
 	if (box._initialized) return box;
 
 	if (options.name) box.setAttribute('name', options.name);
@@ -63,26 +59,26 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 				: string;
 	box.dataValue = value;
 
-	if (boxName && box.proxy.id !== boxName) {
+	if (boxName && box.proxy?.id !== boxName) {
 		const existing = radioProxyMap[boxName] as RadioProxyElement;
 		if (existing) {
 			box.proxy = existing;
 			isNewProxy = false;
-		} else if (box.proxy.id === '') {
+		} else if (box.proxy!.id === '') {
 			delete radioProxyMap[''];
-			box.proxy.id = boxName;
+			box.proxy!.id = boxName;
 			radioProxyMap[boxName] = box.proxy;
 			isNewProxy = true;
 		} else {
 			box.proxy = createRadioProxy() as RadioProxyElement;
-			box.proxy.id = boxName;
-			box.proxy.style.display = 'none';
+			box.proxy!.id = boxName;
+			box.proxy!.style.display = 'none';
 			radioProxyMap[boxName] = box.proxy;
 			isNewProxy = true;
 		}
 	}
 	if (isNewProxy) {
-		box.appendChild(box.proxy);
+		box.appendChild(box.proxy!);
 	}
 
 	const pointerdown = (event: PointerEvent): void => {
@@ -92,12 +88,12 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 					if (document.activeElement !== document.body) {
 						(document.activeElement as HTMLElement).blur();
 					}
-					box.proxy.input(box.dataValue);
-				} else if (box.proxy.cancelable) {
+					box.proxy?.input(box.dataValue);
+				} else if (box.proxy?.cancelable) {
 					if (document.activeElement !== document.body) {
 						(document.activeElement as HTMLElement).blur();
 					}
-					box.proxy.reset();
+					box.proxy?.reset();
 				}
 				break;
 		}
@@ -105,9 +101,9 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 
 	const mouseclick = (event: Event): void => {
 		if (!hasClass(box, 'selected')) {
-			box.proxy.input(box.dataValue);
-		} else if (box.proxy.cancelable) {
-			box.proxy.reset();
+			box.proxy?.input(box.dataValue);
+		} else if (box.proxy?.cancelable) {
+			box.proxy?.reset();
 		}
 	};
 
@@ -150,7 +146,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.dataValue = v;
 	};
 	box.input = (v: any) => {
-		box.proxy.input(v);
+		box.proxy?.input(v);
 	};
 	box.enable = () => {
 		box.classList.remove('disabled');
@@ -159,7 +155,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		box.classList.add('disabled');
 	};
 	box.relate = (entries: any[]) => {
-		box.proxy.relate(entries);
+		box.proxy?.relate(entries);
 	};
 	box.on = (
 		type: string,

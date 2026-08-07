@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { UI } from '@/ui/ui-window.ts';
 import { shallowRef } from 'vue';
 
 export const useUIStore = defineStore('ui', () => {
@@ -9,7 +10,6 @@ export const useUIStore = defineStore('ui', () => {
 	const height = shallowRef<number | null>(null);
 
 	function syncState() {
-		const UI = (window as any).UI;
 		state.value = UI?.state ?? 'closed';
 		target.value = UI?.target ?? null;
 		zoom.value = UI?.zoom ?? null;
@@ -18,195 +18,195 @@ export const useUIStore = defineStore('ui', () => {
 	}
 
 	function open(context: any) {
-		(window as any).UI?.open?.(context);
+		UI?.open?.(context);
 	}
 
 	function close() {
-		(window as any).UI?.close?.();
+		UI?.close?.();
 	}
 
 	function planToSave() {
-		(window as any).UI?.planToSave?.();
+		UI?.planToSave?.();
 	}
 
 	function requestRendering() {
-		(window as any).UI?.requestRendering?.();
+		UI?.requestRendering?.();
 	}
 
 	function load(context: any) {
-		(window as any).UI?.load?.(context);
+		UI?.load?.(context);
 	}
 
 	function save() {
-		(window as any).UI?.save?.();
+		UI?.save?.();
 	}
 
 	function destroy(context: any) {
-		(window as any).UI?.destroy?.(context);
+		UI?.destroy?.(context);
 	}
 
 	function copy() {
-		(window as any).UI?.copy?.();
+		UI?.copy?.();
 	}
 
 	function paste(x?: number, y?: number) {
-		(window as any).UI?.paste?.(x, y);
+		UI?.paste?.(x, y);
 	}
 
 	function duplicate() {
-		(window as any).UI?.duplicate?.();
+		UI?.duplicate?.();
 	}
 
 	function create(kind: string, x: number, y: number) {
-		(window as any).UI?.create?.(kind, x, y);
+		UI?.create?.(kind, x, y);
 	}
 
 	function createPrefab(prefab: any, parent: any, x?: number, y?: number) {
-		(window as any).UI?.createPrefab?.(prefab, parent, x, y);
+		UI?.createPrefab?.(prefab, parent, x, y);
 	}
 
 	function createShortcut(item: any) {
-		(window as any).UI?.createShortcut?.(item);
+		UI?.createShortcut?.(item);
 	}
 
 	function delete_() {
-		(window as any).UI?.delete?.();
+		UI?.delete?.();
 	}
 
 	function toggle() {
-		(window as any).UI?.toggle?.();
+		UI?.toggle?.();
 	}
 
 	function undo() {
-		(window as any).UI?.undo?.();
+		UI?.undo?.();
 	}
 
 	function redo() {
-		(window as any).UI?.redo?.();
+		UI?.redo?.();
 	}
 
 	function setZoom(zoomValue: number) {
-		(window as any).UI?.setZoom?.(zoomValue);
+		UI?.setZoom?.(zoomValue);
 	}
 
 	function setSize(w: number, h: number) {
-		(window as any).UI?.setSize?.(w, h);
+		UI?.setSize?.(w, h);
 	}
 
 	function setHover(hover: any) {
-		(window as any).UI?.setHover?.(hover);
+		UI?.setHover?.(hover);
 	}
 
 	function setTarget(targetValue: any) {
-		(window as any).UI?.setTarget?.(targetValue);
+		UI?.setTarget?.(targetValue);
 	}
 
 	function revealTarget() {
-		(window as any).UI?.revealTarget?.();
+		UI?.revealTarget?.();
 	}
 
 	function shiftAnchor(anchorX: number, anchorY: number) {
-		(window as any).UI?.shiftAnchor?.(anchorX, anchorY);
+		UI?.shiftAnchor?.(anchorX, anchorY);
 	}
 
 	function shiftTarget(x: number, y: number) {
-		(window as any).UI?.shiftTarget?.(x, y);
+		UI?.shiftTarget?.(x, y);
 	}
 
 	function resizeTarget(width?: number, height?: number) {
-		(window as any).UI?.resizeTarget?.(width, height);
+		UI?.resizeTarget?.(width, height);
 	}
 
 	function rotateTarget(rotation: number) {
-		(window as any).UI?.rotateTarget?.(rotation);
+		UI?.rotateTarget?.(rotation);
 	}
 
 	function setControlPoint(point: any) {
-		(window as any).UI?.setControlPoint?.(point);
+		UI?.setControlPoint?.(point);
 	}
 
 	function updateHover() {
-		(window as any).UI?.updateHover?.();
+		UI?.updateHover?.();
 	}
 
 	function updateTarget() {
-		(window as any).UI?.updateTarget?.();
+		UI?.updateTarget?.();
 	}
 
 	function updateElementFont() {
-		(window as any).UI?.updateElementFont?.();
+		UI?.updateElementFont?.();
 	}
 
 	function updateElementLanguage() {
-		(window as any).UI?.updateElementLanguage?.();
+		UI?.updateElementLanguage?.();
 	}
 
 	function updateElementTextScaling() {
-		(window as any).UI?.updateElementTextScaling?.();
+		UI?.updateElementTextScaling?.();
 	}
 
 	function updateIndexedColor(index: number) {
-		(window as any).UI?.updateIndexedColor?.(index);
+		UI?.updateIndexedColor?.(index);
 	}
 
 	function updateAllTexts() {
-		(window as any).UI?.updateAllTexts?.();
+		UI?.updateAllTexts?.();
 	}
 
 	function updateAllPrinters() {
-		(window as any).UI?.updateAllPrinters?.();
+		UI?.updateAllPrinters?.();
 	}
 
 	function updateElement(targetValue: any) {
-		(window as any).UI?.updateElement?.(targetValue);
+		UI?.updateElement?.(targetValue);
 	}
 
 	function deleteElement(targetValue: any) {
-		(window as any).UI?.deleteElement?.(targetValue);
+		UI?.deleteElement?.(targetValue);
 	}
 
 	function switchSettings() {
-		(window as any).UI?.switchSettings?.();
+		UI?.switchSettings?.();
 	}
 
 	function registerPreset(node: any) {
-		(window as any).UI?.registerPreset?.(node);
+		UI?.registerPreset?.(node);
 	}
 
 	function unregisterPreset(node: any) {
-		(window as any).UI?.unregisterPreset?.(node);
+		UI?.unregisterPreset?.(node);
 	}
 
 	function hasPrefab(node: any) {
-		return (window as any).UI?.hasPrefab?.(node);
+		return UI?.hasPrefab?.(node);
 	}
 
 	function setAsPrefab(node: any) {
-		(window as any).UI?.setAsPrefab?.(node);
+		UI?.setAsPrefab?.(node);
 	}
 
 	function unsetAsPrefab(node: any) {
-		(window as any).UI?.unsetAsPrefab?.(node);
+		UI?.unsetAsPrefab?.(node);
 	}
 
 	function clearInvalidPrefabs(uiPrefabs: any[]) {
-		(window as any).UI?.clearInvalidPrefabs?.(uiPrefabs);
+		UI?.clearInvalidPrefabs?.(uiPrefabs);
 	}
 
 	function saveToConfig(config: any) {
-		(window as any).UI?.saveToConfig?.(config);
+		UI?.saveToConfig?.(config);
 	}
 
 	function loadFromConfig(config: any) {
-		(window as any).UI?.loadFromConfig?.(config);
+		UI?.loadFromConfig?.(config);
 	}
 
 	function saveToProject(project: any) {
-		(window as any).UI?.saveToProject?.(project);
+		UI?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).UI?.loadFromProject?.(project);
+		UI?.loadFromProject?.(project);
 	}
 
 	return {

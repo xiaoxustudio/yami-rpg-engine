@@ -16,19 +16,15 @@ export interface RadioProxyElement extends HTMLElement {
 	cancelable: boolean;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
-	reset(): void;
-	enable(): void;
-	disable(): void;
-	relate(entries: RadioRelationEntry[]): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	input(...args: unknown[]): any;
+	reset(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	relate(...args: unknown[]): any;
 	toggleRelatedElements(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 export const radioProxyMap: Record<string, HTMLElement> = {};

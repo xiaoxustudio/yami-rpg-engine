@@ -1,58 +1,58 @@
 import { defineStore } from 'pinia';
+import { Team } from '@/data/team-window.ts';
 import { shallowRef } from 'vue';
 
 export const useTeamStore = defineStore('team', () => {
 	const state = shallowRef<string>('closed');
-	const teams = shallowRef<any[]>([]);
+	const teams = shallowRef<any[] | Record<string, any>>([]);
 
 	function syncState() {
-		const Team = (window as any).Team;
 		state.value = Team?.state ?? 'closed';
 		teams.value = Team?.teams ?? [];
 	}
 
 	function initialize() {
-		(window as any).Team?.initialize?.();
+		Team?.initialize?.();
 	}
 
 	function open(data?: any) {
-		(window as any).Team?.open?.(data);
+		Team?.open?.(data);
 	}
 
 	function close() {
-		(window as any).Team?.close?.();
+		Team?.close?.();
 	}
 
 	function createId() {
-		return (window as any).Team?.createId?.();
+		return Team?.createId?.();
 	}
 
 	function createData() {
-		return (window as any).Team?.createData?.();
+		return Team?.createData?.();
 	}
 
 	function getItemById(id: any) {
-		return (window as any).Team?.getItemById?.(id);
+		return Team?.getItemById?.(id);
 	}
 
 	function unpackTeams() {
-		return (window as any).Team?.unpackTeams?.();
+		return Team?.unpackTeams?.();
 	}
 
 	function packTeams() {
-		return (window as any).Team?.packTeams?.();
+		return Team?.packTeams?.();
 	}
 
 	function confirm(event?: any) {
-		(window as any).Team?.confirm?.(event);
+		Team?.confirm?.(event);
 	}
 
 	function saveToProject(project: any) {
-		(window as any).Team?.saveToProject?.(project);
+		Team?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).Team?.loadFromProject?.(project);
+		Team?.loadFromProject?.(project);
 	}
 
 	return {

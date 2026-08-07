@@ -46,23 +46,34 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#sceneAnimation-priority-slider').synchronize($('#sceneAnimation-priority'));
 
 		$('#sceneAnimation-animationId').on('write', this.animationIdWrite);
-		const elements = $(`#sceneAnimation-name, #sceneAnimation-animationId,
+		const elements =
+			document.querySelectorAll(`#sceneAnimation-name, #sceneAnimation-animationId,
     #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y,
     #sceneAnimation-angle, #sceneAnimation-scale, #sceneAnimation-speed,
     #sceneAnimation-opacity, #sceneAnimation-priority`);
-		const sliders = $(`#sceneAnimation-angle-slider,
+		const sliders = document.querySelectorAll(`#sceneAnimation-angle-slider,
     #sceneAnimation-scale-slider, #sceneAnimation-speed-slider,
     #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+		document
+			.querySelectorAll(
+				'#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts'
+			)
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneAnimation.create = function (this: any) {

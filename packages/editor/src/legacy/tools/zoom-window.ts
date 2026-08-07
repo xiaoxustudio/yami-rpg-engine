@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
-import { Window } from './window-object.ts';
 import { Editor } from '@/main/editor.ts';
 import { webFrame } from 'electron';
 

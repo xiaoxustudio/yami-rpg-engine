@@ -1,7 +1,7 @@
-import { $ } from './dom.ts';
 import { hasClass } from './element-utils.ts';
 
 export class Timer {
+	static state: string | null = null;
 	static timers: Timer[] = [];
 	static updaters: {
 		stageAnimation: ((deltaTime: number) => void) | null;
@@ -119,9 +119,9 @@ Timer.frameTime = 0;
 Timer.tpf = Infinity;
 Timer.animationIndex = -1;
 Timer.animationWaiting = 0;
-Timer.initialize = null;
-Timer.start = null;
-Timer.update = null;
+Timer.initialize = null as unknown as (...args: unknown[]) => any;
+Timer.start = null as unknown as (timestamp: number) => void;
+Timer.update = null as unknown as (...args: unknown[]) => any;
 Timer.play = null;
 Timer.appendUpdater = null;
 Timer.removeUpdater = null;
@@ -149,11 +149,19 @@ Timer.initialize = function (this: typeof Timer) {
 	const windowUnmaximize = () => {
 		this.animationWaiting--;
 	};
-	const windows = $('#event, #selector, #imageClip');
-	windows.on('open', windowOpen);
-	windows.on('closed', windowClosed);
-	windows.on('maximize', windowMaximize);
-	windows.on('unmaximize', windowUnmaximize);
+	const windows = document.querySelectorAll('#event, #selector, #imageClip');
+	(windows as unknown as HTMLElement[]).forEach((el) =>
+		(el as HTMLElement).on('open', windowOpen)
+	);
+	(windows as unknown as HTMLElement[]).forEach((el) =>
+		(el as HTMLElement).on('closed', windowClosed)
+	);
+	(windows as unknown as HTMLElement[]).forEach((el) =>
+		(el as HTMLElement).on('maximize', windowMaximize)
+	);
+	(windows as unknown as HTMLElement[]).forEach((el) =>
+		(el as HTMLElement).on('unmaximize', windowUnmaximize)
+	);
 };
 
 Timer.start = function (timestamp: number) {
@@ -243,4 +251,6 @@ Timer.removeUpdater = function (
 	if (updaters[key] === updater) {
 		updaters[key] = null;
 	}
+
+	null as string | null;
 };

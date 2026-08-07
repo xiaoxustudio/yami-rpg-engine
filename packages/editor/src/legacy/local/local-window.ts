@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import {
 	on,
 	show,
@@ -27,9 +28,7 @@ import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { Selection } from '@/tools/text-capture.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { ipcRenderer } from 'electron';
 
@@ -73,11 +72,11 @@ export const Localization = {
 	searcherInput: null as any,
 	confirm: null as any,
 	apply: null as any,
-	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载
+	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载,
 	createInputs: null as any,
 	fromExcel: null as any,
 	toExcel: null as any,
-	// list 方法引用（ensureDomBound 内挂到真实 list 上）
+	// list 方法引用（ensureDomBound 内挂到真实 list 上）,
 	list_saveScroll: null as any,
 	list_restoreScroll: null as any,
 	list_cancelSearch: null as any,
@@ -91,7 +90,12 @@ export const Localization = {
 	list_updateInitText: null as any,
 	list_onCreate: null as any,
 	list_onDelete: null as any,
-	list_onResume: null as any
+	list_onResume: null as any,
+	state: null as string | null,
+	strings: null as Record<string, any> | null,
+	close: null as (() => void) | null,
+	saveToProject: null as ((project: any) => void) | null,
+	loadFromProject: null as ((project: any) => void) | null
 };
 
 function ensureDomBound() {
@@ -102,18 +106,22 @@ function ensureDomBound() {
 	Localization.panel = $('#localization-inspector');
 	hide(Localization.panel);
 	Localization.searcher = $('#localization-searcher');
-	list.copy = null;
-	list.paste = null;
-	list.delete = null;
+	list.copy = null as unknown as (...args: unknown[]) => any;
+	list.paste = null as unknown as (...args: unknown[]) => any;
+	list.delete = null as unknown as (...args: unknown[]) => any;
 	list.saveScroll = Localization.list_saveScroll;
 	list.restoreScroll = Localization.list_restoreScroll;
 	list.cancelSearch = Localization.list_cancelSearch;
 	list.createFolder = Localization.list_createFolder;
-	list.createItem = Localization.list_createItem;
-	list.createIcon = Localization.list_createIcon;
-	list.addElementClass = Localization.list_addElementClass;
+	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => any;
+	list.createIcon = Localization.list_createIcon as unknown as (...args: unknown[]) => any;
+	list.addElementClass = Localization.list_addElementClass as unknown as (
+		...args: unknown[]
+	) => any;
 	list.updateItemClass = Localization.list_updateItemClass;
-	list.updateItemName = Localization.list_updateItemName;
+	list.updateItemName = Localization.list_updateItemName as unknown as (
+		...args: unknown[]
+	) => any;
 	list.createInitText = Localization.list_createInitText;
 	list.updateInitText = Localization.list_updateInitText;
 	list.onCreate = Localization.list_onCreate;
@@ -133,10 +141,10 @@ Localization.initialize = function () {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.updaters.push(list.updateItemClass);
-	list.creators.push(list.createInitText);
-	list.creators.push(list.updateInitText);
+	list.creators?.push(list.addElementClass);
+	list.updaters?.push(list.updateItemClass);
+	list.creators?.push(list.createInitText);
+	list.creators?.push(list.updateInitText);
 
 	this.panel.item = null;
 
@@ -212,7 +220,7 @@ Localization.open = function (target: any = null) {
 	UndoManager.setActive(this);
 	this.unpackLocalization();
 	this.createInputs();
-	getWindow().open('localization');
+	Window.open!('localization');
 
 	const list = this.list;
 	const item = !target ? undefined : this.getItemById(read(target));
@@ -400,7 +408,7 @@ Localization.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = (Local.createGetter as any)('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedLocalization')
 			},
@@ -409,7 +417,7 @@ Localization.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('localization');
+						Window.close!('localization');
 					}
 				},
 				{
@@ -657,7 +665,7 @@ Localization.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input.value;
+	const text = this.input!.value;
 	Localization.list.searchNodesDebounced(text);
 };
 
@@ -669,11 +677,11 @@ Localization.confirm = function (this: any, event: any) {
 		}
 		(Selection.restoreContext as any)();
 		this.apply();
-		this.target.input(item.id);
+		this.target?.input?.(item.id);
 	} else {
 		this.apply();
 	}
-	getWindow().close('localization');
+	Window.close!('localization');
 }.bind(Localization);
 
 Localization.apply = function (this: any, event: any) {

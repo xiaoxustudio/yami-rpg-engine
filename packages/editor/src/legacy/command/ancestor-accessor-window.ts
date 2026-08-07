@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetElement } from '@/tools/preset-element-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const AncestorGetter = {
 	target: null as any,
@@ -18,7 +16,7 @@ AncestorGetter.initialize = function (this: any) {
 	if (!$('#ancestorGetter-type')) return;
 	const inclusions = new Set(['trigger', 'latest', 'by-id', 'variable']);
 	$('#ancestorGetter-type').loadItems(
-		$('#elementGetter-type').dataItems.filter((a: any) => inclusions.has(a.value))
+		$('#elementGetter-type').dataItems?.filter((a: any) => inclusions.has(a.value))
 	);
 
 	$('#ancestorGetter-type')
@@ -33,7 +31,7 @@ AncestorGetter.initialize = function (this: any) {
 
 AncestorGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('ancestorGetter');
+	Window.open!('ancestorGetter');
 
 	let presetId = PresetElement.getDefaultPresetId();
 	let variable = { type: 'local', key: '' };
@@ -81,6 +79,6 @@ AncestorGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target.input(getter);
-	getWindow().close('ancestorGetter');
+	this.target?.input?.(getter);
+	Window.close!('ancestorGetter');
 }.bind(AncestorGetter);

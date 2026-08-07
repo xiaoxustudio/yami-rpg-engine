@@ -10,26 +10,22 @@ export interface SliderBoxApiOptions {
 }
 
 export interface SliderBoxApi extends HTMLElement {
-	bar: HTMLElement;
-	filler: HTMLElement;
-	input: HTMLInputElement;
+	bar?: HTMLElement | null;
+	filler?: HTMLElement | null;
+	input?: HTMLInputElement;
 	synchronizer: HTMLElement & { value: any; [k: string]: any };
 	step: number;
 	activeWheel: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(): number;
-	write(value: any): void;
-	enable(): void;
-	disable(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
 	updateFiller(): void;
 	synchronize(target: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 	sliderInput(event?: any): void;
 	inputWheel(event: any): void;
 }
@@ -55,7 +51,7 @@ export function attachSliderBoxApi(
 	el: HTMLElement,
 	options: SliderBoxApiOptions = {}
 ): SliderBoxApi {
-	const box = el as SliderBoxApi;
+	const box = el as unknown as SliderBoxApi;
 	if (box._initialized) return box;
 
 	const bar = document.createElement('div');
@@ -134,7 +130,7 @@ export function attachSliderBoxApi(
 			const writeNumber = number.write;
 
 			const sliderPointerdown = () => {
-				slider.input.focus();
+				slider.input!.focus();
 			};
 
 			const sliderInput = (event?: any) => {

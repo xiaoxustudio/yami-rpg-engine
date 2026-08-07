@@ -1,4 +1,5 @@
 import { relate } from '@/util/element-utils';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { dispatchChangeEvent, hasClass, read, write } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
@@ -236,7 +237,7 @@ Scene.screenKeydown = function (this: any, event: any) {
 					if (!this.shiftKey) {
 						this.shiftKey = true;
 						if (this.dragging) {
-							switch (this.dragging.mode) {
+							switch (this.dragging?.mode) {
 								case 'pencil':
 								case 'rect':
 								case 'oval': {
@@ -245,7 +246,7 @@ Scene.screenKeydown = function (this: any, event: any) {
 									break;
 								}
 								case 'object-move':
-									this.pointermove(this.dragging.latest);
+									this.pointermove(this.dragging?.latest);
 									break;
 							}
 						}
@@ -384,7 +385,7 @@ Scene.shiftKeyup = function (this: any, event: any) {
 			if (this.shiftKey) {
 				this.shiftKey = false;
 				if (this.dragging) {
-					switch (this.dragging.mode) {
+					switch (this.dragging?.mode) {
 						case 'pencil':
 						case 'rect':
 						case 'oval': {
@@ -393,7 +394,7 @@ Scene.shiftKeyup = function (this: any, event: any) {
 							break;
 						}
 						case 'object-move':
-							this.pointermove(this.dragging.latest);
+							this.pointermove(this.dragging?.latest);
 							break;
 					}
 				}
@@ -461,7 +462,7 @@ Scene.screenBlur = function (this: any, event: any) {
 }.bind(Scene);
 
 Scene.screenDragenter = function (this: any, event: any) {
-	const file = (window as any).Browser?.body?.activeFile;
+	const file = getBrowserInstance()?.body?.activeFile as { type?: string } | undefined;
 	switch (file?.type) {
 		case 'actor':
 		case 'animation':
@@ -769,7 +770,7 @@ Scene.pointerup = function (this: any, event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'eraser':
 			case 'pencil': {
@@ -837,7 +838,7 @@ Scene.pointerup = function (this: any, event: any) {
 
 Scene.pointermove = function (this: any, event: any) {
 	const { dragging, marquee } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'eraser':
 			case 'pencil': {
@@ -1236,7 +1237,7 @@ Scene.menuPopup = function (this: any, event: any) {
 
 Scene.searcherInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
-		const text = this.input.value;
+		const text = this.input!.value;
 		Scene.list.searchNodesDebounced(text);
 	}
 };

@@ -201,7 +201,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 					li.appendChild(mark);
 				}
 				if (item.icon !== undefined) {
-					li.appendChild(item.icon);
+					li.appendChild(item.icon!);
 				}
 				if (item.label !== undefined) {
 					const label = document.createElement('div');
@@ -464,7 +464,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			element.classList.contains('menu-item') &&
 			!element.classList.contains('disabled')
 		) {
-			if (menu.closeTimer && menu.submenu?.parentMenuItem === element) {
+			if (menu.closeTimer && menu.submenu!.parentMenuItem === element) {
 				menu.closeTimer.remove();
 				menu.closeTimer = null;
 			}

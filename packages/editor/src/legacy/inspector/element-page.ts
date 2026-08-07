@@ -55,17 +55,25 @@ import { UI } from '@/ui/ui-window.ts';
 
 		Inspector.manager.on('switch', this.pageSwitch);
 		const alignElements = $('.uiElement-transform-align');
-		alignElements.on('click', this.alignmentClick);
+		(alignElements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('click', this.alignmentClick)
+		);
 		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
-		const otherElements = $(`#uiElement-name,
+		const otherElements = document.querySelectorAll(`#uiElement-name,
     #uiElement-pointerEvents, #uiElement-transform-anchorX, #uiElement-transform-anchorY,
     #uiElement-transform-x, #uiElement-transform-x2, #uiElement-transform-y, #uiElement-transform-y2,
     #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
     #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
     #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`);
-		otherElements.on('focus', Inspector.inputFocus);
-		otherElements.on('blur', Inspector.inputBlur!(this, UI));
-		$('#uiElement-events, #uiElement-scripts').on('change', UI.listChange);
+		(otherElements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(otherElements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
+		document
+			.querySelectorAll('#uiElement-events, #uiElement-scripts')
+			.forEach((el) => (el as HTMLElement).on('change', UI.listChange));
 	};
 
 	UIElement.createTransform = function (this: any) {
@@ -93,7 +101,7 @@ import { UI } from '@/ui/ui-window.ts';
 		if (!this.synchronous) {
 			this.synchronous = true;
 			disable(
-				$(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
+				document.querySelectorAll(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
       #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
       #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
       #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`)
@@ -105,7 +113,7 @@ import { UI } from '@/ui/ui-window.ts';
 		if (this.synchronous) {
 			this.synchronous = false;
 			enable(
-				$(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
+				document.querySelectorAll(`#uiElement-transform-anchorX, #uiElement-transform-anchorY,
       #uiElement-transform-width, #uiElement-transform-width2, #uiElement-transform-height, #uiElement-transform-height2,
       #uiElement-transform-rotation, #uiElement-transform-scaleX, #uiElement-transform-scaleY,
       #uiElement-transform-skewX, #uiElement-transform-skewY, #uiElement-transform-opacity`)

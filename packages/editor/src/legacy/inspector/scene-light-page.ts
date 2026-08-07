@@ -75,28 +75,36 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#sceneLight-blue-slider').synchronize($('#sceneLight-blue'));
 		$('#sceneLight-direct-slider').synchronize($('#sceneLight-direct'));
 
-		const elements = $(`
+		const elements = document.querySelectorAll(`
     #sceneLight-name, #sceneLight-type,
     #sceneLight-blend, #sceneLight-x, #sceneLight-y,
     #sceneLight-range, #sceneLight-intensity,
     #sceneLight-mask, #sceneLight-anchorX, #sceneLight-anchorY,
     #sceneLight-width, #sceneLight-height, #sceneLight-angle,
     #sceneLight-red, #sceneLight-green, #sceneLight-blue, #sceneLight-direct`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #sceneLight-range-slider, #sceneLight-intensity-slider,
     #sceneLight-anchorX-slider, #sceneLight-anchorY-slider,
     #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider,
     #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+		document
+			.querySelectorAll('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneLight.create = function (this: any) {

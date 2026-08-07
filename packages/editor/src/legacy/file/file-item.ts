@@ -1,13 +1,12 @@
 import { request } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { Data } from '@/data/data-object.ts';
 import { Meta } from '@/data/metadata.ts';
 import { File } from './file-system-core.ts';
 import { FSP } from './file-system.ts';
 import { GUID } from './guid.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Path } from '@/util/config.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
@@ -162,7 +161,7 @@ export class FileItem {
 
 	static warnGuidConflicts() {
 		const warnings = [(Local.get as any)('confirmation.guidConflict')];
-		(getWindow().confirm as any)(
+		(Window.confirm as any)(
 			{
 				message: warnings.concat(FileItem.guidConflictPaths).join('\n')
 			},
@@ -186,7 +185,7 @@ export class FileItem {
 		const warnings = [
 			(Local.get as any)('confirmation.oversizeImage').replace('<size>', GL.maxTexSize)
 		];
-		(getWindow().confirm as any)(
+		(Window.confirm as any)(
 			{
 				message: warnings.concat(FileItem.oversizeImagePaths).join('\n')
 			},

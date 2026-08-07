@@ -1,4 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
@@ -91,7 +92,7 @@ import { Scene } from '@/scene/scene-window.ts';
 	FileTileset.close = function (this: any) {
 		if (this.target) {
 			removeClass(Inspector.manager, 'overflow-visible');
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			Palette.close!();
 			this.target = null;
 			this.meta = null;

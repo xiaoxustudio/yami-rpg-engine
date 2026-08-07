@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus } from '@/util/element-utils';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import { Command } from './command-object.ts';
@@ -6,9 +7,6 @@ import { IfCondition } from './conditional-condition-window.ts';
 import { Token } from './mark-string-manager.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface SwitchConditionData {
 	type:
@@ -54,7 +52,7 @@ export const SwitchCondition: SwitchConditionShape = {
 
 SwitchCondition.initialize = function (this: any): void {
 	if (!$('#switch-condition-type')) return;
-	($('#switch-condition-type') as any).loadItems([
+	$('#switch-condition-type').loadItems([
 		{ name: 'None', value: 'none' },
 		{ name: 'Boolean', value: 'boolean' },
 		{ name: 'Number', value: 'number' },
@@ -67,39 +65,41 @@ SwitchCondition.initialize = function (this: any): void {
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	($('#switch-condition-type') as any).enableHiddenMode().relate([
-		{
-			case: 'boolean',
-			targets: [$('#switch-condition-boolean-value')]
-		},
-		{ case: 'number', targets: [$('#switch-condition-number-value')] },
-		{ case: 'string', targets: [$('#switch-condition-string-value')] },
-		{
-			case: 'attribute',
-			targets: [$('#switch-condition-attribute-attributeId')]
-		},
-		{ case: 'enum', targets: [$('#switch-condition-enum-stringId')] },
-		{
-			case: 'keyboard',
-			targets: [$('#switch-condition-keyboard-keycode')]
-		},
-		{
-			case: 'gamepad',
-			targets: [$('#switch-condition-gamepad-button')]
-		},
-		{ case: 'mouse', targets: [$('#switch-condition-mouse-button')] },
-		{
-			case: 'variable',
-			targets: [$('#switch-condition-variable-variable')]
-		}
-	]);
+	$('#switch-condition-type')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: 'boolean',
+				targets: [$('#switch-condition-boolean-value')]
+			},
+			{ case: 'number', targets: [$('#switch-condition-number-value')] },
+			{ case: 'string', targets: [$('#switch-condition-string-value')] },
+			{
+				case: 'attribute',
+				targets: [$('#switch-condition-attribute-attributeId')]
+			},
+			{ case: 'enum', targets: [$('#switch-condition-enum-stringId')] },
+			{
+				case: 'keyboard',
+				targets: [$('#switch-condition-keyboard-keycode')]
+			},
+			{
+				case: 'gamepad',
+				targets: [$('#switch-condition-gamepad-button')]
+			},
+			{ case: 'mouse', targets: [$('#switch-condition-mouse-button')] },
+			{
+				case: 'variable',
+				targets: [$('#switch-condition-variable-variable')]
+			}
+		]);
 
-	($('#switch-condition-boolean-value') as any).loadItems([
+	$('#switch-condition-boolean-value').loadItems([
 		{ name: 'False', value: false },
 		{ name: 'True', value: true }
 	]);
 
-	($('#switch-condition-mouse-button') as any).loadItems([
+	$('#switch-condition-mouse-button').loadItems([
 		{ name: 'Left Button', value: 0 },
 		{ name: 'Middle Button', value: 1 },
 		{ name: 'Right Button', value: 2 },
@@ -107,7 +107,7 @@ SwitchCondition.initialize = function (this: any): void {
 		{ name: 'Forward Button', value: 4 }
 	]);
 
-	($('#switch-condition-confirm') as HTMLElement).addEventListener('click', this.confirm!);
+	$('#switch-condition-confirm').addEventListener('click', this.confirm!);
 };
 
 SwitchCondition.parse = function (
@@ -167,7 +167,7 @@ SwitchCondition.open = function (
 	this: any,
 	condition: SwitchConditionData = { type: 'number', value: 0 }
 ): void {
-	getWindow().open('switch-condition');
+	Window.open!('switch-condition');
 	let booleanValue = false;
 	let numberValue = 0;
 	let stringValue = '';
@@ -304,7 +304,7 @@ SwitchCondition.save = function (this: any): SwitchConditionData {
 			break;
 		}
 	}
-	getWindow().close('switch-condition');
+	Window.close!('switch-condition');
 	return condition!;
 };
 

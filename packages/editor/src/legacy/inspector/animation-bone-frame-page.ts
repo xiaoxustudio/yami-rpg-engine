@@ -19,11 +19,16 @@ import { read, write } from '@/util/element-utils.ts';
 
 	AnimJointFrame.initialize = function (this: any) {
 		if (!$('#animJointFrame-x')) return;
-		const elements = $(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
+		const elements =
+			document.querySelectorAll(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
     #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener(
 				'blur',
 				Inspector.inputBlur!(this, Animation, (data: any) => {

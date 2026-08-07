@@ -1,12 +1,11 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, read, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 export const IndexBind = {
 	target: null as any,
 	type: null as any,
@@ -19,7 +18,7 @@ export const IndexBind = {
 		return `${item.text}`;
 	},
 	open(item: any) {
-		getWindow().open('ObjectProperty-index');
+		Window.open!('ObjectProperty-index');
 		getFocus($('#ObjectProperty-index-name'));
 		if (item) {
 			write($('#ObjectProperty-index-name'), item.text);
@@ -31,11 +30,11 @@ export const IndexBind = {
 		const elementReader = getElementReader('ObjectProperty-index');
 		const data = { text: elementReader('name') };
 		write($('#ObjectProperty-index-name'), '');
-		getWindow().close('ObjectProperty-index');
+		Window.close!('ObjectProperty-index');
 		return data;
 	},
 	confirm() {
-		return IndexBind.target.save();
+		return IndexBind.target?.save?.();
 	}
 };
 

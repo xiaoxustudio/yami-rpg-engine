@@ -357,7 +357,7 @@ Sprite.updateTransform = function () {
 	this.centerY = Math.roundTo((scrollY - this.paddingTop) / this.scaledUnitHeight, 4);
 };
 
-Sprite.updateBackground = Palette.updateBackground;
+Sprite.updateBackground = Palette?.updateBackground ?? (() => {});
 
 Sprite.drawSprite = function () {
 	if (this.body.clientWidth > 0 && this.canvas.width !== 0 && this.canvas.height !== 0) {
@@ -648,7 +648,7 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 
 Sprite.pointerup = function (this: typeof Sprite, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.screen.endScrolling();
@@ -663,7 +663,7 @@ Sprite.pointerup = function (this: typeof Sprite, event: any) {
 
 Sprite.pointermove = function (this: typeof Sprite, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll': {
 				const distX = event.clientX - dragging.clientX;

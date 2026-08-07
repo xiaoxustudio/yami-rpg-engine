@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import {
 	addClass,
 	dispatchUpdateEvent,
@@ -13,9 +14,6 @@ import {
 import { Command } from './command-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export interface CommandSuggestionItem {
 	value: string;
@@ -34,8 +32,8 @@ export interface CommandSuggestionItem {
 type ListMethod = ((...args: any[]) => any) | null;
 
 interface CommandSuggestionList {
-	createIcon: ListMethod;
-	createComment: ListMethod;
+	createIcon: (item: unknown) => unknown;
+	createComment: (item: unknown) => unknown;
 	searchNodesAlgorithm: ListMethod;
 	updateCommandNames: ListMethod;
 	createCommandTip: ListMethod;
@@ -68,7 +66,7 @@ interface CommandSuggestionList {
 	appendChild<T extends Node>(node: T): T;
 	insertBefore<T extends Node>(node: T, ref: T | null): T;
 	contains(node: Node | null): boolean;
-	on(type: string, listener: (event: any) => void, options?: any): void;
+	on(...args: unknown[]): any;
 	textContent: string;
 	style: CSSStyleDeclaration;
 	data: CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null;
@@ -87,9 +85,9 @@ interface CommandSuggestionSearcher extends HTMLElement {
 	input: HTMLInputElement & { id: string };
 	addCloseButton(): void;
 	deleteInputContent(): void;
-	on(type: string, listener: (event: any) => void, options?: any): void;
-	getFocus(mode?: string): void;
-	read(): any;
+	on(...args: unknown[]): any;
+	getFocus(...args: unknown[]): any;
+	read(...args: unknown[]): any;
 }
 
 interface CommandSuggestionShape {
@@ -136,9 +134,10 @@ function ensureDomBound() {
 	if (CommandSuggestion.widget) return;
 	const widget = $('#command-widget');
 	if (!widget) return;
-	CommandSuggestion.widget = widget;
-	CommandSuggestion.searcher = $('#command-searcher');
-	CommandSuggestion.list = $('#command-suggestions');
+	CommandSuggestion.widget = widget as unknown as CommandSuggestionWidget;
+	CommandSuggestion.searcher = $('#command-searcher') as unknown as CommandSuggestionSearcher;
+	CommandSuggestion.list = $('#command-suggestions') as unknown as HTMLElement &
+		CommandSuggestionList;
 	bindListMethods();
 }
 
@@ -158,7 +157,7 @@ function bindListMethods() {
 			}
 			return icon;
 		};
-	})();
+	})() as unknown as (item: unknown) => unknown;
 
 	list.createComment = function (item: CommandSuggestionItem): void {
 		if (item.class !== 'folder' && !Local.language.startsWith('en')) {
@@ -171,7 +170,7 @@ function bindListMethods() {
 				item.element!.appendChild(comment);
 			}
 		}
-	};
+	} as unknown as (item: unknown) => unknown;
 
 	list.searchNodesAlgorithm = function (
 		data: CommandSuggestionItem[],
@@ -289,9 +288,9 @@ CommandSuggestion.initialize = function (): void {
 
 	// 挂载列表项创建器/更新器 ——
 	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 comment 元素。
-	list.creators.push(list.createIcon!);
-	list.creators.push(list.createComment!);
-	list.creators.push(list.createCommandTip!);
+	list.creators?.push(list.createIcon!);
+	list.creators?.push(list.createComment!);
+	list.creators?.push(list.createCommandTip!);
 
 	this.data = File.get!({
 		local: 'commands.json',
@@ -316,7 +315,7 @@ CommandSuggestion.open = function (): void {
 	list.scrollAndResize();
 	const point = list.getSelectionPosition();
 	if (point) {
-		getWindow().open('command-widget');
+		Window.open!('command-widget');
 		const { widget, list, searcher } = this;
 		const x = point.x - 5;
 		const y = point.y;
@@ -339,7 +338,7 @@ CommandSuggestion.open = function (): void {
 };
 
 CommandSuggestion.select = function (item: CommandSuggestionItem): void {
-	getWindow().close('command-widget');
+	Window.close!('command-widget');
 	Command.open!(item.value);
 };
 
@@ -366,7 +365,7 @@ CommandSuggestion.pointerdown = function (event: PointerEvent): void {
 	const { widget, list } = CommandSuggestion;
 	if (!widget.contains(event.target as Node) && !list.contains(event.target as Node)) {
 		event.preventDefault();
-		getWindow().close('command-widget');
+		Window.close!('command-widget');
 	}
 };
 
@@ -407,7 +406,7 @@ CommandSuggestion.listKeydown = function (event: KeyboardEvent): void {
 	switch (event.code) {
 		case 'Tab':
 			event.preventDefault();
-			CommandSuggestion.searcher.input.focus();
+			CommandSuggestion.searcher.input!.focus();
 			break;
 		case 'Home':
 			event.preventDefault();
@@ -458,7 +457,7 @@ CommandSuggestion.listUpdate = function (event: Event): void {
 		this.style.left = `${x}px`;
 		this.style.top = `${top}px`;
 		this.style.height = `${lines * 20}px`;
-		this.style.zIndex = ((getWindow().frames?.length ?? 0) + 1).toString();
+		this.style.zIndex = ((Window.frames?.length ?? 0) + 1).toString();
 		show(this);
 	} else {
 		hide(this);

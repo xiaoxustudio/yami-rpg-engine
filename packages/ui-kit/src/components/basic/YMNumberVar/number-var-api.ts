@@ -19,19 +19,15 @@ export interface NumberVarApiOptions {
 export interface NumberVarApi extends HTMLElement {
 	mode: string;
 	numBox: NumberBoxApi;
-	varBox: CustomBoxApi;
+	varBox?: CustomBoxApi | null;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	switch(mode?: string): void;
-	enable(): void;
-	disable(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	switch(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
 	getFocus(mode: any): any;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 	keydown(event: any): void;
 	pointerdown(event: any): void;
 }

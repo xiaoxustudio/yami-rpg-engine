@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Palette } from '@/palette/palette.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
@@ -26,8 +27,8 @@ export const paletteStateKeys: (keyof PaletteShape)[] = [
 ];
 
 export const usePaletteStore = defineStore('palette', () => {
-	const state = shallowRef<PaletteState>('closed');
-	const mode = shallowRef<PaletteMode>('normal');
+	const state = shallowRef<string>('closed');
+	const mode = shallowRef<string>('normal');
 	const zoom = shallowRef<number | null>(null);
 	const showGrid = shallowRef<boolean>(true);
 	const scrollable = shallowRef<boolean>(false);
@@ -36,7 +37,6 @@ export const usePaletteStore = defineStore('palette', () => {
 	let listening = false;
 
 	function syncState() {
-		const Palette = (window as any).Palette;
 		state.value = Palette?.state ?? 'closed';
 		mode.value = Palette?.mode ?? 'normal';
 		zoom.value = Palette?.zoom ?? null;

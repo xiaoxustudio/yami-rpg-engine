@@ -62,17 +62,26 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		const elements = $(`#uiDialogBox-content, #uiDialogBox-interval, #uiDialogBox-size,
+		const elements =
+			document.querySelectorAll(`#uiDialogBox-content, #uiDialogBox-interval, #uiDialogBox-size,
     #uiDialogBox-lineSpacing, #uiDialogBox-letterSpacing, #uiDialogBox-color, #uiDialogBox-font,
     #uiDialogBox-typeface, #uiDialogBox-effect-type, #uiDialogBox-effect-shadowOffsetX, #uiDialogBox-effect-shadowOffsetY,
     #uiDialogBox-effect-strokeWidth, #uiDialogBox-effect-color, #uiDialogBox-blend`);
 		const sliders = $(
 			'#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider'
 		);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('blur', Inspector.sliderBlur)
+		);
 	};
 
 	UIDialogBox.create = function (this: any) {

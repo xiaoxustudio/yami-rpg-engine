@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Timer } from '@/util/timer.ts';
 import { shallowRef } from 'vue';
 
 export const useTimerStore = defineStore('timer', () => {
@@ -9,7 +10,6 @@ export const useTimerStore = defineStore('timer', () => {
 	const tpf = shallowRef<number>(Infinity);
 
 	function syncState() {
-		const Timer = (window as any).Timer;
 		state.value = Timer?.state ?? 'idle';
 		timestamp.value = Timer?.timestamp ?? 0;
 		deltaTime.value = Timer?.deltaTime ?? 0;
@@ -18,27 +18,27 @@ export const useTimerStore = defineStore('timer', () => {
 	}
 
 	function initialize() {
-		(window as any).Timer?.initialize?.();
+		Timer?.initialize?.();
 	}
 
 	function start(ts: number) {
-		(window as any).Timer?.start?.(ts);
+		Timer?.start?.(ts);
 	}
 
 	function update(ts: number) {
-		(window as any).Timer?.update?.(ts);
+		Timer?.update?.(ts);
 	}
 
 	function play() {
-		(window as any).Timer?.play?.();
+		Timer?.play?.();
 	}
 
 	function appendUpdater(key: string, updater: (deltaTime: number) => void) {
-		(window as any).Timer?.appendUpdater?.(key, updater);
+		Timer?.appendUpdater?.(key, updater);
 	}
 
 	function removeUpdater(key: string, updater: (deltaTime: number) => void) {
-		(window as any).Timer?.removeUpdater?.(key, updater);
+		Timer?.removeUpdater?.(key, updater);
 	}
 
 	return {

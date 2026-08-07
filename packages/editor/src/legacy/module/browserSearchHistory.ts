@@ -1,4 +1,5 @@
 import { SettingConfig } from './settingconfig';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass } from '@/util/element-utils';
 export const BrowserSearchHistory: any = {
 	histories: [],
@@ -9,10 +10,11 @@ export const BrowserSearchHistory: any = {
 };
 
 BrowserSearchHistory.initialize = function () {
-	if (!(window as any).Browser) return;
-	const initialize = (window as any).Browser?.initialize;
-	(window as any).Browser.initialize = function () {
-		initialize.call(this);
+	const browser = getBrowserInstance();
+	if (!browser) return;
+	const initialize = browser.initialize;
+	browser.initialize = function () {
+		initialize?.call(this);
 		BrowserSearchHistory.bind(this.searcher);
 	};
 };

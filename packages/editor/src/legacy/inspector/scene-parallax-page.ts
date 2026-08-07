@@ -54,7 +54,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneParallax-parameter-pane').bind($('#sceneParallax-scripts'));
 
-		const elements = $(`#sceneParallax-name,
+		const elements = document.querySelectorAll(`#sceneParallax-name,
     #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order,
     #sceneParallax-light, #sceneParallax-blend,
     #sceneParallax-opacity, #sceneParallax-x, #sceneParallax-y,
@@ -66,19 +66,29 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneParallax-shiftSpeedX, #sceneParallax-shiftSpeedY,
     #sceneParallax-tint-0, #sceneParallax-tint-1,
     #sceneParallax-tint-2, #sceneParallax-tint-3`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider,
     #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+		document
+			.querySelectorAll(
+				'#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts'
+			)
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneParallax.create = function (this: any) {

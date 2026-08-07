@@ -25,17 +25,13 @@ export interface CustomBoxApi extends HTMLElement {
 	isPluginInput?: boolean;
 	type: string | null;
 	filter: string | null;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
-	update(): void;
-	enable(): void;
-	disable(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	input(...args: unknown[]): any;
+	update(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 	keydown(event: KeyboardEvent): void;
 	click(event?: Event): void;
 	dragenter(event: DragEvent): void;

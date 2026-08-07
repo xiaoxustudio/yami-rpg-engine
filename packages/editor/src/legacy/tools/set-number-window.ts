@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
-import { Window } from './window-object.ts';
 
 export const SetQuantity = {
 	callback: null as any,
@@ -19,7 +19,7 @@ SetQuantity.initialize = function (this: any) {
 SetQuantity.open = function (this: any, quantity: any, maximum: any, callback: any) {
 	this.callback = callback;
 	Window.open!('setQuantity');
-	$('#setQuantity-quantity').input.max = maximum;
+	($('#setQuantity-quantity').input! as HTMLInputElement).max = maximum;
 	write($('#setQuantity-quantity'), quantity);
 	getFocus($('#setQuantity-quantity'), 'all');
 };

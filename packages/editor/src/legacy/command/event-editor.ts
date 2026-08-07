@@ -1,4 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write } from '@/util/element-utils';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Command } from './command-object.ts';
@@ -6,7 +7,6 @@ import { File } from '@/file/file-system-core.ts';
 import { Editor } from '@/main/editor.ts';
 import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
-import { Window } from '@/tools/window-object.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { Local } from '@/tools/localization.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -93,6 +93,12 @@ interface EventEditorList {
 type EventEditorMethod = ((...args: any[]) => any) | null;
 
 interface EventEditorShape {
+	state: string | null;
+	target: Record<string, any> | null;
+	planToSave: ((meta?: any) => void) | null;
+	open: ((id: string) => void) | null;
+	close: ((id?: string) => void) | null;
+
 	list: HTMLElement & EventEditorList;
 	commandList: HTMLElement & { [k: string]: any; innerHeight?: number };
 	outerGutter: HTMLElement;
@@ -187,42 +193,47 @@ export const EventEditor: EventEditorShape = {
 	commandListUpdate: null as any,
 	commandListScroll: null as any,
 	confirm: null as any,
-	apply: null as any
+	apply: null as any,
+	state: null as string | null,
+	target: null as Record<string, any> | null,
+	planToSave: null as ((meta: any) => void) | null,
+	open: null as ((id: string) => void) | null,
+	close: null as ((id?: string) => void) | null
 };
 
 function ensureDomBound() {
 	if (EventEditor.list) return;
 	const list = $('#event-open-list');
 	if (!list) return;
-	EventEditor.list = list;
+	EventEditor.list = list as unknown as HTMLElement & EventEditorList;
 	EventEditor.commandList = $('#event-commands');
 	EventEditor.outerGutter = $('#event-commands-gutter-outer');
 	EventEditor.innerGutter = $('#event-commands-gutter-inner');
 	EventEditor.list.lastScrollTop = 0;
-	EventEditor.list.selectIndex = null;
+	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => any;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
 	EventEditor.list.closeBelow = null;
 	EventEditor.list.closeOthers = null;
 	EventEditor.list.closeAll = null;
-	EventEditor.list.saveScroll = null;
-	EventEditor.list.restoreScroll = null;
+	EventEditor.list.saveScroll = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.restoreScroll = null as unknown as (...args: unknown[]) => any;
 	EventEditor.list.defineProperties = null;
 	EventEditor.list.createLocalEventItem = null;
 	EventEditor.list.createGlobalEventItem = null;
-	EventEditor.list.createIcon = null;
-	EventEditor.list.updateItemClass = null;
-	EventEditor.list.createIcon = null;
-	EventEditor.list.createInitText = null;
-	EventEditor.list.updateInitText = null;
-	EventEditor.list.updateItemName = null;
+	EventEditor.list.createIcon = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.updateItemClass = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.createIcon = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.createInitText = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.updateInitText = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => any;
 	EventEditor.list.closeButtonClick = null;
 	bindListMethods();
 }
 
 function bindListMethods() {
 	const list = EventEditor.list!;
-	list.selectIndex = function (this: any, index: number) {
+	list.selectIndex = function (index: number) {
 		const elements = this.elements;
 		const last = elements.count - 1;
 		const element = elements[Math.min(index, last)];
@@ -433,9 +444,9 @@ EventEditor.initialize = function (this: any) {
 	list.removable = true;
 	list.foldable = false;
 	list.bind!(() => this.data);
-	list.updaters.push(list.updateItemClass);
-	list.creators.push(list.createInitText);
-	list.creators.push(list.updateInitText);
+	list.updaters?.push(list.updateItemClass);
+	list.creators?.push(list.createInitText);
+	list.creators?.push(list.updateInitText);
 
 	const types = {
 		common: { name: 'Common', value: 'common', tip: '' },

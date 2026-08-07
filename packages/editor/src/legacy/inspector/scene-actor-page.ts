@@ -44,20 +44,30 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		window.addEventListener('datachange', this.datachange);
 		const elements =
-			$(`#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId,
+			document.querySelectorAll(`#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId,
     #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale`);
-		const sliders = $('#sceneActor-angle-slider, #sceneActor-scale-slider');
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		const sliders = document.querySelectorAll(
+			'#sceneActor-angle-slider, #sceneActor-scale-slider'
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
-		$('#sceneActor-type').addEventListener('write', this.typeWrite);
-		$('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
 		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+		$('#sceneActor-type').addEventListener('write', this.typeWrite);
+		document
+			.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneActor.create = function (this: any) {

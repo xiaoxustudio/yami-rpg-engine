@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Animation } from '@/animation/animation-window.ts';
 import { shallowRef } from 'vue';
 
 export const useAnimationStore = defineStore('animation', () => {
@@ -8,7 +9,6 @@ export const useAnimationStore = defineStore('animation', () => {
 	const direction = shallowRef<any>(null);
 
 	function syncState() {
-		const Animation = (window as any).Animation;
 		state.value = Animation?.state ?? 'closed';
 		target.value = Animation?.target ?? null;
 		motion.value = Animation?.motion ?? null;
@@ -16,91 +16,91 @@ export const useAnimationStore = defineStore('animation', () => {
 	}
 
 	function open(context: any) {
-		(window as any).Animation?.open?.(context);
+		Animation?.open?.(context);
 	}
 
 	function load(context: any) {
-		(window as any).Animation?.load?.(context);
+		Animation?.load?.(context);
 	}
 
 	function save() {
-		(window as any).Animation?.save?.();
+		Animation?.save?.();
 	}
 
 	function close() {
-		(window as any).Animation?.close?.();
+		Animation?.close?.();
 	}
 
 	function destroy(context: any) {
-		(window as any).Animation?.destroy?.(context);
+		Animation?.destroy?.(context);
 	}
 
 	function play() {
-		(window as any).Animation?.play?.();
+		Animation?.play?.();
 	}
 
 	function stop() {
-		(window as any).Animation?.stop?.();
+		Animation?.stop?.();
 	}
 
 	function copy() {
-		(window as any).Animation?.copy?.();
+		Animation?.copy?.();
 	}
 
 	function paste() {
-		(window as any).Animation?.paste?.();
+		Animation?.paste?.();
 	}
 
 	function delete_() {
-		(window as any).Animation?.delete?.();
+		Animation?.delete?.();
 	}
 
 	function undo() {
-		(window as any).Animation?.undo?.();
+		Animation?.undo?.();
 	}
 
 	function redo() {
-		(window as any).Animation?.redo?.();
+		Animation?.redo?.();
 	}
 
 	function previousFrame() {
-		(window as any).Animation?.previousFrame?.();
+		Animation?.previousFrame?.();
 	}
 
 	function nextFrame() {
-		(window as any).Animation?.nextFrame?.();
+		Animation?.nextFrame?.();
 	}
 
 	function previousKeyFrame() {
-		(window as any).Animation?.previousKeyFrame?.();
+		Animation?.previousKeyFrame?.();
 	}
 
 	function nextKeyFrame() {
-		(window as any).Animation?.nextKeyFrame?.();
+		Animation?.nextKeyFrame?.();
 	}
 
 	function setSpeed(speed: any) {
-		(window as any).Animation?.setSpeed?.(speed);
+		Animation?.setSpeed?.(speed);
 	}
 
 	function setZoom(zoom: any) {
-		(window as any).Animation?.setZoom?.(zoom);
+		Animation?.setZoom?.(zoom);
 	}
 
 	function setMotion(motion: any) {
-		(window as any).Animation?.setMotion?.(motion);
+		Animation?.setMotion?.(motion);
 	}
 
 	function setDirection(direction: any) {
-		(window as any).Animation?.setDirection?.(direction);
+		Animation?.setDirection?.(direction);
 	}
 
 	function planToSave() {
-		(window as any).Animation?.planToSave?.();
+		Animation?.planToSave?.();
 	}
 
 	function requestRendering() {
-		(window as any).Animation?.requestRendering?.();
+		Animation?.requestRendering?.();
 	}
 
 	return {

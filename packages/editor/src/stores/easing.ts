@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Easing } from '@/data/transition-window.ts';
 import { shallowRef } from 'vue';
 
 export const useEasingStore = defineStore('easing', () => {
@@ -6,69 +7,68 @@ export const useEasingStore = defineStore('easing', () => {
 	const target = shallowRef<any>(null);
 
 	function syncState() {
-		const Easing = (window as any).Easing;
 		state.value = Easing?.state ?? 'closed';
 		target.value = Easing?.target ?? null;
 	}
 
 	function open(target?: any) {
-		(window as any).Easing?.open?.(target);
+		Easing?.open?.(target);
 	}
 
 	function close() {
-		(window as any).Easing?.close?.();
+		Easing?.close?.();
 	}
 
 	function load(easing: any) {
-		(window as any).Easing?.load?.(easing);
+		Easing?.load?.(easing);
 	}
 
 	function insert(dItem: any) {
-		(window as any).Easing?.insert?.(dItem);
+		Easing?.insert?.(dItem);
 	}
 
 	function copy(item: any) {
-		(window as any).Easing?.copy?.(item);
+		Easing?.copy?.(item);
 	}
 
 	function paste(dItem: any) {
-		(window as any).Easing?.paste?.(dItem);
+		Easing?.paste?.(dItem);
 	}
 
 	function delete_(item: any) {
-		(window as any).Easing?.delete?.(item);
+		Easing?.delete?.(item);
 	}
 
 	function createId() {
-		return (window as any).Easing?.createId?.();
+		return Easing?.createId?.();
 	}
 
 	function createData() {
-		return (window as any).Easing?.createData?.();
+		return Easing?.createData?.();
 	}
 
 	function setEasingKey(item: any) {
-		return (window as any).Easing?.setEasingKey?.(item);
+		return Easing?.setEasingKey?.(item);
 	}
 
 	function getItemById(id: any) {
-		return (window as any).Easing?.getItemById?.(id);
+		return Easing?.getItemById?.(id);
 	}
 
 	function updateMaps() {
-		(window as any).Easing?.updateMaps?.();
+		Easing?.updateMaps?.();
 	}
 
 	function requestRendering() {
-		(window as any).Easing?.requestRendering?.();
+		Easing?.requestRendering?.();
 	}
 
 	function saveToProject(project: any) {
-		(window as any).Easing?.saveToProject?.(project);
+		Easing?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).Easing?.loadFromProject?.(project);
+		Easing?.loadFromProject?.(project);
 	}
 
 	return {

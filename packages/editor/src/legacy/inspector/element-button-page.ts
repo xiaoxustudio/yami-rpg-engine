@@ -135,7 +135,7 @@ import { UI } from '@/ui/ui-window.ts';
 		$('#uiButton-letterSpacing-slider').synchronize($('#uiButton-letterSpacing'));
 		$('#uiButton-textPadding-slider').synchronize($('#uiButton-textPadding'));
 
-		const elements = $(`#uiButton-display,
+		const elements = document.querySelectorAll(`#uiButton-display,
     #uiButton-normalImage, #uiButton-normalClip,
     #uiButton-hoverImage, #uiButton-hoverClip,
     #uiButton-activeImage, #uiButton-activeClip,
@@ -149,15 +149,24 @@ import { UI } from '@/ui/ui-window.ts';
     #uiButton-textEffect-shadowOffsetY, #uiButton-textEffect-strokeWidth, #uiButton-textEffect-color,
     #uiButton-normalColor, #uiButton-hoverColor, #uiButton-activeColor,
     #uiButton-hoverSound, #uiButton-clickSound`);
-		const sliders = $(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
+		const sliders =
+			document.querySelectorAll(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
     #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, UI))
 		);
-		sliders.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.sliderFocus));
-		sliders.forEach((el: HTMLElement) => el.addEventListener('blur', Inspector.sliderBlur));
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
 	};
 
 	UIButton.create = function (this: any) {

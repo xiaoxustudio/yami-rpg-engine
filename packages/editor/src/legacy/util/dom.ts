@@ -60,16 +60,17 @@ export const request = (function IIFE() {
 })();
 
 // CSS 选择器 注：返回 any 而非 Element | NodeListOf<Element>，因为调用方常访问 HTMLElement 扩展成员（.read/.write/.on/.onDelete 等，见 global.d.ts）
-export const $ = (function IIFE() {
+function $(selector: `#${string}`): HTMLElement;
+function $(selector: string): NodeListOf<HTMLElement>;
+function $(selector: string): HTMLElement | NodeListOf<HTMLElement> {
 	const regexp = /^#(\w|-)+$/;
-	return function (selector: string): any {
-		if (regexp.test(selector)) {
-			return document.querySelector(selector);
-		} else {
-			return document.querySelectorAll(selector);
-		}
-	};
-})();
+	if (regexp.test(selector)) {
+		return document.querySelector(selector) as HTMLElement;
+	} else {
+		return document.querySelectorAll(selector) as unknown as NodeListOf<HTMLElement>;
+	}
+}
+export { $ };
 
 export const getElementReader = function (prefix: string) {
 	return function (suffix: string): any {

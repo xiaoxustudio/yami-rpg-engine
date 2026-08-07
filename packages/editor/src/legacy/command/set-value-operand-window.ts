@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show } from '@/util/element-utils';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
@@ -6,9 +7,6 @@ import { VariableGetter } from './variable-accessor-window.ts';
 import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface NumberOperandTarget {
 	start: number;
@@ -767,7 +765,7 @@ NumberOperand.open = function (
 		value: 0
 	} as any
 ) {
-	getWindow().open('setNumber-operand');
+	Window.open!('setNumber-operand');
 
 	if (this.target.start === 0) {
 		$('#setNumber-operation').save();
@@ -1166,7 +1164,7 @@ NumberOperand.save = function (this: any) {
 		}
 	}
 	$('#setNumber-operation').save();
-	getWindow().close('setNumber-operand');
+	Window.close!('setNumber-operand');
 	return operand;
 };
 

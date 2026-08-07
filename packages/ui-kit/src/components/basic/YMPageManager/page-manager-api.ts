@@ -6,11 +6,7 @@ export interface PageManagerApi extends HTMLElement {
 	switchEventEnabled: boolean;
 	_initialized: boolean;
 	switch(value: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 const dispatchResizeEvent = (el: HTMLElement): void => {

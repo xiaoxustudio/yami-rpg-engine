@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { on, read } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -6,9 +7,6 @@ import { Editor } from '@/main/editor.ts';
 import { Data } from '@/data/data-object.ts';
 import { FSP } from '@/file/file-system.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const ExportLanguage: {
 	initialize: () => void;
@@ -30,7 +28,7 @@ ExportLanguage.initialize = function (this: any) {
 };
 
 ExportLanguage.open = function (this: any) {
-	getWindow().open('exportLanguage');
+	Window.open!('exportLanguage');
 
 	const items = [] as any[];
 	const none = { name: (Local.get as any)('common.none'), value: '' };
@@ -74,7 +72,7 @@ ExportLanguage.stringifyLanguagePack = function (this: any, map: Record<string, 
 };
 
 ExportLanguage.confirm = function (this: any, event: any) {
-	getWindow().close('exportLanguage');
+	Window.close!('exportLanguage');
 	const dialogs = (Editor.config as any).dialogs;
 	const first = read($('#exportLanguage-first'));
 	const second = read($('#exportLanguage-second'));

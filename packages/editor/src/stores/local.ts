@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Local } from '@/tools/localization.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
@@ -13,7 +14,6 @@ export const useLocalStore = defineStore('local', () => {
 	let listening = false;
 
 	function syncState() {
-		const Local = (window as any).Local;
 		language.value = Local?.language ?? 'en';
 		active.value = Local?.active ?? null;
 		languages.value = Local?.languages ?? [];
@@ -39,13 +39,12 @@ export const useLocalStore = defineStore('local', () => {
 
 	function createGetter(id: string) {
 		return (key: string) => {
-			const Local = (window as any).Local;
 			return Local?.createGetter?.(id)?.(key) ?? key;
 		};
 	}
 
 	function localize(id: string, key: string) {
-		return (window as any).Local?.localize?.(id, key) ?? key;
+		return Local?.localize?.(id, key) ?? key;
 	}
 
 	function get(key: string) {

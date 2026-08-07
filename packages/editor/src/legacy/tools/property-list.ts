@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus } from '@/util/element-utils';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { Command } from '@/command/command-object.ts';
@@ -6,7 +7,6 @@ import { createSelectBox } from '@/components/select-box.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { GameLocal } from '@/local/local-object.ts';
-import { Window } from './window-object.ts';
 
 import { IListInterface } from '@/types/list-interface.ts';
 
@@ -203,14 +203,14 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	static keyWrite(event: any) {
-		const group = (this as any).target?.getAttribute('group');
+		const group = (this as any).target?.getAttribute?.('group');
 		const attr = Attribute.getGroupAttribute(group, event.value);
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);
 			if (attr.type === 'enum') {
 				const enumBox = $('#object-attribute-enum-value');
 				enumBox.loadItems(Enum.getStringItems(attr.enum));
-				enumBox.write(Enum.getDefStringId(attr.enum));
+				enumBox.write?.(Enum.getDefStringId(attr.enum));
 			}
 		}
 	}

@@ -10,21 +10,17 @@ export interface TextAreaApiOptions {
 
 export interface TextAreaApi extends HTMLElement {
 	language: string;
-	input: HTMLTextAreaElement;
+	input?: HTMLTextAreaElement | null;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(): string;
-	write(value: string): void;
-	insert(value: string): void;
-	enable(): void;
-	disable(): void;
-	getFocus(mode: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	insert(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	getFocus(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 }
 
 let target: HTMLElement | null = null;

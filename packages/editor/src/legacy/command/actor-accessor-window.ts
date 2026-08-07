@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const ActorGetter = {
 	target: null as any,
@@ -43,7 +41,7 @@ ActorGetter.initialize = function (this: any) {
 
 ActorGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('actorGetter');
+	Window.open!('actorGetter');
 
 	let memberId = 0;
 	let actorId = '';
@@ -134,6 +132,6 @@ ActorGetter.confirm = function (this: any, event: any) {
 	if (this.target.isPluginInput) {
 		getter = { getter: 'actor', ...getter };
 	}
-	this.target.input(getter);
-	getWindow().close('actorGetter');
+	this.target?.input?.(getter);
+	Window.close!('actorGetter');
 }.bind(ActorGetter);

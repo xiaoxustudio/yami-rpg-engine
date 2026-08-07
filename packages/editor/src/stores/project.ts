@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Project } from '@/data/project-settings-window.ts';
 import { shallowRef } from 'vue';
 
 export const useProjectStore = defineStore('project', () => {
@@ -6,33 +7,32 @@ export const useProjectStore = defineStore('project', () => {
 	const target = shallowRef<any>(null);
 
 	function syncState() {
-		const Project = (window as any).Project;
 		state.value = Project?.state ?? 'closed';
 		target.value = Project?.target ?? null;
 	}
 
 	function initialize() {
-		(window as any).Project?.initialize?.();
+		Project?.initialize?.();
 	}
 
 	function open() {
-		(window as any).Project?.open?.();
+		Project?.open?.();
 	}
 
 	function close() {
-		(window as any).Project?.close?.();
+		Project?.close?.();
 	}
 
 	function startTSC() {
-		(window as any).Project?.startTSC?.();
+		Project?.startTSC?.();
 	}
 
 	function stopTSC() {
-		(window as any).Project?.stopTSC?.();
+		Project?.stopTSC?.();
 	}
 
 	function confirm(event?: any) {
-		(window as any).Project?.confirm?.(event);
+		Project?.confirm?.(event);
 	}
 
 	return {

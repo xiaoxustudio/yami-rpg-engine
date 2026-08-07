@@ -76,20 +76,28 @@ import { UI } from '@/ui/ui-window.ts';
 		$('#uiProgressBar-color-2-slider').synchronize($('#uiProgressBar-color-2'));
 		$('#uiProgressBar-color-3-slider').synchronize($('#uiProgressBar-color-3'));
 
-		const elements = $(`#uiProgressBar-image,
+		const elements = document.querySelectorAll(`#uiProgressBar-image,
     #uiProgressBar-display, #uiProgressBar-clip,
     #uiProgressBar-type, #uiProgressBar-centerX, #uiProgressBar-centerY,
     #uiProgressBar-startAngle, #uiProgressBar-centralAngle, #uiProgressBar-step,
     #uiProgressBar-progress, #uiProgressBar-blend, #uiProgressBar-colorMode,
     #uiProgressBar-color-0, #uiProgressBar-color-1,
     #uiProgressBar-color-2, #uiProgressBar-color-3`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #uiProgressBar-color-0-slider, #uiProgressBar-color-1-slider,
     #uiProgressBar-color-2-slider, #uiProgressBar-color-3-slider`);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('blur', Inspector.sliderBlur)
+		);
 	};
 
 	UIProgressBar.create = function (this: any) {

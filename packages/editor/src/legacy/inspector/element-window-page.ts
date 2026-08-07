@@ -50,12 +50,16 @@ import { UI } from '@/ui/ui-window.ts';
 			{ name: 'Hidden', value: 'hidden' }
 		]);
 
-		const elements = $(`#uiWindow-layout,
+		const elements = document.querySelectorAll(`#uiWindow-layout,
     #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
     #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
     #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
 	};
 
 	UIWindow.create = function (this: any) {

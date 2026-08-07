@@ -25,27 +25,34 @@ import { Sprite } from '@/sprite/sprite.ts';
 		$('#animSpriteFrame-tint-2-slider').synchronize($('#animSpriteFrame-tint-2'));
 		$('#animSpriteFrame-tint-3-slider').synchronize($('#animSpriteFrame-tint-3'));
 
-		const elements = $(`
+		const elements = document.querySelectorAll(`
     #animSpriteFrame-anchorX, #animSpriteFrame-anchorY,
     #animSpriteFrame-pivotX, #animSpriteFrame-pivotY,
     #animSpriteFrame-x, #animSpriteFrame-y, #animSpriteFrame-rotation,
     #animSpriteFrame-scaleX, #animSpriteFrame-scaleY, #animSpriteFrame-opacity,
     #animSpriteFrame-tint-0, #animSpriteFrame-tint-1, #animSpriteFrame-tint-2, #animSpriteFrame-tint-3`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
     #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on(
-			'blur',
-			Inspector.inputBlur!(this, Animation, (data: any) => {
-				data.type = 'inspector-frame-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
 		);
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
-
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on(
+				'blur',
+				Inspector.inputBlur!(this, Animation, (data: any) => {
+					data.type = 'inspector-frame-change';
+					data.motion = this.motion;
+					data.direction = Animation.direction;
+				})
+			)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('blur', Inspector.sliderBlur)
+		);
 		Sprite.initialize();
 	};
 

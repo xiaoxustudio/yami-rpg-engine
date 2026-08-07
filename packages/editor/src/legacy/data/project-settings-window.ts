@@ -1,4 +1,6 @@
 import { ipcRenderer } from 'electron';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { Window } from '@/tools/window-object.ts';
 import { $, getElementWriter } from '@/util/dom.ts';
 import { Command } from '@/command/command-object.ts';
 import { Data } from './data-object.ts';
@@ -9,9 +11,6 @@ import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 import { AttributeListInterface } from '@/tools/property-list.ts';
 import { getFocus, on, read, write } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const Project = {
 	data: null as any,
@@ -28,7 +27,10 @@ export const Project = {
 	projectChange: null as any,
 	dataChange: null as any,
 	paramInput: null as any,
-	confirm: null as any
+	confirm: null as any,
+	state: null as string | null,
+	target: null as Record<string, any> | null,
+	close: null as (() => void) | null
 };
 
 Project.initialize = function (this: any) {
@@ -115,7 +117,8 @@ Project.initialize = function (this: any) {
 	on($('#project-settings'), 'closed', this.windowClosed);
 	on($('#project-settings'), 'change', this.dataChange);
 	on($('#project-confirm'), 'click', this.confirm);
-	$(`#config-window-title, #config-window-width, #config-window-height,
+	document
+		.querySelectorAll(`#config-window-title, #config-window-width, #config-window-height,
     #config-window-display, #config-resolution-width, #config-resolution-height,
     #config-resolution-sceneScale, #config-resolution-uiScale,
     #config-scene-padding, #config-scene-animationInterval,
@@ -132,13 +135,12 @@ Project.initialize = function (this: any) {
     #config-soundAttenuation-distance, #config-soundAttenuation-easingId,
     #config-webgl-desynchronized, #config-webgl-textureMagFilter, #config-webgl-textureMinFilter,
     #config-script-autoCompile, #config-save-location, #config-save-subdir,
-    #config-localization-languages, #config-localization-default, #config-preload, #config-deadzone`).forEach(
-		(el: HTMLElement) => on(el, 'input', this.paramInput)
-	);
+    #config-localization-languages, #config-localization-default, #config-preload, #config-deadzone`)
+		.forEach((el) => on(el, 'input', this.paramInput));
 };
 
 Project.open = function (this: any) {
-	getWindow().open('project-settings');
+	Window.open!('project-settings');
 
 	this.data = Object.clone(Data.config);
 
@@ -213,7 +215,7 @@ Project.windowClose = function (this: any, event: any) {
 	if (Project.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedProjectSettings')
 			},
@@ -222,7 +224,7 @@ Project.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						Project.changed = false;
-						getWindow().close('project-settings');
+						Window.close!('project-settings');
 					}
 				},
 				{
@@ -296,7 +298,7 @@ Project.confirm = function (this: any, event: any) {
 		datachange.last = last;
 		window.dispatchEvent(datachange);
 	}
-	getWindow().close('project-settings');
+	Window.close!('project-settings');
 }.bind(Project);
 
 Project.importedFonts = {
@@ -308,7 +310,7 @@ Project.importedFonts = {
 	},
 	open: function (fontId = '') {
 		this.fontId = fontId;
-		(window as any).Selector?.open?.(this, false);
+		getSelectorInstance()?.open?.(this, false);
 	},
 	save: function () {
 		return this.fontId;
@@ -318,7 +320,7 @@ Project.importedFonts = {
 	},
 	input: function (this: any, fontId: any) {
 		this.fontId = fontId;
-		this.target.save();
+		this.target?.save?.();
 	}
 };
 
@@ -332,8 +334,8 @@ Project.languages = {
 					return getFocus($('#language-name'));
 				}
 			}
-			this.target.save();
-			getWindow().close('language');
+			this.target?.save?.();
+			Window.close!('language');
 		});
 	},
 	parse: function (this: any, language: any) {
@@ -348,7 +350,7 @@ Project.languages = {
 		write($('#language-font'), language.font);
 		write($('#language-scale'), language.scale);
 		getFocus($('#language-name'));
-		getWindow().open('language');
+		Window.open!('language');
 	},
 	save: function () {
 		return {

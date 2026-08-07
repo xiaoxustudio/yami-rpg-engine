@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { AudioManager } from '@/audio/audio-manager.ts';
 import { shallowRef } from 'vue';
 
 export const useAudioStore = defineStore('audio', () => {
@@ -6,33 +7,32 @@ export const useAudioStore = defineStore('audio', () => {
 	const music = shallowRef<any>(null);
 
 	function syncState() {
-		const AudioManager = (window as any).AudioManager;
 		state.value = AudioManager?.state ?? 'closed';
 		music.value = AudioManager?.music ?? null;
 	}
 
 	function initialize() {
-		(window as any).AudioManager?.initialize?.();
+		AudioManager?.initialize?.();
 	}
 
 	function close() {
-		(window as any).AudioManager?.close?.();
+		AudioManager?.close?.();
 	}
 
 	function getWaveform(guid: string) {
-		return (window as any).AudioManager?.getWaveform?.(guid);
+		return AudioManager?.getWaveform?.(guid);
 	}
 
 	function playMusic(name: string) {
-		(window as any).AudioManager?.playMusic?.(name);
+		AudioManager?.playMusic?.(name);
 	}
 
 	function stopMusic() {
-		(window as any).AudioManager?.stopMusic?.();
+		AudioManager?.stopMusic?.();
 	}
 
 	function playSound(name: string) {
-		(window as any).AudioManager?.playSound?.(name);
+		AudioManager?.playSound?.(name);
 	}
 
 	return {

@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
@@ -7,9 +8,6 @@ import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Local } from '@/tools/localization.ts';
 import { on, clear, getFocus } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface IfConditionTarget {
 	save: () => any;
@@ -694,7 +692,7 @@ IfCondition.open = function (
 	} as any
 ) {
 	$('#if-condition-actor-shortcutKey').loadItems(Enum.getStringItems!('shortcut-key'));
-	getWindow().open('if-condition');
+	Window.open!('if-condition');
 	const write = getElementWriter('if-condition');
 	const defaultVariable = { type: 'local', key: '' };
 	let commonVariable = defaultVariable;
@@ -1178,7 +1176,7 @@ IfCondition.save = function (this: any) {
 			break;
 		}
 	}
-	getWindow().close('if-condition');
+	Window.close!('if-condition');
 	return condition;
 };
 

@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import {
 	addClass,
 	clear,
@@ -27,9 +28,7 @@ import { Scene } from '@/scene/scene-window.ts';
 import { NewProject } from '@/title/new-project-window.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+import OriginPackmeta from './packmeta.json';
 import { UI } from '@/ui/ui-window.ts';
 import { Updater } from '@/update/updater.ts';
 import { Variable } from '@/variable/variable.ts';
@@ -37,30 +36,19 @@ import { shell } from 'electron';
 import Path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
-import nodeFs from 'node:fs';
 import fsExtra from 'fs-extra';
 import nodeYauzl from 'yauzl';
 import MarkdownIt from 'markdown-it';
 
 const GlobalPath =
 	typeof Path.resolve === 'function' ? Path.resolve(os.homedir?.() ?? '', '.openyami') : '';
-// ESM 下 __dirname 不存在，用 import.meta.url 推算
-const _moduleURL = new URL(import.meta.url);
-const _modulePath =
-	typeof (window as any).__nodeRequire === 'function'
-		? _moduleURL.protocol === 'file:'
-			? fileURLToPath(_moduleURL)
-			: Path.resolve(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
-		: '';
-const __dirname =
-	typeof (window as any).__nodeRequire === 'function'
-		? _moduleURL.protocol === 'file:'
-			? Path.dirname(Path.dirname(_modulePath))
-			: Path.resolve(process.cwd(), 'Project')
-		: '';
-// oxlint-disable no-unused-vars
-export const fs = fsExtra;
-export const yauzl = nodeYauzl;
+const moduleUrl = new URL(import.meta.url);
+const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(moduleUrl)) : './';
+
+const fs = fsExtra;
+const yauzl = nodeYauzl;
+
+export { yauzl, fs, GlobalPath };
 
 export const CommunityVersion = '26072501';
 
@@ -76,17 +64,10 @@ EventBus.once('editor_loaded', () => {
 });
 
 const packmetaPath = () => {
-	if (typeof Path.join !== 'function') return '';
-	const scriptPath = Path.join(__dirname, 'Script/module', 'packmeta.json');
-	if (typeof nodeFs.existsSync === 'function' && nodeFs.existsSync(scriptPath)) return scriptPath;
-	return Path.join(__dirname, '../src/legacy/module', 'packmeta.json');
+	return Path.join(moduleDir, 'packmeta.json');
 };
 
-export let PackMeta =
-	typeof nodeFs.readFileSync === 'function'
-		? JSON.parse(nodeFs.readFileSync(packmetaPath(), 'utf-8'))
-		: ({} as any);
-
+export let PackMeta: Record<string, any> = OriginPackmeta;
 export const TemplatesPath =
 	typeof Path.resolve === 'function' ? Path.resolve(GlobalPath, 'Templates') : '';
 if (typeof fs.existsSync === 'function' && !fs.existsSync(TemplatesPath))
@@ -97,7 +78,7 @@ export function isNoResource() {
 	delete bak['Editor'];
 	delete bak['Project'];
 	delete bak['Community'];
-	const p = { ...bak };
+	const p = {};
 	Object.defineProperty(p, '@', {
 		value: false,
 		enumerable: false,
@@ -105,11 +86,11 @@ export function isNoResource() {
 	});
 	try {
 		const checkArr: boolean[] = [];
-		Object.keys(p).map((v) => {
-			p[v] = {};
+		Object.keys(bak).map((v) => {
+			p[v] ??= {};
 			p[v]['check'] = false;
-			const _path = typeof Path.resolve === 'function' ? Path.resolve(TemplatesPath, v) : '';
-			if (typeof fs.existsSync === 'function' && fs.existsSync(_path)) {
+			const _path = Path.resolve(TemplatesPath, v) ?? '';
+			if (fs.existsSync(_path)) {
 				p[v]['check'] = true;
 				checkArr.push(true);
 			} else {
@@ -125,7 +106,6 @@ export function isNoResource() {
 
 export let NoResourceObj = isNoResource();
 
-// ESM let 绑定对导入方只读，故提供 setter 在本模块内部赋值，通过 live binding 传给所有导入方
 export function setPackMeta(value: any) {
 	PackMeta = value;
 }
@@ -134,17 +114,14 @@ export function setNoResourceObj(value: any) {
 }
 
 window.addEventListener('localize', () => {
-	Resources.initialize();
-	if (!NoResourceObj['arpg-ts-english'].check && !NoResourceObj['arpg-ts-chinese'].check) {
-		Resources.open();
-		Resources.checkEditorVersion();
-		if (SettingConfig.config?.update?.checkOnStart !== false) {
-			Resources.checkVersion();
-		}
-	} else {
-		if (SettingConfig.config?.update?.checkOnStart !== false) {
-			Resources.checkVersion();
-		}
+	void Resources.initialize();
+	if (!NoResourceObj['arpg-ts-english']?.check && !NoResourceObj['arpg-ts-chinese']?.check) {
+		void Resources.open();
+		void Resources.checkEditorVersion();
+	}
+	if (SettingConfig.config?.update?.checkOnStart !== false) {
+		void Resources.checkVersion();
+		void Resources.checkEditorVersion();
 	}
 	Resources.loaded = true;
 });
@@ -226,8 +203,8 @@ export const unzipWithProgress = async ({
 
 EventBus.once('editor_loaded', () => {
 	CommandList.prototype.openEdit = function (this: any) {
-		getWindow().open('edit-data');
-		EditDataInstance.open(this);
+		Window.open!('edit-data');
+		void EditDataInstance.open(this);
 	};
 });
 
@@ -374,7 +351,6 @@ window.addEventListener(
 	{ once: true }
 );
 (() => {
-	if (typeof fs.writeFileSync !== 'function') return;
 	PackMeta['Editor'] = Updater.latestEditorVersion;
 	PackMeta['Project'] = Updater.latestProjectVersion;
 	PackMeta['Community'] = CommunityVersion;
@@ -437,7 +413,7 @@ UpdateLog.initialize = function (this: any) {
 	const tabsContainer = $('#update-log-tabs');
 	if (tabsContainer) {
 		tabsContainer.addEventListener('click', (event: any) => {
-			const btn = event.target.closest('.update-log-tab');
+			const btn = event.target?.closest?.('.update-log-tab');
 			if (btn) {
 				if (btn.id === 'update-log-tab-internal') {
 					UpdateLog.switchMode?.('internal');
@@ -454,7 +430,7 @@ UpdateLog.initialize = function (this: any) {
 export const UpdateLogOpenOrigin = UpdateLog.open;
 UpdateLog.open = function (this: any, items: any = null) {
 	if (items instanceof Array) {
-		getWindow().open('update-log');
+		Window.open!('update-log');
 		this.internalItems = items;
 		this.currentMode = 'internal';
 		this.update?.(items);
@@ -646,7 +622,7 @@ SetTileTag.initialize = function () {
 
 SetTileTag.open = function (tag: any, callback: any) {
 	this.callback = callback;
-	getWindow().open('setTileTag');
+	Window.open!('setTileTag');
 	write($('#setTileTag-tag'), tag);
 	getFocus($('#setTileTag-tag'), 'all');
 };
@@ -657,7 +633,7 @@ SetTileTag.windowClosed = function (this: any) {
 
 SetTileTag.confirm = function (this: any) {
 	this.callback!(read($('#setTileTag-tag')));
-	getWindow().close('setTileTag');
+	Window.close!('setTileTag');
 }.bind(SetTileTag);
 
 export function loadDtsFolder(folderPath: any, monaco: any, recursive = true) {

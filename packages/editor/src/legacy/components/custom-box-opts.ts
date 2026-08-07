@@ -1,5 +1,7 @@
 ﻿import { Command } from '@/command/command-object';
 import { Attribute } from '@/attribute/attribute-window';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { ActorGetter } from '@/command/actor-accessor-window';
 import { AncestorGetter } from '@/command/ancestor-accessor-window';
 import { AngleGetter } from '@/command/angle-accessor-window';
@@ -40,7 +42,7 @@ export const customBoxOptions: {
 	localize: (key: string) => string;
 } = {
 	getters: {
-		file: (el: any) => (window as any).Selector.open(el),
+		file: (el: any) => getSelectorInstance()?.open?.(el),
 		'dialog-dir': (el: any) =>
 			File.showOpenDialog!({ defaultPath: el.read(), properties: ['openDirectory'] }).then(
 				({ filePaths }: { filePaths: string[] }) => {
@@ -145,8 +147,8 @@ export const customBoxOptions: {
 			properties: ['openDirectory']
 		}),
 	browser: (): any => ({
-		dragging: (window as any).Browser?.dragging,
-		body: (window as any).Browser?.body
+		dragging: getBrowserInstance()?.dragging,
+		body: getBrowserInstance()?.body
 	}),
 	localize: (key: string): string => Local.get(key)
 };

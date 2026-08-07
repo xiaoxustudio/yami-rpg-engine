@@ -13,7 +13,7 @@ export const Local = {
 	language: null as any,
 	languages: null as any,
 	properties: {} as Record<string, any>,
-	// 保存最近一次 update() 的 components 表，供延迟创建的元素（如动态渲染的设置项）按 id 取回 label/tip/content
+	// 保存最近一次 update() 的 components 表，供延迟创建的元素（如动态渲染的设置项）按 id 取回 label/tip/content,
 	components: {} as Record<string, any>,
 	saveItems: {} as Record<string, any>,
 	saveTagExp: /^#(\S+)$/,
@@ -27,7 +27,8 @@ export const Local = {
 	parseTip: null as any,
 	createGetter: null as any,
 	get: null as any,
-	showInExplorer: null as (() => string | undefined) | null
+	showInExplorer: null as (() => string | undefined) | null,
+	localize: null as ((id?: string, key?: string) => void) | null
 };
 
 Local.initialize = function (this: any) {
@@ -280,7 +281,8 @@ Local.showInExplorer = function (this: any) {
 	}
 };
 
-import { localStateKeys, getLocalStore } from '@app/stores/local';
+const localStateKeys = ['language', 'active', 'languages'] as const;
+import { getLocalStore } from '@app/stores/local';
 
 for (const key of localStateKeys) {
 	Object.defineProperty(Local, key, {

@@ -7,7 +7,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		target.style.cssText = 'width:200px;height:200px;overflow:auto;position:relative;';
 		const content = document.createElement('div');
 		content.style.cssText = 'width:600px;height:600px;';
-		target.appendChild(content);
+		target?.appendChild?.(content);
 		const parent = document.createElement('div');
 		parent.appendChild(target);
 		document.body.appendChild(parent);
@@ -28,7 +28,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 
 		// 拖拽 vertical thumb → scrollTop 更新 + userscroll 派发（marquee 同步链）
 		let userscrollCount = 0;
-		target.addEventListener('userscroll', () => userscrollCount++);
+		target?.addEventListener?.('userscroll', () => userscrollCount++);
 		const thumb = (vBar as any).thumb;
 		const fire = (el: any, type: string, props: any) => {
 			const ev = new PointerEvent(type, {

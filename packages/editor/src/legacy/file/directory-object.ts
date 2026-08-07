@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { Window } from '@/tools/window-object.ts';
 import { Path } from '@/util/config.ts';
 import { File } from './file-system-core.ts';
 import { Data } from '@/data/data-object.ts';
@@ -8,9 +9,6 @@ import { FS, FSP } from './file-system.ts';
 import { FolderItem } from './folder-item.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 type DirectoryMethod = (...args: any[]) => any;
 
@@ -85,7 +83,7 @@ Directory.read = function () {
 					},
 					(error: any) => {
 						(Log.throw as any)(error);
-						(getWindow().confirm as any)(
+						(Window.confirm as any)(
 							{
 								message: 'Failed to read directory',
 								close: () => {

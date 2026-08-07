@@ -27,20 +27,20 @@ export class Reverb {
 
 	connect(): void {
 		this.player.reverb = this;
-		this.input.disconnect(this.output);
-		this.input.connect(this.dryGain);
+		this.input!.disconnect(this.output);
+		this.input!.connect(this.dryGain);
 		this.dryGain.connect(this.output);
-		this.input.connect(this.wetGain);
+		this.input!.connect(this.wetGain);
 		this.wetGain.connect(this.convolver!);
 	}
 
 	disconnect(): void {
 		this.player.reverb = null;
-		this.input.disconnect(this.dryGain);
+		this.input!.disconnect(this.dryGain);
 		this.dryGain.disconnect(this.output);
-		this.input.disconnect(this.wetGain);
+		this.input!.disconnect(this.wetGain);
 		this.wetGain.disconnect(this.convolver!);
-		this.input.connect(this.output);
+		this.input!.connect(this.output);
 	}
 
 	set(dry: number, wet: number): void {

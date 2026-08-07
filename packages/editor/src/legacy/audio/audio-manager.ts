@@ -10,7 +10,12 @@ export const AudioManager = {
 	waveforms: {} as Record<string, any>,
 	initialize: null as (() => void) | null,
 	getWaveform: null as ((guid: string) => any) | null,
-	close: null as (() => void) | null
+	close: null as (() => void) | null,
+	state: null as string | null,
+	music: null as Record<string, any> | null,
+	playMusic: null as ((name: string) => void) | null,
+	stopMusic: null as (() => void) | null,
+	playSound: null as ((name: string) => void) | null
 };
 
 AudioManager.initialize = function () {

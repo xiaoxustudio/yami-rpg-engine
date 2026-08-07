@@ -177,7 +177,7 @@ export class CommonList extends HTMLElement {
 		CommonList.clearElements(this, start);
 	}
 
-	clear(): this {
+	clear(...args: unknown[]): this {
 		this.unselect();
 		this.textContent = '';
 		this.clearElements(0);

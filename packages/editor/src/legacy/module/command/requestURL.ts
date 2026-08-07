@@ -1,12 +1,11 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 export const RequestkeyValueBind = {
 	target: null as any,
 	type: null as any,
@@ -19,7 +18,7 @@ export const RequestkeyValueBind = {
 		return `${typeof i.key === 'string' ? i.key : i.key.key} = ${typeof i.value === 'string' ? i.value : i.value.key}`;
 	},
 	open(item: any) {
-		getWindow().open('request-keyValue');
+		Window.open!('request-keyValue');
 		if (!item) {
 			write($('#request-keyValue-value'), '');
 			write($('#request-keyValue-key'), '');
@@ -44,11 +43,11 @@ export const RequestkeyValueBind = {
 		if (!data.key) {
 			return getFocus($('#request-keyValue-key'));
 		}
-		getWindow().close('request-keyValue');
+		Window.close!('request-keyValue');
 		return data;
 	},
 	confirm() {
-		return RequestkeyValueBind.target.save();
+		return RequestkeyValueBind.target?.save?.();
 	}
 };
 

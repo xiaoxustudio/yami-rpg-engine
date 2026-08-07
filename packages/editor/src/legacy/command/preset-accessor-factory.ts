@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface AccessorConfig {
 	domKey: string;
@@ -31,7 +29,7 @@ function createPresetAccessor(config: AccessorConfig) {
 
 	accessor.open = function (this: any, target: any) {
 		this.target = target;
-		getWindow().open(domKey);
+		Window.open!(domKey);
 
 		let presetId = PresetObject.getDefaultPresetId(presetCategory);
 		let variable = { type: 'local', key: '' };
@@ -79,8 +77,8 @@ function createPresetAccessor(config: AccessorConfig) {
 				break;
 			}
 		}
-		this.target.input(getter);
-		getWindow().close(domKey);
+		this.target?.input?.(getter);
+		Window.close!(domKey);
 	}.bind(accessor);
 
 	return accessor;

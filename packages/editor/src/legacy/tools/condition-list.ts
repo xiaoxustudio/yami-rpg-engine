@@ -1,11 +1,11 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { IfCondition } from '@/command/conditional-condition-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { IListInterface } from '@/types/list-interface.ts';
 import { Local } from './localization.ts';
-import { Window } from './window-object.ts';
 
 export class ConditionListInterface implements IListInterface {
 	target!: HTMLElement | null;

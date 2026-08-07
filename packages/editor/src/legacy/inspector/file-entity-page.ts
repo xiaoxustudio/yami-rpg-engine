@@ -1,4 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear, read } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
@@ -38,11 +39,12 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		$(`#${domKey}-events`).bind(new EventListInterface(this));
 		$(`#${domKey}-scripts`).bind(new ScriptListInterface());
 		$(`#${domKey}-parameter-pane`).bind($(`#${domKey}-scripts`));
-		$(`#${domKey}-icon, #${domKey}-clip, #${domKey}-inherit`).on('input', this.paramInput);
-		$(`#${domKey}-attributes, #${domKey}-events, #${domKey}-scripts`).on(
-			'change',
-			this.listChange
-		);
+		document
+			.querySelectorAll(`#${domKey}-icon, #${domKey}-clip, #${domKey}-inherit`)
+			.forEach((el) => (el as HTMLElement).on('input', this.paramInput));
+		document
+			.querySelectorAll(`#${domKey}-attributes, #${domKey}-events, #${domKey}-scripts`)
+			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	entity.create = function (this: any) {
@@ -72,7 +74,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 
 	entity.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			clear($(`#${domKey}-attributes`));
@@ -89,7 +91,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 			case 'clip':
 				if (target[key] !== value) {
 					target[key] = value;
-					(window as any).Browser?.body?.updateIcon?.(this.meta.file);
+					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
 				}
 				break;
 			case 'inherit':

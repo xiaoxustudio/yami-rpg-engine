@@ -1,4 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { disable, enable, getFocus, read, write } from '@/util/element-utils';
 import { Timer } from '@/util/timer.ts';
 import { Data } from '@/data/data-object.ts';
@@ -10,9 +11,7 @@ import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from '@/module/global.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Path } from '@/util/config.ts';
 
 type NewProjectState = 'passed' | 'open' | 'closed';
@@ -72,7 +71,7 @@ NewProject.initialize = function (this: any) {
 };
 
 NewProject.open = function (this: any) {
-	getWindow().open('newProject');
+	Window.open!('newProject');
 	const write = getElementWriter('newProject');
 	const dialogs = (Editor.config as any).dialogs;
 	const location = Path.normalize!(dialogs.new);
@@ -162,7 +161,7 @@ NewProject.readFileList = (function IIFE() {
 })();
 
 NewProject.copyFilesTo = function (this: any, sPath: any, dPath: any, idFilter: any) {
-	getWindow().open('copyProgress');
+	Window.open!('copyProgress');
 	const progressBar = $('#copyProgress-bar');
 	const progressInfo = $('#copyProgress-info');
 	progressBar.style.width = '0';
@@ -274,7 +273,7 @@ NewProject.confirm = function (this: any, event: any) {
 			? Path.resolve!(TemplatesPath, template)
 			: Path.resolve!(File.root);
 	const dPath = Path.resolve!(location, folder);
-	getWindow().close('newProject');
+	Window.close!('newProject');
 	FSP.mkdir!(dPath, { recursive: true })
 		.then((done: any) => {
 			return template === 'minimized-project' ? Data.createReferencedFileIDMap!() : undefined;
@@ -286,7 +285,7 @@ NewProject.confirm = function (this: any, event: any) {
 			return NewProject.writeData!(dPath);
 		})
 		.finally(() => {
-			getWindow().close('copyProgress');
+			Window.close!('copyProgress');
 			if (NewProject.timer) {
 				NewProject.timer.remove();
 				NewProject.timer = null;
@@ -299,7 +298,7 @@ NewProject.confirm = function (this: any, event: any) {
 		.catch((error: any) => {
 			Editor.close!();
 			Log.throw!(error);
-			getWindow().confirm(
+			Window.confirm!(
 				{
 					message: 'Failed to create project',
 					close: () => {

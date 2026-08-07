@@ -4,7 +4,8 @@ import { RadioProxy } from '@/components/radio-proxy.ts';
 import { History } from '@/tools/history.ts';
 import { Reference } from '@/log/related-references.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
-import { variableStateKeys, getVariableStore } from '@app/stores/variable';
+const variableStateKeys = ['target', 'data', 'idMap', 'history', 'changed'] as const;
+import { getVariableStore } from '@app/stores/variable';
 
 export const Variable = {
 	list: null as any,
@@ -91,9 +92,9 @@ function ensureDomBound() {
 	Variable.inputs.number = $('#variable-value-number');
 	Variable.inputs.string = $('#variable-value-string');
 	Variable.inputs.note = $('#variable-note');
-	Variable.list.copy = null;
-	Variable.list.paste = null;
-	Variable.list.delete = null;
+	Variable.list.copy = null as unknown as (...args: unknown[]) => any;
+	Variable.list.paste = null as unknown as (...args: unknown[]) => any;
+	Variable.list.delete = null as unknown as (...args: unknown[]) => any;
 	if (!Variable._listMethodsLoaded) {
 		Variable._listMethodsLoaded = true;
 		import('./list-methods.ts');
@@ -103,9 +104,11 @@ function ensureDomBound() {
 	Variable.list.cancelSearch = Variable.list_cancelSearch;
 	Variable.list.createFolder = Variable.list_createFolder;
 	Variable.list.createVariable = Variable.list_createVariable;
-	Variable.list.createIcon = Variable.list_createIcon;
-	Variable.list.updateIcon = Variable.list_updateIcon;
-	Variable.list.addElementClass = Variable.list_addElementClass;
+	Variable.list.createIcon = Variable.list_createIcon as unknown as (...args: unknown[]) => any;
+	Variable.list.updateIcon = Variable.list_updateIcon as unknown as (...args: unknown[]) => any;
+	Variable.list.addElementClass = Variable.list_addElementClass as unknown as (
+		...args: unknown[]
+	) => any;
 	Variable.list.updateItemClass = Variable.list_updateItemClass;
 	Variable.list.createInitText = Variable.list_createInitText;
 	Variable.list.updateInitText = Variable.list_updateInitText;
@@ -153,12 +156,12 @@ Variable.initialize = function () {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.updateItemClass);
-	list.creators.push(list.createInitText);
-	list.creators.push(list.updateInitText);
-	list.creators.push(list.createNoteIcon);
-	list.creators.push(list.updateNoteIcon);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.updateItemClass);
+	list.creators?.push(list.createInitText);
+	list.creators?.push(list.updateInitText);
+	list.creators?.push(list.createNoteIcon);
+	list.creators?.push(list.updateNoteIcon);
 
 	this.panel.variable = null;
 	this.searcher.addCloseButton();

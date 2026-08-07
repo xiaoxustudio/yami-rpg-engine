@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear, read, write } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -98,7 +99,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#fileTrigger-parameter-pane').bind($('#fileTrigger-scripts'));
 
 		// animationId write + 22 控件 input 经 Vue 模板转发（FileTriggerPage.vue @write/@input → FileTrigger.*）
-		$('#fileTrigger-events, #fileTrigger-scripts').on('change', this.listChange);
+		document
+			.querySelectorAll('#fileTrigger-events, #fileTrigger-scripts')
+			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	FileTrigger.create = function (this: any) {
@@ -164,7 +167,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 	FileTrigger.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			this.motions = null;

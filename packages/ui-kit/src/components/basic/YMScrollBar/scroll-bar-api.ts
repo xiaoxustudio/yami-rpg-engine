@@ -19,7 +19,7 @@ interface ScrollDragging extends PointerEvent {
 	scrollTop: number;
 	clientX: number;
 	clientY: number;
-	relate(event: PointerEvent): boolean;
+	relate(...args: unknown[]): any;
 }
 
 export interface ScrollBarApi extends HTMLElement {

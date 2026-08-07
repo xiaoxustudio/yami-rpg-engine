@@ -12,22 +12,18 @@ export interface StringVarApiOptions {
 
 export interface StringVarApi extends HTMLElement {
 	mode: string;
-	strBox: TextBoxApi;
-	varBox: CustomBoxApi;
+	strBox?: TextBoxApi | null;
+	varBox?: CustomBoxApi | null;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
-	switch(mode?: string): void;
-	enable(): void;
-	disable(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	switch(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
 	getFocus(mode: any): any;
 	keydown(event: any): void;
 	pointerdown(event: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 export function attachStringVarApi(

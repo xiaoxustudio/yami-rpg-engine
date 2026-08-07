@@ -1,9 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus } from '@/util/element-utils';
 import { Command } from './command-object.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
 import { Token } from './mark-string-manager.ts';
 import { TreeList } from '@/components/tree-list.ts';
@@ -80,7 +79,7 @@ Command.custom = {
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
-		($('#scriptCommand-confirm') as HTMLElement)?.addEventListener('click', this.save);
+		$('#scriptCommand-confirm')?.addEventListener('click', this.save);
 
 		this.windowFrame = $('#scriptCommand') as HTMLElement & {
 			style: CSSStyleDeclaration;
@@ -288,8 +287,8 @@ Command.custom = {
 	load: function (id: string, parameters: Record<string, any>): void {
 		this.loadedScript.id = id;
 		this.loadedScript.parameters = Object.clone(parameters);
-		this.windowX = getWindow().absolutePos.x;
-		this.windowY = getWindow().absolutePos.y;
+		this.windowX = Window.absolutePos.x;
+		this.windowY = Window.absolutePos.y;
 		this.parameterPane.update();
 		const selector = Layout.focusableSelector;
 		this.parameterPane.querySelector(selector)

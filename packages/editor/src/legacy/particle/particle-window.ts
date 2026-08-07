@@ -1,4 +1,5 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -28,9 +29,7 @@ import { Scene } from '@/scene/scene-window.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { StageColor } from '@/util/stage-color.ts';
 import { Timer } from '@/util/timer.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
@@ -184,12 +183,20 @@ interface ParticleShape {
 export const Particle: ParticleShape = {
 	state: 'closed',
 	page: $('#particle'),
-	head: $('#particle-head'),
+	head: $('#particle-head') as unknown as HTMLElement & {
+		left: number;
+		width: number;
+		padding?: number;
+	},
 	body: hide($('#particle-body')),
 	info: $('#particle-info'),
-	screen: $('#particle-screen'),
-	marquee: $('#particle-marquee'),
-	list: $('#particle-list') || ({} as any),
+	screen: $('#particle-screen') as unknown as HTMLElement & {
+		rawScrollLeft: number;
+		rawScrollTop: number;
+		pointerevent: unknown;
+	},
+	marquee: $('#particle-marquee') as unknown as HTMLElement & { pointerevent: unknown },
+	list: ($('#particle-list') as unknown as never) || ({} as never),
 	dragging: null,
 	target: null,
 	paused: false,
@@ -300,15 +307,15 @@ export const Particle: ParticleShape = {
 	Element: null
 };
 
-Particle.list.create = null;
-Particle.list.copy = null;
-Particle.list.paste = null;
-Particle.list.delete = null;
-Particle.list.createIcon = null;
+Particle.list.create = null as unknown as (...args: unknown[]) => any;
+Particle.list.copy = null as unknown as (...args: unknown[]) => any;
+Particle.list.paste = null as unknown as (...args: unknown[]) => any;
+Particle.list.delete = null as unknown as (...args: unknown[]) => any;
+Particle.list.createIcon = null as unknown as (...args: unknown[]) => any;
 Particle.list.updateIcon = function (...args) {
 	return (Scene.list.updateIcon as any)(...args);
 };
-Particle.list.createVisibilityIcon = null;
+Particle.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any;
 Particle.list.updateVisibilityIcon = function (...args) {
 	return (Scene.list.updateVisibilityIcon as any)(...args);
 };
@@ -319,17 +326,20 @@ Particle.list.onResume = null;
 
 Particle.initialize = function () {
 	this.page = $('#particle');
-	this.head = $('#particle-head');
+	this.head = $('#particle-head') as unknown as HTMLElement & { left: number; width: number };
 	this.body = hide($('#particle-body'));
 	this.info = $('#particle-info');
-	this.screen = $('#particle-screen');
+	this.screen = $('#particle-screen') as unknown as HTMLElement & {
+		rawScrollLeft: number;
+		rawScrollTop: number;
+	};
 	const oldMarquee = this.marquee;
-	this.marquee = $('#particle-marquee');
+	this.marquee = $('#particle-marquee') as unknown as HTMLElement & { pointerevent: unknown };
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
 		Object.assign(this.marquee, oldMarquee);
 	}
 	const oldList = this.list;
-	this.list = $('#particle-list');
+	this.list = $('#particle-list') as unknown as never;
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -395,8 +405,8 @@ Particle.initialize = function () {
 	list.removable = true;
 	list.renamable = true;
 	(list as any).bind(() => this.layers);
-	(list as any).creators.push(list.createVisibilityIcon);
-	(list as any).updaters.push(list.updateVisibilityIcon);
+	(list as any).creators?.push(list.createVisibilityIcon);
+	(list as any).updaters?.push(list.updateVisibilityIcon);
 
 	(History.processors as any)['particle-layer-create'] =
 		(History.processors as any)['particle-layer-delete'] =
@@ -455,7 +465,7 @@ Particle.open = function (context) {
 		this.requestRendering!();
 	} else {
 		(Layout.manager as any).switch('directory');
-		(getWindow().confirm as any)(
+		(Window.confirm as any)(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},
@@ -1482,7 +1492,7 @@ Particle.pointerup = function (event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-move':
 				break;
@@ -1498,7 +1508,7 @@ Particle.pointerup = function (event: any) {
 
 Particle.pointermove = function (event: any) {
 	const { dragging } = Particle;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-move': {
 				if (!dragging.enabled) {

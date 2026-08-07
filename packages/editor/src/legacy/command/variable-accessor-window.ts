@@ -1,13 +1,11 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on } from '@/util/element-utils';
 import { getVariable } from '@/util/safe.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { EventEditor } from './event-editor.ts';
 import { TextSuggestion } from './text-tip.ts';
 import { selectBoxSetItemNames } from '@/components/select-box.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface VariableGetterTarget {
 	filter: string;
@@ -70,7 +68,16 @@ interface VariableGetterShape {
 }
 
 export const VariableGetter: VariableGetterShape = {
-	keyBox: $('#variableGetter-preset-key'),
+	keyBox: $('#variableGetter-preset-key') as unknown as HTMLElement & {
+		loadItems: (items: any[]) => void;
+		selectBox: HTMLElement & {
+			textContent: string;
+			write: (v: any) => void;
+			read: () => any;
+			invalid: boolean;
+			dataItems: any[];
+		};
+	},
 	target: null as any,
 	filter: null as any,
 	types: null as any,
@@ -91,7 +98,16 @@ export const VariableGetter: VariableGetterShape = {
 };
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
-	this.keyBox = $('#variableGetter-preset-key');
+	this.keyBox = $('#variableGetter-preset-key') as unknown as HTMLElement & {
+		loadItems: (items: any[]) => void;
+		selectBox: HTMLElement & {
+			textContent: string;
+			write: (v: any) => void;
+			read: () => any;
+			invalid: boolean;
+			dataItems: any[];
+		};
+	};
 	if (!this.keyBox) return;
 	const types = {
 		local: { name: 'Local', value: 'local' },
@@ -180,7 +196,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 VariableGetter.open = function (this: VariableGetterShape, target: VariableGetterTarget): void {
 	const filter = target.filter;
 	// 若主窗口已打开，则叠加打开窗口2（避免递归冲突）
-	if (getWindow().isWindowOpen('variableGetter')) {
+	if (Window.isWindowOpen!('variableGetter')) {
 		this._openCore!(target, filter, 'variableGetter2');
 	} else {
 		this._openCore!(target, filter, 'variableGetter');
@@ -205,7 +221,7 @@ VariableGetter._openCore = function (
 			items = prefix === 'variableGetter2' ? types.object : types.all;
 			break;
 		case 'object':
-			items = !getWindow().isWindowOpen('elementGetter') ? types.object : types.object2;
+			items = !Window.isWindowOpen!('elementGetter') ? types.object : types.object2;
 			break;
 		case 'writable-boolean':
 		case 'writable-number':
@@ -309,7 +325,7 @@ VariableGetter._openCore = function (
 		this.target = target;
 	}
 	getFocus($(`#${prefix}-type`));
-	getWindow().open(prefix);
+	Window.open!(prefix);
 };
 
 VariableGetter.isNone = function (this: any, variable: { key: string }): boolean {
@@ -554,6 +570,6 @@ VariableGetter._confirmCore = function (this: VariableGetterShape, prefix: strin
 	if (target.isPluginInput) {
 		getter = { getter: 'variable', ...getter };
 	}
-	target.input(getter);
-	getWindow().close(prefix);
+	target?.input?.(getter);
+	Window.close!(prefix);
 };

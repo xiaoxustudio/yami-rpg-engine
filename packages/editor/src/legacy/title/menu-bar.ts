@@ -1,4 +1,5 @@
 import { macRedoKey } from '@/util/event-accessors';
+import { Window } from '@/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { SettingConfig } from '@/module/settingconfig';
 import { $ } from '@/util/dom.ts';
@@ -42,9 +43,7 @@ import { Title } from './title-bar.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Zoom } from '@/tools/zoom-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { ctrl } from '@/util/event-accessors.ts';
@@ -56,6 +55,9 @@ import { Variable } from '@/variable/variable.ts';
 type MenubarMethod = ((...args: any[]) => any) | null;
 
 interface MenubarShape {
+	state: string | null;
+	popup: ((...args: unknown[]) => void) | null;
+
 	// methods
 	initialize: (() => void) | null;
 	toggleFullScreen: MenubarMethod;
@@ -79,7 +81,7 @@ interface MenubarShape {
 }
 
 export const Menubar: MenubarShape = {
-	// methods
+	// methods,
 	initialize: null as any,
 	toggleFullScreen: null as any,
 	popupFileMenu: null as any,
@@ -93,12 +95,14 @@ export const Menubar: MenubarShape = {
 	createColorIcon: null as any,
 	revealSaveDirectory: null as any,
 	sanitizeFolderName: null as any,
-	// events
+	// events,
 	keydown: null as any,
 	pointerdown: null as any,
 	pointerup: null as any,
 	pointerover: null as any,
-	hrefClick: null as any
+	hrefClick: null as any,
+	state: null as string | null,
+	popup: null as ((...args: unknown[]) => void) | null
 };
 
 // 初始化
@@ -106,7 +110,9 @@ Menubar.initialize = function (this: any) {
 	// 侦听事件
 	window.addEventListener('keydown', this.keydown);
 	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
-	$('.href').forEach((el: HTMLElement) => el.addEventListener('click', this.hrefClick!));
+	document
+		.querySelectorAll('.href')
+		.forEach((el) => el.addEventListener('click', this.hrefClick!));
 };
 
 // 开关全屏模式
@@ -640,7 +646,7 @@ Menubar.popupHelpMenu = function (this: any, target: any) {
 						if (winos) osversion += winos;
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
-						getWindow().open('about');
+						Window.open!('about');
 						$('#editor-version').textContent = (Editor.config as any).version;
 						$('#electron-version').textContent = process.versions.electron;
 						$('#chrome-version').textContent = process.versions.chrome;
@@ -695,7 +701,7 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 				{
 					label: get('setting'),
 					click: () => {
-						getWindow().open('setting');
+						Window.open!('setting');
 					}
 				},
 				{
@@ -715,8 +721,8 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 					label: get('export_apk'),
 					enabled: open,
 					click: async () => {
-						getWindow().open('export-apk');
-						getWindow().open('windowProgress');
+						Window.open!('export-apk');
+						Window.open!('windowProgress');
 						const progressInfo = $('#windowProgress-info');
 						progressInfo.textContent = '加载中...';
 						$('#export-apk').addEventListener(
@@ -811,7 +817,7 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 							} else {
 								enable($('#export-apk-button'));
 							}
-							getWindow().close('windowProgress');
+							Window.close!('windowProgress');
 						});
 					}
 				}
@@ -1059,7 +1065,7 @@ Menubar.pointerdown = function (this: any, event: any) {
 		case -1: {
 			const target = event.target;
 			if (hasClass(target, 'item') && !hasClass(target, 'selected')) {
-				switch (target.getAttribute('value')) {
+				switch (target?.getAttribute?.('value')) {
 					case 'file':
 						return Menubar.popupFileMenu!(target);
 					case 'edit':
@@ -1106,5 +1112,5 @@ Menubar.pointerover = function (this: any, event: any) {
 
 // 超链接 - 点击事件
 Menubar.hrefClick = function (this: any, event: any) {
-	File.openURL!(event.target.getAttribute('href'));
+	File.openURL!(event.target?.getAttribute?.('href'));
 };

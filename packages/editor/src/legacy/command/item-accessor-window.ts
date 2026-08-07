@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const ItemGetter = {
 	target: null as any,
@@ -44,7 +42,7 @@ ItemGetter.initialize = function (this: any) {
 
 ItemGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('itemGetter');
+	Window.open!('itemGetter');
 
 	$('#itemGetter-key').loadItems(Enum.getStringItems('shortcut-key'));
 
@@ -127,6 +125,6 @@ ItemGetter.confirm = function (this: any, event: any) {
 	if (this.target.isPluginInput) {
 		getter = { getter: 'item', ...getter };
 	}
-	this.target.input(getter);
-	getWindow().close('itemGetter');
+	this.target?.input?.(getter);
+	Window.close!('itemGetter');
 }.bind(ItemGetter);

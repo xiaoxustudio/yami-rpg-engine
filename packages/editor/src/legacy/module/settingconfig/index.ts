@@ -1,9 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { on } from '@/util/element-utils.ts';
 import { GlobalPathForDir, GlobalPath } from '@/util/config.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { WebServer } from '../webserver.ts';
 import nodeFs from 'node:fs';
 import nodePath from 'node:path';
@@ -38,6 +37,7 @@ export const SettingConfig = new (class {
 	constructor() {
 		// 启动期即从磁盘载入完整 config，避免下游裸取 config.github.* 时撞默认空 {} 的问题
 		this.load();
+		if (typeof document === 'undefined') return;
 		this.bindButtons();
 		if (!this._buttonsBound) {
 			const observer = new MutationObserver(() => {
@@ -51,11 +51,12 @@ export const SettingConfig = new (class {
 	private _buttonsBound = false;
 	private bindButtons() {
 		if (this._buttonsBound) return;
+		if (typeof document === 'undefined') return;
 		const settingEl = $('#setting');
 		if (!settingEl) return;
 		this._buttonsBound = true;
 		on(settingEl, 'open', this.open.bind(this));
-		on($('#setting-confirm'), 'click', () => getWindow().close('setting'));
+		on($('#setting-confirm'), 'click', () => Window.close!('setting'));
 	}
 
 	// ---- 生命周期 ----

@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
@@ -11,12 +12,20 @@ import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
-import { attributeStateKeys, getAttributeStore } from '@app/stores/attribute';
+const attributeStateKeys = [
+	'mode',
+	'target',
+	'data',
+	'idMap',
+	'settings',
+	'settingKeys',
+	'history',
+	'changed'
+] as const;
+import { getAttributeStore } from '@app/stores/attribute';
 
 export const Attribute = {
 	list: null as any,
@@ -109,18 +118,18 @@ function ensureDomBound() {
 	Attribute.inputs.note = $('#attribute-note');
 	Attribute.inputs.enum = $('#attribute-enum');
 	Attribute.inputs.enumBox = $('#attribute-enum-box');
-	list.copy = null;
-	list.paste = null;
-	list.delete = null;
+	list.copy = null as unknown as (...args: unknown[]) => any;
+	list.paste = null as unknown as (...args: unknown[]) => any;
+	list.delete = null as unknown as (...args: unknown[]) => any;
 	list.saveScroll = Attribute.list_saveScroll;
 	list.restoreScroll = Attribute.list_restoreScroll;
 	list.cancelSearch = Attribute.list_cancelSearch;
 	list.createFolder = Attribute.list_createFolder;
 	list.createAttribute = Attribute.list_createAttribute;
-	list.createIcon = Attribute.list_createIcon;
-	list.updateIcon = Attribute.list_updateIcon;
+	list.createIcon = Attribute.list_createIcon as unknown as (...args: unknown[]) => any;
+	list.updateIcon = Attribute.list_updateIcon as unknown as (...args: unknown[]) => any;
 	list.parseName = Attribute.list_parseName;
-	list.addElementClass = Attribute.list_addElementClass;
+	list.addElementClass = Attribute.list_addElementClass as unknown as (...args: unknown[]) => any;
 	list.createGroupText = Attribute.list_createGroupText;
 	list.updateGroupText = Attribute.list_updateGroupText;
 	list.createInitText = Attribute.list_createInitText;
@@ -153,13 +162,13 @@ Attribute.initialize = function (this: any) {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.createGroupText);
-	list.updaters.push(list.updateGroupText);
-	list.creators.push(list.createInitText);
-	list.creators.push(list.updateInitText);
-	list.creators.push(list.createNoteIcon);
-	list.creators.push(list.updateNoteIcon);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.createGroupText);
+	list.updaters?.push(list.updateGroupText);
+	list.creators?.push(list.createInitText);
+	list.creators?.push(list.updateInitText);
+	list.creators?.push(list.createNoteIcon);
+	list.creators?.push(list.updateNoteIcon);
 
 	this.panel.attribute = null;
 
@@ -278,7 +287,7 @@ Attribute.open = function (this: any, target: any = null, mode: any = 'normal') 
 	this.history = new History(100);
 	UndoManager.setActive(this);
 	this.unpackAttribute();
-	getWindow().open('attribute');
+	Window.open!('attribute');
 
 	const list = this.list;
 	const item = !target ? undefined : this.getItemById(read(target));
@@ -524,7 +533,7 @@ Attribute.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedAttributes')
 			},
@@ -533,7 +542,7 @@ Attribute.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('attribute');
+						Window.close!('attribute');
 					}
 				},
 				{
@@ -865,7 +874,7 @@ Attribute.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input.value;
+	const text = this.input!.value;
 	Attribute.list.searchNodesDebounced(text);
 };
 
@@ -880,7 +889,7 @@ Attribute.confirm = function (this: any, event: any) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target.input(item ? item.id : '');
+			this.target?.input?.(item ? item.id : '');
 			break;
 		}
 		case 'attribute': {
@@ -889,11 +898,11 @@ Attribute.confirm = function (this: any, event: any) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target.input(item ? item.id : '');
+			this.target?.input?.(item ? item.id : '');
 			break;
 		}
 	}
-	getWindow().close('attribute');
+	Window.close!('attribute');
 }.bind(Attribute);
 
 Attribute.apply = function (this: any, event: any) {

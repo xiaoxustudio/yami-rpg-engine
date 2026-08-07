@@ -1,7 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { pinia } from '@app/stores/pinia';
-import '@/browser/browser-bridge.ts';
 
 const app = createApp(App);
 app.use(pinia);

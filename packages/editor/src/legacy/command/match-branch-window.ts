@@ -1,10 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, on, read, write } from '@/util/element-utils';
 import { Command } from './command-object.ts';
 import { SwitchCondition } from './match-condition-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const SwitchBranch = {
 	target: null as any,
@@ -40,7 +38,7 @@ SwitchBranch.open = function (this: any, branch: any) {
 		SwitchCondition.target = this.target;
 		SwitchCondition.open!();
 	} else {
-		getWindow().open('switch-branch');
+		Window.open!('switch-branch');
 		write($('#switch-branch-conditions'), branch.conditions.slice());
 		getFocus($('#switch-branch-conditions'));
 		this.commands = branch.commands;
@@ -61,7 +59,7 @@ SwitchBranch.save = function (this: any) {
 			return getFocus(element);
 		}
 		const commands = this.commands;
-		getWindow().close('switch-branch');
+		Window.close!('switch-branch');
 		return { conditions, commands };
 	}
 };
@@ -72,5 +70,5 @@ SwitchBranch.windowClosed = function (this: any, event: any) {
 };
 
 SwitchBranch.confirm = function (this: any, event: any) {
-	return SwitchBranch.target.save();
+	return SwitchBranch.target?.save?.();
 };

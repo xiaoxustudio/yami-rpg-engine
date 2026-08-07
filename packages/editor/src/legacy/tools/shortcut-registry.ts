@@ -18,27 +18,27 @@ export const Shortcuts = {
 				switch (event.code) {
 					case 'KeyC':
 						if (target.copy) {
-							target.copy();
+							target?.copy?.();
 						}
 						return true;
 					case 'KeyV':
 						if (target.paste) {
-							target.paste();
+							target?.paste?.();
 						}
 						return true;
 					case 'KeyX':
 						if (target.cut) {
-							target.cut();
+							target?.cut?.();
 						}
 						return true;
 					case 'KeyD':
 						if (target.duplicate) {
-							target.duplicate();
+							target?.duplicate?.();
 						}
 						return true;
 					case 'KeyA':
 						if (target.selectAll) {
-							target.selectAll();
+							target?.selectAll?.();
 						}
 						return true;
 				}
@@ -53,12 +53,12 @@ export const Shortcuts = {
 				switch (event.code) {
 					case 'KeyZ':
 						if (!macRedoKey(event) && target.undo) {
-							target.undo();
+							target?.undo?.();
 						}
 						return true;
 					case 'KeyY':
 						if (target.redo) {
-							target.redo();
+							target?.redo?.();
 						}
 						return true;
 				}
@@ -73,54 +73,54 @@ export const Shortcuts = {
 				switch (event.code) {
 					case 'KeyC':
 						if (target.copy) {
-							target.copy();
+							target?.copy?.();
 						}
 						return true;
 					case 'KeyV':
 						if (target.paste) {
-							target.paste();
+							target?.paste?.();
 						}
 						return true;
 					case 'KeyX':
 						if (target.cut) {
-							target.cut();
+							target?.cut?.();
 						}
 						return true;
 					case 'KeyD':
 						if (target.duplicate) {
-							target.duplicate();
+							target?.duplicate?.();
 						}
 						return true;
 					case 'KeyA':
 						if (target.selectAll) {
-							target.selectAll();
+							target?.selectAll?.();
 						}
 						return true;
 					case 'KeyZ':
 						if (!macRedoKey(event) && target.undo) {
-							target.undo();
+							target?.undo?.();
 						}
 						return true;
 					case 'KeyY':
 						if (target.redo) {
-							target.redo();
+							target?.redo?.();
 						}
 						return true;
 				}
 			}
 			if (event.code === 'Insert') {
 				if (target.insert) {
-					target.insert();
+					target?.insert?.();
 				}
 				return true;
 			}
 			if (event.code === 'Delete' || event.code === 'Backspace') {
 				if (event.ctrlKey || event.metaKey) {
 					if (target.cancelSearch) {
-						target.cancelSearch();
+						target?.cancelSearch?.();
 					}
 				} else if (target.delete) {
-					target.delete();
+					target?.delete?.();
 				}
 				return true;
 			}
@@ -144,7 +144,7 @@ export const Shortcuts = {
 			if (scrollKeys & 2) dx -= 4;
 			if (scrollKeys & 4) dy += 4;
 			if (scrollKeys & 8) dx += 4;
-			target.scrollBy(dx, dy);
+			target?.scrollBy?.(dx, dy);
 			scrollTimer = requestAnimationFrame(updateScroll);
 		}
 

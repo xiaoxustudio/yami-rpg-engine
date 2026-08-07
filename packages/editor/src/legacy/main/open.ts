@@ -1,4 +1,5 @@
 import { SettingConfig } from '@/module/settingconfig';
+import { Window } from '@/tools/window-object.ts';
 import { Path } from '@/util/config.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Command } from '@/command/command-object.ts';
@@ -15,9 +16,7 @@ import { WebServer } from '@/module/webserver.ts';
 import { Printer } from '@/printer/printer.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Updater } from '@/update/updater.ts';
 
 Editor.open = async function (this: any, path, agreed = false) {
@@ -49,7 +48,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 		Object.defineProperty(this.project, 'code', { value: json });
 		const verNum = (Updater.getVersionNumber as any)(this.project.version);
 		if (!(Editor.isProjectVersionSupported as any)()) {
-			return (getWindow().confirm as any)(
+			return (Window.confirm as any)(
 				{
 					message: get('versionIsTooHigh'),
 					close: () => {
@@ -67,7 +66,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 		if (verNum < (Updater.getVersionNumber as any)('1.0.122')) {
 			if (!agreed) {
 				const warning = (Updater.getTSVersionWarning as any)();
-				return (getWindow().confirm as any)(
+				return (Window.confirm as any)(
 					{
 						message: warning.message,
 						close: () => {
@@ -92,7 +91,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 		}
 	} catch (error: any) {
 		(Log.throw as any)(error);
-		return (getWindow().confirm as any)(
+		return (Window.confirm as any)(
 			{
 				message: error.message,
 				close: () => {
@@ -126,7 +125,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 					: 'Error';
 		(Directory.close as any)();
 		Data.close!();
-		return (getWindow().confirm as any)(
+		return (Window.confirm as any)(
 			{
 				message: `${type}: ${error.message}`,
 				close: () => {
@@ -156,7 +155,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 		const message = path.slice(index);
 		(Directory.close as any)();
 		Data.close!();
-		(getWindow().confirm as any)(
+		(Window.confirm as any)(
 			{
 				message: `Failed to read file: ${message}`,
 				close: () => {

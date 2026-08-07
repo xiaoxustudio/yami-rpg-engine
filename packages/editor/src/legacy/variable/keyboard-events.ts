@@ -62,6 +62,6 @@ Variable.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = (this as any).input.value;
+	const text = (this as any).input!.value;
 	Variable.list.searchNodesDebounced(text);
 };

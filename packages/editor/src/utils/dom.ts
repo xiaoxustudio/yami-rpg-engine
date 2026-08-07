@@ -31,7 +31,7 @@ export function css(el: HTMLElement, property: string, value: string): void;
 export function css(el: HTMLElement, properties: Record<string, string>): void;
 export function css(el: HTMLElement, ...args: any[]): any {
 	if (args.length === 1) {
-		return (getComputedStyle(el) as any)[args[0] as string];
+		return (getComputedStyle(el as Element) as any)[args[0] as string];
 	}
 	if (args.length === 2) {
 		(el.style as any)[args[0] as string] = args[1] as string;

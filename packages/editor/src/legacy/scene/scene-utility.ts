@@ -1,4 +1,5 @@
 import { Data } from '@/data/data-object.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Scene } from './scene-window.ts';
 import { StageColor } from '@/util/stage-color.ts';
@@ -25,9 +26,9 @@ Scene.getObjectFile = function (this: any, sceneObject: any) {
 Scene.openFileLocation = function (this: any, sceneObject: any) {
 	const file = Scene.getObjectFile!(sceneObject);
 	if (file instanceof FileItem) {
-		(window as any).Browser?.body?.openFileLocation?.(file);
-		(window as any).Browser?.body?.select?.(file);
-		(window as any).Browser?.body?.content?.getFocus?.();
+		getBrowserInstance()?.body?.openFileLocation?.(file);
+		getBrowserInstance()?.body?.select?.(file);
+		getBrowserInstance()?.body?.content?.getFocus?.();
 	}
 };
 

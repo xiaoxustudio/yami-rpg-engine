@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const TilemapGetter = {
 	target: null as any,
@@ -33,7 +31,7 @@ TilemapGetter.initialize = function (this: any) {
 
 TilemapGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('tilemapGetter');
+	Window.open!('tilemapGetter');
 
 	let presetId = PresetObject.getDefaultPresetId('tilemap');
 	let variable = { type: 'local', key: '' };
@@ -79,6 +77,6 @@ TilemapGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target.input(getter);
-	getWindow().close('tilemapGetter');
+	this.target?.input?.(getter);
+	Window.close!('tilemapGetter');
 }.bind(TilemapGetter);

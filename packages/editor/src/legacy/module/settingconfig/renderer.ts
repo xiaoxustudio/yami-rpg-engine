@@ -129,7 +129,9 @@ export class SettingRenderer {
 
 	/** 绑定输入事件：读取值 → 更新 config → 校验 → 变更回调；并绑定动态路径提示 */
 	private bindOption(sectionPath: string[], opt: SettingOption) {
-		const el = $(`#${this.optionId(sectionPath, opt)}`);
+		const el = document.querySelectorAll(
+			`#${this.optionId(sectionPath, opt)}`
+		)[0] as HTMLElement;
 		if (!el) return;
 		on(el, 'input', (e: any) => {
 			const value = this.readValue(e);
@@ -157,7 +159,9 @@ export class SettingRenderer {
 
 	/** 写入当前 config 值到控件 */
 	private writeValue(sectionPath: string[], opt: SettingOption) {
-		const el = $(`#${this.optionId(sectionPath, opt)}`);
+		const el = document.querySelectorAll(
+			`#${this.optionId(sectionPath, opt)}`
+		)[0] as HTMLElement;
 		if (!el) return;
 		write(el, this.readConfig(sectionPath, opt.key));
 	}
@@ -165,7 +169,9 @@ export class SettingRenderer {
 	/** 加载 select 选项并回写当前值（optionsFn 可异步） */
 	private async loadSelectOptions(sectionPath: string[], opt: SettingOption) {
 		if (!opt.optionsFn) return;
-		const el = $(`#${this.optionId(sectionPath, opt)}`);
+		const el = document.querySelectorAll(
+			`#${this.optionId(sectionPath, opt)}`
+		)[0] as HTMLElement;
 		if (!el) return;
 		const get = Local.createGetter!('confirmation');
 		const items = await opt.optionsFn({ get, config: this.host.config });

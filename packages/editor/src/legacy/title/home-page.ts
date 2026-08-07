@@ -14,6 +14,10 @@ import { Local } from '@/tools/localization.ts';
 type HomeMethod = ((...args: any[]) => any) | null;
 
 interface HomeShape {
+	state: string | null;
+	openProject: ((path?: string) => void) | null;
+	createProject: ((path?: string) => void) | null;
+
 	initialize: (() => void) | null;
 	updateCenterPosition: HomeMethod;
 	parseRecentProjects: HomeMethod;
@@ -38,7 +42,10 @@ export const Home: HomeShape = {
 	windowLocalize: null as any,
 	startClick: null as any,
 	recentClick: null as any,
-	recentPointerup: null as any
+	recentPointerup: null as any,
+	state: null as string | null,
+	openProject: null as ((path?: string) => void) | null,
+	createProject: null as (() => void) | null
 };
 
 Home.initialize = function (this: any) {

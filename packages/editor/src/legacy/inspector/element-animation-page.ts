@@ -20,12 +20,16 @@ import { UI } from '@/ui/ui-window.ts';
 	UIAnimation.initialize = function (this: any) {
 		if (!$('#uiAnimation-animation')) return;
 		$('#uiAnimation-animation').on('write', this.animationIdWrite);
-		const elements = $(`#uiAnimation-animation, #uiAnimation-motion,
+		const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
     #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
     #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, UI))
 		);
 	};

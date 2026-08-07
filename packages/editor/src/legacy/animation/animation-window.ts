@@ -1,4 +1,5 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -37,9 +38,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { StageColor } from '@/util/stage-color.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
 import { Matrix } from '@/webgl/matrix2.ts';
@@ -338,34 +337,34 @@ export const Animation: AnimationShape = {
 	Player: null as any
 };
 
-Animation.marquee.resize = null;
+Animation.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
 Animation.list.page = $('#animation-motion');
 Animation.list.head = $('#animation-list-head');
-Animation.list.copy = null;
-Animation.list.paste = null;
-Animation.list.delete = null;
-Animation.list.cancelSearch = null;
-Animation.list.updateHead = null;
-Animation.list.createIcon = null;
-Animation.list.createText = null;
+Animation.list.copy = null as unknown as (...args: unknown[]) => any;
+Animation.list.paste = null as unknown as (...args: unknown[]) => any;
+Animation.list.delete = null as unknown as (...args: unknown[]) => any;
+Animation.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+Animation.list.updateHead = null as unknown as (...args: unknown[]) => any;
+Animation.list.createIcon = null as unknown as (...args: unknown[]) => any;
+Animation.list.createText = null as unknown as (...args: unknown[]) => any;
 Animation.list.updateText = null;
 Animation.list.createLoopIcon = null;
 Animation.list.updateLoopIcon = null;
 Animation.list.onDelete = null;
 
-Animation.layerList.update = null;
-Animation.layerList.create = null;
-Animation.layerList.copy = null;
-Animation.layerList.paste = null;
-Animation.layerList.delete = null;
+Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
+Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
+Animation.layerList.copy = null as unknown as (...args: unknown[]) => any;
+Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
+Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 // ESM 求值顺序错：scene-window.js:338-339 占位赋 null 早跑，scene-list.js:156/177 真定义晚跑 （仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
-Animation.layerList.createIcon = null;
+Animation.layerList.createIcon = null as unknown as (...args: unknown[]) => any;
 // ESM 求值顺序错：scene-window.js:353 占位赋 null 早跑，scene-list.js:477 真定义晚跑（仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。删此 4 赋值，改在 Animation.initialize 钩子内（503 段）直接用 Scene.list.* （真定义已跑后）
 Animation.layerList.onDelete = null;
 
 Animation.timeline.head = $('#animation-timeline-head');
-Animation.timeline.updateHead = null;
+Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
 
 // outerTimelineList properties
 Animation.outerTimelineList.dragging = null;
@@ -581,19 +580,19 @@ Animation.initialize = function (this: any) {
 	const { list } = this;
 	list.removable = true;
 	list.bind(() => this.motions);
-	list.updaters.push(list.updateText);
-	list.creators.push(list.createLoopIcon);
-	list.creators.push(list.updateLoopIcon);
+	list.updaters?.push(list.updateText);
+	list.creators?.push(list.createLoopIcon);
+	list.creators?.push(list.updateLoopIcon);
 
 	const { layerList } = this;
 	layerList.removable = true;
 	layerList.renamable = true;
 	layerList.bind(() => this.layers);
 	// 直接用 Scene.list.* 真定义（Animation.initialize 跑时 scene-list.js 已求值），不用 layerList.* ——后者在模块顶层被 scene-window.js:353 占位赋 null 固化，拿到 null
-	layerList.creators.push(Scene.list.createVisibilityIcon);
-	layerList.updaters.push(Scene.list.updateVisibilityIcon);
-	layerList.creators.push(Scene.list.createLockIcon);
-	layerList.updaters.push(Scene.list.updateLockIcon);
+	layerList.creators?.push(Scene.list.createVisibilityIcon);
+	layerList.updaters?.push(Scene.list.updateVisibilityIcon);
+	layerList.creators?.push(Scene.list.createLockIcon);
+	layerList.updaters?.push(Scene.list.updateLockIcon);
 	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 5282/5303 段 this.setRecursiveStates + 567/569/580/582 段 layerList.* 调用姿势不变
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
@@ -848,7 +847,7 @@ Animation.open = function (this: any, context: any) {
 		this.requestRendering!();
 	} else {
 		Layout.manager.switch('directory');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},
@@ -4509,7 +4508,7 @@ Animation.pointerup = function (this: any, event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-rotate':
 			case 'object-resize':
@@ -4529,7 +4528,7 @@ Animation.pointerup = function (this: any, event: any) {
 
 Animation.pointermove = function (this: any, event: any) {
 	const { dragging } = Animation;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
 			case 'object-rotate':
@@ -4715,7 +4714,7 @@ Animation.pointermove = function (this: any, event: any) {
 
 Animation.searcherInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
-		const text = this.input.value;
+		const text = this.input!.value;
 		Animation.list.searchNodesDebounced(text);
 	}
 };
@@ -5381,7 +5380,7 @@ Animation.outerTimelineListPointerup = function (this: any, event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select':
 				Animation.outerTimelineList.removeScrollListener();
@@ -5501,7 +5500,7 @@ Animation.outerTimelineListPointerup = function (this: any, event: any) {
 
 Animation.outerTimelineListPointermove = function (this: any, event: any) {
 	const { dragging } = Animation.outerTimelineList;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				dragging.latest = event;

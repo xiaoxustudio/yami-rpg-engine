@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, hasClass, on, removeClass } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -10,9 +11,6 @@ import { Easing } from './transition-window.ts';
 import { GUID } from '@/file/guid.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const Team = {
 	list: null as any,
@@ -44,7 +42,12 @@ export const Team = {
 	list_updateIcon: null as any,
 	list_updateItemName: null as any,
 	list_createMarks: null as any,
-	list_updateMarks: null as any
+	list_updateMarks: null as any,
+	state: null as string | null,
+	teams: null as Record<string, any> | null,
+	saveToProject: null as ((project: any) => void) | null,
+	loadFromProject: null as ((project: any) => void) | null,
+	close: null as (() => void) | null
 };
 
 function ensureDomBound() {
@@ -52,26 +55,28 @@ function ensureDomBound() {
 	const list = $('#team-list');
 	if (!list) return;
 	Team.list = list;
-	list.insert = null;
-	list.copy = null;
-	list.paste = null;
-	list.delete = null;
-	list.saveSelection = null;
-	list.restoreSelection = null;
-	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.createIcon = Team.list_createIcon;
-	list.updateIcon = Team.list_updateIcon;
-	list.updateItemName = Team.list_updateItemName;
-	list.addElementClass = Easing.list_addElementClass;
-	list.updateTextNode = Easing.list_updateTextNode;
+	list.insert = null as unknown as (...args: unknown[]) => any;
+	list.copy = null as unknown as (...args: unknown[]) => any;
+	list.paste = null as unknown as (...args: unknown[]) => any;
+	list.delete = null as unknown as (...args: unknown[]) => any;
+	list.saveSelection = null as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
+	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
+		...args: unknown[]
+	) => any;
+	list.createIcon = Team.list_createIcon as unknown as (...args: unknown[]) => any;
+	list.updateIcon = Team.list_updateIcon as unknown as (...args: unknown[]) => any;
+	list.updateItemName = Team.list_updateItemName as unknown as (...args: unknown[]) => any;
+	list.addElementClass = Easing.list_addElementClass as unknown as (...args: unknown[]) => any;
+	list.updateTextNode = Easing.list_updateTextNode as unknown as (...args: unknown[]) => any;
 	list.createMarks = Team.list_createMarks;
 	list.updateMarks = Team.list_updateMarks;
 	list.insert = Team.list_insert;
 	list.copy = Team.list_copy;
 	list.paste = Team.list_paste;
 	list.delete = Team.list_delete;
-	list.saveSelection = Team.list_saveSelection;
-	list.restoreSelection = Team.list_restoreSelection;
+	list.saveSelection = Team.list_saveSelection as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = Team.list_restoreSelection as unknown as (...args: unknown[]) => any;
 }
 
 Team.initialize = function (this: any) {
@@ -83,11 +88,11 @@ Team.initialize = function (this: any) {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.createIcon);
-	list.updaters.push(list.updateTextNode);
-	list.creators.push(list.createMarks);
-	list.updaters.push(list.updateMarks);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.createIcon);
+	list.updaters?.push(list.updateTextNode);
+	list.creators?.push(list.createMarks);
+	list.updaters?.push(list.updateMarks);
 
 	on($('#team'), 'close', this.windowClose);
 	on($('#team'), 'closed', this.windowClosed);
@@ -99,7 +104,7 @@ Team.initialize = function (this: any) {
 };
 
 Team.open = function (this: any, data: any) {
-	getWindow().open('team');
+	Window.open!('team');
 
 	this.unpackTeams();
 
@@ -205,7 +210,7 @@ Team.windowClose = function (this: any, event: any) {
 	if (Team.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedTeams')
 			},
@@ -214,7 +219,7 @@ Team.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						Team.changed = false;
-						getWindow().close('team');
+						Window.close!('team');
 					}
 				},
 				{
@@ -383,7 +388,7 @@ Team.confirm = function (this: any, event: any) {
 		datachange.key = 'teams';
 		window.dispatchEvent(datachange);
 	}
-	getWindow().close('team');
+	Window.close!('team');
 }.bind(Team);
 
 Team.list_insert = function (this: any, dItem: any) {
@@ -437,7 +442,7 @@ Team.list_delete = function (this: any, item: any) {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
 			},

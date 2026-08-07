@@ -1,4 +1,5 @@
 import { drawAndFitImage } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
@@ -16,9 +17,6 @@ import { TileFrame } from './tile-frame-index.ts';
 import { SceneShift } from '@/scene/move-scene.ts';
 import { Local } from '@/tools/localization.ts';
 import { SetQuantity } from '@/tools/set-number-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const AutoTile = {
 	canvas: null as any,
@@ -102,10 +100,18 @@ function ensureDomBound() {
 	AutoTile.templateList = templateList;
 	AutoTile.nodeList = $('#autoTile-nodes');
 	AutoTile.frameList = $('#autoTile-frames');
-	templateList.updateNodeElement = Easing.list_updateNodeElement;
-	templateList.updateItemName = Team.list_updateItemName;
-	templateList.addElementClass = Easing.list_addElementClass;
-	templateList.updateTextNode = Easing.list_updateTextNode;
+	templateList.updateNodeElement = Easing.list_updateNodeElement as unknown as (
+		...args: unknown[]
+	) => any;
+	templateList.updateItemName = Team.list_updateItemName as unknown as (
+		...args: unknown[]
+	) => any;
+	templateList.addElementClass = Easing.list_addElementClass as unknown as (
+		...args: unknown[]
+	) => any;
+	templateList.updateTextNode = Easing.list_updateTextNode as unknown as (
+		...args: unknown[]
+	) => any;
 }
 
 AutoTile.initialize = function (this: any) {
@@ -118,8 +124,8 @@ AutoTile.initialize = function (this: any) {
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.templates);
-	list.creators.push(list.addElementClass);
-	list.updaters.push(list.updateTextNode);
+	list.creators?.push(list.addElementClass);
+	list.updaters?.push(list.updateTextNode);
 
 	window.addEventListener('dprchange', this.dprchange);
 	on($('#autoTile'), 'close', this.windowClose);
@@ -130,9 +136,9 @@ AutoTile.initialize = function (this: any) {
 	on(this.nodeList, 'write', this.nodesWrite);
 	on(this.nodeList, 'popup', this.nodesPopup);
 	on(this.nodeList, 'keydown', this.nodesKeydown);
-	$('.autoTile-neighbor').forEach((el: HTMLElement) =>
-		el.addEventListener('input', this.ruleNeighborInput!)
-	);
+	document
+		.querySelectorAll('.autoTile-neighbor')
+		.forEach((el) => el.addEventListener('input', this.ruleNeighborInput!));
 	on(this.frameList, 'write', this.framesWrite);
 	on(this.frameList, 'popup', this.framesPopup);
 	on(this.frameList, 'keydown', this.framesKeydown);
@@ -145,7 +151,7 @@ AutoTile.initialize = function (this: any) {
 };
 
 AutoTile.open = function (this: any, { template, image, x, y }: any) {
-	getWindow().open('autoTile');
+	Window.open!('autoTile');
 	write($('#autoTile-image'), image);
 	write($('#autoTile-x'), x);
 	write($('#autoTile-y'), y);
@@ -194,7 +200,7 @@ AutoTile.deleteTemplate = function (this: any, item: any) {
 	const items = this.templates;
 	if (items.length > 1) {
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
 			},
@@ -355,7 +361,7 @@ AutoTile.createNodeItems = function (this: any, id = this.nodeIndex) {
 		const element = document.createElement('common-item');
 		const index = i.toString().padStart(digits, '0');
 		element.textContent = `#${index}${i === cover ? ' !' : ''}`;
-		element.dataValue = i;
+		element.dataValue = i as unknown as Record<string, any> | null;
 		list.appendElement(element);
 	}
 	list.update();
@@ -465,7 +471,7 @@ AutoTile.createFrameItems = function (this: any, id = this.frameIndex) {
 		const element = document.createElement('common-item');
 		const index = i.toString().padStart(digits, '0');
 		element.textContent = `#${index}: ${x},${y}`;
-		element.dataValue = i;
+		element.dataValue = i as unknown as Record<string, any> | null;
 		list.appendElement(element);
 	}
 	list.update();
@@ -540,7 +546,7 @@ AutoTile.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedTiles')
 			},
@@ -549,7 +555,7 @@ AutoTile.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('autoTile');
+						Window.close!('autoTile');
 					}
 				},
 				{
@@ -1017,6 +1023,6 @@ AutoTile.confirm = function (this: any, event: any) {
 	File.planToSave!(Palette.meta);
 	Palette.requestRendering();
 	Scene.requestRendering();
-	getWindow().close('autoTile');
+	Window.close!('autoTile');
 	// console.log(JSON.stringify(tiles[index], null, 2))
 }.bind(AutoTile);

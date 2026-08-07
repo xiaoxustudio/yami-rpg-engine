@@ -1,4 +1,7 @@
 import { ipcRenderer } from 'electron';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
+import { Window } from '@/tools/window-object.ts';
 import { Data } from '@/data/data-object.ts';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { Project } from '@/data/project-settings-window.ts';
@@ -10,9 +13,7 @@ import { WebServer } from '@/module/webserver.ts';
 import { Printer } from '@/printer/printer.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { Title } from '@/title/title-bar.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { UI } from '@/ui/ui-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
@@ -27,13 +28,13 @@ Editor.close = function (this: any, save = true) {
 		this.switchHotkey(false);
 		this.config.project = '';
 		this.project = null;
-		(getWindow().closeAll as any)();
+		(Window.closeAll as any)();
 		Scene.close!();
 		(UI.close as any)();
 		(Directory.close as any)();
 		(Inspector.close as any)();
-		(window as any).Browser?.close?.();
-		(window as any).Selector?.close?.();
+		getBrowserInstance()?.close?.();
+		getSelectorInstance()?.close?.();
 		Data.close!();
 		(AudioManager.close as any)();
 		Printer.clearFonts();

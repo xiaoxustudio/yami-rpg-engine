@@ -52,7 +52,7 @@ Scene.marquee.save = function (this: any, key = 'default') {
 			};
 			break;
 	}
-	this.saveData[key] = data;
+	this.saveData[key as string] = data;
 };
 
 // 选框 - 切换状态

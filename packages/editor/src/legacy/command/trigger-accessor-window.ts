@@ -1,9 +1,7 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const TriggerGetter = {
 	target: null as any,
@@ -29,7 +27,7 @@ TriggerGetter.initialize = function (this: any) {
 
 TriggerGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('triggerGetter');
+	Window.open!('triggerGetter');
 
 	let variable = { type: 'local', key: '' };
 	const trigger = target.dataValue;
@@ -64,6 +62,6 @@ TriggerGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target.input(getter);
-	getWindow().close('triggerGetter');
+	this.target?.input?.(getter);
+	Window.close!('triggerGetter');
 }.bind(TriggerGetter);

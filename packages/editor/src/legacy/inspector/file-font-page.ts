@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show, write } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
@@ -24,10 +25,10 @@ import { Inspector } from './inspector.ts';
 
 		this.input = $('#fileFont-content');
 		write(this.input, 'Yami RPG Editor');
-		this.textInput({ target: this.input.input });
+		this.textInput({ target: this.input!.input });
 
 		$('#fileFont').addEventListener('resize', this.windowResize);
-		this.input.addEventListener('input', this.textInput);
+		this.input!.addEventListener('input', this.textInput);
 	};
 
 	FileFont.open = function (this: any, file: any, meta: any) {
@@ -70,7 +71,7 @@ import { Inspector } from './inspector.ts';
 			if (this.font instanceof FontFace) {
 				document.fonts.delete(this.font);
 			}
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			this.symbol = null;

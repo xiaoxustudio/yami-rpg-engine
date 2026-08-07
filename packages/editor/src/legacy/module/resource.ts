@@ -1,11 +1,10 @@
 import { ipcRenderer } from 'electron';
+import { Window } from '@/tools/window-object.ts';
 import { GlobalPath, Path } from '@/util/config.ts';
 import { SettingConfig } from './settingconfig';
 import { $ } from '@/util/dom.ts';
 import { disable, enable, on, write } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Net } from './net.ts';
 import {
 	fs,
@@ -21,8 +20,8 @@ import {
 import { Local } from '@/tools/localization.ts';
 
 interface TextBoxElement extends HTMLElement {
-	input: HTMLInputElement;
-	write(value: string): void;
+	input?: HTMLInputElement | Record<string, any> | null;
+	write?: (value: any) => any;
 }
 export const Resources = new (class {
 	get window() {
@@ -146,8 +145,8 @@ export const Resources = new (class {
 				'https://api.github.com/repos/Open-Yami-Community/yami-rpg-editor/releases'
 			);
 			if (!response.ok) throw new Error('Failed to fetch announcement');
-			const [{ body }] = await response.json();
-			return body;
+			const jj = await response.json();
+			return jj[jj.length - 1].body;
 		} catch (error: any) {
 			console.warn('Failed to load community announcement:', error);
 			return '';
@@ -330,7 +329,7 @@ export const Resources = new (class {
 			fs.writeFileSync(tempPath, JSON.stringify(PackMeta));
 			return PackMeta;
 		}
-		return JSON.parse(fs.readFileSync(tempPath));
+		return JSON.parse(fs.readFileSync(tempPath, 'utf-8'));
 	}
 
 	writeTemplate(val: any) {
@@ -361,7 +360,7 @@ export const Resources = new (class {
 		if (isUpdate) {
 			const updateText = this.getFirstAnnouncementContent(await this.getRemoteAnnouncement());
 			const updateMessage = `${text} \n${'——'.repeat(20)}\n\n${updateText}`;
-			getWindow().confirm(
+			Window.confirm!(
 				{
 					message: `${updateMessage} \n${'——'.repeat(20)}\n 编辑器本体需要更新 \n 请到指定地址重新下载编辑器`
 				},
@@ -396,15 +395,15 @@ export const Resources = new (class {
 
 		const get = Local.createGetter!('confirmation');
 		if (isReOpen) {
-			getWindow().close('resource');
+			Window.close!('resource');
 			if (
-				!NoResourceObj['arpg-ts-english'].check &&
-				!NoResourceObj['arpg-ts-chinese'].check
+				!NoResourceObj['arpg-ts-english']?.check &&
+				!NoResourceObj['arpg-ts-chinese']?.check
 			) {
 				void Resources.open();
 			}
 
-			getWindow().confirm({ message: versionString }, [
+			Window.confirm!({ message: versionString }, [
 				{
 					label: get('yes')
 				}
@@ -594,7 +593,7 @@ export const Resources = new (class {
 							progressBar.style.background =
 								'linear-gradient(90deg, #4caf50, #66bb6a)';
 
-							getWindow().confirm({ message: e.message }, [
+							Window.confirm!({ message: e.message }, [
 								{
 									label: get('yes')
 								}
@@ -609,7 +608,7 @@ export const Resources = new (class {
 					progressContainer.style.display = 'none';
 
 					if (!Net.isCancel(e)) {
-						getWindow().confirm({ message: e.message }, [
+						Window.confirm!({ message: e.message }, [
 							{
 								label: get('yes')
 							}
@@ -652,7 +651,7 @@ export const Resources = new (class {
 	}
 
 	async open() {
-		getWindow().open('resource');
+		Window.open!('resource');
 		void this.updateNodeInfo();
 		this.load();
 	}

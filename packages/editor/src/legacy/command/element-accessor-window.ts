@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetElement } from '@/tools/preset-element-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface ElementGetterTarget {
 	dataValue: ElementData;
@@ -52,7 +50,7 @@ export const ElementGetter: ElementGetterShape = {
 
 ElementGetter.initialize = function (this: any): void {
 	if (!$('#elementGetter-type')) return;
-	($('#elementGetter-type') as any).loadItems([
+	$('#elementGetter-type').loadItems([
 		{ name: 'Event Trigger Element', value: 'trigger' },
 		{ name: 'Latest Element', value: 'latest' },
 		{ name: 'By Element ID', value: 'by-id' },
@@ -65,32 +63,34 @@ ElementGetter.initialize = function (this: any): void {
 		{ name: 'Variable', value: 'variable' }
 	]);
 
-	($('#elementGetter-type') as any).enableHiddenMode().relate([
-		{ case: 'by-id', targets: [$('#elementGetter-presetId')] },
-		{
-			case: 'by-ancestor-and-id',
-			targets: [$('#elementGetter-ancestor'), $('#elementGetter-presetId')]
-		},
-		{
-			case: ['by-index', 'by-button-index'],
-			targets: [$('#elementGetter-ancestor'), $('#elementGetter-index')]
-		},
-		{
-			case: 'selected-button',
-			targets: [$('#elementGetter-ancestor')]
-		},
-		{
-			case: ['parent', 'variable'],
-			targets: [$('#elementGetter-variable')]
-		}
-	]);
+	$('#elementGetter-type')
+		.enableHiddenMode()
+		.relate([
+			{ case: 'by-id', targets: [$('#elementGetter-presetId')] },
+			{
+				case: 'by-ancestor-and-id',
+				targets: [$('#elementGetter-ancestor'), $('#elementGetter-presetId')]
+			},
+			{
+				case: ['by-index', 'by-button-index'],
+				targets: [$('#elementGetter-ancestor'), $('#elementGetter-index')]
+			},
+			{
+				case: 'selected-button',
+				targets: [$('#elementGetter-ancestor')]
+			},
+			{
+				case: ['parent', 'variable'],
+				targets: [$('#elementGetter-variable')]
+			}
+		]);
 
-	($('#elementGetter-confirm') as HTMLElement).addEventListener('click', this.confirm!);
+	$('#elementGetter-confirm').addEventListener('click', this.confirm!);
 };
 
 ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTarget): void {
 	this.target = target;
-	getWindow().open('elementGetter');
+	Window.open!('elementGetter');
 
 	let index = 0;
 	let presetId = PresetElement.getDefaultPresetId!();
@@ -205,5 +205,5 @@ ElementGetter.confirm = function (this: ElementGetterShape, event: Event): void 
 		getter = { getter: 'element', ...getter };
 	}
 	this.target!.input(getter);
-	getWindow().close('elementGetter');
+	Window.close!('elementGetter');
 }.bind(ElementGetter);

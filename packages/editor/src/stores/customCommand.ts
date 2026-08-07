@@ -1,54 +1,54 @@
 import { defineStore } from 'pinia';
+import { CustomCommand } from '@/command/custom-command-window.ts';
 import { shallowRef } from 'vue';
 
 export const useCustomCommandStore = defineStore('customCommand', () => {
 	const state = shallowRef<string>('closed');
-	const commands = shallowRef<any[]>([]);
+	const commands = shallowRef<any[] | Record<string, any>>([]);
 
 	function syncState() {
-		const CustomCommand = (window as any).CustomCommand;
 		state.value = CustomCommand?.state ?? 'closed';
 		commands.value = CustomCommand?.commands ?? [];
 	}
 
 	function initialize() {
-		(window as any).CustomCommand?.initialize?.();
+		CustomCommand?.initialize?.();
 	}
 
 	function open() {
-		(window as any).CustomCommand?.open?.();
+		CustomCommand?.open?.();
 	}
 
 	function close() {
-		(window as any).CustomCommand?.close?.();
+		CustomCommand?.close?.();
 	}
 
 	function unload() {
-		(window as any).CustomCommand?.unload?.();
+		CustomCommand?.unload?.();
 	}
 
 	function loadOverview() {
-		(window as any).CustomCommand?.loadOverview?.();
+		CustomCommand?.loadOverview?.();
 	}
 
 	function createData(id: string) {
-		return (window as any).CustomCommand?.createData?.(id);
+		return CustomCommand?.createData?.(id);
 	}
 
 	function confirm(event?: any) {
-		(window as any).CustomCommand?.confirm?.(event);
+		CustomCommand?.confirm?.(event);
 	}
 
 	function apply(event?: any) {
-		(window as any).CustomCommand?.apply?.(event);
+		CustomCommand?.apply?.(event);
 	}
 
 	function saveToProject(project: any) {
-		(window as any).CustomCommand?.saveToProject?.(project);
+		CustomCommand?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).CustomCommand?.loadFromProject?.(project);
+		CustomCommand?.loadFromProject?.(project);
 	}
 
 	return {

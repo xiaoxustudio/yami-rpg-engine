@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { addClass, getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
@@ -7,9 +8,7 @@ import { CommandSchema } from './schema.ts';
 import { loadDtsFolder } from '@/module/global.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Path } from '@/util/config.ts';
 import { getMonaco } from '@/util/monaco.ts';
 
@@ -35,7 +34,7 @@ Command.cases.script = new CommandSchema({
 	},
 	resize() {
 		const content = $('#script-script');
-		const parent = content.parentElement;
+		const parent = content.parentElement!;
 		if (!this.isMaximized!()) {
 			content.style.width = '';
 			content.style.height = '';
@@ -61,7 +60,7 @@ Command.cases.script = new CommandSchema({
 			if (this.changed) {
 				event.preventDefault();
 				const get = Local.createGetter('confirmation');
-				getWindow().confirm(
+				Window.confirm!(
 					{
 						message: get('closeUnsavedScript'),
 						close: () => {
@@ -73,7 +72,7 @@ Command.cases.script = new CommandSchema({
 							label: get('yes'),
 							click: () => {
 								this.setChangeState!(false);
-								getWindow().close('script');
+								Window.close!('script');
 							}
 						},
 						{
@@ -143,7 +142,7 @@ Command.cases.script = new CommandSchema({
 		} catch (error: any) {
 			const get = Local.createGetter('confirmation');
 			let continued = false;
-			return getWindow().confirm(
+			return Window.confirm!(
 				{
 					message: `${error.message}\n${get('compileError')}`,
 					close: () => {

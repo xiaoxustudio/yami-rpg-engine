@@ -8,19 +8,15 @@ export interface ColorBoxApiOptions {
 
 export interface ColorBoxApi extends HTMLElement {
 	foreground: HTMLElement;
-	dataValue: string;
+	dataValue: string | null;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
-	read(): string;
-	write(color: string): void;
-	input(color: string): void;
-	enable(): void;
-	disable(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	input(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 	keydown(event: KeyboardEvent): void;
 	mouseclick(event: Event): void;
 }
@@ -38,7 +34,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 };
 
 export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions = {}): ColorBoxApi {
-	const box = el as ColorBoxApi;
+	const box = el as unknown as ColorBoxApi;
 	if (box._initialized) return box;
 
 	const background = document.createElement('div');
@@ -58,7 +54,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 	box.tabIndex = 0;
 
 	box.read = function (): string {
-		return box.dataValue;
+		return box.dataValue ?? '';
 	};
 
 	box.write = function (color: string): void {

@@ -1,13 +1,12 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, hide, read, show, write } from '@/util/element-utils';
 import { EventEditor } from '@/command/event-editor.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 {
 	const FileEvent = {
@@ -98,7 +97,7 @@ function getWindow() {
 
 	FileEvent.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			clear($('#fileEvent-parameters'));
@@ -126,7 +125,7 @@ function getWindow() {
 			case 'enabled':
 				if (event.enabled !== value) {
 					event.enabled = value;
-					(window as any).Browser?.body?.updateIcon?.(this.meta.file);
+					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
 				}
 				break;
 		}
@@ -210,7 +209,7 @@ function getWindow() {
 			return [{ content: key }, { content: Local.get!('eventParameterTypes.' + type) }];
 		},
 		open: function ({ type = 'number', key = '', note = '' } = {}) {
-			getWindow().open('fileEvent-parameter');
+			Window.open!('fileEvent-parameter');
 			const write = getElementWriter('fileEvent-parameter');
 			write('type', type);
 			write('key', key);
@@ -225,7 +224,7 @@ function getWindow() {
 				return getFocus($('#fileEvent-parameter-key'));
 			}
 			const note = read('note').trim();
-			getWindow().close('fileEvent-parameter');
+			Window.close!('fileEvent-parameter');
 			return { type, key, note };
 		}
 	};

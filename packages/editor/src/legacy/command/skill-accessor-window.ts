@@ -1,10 +1,8 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const SkillGetter = {
 	target: null as any,
@@ -44,7 +42,7 @@ SkillGetter.initialize = function (this: any) {
 
 SkillGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('skillGetter');
+	Window.open!('skillGetter');
 
 	$('#skillGetter-key').loadItems(Enum.getStringItems('shortcut-key'));
 
@@ -127,6 +125,6 @@ SkillGetter.confirm = function (this: any, event: any) {
 	if (this.target.isPluginInput) {
 		getter = { getter: 'skill', ...getter };
 	}
-	this.target.input(getter);
-	getWindow().close('skillGetter');
+	this.target?.input?.(getter);
+	Window.close!('skillGetter');
 }.bind(SkillGetter);

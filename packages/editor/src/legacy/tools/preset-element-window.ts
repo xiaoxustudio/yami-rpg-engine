@@ -1,7 +1,7 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, read, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
-import { Window } from './window-object.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 export const PresetElement = {
@@ -29,7 +29,7 @@ function ensureDomBound() {
 	PresetElement.ui = $('#presetElement-uiId');
 	PresetElement.list = list;
 	PresetElement.searcher = $('#presetElement-searcher');
-	PresetElement.list.createIcon = null;
+	PresetElement.list.createIcon = null as unknown as (...args: unknown[]) => any;
 }
 
 PresetElement.initialize = function (this: any) {
@@ -135,7 +135,7 @@ PresetElement.searcherInput = function (this: any, event: any) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input.value;
+	const text = this.input!.value;
 	const list = PresetElement.list;
 	list.searchNodes(text);
 	const elements = list.elements;
@@ -158,6 +158,6 @@ PresetElement.confirm = function (this: any, event: any) {
 	if (!presetId) {
 		return getFocus(this.list);
 	}
-	this.target.input(presetId);
+	this.target?.input?.(presetId);
 	Window.close!('presetElement');
 }.bind(PresetElement);

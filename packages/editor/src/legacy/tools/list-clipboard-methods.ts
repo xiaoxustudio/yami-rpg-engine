@@ -1,13 +1,11 @@
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+import { Window } from '@/tools/window-object.ts';
 
 interface ListWithElements {
-	elements: HTMLElement[] & { count: number };
-	addNodeTo: (item: any, dItem: any) => void;
-	deleteNode: (item: any) => void;
-	select: (item: any) => void;
+	elements?: any[] & { count?: number };
+	addNodeTo?: (item: any, dItem: any) => void;
+	deleteNode?: (item: any) => void;
+	select?: (item: any) => void;
 	copy?: (item: any) => void;
 	paste?: (dItem: any) => void;
 	delete?: (item: any) => void;
@@ -49,14 +47,14 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 				copy.id = module.createId();
 				copy.name += ' - Copy';
 			}
-			this.addNodeTo(copy, dItem);
+			this.addNodeTo?.(copy, dItem);
 		}
 	};
 
 	list.delete = function (item: any) {
 		if (item) {
 			const get = Local.createGetter('confirmation');
-			getWindow().confirm(
+			Window.confirm!(
 				{
 					message: get('deleteSingleFile').replace('<filename>', item.name)
 				},
@@ -64,14 +62,14 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 					{
 						label: get('yes'),
 						click: () => {
-							const elements = this.elements;
+							const elements = this.elements ?? [];
 							const index = elements.indexOf(item.element);
-							this.deleteNode(item);
+							this.deleteNode?.(item);
 							closePanel();
-							const last = elements.count - 1;
+							const last = (elements.count ?? elements.length) - 1;
 							const element = elements[Math.min(index, last)];
 							if (element instanceof HTMLElement) {
-								this.select(element.item);
+								this.select?.(element.item);
 							}
 						}
 					},

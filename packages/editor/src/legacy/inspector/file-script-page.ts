@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -54,7 +55,7 @@ export default class Plugin {
 
 	FileScript.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			clear(this.overview);

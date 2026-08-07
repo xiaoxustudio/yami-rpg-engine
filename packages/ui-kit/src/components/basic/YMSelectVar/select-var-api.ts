@@ -15,21 +15,17 @@ export interface SelectVarApi extends HTMLElement {
 	selectBox: SelectBoxApi;
 	varBox: CustomBoxApi;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
 	switch(mode?: string): void;
-	enable(): void;
-	disable(): void;
-	loadItems(items: any): void;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	loadItems(...args: unknown[]): any;
 	getFocus(mode: any): void;
-	clear(): void;
+	clear(...args: unknown[]): any;
 	keydown(event: any): void;
 	pointerdown(event: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 export function attachSelectVarApi(
@@ -42,15 +38,15 @@ export function attachSelectVarApi(
 	box.mode = null as any;
 	box.selectBox = (options.selectBoxFactory ?? (() => null))() as SelectBoxApi;
 	box.varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
-	box.varBox.type = 'variable';
-	box.varBox.filter = 'all';
+	box.varBox!.type = 'variable';
+	box.varBox!.filter = 'all';
 
 	box.read = function (): any {
 		switch (box.mode) {
 			case 'constant':
 				return read(box.selectBox);
 			case 'variable':
-				return box.varBox.read();
+				return box.varBox?.read();
 		}
 	};
 
@@ -59,12 +55,12 @@ export function attachSelectVarApi(
 			case 'string':
 				box.switch('constant');
 				write(box.selectBox, value);
-				box.varBox.write(defVar);
+				box.varBox?.write(defVar);
 				break;
 			case 'object':
 				box.switch('variable');
 				box.selectBox.writeDefault();
-				box.varBox.write(value);
+				box.varBox?.write(value);
 				break;
 		}
 	};
@@ -87,17 +83,17 @@ export function attachSelectVarApi(
 			box.mode = mode as string;
 			switch (mode) {
 				case 'constant':
-					box.varBox.remove();
-					box.appendChild(box.selectBox);
+					box.varBox?.remove();
+					box.appendChild(box.selectBox!);
 					if (focus) {
 						box.selectBox.focus();
 					}
 					break;
 				case 'variable':
 					box.selectBox.remove();
-					box.appendChild(box.varBox);
+					box.appendChild(box.varBox!);
 					if (focus) {
-						box.varBox.focus();
+						box.varBox?.focus();
 					}
 					break;
 			}
@@ -107,14 +103,14 @@ export function attachSelectVarApi(
 	box.enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			box.selectBox.enable();
-			box.varBox.enable();
+			box.varBox?.enable();
 		}
 	};
 
 	box.disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			box.selectBox.disable();
-			box.varBox.disable();
+			box.varBox?.disable();
 		}
 	};
 
@@ -127,7 +123,7 @@ export function attachSelectVarApi(
 			case 'constant':
 				return box.selectBox.focus();
 			case 'variable':
-				return box.varBox.focus();
+				return box.varBox?.focus();
 		}
 	};
 

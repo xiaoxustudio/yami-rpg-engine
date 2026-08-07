@@ -18,30 +18,26 @@ export interface SelectBoxApi extends HTMLElement {
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
-	read(): any;
-	write(value: any): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
 	write2(value: any): void;
 	writeDefault(): void;
-	input(value: any): void;
-	update(): void;
-	reselect(offset: any): void;
+	input(...args: unknown[]): any;
+	update(...args: unknown[]): any;
+	reselect(...args: unknown[]): any;
 	save(): void;
 	restore(): void;
-	enable(): void;
-	disable(): void;
-	loadItems(items: any): void;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	loadItems(...args: unknown[]): any;
 	setItemNames(options: any): void;
-	clear(): HTMLElement;
+	clear(...args: unknown[]): any;
 	enableHiddenMode(): SelectBoxApi;
-	relate(entries: any): void;
+	relate(...args: unknown[]): any;
 	toggleRelatedElements(): void;
 	enableElement(element: any): void;
 	disableElement(element: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 	keydown(event: any): void;
 	pointerdown(event: any): void;
 	closePopup(): void;

@@ -1,4 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { Window } from '@/tools/window-object.ts';
 import {
 	addClass,
 	clear,
@@ -29,9 +31,6 @@ import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from '@/tools/localization.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const PluginManager = {
 	list: null as any,
@@ -83,7 +82,9 @@ export const PluginManager = {
 	list_addElementClass: null as any,
 	list_updateTextNode: null as any,
 	list_updateToggleStyle: null as any,
-	list_createEditIcon: null as any
+	list_createEditIcon: null as any,
+	plugins: null as Record<string, any> | null,
+	reload: null as (() => void) | null
 };
 
 function ensureDomBound() {
@@ -96,26 +97,38 @@ function ensureDomBound() {
 	PluginManager.overview = $('#plugin-overview');
 	PluginManager.parameterPane = $('#plugin-parameter-pane');
 	hide(PluginManager.parameterPane);
-	list.insert = null;
-	list.toggle = null;
-	list.copy = null;
-	list.paste = null;
-	list.delete = null;
-	list.saveSelection = null;
-	list.restoreSelection = null;
-	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.addElementClass = PluginManager.list_addElementClass;
-	list.updateTextNode = PluginManager.list_updateTextNode;
-	list.updateToggleStyle = PluginManager.list_updateToggleStyle;
-	list.createEditIcon = PluginManager.list_createEditIcon;
+	list.insert = null as unknown as (...args: unknown[]) => any;
+	list.toggle = null as unknown as (...args: unknown[]) => any;
+	list.copy = null as unknown as (...args: unknown[]) => any;
+	list.paste = null as unknown as (...args: unknown[]) => any;
+	list.delete = null as unknown as (...args: unknown[]) => any;
+	list.saveSelection = null as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
+	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
+		...args: unknown[]
+	) => any;
+	list.addElementClass = PluginManager.list_addElementClass as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateToggleStyle = PluginManager.list_updateToggleStyle as unknown as (
+		...args: unknown[]
+	) => any;
+	list.createEditIcon = PluginManager.list_createEditIcon as unknown as (
+		...args: unknown[]
+	) => any;
 	list.edit = PluginManager.list_edit;
 	list.insert = PluginManager.list_insert;
 	list.toggle = PluginManager.list_toggle;
 	list.copy = PluginManager.list_copy;
 	list.paste = PluginManager.list_paste;
 	list.delete = PluginManager.list_delete;
-	list.saveSelection = PluginManager.list_saveSelection;
-	list.restoreSelection = PluginManager.list_restoreSelection;
+	list.saveSelection = PluginManager.list_saveSelection as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = PluginManager.list_restoreSelection as unknown as (
+		...args: unknown[]
+	) => any;
 }
 
 // pane methods 注意：不再重写 ParameterPane.createDetailBox / clear，因为它们在 ParameterPane.initialize 中被重写
@@ -126,10 +139,10 @@ PluginManager.initialize = function (this: any) {
 	const { list } = this;
 	list.removable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.updateToggleStyle);
-	list.updaters.push(list.updateTextNode);
-	list.creators.push(list.createEditIcon);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.updateToggleStyle);
+	list.updaters?.push(list.updateTextNode);
+	list.creators?.push(list.createEditIcon);
 
 	this.parameterPane.bind(list);
 
@@ -147,7 +160,7 @@ PluginManager.initialize = function (this: any) {
 };
 
 PluginManager.open = function (this: any) {
-	getWindow().open('plugin');
+	Window.open!('plugin');
 
 	this.data = Object.clone(Data.plugins);
 
@@ -1650,7 +1663,7 @@ PluginManager.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedPlugins')
 			},
@@ -1659,7 +1672,7 @@ PluginManager.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('plugin');
+						Window.close!('plugin');
 					}
 				},
 				{
@@ -1853,7 +1866,7 @@ PluginManager.parameterPaneUpdate = function (this: any, event: any) {
 
 PluginManager.confirm = function (this: any, event: any) {
 	this.apply();
-	getWindow().close('plugin');
+	Window.close!('plugin');
 }.bind(PluginManager);
 
 PluginManager.apply = function (this: any, event: any) {
@@ -1873,7 +1886,7 @@ PluginManager.apply = function (this: any, event: any) {
 
 // 列表 - 编辑
 PluginManager.list_edit = function (this: any, item: any) {
-	(window as any).Selector?.open?.(
+	getSelectorInstance()?.open?.(
 		{
 			filter: 'script',
 			read: () => item.id,
@@ -1893,7 +1906,7 @@ PluginManager.list_edit = function (this: any, item: any) {
 
 // 列表 - 插入
 PluginManager.list_insert = function (this: any, dItem: any) {
-	(window as any).Selector?.open?.(
+	getSelectorInstance()?.open?.(
 		{
 			filter: 'script',
 			read: () => '',
@@ -1933,7 +1946,7 @@ PluginManager.list_paste = function (this: any, dItem: any) {
 PluginManager.list_delete = function (this: any, item: any) {
 	const get = Local.createGetter('confirmation');
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
-	getWindow().confirm(
+	Window.confirm!(
 		{
 			message: get('deleteSingleFile').replace('<filename>', name)
 		},

@@ -1,7 +1,5 @@
-function getWindow() {
-	return (window as any).Window;
-}
 import { clear, write } from '@/util/element-utils.ts';
+import { Window } from '@/tools/window-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
@@ -12,7 +10,7 @@ Variable.windowClose = function (this: any, event: any) {
 	if (this.changed) {
 		event.preventDefault();
 		const get = (Local.createGetter as any)('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedVariables')
 			},
@@ -21,7 +19,7 @@ Variable.windowClose = function (this: any, event: any) {
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('variable');
+						Window.close!('variable');
 					}
 				},
 				{

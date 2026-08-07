@@ -7,6 +7,8 @@ import { UI } from '@/ui/ui-window.ts';
 import { Title } from '@/title/title-bar.ts';
 
 export class Printer {
+	static state: string | null = null;
+	static print: ((...args: unknown[]) => void) | null = null;
 	texture!: any | null;
 	// images 运行时挂载 .changed 标志（L56/L200/L469 读写）
 	images!: any[] & { changed?: boolean };

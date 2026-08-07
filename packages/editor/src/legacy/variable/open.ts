@@ -1,13 +1,12 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Variable } from './variable.ts';
 
 Variable.open = function (this: any, target: any = null) {
@@ -16,7 +15,7 @@ Variable.open = function (this: any, target: any = null) {
 	this.history = new History(100);
 	UndoManager.setActive(this);
 	this.unpackVariables();
-	getWindow().open('variable');
+	Window.open!('variable');
 
 	const list = this.list;
 	const item = !target ? undefined : this.getVariableById(read(target as any));
@@ -72,11 +71,11 @@ Variable.confirm = function (this: any, event: any) {
 				break;
 		}
 		this.apply();
-		target.input(variable.id);
+		target?.input?.(variable.id);
 	} else {
 		this.apply();
 	}
-	getWindow().close('variable');
+	Window.close!('variable');
 }.bind(Variable);
 
 Variable.apply = function (this: any, event: any) {

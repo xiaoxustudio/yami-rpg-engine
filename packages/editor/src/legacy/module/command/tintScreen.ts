@@ -21,17 +21,20 @@ Command.cases.tintScreen = new CommandSchema({
 			clear($('#tintScreen-easingId'));
 			clear($('#tintScreen-filter'));
 		});
-		$('#tintScreen-tint-0, #tintScreen-tint-1, #tintScreen-tint-2, #tintScreen-tint-3').on(
-			'input',
-			function (event: any) {
-				write($('#tintScreen-filter'), [
-					read($('#tintScreen-tint-0')),
-					read($('#tintScreen-tint-1')),
-					read($('#tintScreen-tint-2')),
-					read($('#tintScreen-tint-3'))
-				]);
-			}
-		);
+		document
+			.querySelectorAll(
+				'#tintScreen-tint-0, #tintScreen-tint-1, #tintScreen-tint-2, #tintScreen-tint-3'
+			)
+			.forEach((el) =>
+				(el as HTMLElement).on('input', function (event: any) {
+					write($('#tintScreen-filter'), [
+						read($('#tintScreen-tint-0')),
+						read($('#tintScreen-tint-1')),
+						read($('#tintScreen-tint-2')),
+						read($('#tintScreen-tint-3'))
+					]);
+				})
+			);
 	},
 	parseTint([red, green, blue, gray]: any[]) {
 		const _red = Command.setNumberColor!(red);

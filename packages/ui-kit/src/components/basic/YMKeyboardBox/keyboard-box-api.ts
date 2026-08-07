@@ -6,23 +6,19 @@ export interface KeyboardBoxApiOptions {
 }
 
 export interface KeyboardBoxApi extends HTMLElement {
-	input: HTMLInputElement;
-	dataValue: number;
+	input?: HTMLInputElement;
+	dataValue: number | null;
 	inputEventEnabled: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(): number;
-	write(code: number): void;
-	inputCode(code: number): void;
-	enable(): void;
-	disable(): void;
-	getFocus(mode: string): HTMLInputElement;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	inputCode(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	getFocus(...args: unknown[]): any;
+	on(...args: unknown[]): any;
 }
 
 const codeToKey = (code: string): string => {
@@ -49,7 +45,7 @@ export function attachKeyboardBoxApi(
 	el: HTMLElement,
 	options: KeyboardBoxApiOptions = {}
 ): KeyboardBoxApi {
-	const box = el as KeyboardBoxApi;
+	const box = el as unknown as KeyboardBoxApi;
 	if (box._initialized) return box;
 
 	const input = document.createElement('input');
@@ -81,12 +77,12 @@ export function attachKeyboardBoxApi(
 	el.appendChild(input);
 
 	box.read = function (): number {
-		return box.dataValue;
+		return box.dataValue ?? 0;
 	};
 
 	box.write = function (code: number): void {
 		box.dataValue = code;
-		box.input.value = String(code);
+		box.input!.value = String(code);
 	};
 
 	box.inputCode = function (code: number): void {

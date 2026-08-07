@@ -45,7 +45,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const Clipboard = (window as any).Clipboard;
+const Clipboard = null as unknown as { write(type: string, data: unknown): void; read(type: string): unknown; has(type: string): boolean };
 
 const dataApi = {
 	get manifest() {
@@ -59,8 +59,8 @@ const windowApi = {
 const glApi = { maxTexSize: GL.maxTexSize };
 const menuState = () => (Menu as any).state;
 const clipboardApi = {
-	write: (type: string, data: any) => Clipboard.write(type, data),
-	read: (type: string) => Clipboard.read(type)
+	write: (type: string, data: any) => Clipboard?.write?.(type, data),
+	read: (type: string) => Clipboard?.read?.(type)
 };
 const referenceApi = {
 	findRelated: (guid: string) => (Reference as any).findRelated(guid),

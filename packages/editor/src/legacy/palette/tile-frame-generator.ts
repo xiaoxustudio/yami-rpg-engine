@@ -1,8 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus, read, on } from '@/util/element-utils.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const FrameGenerator = {
 	callback: null as any,
@@ -29,7 +27,7 @@ FrameGenerator.initialize = function (this: any) {
 
 FrameGenerator.open = function (this: any, callback: any) {
 	this.callback = callback;
-	getWindow().open('autoTile-generateFrames');
+	Window.open!('autoTile-generateFrames');
 	getFocus($('#autoTile-generateFrames-strideX'), 'all');
 };
 
@@ -45,5 +43,5 @@ FrameGenerator.confirm = function (this: any, event: any) {
 		return getFocus($('#autoTile-generateFrames-strideX'));
 	}
 	this.callback(strideX, strideY, count);
-	getWindow().close('autoTile-generateFrames');
+	Window.close!('autoTile-generateFrames');
 }.bind(FrameGenerator);

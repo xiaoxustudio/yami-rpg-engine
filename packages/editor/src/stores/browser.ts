@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { Editor } from '@/main/editor.ts';
+import { Layout } from '@/layout/layout.ts';
 import { shallowRef } from 'vue';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
@@ -18,14 +20,69 @@ import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { $ } from '@/util/dom.ts';
 import { addClass, hasClass, rect, removeClass, seek } from '@/util/element-utils';
+import { pinia } from './pinia';
+import type { FileBrowserLinks } from '@/types/file-browser-links.ts';
 import child_process from 'node:child_process';
+
+export interface FileBrowserBody {
+	activeFile?: unknown;
+	selections?: unknown[];
+	copyFiles?(cut?: boolean): void;
+	pasteFiles?(path?: string): void;
+	deleteFiles?(): void;
+	rename?(file?: unknown): void;
+	importFiles?(): void;
+	showInExplorer?(): void;
+	openFileLocation?(file?: unknown): void;
+	openFile?(file?: unknown): void;
+	updateIcon?(meta?: unknown): void;
+	computeGridProperties?(): void;
+	resize?(): void;
+	updateContentSize?(): void;
+	on?(type: string, listener: (event: unknown) => void): void;
+	content?: { getFocus?(): void };
+}
+
+export interface FileBrowserInstance {
+	state?: string;
+	directory?: string | null;
+	page?: HTMLElement;
+	searcher?: HTMLElement & { addKeydownFilter?(): void };
+	head?: HTMLElement & { searcher?: HTMLElement; left?: number; padding?: number };
+	nav?: {
+		resize?(): void;
+		load?(...folders: unknown[]): void;
+		setViewIndex?(index: number): void;
+		update?(): void;
+		getSelections?(): unknown[];
+	};
+	body?: FileBrowserBody & {
+		setViewIndex?(index: number): void;
+		unselect?(meta?: unknown): void;
+		getDirName?(): string;
+		select?(file?: unknown): void;
+		viewIndex?: number;
+	};
+	links?: FileBrowserLinks;
+	dragging?: unknown;
+	initialize?(): void;
+	close?(): void;
+	open?(dir?: string): void;
+	unselect?(meta?: unknown): void;
+	openScript?(path?: string): void;
+}
 
 export const useBrowserStore = defineStore('browser', () => {
 	const state = shallowRef<string>('closed');
 	const directory = shallowRef<string | null>(null);
+	const component = shallowRef<FileBrowserInstance | null>(null);
 
-	function getBrowser(): any {
-		return (window as any).Browser;
+	function setComponent(instance: FileBrowserInstance | null) {
+		component.value = instance;
+	}
+
+	function getBrowser(): FileBrowserInstance | null {
+		return component.value;
 	}
 
 	function syncState() {
@@ -40,9 +97,9 @@ export const useBrowserStore = defineStore('browser', () => {
 		updateNavVisibility();
 		updateHead();
 		Browser.nav?.resize?.();
-		Browser.body.computeGridProperties?.();
-		Browser.body.resize?.();
-		Browser.body.updateContentSize?.();
+		Browser.body?.computeGridProperties?.();
+		Browser.body?.resize?.();
+		Browser.body?.updateContentSize?.();
 	}
 
 	function bodyKeydown(event: any) {
@@ -51,13 +108,13 @@ export const useBrowserStore = defineStore('browser', () => {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
-					Browser.body.copyFiles(true);
+					Browser.body?.copyFiles?.(true);
 					break;
 				case 'KeyC':
-					Browser.body.copyFiles();
+					Browser.body?.copyFiles?.();
 					break;
 				case 'KeyV':
-					Browser.body.pasteFiles();
+					Browser.body?.pasteFiles?.();
 					break;
 				default:
 					return;
@@ -169,14 +226,18 @@ export const useBrowserStore = defineStore('browser', () => {
 		if (!Browser) return;
 		const items: any[] = [];
 		const { target } = event.raw;
-		const { browser, nav } = Browser.links;
+		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
 		const get = (Local as any).createGetter('menuFileBrowser');
-		const Clipboard = (globalThis as any).Clipboard;
-		const pastable = Clipboard.has('yami.files');
+		const Clipboard = null as unknown as {
+			write(type: string, data: unknown): void;
+			read(type: string): unknown;
+			has(type: string): boolean;
+		};
+		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;
-		if (seek(target, 'file-body-pane') === Browser) {
-			const folders = nav.selections;
-			if (browser.display === 'normal' && folders.length === 1) {
+		if ((seek(target, 'file-body-pane') as unknown as FileBrowserInstance) === Browser) {
+			const folders = nav?.selections ?? [];
+			if (browser?.display === 'normal' && folders.length === 1) {
 				creatable = true;
 				items.push(
 					{
@@ -190,13 +251,13 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: ctrl('V'),
 						enabled: pastable,
 						click: () => {
-							Browser.body.pasteFiles();
+							Browser.body?.pasteFiles?.();
 						}
 					},
 					{
 						label: get('import'),
 						click: () => {
-							Browser.body.importFiles();
+							Browser.body?.importFiles?.();
 						}
 					},
 					{
@@ -216,14 +277,14 @@ export const useBrowserStore = defineStore('browser', () => {
 		} else {
 			const element = seek(target, 'file-body-item', 2);
 			if (element.tagName === 'FILE-BODY-ITEM' && hasClass(element, 'selected')) {
-				const { selections } = Browser.body;
+				const { selections } = Browser.body ?? { selections: [] as unknown[] };
 				const { file } = element;
-				const single = selections.length === 1;
-				if (single && selections[0] instanceof FolderItem) {
+				const single = (selections ?? []).length === 1;
+				if (single && selections?.[0] instanceof FolderItem) {
 					creatable = true;
 				}
 				let copyable = true;
-				for (const f of selections) {
+				for (const f of selections ?? []) {
 					if (f instanceof FolderItem) {
 						copyable = false;
 						break;
@@ -232,15 +293,15 @@ export const useBrowserStore = defineStore('browser', () => {
 				items.push({
 					label: get((Local as any).showInExplorer()),
 					click: () => {
-						Browser.body.showInExplorer();
+						Browser.body?.showInExplorer?.();
 					}
 				});
-				if (browser.display === 'search') {
+				if (browser?.display === 'search') {
 					items.push({
 						label: get('openFileLocation'),
 						enabled: single,
 						click: () => {
-							Browser.body.openFileLocation(file);
+							Browser.body?.openFileLocation?.(file);
 						}
 					});
 				}
@@ -250,7 +311,7 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: 'Enter',
 						enabled: single,
 						click: () => {
-							Browser.body.openFile(file);
+							Browser.body?.openFile?.(file);
 						}
 					},
 					{
@@ -258,7 +319,7 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: ctrl('X'),
 						enabled: copyable,
 						click: () => {
-							Browser.body.copyFiles(true);
+							Browser.body?.copyFiles?.(true);
 						}
 					},
 					{
@@ -266,7 +327,7 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: ctrl('C'),
 						enabled: copyable,
 						click: () => {
-							Browser.body.copyFiles();
+							Browser.body?.copyFiles?.();
 						}
 					},
 					{
@@ -274,15 +335,17 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: ctrl('V'),
 						enabled: pastable,
 						click: () => {
-							Browser.body.pasteFiles(creatable ? selections[0].path : undefined);
+							Browser.body?.pasteFiles?.(
+								creatable ? (selections as { path?: string }[])[0]?.path : undefined
+							);
 						}
 					},
 					{
 						label: get('delete'),
 						accelerator: 'Delete',
-						enabled: !selections.includes((Directory as any).assets),
+						enabled: !(selections as unknown[]).includes((Directory as any).assets),
 						click: () => {
-							Browser.body.deleteFiles();
+							Browser.body?.deleteFiles?.();
 						}
 					},
 					{
@@ -290,7 +353,7 @@ export const useBrowserStore = defineStore('browser', () => {
 						accelerator: 'F2',
 						enabled: single,
 						click: () => {
-							Browser.body.rename(file);
+							Browser.body?.rename?.(file);
 						}
 					}
 				);
@@ -305,14 +368,16 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		Browser.page = $('#project');
-		Browser.searcher = Browser.links.head.searcher;
-		Browser.searcher.addKeydownFilter();
-		Browser.page.addEventListener('resize', pageResize);
-		Browser.body.on('keydown', bodyKeydown);
-		Browser.body.on('open', bodyOpen);
-		Browser.body.on('select', bodySelect);
-		Browser.body.on('unselect', bodyUnselect);
-		Browser.body.on('popup', bodyPopup);
+		Browser.searcher = (
+			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
+		)?.searcher;
+		Browser.searcher?.addKeydownFilter?.();
+		Browser.page?.addEventListener('resize', pageResize);
+		Browser.body?.on?.('keydown', bodyKeydown);
+		Browser.body?.on?.('open', bodyOpen);
+		Browser.body?.on?.('select', bodySelect);
+		Browser.body?.on?.('unselect', bodyUnselect);
+		Browser.body?.on?.('popup', bodyPopup);
 	}
 
 	function open(dir: string) {
@@ -327,17 +392,18 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const body = Browser.body;
-		const files = body.selections;
-		if (files.length === 1 && files[0].meta === meta) {
-			body.unselect();
+		const files = body?.selections ?? [];
+		if (files.length === 1 && (files as { meta?: unknown }[])[0].meta === meta) {
+			body?.unselect?.();
 		}
 	}
 
 	function updateHead() {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		const Layout = (window as any).Layout;
-		const { page, head } = Browser;
+
+		const { page, head } = Browser ?? {};
+		if (!page || !head) return;
 		if (hasClass(page, 'visible')) {
 			const { nav } = Layout.getGroupOfElement(head);
 			const nRect = rect(nav);
@@ -359,8 +425,8 @@ export const useBrowserStore = defineStore('browser', () => {
 	function openScript(filePath: any) {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		const Editor = (window as any).Editor;
-		const { mode, path } = Editor.config.scriptEditor;
+
+		const { mode = '', path = '' } = Editor.config?.scriptEditor ?? {};
 		switch (mode) {
 			case 'by-file-extension':
 				(File as any).openPath((File as any).path(filePath));
@@ -384,7 +450,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const { body } = Browser;
 		const [basename, extname] = filename.split('.');
 		const fullname = `${basename}.${guid}.${extname}`;
-		const dirname = body.getDirName();
+		const dirname = body?.getDirName?.() ?? '';
 		const path = `${dirname}/${fullname}`;
 		const route = (File as any).path(path);
 		const json = data instanceof Object ? JSON.stringify(data, null, 2) : data;
@@ -394,12 +460,12 @@ export const useBrowserStore = defineStore('browser', () => {
 				if (changed) {
 					const folder = (Directory as any).getFolder(dirname);
 					if (folder.path === dirname) {
-						Browser.nav.load(folder);
+						Browser.nav?.load?.(folder);
 					}
 					const file = (Directory as any).getFile(path);
 					if (file?.path === path) {
-						body.select(file);
-						body.rename(file);
+						body?.select?.(file);
+						body?.rename?.(file);
 					}
 				}
 				console.log(`write: ${path}`);
@@ -419,7 +485,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const { body } = Browser;
 		const [basename, extname] = filename.split('.');
 		const fullname = `${basename}.${guid}.${extname}`;
-		const dirname = body.getDirName();
+		const dirname = body?.getDirName?.() ?? '';
 		const path = `${dirname}/${fullname}`;
 		const route = (File as any).path(path);
 		const source = Path.resolve(TemplatesPath, 'script', filename);
@@ -429,12 +495,12 @@ export const useBrowserStore = defineStore('browser', () => {
 				if (changed) {
 					const folder = (Directory as any).getFolder(dirname);
 					if (folder.path === dirname) {
-						Browser.nav.load(folder);
+						Browser.nav?.load?.(folder);
 					}
 					const file = (Directory as any).getFile(path);
 					if (file?.path === path) {
-						body.select(file);
-						body.rename(file);
+						body?.select?.(file);
+						body?.rename?.(file);
 					}
 				}
 				console.log(`write: ${path}`);
@@ -448,9 +514,9 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		if (hasClass(Browser.page, 'visible')) {
-			if (Browser.clientWidth >= 500) {
+			if ((Browser as HTMLElement & FileBrowserInstance).clientWidth >= 500) {
 				if (removeClass(Browser, 'hide-nav-pane')) {
-					Browser.nav.update();
+					Browser.nav?.update?.();
 				}
 			} else {
 				addClass(Browser, 'hide-nav-pane');
@@ -462,8 +528,8 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const { browser } = project;
-		const { viewIndex } = Browser.body;
-		const selections = Browser.nav.getSelections();
+		const { viewIndex } = Browser.body ?? {};
+		const selections = Browser.nav?.getSelections?.() ?? [];
 		const folders = selections.map((folder: any) => folder.path);
 		browser.view = viewIndex ?? browser.view;
 		if (folders.length !== 0) {
@@ -483,13 +549,16 @@ export const useBrowserStore = defineStore('browser', () => {
 			selections.push((Directory as any).assets);
 		}
 		Browser.directory = (Directory as any).assets;
-		Browser.body.setViewIndex(view);
-		Browser.nav.load(...selections);
+		Browser.body?.setViewIndex?.(view);
+		Browser.nav?.load?.(...selections);
 	}
 
 	return {
 		state,
 		directory,
+		component,
+		setComponent,
+		getBrowser,
 		syncState,
 		initialize,
 		open,
@@ -510,3 +579,11 @@ export const useBrowserStore = defineStore('browser', () => {
 		bodyPopup
 	};
 });
+
+export function getBrowserStore() {
+	return useBrowserStore(pinia);
+}
+
+export function getBrowserInstance(): FileBrowserInstance | null {
+	return getBrowserStore().getBrowser();
+}

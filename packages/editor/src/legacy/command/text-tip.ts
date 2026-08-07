@@ -1,8 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addClass, hasClass, hide, rect, show } from '@/util/element-utils';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface TextSuggestionItem {
 	name: string;
@@ -47,12 +45,12 @@ interface TextSuggestionList {
 	textContent: string;
 }
 
-interface TextSuggestionTarget {
-	generator: () => TextSuggestionItem[];
-	input: { select(): void };
-	insert(name: string): void;
-	rect(): { left: number; top: number; bottom: number; width: number };
-	read(): string;
+export interface TextSuggestionTarget {
+	generator?: () => TextSuggestionItem[];
+	input?: { select(): void };
+	insert?(name: string): void;
+	rect?(): { left: number; top: number; bottom: number; width: number };
+	read?(): string;
 	contains(node: Node | null): boolean;
 	addEventListener(type: string, listener: (event: any) => void, options?: any): void;
 	removeEventListener(type: string, listener: (event: any) => void, options?: any): void;
@@ -117,7 +115,7 @@ function createEmptyList(): TextSuggestionList {
 }
 
 export const TextSuggestion: TextSuggestionShape = {
-	list: $('#text-suggestions') ?? createEmptyList(),
+	list: ($('#text-suggestions') as unknown as TextSuggestionList) ?? createEmptyList(),
 	inserting: false,
 	target: null,
 	data: null,
@@ -136,23 +134,27 @@ export const TextSuggestion: TextSuggestionShape = {
 	listOpen: null
 };
 
-TextSuggestion.list.updateNodeElement = null;
-TextSuggestion.list.createIcon = null;
-TextSuggestion.list.createText = null;
-TextSuggestion.list.createRefCount = null;
-TextSuggestion.list.createComment = null;
-TextSuggestion.list.selectDefaultCommand = null;
+TextSuggestion.list.updateNodeElement = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.createIcon = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.createText = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.createRefCount = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.createComment = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.selectDefaultCommand = null as unknown as (...args: unknown[]) => any;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 	const element = $('#text-suggestions');
-	if (element && element !== this.list) {
-		element.updateNodeElement = this.list.updateNodeElement;
-		element.createIcon = this.list.createIcon;
-		element.createText = this.list.createText;
-		element.createRefCount = this.list.createRefCount;
-		element.createComment = this.list.createComment;
-		element.selectDefaultCommand = this.list.selectDefaultCommand;
-		this.list = element;
+	if (element && element !== (this.list as unknown as HTMLElement)) {
+		element.updateNodeElement = this.list.updateNodeElement as unknown as (
+			item: unknown
+		) => unknown;
+		element.createIcon = this.list.createIcon as unknown as (item: unknown) => unknown;
+		element.createText = this.list.createText as unknown as (item: unknown) => unknown;
+		element.createRefCount = this.list.createRefCount as unknown as (item: unknown) => unknown;
+		element.createComment = this.list.createComment as unknown as (item: unknown) => unknown;
+		element.selectDefaultCommand = this.list.selectDefaultCommand as unknown as (
+			item: unknown
+		) => unknown;
+		this.list = element as unknown as TextSuggestionList;
 	}
 	const { list } = this;
 	list.bind(() => this.data);
@@ -198,20 +200,20 @@ TextSuggestion.select = function (this: TextSuggestionShape, item: TextSuggestio
 	if ((target as unknown as { strBox: TextSuggestionTarget }).strBox) {
 		target = (target as unknown as { strBox: TextSuggestionTarget }).strBox;
 	}
-	target.input.select();
-	target.insert(item.name);
+	target.input!.select();
+	target?.insert?.(item.name);
 	this.inserting = false;
 	this.close!();
 };
 
 TextSuggestion.createData = function (this: TextSuggestionShape): void {
 	if (!this.data) {
-		this.data = this.target!.generator();
+		this.data = this.target!.generator?.() ?? null;
 	}
 };
 
 TextSuggestion.textBoxFocus = function (this: TextSuggestionTarget, event: Event): void {
-	const text = this.read().trim();
+	const text = this.read?.().trim() ?? '';
 	TextSuggestion.open!(this);
 	TextSuggestion.list.searchNodes(text);
 	TextSuggestion.list.selectDefaultCommand!();
@@ -258,7 +260,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 		TextSuggestion.inserting === false &&
 		event.inputType !== 'insertCompositionText'
 	) {
-		const text = this.read().trim();
+		const text = this.read?.().trim() ?? '';
 		TextSuggestion.open!(this);
 		TextSuggestion.list.searchNodes(text);
 		TextSuggestion.list.selectDefaultCommand!();
@@ -300,13 +302,13 @@ TextSuggestion.listUpdate = function (this: TextSuggestionList, event: Event): v
 	const top = below ? rb : rt - lines * 20;
 	if (
 		lines !== 0 &&
-		!(lines === 1 && this.elements[0].item.name === TextSuggestion.target!.read())
+		!(lines === 1 && this.elements[0].item.name === TextSuggestion.target!.read?.())
 	) {
 		this.style.left = `${rl}px`;
 		this.style.top = `${top}px`;
 		this.style.width = `calc(${rw}px - var(--2dpx))`;
 		this.style.height = `${lines * 20}px`;
-		this.style.zIndex = ((getWindow().frames?.length ?? 0) + 1).toString();
+		this.style.zIndex = ((Window.frames?.length ?? 0) + 1).toString();
 		show(this);
 	} else {
 		hide(this);

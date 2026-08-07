@@ -1,11 +1,7 @@
 export interface DetailSummaryApi extends HTMLElement {
 	_initialized: boolean;
 	toggle(): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {

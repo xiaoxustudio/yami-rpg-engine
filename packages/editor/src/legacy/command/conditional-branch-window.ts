@@ -1,10 +1,8 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, on, read, write } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { IfCondition } from './conditional-condition-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const IfBranch = {
 	target: null as any,
@@ -54,7 +52,7 @@ IfBranch.open = function (this: any, branch: any) {
 		IfCondition.target = this.target;
 		IfCondition.open!();
 	} else {
-		getWindow().open('if-branch');
+		Window.open!('if-branch');
 		write($('#if-branch-mode'), branch.mode);
 		write($('#if-branch-conditions'), branch.conditions.slice());
 		getFocus($('#if-branch-conditions'));
@@ -79,7 +77,7 @@ IfBranch.save = function (this: any) {
 			return getFocus(element);
 		}
 		const commands = this.commands;
-		getWindow().close('if-branch');
+		Window.close!('if-branch');
 		return { mode, conditions, commands };
 	}
 };
@@ -90,5 +88,5 @@ IfBranch.windowClosed = function (this: any, event: any) {
 };
 
 IfBranch.confirm = function (this: any, event: any) {
-	return IfBranch.target.save();
+	return IfBranch.target?.save?.();
 };

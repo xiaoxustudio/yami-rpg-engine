@@ -35,8 +35,12 @@ import { Inspector } from './inspector.ts';
 		const elements = $(
 			'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
 		);
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('input', this.paramInput)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
 		elements.on(
 			'blur',
 			Inspector.inputBlur!(this, Animation, (data: any) => {

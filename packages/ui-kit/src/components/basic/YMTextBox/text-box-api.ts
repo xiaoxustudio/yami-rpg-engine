@@ -5,28 +5,24 @@ export interface TextBoxApiOptions {
 }
 
 export interface TextBoxApi extends HTMLElement {
-	input: HTMLInputElement;
+	input?: HTMLInputElement;
 	lastText: string;
 	hiddenNodes: HTMLElement[];
 	_initialized: boolean;
-	read(): string;
-	write(value: string): void;
-	insert(value: string): void;
-	enable(): void;
-	disable(): void;
-	focus(): void;
-	getFocus(mode: string | null): HTMLInputElement | undefined;
-	setPlaceholder(placeholder: string): void;
-	setMaxLength(maxLength: number): void;
-	fitContent(): void;
-	deleteInputContent(): void;
-	addCloseButton(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	insert(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
+	focus(...args: unknown[]): any;
+	getFocus(...args: unknown[]): any;
+	setPlaceholder(...args: unknown[]): any;
+	setMaxLength(...args: unknown[]): any;
+	fitContent(...args: unknown[]): any;
+	deleteInputContent(...args: unknown[]): any;
+	addCloseButton(...args: unknown[]): any;
 	addKeydownFilter(fn: (event: KeyboardEvent) => boolean): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 const clamp = (value: number, min: number, max: number): number =>

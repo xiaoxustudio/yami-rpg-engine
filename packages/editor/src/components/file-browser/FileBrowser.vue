@@ -40,16 +40,17 @@ import { Local } from '@/tools/localization.ts';
 import { Path } from '@/util/config.ts';
 import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { setIconClip } from '@/util/icon-clip.ts';
-import { useBrowserStore } from '@app/stores/browser.ts';
-import { useSelectorStore } from '@app/stores/selector.ts';
+import { useBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
+import { useSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
 
 interface Props {
 	id?: string;
+	bridge?: 'browser' | 'selector';
 }
 
 const props = defineProps<Props>();
 
-const Clipboard = (window as any).Clipboard;
+const Clipboard = null as unknown as { write(type: string, data: unknown): void; read(type: string): unknown; has(type: string): boolean };
 
 const menuPopup = (options: any, items: any[]) => Menu.popup(options, items);
 const directoryApi = {
@@ -111,8 +112,8 @@ const windowApi = {
 };
 const glApi = { maxTexSize: GL.maxTexSize };
 const clipboardApi = {
-	write: (type: string, data: any) => Clipboard.write(type, data),
-	read: (type: string) => Clipboard.read(type)
+	write: (type: string, data: any) => Clipboard?.write?.(type, data),
+	read: (type: string) => Clipboard?.read?.(type)
 };
 const referenceApi = {
 	findRelated: (guid: string) => (Reference as any).findRelated(guid),
@@ -143,11 +144,20 @@ defineExpose({ update, searchFiles, backToParentFolder, el });
 watch(
 	() => ym.value?.el,
 	(node) => {
-		if (!node) return;
-		const anyNode = node as any;
 		const selector = useSelectorStore();
-		anyNode.open = (target: any, allowNone = true) => selector.open(target, allowNone);
-		anyNode.close = () => selector.close();
+		if (!node) {
+			if (props.bridge === 'selector') selector.setComponent(null);
+			else useBrowserStore().setComponent(null);
+			return;
+		}
+		if (props.bridge === 'selector') {
+			selector.setComponent(node as unknown as SelectorInstance);
+			return;
+		}
+		const browserNode = node as unknown as FileBrowserInstance;
+		useBrowserStore().setComponent(browserNode);
+		browserNode.open = (target: unknown, allowNone = true) => selector.open(target, allowNone);
+		browserNode.close = () => selector.close();
 	}
 );
 </script>

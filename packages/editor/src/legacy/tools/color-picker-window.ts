@@ -1,4 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import {
 	relate,
 	getRelativeCoords,
@@ -14,7 +15,6 @@ import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from './localization.ts';
 import { Rename } from './rename-window.ts';
-import { Window } from './window-object.ts';
 
 export const Color = {
 	target: null as any,
@@ -63,12 +63,12 @@ Color.initialize = function (this: any) {
 	on($('#color-palette-frame'), 'pointerdown', this.palettePointerdown);
 	on($('#color-pillar-frame'), 'pointerdown', this.pillarPointerdown);
 	$('#color-index')?.addEventListener('input', this.indexedColorInput);
-	$('[name="color-index"]')?.forEach((el: HTMLElement) =>
+	$('[name="color-index"]').forEach((el) =>
 		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
 	);
-	$('#color-r, #color-g, #color-b, #color-a')?.forEach((el: HTMLElement) =>
-		el.addEventListener('input', this.rgbaInput!)
-	);
+	document
+		.querySelectorAll('#color-r, #color-g, #color-b, #color-a')
+		.forEach((el) => el.addEventListener('input', this.rgbaInput!));
 	$('#color-hex')?.addEventListener('beforeinput', this.hexBeforeinput, { capture: true });
 	$('#color-hex')?.addEventListener('input', this.hexInput);
 	on($('#color-confirm'), 'click', this.confirm);
@@ -321,7 +321,7 @@ Color.indexedColorInput = function (this: any, event: any) {
 	this.writeRGBAToInputs(rgba);
 	this.drawViewer(rgba);
 	if (!this.indexEnabled) {
-		event.target.reset();
+		event.target?.reset?.();
 	}
 }.bind(Color);
 
@@ -371,7 +371,7 @@ Color.indexedColorPointerdown = function (this: any, event: any) {
 
 Color.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
 		window.removeEventListener('pointermove', this.pointermove);
@@ -380,7 +380,7 @@ Color.pointerup = function (this: any, event: any) {
 
 Color.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'palette':
 				return this.palettePointerdown(event);
@@ -437,11 +437,11 @@ Color.rgbaInput = function (this: any, event: any) {
 Color.confirm = function (this: any, event: any) {
 	const index = read($('#color-index'));
 	if (this.indexEnabled && index !== null) {
-		this.target.input(index);
+		this.target?.input?.(index);
 	} else {
 		const rgba = this.readRGBAFromInputs();
 		const hex = this.getHexFromRGBA(rgba);
-		this.target.input(hex);
+		this.target?.input?.(hex);
 	}
 	Window.close!('color');
 }.bind(Color);

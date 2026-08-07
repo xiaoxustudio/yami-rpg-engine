@@ -1,4 +1,6 @@
 import { File } from '@/file/file-system-core.ts';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, removeClass } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { FileItem } from '@/file/file-item.ts';
@@ -79,7 +81,7 @@ export class ScriptListInterface implements IScriptListInterface {
 
 	open(script = PluginManager.createData()) {
 		this.script = script;
-		(window as any).Selector?.open?.(this, false);
+		getSelectorInstance()?.open?.(this, false);
 	}
 
 	save() {
@@ -103,7 +105,7 @@ export class ScriptListInterface implements IScriptListInterface {
 				const el = element.parentNode;
 				const item = el.dataItem ?? el.item;
 				const path = File.getPath!(item.id);
-				if (path) (window as any).Browser?.openScript?.(path);
+				if (path) getBrowserInstance()?.openScript?.(path);
 			}
 			element = null;
 		};
@@ -128,8 +130,8 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	static listDragover(event: any) {
-		if ((window as any).Browser?.dragging) {
-			const file = (window as any).Browser?.body?.activeFile;
+		if (getBrowserInstance()?.dragging) {
+			const file = getBrowserInstance()?.body?.activeFile;
 			if (file instanceof FileItem && file.type === 'script') {
 				event.dataTransfer.dropEffect = 'move';
 				event.preventDefault();
@@ -139,7 +141,7 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	static listDrop(event: any) {
-		const file = (window as any).Browser?.body?.activeFile;
+		const file = getBrowserInstance()?.body?.activeFile;
 		if (file instanceof FileItem) {
 			const script = PluginManager.createData();
 			script.id = file.meta.guid;

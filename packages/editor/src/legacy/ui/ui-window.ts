@@ -1,4 +1,5 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -17,9 +18,7 @@ import {
 import { Timer } from '@/util/timer.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Inspector } from '@/inspector/inspector.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
 import { GUID } from '@/file/guid.ts';
@@ -208,15 +207,15 @@ export const UI = {
 	createShortcut: null as any
 };
 
-UI.marquee.resize = null;
+UI.marquee.resize = null as unknown as (...args: unknown[]) => any;
 
 UI.list.page = $('#ui-element');
 UI.list.head = $('#ui-list-head');
-UI.list.copy = null;
-UI.list.paste = null;
-UI.list.delete = null;
-UI.list.toggle = null;
-UI.list.cancelSearch = null;
+UI.list.copy = null as unknown as (...args: unknown[]) => any;
+UI.list.paste = null as unknown as (...args: unknown[]) => any;
+UI.list.delete = null as unknown as (...args: unknown[]) => any;
+UI.list.toggle = null as unknown as (...args: unknown[]) => any;
+UI.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
 EventBus.once('editor_loaded', () => {
 	UI.list.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
@@ -224,11 +223,11 @@ EventBus.once('editor_loaded', () => {
 	// 否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
 	UI.list.updaters?.push(UI.list.updateItemClass);
 });
-UI.list.createIcon = null;
-UI.list.updateIcon = null;
-UI.list.updateHead = null;
-UI.list.createConditionIcon = null;
-UI.list.updateConditionIcon = null;
+UI.list.createIcon = null as unknown as (...args: unknown[]) => any;
+UI.list.updateIcon = null as unknown as (...args: unknown[]) => any;
+UI.list.updateHead = null as unknown as (...args: unknown[]) => any;
+UI.list.createConditionIcon = null as unknown as (...args: unknown[]) => any;
+UI.list.updateConditionIcon = null as unknown as (...args: unknown[]) => any;
 EventBus.once('editor_loaded', () => {
 	UI.list.createEventIcon = Scene.list.createEventIcon;
 	UI.list.updateEventIcon = Scene.list.updateEventIcon;
@@ -400,8 +399,8 @@ UI.initialize = function (this: any) {
 	list.renamable = true;
 	list.bind(() => this.nodes);
 	// 其 updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
-	list.creators.push(list.createConditionIcon);
-	list.creators.push(list.updateConditionIcon);
+	list.creators?.push(list.createConditionIcon);
+	list.creators?.push(list.updateConditionIcon);
 	// 其 creators/updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
 
 	History.processors['ui-object-create'] = (operation: any, data: any) => {
@@ -561,7 +560,7 @@ UI.open = function (this: any, context: any) {
 		this.requestRendering!();
 	} else {
 		Layout.manager.switch('directory');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},
@@ -2344,7 +2343,7 @@ UI.pointerup = function (this: any, event: any) {
 	if (event === undefined) {
 		event = dragging;
 	}
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'object-rotate':
 			case 'object-resize':
@@ -2373,7 +2372,7 @@ UI.pointerup = function (this: any, event: any) {
 
 UI.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
 			case 'object-rotate':
@@ -2743,7 +2742,7 @@ UI.menuPopup = function (this: any, event: any) {
 
 UI.searcherInput = function (this: any, event: any) {
 	if (event.inputType !== 'insertCompositionText') {
-		const text = this.input.value;
+		const text = this.input!.value;
 		UI.list.searchNodesDebounced(text);
 	}
 };

@@ -1,4 +1,6 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, read, write } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Command } from '@/command/command-object.ts';
@@ -11,9 +13,6 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { Local } from '@/tools/localization.ts';
 import { AttributeListInterface } from '@/tools/property-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 {
 	const FileActor = {
@@ -73,9 +72,11 @@ function getWindow() {
 		$('#fileActor-parameter-pane').bind($('#fileActor-scripts'));
 
 		// animationId write + 15 控件 input 经 Vue 模板转发（FileActorPage.vue @write/@input → FileActor.*）
-		$(`#fileActor-sprites, #fileActor-attributes, #fileActor-skills, #fileActor-equipments,
+		document
+			.querySelectorAll(`#fileActor-sprites, #fileActor-attributes, #fileActor-skills, #fileActor-equipments,
     #fileActor-inventory, #fileActor-events, #fileActor-scripts
-  `).on('change', this.listChange);
+  `)
+			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	FileActor.create = function (this: any) {
@@ -138,7 +139,7 @@ function getWindow() {
 
 	FileActor.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			clear($('#fileActor-sprites'));
@@ -159,7 +160,7 @@ function getWindow() {
 			case 'clip':
 				if (actor[key] !== value) {
 					actor[key] = value;
-					(window as any).Browser?.body?.updateIcon?.(this.meta.file);
+					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
 				}
 				break;
 			case 'animationId':
@@ -302,7 +303,7 @@ function getWindow() {
 			];
 		},
 		open: function ({ id = '', image = '' } = {}) {
-			getWindow().open('fileActor-sprite');
+			Window.open!('fileActor-sprite');
 			const animationId = FileActor.target.animationId;
 			const items = Animation.getSpriteListItems!(animationId);
 			$('#fileActor-sprite-id').loadItems(items);
@@ -322,7 +323,7 @@ function getWindow() {
 				return getFocus($('#fileActor-sprite-id'));
 			}
 			const image = read('image');
-			getWindow().close('fileActor-sprite');
+			Window.close!('fileActor-sprite');
 			return { id, image };
 		}
 	};
@@ -350,7 +351,7 @@ function getWindow() {
 			];
 		},
 		open: function ({ id = '', key = '' } = {}) {
-			getWindow().open('fileActor-skill');
+			Window.open!('fileActor-skill');
 			const elSkillId = $('#fileActor-skill-id');
 			const elSkillKey = $('#fileActor-skill-key');
 			const items = Enum.getStringItems!('shortcut-key', true);
@@ -367,7 +368,7 @@ function getWindow() {
 				return getFocus(elSkillId);
 			}
 			const key = read(elSkillKey);
-			getWindow().close('fileActor-skill');
+			Window.close!('fileActor-skill');
 			return { id, key };
 		}
 	};
@@ -395,7 +396,7 @@ function getWindow() {
 			];
 		},
 		open: function ({ id = '', slot = Enum.getDefStringId!('equipment-slot') } = {}) {
-			getWindow().open('fileActor-equipment');
+			Window.open!('fileActor-equipment');
 			const elEquipmentId = $('#fileActor-equipment-id');
 			const elEquipmentKey = $('#fileActor-equipment-slot');
 			const items = Enum.getStringItems!('equipment-slot');
@@ -415,7 +416,7 @@ function getWindow() {
 			if (!slot) {
 				return getFocus(elKey);
 			}
-			getWindow().close('fileActor-equipment');
+			Window.close!('fileActor-equipment');
 			return { id, slot };
 		}
 	};
@@ -484,7 +485,7 @@ function getWindow() {
 			}
 		},
 		open: function ({ type = 'item', id = '', quantity = 1, money = 1 } = {}) {
-			getWindow().open('fileActor-inventory-goods');
+			Window.open!('fileActor-inventory-goods');
 			const write = getElementWriter('fileActor-inventory');
 			const itemId = type === 'item' ? id : '';
 			const equipmentId = type === 'equipment' ? id : '';
@@ -516,7 +517,7 @@ function getWindow() {
 					goods = { type: 'money', money: read('money') };
 					break;
 			}
-			getWindow().close('fileActor-inventory-goods');
+			Window.close!('fileActor-inventory-goods');
 			return goods;
 		}
 	};

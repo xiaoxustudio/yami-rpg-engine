@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { EventEditor } from '@/command/event-editor.ts';
 import { shallowRef } from 'vue';
 
 export const useCommandStore = defineStore('command', () => {
@@ -6,97 +7,96 @@ export const useCommandStore = defineStore('command', () => {
 	const target = shallowRef<any>(null);
 
 	function syncState() {
-		const EventEditor = (window as any).EventEditor;
 		state.value = EventEditor?.state ?? 'closed';
 		target.value = EventEditor?.target ?? null;
 	}
 
 	function initialize() {
-		(window as any).EventEditor?.initialize?.();
+		EventEditor?.initialize?.();
 	}
 
 	function open(target: any) {
-		(window as any).EventEditor?.open?.(target);
+		EventEditor?.open?.(target);
 	}
 
 	function close() {
-		(window as any).EventEditor?.close?.();
+		EventEditor?.close?.();
 	}
 
 	function planToSave() {
-		(window as any).EventEditor?.planToSave?.();
+		EventEditor?.planToSave?.();
 	}
 
 	function openLocalEvent(inserting: any, filter: any, name: any, event: any, callback: any) {
-		(window as any).EventEditor?.openLocalEvent?.(inserting, filter, name, event, callback);
+		EventEditor?.openLocalEvent?.(inserting, filter, name, event, callback);
 	}
 
 	function openGlobalEvent(guid: any) {
-		(window as any).EventEditor?.openGlobalEvent?.(guid);
+		EventEditor?.openGlobalEvent?.(guid);
 	}
 
 	function openRelatedEvents(contexts: any) {
-		(window as any).EventEditor?.openRelatedEvents?.(contexts);
+		EventEditor?.openRelatedEvents?.(contexts);
 	}
 
 	function findRelatedEvents(eventId: any) {
-		return (window as any).EventEditor?.findRelatedEvents?.(eventId);
+		return EventEditor?.findRelatedEvents?.(eventId);
 	}
 
 	function getAllLocalEvents() {
-		return (window as any).EventEditor?.getAllLocalEvents?.();
+		return EventEditor?.getAllLocalEvents?.();
 	}
 
 	function clearAllEventClasses(...items: any[]) {
-		return (window as any).EventEditor?.clearAllEventClasses?.(...items);
+		return EventEditor?.clearAllEventClasses?.(...items);
 	}
 
 	function clearRelatedEventClasses(...items: any[]) {
-		return (window as any).EventEditor?.clearRelatedEventClasses?.(...items);
+		return EventEditor?.clearRelatedEventClasses?.(...items);
 	}
 
 	function save(item: any) {
-		(window as any).EventEditor?.save?.(item);
+		EventEditor?.save?.(item);
 	}
 
 	function isChanged() {
-		return (window as any).EventEditor?.isChanged?.();
+		return EventEditor?.isChanged?.();
 	}
 
 	function getItemById(id: any) {
-		return (window as any).EventEditor?.getItemById?.(id);
+		return EventEditor?.getItemById?.(id);
 	}
 
 	function getItemByEvent(event: any) {
-		return (window as any).EventEditor?.getItemByEvent?.(event);
+		return EventEditor?.getItemByEvent?.(event);
 	}
 
 	function openCommandList(item: any) {
-		(window as any).EventEditor?.openCommandList?.(item);
+		EventEditor?.openCommandList?.(item);
 	}
 
 	function closeCommandList() {
-		(window as any).EventEditor?.closeCommandList?.();
+		EventEditor?.closeCommandList?.();
 	}
 
 	function unpackOpenEvents() {
-		return (window as any).EventEditor?.unpackOpenEvents?.();
+		return EventEditor?.unpackOpenEvents?.();
 	}
 
 	function packOpenEvents() {
-		return (window as any).EventEditor?.packOpenEvents?.();
+		return EventEditor?.packOpenEvents?.();
 	}
 
 	function getGlobalEventName(id: any) {
-		return (window as any).EventEditor?.getGlobalEventName?.(id);
+		return EventEditor?.getGlobalEventName?.(id);
 	}
 
 	function confirm(event?: any) {
-		(window as any).EventEditor?.confirm?.(event);
+		EventEditor?.confirm?.(event);
 	}
 
 	function apply(event?: any) {
-		(window as any).EventEditor?.apply?.(event);
+		EventEditor?.apply?.(event);
 	}
 
 	return {

@@ -60,17 +60,25 @@ import { read } from '@/util/element-utils.ts';
 		$('#uiImage-tint-2-slider').synchronize($('#uiImage-tint-2'));
 		$('#uiImage-tint-3-slider').synchronize($('#uiImage-tint-3'));
 
-		const elements = $(`#uiImage-image,
+		const elements = document.querySelectorAll(`#uiImage-image,
     #uiImage-display, #uiImage-flip, #uiImage-blend,
     #uiImage-shiftX, #uiImage-shiftY, #uiImage-clip, #uiImage-border,
     #uiImage-tint-0, #uiImage-tint-1, #uiImage-tint-2, #uiImage-tint-3`);
-		const sliders = $(`
+		const sliders = document.querySelectorAll(`
     #uiImage-tint-0-slider, #uiImage-tint-1-slider,
     #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('blur', Inspector.sliderBlur)
+		);
 	};
 
 	UIImage.create = function (this: any) {

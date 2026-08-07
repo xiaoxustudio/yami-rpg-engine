@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, read, write } from '@/util/element-utils';
 import { reportError } from '@/util/safe.ts';
 import { ActorGetter } from '@/command/actor-accessor-window.ts';
@@ -22,9 +23,6 @@ import { TriggerGetter } from '@/command/trigger-accessor-window.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface CommandSchemaConfig {
 	name: string;
@@ -99,8 +97,8 @@ export class CommandSchema {
 			this[key] = config[key];
 		}
 		if (this.noWindow) {
-			(this as any).load = null;
-			(this as any).initialize = null;
+			(this as any).load = null as unknown as (...args: unknown[]) => any;
+			(this as any).initialize = null as unknown as (...args: unknown[]) => any;
 		}
 	}
 
@@ -259,7 +257,7 @@ export class CommandSchema {
 	static insert(target: any, id: any) {
 		Command.target = target;
 		if (id) {
-			target.scrollAndResize();
+			target?.scrollAndResize?.();
 			return CommandSchema.open(id);
 		}
 		CommandSuggestion.open?.();
@@ -270,13 +268,13 @@ export class CommandSchema {
 		if (handler !== undefined) {
 			Command.id = id;
 			if (handler.load) {
-				const point = Command.target.getSelectionPosition();
+				const point = Command.target?.getSelectionPosition?.();
 				if (point) {
-					getWindow().setPositionMode('absolute');
-					getWindow().absolutePos.x = point.x + 100;
-					getWindow().absolutePos.y = point.y;
-					getWindow().open(id);
-					getWindow().setPositionMode('overlap');
+					Window.setPositionMode!('absolute');
+					Window.absolutePos.x = point.x + 100;
+					Window.absolutePos.y = point.y;
+					Window.open!(id);
+					Window.setPositionMode!('overlap');
 					handler.load({});
 				}
 			} else {
@@ -288,13 +286,13 @@ export class CommandSchema {
 		if (meta !== undefined && Command.custom.commandNameMap?.[id]) {
 			Command.id = id;
 			if (meta.parameters.length !== 0) {
-				const point = Command.target.getSelectionPosition();
+				const point = Command.target?.getSelectionPosition?.();
 				if (point) {
-					getWindow().setPositionMode('absolute');
-					getWindow().absolutePos.x = point.x + 100;
-					getWindow().absolutePos.y = point.y;
-					getWindow().open('scriptCommand');
-					getWindow().setPositionMode('overlap');
+					Window.setPositionMode!('absolute');
+					Window.absolutePos.x = point.x + 100;
+					Window.absolutePos.y = point.y;
+					Window.open!('scriptCommand');
+					Window.setPositionMode!('overlap');
 					Command.custom.load(id, {});
 				}
 			} else {
@@ -309,14 +307,14 @@ export class CommandSchema {
 		if (handler?.load instanceof Function) {
 			Command.target = target;
 			Command.id = id;
-			target.scrollAndResize();
-			const point = target.getSelectionPosition();
+			target?.scrollAndResize?.();
+			const point = target?.getSelectionPosition?.();
 			if (point) {
-				getWindow().setPositionMode('absolute');
-				getWindow().absolutePos.x = point.x + 100;
-				getWindow().absolutePos.y = point.y;
-				getWindow().open(id);
-				getWindow().setPositionMode('overlap');
+				Window.setPositionMode!('absolute');
+				Window.absolutePos.x = point.x + 100;
+				Window.absolutePos.y = point.y;
+				Window.open!(id);
+				Window.setPositionMode!('overlap');
 				handler.load(params);
 			}
 		}
@@ -325,14 +323,14 @@ export class CommandSchema {
 		if (meta?.parameters.length > 0 && Command.custom.commandNameMap?.[id]) {
 			Command.target = target;
 			Command.id = id;
-			target.scrollAndResize();
-			const point = target.getSelectionPosition();
+			target?.scrollAndResize?.();
+			const point = target?.getSelectionPosition?.();
 			if (point) {
-				getWindow().setPositionMode('absolute');
-				getWindow().absolutePos.x = point.x + 100;
-				getWindow().absolutePos.y = point.y;
-				getWindow().open('scriptCommand');
-				getWindow().setPositionMode('overlap');
+				Window.setPositionMode!('absolute');
+				Window.absolutePos.x = point.x + 100;
+				Window.absolutePos.y = point.y;
+				Window.open!('scriptCommand');
+				Window.setPositionMode!('overlap');
 				Command.custom.load(id, params);
 			}
 		}
@@ -340,12 +338,12 @@ export class CommandSchema {
 
 	static save(params: any) {
 		const { id, target } = Command;
-		target.save({ id, params });
+		target?.save?.({ id, params });
 		const handler = CommandSchema._resolve(id);
 		if (handler !== undefined) {
-			(handler as any).load && getWindow().close(id);
+			(handler as any).load && Window.close!(id);
 		} else {
-			getWindow().close('scriptCommand');
+			Window.close!('scriptCommand');
 		}
 	}
 

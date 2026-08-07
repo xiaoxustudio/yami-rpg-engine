@@ -1,11 +1,11 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { on, hide, show, hasClass, read } from '@/util/element-utils.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from './localization.ts';
 import { Cursor } from './pointer-object.ts';
-import { Window } from './window-object.ts';
 import { Path } from '@/util/config.ts';
 
 export const ImageClip = {
@@ -58,9 +58,9 @@ ImageClip.initialize = function (this: any) {
 	on(this.screen, 'keydown', this.screenKeydown);
 	this.marquee.addEventListener('pointerdown', this.marqueePointerdown);
 	attachDoubleclick(this.marquee, this.marqueeDoubleclick);
-	$('#imageClip-x, #imageClip-y, #imageClip-width, #imageClip-height').forEach(
-		(el: HTMLElement) => el.addEventListener('input', this.paramInput!)
-	);
+	document
+		.querySelectorAll('#imageClip-x, #imageClip-y, #imageClip-width, #imageClip-height')
+		.forEach((el) => el.addEventListener('input', this.paramInput!));
 	on($('#imageClip-confirm'), 'click', this.confirm);
 };
 
@@ -81,7 +81,7 @@ ImageClip.open = async function (this: any, target: any) {
 ImageClip.loadImage = function (this: any) {
 	this.window.setTitle('');
 
-	const id = this.target.getAttribute('image');
+	const id = this.target?.getAttribute?.('image');
 	const guid = read($('#' + id));
 	const path = File.getPath!(guid);
 	if (path) {
@@ -315,7 +315,7 @@ ImageClip.marqueeDoubleclick = function (this: any, event: any) {
 
 ImageClip.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				Cursor.close('cursor-grab');
@@ -329,7 +329,7 @@ ImageClip.pointerup = function (this: any, event: any) {
 
 ImageClip.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;
@@ -345,6 +345,6 @@ ImageClip.paramInput = function (this: any, event: any) {
 
 ImageClip.confirm = function (this: any, event: any) {
 	const read = getElementReader('imageClip');
-	this.target.input([read('x'), read('y'), read('width'), read('height')]);
+	this.target?.input?.([read('x'), read('y'), read('width'), read('height')]);
 	Window.close!('imageClip');
 }.bind(ImageClip);

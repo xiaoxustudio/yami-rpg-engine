@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Scene } from '@/scene/scene-window.ts';
 import { shallowRef } from 'vue';
 
 export const useSceneStore = defineStore('scene', () => {
@@ -6,69 +7,68 @@ export const useSceneStore = defineStore('scene', () => {
 	const target = shallowRef<any>(null);
 
 	function syncState() {
-		const Scene = (window as any).Scene;
 		state.value = Scene?.state ?? 'closed';
 		target.value = Scene?.target ?? null;
 	}
 
 	function open(target: any) {
-		(window as any).Scene?.open?.(target);
+		Scene?.open?.(target);
 	}
 
 	function close() {
-		(window as any).Scene?.close?.();
+		Scene?.close?.();
 	}
 
 	function planToSave() {
-		(window as any).Scene?.planToSave?.();
+		Scene?.planToSave?.();
 	}
 
 	function requestRendering() {
-		(window as any).Scene?.requestRendering?.();
+		Scene?.requestRendering?.();
 	}
 
 	function load(context: any) {
-		(window as any).Scene?.load?.(context);
+		Scene?.load?.(context);
 	}
 
 	function save() {
-		(window as any).Scene?.save?.();
+		Scene?.save?.();
 	}
 
 	function destroy(context: any) {
-		(window as any).Scene?.destroy?.(context);
+		Scene?.destroy?.(context);
 	}
 
 	function copy() {
-		(window as any).Scene?.copy?.();
+		Scene?.copy?.();
 	}
 
 	function paste(x: number, y: number) {
-		(window as any).Scene?.paste?.(x, y);
+		Scene?.paste?.(x, y);
 	}
 
 	function duplicate() {
-		(window as any).Scene?.duplicate?.();
+		Scene?.duplicate?.();
 	}
 
 	function create(kind: string, x: number, y: number) {
-		(window as any).Scene?.create?.(kind, x, y);
+		Scene?.create?.(kind, x, y);
 	}
 
 	function delete_() {
-		(window as any).Scene?.delete?.();
+		Scene?.delete?.();
 	}
 
 	function toggle() {
-		(window as any).Scene?.toggle?.();
+		Scene?.toggle?.();
 	}
 
 	function undo() {
-		(window as any).Scene?.undo?.();
+		Scene?.undo?.();
 	}
 
 	function redo() {
-		(window as any).Scene?.redo?.();
+		Scene?.redo?.();
 	}
 
 	return {

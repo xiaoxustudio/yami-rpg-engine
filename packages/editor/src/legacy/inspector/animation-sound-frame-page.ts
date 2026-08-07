@@ -18,16 +18,22 @@ import { Inspector } from './inspector.ts';
 
 	AnimSoundFrame.initialize = function (this: any) {
 		if (!$('#animSoundFrame-sound')) return;
-		const elements = $('#animSoundFrame-sound, #animSoundFrame-volume');
-		elements.on('input', this.paramInput);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on(
-			'blur',
-			Inspector.inputBlur!(this, Animation, (data: any) => {
-				data.type = 'inspector-frame-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
+		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('input', this.paramInput)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on(
+				'blur',
+				Inspector.inputBlur!(this, Animation, (data: any) => {
+					data.type = 'inspector-frame-change';
+					data.motion = this.motion;
+					data.direction = Animation.direction;
+				})
+			)
 		);
 	};
 

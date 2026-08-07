@@ -1,4 +1,5 @@
 import { $ } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { File } from '@/file/file-system-core.ts';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { Inspector } from './inspector.ts';
@@ -71,7 +72,7 @@ import { Inspector } from './inspector.ts';
 
 	FileVideo.close = function (this: any) {
 		if (this.target) {
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			this.symbol = null;

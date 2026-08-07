@@ -3,7 +3,7 @@ import { getFocus, read, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { EventEditor } from '@/command/event-editor.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { TextSuggestion } from '@/command/text-tip.ts';
+import { TextSuggestion, type TextSuggestionTarget } from '@/command/text-tip.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
@@ -11,7 +11,10 @@ Command.cases.jumpTo = new CommandSchema({
 	name: 'jumpTo',
 	onInitialize() {
 		$('#jumpTo-confirm').on('click', () => this.save!());
-		TextSuggestion.listen!($('#jumpTo-label'), this.loadLabels);
+		TextSuggestion.listen!(
+			$('#jumpTo-label') as unknown as TextSuggestionTarget,
+			this.loadLabels
+		);
 		$('#jumpTo-operation').loadItems([
 			{ name: 'Jump to Label', value: 'jump' },
 			{ name: 'Save and Jump to Label', value: 'save-jump' },

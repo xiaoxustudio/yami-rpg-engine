@@ -47,7 +47,7 @@ export const seek = (el: any, tagName: string, count = 1): HTMLElement => {
 	return element;
 };
 
-export const css = (el: any): CSSStyleDeclaration => getComputedStyle(el);
+export const css = (el: any): CSSStyleDeclaration => getComputedStyle(el as Element);
 
 export const rect = (el: any): DOMRect => el.getBoundingClientRect();
 

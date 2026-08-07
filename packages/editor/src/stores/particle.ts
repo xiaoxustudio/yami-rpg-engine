@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Particle } from '@/particle/particle-window.ts';
 import { shallowRef } from 'vue';
 
 export const useParticleStore = defineStore('particle', () => {
@@ -6,89 +7,88 @@ export const useParticleStore = defineStore('particle', () => {
 	const target = shallowRef<any>(null);
 
 	function syncState() {
-		const Particle = (window as any).Particle;
 		state.value = Particle?.state ?? 'closed';
 		target.value = Particle?.target ?? null;
 	}
 
 	function open(context: any) {
-		(window as any).Particle?.open?.(context);
+		Particle?.open?.(context);
 	}
 
 	function close() {
-		(window as any).Particle?.close?.();
+		Particle?.close?.();
 	}
 
 	function planToSave() {
-		(window as any).Particle?.planToSave?.();
+		Particle?.planToSave?.();
 	}
 
 	function requestRendering() {
-		(window as any).Particle?.requestRendering?.();
+		Particle?.requestRendering?.();
 	}
 
 	function load(context: any) {
-		(window as any).Particle?.load?.(context);
+		Particle?.load?.(context);
 	}
 
 	function save() {
-		(window as any).Particle?.save?.();
+		Particle?.save?.();
 	}
 
 	function destroy(context: any) {
-		(window as any).Particle?.destroy?.(context);
+		Particle?.destroy?.(context);
 	}
 
 	function restart() {
-		(window as any).Particle?.restart?.();
+		Particle?.restart?.();
 	}
 
 	function undo() {
-		(window as any).Particle?.undo?.();
+		Particle?.undo?.();
 	}
 
 	function redo() {
-		(window as any).Particle?.redo?.();
+		Particle?.redo?.();
 	}
 
 	function setTarget(targetValue: any) {
-		(window as any).Particle?.setTarget?.(targetValue);
+		Particle?.setTarget?.(targetValue);
 	}
 
 	function updateTarget() {
-		(window as any).Particle?.updateTarget?.();
+		Particle?.updateTarget?.();
 	}
 
 	function updateParticleInfo() {
-		(window as any).Particle?.updateParticleInfo?.();
+		Particle?.updateParticleInfo?.();
 	}
 
 	function selectEmitter(x: number, y: number) {
-		return (window as any).Particle?.selectEmitter?.(x, y);
+		return Particle?.selectEmitter?.(x, y);
 	}
 
 	function requestAnimation() {
-		(window as any).Particle?.requestAnimation?.();
+		Particle?.requestAnimation?.();
 	}
 
 	function stopAnimation() {
-		(window as any).Particle?.stopAnimation?.();
+		Particle?.stopAnimation?.();
 	}
 
 	function saveToConfig(config: any) {
-		(window as any).Particle?.saveToConfig?.(config);
+		Particle?.saveToConfig?.(config);
 	}
 
 	function loadFromConfig(config: any) {
-		(window as any).Particle?.loadFromConfig?.(config);
+		Particle?.loadFromConfig?.(config);
 	}
 
 	function saveToProject(project: any) {
-		(window as any).Particle?.saveToProject?.(project);
+		Particle?.saveToProject?.(project);
 	}
 
 	function loadFromProject(project: any) {
-		(window as any).Particle?.loadFromProject?.(project);
+		Particle?.loadFromProject?.(project);
 	}
 
 	return {

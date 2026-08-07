@@ -1,87 +1,88 @@
 import { defineStore } from 'pinia';
+import { Menubar } from '@/title/menu-bar.ts';
 import { shallowRef } from 'vue';
 
 export const useMenubarStore = defineStore('menubar', () => {
 	const state = shallowRef<string>('closed');
 
 	function syncState() {
-		state.value = (window as any).Menubar?.state ?? 'closed';
+		state.value = Menubar?.state ?? 'closed';
 	}
 
 	function popup(rect: any, menus: any[]) {
-		(window as any).Menubar?.popup?.(rect, menus);
+		Menubar?.popup?.(rect, menus);
 	}
 
 	function initialize() {
-		(window as any).Menubar?.initialize?.();
+		Menubar?.initialize?.();
 	}
 
 	function toggleFullScreen() {
-		(window as any).Menubar?.toggleFullScreen?.();
+		Menubar?.toggleFullScreen?.();
 	}
 
 	function popupFileMenu(target: any) {
-		(window as any).Menubar?.popupFileMenu?.(target);
+		Menubar?.popupFileMenu?.(target);
 	}
 
 	function popupEditMenu(target: any) {
-		(window as any).Menubar?.popupEditMenu?.(target);
+		Menubar?.popupEditMenu?.(target);
 	}
 
 	function popupViewMenu(target: any) {
-		(window as any).Menubar?.popupViewMenu?.(target);
+		Menubar?.popupViewMenu?.(target);
 	}
 
 	function popupWindowMenu(target: any) {
-		(window as any).Menubar?.popupWindowMenu?.(target);
+		Menubar?.popupWindowMenu?.(target);
 	}
 
 	function popupHelpMenu(target: any) {
-		(window as any).Menubar?.popupHelpMenu?.(target);
+		Menubar?.popupHelpMenu?.(target);
 	}
 
 	function popupOpenYamiMenu(target: any) {
-		(window as any).Menubar?.popupOpenYamiMenu?.(target);
+		Menubar?.popupOpenYamiMenu?.(target);
 	}
 
 	function createRecentItems() {
-		return (window as any).Menubar?.createRecentItems?.();
+		return Menubar?.createRecentItems?.();
 	}
 
 	function createLanguageItems() {
-		return (window as any).Menubar?.createLanguageItems?.();
+		return Menubar?.createLanguageItems?.();
 	}
 
 	function createColorIcon(color: string) {
-		return (window as any).Menubar?.createColorIcon?.(color);
+		return Menubar?.createColorIcon?.(color);
 	}
 
 	function revealSaveDirectory() {
-		return (window as any).Menubar?.revealSaveDirectory?.();
+		return Menubar?.revealSaveDirectory?.();
 	}
 
 	function sanitizeFolderName(name: string) {
-		return (window as any).Menubar?.sanitizeFolderName?.(name);
+		return Menubar?.sanitizeFolderName?.(name);
 	}
 
 	function keydown(event: any) {
-		(window as any).Menubar?.keydown?.(event);
+		Menubar?.keydown?.(event);
 	}
 
 	function pointerdown(event: any) {
-		(window as any).Menubar?.pointerdown?.(event);
+		Menubar?.pointerdown?.(event);
 	}
 
 	function pointerup(event: any) {
-		(window as any).Menubar?.pointerup?.(event);
+		Menubar?.pointerup?.(event);
 	}
 
 	function pointerover(event: any) {
-		(window as any).Menubar?.pointerover?.(event);
+		Menubar?.pointerover?.(event);
 	}
 
 	function hrefClick(event: any) {
-		(window as any).Menubar?.hrefClick?.(event);
+		Menubar?.hrefClick?.(event);
 	}
 
 	return {

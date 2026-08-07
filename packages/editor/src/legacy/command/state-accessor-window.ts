@@ -1,9 +1,7 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const StateGetter = {
 	target: null as any,
@@ -38,7 +36,7 @@ StateGetter.initialize = function (this: any) {
 
 StateGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('stateGetter');
+	Window.open!('stateGetter');
 
 	let actor = { type: 'trigger' };
 	let stateId = '';
@@ -104,6 +102,6 @@ StateGetter.confirm = function (this: any, event: any) {
 	if (this.target.isPluginInput) {
 		getter = { getter: 'state', ...getter };
 	}
-	this.target.input(getter);
-	getWindow().close('stateGetter');
+	this.target?.input?.(getter);
+	Window.close!('stateGetter');
 }.bind(StateGetter);

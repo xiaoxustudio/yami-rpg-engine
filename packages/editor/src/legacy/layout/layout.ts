@@ -1,4 +1,5 @@
 import { relate, hideDragImage, getRelativeCoords } from '@/util/element-utils';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { $ } from '@/util/dom.ts';
 import {
 	on,
@@ -60,24 +61,24 @@ export const Layout = {
 	enableFocusableElements: null as (() => void) | null,
 	disableFocusableElements: null as (() => void) | null,
 	saveNavStates: null as (() => void) | null,
-	saveLayoutScheme: null as ((rootGroup: any) => any) | null,
-	loadLayoutScheme: null as ((key: string) => void) | null,
+	saveLayoutScheme: null as ((rootGroup?: any) => any) | null,
+	loadLayoutScheme: null as ((key?: string) => void) | null,
 	saveToConfig: null as ((config: any) => void) | null,
 	loadFromConfig: null as ((config: any) => void) | null,
 	windowResize: null as ((event: EditorEvent) => void) | null,
 	windowLocalize: null as ((event: EditorEvent) => void) | null,
 	pageSwitch: null as ((event: EditorEvent) => void) | null,
-	navWrite: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
+	navWrite: null as ((event: EditorEvent) => void) | null,
 	navPointerdown: null as ((event: any) => void) | null,
-	navDragstart: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
+	navDragstart: null as ((event: EditorEvent) => void) | null,
 	navDragend: null as ((event: EditorEvent) => void) | null,
-	navDragenter: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
+	navDragenter: null as ((event: EditorEvent) => void) | null,
 	navDragleave: null as ((event: EditorEvent) => void) | null,
 	navDragover: null as ((event: EditorEvent) => void) | null,
 	navDrop: null as ((event: EditorEvent) => void) | null,
-	regionDragleave: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
-	regionDragover: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
-	borderPointerdown: null as ((this: HTMLElement, event: EditorEvent) => void) | null,
+	regionDragleave: null as ((event: EditorEvent) => void) | null,
+	regionDragover: null as ((event: EditorEvent) => void) | null,
+	borderPointerdown: null as ((event: EditorEvent) => void) | null,
 	pointerup: null as ((event?: EditorEvent) => void) | null,
 	pointermove: null as ((event: EditorEvent) => void) | null
 };
@@ -90,17 +91,19 @@ Layout.initialize = function () {
 	for (const item of nav.childNodes) {
 		if (item.nodeType !== 1) continue;
 		const key = item.getAttribute('value');
-		item.draggable = true;
+		(item as HTMLElement).draggable = true;
 		const string = key ?? '';
 		const isNumber = RegExp.number.test(string);
-		(item as any).dataValue = isNumber ? parseFloat(string) : string;
-		items[key] = item;
+		(item as HTMLElement).dataValue = (isNumber
+			? parseFloat(string)
+			: string) as unknown as Record<string, any> | null;
+		items[key!] = item;
 	}
 	for (const page of manager.childNodes) {
 		if (page.nodeType !== 1) continue;
 		const key = page.getAttribute('value');
-		(page as any).dataValue = key;
-		items[key].page = page;
+		(page as HTMLElement).dataValue = key as unknown as Record<string, any> | null;
+		items[key!].page = page;
 	}
 
 	Object.defineProperty(items, 'list', {
@@ -115,7 +118,7 @@ Layout.initialize = function () {
 		Animation.head,
 		Animation.list.head,
 		Animation.timeline.head,
-		(window as any).Browser?.head,
+		getBrowserInstance()?.head,
 		Palette.head
 	];
 
@@ -658,11 +661,11 @@ Layout.saveLayoutScheme = (function IIFE() {
 	};
 })();
 
-Layout.loadLayoutScheme = function (key: string) {
+Layout.loadLayoutScheme = function (key?: string) {
 	const layout = this.layout ?? {};
-	let scheme = layout[key];
+	let scheme = layout[key ?? ''];
 	if (scheme === undefined) {
-		scheme = this.default?.[key];
+		scheme = this.default?.[key ?? ''];
 	}
 	const page = this.manager.active;
 	if (scheme === undefined || page === null) {
@@ -827,9 +830,9 @@ Layout.pageSwitch = function (event: EditorEvent) {
 	}
 };
 
-Layout.navWrite = function (this: HTMLElement, event: EditorEvent) {
+Layout.navWrite = function (this: typeof Layout, event: EditorEvent) {
 	const index = event.value;
-	(this.parentNode as any).manager.switch(index);
+	((this as HTMLElement & typeof Layout).parentNode as any).manager.switch(index);
 };
 
 Layout.navPointerdown = function (event: any) {
@@ -861,14 +864,14 @@ Layout.navPointerdown = function (event: any) {
 	}
 };
 
-Layout.navDragstart = function (this: HTMLElement, event: any) {
+Layout.navDragstart = function (this: typeof Layout, event: any) {
 	if (!Layout.dragging) {
 		Layout.dragging = event;
 		Object.defineProperty(event, 'clientX', { writable: true });
 		Object.defineProperty(event, 'clientY', { writable: true });
 		event.preventDefault = Function.empty;
 		hideDragImage(event.dataTransfer);
-		event.group = this.parentNode;
+		event.group = (this as HTMLElement & typeof Layout).parentNode;
 		event.hint = createDragAndDropHint();
 		addClass(event.hint, 'for-group');
 		window.addEventListener('dragenter', Layout.navDragover!);
@@ -919,13 +922,13 @@ Layout.navDragend = function (event: EditorEvent) {
 	}
 };
 
-Layout.navDragenter = function (this: HTMLElement, event: any) {
+Layout.navDragenter = function (this: typeof Layout, event: any) {
 	const { dragging } = Layout;
 	if (dragging) {
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'move';
 		const trigger = event.target;
-		const target = this.parentNode;
+		const target = (this as HTMLElement & typeof Layout).parentNode;
 		const sGroup = dragging.group;
 		const sItem = dragging.target;
 		const sNav = sGroup.nav;
@@ -1093,20 +1096,20 @@ Layout.navDrop = function (event: EditorEvent) {
 	}
 };
 
-Layout.regionDragleave = function (this: HTMLElement, event: EditorEvent) {
+Layout.regionDragleave = function (this: typeof Layout, event: EditorEvent) {
 	const { dragging } = Layout;
 	if (dragging && dragging.location && dragging.location.trigger === this) {
 		Layout.updateHint!(null);
 	}
 };
 
-Layout.regionDragover = function (this: HTMLElement, event: any) {
+Layout.regionDragover = function (this: typeof Layout, event: any) {
 	const { dragging } = Layout;
 	if ((dragging && dragging.clientX !== event.clientX) || dragging.clientY !== event.clientY) {
 		dragging.clientX = event.clientX;
 		dragging.clientY = event.clientY;
 		const root = Layout.manager.active.childNodes[0];
-		let target: any = this.parentNode;
+		let target: any = (this as HTMLElement & typeof Layout).parentNode;
 		let parent: any = target.parentNode;
 		let siblings = parent.childNodes;
 		let direction;
@@ -1154,8 +1157,8 @@ Layout.regionDragover = function (this: HTMLElement, event: any) {
 			}
 		}
 		const { x, y } = getRelativeCoords(event, this);
-		const w = this.clientWidth;
-		const h = this.clientHeight;
+		const w = (this as HTMLElement & typeof Layout).clientWidth;
+		const h = (this as HTMLElement & typeof Layout).clientHeight;
 		const n = Math.min(w, h) / 4;
 		const l = n;
 		const t = n;
@@ -1273,13 +1276,13 @@ Layout.regionDragover = function (this: HTMLElement, event: any) {
 	}
 };
 
-Layout.borderPointerdown = function (this: HTMLElement, event: any) {
+Layout.borderPointerdown = function (this: typeof Layout, event: any) {
 	// event.preventDefault()
 	switch (event.button) {
 		case 0:
 			if (!Layout.resizing) {
 				Layout.resizing = event;
-				const group: any = this.parentNode;
+				const group: any = (this as HTMLElement & typeof Layout).parentNode;
 				const outer: any = group.parentNode;
 				switch (outer.split) {
 					case 'horizontal':
@@ -1368,5 +1371,3 @@ Layout.pointermove = function (event: EditorEvent) {
 		}
 	}
 };
-
-(window as any).Layout = Layout;

@@ -135,7 +135,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		const { eventResult } = this;
 		if (eventResult) {
 			eventResult.label.remove();
-			eventResult.input.remove();
+			eventResult.input!.remove();
 			this.eventResult = null;
 		}
 	},
@@ -156,8 +156,8 @@ import { Selection } from '@/tools/text-capture.ts';
 				break;
 			case 'number':
 				input = createNumberVar();
-				input.numBox.input.min = '-1000000000';
-				input.numBox.input.max = '1000000000';
+				input.numBox.input!.min = '-1000000000';
+				input.numBox.input!.max = '1000000000';
 				input.numBox.decimals = 10;
 				break;
 			case 'string':

@@ -72,23 +72,30 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneTilemap-parameter-pane').bind($('#sceneTilemap-scripts'));
 
-		const elements = $(`#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order,
+		const elements =
+			document.querySelectorAll(`#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order,
     #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y,
     #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY,
     #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity`);
-		elements.forEach((el: HTMLElement) => el.addEventListener('input', this.paramInput!));
-		elements.forEach((el: HTMLElement) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: HTMLElement) =>
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
 		$('#sceneTilemap-layer').addEventListener('write', this.layerWrite);
 		$('#sceneTilemap-layer').addEventListener('input', this.layerInput);
-		$('#sceneTilemap-width, #sceneTilemap-height').forEach((el: HTMLElement) =>
-			el.addEventListener('change', this.paramInput!)
-		);
-		$('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts').forEach(
-			(el: HTMLElement) => el.addEventListener('change', Scene.listChange)
-		);
+		document
+			.querySelectorAll('#sceneTilemap-width, #sceneTilemap-height')
+			.forEach((el) => el.addEventListener('change', this.paramInput!));
+		document
+			.querySelectorAll(
+				'#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts'
+			)
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
 	SceneTilemap.create = function (this: any, width = 4, height = 4) {

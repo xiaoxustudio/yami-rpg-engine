@@ -72,17 +72,26 @@ import { UI } from '@/ui/ui-window.ts';
 				{ case: 'outline', targets: [$('#uiText-effect-color')] }
 			]);
 
-		const elements = $(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
+		const elements =
+			document.querySelectorAll(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
     #uiText-content, #uiText-size, #uiText-lineSpacing, #uiText-letterSpacing, #uiText-color, #uiText-font,
     #uiText-typeface, #uiText-effect-type, #uiText-effect-shadowOffsetX, #uiText-effect-shadowOffsetY,
     #uiText-effect-strokeWidth, #uiText-effect-color, #uiText-overflow, #uiText-blend`);
 		const sliders = $(
 			'#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider'
 		);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
-		sliders.on('focus', Inspector.sliderFocus);
-		sliders.on('blur', Inspector.sliderBlur);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('blur', Inspector.sliderBlur)
+		);
 	};
 
 	UIText.create = function (this: any) {

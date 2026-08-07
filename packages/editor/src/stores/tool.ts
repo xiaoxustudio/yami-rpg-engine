@@ -1,4 +1,9 @@
 import { defineStore } from 'pinia';
+import { Zoom } from '@/tools/zoom-window.ts';
+import { PresetElement } from '@/tools/preset-element-window.ts';
+import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { Color } from '@/tools/color-picker-window.ts';
+import { Selection } from '@/tools/text-capture.ts';
 import { shallowRef } from 'vue';
 
 export const useToolStore = defineStore('tool', () => {
@@ -107,63 +112,63 @@ export const useToolStore = defineStore('tool', () => {
 	}
 
 	function colorGetRGBAFromHex(...args: any[]) {
-		return (window as any).Color?.getRGBAFromHex?.(...args);
+		return Color?.getRGBAFromHex?.(...args);
 	}
 
 	function colorGetHexFromRGBA(...args: any[]) {
-		return (window as any).Color?.getHexFromRGBA?.(...args);
+		return Color?.getHexFromRGBA?.(...args);
 	}
 
 	function colorGetCSSColorFromRGBA(...args: any[]) {
-		return (window as any).Color?.getCSSColorFromRGBA?.(...args);
+		return Color?.getCSSColorFromRGBA?.(...args);
 	}
 
 	function colorSimplifyHexColor(...args: any[]) {
-		return (window as any).Color?.simplifyHexColor?.(...args);
+		return Color?.simplifyHexColor?.(...args);
 	}
 
 	function zoomGetFactor() {
-		return (window as any).Zoom?.getFactor?.();
+		return Zoom?.getFactor?.();
 	}
 
 	function presetObjectGetDefaultPresetId(...args: any[]) {
-		return (window as any).PresetObject?.getDefaultPresetId?.(...args);
+		return PresetObject?.getDefaultPresetId?.(...args);
 	}
 
 	function presetObjectBuildNodes(...args: any[]) {
-		return (window as any).PresetObject?.buildNodes?.(...args);
+		return PresetObject?.buildNodes?.(...args);
 	}
 
 	function presetElementGetDefaultPresetId(...args: any[]) {
-		return (window as any).PresetElement?.getDefaultPresetId?.(...args);
+		return PresetElement?.getDefaultPresetId?.(...args);
 	}
 
 	function presetElementBuildNodes(...args: any[]) {
-		return (window as any).PresetElement?.buildNodes?.(...args);
+		return PresetElement?.buildNodes?.(...args);
 	}
 
 	function selectionSaveContext() {
-		(window as any).Selection?.saveContext?.();
+		Selection?.saveContext?.();
 	}
 
 	function selectionRestoreContext() {
-		(window as any).Selection?.restoreContext?.();
+		Selection?.restoreContext?.();
 	}
 
 	function selectionMatch() {
-		return (window as any).Selection?.match?.();
+		return Selection?.match?.();
 	}
 
 	function selectionInsert(...args: any[]) {
-		(window as any).Selection?.insert?.(...args);
+		Selection?.insert?.(...args);
 	}
 
 	function selectionEdit() {
-		(window as any).Selection?.edit?.();
+		Selection?.edit?.();
 	}
 
 	function selectionWrap(...args: any[]) {
-		(window as any).Selection?.wrap?.(...args);
+		Selection?.wrap?.(...args);
 	}
 
 	return {

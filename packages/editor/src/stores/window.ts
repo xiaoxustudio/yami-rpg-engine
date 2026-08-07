@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { Window } from '@/tools/window-object.ts';
 import { shallowRef } from 'vue';
 
 export const useWindowStore = defineStore('window', () => {
@@ -6,64 +7,59 @@ export const useWindowStore = defineStore('window', () => {
 	const windows = shallowRef<any[]>([]);
 
 	function syncState() {
-		const Window = (window as any).Window;
 		topWindow.value = Window?.getTopWindow?.() ?? null;
 	}
 
 	function getTopWindow() {
-		return (window as any).Window?.getTopWindow?.() ?? null;
+		return Window?.getTopWindow?.() ?? null;
 	}
 
 	function confirm(options: any, buttons: any[]) {
-		return (window as any).Window?.confirm?.(options, buttons);
-	}
-
-	function alert(options: any, button?: any) {
-		return (window as any).Window?.alert?.(options, button);
+		return Window?.confirm?.(options, buttons);
 	}
 
 	function initialize() {
-		(window as any).Window?.initialize?.();
+		Window?.initialize?.();
 	}
 
 	function open(id: string) {
-		(window as any).Window?.open?.(id);
+		Window?.open?.(id);
 	}
 
 	function close(id?: string) {
-		(window as any).Window?.close?.(id);
+		Window?.close?.(id);
 	}
 
 	function closeAll() {
-		(window as any).Window?.closeAll?.();
+		Window?.closeAll?.();
 	}
 
 	function isWindowOpen(id: string) {
-		return (window as any).Window?.isWindowOpen?.(id);
+		return Window?.isWindowOpen?.(id);
 	}
 
 	function setPositionMode(mode: string) {
-		(window as any).Window?.setPositionMode?.(mode);
+		Window?.setPositionMode?.(mode);
 	}
 
 	function saveActiveElement() {
-		(window as any).Window?.saveActiveElement?.();
+		Window?.saveActiveElement?.();
 	}
 
 	function restoreActiveElement() {
-		(window as any).Window?.restoreActiveElement?.();
+		Window?.restoreActiveElement?.();
 	}
 
 	function refocus() {
-		(window as any).Window?.refocus?.();
+		Window?.refocus?.();
 	}
 
 	function keydown(event: any) {
-		(window as any).Window?.keydown?.(event);
+		Window?.keydown?.(event);
 	}
 
 	function cancel(event: any) {
-		(window as any).Window?.cancel?.(event);
+		Window?.cancel?.(event);
 	}
 
 	return {
@@ -72,7 +68,6 @@ export const useWindowStore = defineStore('window', () => {
 		syncState,
 		getTopWindow,
 		confirm,
-		alert,
 		initialize,
 		open,
 		close,

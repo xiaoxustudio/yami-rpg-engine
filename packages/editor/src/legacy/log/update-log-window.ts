@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
-import { on, addClass, clear } from '@/util/element-utils.ts';
 import { Window } from '@/tools/window-object.ts';
+import { on, addClass, clear } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
 
 export const UpdateLog = {
@@ -8,14 +8,14 @@ export const UpdateLog = {
 	currentMode: null as string | null,
 	internalItems: null as any[] | null,
 	communityItems: null as any[] | null,
-	open: null as ((items?: any) => void) | null,
-	update: null as ((items: any) => void) | null,
-	initialize: null as (() => void) | null,
-	switchMode: null as ((...args: any[]) => any) | null,
-	loadCommunityReleases: null as ((...args: any[]) => any) | null,
-	displayDonationList: null as ((...args: any[]) => any) | null,
-	parseCommunityReleases: null as ((...args: any[]) => any) | null,
-	windowClosed: null as (() => void) | null
+	open: null as ((...args: unknown[]) => unknown) | null,
+	update: null as ((...args: unknown[]) => unknown) | null,
+	initialize: null as ((...args: unknown[]) => unknown) | null,
+	switchMode: null as ((...args: unknown[]) => unknown) | null,
+	loadCommunityReleases: null as ((...args: unknown[]) => unknown) | null,
+	displayDonationList: null as ((...args: unknown[]) => unknown) | null,
+	parseCommunityReleases: null as ((...args: unknown[]) => unknown) | null,
+	windowClosed: null as ((...args: unknown[]) => unknown) | null
 };
 
 UpdateLog.initialize = function () {

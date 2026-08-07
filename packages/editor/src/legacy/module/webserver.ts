@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { disable, enable, on, write } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
@@ -6,9 +7,7 @@ import { FSP } from '@/file/file-system.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { Deployment } from '@/title/deploy-project-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 export const WebServer = new (class {
 	port = 5959;
 	constructor() {}
@@ -54,7 +53,7 @@ export const WebServer = new (class {
 	}
 	async open() {
 		this.bindButtons!();
-		getWindow().open('qr-code');
+		Window.open!('qr-code');
 		const ips = await WebServer.getIp();
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
@@ -82,7 +81,7 @@ export const WebServer = new (class {
 				return (Deployment as any).copyFilesTo(location);
 			})
 			.finally(() => {
-				getWindow().close('copyProgress');
+				Window.close!('copyProgress');
 				if (Deployment.timer) {
 					Deployment.timer.remove();
 					Deployment.timer = null;
@@ -93,7 +92,7 @@ export const WebServer = new (class {
 			})
 			.catch((error: any) => {
 				(Log as any).throw(error);
-				getWindow().confirm(
+				Window.confirm!(
 					{
 						message: 'Failed to deploy project:\n' + error.message
 					},

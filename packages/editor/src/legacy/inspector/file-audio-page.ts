@@ -1,4 +1,5 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, hide, removeClass, show, write } from '@/util/element-utils';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -145,7 +146,7 @@ import { Timer } from '@/util/timer.ts';
 				this.promise.canceled = true;
 				this.promise = null;
 			}
-			(window as any).Browser?.unselect?.(this.meta);
+			getBrowserInstance()?.unselect?.(this.meta);
 			this.stopAnimation!();
 			this.target = null;
 			this.meta = null;

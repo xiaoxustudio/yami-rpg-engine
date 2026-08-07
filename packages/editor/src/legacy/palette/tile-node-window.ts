@@ -1,13 +1,11 @@
 import { relate, getRelativeCoords } from '@/util/element-utils';
+import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { on, rect, css, addClass } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import { Palette } from './palette.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const TileNode = {
 	get canvas() {
@@ -102,7 +100,7 @@ TileNode.open = function (this: any, nodes: any, image: any, offsetX: any, offse
 	windowFrame.style.width = `${contentWidth}px`;
 	windowFrame.style.height = `${contentHeight + 28}px`;
 	window.addEventListener('keydown', this.keydown);
-	getWindow().open('autoTile-selectNode');
+	Window.open!('autoTile-selectNode');
 
 	const screenBox = this.getDevicePixelClientBoxSize(screen);
 	const screenWidth = screenBox.width;
@@ -286,7 +284,7 @@ TileNode.keydown = function (this: any, event: any) {
 			}
 			Palette.explicit = true;
 			addClass(Palette.marquee, 'explicit');
-			getWindow().close('autoTile-selectNode');
+			Window.close!('autoTile-selectNode');
 			break;
 		}
 		case 'ArrowLeft':
@@ -375,7 +373,7 @@ TileNode.marqueePointerdown = function (this: any, event: any) {
 
 TileNode.pointerup = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'select': {
 				const marquee = this.marquee;
@@ -399,7 +397,7 @@ TileNode.pointerup = function (this: any, event: any) {
 						Palette.explicit = true;
 						addClass(Palette.marquee, 'explicit');
 						// 关闭窗口会额外触发一次本事件 换做 mouseup 事件也一样
-						getWindow().close('autoTile-selectNode');
+						Window.close!('autoTile-selectNode');
 					}
 				}
 				break;
@@ -416,7 +414,7 @@ TileNode.pointerup = function (this: any, event: any) {
 
 TileNode.pointermove = function (this: any, event: any) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				dragging.screen.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;

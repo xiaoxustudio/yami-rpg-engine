@@ -1,9 +1,7 @@
 import { $, getElementReader } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const RegionGetter = {
 	target: null as any,
@@ -28,7 +26,7 @@ RegionGetter.initialize = function (this: any) {
 
 RegionGetter.open = function (this: any, target: any) {
 	this.target = target;
-	getWindow().open('regionGetter');
+	Window.open!('regionGetter');
 
 	let presetId = PresetObject.getDefaultPresetId('region');
 	const region = target.dataValue;
@@ -61,6 +59,6 @@ RegionGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target.input(getter);
-	getWindow().close('regionGetter');
+	this.target?.input?.(getter);
+	Window.close!('regionGetter');
 }.bind(RegionGetter);

@@ -1,11 +1,9 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
 import { Local } from '@/tools/localization.ts';
-function getWindow() {
-	return (window as any).Window;
-}
 
 interface PropertyKeyConfig {
 	name: string;
@@ -112,7 +110,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		const key = data?.key ?? defaultKey;
 		const value = data?.value ?? defaultVal;
 
-		getWindow().open(`${prefix}-property`);
+		Window.open!(`${prefix}-property`);
 
 		const defaults = {} as Record<string, any>;
 		for (const k of keys) {
@@ -145,7 +143,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 			value = read(keyObj?.uiName ?? key);
 		}
 
-		getWindow().close(`${prefix}-property`);
+		Window.close!(`${prefix}-property`);
 		return { key, value };
 	};
 

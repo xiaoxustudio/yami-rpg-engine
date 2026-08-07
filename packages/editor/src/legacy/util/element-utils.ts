@@ -269,7 +269,7 @@ export const setTooltip = (function IIFE() {
 					window.removeEventListener('pointerdown', close, capture);
 					return;
 				}
-				const hotkey = target?.getAttribute('hotkey');
+				const hotkey = target?.getAttribute?.('hotkey');
 				if (hotkey) {
 					if (tip.includes('\n')) {
 						tip = tip.replace('\n', ` (${hotkey})\n`);
@@ -535,7 +535,7 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 
 const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				(Cursor.close as any)('cursor-grab');
@@ -549,7 +549,7 @@ const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 
 const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
 	const { dragging } = this;
-	if (relate(dragging, event)) {
+	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.scrollLeft = dragging.scrollLeft + dragging.clientX - event.clientX;

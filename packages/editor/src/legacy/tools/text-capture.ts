@@ -1,4 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import type { TextSuggestionTarget } from '@/command/text-tip.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
 import { ctrl } from '@/util/event-accessors.ts';
 import { TextSuggestion } from '@/command/text-tip.ts';
@@ -8,7 +10,6 @@ import { Localization } from '@/local/local-window.ts';
 import { Printer } from '@/printer/printer.ts';
 import { Color } from './color-picker-window.ts';
 import { Local } from './localization.ts';
-import { Window } from './window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 
 export const Selection = {
@@ -790,7 +791,7 @@ Selection.localVariable = {
 	filter: 'all',
 	initialize: function () {
 		TextSuggestion.listen!(
-			$('#localVariable-key'),
+			$('#localVariable-key') as unknown as TextSuggestionTarget,
 			VariableGetter.createVarListGenerator!(this)
 		);
 	},

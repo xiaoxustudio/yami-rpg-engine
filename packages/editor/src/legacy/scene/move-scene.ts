@@ -1,8 +1,6 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
-function getWindow() {
-	return (window as any).Window;
-}
 
 export const SceneShift: {
 	callback: ((...args: any[]) => any) | null;
@@ -21,13 +19,16 @@ export const SceneShift: {
 SceneShift.initialize = function () {
 	const shiftEl = $('#scene-shift');
 	if (!shiftEl) return;
-	shiftEl.addEventListener('closed', this.windowClosed);
-	$('#scene-shift-confirm')?.addEventListener('click', this.confirm);
+	shiftEl.addEventListener('closed', this.windowClosed as (...args: unknown[]) => any);
+	$('#scene-shift-confirm')?.addEventListener(
+		'click',
+		this.confirm as (...args: unknown[]) => any
+	);
 };
 
 SceneShift.open = function (callback: any) {
 	this.callback = callback;
-	getWindow().open('scene-shift');
+	Window.open!('scene-shift');
 	write($('#scene-shift-x'), 0);
 	write($('#scene-shift-y'), 0);
 	getFocus($('#scene-shift-x'), 'all');
@@ -44,5 +45,5 @@ SceneShift.confirm = function (event: any) {
 		return getFocus($('#scene-shift-x'));
 	}
 	SceneShift.callback!(x, y);
-	getWindow().close('scene-shift');
+	Window.close!('scene-shift');
 };

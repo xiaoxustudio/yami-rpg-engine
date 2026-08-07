@@ -46,12 +46,17 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		const elements = $(`#uiTextBox-type, #uiTextBox-align, #uiTextBox-text,
+		const elements =
+			document.querySelectorAll(`#uiTextBox-type, #uiTextBox-align, #uiTextBox-text,
     #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
     #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
     #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
-		elements.on('focus', Inspector.inputFocus);
-		elements.on('blur', Inspector.inputBlur!(this, UI));
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			(el as HTMLElement).on('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
+		);
 	};
 
 	UITextBox.create = function (this: any) {
@@ -94,8 +99,8 @@ import { UI } from '@/ui/ui-window.ts';
 
 			const write = getElementWriter('uiTextBox', node);
 			const number = $('#uiTextBox-number');
-			number.input.min = node.min;
-			number.input.max = node.max;
+			(number.input! as HTMLInputElement).min = node.min;
+			(number.input! as HTMLInputElement).max = node.max;
 			number.decimals = node.decimals;
 			write('type');
 			write('align');
@@ -157,7 +162,7 @@ import { UI } from '@/ui/ui-window.ts';
 					node[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
-					$('#uiTextBox-number').input[key] = value;
+					($('#uiTextBox-number').input! as Record<string, any>)[key] = value;
 				}
 				break;
 			case 'decimals':

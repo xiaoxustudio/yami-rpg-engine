@@ -14,22 +14,18 @@ export interface NumberBoxApiOptions {
 }
 
 export interface NumberBoxApi extends HTMLElement {
-	input: HTMLInputElement;
+	input?: HTMLInputElement;
 	decimals: number;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_unit: string | null;
 	_initialized: boolean;
-	read(): number;
-	write(value: any): void;
-	enable(): void;
-	disable(): void;
+	read(...args: unknown[]): any;
+	write(...args: unknown[]): any;
+	enable(...args: unknown[]): any;
+	disable(...args: unknown[]): any;
 	getFocus(mode: any): void;
-	on(
-		type: string,
-		listener: (event: any) => void,
-		options?: boolean | AddEventListenerOptions
-	): void;
+	on(...args: unknown[]): any;
 }
 
 const whiteList = new Set([

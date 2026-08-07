@@ -1,10 +1,9 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
 import { File } from '@/file/file-system-core.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
 import { GUID } from '@/file/guid.ts';
@@ -86,7 +85,7 @@ export const Scene: SceneShape = {
 	screen: $('#scene-screen'),
 	marquee: $('#scene-marquee') || ({} as any),
 	searcher: $('#scene-searcher'),
-	list: $('#scene-list') || ({} as any),
+	list: ($('#scene-list') as unknown as never) || ({} as never),
 	dragging: null as any,
 	tilemap: null as any,
 	target: null as any,
@@ -358,11 +357,11 @@ Scene.marquee.tiles = null;
 Scene.marquee.terrain = null;
 Scene.marquee.previewTiles = false;
 Scene.marquee.pointerevent = null;
-Scene.marquee.save = null;
+Scene.marquee.save = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.switch = null;
-Scene.marquee.resize = null;
-(Scene.marquee as any).clear = null;
-Scene.marquee.select = null;
+Scene.marquee.resize = null as unknown as (...args: unknown[]) => any;
+(Scene.marquee as any).clear = null as unknown as (...args: unknown[]) => any;
+Scene.marquee.select = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.selectInPencilMode = null;
 Scene.marquee.selectInRectMode = null;
 Scene.marquee.selectInCopyMode = null;
@@ -371,33 +370,33 @@ Scene.marquee.getTiles = null;
 
 Scene.list.page = $('#scene-object');
 Scene.list.head = $('#scene-list-head');
-Scene.list.copy = null;
-Scene.list.paste = null;
-Scene.list.duplicate = null;
-Scene.list.delete = null;
-Scene.list.toggle = null;
-Scene.list.cancelSearch = null;
-Scene.list.createFolder = null;
+Scene.list.copy = null as unknown as (...args: unknown[]) => any;
+Scene.list.paste = null as unknown as (...args: unknown[]) => any;
+Scene.list.duplicate = null as unknown as (...args: unknown[]) => any;
+Scene.list.delete = null as unknown as (...args: unknown[]) => any;
+Scene.list.toggle = null as unknown as (...args: unknown[]) => any;
+Scene.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+Scene.list.createFolder = null as unknown as (...args: unknown[]) => any;
 Scene.list.createTilemapShortcutItems = null;
-Scene.list.restoreRecursiveStates = null;
-Scene.list.setRecursiveStates = null;
-Scene.list.updateItemClass = null;
+Scene.list.restoreRecursiveStates = null as unknown as (...args: unknown[]) => any;
+Scene.list.setRecursiveStates = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateItemClass = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateFolderState = null;
 Scene.list.canSwitchState = null;
-Scene.list.createIcon = null;
-Scene.list.updateIcon = null;
-Scene.list.updateHead = null;
+Scene.list.createIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateHead = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateTilemapClass = null;
-Scene.list.createConditionIcon = null;
-Scene.list.updateConditionIcon = null;
-Scene.list.createEventIcon = null;
-Scene.list.updateEventIcon = null;
-Scene.list.createScriptIcon = null;
-Scene.list.updateScriptIcon = null;
-Scene.list.createVisibilityIcon = null;
-Scene.list.updateVisibilityIcon = null;
-Scene.list.createLockIcon = null;
-Scene.list.updateLockIcon = null;
+Scene.list.createConditionIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateConditionIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.createEventIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateEventIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.createScriptIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateScriptIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateVisibilityIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.createLockIcon = null as unknown as (...args: unknown[]) => any;
+Scene.list.updateLockIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.onCreate = null;
 Scene.list.onRemove = null;
 Scene.list.onDelete = null;
@@ -545,18 +544,18 @@ Scene.initialize = function (this: any) {
 	list.removable = true;
 	list.renamable = true;
 	(list as any).bind(() => this.objects);
-	list.updaters.push(list.updateItemClass);
-	list.creators.push(list.updateTilemapClass);
-	list.creators.push(list.createConditionIcon);
-	list.creators.push(list.updateConditionIcon);
-	list.creators.push(list.createEventIcon);
-	list.creators.push(list.updateEventIcon);
-	list.creators.push(list.createScriptIcon);
-	list.creators.push(list.updateScriptIcon);
-	list.creators.push(list.createVisibilityIcon);
-	list.updaters.push(list.updateVisibilityIcon);
-	list.creators.push(list.createLockIcon);
-	list.updaters.push(list.updateLockIcon);
+	list.updaters?.push(list.updateItemClass);
+	list.creators?.push(list.updateTilemapClass);
+	list.creators?.push(list.createConditionIcon);
+	list.creators?.push(list.updateConditionIcon);
+	list.creators?.push(list.createEventIcon);
+	list.creators?.push(list.updateEventIcon);
+	list.creators?.push(list.createScriptIcon);
+	list.creators?.push(list.updateScriptIcon);
+	list.creators?.push(list.createVisibilityIcon);
+	list.updaters?.push(list.updateVisibilityIcon);
+	list.creators?.push(list.createLockIcon);
+	list.updaters?.push(list.updateLockIcon);
 
 	History.processors['scene-folder-rename'] = (operation: any, data: any) => {
 		const { response } = data;
@@ -806,7 +805,7 @@ Scene.open = function (this: any, context: any) {
 		this.load!(context);
 	} else {
 		(Layout.manager as any).switch('directory');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},

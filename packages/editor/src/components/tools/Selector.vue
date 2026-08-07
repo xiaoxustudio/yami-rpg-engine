@@ -6,7 +6,7 @@
 		</TitleBar></template>
 		
 			<div class="file-browser" id="selector-browser">
-				<FileBrowser />
+				<FileBrowser bridge="selector" />
 			</div>
 		
 	</WindowFrame>

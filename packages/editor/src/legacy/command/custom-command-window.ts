@@ -1,4 +1,6 @@
 import { $, getElementWriter } from '@/util/dom.ts';
+import { getSelectorInstance } from '@app/stores/selector.ts';
+import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, hide, on, show } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -9,9 +11,7 @@ import { File } from '@/file/file-system-core.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Local } from '@/tools/localization.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
-function getWindow() {
-	return (window as any).Window;
-}
+
 import { ctrl } from '@/util/event-accessors.ts';
 
 interface CustomCommandData {
@@ -56,6 +56,12 @@ interface CustomCommandList {
 type CustomCommandMethod = ((...args: any[]) => any) | null;
 
 interface CustomCommandShape {
+	close: ((id?: string) => void) | null;
+	state: string | null;
+	commands: Record<string, any> | null;
+	saveToProject: ((project: any) => void) | null;
+	loadFromProject: ((project: any) => void) | null;
+
 	list: CustomCommandList;
 	overviewPane: HTMLElement & {
 		hide(): HTMLElement & { hide(): HTMLElement };
@@ -145,38 +151,55 @@ export const CustomCommand: CustomCommandShape = {
 	list_copy: null as any,
 	list_paste: null as any,
 	list_saveSelection: null as any,
-	list_restoreSelection: null as any
+	list_restoreSelection: null as any,
+	state: null as string | null,
+	commands: null as Record<string, any> | null,
+	saveToProject: null as ((project: any) => void) | null,
+	loadFromProject: null as ((project: any) => void) | null,
+	close: null as ((id?: string) => void) | null
 };
 
 function ensureDomBound() {
 	if (CustomCommand.list) return;
 	const list = $('#command-list');
 	if (!list) return;
-	CustomCommand.list = list;
+	CustomCommand.list = list as unknown as CustomCommandList;
 	CustomCommand.overviewPane = $('#command-overview-detail');
 	hide(CustomCommand.overviewPane);
-	CustomCommand.overview = $('#command-overview');
+	CustomCommand.overview = $('#command-overview') as unknown as CustomCommandShape['overview'];
 	CustomCommand.settingsPane = $('#command-settings-detail');
 	hide(CustomCommand.settingsPane);
-	list.insert = null;
-	list.toggle = null;
-	list.copy = null;
-	list.paste = null;
+	list.insert = null as unknown as (...args: unknown[]) => any;
+	list.toggle = null as unknown as (...args: unknown[]) => any;
+	list.copy = null as unknown as (...args: unknown[]) => any;
+	list.paste = null as unknown as (...args: unknown[]) => any;
 	list.delete = PluginManager.list_delete;
-	list.saveSelection = null;
-	list.restoreSelection = null;
-	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.addElementClass = PluginManager.list_addElementClass;
-	list.updateTextNode = PluginManager.list_updateTextNode;
-	list.updateToggleStyle = PluginManager.list_updateToggleStyle;
-	list.createEditIcon = PluginManager.list_createEditIcon;
-	list.edit = CustomCommand.list_edit;
-	list.insert = CustomCommand.list_insert;
-	list.toggle = CustomCommand.list_toggle;
-	list.copy = CustomCommand.list_copy;
-	list.paste = CustomCommand.list_paste;
-	list.saveSelection = CustomCommand.list_saveSelection;
-	list.restoreSelection = CustomCommand.list_restoreSelection;
+	list.saveSelection = null as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
+	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
+		...args: unknown[]
+	) => any;
+	list.addElementClass = PluginManager.list_addElementClass as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
+		...args: unknown[]
+	) => any;
+	list.updateToggleStyle = PluginManager.list_updateToggleStyle as unknown as (
+		...args: unknown[]
+	) => any;
+	list.createEditIcon = PluginManager.list_createEditIcon as unknown as (
+		...args: unknown[]
+	) => any;
+	list.edit = CustomCommand.list_edit as unknown as (item?: unknown) => unknown;
+	list.insert = CustomCommand.list_insert as unknown as (...args: unknown[]) => any;
+	list.toggle = CustomCommand.list_toggle as unknown as (...args: unknown[]) => any;
+	list.copy = CustomCommand.list_copy as unknown as (...args: unknown[]) => any;
+	list.paste = CustomCommand.list_paste as unknown as (...args: unknown[]) => any;
+	list.saveSelection = CustomCommand.list_saveSelection as unknown as (...args: unknown[]) => any;
+	list.restoreSelection = CustomCommand.list_restoreSelection as unknown as (
+		...args: unknown[]
+	) => any;
 }
 
 CustomCommand.initialize = function (this: CustomCommandShape): void {
@@ -185,26 +208,26 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	const { list } = this;
 	list.removable = true;
 	list.bind(() => this.data);
-	list.creators.push(list.addElementClass);
-	list.creators.push(list.updateToggleStyle);
-	list.updaters.push(list.updateTextNode);
-	list.creators.push(list.createEditIcon);
+	list.creators?.push(list.addElementClass);
+	list.creators?.push(list.updateToggleStyle);
+	list.updaters?.push(list.updateTextNode);
+	list.creators?.push(list.createEditIcon);
 
-	($('#command') as HTMLElement).addEventListener('close', this.windowClose!);
-	($('#command') as HTMLElement).addEventListener('closed', this.windowClosed!);
+	$('#command').addEventListener('close', this.windowClose!);
+	$('#command').addEventListener('closed', this.windowClosed!);
 	list.on('keydown', this.listKeydown!);
 	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	list.on('unselect', this.listUnselect!);
 	list.on('pointerdown', ScriptListInterface.listPointerdown);
-	$('#command-alias, #command-keywords').forEach((el: HTMLElement) =>
-		el.addEventListener('input', this.paramInput!)
-	);
+	document
+		.querySelectorAll('#command-alias, #command-keywords')
+		.forEach((el) => el.addEventListener('input', this.paramInput!));
 	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
 	on($('#command-apply') as HTMLElement, 'click', this.apply!);
 };
 
 CustomCommand.open = function (this: CustomCommandShape): void {
-	getWindow().open('command');
+	Window.open!('command');
 
 	this.data = Object.clone(Data.commands);
 
@@ -270,7 +293,7 @@ CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): v
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter('confirmation');
-		getWindow().confirm(
+		Window.confirm!(
 			{
 				message: get('closeUnsavedCommands')
 			},
@@ -279,7 +302,7 @@ CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): v
 					label: get('yes'),
 					click: () => {
 						this.changed = false;
-						getWindow().close('command');
+						Window.close!('command');
 					}
 				},
 				{
@@ -448,7 +471,7 @@ CustomCommand.paramInput = function (
 
 CustomCommand.confirm = function (this: CustomCommandShape, event: Event): void {
 	this.apply!(event);
-	getWindow().close('command');
+	Window.close!('command');
 }.bind(CustomCommand);
 
 CustomCommand.apply = function (this: CustomCommandShape, event: any): void {
@@ -468,7 +491,7 @@ CustomCommand.apply = function (this: CustomCommandShape, event: any): void {
 }.bind(CustomCommand);
 
 CustomCommand.list_edit = function (this: CustomCommandList, item: CustomCommandData): void {
-	(window as any).Selector?.open?.(
+	getSelectorInstance()?.open?.(
 		{
 			filter: 'script',
 			read: () => item.id,
@@ -487,7 +510,7 @@ CustomCommand.list_edit = function (this: CustomCommandList, item: CustomCommand
 };
 
 CustomCommand.list_insert = function (this: CustomCommandList, dItem?: any): void {
-	(window as any).Selector?.open?.(
+	getSelectorInstance()?.open?.(
 		{
 			filter: 'script',
 			read: () => '',

@@ -1,9 +1,7 @@
 import { $ } from '@/util/dom.ts';
+import { Window } from '@/tools/window-object.ts';
 import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@/util/element-utils';
 
-function getWindow() {
-	return (window as any).Window;
-}
 import { Animation } from '@/animation/animation-window.ts';
 import { Log } from '@/log/log-window.ts';
 import { History } from '@/tools/history.ts';
@@ -220,7 +218,7 @@ Inspector.initialize = function (this: any) {
 	for (const name of subNames) {
 		initSub(name);
 	}
-	const win = getWindow();
+	const win = Window;
 	if (win && typeof win.initialize === 'function') {
 		try {
 			win.initialize();
@@ -361,7 +359,7 @@ Inspector.scrollPointerdown = function (this: any, event: any) {
 };
 
 Inspector.inputFocus = function (this: any, event: any) {
-	if (getWindow().activeElement === null) {
+	if (Window.activeElement === null) {
 		const { manager } = Inspector;
 		if (manager.focusing !== null) {
 			const id1 = manager.focusing.id;
@@ -380,7 +378,7 @@ Inspector.inputBlur = function (
 	callback: ((data: any) => void) | null = null
 ) {
 	return function (this: any, event: any) {
-		if (getWindow().activeElement === null) {
+		if (Window.activeElement === null) {
 			// 因此需要判断manager.focusing
 			const { manager } = Inspector;
 			if (manager.focusing === null) {
@@ -487,5 +485,3 @@ Inspector.ParamHistory = class ParamHistory {
 		return data?.type.indexOf('inspector-param') === 0;
 	}
 };
-
-(window as any).Inspector = Inspector;
