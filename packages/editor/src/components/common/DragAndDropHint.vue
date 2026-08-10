@@ -37,7 +37,7 @@ const set = (coords: DragAndDropHintCoords): void => ym.value?.set(coords);
 defineExpose({ measure, moveUp, moveDown, set, root });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement & Record<'measure' | 'moveUp' | 'moveDown' | 'set', any>;
 	if (!el) return;
 	el.measure = measure;
 	el.moveUp = moveUp;

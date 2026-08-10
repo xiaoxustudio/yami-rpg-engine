@@ -3,7 +3,7 @@ Object.empty = {};
 // 对象静态方法 - 克隆对象 - 仅深拷贝「纯对象 / 数组」，其余（函数、类实例、DOM 节点等）原样引用 - 通过 WeakMap 记录已访问对象，避免循环引用导致栈溢出
 Object.clone = (function IIFE() {
 	const { isArray } = Array;
-	const isPlainObject = (value: any): boolean => {
+	const isPlainObject = (value: unknown): boolean => {
 		if (value === null || typeof value !== 'object') return false;
 		const proto = Object.getPrototypeOf(value);
 		return proto === Object.prototype || proto === null;

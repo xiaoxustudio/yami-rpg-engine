@@ -2,6 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import TreeList from '@app/components/common/TreeList.vue';
 
+interface TreeListBridgeEl extends HTMLElement {
+	selectEventEnabled: boolean;
+	recordEventEnabled: boolean;
+	popupEventEnabled: boolean;
+	openEventEnabled: boolean;
+	select(item: unknown): void;
+	open(item: unknown): void;
+	initialize(): void;
+	bind(fn: () => unknown[]): void;
+}
+
 describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 	it('select 事件转发（el.on 启用开关 + emit）', async () => {
 		const wrapper = mount(TreeList, {
@@ -9,14 +20,14 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		expect(el.selectEventEnabled).toBe(true);
 		const item = { name: 'ItemA', children: [] };
 		el.select(item);
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('select');
 		expect(emitted).toBeTruthy();
-		expect((emitted![0][0] as any).value.name).toBe('ItemA');
+		expect((emitted![0][0] as { value: { name: string } }).value.name).toBe('ItemA');
 		wrapper.unmount();
 	});
 
@@ -26,7 +37,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		el.dispatchEvent(new Event('change'));
 		await wrapper.vm.$nextTick();
 		expect(wrapper.emitted('change')).toBeTruthy();
@@ -39,7 +50,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		expect(el.selectEventEnabled).toBe(true);
 		expect(el.recordEventEnabled).toBe(true);
 		expect(el.popupEventEnabled).toBe(true);
@@ -53,17 +64,21 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		const item = { name: 'A', children: [] };
 		el.bind(() => [item]);
 		el.initialize();
 		const record = new Event('record');
-		(record as any).value = { type: 'rename', item, oldValue: 'A', newValue: 'B' };
+		(
+			record as unknown as {
+				value: { type: string; item: unknown; oldValue: string; newValue: string };
+			}
+		).value = { type: 'rename', item, oldValue: 'A', newValue: 'B' };
 		el.dispatchEvent(record);
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('record');
 		expect(emitted).toBeTruthy();
-		expect((emitted![0][0] as any).value.type).toBe('rename');
+		expect((emitted![0][0] as { value: { type: string } }).value.type).toBe('rename');
 		wrapper.unmount();
 	});
 
@@ -73,7 +88,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		const item = { name: 'B', children: [] };
 		el.bind(() => [item]);
 		el.initialize();
@@ -81,7 +96,7 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('open');
 		expect(emitted).toBeTruthy();
-		expect((emitted![0][0] as any).value.name).toBe('B');
+		expect((emitted![0][0] as { value: { name: string } }).value.name).toBe('B');
 		wrapper.unmount();
 	});
 
@@ -91,14 +106,17 @@ describe('TreeList 事件转发（列表事件 Vue 化回归保护）', () => {
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListBridgeEl;
 		const popup = new Event('popup');
-		(popup as any).value = { name: 'C', children: [] };
+		(popup as unknown as { value: { name: string; children: unknown[] } }).value = {
+			name: 'C',
+			children: []
+		};
 		el.dispatchEvent(popup);
 		await wrapper.vm.$nextTick();
 		const emitted = wrapper.emitted('popup');
 		expect(emitted).toBeTruthy();
-		expect((emitted![0][0] as any).value.name).toBe('C');
+		expect((emitted![0][0] as { value: { name: string } }).value.name).toBe('C');
 		wrapper.unmount();
 	});
 });

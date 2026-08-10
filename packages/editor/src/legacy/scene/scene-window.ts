@@ -56,8 +56,8 @@ interface SceneListExtensions {
 	onDelete: ((...args: any[]) => any) | null;
 	onResume: ((...args: any[]) => any) | null;
 	// creators/updaters 数组（运行时挂载，供 push 挂载方法）
-	creators: any[];
-	updaters: any[];
+	creators: unknown[];
+	updaters: unknown[];
 }
 
 interface SceneShape {
@@ -76,6 +76,23 @@ interface SceneShape {
 	[k: string]: any;
 }
 
+interface TilemapsShape extends Array<any> {
+	shortcuts: TilemapShortcuts;
+}
+
+interface RegionsShape extends Array<unknown> {
+	visibleList: unknown[] & { count: number };
+}
+
+interface SceneContextShape {
+	meta: Record<string, any> & { guid: string; path: string };
+	scene?: any;
+	editor?: any;
+	changed?: boolean;
+}
+
+type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, any>;
+
 export const Scene: SceneShape = {
 	state: 'closed',
 	page: $('#scene'),
@@ -83,270 +100,270 @@ export const Scene: SceneShape = {
 	body: hide($('#scene-body')),
 	info: $('#scene-info'),
 	screen: $('#scene-screen'),
-	marquee: $('#scene-marquee') || ({} as any),
+	marquee: $('#scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
 	searcher: $('#scene-searcher'),
 	list: ($('#scene-list') as unknown as never) || ({} as never),
-	dragging: null as any,
-	tilemap: null as any,
-	target: null as any,
-	layer: null as any,
-	brush: null as any,
-	symbol: null as any,
-	history: null as any,
-	textures: null as any,
+	dragging: null,
+	tilemap: null,
+	target: null,
+	layer: null,
+	brush: null,
+	symbol: null,
+	history: null,
+	textures: null,
 	shiftKey: false,
 	translationKey: 0b0000,
-	translationTimer: null as any,
+	translationTimer: null,
 	showGrid: false,
 	showLight: false,
 	showAnimation: false,
-	animationFrame: null as any,
-	animationElapsed: null as any,
-	background: null as any,
-	matrix: null as any,
-	zoom: null as any,
-	zoomTimer: null as any,
-	scale: null as any,
-	scaleX: null as any,
-	scaleY: null as any,
-	scaledTileWidth: null as any,
-	scaledTileHeight: null as any,
-	aspectRatio: null as any,
-	outerWidth: null as any,
-	outerHeight: null as any,
-	scrollLeft: null as any,
-	scrollTop: null as any,
-	scrollRight: null as any,
-	scrollBottom: null as any,
-	scrollCenterX: null as any,
-	scrollCenterY: null as any,
-	centerOffsetX: null as any,
-	centerOffsetY: null as any,
-	lightLeft: null as any,
-	lightTop: null as any,
-	lightRight: null as any,
-	lightBottom: null as any,
-	padding: null as any,
-	paddingLeft: null as any,
-	paddingTop: null as any,
-	patternOriginX: null as any,
-	patternOriginY: null as any,
-	inspectorTypeMap: null as any,
-	tilemapLightSamplingModes: null as any,
-	defaultLightSamplingModes: null as any,
-	startPositionTexture: null as any,
-	blendModeMap: null as any,
-	activeTilemapId: null as any,
-	sharedPoint: null as any,
-	previewObject: null as any,
-	context: null as any,
-	meta: null as any,
-	width: null as any,
-	height: null as any,
-	tileWidth: null as any,
-	tileHeight: null as any,
-	animationInterval: null as any,
-	ambient: null as any,
-	terrains: null as any,
-	events: null as any,
-	scripts: null as any,
-	objects: null as any,
-	tilemaps: null as any,
-	actors: null as any,
-	regions: null as any,
-	lights: null as any,
-	animations: null as any,
-	particles: null as any,
-	parallaxes: null as any,
-	backgrounds: null as any,
-	foregrounds: null as any,
-	doodads: null as any,
-	initialize: null as any,
-	open: null as any,
-	load: null as any,
-	save: null as any,
-	close: null as any,
-	destroy: null as any,
-	shiftTilemap: null as any,
-	shiftTerrains: null as any,
-	shiftObjects: null as any,
-	computeObjectShifting: null as any,
-	getDefaultObjectFolder: null as any,
-	copy: null as any,
-	paste: null as any,
-	duplicate: null as any,
-	create: null as any,
-	delete: null as any,
-	toggle: null as any,
-	undo: null as any,
-	redo: null as any,
-	setZoom: null as any,
-	setSize: null as any,
-	setTileSize: null as any,
-	setTilemapSize: null as any,
-	setTarget: null as any,
-	openTilemap: null as any,
-	closeTilemap: null as any,
-	computeActiveTilemapId: null as any,
-	revealTarget: null as any,
-	shiftTarget: null as any,
-	redirectTarget: null as any,
-	updateTarget: null as any,
-	updateTargetInfo: null as any,
-	updateTargetItem: null as any,
-	updateTargetEditor: null as any,
-	updateAnimationInterval: null as any,
-	updateLightAreaExpansion: null as any,
-	updateActorTeams: null as any,
-	updateHead: null as any,
-	resize: null as any,
-	getTileCoords: null as any,
-	getConvertedCoords: null as any,
-	getParallaxAnchor: null as any,
-	getGridContext: null as any,
-	rasterizeScrollPosition: null as any,
-	updateLightTexParameters: null as any,
-	updateCamera: null as any,
-	updateTransform: null as any,
-	registerPreset: null as any,
-	unregisterPreset: null as any,
-	sortLayers: null as any,
-	loadObjects: null as any,
-	loadTextures: null as any,
-	loadAllContexts: null as any,
-	loadActorContext: null as any,
-	loadLightContext: null as any,
-	loadAnimationContext: null as any,
-	loadParallaxContext: null as any,
-	loadParticleContext: null as any,
-	loadObjectContext: null as any,
-	reloadObjectContext: null as any,
-	destroyObjectContext: null as any,
-	createPreviewObject: null as any,
-	deletePreviewObject: null as any,
-	updateParallaxes: null as any,
-	drawScene: null as any,
-	drawBackgrounds: null as any,
-	drawForegrounds: null as any,
-	updateAnimations: null as any,
-	updateParticles: null as any,
-	drawTileLayer: null as any,
-	drawGridLayer: null as any,
-	drawRegionLayer: null as any,
-	drawRegionBorders: null as any,
-	drawObjectLayer: null as any,
-	drawDirectLightLayer: null as any,
-	drawNameLayer: null as any,
-	drawTerrainLayer: null as any,
-	drawLightTextures: null as any,
-	drawTilemap: null as any,
-	drawTilePreview: null as any,
-	drawTileMarquee: null as any,
-	drawTerrainMarquee: null as any,
-	drawTilemapWireframe: null as any,
-	drawAnimationWireframe: null as any,
-	drawAnimationAnchor: null as any,
-	drawLightWireframe: null as any,
-	drawRegionWireframe: null as any,
-	drawParticleEmitterWireframe: null as any,
-	drawParallaxWireframe: null as any,
-	drawOvalWireframe: null as any,
-	drawTargetAnchor: null as any,
-	drawRectWireframe: null as any,
-	drawRectWireframeOnTilemap: null as any,
-	setRectWireframeVertices: null as any,
-	createStartPositionTexture: null as any,
-	drawStartPosition: null as any,
-	selectObject: null as any,
-	selectRegion: null as any,
-	selectLight: null as any,
-	selectParticleEmitter: null as any,
-	selectSortedLayer: null as any,
-	edit: null as any,
-	editInPencilMode: null as any,
-	editInRectMode: null as any,
-	editInOvalMode: null as any,
-	editInFillMode: null as any,
-	setTile: null as any,
-	setTileFrame: null as any,
-	setTerrain: null as any,
-	createTiles: null as any,
-	cloneTiles: null as any,
-	createTerrains: null as any,
-	getNewTilesetIndex: null as any,
-	requestAnimation: null as any,
-	updateAnimation: null as any,
-	stopAnimation: null as any,
-	requestRendering: null as any,
-	renderingFunction: null as any,
-	stopRendering: null as any,
-	switchLayer: null as any,
-	switchBrush: null as any,
-	switchGrid: null as any,
-	switchLight: null as any,
-	switchAnimation: null as any,
-	switchSettings: null as any,
-	switchTerrain: null as any,
-	resetAnimations: null as any,
-	updateFont: null as any,
-	planToSave: null as any,
-	planToSaveTerrains: null as any,
-	beginMapRecord: null as any,
-	closeMapRecord: null as any,
-	saveMapRecord: null as any,
-	recordMapData: null as any,
-	restoreMapData: null as any,
-	undoMapData: null as any,
-	redoMapData: null as any,
-	createHistory: null as any,
-	createDefaultAnimation: null as any,
-	getObjectFile: null as any,
-	openFileLocation: null as any,
-	saveToConfig: null as any,
-	loadFromConfig: null as any,
-	saveToProject: null as any,
-	loadFromProject: null as any,
-	webglRestored: null as any,
-	windowResize: null as any,
-	themechange: null as any,
-	dprchange: null as any,
-	datachange: null as any,
-	keydown: null as any,
-	headPointerdown: null as any,
-	switchPointerdown: null as any,
-	layerPointerdown: null as any,
-	brushPointerdown: null as any,
-	zoomFocus: null as any,
-	zoomInput: null as any,
-	screenKeydown: null as any,
-	shiftKeyup: null as any,
-	translationKeyup: null as any,
-	screenWheel: null as any,
-	screenUserscroll: null as any,
-	screenBlur: null as any,
-	screenDragenter: null as any,
-	screenDragleave: null as any,
-	screenDragover: null as any,
-	screenDrop: null as any,
-	marqueePointerdown: null as any,
-	marqueePointermove: null as any,
-	marqueePointerleave: null as any,
-	marqueeDoubleclick: null as any,
-	pointerup: null as any,
-	pointermove: null as any,
-	menuPopup: null as any,
-	searcherInput: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listSelect: null as any,
-	listRecord: null as any,
-	listPopup: null as any,
-	listOpen: null as any,
-	listRename: null as any,
-	listChange: null as any,
-	listPageResize: null as any,
-	Textures: null as any,
-	Point: null as any
+	animationFrame: null,
+	animationElapsed: null,
+	background: null,
+	matrix: null,
+	zoom: null,
+	zoomTimer: null,
+	scale: null,
+	scaleX: null,
+	scaleY: null,
+	scaledTileWidth: null,
+	scaledTileHeight: null,
+	aspectRatio: null,
+	outerWidth: null,
+	outerHeight: null,
+	scrollLeft: null,
+	scrollTop: null,
+	scrollRight: null,
+	scrollBottom: null,
+	scrollCenterX: null,
+	scrollCenterY: null,
+	centerOffsetX: null,
+	centerOffsetY: null,
+	lightLeft: null,
+	lightTop: null,
+	lightRight: null,
+	lightBottom: null,
+	padding: null,
+	paddingLeft: null,
+	paddingTop: null,
+	patternOriginX: null,
+	patternOriginY: null,
+	inspectorTypeMap: null,
+	tilemapLightSamplingModes: null,
+	defaultLightSamplingModes: null,
+	startPositionTexture: null,
+	blendModeMap: null,
+	activeTilemapId: null,
+	sharedPoint: null,
+	previewObject: null,
+	context: null,
+	meta: null,
+	width: null,
+	height: null,
+	tileWidth: null,
+	tileHeight: null,
+	animationInterval: null,
+	ambient: null,
+	terrains: null,
+	events: null,
+	scripts: null,
+	objects: null,
+	tilemaps: null,
+	actors: null,
+	regions: null,
+	lights: null,
+	animations: null,
+	particles: null,
+	parallaxes: null,
+	backgrounds: null,
+	foregrounds: null,
+	doodads: null,
+	initialize: null,
+	open: null,
+	load: null,
+	save: null,
+	close: null,
+	destroy: null,
+	shiftTilemap: null,
+	shiftTerrains: null,
+	shiftObjects: null,
+	computeObjectShifting: null,
+	getDefaultObjectFolder: null,
+	copy: null,
+	paste: null,
+	duplicate: null,
+	create: null,
+	delete: null,
+	toggle: null,
+	undo: null,
+	redo: null,
+	setZoom: null,
+	setSize: null,
+	setTileSize: null,
+	setTilemapSize: null,
+	setTarget: null,
+	openTilemap: null,
+	closeTilemap: null,
+	computeActiveTilemapId: null,
+	revealTarget: null,
+	shiftTarget: null,
+	redirectTarget: null,
+	updateTarget: null,
+	updateTargetInfo: null,
+	updateTargetItem: null,
+	updateTargetEditor: null,
+	updateAnimationInterval: null,
+	updateLightAreaExpansion: null,
+	updateActorTeams: null,
+	updateHead: null,
+	resize: null,
+	getTileCoords: null,
+	getConvertedCoords: null,
+	getParallaxAnchor: null,
+	getGridContext: null,
+	rasterizeScrollPosition: null,
+	updateLightTexParameters: null,
+	updateCamera: null,
+	updateTransform: null,
+	registerPreset: null,
+	unregisterPreset: null,
+	sortLayers: null,
+	loadObjects: null,
+	loadTextures: null,
+	loadAllContexts: null,
+	loadActorContext: null,
+	loadLightContext: null,
+	loadAnimationContext: null,
+	loadParallaxContext: null,
+	loadParticleContext: null,
+	loadObjectContext: null,
+	reloadObjectContext: null,
+	destroyObjectContext: null,
+	createPreviewObject: null,
+	deletePreviewObject: null,
+	updateParallaxes: null,
+	drawScene: null,
+	drawBackgrounds: null,
+	drawForegrounds: null,
+	updateAnimations: null,
+	updateParticles: null,
+	drawTileLayer: null,
+	drawGridLayer: null,
+	drawRegionLayer: null,
+	drawRegionBorders: null,
+	drawObjectLayer: null,
+	drawDirectLightLayer: null,
+	drawNameLayer: null,
+	drawTerrainLayer: null,
+	drawLightTextures: null,
+	drawTilemap: null,
+	drawTilePreview: null,
+	drawTileMarquee: null,
+	drawTerrainMarquee: null,
+	drawTilemapWireframe: null,
+	drawAnimationWireframe: null,
+	drawAnimationAnchor: null,
+	drawLightWireframe: null,
+	drawRegionWireframe: null,
+	drawParticleEmitterWireframe: null,
+	drawParallaxWireframe: null,
+	drawOvalWireframe: null,
+	drawTargetAnchor: null,
+	drawRectWireframe: null,
+	drawRectWireframeOnTilemap: null,
+	setRectWireframeVertices: null,
+	createStartPositionTexture: null,
+	drawStartPosition: null,
+	selectObject: null,
+	selectRegion: null,
+	selectLight: null,
+	selectParticleEmitter: null,
+	selectSortedLayer: null,
+	edit: null,
+	editInPencilMode: null,
+	editInRectMode: null,
+	editInOvalMode: null,
+	editInFillMode: null,
+	setTile: null,
+	setTileFrame: null,
+	setTerrain: null,
+	createTiles: null,
+	cloneTiles: null,
+	createTerrains: null,
+	getNewTilesetIndex: null,
+	requestAnimation: null,
+	updateAnimation: null,
+	stopAnimation: null,
+	requestRendering: null,
+	renderingFunction: null,
+	stopRendering: null,
+	switchLayer: null,
+	switchBrush: null,
+	switchGrid: null,
+	switchLight: null,
+	switchAnimation: null,
+	switchSettings: null,
+	switchTerrain: null,
+	resetAnimations: null,
+	updateFont: null,
+	planToSave: null,
+	planToSaveTerrains: null,
+	beginMapRecord: null,
+	closeMapRecord: null,
+	saveMapRecord: null,
+	recordMapData: null,
+	restoreMapData: null,
+	undoMapData: null,
+	redoMapData: null,
+	createHistory: null,
+	createDefaultAnimation: null,
+	getObjectFile: null,
+	openFileLocation: null,
+	saveToConfig: null,
+	loadFromConfig: null,
+	saveToProject: null,
+	loadFromProject: null,
+	webglRestored: null,
+	windowResize: null,
+	themechange: null,
+	dprchange: null,
+	datachange: null,
+	keydown: null,
+	headPointerdown: null,
+	switchPointerdown: null,
+	layerPointerdown: null,
+	brushPointerdown: null,
+	zoomFocus: null,
+	zoomInput: null,
+	screenKeydown: null,
+	shiftKeyup: null,
+	translationKeyup: null,
+	screenWheel: null,
+	screenUserscroll: null,
+	screenBlur: null,
+	screenDragenter: null,
+	screenDragleave: null,
+	screenDragover: null,
+	screenDrop: null,
+	marqueePointerdown: null,
+	marqueePointermove: null,
+	marqueePointerleave: null,
+	marqueeDoubleclick: null,
+	pointerup: null,
+	pointermove: null,
+	menuPopup: null,
+	searcherInput: null,
+	listKeydown: null,
+	listPointerdown: null,
+	listSelect: null,
+	listRecord: null,
+	listPopup: null,
+	listOpen: null,
+	listRename: null,
+	listChange: null,
+	listPageResize: null,
+	Textures: null,
+	Point: null
 };
 
 Scene.marquee.key = null;
@@ -360,7 +377,7 @@ Scene.marquee.pointerevent = null;
 Scene.marquee.save = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.switch = null;
 Scene.marquee.resize = null as unknown as (...args: unknown[]) => any;
-(Scene.marquee as any).clear = null as unknown as (...args: unknown[]) => any;
+Scene.marquee.clear = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.select = null as unknown as (...args: unknown[]) => any;
 Scene.marquee.selectInPencilMode = null;
 Scene.marquee.selectInRectMode = null;
@@ -425,7 +442,7 @@ Scene.initialize = function (this: any) {
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			if (this.state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const meta = this.meta;
@@ -464,7 +481,7 @@ Scene.initialize = function (this: any) {
 
 	this.zoomTimer = new Timer({
 		duration: 80,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			if (this.state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
@@ -543,7 +560,7 @@ Scene.initialize = function (this: any) {
 	const { list } = this;
 	list.removable = true;
 	list.renamable = true;
-	(list as any).bind(() => this.objects);
+	list.bind(() => this.objects);
 	list.updaters?.push(list.updateItemClass);
 	list.creators?.push(list.updateTilemapClass);
 	list.creators?.push(list.createConditionIcon);
@@ -557,24 +574,24 @@ Scene.initialize = function (this: any) {
 	list.creators?.push(list.createLockIcon);
 	list.updaters?.push(list.updateLockIcon);
 
-	History.processors['scene-folder-rename'] = (operation: any, data: any) => {
+	History.processors['scene-folder-rename'] = (operation: string, data: Record<string, any>) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['scene-object-create'] = (operation: any, data: any) => {
+	History.processors['scene-object-create'] = (operation: string, data: Record<string, any>) => {
 		const { response, parent } = data;
 		list.restore(operation, response);
 		list.updateFolderState(parent, 'hidden');
 		list.updateFolderState(parent, 'locked');
 	};
-	History.processors['scene-object-delete'] = (operation: any, data: any) => {
+	History.processors['scene-object-delete'] = (operation: string, data: Record<string, any>) => {
 		const { response } = data;
 		const parent = response.item.parent;
 		list.restore(operation, response);
 		list.updateFolderState(parent, 'hidden');
 		list.updateFolderState(parent, 'locked');
 	};
-	History.processors['scene-object-remove'] = (operation: any, data: any) => {
+	History.processors['scene-object-remove'] = (operation: string, data: Record<string, any>) => {
 		const { response } = data;
 		const sParent = response.source.parent;
 		const dParent = response.destination.parent;
@@ -586,7 +603,7 @@ Scene.initialize = function (this: any) {
 			list.updateFolderState(dParent, 'locked');
 		}
 	};
-	History.processors['scene-object-toggle'] = (operation: any, data: any) => {
+	History.processors['scene-object-toggle'] = (operation: string, data: Record<string, any>) => {
 		const { item, oldValue, newValue } = data;
 		if (operation === 'undo') {
 			item.enabled = oldValue;
@@ -597,7 +614,7 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-object-hidden'] = (operation: any, data: any) => {
+	History.processors['scene-object-hidden'] = (operation: string, data: Record<string, any>) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(item, 'hidden', oldValues);
@@ -609,7 +626,7 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-object-locked'] = (operation: any, data: any) => {
+	History.processors['scene-object-locked'] = (operation: string, data: Record<string, any>) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(item, 'locked', oldValues);
@@ -620,7 +637,7 @@ Scene.initialize = function (this: any) {
 		list.update();
 		Scene.planToSave!();
 	};
-	History.processors['scene-resize'] = (operation: any, data: any) => {
+	History.processors['scene-resize'] = (operation: string, data: Record<string, any>) => {
 		const { editor, width, height, terrains } = data;
 		const { scene } = Scene.context;
 		data.width = Scene.width;
@@ -639,7 +656,7 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-resize'] = (operation: any, data: any) => {
+	History.processors['scene-tilemap-resize'] = (operation: string, data: Record<string, any>) => {
 		const { editor, tilemap, width, height, tiles, tilesetMap } = data;
 		data.width = tilemap.width;
 		data.height = tilemap.height;
@@ -657,7 +674,10 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-shortcut'] = (operation: any, data: any) => {
+	History.processors['scene-tilemap-shortcut'] = (
+		operation: string,
+		data: Record<string, any>
+	) => {
 		const { tilemap, shortcut } = data;
 		data.shortcut = tilemap.shortcut;
 		tilemap.shortcut = shortcut;
@@ -665,7 +685,7 @@ Scene.initialize = function (this: any) {
 		Scene.tilemaps.shortcuts.update();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-shift'] = (operation: any, data: any) => {
+	History.processors['scene-tilemap-shift'] = (operation: string, data: Record<string, any>) => {
 		const { tilemap, shiftX, shiftY } = data;
 		if (operation === 'undo') {
 			Scene.shiftTilemap!(tilemap, -shiftX, -shiftY);
@@ -676,7 +696,7 @@ Scene.initialize = function (this: any) {
 		Scene.setTarget!(tilemap);
 		Scene.planToSave!();
 	};
-	History.processors['scene-shift'] = (operation: any, data: any) => {
+	History.processors['scene-shift'] = (operation: string, data: Record<string, any>) => {
 		const { shiftX, shiftY, changes } = data;
 		if (operation === 'undo') {
 			Scene.shiftTerrains!(-shiftX, -shiftY);
@@ -687,7 +707,7 @@ Scene.initialize = function (this: any) {
 		Scene.planToSaveTerrains!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-change'] = (operation: any, data: any) => {
+	History.processors['scene-tilemap-change'] = (operation: string, data: Record<string, any>) => {
 		const { tilemap, changes, tilesetMap } = data;
 		switch (operation) {
 			case 'undo':
@@ -702,7 +722,7 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-terrain-change'] = (operation: any, data: any) => {
+	History.processors['scene-terrain-change'] = (operation: string, data: Record<string, any>) => {
 		const { terrains, changes } = data;
 		switch (operation) {
 			case 'undo':
@@ -716,7 +736,7 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-target-shift'] = (operation: any, data: any) => {
+	History.processors['scene-target-shift'] = (operation: string, data: Record<string, any>) => {
 		const { editor, target, x, y } = data;
 		data.x = target.x;
 		data.y = target.y;
@@ -730,7 +750,10 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-target-redirect'] = (operation: any, data: any) => {
+	History.processors['scene-target-redirect'] = (
+		operation: string,
+		data: Record<string, any>
+	) => {
 		const { editor, target, angle } = data;
 		data.angle = target.angle;
 		target.angle = angle;
@@ -775,7 +798,7 @@ Scene.initialize = function (this: any) {
 	TilemapShortcuts.initialize!();
 };
 
-Scene.open = function (this: any, context: any) {
+Scene.open = function (this: SceneShape, context: SceneContextShape) {
 	if (this.context === context) {
 		return;
 	}
@@ -804,7 +827,7 @@ Scene.open = function (this: any, context: any) {
 		this.state = 'loading';
 		this.load!(context);
 	} else {
-		(Layout.manager as any).switch('directory');
+		Layout.manager.switch('directory');
 		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
@@ -818,20 +841,20 @@ Scene.open = function (this: any, context: any) {
 	}
 };
 
-Scene.load = function (this: any, context: any) {
+Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
-		const tilemaps = [] as any;
+		const tilemaps = [] as unknown as TilemapsShape;
 		tilemaps.shortcuts = new TilemapShortcuts(tilemaps);
 
-		const regions = [] as any;
-		regions.visibleList = [] as any[];
+		const regions = [] as unknown as RegionsShape;
+		regions.visibleList = [] as unknown as unknown[] & { count: number };
 		regions.visibleList.count = 0;
 
 		context.changed = false;
 		context.editor = {
-			target: null as any,
-			tilemap: null as any,
+			target: null,
+			tilemap: null,
 			history: this.createHistory!(),
 			textures: new Scene.Textures!(),
 			tilemaps: tilemaps,
@@ -907,7 +930,7 @@ Scene.load = function (this: any, context: any) {
 	UndoManager.setActive!(Scene);
 };
 
-Scene.save = function (this: any) {
+Scene.save = function (this: SceneShape) {
 	if (this.state === 'open') {
 		const { scene, editor } = this.context;
 
@@ -947,7 +970,7 @@ Scene.save = function (this: any) {
 	}
 };
 
-Scene.close = function (this: any) {
+Scene.close = function (this: SceneShape) {
 	if (this.state !== 'closed') {
 		this.screen?.blur();
 		this.closeTilemap!();
@@ -996,7 +1019,7 @@ Scene.close = function (this: any) {
 	}
 };
 
-Scene.destroy = function (this: any, context: any) {
+Scene.destroy = function (this: SceneShape, context: SceneContextShape) {
 	const { editor } = context;
 	if (!editor) return;
 	if (this.context === context) {
@@ -1028,7 +1051,16 @@ Scene.destroy = function (this: any, context: any) {
 	}
 };
 
-Scene.shiftTilemap = function (this: any, tilemap: any, offsetX: number, offsetY: number) {
+Scene.shiftTilemap = function (
+	this: SceneShape,
+	tilemap: {
+		width: number;
+		height: number;
+		tiles: { rowOffset: number; [index: number]: number };
+	},
+	offsetX: number,
+	offsetY: number
+) {
 	const width = tilemap.width;
 	const height = tilemap.height;
 	if (width === 0 || height === 0) {
@@ -1052,7 +1084,7 @@ Scene.shiftTilemap = function (this: any, tilemap: any, offsetX: number, offsetY
 	this.requestRendering!();
 };
 
-Scene.shiftTerrains = function (this: any, offsetX: number, offsetY: number) {
+Scene.shiftTerrains = function (this: SceneShape, offsetX: number, offsetY: number) {
 	const width = this.width;
 	const height = this.height;
 	if (width === 0 || height === 0) {
@@ -1076,7 +1108,10 @@ Scene.shiftTerrains = function (this: any, offsetX: number, offsetY: number) {
 	this.requestRendering!();
 };
 
-Scene.shiftObjects = function (this: any, changes: any) {
+Scene.shiftObjects = function (
+	this: SceneShape,
+	changes: { targets: { x: number; y: number }[]; posX: number[]; posY: number[] }
+) {
 	const { targets, posX, posY } = changes;
 	const length = targets.length;
 	for (let i = 0; i < length; i++) {
@@ -1091,7 +1126,7 @@ Scene.shiftObjects = function (this: any, changes: any) {
 	this.requestRendering!();
 };
 
-Scene.computeObjectShifting = function (this: any, ox: number, oy: number) {
+Scene.computeObjectShifting = function (this: SceneShape, ox: number, oy: number) {
 	const MIN = -128;
 	const MAX = 640;
 	const keys = [
@@ -1126,8 +1161,8 @@ Scene.computeObjectShifting = function (this: any, ox: number, oy: number) {
 	return { targets, posX, posY };
 };
 
-Scene.getDefaultObjectFolder = function (this: any, kind: string) {
-	const name = (Editor.project as any).scene.defaultFolders[kind];
+Scene.getDefaultObjectFolder = function (this: SceneShape, kind: string) {
+	const name = Editor.project!.scene.defaultFolders[kind];
 	return !name
 		? null
 		: this.list.getItemByProperties({
@@ -1136,19 +1171,19 @@ Scene.getDefaultObjectFolder = function (this: any, kind: string) {
 			});
 };
 
-Scene.copy = function (this: any) {
+Scene.copy = function (this: SceneShape) {
 	if (this.state === 'open' && this.target !== null) {
 		this.list.copy!(this.target);
 	}
 };
 
-Scene.paste = function (this: any, x: any, y: any) {
+Scene.paste = function (this: SceneShape, x?: number, y?: number) {
 	if (this.state === 'open' && this.dragging === null) {
 		if (x === undefined) {
 			x = this.meta.x;
 			y = this.meta.y;
 		}
-		this.list.paste!('auto', (data: any) => {
+		this.list.paste!('auto', (data: Record<string, any>) => {
 			switch (data.class) {
 				case 'tilemap':
 				case 'actor':
@@ -1157,21 +1192,21 @@ Scene.paste = function (this: any, x: any, y: any) {
 				case 'animation':
 				case 'particle':
 				case 'parallax':
-					data.x = Math.clamp(Math.floor(x), 0, this.width - 1) + 0.5;
-					data.y = Math.clamp(Math.floor(y), 0, this.height - 1) + 0.5;
+					data.x = Math.clamp(Math.floor(x!), 0, this.width - 1) + 0.5;
+					data.y = Math.clamp(Math.floor(y!), 0, this.height - 1) + 0.5;
 					break;
 			}
 		});
 	}
 };
 
-Scene.duplicate = function (this: any) {
+Scene.duplicate = function (this: SceneShape) {
 	if (this.target) {
 		this.list.duplicate(this.target);
 	}
 };
 
-Scene.create = function (this: any, kind: string, x: number, y: number) {
+Scene.create = function (this: SceneShape, kind: string, x: number, y: number) {
 	const dItem = this.getDefaultObjectFolder!(kind);
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
@@ -1182,29 +1217,29 @@ Scene.create = function (this: any, kind: string, x: number, y: number) {
 	this.list.addNodeTo(object, dItem);
 };
 
-Scene.delete = function (this: any) {
+Scene.delete = function (this: SceneShape) {
 	if (this.state === 'open' && this.target !== null && this.dragging === null) {
 		this.list.delete!(this.target);
 	}
 };
 
-Scene.toggle = function (this: any) {
+Scene.toggle = function (this: SceneShape) {
 	this.list.toggle!(this.target);
 };
 
-Scene.undo = function (this: any) {
+Scene.undo = function (this: SceneShape) {
 	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
-Scene.redo = function (this: any) {
+Scene.redo = function (this: SceneShape) {
 	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
 
-Scene.updateAnimationInterval = function (this: any) {
+Scene.updateAnimationInterval = function (this: SceneShape) {
 	const { animationInterval } = Data.config.scene;
 	if (this.animationInterval !== animationInterval) {
 		if (animationInterval === 0 && this.animationFrame !== 0) {
@@ -1216,7 +1251,15 @@ Scene.updateAnimationInterval = function (this: any) {
 	}
 };
 
-Scene.updateLightAreaExpansion = function (this: any, last: any) {
+Scene.updateLightAreaExpansion = function (
+	this: SceneShape,
+	last: {
+		expansionLeft: number;
+		expansionTop: number;
+		expansionRight: number;
+		expansionBottom: number;
+	}
+) {
 	if (this.showLight) {
 		const light = Data.config.lightArea;
 		if (
@@ -1235,17 +1278,17 @@ Scene.updateLightAreaExpansion = function (this: any, last: any) {
 	}
 };
 
-Scene.updateActorTeams = function (this: any) {
+Scene.updateActorTeams = function (this: SceneShape) {
 	const list = this.list;
 	for (const actor of this.actors) {
 		list.updateIcon!(actor);
 	}
 };
 
-Scene.updateHead = function (this: any) {
+Scene.updateHead = function (this: SceneShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = (Layout.getGroupOfElement as any)(head);
+		const { nav } = Layout.getGroupOfElement!(head)!;
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
@@ -1278,7 +1321,7 @@ Scene.registerPreset = (function IIFE() {
 		} while (id in scenePresets);
 		return id;
 	};
-	const registerPreset = (node: any) => {
+	const registerPreset = (node: PresetNodeShape) => {
 		const { scenePresets } = Data;
 		// 新对象或对象ID冲突，生成新ID
 		if (node.presetId === '' || node.presetId in scenePresets) {
@@ -1294,12 +1337,12 @@ Scene.registerPreset = (function IIFE() {
 			}
 		}
 	};
-	return function (this: any, node: any) {
+	return function (this: SceneShape, node: PresetNodeShape) {
 		registerPreset(node);
 	};
 })();
 
-Scene.unregisterPreset = function (this: any, node: any) {
+Scene.unregisterPreset = function (this: SceneShape, node: PresetNodeShape) {
 	delete Data.scenePresets[node.presetId];
 	if (node.children instanceof Array) {
 		for (const child of node.children) {
@@ -1309,7 +1352,7 @@ Scene.unregisterPreset = function (this: any, node: any) {
 };
 
 Scene.sortLayers = (function IIFE() {
-	const sorter = (a: any, b: any) => a.order - b.order;
+	const sorter = (a: { order: number }, b: { order: number }) => a.order - b.order;
 	return function (this: SceneShape) {
 		this.backgrounds.sort(sorter);
 		this.foregrounds.sort(sorter);
@@ -1317,11 +1360,11 @@ Scene.sortLayers = (function IIFE() {
 	};
 })();
 
-Scene.planToSave = function (this: any) {
+Scene.planToSave = function (this: SceneShape) {
 	File.planToSave!(this.meta);
 	this.context.changed = true;
 };
 
-Scene.planToSaveTerrains = function (this: any) {
+Scene.planToSaveTerrains = function (this: SceneShape) {
 	this.context.scene.terrainChanged = true;
 };

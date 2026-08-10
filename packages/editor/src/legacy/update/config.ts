@@ -2,14 +2,14 @@ import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateConfig = function (verNum: any) {
+Updater.updateConfig = function (verNum: number) {
 	// 修改font属性为text属性
-	if (verNum < Updater.getVersionNumber('1.0.54')) {
+	if (verNum < Updater.getVersionNumber!('1.0.54')) {
 		const sConfig = Data.config;
-		const dConfig = {};
+		const dConfig: Record<string, any> = {};
 		for (const key of Object.keys(sConfig)) {
 			if (key === 'font') {
-				(dConfig as any).text = {
+				dConfig.text = {
 					importedFonts: sConfig.font.imports,
 					fontFamily: sConfig.font.default,
 					wordWrap: 'break'
@@ -24,12 +24,12 @@ Updater.updateConfig = function (verNum: any) {
 						}
 						break;
 				}
-				(dConfig as any)[key] = sConfig[key];
+				dConfig[key] = sConfig[key];
 				switch (key) {
 					case 'script':
 						// 在script属性后添加localization属性
-						if (!(sConfig as any).localization) {
-							(dConfig as any).localization = {
+						if (!sConfig.localization) {
+							dConfig.localization = {
 								languages: ['en', 'zh-CN'],
 								default: 'auto'
 							};
@@ -39,25 +39,25 @@ Updater.updateConfig = function (verNum: any) {
 			}
 		}
 		Data.config = dConfig;
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
-	if (verNum < Updater.getVersionNumber('1.0.52')) {
+	if (verNum < Updater.getVersionNumber!('1.0.52')) {
 		delete Data.config.text.pixelated;
 		delete Data.config.text.threshold;
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
-	if (verNum < Updater.getVersionNumber('1.0.68')) {
+	if (verNum < Updater.getVersionNumber!('1.0.68')) {
 		delete Data.config.collision.actor.ignoreTeamMember;
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
-	if (verNum < Updater.getVersionNumber('1.0.102')) {
+	if (verNum < Updater.getVersionNumber!('1.0.102')) {
 		Data.config.resolution.sceneScale = 1;
 		Data.config.resolution.uiScale = 1;
 		Data.config.text.highDefinition = false;
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
 	// 修改localization.languages属性为对象
-	if (verNum < Updater.getVersionNumber('1.0.115')) {
+	if (verNum < Updater.getVersionNumber!('1.0.115')) {
 		delete Data.config.text.wordWrap;
 		const { languages } = Data.config.localization;
 		for (let i = 0; i < languages.length; i++) {
@@ -69,10 +69,10 @@ Updater.updateConfig = function (verNum: any) {
 				};
 			}
 		}
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
 	// 修改window.display的值: 'window'->'windowed'
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const { config, events } = Data;
 		if (config.deployed === undefined) {
 			config.deployed = false;
@@ -121,9 +121,9 @@ Updater.updateConfig = function (verNum: any) {
 			}
 			delete config.event;
 		}
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
-	if (verNum < Updater.getVersionNumber('1.0.127')) {
+	if (verNum < Updater.getVersionNumber!('1.0.127')) {
 		const { config } = Data;
 		if (config.webgl.textureMagFilter === undefined) {
 			config.webgl = {
@@ -135,6 +135,6 @@ Updater.updateConfig = function (verNum: any) {
 		if (config.preload === undefined) {
 			config.preload = 'never';
 		}
-		(File.planToSave as any)(Data.manifest.project.config);
+		File.planToSave!(Data.manifest.project.config);
 	}
 };

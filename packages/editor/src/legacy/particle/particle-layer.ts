@@ -215,7 +215,7 @@ Particle.Layer = class ParticleLayer {
 				}
 			}
 			const lightMode = Scene.state === 'open' && Scene.showLight ? data.light : 'raw';
-			gl.uniform1i(program.u_LightMode, (ParticleLayer.lightSamplingModes as any)[lightMode]);
+			gl.uniform1i(program.u_LightMode, ParticleLayer.lightSamplingModes[lightMode]);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
 			gl.bindTexture(gl.TEXTURE_2D, texture!.base.glTexture);
 			gl.drawElements(gl.TRIANGLES, (vi / 20) * 6, gl.UNSIGNED_INT, 0);
@@ -243,7 +243,7 @@ Particle.Layer = class ParticleLayer {
 				this.texture = texture;
 				this.calculateElementSize!();
 				Particle.Element.stage.requestRendering();
-				delete (this as any).draw;
+				delete (this as unknown as Record<string, unknown>).draw;
 				return;
 			}
 			this.texture = texture;
@@ -252,7 +252,7 @@ Particle.Layer = class ParticleLayer {
 					this.texture = texture;
 					this.calculateElementSize!();
 					Particle.Element.stage.requestRendering();
-					delete (this as any).draw;
+					delete (this as unknown as Record<string, unknown>).draw;
 				} else {
 					texture.destroy();
 				}
@@ -295,7 +295,7 @@ Particle.Layer = class ParticleLayer {
 	updateEasing() {
 		const { color } = this.data;
 		if (color.mode === 'easing') {
-			this.easing = (Easing.get as any)(color.easingId);
+			this.easing = Easing.get(color.easingId);
 		}
 	}
 
@@ -360,5 +360,5 @@ Particle.Layer = class ParticleLayer {
 		return this._sharedUint32B;
 	}
 
-	static lightSamplingModes = { raw: 0, global: 1, ambient: 2 };
+	static lightSamplingModes: Record<string, number> = { raw: 0, global: 1, ambient: 2 };
 };

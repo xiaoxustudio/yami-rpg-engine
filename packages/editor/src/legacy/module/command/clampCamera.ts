@@ -16,28 +16,28 @@ Command.cases.clampCamera = new CommandSchema({
 	customParse({ left, top, right, bottom }: any) {
 		const words = Command.words
 			.push(
-				Local.get('command.clampCamera.left') +
+				Local.get!('command.clampCamera.left') +
 					Token(' = ') +
 					Command.parseVariableNumber(left)
 			)
 			.push(
-				Local.get('command.clampCamera.top') +
+				Local.get!('command.clampCamera.top') +
 					Token(' = ') +
 					Command.parseVariableNumber(top)
 			)
 			.push(
-				Local.get('command.clampCamera.right') +
+				Local.get!('command.clampCamera.right') +
 					Token(' = ') +
 					Command.parseVariableNumber(right)
 			)
 			.push(
-				Local.get('command.clampCamera.bottom') +
+				Local.get!('command.clampCamera.bottom') +
 					Token(' = ') +
 					Command.parseVariableNumber(bottom)
 			);
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.clampCamera') + Token(': ') },
+			{ text: Local.get!('command.clampCamera') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

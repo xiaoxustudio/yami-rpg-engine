@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { CustomCommand } from '@/command/custom-command-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -45,16 +46,16 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListSelect = (event: any) => {
-	(window as any).CustomCommand?.listSelect?.(event);
+	CustomCommand?.listSelect?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).CustomCommand?.listPopup?.(event);
+	CustomCommand?.listPopup?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).CustomCommand?.listOpen?.(event);
+	CustomCommand?.listOpen?.(event);
 };
 const onListChange = (event: any) => {
-	(window as any).CustomCommand?.listChange?.(event);
+	CustomCommand?.listChange?.(event);
 };
 
 onMounted(() => {

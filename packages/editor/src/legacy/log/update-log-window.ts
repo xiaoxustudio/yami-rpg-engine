@@ -3,11 +3,17 @@ import { Window } from '@/tools/window-object.ts';
 import { on, addClass, clear } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
 
+interface UpdateLogItem {
+	title?: string;
+	major?: string;
+	minor?: string;
+}
+
 export const UpdateLog = {
 	content: $('#update-log-content'),
 	currentMode: null as string | null,
-	internalItems: null as any[] | null,
-	communityItems: null as any[] | null,
+	internalItems: null as unknown as any[] | null,
+	communityItems: null as unknown as any[] | null,
 	open: null as ((...args: unknown[]) => unknown) | null,
 	update: null as ((...args: unknown[]) => unknown) | null,
 	initialize: null as ((...args: unknown[]) => unknown) | null,
@@ -24,16 +30,16 @@ UpdateLog.initialize = function () {
 	if (el) on(el, 'closed', this.windowClosed!);
 };
 
-UpdateLog.open = function (items: any = null) {
+UpdateLog.open = function (this: typeof UpdateLog, items: UpdateLogItem[] | null = null) {
 	if (items instanceof Array) {
-		(Window.open as any)('update-log');
+		Window.open!('update-log');
 		this.update!(items);
 	} else {
 		Updater.updateIncrementalChanges(Updater.latestProjectVersion);
 	}
-};
+} as (...args: unknown[]) => unknown;
 
-UpdateLog.update = function (items: any) {
+UpdateLog.update = function (this: typeof UpdateLog, items: UpdateLogItem[]) {
 	if (!this.content) {
 		this.content = $('#update-log-content');
 	}
@@ -61,7 +67,7 @@ UpdateLog.update = function (items: any) {
 			this.content.appendChild(minor);
 		}
 	}
-};
+} as (...args: unknown[]) => unknown;
 
 UpdateLog.windowClosed = function () {
 	clear(UpdateLog.content);

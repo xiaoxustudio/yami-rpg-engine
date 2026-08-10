@@ -54,7 +54,7 @@ const controls = {
 	textBox: () => textBoxFactory()
 };
 
-const dataManifest = (): any => (Data as any).manifest;
+const dataManifest = (): any => Data.manifest;
 const plugin = computed(() => PluginManager);
 const localize = (key: string): string => Local.get(key);
 const selection = computed(() => Selection);
@@ -91,7 +91,7 @@ const on = (
 defineExpose({ bind, rewrite, update, clear, on, root });
 
 onMounted(() => {
-	const el = root.value as any;
+const el = root.value as HTMLElement & Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', any>;
 	if (!el) return;
 	el.bind = bind;
 	el.rewrite = rewrite;

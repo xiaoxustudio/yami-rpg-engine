@@ -20,26 +20,26 @@ Editor.saveProject = function (this: any) {
 	}
 	try {
 		Scene.saveToProject!(project);
-		(UI.saveToProject as any)(project);
+		UI.saveToProject(project);
 		Animation.saveToProject!(project);
-		(Particle.saveToProject as any)(project);
-		(Palette.saveToProject as any)(project);
+		Particle.saveToProject!(project);
+		Palette.saveToProject(project);
 		Sprite.saveToProject(project);
 		useBrowserStore().saveToProject(project);
 		useSelectorStore().saveToProject(project);
-		(PluginManager.saveToProject as any)(project);
-		(Title.saveToProject as any)(project);
+		PluginManager.saveToProject!(project);
+		Title.saveToProject!(project);
 
 		const json = JSON.stringify(project, null, 2);
 		const last = project.code;
 		if (json && json !== last) {
 			const path = this.config.project;
 			FSP.writeFile!(path, json).catch((error: any) => {
-				(Log.throw as any)(error);
+				Log.throw!(error);
 			});
 		}
 	} catch (error: any) {
-		(Log.throw as any)(error);
+		Log.throw!(error);
 		return console.error(error);
 	}
 };
@@ -47,15 +47,15 @@ Editor.saveProject = function (this: any) {
 Editor.loadProject = function (this: any) {
 	const { project } = this;
 	Scene.loadFromProject!(project);
-	(UI.loadFromProject as any)(project);
+	UI.loadFromProject(project);
 	Animation.loadFromProject!(project);
-	(Particle.loadFromProject as any)(project);
-	(Palette.loadFromProject as any)(project);
+	Particle.loadFromProject!(project);
+	Palette.loadFromProject(project);
 	Sprite.loadFromProject(project);
 	useBrowserStore().loadFromProject(project);
 	useSelectorStore().loadFromProject(project);
-	(PluginManager.loadFromProject as any)(project);
-	(Title.loadFromProject as any)(project);
+	PluginManager.loadFromProject!(project);
+	Title.loadFromProject!(project);
 };
 
 Editor.saveManifest = function (this: any) {

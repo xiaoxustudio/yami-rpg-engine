@@ -4,18 +4,30 @@ import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const AnimSoundLayer = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimSoundLayerShape {
+		[k: string]: any;
+	}
+	interface AnimSoundLayerData {
+		class: string;
+		name: string;
+		hidden: boolean;
+		locked: boolean;
+		playbackRate: string;
+		frames: unknown[];
+		[k: string]: unknown;
+	}
+	const AnimSoundLayer: AnimSoundLayerShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimSoundLayer.initialize = function (this: any) {
+	AnimSoundLayer.initialize = function (this: typeof AnimSoundLayer) {
 		if (!$('#animSoundLayer-playbackRate')) return;
 		$('#animSoundLayer-playbackRate').loadItems([
 			{ name: 'Default', value: 'default' },
@@ -27,15 +39,19 @@ import { Inspector } from './inspector.ts';
 		element.on('focus', Inspector.inputFocus);
 		element.on(
 			'blur',
-			Inspector.inputBlur!(this, Animation, (data: any) => {
-				data.type = 'inspector-layer-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
+			Inspector.inputBlur!(
+				this,
+				Animation,
+				(data: { type: string; [k: string]: unknown }) => {
+					data.type = 'inspector-layer-change';
+					data.motion = this.motion;
+					data.direction = Animation.direction;
+				}
+			)
 		);
 	};
 
-	AnimSoundLayer.create = function (this: any) {
+	AnimSoundLayer.create = function (this: typeof AnimSoundLayer) {
 		return {
 			class: 'sound',
 			name: 'Sound',
@@ -46,7 +62,7 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	AnimSoundLayer.open = function (this: any, layer: any) {
+	AnimSoundLayer.open = function (this: typeof AnimSoundLayer, layer: AnimSoundLayerData) {
 		if (this.target !== layer) {
 			this.target = layer;
 			this.motion = Animation.motion;
@@ -56,25 +72,33 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundLayer.close = function (this: any) {
+	AnimSoundLayer.close = function (this: typeof AnimSoundLayer) {
 		if (this.target) {
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimSoundLayer.update = function (this: any, layer: any, key: any, value: any) {
+	AnimSoundLayer.update = function (
+		this: typeof AnimSoundLayer,
+		layer: AnimSoundLayerData,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'playbackRate':
 				if (layer[key] !== value) {
-					layer[key] = value;
+					(layer as Record<string, unknown>)[key] = value;
 				}
 				break;
 		}
 	};
 
-	AnimSoundLayer.paramInput = function (this: any, event: any) {
+	AnimSoundLayer.paramInput = function (
+		this: HTMLElement & { [k: string]: unknown },
+		event: Event
+	) {
 		AnimSoundLayer.update(AnimSoundLayer.target, Inspector.getKey!(this), read(this));
 	};
 

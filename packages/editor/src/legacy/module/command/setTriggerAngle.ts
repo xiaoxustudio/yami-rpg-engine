@@ -17,7 +17,7 @@ Command.cases.setTriggerAngle = new CommandSchema({
 			.push(Command.parseAngle(angle));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get('command.setTriggerAngle') + Token(': ') },
+			{ text: Local.get!('command.setTriggerAngle') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

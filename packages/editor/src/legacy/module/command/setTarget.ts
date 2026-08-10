@@ -11,7 +11,7 @@ Command.cases.setTarget = new CommandSchema({
 	customParse({ actor }: any) {
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setTarget') + Token(': ') },
+			{ text: Local.get!('command.setTarget') + Token(': ') },
 			{ text: Command.parseActor(actor) }
 		];
 	},

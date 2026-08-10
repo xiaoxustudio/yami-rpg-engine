@@ -85,6 +85,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { AutoTile } from '@/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -99,13 +100,13 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onTemplatesSelect = (event: any) => {
-	(window as any).AutoTile?.templatesSelect?.(event);
+	AutoTile?.templatesSelect?.(event);
 };
 const onTemplatesPopup = (event: any) => {
-	(window as any).AutoTile?.templatesPopup?.(event);
+	AutoTile?.templatesPopup?.(event);
 };
 const onTemplatesChange = (event: any) => {
-	(window as any).AutoTile?.templatesChange?.(event);
+	AutoTile?.templatesChange?.(event);
 };
 
 onMounted(() => {

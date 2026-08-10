@@ -78,7 +78,7 @@ export class ConditionListInterface implements IListInterface {
 			const element = item.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				(list as any).updateConditionIcon(item);
+				list.updateConditionIcon(item);
 			}
 		}
 	}
@@ -92,7 +92,7 @@ export class ConditionListInterface implements IListInterface {
 		}
 	) {
 		Window.open!('condition');
-		(ConditionListInterface as any).target = this.target;
+		ConditionListInterface.target = this.target;
 		const write = getElementWriter('condition');
 		let booleanOperation = 'equal';
 		let booleanValue = true;
@@ -109,12 +109,12 @@ export class ConditionListInterface implements IListInterface {
 			case 'global-number':
 			case 'self-number':
 				numberOperation = condition.operation;
-				numberValue = condition.value as any;
+				numberValue = condition.value as unknown as number;
 				break;
 			case 'global-string':
 			case 'self-string':
 				stringOperation = condition.operation;
-				stringValue = condition.value as any;
+				stringValue = condition.value as unknown as string;
 				break;
 		}
 		write('type', condition.type);
@@ -170,7 +170,7 @@ export class ConditionListInterface implements IListInterface {
 		return condition;
 	}
 
-	static target = null;
+	static target: HTMLElement | null = null;
 
 	static initialize() {
 		const typeEl = $('#condition-type');
@@ -261,7 +261,7 @@ export class ConditionListInterface implements IListInterface {
 
 		// 确定按钮 - 鼠标点击事件
 		$('#condition-confirm').on('click', (event: any) => {
-			(ConditionListInterface as any).target!.save();
+			ConditionListInterface.target!.save();
 		});
 	}
 }

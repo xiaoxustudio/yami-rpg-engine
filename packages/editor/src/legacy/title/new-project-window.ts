@@ -14,18 +14,23 @@ import { Local } from '@/tools/localization.ts';
 
 import { Path } from '@/util/config.ts';
 
-type NewProjectState = 'passed' | 'open' | 'closed';
+type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
-type NewProjectMethod = ((...args: any[]) => any) | null;
+type NewProjectMethod = ((...args: unknown[]) => unknown) | null;
 
 interface NewProjectShape {
 	state: NewProjectState;
-	timer: any | null;
+	timer: Timer | null;
 	initialize: (() => void) | null;
 	open: NewProjectMethod;
 	check: NewProjectMethod;
-	readFileList: NewProjectMethod;
+	readFileList:
+		| ((
+				dirname: string,
+				idFilter: unknown
+		  ) => Promise<Array<{ folder?: boolean; path: string }>>)
+		| null;
 	copyFilesTo: NewProjectMethod;
 	writeData: NewProjectMethod;
 	getNewFolder: NewProjectMethod;
@@ -39,23 +44,23 @@ interface NewProjectShape {
 
 export const NewProject: NewProjectShape = {
 	state: 'passed',
-	timer: null as any,
-	initialize: null as any,
-	open: null as any,
-	check: null as any,
-	readFileList: null as any,
-	copyFilesTo: null as any,
-	writeData: null as any,
-	getNewFolder: null as any,
-	templateInput: null as any,
-	folderBeforeinput: null as any,
-	folderInput: null as any,
-	locationInput: null as any,
-	chooseClick: null as any,
-	confirm: null as any
+	timer: null,
+	initialize: null,
+	open: null,
+	check: null,
+	readFileList: null,
+	copyFilesTo: null,
+	writeData: null,
+	getNewFolder: null,
+	templateInput: null,
+	folderBeforeinput: null,
+	folderInput: null,
+	locationInput: null,
+	chooseClick: null,
+	confirm: null
 };
 
-NewProject.initialize = function (this: any) {
+NewProject.initialize = function (this: typeof NewProject) {
 	const template = $('#newProject-template');
 	if (!template) return;
 	template.loadItems([
@@ -64,17 +69,17 @@ NewProject.initialize = function (this: any) {
 		{ name: 'Minimized Current Project', value: 'minimized-project' }
 	]);
 
-	template.addEventListener('input', this.templateInput);
+	template.addEventListener('input', this.templateInput as unknown as EventListener);
 	// folder/location input 经 Vue 模板转发（NewProject.vue @input/@beforeinput → NewProject.*）
-	$('#newProject-choose').addEventListener('click', this.chooseClick);
-	$('#newProject-confirm').addEventListener('click', this.confirm);
+	$('#newProject-choose').addEventListener('click', this.chooseClick as unknown as EventListener);
+	$('#newProject-confirm').addEventListener('click', this.confirm as unknown as EventListener);
 };
 
-NewProject.open = function (this: any) {
+NewProject.open = function (this: typeof NewProject) {
 	Window.open!('newProject');
 	const write = getElementWriter('newProject');
-	const dialogs = (Editor.config as any).dialogs;
-	const location = Path.normalize!(dialogs.new);
+	const dialogs = Editor.config!.dialogs!;
+	const location = Path.normalize!(dialogs.new!);
 	const folder = this.getNewFolder!(location);
 	let template;
 	switch (Local.language) {
@@ -93,7 +98,7 @@ NewProject.open = function (this: any) {
 	this.check!();
 };
 
-NewProject.check = function (this: any) {
+NewProject.check = function (this: typeof NewProject) {
 	const folder = read($('#newProject-folder'));
 	const location = read($('#newProject-location'));
 	if (!folder) {
@@ -124,87 +129,100 @@ NewProject.check = function (this: any) {
 
 NewProject.readFileList = (function IIFE() {
 	const options = { withFileTypes: true };
-	const read = (dirname: any, idFilter: any, path: any, list: any) => {
-		return (FSP.readdir as any)(`${dirname}/${path}`, options).then(async (files: any[]) => {
-			if (path) {
-				path += '/';
-			}
-			const promises = [] as any[];
-			for (const file of files) {
-				const newPath = `${path}${file.name}`;
-				if (file.isDirectory()) {
-					list.push({
-						folder: true,
-						path: newPath
-					});
-					promises.push(read(dirname, idFilter, newPath, list));
-				} else {
-					// 如果存在ID过滤器，文件名中包括了ID 但是未在ID过滤器中找到，则判定为多余文件，跳过
-					if (idFilter) {
-						const guid = File.parseGUID!(file.name);
-						if (guid && !idFilter[guid]) continue;
-					}
-					list.push({
-						path: newPath
-					});
+	const read = (
+		dirname: string,
+		idFilter: unknown,
+		path: string,
+		list: Array<{ folder?: boolean; path: string }>
+	) => {
+		return FSP.readdir(`${dirname}/${path}`, options).then(
+			async (files: Array<{ name: string; isDirectory(): boolean }>) => {
+				if (path) {
+					path += '/';
 				}
+				const promises: Promise<unknown>[] = [];
+				for (const file of files) {
+					const newPath = `${path}${file.name}`;
+					if (file.isDirectory()) {
+						list.push({
+							folder: true,
+							path: newPath
+						});
+						promises.push(read(dirname, idFilter, newPath, list));
+					} else {
+						// 如果存在ID过滤器，文件名中包括了ID 但是未在ID过滤器中找到，则判定为多余文件，跳过
+						if (idFilter) {
+							const guid = File.parseGUID!(file.name);
+							if (guid && !(idFilter as Record<string, unknown>)[guid]) continue;
+						}
+						list.push({
+							path: newPath
+						});
+					}
+				}
+				if (promises.length !== 0) {
+					await Promise.all(promises);
+				}
+				return list;
 			}
-			if (promises.length !== 0) {
-				await Promise.all(promises);
-			}
-			return list;
-		});
+		);
 	};
-	return function (this: any, dirname, idFilter) {
+	return function (this: typeof NewProject, dirname: string, idFilter: unknown) {
 		return read(dirname, idFilter, '', []);
 	};
 })();
 
-NewProject.copyFilesTo = function (this: any, sPath: any, dPath: any, idFilter: any) {
+NewProject.copyFilesTo = function (this: typeof NewProject, ...args: unknown[]) {
+	const sPath = args[0] as string;
+	const dPath = args[1] as string;
+	const idFilter = args[2];
 	Window.open!('copyProgress');
 	const progressBar = $('#copyProgress-bar');
 	const progressInfo = $('#copyProgress-info');
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';
-	return this.readFileList!(sPath, idFilter).then((list: any) => {
-		let total = 0;
-		let count = 0;
-		let info = '';
-		const promises = [] as any[];
-		const length = list.length;
-		for (let i = 0; i < length; i++) {
-			const item = list[i];
-			const path = item.path;
-			switch (item.folder) {
-				case true:
-					FS.mkdirSync!(dPath + '/' + path);
-					continue;
-				default:
-					promises.push(
-						FSP.copyFile!(sPath + '/' + path, dPath + '/' + path).then(() => {
-							count++;
-							info = path;
-						})
-					);
-					total++;
-					continue;
+	return this.readFileList!(sPath, idFilter).then(
+		(list: Array<{ folder?: boolean; path: string }>) => {
+			let total = 0;
+			let count = 0;
+			let info = '';
+			const promises: Promise<unknown>[] = [];
+			const length = list.length;
+			for (let i = 0; i < length; i++) {
+				const item = list[i];
+				const path = item.path;
+				switch (item.folder) {
+					case true:
+						FS.mkdirSync!(dPath + '/' + path);
+						continue;
+					default:
+						promises.push(
+							FSP.copyFile!(sPath + '/' + path, dPath + '/' + path).then(() => {
+								count++;
+								info = path;
+							})
+						);
+						total++;
+						continue;
+				}
 			}
+			this.timer = new Timer({
+				duration: Infinity,
+				update: (timer: Timer) => {
+					const percent = Math.round((count / total) * 100);
+					progressBar.style.width = `${percent}%`;
+					progressInfo.textContent = info;
+				}
+			}).add();
+			return Promise.all(promises);
 		}
-		this.timer = new Timer({
-			duration: Infinity,
-			update: (timer: any) => {
-				const percent = Math.round((count / total) * 100);
-				progressBar.style.width = `${percent}%`;
-				progressInfo.textContent = info;
-			}
-		}).add();
-		return Promise.all(promises);
-	});
+	);
 };
 
-NewProject.writeData = function (this: any, dirPath: any) {
+NewProject.writeData = function (this: typeof NewProject, ...args: unknown[]) {
+	const dirPath = args[0] as string;
 	const path = `${dirPath}/data/config.json`;
-	return FSP.readFile!(path, 'utf8').then((data: any) => {
+	return FSP.readFile!(path, 'utf8').then((data: string) => {
 		const config = JSON.parse(data);
 		config.gameId = GUID.generate64bit();
 		config.save.subdir = config.gameId;
@@ -213,7 +231,8 @@ NewProject.writeData = function (this: any, dirPath: any) {
 	});
 };
 
-NewProject.getNewFolder = function (this: any, location: any) {
+NewProject.getNewFolder = function (this: typeof NewProject, ...args: unknown[]) {
+	const location = args[0] as string;
 	for (let i = 1; true; i++) {
 		const folder = `Project${i}`;
 		if (!FS.existsSync!(Path.resolve!(location, folder))) {
@@ -222,11 +241,13 @@ NewProject.getNewFolder = function (this: any, location: any) {
 	}
 };
 
-NewProject.templateInput = function (this: any, event: any) {
+NewProject.templateInput = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as Event;
 	NewProject.check!();
 };
 
-NewProject.folderBeforeinput = function (this: any, event: any) {
+NewProject.folderBeforeinput = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as InputEvent;
 	if (event.inputType === 'insertText' && typeof event.data === 'string') {
 		const regexp = /[\\/:*?"<>|"]/;
 		if (regexp.test(event.data)) {
@@ -236,7 +257,8 @@ NewProject.folderBeforeinput = function (this: any, event: any) {
 	}
 };
 
-NewProject.folderInput = function (this: any, event: any) {
+NewProject.folderInput = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as Event;
 	const el = $('#newProject-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
 	const oldName = read(el);
@@ -247,16 +269,18 @@ NewProject.folderInput = function (this: any, event: any) {
 	NewProject.check!();
 };
 
-NewProject.locationInput = function (this: any, event: any) {
+NewProject.locationInput = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as Event;
 	NewProject.check!();
 };
 
-NewProject.chooseClick = function (this: any, event: any) {
+NewProject.chooseClick = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as Event;
 	const input = $('#newProject-location');
 	File.showOpenDialog!({
 		defaultPath: read(input),
 		properties: ['openDirectory']
-	}).then(({ filePaths }: any) => {
+	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
 			write(input, filePaths[0]);
 			NewProject.check!();
@@ -264,7 +288,8 @@ NewProject.chooseClick = function (this: any, event: any) {
 	});
 };
 
-NewProject.confirm = function (this: any, event: any) {
+NewProject.confirm = function (this: typeof NewProject, ...args: unknown[]) {
+	const event = args[0] as Event;
 	const template = read($('#newProject-template'));
 	const location = read($('#newProject-location'));
 	const folder = read($('#newProject-folder'));
@@ -275,13 +300,13 @@ NewProject.confirm = function (this: any, event: any) {
 	const dPath = Path.resolve!(location, folder);
 	Window.close!('newProject');
 	FSP.mkdir!(dPath, { recursive: true })
-		.then((done: any) => {
+		.then((done: boolean) => {
 			return template === 'minimized-project' ? Data.createReferencedFileIDMap!() : undefined;
 		})
-		.then((idFilter: any) => {
+		.then((idFilter: unknown) => {
 			return NewProject.copyFilesTo!(sPath, dPath, idFilter);
 		})
-		.then((done: any) => {
+		.then((done: boolean) => {
 			return NewProject.writeData!(dPath);
 		})
 		.finally(() => {
@@ -293,9 +318,9 @@ NewProject.confirm = function (this: any, event: any) {
 		})
 		.then(() => {
 			Editor.open!(`${dPath}/game.yamirpg`);
-			(Editor.config as any).dialogs.new = Path.slash!(Path.resolve!(location));
+			Editor.config!.dialogs!.new = Path.slash!(Path.resolve!(location));
 		})
-		.catch((error: any) => {
+		.catch((error: unknown) => {
 			Editor.close!();
 			Log.throw!(error);
 			Window.confirm!(

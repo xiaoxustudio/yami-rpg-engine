@@ -19,7 +19,7 @@ Command.cases.deleteTile = new CommandSchema({
 			.push(Command.parseVariableNumber(tilemapY));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.deleteTile') + Token(': ') },
+			{ text: Local.get!('command.deleteTile') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

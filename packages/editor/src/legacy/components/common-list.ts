@@ -7,15 +7,17 @@ import {
 	listenDraggingScrollbarEvent
 } from '@/util/element-utils.ts';
 
+type CommonListElements = any[] & {
+	versionId: number;
+	count: number;
+	start: number;
+	end: number;
+	head: HTMLElement | null;
+	foot: HTMLElement | null;
+};
+
 export class CommonList extends HTMLElement {
-	elements: any[] & {
-		versionId: number;
-		count: number;
-		start: number;
-		end: number;
-		head: HTMLElement | null;
-		foot: HTMLElement | null;
-	};
+	elements: CommonListElements;
 	selection: HTMLElement | null;
 	writeEventEnabled: boolean;
 	selectEventEnabled: boolean;
@@ -26,14 +28,7 @@ export class CommonList extends HTMLElement {
 		super();
 
 		this._initialized = false;
-		this.elements = [] as unknown as any[] & {
-			versionId: number;
-			count: number;
-			start: number;
-			end: number;
-			head: HTMLElement | null;
-			foot: HTMLElement | null;
-		};
+		this.elements = [] as unknown as CommonListElements;
 		this.elements.versionId = 0;
 		this.elements.count = 0;
 		this.elements.start = -1;
@@ -58,11 +53,11 @@ export class CommonList extends HTMLElement {
 		this.tabIndex = 0;
 	}
 
-	read(): any {
+	read(): unknown {
 		return this.selection?.dataValue;
 	}
 
-	write(value: any): void {
+	write(value: unknown): void {
 		const elements = this.elements;
 		const count = elements.count;
 		if (count !== 0) {
@@ -79,7 +74,7 @@ export class CommonList extends HTMLElement {
 			this.selection = target;
 			this.scrollToItem(index);
 			if (this.writeEventEnabled) {
-				const write: any = new Event('write');
+				const write = new Event('write') as Event & { value: unknown };
 				write.value = target.dataValue;
 				this.dispatchEvent(write);
 			}
@@ -116,10 +111,10 @@ export class CommonList extends HTMLElement {
 
 	select(element: HTMLElement): void {
 		if (element instanceof HTMLElement && this.selection !== element) {
-			this.write((element as HTMLElement & { dataValue: any }).dataValue);
+			this.write((element as HTMLElement & { dataValue: unknown }).dataValue);
 			if (this.selectEventEnabled) {
-				const select: any = new Event('select');
-				select.value = (element as HTMLElement & { dataValue: any }).dataValue;
+				const select = new Event('select') as Event & { value: unknown };
+				select.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 				this.dispatchEvent(select);
 			}
 		}
@@ -190,7 +185,7 @@ export class CommonList extends HTMLElement {
 
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
 		super.addEventListener(type, listener, options);
@@ -260,13 +255,21 @@ export class CommonList extends HTMLElement {
 				if (this.popupEventEnabled && document.activeElement === this) {
 					const element = seek(event.target as HTMLElement, 'common-item')!;
 					if (element.tagName === 'COMMON-ITEM' && hasClass(element, 'selected')) {
-						const popup: any = new Event('popup');
-						popup.value = (element as HTMLElement & { dataValue: any }).dataValue;
+						const popup = new Event('popup') as Event & {
+							value: unknown;
+							clientX: number;
+							clientY: number;
+						};
+						popup.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 						popup.clientX = event.clientX;
 						popup.clientY = event.clientY;
 						this.dispatchEvent(popup);
 					} else {
-						const popup: any = new Event('popup');
+						const popup = new Event('popup') as Event & {
+							value: unknown;
+							clientX: number;
+							clientY: number;
+						};
 						popup.value = null;
 						popup.clientX = event.clientX;
 						popup.clientY = event.clientY;

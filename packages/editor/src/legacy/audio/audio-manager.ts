@@ -2,17 +2,25 @@ import { File } from '@/file/file-system-core.ts';
 import { AudioPlayer } from './audio-player.ts';
 import { MultipleAudioPlayer } from './multiple-audio-player.ts';
 
+interface WaveformPromise extends Promise<string | undefined> {
+	canceled?: boolean;
+}
+
 export const AudioManager = {
 	context: null as AudioContext | null,
 	player: null as AudioPlayer | null,
-	se: null as any,
+	se: null as
+		| (MultipleAudioPlayer & {
+				play: (sound: string, volume: number) => void;
+		  })
+		| null,
 	analyser: null as AnalyserNode | null,
-	waveforms: {} as Record<string, any>,
+	waveforms: {} as Record<string, string | WaveformPromise>,
 	initialize: null as (() => void) | null,
 	getWaveform: null as ((guid: string) => any) | null,
 	close: null as (() => void) | null,
 	state: null as string | null,
-	music: null as Record<string, any> | null,
+	music: null as Record<string, unknown> | null,
 	playMusic: null as ((name: string) => void) | null,
 	stopMusic: null as (() => void) | null,
 	playSound: null as ((name: string) => void) | null
@@ -26,7 +34,9 @@ AudioManager.initialize = function () {
 
 	this.player = new AudioPlayer();
 
-	this.se = new MultipleAudioPlayer();
+	this.se = new MultipleAudioPlayer() as MultipleAudioPlayer & {
+		play: (sound: string, volume: number) => void;
+	};
 };
 
 AudioManager.getWaveform = function (guid: string) {
@@ -41,7 +51,7 @@ AudioManager.getWaveform = function (guid: string) {
 	const promise = (waveforms[guid] = File.get!({
 		guid: guid,
 		type: 'arraybuffer'
-	}).then((response: any) => {
+	}).then((response: ArrayBuffer) => {
 		if (waveforms[guid] !== promise) {
 			return;
 		}
@@ -50,7 +60,7 @@ AudioManager.getWaveform = function (guid: string) {
 			delete waveforms[guid];
 			return;
 		}
-		return this.context!.decodeAudioData(response).then((buffer: any) => {
+		return this.context!.decodeAudioData(response).then((buffer: AudioBuffer) => {
 			const canvas = document.createElement('canvas');
 			canvas.width = 512;
 			canvas.height = 160;
@@ -78,7 +88,7 @@ AudioManager.getWaveform = function (guid: string) {
 			}
 			return (waveforms[guid] = `url(${canvas.toDataURL()})`);
 		});
-	}));
+	}) as WaveformPromise);
 	return promise;
 };
 

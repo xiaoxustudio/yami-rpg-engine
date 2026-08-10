@@ -15,6 +15,7 @@ import {
 import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
 import { createNavBar } from '@/components/nav-bar.ts';
 import { createPageManager } from '@/components/page-manager.ts';
+import type { PageManagerApi } from '@ui-kit';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { GL } from '@/webgl/webgl-init.ts';
@@ -26,59 +27,115 @@ import { Scene } from '@/scene/scene-window.ts';
 import { Home } from '@/title/home-page.ts';
 import { Title } from '@/title/title-bar.ts';
 import { UI } from '@/ui/ui-window.ts';
+import { DynamicShape } from '@/types/legacy-shapes.ts';
 
-export const Layout = {
-	manager: null as any,
-	items: null as Record<string, any> | null,
+interface LayoutScheme {
+	end: number;
+	split?: string;
+	children?: LayoutScheme[];
+	tabs?: string[];
+	[k: string]: any;
+}
+
+type LayoutItemElement = HTMLElement & {
+	page?: HTMLElement;
+};
+
+type LayoutItems = Record<string, LayoutItemElement> & {
+	list: LayoutItemElement[];
+};
+
+type LayoutGroupElement = HTMLElement & {
+	end: number;
+	split?: string;
+	tabs?: string[];
+	nav: HTMLElement;
+	manager: PageManagerApi;
+	border?: HTMLElement;
+};
+
+type LayoutDragLocation = {
+	trigger: HTMLElement;
+	target: HTMLElement;
+	direction: string;
+};
+
+type LayoutDragEvent = DragEvent & {
+	group: HTMLElement | null;
+	hint: HTMLElement;
+	navs: HTMLElement[];
+	regions: HTMLElement[];
+};
+
+type LayoutResizeEvent = {
+	mode?: string;
+	startX?: number;
+	startY?: number;
+	outer?: LayoutGroupElement;
+	group?: LayoutGroupElement;
+	end?: number;
+	infos?: HTMLElement[];
+};
+
+export const Layout: DynamicShape = {
+	manager: null,
+	items: null as LayoutItems | null,
 	heads: null as HTMLElement[] | null,
-	layouts: null as any,
-	layout: null as Record<string, any> | null,
-	default: null as any,
-	dragging: null as any,
-	resizing: null as any,
+	layouts: null,
+	layout: null as Record<string, LayoutScheme> | null,
+	default: null,
+	dragging: null,
+	resizing: null,
+	afterChange: null as (() => void) | null,
 	focusableSelector: null as string | null,
 	focusableElements: null as HTMLElement[] | null,
 	initialize: null as (() => void) | null,
-	switchLayout: null as ((layout: any) => void) | null,
-	createGroups: null as ((item: any, parent: HTMLElement) => void) | null,
+	switchLayout: null as ((layout: Record<string, LayoutScheme>) => void) | null,
+	createGroups: null as ((item: LayoutScheme, parent: HTMLElement) => void) | null,
 	updateGroups: null as ((force?: boolean) => void) | null,
-	updateGroupTabs: null as ((group: any) => void) | null,
+	updateGroupTabs: null as ((group: LayoutGroupElement) => void) | null,
 	updateGroupInfo: null as (() => void) | null,
 	mergeGroups: null as (() => void) | null,
-	setGroupSize: null as ((group: any, hint: any, direction: any) => void) | null,
-	computeSizesBefore: null as ((group: any) => void) | null,
-	computeSizesAfter: null as ((group: any) => void) | null,
-	updateHint: null as ((location: any) => void) | null,
-	getKeyGroups: null as (() => any[]) | null,
-	getGroupOfElement: null as
+	setGroupSize: null as
 		| ((
-				element: HTMLElement
-		  ) => (HTMLElement & { nav: HTMLElement; manager: any; border: any }) | null)
+				group: LayoutGroupElement,
+				hint: { width: number; height: number },
+				direction: 'forward' | 'backward'
+		  ) => void)
 		| null,
+	computeSizesBefore: null as ((group: LayoutGroupElement) => void) | null,
+	computeSizesAfter: null as ((group: LayoutGroupElement) => void) | null,
+	updateHint: null as ((location: LayoutDragLocation | null) => void) | null,
+	getKeyGroups: null as (() => LayoutGroupElement[]) | null,
+	getGroupOfElement: null as ((element: HTMLElement) => LayoutGroupElement | null) | null,
 	readyToFocus: null as ((element: HTMLElement) => void) | null,
-	createGroupContent: null as ((group: any) => void) | null,
-	createGroupBorder: null as ((group: any) => void) | null,
+	createGroupContent: null as ((group: LayoutGroupElement) => void) | null,
+	createGroupBorder: null as ((group: LayoutGroupElement) => void) | null,
 	enableFocusableElements: null as (() => void) | null,
 	disableFocusableElements: null as (() => void) | null,
 	saveNavStates: null as (() => void) | null,
-	saveLayoutScheme: null as ((rootGroup?: any) => any) | null,
+	saveLayoutScheme: null as ((rootGroup?: LayoutGroupElement) => LayoutScheme) | null,
 	loadLayoutScheme: null as ((key?: string) => void) | null,
-	saveToConfig: null as ((config: any) => void) | null,
-	loadFromConfig: null as ((config: any) => void) | null,
+	saveToConfig: null as
+		| ((config: { layout?: Record<string, LayoutScheme> | null }) => void)
+		| null,
+	loadFromConfig: null as
+		| ((config: { layout?: Record<string, LayoutScheme> | null }) => void)
+		| null,
 	windowResize: null as ((event: EditorEvent) => void) | null,
 	windowLocalize: null as ((event: EditorEvent) => void) | null,
 	pageSwitch: null as ((event: EditorEvent) => void) | null,
 	navWrite: null as ((event: EditorEvent) => void) | null,
-	navPointerdown: null as ((event: any) => void) | null,
-	navDragstart: null as ((event: EditorEvent) => void) | null,
+	navPointerdown: null as ((event: { button: number; target: LayoutItemElement }) => void) | null,
+	navDragstart: null as ((event: LayoutDragEvent) => void) | null,
 	navDragend: null as ((event: EditorEvent) => void) | null,
-	navDragenter: null as ((event: EditorEvent) => void) | null,
+	navDragenter: null as ((event: DragEvent) => void) | null,
 	navDragleave: null as ((event: EditorEvent) => void) | null,
-	navDragover: null as ((event: EditorEvent) => void) | null,
+	navDragover: null as ((event: DragEvent) => void) | null,
 	navDrop: null as ((event: EditorEvent) => void) | null,
 	regionDragleave: null as ((event: EditorEvent) => void) | null,
-	regionDragover: null as ((event: EditorEvent) => void) | null,
-	borderPointerdown: null as ((event: EditorEvent) => void) | null,
+	regionDragover: null as ((event: DragEvent) => void) | null,
+	borderPointerdown: null as ((event: Event & LayoutResizeEvent) => void) | null,
 	pointerup: null as ((event?: EditorEvent) => void) | null,
 	pointermove: null as ((event: EditorEvent) => void) | null
 };
@@ -87,23 +144,21 @@ Layout.initialize = function () {
 	this.manager = $('#workspace-page-manager');
 	const nav = $('#layout-nav');
 	const manager = $('#layout-page-manager');
-	const items = (this.items = {} as Record<string, any>);
+	const items = (this.items = {} as LayoutItems);
 	for (const item of nav.childNodes) {
 		if (item.nodeType !== 1) continue;
 		const key = item.getAttribute('value');
 		(item as HTMLElement).draggable = true;
 		const string = key ?? '';
 		const isNumber = RegExp.number.test(string);
-		(item as HTMLElement).dataValue = (isNumber
-			? parseFloat(string)
-			: string) as unknown as Record<string, any> | null;
-		items[key!] = item;
+		(item as HTMLElement).dataValue = isNumber ? parseFloat(string) : string;
+		items[key!] = item as LayoutItemElement;
 	}
 	for (const page of manager.childNodes) {
 		if (page.nodeType !== 1) continue;
 		const key = page.getAttribute('value');
-		(page as HTMLElement).dataValue = key as unknown as Record<string, any> | null;
-		items[key!].page = page;
+		(page as HTMLElement).dataValue = key;
+		items[key!].page = page as HTMLElement;
 	}
 
 	Object.defineProperty(items, 'list', {
@@ -125,7 +180,7 @@ Layout.initialize = function () {
 	File.get!({
 		local: 'default.json',
 		type: 'json'
-	}).then((config: any) => {
+	}).then((config: { layout: unknown }) => {
 		this.default = config.layout;
 	});
 
@@ -139,7 +194,7 @@ Layout.initialize = function () {
 	this.manager.on('switch', this.pageSwitch!);
 };
 
-Layout.switchLayout = function (layout: any) {
+Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
 	this.layout = layout;
 	const { manager } = this;
 	for (const page of manager.childNodes) {
@@ -153,78 +208,30 @@ Layout.switchLayout = function (layout: any) {
 	}
 };
 
-Layout.createGroups = function (item: any, parent: HTMLElement) {
+Layout.createGroups = function (item: LayoutScheme, parent: HTMLElement) {
 	const group = document.createElement('group');
 	parent.appendChild(group);
 	if (item.children) {
-		(
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).end = item.end;
-		(
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).split = item.split;
-		addClass(group, item.split);
+		(group as LayoutGroupElement).end = item.end;
+		(group as LayoutGroupElement).split = item.split;
+		addClass(group, item.split!);
 
 		for (const child of item.children) {
 			this.createGroups!(child, group);
 		}
 	} else {
 		const { end, tabs } = item;
-		(
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).end = end;
-		(
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).tabs = tabs;
+		(group as LayoutGroupElement).end = end;
+		(group as LayoutGroupElement).tabs = tabs;
 		this.createGroupContent!(group);
 
-		const nav = (
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).nav;
-		const manager = (
-			group as HTMLElement & {
-				end: any;
-				split: any;
-				tabs: any[];
-				nav: HTMLElement;
-				manager: any;
-			}
-		).manager;
-		for (const tab of tabs) {
+		const nav = (group as LayoutGroupElement).nav;
+		const manager = (group as LayoutGroupElement).manager;
+		for (const tab of tabs!) {
 			const item = this.items![tab];
 			if (item) {
 				nav.appendChild(item);
-				manager.appendChild(item.page);
+				manager.appendChild(item.page!);
 			} else {
 				console.warn('missing item for tab:', tab);
 			}
@@ -235,12 +242,12 @@ Layout.createGroups = function (item: any, parent: HTMLElement) {
 };
 
 Layout.updateGroups = (function IIFE() {
-	const update = (group: any, split: string, start: number) => {
+	const update = (group: LayoutGroupElement, split: string, start: number) => {
 		const end = group.end;
 		const style = group.style;
 		switch (split) {
 			case 'horizontal': {
-				const pn = group.parentNode;
+				const pn = group.parentNode as LayoutGroupElement;
 				const pw = pn.clientWidth;
 				const sl = CSS.rasterize(pw * start);
 				const sr = CSS.rasterize(pw * end);
@@ -251,7 +258,7 @@ Layout.updateGroups = (function IIFE() {
 				break;
 			}
 			case 'vertical': {
-				const pn = group.parentNode;
+				const pn = group.parentNode as LayoutGroupElement;
 				const ph = pn.clientHeight;
 				const st = CSS.rasterize(ph * start);
 				const sb = CSS.rasterize(ph * end);
@@ -273,11 +280,17 @@ Layout.updateGroups = (function IIFE() {
 			let start = 0;
 			for (const child of group.childNodes) {
 				if (child.tagName === 'GROUP') {
-					start = update(child, split, start);
+					start = update(child as LayoutGroupElement, split, start);
 				}
 			}
 		} else {
-			const active = group.manager.active;
+			const active = group.manager.active as
+				| (HTMLElement & {
+						dpr: number;
+						width: number;
+						height: number;
+				  })
+				| null;
 			const width = group.clientWidth;
 			const height = group.clientHeight;
 			const dpr = window.devicePixelRatio;
@@ -317,10 +330,10 @@ Layout.updateGroups = (function IIFE() {
 	};
 })();
 
-Layout.updateGroupTabs = function (group: any) {
-	const tabs: any[] = [];
+Layout.updateGroupTabs = function (group: LayoutGroupElement) {
+	const tabs: string[] = [];
 	for (const item of group.nav.childNodes) {
-		tabs.push(item.getAttribute('value'));
+		tabs.push(item.getAttribute('value')!);
 	}
 	group.tabs = tabs;
 };
@@ -333,16 +346,16 @@ Layout.updateGroupInfo = function () {
 };
 
 Layout.mergeGroups = (function IIFE() {
-	const merge = (outer: any) => {
-		const nodes = outer.childNodes;
+	const merge = (outer: LayoutGroupElement) => {
+		const nodes = outer.childNodes as unknown as LayoutGroupElement[];
 		let i = nodes.length;
 		while (--i >= 0) {
 			const inner = nodes[i];
 			if (inner.split === outer.split) {
-				const prev = inner.previousSibling;
+				const prev = inner.previousSibling as LayoutGroupElement | null;
 				const gs = prev ? prev.end : 0;
 				const ge = inner.end;
-				const nodes = inner.childNodes;
+				const nodes = inner.childNodes as unknown as LayoutGroupElement[];
 				while (nodes.length > 1) {
 					const node = nodes[0];
 					const end = node.end;
@@ -366,12 +379,16 @@ Layout.mergeGroups = (function IIFE() {
 	};
 })();
 
-Layout.setGroupSize = function (group: any, hint: any, direction: any) {
-	const parent = group.parentNode;
-	const prev = group.previousSibling;
-	const next = group.nextSibling;
-	let space;
-	let size;
+Layout.setGroupSize = function (
+	group: LayoutGroupElement,
+	hint: { width: number; height: number },
+	direction: 'forward' | 'backward'
+) {
+	const parent = group.parentNode as LayoutGroupElement;
+	const prev = group.previousSibling as LayoutGroupElement | null;
+	const next = group.nextSibling as LayoutGroupElement | null;
+	let space: number | undefined;
+	let size: number | undefined;
 	switch (parent.split) {
 		case 'horizontal':
 			space = parent.clientWidth;
@@ -382,11 +399,11 @@ Layout.setGroupSize = function (group: any, hint: any, direction: any) {
 			size = group.clientTop + hint.height;
 			break;
 	}
-	if (next.tagName === 'GROUP') {
-		size += 1;
+	if (next!.tagName === 'GROUP') {
+		size! += 1;
 	}
 	if (space !== 0) {
-		let end = size / space;
+		let end = size! / space!;
 		switch (direction) {
 			case 'forward':
 				if (prev) {
@@ -411,8 +428,8 @@ Layout.setGroupSize = function (group: any, hint: any, direction: any) {
 	}
 };
 
-Layout.computeSizesBefore = function (group: any) {
-	const parent = group.parentNode;
+Layout.computeSizesBefore = function (group: LayoutGroupElement) {
+	const parent = group.parentNode as LayoutGroupElement;
 	const space =
 		parent.split === 'horizontal'
 			? parent.clientWidth
@@ -420,9 +437,9 @@ Layout.computeSizesBefore = function (group: any) {
 				? parent.clientHeight
 				: 0;
 	if (space !== 0) {
-		const nodes = parent.childNodes;
+		const nodes = parent.childNodes as unknown as LayoutGroupElement[];
 		const index = Array.prototype.indexOf.call(nodes, group);
-		const groups = Array.prototype.slice.call(nodes, 0, index + 1);
+		const groups = Array.prototype.slice.call(nodes, 0, index + 1) as LayoutGroupElement[];
 		const head = nodes[0];
 		const length = groups.length;
 		const min = Math.min(0.1, 32 / space);
@@ -443,8 +460,8 @@ Layout.computeSizesBefore = function (group: any) {
 	}
 };
 
-Layout.computeSizesAfter = function (group: any) {
-	const parent = group.parentNode;
+Layout.computeSizesAfter = function (group: LayoutGroupElement) {
+	const parent = group.parentNode as LayoutGroupElement;
 	const space =
 		parent.split === 'horizontal'
 			? parent.clientWidth
@@ -452,9 +469,9 @@ Layout.computeSizesAfter = function (group: any) {
 				? parent.clientHeight
 				: 0;
 	if (space !== 0) {
-		const nodes = parent.childNodes;
+		const nodes = parent.childNodes as unknown as LayoutGroupElement[];
 		const index = Array.prototype.indexOf.call(nodes, group);
-		const groups = Array.prototype.slice.call(nodes, index, -1);
+		const groups = Array.prototype.slice.call(nodes, index, -1) as LayoutGroupElement[];
 		const foot = nodes[nodes.length - 2];
 		const last = groups.length - 1;
 		const min = Math.min(0.1, 32 / space);
@@ -475,7 +492,7 @@ Layout.computeSizesAfter = function (group: any) {
 	}
 };
 
-Layout.updateHint = function (location: any) {
+Layout.updateHint = function (location: LayoutDragLocation | null) {
 	const { dragging } = this;
 	const { hint } = dragging;
 	if (dragging.location) {
@@ -532,9 +549,9 @@ Layout.updateHint = function (location: any) {
 };
 
 Layout.getKeyGroups = (function IIFE() {
-	const find = (list: any[], node: any) => {
+	const find = (list: LayoutGroupElement[], node: LayoutGroupElement) => {
 		if (node.split !== undefined) {
-			for (const group of node.childNodes) {
+			for (const group of node.childNodes as unknown as LayoutGroupElement[]) {
 				if (group.tagName === 'GROUP') {
 					find(list, group);
 				}
@@ -549,12 +566,10 @@ Layout.getKeyGroups = (function IIFE() {
 	};
 })();
 
-Layout.getGroupOfElement = function (
-	element: any
-): (HTMLElement & { nav: HTMLElement; manager: any; border: any }) | null {
-	while ((element = element ? element.parentNode : null)) {
+Layout.getGroupOfElement = function (element: HTMLElement): LayoutGroupElement | null {
+	while ((element = (element ? element.parentNode : null) as HTMLElement)) {
 		if (element.tagName === 'GROUP') {
-			return element;
+			return element as LayoutGroupElement;
 		}
 	}
 	return null;
@@ -572,7 +587,7 @@ Layout.readyToFocus = function (element: HTMLElement) {
 	}
 };
 
-Layout.createGroupContent = function (group: any) {
+Layout.createGroupContent = function (group: LayoutGroupElement) {
 	const nav = createNavBar();
 	on(nav, 'write', this.navWrite!);
 	on(nav, 'pointerdown', this.navPointerdown!);
@@ -588,7 +603,7 @@ Layout.createGroupContent = function (group: any) {
 	group.manager = manager;
 };
 
-Layout.createGroupBorder = function (group: any) {
+Layout.createGroupBorder = function (group: LayoutGroupElement) {
 	const border = document.createElement('group-border');
 	on(border, 'pointerdown', this.borderPointerdown!);
 	group.appendChild(border);
@@ -612,7 +627,7 @@ Layout.disableFocusableElements = function () {
 	if (!this.manager) return;
 	const { active } = this.manager;
 	if (active) {
-		const nodes: any[] = [];
+		const nodes: HTMLElement[] = [];
 		const selector = this.focusableSelector;
 		const elements = active.querySelectorAll(selector);
 		for (const element of elements) {
@@ -637,16 +652,16 @@ Layout.saveNavStates = function () {
 };
 
 Layout.saveLayoutScheme = (function IIFE() {
-	const read = (data: any, group: any) => {
+	const read = (data: LayoutScheme, group: LayoutGroupElement): LayoutScheme => {
 		if (group.split !== undefined) {
-			const children: any[] = [];
+			const children: LayoutScheme[] = [];
 			data.end = group.end;
 			data.split = group.split;
 			data.children = children;
 			for (const childNode of group.childNodes) {
 				if (childNode !== group.border) {
-					const subdata = {};
-					read(subdata, childNode);
+					const subdata = {} as LayoutScheme;
+					read(subdata, childNode as LayoutGroupElement);
 					children.push(subdata);
 				}
 			}
@@ -656,8 +671,8 @@ Layout.saveLayoutScheme = (function IIFE() {
 		}
 		return data;
 	};
-	return function (rootGroup: any) {
-		return read({}, rootGroup);
+	return function (rootGroup: LayoutGroupElement) {
+		return read({} as LayoutScheme, rootGroup);
 	};
 })();
 
@@ -687,7 +702,7 @@ Layout.loadLayoutScheme = function (key?: string) {
 			for (const tab of tabs) {
 				const item = items[tab];
 				nav.appendChild(item);
-				manager.appendChild(item.page);
+				manager.appendChild(item.page!);
 			}
 		}
 		this.updateGroups!(true);
@@ -697,7 +712,7 @@ Layout.loadLayoutScheme = function (key?: string) {
 	}
 };
 
-Layout.saveToConfig = function (config: any) {
+Layout.saveToConfig = function (config: { layout?: Record<string, LayoutScheme> | null }) {
 	const { layout } = this;
 	for (const page of this.manager.childNodes) {
 		const key = page.getAttribute('value');
@@ -709,7 +724,7 @@ Layout.saveToConfig = function (config: any) {
 	config.layout = layout;
 };
 
-Layout.loadFromConfig = function (config: any) {
+Layout.loadFromConfig = function (config: { layout?: Record<string, LayoutScheme> | null }) {
 	this.layout = config.layout ?? {};
 };
 
@@ -733,8 +748,8 @@ Layout.pageSwitch = function (event: EditorEvent) {
 				Scene.close();
 				break;
 			case 'ui':
-				(UI.save as any)();
-				(UI.close as any)();
+				UI.save();
+				UI.close();
 				break;
 			case 'animation':
 				Animation.save();
@@ -828,14 +843,15 @@ Layout.pageSwitch = function (event: EditorEvent) {
 	} catch (error) {
 		console.warn('[pageSwitch] loadLayoutScheme failed:', error);
 	}
+	this.afterChange?.();
 };
 
 Layout.navWrite = function (this: typeof Layout, event: EditorEvent) {
 	const index = event.value;
-	((this as HTMLElement & typeof Layout).parentNode as any).manager.switch(index);
+	(this as typeof Layout).parentNode.manager.switch(index);
 };
 
-Layout.navPointerdown = function (event: any) {
+Layout.navPointerdown = function (event: { button: number; target: LayoutItemElement }) {
 	switch (event.button) {
 		case 0: {
 			const element = event.target;
@@ -845,8 +861,10 @@ Layout.navPointerdown = function (event: any) {
 						Layout.readyToFocus!(Inspector.manager);
 						break;
 					default: {
-						const page = element.page;
-						const nodes = page.querySelectorAll('[tabindex]');
+						const page = element.page!;
+						const nodes = page.querySelectorAll(
+							'[tabindex]'
+						) as NodeListOf<HTMLElement>;
 						for (let i = nodes.length - 1; i >= 0; i--) {
 							const node = nodes[i];
 							if (node.clientWidth !== 0 && node.clientHeight !== 0) {
@@ -864,21 +882,21 @@ Layout.navPointerdown = function (event: any) {
 	}
 };
 
-Layout.navDragstart = function (this: typeof Layout, event: any) {
+Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 	if (!Layout.dragging) {
 		Layout.dragging = event;
 		Object.defineProperty(event, 'clientX', { writable: true });
 		Object.defineProperty(event, 'clientY', { writable: true });
 		event.preventDefault = Function.empty;
-		hideDragImage(event.dataTransfer);
-		event.group = (this as HTMLElement & typeof Layout).parentNode;
+		hideDragImage(event.dataTransfer!);
+		event.group = (this as HTMLElement & typeof Layout).parentNode as HTMLElement | null;
 		event.hint = createDragAndDropHint();
 		addClass(event.hint, 'for-group');
 		window.addEventListener('dragenter', Layout.navDragover!);
 		window.addEventListener('dragover', Layout.navDragover!);
 		const groups = Layout.getKeyGroups!();
-		const navs = (event.navs = [] as any[]);
-		const regions = (event.regions = [] as any[]);
+		const navs: HTMLElement[] = (event.navs = []);
+		const regions: HTMLElement[] = (event.regions = []);
 		for (const group of groups) {
 			const nav = group.nav;
 			on(nav, 'dragenter', Layout.navDragenter!);
@@ -922,13 +940,13 @@ Layout.navDragend = function (event: EditorEvent) {
 	}
 };
 
-Layout.navDragenter = function (this: typeof Layout, event: any) {
+Layout.navDragenter = function (this: typeof Layout, event: DragEvent) {
 	const { dragging } = Layout;
 	if (dragging) {
 		event.preventDefault();
-		event.dataTransfer.dropEffect = 'move';
+		event.dataTransfer!.dropEffect = 'move';
 		const trigger = event.target;
-		const target = (this as HTMLElement & typeof Layout).parentNode;
+		const target = (this as HTMLElement & typeof Layout).parentNode as HTMLElement;
 		const sGroup = dragging.group;
 		const sItem = dragging.target;
 		const sNav = sGroup.nav;
@@ -958,9 +976,9 @@ Layout.navDragleave = function (event: EditorEvent) {
 	}
 };
 
-Layout.navDragover = function (event: any) {
+Layout.navDragover = function (event: DragEvent) {
 	event.preventDefault();
-	event.dataTransfer.dropEffect = 'move';
+	event.dataTransfer!.dropEffect = 'move';
 };
 
 Layout.navDrop = function (event: EditorEvent) {
@@ -1103,7 +1121,7 @@ Layout.regionDragleave = function (this: typeof Layout, event: EditorEvent) {
 	}
 };
 
-Layout.regionDragover = function (this: typeof Layout, event: any) {
+Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 	const { dragging } = Layout;
 	if ((dragging && dragging.clientX !== event.clientX) || dragging.clientY !== event.clientY) {
 		dragging.clientX = event.clientX;
@@ -1276,24 +1294,25 @@ Layout.regionDragover = function (this: typeof Layout, event: any) {
 	}
 };
 
-Layout.borderPointerdown = function (this: typeof Layout, event: any) {
+Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutResizeEvent) {
 	// event.preventDefault()
 	switch (event.button) {
 		case 0:
 			if (!Layout.resizing) {
 				Layout.resizing = event;
-				const group: any = (this as HTMLElement & typeof Layout).parentNode;
-				const outer: any = group.parentNode;
+				const group = (this as HTMLElement & typeof Layout)
+					.parentNode as LayoutGroupElement;
+				const outer = group.parentNode as LayoutGroupElement;
 				switch (outer.split) {
 					case 'horizontal':
 						event.mode = 'col-resize';
 						event.startX = Math.round(outer.clientWidth * group.end);
-						(Cursor.open as any)('cursor-col-resize');
+						Cursor.open('cursor-col-resize');
 						break;
 					case 'vertical':
 						event.mode = 'row-resize';
 						event.startY = Math.round(outer.clientHeight * group.end);
-						(Cursor.open as any)('cursor-row-resize');
+						Cursor.open('cursor-row-resize');
 						break;
 				}
 				event.outer = outer;
@@ -1302,10 +1321,10 @@ Layout.borderPointerdown = function (this: typeof Layout, event: any) {
 				window.addEventListener('pointerup', Layout.pointerup!);
 				window.addEventListener('pointermove', Layout.pointermove!);
 				const groups = Layout.getKeyGroups!();
-				const infos = (event.infos = [] as any[]);
+				const infos: HTMLElement[] = (event.infos = []);
 				for (const group of groups) {
 					const info = document.createElement('group-info');
-					(info as any).manager = (group as any).manager;
+					(info as HTMLElement & { manager: PageManagerApi }).manager = group.manager;
 					group.appendChild(info);
 					infos.push(info);
 				}
@@ -1326,10 +1345,10 @@ Layout.pointerup = function (event?: EditorEvent) {
 	if (relate(resizing, event)) {
 		switch (resizing.mode) {
 			case 'col-resize':
-				(Cursor.close as any)('cursor-col-resize');
+				Cursor.close('cursor-col-resize');
 				break;
 			case 'row-resize':
-				(Cursor.close as any)('cursor-row-resize');
+				Cursor.close('cursor-row-resize');
 				break;
 		}
 		for (const info of resizing.infos) {
@@ -1342,7 +1361,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 };
 
 Layout.pointermove = function (event: EditorEvent) {
-	let end: any;
+	let end: number | undefined = undefined;
 	const { resizing } = Layout;
 	switch (resizing.mode) {
 		case 'col-resize':
@@ -1354,8 +1373,8 @@ Layout.pointermove = function (event: EditorEvent) {
 				+(event.clientY + resizing.startY - resizing.clientY) / resizing.outer.clientHeight;
 			break;
 	}
-	end = Math.clamp(end, 0, 1);
-	end = Math.roundTo(end, 6);
+	end = Math.clamp(end!, 0, 1);
+	end = Math.roundTo(end!, 6);
 	if (end !== undefined) {
 		const { group } = resizing;
 		const lastEnd = group.end;

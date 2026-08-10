@@ -2,10 +2,17 @@ import { createSelectBoxElement, type SelectBoxApi } from '@ui-kit';
 import { Select } from './select-list';
 
 export function createSelectBox(): SelectBoxApi {
-	return createSelectBoxElement({ popup: (box) => (Select as any).open(box) });
+	return createSelectBoxElement({ popup: (box) => Select.open(box) });
 }
 
-export function selectBoxSetItemNames(box: any, options: any): void {
+export function selectBoxSetItemNames(
+	box: {
+		dataItems: Array<{ name?: string; tip?: string; value: string | number }> | null;
+		dataValue?: unknown;
+		update?: (...args: unknown[]) => unknown;
+	},
+	options: Record<string, string | { name?: string; tip?: string }>
+): void {
 	for (const item of box.dataItems ?? []) {
 		const key = item.value;
 		const option = options[key];

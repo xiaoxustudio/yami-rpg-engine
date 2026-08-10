@@ -13,90 +13,126 @@ import { Menu } from '@/components/menu-list.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { Local } from '@/tools/localization.ts';
 import { SetKey } from '@/tools/set-key-window.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import type { EditorProjectShape } from '@app/stores/editor';
+
+const Clipboard = getGlobalClipboard();
+
+type EasingPoint = { x: number; y: number };
+type EasingData = {
+	id: string;
+	key: string;
+	name: string;
+	points: Array<EasingPoint>;
+	[k: string]: any;
+};
+type EasingDrag = {
+	clientX: number;
+	clientY: number;
+	pointStartX: number;
+	pointStartY: number;
+	[k: string]: any;
+};
+type CurveMapInstance = Float64Array & {
+	count: number;
+	update(...points: EasingPoint[]): void;
+};
+type EasingMapInstance = Float32Array & {
+	update(...points: EasingPoint[]): EasingMapInstance;
+	ease(time: number): number;
+};
+type EasingListNodeElementShape = {
+	item: EasingData;
+	textNode?: Text;
+	draggable: boolean;
+	appendChild(node: Node): void;
+};
 
 export const Easing = {
-	list: null as any,
-	curve: null as any,
-	preview: null as any,
-	data: null as any,
-	points: null as any,
-	dragging: null as any,
-	activePoint: null as any,
-	scale: null as any,
-	originX: null as any,
-	originY: null as any,
-	timer: null as any,
-	reverse: null as any,
-	elapsed: null as any,
-	duration: null as any,
-	delay: null as any,
-	curveMap: null as any,
-	easingMap: null as any,
-	pointImage: null as any,
-	previewImage: null as any,
-	startPoint: null as any,
-	endPoint: null as any,
+	list: null as (HTMLElement & Record<string, any>) | null,
+	curve: null as (HTMLElement & Record<string, any>) | null,
+	preview: null as (HTMLElement & Record<string, any>) | null,
+	data: null as Array<EasingData> | null,
+	points: null as Array<EasingPoint> | null,
+	dragging: null as EasingDrag | null,
+	activePoint: null as EasingPoint | null,
+	scale: null as unknown as number,
+	originX: null as number | null,
+	originY: null as number | null,
+	timer: null as unknown as Timer,
+	reverse: null as unknown as boolean,
+	elapsed: null as unknown as number,
+	duration: null as unknown as number,
+	delay: null as unknown as number,
+	curveMap: null as CurveMapInstance | null,
+	easingMap: null as EasingMapInstance | null,
+	pointImage: null as CanvasImageSource | null,
+	previewImage: null as HTMLCanvasElement | null,
+	startPoint: null as { x: number; y: number } | null,
+	endPoint: null as { x: number; y: number } | null,
 	changed: false,
-	initialize: null as any,
-	get: null as any,
-	clear: null as any,
-	open: null as any,
-	load: null as any,
-	insert: null as any,
-	copy: null as any,
-	paste: null as any,
-	delete: null as any,
-	createId: null as any,
-	createData: null as any,
-	setEasingKey: null as any,
-	getItemById: null as any,
-	updateMaps: null as any,
-	updateCanvases: null as any,
-	drawCurve: null as any,
-	drawPreview: null as any,
-	updatePoints: null as any,
-	selectPointByCoords: null as any,
-	createPointImage: null as any,
-	createPreviewImage: null as any,
-	requestRendering: null as any,
-	renderingFunction: null as any,
-	stopRendering: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	dprchange: null as any,
-	themechange: null as any,
-	dataChange: null as any,
-	listKeydown: null as any,
-	listSelect: null as any,
-	listOpen: null as any,
-	listPopup: null as any,
-	modeSelect: null as any,
-	pointInput: null as any,
-	scaleInput: null as any,
-	curveKeydown: null as any,
-	curvePointerdown: null as any,
-	curveWheel: null as any,
-	curveBlur: null as any,
-	pointerup: null as any,
-	pointermove: null as any,
-	reverseInput: null as any,
-	durationInput: null as any,
-	delayInput: null as any,
-	confirm: null as any,
-	CurveMap: null as any,
-	EasingMap: null as any,
-	list_saveSelection: null as any,
-	list_restoreSelection: null as any,
-	list_updateNodeElement: null as any,
-	list_updateItemName: null as any,
-	list_addElementClass: null as any,
-	list_updateTextNode: null as any,
-	list_createKeyTextNode: null as any,
-	list_updateKeyTextNode: null as any,
+	initialize: null as unknown as () => void,
+	get: null as unknown as (id: string) => any,
+	clear: null as unknown as () => void,
+	open: null as unknown as (target?: unknown) => void,
+	load: null as unknown as (easing: EasingData) => void,
+	insert: null as unknown as (dItem: EasingData) => void,
+	copy: null as unknown as (item: EasingData) => void,
+	paste: null as unknown as (dItem?: EasingData) => void,
+	delete: null as unknown as (item: EasingData) => void,
+	createId: null as unknown as () => string,
+	createData: null as unknown as () => EasingData,
+	setEasingKey: null as unknown as (item: EasingData) => void,
+	getItemById: null as unknown as (id: string) => any,
+	updateMaps: null as unknown as () => void,
+	updateCanvases: null as unknown as () => void,
+	drawCurve: null as unknown as () => void,
+	drawPreview: null as unknown as () => void,
+	updatePoints: null as unknown as () => void,
+	selectPointByCoords: null as unknown as (mouseX: number, mouseY: number) => EasingPoint | null,
+	createPointImage: null as unknown as () => void,
+	createPreviewImage: null as unknown as () => void,
+	requestRendering: null as unknown as () => void,
+	renderingFunction: null as unknown as () => void,
+	stopRendering: null as unknown as () => void,
+	windowClose: null as unknown as (event: Event) => void,
+	windowClosed: null as unknown as (event: Event) => void,
+	dprchange: null as unknown as (event: Event) => void,
+	themechange: null as unknown as (event: Event & { value?: string }) => void,
+	dataChange: null as unknown as (event: Event) => void,
+	listKeydown: null as unknown as (event: KeyboardEvent) => void,
+	listSelect: null as unknown as (event: Event & { value?: EasingData }) => void,
+	listOpen: null as unknown as (event: Event & { value?: EasingData }) => void,
+	listPopup: null as unknown as (event: PointerEvent & { value?: EasingData | null }) => void,
+	modeSelect: null as unknown as (event: Event) => void,
+	pointInput: null as unknown as (event: Event) => void,
+	scaleInput: null as unknown as (event: Event & { value?: number }) => void,
+	curveKeydown: null as unknown as (event: KeyboardEvent) => void,
+	curvePointerdown: null as unknown as (event: PointerEvent & EasingDrag) => void,
+	curveWheel: null as unknown as (event: WheelEvent) => void,
+	curveBlur: null as unknown as (event: Event) => void,
+	pointerup: null as unknown as (event?: PointerEvent) => void,
+	pointermove: null as unknown as (event: PointerEvent) => void,
+	reverseInput: null as unknown as (event: Event) => void,
+	durationInput: null as unknown as (event: Event) => void,
+	delayInput: null as unknown as (event: Event) => void,
+	confirm: null as unknown as (event: Event) => void,
+	CurveMap: null as unknown as { new (): CurveMapInstance },
+	EasingMap: null as unknown as { new (): EasingMapInstance } & {
+		easeInOut: EasingMapInstance;
+	},
+	list_saveSelection: null as unknown as () => void,
+	list_restoreSelection: null as unknown as () => void,
+	list_updateNodeElement: null as unknown as (element: EasingListNodeElementShape) => void,
+	list_updateItemName: null as unknown as (item: EasingData) => void,
+	list_addElementClass: null as unknown as (item: EasingData) => void,
+	list_updateTextNode: null as unknown as (item: EasingData) => void,
+	list_createKeyTextNode: null as unknown as (item: EasingData) => void,
+	list_updateKeyTextNode: null as unknown as (item: EasingData) => void,
 	state: null as string | null,
 	target: null as Record<string, any> | null,
-	saveToProject: null as ((project: any) => void) | null,
-	loadFromProject: null as ((project: any) => void) | null,
+	saveToProject: null as ((project: EditorProjectShape) => void) | null,
+	loadFromProject: null as ((project: EditorProjectShape) => void) | null,
 	close: null as (() => void) | null
 };
 
@@ -252,9 +288,9 @@ Easing.initialize = () => {
 };
 
 (() => {
-	const maps = {} as Record<string, any>;
-	const linear = { map: (a: any) => a };
-	const get = (id: any) => {
+	const maps = {} as Record<string, EasingMapInstance>;
+	const linear = { map: (a: unknown) => a };
+	const get = (id: string) => {
 		const map = maps[id];
 		if (map !== undefined) {
 			return map;
@@ -265,7 +301,7 @@ Easing.initialize = () => {
 			const { points } = easing;
 			const { startPoint, endPoint } = Easing;
 			const map = new Easing.EasingMap();
-			map.update(startPoint, ...points, endPoint);
+			map.update(startPoint!, ...points, endPoint!);
 			return (maps[id] = map);
 		}
 
@@ -282,7 +318,7 @@ Easing.initialize = () => {
 	Easing.clear = clear;
 })();
 
-Easing.open = function (this: any) {
+Easing.open = function (this: typeof Easing) {
 	Window.open!('easing');
 
 	this.data = Object.clone(Data.easings);
@@ -301,12 +337,12 @@ Easing.open = function (this: any) {
 
 	this.updateCanvases();
 
-	this.list.restoreSelection();
+	this.list!.restoreSelection();
 
 	getFocus(this.list);
 };
 
-Easing.load = function (this: any, easing: any) {
+Easing.load = function (this: typeof Easing, easing: EasingData) {
 	const points = easing.points;
 	this.points = points;
 
@@ -326,29 +362,29 @@ Easing.load = function (this: any, easing: any) {
 	this.requestRendering!();
 };
 
-Easing.insert = function (this: any, dItem: any) {
-	this.list.addNodeTo(this.createData(), dItem);
+Easing.insert = function (this: typeof Easing, dItem: EasingData) {
+	this.list!.addNodeTo(this.createData(), dItem);
 };
 
-Easing.copy = function (this: any, item: any) {
+Easing.copy = function (this: typeof Easing, item: EasingData) {
 	if (item) {
-		(Clipboard as any).write('yami.data.easing', item);
+		Clipboard.write('yami.data.easing', item);
 	}
 };
 
-Easing.paste = function (this: any, dItem: any) {
-	const copy = (Clipboard as any).read('yami.data.easing');
+Easing.paste = function (this: typeof Easing, dItem?: EasingData) {
+	const copy = Clipboard.read('yami.data.easing');
 	if (copy) {
 		copy.name += ' - Copy';
 		copy.id = this.createId();
-		this.list.addNodeTo(copy, dItem);
+		this.list!.addNodeTo(copy, dItem);
 	}
 };
 
-Easing.delete = function (this: any, item: any) {
-	const items = this.data;
+Easing.delete = function (this: typeof Easing, item: EasingData) {
+	const items = this.data!;
 	if (items.length > 1) {
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -358,9 +394,9 @@ Easing.delete = function (this: any, item: any) {
 					label: get('yes'),
 					click: () => {
 						const index = items.indexOf(item);
-						this.list.deleteNode(item);
+						this.list!.deleteNode(item);
 						const last = items.length - 1;
-						this.list.select(items[Math.min(index, last)]);
+						this.list!.select(items[Math.min(index, last)]);
 					}
 				},
 				{
@@ -371,7 +407,7 @@ Easing.delete = function (this: any, item: any) {
 	}
 };
 
-Easing.createId = function (this: any) {
+Easing.createId = function (this: typeof Easing) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -379,7 +415,7 @@ Easing.createId = function (this: any) {
 	return id;
 };
 
-Easing.createData = function (this: any) {
+Easing.createData = function (this: typeof Easing) {
 	return {
 		id: this.createId(),
 		key: '',
@@ -391,33 +427,33 @@ Easing.createData = function (this: any) {
 	};
 };
 
-Easing.setEasingKey = function (this: any, item: any) {
-	SetKey.open!(item.key, (key: any) => {
+Easing.setEasingKey = function (this: typeof Easing, item: EasingData) {
+	SetKey.open!(item.key, (key: string) => {
 		item.key = key;
 		this.changed = true;
-		this.list.updateKeyTextNode(item);
+		this.list!.updateKeyTextNode(item);
 	});
 };
 
-Easing.getItemById = function (this: any, id: any) {
-	const { data } = this;
+Easing.getItemById = function (this: typeof Easing, id: string) {
+	const data = this.data!;
 	const { length } = data;
 	for (let i = 0; i < length; i++) {
 		if (data[i].id === id) {
 			return data[i];
 		}
 	}
-	return undefined;
+	return null;
 };
 
-Easing.updateMaps = function (this: any) {
+Easing.updateMaps = function (this: typeof Easing) {
 	const { startPoint, endPoint } = this;
-	this.curveMap.update(startPoint, ...this.points, endPoint);
-	this.easingMap.update(startPoint, ...this.points, endPoint);
+	this.curveMap!.update(startPoint!, ...this.points!, endPoint!);
+	this.easingMap!.update(startPoint!, ...this.points!, endPoint!);
 };
 
-Easing.updateCanvases = function (this: any) {
-	const { curve } = this;
+Easing.updateCanvases = function (this: typeof Easing) {
+	const curve = this.curve!;
 	const { width: cWidth, height: cHeight } = CSS.getDevicePixelContentBoxSize(curve);
 	if (curve.width !== cWidth || curve.height !== cHeight) {
 		if (curve.width !== cWidth) {
@@ -431,7 +467,7 @@ Easing.updateCanvases = function (this: any) {
 		curve.spacing = Math.floor(Math.max(cWidth / 12, 20) / 2) * 2;
 	}
 
-	const { preview } = this;
+	const preview = this.preview!;
 	const { width: pWidth, height: pHeight } = CSS.getDevicePixelContentBoxSize(preview);
 	if (preview.width !== pWidth) {
 		preview.width = pWidth;
@@ -441,8 +477,8 @@ Easing.updateCanvases = function (this: any) {
 	}
 };
 
-Easing.drawCurve = function (this: any) {
-	const canvas = this.curve;
+Easing.drawCurve = function (this: typeof Easing) {
+	const canvas = this.curve!;
 	const scale = this.scale;
 	const width = canvas.width;
 	const height = canvas.height;
@@ -501,7 +537,7 @@ Easing.drawCurve = function (this: any) {
 	context.strokeStyle = canvas.curveColor;
 	context.beginPath();
 	context.moveTo(originX + 0.5, originY + 0.5);
-	const curveMap = this.curveMap;
+	const curveMap = this.curveMap!;
 	const count = curveMap.count;
 	for (let i = 2; i < count; i += 2) {
 		context.lineTo(
@@ -514,7 +550,7 @@ Easing.drawCurve = function (this: any) {
 	context.strokeStyle = canvas.curveColorActive;
 	context.beginPath();
 	context.moveTo(originX + 0.5, originY + 0.5);
-	const easingMap = this.easingMap;
+	const easingMap = this.easingMap!;
 	const ratio = easingMap.length - 1;
 	const time = this.elapsed / this.duration;
 	const length = Math.ceil(ratio * time) + 1;
@@ -528,16 +564,16 @@ Easing.drawCurve = function (this: any) {
 	context.lineWidth = 1;
 
 	const active = this.activePoint;
-	const points = this.points;
+	const points = this.points!;
 	const pLength = points.length;
 	for (let i = 0; i < pLength; i++) {
 		let linkPoint;
 		switch (i % 3) {
 			case 0:
-				linkPoint = points[i - 1] ?? this.startPoint;
+				linkPoint = (points[i - 1] ?? this.startPoint)!;
 				break;
 			case 1:
-				linkPoint = points[i + 1] ?? this.endPoint;
+				linkPoint = (points[i + 1] ?? this.endPoint)!;
 				break;
 			default:
 				continue;
@@ -576,16 +612,16 @@ Easing.drawCurve = function (this: any) {
 	}
 };
 
-Easing.drawPreview = function (this: any) {
-	const canvas = this.preview;
+Easing.drawPreview = function (this: typeof Easing) {
+	const canvas = this.preview!;
 	const width = canvas.width;
 	const height = canvas.height;
-	const image = this.previewImage;
+	const image = this.previewImage!;
 	const size = image.height;
 	const halfsize = size / 2;
 	const spacingX = Math.floor((width - size * 4) / 5);
 	const spacingY = Math.floor(height / 2);
-	const time = this.easingMap.ease(this.elapsed / this.duration);
+	const time = this.easingMap!.ease(this.elapsed / this.duration);
 	const dpr = window.devicePixelRatio;
 
 	let { context } = canvas;
@@ -637,10 +673,10 @@ Easing.drawPreview = function (this: any) {
 	}
 };
 
-Easing.updatePoints = function (this: any) {
+Easing.updatePoints = function (this: typeof Easing) {
 	const read = getElementReader('easing');
 	const count = read('mode');
-	const points = this.points;
+	const points = this.points!;
 	const length = points.length;
 	if (length !== count) {
 		points.length = count;
@@ -653,21 +689,21 @@ Easing.updatePoints = function (this: any) {
 	}
 };
 
-Easing.selectPointByCoords = function (this: any, mouseX: any, mouseY: any) {
+Easing.selectPointByCoords = function (this: typeof Easing, mouseX: number, mouseY: number) {
 	let target = null;
 	let weight = 0;
-	const canvas = this.curve;
+	const canvas = this.curve!;
 	const fullSize = canvas.spacing * this.scale * 10;
-	const x = (mouseX - this.originX) / fullSize;
-	const y = (this.originY - mouseY) / fullSize;
+	const x = (mouseX - this.originX!) / fullSize;
+	const y = (this.originY! - mouseY) / fullSize;
 	const ifSelectUpper = mouseY < 20;
 	const ifSelectLower = mouseY >= canvas.height - 20;
 	const borderY = ifSelectUpper
-		? this.originY / fullSize
+		? this.originY! / fullSize
 		: ifSelectLower
-			? (this.originY - canvas.height) / fullSize
+			? (this.originY! - canvas.height) / fullSize
 			: null;
-	const points = this.points;
+	const points = this.points!;
 	for (let i = points.length - 1; i >= 0; i--) {
 		const point = points[i];
 		const distX = Math.abs(point.x - x);
@@ -691,18 +727,18 @@ Easing.selectPointByCoords = function (this: any, mouseX: any, mouseY: any) {
 	return target;
 };
 
-Easing.createPointImage = function (this: any) {
+Easing.createPointImage = function (this: typeof Easing) {
 	if (!this.pointImage) {
 		File.get!({
 			local: 'Images/curve_mark.png',
 			type: 'image'
-		}).then((image: any) => {
+		}).then((image: CanvasImageSource) => {
 			this.pointImage = image;
 		});
 	}
 };
 
-Easing.createPreviewImage = function (this: any) {
+Easing.createPreviewImage = function (this: typeof Easing) {
 	if (!this.previewImage) {
 		const canvas = document.createElement('canvas');
 		canvas.width = 480;
@@ -722,24 +758,24 @@ Easing.createPreviewImage = function (this: any) {
 	}
 };
 
-Easing.requestRendering = function (this: any) {
+Easing.requestRendering = function (this: typeof Easing) {
 	if (this.data !== null) {
 		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
 
-Easing.renderingFunction = function (this: any) {
+Easing.renderingFunction = function (this: typeof Easing) {
 	Easing.drawCurve();
 };
 
-Easing.stopRendering = function (this: any) {
+Easing.stopRendering = function (this: typeof Easing) {
 	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-Easing.windowClose = function (this: any, event: any) {
+Easing.windowClose = function (this: typeof Easing, event: Event) {
 	if (Easing.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEasings')
@@ -760,9 +796,9 @@ Easing.windowClose = function (this: any, event: any) {
 	}
 };
 
-Easing.windowClosed = function (this: any, event: any) {
-	this.list.saveSelection();
-	this.curve.blur();
+Easing.windowClosed = function (this: typeof Easing, event: Event) {
+	this.list!.saveSelection();
+	this.curve!.blur();
 	this.timer.remove();
 	this.data = null;
 	this.points = null;
@@ -770,19 +806,19 @@ Easing.windowClosed = function (this: any, event: any) {
 	this.easingMap = null;
 	this.activePoint = null;
 	this.previewImage = null;
-	this.list.clear();
+	this.list!.clear();
 	this.stopRendering();
 }.bind(Easing);
 
-Easing.dprchange = function (this: any, event: any) {
+Easing.dprchange = function (this: typeof Easing, event: Event) {
 	if (this.data !== null) {
 		this.updateCanvases();
 		this.requestRendering();
 	}
 }.bind(Easing);
 
-Easing.themechange = function (this: any, event: any) {
-	const canvas = this.curve;
+Easing.themechange = function (this: typeof Easing, event: Event & { value?: string }) {
+	const canvas = this.curve!;
 	switch (event.value) {
 		case 'light':
 			canvas.textColor = '#808080';
@@ -804,11 +840,11 @@ Easing.themechange = function (this: any, event: any) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.dataChange = function (this: any, event: any) {
+Easing.dataChange = function (this: typeof Easing, event: Event) {
 	this.changed = true;
 }.bind(Easing);
 
-Easing.listKeydown = function (this: any, event: any) {
+Easing.listKeydown = function (this: HTMLElement, event: KeyboardEvent) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -833,21 +869,24 @@ Easing.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Easing.listSelect = function (this: any, event: any) {
-	Easing.load(event.value);
+Easing.listSelect = function (this: typeof Easing, event: Event & { value?: EasingData }) {
+	Easing.load(event.value!);
 };
 
-Easing.listOpen = function (this: any, event: any) {
-	Easing.setEasingKey(event.value);
+Easing.listOpen = function (this: typeof Easing, event: Event & { value?: EasingData }) {
+	Easing.setEasingKey(event.value!);
 };
 
-Easing.listPopup = function (this: any, event: any) {
-	const list = Easing.list;
+Easing.listPopup = function (
+	this: typeof Easing,
+	event: PointerEvent & { value?: EasingData | null }
+) {
+	const list = Easing.list!;
 	const item = event.value;
 	const selected = !!item;
-	const pastable = (Clipboard as any).has('yami.data.easing');
-	const deletable = selected && Easing.data.length > 1;
-	const get = Local.createGetter('menuEasingList');
+	const pastable = Clipboard.has('yami.data.easing');
+	const deletable = selected && Easing.data!.length > 1;
+	const get = Local.createGetter!('menuEasingList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -858,7 +897,7 @@ Easing.listPopup = function (this: any, event: any) {
 				label: get('insert'),
 				accelerator: 'Insert',
 				click: () => {
-					Easing.insert(item);
+					Easing.insert(item!);
 				}
 			},
 			{
@@ -866,7 +905,7 @@ Easing.listPopup = function (this: any, event: any) {
 				accelerator: ctrl('C'),
 				enabled: selected,
 				click: () => {
-					Easing.copy(item);
+					Easing.copy(item!);
 				}
 			},
 			{
@@ -874,7 +913,7 @@ Easing.listPopup = function (this: any, event: any) {
 				accelerator: ctrl('V'),
 				enabled: pastable,
 				click: () => {
-					Easing.paste(item);
+					Easing.paste(item!);
 				}
 			},
 			{
@@ -882,7 +921,7 @@ Easing.listPopup = function (this: any, event: any) {
 				accelerator: 'Delete',
 				enabled: deletable,
 				click: () => {
-					Easing.delete(item);
+					Easing.delete(item!);
 				}
 			},
 			{
@@ -897,17 +936,17 @@ Easing.listPopup = function (this: any, event: any) {
 				label: get('set-key'),
 				enabled: selected,
 				click: () => {
-					Easing.setEasingKey(item);
+					Easing.setEasingKey(item!);
 				}
 			}
 		]
 	);
 };
 
-Easing.modeSelect = function (this: any, event: any) {
+Easing.modeSelect = function (this: typeof Easing, event: Event) {
 	this.updatePoints();
-	const points = this.points;
-	const easingMap = this.easingMap;
+	const points = this.points!;
+	const easingMap = this.easingMap!;
 	const write = getElementWriter('easing');
 	const read = getElementReader('easing');
 	if (
@@ -970,12 +1009,12 @@ Easing.modeSelect = function (this: any, event: any) {
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.pointInput = function (this: any, event: any) {
+Easing.pointInput = function (this: HTMLElement, event: Event) {
 	const key = Inspector.getKey(this);
 	const value = read(this);
 	const keys = key.split('-');
 	const end = keys.length - 1;
-	let node = Easing.list.read();
+	let node = Easing.list!.read();
 	for (let i = 0; i < end; i++) {
 		node = node[keys[i]];
 	}
@@ -987,17 +1026,17 @@ Easing.pointInput = function (this: any, event: any) {
 	Easing.requestRendering();
 };
 
-Easing.scaleInput = function (this: any, event: any) {
-	this.scale = event.value;
+Easing.scaleInput = function (this: typeof Easing, event: Event & { value?: number }) {
+	this.scale = event.value!;
 	this.requestRendering();
 }.bind(Easing);
 
-Easing.curveKeydown = function (this: any, event: any) {
+Easing.curveKeydown = function (this: typeof Easing, event: KeyboardEvent) {
 	const point = this.activePoint;
 	if (point !== null) {
 		switch (event.code) {
 			case 'ArrowUp': {
-				const index = this.points.indexOf(point);
+				const index = this.points!.indexOf(point);
 				const element = $(`#easing-points-${index}-y`);
 				write(element, point.y + 0.01);
 				point.y = read(element);
@@ -1007,7 +1046,7 @@ Easing.curveKeydown = function (this: any, event: any) {
 				break;
 			}
 			case 'ArrowDown': {
-				const index = this.points.indexOf(point);
+				const index = this.points!.indexOf(point);
 				const element = $(`#easing-points-${index}-y`);
 				write(element, point.y - 0.01);
 				point.y = read(element);
@@ -1017,7 +1056,7 @@ Easing.curveKeydown = function (this: any, event: any) {
 				break;
 			}
 			case 'ArrowLeft': {
-				const index = this.points.indexOf(point);
+				const index = this.points!.indexOf(point);
 				const element = $(`#easing-points-${index}-x`);
 				write(element, point.x - 0.01);
 				point.x = read(element);
@@ -1027,7 +1066,7 @@ Easing.curveKeydown = function (this: any, event: any) {
 				break;
 			}
 			case 'ArrowRight': {
-				const index = this.points.indexOf(point);
+				const index = this.points!.indexOf(point);
 				const element = $(`#easing-points-${index}-x`);
 				write(element, point.x + 0.01);
 				point.x = read(element);
@@ -1040,7 +1079,7 @@ Easing.curveKeydown = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.curvePointerdown = function (this: any, event: any) {
+Easing.curvePointerdown = function (this: typeof Easing, event: PointerEvent & EasingDrag) {
 	switch (event.button) {
 		case 0: {
 			const coords = getRelativeCoords(event, this.curve);
@@ -1060,7 +1099,7 @@ Easing.curvePointerdown = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.curveWheel = function (this: any, event: any) {
+Easing.curveWheel = function (this: typeof Easing, event: WheelEvent) {
 	if (!this.dragging && event.deltaY !== 0) {
 		const radios = document.getElementsByName('easing-scale');
 		const length = radios.length;
@@ -1069,7 +1108,9 @@ Easing.curveWheel = function (this: any, event: any) {
 				const step = event.deltaY < 0 ? -1 : 1;
 				const radio = radios[i + step];
 				if (radio !== undefined) {
-					(radio as any).pointerdown(event);
+					(radio as unknown as { pointerdown: (event: WheelEvent) => void }).pointerdown(
+						event
+					);
 				}
 				break;
 			}
@@ -1077,7 +1118,7 @@ Easing.curveWheel = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.curveBlur = function (this: any, event: any) {
+Easing.curveBlur = function (this: typeof Easing, event: Event) {
 	this.pointerup();
 	if (this.activePoint !== null) {
 		this.activePoint = null;
@@ -1085,7 +1126,7 @@ Easing.curveBlur = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.pointerup = function (this: any, event: any) {
+Easing.pointerup = function (this: any, event?: PointerEvent) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -1100,12 +1141,12 @@ Easing.pointerup = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.pointermove = function (this: any, event: any) {
+Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 	if (this.activePoint !== null) {
-		const dragging = this.dragging;
+		const dragging = this.dragging!;
 		const point = this.activePoint;
-		const index = this.points.indexOf(point);
-		const fullSize = this.curve.spacing * this.scale * 10;
+		const index = this.points!.indexOf(point);
+		const fullSize = this.curve!.spacing * this.scale * 10;
 		const transX = Math.roundTo((event.clientX - dragging.clientX) / fullSize, 2);
 		const transY = Math.roundTo((dragging.clientY - event.clientY) / fullSize, 2);
 		const pointX = Math.clamp(Math.roundTo(dragging.pointStartX + transX, 2), 0, 1);
@@ -1122,11 +1163,11 @@ Easing.pointermove = function (this: any, event: any) {
 	}
 }.bind(Easing);
 
-Easing.reverseInput = function (this: any, event: any) {
+Easing.reverseInput = function (this: HTMLElement, event: Event) {
 	Easing.reverse = read(this);
 };
 
-Easing.durationInput = function (this: any, event: any) {
+Easing.durationInput = function (this: HTMLElement, event: Event) {
 	Easing.duration = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'playing') {
@@ -1136,7 +1177,7 @@ Easing.durationInput = function (this: any, event: any) {
 	}
 };
 
-Easing.delayInput = function (this: any, event: any) {
+Easing.delayInput = function (this: HTMLElement, event: Event) {
 	Easing.delay = read(this);
 	const timer = Easing.timer;
 	if (timer.state === 'waiting') {
@@ -1146,11 +1187,11 @@ Easing.delayInput = function (this: any, event: any) {
 	}
 };
 
-Easing.confirm = function (this: any, event: any) {
+Easing.confirm = function (this: typeof Easing, event: Event) {
 	if (this.changed) {
 		this.changed = false;
 		this.clear();
-		const easings = this.data;
+		const easings = this.data!;
 		TreeList.deleteCaches(easings);
 		Data.easings = easings;
 		Data.createGUIDMap(easings);
@@ -1170,7 +1211,7 @@ Easing.CurveMap = class CurveMap extends Float64Array {
 		super(6002);
 	}
 
-	update(...points: any[]) {
+	update(...points: EasingPoint[]) {
 		const length = points.length - 1;
 		for (let i = 0; i < length; i += 3) {
 			const { x: x0, y: y0 } = points[i];
@@ -1203,7 +1244,7 @@ Easing.EasingMap = (function IIFE() {
 			super(SCALE + 1);
 		}
 
-		update(...points: any[]) {
+		update(...points: EasingPoint[]) {
 			const length = points.length - 1;
 			let pos = -1;
 			for (let i = 0; i < length; i += 3) {
@@ -1254,7 +1295,7 @@ Easing.EasingMap = (function IIFE() {
 	};
 })();
 
-Easing.list_saveSelection = function (this: any) {
+Easing.list_saveSelection = function (this: HTMLElement) {
 	const { easings } = Data;
 	if (easings.selection === undefined) {
 		Object.defineProperty(easings, 'selection', {
@@ -1268,7 +1309,7 @@ Easing.list_saveSelection = function (this: any) {
 	}
 };
 
-Easing.list_restoreSelection = function (this: any) {
+Easing.list_restoreSelection = function (this: HTMLElement) {
 	const id = Data.easings.selection;
 	const item = Easing.getItemById(id) ?? this.data[0];
 	this.select(item);
@@ -1276,7 +1317,7 @@ Easing.list_restoreSelection = function (this: any) {
 	this.scrollToSelection();
 };
 
-Easing.list_updateNodeElement = function (this: any, element: any) {
+Easing.list_updateNodeElement = function (this: any, element: EasingListNodeElementShape) {
 	const { item } = element;
 	if (!element.textNode) {
 		const textNode = document.createTextNode('');
@@ -1295,16 +1336,16 @@ Easing.list_updateNodeElement = function (this: any, element: any) {
 	}
 };
 
-Easing.list_updateItemName = function (this: any, item: any) {
+Easing.list_updateItemName = function (this: HTMLElement, item: EasingData) {
 	this.updateTextNode(item);
 	this.updateKeyTextNode(item);
 };
 
-Easing.list_addElementClass = function (this: any, item: any) {
+Easing.list_addElementClass = function (this: HTMLElement, item: EasingData) {
 	addClass(item.element, 'plain');
 };
 
-Easing.list_updateTextNode = function (this: any, item: any) {
+Easing.list_updateTextNode = function (this: HTMLElement, item: EasingData) {
 	const textNode = item.element.textNode;
 	const items = item.parent.children;
 	const index = items.indexOf(item);
@@ -1317,7 +1358,7 @@ Easing.list_updateTextNode = function (this: any, item: any) {
 	}
 };
 
-Easing.list_createKeyTextNode = function (this: any, item: any) {
+Easing.list_createKeyTextNode = function (this: HTMLElement, item: EasingData) {
 	const keyTextNode = document.createElement('div');
 	keyTextNode.key = '';
 	addClass(keyTextNode, 'variable-init-text');
@@ -1326,7 +1367,7 @@ Easing.list_createKeyTextNode = function (this: any, item: any) {
 	item.element.keyTextNode = keyTextNode;
 };
 
-Easing.list_updateKeyTextNode = function (this: any, item: any) {
+Easing.list_updateKeyTextNode = function (this: HTMLElement, item: EasingData) {
 	const keyTextNode = item.element.keyTextNode;
 	const key = item.key;
 	if (keyTextNode.key !== key) {

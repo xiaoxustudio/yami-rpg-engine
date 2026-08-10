@@ -2,6 +2,7 @@ import { macRedoKey } from '@/util/event-accessors';
 import { Window } from '@/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { SettingConfig } from '@/module/settingconfig';
+import type { MenuItem } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import {
 	addClass,
@@ -80,35 +81,37 @@ interface MenubarShape {
 	hrefClick: MenubarMethod;
 }
 
+type RecentTabMeta = { guid?: string; path: string; [k: string]: unknown };
+
 export const Menubar: MenubarShape = {
 	// methods,
-	initialize: null as any,
-	toggleFullScreen: null as any,
-	popupFileMenu: null as any,
-	popupEditMenu: null as any,
-	popupViewMenu: null as any,
-	popupWindowMenu: null as any,
-	popupHelpMenu: null as any,
-	popupOpenYamiMenu: null as any,
-	createRecentItems: null as any,
-	createLanguageItems: null as any,
-	createColorIcon: null as any,
-	revealSaveDirectory: null as any,
-	sanitizeFolderName: null as any,
+	initialize: null,
+	toggleFullScreen: null,
+	popupFileMenu: null,
+	popupEditMenu: null,
+	popupViewMenu: null,
+	popupWindowMenu: null,
+	popupHelpMenu: null,
+	popupOpenYamiMenu: null,
+	createRecentItems: null,
+	createLanguageItems: null,
+	createColorIcon: null,
+	revealSaveDirectory: null,
+	sanitizeFolderName: null,
 	// events,
-	keydown: null as any,
-	pointerdown: null as any,
-	pointerup: null as any,
-	pointerover: null as any,
-	hrefClick: null as any,
+	keydown: null,
+	pointerdown: null,
+	pointerup: null,
+	pointerover: null,
+	hrefClick: null,
 	state: null as string | null,
 	popup: null as ((...args: unknown[]) => void) | null
 };
 
 // 初始化
-Menubar.initialize = function (this: any) {
+Menubar.initialize = function (this: typeof Menubar) {
 	// 侦听事件
-	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown!);
 	// #menu pointerdown/pointerup/pointerover 经 Vue 模板转发（AppShell @pointerdown/@pointerup/@pointerover → Menubar.*）
 	document
 		.querySelectorAll('.href')
@@ -116,12 +119,12 @@ Menubar.initialize = function (this: any) {
 };
 
 // 开关全屏模式
-Menubar.toggleFullScreen = function (this: any) {
+Menubar.toggleFullScreen = function (this: typeof Menubar) {
 	ipcRenderer.send('toggle-full-screen');
 };
 
 // 弹出文件菜单
-Menubar.popupFileMenu = function (this: any, target: any) {
+Menubar.popupFileMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -154,7 +157,7 @@ Menubar.popupFileMenu = function (this: any, target: any) {
 					label: get('revealProject'),
 					enabled: open,
 					click: () => {
-						File.openPath!(Path.dirname!((Editor.config as any).project));
+						File.openPath!(Path.dirname!(Editor.config!.project!));
 					}
 				},
 				{
@@ -220,7 +223,7 @@ Menubar.popupFileMenu = function (this: any, target: any) {
 };
 
 // 弹出编辑菜单
-Menubar.popupEditMenu = function (this: any, target: any) {
+Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -269,7 +272,7 @@ Menubar.popupEditMenu = function (this: any, target: any) {
 			case 'scene':
 				if (Scene.state === 'open') {
 					const selected = Scene.target instanceof Object;
-					const pastable = (Clipboard as any).has('yami.scene.object');
+					const pastable = (Clipboard as unknown as Clipboard).has('yami.scene.object');
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
@@ -292,7 +295,7 @@ Menubar.popupEditMenu = function (this: any, target: any) {
 			case 'ui':
 				if (UI.state === 'open') {
 					const selected = UI.target instanceof Object;
-					const pastable = (Clipboard as any).has('yami.ui.object');
+					const pastable = (Clipboard as unknown as Clipboard).has('yami.ui.object');
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
@@ -315,7 +318,9 @@ Menubar.popupEditMenu = function (this: any, target: any) {
 			case 'animation':
 				if (Animation.state === 'open') {
 					const selected = Animation.motion instanceof Object;
-					const pastable = (Clipboard as any).has('yami.animation.object');
+					const pastable = (Clipboard as unknown as Clipboard).has(
+						'yami.animation.object'
+					);
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
@@ -350,13 +355,20 @@ Menubar.popupEditMenu = function (this: any, target: any) {
 					removeClass(target, 'selected');
 				}
 			},
-			[items.cut, items.copy, items.paste, items.delete, items.undo, items.redo] as any[]
+			[
+				items.cut,
+				items.copy,
+				items.paste,
+				items.delete,
+				items.undo,
+				items.redo
+			] as unknown as MenuItem[]
 		);
 	}
 };
 
 // 弹出视图菜单
-Menubar.popupViewMenu = function (this: any, target: any) {
+Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -476,9 +488,9 @@ Menubar.popupViewMenu = function (this: any, target: any) {
 							}
 						},
 						{
-							label: `${get('layout.zoom')}: ${(Zoom.getFactor as any)()}`,
+							label: `${get('layout.zoom')}: ${Zoom.getFactor()}`,
 							click: () => {
-								(Zoom.open as any)();
+								Zoom.open();
 							}
 						}
 					]
@@ -512,7 +524,7 @@ Menubar.popupViewMenu = function (this: any, target: any) {
 };
 
 // 弹出窗口菜单
-Menubar.popupWindowMenu = function (this: any, target: any) {
+Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -611,7 +623,7 @@ Menubar.popupWindowMenu = function (this: any, target: any) {
 };
 
 // 弹出帮助菜单
-Menubar.popupHelpMenu = function (this: any, target: any) {
+Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
@@ -647,7 +659,7 @@ Menubar.popupHelpMenu = function (this: any, target: any) {
 						if (winos && bits) osversion += ' ' + bits;
 						if (!osversion) osversion = 'unknown';
 						Window.open!('about');
-						$('#editor-version').textContent = (Editor.config as any).version;
+						$('#editor-version').textContent = Editor.config!.version!;
 						$('#electron-version').textContent = process.versions.electron;
 						$('#chrome-version').textContent = process.versions.chrome;
 						$('#node-version').textContent = process.versions.node;
@@ -683,7 +695,7 @@ Menubar.popupHelpMenu = function (this: any, target: any) {
 	}
 };
 // 弹出OpenYami菜单
-Menubar.popupOpenYamiMenu = function (this: any, target: any) {
+Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const open = Editor.state === 'open';
@@ -734,7 +746,7 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 						);
 						// 解析本地构建APK配置
 						const pConfig = Path.resolve!(
-							Path.dirname!((Editor.config as any).project),
+							Path.dirname!(Editor.config!.project!),
 							'apk',
 							'./config.json'
 						);
@@ -753,52 +765,61 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 							}
 							FSP.writeFile!(pConfig, JSON.stringify(config), {});
 						};
-						const InputEvent = (e: any, name: any) => {
-							(config as Record<string, any>)[name] = e.target.value;
+						const InputEvent = (e: Event, name: string) => {
+							(config as Record<string, string | number>)[name] = (
+								e.target as HTMLInputElement
+							).value;
 							apkConfigSave();
 						};
-						await new Promise(async (resolve: any, reject: any) => {
-							if (FS.existsSync!(pConfig)) {
-								resolve(
-									(config = JSON.parse((await FSP.readFile!(pConfig)).toString()))
-								);
-							} else {
-								// 配置不存在
-								if (!FS.existsSync!(Path.dirname!(pConfig))) {
-									FS.mkdirSync!(Path.dirname!(pConfig));
+						await new Promise(
+							async (
+								resolve: (value: unknown) => void,
+								reject: (reason?: unknown) => void
+							) => {
+								if (FS.existsSync!(pConfig)) {
+									resolve(
+										(config = JSON.parse(
+											(await FSP.readFile!(pConfig)).toString()
+										))
+									);
+								} else {
+									// 配置不存在
+									if (!FS.existsSync!(Path.dirname!(pConfig))) {
+										FS.mkdirSync!(Path.dirname!(pConfig));
+									}
+									resolve(FSP.writeFile!(pConfig, JSON.stringify(config)));
 								}
-								resolve(FSP.writeFile!(pConfig, JSON.stringify(config)));
 							}
-						}).then(() => {
+						).then(() => {
 							// 初始化
 							write($('#export-apk-apkName'), config.appName);
-							$('#export-apk-apkName').addEventListener('input', (e: any) =>
+							$('#export-apk-apkName').addEventListener('input', (e: Event) =>
 								InputEvent(e, 'appName')
 							);
 							write($('#export-apk-apkIcon'), config.iconPath);
-							$('#export-apk-apkIcon').addEventListener('input', (e: any) =>
+							$('#export-apk-apkIcon').addEventListener('input', (e: Event) =>
 								InputEvent(e, 'iconPath')
 							);
-							$('#export-apk-apkIcon').addEventListener('mouseenter', (e: any) =>
+							$('#export-apk-apkIcon').addEventListener('mouseenter', (e: Event) =>
 								setTooltip(
 									$('#export-apk-apkIcon'),
 									ApkBuilder.processPathOnly!(config.iconPath)
 								)
 							);
 							write($('#export-apk-apkPackageName'), config.packageName);
-							$('#export-apk-apkPackageName').addEventListener('input', (e: any) =>
+							$('#export-apk-apkPackageName').addEventListener('input', (e: Event) =>
 								InputEvent(e, 'packageName')
 							);
 							write($('#export-apk-apkVersionName'), config.versionName);
-							$('#export-apk-apkVersionName').addEventListener('input', (e: any) =>
+							$('#export-apk-apkVersionName').addEventListener('input', (e: Event) =>
 								InputEvent(e, 'versionName')
 							);
 							write($('#export-apk-apkVersionCode'), config.versionCode);
-							$('#export-apk-apkVersionCode').addEventListener('input', (e: any) =>
+							$('#export-apk-apkVersionCode').addEventListener('input', (e: Event) =>
 								InputEvent(e, 'versionCode')
 							);
 
-							$('#export-apk-button').addEventListener('click', (e: any) => {
+							$('#export-apk-button').addEventListener('click', (e: Event) => {
 								disable($('#export-apk-button'));
 								apkConfigSave();
 								SettingConfig.load(); // 更新配置
@@ -811,7 +832,7 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 							// 加载状态
 							if (ApkBuilder.isBuilding!()) {
 								disable($('#export-apk-button'));
-								ApkBuilder.logs.forEach((log: any) => {
+								ApkBuilder.logs.forEach((log) => {
 									ApkBuilder.apkLog!(log);
 								});
 							} else {
@@ -827,12 +848,12 @@ Menubar.popupOpenYamiMenu = function (this: any, target: any) {
 };
 
 // 创建最近的文件项目
-Menubar.createRecentItems = function (this: any) {
+Menubar.createRecentItems = function (this: typeof Menubar) {
 	if (Editor.state === 'closed') {
 		return [];
 	}
-	const { recentTabs } = Editor.project as any;
-	const items: any[] = [] as any[];
+	const { recentTabs } = Editor.project!;
+	const items: (MenuItem & { meta?: RecentTabMeta })[] = [];
 	const get = Local.createGetter!('menuFile');
 	items.push({
 		label: get('openRecent.reopenClosedFile'),
@@ -844,7 +865,7 @@ Menubar.createRecentItems = function (this: any) {
 	});
 	// 添加最近的标签选项
 	if (recentTabs.length !== 0) {
-		const click = function (this: any) {
+		const click = function (this: { meta: unknown }) {
 			Title.reopenClosedTab!(this.meta);
 		};
 		items.push({ type: 'separator' });
@@ -872,11 +893,11 @@ Menubar.createRecentItems = function (this: any) {
 };
 
 // 创建语言项目
-Menubar.createLanguageItems = function (this: any) {
+Menubar.createLanguageItems = function (this: typeof Menubar) {
 	const get = Local.createGetter!('menuView.language');
-	const autoChecked = (Editor.config as any).language === '';
+	const autoChecked = Editor.config!.language === '';
 	const autoLabel = get('auto');
-	const items: any[] = [
+	const items: MenuItem[] = [
 		{
 			label: autoLabel,
 			checked: autoChecked,
@@ -887,40 +908,42 @@ Menubar.createLanguageItems = function (this: any) {
 			}
 		}
 	];
-	Local.readLanguageList!().then((languages: any) => {
-		const active = Local.active;
-		if (languages.length !== 0) {
-			items.push({ type: 'separator' });
-		}
-		for (const { key, alias, filename } of languages) {
-			let checked = filename === active;
-			if (checked && autoChecked) {
-				checked = false;
-				items[0].label = `${autoLabel} - ${alias}`;
+	Local.readLanguageList!()!.then(
+		(languages: Array<{ key: string; alias: string; filename: string }>) => {
+			const active = Local.active;
+			if (languages.length !== 0) {
+				items.push({ type: 'separator' });
 			}
-			items.push({
-				label: alias,
-				checked: checked,
-				click: () => {
-					if (!checked) {
-						Local.setLanguage!(key);
+			for (const { key, alias, filename } of languages) {
+				let checked = filename === active;
+				if (checked && autoChecked) {
+					checked = false;
+					items[0].label = `${autoLabel} - ${alias}`;
+				}
+				items.push({
+					label: alias,
+					checked: checked,
+					click: () => {
+						if (!checked) {
+							Local.setLanguage!(key);
+						}
 					}
+				});
+			}
+			items.push({ type: 'separator' });
+			items.push({
+				label: get(Local.showInExplorer!()!),
+				click: () => {
+					File.openPath!(Local.dirname);
 				}
 			});
 		}
-		items.push({ type: 'separator' });
-		items.push({
-			label: get(Local.showInExplorer!()),
-			click: () => {
-				File.openPath!(Local.dirname);
-			}
-		});
-	});
+	);
 	return items;
 };
 
 // 创建颜色图标
-Menubar.createColorIcon = function (this: any, color: any) {
+Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
 	const icon = document.createElement('menu-icon');
 	const r = parseInt(color.slice(0, 2), 16);
 	const g = parseInt(color.slice(2, 4), 16);
@@ -935,7 +958,7 @@ Menubar.createColorIcon = function (this: any, color: any) {
 };
 
 // 显示存档目录
-Menubar.revealSaveDirectory = async function (this: any) {
+Menubar.revealSaveDirectory = async function (this: typeof Menubar) {
 	let saveDir;
 	const { location, subdir } = Data.config.save;
 	if (location !== 'local') {
@@ -949,7 +972,7 @@ Menubar.revealSaveDirectory = async function (this: any) {
 };
 
 // 规范化文件夹名称
-Menubar.sanitizeFolderName = function (this: any, name: any) {
+Menubar.sanitizeFolderName = function (this: typeof Menubar, name: string) {
 	// 移除Windows/macOS/Linux不允许的字符
 	name = name.replace(/[/:*?"<>|]/g, '');
 	// 去掉开头和结尾的空格
@@ -967,7 +990,7 @@ Menubar.sanitizeFolderName = function (this: any, name: any) {
 };
 
 // 键盘按下事件
-Menubar.keydown = function (this: any, event: any) {
+Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyN':
@@ -978,7 +1001,7 @@ Menubar.keydown = function (this: any, event: any) {
 				break;
 			case 'KeyS':
 				File.save!();
-				WebServer.update!((Editor.config as any).project);
+				WebServer.update!(Editor.config!.project);
 				break;
 			case 'KeyT':
 				if (event.shiftKey) {
@@ -1059,11 +1082,11 @@ Menubar.keydown = function (this: any, event: any) {
 };
 
 // 指针按下事件
-Menubar.pointerdown = function (this: any, event: any) {
+Menubar.pointerdown = function (this: typeof Menubar, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 		case -1: {
-			const target = event.target;
+			const target = event.target as HTMLElement;
 			if (hasClass(target, 'item') && !hasClass(target, 'selected')) {
 				switch (target?.getAttribute?.('value')) {
 					case 'file':
@@ -1086,7 +1109,7 @@ Menubar.pointerdown = function (this: any, event: any) {
 };
 
 // 指针弹起事件
-Menubar.pointerup = function (this: any, event: any) {
+Menubar.pointerup = function (this: typeof Menubar, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
 			const target = event.target;
@@ -1099,10 +1122,10 @@ Menubar.pointerup = function (this: any, event: any) {
 };
 
 // 指针进入事件
-Menubar.pointerover = function (this: any, event: any) {
-	const element = event.target;
+Menubar.pointerover = function (this: typeof Menubar, event: PointerEvent) {
+	const element = event.target as HTMLElement;
 	if (hasClass(element, 'item')) {
-		const parent = element.parentNode;
+		const parent = element.parentNode as HTMLElement;
 		const selected = parent.querySelector('.selected');
 		if (selected !== null && selected !== element) {
 			Menubar.pointerdown!(event);
@@ -1111,6 +1134,6 @@ Menubar.pointerover = function (this: any, event: any) {
 };
 
 // 超链接 - 点击事件
-Menubar.hrefClick = function (this: any, event: any) {
-	File.openURL!(event.target?.getAttribute?.('href'));
+Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
+	File.openURL!((event.target as HTMLElement | null)?.getAttribute?.('href'));
 };

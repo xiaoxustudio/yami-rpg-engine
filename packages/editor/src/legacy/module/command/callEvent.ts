@@ -14,13 +14,13 @@ import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 import { Selection } from '@/tools/text-capture.ts';
 
-(Command.cases as any).callEvent = new CommandSchema({
+Command.cases.callEvent = new CommandSchema({
 	name: 'callEvent',
-	windowFrame: null as any,
-	gridBox: null as any,
+	windowFrame: null,
+	gridBox: null,
 	eventArgs: [],
 	parameters: [],
-	eventResult: null as any,
+	eventResult: null,
 	onInitialize() {
 		this.windowFrame = $('#callEvent');
 		this.gridBox = $('#callEvent').querySelector('.grid-box');
@@ -75,7 +75,7 @@ import { Selection } from '@/tools/text-capture.ts';
 			]);
 
 		this.windowFrame.on('closed', () => {
-			this.eventArgs = [] as any[];
+			this.eventArgs = [];
 			this.clearGlobalEventElements!();
 		});
 	},
@@ -98,7 +98,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		this.clearGlobalEventElements!();
 		const id = event.value;
 		if (id) {
-			const flags = {} as Record<string, any>;
+			const flags = {} as Record<string, boolean>;
 			const globalEvent = Data.events[id];
 			for (const parameter of globalEvent.parameters) {
 				if (parameter.key in flags) {
@@ -271,7 +271,7 @@ import { Selection } from '@/tools/text-capture.ts';
 	parseEventArgs(event: any, args: any) {
 		const words = Command.words;
 		if (event) {
-			const flags = {} as Record<string, any>;
+			const flags = {} as Record<string, boolean>;
 			const parameters = event.parameters;
 			outer: for (const { type, key, note } of parameters) {
 				const name = note ? Command.setTooltip!(`<b>${key}</b>\n${note}`) + key : key;
@@ -285,7 +285,7 @@ import { Selection } from '@/tools/text-capture.ts';
 						continue outer;
 					}
 				}
-				const info = `${(Command as any).setClass('error')}${name}${
+				const info = `${Command.setClass('error')}${name}${
 					Token(': ') + Command.setWeakColor!(Local.get!('eventParameterTypes.' + type))
 				}`;
 				words.push(info);
@@ -356,7 +356,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		}
 	},
 	readEventArgs() {
-		const args = [] as any[];
+		const args: any[] = [];
 		for (const { type, key, input } of this.parameters) {
 			const value = read(input);
 			if (type === 'object' && VariableGetter.isNone!(value)) {
@@ -408,7 +408,7 @@ import { Selection } from '@/tools/text-capture.ts';
 		switch (type) {
 			case 'global': {
 				if (eventArgs === undefined) {
-					eventArgs = [] as any[];
+					eventArgs = [];
 				}
 				if (eventResult === undefined) {
 					eventResult = { type: 'none' };
@@ -448,7 +448,7 @@ import { Selection } from '@/tools/text-capture.ts';
 				}
 				if (leftValue) {
 					if (eventResult.type !== event.returnType) {
-						leftValue = (Command as any).setClass('error') + leftValue;
+						leftValue = Command.setClass('error') + leftValue;
 					}
 					leftValue += Token(' = ');
 				}

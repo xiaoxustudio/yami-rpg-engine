@@ -3,7 +3,7 @@
 export interface TreeDataItem {
 	name?: string;
 	value: string;
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface TreeDataGroup {

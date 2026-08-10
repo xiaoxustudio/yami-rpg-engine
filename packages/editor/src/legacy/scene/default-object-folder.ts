@@ -8,9 +8,9 @@ export const ObjectFolder: {
 	open: ((...args: any[]) => any) | null;
 	confirm: ((...args: any[]) => any) | null;
 } = {
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
 ObjectFolder.initialize = function (this: any) {
@@ -20,7 +20,7 @@ ObjectFolder.initialize = function (this: any) {
 
 ObjectFolder.open = function (this: any) {
 	Window.open!('object-folder');
-	const data = (Editor.project as any).scene.defaultFolders;
+	const data = Editor.project!.scene.defaultFolders;
 	const write = getElementWriter('object-folder', data);
 	write('tilemap');
 	write('actor');
@@ -33,7 +33,7 @@ ObjectFolder.open = function (this: any) {
 
 ObjectFolder.confirm = function (this: any, event: any) {
 	const read = getElementReader('object-folder');
-	(Editor.project as any).scene.defaultFolders = {
+	Editor.project!.scene.defaultFolders = {
 		tilemap: read('tilemap'),
 		actor: read('actor'),
 		region: read('region'),

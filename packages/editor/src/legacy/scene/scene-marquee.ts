@@ -1,7 +1,7 @@
 import { Data } from '@/data/data-object.ts';
 import { Scene } from './scene-window.ts';
 // 选框 - 保存状态
-Scene.marquee.save = function (this: any, key = 'default') {
+Scene.marquee.save = function (this: typeof Scene.marquee, key = 'default') {
 	let data;
 	switch (key) {
 		case 'object':
@@ -56,7 +56,7 @@ Scene.marquee.save = function (this: any, key = 'default') {
 };
 
 // 选框 - 切换状态
-Scene.marquee.switch = function (this: any, key: any) {
+Scene.marquee.switch = function (this: typeof Scene.marquee, key: string) {
 	if (this.key !== key) {
 		this.save(this.key);
 		this.restore((this.key = key));
@@ -64,14 +64,14 @@ Scene.marquee.switch = function (this: any, key: any) {
 };
 
 // 选框 - 调整位置
-Scene.marquee.resize = function (this: any) {
+Scene.marquee.resize = function (this: typeof Scene.marquee) {
 	if (this.pointerevent !== null) {
 		Scene.marqueePointermove!(this.pointerevent);
 	}
 };
 
 // 选框 - 擦除矩形
-Scene.marquee.clear = function (this: any) {
+Scene.marquee.clear = function (this: typeof Scene.marquee) {
 	if (this.visible) {
 		this.visible = false;
 		Scene.requestRendering!();
@@ -83,7 +83,7 @@ Scene.marquee.clear = function (this: any) {
 
 // 选框 - 选取矩形
 Scene.marquee.select = function (
-	this: any,
+	this: typeof Scene.marquee,
 	x = this.x,
 	y = this.y,
 	width = this.width,
@@ -98,7 +98,13 @@ Scene.marquee.select = function (
 };
 
 // 选框 - 选取矩形: 橡皮, 铅笔, 填充模式
-Scene.marquee.selectInPencilMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.marquee.selectInPencilMode = function (
+	this: typeof Scene.marquee,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	this.backgroundColor = this.backgroundColorNormal;
 	this.borderColor = this.borderColorNormal;
 	this.previewTiles = true;
@@ -109,7 +115,13 @@ Scene.marquee.selectInPencilMode = function (this: any, x: any, y: any, width: a
 };
 
 // 选框 - 选取矩形: 矩形, 椭圆模式
-Scene.marquee.selectInRectMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.marquee.selectInRectMode = function (
+	this: typeof Scene.marquee,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	this.backgroundColor = this.backgroundColorRect;
 	this.borderColor = this.borderColorRect;
 	this.previewTiles = false;
@@ -118,7 +130,13 @@ Scene.marquee.selectInRectMode = function (this: any, x: any, y: any, width: any
 };
 
 // 选框 - 选取矩形: 复制模式
-Scene.marquee.selectInCopyMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.marquee.selectInCopyMode = function (
+	this: typeof Scene.marquee,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	this.backgroundColor = this.backgroundColorCopy;
 	this.borderColor = this.borderColorCopy;
 	this.previewTiles = false;
@@ -127,12 +145,12 @@ Scene.marquee.selectInCopyMode = function (this: any, x: any, y: any, width: any
 };
 
 // 选框 - 选取矩形: 对象模式
-Scene.marquee.selectInObjectMode = function (this: any, x: any, y: any) {
+Scene.marquee.selectInObjectMode = function (this: typeof Scene.marquee, x: number, y: number) {
 	Scene.info.textContent = `${x},${y}`;
 };
 
 // 选框 - 获取图块数据
-Scene.marquee.getTiles = function (this: any, raw: any) {
+Scene.marquee.getTiles = function (this: typeof Scene.marquee, raw: boolean) {
 	const sTiles = this.tiles;
 	if (raw) return sTiles;
 	let dTiles = sTiles.standard;

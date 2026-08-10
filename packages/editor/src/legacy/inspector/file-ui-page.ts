@@ -5,23 +5,37 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const FileUI = {
-		button: null as any,
-		owner: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface FileUIShape {
+		button: HTMLElement | null;
+		owner: unknown;
+		target: FileUIData | null;
+		update: ((ui: FileUIData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface FileUIData {
+		width: number;
+		height: number;
+		setSize(width: number, height: number): void;
+		[k: string]: unknown;
+	}
+	const FileUI: FileUIShape = {
+		button: null,
+		owner: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	FileUI.initialize = function (this: any) {
+	FileUI.initialize = function (this: typeof FileUI) {
 		if (!$('#ui-switch-settings')) return;
 		this.button = $('#ui-switch-settings');
 		this.owner = {
-			setTarget: (target: any) => {
+			setTarget: (target: Record<string, unknown>) => {
 				if (this.target !== target) {
 					Inspector.open!('fileUI', target);
 				}
@@ -46,7 +60,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	FileUI.create = function (this: any) {
+	FileUI.create = function (this: typeof FileUI) {
 		const { resolution } = Data.config;
 		return {
 			width: resolution.width,
@@ -55,7 +69,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	FileUI.open = function (this: any, ui: any) {
+	FileUI.open = function (this: typeof FileUI, ui: FileUIData) {
 		if (this.target !== ui) {
 			this.target = ui;
 
@@ -67,7 +81,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	FileUI.close = function (this: any) {
+	FileUI.close = function (this: typeof FileUI) {
 		if (this.target) {
 			this.target = null;
 
@@ -75,24 +89,24 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	FileUI.update = function (this: any, ui: any, key: any, value: any) {
+	FileUI.update = function (this: typeof FileUI, ui: FileUIData, key: string, value: unknown) {
 		UI.planToSave!();
 		switch (key) {
 			case 'width':
 				if (ui.width !== value) {
-					ui.setSize(value, ui.height);
+					ui.setSize(value as number, ui.height);
 				}
 				break;
 			case 'height':
 				if (ui.height !== value) {
-					ui.setSize(ui.width, value);
+					ui.setSize(ui.width, value as number);
 				}
 				break;
 		}
 	};
 
-	FileUI.paramInput = function (this: any, event: any) {
-		FileUI.update!(FileUI.target, Inspector.getKey!(this), read(this));
+	FileUI.paramInput = function (this: typeof FileUI, event: Event) {
+		FileUI.update!(FileUI.target as FileUIData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.fileUI = FileUI;

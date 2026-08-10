@@ -11,7 +11,7 @@ Command.cases.setCursor = new CommandSchema({
 	customParse({ image }: any) {
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.setCursor') + Token(': ') },
+			{ text: Local.get!('command.setCursor') + Token(': ') },
 			{ text: Command.parseFileName(image) }
 		];
 	},

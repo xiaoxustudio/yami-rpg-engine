@@ -17,7 +17,7 @@ Command.cases.setTriggerSpeed = new CommandSchema({
 			.push(Command.parseVariableNumber(speed, 't/s'));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get('command.setTriggerSpeed') + Token(': ') },
+			{ text: Local.get!('command.setTriggerSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

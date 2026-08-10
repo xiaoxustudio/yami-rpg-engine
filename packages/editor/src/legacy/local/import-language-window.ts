@@ -14,7 +14,7 @@ export const ImportLanguage: {
 	open: () => void;
 	importLanguagePack: (language: string, string: string) => void;
 	parseLanguagePack: (string: string) => Record<string, string>;
-	confirm: (event: any) => void;
+	confirm: (event: Event) => void;
 } = {
 	filePath: '',
 	initialize: () => {},
@@ -24,13 +24,13 @@ export const ImportLanguage: {
 	confirm: () => {}
 };
 
-ImportLanguage.initialize = function (this: any) {
+ImportLanguage.initialize = function (this: typeof ImportLanguage) {
 	if (!$('#importLanguage-confirm')) return;
 	on($('#importLanguage-confirm'), 'click', this.confirm);
 };
 
-ImportLanguage.open = function (this: any) {
-	const dialogs = (Editor.config as any).dialogs;
+ImportLanguage.open = function (this: typeof ImportLanguage) {
+	const dialogs = Editor.config!.dialogs as { import: string; export: string };
 	File.showOpenDialog!({
 		defaultPath: Path.resolve!(dialogs.import),
 		filters: [
@@ -39,13 +39,13 @@ ImportLanguage.open = function (this: any) {
 				extensions: ['txt']
 			}
 		]
-	}).then(({ filePaths }: any) => {
+	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
 			Window.open!('importLanguage');
-			const items = [] as any[];
+			const items: { name: string; value: string }[] = [];
 			for (const language of Data.config.localization.languages) {
 				items.push({
-					name: (Local.get as any)('languages.' + language.name),
+					name: Local.get!('languages.' + language.name),
 					value: language.name
 				});
 			}
@@ -61,7 +61,11 @@ ImportLanguage.open = function (this: any) {
 	});
 };
 
-ImportLanguage.importLanguagePack = function (this: any, language: string, string: string) {
+ImportLanguage.importLanguagePack = function (
+	this: typeof ImportLanguage,
+	language: string,
+	string: string
+) {
 	const map = Data.localization.map;
 	for (const [id, text] of Object.entries(this.parseLanguagePack!(string))) {
 		const item = map[id];
@@ -72,9 +76,9 @@ ImportLanguage.importLanguagePack = function (this: any, language: string, strin
 	File.planToSave!(Data.manifest.project.localization);
 };
 
-ImportLanguage.parseLanguagePack = function (this: any, string: string) {
+ImportLanguage.parseLanguagePack = function (this: typeof ImportLanguage, string: string) {
 	const regexp = /\$([0-9a-fA-F]{16})\n([\s\S]*?)\n?(?=\n?\$[0-9a-fA-F]{16}|$)/g;
-	const map: Record<string, string> = {} as Record<string, any>;
+	const map: Record<string, string> = {};
 	let match: RegExpExecArray | null;
 	while ((match = regexp.exec(string))) {
 		const id = match[1].toLowerCase();
@@ -84,11 +88,11 @@ ImportLanguage.parseLanguagePack = function (this: any, string: string) {
 	return map;
 };
 
-ImportLanguage.confirm = function (this: any, event: any) {
-	const get = (Local.createGetter as any)('confirmation');
+ImportLanguage.confirm = function (this: typeof ImportLanguage, event: Event) {
+	const get = Local.createGetter!('confirmation');
 	const filename = Path.basename!(ImportLanguage.filePath);
 	const language = read($('#importLanguage-language'));
-	const langname = (Local.get as any)('languages.' + language);
+	const langname = Local.get!('languages.' + language);
 	Window.confirm!(
 		{
 			message: get('importLanguagePack')
@@ -103,7 +107,7 @@ ImportLanguage.confirm = function (this: any, event: any) {
 					File.get!({
 						local: ImportLanguage.filePath,
 						type: 'text'
-					}).then((text: any) => {
+					}).then((text: string) => {
 						if (text) {
 							ImportLanguage.importLanguagePack!(language, text);
 						}

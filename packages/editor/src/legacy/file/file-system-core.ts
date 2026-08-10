@@ -15,9 +15,10 @@ type FileMethod = (...args: any[]) => any;
 
 export const File: {
 	root: string;
-	promises: Record<string, any>;
+	promises: Record<string, Promise<HTMLImageElement>>;
 	get: FileMethod | null;
 	getPath: FileMethod | null;
+	parseMetaName: FileMethod | null;
 	save: FileMethod | null;
 	saveFile: FileMethod | null;
 	planToSave: FileMethod | null;
@@ -40,6 +41,7 @@ export const File: {
 	promises: {},
 	get: null,
 	getPath: null,
+	parseMetaName: null,
 	save: null,
 	saveFile: null,
 	planToSave: null,
@@ -61,7 +63,7 @@ export const File: {
 
 // 开发模式取 process.cwd()/Project，生产模式从 HTML 文件位置推导避免 process.cwd() 不准确
 function getFallbackRoot(): string {
-	if ((import.meta as any).env?.DEV) {
+	if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) {
 		return typeof process !== 'undefined' && typeof process.cwd === 'function'
 			? Path.resolve(process.cwd(), 'Project')
 			: '';
@@ -82,7 +84,7 @@ File.get = function (descriptor) {
 			? localPath
 			: getFallbackRoot() + '/' + localPath.replace(/^[\\/]+/, '');
 	} else {
-		(Log.throw as any)(new Error('Invalid parameter'));
+		Log.throw!(new Error('Invalid parameter'));
 	}
 	const type = descriptor.type;
 	switch (type) {
@@ -97,7 +99,7 @@ File.get = function (descriptor) {
 				promises[path] ||
 				(promises[path] = new Promise((resolve) => {
 					const image = new Image();
-					(image as any).guid = descriptor.guid ?? '';
+					(image as HTMLImageElement & { guid?: string }).guid = descriptor.guid ?? '';
 					image.onload = () => {
 						delete promises[path];
 						image.onload = null;
@@ -176,9 +178,9 @@ File.save = function (hint = true) {
 	}
 
 	if (hint) {
-		(Cursor.open as any)('cursor-wait');
+		Cursor.open('cursor-wait');
 		setTimeout(() => {
-			(Cursor.close as any)('cursor-wait');
+			Cursor.close('cursor-wait');
 		}, 100);
 	}
 
@@ -192,7 +194,7 @@ File.saveFile = function (meta) {
 			Scene.save();
 			break;
 		case UI.meta:
-			(UI.save as any)();
+			UI.save();
 			break;
 		case Animation.meta:
 			Animation.save();
@@ -216,7 +218,7 @@ File.saveFile = function (meta) {
 	}
 	const path = meta.path;
 	const route = File.path?.(path);
-	return FSP.writeFile(route, text, true as any)
+	return FSP.writeFile(route, text, true)
 		.then(() => {
 			console.log(`write: ${path}`);
 		})
@@ -295,7 +297,7 @@ File.getFileName = (function IIFE() {
 })();
 
 File.getImageResolution = (function IIFE() {
-	const promises: Record<string, any> = {};
+	const promises: Record<string, Promise<{ width: number; height: number }>> = {};
 	const resolution = { width: 0, height: 0 };
 	return function (path) {
 		let promise = promises[path];
@@ -345,7 +347,7 @@ File.showSaveDialog = function (options) {
 	return ipcRenderer.invoke('show-save-dialog', options);
 };
 
-(File as any).parseMetaName = function (meta: any) {
+File.parseMetaName = function (meta: any) {
 	const alias = File.filterGUID!(meta.path);
 	const extname = Path.extname(alias);
 	return Path.basename(alias, extname);
@@ -386,7 +388,7 @@ File.route = function (relativePath) {
 		/[\\/]{2,}/g,
 		'/'
 	);
-	if ((import.meta as any).env?.DEV) {
+	if ((import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV) {
 		return `/local-file/?path=${route.replace(/\?ver=(\d+)$/, '#ver=$1')}`;
 	}
 	return route;

@@ -33,7 +33,7 @@ const select = (x?: number, y?: number, width?: number, height?: number): void =
 defineExpose({ save, restore, resize, clear, select, root });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement & Record<'save' | 'restore' | 'resize' | 'clear' | 'select', any>;
 	if (!el) return;
 	el.save = save;
 	el.restore = restore;

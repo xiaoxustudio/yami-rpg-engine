@@ -8,7 +8,97 @@ import { Particle } from '@/particle/particle-window.ts';
 import { Light } from './light.ts';
 import { Parallax } from './parallax.ts';
 import { Scene } from './scene-window.ts';
-Scene.loadObjects = function (this: any) {
+
+interface SceneNode {
+	class: string;
+	layer?: string;
+	children?: SceneNode[];
+	shortcut?: number;
+	player?: { destroy(): void };
+	emitter?: { destroy(): void };
+}
+interface SceneActor {
+	class: string;
+	layer?: string;
+	children?: SceneNode[];
+	actorId?: string;
+	scale?: number;
+	angle?: number;
+	data?: {
+		animationId?: string;
+		sprites?: Array<{ id: string; image: string }>;
+		scale?: number;
+		rotatable?: boolean;
+		idleMotion?: unknown;
+	};
+	player?: {
+		destroy(): void;
+		scale?: number;
+		rotatable?: boolean;
+		setSpriteImages?(m: Record<string, string>): void;
+		setMotion?(m: unknown): void;
+		setAngle?(a: number): void;
+	} | null;
+}
+interface SceneLight extends SceneNode {
+	instance?: unknown;
+}
+interface SceneAnimation {
+	class: string;
+	layer?: string;
+	children?: SceneNode[];
+	animationId?: string;
+	scale?: number;
+	speed?: number;
+	opacity?: number;
+	rotatable?: boolean;
+	motion?: unknown;
+	angle?: number;
+	player?: {
+		destroy(): void;
+		scale?: number;
+		speed?: number;
+		opacity?: number;
+		rotatable?: boolean;
+		setMotion?(m: unknown): void;
+		setAngle?(a: number): void;
+	} | null;
+}
+interface SceneParallax {
+	class: string;
+	layer?: string;
+	children?: SceneNode[];
+	hidden?: boolean;
+	player?: { destroy(): void; update(d: number): void } | null;
+}
+interface SceneParticle {
+	class: string;
+	layer?: string;
+	children?: SceneNode[];
+	particleId?: string;
+	angle?: number;
+	scale?: number;
+	speed?: number;
+	opacity?: number;
+	emitter?:
+		| {
+				destroy(): void;
+				bounding?: unknown;
+				angle?: number;
+				scale?: number;
+				speed?: number;
+				opacity?: number;
+				calculateOuterRect?(): unknown;
+		  }
+		| null
+		| undefined;
+}
+interface PreviewFile {
+	basename: string;
+	meta: { guid: string };
+	type: string;
+}
+Scene.loadObjects = function (this: typeof Scene) {
 	const actors = this.actors;
 	const regions = this.regions;
 	const lights = this.lights;
@@ -29,38 +119,43 @@ Scene.loadObjects = function (this: any) {
 	let backgroundIndex = 0;
 	let foregroundIndex = 0;
 	let doodadIndex = 0;
-	const layerLoaders = {
-		background: (node: any) => {
+	interface SceneNode {
+		class: string;
+		layer?: string;
+		children?: SceneNode[];
+	}
+	const layerLoaders: Record<string, (node: SceneNode) => void> = {
+		background: (node) => {
 			backgrounds[backgroundIndex++] = node;
 		},
-		foreground: (node: any) => {
+		foreground: (node) => {
 			foregrounds[foregroundIndex++] = node;
 		},
-		object: (node: any) => {
+		object: (node) => {
 			doodads[doodadIndex++] = node;
 		}
 	};
-	const loaders = {
-		folder: (node: any) => load(node.children),
-		actor: (node: any) => (actors[actorIndex++] = node),
-		region: (node: any) => (regions[regionIndex++] = node),
-		light: (node: any) => (lights[lightIndex++] = node),
-		animation: (node: any) => (animations[animationIndex++] = node),
-		particle: (node: any) => (particles[particleIndex++] = node),
-		parallax: (node: any) => {
+	const loaders: Record<string, (node: SceneNode) => void> = {
+		folder: (node) => load(node.children!),
+		actor: (node) => (actors[actorIndex++] = node),
+		region: (node) => (regions[regionIndex++] = node),
+		light: (node) => (lights[lightIndex++] = node),
+		animation: (node) => (animations[animationIndex++] = node),
+		particle: (node) => (particles[particleIndex++] = node),
+		parallax: (node) => {
 			parallaxes[parallaxIndex++] = node;
-			(layerLoaders as Record<string, any>)[node.layer](node);
+			layerLoaders[node.layer!](node);
 		},
-		tilemap: (node: any) => {
+		tilemap: (node) => {
 			tilemaps[tilemapIndex++] = node;
-			(layerLoaders as Record<string, any>)[node.layer](node);
+			layerLoaders[node.layer!](node);
 		}
 	};
-	const load = (nodes: any) => {
+	const load = (nodes: SceneNode[]) => {
 		const length = nodes.length;
 		for (let i = 0; i < length; i++) {
 			const node = nodes[i];
-			(loaders as Record<string, any>)[node.class](node);
+			loaders[node.class](node);
 		}
 	};
 	load(this.objects);
@@ -98,9 +193,9 @@ Scene.loadObjects = function (this: any) {
 	this.computeActiveTilemapId!();
 };
 
-Scene.loadTextures = async function (this: any) {
+Scene.loadTextures = async function (this: typeof Scene) {
 	if (this.state === 'closed') return;
-	const promises = [] as any[];
+	const promises: Promise<unknown>[] = [];
 	const textures = this.textures;
 	const tilesets = Data.tilesets;
 	const templates = Data.autotiles.map;
@@ -158,7 +253,7 @@ Scene.loadTextures = async function (this: any) {
 	}
 };
 
-Scene.loadAllContexts = function (this: any) {
+Scene.loadAllContexts = function (this: typeof Scene) {
 	for (const actor of this.actors) {
 		this.loadActorContext!(actor);
 	}
@@ -176,13 +271,13 @@ Scene.loadAllContexts = function (this: any) {
 	}
 };
 
-Scene.loadActorContext = function (this: any, actor: any) {
+Scene.loadActorContext = function (this: typeof Scene, actor: SceneActor) {
 	if (actor.player) {
 		actor.player.destroy();
 		delete actor.player;
 	}
 	const actorId = actor.actorId;
-	const data = Data.actors[actorId];
+	const data = Data.actors[actorId!];
 	if (data !== undefined) {
 		Object.defineProperty(actor, 'data', {
 			configurable: true,
@@ -192,18 +287,18 @@ Scene.loadActorContext = function (this: any, actor: any) {
 		const animation = Data.animations[animationId];
 		if (animation !== undefined) {
 			const player = new Animation.Player!(animation);
-			const images = {} as Record<string, any>;
+			const images: Record<string, string> = {};
 			const sprites = data.sprites;
 			const length = sprites.length;
 			for (let i = 0; i < length; i++) {
 				const sprite = sprites[i];
 				images[sprite.id] = sprite.image;
 			}
-			player.scale = actor.scale * data.scale;
+			player.scale = (actor.scale ?? 1) * (data.scale ?? 1);
 			player.rotatable = data.rotatable;
 			player.setSpriteImages(images);
 			player.setMotion(data.idleMotion);
-			player.setAngle(Math.radians(actor.angle));
+			player.setAngle(Math.radians(actor.angle ?? 0));
 			Object.defineProperty(actor, 'player', {
 				configurable: true,
 				value: player
@@ -218,32 +313,32 @@ Scene.loadActorContext = function (this: any, actor: any) {
 	});
 };
 
-Scene.loadLightContext = function (this: any, light: any) {
+Scene.loadLightContext = function (this: typeof Scene, light: SceneLight) {
 	Object.defineProperty(light, 'instance', {
 		configurable: true,
-		value: new Light(light)
+		value: new Light(light as unknown as ConstructorParameters<typeof Light>[0])
 	});
 };
 
-Scene.loadAnimationContext = function (this: any, animation: any) {
+Scene.loadAnimationContext = function (this: typeof Scene, animation: SceneAnimation) {
 	if (animation.player) {
 		animation.player.destroy();
 		delete animation.player;
 	}
 	const animationId = animation.animationId;
-	const data = Data.animations[animationId];
+	const data = Data.animations[animationId!];
 	if (data !== undefined) {
 		Object.defineProperty(animation, 'data', {
 			configurable: true,
 			value: data
 		});
 		const player = new Animation.Player!(data);
-		player.scale = animation.scale;
-		player.speed = animation.speed;
-		player.opacity = animation.opacity;
+		player.scale = animation.scale ?? 1;
+		player.speed = animation.speed ?? 1;
+		player.opacity = animation.opacity ?? 1;
 		player.rotatable = animation.rotatable;
 		player.setMotion(animation.motion);
-		player.setAngle(Math.radians(animation.angle));
+		player.setAngle(Math.radians(animation.angle ?? 0));
 		Object.defineProperty(animation, 'player', {
 			configurable: true,
 			value: player
@@ -257,30 +352,30 @@ Scene.loadAnimationContext = function (this: any, animation: any) {
 	});
 };
 
-Scene.loadParallaxContext = function (this: any, parallax: any) {
+Scene.loadParallaxContext = function (this: typeof Scene, parallax: SceneParallax) {
 	if (parallax.player) {
 		parallax.player.destroy();
 		delete parallax.player;
 	}
 	Object.defineProperty(parallax, 'player', {
 		configurable: true,
-		value: new Parallax(parallax)
+		value: new Parallax(parallax as unknown as ConstructorParameters<typeof Parallax>[0])
 	});
 };
 
-Scene.loadParticleContext = function (this: any, particle: any) {
+Scene.loadParticleContext = function (this: typeof Scene, particle: SceneParticle) {
 	if (particle.emitter) {
 		particle.emitter.destroy();
 		delete particle.emitter;
 	}
-	const data = Data.particles[particle.particleId];
+	const data = Data.particles[particle.particleId!];
 	if (data !== undefined) {
 		const emitter = new Particle.Emitter!(data);
 		emitter.bounding = emitter.calculateOuterRect();
-		emitter.angle = Math.radians(particle.angle);
-		emitter.scale = particle.scale;
-		emitter.speed = particle.speed;
-		emitter.opacity = particle.opacity;
+		emitter.angle = Math.radians(particle.angle ?? 0);
+		emitter.scale = particle.scale ?? 1;
+		emitter.speed = particle.speed ?? 1;
+		emitter.opacity = particle.opacity ?? 1;
 		Object.defineProperty(particle, 'emitter', {
 			configurable: true,
 			value: emitter
@@ -288,7 +383,7 @@ Scene.loadParticleContext = function (this: any, particle: any) {
 	}
 };
 
-Scene.loadObjectContext = function (this: any, object: any) {
+Scene.loadObjectContext = function (this: typeof Scene, object: SceneNode) {
 	switch (object.class) {
 		case 'actor':
 			this.loadActorContext!(object);
@@ -313,10 +408,10 @@ Scene.loadObjectContext = function (this: any, object: any) {
 	}
 };
 
-Scene.reloadObjectContext = function (this: any, object: any) {
+Scene.reloadObjectContext = function (this: typeof Scene, object: SceneNode) {
 	switch (object.class) {
 		case 'folder':
-			for (const child of object.children) {
+			for (const child of object.children ?? []) {
 				this.reloadObjectContext!(child);
 			}
 			break;
@@ -340,28 +435,28 @@ Scene.reloadObjectContext = function (this: any, object: any) {
 	}
 };
 
-Scene.destroyObjectContext = function (this: any, object: any) {
+Scene.destroyObjectContext = function (this: typeof Scene, object: SceneNode) {
 	switch (object.class) {
 		case 'folder':
-			for (const child of object.children) {
+			for (const child of object.children ?? []) {
 				this.destroyObjectContext!(child);
 			}
 			break;
 		case 'actor':
-			object.player.destroy();
+			object.player?.destroy();
 			delete object.player;
 			break;
 		case 'animation':
-			object.player.destroy();
-			delete object.player;
+			object.player?.destroy();
+			delete (object as { player?: unknown }).player;
 			break;
 		case 'particle':
 			object.emitter?.destroy();
 			delete object.emitter;
 			break;
 		case 'parallax':
-			object.player.destroy();
-			delete object.player;
+			object.player?.destroy();
+			delete (object as { player?: unknown }).player;
 			break;
 		case 'tilemap':
 			if (this.tilemap === object) {
@@ -374,7 +469,7 @@ Scene.destroyObjectContext = function (this: any, object: any) {
 	}
 };
 
-Scene.createPreviewObject = function (this: any, file: any) {
+Scene.createPreviewObject = function (this: typeof Scene, file: PreviewFile) {
 	if (!this.previewObject) {
 		const name = file.basename;
 		const guid = file.meta.guid;
@@ -412,7 +507,7 @@ Scene.createPreviewObject = function (this: any, file: any) {
 	}
 };
 
-Scene.deletePreviewObject = function (this: any) {
+Scene.deletePreviewObject = function (this: typeof Scene) {
 	const object = this.previewObject;
 	if (object) {
 		switch (object.class) {
@@ -434,7 +529,7 @@ Scene.deletePreviewObject = function (this: any) {
 	}
 };
 
-Scene.updateParallaxes = function (this: any, deltaTime: any) {
+Scene.updateParallaxes = function (this: typeof Scene, deltaTime: number) {
 	for (const parallax of this.parallaxes) {
 		if (parallax.hidden) continue;
 		parallax.player.update(deltaTime);

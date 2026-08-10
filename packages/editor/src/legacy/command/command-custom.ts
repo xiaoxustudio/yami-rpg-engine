@@ -36,7 +36,7 @@ interface CustomCommandItem {
 
 interface ScriptObject {
 	id: string;
-	parameters: Record<string, any> | null;
+	parameters: Record<string, unknown> | null;
 }
 
 type WordListInstance = Array<string> & {
@@ -107,7 +107,7 @@ Command.custom = {
 			meta: any;
 			data: any;
 		};
-		const wrap = { box, grid, children: [] as any[] };
+		const wrap = { box, grid, children: [] };
 		box.wrap = wrap;
 		this.parameterPane.createDetailBox = function (): {
 			box: HTMLElement;
@@ -141,11 +141,11 @@ Command.custom = {
 		});
 	},
 
-	parse: function (id: string, parameters: Record<string, any>): any[] {
+	parse: function (id: string, parameters: Record<string, unknown>): any[] {
 		const meta = Data.scripts[id];
 		const name = this.commandNameMap![id];
 		if (meta === undefined || name === undefined) {
-			const label = Local.get('command.invalidCommand');
+			const label = Local.get!('command.invalidCommand');
 			const cmdId = Command.parseUnlinkedId!(id);
 			return [{ color: 'invalid' }, { text: `${label}: ${cmdId}` }];
 		}
@@ -189,10 +189,14 @@ Command.custom = {
 					continue;
 				}
 				case 'easing':
-					words.push((Data.easings.map as Record<string, { name: string }>)[value].name);
+					words.push(
+						(Data.easings.map as Record<string, { name: string }>)[value as string].name
+					);
 					continue;
 				case 'team':
-					words.push((Data.teams.map as Record<string, { name: string }>)[value].name);
+					words.push(
+						(Data.teams.map as Record<string, { name: string }>)[value as string].name
+					);
 					continue;
 				case 'variable':
 					words.push(
@@ -284,7 +288,7 @@ Command.custom = {
 		return [{ color: 'custom' }, { text: name + Token(': ') }, { text: words.join() }];
 	},
 
-	load: function (id: string, parameters: Record<string, any>): void {
+	load: function (id: string, parameters: Record<string, unknown>): void {
 		this.loadedScript.id = id;
 		this.loadedScript.parameters = Object.clone(parameters);
 		this.windowX = Window.absolutePos.x;

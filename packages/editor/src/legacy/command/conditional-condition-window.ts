@@ -15,59 +15,105 @@ interface IfConditionTarget {
 	isPluginInput?: boolean;
 }
 
+interface IfConditionOperandShape {
+	type: string;
+	stringId?: string;
+	[k: string]: any;
+}
+
+export interface IfConditionData {
+	type: string;
+	operation?: string;
+	operand?: IfConditionOperandShape | null;
+	keycode?: string;
+	state?: string;
+	button?: number;
+	key?: string;
+	skillId?: string;
+	stateId?: string;
+	itemId?: string;
+	equipmentId?: string;
+	quantity?: number;
+	shortcutKey?: string;
+	teamId?: string;
+	[k: string]: any;
+}
+
+declare global {
+	type SwitchConditionData = {
+		type:
+			| 'none'
+			| 'boolean'
+			| 'number'
+			| 'string'
+			| 'attribute'
+			| 'enum'
+			| 'keyboard'
+			| 'gamepad'
+			| 'mouse'
+			| 'variable';
+		value?: any;
+		attributeId?: string;
+		stringId?: string;
+		keycode?: string;
+		button?: number;
+		variable?: { type: string; key: string };
+	};
+}
+
 interface IfConditionShape {
 	type: string;
 	target: IfConditionTarget | null;
 	initialize: (() => void) | null;
-	parseBooleanOperation: ((condition: any) => string) | null;
-	parseBooleanOperand: ((condition: any) => string) | null;
-	parseNumberOperation: ((condition: any) => string) | null;
-	parseNumberOperand: ((condition: any) => string) | null;
-	parseStringOperation: ((condition: any) => string) | null;
-	parseStringOperand: ((condition: any) => string) | null;
-	parseObjectOperation: ((condition: any) => string) | null;
-	parseObjectOperand: ((condition: any) => string) | null;
-	parseActorOperation: ((condition: any) => string) | null;
-	parseElementOperation: ((condition: any) => string) | null;
-	parseKeyboardState: ((state: any) => string) | null;
-	parseGamepadState: ((state: any) => string) | null;
-	parseMouseButton: ((button: number) => string) | null;
-	parseMouseState: ((state: any) => string) | null;
-	parseListOperation: ((condition: any) => string) | null;
-	parseOther: ((condition: any) => string) | null;
-	parse: ((condition: any, listData?: boolean) => string) | null;
-	open: ((condition?: any) => void) | null;
+	parseBooleanOperation: ((condition: IfConditionData) => string) | null;
+	parseBooleanOperand: ((condition: IfConditionData) => string) | null;
+	parseNumberOperation: ((condition: IfConditionData) => string) | null;
+	parseNumberOperand: ((condition: IfConditionData) => string) | null;
+	parseStringOperation: ((condition: IfConditionData) => string) | null;
+	parseStringOperand: ((condition: IfConditionData) => string) | null;
+	parseObjectOperation: ((condition: IfConditionData) => string) | null;
+	parseObjectOperand: ((condition: IfConditionData) => string) | null;
+	parseActorOperation: ((condition: IfConditionData) => string) | null;
+	parseElementOperation: ((condition: IfConditionData) => string) | null;
+	parseKeyboardState: ((state: string | undefined) => string) | null;
+	parseGamepadState: ((state: string | undefined) => string) | null;
+	parseMouseButton: ((button: number | undefined) => string) | null;
+	parseMouseState: ((state: string | undefined) => string) | null;
+	parseListOperation: ((condition: IfConditionData) => string) | null;
+	parseOther: ((condition: IfConditionData) => string) | null;
+	parse: ((condition: IfConditionData, listData?: boolean) => string) | null;
+	open: ((condition?: IfConditionData) => void) | null;
 	save: (() => any) | null;
 	confirm: ((event: Event) => any) | null;
 }
 
 export const IfCondition: IfConditionShape = {
 	type: 'condition',
-	target: null as any,
-	initialize: null as any,
-	parseBooleanOperation: null as any,
-	parseBooleanOperand: null as any,
-	parseNumberOperation: null as any,
-	parseNumberOperand: null as any,
-	parseStringOperation: null as any,
-	parseStringOperand: null as any,
-	parseObjectOperation: null as any,
-	parseObjectOperand: null as any,
-	parseActorOperation: null as any,
-	parseElementOperation: null as any,
-	parseKeyboardState: null as any,
-	parseGamepadState: null as any,
-	parseMouseButton: null as any,
-	parseMouseState: null as any,
-	parseListOperation: null as any,
-	parseOther: null as any,
-	parse: null as any,
-	open: null as any,
-	save: null as any,
-	confirm: null as any
+	target: null,
+	initialize: null,
+	parseBooleanOperation: null,
+	parseBooleanOperand: null,
+	parseNumberOperation: null,
+	parseNumberOperand: null,
+	parseStringOperation: null,
+	parseStringOperand: null,
+	parseObjectOperation: null,
+	parseObjectOperand: null,
+	parseActorOperation: null,
+	parseElementOperation: null,
+	parseKeyboardState: null,
+	parseGamepadState: null,
+	parseMouseButton: null,
+	parseMouseState: null,
+	parseListOperation: null,
+	parseOther: null,
+	parse: null,
+	open: null,
+	save: null,
+	confirm: null
 };
 
-IfCondition.initialize = function (this: any) {
+IfCondition.initialize = function (this: typeof IfCondition) {
 	if (!$('#if-condition-type')) return;
 	$('#if-condition-type').loadItems([
 		{ name: 'Boolean', value: 'boolean' },
@@ -145,7 +191,7 @@ IfCondition.initialize = function (this: any) {
 			{ case: 'other', targets: [$('#if-condition-other-key')] }
 		]);
 
-	on($('#if-condition-type'), 'write', (event: any) => {
+	on($('#if-condition-type'), 'write', (event: Event & { value?: string }) => {
 		let filter1 = 'all';
 		let filter2 = 'all';
 		switch (event.value) {
@@ -429,10 +475,13 @@ IfCondition.initialize = function (this: any) {
 		clear($('#if-condition-actor-teamId'));
 	});
 
-	on($('#if-condition-confirm'), 'click', this.confirm);
+	on($('#if-condition-confirm'), 'click', this.confirm!);
 };
 
-IfCondition.parseBooleanOperation = function (this: any, { operation }: any) {
+IfCondition.parseBooleanOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	const set = Command.setOperatorColor;
 	switch (operation) {
 		case 'equal':
@@ -442,18 +491,24 @@ IfCondition.parseBooleanOperation = function (this: any, { operation }: any) {
 	}
 };
 
-IfCondition.parseBooleanOperand = function (this: any, { operand }: any) {
-	switch (operand.type) {
+IfCondition.parseBooleanOperand = function (
+	this: typeof IfCondition,
+	{ operand }: IfConditionData
+) {
+	switch (operand!.type) {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return Command.setBooleanColor!(operand.value.toString());
+			return Command.setBooleanColor!(operand!.value.toString());
 		case 'variable':
-			return Command.parseVariable!(operand.variable, 'boolean');
+			return Command.parseVariable!(operand!.variable, 'boolean');
 	}
 };
 
-IfCondition.parseNumberOperation = function (this: any, { operation }: any) {
+IfCondition.parseNumberOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	const set = Command.setOperatorColor;
 	switch (operation) {
 		case 'equal':
@@ -471,18 +526,21 @@ IfCondition.parseNumberOperation = function (this: any, { operation }: any) {
 	}
 };
 
-IfCondition.parseNumberOperand = function (this: any, { operand }: any) {
-	switch (operand.type) {
+IfCondition.parseNumberOperand = function (this: typeof IfCondition, { operand }: IfConditionData) {
+	switch (operand!.type) {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return Command.setNumberColor!(operand.value.toString());
+			return Command.setNumberColor!(operand!.value.toString());
 		case 'variable':
-			return Command.parseVariable!(operand.variable, 'number');
+			return Command.parseVariable!(operand!.variable, 'number');
 	}
 };
 
-IfCondition.parseStringOperation = function (this: any, { operation }: any) {
+IfCondition.parseStringOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	const set = Command.setOperatorColor;
 	switch (operation) {
 		case 'equal':
@@ -494,20 +552,23 @@ IfCondition.parseStringOperation = function (this: any, { operation }: any) {
 	}
 };
 
-IfCondition.parseStringOperand = function (this: any, { operand }: any) {
-	switch (operand.type) {
+IfCondition.parseStringOperand = function (this: typeof IfCondition, { operand }: IfConditionData) {
+	switch (operand!.type) {
 		case 'none':
 			return Token('null');
 		case 'constant':
-			return Command.setStringColor!(`"${Command.parseMultiLineString!(operand.value)}"`);
+			return Command.setStringColor!(`"${Command.parseMultiLineString!(operand!.value)}"`);
 		case 'variable':
-			return Command.parseVariable!(operand.variable, 'string');
+			return Command.parseVariable!(operand!.variable, 'string');
 		case 'enum':
-			return Command.parseEnumStringTag!(operand.stringId);
+			return Command.parseEnumStringTag!(operand!.stringId);
 	}
 };
 
-IfCondition.parseObjectOperation = function (this: any, { operation }: any) {
+IfCondition.parseObjectOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	const set = Command.setOperatorColor;
 	switch (operation) {
 		case 'equal':
@@ -519,7 +580,7 @@ IfCondition.parseObjectOperation = function (this: any, { operation }: any) {
 	}
 };
 
-IfCondition.parseObjectOperand = function (this: any, { operand }: any) {
+IfCondition.parseObjectOperand = function (this: typeof IfCondition, { operand }: IfConditionData) {
 	if (!operand) return '';
 	switch (operand.type) {
 		case 'none':
@@ -546,8 +607,18 @@ IfCondition.parseObjectOperand = function (this: any, { operand }: any) {
 };
 
 IfCondition.parseActorOperation = function (
-	this: any,
-	{ operation, itemId, equipmentId, skillId, stateId, quantity, shortcutKey, target, teamId }: any
+	this: typeof IfCondition,
+	{
+		operation,
+		itemId,
+		equipmentId,
+		skillId,
+		stateId,
+		quantity,
+		shortcutKey,
+		target,
+		teamId
+	}: IfConditionData
 ) {
 	const op = Local.get!('command.if.actor.' + operation);
 	switch (operation) {
@@ -581,35 +652,44 @@ IfCondition.parseActorOperation = function (
 	}
 };
 
-IfCondition.parseElementOperation = function (this: any, { operation }: any) {
+IfCondition.parseElementOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	return Local.get!('command.if.element.' + operation);
 };
 
-IfCondition.parseKeyboardState = function (this: any, state: any) {
+IfCondition.parseKeyboardState = function (this: typeof IfCondition, state: string | undefined) {
 	return Local.get!('command.if.keyboard.' + state);
 };
 
-IfCondition.parseGamepadState = function (this: any, state: any) {
+IfCondition.parseGamepadState = function (this: typeof IfCondition, state: string | undefined) {
 	return Local.get!('command.if.gamepad.' + state);
 };
 
-IfCondition.parseMouseButton = function (this: any, button: any) {
+IfCondition.parseMouseButton = function (this: typeof IfCondition, button: number | undefined) {
 	return Local.get!('command.if.mouse.button.' + button);
 };
 
-IfCondition.parseMouseState = function (this: any, state: any) {
+IfCondition.parseMouseState = function (this: typeof IfCondition, state: string | undefined) {
 	return Local.get!('command.if.mouse.' + state);
 };
 
-IfCondition.parseListOperation = function (this: any, { operation }: any) {
+IfCondition.parseListOperation = function (
+	this: typeof IfCondition,
+	{ operation }: IfConditionData
+) {
 	return Local.get!('command.if.list.' + operation);
 };
 
-IfCondition.parseOther = function (this: any, { key }: any) {
+IfCondition.parseOther = function (this: typeof IfCondition, { key }: IfConditionData) {
 	return Local.get!('command.if.other.' + key);
 };
 
-const parseTypeHandlers: Record<string, (this: typeof IfCondition, condition: any) => string> = {
+const parseTypeHandlers: Record<
+	string,
+	(this: typeof IfCondition, condition: IfConditionData) => string
+> = {
 	boolean: function (condition) {
 		const variable = Command.parseVariable!(condition.variable, 'boolean');
 		const operator = this.parseBooleanOperation!(condition);
@@ -651,7 +731,7 @@ const parseTypeHandlers: Record<string, (this: typeof IfCondition, condition: an
 		return keyboard + Token('[') + Command.setStringColor!(key) + Token(']') + ' ' + state;
 	},
 	gamepad: function (condition) {
-		const button = getButtonName(condition.button);
+		const button = getButtonName(condition.button!);
 		const gamepad = Local.get!('command.if.gamepad');
 		const state = this.parseGamepadState!(condition.state);
 		return gamepad + Token('[') + Command.setStringColor!(button) + Token(']') + ' ' + state;
@@ -673,7 +753,11 @@ const parseTypeHandlers: Record<string, (this: typeof IfCondition, condition: an
 	}
 };
 
-IfCondition.parse = function (this: any, condition, listData: any) {
+IfCondition.parse = function (
+	this: typeof IfCondition,
+	condition: IfConditionData,
+	listData?: boolean
+) {
 	const handler = parseTypeHandlers[condition.type];
 	let string = handler ? handler.call(this, condition) : '';
 	if (listData) {
@@ -683,30 +767,30 @@ IfCondition.parse = function (this: any, condition, listData: any) {
 };
 
 IfCondition.open = function (
-	this: any,
+	this: typeof IfCondition,
 	condition = {
 		type: 'number',
 		variable: { type: 'local', key: '' },
 		operation: 'equal',
 		operand: { type: 'constant', value: 0 }
-	} as any
+	} as unknown as IfConditionData
 ) {
 	$('#if-condition-actor-shortcutKey').loadItems(Enum.getStringItems!('shortcut-key'));
 	Window.open!('if-condition');
 	const write = getElementWriter('if-condition');
 	const defaultVariable = { type: 'local', key: '' };
 	let commonVariable = defaultVariable;
-	let booleanOperation = 'equal';
+	let booleanOperation: string | undefined = 'equal';
 	let booleanOperandType = 'constant';
 	let booleanConstantValue = true;
-	let numberOperation = 'equal';
+	let numberOperation: string | undefined = 'equal';
 	let numberOperandType = 'constant';
 	let numberConstantValue = 0;
-	let stringOperation = 'equal';
+	let stringOperation: string | undefined = 'equal';
 	let stringOperandType = 'constant';
 	let stringConstantValue = '';
 	let stringEnumStringId = '';
-	let objectOperation = 'equal';
+	let objectOperation: string | undefined = 'equal';
 	let objectOperandType = 'none';
 	let operandVariable = defaultVariable;
 	let commonActor = { type: 'trigger' };
@@ -717,7 +801,7 @@ IfCondition.open = function (
 	let commonTrigger = { type: 'trigger' };
 	let commonLight = { type: 'trigger' };
 	let commonElement = { type: 'trigger' };
-	let actorOperation = 'present-active';
+	let actorOperation: string | undefined = 'present-active';
 	let actorSkillId = '';
 	let actorStateId = '';
 	let actorItemId = '';
@@ -726,37 +810,37 @@ IfCondition.open = function (
 	let actorShortcutKey = Enum.getDefStringId!('shortcut-key');
 	let actorTarget = { type: 'trigger' };
 	let actorTeamId = Data.teams.list[0].id;
-	let elementOperation = 'present';
-	let keyboardKeycode = '';
-	let keyboardState = 'just-pressed';
-	let gamepadButton = -1;
-	let gamepadState = 'just-pressed';
-	let mouseButton = 0;
-	let mouseState = 'just-pressed';
-	let listOperation = 'include';
-	let otherKey = 'mouse-entered';
+	let elementOperation: string | undefined = 'present';
+	let keyboardKeycode: string | undefined = '';
+	let keyboardState: string | undefined = 'just-pressed';
+	let gamepadButton: number | undefined = -1;
+	let gamepadState: string | undefined = 'just-pressed';
+	let mouseButton: number | undefined = 0;
+	let mouseState: string | undefined = 'just-pressed';
+	let listOperation: string | undefined = 'include';
+	let otherKey: string | undefined = 'mouse-entered';
 	switch (condition.type) {
 		case 'boolean':
 			commonVariable = condition.variable;
 			booleanOperation = condition.operation;
-			booleanOperandType = condition.operand.type;
-			booleanConstantValue = condition.operand.value ?? booleanConstantValue;
-			operandVariable = condition.operand.variable ?? operandVariable;
+			booleanOperandType = condition.operand!.type;
+			booleanConstantValue = condition.operand!.value ?? booleanConstantValue;
+			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'number':
 			commonVariable = condition.variable;
 			numberOperation = condition.operation;
-			numberOperandType = condition.operand.type;
-			numberConstantValue = condition.operand.value ?? numberConstantValue;
-			operandVariable = condition.operand.variable ?? operandVariable;
+			numberOperandType = condition.operand!.type;
+			numberConstantValue = condition.operand!.value ?? numberConstantValue;
+			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'string':
 			commonVariable = condition.variable;
 			stringOperation = condition.operation;
-			stringOperandType = condition.operand.type;
-			stringConstantValue = condition.operand.value ?? stringConstantValue;
-			stringEnumStringId = condition.operand.stringId ?? stringEnumStringId;
-			operandVariable = condition.operand.variable ?? operandVariable;
+			stringOperandType = condition.operand!.type;
+			stringConstantValue = condition.operand!.value ?? stringConstantValue;
+			stringEnumStringId = condition.operand!.stringId ?? stringEnumStringId;
+			operandVariable = condition.operand!.variable ?? operandVariable;
 			break;
 		case 'object':
 			commonVariable = condition.variable;
@@ -853,7 +937,7 @@ IfCondition.open = function (
 	getFocus($('#if-condition-type'));
 };
 
-IfCondition.save = function (this: any) {
+IfCondition.save = function (this: typeof IfCondition) {
 	const read = getElementReader('if-condition');
 	const type = read('type');
 	let condition;
@@ -1180,6 +1264,6 @@ IfCondition.save = function (this: any) {
 	return condition;
 };
 
-IfCondition.confirm = function (this: any, event: any) {
+IfCondition.confirm = function (this: typeof IfCondition, event: Event) {
 	return IfCondition.target!.save();
 };

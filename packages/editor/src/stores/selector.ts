@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { Window } from '@/tools/window-object.ts';
 import { shallowRef } from 'vue';
 import { $ } from '@/util/dom.ts';
@@ -120,7 +120,8 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.allowNone = allowNoneParam;
 		target.value = t;
 		allowNone.value = allowNoneParam;
-		(Window as any).open('selector');
+		state.value = 'open';
+		Window.open?.('selector');
 		const { nav, head, body } = Selector ?? {};
 		const guid = t.read();
 		const meta = Data.manifest.guidMap[guid];
@@ -129,10 +130,10 @@ export const useSelectorStore = defineStore('selector', () => {
 		body?.computeGridProperties?.();
 		if (meta !== undefined) {
 			const path = meta.path;
-			nav?.load?.((Directory as any).getFolder(path));
+			nav?.load?.(Directory.getFolder?.(path));
 			body?.selectByPath?.(path);
 		} else {
-			nav?.load?.((Directory as any).getFolder(Selector.lastDir ?? 'Assets'));
+			nav?.load?.(Directory.getFolder?.(Selector.lastDir ?? 'Assets'));
 		}
 		head?.searcher?.getFocus?.();
 	}
@@ -152,8 +153,9 @@ export const useSelectorStore = defineStore('selector', () => {
 		if (files.length === 1 && files[0].type === 'audio') {
 			Selector.audioPlayed = true;
 			audioPlayed.value = true;
-			(AudioManager.player as any).stop();
-			(AudioManager.player as any).play(files[0].path);
+			AudioManager.player?.stop?.();
+			const path = files[0].path;
+			if (path) AudioManager.player?.play?.(path);
 		}
 	}
 
@@ -169,14 +171,14 @@ export const useSelectorStore = defineStore('selector', () => {
 					const meta = file?.meta;
 					if (meta !== undefined) {
 						Selector.target?.input?.(meta?.guid);
-						(Window as any).close('selector');
+						Window.close?.('selector');
 					}
 				}
 				break;
 			case 0:
 				if (Selector.allowNone) {
 					Selector.target?.input?.('');
-					(Window as any).close('selector');
+					Window.close?.('selector');
 				}
 				break;
 		}
@@ -194,13 +196,14 @@ export const useSelectorStore = defineStore('selector', () => {
 		const Selector = getSelector();
 		if (!Selector) return;
 		const { view } = project.selector;
-		Selector.directory = [(Directory as any).assets];
+		Selector.directory = [Directory.assets];
 		Selector.body?.setViewIndex?.(view);
 	}
 
-	function windowClosed(event: any) {
+	function windowClosed(event: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
+		state.value = 'closed';
 		const folder = (Selector.nav?.selections?.[0] ?? Selector.backupFolders?.[0]) as
 			| { path?: string }
 			| undefined;
@@ -215,11 +218,11 @@ export const useSelectorStore = defineStore('selector', () => {
 		if (Selector.audioPlayed) {
 			Selector.audioPlayed = false;
 			audioPlayed.value = false;
-			(AudioManager.player as any).stop();
+			AudioManager.player?.stop?.();
 		}
 	}
 
-	function windowResize(event: any) {
+	function windowResize(event: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		Selector.nav?.resize?.();
@@ -228,7 +231,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.updateContentSize?.();
 	}
 
-	function searcherKeydown(event: any) {
+	function searcherKeydown(event: KeyboardEvent) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		if (event.ctrlKey || event.metaKey) return;
@@ -256,7 +259,7 @@ export const useSelectorStore = defineStore('selector', () => {
 		}
 	}
 
-	function bodyKeydown(event: any) {
+	function bodyKeydown(event: KeyboardEvent) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		if (event.ctrlKey || event.metaKey) return;
@@ -270,28 +273,28 @@ export const useSelectorStore = defineStore('selector', () => {
 		event.stopImmediatePropagation();
 	}
 
-	function bodyOpen(event: any) {
+	function bodyOpen(event: Event) {
 		return confirm(event);
 	}
 
-	function bodyPopup(event: any) {
+	function bodyPopup(
+		event: Event & { raw: { target: unknown }; clientX: number; clientY: number }
+	) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		const items: any[] = [];
 		const { target: rawTarget } = event.raw;
 		const { browser, nav } = Selector.links ?? {};
-		const get = (Local as any).createGetter('menuFileBrowser');
+		const get = Local.createGetter!('menuFileBrowser');
 		if (seek(rawTarget, 'file-body-pane') === Selector) {
 			const folders = nav?.selections ?? [];
 			if (!(browser?.display === 'normal' && (folders ?? []).length === 1)) {
 				return;
 			}
 			items.push({
-				label: get((Local as any).showInExplorer()),
+				label: get(Local.showInExplorer?.() ?? ''),
 				click: () => {
-					(File as any).openPath(
-						(File as any).path((folders as { path?: string }[])[0]?.path)
-					);
+					File.openPath?.(File.path?.((folders as { path?: string }[])[0]?.path));
 				}
 			});
 		} else {
@@ -320,7 +323,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				items.push({
 					label: get('delete'),
 					accelerator: 'Delete',
-					enabled: !(selections ?? []).includes((Directory as any).assets),
+					enabled: !(selections ?? []).includes(Directory.assets),
 					click: () => {
 						Selector.deleteFiles?.();
 					}
@@ -328,7 +331,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				items.push({
 					label: get('rename'),
 					accelerator: 'F2',
-					enabled: single && file !== (Directory as any).assets,
+					enabled: single && file !== Directory.assets,
 					click: () => {
 						Selector.rename?.(file);
 					}
@@ -344,14 +347,14 @@ export const useSelectorStore = defineStore('selector', () => {
 						{
 							label: get('copy-id'),
 							click: () => {
-								navigator.clipboard.writeText(file.meta.guid);
+								navigator.clipboard.writeText(file.meta!.guid);
 							}
 						},
 						{
 							label: get('find-references'),
 							accelerator: 'Alt+LB',
 							click: () => {
-								(Reference as any).openRelated(file.meta.guid);
+								Reference.openRelated?.(file.meta!.guid);
 							}
 						}
 					);

@@ -14,6 +14,8 @@ import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { type MenuItem } from '@ui-kit';
+import { type TreeListElement } from '@/components/tree-list.ts';
 const enumStateKeys = [
 	'mode',
 	'target',
@@ -26,60 +28,145 @@ const enumStateKeys = [
 ] as const;
 import { getEnumStore } from '@app/stores/enum';
 
-export const Enum = {
-	list: null as any,
-	panel: null as any,
-	searcher: null as any,
+interface EnumItem {
+	id: string;
+	class?: string;
+	name: string;
+	value?: string;
+	note?: string;
+	expanded?: boolean;
+	children?: EnumItem[];
+	element?: HTMLElement & {
+		group?: string;
+		groupText?: HTMLElement;
+		initText?: HTMLElement;
+		attrValue?: string;
+		noteIcon?: HTMLElement;
+		annotated?: boolean | null;
+	};
+}
+
+interface EnumTarget {
+	input?: (id: string) => void;
+}
+
+interface EnumHistoryData {
+	item: EnumItem;
+	value: string;
+	settings: Record<string, string>;
+	response: unknown;
+}
+
+interface EnumModule {
+	list: TreeListElement | null;
+	panel: (HTMLElement & { enumString?: EnumItem | null }) | null;
+	searcher: HTMLElement | null;
 	inputs: {
-		name: null as any,
-		value: null as any,
-		note: null as any
+		name: HTMLElement | null;
+		value: HTMLElement | null;
+		note: HTMLElement | null;
+	};
+	mode: string | null;
+	target: EnumTarget | null;
+	data: EnumItem[] | null;
+	idMap: Record<string, boolean>;
+	settings: Record<string, string>;
+	settingKeys: string[];
+	history: History | null;
+	changed: boolean;
+	initialize: any;
+	open: any;
+	undo: any;
+	redo: any;
+	createId: any;
+	register: any;
+	unregister: any;
+	getItemById: any;
+	setFolderGroup: any;
+	getGroup: any;
+	getString: any;
+	getGroupString: any;
+	getDefStringId: any;
+	getStringItems: any;
+	getMergedItems: any;
+	openPropertyPanel: any;
+	closePropertyPanel: any;
+	unpackEnumeration: any;
+	packEnumeration: any;
+	saveHistory: any;
+	windowClose: any;
+	windowClosed: any;
+	keydown: any;
+	listKeydown: any;
+	listPointerdown: any;
+	listDoubleclick: any;
+	listSelect: any;
+	listRecord: any;
+	listOpen: any;
+	listPopup: any;
+	nameInput: any;
+	valueInput: any;
+	noteInput: any;
+	panelKeydown: any;
+	searcherInput: any;
+	confirm: any;
+	apply: any;
+}
+
+export const Enum: EnumModule = {
+	list: null,
+	panel: null,
+	searcher: null,
+	inputs: {
+		name: null,
+		value: null,
+		note: null
 	},
-	mode: null as any,
-	target: null as any,
-	data: null as any,
-	idMap: null as any,
-	settings: null as any,
-	settingKeys: null as any,
-	history: null as any,
+	mode: null,
+	target: null,
+	data: null,
+	idMap: null as unknown as Record<string, boolean>,
+	settings: null as unknown as Record<string, string>,
+	settingKeys: null as unknown as string[],
+	history: null,
 	changed: false,
-	initialize: null as any,
-	open: null as any,
-	undo: null as any,
-	redo: null as any,
-	createId: null as any,
-	register: null as any,
-	unregister: null as any,
-	getItemById: null as any,
-	setFolderGroup: null as any,
-	getGroup: null as any,
-	getString: null as any,
-	getGroupString: null as any,
-	getDefStringId: null as any,
-	getStringItems: null as any,
-	getMergedItems: null as any,
-	openPropertyPanel: null as any,
-	closePropertyPanel: null as any,
-	unpackEnumeration: null as any,
-	packEnumeration: null as any,
-	saveHistory: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	keydown: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listDoubleclick: null as any,
-	listSelect: null as any,
-	listRecord: null as any,
-	listOpen: null as any,
-	listPopup: null as any,
-	nameInput: null as any,
-	valueInput: null as any,
-	noteInput: null as any,
-	panelKeydown: null as any,
-	searcherInput: null as any,
-	confirm: null as any,
-	apply: null as any
+	initialize: null,
+	open: null,
+	undo: null,
+	redo: null,
+	createId: null,
+	register: null,
+	unregister: null,
+	getItemById: null,
+	setFolderGroup: null,
+	getGroup: null,
+	getString: null,
+	getGroupString: null,
+	getDefStringId: null,
+	getStringItems: null,
+	getMergedItems: null,
+	openPropertyPanel: null,
+	closePropertyPanel: null,
+	unpackEnumeration: null,
+	packEnumeration: null,
+	saveHistory: null,
+	windowClose: null,
+	windowClosed: null,
+	keydown: null,
+	listKeydown: null,
+	listPointerdown: null,
+	listDoubleclick: null,
+	listSelect: null,
+	listRecord: null,
+	listOpen: null,
+	listPopup: null,
+	nameInput: null,
+	valueInput: null,
+	noteInput: null,
+	panelKeydown: null,
+	searcherInput: null,
+	confirm: null,
+	apply: null
 };
 
 function ensureDomBound() {
@@ -116,7 +203,7 @@ function ensureDomBound() {
 		list: Enum.list,
 		clipboardKey: 'yami.data.enumeration'
 	});
-	Enum.list.saveScroll = function (this: any) {
+	Enum.list.saveScroll = function (this: TreeListElement) {
 		const { enumeration } = Data;
 		if (enumeration.scrollTop === undefined) {
 			Object.defineProperty(enumeration, 'scrollTop', {
@@ -126,19 +213,19 @@ function ensureDomBound() {
 		}
 		enumeration.scrollTop = this.scrollTop;
 	};
-	Enum.list.restoreScroll = function (this: any) {
+	Enum.list.restoreScroll = function (this: TreeListElement) {
 		this.scrollTop = Data.enumeration.scrollTop ?? 0;
 	};
-	Enum.list.cancelSearch = function (this: any) {
+	Enum.list.cancelSearch = function (this: TreeListElement) {
 		if (this.display === 'search') {
 			const active = document.activeElement;
-			Enum.searcher.deleteInputContent();
+			Enum.searcher!.deleteInputContent();
 			this.expandToSelection();
 			this.scrollToSelection();
 			active!.focus();
 		}
 	};
-	Enum.list.createFolder = function (this: any) {
+	Enum.list.createFolder = function () {
 		return {
 			class: 'folder',
 			id: Enum.createId(),
@@ -147,7 +234,7 @@ function ensureDomBound() {
 			children: []
 		};
 	};
-	Enum.list.createString = function (this: any) {
+	Enum.list.createString = function () {
 		return {
 			id: Enum.createId(),
 			value: '',
@@ -155,7 +242,7 @@ function ensureDomBound() {
 			note: ''
 		};
 	};
-	Enum.list.createIcon = function (this: any, item: any) {
+	Enum.list.createIcon = function (item: EnumItem) {
 		const icon = document.createElement('node-icon');
 		if (item.class !== 'folder') {
 			addClass(icon, 'icon-string');
@@ -163,17 +250,17 @@ function ensureDomBound() {
 			addClass(icon, 'icon-folder');
 		}
 		return icon;
-	};
-	Enum.list.parseName = function (this: any, item: any) {
+	} as unknown as (...args: unknown[]) => any;
+	Enum.list.parseName = function (item: EnumItem) {
 		return GameLocal.replace(item.name);
 	};
-	Enum.list.addElementClass = function (this: any, item: any) {
+	Enum.list.addElementClass = function (item: EnumItem) {
 		addClass(item.element, 'enum-item');
 		addClass(item.element, 'reference');
 	};
-	Enum.list.createGroupText = function (this: any, item: any) {
+	Enum.list.createGroupText = function (item: EnumItem) {
 		if (item.class === 'folder') {
-			const { element } = item;
+			const element = item.element!;
 			const groupText = document.createElement('div');
 			addClass(groupText, 'enum-init-text');
 			addClass(groupText, 'text');
@@ -182,9 +269,9 @@ function ensureDomBound() {
 			element.group = '';
 		}
 	};
-	Enum.list.updateGroupText = function (this: any, item: any) {
+	Enum.list.updateGroupText = function (item: EnumItem) {
 		const { element } = item;
-		if (element.groupText !== undefined) {
+		if (element?.groupText !== undefined) {
 			let group = '';
 			for (const key of Enum.settingKeys) {
 				if (item.id === Enum.settings[key]) {
@@ -197,9 +284,9 @@ function ensureDomBound() {
 			}
 		}
 	};
-	Enum.list.createInitText = function (this: any, item: any) {
+	Enum.list.createInitText = function (item: EnumItem) {
 		if (item.class !== 'folder') {
-			const { element } = item;
+			const element = item.element!;
 			const initText = document.createElement('div');
 			addClass(initText, 'enum-init-text');
 			addClass(initText, 'text');
@@ -208,19 +295,19 @@ function ensureDomBound() {
 			element.attrValue = '';
 		}
 	};
-	Enum.list.updateInitText = function (this: any, item: any) {
+	Enum.list.updateInitText = function (item: EnumItem) {
 		const { element } = item;
-		if (element.initText !== undefined) {
-			const value = GameLocal.replace(item.value);
+		if (element?.initText !== undefined) {
+			const value = GameLocal.replace(item.value!);
 			if (element.attrValue !== value) {
 				element.attrValue = value;
 				element.initText.textContent = value ? ` = ${value}` : '';
 			}
 		}
 	};
-	Enum.list.createNoteIcon = function (this: any, item: any) {
+	Enum.list.createNoteIcon = function (item: EnumItem) {
 		if (item.class !== 'folder') {
-			const { element } = item;
+			const element = item.element!;
 			const noteIcon = document.createElement('node-icon');
 			addClass(noteIcon, 'icon-note');
 			noteIcon.textContent = '\uf27b';
@@ -229,9 +316,9 @@ function ensureDomBound() {
 			element.annotated = null;
 		}
 	};
-	Enum.list.updateNoteIcon = function (this: any, item: any) {
+	Enum.list.updateNoteIcon = function (item: EnumItem) {
 		const { element } = item;
-		if (element.noteIcon !== undefined) {
+		if (element?.noteIcon !== undefined) {
 			const annotated = item.note !== '';
 			if (element.annotated !== annotated) {
 				element.annotated = annotated;
@@ -239,13 +326,13 @@ function ensureDomBound() {
 			}
 		}
 	};
-	Enum.list.onCreate = function (this: any, item: any) {
+	Enum.list.onCreate = function (item: EnumItem) {
 		Enum.register(item);
 	};
-	Enum.list.onDelete = function (this: any, item: any) {
+	Enum.list.onDelete = function (item: EnumItem) {
 		Enum.unregister(item);
 	};
-	Enum.list.onResume = function (this: any, item: any) {
+	Enum.list.onResume = function (item: EnumItem) {
 		Enum.register(item);
 	};
 }
@@ -269,7 +356,7 @@ Enum.initialize = function (this: any) {
 
 	this.searcher.addCloseButton();
 
-	History.processors['enum-list-operation'] = (operation: any, data: any) => {
+	History.processors['enum-list-operation'] = (operation: string, data: EnumHistoryData) => {
 		const { response } = data;
 		list.restore(operation, response);
 		if (read(list) === null && this.panel.enumString !== null) {
@@ -277,14 +364,14 @@ Enum.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['enum-settings-change'] = (operation: any, data: any) => {
+	History.processors['enum-settings-change'] = (operation: string, data: EnumHistoryData) => {
 		const { settings } = data;
 		data.settings = this.settings;
 		this.settings = settings;
 		list.update();
 		this.changed = true;
 	};
-	History.processors['enum-name-change'] = (operation: any, data: any) => {
+	History.processors['enum-name-change'] = (operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
 		data.value = item.name;
 		item.name = value;
@@ -298,9 +385,9 @@ Enum.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['enum-value-change'] = (operation: any, data: any) => {
+	History.processors['enum-value-change'] = (operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
-		data.value = item.value;
+		data.value = item.value!;
 		item.value = value;
 		list.updateInitText(item);
 		if (this.panel.enumString === item) {
@@ -312,9 +399,9 @@ Enum.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['enum-note-change'] = (operation: any, data: any) => {
+	History.processors['enum-note-change'] = (operation: string, data: EnumHistoryData) => {
 		const { item, value } = data;
-		data.value = item.note;
+		data.value = item.note!;
 		item.note = value;
 		list.updateNoteIcon(item);
 		if (this.panel.enumString === item) {
@@ -346,7 +433,11 @@ Enum.initialize = function (this: any) {
 	on($('#enum-apply'), 'click', this.apply);
 };
 
-Enum.open = function (this: any, target: any = null, mode: any = 'normal') {
+Enum.open = function (
+	this: any,
+	target: EnumTarget | null | undefined = null,
+	mode: string | null | undefined = 'normal'
+) {
 	this.mode = mode;
 	this.target = target;
 	this._previousActive = UndoManager.getActive();
@@ -398,29 +489,29 @@ Enum.createId = function (this: any) {
 	return id;
 };
 
-Enum.register = function (this: any, item: any) {
+Enum.register = function (this: any, item: EnumItem) {
 	Enum.idMap[item.id] = true;
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Enum.register(child);
 		}
 	}
 };
 
-Enum.unregister = function (this: any, item: any) {
+Enum.unregister = function (this: any, item: EnumItem) {
 	delete Enum.idMap[item.id];
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Enum.unregister(child);
 		}
 	}
 };
 
 Enum.getItemById = (function IIFE() {
-	const find = (items: any, id: any): any => {
-		const length = items.length;
+	const find = (items: EnumItem[] | null | undefined, id: string): EnumItem | undefined => {
+		const length = items!.length;
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.id === id) {
 				return item;
 			}
@@ -433,13 +524,13 @@ Enum.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (this: any, id: any) {
+	return function (this: any, id: string) {
 		return find(this.data, id);
 	};
 })();
 
-Enum.setFolderGroup = function (this: any, folder: any, newGroup: any) {
-	const oldGroup = folder.element.group;
+Enum.setFolderGroup = function (this: any, folder: EnumItem, newGroup: string) {
+	const oldGroup = folder.element!.group;
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
 		if (oldGroup) this.settings[oldGroup] = '';
@@ -453,31 +544,36 @@ Enum.setFolderGroup = function (this: any, folder: any, newGroup: any) {
 	}
 };
 
-Enum.getGroup = function (this: any, groupKey: any) {
+Enum.getGroup = function (this: any, groupKey: string) {
 	return Data.enumeration.context.getGroup(groupKey);
 };
 
-Enum.getString = function (this: any, stringId: any) {
+Enum.getString = function (this: any, stringId: string) {
 	return Data.enumeration.context.getString(stringId);
 };
 
-Enum.getGroupString = function (this: any, groupKey: any, stringId: any) {
+Enum.getGroupString = function (this: any, groupKey: string, stringId: string) {
 	return Data.enumeration.context.getGroupString(groupKey, stringId);
 };
 
-Enum.getDefStringId = function (this: any, groupKey: any) {
+Enum.getDefStringId = function (this: any, groupKey: string) {
 	return Data.enumeration.context.getDefStringId(groupKey);
 };
 
-Enum.getStringItems = function (this: any, groupKey: any, allowNone: any) {
+Enum.getStringItems = function (this: any, groupKey: string, allowNone: boolean = false) {
 	return Data.enumeration.context.getStringItems(groupKey, allowNone);
 };
 
-Enum.getMergedItems = function (this: any, headItems: any, groupKey: any, mergedKey: any) {
+Enum.getMergedItems = function (
+	this: any,
+	headItems: unknown,
+	groupKey: string,
+	mergedKey: string = 'merged'
+) {
 	return Data.enumeration.context.getMergedItems(headItems, groupKey, mergedKey);
 };
 
-Enum.openPropertyPanel = function (this: any, enumString: any) {
+Enum.openPropertyPanel = function (this: any, enumString: EnumItem) {
 	const panel = this.panel;
 	if (panel.enumString !== enumString) {
 		panel.enumString = enumString;
@@ -499,14 +595,14 @@ Enum.closePropertyPanel = function (this: any) {
 
 Enum.unpackEnumeration = (function IIFE() {
 	class ReferencedFolder {
-		data: any;
+		data: EnumItem;
 		class: string;
 		id: string;
 		name: string;
-		children: any[];
-		constructor(item: any) {
+		children: EnumItem[];
+		constructor(item: EnumItem) {
 			this.data = item;
-			this.class = item.class;
+			this.class = item.class!;
 			this.id = item.id;
 			this.name = item.name;
 			this.children = clone(item.children);
@@ -516,16 +612,16 @@ Enum.unpackEnumeration = (function IIFE() {
 			return this.data.expanded;
 		}
 
-		set expanded(value: any) {
+		set expanded(value: boolean | undefined) {
 			this.data.expanded = value;
 			File.planToSave!(Data.manifest.project.enumeration);
 		}
 	}
-	const clone = (items: any) => {
-		const length = items.length;
+	const clone = (items: EnumItem[] | null | undefined): EnumItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			Enum.idMap[item.id] = true;
 			if (item.class !== 'folder') {
 				copies[i] = Object.clone(item);
@@ -546,11 +642,11 @@ Enum.unpackEnumeration = (function IIFE() {
 })();
 
 Enum.packEnumeration = (function IIFE() {
-	const clone = (items: any) => {
-		const length = items.length;
+	const clone = (items: EnumItem[] | null | undefined): EnumItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.class !== 'folder') {
 				copies[i] = Object.clone(item);
 			} else {
@@ -572,7 +668,7 @@ Enum.packEnumeration = (function IIFE() {
 	};
 })();
 
-Enum.saveHistory = function (this: any, item: any, key: any, value: any) {
+Enum.saveHistory = function (this: any, item: EnumItem, key: string, value?: string) {
 	const type = `enum-${key}-change`;
 	const history = this.history;
 	const index = history.index;
@@ -592,11 +688,11 @@ Enum.saveHistory = function (this: any, item: any, key: any, value: any) {
 	}
 };
 
-Enum.windowClose = function (this: any, event: any) {
+Enum.windowClose = function (this: any, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEnumeration')
@@ -617,7 +713,7 @@ Enum.windowClose = function (this: any, event: any) {
 	}
 }.bind(Enum);
 
-Enum.windowClosed = function (this: any, event: any) {
+Enum.windowClosed = function (this: any, event: Event) {
 	this.data = null;
 	this.idMap = null;
 	this.settings = null;
@@ -633,7 +729,7 @@ Enum.windowClosed = function (this: any, event: any) {
 
 Enum.keydown = Shortcuts.createUndoRedo(Enum);
 
-Enum.listKeydown = function (this: any, event: any) {
+Enum.listKeydown = function (this: TreeListElement, event: KeyboardEvent) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -661,7 +757,7 @@ Enum.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Enum.listPointerdown = function (this: any, event: any) {
+Enum.listPointerdown = function (this: TreeListElement, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (event.target === this) {
@@ -675,7 +771,7 @@ Enum.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Enum.listDoubleclick = function (this: any, event: any) {
+Enum.listDoubleclick = function (event: MouseEvent) {
 	switch (Enum.mode) {
 		case 'group':
 			if (read(Enum.list)?.class === 'folder') {
@@ -694,26 +790,26 @@ Enum.listDoubleclick = function (this: any, event: any) {
 	}
 };
 
-Enum.listSelect = function (this: any, event: any) {
+Enum.listSelect = function (event: Event) {
 	const item = event.value;
 	return item.class !== 'folder' ? Enum.openPropertyPanel(item) : Enum.closePropertyPanel();
 };
 
-Enum.listRecord = function (this: any, event: any) {
+Enum.listRecord = function (event: Event) {
 	Enum.changed = true;
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
 			// 如果是字符串则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
-			if (Enum.panel.enumString === item) {
+			if (Enum.panel!.enumString === item) {
 				write(Enum.inputs.name, newValue);
 				Enum.saveHistory(item, 'name', oldValue);
 				break;
 			}
 		}
 		default:
-			Enum.history.save({
+			Enum.history!.save({
 				type: 'enum-list-operation',
 				response: response
 			});
@@ -721,20 +817,20 @@ Enum.listRecord = function (this: any, event: any) {
 	}
 };
 
-Enum.listOpen = function (this: any, event: any) {
+Enum.listOpen = function (event: any) {
 	Enum.listDoubleclick(event);
 };
 
-Enum.listPopup = function (this: any, event: any) {
-	const list = Enum.list;
+Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+	const list = Enum.list!;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as any).has('yami.data.enumeration');
-	const undoable = Enum.history.canUndo();
-	const redoable = Enum.history.canRedo();
-	const get = Local.createGetter('menuEnumList');
-	const items: any[] = [
+	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.enumeration');
+	const undoable = Enum.history!.canUndo();
+	const redoable = Enum.history!.canRedo();
+	const get = Local.createGetter!('menuEnumList');
+	const items: MenuItem[] = [
 		{
 			label: get('create'),
 			submenu: [
@@ -854,38 +950,38 @@ Enum.listPopup = function (this: any, event: any) {
 	);
 };
 
-Enum.nameInput = function (this: any, event: any) {
-	const item = Enum.panel.enumString;
+Enum.nameInput = function (event: any) {
+	const item = Enum.panel!.enumString!;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'name', item.name);
 		item.name = event.target.value;
-		Enum.list.updateItemName(item);
+		Enum.list!.updateItemName(item);
 		Enum.changed = true;
 	}
 };
 
-Enum.valueInput = function (this: any, event: any) {
-	const item = Enum.panel.enumString;
+Enum.valueInput = function (event: any) {
+	const item = Enum.panel!.enumString!;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'value', item.value);
 		item.value = event.target.value;
-		Enum.list.updateInitText(item);
+		Enum.list!.updateInitText(item);
 		Enum.changed = true;
 	}
 };
 
-Enum.noteInput = function (this: any, event: any) {
+Enum.noteInput = function (this: HTMLElement, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
-		const item = Enum.panel.enumString;
+		const item = Enum.panel!.enumString!;
 		Enum.saveHistory(item, 'note', item.note);
 		item.note = read(this);
-		Enum.list.updateNoteIcon(item);
+		Enum.list!.updateNoteIcon(item);
 		Enum.changed = true;
 	}
 };
 
-Enum.panelKeydown = function (this: any, event: any) {
-	switch (event.target.tagName) {
+Enum.panelKeydown = function (event: KeyboardEvent) {
+	switch ((event.target as HTMLElement).tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
 			if (event.ctrlKey || event.metaKey) {
@@ -902,15 +998,15 @@ Enum.panelKeydown = function (this: any, event: any) {
 	}
 };
 
-Enum.searcherInput = function (this: any, event: any) {
+Enum.searcherInput = function (this: TextBox, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
 	const text = this.input!.value;
-	Enum.list.searchNodesDebounced(text);
+	Enum.list!.searchNodesDebounced(text);
 };
 
-Enum.confirm = function (this: any, event: any) {
+Enum.confirm = function (this: any, event?: Event) {
 	switch (this.mode) {
 		case 'normal':
 			this.apply();
@@ -937,7 +1033,7 @@ Enum.confirm = function (this: any, event: any) {
 	Window.close!('enum');
 }.bind(Enum);
 
-Enum.apply = function (this: any, event: any) {
+Enum.apply = function (this: any, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -951,8 +1047,8 @@ Enum.apply = function (this: any, event: any) {
 for (const key of enumStateKeys) {
 	Object.defineProperty(Enum, key, {
 		get: () => getEnumStore().state[key],
-		set: (value: any) => {
-			(getEnumStore().state as any)[key] = value;
+		set: (value: unknown) => {
+			(getEnumStore().state as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

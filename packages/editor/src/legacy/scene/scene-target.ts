@@ -4,7 +4,7 @@ import { addClass, read, removeClass, write } from '@/util/element-utils';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
-Scene.setTarget = function (this: any, target: any) {
+Scene.setTarget = function (this: typeof Scene, target: { class: string } | null) {
 	if (this.target !== target) {
 		if (target !== null && this.tilemap !== null && this.tilemap !== target) {
 			this.closeTilemap();
@@ -23,7 +23,7 @@ Scene.setTarget = function (this: any, target: any) {
 	}
 };
 
-Scene.openTilemap = function (this: any, tilemap: any) {
+Scene.openTilemap = function (this: typeof Scene, tilemap: unknown) {
 	if (tilemap instanceof Object && this.tilemap !== tilemap) {
 		this.closeTilemap(false);
 		this.tilemap = tilemap;
@@ -38,7 +38,7 @@ Scene.openTilemap = function (this: any, tilemap: any) {
 	}
 };
 
-Scene.closeTilemap = function (this: any, back = true) {
+Scene.closeTilemap = function (this: typeof Scene, back = true) {
 	if (this.tilemap !== null) {
 		removeClass(this.tilemap.element, 'highlight');
 		if (this.tilemap.shortcut !== 0) {
@@ -52,7 +52,7 @@ Scene.closeTilemap = function (this: any, back = true) {
 	}
 };
 
-Scene.computeActiveTilemapId = function (this: any) {
+Scene.computeActiveTilemapId = function (this: typeof Scene) {
 	const { tilemap } = this;
 	switch (tilemap?.layer) {
 		case 'background':
@@ -73,7 +73,7 @@ Scene.computeActiveTilemapId = function (this: any) {
 Scene.revealTarget = (function IIFE() {
 	const timer = new Timer({
 		duration: 200,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			const { target } = timer;
 			if (target === Scene.target) {
 				const easing = Easing.EasingMap.easeInOut;
@@ -95,11 +95,11 @@ Scene.revealTarget = (function IIFE() {
 				return false;
 			}
 		},
-		callback: (timer: any) => {
+		callback: (timer: Timer) => {
 			timer.target = null;
 		}
 	});
-	return function (this: any) {
+	return function (this: typeof Scene) {
 		const { target, meta } = this;
 		const toleranceX = 1 / this.scaledTileWidth / this.scaleX;
 		const toleranceY = 1 / this.scaledTileHeight / this.scaleY;
@@ -120,7 +120,7 @@ Scene.revealTarget = (function IIFE() {
 	};
 })();
 
-Scene.shiftTarget = function (this: any, x: any, y: any) {
+Scene.shiftTarget = function (this: typeof Scene, x: number, y: number) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];
@@ -154,7 +154,7 @@ Scene.shiftTarget = function (this: any, x: any, y: any) {
 	}
 };
 
-Scene.redirectTarget = function (this: any, angle: any) {
+Scene.redirectTarget = function (this: typeof Scene, angle: number) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];
@@ -188,7 +188,7 @@ Scene.redirectTarget = function (this: any, angle: any) {
 	}
 };
 
-Scene.updateTarget = function (this: any) {
+Scene.updateTarget = function (this: typeof Scene) {
 	let item = read(this.list);
 	if (item?.class === 'folder') {
 		item = null;
@@ -198,7 +198,7 @@ Scene.updateTarget = function (this: any) {
 	}
 };
 
-Scene.updateTargetInfo = function (this: any) {
+Scene.updateTargetInfo = function (this: typeof Scene) {
 	if (this.layer === 'object') {
 		switch (this.target?.class) {
 			case 'tilemap':
@@ -241,7 +241,7 @@ Scene.updateTargetInfo = function (this: any) {
 	}
 };
 
-Scene.updateTargetItem = function (this: any) {
+Scene.updateTargetItem = function (this: typeof Scene) {
 	const { target } = this;
 	if (target !== null) {
 		const { list } = this;
@@ -255,7 +255,7 @@ Scene.updateTargetItem = function (this: any) {
 	}
 };
 
-Scene.updateTargetEditor = function (this: any) {
+Scene.updateTargetEditor = function (this: typeof Scene) {
 	const target = this.target;
 	const map = this.inspectorTypeMap;
 	const key = map[target?.class];

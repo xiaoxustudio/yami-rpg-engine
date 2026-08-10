@@ -2,15 +2,25 @@ import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const RegionGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+interface RegionTarget {
+	dataValue: {
+		type: string;
+		presetId: string;
+	};
+	input: (getter: Record<string, any>) => void;
+	isPluginInput?: boolean;
+}
+
+export const RegionGetter: AccessorBaseShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
-RegionGetter.initialize = function (this: any) {
+RegionGetter.initialize = function (this: typeof RegionGetter) {
 	if (!$('#regionGetter-type')) return;
 	$('#regionGetter-type').loadItems([
 		{ name: 'Event Trigger Region', value: 'trigger' },
@@ -24,7 +34,7 @@ RegionGetter.initialize = function (this: any) {
 	$('#regionGetter-confirm').on('click', this.confirm);
 };
 
-RegionGetter.open = function (this: any, target: any) {
+RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
 	this.target = target;
 	Window.open!('regionGetter');
 
@@ -42,10 +52,10 @@ RegionGetter.open = function (this: any, target: any) {
 	getFocus($('#regionGetter-type'));
 };
 
-RegionGetter.confirm = function (this: any, event: any) {
+RegionGetter.confirm = function (this: typeof RegionGetter, event: Event) {
 	const read = getElementReader('regionGetter');
 	const type = read('type');
-	let getter;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'trigger':
 			getter = { type };
@@ -59,6 +69,6 @@ RegionGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('regionGetter');
 }.bind(RegionGetter);

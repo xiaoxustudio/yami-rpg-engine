@@ -11,7 +11,7 @@ Command.cases.label = new CommandSchema({
 	customParse({ name }: any) {
 		return [
 			{ color: 'flow' },
-			{ text: Local.get('command.label') + Token(': ') },
+			{ text: Local.get!('command.label') + Token(': ') },
 			{ color: 'label' },
 			{ text: name }
 		];

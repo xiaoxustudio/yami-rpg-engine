@@ -138,7 +138,7 @@ export const settingSchema: SettingSection[] = [
 /** 由 schema 派生默认 config（含 hidden 隐藏项，递归处理 subgroups） */
 export function buildDefaultConfig(schema: SettingSection[] = settingSchema): any {
 	const cfg: any = {};
-	const build = (sections: SettingSection[], target: any) => {
+	const build = (sections: SettingSection[], target: Record<string, any>) => {
 		for (const s of sections) {
 			target[s.id] = {};
 			for (const o of s.options) target[s.id][o.key] = o.default;

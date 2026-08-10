@@ -3,9 +3,9 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateParticles = function (verNum: any) {
-	if (verNum < Updater.getVersionNumber('1.0.95')) {
-		const convert = (array: any) => {
+Updater.updateParticles = function (verNum: number) {
+	if (verNum < Updater.getVersionNumber!('1.0.95')) {
+		const convert = (array: number[]) => {
 			const min = array[0];
 			const max = array[1];
 			const std = Math.roundTo((min + max) / 2, 4);
@@ -13,12 +13,12 @@ Updater.updateParticles = function (verNum: any) {
 			array[0] = std;
 			array[1] = dev;
 		};
-		for (const [guid, particle] of Object.entries(Data.particles)) {
+		for (const [guid, particle] of Object.entries<any>(Data.particles)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			for (const layer of (particle as any).layers) {
+			for (const layer of particle.layers) {
 				convert(layer.anchor.x);
 				convert(layer.anchor.y);
 				convert(layer.anchor.speedX);
@@ -40,20 +40,20 @@ Updater.updateParticles = function (verNum: any) {
 				convert(layer.scale.speed);
 				convert(layer.scale.accel);
 			}
-			(File.planToSave as any)(meta);
+			File.planToSave!(meta);
 		}
 	}
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
-		const keys = Object.keys((Inspector.particleLayer as any).create());
-		for (const [guid, particle] of Object.entries(Data.particles)) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
+		const keys = Object.keys(Inspector.particleLayer.create());
+		for (const [guid, particle] of Object.entries<any>(Data.particles)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			const layers = (particle as any).layers;
+			const layers = particle.layers;
 			for (let i = 0; i < layers.length; i++) {
 				const sLayer = layers[i];
-				const dLayer = (Inspector.particleLayer as any).create();
+				const dLayer = Inspector.particleLayer.create();
 				for (const key of keys) {
 					if (key in sLayer) {
 						dLayer[key] = sLayer[key];
@@ -72,7 +72,7 @@ Updater.updateParticles = function (verNum: any) {
 				}
 				layers[i] = dLayer;
 			}
-			(File.planToSave as any)(meta);
+			File.planToSave!(meta);
 		}
 	}
 };

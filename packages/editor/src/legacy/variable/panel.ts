@@ -28,17 +28,17 @@ Variable.closePropertyPanel = function () {
 	}
 };
 
-Variable.nameInput = function (event: any) {
-	const item = Variable.panel.variable;
+Variable.nameInput = function (event: Event) {
+	const item = Variable.panel.variable!;
 	if (item.class !== 'folder') {
 		Variable.saveHistory(item, 'name', item.name);
-		item.name = event.target.value;
+		item.name = (event.target as HTMLInputElement).value;
 		Variable.list.updateItemName(item);
 		Variable.changed = true;
 	}
 };
 
-Variable.sortWrite = function (event: any) {
+Variable.sortWrite = function (event: Event & { value?: any }) {
 	switch (event.value) {
 		case 0:
 		case 1:
@@ -50,8 +50,8 @@ Variable.sortWrite = function (event: any) {
 	}
 };
 
-Variable.sortInput = function (event: any) {
-	const item = Variable.panel.variable;
+Variable.sortInput = function (event: Event & { value?: any }) {
+	const item = Variable.panel.variable!;
 	const sort = event.value;
 	Variable.saveHistory(item, 'sort', {
 		sort: item.sort,
@@ -69,7 +69,7 @@ Variable.sortInput = function (event: any) {
 	Variable.changed = true;
 };
 
-Variable.typeWrite = function (event: any) {
+Variable.typeWrite = function (event: Event & { value?: any }) {
 	const { style } = Variable.inputs.value;
 	Variable.manager.switch(event.value);
 	switch (event.value) {
@@ -84,8 +84,8 @@ Variable.typeWrite = function (event: any) {
 	}
 };
 
-Variable.typeInput = function (event: any) {
-	const item = Variable.panel.variable;
+Variable.typeInput = function (event: Event & { value?: any }) {
+	const item = Variable.panel.variable!;
 	const type = event.value;
 	Variable.saveHistory(item, 'type', item.value);
 	switch (type) {
@@ -103,9 +103,9 @@ Variable.typeInput = function (event: any) {
 	Variable.changed = true;
 };
 
-Variable.valueInput = function (this: any, event: any) {
-	if (event.inputType !== 'insertCompositionText') {
-		const item = Variable.panel.variable;
+Variable.valueInput = function (this: any, event: Event) {
+	if ((event as InputEvent).inputType !== 'insertCompositionText') {
+		const item = Variable.panel.variable!;
 		Variable.saveHistory(item, 'value', item.value);
 		item.value = read(this);
 		Variable.list.updateInitText(item);
@@ -113,9 +113,9 @@ Variable.valueInput = function (this: any, event: any) {
 	}
 };
 
-Variable.noteInput = function (this: any, event: any) {
-	if (event.inputType !== 'insertCompositionText') {
-		const item = Variable.panel.variable;
+Variable.noteInput = function (this: any, event: Event) {
+	if ((event as InputEvent).inputType !== 'insertCompositionText') {
+		const item = Variable.panel.variable!;
 		Variable.saveHistory(item, 'note', item.note);
 		item.note = read(this);
 		Variable.list.updateNoteIcon(item);

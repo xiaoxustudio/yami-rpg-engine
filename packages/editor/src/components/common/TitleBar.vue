@@ -34,7 +34,7 @@ const on = (
 defineExpose({ on, root });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement & Record<'on', typeof on>;
 	if (!el) return;
 	el.on = on;
 });

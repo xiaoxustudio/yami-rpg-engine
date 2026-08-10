@@ -4,38 +4,38 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateLocalEvents = function (verNum: any) {
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
-		const listMap = (EventEditor.getAllLocalEvents as any)();
-		for (const [guid, events] of Object.entries(listMap)) {
+Updater.updateLocalEvents = function (verNum: number) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
+		const listMap = EventEditor.getAllLocalEvents!();
+		for (const [guid, events] of Object.entries<any>(listMap)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			for (const event of events as any) {
+			for (const event of events) {
 				const { commands } = event;
 				delete event.commands;
 				event.enabled = true;
 				event.commands = commands;
 			}
-			(File.planToSave as any)(meta, guid);
+			File.planToSave!(meta, guid);
 		}
 	}
 };
 
-Updater.updateGlobalEvents = function (verNum: any) {
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
+Updater.updateGlobalEvents = function (verNum: number) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const events = Data.events;
-		const keys = Object.keys((Inspector.fileEvent as any).create('global'));
-		for (const [guid, sEvent] of Object.entries(events)) {
+		const keys = Object.keys(Inspector.fileEvent.create('global'));
+		for (const [guid, sEvent] of Object.entries<any>(events)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			const dEvent = (Inspector.fileEvent as any).create('global');
+			const dEvent = Inspector.fileEvent.create('global');
 			for (const key of keys) {
-				if (key in (sEvent as any)) {
-					dEvent[key] = (sEvent as any)[key];
+				if (key in sEvent) {
+					dEvent[key] = sEvent[key];
 					continue;
 				}
 				switch (key) {
@@ -45,19 +45,20 @@ Updater.updateGlobalEvents = function (verNum: any) {
 				}
 			}
 			events[guid] = dEvent;
-			(File.planToSave as any)(meta);
+			File.planToSave!(meta);
 		}
 	}
 };
 
-Updater.updateGlobalEvent = function (meta: any) {
-	const guid = meta.guid;
+Updater.updateGlobalEvent = function (meta: unknown) {
+	const metaObj = meta as { guid: string };
+	const guid = metaObj.guid;
 	const sEvent = Data.events[guid];
 	if ('namespace' in sEvent || 'priority' in sEvent) return;
-	const dEvent = (Inspector.fileEvent as any).create('global');
+	const dEvent = Inspector.fileEvent.create('global');
 	for (const key of Object.keys(dEvent)) {
-		if (key in (sEvent as any)) {
-			dEvent[key] = (sEvent as any)[key];
+		if (key in sEvent) {
+			dEvent[key] = sEvent[key];
 			continue;
 		}
 		switch (key) {
@@ -67,5 +68,5 @@ Updater.updateGlobalEvent = function (meta: any) {
 		}
 	}
 	Data.events[guid] = dEvent;
-	(File.planToSave as any)(meta);
+	File.planToSave!(metaObj);
 };

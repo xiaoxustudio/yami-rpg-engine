@@ -9,22 +9,47 @@ import { Inspector } from './inspector.ts';
 import { Local } from '@/tools/localization.ts';
 
 {
-	const FileEvent = {
-		target: null as any,
-		meta: null as any,
-		parameters: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any,
-		typeWrite: null as any,
-		listChange: null as any
-	};
+	interface FileEventData {
+		type: string;
+		enabled: boolean;
+		priority: boolean;
+		namespace: boolean;
+		returnType: string;
+		description: string;
+		parameters: unknown[];
+		commands: unknown[];
+		[k: string]: any;
+	}
 
-	FileEvent.initialize = function (this: any) {
+	interface FileEventList {
+		save(): void;
+		on?(type: string, listener: (event: Event) => void): void;
+		[k: string]: any;
+	}
+
+	interface FileEventPage {
+		target: FileEventData | null;
+		meta: { file: unknown } | null;
+		parameters: FileEventList;
+		[k: string]: any;
+	}
+
+	const FileEvent = {
+		target: null,
+		meta: null,
+		parameters: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null,
+		typeWrite: null,
+		listChange: null
+	} as unknown as FileEventPage;
+
+	FileEvent.initialize = function (this: FileEventPage) {
 		if (!$('#fileEvent-type')) return;
 		if (!EventEditor.types) return;
 		$('#fileEvent-type').loadItems(EventEditor.types.global);
@@ -48,11 +73,11 @@ import { Local } from '@/tools/localization.ts';
 
 		$('#fileEvent-parameters').bind(this.parameters);
 
-		// 6 控件 input + type write 经 Vue 模板转发（FileEventPage.vue @input/@write → FileEvent.*）
+		// 6 闂佺敤鐭囬崒娑卞仺 input + type write 缂?Vue 濠碘槅鍨崜婵嗩熆濡堢粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eEventPage.vue @input/@write 闂?FileEvent.*闂?
 		$('#fileEvent-parameters').on('change', this.listChange);
 	};
 
-	FileEvent.create = function (this: any, filter: any) {
+	FileEvent.create = function (this: FileEventPage, filter: string) {
 		const type = EventEditor.types[filter][0].value;
 		switch (filter) {
 			case 'global':
@@ -75,7 +100,7 @@ import { Local } from '@/tools/localization.ts';
 		}
 	};
 
-	FileEvent.open = function (this: any, event: any, meta: any) {
+	FileEvent.open = function (this: FileEventPage, event: FileEventData, meta: { file: unknown }) {
 		if (this.meta !== meta) {
 			this.target = event;
 			this.meta = meta;
@@ -95,7 +120,7 @@ import { Local } from '@/tools/localization.ts';
 		}
 	};
 
-	FileEvent.close = function (this: any) {
+	FileEvent.close = function (this: FileEventPage) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -104,13 +129,18 @@ import { Local } from '@/tools/localization.ts';
 		}
 	};
 
-	FileEvent.write = function (this: any, options: any) {
+	FileEvent.write = function (this: FileEventPage, options: { type?: string }) {
 		if (options.type !== undefined) {
 			write($('#fileEvent-type'), options.type);
 		}
 	};
 
-	FileEvent.update = function (this: any, event: any, key: any, value: any) {
+	FileEvent.update = function (
+		this: FileEventPage,
+		event: FileEventData,
+		key: string,
+		value: unknown
+	) {
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'type':
@@ -119,29 +149,29 @@ import { Local } from '@/tools/localization.ts';
 			case 'returnType':
 			case 'description':
 				if (event[key] !== value) {
-					event[key] = value;
+					(event as Record<string, unknown>)[key] = value;
 				}
 				break;
 			case 'enabled':
 				if (event.enabled !== value) {
-					event.enabled = value;
-					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
+					(event as Record<string, unknown>).enabled = value;
+					getBrowserInstance()?.body?.updateIcon?.(this.meta!.file);
 				}
 				break;
 		}
 	};
 
-	FileEvent.paramInput = function (this: any, event: any) {
+	FileEvent.paramInput = function (this: FileEventPage, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileEvent-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileEvent.update(FileEvent.target, Inspector.getKey!(element), read(element));
+		FileEvent.update(FileEvent.target!, Inspector.getKey!(element), read(element));
 	};
 
-	FileEvent.typeWrite = function (this: any, event: any) {
+	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {
 		const enabledInput = $('#fileEvent-enabled');
 		const enabledLabel = enabledInput.previousElementSibling;
 		const priorityInput = $('#fileEvent-priority');
@@ -182,12 +212,12 @@ import { Local } from '@/tools/localization.ts';
 		}
 	};
 
-	FileEvent.listChange = function (this: any, event: any) {
+	FileEvent.listChange = function (this: FileEventPage, event: Event) {
 		File.planToSave!(FileEvent.meta);
 	};
 
 	FileEvent.parameters = {
-		initialize: function (this: any, list: any) {
+		initialize: function (this: FileEventList, list: FileEventList) {
 			$('#fileEvent-parameter-confirm').on('click', () => list.save());
 
 			$('#fileEvent-parameter-type').loadItems([
@@ -205,10 +235,14 @@ import { Local } from '@/tools/localization.ts';
 				{ name: 'Element', value: 'element' }
 			]);
 		},
-		parse: function ({ type, key, note }: any) {
+		parse: function ({ type, key, note }: { type: string; key: string; note: string }) {
 			return [{ content: key }, { content: Local.get!('eventParameterTypes.' + type) }];
 		},
-		open: function ({ type = 'number', key = '', note = '' } = {}) {
+		open: function ({
+			type = 'number',
+			key = '',
+			note = ''
+		}: { type?: string; key?: string; note?: string } = {}) {
 			Window.open!('fileEvent-parameter');
 			const write = getElementWriter('fileEvent-parameter');
 			write('type', type);

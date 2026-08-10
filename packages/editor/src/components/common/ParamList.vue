@@ -32,7 +32,7 @@ const historyFactory = (list: any): any => new ParamListHistory(list);
 const menuPopup = (options: any, items: any[]): void => Menu.popup(options, items);
 const localize = (key: string): string => Local.createGetter('menuParamList')(key);
 const clipboard = ((): any => {
-	const C = (window as any).Clipboard;
+	const C = (window as unknown as { Clipboard?: Clipboard }).Clipboard;
 	if (!C) return null;
 	return {
 		write: (type: string, data: any): void => C.write(type, data),
@@ -74,7 +74,7 @@ const on = (
 defineExpose({ bind, read, write, update, select, clear, on, root });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement & Record<'bind' | 'read' | 'write' | 'update' | 'select' | 'clear' | 'on', any>;
 	if (!el) return;
 	el.bind = bind;
 	el.read = read;

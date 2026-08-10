@@ -2,15 +2,25 @@ import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const TriggerGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+interface TriggerTarget {
+	dataValue: {
+		type: string;
+		variable: { type: string; key: string };
+	};
+	input: (getter: Record<string, any>) => void;
+	isPluginInput?: boolean;
+}
+
+export const TriggerGetter: AccessorBaseShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
-TriggerGetter.initialize = function (this: any) {
+TriggerGetter.initialize = function (this: typeof TriggerGetter) {
 	if (!$('#triggerGetter-type')) return;
 	$('#triggerGetter-type').loadItems([
 		{ name: 'Event Trigger', value: 'trigger' },
@@ -22,10 +32,10 @@ TriggerGetter.initialize = function (this: any) {
 		.enableHiddenMode()
 		.relate([{ case: 'variable', targets: [$('#triggerGetter-variable')] }]);
 
-	on($('#triggerGetter-confirm'), 'click', this.confirm);
+	on($('#triggerGetter-confirm'), 'click', this.confirm!);
 };
 
-TriggerGetter.open = function (this: any, target: any) {
+TriggerGetter.open = function (this: typeof TriggerGetter, target: TriggerTarget) {
 	this.target = target;
 	Window.open!('triggerGetter');
 
@@ -44,10 +54,10 @@ TriggerGetter.open = function (this: any, target: any) {
 	getFocus($('#triggerGetter-type'));
 };
 
-TriggerGetter.confirm = function (this: any, event: any) {
+TriggerGetter.confirm = function (this: typeof TriggerGetter, event: Event) {
 	const read = getElementReader('triggerGetter');
 	const type = read('type');
-	let getter;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'trigger':
 		case 'latest':
@@ -62,6 +72,6 @@ TriggerGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('triggerGetter');
 }.bind(TriggerGetter);

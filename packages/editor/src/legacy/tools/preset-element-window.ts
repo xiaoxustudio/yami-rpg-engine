@@ -4,22 +4,81 @@ import { getFocus, on, read, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { UI } from '@/ui/ui-window.ts';
 
-export const PresetElement = {
-	ui: null as any,
-	list: null as any,
-	searcher: null as any,
-	target: null as any,
-	nodes: null as any,
-	initialize: null as any,
-	open: null as any,
-	buildNodes: null as any,
-	getDefaultPresetId: null as any,
-	windowClosed: null as any,
-	uiIdWrite: null as any,
-	listOpen: null as any,
-	searcherKeydown: null as any,
-	searcherInput: null as any,
-	confirm: null as any
+type PresetElementNode = {
+	class: string;
+	name: string;
+	expanded?: boolean;
+	presetId?: string;
+	children?: PresetElementNode[];
+};
+
+interface PresetElementListItem {
+	class: string;
+	presetId?: string;
+}
+
+interface PresetElementList extends HTMLElement {
+	elements: Array<{ item: PresetElementListItem }>;
+	createIcon: (...args: unknown[]) => unknown;
+	bind(getter: () => PresetElementNode[] | null): void;
+	clear(): void;
+	update(): void;
+	unselect(): void;
+	select(item: PresetElementListItem): void;
+	selectRelative(direction: string): void;
+	pageUp(select: boolean): void;
+	pageDown(select: boolean): void;
+	scrollToSelection(mode: string): void;
+	expandToSelection(): void;
+	getItemByProperties(properties: Record<string, unknown>): PresetElementListItem | undefined;
+	searchNodes(text: string): void;
+	read(): PresetElementNode | null;
+}
+
+type PresetElementTarget = {
+	input?: (presetId: string) => void;
+};
+
+type PresetElementShape = {
+	ui: HTMLElement;
+	list: PresetElementList;
+	searcher: HTMLElement;
+	target: PresetElementTarget | null;
+	nodes: PresetElementNode[] | null;
+	initialize: ((this: typeof PresetElement) => void) | null;
+	open: ((this: typeof PresetElement, target: PresetElementTarget) => void) | null;
+	buildNodes:
+		| ((this: typeof PresetElement, nodes: PresetElementNode[]) => PresetElementNode[])
+		| null;
+	getDefaultPresetId: (() => string) | null;
+	windowClosed: (event: Event) => void;
+	uiIdWrite: (event: Event & { value?: string }) => void;
+	listOpen: (event: Event) => void;
+	searcherKeydown: (event: KeyboardEvent) => void;
+	searcherInput: (event: InputEvent) => void;
+	confirm: (event?: Event) => void;
+};
+
+export const PresetElement: PresetElementShape = {
+	ui: null as unknown as HTMLElement,
+	list: null as unknown as PresetElementList,
+	searcher: null as unknown as HTMLElement,
+	target: null as unknown as PresetElementTarget | null,
+	nodes: null as unknown as PresetElementNode[] | null,
+	initialize: null as unknown as ((this: typeof PresetElement) => void) | null,
+	open: null as unknown as
+		| ((this: typeof PresetElement, target: PresetElementTarget) => void)
+		| null,
+	buildNodes: null as unknown as
+		| ((this: typeof PresetElement, nodes: PresetElementNode[]) => PresetElementNode[])
+		| null,
+	getDefaultPresetId: null as unknown as (() => string) | null,
+	windowClosed: null as unknown as (event: Event) => void,
+	uiIdWrite: null as unknown as (event: Event & { value?: string }) => void,
+	listOpen: null as unknown as (event: Event) => void,
+	searcherKeydown: null as unknown as (event: KeyboardEvent) => void,
+	searcherInput: null as unknown as (event: InputEvent) => void,
+	confirm: null as unknown as (event?: Event) => void
 };
 
 function ensureDomBound() {
@@ -27,12 +86,12 @@ function ensureDomBound() {
 	const list = $('#presetElement-list');
 	if (!list) return;
 	PresetElement.ui = $('#presetElement-uiId');
-	PresetElement.list = list;
+	PresetElement.list = list as PresetElementList;
 	PresetElement.searcher = $('#presetElement-searcher');
 	PresetElement.list.createIcon = null as unknown as (...args: unknown[]) => any;
 }
 
-PresetElement.initialize = function (this: any) {
+PresetElement.initialize = function (this: typeof PresetElement) {
 	ensureDomBound();
 	if (!this.list) return;
 	this.list.bind(() => this.nodes);
@@ -48,7 +107,7 @@ PresetElement.initialize = function (this: any) {
 	on($('#presetElement-confirm'), 'click', this.confirm);
 };
 
-PresetElement.open = function (this: any, target: any) {
+PresetElement.open = function (this: typeof PresetElement, target: PresetElementTarget) {
 	this.target = target;
 	Window.open!('presetElement');
 
@@ -67,7 +126,7 @@ PresetElement.open = function (this: any, target: any) {
 
 // 构造简化的元素节点(避免影响元素数据)
 PresetElement.buildNodes = (function IIFE() {
-	const build = (nodes: any) => {
+	const build = (nodes: PresetElementNode[]) => {
 		const length = nodes.length;
 		const list = new Array(length);
 		for (let i = 0; i < length; i++) {
@@ -77,30 +136,31 @@ PresetElement.buildNodes = (function IIFE() {
 				name: node.name,
 				expanded: node.expanded,
 				presetId: node.presetId,
-				children: build(node.children)
+				children: build(node.children ?? [])
 			};
 		}
 		return list;
 	};
-	return function (this: any, nodes: any) {
+	return function (this: typeof PresetElement, nodes: PresetElementNode[]) {
 		return build(nodes);
 	};
 })();
 
-PresetElement.getDefaultPresetId = function (this: any) {
+PresetElement.getDefaultPresetId = function (this: typeof PresetElement) {
 	return UI.target?.presetId ?? '';
 };
 
-PresetElement.windowClosed = function (this: any, event: any) {
+PresetElement.windowClosed = function (this: typeof PresetElement, event: Event) {
 	PresetElement.target = null;
 	PresetElement.nodes = null;
 	PresetElement.list.clear();
 };
 
-PresetElement.uiIdWrite = function (this: any, event: any) {
+PresetElement.uiIdWrite = function (this: typeof PresetElement, event: Event & { value?: string }) {
 	if (!event.value) return;
 	const ui = Data.ui[event.value];
-	const nodes = ui ? PresetElement.buildNodes(ui.nodes) : Array.empty;
+	const nodes =
+		ui && PresetElement.buildNodes ? PresetElement.buildNodes(ui.nodes ?? []) : Array.empty;
 	PresetElement.nodes = nodes;
 	PresetElement.list.update();
 	if (nodes.length !== 0) {
@@ -111,11 +171,11 @@ PresetElement.uiIdWrite = function (this: any, event: any) {
 	}
 };
 
-PresetElement.listOpen = function (this: any, event: any) {
+PresetElement.listOpen = function (this: typeof PresetElement, event: Event) {
 	PresetElement.confirm();
 };
 
-PresetElement.searcherKeydown = function (this: any, event: any) {
+PresetElement.searcherKeydown = function (this: typeof PresetElement, event: KeyboardEvent) {
 	switch (event.code) {
 		case 'ArrowUp':
 		case 'ArrowDown':
@@ -131,14 +191,14 @@ PresetElement.searcherKeydown = function (this: any, event: any) {
 	}
 };
 
-PresetElement.searcherInput = function (this: any, event: any) {
+PresetElement.searcherInput = function (this: typeof PresetElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
-	const text = this.input!.value;
+	const text = this.searcher.value;
 	const list = PresetElement.list;
 	list.searchNodes(text);
-	const elements = list.elements;
+	const elements = list.elements as any[] & { count: number };
 	for (let i = 0; i < elements.count; i++) {
 		const { item } = elements[i];
 		if (item.class !== 'folder') {
@@ -148,7 +208,7 @@ PresetElement.searcherInput = function (this: any, event: any) {
 	}
 };
 
-PresetElement.confirm = function (this: any, event: any) {
+PresetElement.confirm = function (this: typeof PresetElement, event?: Event) {
 	const uiId = this.ui.read();
 	if (!uiId) {
 		return getFocus(this.ui);

@@ -7,76 +7,118 @@ import { Log } from '@/log/log-window.ts';
 import { History } from '@/tools/history.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import { ParamListHistory } from '@/components/param-history.ts';
+import { DynamicShape } from '@/types/legacy-shapes.ts';
 
-interface InspectorShape {
+interface InspectorChange {
+	input: HTMLElement;
+	oldValue: any;
+	newValue: any;
+}
+
+interface InspectorEditorShape {
+	target: any;
+	update?: (target: any, key: string, value: any) => void;
+	owner?: { setTarget: (target: any, meta?: any) => void };
+}
+
+interface InspectorChangeData {
+	editor: InspectorEditorShape;
+	target: any;
+	changes: InspectorChange[];
 	[k: string]: any;
 }
 
-export const Inspector: InspectorShape = {
-	manager: null as any,
-	type: null as any,
-	meta: null as any,
-	fileScene: null as any,
-	fileUI: null as any,
-	fileAnimation: null as any,
-	fileParticle: null as any,
-	fileTileset: null as any,
-	fileActor: null as any,
-	fileSkill: null as any,
-	fileTrigger: null as any,
-	fileItem: null as any,
-	fileEquipment: null as any,
-	fileState: null as any,
-	fileEvent: null as any,
-	fileImage: null as any,
-	fileAudio: null as any,
-	fileVideo: null as any,
-	fileFont: null as any,
-	fileScript: null as any,
-	sceneActor: null as any,
-	sceneRegion: null as any,
-	sceneLight: null as any,
-	sceneAnimation: null as any,
-	sceneParticle: null as any,
-	sceneParallax: null as any,
-	sceneTilemap: null as any,
-	uiElement: null as any,
-	uiImage: null as any,
-	uiText: null as any,
-	uiTextBox: null as any,
-	uiDialogBox: null as any,
-	uiProgressBar: null as any,
-	uiButton: null as any,
-	uiAnimation: null as any,
-	uiVideo: null as any,
-	uiWindow: null as any,
-	uiContainer: null as any,
-	uiReference: null as any,
-	animMotion: null as any,
-	animJointLayer: null as any,
-	animJointFrame: null as any,
-	animSpriteLayer: null as any,
-	animSpriteFrame: null as any,
-	animParticleLayer: null as any,
-	animParticleFrame: null as any,
-	animSoundLayer: null as any,
-	animSoundFrame: null as any,
-	particleLayer: null as any,
-	initialize: null as any,
-	open: null as any,
-	close: null as any,
-	getKey: null as any,
-	inspectorResize: null as any,
-	managerKeydown: null as any,
-	scrollPointerdown: null as any,
-	inputFocus: null as any,
-	inputBlur: null as any,
-	sliderFocus: null as any,
-	sliderBlur: null as any,
-	ParamHistory: null as any
+interface InspectorLayerChangeData extends InspectorChangeData {
+	motion: any;
+	direction: any;
+}
+
+interface InspectorParamData {
+	type: string;
+	array: any[];
+	history: Record<string, any>;
+	target: any;
+	[k: string]: any;
+}
+
+interface InspectorScriptParameterData {
+	editor: {
+		target: any;
+		owner: { setTarget: (target: any, meta?: any) => void };
+	};
+	target: any;
+	meta: any;
+	list: { rewrite: (parameters: Record<string, any>, key: string) => void };
+	parameters: Record<string, any>;
+	key: string;
+	value: any;
+}
+
+export const Inspector: DynamicShape = {
+	manager: null,
+	type: null,
+	meta: null,
+	fileScene: null,
+	fileUI: null,
+	fileAnimation: null,
+	fileParticle: null,
+	fileTileset: null,
+	fileActor: null,
+	fileSkill: null,
+	fileTrigger: null,
+	fileItem: null,
+	fileEquipment: null,
+	fileState: null,
+	fileEvent: null,
+	fileImage: null,
+	fileAudio: null,
+	fileVideo: null,
+	fileFont: null,
+	fileScript: null,
+	sceneActor: null,
+	sceneRegion: null,
+	sceneLight: null,
+	sceneAnimation: null,
+	sceneParticle: null,
+	sceneParallax: null,
+	sceneTilemap: null,
+	uiElement: null,
+	uiImage: null,
+	uiText: null,
+	uiTextBox: null,
+	uiDialogBox: null,
+	uiProgressBar: null,
+	uiButton: null,
+	uiAnimation: null,
+	uiVideo: null,
+	uiWindow: null,
+	uiContainer: null,
+	uiReference: null,
+	animMotion: null,
+	animJointLayer: null,
+	animJointFrame: null,
+	animSpriteLayer: null,
+	animSpriteFrame: null,
+	animParticleLayer: null,
+	animParticleFrame: null,
+	animSoundLayer: null,
+	animSoundFrame: null,
+	particleLayer: null,
+	initialize: null,
+	open: null,
+	close: null,
+	getKey: null,
+	inspectorResize: null,
+	managerKeydown: null,
+	scrollPointerdown: null,
+	inputFocus: null,
+	inputBlur: null,
+	sliderFocus: null,
+	sliderBlur: null,
+	ParamHistory: null
 };
 
-Inspector.initialize = function (this: any) {
+Inspector.initialize = function (this: typeof Inspector) {
 	this.manager = $('#inspector-page-manager');
 	this.manager.focusing = null;
 	this.manager.oldValue = null;
@@ -87,7 +129,7 @@ Inspector.initialize = function (this: any) {
 	// this.manager.switch('fileTrigger')
 
 	const processors = History.processors as Record<string, (operation: string, data: any) => void>;
-	processors['inspector-change'] = (operation: any, data: any) => {
+	processors['inspector-change'] = (operation: string, data: InspectorChangeData) => {
 		const { editor, target, changes } = data;
 		for (const change of changes) {
 			const input = change.input;
@@ -97,54 +139,57 @@ Inspector.initialize = function (this: any) {
 				input.dispatchEvent(new Event('input'));
 			} else {
 				const key = Inspector.getKey!(input);
-				editor.update(target, key, value);
+				editor.update!(target, key, value);
 			}
 		}
 		editor.owner?.setTarget(target);
 	};
-	processors['inspector-layer-change'] = (operation: any, data: any) => {
+	processors['inspector-layer-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
 		Animation.setMotion(motion);
 		Animation.setDirection(direction);
 		Animation.openLayer(target);
 	};
-	processors['inspector-frame-change'] = (operation: any, data: any) => {
+	processors['inspector-frame-change'] = (operation: string, data: InspectorLayerChangeData) => {
 		const { target, motion, direction } = data;
 		processors['inspector-change'](operation, data);
 		Animation.setMotion(motion);
 		Animation.setDirection(direction);
 		Animation.selectFrame(target);
 	};
-	processors['inspector-param-insert'] = (operation: any, data: any) => {
+	processors['inspector-param-insert'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'insert', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-replace'] = (operation: any, data: any) => {
+	processors['inspector-param-replace'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'replace', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-delete'] = (operation: any, data: any) => {
+	processors['inspector-param-delete'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'delete', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['inspector-param-toggle'] = (operation: any, data: any) => {
+	processors['inspector-param-toggle'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
 		ParamListHistory.restore(list, data, 'toggle', operation);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
-	processors['script-parameter-change'] = (operation: any, data: any) => {
+	processors['script-parameter-change'] = (
+		operation: string,
+		data: InspectorScriptParameterData
+	) => {
 		const { editor, target, meta, list, parameters, key, value } = data;
 		data.value = parameters[key];
 		parameters[key] = value;
@@ -158,12 +203,12 @@ Inspector.initialize = function (this: any) {
 	this.manager.addEventListener('keydown', this.managerKeydown);
 
 	const initSub = (name: string) => {
-		const sub = (this as any)[name];
+		const sub = this[name];
 		if (sub && typeof sub.initialize === 'function') {
 			try {
 				sub.initialize();
-			} catch (e: any) {
-				console.warn(`[Inspector] ${name}.initialize failed:`, e?.message);
+			} catch (e: unknown) {
+				console.warn(`[Inspector] ${name}.initialize failed:`, (e as Error)?.message);
 			}
 		} else {
 			console.warn(`[Inspector] ${name} is null or has no initialize`);
@@ -222,13 +267,13 @@ Inspector.initialize = function (this: any) {
 	if (win && typeof win.initialize === 'function') {
 		try {
 			win.initialize();
-		} catch (e: any) {
-			console.warn('[Inspector] Window.initialize failed:', e?.message);
+		} catch (e: unknown) {
+			console.warn('[Inspector] Window.initialize failed:', (e as Error)?.message);
 		}
 	}
 };
 
-Inspector.open = function (this: any, type: string, target: any, meta?: any) {
+Inspector.open = function (this: typeof Inspector, type: string, target: any, meta?: any) {
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -243,15 +288,20 @@ Inspector.open = function (this: any, type: string, target: any, meta?: any) {
 		this.meta = meta || null;
 		try {
 			this[type].open(target, meta);
-		} catch (e: any) {
-			console.error('[Inspector.open] sub.open failed:', type, e?.message, e?.stack);
+		} catch (e: unknown) {
+			console.error(
+				'[Inspector.open] sub.open failed:',
+				type,
+				(e as Error)?.message,
+				(e as Error)?.stack
+			);
 		}
 	} else {
 		this.close();
 	}
 };
 
-Inspector.close = function (this: any, type?: string) {
+Inspector.close = function (this: typeof Inspector, type?: string) {
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -266,19 +316,22 @@ Inspector.close = function (this: any, type?: string) {
 	}
 };
 
-Inspector.getKey = function (this: any, element: any) {
+Inspector.getKey = function (
+	this: typeof Inspector,
+	element: { key?: string; id: string }
+): string {
 	let key = element.key;
 	if (key === undefined) {
 		const id = element.id;
 		const index = id.indexOf('-') + 1;
 		key = element.key = id.slice(index);
 	}
-	return key;
+	return key as string;
 };
 
 Inspector.inspectorResize = (function IIFE() {
 	const resize = new Event('resize');
-	return function (this: any, event: any) {
+	return function (this: typeof Inspector, event: Event) {
 		const page = Inspector.manager.active;
 		if (page instanceof HTMLElement) {
 			page.dispatchEvent(resize);
@@ -286,12 +339,12 @@ Inspector.inspectorResize = (function IIFE() {
 	};
 })();
 
-Inspector.managerKeydown = function (this: any, event: any) {
-	const element = event.target;
+Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEvent) {
+	const element = event.target as HTMLElement & { type?: string };
 	switch (element.tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
-			// 如果是滑动框类型则跳到default
+			// 濡傛灉鏄粦鍔ㄦ绫诲瀷鍒欒烦鍒癲efault
 			if (element.type !== 'range') {
 				if (event.ctrlKey || event.metaKey) {
 					switch (event.code) {
@@ -330,19 +383,22 @@ Inspector.managerKeydown = function (this: any, event: any) {
 	}
 };
 
-Inspector.scrollPointerdown = function (this: any, event: any) {
+Inspector.scrollPointerdown = function (
+	this: HTMLElement,
+	event: PointerEvent & { [k: string]: any }
+) {
 	if (this.dragging) {
 		return;
 	}
 	switch (event.button) {
 		case 0:
 			if (event.altKey && !(event.target as HTMLElement).closest('.marquee-area')) {
-				let element = event.target;
+				let element: HTMLElement = event.target as HTMLElement;
 				while (element !== this) {
-					if (element.scrollPointerup && hasScrollBar(element as HTMLElement)) {
+					if (typeof element.scrollPointerup === 'function' && hasScrollBar(element)) {
 						return;
 					}
-					element = element.parentNode;
+					element = element.parentNode as HTMLElement;
 				}
 				event.preventDefault();
 				event.stopImmediatePropagation();
@@ -350,7 +406,7 @@ Inspector.scrollPointerdown = function (this: any, event: any) {
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
-				(Cursor as any).open('cursor-grab');
+				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.scrollPointerup);
 				window.addEventListener('pointermove', this.scrollPointermove);
 			}
@@ -358,7 +414,7 @@ Inspector.scrollPointerdown = function (this: any, event: any) {
 	}
 };
 
-Inspector.inputFocus = function (this: any, event: any) {
+Inspector.inputFocus = function (this: HTMLElement, event: Event) {
 	if (Window.activeElement === null) {
 		const { manager } = Inspector;
 		if (manager.focusing !== null) {
@@ -372,14 +428,13 @@ Inspector.inputFocus = function (this: any, event: any) {
 };
 
 Inspector.inputBlur = function (
-	this: any,
-	editor: any,
-	owner: any,
-	callback: ((data: any) => void) | null = null
+	editor: { target: any },
+	owner: { history: History | null },
+	callback: ((data: InspectorChangeData) => void) | null = null
 ) {
-	return function (this: any, event: any) {
+	return function (this: HTMLElement & { changes?: InspectorChange[] }, event: Event) {
 		if (Window.activeElement === null) {
-			// 因此需要判断manager.focusing
+			// 鍥犳闇€瑕佸垽鏂璵anager.focusing
 			const { manager } = Inspector;
 			if (manager.focusing === null) {
 				return;
@@ -388,7 +443,7 @@ Inspector.inputBlur = function (
 			const oldValue = manager.oldValue;
 			const newValue = read(this);
 			if (target !== null) {
-				const changes = [] as any[];
+				const changes: InspectorChange[] = [];
 				if (oldValue !== newValue) {
 					changes.push({
 						input: this,
@@ -406,7 +461,7 @@ Inspector.inputBlur = function (
 						target: target,
 						changes: changes
 					};
-					owner.history.save(data);
+					owner.history!.save(data);
 					callback?.(data);
 				}
 			}
@@ -421,24 +476,24 @@ Inspector.inputBlur = function (
 
 Inspector.sliderFocus = (function IIFE() {
 	const focus = new FocusEvent('focus');
-	return function (this: any, event: any) {
+	return function (this: HTMLElement & { synchronizer: HTMLElement }, event: Event) {
 		this.synchronizer.dispatchEvent(focus);
 	};
 })();
 
 Inspector.sliderBlur = (function IIFE() {
 	const blur = new FocusEvent('blur');
-	return function (this: any, event: any) {
+	return function (this: HTMLElement & { synchronizer: HTMLElement }, event: Event) {
 		this.synchronizer.dispatchEvent(blur);
 	};
 })();
 
 Inspector.ParamHistory = class ParamHistory {
-	editor: any;
-	owner: any;
+	editor: { target: any };
+	owner: { history: History };
 	list: any;
 
-	constructor(editor: any, owner: any, list: any) {
+	constructor(editor: { target: any }, owner: { history: History }, list: any) {
 		this.editor = editor;
 		this.owner = owner;
 		this.list = list;
@@ -446,7 +501,7 @@ Inspector.ParamHistory = class ParamHistory {
 
 	reset() {}
 
-	save(data: any) {
+	save(data: { type: string } & InspectorParamData) {
 		const { target } = this.editor;
 		if (target !== null) {
 			switch (data.type) {
@@ -469,7 +524,7 @@ Inspector.ParamHistory = class ParamHistory {
 		}
 	}
 
-	restore(operation: any) {
+	restore(operation: string) {
 		this.owner.history.restore(operation);
 	}
 

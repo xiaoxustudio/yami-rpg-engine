@@ -1,14 +1,33 @@
-import { $ } from '@/util/dom.ts';
+﻿import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { disable, enable, on, read, write } from '@/util/element-utils.ts';
 
+interface SearchMode {
+	caseInsensitive: boolean;
+	regex: boolean;
+	matchLine: boolean;
+}
+
+interface SearchResult {
+	node: HTMLElement;
+	index: number;
+	sub?: { folded?: boolean } & HTMLElement;
+}
+
+interface SearchableList {
+	elements: unknown[];
+	findString: (val: string, elements: unknown[], mode: SearchMode) => SearchResult[];
+	scrollToRow: (index: number) => void;
+	fold?: (sub: HTMLElement) => void;
+}
+
 export const SearchString = new (class {
-	window = null as any;
-	current: any = null;
-	log = null as any;
-	lastArr: any[] = [];
+	window: HTMLElement | null = null;
+	current: SearchableList | null = null;
+	log: HTMLElement | null = null;
+	lastArr: SearchResult[] = [];
 	index = 0;
-	searchMode: { [k: string]: any } = { caseInsensitive: false, regex: false, matchLine: false };
+	searchMode: SearchMode = { caseInsensitive: false, regex: false, matchLine: false };
 	private _bound = false;
 	private bindButtons() {
 		if (this._bound) return;
@@ -17,7 +36,7 @@ export const SearchString = new (class {
 		this._bound = true;
 		this.window = win;
 		this.log = $('#event-search-string-log');
-		on(win, 'keydown', (e: any) => {
+		on(win, 'keydown', (e: KeyboardEvent) => {
 			if (e.key == 'Enter' && this.lastArr.length > 0) {
 				this.next();
 			}
@@ -25,15 +44,17 @@ export const SearchString = new (class {
 		on(win, 'closed', () => this.close());
 		on($('#event-search-string-previous'), 'click', () => this.previous());
 		on($('#event-search-string-next'), 'click', () => this.next());
-		on($('#event-search-string-search'), 'input', (e: any) => this.input(e));
-		on($('#event-search-string-case-insensitive'), 'change', (e: any) =>
+		on($('#event-search-string-search'), 'input', (e: Event) => this.input(e));
+		on($('#event-search-string-case-insensitive'), 'change', (e: Event) =>
 			this.change('caseInsensitive', e)
 		);
-		on($('#event-search-string-regex'), 'change', (e: any) => this.change('regex', e));
-		on($('#event-search-string-match-line'), 'change', (e: any) => this.change('matchLine', e));
+		on($('#event-search-string-regex'), 'change', (e: Event) => this.change('regex', e));
+		on($('#event-search-string-match-line'), 'change', (e: Event) =>
+			this.change('matchLine', e)
+		);
 	}
-	change(mode: any, e: any) {
-		this.searchMode[mode] = read(e.target);
+	change(mode: keyof SearchMode, e: Event) {
+		this.searchMode[mode] = read(e.target as HTMLElement);
 		switch (mode) {
 			case 'caseInsensitive':
 				if (this.searchMode[mode]) {
@@ -63,15 +84,15 @@ export const SearchString = new (class {
 		const index = this.index;
 		const current = arr[index];
 		current.node.classList.add('event-search-string-location-active');
-		this.current.scrollToRow(current.index);
+		this.current!.scrollToRow(current.index);
 		if (current.sub) {
 			if (current.sub?.folded) {
-				this.current.fold(current.sub);
+				this.current!.fold!(current.sub);
 			}
 		}
 	}
 	clear() {
-		this.lastArr.forEach((element: any) => {
+		this.lastArr.forEach((element) => {
 			element.node.classList.remove('event-search-string-location-active');
 			element.node.classList.remove('event-search-string-active');
 		});
@@ -79,22 +100,22 @@ export const SearchString = new (class {
 	clearHistory() {
 		write($('#event-search-string-search'), '');
 	}
-	input(e: any) {
-		const val = e.target.value;
+	input(e: { target?: { value?: unknown } } | Event) {
+		const val = (e.target as { value?: unknown })?.value as string;
 		if (val.trim() == '') {
 			this.clear();
 			this.lastArr = [];
-			this.log.textContent = this.lastArr.length;
+			this.log!.textContent = String(this.lastArr.length);
 			return;
 		}
 		this.clear();
-		const { elements } = this.current;
-		const findArr = this.current.findString(val, elements, this.searchMode);
+		const { elements } = this.current!;
+		const findArr = this.current!.findString(val, elements, this.searchMode);
 		this.lastArr = findArr;
-		findArr.forEach((element: any) => {
+		findArr.forEach((element) => {
 			element.node.classList.add('event-search-string-active');
 		});
-		this.log.textContent = findArr.length;
+		this.log!.textContent = String(findArr.length);
 		if (this.lastArr.length == 0) {
 			disable($('#event-search-string-previous'));
 			disable($('#event-search-string-next'));
@@ -128,7 +149,7 @@ export const SearchString = new (class {
 		this.locationLine();
 	}
 
-	open(eventWindow: any) {
+	open(eventWindow: SearchableList) {
 		this.bindButtons();
 		Window.open!('event-search-string');
 		this.index = 0;
@@ -145,6 +166,6 @@ export const SearchString = new (class {
 		this.current = null;
 		this.clear();
 		this.lastArr = [];
-		this.log.textContent = this.lastArr.length;
+		this.log!.textContent = String(this.lastArr.length);
 	}
 })();

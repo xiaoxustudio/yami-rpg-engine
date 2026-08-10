@@ -5,12 +5,19 @@ import { pinia } from './pinia';
 
 export const localStateKeys = ['language', 'active', 'languages'] as const;
 
+interface LocalComponentShape {
+	label?: string;
+	content?: string;
+	tip?: string;
+	[k: string]: any;
+}
+
 export const useLocalStore = defineStore('local', () => {
 	const language = shallowRef<string>('en');
 	const active = shallowRef<string | null>(null);
 	const languages = shallowRef<any[]>([]);
-	const properties = shallowRef<Record<string, any>>({});
-	const components = shallowRef<Record<string, any>>({});
+	const properties = shallowRef<Record<string, string>>({});
+	const components = shallowRef<Record<string, LocalComponentShape>>({});
 	let listening = false;
 
 	function syncState() {

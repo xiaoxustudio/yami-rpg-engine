@@ -11,7 +11,7 @@ Command.cases.deleteVariable = new CommandSchema({
 	customParse({ variable }: any) {
 		return [
 			{ color: 'variable' },
-			{ text: Local.get('command.deleteVariable.alias') + ' ' },
+			{ text: Local.get!('command.deleteVariable.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: Command.parseVariable(variable, 'any') }
 		];

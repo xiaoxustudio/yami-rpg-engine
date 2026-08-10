@@ -4,19 +4,25 @@ import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const AnimSoundFrame = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimSoundFrameShape {
+		target: Record<string, unknown> | null;
+		update: ((frame: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimSoundFrame: AnimSoundFrameShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimSoundFrame.initialize = function (this: any) {
+	AnimSoundFrame.initialize = function (this: typeof AnimSoundFrame) {
 		if (!$('#animSoundFrame-sound')) return;
 		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -28,7 +34,7 @@ import { Inspector } from './inspector.ts';
 		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
 			(el as HTMLElement).on(
 				'blur',
-				Inspector.inputBlur!(this, Animation, (data: any) => {
+				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -37,7 +43,7 @@ import { Inspector } from './inspector.ts';
 		);
 	};
 
-	AnimSoundFrame.create = function (this: any) {
+	AnimSoundFrame.create = function (this: typeof AnimSoundFrame) {
 		return {
 			start: 0,
 			end: 1,
@@ -46,7 +52,7 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	AnimSoundFrame.open = function (this: any, frame: any) {
+	AnimSoundFrame.open = function (this: typeof AnimSoundFrame, frame: Record<string, unknown>) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
@@ -57,7 +63,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundFrame.close = function (this: any) {
+	AnimSoundFrame.close = function (this: typeof AnimSoundFrame) {
 		if (this.target) {
 			Animation.unselectMarquee!(this.target);
 			this.target = null;
@@ -65,7 +71,10 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundFrame.write = function (this: any, options: any) {
+	AnimSoundFrame.write = function (
+		this: typeof AnimSoundFrame,
+		options: Record<string, unknown>
+	) {
 		if (options.sound !== undefined) {
 			write($('#animSoundFrame-sound'), options.sound);
 		}
@@ -74,7 +83,12 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundFrame.update = function (this: any, frame: any, key: any, value: any) {
+	AnimSoundFrame.update = function (
+		this: typeof AnimSoundFrame,
+		frame: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'sound':
@@ -86,8 +100,12 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimSoundFrame.paramInput = function (this: any, event: any) {
-		AnimSoundFrame.update(AnimSoundFrame.target, Inspector.getKey!(this), read(this));
+	AnimSoundFrame.paramInput = function (this: typeof AnimSoundFrame, event: Event) {
+		AnimSoundFrame.update!(
+			AnimSoundFrame.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.animSoundFrame = AnimSoundFrame;

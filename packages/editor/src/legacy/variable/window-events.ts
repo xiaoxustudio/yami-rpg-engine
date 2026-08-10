@@ -3,13 +3,14 @@ import { Window } from '@/tools/window-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
+import type { IArrayHistory } from '@/types/history.ts';
 import { Variable } from './variable.ts';
 
-Variable.windowClose = function (this: any, event: any) {
+Variable.windowClose = function (this: typeof Variable, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = (Local.createGetter as any)('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedVariables')
@@ -30,16 +31,16 @@ Variable.windowClose = function (this: any, event: any) {
 	}
 }.bind(Variable);
 
-Variable.windowClosed = function (this: any, event: any) {
+Variable.windowClosed = function (this: typeof Variable, event: Event) {
 	this.target = null;
 	this.data = null;
-	this.idMap = null;
+	this.idMap = null as unknown as Record<string, unknown>;
 	UndoManager.setActive(this._previousActive);
 	this._previousActive = null;
-	this.history = null;
+	this.history = null as unknown as IArrayHistory & Array<{ type: unknown; item: unknown }>;
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
-	window.removeEventListener('keydown', this.keydown);
-	window.removeEventListener('keydown', (Reference.getKeydownListener as any)(this.list));
+	window.removeEventListener('keydown', this.keydown!);
+	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list));
 }.bind(Variable);

@@ -1,8 +1,11 @@
-﻿import { Inspector } from './inspector.ts';
+import { Inspector } from './inspector.ts';
 
 {
-	const AnimJointLayer = {
-		create: null as any
+	interface AnimJointLayerShape {
+		[k: string]: any;
+	}
+	const AnimJointLayer: AnimJointLayerShape = {
+		create: null
 	};
 
 	AnimJointLayer.create = function (this: any) {

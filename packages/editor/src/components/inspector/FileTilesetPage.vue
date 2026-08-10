@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="box" id="palette-head" @pointerdown="onHeadPointerdown">
 		<div class="box" id="palette-head-start" @pointerdown="onToolbarPointerdown">
 			<div
@@ -118,6 +118,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { focus } from '@/util/element-utils';
+import { Inspector } from '@/inspector/inspector.ts';
+import { Palette } from '@/palette/palette.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { usePaletteStore } from '@app/stores/palette';
@@ -134,16 +136,16 @@ const palette = usePaletteStore();
 
 const onParamInput = (event: any) => {
 	const target = event?.target ?? document.activeElement;
-	(window as any).Inspector?.fileTileset?.paramInput?.({ target });
+	Inspector?.fileTileset?.paramInput?.({ target });
 };
 const onParamChange = () => {
-	(window as any).Inspector?.fileTileset?.paramInput?.();
+	Inspector?.fileTileset?.paramInput?.();
 };
 
 const onHeadPointerdown = (event: PointerEvent) => {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
-		const P = (window as any).Palette;
+		const P = Palette;
 		if (P?.screen && document.activeElement !== P.screen) {
 			focus(P.screen);
 		}
@@ -153,7 +155,7 @@ const onHeadPointerdown = (event: PointerEvent) => {
 const onToolbarPointerdown = (event: PointerEvent) => {
 	if (event.button !== 0) return;
 	const element = event.target as HTMLElement;
-	const P = (window as any).Palette;
+	const P = Palette;
 	if (!P || !element.classList.contains('item')) return;
 	switch (element.getAttribute('value')) {
 		case 'scroll':
@@ -175,28 +177,28 @@ const onToolbarPointerdown = (event: PointerEvent) => {
 };
 
 const onZoomInput = (value: number) => {
-	(window as any).Palette?.setZoom?.(value);
+	Palette?.setZoom?.(value);
 };
 
 const onZoomFocus = () => {
-	const P = (window as any).Palette;
+	const P = Palette;
 	if (P?.screen) focus(P.screen);
 };
 
 const onScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).Palette?.screenKeydown?.(event);
+	Palette?.screenKeydown?.(event);
 };
 
 const onScreenWheel = (event: WheelEvent) => {
-	(window as any).Palette?.screenWheel?.(event);
+	Palette?.screenWheel?.(event);
 };
 
 const onMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).Palette?.marqueePointerdown?.(event);
+	Palette?.marqueePointerdown?.(event);
 };
 
 const onMarqueeDoubleclick = (event: PointerEvent) => {
-	(window as any).Palette?.marqueeDoubleclick?.(event);
+	Palette?.marqueeDoubleclick?.(event);
 };
 
 const paletteInfo = computed(() => {

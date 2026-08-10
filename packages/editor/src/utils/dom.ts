@@ -31,16 +31,18 @@ export function css(el: HTMLElement, property: string, value: string): void;
 export function css(el: HTMLElement, properties: Record<string, string>): void;
 export function css(el: HTMLElement, ...args: any[]): any {
 	if (args.length === 1) {
-		return (getComputedStyle(el as Element) as any)[args[0] as string];
+		return (getComputedStyle(el as Element) as unknown as Record<string, string>)[
+			args[0] as string
+		];
 	}
 	if (args.length === 2) {
-		(el.style as any)[args[0] as string] = args[1] as string;
+		(el.style as unknown as Record<string, string>)[args[0] as string] = args[1] as string;
 		return;
 	}
 	if (typeof args[0] === 'object' && args[0] !== null) {
 		const props = args[0] as Record<string, string>;
 		for (const key in props) {
-			(el.style as any)[key] = props[key];
+			(el.style as unknown as Record<string, string>)[key] = props[key];
 		}
 	}
 }
@@ -72,7 +74,7 @@ export function dispatchResizeEvent(el: HTMLElement): void {
 }
 
 export function dispatchChangeEvent(el: HTMLElement, index?: number): void {
-	const event = new Event('change', { bubbles: true }) as any;
+	const event = new Event('change', { bubbles: true }) as Event & { index: number };
 	if (index !== undefined) {
 		event.index = index;
 	}

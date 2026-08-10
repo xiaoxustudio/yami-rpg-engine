@@ -7,31 +7,69 @@ import { FSP } from '@/file/file-system.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 
-export const Local = {
-	active: null as any,
+interface LocalComponentItem {
+	save?: string;
+	content?: string;
+	title?: string;
+	label?: string;
+	tip?: string;
+	placeholder?: string;
+	options?: string[];
+}
+
+interface LocalShape {
+	active: string;
+	dirname: string;
+	language: string;
+	languages: { key: string; alias: string; filename: string }[];
+	properties: Record<string, string>;
+	components: Record<string, LocalComponentItem>;
+	saveItems: Record<string, LocalComponentItem>;
+	saveTagExp: RegExp;
+	titleTagExp: RegExp;
+	initialize: ((this: typeof Local) => void) | null;
+	update: ((this: typeof Local, data: Record<string, unknown>) => void) | null;
+	readLanguageList:
+		| ((
+				this: typeof Local
+		  ) => Promise<{ key: string; alias: string; filename: string }[]> | null)
+		| null;
+	setLanguage: ((this: typeof Local, language: string) => Promise<void>) | null;
+	setProperties: ((this: typeof Local, data: Record<string, unknown>) => void) | null;
+	setElement:
+		| ((this: typeof Local, element: HTMLElement, item: LocalComponentItem) => void)
+		| null;
+	parseTip: ((this: typeof Local, tip: string, title: string) => string) | null;
+	createGetter: ((this: typeof Local, path: string) => (key: string) => any) | null;
+	get: ((this: typeof Local, key: string) => string) | null;
+	showInExplorer: (() => string | undefined) | null;
+	localize: ((id?: string, key?: string) => void) | null;
+}
+
+export const Local: LocalShape = {
+	active: null as unknown as string,
 	dirname: '',
-	language: null as any,
-	languages: null as any,
-	properties: {} as Record<string, any>,
-	// 保存最近一次 update() 的 components 表，供延迟创建的元素（如动态渲染的设置项）按 id 取回 label/tip/content,
-	components: {} as Record<string, any>,
-	saveItems: {} as Record<string, any>,
+	language: null as unknown as string,
+	languages: null as unknown as { key: string; alias: string; filename: string }[],
+	properties: {} as Record<string, string>,
+	components: {} as Record<string, LocalComponentItem>,
+	saveItems: {} as Record<string, LocalComponentItem>,
 	saveTagExp: /^#(\S+)$/,
 	titleTagExp: /\$([\S ]+)(?=\n|$)/g,
-	initialize: null as any,
-	update: null as any,
-	readLanguageList: null as any,
-	setLanguage: null as any,
-	setProperties: null as any,
-	setElement: null as any,
-	parseTip: null as any,
-	createGetter: null as any,
-	get: null as any,
-	showInExplorer: null as (() => string | undefined) | null,
-	localize: null as ((id?: string, key?: string) => void) | null
+	initialize: null,
+	update: null,
+	readLanguageList: null,
+	setLanguage: null,
+	setProperties: null,
+	setElement: null,
+	parseTip: null,
+	createGetter: null,
+	get: null,
+	showInExplorer: null,
+	localize: null
 };
 
-Local.initialize = function (this: any) {
+Local.initialize = function (this: typeof Local) {
 	for (const button of document.getElementsByName('confirm')) {
 		button.setAttribute('hotkey', 'Ctrl+Enter');
 	}
@@ -52,19 +90,19 @@ Local.initialize = function (this: any) {
 			? Path.resolve!(process.cwd(), 'Project')
 			: '';
 	this.dirname = _moduleDir ? Path.resolve!(_moduleDir, 'Locales') : '';
-	this.readLanguageList!()
+	this.readLanguageList!()!
 		.then(() => {
-			return this.setLanguage!((Editor.config as any).language);
+			return this.setLanguage!(Editor.config!.language ?? '');
 		})
 		.then(() => {
 			addClass($('#menu'), 'visible');
 		});
 };
 
-Local.readLanguageList = function (this: any) {
-	const languages = (this.languages = [] as any[]);
+Local.readLanguageList = function (this: typeof Local) {
+	const languages = (this.languages = [] as { key: string; alias: string; filename: string }[]);
 	return FSP.readdir!(this.dirname, { withFileTypes: true })
-		.then((files: any) => {
+		.then((files: Array<{ name: string; isFile(): boolean; isDirectory(): boolean }>) => {
 			const regexp = /\.(.+)$/;
 			for (const file of files) {
 				if (file.isDirectory()) {
@@ -93,14 +131,14 @@ Local.readLanguageList = function (this: any) {
 			}
 			return languages;
 		})
-		.catch((error: any) => {
+		.catch((error: unknown) => {
 			Log.throw!(error);
 			return languages;
 		});
 };
 
-Local.setLanguage = async function (this: any, language: any) {
-	(Editor.config as any).language = language;
+Local.setLanguage = async function (this: typeof Local, language: string) {
+	Editor.config!.language = language;
 	if (language === '') {
 		language = 'en-US';
 		let matchedWeight = 0;
@@ -130,7 +168,7 @@ Local.setLanguage = async function (this: any, language: any) {
 				this.active = filename;
 				this.language = language;
 				window.dispatchEvent(new Event('localize'));
-			} catch (error: any) {
+			} catch (error: unknown) {
 				console.error(new Error('Failed to load language pack'));
 				Log.throw!(error);
 			}
@@ -138,18 +176,17 @@ Local.setLanguage = async function (this: any, language: any) {
 		return;
 	}
 	// 找不到语言包时切换到自动模式
-	if ((Editor.config as any).language) {
+	if (Editor.config!.language) {
 		return this.setLanguage!('');
 	}
 };
 
 Local.update = (function IIFE() {
-	const throwError = (_message: any) => {};
-	return function (this: any, data: any) {
-		this.setProperties!(data.properties);
-		this.components = data.components ?? {};
-		const setElement = this.setElement;
-		const entries = Object.entries(data.components);
+	const throwError = (_message: unknown) => {};
+	return function (this: typeof Local, data: Record<string, unknown>) {
+		this.setProperties!(data.properties as Record<string, unknown>);
+		this.components = (data.components ?? {}) as Record<string, LocalComponentItem>;
+		const entries = Object.entries(data.components ?? {});
 		const length = entries.length;
 		for (let i = 0; i < length; i++) {
 			const [key, item] = entries[i];
@@ -162,7 +199,7 @@ Local.update = (function IIFE() {
 				const length = elements.length;
 				if (length !== 0) {
 					for (let i = 0; i < length; i++) {
-						setElement(elements[i], item);
+						this.setElement!(elements[i] as HTMLElement, item as LocalComponentItem);
 					}
 				} else {
 					throwError(`key '${key}' is invalid`);
@@ -170,26 +207,26 @@ Local.update = (function IIFE() {
 			} else {
 				const element = document.getElementById(key);
 				if (element !== null) {
-					setElement(element, item);
+					this.setElement!(element, item as LocalComponentItem);
 				} else {
 					throwError(`key '${key}' is invalid`);
 				}
 			}
 		}
-		this.saveItems = {} as Record<string, any>;
+		this.saveItems = {} as Record<string, LocalComponentItem>;
 	};
 })();
 
 Local.setProperties = (function IIFE() {
-	const setProperty = (map: any, path: any, value: any) => {
-		map[path] = value;
+	const setProperty = (map: Record<string, string>, path: string, value: unknown) => {
+		map[path] = value as string;
 		if (value instanceof Object) {
 			for (const key of Object.keys(value)) {
-				setProperty(map, path + '.' + key, value[key]);
+				setProperty(map, path + '.' + key, (value as Record<string, unknown>)[key]);
 			}
 		}
 	};
-	return function (this: any, data: any) {
+	return function (this: typeof Local, data: Record<string, unknown>) {
 		const map = this.properties;
 		if (data instanceof Object) {
 			for (const key of Object.keys(data)) {
@@ -200,8 +237,8 @@ Local.setProperties = (function IIFE() {
 })();
 
 Local.setElement = (function IIFE() {
-	const throwError = (_element: any, _message: any) => {};
-	return function (this: any, element: any, item: any) {
+	const throwError = (_element: unknown, _message: unknown) => {};
+	return function (this: typeof Local, element: HTMLElement, item: LocalComponentItem) {
 		if (item.save !== undefined) {
 			Local.saveItems[item.save] = item;
 		}
@@ -210,7 +247,7 @@ Local.setElement = (function IIFE() {
 		}
 		if (item.title !== undefined) {
 			if ((element as HTMLElement).classList.contains('window-frame')) {
-				if (typeof (element as any).setTitle === 'function') {
+				if (typeof element.setTitle === 'function') {
 					element.setTitle(item.title);
 				}
 			} else {
@@ -226,7 +263,7 @@ Local.setElement = (function IIFE() {
 			}
 		}
 		if (item.tip !== undefined) {
-			setTooltip(element, Local.parseTip!(item.tip, item.label ?? item.content));
+			setTooltip(element, Local.parseTip!(item.tip, item.label ?? item.content ?? ''));
 		}
 		if (item.placeholder !== undefined) {
 			if ((element as HTMLElement).classList.contains('text-box')) {
@@ -245,21 +282,21 @@ Local.setElement = (function IIFE() {
 	};
 })();
 
-Local.parseTip = function (this: any, tip: any, title: any) {
+Local.parseTip = function (this: typeof Local, tip: string, title: string) {
 	const match = this.saveTagExp.exec(tip);
-	let string = match ? this.saveItems[match[1]].tip : tip;
+	let string: string = match ? (this.saveItems[match[1]]?.tip ?? '') : tip;
 	if (title && tip[0] !== '$') {
 		string = `<b>${title}</b>\n${string}`;
 	}
 	return string.replace(this.titleTagExp, '<b>$1</b>');
 };
 
-Local.createGetter = function (this: any, path: any) {
+Local.createGetter = function (this: typeof Local, path: string) {
 	const prefix = path + '.';
-	return (key: any) => this.get!(prefix + key);
+	return (key: string) => this.get!(prefix + key);
 };
 
-Local.get = function (this: any, key: any) {
+Local.get = function (this: typeof Local, key: string) {
 	const property = this.properties[key];
 	if (property === undefined) {
 		const index = key.lastIndexOf('.');
@@ -269,10 +306,10 @@ Local.get = function (this: any, key: any) {
 		const remap = 'common.' + key;
 		return this.properties[remap] ?? '';
 	}
-	return property;
+	return property ?? '';
 };
 
-Local.showInExplorer = function (this: any) {
+Local.showInExplorer = function (this: typeof Local) {
 	switch (typeof process !== 'undefined' ? process.platform : '') {
 		case 'win32':
 			return 'showInExplorer';
@@ -287,9 +324,9 @@ import { getLocalStore } from '@app/stores/local';
 for (const key of localStateKeys) {
 	Object.defineProperty(Local, key, {
 		get: () => getLocalStore()[key],
-		set: (value: any) => {
+		set: (value: string) => {
 			const store = getLocalStore();
-			(store as any)[key] = value;
+			(store as unknown as Record<(typeof localStateKeys)[number], any>)[key] = value;
 		},
 		configurable: true
 	});

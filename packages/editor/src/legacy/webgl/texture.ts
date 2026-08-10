@@ -1,17 +1,18 @@
 import { GL } from './webgl-init.ts';
+import type { BaseTexture } from './base-texture.ts';
 
 export class Texture {
 	complete!: boolean;
-	base: any;
-	gl: any;
+	base: BaseTexture | null = null;
+	gl: typeof GL;
 	x!: number;
 	y!: number;
 	width!: number;
 	height!: number;
-	declare on: (type: string, callback: (...args: any[]) => void) => void;
-	declare reply: (type: string, ...args: any[]) => void;
+	declare on: (type: string, callback: (...args: unknown[]) => void) => void;
+	declare reply: (type: string, ...args: unknown[]) => void;
 
-	constructor(options: any = {}) {
+	constructor(options: Record<string, unknown> = {}) {
 		if (new.target !== Texture) {
 			return;
 		}
@@ -25,7 +26,7 @@ export class Texture {
 		this.height = 0;
 	}
 
-	clip(x: any, y: any, width: any, height: any) {
+	clip(x: number, y: number, width: number, height: number) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -40,7 +41,7 @@ export class Texture {
 			gl.FRAMEBUFFER,
 			gl.COLOR_ATTACHMENT0,
 			gl.TEXTURE_2D,
-			this.base.glTexture,
+			this.base!.glTexture,
 			0
 		);
 		gl.clearColor(red, green, blue, alpha);
@@ -48,33 +49,34 @@ export class Texture {
 		gl.unbindFBO();
 	}
 
-	resize(width: any, height: any) {
+	resize(width: number, height: number) {
 		const { gl, base } = this;
-		const { format } = base;
-		base.width = Math.min(width, gl.maxTexSize);
-		base.height = Math.min(height, gl.maxTexSize);
-		gl.bindTexture(gl.TEXTURE_2D, base.glTexture);
+		const { format } = base!;
+		base!.width = Math.min(width, gl.maxTexSize);
+		base!.height = Math.min(height, gl.maxTexSize);
+		gl.bindTexture(gl.TEXTURE_2D, base!.glTexture);
 		gl.texImage2D(
 			gl.TEXTURE_2D,
 			0,
 			format,
-			base.width,
-			base.height,
+			base!.width,
+			base!.height,
 			0,
 			format,
 			gl.UNSIGNED_BYTE,
 			null
 		);
-		return this.clip(0, 0, base.width, base.height);
+		return this.clip(0, 0, base!.width, base!.height);
 	}
 
-	fromImage(image: any) {
+	fromImage(image: HTMLImageElement | HTMLCanvasElement | null) {
 		// 上传空图像会被Chromium警告
+		if (!image) return this.resize(0, 0);
 		if (image.width === 0 && image.height === 0) {
 			return this.resize(0, 0);
 		}
 		const gl = this.gl;
-		const base = this.base;
+		const base = this.base!;
 		const format = base.format;
 		base.image = image;
 		base.width = Math.min(image.width, gl.maxTexSize);
@@ -94,7 +96,7 @@ export class Texture {
 		return this.clip(0, 0, base.width, base.height);
 	}
 
-	getImageData(x: any, y: any, width: any, height: any) {
+	getImageData(x: number, y: number, width: number, height: number) {
 		const gl = this.gl;
 		const base = this.base;
 		if (base instanceof WebGLTexture) {
@@ -106,7 +108,7 @@ export class Texture {
 				gl.FRAMEBUFFER,
 				gl.COLOR_ATTACHMENT0,
 				gl.TEXTURE_2D,
-				(base as any).glTexture,
+				(base as unknown as { glTexture?: WebGLTexture | null }).glTexture,
 				0
 			);
 			gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, uint8);

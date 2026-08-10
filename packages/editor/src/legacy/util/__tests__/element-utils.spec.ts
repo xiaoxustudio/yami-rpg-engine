@@ -80,8 +80,8 @@ describe('element-utils 低依赖工具（回归保护）', () => {
 		addClass(el, 'b');
 		expect(hasClass(el, 'b')).toBe(true);
 		const text = document.createTextNode('x');
-		expect(hasClass(text as any, 'a')).toBe(false);
-		expect(() => addClass(text as any, 'a')).not.toThrow();
+		expect(hasClass(text as unknown as HTMLElement, 'a')).toBe(false);
+		expect(() => addClass(text as unknown as HTMLElement, 'a')).not.toThrow();
 	});
 
 	it('hasScrollBar 无滚动（scrollWidth === clientWidth）', () => {

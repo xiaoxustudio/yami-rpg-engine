@@ -18,13 +18,13 @@ const _modulePath =
 			: '';
 const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-Updater.updateToLatest = function (this: any, version: any) {
+Updater.updateToLatest = function (this: typeof Updater, version: string) {
 	const verNum = Updater.getVersionNumber!(version);
 	if (verNum >= Updater.getVersionNumber!('1.0.122')) {
 		return Updater.updateIncrementalChanges!(version);
 	}
 
-	const dstProjectDir = Path.dirname!((Editor.config as any).project);
+	const dstProjectDir = Path.dirname!(Editor.config!.project!);
 	const srcProjectDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update');
 	const srcScriptDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/script');
 	const srcPluginDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/plugins');
@@ -60,7 +60,7 @@ Updater.updateToLatest = function (this: any, version: any) {
 			if (FS.statSync!(path).isFile()) {
 				FS.unlinkSync!(path);
 			}
-		} catch (error: any) {}
+		} catch (error: unknown) {}
 	}
 
 	FS.cpSync!(srcScriptDir, dstScriptDir, { recursive: true });
@@ -73,8 +73,8 @@ Updater.updateToLatest = function (this: any, version: any) {
 		const meta = Data.manifest.guidMap[guid as string];
 		if (meta) {
 			const sPath = Path.resolve!(srcPluginDir, file.name);
-			const jsPath = (File.path as any)(meta.path);
-			const tsPath = (File.path as any)(meta.path.replace(jsExtname, '.ts'));
+			const jsPath = File.path!(meta.path);
+			const tsPath = File.path!(meta.path.replace(jsExtname, '.ts'));
 			FS.copyFileSync!(sPath, jsPath);
 			FS.renameSync!(jsPath, tsPath);
 		}
@@ -88,5 +88,5 @@ Updater.updateToLatest = function (this: any, version: any) {
 	const dTsconfigPath = Path.resolve!(dstProjectDir, 'tsconfig.json');
 	FS.copyFileSync!(sTsconfigPath, dTsconfigPath);
 
-	(UpdateLog.open as any)();
+	UpdateLog.open!();
 };

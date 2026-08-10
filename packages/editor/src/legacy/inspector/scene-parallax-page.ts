@@ -7,20 +7,36 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneParallax = {
+	interface SceneParallaxShape {
+		target: SceneParallaxData | null;
+		update: ((parallax: SceneParallaxData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface SceneParallaxData {
+		player: {
+			destroy(): void;
+			loadTexture(): void;
+			shiftX: number;
+			shiftY: number;
+		};
+		tint: Record<string, unknown>;
+		[k: string]: unknown;
+	}
+	const SceneParallax: SceneParallaxShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	SceneParallax.initialize = function (this: any) {
+	SceneParallax.initialize = function (this: typeof SceneParallax) {
 		if (!$('#sceneParallax-name')) return;
 		this.nameBox = $('#sceneParallax-name');
 		$('#sceneParallax-layer').loadItems([
@@ -50,7 +66,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneParallax-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneParallax-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneParallax-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneParallax-parameter-pane').bind($('#sceneParallax-scripts'));
 
@@ -91,7 +109,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneParallax.create = function (this: any) {
+	SceneParallax.create = function (this: typeof SceneParallax) {
 		return {
 			class: 'parallax',
 			name: 'Parallax',
@@ -126,7 +144,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneParallax.open = function (this: any, parallax: any) {
+	SceneParallax.open = function (this: typeof SceneParallax, parallax: SceneParallaxData) {
 		if (this.target !== parallax) {
 			this.target = parallax;
 
@@ -162,7 +180,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.close = function (this: any) {
+	SceneParallax.close = function (this: typeof SceneParallax) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -174,7 +192,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.write = function (this: any, options: any) {
+	SceneParallax.write = function (this: typeof SceneParallax, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneParallax-x'), options.x);
 		}
@@ -183,7 +201,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParallax.update = function (this: any, parallax: any, key: any, value: any) {
+	SceneParallax.update = function (
+		this: typeof SceneParallax,
+		parallax: SceneParallaxData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -258,8 +281,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneParallax.paramInput = function (this: any, event: any) {
-		SceneParallax.update!(SceneParallax.target, Inspector.getKey!(this), read(this));
+	SceneParallax.paramInput = function (this: typeof SceneParallax, event: Event) {
+		SceneParallax.update!(
+			SceneParallax.target as SceneParallaxData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneParallax = SceneParallax;

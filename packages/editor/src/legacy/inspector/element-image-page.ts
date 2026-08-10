@@ -4,18 +4,28 @@ import { UI } from '@/ui/ui-window.ts';
 import { read } from '@/util/element-utils.ts';
 
 {
-	const UIImage = {
+	interface UIImageShape {
+		target: UIImageData | null;
+		update: ((node: UIImageData, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
+	}
+	interface UIImageData {
+		instances: { setProperty(key: string, value: unknown): void };
+		tint: Record<string, unknown>;
+		[k: string]: unknown;
+	}
+	const UIImage: UIImageShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIImage.initialize = function (this: any) {
+	UIImage.initialize = function (this: typeof UIImage) {
 		if (!$('#uiImage-display')) return;
 		$('#uiImage-display').loadItems([
 			{ name: 'Stretch', value: 'stretch' },
@@ -81,7 +91,7 @@ import { read } from '@/util/element-utils.ts';
 		);
 	};
 
-	UIImage.create = function (this: any) {
+	UIImage.create = function (this: typeof UIImage) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -110,7 +120,7 @@ import { read } from '@/util/element-utils.ts';
 		};
 	};
 
-	UIImage.open = function (this: any, node: any) {
+	UIImage.open = function (this: typeof UIImage, node: UIImageData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -131,7 +141,7 @@ import { read } from '@/util/element-utils.ts';
 		}
 	};
 
-	UIImage.close = function (this: any) {
+	UIImage.close = function (this: typeof UIImage) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -140,7 +150,12 @@ import { read } from '@/util/element-utils.ts';
 		}
 	};
 
-	UIImage.update = function (this: any, node: any, key: any, value: any) {
+	UIImage.update = function (
+		this: typeof UIImage,
+		node: UIImageData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -175,8 +190,8 @@ import { read } from '@/util/element-utils.ts';
 		UI.requestRendering!();
 	};
 
-	UIImage.paramInput = function (this: any, event: any) {
-		UIImage.update(UIImage.target, Inspector.getKey!(this), read(this));
+	UIImage.paramInput = function (this: typeof UIImage, event: Event) {
+		UIImage.update!(UIImage.target as UIImageData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiImage = UIImage;

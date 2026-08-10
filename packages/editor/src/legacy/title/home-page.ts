@@ -10,53 +10,76 @@ import { Editor } from '@/main/editor.ts';
 import { Title } from './title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
-type HomeMethod = ((...args: any[]) => any) | null;
+import type { Dirent, Stats } from 'node:fs';
+
+type StatType = 'folder' | 'data' | 'script' | 'image' | 'media' | 'other';
+
+interface StatCounts {
+	folder: number;
+	data: number;
+	script: number;
+	image: number;
+	media: number;
+	other: number;
+	total: number;
+}
+
+interface FileStatItem {
+	type: StatType;
+	size: number;
+}
+
+interface RecentProject {
+	name: string;
+	path: string;
+	date: string | number;
+	[k: string]: any;
+}
 
 interface HomeShape {
 	state: string | null;
 	openProject: ((path?: string) => void) | null;
 	createProject: ((path?: string) => void) | null;
 
-	initialize: (() => void) | null;
-	updateCenterPosition: HomeMethod;
-	parseRecentProjects: HomeMethod;
-	removeRecentProject: HomeMethod;
-	readFileList: HomeMethod;
-	countFileList: HomeMethod;
-	windowResize: HomeMethod;
-	windowLocalize: HomeMethod;
-	startClick: HomeMethod;
-	recentClick: HomeMethod;
-	recentPointerup: HomeMethod;
+	initialize: ((this: typeof Home) => void) | null;
+	updateCenterPosition: ((this: typeof Home) => void) | null;
+	parseRecentProjects: ((this: typeof Home) => void) | null;
+	removeRecentProject: ((this: typeof Home, index: number) => void) | null;
+	readFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
+	countFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
+	windowResize: ((this: typeof Home, event: Event) => void) | null;
+	windowLocalize: ((this: typeof Home, event: Event) => void) | null;
+	startClick: ((this: typeof Home, event: Event) => void) | null;
+	recentClick: ((this: typeof Home, event: Event) => void) | null;
+	recentPointerup: ((this: typeof Home, event: Event) => void) | null;
 }
 
 export const Home: HomeShape = {
-	initialize: null as any,
-	updateCenterPosition: null as any,
-	parseRecentProjects: null as any,
-	removeRecentProject: null as any,
-	readFileList: null as any,
-	countFileList: null as any,
-	windowResize: null as any,
-	windowLocalize: null as any,
-	startClick: null as any,
-	recentClick: null as any,
-	recentPointerup: null as any,
+	initialize: null,
+	updateCenterPosition: null,
+	parseRecentProjects: null,
+	removeRecentProject: null,
+	readFileList: null,
+	countFileList: null,
+	windowResize: null,
+	windowLocalize: null,
+	startClick: null,
+	recentClick: null,
+	recentPointerup: null,
 	state: null as string | null,
 	openProject: null as ((path?: string) => void) | null,
 	createProject: null as (() => void) | null
 };
 
-Home.initialize = function (this: any) {
-	window.addEventListener('resize', this.windowResize);
-	window.addEventListener('localize', this.windowLocalize);
-	$('#home-start-list').addEventListener('click', this.startClick);
-	$('#home-recent-list').addEventListener('click', this.recentClick);
-	$('#home-recent-list').addEventListener('pointerup', this.recentPointerup);
+Home.initialize = function (this: typeof Home) {
+	window.addEventListener('resize', this.windowResize!);
+	window.addEventListener('localize', this.windowLocalize!);
+	$('#home-start-list').addEventListener('click', this.startClick!);
+	$('#home-recent-list').addEventListener('click', this.recentClick!);
+	$('#home-recent-list').addEventListener('pointerup', this.recentPointerup!);
 };
 
-Home.updateCenterPosition = function (this: any) {
+Home.updateCenterPosition = function (this: typeof Home) {
 	if (Layout.manager.index === 'home') {
 		const elPage = $('#home');
 		const elContent = $('#home-content');
@@ -69,22 +92,22 @@ Home.updateCenterPosition = function (this: any) {
 	}
 };
 
-Home.windowResize = function (this: any, event: any) {
+Home.windowResize = function (this: typeof Home, event: Event) {
 	// 不支持page(home):resize事件 先用window:resize代替
 	Home.updateCenterPosition!();
 };
 
-Home.parseRecentProjects = function (this: any) {
+Home.parseRecentProjects = function (this: typeof Home) {
 	const nodes = $('.home-recent-item');
-	const items = (Editor.config as any).recent;
+	const items = Editor.config!.recent! as RecentProject[];
 	const statsMode =
 		typeof SettingConfig !== 'undefined' && SettingConfig.config.recent
 			? SettingConfig.config.recent.statsMode
 			: 'count';
 
 	for (let i = 0; i < nodes.length; i++) {
-		const node = clear((nodes as Record<string, any>)[i]);
-		const item = items![i];
+		const node = clear(nodes[i]);
+		const item = items[i];
 		removeClass(node, 'disabled');
 		if (!item) {
 			hide(node);
@@ -129,7 +152,7 @@ Home.parseRecentProjects = function (this: any) {
 		node.appendChild(eStat);
 
 		const dirname = Path.dirname!(path);
-		new Promise((resolve: any, reject: any) => {
+		new Promise<string>((resolve: (val: string) => void, reject: (err: unknown) => void) => {
 			if (FS.existsSync!(path)) {
 				const dPath = `${dirname}/data/config.json`;
 				resolve(FSP.readFile!(dPath, 'utf8'));
@@ -137,8 +160,8 @@ Home.parseRecentProjects = function (this: any) {
 				reject(new URIError());
 			}
 		})
-			.then((data: any) => {
-				const { window } = JSON.parse(data as any);
+			.then((data: string) => {
+				const { window } = JSON.parse(data);
 				eTitle.textContent = window.title;
 
 				// 根据配置选择使用readFileList或countFileList
@@ -148,8 +171,8 @@ Home.parseRecentProjects = function (this: any) {
 					return this.countFileList!(dirname);
 				}
 			})
-			.then((list: any) => {
-				const counts = {
+			.then((list: FileStatItem[]) => {
+				const counts: StatCounts = {
 					folder: 0,
 					data: 0,
 					script: 0,
@@ -158,7 +181,7 @@ Home.parseRecentProjects = function (this: any) {
 					other: 0,
 					total: 0
 				};
-				const sizes = {
+				const sizes: StatCounts = {
 					folder: 0,
 					data: 0,
 					script: 0,
@@ -169,9 +192,9 @@ Home.parseRecentProjects = function (this: any) {
 				};
 				const length = list.length;
 				for (let i = 0; i < length; i++) {
-					const { type, size } = (list as Record<string, any>)[i];
-					(counts as Record<string, any>)[type] += 1;
-					(sizes as Record<string, any>)[type] += size;
+					const { type, size } = list[i];
+					counts[type] += 1;
+					sizes[type] += size;
 				}
 				counts.total =
 					counts.data + counts.script + counts.image + counts.media + counts.other;
@@ -184,9 +207,9 @@ Home.parseRecentProjects = function (this: any) {
 					{ type: 'media', name: get('media') },
 					{ type: 'other', name: get('other') },
 					{ type: 'total', name: get('total') }
-				]) {
-					const count = (counts as Record<string, any>)[type];
-					const size = File.parseFileSize!((sizes as Record<string, any>)[type]);
+				] as { type: StatType | 'total'; name: string }[]) {
+					const count = counts[type];
+					const size = File.parseFileSize!(sizes[type]);
 
 					const eText = document.createElement('div');
 					addClass(eText, 'home-recent-data');
@@ -202,7 +225,7 @@ Home.parseRecentProjects = function (this: any) {
 				}
 				show(node);
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				addClass(node, 'disabled');
 				if (error instanceof URIError) {
 					eTitle.textContent = 'Project does not exist';
@@ -213,18 +236,18 @@ Home.parseRecentProjects = function (this: any) {
 	}
 };
 
-Home.removeRecentProject = function (this: any, index: any) {
+Home.removeRecentProject = function (this: typeof Home, index: number) {
 	const nodes = $('.home-recent-item');
-	const items = (Editor.config as any).recent;
-	const item = (items as Record<string, any>)[index];
-	const node = (nodes as Record<string, any>)[index];
+	const items = Editor.config!.recent! as RecentProject[];
+	const item = items[index];
+	const node = nodes[index];
 	if (item && node) {
 		items.remove(item);
 		clear(node);
 		const end = nodes.length - 1;
 		for (let i = index; i < end; i++) {
-			const sNode = (nodes as Record<string, any>)[i + 1];
-			const dNode = (nodes as Record<string, any>)[i];
+			const sNode = nodes[i + 1];
+			const dNode = nodes[i];
 			const array = Array.from(sNode.childNodes);
 			for (const node of array) {
 				dNode.appendChild(node);
@@ -233,12 +256,12 @@ Home.removeRecentProject = function (this: any, index: any) {
 				? addClass(dNode, 'disabled')
 				: removeClass(dNode, 'disabled');
 		}
-		hide((nodes as Record<string, any>)[items.length]);
+		hide(nodes[items.length]);
 	}
 };
 
 Home.countFileList = (function IIFE() {
-	const extnameToTypeMap = {
+	const extnameToTypeMap: Record<string, StatType> = {
 		'.actor': 'data',
 		'.skill': 'data',
 		'.trigger': 'data',
@@ -272,13 +295,13 @@ Home.countFileList = (function IIFE() {
 		'.woff': 'other',
 		'.woff2': 'other'
 	};
-	const options: any = { withFileTypes: true };
-	const read = (path: any, list: any) => {
-		return FSP.readdir!(path, options).then(async (files: any[]) => {
+	const options: { withFileTypes: true } = { withFileTypes: true };
+	const read = (path: string, list: FileStatItem[]): Promise<FileStatItem[]> => {
+		return FSP.readdir!(path, options).then(async (files: Dirent[]) => {
 			if (path) {
 				path += '/';
 			}
-			const promises = [] as any[];
+			const promises: Promise<FileStatItem[]>[] = [];
 			for (const file of files) {
 				const name = file.name;
 				const newPath = `${path}${name}`;
@@ -290,8 +313,7 @@ Home.countFileList = (function IIFE() {
 					promises.push(read(newPath, list));
 				} else {
 					const extname = Path.extname!(name);
-					const type =
-						(extnameToTypeMap as Record<string, any>)[extname.toLowerCase()] ?? 'other';
+					const type = extnameToTypeMap[extname.toLowerCase()] ?? 'other';
 					list.push({
 						type: type,
 						size: 0
@@ -304,13 +326,13 @@ Home.countFileList = (function IIFE() {
 			return list;
 		});
 	};
-	return function (this: any, path: any) {
+	return function (this: typeof Home, path: string) {
 		return read(path, []);
 	};
 })();
 
 Home.readFileList = (function IIFE() {
-	const extnameToTypeMap = {
+	const extnameToTypeMap: Record<string, StatType> = {
 		'.actor': 'data',
 		'.skill': 'data',
 		'.trigger': 'data',
@@ -344,13 +366,13 @@ Home.readFileList = (function IIFE() {
 		'.woff': 'other',
 		'.woff2': 'other'
 	};
-	const options: any = { withFileTypes: true };
-	const read = (path: any, list: any) => {
-		return FSP.readdir!(path, options).then(async (files: any[]) => {
+	const options: { withFileTypes: true } = { withFileTypes: true };
+	const read = (path: string, list: FileStatItem[]): Promise<FileStatItem[]> => {
+		return FSP.readdir!(path, options).then(async (files: Dirent[]) => {
 			if (path) {
 				path += '/';
 			}
-			const promises = [] as any[];
+			const promises: Promise<FileStatItem[] | void>[] = [];
 			for (const file of files) {
 				const name = file.name;
 				const newPath = `${path}${name}`;
@@ -362,15 +384,14 @@ Home.readFileList = (function IIFE() {
 					promises.push(read(newPath, list));
 				} else {
 					const extname = Path.extname!(name);
-					const type =
-						(extnameToTypeMap as Record<string, any>)[extname.toLowerCase()] ?? 'other';
+					const type = extnameToTypeMap[extname.toLowerCase()] ?? 'other';
 					const item = {
 						type: type,
 						size: 0
 					};
 					list.push(item);
 					promises.push(
-						FSP.stat!(newPath).then((stats: any) => {
+						FSP.stat!(newPath).then((stats: Stats) => {
 							item.size = stats.size;
 						})
 					);
@@ -382,19 +403,19 @@ Home.readFileList = (function IIFE() {
 			return list;
 		});
 	};
-	return function (this: any, path: any) {
+	return function (this: typeof Home, path: string) {
 		return read(path, []);
 	};
 })();
 
-Home.windowLocalize = function (this: any, event: any) {
+Home.windowLocalize = function (this: typeof Home, event: Event) {
 	if (Layout.manager.index === 'home') {
 		Home.parseRecentProjects!();
 	}
 };
 
-Home.startClick = function (this: any, event: any) {
-	const element = event.target;
+Home.startClick = function (this: typeof Home, event: Event) {
+	const element = event.target as HTMLElement;
 	if (hasClass(element, 'home-start-item')) {
 		switch (element.getAttribute('value')) {
 			case 'new':
@@ -407,27 +428,27 @@ Home.startClick = function (this: any, event: any) {
 	}
 };
 
-Home.recentClick = function (this: any, event: any) {
-	const element = event.target;
+Home.recentClick = function (this: typeof Home, event: Event) {
+	const element = event.target as HTMLElement;
 	if (hasClass(element, 'home-recent-item') && !hasClass(element, 'disabled')) {
 		const index = element.getAttribute('value');
-		const items = (Editor.config as any).recent;
-		const item = (items as Record<string, any>)[parseInt(index)];
+		const items = Editor.config!.recent! as RecentProject[];
+		const item = items[parseInt(index ?? '0')];
 		if (item) Editor.open!(item.path);
 	}
 };
 
-Home.recentPointerup = function (this: any, event: any) {
+Home.recentPointerup = function (this: typeof Home, event: Event) {
 	switch (event.button) {
 		case 2: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			if (
 				hasClass(element, 'home-recent-item') &&
 				element.childNodes.length !== 0 &&
 				document.activeElement === element.parentNode
 			) {
 				addClass(element, 'hover');
-				const index = parseInt(element.getAttribute('value'));
+				const index = parseInt(element.getAttribute('value') ?? '0');
 				const enabled = !hasClass(element, 'disabled');
 				const get = Local.createGetter!('menuRecent');
 				Menu.popup!(
@@ -443,19 +464,19 @@ Home.recentPointerup = function (this: any, event: any) {
 							label: get('openProject'),
 							enabled: enabled,
 							click: () => {
-								const items = (Editor.config as any).recent;
-								const item = (items as Record<string, any>)[index];
+								const items = Editor.config!.recent! as RecentProject[];
+								const item = items[index];
 								if (item) {
 									Editor.open!(item.path);
 								}
 							}
 						},
 						{
-							label: get(Local.showInExplorer!()),
+							label: get(Local.showInExplorer!() ?? ''),
 							enabled: enabled,
 							click: () => {
-								const items = (Editor.config as any).recent;
-								const item = (items as Record<string, any>)[index];
+								const items = Editor.config!.recent! as RecentProject[];
+								const item = items[index];
 								if (item) {
 									File.showInExplorer!(item.path);
 								}

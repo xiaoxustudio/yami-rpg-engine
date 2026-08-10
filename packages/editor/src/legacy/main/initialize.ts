@@ -1,6 +1,9 @@
 import { Timer } from '@/util/timer.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
+import { getWindowStore } from '@app/stores/window.ts';
+import { getLayoutStore } from '@app/stores/layout.ts';
+import type { EditorConfigShape } from '@app/stores/editor';
 import { Window } from '@/tools/window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 import '../variable/initialize.js';
@@ -54,76 +57,140 @@ import { Selection } from '@/tools/text-capture.ts';
 import { Zoom } from '@/tools/zoom-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 
-Object.assign(window as any, {
-	Timer,
-	Data,
-	Variable,
-	Animation,
-	Attribute,
-	AudioManager,
-	Command,
-	CustomCommand,
-	EventEditor,
-	Project,
-	Team,
-	Easing,
-	Enum,
-	Directory,
-	Localization,
-	Log,
-	Reference,
-	UpdateLog,
-	SetTileTag,
-	Palette,
-	AutoTile,
-	Sprite,
-	Curve,
-	NewProject,
-	Deployment,
-	Particle,
-	PluginManager,
-	Printer,
-	Scene,
-	Home,
-	Menubar,
-	Title,
-	ArrayList,
-	Color,
-	ConditionListInterface,
-	ImageClip,
-	Local,
-	PresetElement,
-	AttributeListInterface,
-	Rename,
-	PresetObject,
-	SetKey,
-	SetQuantity,
-	Selection,
-	Window,
-	Zoom,
-	UI
-});
+interface EditorGlobals {
+	Timer: typeof Timer;
+	Data: typeof Data;
+	Variable: typeof Variable;
+	Animation: typeof Animation;
+	Attribute: typeof Attribute;
+	AudioManager: typeof AudioManager;
+	Command: typeof Command;
+	CustomCommand: typeof CustomCommand;
+	EventEditor: typeof EventEditor;
+	Project: typeof Project;
+	Team: typeof Team;
+	Easing: typeof Easing;
+	Enum: typeof Enum;
+	Directory: typeof Directory;
+	Localization: typeof Localization;
+	Log: typeof Log;
+	Reference: typeof Reference;
+	UpdateLog: typeof UpdateLog;
+	SetTileTag: typeof SetTileTag;
+	Palette: typeof Palette;
+	AutoTile: typeof AutoTile;
+	Sprite: typeof Sprite;
+	Curve: typeof Curve;
+	NewProject: typeof NewProject;
+	Deployment: typeof Deployment;
+	Particle: typeof Particle;
+	PluginManager: typeof PluginManager;
+	Printer: typeof Printer;
+	Scene: typeof Scene;
+	Home: typeof Home;
+	Menubar: typeof Menubar;
+	Title: typeof Title;
+	ArrayList: typeof ArrayList;
+	Color: typeof Color;
+	ConditionListInterface: typeof ConditionListInterface;
+	ImageClip: typeof ImageClip;
+	Local: typeof Local;
+	PresetElement: typeof PresetElement;
+	AttributeListInterface: typeof AttributeListInterface;
+	Rename: typeof Rename;
+	PresetObject: typeof PresetObject;
+	SetKey: typeof SetKey;
+	SetQuantity: typeof SetQuantity;
+	Selection: typeof Selection;
+	Window: typeof Window;
+	Zoom: typeof Zoom;
+	UI: typeof UI;
+}
 
-Editor.initialize = async function (this: any) {
-	this.switchHotkey(false);
+interface SingletonShape {
+	initialize?: ((...args: any[]) => any) | null;
+	dependsOn?: string[];
+	[k: string]: unknown;
+}
+
+Object.assign(
+	window as unknown as EditorGlobals,
+	{
+		Timer,
+		Data,
+		Variable,
+		Animation,
+		Attribute,
+		AudioManager,
+		Command,
+		CustomCommand,
+		EventEditor,
+		Project,
+		Team,
+		Easing,
+		Enum,
+		Directory,
+		Localization,
+		Log,
+		Reference,
+		UpdateLog,
+		SetTileTag,
+		Palette,
+		AutoTile,
+		Sprite,
+		Curve,
+		NewProject,
+		Deployment,
+		Particle,
+		PluginManager,
+		Printer,
+		Scene,
+		Home,
+		Menubar,
+		Title,
+		ArrayList,
+		Color,
+		ConditionListInterface,
+		ImageClip,
+		Local,
+		PresetElement,
+		AttributeListInterface,
+		Rename,
+		PresetObject,
+		SetKey,
+		SetQuantity,
+		Selection,
+		Window,
+		Zoom,
+		UI
+	} as EditorGlobals
+);
+
+Editor.initialize = async function (this: typeof Editor) {
+	this.switchHotkey!(false);
 
 	// 等待 AppShell 懒加载的命令/工具弹窗组件挂载完成，保证 initAll 能拿到 DOM
 	// 首次冷启动时 145+ 个异步组件编译较慢，8s 超时太短会提前 initAll 导致元素缺失，放宽到 60s
 	await Promise.race([
-		(window as any).__lazyComponentsReady__ ?? Promise.resolve(),
-		new Promise((resolve: any) => setTimeout(resolve, 60000))
+		(window as unknown as { __lazyComponentsReady__?: Promise<void> })
+			.__lazyComponentsReady__ ?? Promise.resolve(),
+		new Promise((resolve: (val: unknown) => void) => setTimeout(resolve, 60000))
 	]);
 
 	try {
+		Window.afterChange = () => getWindowStore().syncState();
+		getWindowStore().syncState();
+		Layout.afterChange = () => getLayoutStore().syncState();
+		getLayoutStore().syncState();
 		// Selector 为懒加载 Vue 组件（#selector-browser），须等 __lazyComponentsReady__ 挂载完成后再解析
 		const Selector = getSelectorInstance();
-		(Title.initialize as any)();
-		const data = await (window as any).config;
+		Title.initialize!();
+		const data = await (window as unknown as { config?: EditorConfigShape }).config;
 		const code = JSON.stringify(data);
 		this.config = data ?? {};
-		if (this.config) this.checkForEditorUpdates();
+		if (this.config) this.checkForEditorUpdates!();
 		Object.defineProperty(this.config, 'code', { value: code });
-		delete (window as any).config;
+		delete (window as unknown as { config?: EditorConfigShape }).config;
 
 		const initializedSet = new Set();
 		const singletonMap = {
@@ -171,12 +238,12 @@ Editor.initialize = async function (this: any) {
 			AttributeListInterface,
 			ConditionListInterface
 		};
-		const singletons = singletonMap as Record<string, any>;
+		const singletons = singletonMap as unknown as Record<string, SingletonShape>;
 		const initNames = Object.keys(singletons).filter(
-			(n: any) => singletons[n] != null && typeof singletons[n].initialize === 'function'
+			(n: string) => singletons[n] != null && typeof singletons[n].initialize === 'function'
 		);
-		const graph = new Map<string, string[]>(initNames.map((n: any) => [n, [] as string[]]));
-		const inDegree = new Map<string, number>(initNames.map((n: any) => [n, 0]));
+		const graph = new Map<string, string[]>(initNames.map((n: string) => [n, [] as string[]]));
+		const inDegree = new Map<string, number>(initNames.map((n: string) => [n, 0]));
 		for (const name of initNames) {
 			const deps = singletons[name].dependsOn ?? [];
 			for (const dep of deps) {
@@ -185,15 +252,15 @@ Editor.initialize = async function (this: any) {
 				inDegree.set(name, (inDegree.get(name) ?? 0) + 1);
 			}
 		}
-		const queue = initNames.filter((n: any) => inDegree.get(n) === 0);
+		const queue = initNames.filter((n: string) => inDegree.get(n) === 0);
 		while (queue.length) {
 			const node = queue.shift()!;
 			const singleton = singletons[node];
 			try {
-				singleton.initialize.call(singleton);
-			} catch (e: any) {
-				console.warn(`[init] ${node} initialize failed:`, e?.message);
-				console.warn(`[init] ${node} stack:`, e?.stack);
+				singleton.initialize!.call(singleton);
+			} catch (e: unknown) {
+				console.warn(`[init] ${node} initialize failed:`, (e as Error)?.message);
+				console.warn(`[init] ${node} stack:`, (e as Error)?.stack);
 			}
 			initializedSet.add(node);
 			for (const next of graph.get(node)!) {
@@ -207,7 +274,7 @@ Editor.initialize = async function (this: any) {
 					Log.warn!(`初始化循环依赖：${name} 未被初始化`, singletons[name].dependsOn);
 				}
 				try {
-					singletons[name].initialize.call(singletons[name]);
+					singletons[name].initialize!.call(singletons[name]);
 				} catch (e) {
 					console.warn(`[init] ${name} initialize failed (cyclic):`, e);
 				}
@@ -215,16 +282,16 @@ Editor.initialize = async function (this: any) {
 			}
 		}
 
-		this.loadConfig();
-		(Layout.manager as any).switch('home');
-	} catch (error: any) {
-		(Log.throw as any)(error);
-		(Window.confirm as any)(
+		this.loadConfig!();
+		Layout.manager.switch('home');
+	} catch (error: unknown) {
+		Log.throw!(error);
+		Window.confirm!(
 			{
-				message: `Failed to initialize\n${error.message}`,
+				message: `Failed to initialize\n${(error as Error).message}`,
 				close: () => {
 					this.config = null;
-					this.quit();
+					this.quit!();
 				}
 			},
 			[

@@ -129,6 +129,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Variable } from '@/variable/variable.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -143,20 +144,20 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onListSelect = (event: any) => {
-	(window as any).Variable?.listSelect?.(event);
+const onListSelect = (event: Event) => {
+	Variable?.listSelect?.(event);
 };
-const onListRecord = (event: any) => {
-	(window as any).Variable?.listRecord?.(event);
+const onListRecord = (event: Event) => {
+	Variable?.listRecord?.(event);
 };
-const onListPopup = (event: any) => {
-	(window as any).Variable?.listPopup?.(event);
+const onListPopup = (event: Event) => {
+	Variable?.listPopup?.(event);
 };
-const onListOpen = (event: any) => {
-	(window as any).Variable?.listOpen?.(event);
+const onListOpen = (event: Event) => {
+	Variable?.listOpen?.(event);
 };
 const onNameInput = (value: string) => {
-	(window as any).Variable?.nameInput?.({ target: { value } });
+	Variable?.nameInput?.({ target: { value } });
 };
 let lastSortValue: any;
 let lastSortWriteValue: any;
@@ -165,25 +166,25 @@ let lastTypeWriteValue: any;
 const onSortInput = (value: any) => {
 	if (lastSortValue !== value) {
 		lastSortValue = value;
-		(window as any).Variable?.sortInput?.({ value });
+		Variable?.sortInput?.({ value });
 	}
 };
 const onSortWrite = (value: any) => {
 	if (lastSortWriteValue !== value) {
 		lastSortWriteValue = value;
-		(window as any).Variable?.sortWrite?.({ value });
+		Variable?.sortWrite?.({ value });
 	}
 };
 const onTypeInput = (value: any) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
-		(window as any).Variable?.typeInput?.({ value });
+		Variable?.typeInput?.({ value });
 	}
 };
 const onTypeWrite = (value: any) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
-		(window as any).Variable?.typeWrite?.({ value });
+		Variable?.typeWrite?.({ value });
 	}
 };
 

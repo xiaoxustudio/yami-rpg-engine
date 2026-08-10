@@ -4,14 +4,14 @@ import { Cursor } from '../tools/pointer-object.ts';
 import { createScrollBar } from '@/components/scroll-bar.ts';
 import { attachDoubleclick, detachDoubleclick } from './doubleclick.ts';
 
-if (typeof (HTMLElement.prototype as any).on !== 'function') {
+if (typeof (HTMLElement.prototype as unknown as Record<string, unknown>).on !== 'function') {
 	Object.defineProperty(HTMLElement.prototype, 'on', {
 		configurable: true,
 		writable: true,
 		value: function (
 			this: HTMLElement,
 			type: string,
-			listener: (event: any) => void,
+			listener: (event: EditorEvent) => void,
 			options?: AddEventListenerOptions
 		) {
 			if (type === 'doubleclick') {
@@ -27,7 +27,7 @@ if (typeof (HTMLElement.prototype as any).on !== 'function') {
 		value: function (
 			this: HTMLElement,
 			type: string,
-			listener: (event: any) => void,
+			listener: (event: EditorEvent) => void,
 			options?: EventListenerOptions
 		) {
 			if (type === 'doubleclick') {
@@ -38,13 +38,13 @@ if (typeof (HTMLElement.prototype as any).on !== 'function') {
 		}
 	});
 }
-if (typeof (NodeList.prototype as any).on !== 'function') {
+if (typeof (NodeList.prototype as unknown as Record<string, unknown>).on !== 'function') {
 	Object.defineProperty(NodeList.prototype, 'on', {
 		configurable: true,
 		value: function (
 			this: NodeList,
 			type: string,
-			listener: (event: any) => void,
+			listener: (event: EditorEvent) => void,
 			options?: AddEventListenerOptions
 		) {
 			for (const el of this) {
@@ -58,7 +58,7 @@ if (typeof (NodeList.prototype as any).on !== 'function') {
 		value: function (
 			this: NodeList,
 			type: string,
-			listener: (event: any) => void,
+			listener: (event: EditorEvent) => void,
 			options?: EventListenerOptions
 		) {
 			for (const el of this) {
@@ -79,15 +79,15 @@ export function on(
 		return;
 	}
 	if (type === 'doubleclick') {
-		if (typeof (el as any).on === 'function') {
-			(el as any).on(type, listener, options);
+		if (typeof el.on === 'function') {
+			el.on(type, listener, options);
 		} else {
 			attachDoubleclick(el, listener, options);
 		}
 		return;
 	}
-	if (typeof (el as any).on === 'function') {
-		(el as any).on(type, listener, options);
+	if (typeof el.on === 'function') {
+		el.on(type, listener, options);
 	} else {
 		el.addEventListener(type, listener, options);
 	}
@@ -101,37 +101,37 @@ export function off(
 ): void {
 	if (!el) return;
 	if (type === 'doubleclick') {
-		if (typeof (el as any).off === 'function') {
-			(el as any).off(type, listener, options);
+		if (typeof el.off === 'function') {
+			el.off(type, listener, options);
 		} else {
 			detachDoubleclick(el, listener, options);
 		}
 		return;
 	}
-	if (typeof (el as any).off === 'function') {
-		(el as any).off(type, listener, options);
+	if (typeof el.off === 'function') {
+		el.off(type, listener, options);
 	} else {
 		el.removeEventListener(type, listener, options);
 	}
 }
 
-export function emit(el: any, type: string, detail?: any): boolean {
+export function emit(el: EventTarget, type: string, detail?: unknown): boolean {
 	return el.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
-export function show(el: any): HTMLElement {
-	if (!el) return el;
+export function show(el: Record<string, any> | null | undefined): HTMLElement {
+	if (!el) return el as unknown as HTMLElement;
 	removeClass(el, 'hidden');
-	return el;
+	return el as unknown as HTMLElement;
 }
 
-export function hide(el: any): HTMLElement {
-	if (!el) return el;
+export function hide(el: Record<string, any> | null | undefined): HTMLElement {
+	if (!el) return el as unknown as HTMLElement;
 	addClass(el, 'hidden');
-	return el;
+	return el as unknown as HTMLElement;
 }
 
-export function addClass(el: any, className: string): boolean {
+export function addClass(el: Record<string, any> | null | undefined, className: string): boolean {
 	if (!el) return false;
 	if (!el.classList) {
 		console.error('[addClass] el has no classList:', el, 'stack:', new Error().stack);
@@ -144,7 +144,10 @@ export function addClass(el: any, className: string): boolean {
 	return false;
 }
 
-export function removeClass(el: any, className: string): boolean {
+export function removeClass(
+	el: Record<string, any> | null | undefined,
+	className: string
+): boolean {
 	if (!el) return false;
 	if (!el.classList) {
 		console.error('[removeClass] el has no classList:', el, 'stack:', new Error().stack);
@@ -157,20 +160,20 @@ export function removeClass(el: any, className: string): boolean {
 	return false;
 }
 
-export function hasClass(el: any, className: string): boolean {
+export function hasClass(el: Record<string, any> | null | undefined, className: string): boolean {
 	if (!el || !el.classList) return false;
 	return el.classList.contains(className);
 }
 
-export function enable(el: any): void {
+export function enable(el: Record<string, any> | null | undefined): void {
 	removeClass(el, 'disabled');
 }
 
-export function disable(el: any): void {
+export function disable(el: Record<string, any> | null | undefined): void {
 	addClass(el, 'disabled');
 }
 
-export function seek(el: any, tagName: string, count: number = 1): HTMLElement {
+export function seek(el: HTMLElement, tagName: string, count: number = 1): HTMLElement {
 	let element: HTMLElement = el;
 	while (count-- > 0) {
 		if (
@@ -185,36 +188,39 @@ export function seek(el: any, tagName: string, count: number = 1): HTMLElement {
 	return element;
 }
 
-export function css(el: any): CSSStyleDeclaration {
+export function css(el: Element): CSSStyleDeclaration {
 	return getComputedStyle(el);
 }
 
-export function rect(el: any): DOMRect {
-	return el.getBoundingClientRect();
+export function rect(el: Record<string, any> | null | undefined): DOMRect {
+	return el!.getBoundingClientRect();
 }
 
-export function clear(el: any): HTMLElement {
-	if (!el) return el as HTMLElement;
+export function clear(el: Node | null | undefined): HTMLElement {
+	if (!el) return el as unknown as HTMLElement;
 	el.textContent = '';
-	return el;
+	return el as HTMLElement;
 }
 
-export function read(el: any): any {
-	if (typeof (el as any).read === 'function') {
-		return (el as any).read();
+export function read(el: unknown): any {
+	if (typeof (el as unknown as Record<string, unknown>).read === 'function') {
+		return (el as unknown as Record<string, any>).read();
 	}
-	return (el as any).dataValue;
+	return (el as unknown as Record<string, any>).dataValue;
 }
 
-export function write(el: any, value: any): void {
-	if (typeof (el as any).write === 'function') {
-		(el as any).write(value);
+export function write(el: unknown, value: unknown): void {
+	if (typeof (el as unknown as Record<string, unknown>).write === 'function') {
+		(el as unknown as Record<string, any>).write(value);
 	} else {
-		(el as any).dataValue = value;
+		(el as unknown as Record<string, any>).dataValue = value;
 	}
 }
 
-export function getFocus(el: any, mode: string | null = null): void {
+export function getFocus(
+	el: Record<string, any> | null | undefined,
+	mode: string | null = null
+): void {
 	setTimeout(() => {
 		if (!el || typeof el.focus !== 'function') return;
 		el.focus();
@@ -227,7 +233,7 @@ export function getFocus(el: any, mode: string | null = null): void {
 				break;
 			case 'end':
 				if (typeof el.selectionStart === 'number') {
-					const endIndex = el.value.length;
+					const endIndex = el.value!.length;
 					el.selectionStart = endIndex;
 					el.selectionEnd = endIndex;
 				}
@@ -237,15 +243,15 @@ export function getFocus(el: any, mode: string | null = null): void {
 }
 
 const resizeEvent = new Event('resize');
-export function dispatchResizeEvent(el: any): void {
+export function dispatchResizeEvent(el: EventTarget): void {
 	el.dispatchEvent(resizeEvent);
 }
 
-export function focus(el: any): void {
+export function focus(el: HTMLElement): void {
 	el.focus();
 }
 
-export function blur(el: any): void {
+export function blur(el: HTMLElement): void {
 	el.blur();
 }
 
@@ -262,7 +268,7 @@ export const setTooltip = (function IIFE() {
 		duration: 0,
 		callback: () => {
 			if (state === 'waiting') {
-				let tip = (target as any)?.tip ?? '';
+				let tip = (target as (HTMLElement & { tip?: string }) | null)?.tip ?? '';
 				if (!tip) {
 					state = 'closed';
 					window.removeEventListener('keydown', close, capture);
@@ -356,7 +362,7 @@ export const setTooltip = (function IIFE() {
 		close();
 	});
 
-	return function (el: any, tip: string | (() => string)): void {
+	return function (el: HTMLElement & { tip?: string }, tip: string | (() => string)): void {
 		if ('tip' in el === false) {
 			el.addEventListener('pointermove', pointermove);
 			el.addEventListener('pointerleave', pointerleave);
@@ -375,7 +381,7 @@ export const setTooltip = (function IIFE() {
 	};
 })();
 
-export function hideChildNodes(el: any): void {
+export function hideChildNodes(el: Node): void {
 	for (const childNode of el.childNodes) {
 		if (childNode.nodeType === Node.ELEMENT_NODE) {
 			hide(childNode as HTMLElement);
@@ -383,7 +389,7 @@ export function hideChildNodes(el: any): void {
 	}
 }
 
-export function showChildNodes(el: any): void {
+export function showChildNodes(el: Node): void {
 	for (const childNode of el.childNodes) {
 		if (childNode.nodeType === Node.ELEMENT_NODE) {
 			show(childNode as HTMLElement);
@@ -395,27 +401,27 @@ const changeEvents = [
 	new Event('change', { bubbles: true }),
 	new Event('change', { bubbles: true })
 ];
-export function dispatchChangeEvent(el: any, index: number = 0): void {
+export function dispatchChangeEvent(el: Record<string, any>, index: number = 0): void {
 	el.dispatchEvent(changeEvents[index]);
 }
 
 const updateEvent = new Event('update');
-export function dispatchUpdateEvent(el: any): void {
+export function dispatchUpdateEvent(el: HTMLElement): void {
 	el.dispatchEvent(updateEvent);
 }
 
-export function hasScrollBar(el: any): boolean {
+export function hasScrollBar(el: HTMLElement): boolean {
 	return el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 }
 
-export function isInContent(el: any, event: MouseEvent): boolean {
+export function isInContent(el: Record<string, any>, event: MouseEvent): boolean {
 	const coords = getRelativeCoords(event, el);
 	const x = coords.x - el.scrollLeft;
 	const y = coords.y - el.scrollTop;
 	return x >= 0 && x < el.clientWidth && y >= 0 && y < el.clientHeight;
 }
 
-export function addScrollbars(el: any): void {
+export function addScrollbars(el: HTMLElement): void {
 	const hBar = createScrollBar();
 	const vBar = createScrollBar();
 	const corner = document.createElement('scroll-corner');
@@ -499,7 +505,7 @@ export function addScrollbars(el: any): void {
 	};
 }
 
-export function addSetScrollMethod(el: any): void {
+export function addSetScrollMethod(el: HTMLElement): void {
 	const userscroll = new Event('userscroll');
 
 	el.setScroll = function (left: number, top: number) {
@@ -525,7 +531,7 @@ const defaultPointerdown = function (this: HTMLElement, event: EditorEvent) {
 				event.mode = 'scroll';
 				event.scrollLeft = this.scrollLeft;
 				event.scrollTop = this.scrollTop;
-				(Cursor.open as any)('cursor-grab');
+				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.scrollPointerup);
 				window.addEventListener('pointermove', this.scrollPointermove);
 			}
@@ -538,7 +544,7 @@ const scrollPointerup = function (this: HTMLElement, event: EditorEvent) {
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
-				(Cursor.close as any)('cursor-grab');
+				Cursor.close('cursor-grab');
 				break;
 		}
 		this.dragging = null;
@@ -560,7 +566,7 @@ const scrollPointermove = function (this: HTMLElement, event: EditorEvent) {
 };
 
 export function listenDraggingScrollbarEvent(
-	el: any,
+	el: HTMLElement,
 	pointerdown: (event: EditorEvent) => void = defaultPointerdown,
 	options?: boolean | AddEventListenerOptions
 ): void {
@@ -569,11 +575,14 @@ export function listenDraggingScrollbarEvent(
 	on(el, 'pointerdown', pointerdown, options as AddEventListenerOptions);
 }
 
-export function getRelativeCoords(event: any, el: any): { x: number; y: number } {
-	const rect = el.getBoundingClientRect();
+export function getRelativeCoords(
+	event: Event,
+	el: Record<string, any> | null | undefined
+): { x: number; y: number } {
+	const rect = el!.getBoundingClientRect();
 	return {
-		x: event.clientX - rect.left - el.clientLeft + el.scrollLeft,
-		y: event.clientY - rect.top - el.clientTop + el.scrollTop
+		x: event.clientX - rect.left - el!.clientLeft + el!.scrollLeft,
+		y: event.clientY - rect.top - el!.clientTop + el!.scrollTop
 	};
 }
 
@@ -612,6 +621,9 @@ export function drawAndFitImage(
 	ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 }
 
-export function relate(a: any, b: any): boolean {
+export function relate(
+	a: { type: string; pointerId?: number } | Record<string, any>,
+	b?: { type: string; pointerId?: number } | Record<string, any> | null
+): boolean {
 	return !!a && a.pointerId === b?.pointerId;
 }

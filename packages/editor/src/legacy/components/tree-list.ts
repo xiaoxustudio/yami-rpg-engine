@@ -21,7 +21,7 @@ export const TreeList: TreeListStaticsType = {
 	createParents: treeListStatics.createParents,
 	deleteCaches: treeListStatics.deleteCaches,
 	textBox: treeListStatics.textBox,
-	prototype: treeListPrototype as any
+	prototype: treeListPrototype
 };
 
 export interface TreeListElement extends HTMLElement {

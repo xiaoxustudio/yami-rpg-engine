@@ -4,28 +4,49 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIReference = {
+	interface UIReferenceData {
+		instance: {
+			historyEnabled: boolean;
+		};
+		instances: {
+			setProperty(key: string, value: unknown): void;
+		};
+		[k: string]: unknown;
+	}
+	interface UIReferenceShape {
+		target: UIReferenceData | null;
+		update: ((node: UIReferenceData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const UIReference: UIReferenceShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIReference.initialize = function (this: any) {
+	UIReference.initialize = function (this: typeof UIReference) {
 		if (!$('#uiReference-prefabId')) return;
 		const elements = document.querySelectorAll(
 			'#uiReference-prefabId, #uiReference-synchronous'
 		);
-		elements.forEach((el: any) => el.addEventListener('input', this.paramInput));
-		elements.forEach((el: any) => el.addEventListener('focus', Inspector.inputFocus));
-		elements.forEach((el: any) => el.addEventListener('blur', Inspector.inputBlur!(this, UI)));
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			el.addEventListener('input', this.paramInput!)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur!(this, UI))
+		);
 	};
 
-	UIReference.create = function (this: any) {
+	UIReference.create = function (this: typeof UIReference) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -46,7 +67,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIReference.open = function (this: any, node: any) {
+	UIReference.open = function (this: typeof UIReference, node: UIReferenceData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -57,7 +78,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIReference.close = function (this: any) {
+	UIReference.close = function (this: typeof UIReference) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -66,7 +87,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIReference.update = function (this: any, node: any, key: any, value: any) {
+	UIReference.update = function (
+		this: typeof UIReference,
+		node: UIReferenceData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -92,8 +118,12 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIReference.paramInput = function (this: any, event: any) {
-		UIReference.update!(UIReference.target, Inspector.getKey!(this), read(this));
+	UIReference.paramInput = function (this: typeof UIReference, event: Event) {
+		UIReference.update!(
+			UIReference.target as UIReferenceData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.uiReference = UIReference;

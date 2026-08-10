@@ -1,15 +1,26 @@
 import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const AngleGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+interface AngleTarget {
+	dataValue: {
+		type: string;
+		position: { type: string; actor: { type: string } };
+		degrees: number;
+	};
+	input: (getter: Record<string, any>) => void;
+	isPluginInput?: boolean;
+}
+
+export const AngleGetter: AccessorBaseShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
-AngleGetter.initialize = function (this: any) {
+AngleGetter.initialize = function (this: typeof AngleGetter) {
 	if (!$('#angleGetter-type')) return;
 	$('#angleGetter-type').loadItems([
 		{ name: 'Towards Position', value: 'position' },
@@ -35,7 +46,7 @@ AngleGetter.initialize = function (this: any) {
 	$('#angleGetter-confirm').on('click', this.confirm);
 };
 
-AngleGetter.open = function (this: any, target: any) {
+AngleGetter.open = function (this: typeof AngleGetter, target: AngleTarget) {
 	this.target = target;
 	Window.open!('angleGetter');
 
@@ -60,10 +71,10 @@ AngleGetter.open = function (this: any, target: any) {
 	getFocus($('#angleGetter-type'));
 };
 
-AngleGetter.confirm = function (this: any, event: any) {
+AngleGetter.confirm = function (this: typeof AngleGetter, event: Event) {
 	const read = getElementReader('angleGetter');
 	const type = read('type');
-	let getter;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'position': {
 			const position = read('position-position');
@@ -81,6 +92,6 @@ AngleGetter.confirm = function (this: any, event: any) {
 			getter = { type };
 			break;
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('angleGetter');
 }.bind(AngleGetter);

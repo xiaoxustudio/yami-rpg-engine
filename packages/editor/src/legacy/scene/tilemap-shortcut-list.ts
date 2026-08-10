@@ -5,7 +5,7 @@ import { Scene } from './scene-window.ts';
 interface TilemapData {
 	shortcut: number;
 	name: string;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 export class TilemapShortcuts {
@@ -59,7 +59,7 @@ export class TilemapShortcuts {
 		return 0;
 	}
 
-	static elements: { [index: number]: any } = {};
+	static elements: { [index: number]: HTMLElement } = {};
 
 	static initialize(): void {
 		this.elements = {

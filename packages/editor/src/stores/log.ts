@@ -5,7 +5,7 @@ import { Reference } from '@/log/related-references.ts';
 import { shallowRef } from 'vue';
 
 export const useLogStore = defineStore('log', () => {
-	const logs = shallowRef<any[]>([]);
+	const logs = shallowRef<{ [k: string]: any }[]>([]);
 
 	function syncState() {
 		logs.value = Log?.logs ?? [];

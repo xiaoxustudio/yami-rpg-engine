@@ -5,7 +5,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 Scene.setZoom = (function IIFE() {
-	return function (this: any, zoom: any) {
+	return function (this: typeof Scene, zoom: number) {
 		const slider = $('#scene-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -43,7 +43,7 @@ Scene.setZoom = (function IIFE() {
 	};
 })();
 
-Scene.setSize = function (this: any, width: any, height: any) {
+Scene.setSize = function (this: typeof Scene, width: number, height: number) {
 	if (this.width === width && this.height === height) {
 		return;
 	}
@@ -76,14 +76,14 @@ Scene.setSize = function (this: any, width: any, height: any) {
 	this.requestRendering();
 };
 
-Scene.setTileSize = function (this: any, tileWidth: any, tileHeight: any) {
+Scene.setTileSize = function (this: typeof Scene, tileWidth: number, tileHeight: number) {
 	this.tileWidth = tileWidth;
 	this.tileHeight = tileHeight;
 	this.resize();
 	this.requestRendering();
 };
 
-Scene.setTilemapSize = function (this: any, tilemap: any, width: any, height: any) {
+Scene.setTilemapSize = function (this: typeof Scene, tilemap: any, width: number, height: number) {
 	if (tilemap.width === width && tilemap.height === height) {
 		return;
 	}
@@ -116,7 +116,7 @@ Scene.setTilemapSize = function (this: any, tilemap: any, width: any, height: an
 	this.marquee.resize();
 };
 
-Scene.resize = function (this: any) {
+Scene.resize = function (this: typeof Scene) {
 	if (this.state === 'open' && this.screen && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const scaledPadding = Math.round(this.padding * scale);
@@ -161,7 +161,7 @@ Scene.resize = function (this: any) {
 
 Scene.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: any, event: any, integer = false) {
+	return function (this: typeof Scene, event: WheelEvent, integer = false) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const stw = this.scaledTileWidth;
 		const sth = this.scaledTileHeight;
@@ -196,7 +196,7 @@ Scene.getConvertedCoords = (function IIFE() {
 
 Scene.getParallaxAnchor = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: any, parallax: any, tiled = false) {
+	return function (this: typeof Scene, parallax: any, tiled = false) {
 		const tw = this.tileWidth;
 		const th = this.tileHeight;
 		const cx = this.scrollCenterX;
@@ -220,7 +220,7 @@ Scene.getParallaxAnchor = (function IIFE() {
 
 Scene.getGridContext = (function IIFE() {
 	const context = { width: 0, height: 0, offsetX: 0, offsetY: 0 };
-	return function (this: any) {
+	return function (this: typeof Scene) {
 		if (this.layer === 'tilemap') {
 			const tilemap = this.tilemap;
 			const anchor = this.getParallaxAnchor(tilemap);
@@ -249,7 +249,7 @@ Scene.getGridContext = (function IIFE() {
 // 光栅化滚动位置 - 对齐到像素 避免瓦片地图视差模式下图块|网格|选框位置不同步的现象
 Scene.rasterizeScrollPosition = (function IIFE() {
 	const scroll = { left: 0, top: 0, right: 0, bottom: 0 };
-	return function (this: any, ox: any, oy: any) {
+	return function (this: typeof Scene, ox: number, oy: number) {
 		const sx = this.scaleX;
 		const sy = this.scaleY;
 		const sl = this.scrollLeft;
@@ -264,7 +264,7 @@ Scene.rasterizeScrollPosition = (function IIFE() {
 	};
 })();
 
-Scene.updateLightTexParameters = function (this: any) {
+Scene.updateLightTexParameters = function (this: typeof Scene) {
 	const light = Data.config.lightArea;
 	const texture = GL.reflectedLightMap;
 	const scaleX = this.scaleX;
@@ -296,22 +296,23 @@ Scene.updateLightTexParameters = function (this: any) {
 	}
 };
 
-Scene.updateCamera = function (this: any, x = this.meta.x, y = this.meta.y) {
+Scene.updateCamera = function (this: typeof Scene, x = this.meta.x, y = this.meta.y) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const scrollX = x * this.scaledTileWidth + this.paddingLeft;
 	const scrollY = y * this.scaledTileHeight + this.paddingTop;
 	const toleranceX = this.scaledTileWidth * 0.0001;
 	const toleranceY = this.scaledTileHeight * 0.0001;
-	screen.rawScrollLeft =
+	const screenExt = screen as unknown as { rawScrollLeft: number; rawScrollTop: number };
+	screenExt.rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
-	screen.rawScrollTop =
+	screenExt.rawScrollTop =
 		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceX) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceY) / dpr;
 };
 
-Scene.updateTransform = function (this: any) {
+Scene.updateTransform = function (this: typeof Scene) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const left = Math.roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
@@ -332,8 +333,10 @@ Scene.updateTransform = function (this: any) {
 	this.lightRight = this.scrollRight + lightmap.expansionRight;
 	this.lightBottom = this.scrollBottom + lightmap.expansionBottom;
 	this.matrix.reset().scale(scaleX, scaleY).translate(-this.scrollLeft, -this.scrollTop);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
+	const scrollX =
+		(screen as unknown as { rawScrollLeft: number }).rawScrollLeft * dpr + this.centerOffsetX;
+	const scrollY =
+		(screen as unknown as { rawScrollTop: number }).rawScrollTop * dpr + this.centerOffsetY;
 	this.meta.x = Math.roundTo((scrollX - this.paddingLeft) / this.scaledTileWidth, 4);
 	this.meta.y = Math.roundTo((scrollY - this.paddingTop) / this.scaledTileHeight, 4);
 	Data.manifest.changed = true;

@@ -235,7 +235,7 @@ Timer.appendUpdater = function (
 	key: string,
 	updater: (deltaTime: number) => void
 ) {
-	const updaters = this.updaters as any;
+	const updaters: Record<string, ((deltaTime: number) => void) | null> = this.updaters;
 	if (updaters[key] === null) {
 		updaters[key] = updater;
 		if (this.play) this.play();
@@ -247,7 +247,7 @@ Timer.removeUpdater = function (
 	key: string,
 	updater: (deltaTime: number) => void
 ) {
-	const updaters = this.updaters as any;
+	const updaters: Record<string, ((deltaTime: number) => void) | null> = this.updaters;
 	if (updaters[key] === updater) {
 		updaters[key] = null;
 	}

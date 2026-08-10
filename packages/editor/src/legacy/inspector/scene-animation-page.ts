@@ -8,22 +8,43 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneAnimation = {
+	interface SceneAnimationData {
+		player: {
+			angle: number;
+			rotatable: boolean;
+			rotation: number;
+			restart(): void;
+			setAngle(angle: number): void;
+			setMotion(value: unknown): boolean;
+			setOpacity(value: unknown): void;
+			setScale(value: unknown): void;
+			setSpeed(value: unknown): void;
+		};
+		[k: string]: unknown;
+	}
+	interface SceneAnimationShape {
+		target: SceneAnimationData | null;
+		update: ((animation: SceneAnimationData, key: string, value: unknown) => void) | null;
+		animationIdWrite: ((event: { value: string }) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const SceneAnimation: SceneAnimationShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		motions: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		animationIdWrite: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		motions: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		animationIdWrite: null,
+		paramInput: null
 	};
 
-	SceneAnimation.initialize = function (this: any) {
+	SceneAnimation.initialize = function (this: typeof SceneAnimation) {
 		if (!$('#sceneAnimation-name')) return;
 		this.nameBox = $('#sceneAnimation-name');
 		$('#sceneAnimation-rotatable').loadItems([
@@ -35,7 +56,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneAnimation-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneAnimation-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneAnimation-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneAnimation-parameter-pane').bind($('#sceneAnimation-scripts'));
 
@@ -76,7 +99,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneAnimation.create = function (this: any) {
+	SceneAnimation.create = function (this: typeof SceneAnimation) {
 		return {
 			class: 'animation',
 			name: 'Animation',
@@ -100,7 +123,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneAnimation.open = function (this: any, animation: any) {
+	SceneAnimation.open = function (this: typeof SceneAnimation, animation: SceneAnimationData) {
 		if (this.target !== animation) {
 			this.target = animation;
 
@@ -122,7 +145,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.close = function (this: any) {
+	SceneAnimation.close = function (this: typeof SceneAnimation) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -135,7 +158,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.write = function (this: any, options: any) {
+	SceneAnimation.write = function (
+		this: typeof SceneAnimation,
+		options: Record<string, unknown>
+	) {
 		if (options.x !== undefined) {
 			write($('#sceneAnimation-x'), options.x);
 		}
@@ -147,7 +173,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneAnimation.update = function (this: any, animation: any, key: any, value: any) {
+	SceneAnimation.update = function (
+		this: typeof SceneAnimation,
+		animation: SceneAnimationData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -176,7 +207,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'rotatable':
 				if (animation.rotatable !== value) {
 					animation.rotatable = value;
-					animation.player.rotatable = value;
+					animation.player.rotatable = value as boolean;
 					animation.player.rotation = 0;
 					animation.player.setAngle(animation.player.angle);
 				}
@@ -191,7 +222,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'angle':
 				if (animation.angle !== value) {
 					animation.angle = value;
-					animation.player.setAngle(Math.radians(value));
+					animation.player.setAngle(Math.radians(value as number));
 				}
 				break;
 			case 'scale':
@@ -216,15 +247,22 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneAnimation.animationIdWrite = function (this: any, event: any) {
+	SceneAnimation.animationIdWrite = function (
+		this: typeof SceneAnimation,
+		event: { value: string }
+	) {
 		const elMotion = $('#sceneAnimation-motion');
 		const items = Animation.getMotionListItems!(event.value);
 		elMotion.loadItems(items);
 		write(elMotion, read(elMotion) ?? items[0].value);
 	};
 
-	SceneAnimation.paramInput = function (this: any, event: any) {
-		SceneAnimation.update!(SceneAnimation.target, Inspector.getKey!(this), read(this));
+	SceneAnimation.paramInput = function (this: typeof SceneAnimation, event: Event) {
+		SceneAnimation.update!(
+			SceneAnimation.target as SceneAnimationData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneAnimation = SceneAnimation;

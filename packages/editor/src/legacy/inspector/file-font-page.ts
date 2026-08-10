@@ -5,18 +5,21 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const FileFont = {
-		target: null as any,
-		meta: null as any,
-		symbol: null as any,
-		font: null as any,
-		input: null as any,
-		previews: null as any,
-		initialize: null as any,
-		open: null as any,
-		close: null as any,
-		windowResize: null as any,
-		textInput: null as any
+	interface FileFontShape {
+		[k: string]: any;
+	}
+	const FileFont: FileFontShape = {
+		target: null,
+		meta: null,
+		symbol: null,
+		font: null,
+		input: null,
+		previews: null,
+		initialize: null,
+		open: null,
+		close: null,
+		windowResize: null,
+		textInput: null
 	};
 
 	FileFont.initialize = function (this: any) {

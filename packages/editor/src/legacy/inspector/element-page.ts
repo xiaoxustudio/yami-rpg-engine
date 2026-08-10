@@ -6,31 +6,62 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIElement = {
+	interface UIElementShape {
+		[k: string]: any;
+	}
+	interface UIElementTransform {
+		anchorX: number;
+		anchorY: number;
+		x: number;
+		x2: number;
+		y: number;
+		y2: number;
+		width: number;
+		width2: number;
+		height: number;
+		height2: number;
+		rotation: number;
+		scaleX: number;
+		scaleY: number;
+		skewX: number;
+		skewY: number;
+		opacity: number;
+		[k: string]: unknown;
+	}
+	interface UIElementData {
+		name: unknown;
+		pointerEvents?: unknown;
+		class?: string;
+		synchronous?: boolean;
+		transform: UIElementTransform;
+		instances: { setProperty(key: string, value: unknown): void; resize(): void };
+		[k: string]: unknown;
+	}
+	const UIElement: UIElementShape = {
 		owner: UI,
-		target: null as any,
+		target: null,
 		synchronous: false,
-		nameBox: null as any,
-		pointerEvents: null as any,
-		generalGroup: null as any,
-		transformGroup: null as any,
-		eventsGroup: null as any,
-		scriptsGroup: null as any,
-		parameterPane: null as any,
-		initialize: null as any,
-		createTransform: null as any,
-		lockSizeInputs: null as any,
-		unlockSizeInputs: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		pageSwitch: null as any,
-		alignmentClick: null as any,
-		paramInput: null as any
+		nameBox: null,
+		pointerEvents: null,
+		generalGroup: null,
+		transformGroup: null,
+		eventsGroup: null,
+		scriptsGroup: null,
+		parameterPane: null,
+		initialize: null,
+		createTransform: null,
+		lockSizeInputs: null,
+		unlockSizeInputs: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		pageSwitch: null,
+		alignmentClick: null,
+		paramInput: null
 	};
 
-	UIElement.initialize = function (this: any) {
+	UIElement.initialize = function (this: typeof UIElement) {
 		if (!$('#uiElement-name')) return;
 		this.nameBox = $('#uiElement-name');
 		this.pointerEvents = $('#uiElement-pointerEvents');
@@ -58,7 +89,7 @@ import { UI } from '@/ui/ui-window.ts';
 		(alignElements as unknown as HTMLElement[]).forEach((el) =>
 			(el as HTMLElement).on('click', this.alignmentClick)
 		);
-		// 18 控件 input 经 Vue 模板转发（UIImagePage.vue @input → UIElement.paramInput）
+		// 18 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶閻攢magePage.vue @input 闂?UIElement.paramInput闂?
 		const otherElements = document.querySelectorAll(`#uiElement-name,
     #uiElement-pointerEvents, #uiElement-transform-anchorX, #uiElement-transform-anchorY,
     #uiElement-transform-x, #uiElement-transform-x2, #uiElement-transform-y, #uiElement-transform-y2,
@@ -76,7 +107,7 @@ import { UI } from '@/ui/ui-window.ts';
 			.forEach((el) => (el as HTMLElement).on('change', UI.listChange));
 	};
 
-	UIElement.createTransform = function (this: any) {
+	UIElement.createTransform = function (this: typeof UIElement) {
 		return {
 			anchorX: 0,
 			anchorY: 0,
@@ -97,7 +128,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIElement.lockSizeInputs = function (this: any) {
+	UIElement.lockSizeInputs = function (this: typeof UIElement) {
 		if (!this.synchronous) {
 			this.synchronous = true;
 			disable(
@@ -109,7 +140,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.unlockSizeInputs = function (this: any) {
+	UIElement.unlockSizeInputs = function (this: typeof UIElement) {
 		if (this.synchronous) {
 			this.synchronous = false;
 			enable(
@@ -121,7 +152,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.open = function (this: any, node: any) {
+	UIElement.open = function (this: typeof UIElement, node: UIElementData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -161,7 +192,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.close = function (this: any) {
+	UIElement.close = function (this: typeof UIElement) {
 		if (this.target) {
 			this.target = null;
 			clear($('#uiElement-events'));
@@ -170,7 +201,27 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.write = function (this: any, options: any) {
+	UIElement.write = function (
+		this: typeof UIElement,
+		options: {
+			anchorX?: number;
+			anchorY?: number;
+			x?: number;
+			x2?: number;
+			y?: number;
+			y2?: number;
+			width?: number;
+			width2?: number;
+			height?: number;
+			height2?: number;
+			rotation?: number;
+			scaleX?: number;
+			scaleY?: number;
+			skewX?: number;
+			skewY?: number;
+			opacity?: number;
+		}
+	) {
 		if (options.anchorX !== undefined) {
 			write($('#uiElement-transform-anchorX'), options.anchorX);
 		}
@@ -221,7 +272,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.update = function (this: any, node: any, key: any, value: any) {
+	UIElement.update = function (
+		this: typeof UIElement,
+		node: UIElementData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		const transform = node.transform;
 		switch (key) {
@@ -265,7 +321,7 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIElement.pageSwitch = function (this: any, event: any) {
+	UIElement.pageSwitch = function (this: typeof UIElement, event: Event & { value?: string }) {
 		switch (event.value) {
 			case 'uiImage':
 			case 'uiText':
@@ -289,7 +345,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	}.bind(UIElement);
 
-	UIElement.alignmentClick = function (this: any, event: any) {
+	UIElement.alignmentClick = function (this: HTMLElement, event: Event) {
 		let x;
 		let y;
 		switch (this.getAttribute('value')) {
@@ -315,7 +371,7 @@ import { UI } from '@/ui/ui-window.ts';
 		const node = UIElement.target;
 		const elements = node.instances;
 		const transform = node.transform;
-		const changes = [] as any[];
+		const changes: { input: HTMLElement; oldValue: number; newValue: number }[] = [];
 		if (x !== undefined) {
 			if (transform.anchorX !== x) {
 				const input = $('#uiElement-transform-anchorX');
@@ -399,14 +455,18 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIElement.paramInput = function (this: any, event: any) {
+	UIElement.paramInput = function (this: typeof UIElement, event?: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (element.id.startsWith('uiElement-')) break;
 			element = element.parentElement;
 		}
-		UIElement.update(UIElement.target, Inspector.getKey!(element), read(element));
+		UIElement.update(
+			UIElement.target,
+			Inspector.getKey!(element as HTMLElement),
+			read(element)
+		);
 	};
 
 	Inspector.uiElement = UIElement;

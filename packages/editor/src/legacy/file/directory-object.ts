@@ -13,11 +13,11 @@ import { Editor } from '@/main/editor.ts';
 type DirectoryMethod = (...args: any[]) => any;
 
 export const Directory: {
-	inoMap: Record<string, any>;
-	assets: any | null;
-	symbol: any | null;
+	inoMap: Record<string, unknown>;
+	assets: FolderItem | null;
+	symbol: symbol | null;
 	reading: boolean;
-	updating: any | null;
+	updating: Promise<unknown> | null;
 	initialize: DirectoryMethod | null;
 	read: DirectoryMethod | null;
 	close: DirectoryMethod | null;
@@ -81,9 +81,9 @@ Directory.read = function () {
 							await Promise.all(promises);
 						}
 					},
-					(error: any) => {
-						(Log.throw as any)(error);
-						(Window.confirm as any)(
+					(error: unknown) => {
+						Log.throw!(error);
+						Window.confirm!(
 							{
 								message: 'Failed to read directory',
 								close: () => {
@@ -122,7 +122,13 @@ Directory.update = function () {
 		this.updating = assets
 			.update()
 			.then(
-				async ({ changed, promises }: { changed: any; promises: any }) => {
+				async ({
+					changed,
+					promises
+				}: {
+					changed: boolean;
+					promises: Promise<unknown>[];
+				}) => {
 					if (this.assets !== assets) {
 						throw new Error('Directory update timeout');
 					}
@@ -138,7 +144,7 @@ Directory.update = function () {
 					}
 					return changed;
 				},
-				(error: any) => {
+				(error: unknown) => {
 					throw error;
 				}
 			)
@@ -184,25 +190,39 @@ Directory.getFile = function (path) {
 
 Directory.readdir = (function IIFE() {
 	const options = { withFileTypes: true };
-	const read = (dirPath: any, dir: any) => {
-		return (FSP.readdir as any)(dirPath, options).then(async (files: any[]) => {
-			const promises = [];
-			for (const file of files) {
-				const name = file.name;
-				const path = `${dirPath}/${name}`;
-				if (file.isDirectory()) {
-					const children: any[] = [];
-					dir.push({ name, path, children });
-					promises.push(read(path, children));
-				} else {
-					dir.push({ name, path });
+	const read = (
+		dirPath: string,
+		dir: Array<{ name: string; path: string; children?: unknown[] }>
+	) => {
+		return FSP.readdir(dirPath, options).then(
+			async (files: Array<{ name: string; isDirectory(): boolean }>) => {
+				const promises: Promise<unknown>[] = [];
+				for (const file of files) {
+					const name = file.name;
+					const path = `${dirPath}/${name}`;
+					if (file.isDirectory()) {
+						const children: unknown[] = [];
+						dir.push({ name, path, children });
+						promises.push(
+							read(
+								path,
+								children as Array<{
+									name: string;
+									path: string;
+									children?: unknown[];
+								}>
+							)
+						);
+					} else {
+						dir.push({ name, path });
+					}
 				}
+				if (promises.length !== 0) {
+					await Promise.all(promises);
+				}
+				return dir;
 			}
-			if (promises.length !== 0) {
-				await Promise.all(promises);
-			}
-			return dir;
-		});
+		);
 	};
 	return async function (paths) {
 		const dir = [];
@@ -218,13 +238,14 @@ Directory.readdir = (function IIFE() {
 				const path = paths[i];
 				const name = Path.basename(path);
 				if (stats.isDirectory()) {
-					const children: any[] = [];
+					const children: Array<{ name: string; path: string; children?: unknown[] }> =
+						[];
 					dir.push({ name, path, children });
 					readPromises.push(read(path, children));
 				} else {
 					dir.push({ name, path });
 				}
-			} catch (error: any) {
+			} catch (error: unknown) {
 				console.log(error);
 			}
 		}
@@ -234,7 +255,12 @@ Directory.readdir = (function IIFE() {
 })();
 
 Directory.searchFiles = (function IIFE() {
-	const search = (filters: any, keyword: any, items: any, list: any) => {
+	const search = (
+		filters: string[] | null,
+		keyword: RegExp,
+		items: Array<FileItem | FolderItem>,
+		list: Array<FileItem | FolderItem>
+	) => {
 		const length = items.length;
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
@@ -255,13 +281,18 @@ Directory.searchFiles = (function IIFE() {
 })();
 
 Directory.existFiles = (function IIFE() {
-	const check = async (dirPath: any, dir: any): Promise<any> => {
-		const promises = [];
+	const check = async (
+		dirPath: string,
+		dir: Array<{ name: string; children?: unknown[] }>
+	): Promise<unknown> => {
+		const promises: Promise<unknown>[] = [];
 		for (const file of dir) {
 			const path = `${dirPath}/${file.name}`;
 			promises.push(FSP.stat(path));
 			if (file.children?.length) {
-				promises.push(check(path, file.children));
+				promises.push(
+					check(path, file.children as Array<{ name: string; children?: unknown[] }>)
+				);
 			}
 		}
 		if (promises.length !== 0) {
@@ -270,14 +301,14 @@ Directory.existFiles = (function IIFE() {
 	};
 	return function (dirPath, dir) {
 		return check(File.path!(dirPath), dir).then(
-			(existed: any) => true,
-			(error: any) => false
+			() => true,
+			(error: unknown) => false
 		);
 	};
 })();
 
 Directory.filterFiles = (function IIFE() {
-	const sorter = (a: any, b: any) => {
+	const sorter = (a: FileItem | FolderItem, b: FileItem | FolderItem) => {
 		if (a instanceof FileItem) {
 			if (b instanceof FileItem) {
 				return -a.path.localeCompare(b.path);
@@ -314,9 +345,9 @@ Directory.filterFiles = (function IIFE() {
 })();
 
 Directory.deleteFiles = (function IIFE() {
-	const { invoke } = ipcRenderer ?? ({} as any);
-	const trash = async (files: any) => {
-		const promises = [];
+	const { invoke } = ipcRenderer ?? ({} as unknown as Pick<typeof ipcRenderer, 'invoke'>);
+	const trash = async (files: Array<FileItem | FolderItem>) => {
+		const promises: Promise<unknown>[] = [];
 		for (const file of files) {
 			const path = File.path!(file.path);
 			console.log('delete: ' + Path.normalize(path));
@@ -332,8 +363,12 @@ Directory.deleteFiles = (function IIFE() {
 })();
 
 Directory.moveFiles = (function IIFE() {
-	const move = async (dirPath: any, dir: any, existings: any) => {
-		const promises = [];
+	const move = async (
+		dirPath: string,
+		dir: Array<FileItem | FolderItem>,
+		existings: Record<string, boolean>
+	) => {
+		const promises: Promise<unknown>[] = [];
 		for (const file of dir) {
 			const path = `${dirPath}/${file.name}`;
 			if (!existings[path]) {
@@ -351,8 +386,12 @@ Directory.moveFiles = (function IIFE() {
 })();
 
 Directory.saveFiles = (function IIFE() {
-	const save = async (files: any, changes: any, metaset: any): Promise<any> => {
-		const promises = [];
+	const save = async (
+		files: Array<FileItem | FolderItem>,
+		changes: Array<unknown>,
+		metaset: Array<unknown>
+	): Promise<unknown> => {
+		const promises: Promise<unknown>[] = [];
 		for (const file of files) {
 			if (file instanceof FolderItem) {
 				promises.push(save(file.children, changes, metaset));
@@ -369,9 +408,9 @@ Directory.saveFiles = (function IIFE() {
 		}
 	};
 	return function (files) {
-		const metaset: any[] = [];
+		const metaset: Array<unknown> = [];
 		const changes = Data.manifest.changes;
-		return save(files, changes, metaset).then((result: any) => {
+		return save(files, changes, metaset).then((result: unknown) => {
 			for (const meta of metaset) {
 				changes.remove(meta);
 			}
@@ -381,8 +420,13 @@ Directory.saveFiles = (function IIFE() {
 })();
 
 Directory.copyFiles = (function IIFE() {
-	const copy = async (dirPath: any, dir: any, suffix: any, existings: any) => {
-		const promises = [];
+	const copy = async (
+		dirPath: string,
+		dir: Array<FileItem | FolderItem>,
+		suffix: string,
+		existings: Record<string, boolean>
+	) => {
+		const promises: Promise<unknown>[] = [];
 		for (const file of dir) {
 			const name = File.filterGUID!(file.name);
 			const ext = Path.extname(name);
@@ -393,7 +437,7 @@ Directory.copyFiles = (function IIFE() {
 			existings[path] = true;
 			promises.push(
 				(existed ? Promise.resolve() : FSP.stat(path))
-					.then((stats: any) => {
+					.then((stats: { isDirectory(): boolean } | undefined) => {
 						for (let i = 2; ; i++) {
 							path = `${dirPath}/${base}${suffix} (${i})${ext}`;
 							if (existings[path]) {
@@ -406,7 +450,7 @@ Directory.copyFiles = (function IIFE() {
 						}
 					}, Function.empty)
 					.finally(() => {
-						const { children } = file;
+						const children = (file as FolderItem).children;
 						if (children) {
 							FS.mkdirSync(path);
 							if (children.length !== 0) {
@@ -428,7 +472,7 @@ Directory.copyFiles = (function IIFE() {
 })();
 
 Directory.sortFiles = (function IIFE() {
-	const sorter = (a: any, b: any) => {
+	const sorter = (a: FileItem | FolderItem, b: FileItem | FolderItem) => {
 		if (a instanceof FileItem) {
 			if (b instanceof FileItem) {
 				const r1 = a.basename.localeCompare(b.basename);
@@ -459,7 +503,10 @@ Directory.sortFiles = (function IIFE() {
 
 // 注意：使用PS等工具可能造成文件INO变化
 Directory.createInoMap = (function IIFE() {
-	const register = (map: any, item: any) => {
+	const register = (
+		map: Record<string | number, FileItem | FolderItem>,
+		item: FileItem | FolderItem
+	) => {
 		map[item.stats.ino] = item;
 		if (item instanceof FolderItem) {
 			const children = item.children;

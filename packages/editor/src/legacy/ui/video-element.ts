@@ -6,7 +6,7 @@ UI.Video = class VideoElement extends UI.Element {
 	flip: string;
 	blend: string;
 
-	constructor(data: any) {
+	constructor(data: { video: string; loop: boolean; flip: string; blend: string }) {
 		super(data);
 		this.video = data.video;
 		this.loop = data.loop;

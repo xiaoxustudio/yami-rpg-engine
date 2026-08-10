@@ -17,7 +17,7 @@ Command.cases.setTriggerMotion = new CommandSchema({
 			.push(Command.parseEnumString(motion));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get('command.setTriggerMotion') + Token(': ') },
+			{ text: Local.get!('command.setTriggerMotion') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

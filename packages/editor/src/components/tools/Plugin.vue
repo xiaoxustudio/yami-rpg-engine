@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { PluginManager } from '@/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -43,16 +44,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 const onListSelect = (event: any) => {
-	(window as any).PluginManager?.listSelect?.(event);
+	PluginManager?.listSelect?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).PluginManager?.listPopup?.(event);
+	PluginManager?.listPopup?.(event);
 };
 const onListChange = (event: any) => {
-	(window as any).PluginManager?.listChange?.(event);
+	PluginManager?.listChange?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).PluginManager?.listOpen?.(event);
+	PluginManager?.listOpen?.(event);
 };
 
 

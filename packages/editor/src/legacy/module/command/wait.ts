@@ -11,7 +11,7 @@ Command.cases.wait = new CommandSchema({
 	customParse({ duration }: any) {
 		return [
 			{ color: 'wait' },
-			{ text: Local.get('command.wait') + Token(': ') },
+			{ text: Local.get!('command.wait') + Token(': ') },
 			{ text: Command.parseVariableNumber(duration, 'ms') }
 		];
 	},

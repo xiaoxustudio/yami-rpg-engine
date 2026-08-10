@@ -4,18 +4,39 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UITextBox = {
+	interface UITextBoxShape {
+		[k: string]: any;
+	}
+	interface UITextBoxData {
+		type: string;
+		align: string;
+		text: string;
+		maxLength: number;
+		number: number;
+		min: string;
+		max: string;
+		decimals: number;
+		padding: number;
+		size: number;
+		font: string;
+		color: string;
+		selectionColor: string;
+		selectionBgColor: string;
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: any;
+	}
+	const UITextBox: UITextBoxShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UITextBox.initialize = function (this: any) {
+	UITextBox.initialize = function (this: typeof UITextBox) {
 		if (!$('#uiTextBox-type')) return;
 		$('#uiTextBox-type').loadItems([
 			{ name: 'Text', value: 'text' },
@@ -59,7 +80,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UITextBox.create = function (this: any) {
+	UITextBox.create = function (this: typeof UITextBox) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 24;
@@ -93,7 +114,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UITextBox.open = function (this: any, node: any) {
+	UITextBox.open = function (this: typeof UITextBox, node: UITextBoxData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -120,7 +141,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UITextBox.close = function (this: any) {
+	UITextBox.close = function (this: typeof UITextBox) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -129,7 +150,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UITextBox.update = function (this: any, node: any, key: any, value: any) {
+	UITextBox.update = function (
+		this: typeof UITextBox,
+		node: UITextBoxData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -143,7 +169,7 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'selectionColor':
 			case 'selectionBgColor':
 				if (node[key] !== value) {
-					node[key] = value;
+					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
@@ -151,15 +177,18 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'text':
 			case 'number':
 				if (node[key] !== value) {
-					node[key] = value;
+					(node as Record<string, unknown>)[key] = value;
 					// element.content = value.toString()
-					node.instances.setProperty('content', value.toString());
+					node.instances.setProperty(
+						'content',
+						(value as { toString(): string }).toString()
+					);
 				}
 				break;
 			case 'min':
 			case 'max':
 				if (node[key] !== value) {
-					node[key] = value;
+					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
 					($('#uiTextBox-number').input! as Record<string, any>)[key] = value;
@@ -167,17 +196,17 @@ import { UI } from '@/ui/ui-window.ts';
 				break;
 			case 'decimals':
 				if (node.decimals !== value) {
-					node.decimals = value;
+					node.decimals = value as number;
 					// element.decimals = value
 					node.instances.setProperty(key, value);
-					$('#uiTextBox-number').decimals = value;
+					$('#uiTextBox-number').decimals = value as number;
 				}
 				break;
 		}
 		UI.requestRendering!();
 	};
 
-	UITextBox.paramInput = function (this: any, event: any) {
+	UITextBox.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		UITextBox.update(UITextBox.target, Inspector.getKey!(this), read(this));
 	};
 

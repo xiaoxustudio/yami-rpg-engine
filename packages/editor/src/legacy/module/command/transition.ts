@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.transition = new CommandSchema({
 	name: 'transition',
-	commands: null as any,
+	commands: null,
 	onInitialize(this: any) {
 		$('#transition-confirm').on('click', () => this.save!());
 		$('#transition').on('open', function (event: any) {

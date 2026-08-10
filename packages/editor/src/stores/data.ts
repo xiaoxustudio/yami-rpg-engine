@@ -1,63 +1,84 @@
 import { defineStore } from 'pinia';
+import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { shallowReactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 
+export interface FileMetaShape {
+	guid: string;
+	path: string;
+	file?: { basename: string; aliasPath: string };
+	overview?: { plugin?: string; [k: string]: any };
+	[k: string]: any;
+}
+
+export interface DataEntryShape {
+	guid?: string;
+	name?: string;
+	[k: string]: any;
+}
+
+export interface ProjectMetaShape {
+	guid: string;
+	path: string;
+	[k: string]: any;
+}
+
 // Manifest 结构类型（对齐 legacy metadata-manifest.ts 字段——宽类型起步，随迁移细化）
 export interface ManifestShape {
-	actors: any[];
-	skills: any[];
-	triggers: any[];
-	items: any[];
-	equipments: any[];
-	states: any[];
-	events: any[];
-	scenes: any[];
-	tilesets: any[];
-	ui: any[];
-	animations: any[];
-	particles: any[];
-	images: any[];
-	metaList: any[];
-	guidMap: Record<string, any>;
-	pathMap: Record<string, any>;
+	actors: FileMeta[];
+	skills: FileMeta[];
+	triggers: FileMeta[];
+	items: FileMeta[];
+	equipments: FileMeta[];
+	states: FileMeta[];
+	events: FileMeta[];
+	scenes: FileMeta[];
+	tilesets: FileMeta[];
+	ui: FileMeta[];
+	animations: FileMeta[];
+	particles: FileMeta[];
+	images: FileMeta[];
+	metaList: FileMeta[];
+	guidMap: Record<string, FileMetaShape>;
+	pathMap: Record<string, FileMetaShape>;
 	changed: boolean;
-	audio: any[];
-	videos: any[];
-	fonts: any[];
-	script: any[];
-	others: any[];
-	project: Record<string, any>;
-	changes: any[];
+	audio: FileMeta[];
+	videos: FileMeta[];
+	fonts: FileMeta[];
+	script: FileMeta[];
+	others: FileMeta[];
+	project: Record<string, ProjectMetaShape>;
+	changes: FileMeta[];
 	code: string;
 }
 
 // 场景预设映射（registerScenePresets 写入：sceneId + 数据节点）
 export interface ScenePresetShape {
 	sceneId: string;
-	data: any;
+	data: { [k: string]: any };
 }
 
 // UI 预设映射（registerUiPresets 写入：uiId + 数据节点）
 export interface UiPresetShape {
 	uiId: string;
-	data: any;
+	data: { [k: string]: any };
 }
 
 // guid → 数据对象映射（createDataMaps 初始化为 {}）
 export interface DataMapShape {
-	[guid: string]: any;
+	[guid: string]: DataEntryShape;
 }
 
 // 数组列表类数据（loadFile 从 Data/xxx.json 加载——运行期附加 map 等属性，legacy 经 Data:any 访问）
-export interface DataListShape extends Array<any> {
-	items?: { name: string; value: any }[];
+export interface DataListShape extends Array<DataEntryShape> {
+	items?: { name: string; value: unknown }[];
 }
 
 // 变量树节点（createVariableMap 递归 map——children 表示分组）
 export interface VariableNodeShape {
 	id: string;
 	name: string;
-	value?: any;
+	value?: unknown;
 	note?: string;
 	sort?: number;
 	children?: VariableNodeShape[];
@@ -67,20 +88,33 @@ export interface VariableNodeShape {
 export interface VariablesShape extends Array<VariableNodeShape> {}
 
 // 队伍数据（createTeamMap：list 数组 + map）
+export interface TeamShape {
+	id: string;
+	name?: string;
+	color?: string;
+	[k: string]: any;
+}
+
 export interface TeamsShape {
-	list: any[];
-	map?: Record<string, any>;
+	list: TeamShape[];
+	map?: Record<string, TeamShape>;
 }
 
 // 本地化数据（createLocalizationMap：list 数组 + map）
+export interface LocalizationItemShape {
+	id: string;
+	contents?: Record<string, string>;
+	[k: string]: any;
+}
+
 export interface LocalizationShape {
-	list: any[];
-	map?: Record<string, any>;
+	list: LocalizationItemShape[];
+	map?: Record<string, LocalizationItemShape>;
 }
 
 // 属性/枚举数据（createAttributeContext/createEnumerationContext：数组 + context）
-export interface ContextDataShape extends Array<any> {
-	context?: any;
+export interface ContextDataShape extends Array<DataEntryShape> {
+	context?: Record<string, any>;
 }
 
 export interface DataShape {
@@ -109,7 +143,7 @@ export interface DataShape {
 	localization: LocalizationShape | null;
 	plugins: any | null;
 	commands: any | null;
-	config: any | null;
+	config: Record<string, any> | null;
 }
 
 export const dataKeys: (keyof DataShape)[] = [
@@ -177,7 +211,7 @@ export const useDataStore = defineStore('data', () => {
 		data.manifest = value;
 	}
 
-	function setData(key: keyof DataShape, value: any) {
+	function setData(key: keyof DataShape, value: DataShape[keyof DataShape]) {
 		data[key] = value;
 	}
 

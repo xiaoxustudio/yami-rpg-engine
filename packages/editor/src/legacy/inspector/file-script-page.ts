@@ -7,15 +7,18 @@ import { Inspector } from './inspector.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 
 {
-	const FileScript = {
-		target: null as any,
-		meta: null as any,
-		overview: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		windowLocalize: null as any
+	interface FileScriptShape {
+		[k: string]: any;
+	}
+	const FileScript: FileScriptShape = {
+		target: null,
+		meta: null,
+		overview: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		windowLocalize: null
 	};
 
 	FileScript.initialize = function (this: any) {

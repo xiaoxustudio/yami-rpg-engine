@@ -66,7 +66,7 @@ interface CommandSuggestionList {
 	appendChild<T extends Node>(node: T): T;
 	insertBefore<T extends Node>(node: T, ref: T | null): T;
 	contains(node: Node | null): boolean;
-	on(...args: unknown[]): any;
+	on(...args: unknown[]): unknown;
 	textContent: string;
 	style: CSSStyleDeclaration;
 	data: CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null;
@@ -85,9 +85,9 @@ interface CommandSuggestionSearcher extends HTMLElement {
 	input: HTMLInputElement & { id: string };
 	addCloseButton(): void;
 	deleteInputContent(): void;
-	on(...args: unknown[]): any;
-	getFocus(...args: unknown[]): any;
-	read(...args: unknown[]): any;
+	on(...args: unknown[]): unknown;
+	getFocus(...args: unknown[]): unknown;
+	read(...args: unknown[]): unknown;
 }
 
 interface CommandSuggestionShape {
@@ -112,9 +112,9 @@ interface CommandSuggestionShape {
 }
 
 export const CommandSuggestion: CommandSuggestionShape = {
-	widget: null as any,
-	searcher: null as any,
-	list: null as any,
+	widget: null as unknown as CommandSuggestionWidget,
+	searcher: null as unknown as CommandSuggestionSearcher,
+	list: null as unknown as HTMLElement & CommandSuggestionList,
 	data: null,
 	initialize: null,
 	open: null,
@@ -192,7 +192,7 @@ function bindListMethods() {
 					}
 					const children = item.children;
 					if (children instanceof Array) {
-						(this as any).searchNodesAlgorithm(children, keyword, list);
+						this.searchNodesAlgorithm!(children, keyword, list);
 					}
 					continue;
 				}
@@ -227,7 +227,7 @@ function bindListMethods() {
 			}
 		};
 		return function (this: CommandSuggestionList): void {
-			update(this.data as CommandSuggestionItem[], Local.createGetter('command'));
+			update(this.data as CommandSuggestionItem[], Local.createGetter!('command'));
 		};
 	})();
 
@@ -249,9 +249,9 @@ function bindListMethods() {
 				}
 			}
 			const tip1 = item.class === 'folder' ? '' : `$${item.name}\n${item.desc ?? ''}\n`;
-			const tip2 = `$${Local.get('command.keywords')}\n${words.join(', ')}`;
+			const tip2 = `$${Local.get!('command.keywords')}\n${words.join(', ')}`;
 			addClass(element, 'command-suggestion-item');
-			setTooltip(element, Local.parseTip(tip1 + tip2));
+			setTooltip(element, Local.parseTip!(tip1 + tip2, ''));
 		};
 	})();
 

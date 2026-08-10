@@ -67,24 +67,24 @@ Animation.Player = class AnimationPlayer {
 		this.dirCases = null;
 		this.layers = null;
 		this.motion = null;
-		this.motions = {} as Record<string, any>;
-		this.sprites = {} as Record<string, any>;
-		this.images = {} as Record<string, any>;
-		this.textures = {} as Record<string, any>;
-		this.contexts = [] as any[];
-		this.emitters = [] as any[];
+		this.motions = {} as Record<string, AnimationMotion>;
+		this.sprites = {} as Record<string, AnimationSprite>;
+		this.images = {} as AnimationImageMap;
+		this.textures = {} as AnimationTextureMap;
+		this.contexts = [];
+		this.emitters = [];
 		this.isUIComponent = false;
 		this.loadSprites();
 		this.loadMotions();
 	}
 
-	setMotion(key: any) {
+	setMotion(key: string) {
 		const motions = this.motions;
 		const motion = motions[key];
 		if (motion !== undefined && this.motion !== motion) {
 			this.motion = motion;
 			this.dirCases = motion.dirCases;
-			const dirMap = (AnimationPlayer.dirMaps as Record<string, any>)[motion.mode];
+			const dirMap = AnimationPlayer.dirMaps[motion.mode];
 			if (this.dirMap !== dirMap) {
 				this.dirMap = dirMap;
 				this.direction = -1;
@@ -108,19 +108,19 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	setScale(scale: any) {
+	setScale(scale: number) {
 		this.scale = scale;
 	}
 
-	setSpeed(speed: any) {
+	setSpeed(speed: number) {
 		this.speed = speed;
 	}
 
-	setOpacity(opacity: any) {
+	setOpacity(opacity: number) {
 		this.opacity = opacity;
 	}
 
-	setAngle(angle: any) {
+	setAngle(angle: number) {
 		this.angle = angle;
 		const directions = this.dirMap.length;
 		const proportion = Math.modRadians(angle) / (Math.PI * 2);
@@ -131,7 +131,7 @@ Animation.Player = class AnimationPlayer {
 		return dirChanged;
 	}
 
-	setDirection(direction: any) {
+	setDirection(direction: number) {
 		if (this.direction !== direction) {
 			const params = this.dirMap[direction];
 			if (!params) return false;
@@ -156,7 +156,7 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	goto(index: any) {
+	goto(index: number) {
 		index = Math.clamp(index, 0, this.length - 1);
 		// 跳转到前面的动画帧时增加循环计数
 		if (index < this.index) {
@@ -174,12 +174,12 @@ Animation.Player = class AnimationPlayer {
 		this.length = 0;
 		this.end = 0;
 		this.motion = null;
-		this.contexts = [] as any[];
+		this.contexts = [];
 		this.destroyUpdatingEmitters();
 		this.destroyContextEmitters();
 	}
 
-	setPosition(x: any, y: any) {
+	setPosition(x: number, y: number) {
 		const matrix = AnimationPlayer.matrix.set6f(1, 0, 0, 1, x, y);
 
 		if (this.mirror) {
@@ -195,11 +195,11 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	setSpriteImages(images: any) {
+	setSpriteImages(images: AnimationImageMap) {
 		this.images = Object.setPrototypeOf(images, this.images);
 	}
 
-	updateFrameParameters(contexts: any, index: any) {
+	updateFrameParameters(contexts: any[] & { count?: number }, index: number) {
 		const { count } = contexts as { count: number };
 		outer: for (let i = 0; i < count; i++) {
 			const context = contexts[i];
@@ -250,7 +250,7 @@ Animation.Player = class AnimationPlayer {
 		AnimationPlayer.loadContexts(this, contexts);
 	}
 
-	update(deltaTime: any) {
+	update(deltaTime: number) {
 		if (this.length !== 0) {
 			this.index += (deltaTime * this.speed) / AnimationPlayer.step;
 			// 如果动画播放结束
@@ -283,7 +283,7 @@ Animation.Player = class AnimationPlayer {
 		this.end = motion.skip && this.loopStart < lastFrame ? lastFrame : length;
 	}
 
-	emitParticles(deltaTime: any) {
+	emitParticles(deltaTime: number) {
 		deltaTime *= this.speed;
 		const { contexts } = this;
 		const { count } = contexts as { count: number };
@@ -311,7 +311,7 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	updateParticles(deltaTime: any) {
+	updateParticles(deltaTime: number) {
 		deltaTime *= this.speed;
 		const { emitters } = this;
 		let i = emitters.length;
@@ -328,7 +328,7 @@ Animation.Player = class AnimationPlayer {
 		return totalCount;
 	}
 
-	draw(opacity: any, light: any) {
+	draw(opacity: number, light: string | undefined) {
 		const { emitters } = this;
 		const { length } = emitters;
 		if (length !== 0) {
@@ -409,8 +409,8 @@ Animation.Player = class AnimationPlayer {
 		if (light === undefined) {
 			light = Scene.showLight ? layer.light : 'raw';
 		}
-		const vi = (response as any[])[0] * 8;
-		const mode = (AnimationPlayer.lightSamplingModes as Record<string, any>)[light];
+		const vi = response[0] * 8;
+		const mode = AnimationPlayer.lightSamplingModes[light];
 		const alpha = Math.round(context.opacity * 255);
 		const param = response[1] | (alpha << 8) | (mode << 16);
 		const redGreen = tint[0] + (tint[1] << 16) + 0x00ff00ff;
@@ -454,7 +454,7 @@ Animation.Player = class AnimationPlayer {
 		attributes[vi + 31] = anchor;
 	}
 
-	getTexture(spriteId: any) {
+	getTexture(spriteId: string) {
 		const textures = this.textures;
 		const texture = textures![spriteId];
 		if (texture === undefined) {
@@ -500,7 +500,7 @@ Animation.Player = class AnimationPlayer {
 		this.textures = null;
 		this.destroyUpdatingEmitters();
 		this.destroyContextEmitters();
-		for (const motion of Object.values(this.motions) as any[]) {
+		for (const motion of Object.values(this.motions)) {
 			for (const dirCase of motion.dirCases) {
 				if (dirCase.loaded === undefined) continue;
 				delete dirCase.loaded;
@@ -557,10 +557,10 @@ Animation.Player = class AnimationPlayer {
 
 	static step = 0;
 	static matrix = new Matrix();
-	static lightSamplingModes = { raw: 0, global: 1, anchor: 2 };
-	static stage: any;
+	static lightSamplingModes: Record<string, number> = { raw: 0, global: 1, anchor: 2 };
+	static stage: unknown;
 
-	static dirMaps = {
+	static dirMaps: Record<string, { index: number; mirror: boolean }[]> = {
 		'1-dir': [{ index: 0, mirror: false }],
 		'1-dir-mirror': [
 			{ index: 0, mirror: false },
@@ -642,16 +642,16 @@ Animation.Player = class AnimationPlayer {
 			if (context === undefined) {
 				context = contexts[contexts.count] = {
 					animation: animation,
-					parent: null as any,
-					layer: null as any,
-					frame: null as any,
+					parent: null,
+					layer: null,
+					frame: null,
 					matrix: new Matrix(),
 					anchorX: 0,
 					anchorY: 0,
 					pivotX: 0,
 					pivotY: 0,
 					opacity: 0,
-					update: null as any,
+					update: null,
 					reset: AnimationPlayer.contextReset
 				};
 			}

@@ -25,7 +25,7 @@ Command.cases.jumpTo = new CommandSchema({
 			.relate([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
 	},
 	loadLabels() {
-		const items = [] as any[];
+		const items: any[] = [];
 		const commands = read(EventEditor.commandList);
 		if (!commands) return items;
 		Command.forEachCommand!(commands, (command: any) => {

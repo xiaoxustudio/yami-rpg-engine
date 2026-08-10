@@ -9,9 +9,9 @@ Command.cases.independent = new CommandSchema({
 		return [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get('command.independent') },
+			{ text: Local.get!('command.independent') },
 			{ children: commands },
-			{ text: Local.get('command.independent.end') }
+			{ text: Local.get!('command.independent.end') }
 		];
 	},
 	customSave() {

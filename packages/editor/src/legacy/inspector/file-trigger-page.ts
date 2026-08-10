@@ -8,21 +8,42 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const FileTrigger = {
-		target: null as any,
-		meta: null as any,
-		motions: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		animationIdWrite: null as any,
-		paramInput: null as any,
-		listChange: null as any
+	interface FileTriggerShape {
+		target: FileTriggerData | null;
+		meta: { file: unknown } | null;
+		motions: unknown;
+		[k: string]: any;
+	}
+	interface FileTriggerData {
+		selector: string;
+		animationId: string;
+		guid?: string;
+		events?: unknown;
+		shape: {
+			type: string;
+			width?: unknown;
+			height?: unknown;
+			anchor?: unknown;
+			radius?: unknown;
+			centralAngle?: unknown;
+		};
+		[k: string]: any;
+	}
+	const FileTrigger: FileTriggerShape = {
+		target: null,
+		meta: null,
+		motions: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		animationIdWrite: null,
+		paramInput: null,
+		listChange: null
 	};
 
-	FileTrigger.initialize = function (this: any) {
+	FileTrigger.initialize = function (this: typeof FileTrigger) {
 		if (!$('#fileTrigger-selector')) return;
 		$('#fileTrigger-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
@@ -98,13 +119,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#fileTrigger-parameter-pane').bind($('#fileTrigger-scripts'));
 
-		// animationId write + 22 控件 input 经 Vue 模板转发（FileTriggerPage.vue @write/@input → FileTrigger.*）
+		// animationId write + 22 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eTriggerPage.vue @write/@input 闂?FileTrigger.*闂?
 		document
 			.querySelectorAll('#fileTrigger-events, #fileTrigger-scripts')
 			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
-	FileTrigger.create = function (this: any) {
+	FileTrigger.create = function (this: typeof FileTrigger) {
 		return {
 			selector: 'enemy',
 			onHitWalls: 'penetrate',
@@ -131,7 +152,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	FileTrigger.open = function (this: any, trigger: any, meta: any) {
+	FileTrigger.open = function (
+		this: typeof FileTrigger,
+		trigger: FileTriggerData,
+		meta: { file: unknown }
+	) {
 		if (this.meta !== meta) {
 			this.target = trigger;
 			this.meta = meta;
@@ -165,7 +190,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.close = function (this: any) {
+	FileTrigger.close = function (this: typeof FileTrigger) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -177,7 +202,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.update = function (this: any, trigger: any, key: any, value: any) {
+	FileTrigger.update = function (
+		this: typeof FileTrigger,
+		trigger: FileTriggerData,
+		key: string,
+		value: unknown
+	) {
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'selector':
@@ -229,7 +259,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'shape-radius':
 			case 'shape-centralAngle': {
 				const index = key.indexOf('-') + 1;
-				const property = key.slice(index);
+				const property = key.slice(index) as
+					| 'width'
+					| 'height'
+					| 'anchor'
+					| 'radius'
+					| 'centralAngle';
 				if (trigger.shape[property] !== value) {
 					trigger.shape[property] = value;
 				}
@@ -237,7 +272,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			}
 			case 'animationId':
 				if (trigger.animationId !== value) {
-					trigger.animationId = value;
+					trigger.animationId = value as string;
 					FileTrigger.motions = null;
 				}
 				break;
@@ -252,24 +287,27 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileTrigger.animationIdWrite = function (this: any, event: any) {
+	FileTrigger.animationIdWrite = function (
+		this: typeof FileTrigger,
+		event: Event & { value?: string }
+	) {
 		if (!event.value) return;
 		const elMotion = $('#fileTrigger-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
 	};
 
-	FileTrigger.paramInput = function (this: any, event: any) {
+	FileTrigger.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileTrigger-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileTrigger.update(FileTrigger.target, Inspector.getKey!(element), read(element));
+		FileTrigger.update(FileTrigger.target!, Inspector.getKey!(element), read(element));
 	};
 
-	FileTrigger.listChange = function (this: any, event: any) {
+	FileTrigger.listChange = function (this: typeof FileTrigger, event: Event) {
 		File.planToSave!(FileTrigger.meta);
 	};
 

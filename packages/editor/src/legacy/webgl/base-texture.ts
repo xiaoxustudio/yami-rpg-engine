@@ -1,13 +1,18 @@
 import { GL } from './webgl-init.ts';
 
+type CallbackStore = { [k: string]: Array<(base: BaseTexture) => void> };
+
 export class BaseTexture {
+	[k: symbol]: string | CallbackStore | undefined;
+	[k: string]: unknown;
 	glTexture: WebGLTexture | null;
 	width: number;
 	height: number;
 	format: number;
 	magFilter!: number;
 	minFilter!: number;
-	image: any;
+	image!: HTMLImageElement | HTMLCanvasElement | null;
+	refCount!: number;
 	constructor() {
 		this.glTexture = GL.createTexture();
 		this.width = 0;
@@ -48,15 +53,15 @@ export class BaseTexture {
 	}
 
 	// 基础纹理方法 - 设置加载回调 @param {string} type 回调事件类型 @param {function} callback 回调函数
-	on(type: any, callback: any) {
-		let cache = (this as any)[BaseTexture.CALLBACK];
+	on(type: string, callback: (base: BaseTexture) => void) {
+		let cache = this[BaseTexture.CALLBACK];
 		if (cache === type) {
 			callback(this);
 			return;
 		}
 		// 首次调用，创建加载回调缓存
 		if (cache === undefined) {
-			cache = (this as any)[BaseTexture.CALLBACK] = { load: [], error: [] };
+			cache = this[BaseTexture.CALLBACK] = { load: [], error: [] };
 		}
 		// 如果未加载完成，添加回调到缓存中
 		if (typeof cache === 'object') {
@@ -65,15 +70,15 @@ export class BaseTexture {
 	}
 
 	// 基础纹理方法 - 执行加载回调 @param {string} type 回调事件类型
-	reply(type: any) {
-		const cache = (this as any)[BaseTexture.CALLBACK];
+	reply(type: string) {
+		const cache = this[BaseTexture.CALLBACK];
 		if (typeof cache === 'object') {
 			for (const callback of cache[type]) {
 				callback(this);
 			}
 		}
 		// 将缓存替换为类型名称
-		(this as any)[BaseTexture.CALLBACK] = type;
+		this[BaseTexture.CALLBACK] = type;
 	}
 
 	static CALLBACK = Symbol('LOAD_CALLBACK');

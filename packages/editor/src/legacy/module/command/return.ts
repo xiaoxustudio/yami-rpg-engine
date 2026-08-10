@@ -137,7 +137,7 @@ Command.cases.return = new CommandSchema({
 		}
 		let info = words.join();
 		if (Command.returnType !== type) {
-			info = (Command as any).setClass('error') + (info || '?');
+			info = Command.setClass('error') + (info || '?');
 		}
 		return [
 			{ color: 'flow' },

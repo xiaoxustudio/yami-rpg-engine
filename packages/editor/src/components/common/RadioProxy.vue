@@ -39,7 +39,7 @@ interface RadioProxyElement extends HTMLElement {
 	toggleRelatedElements(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -196,7 +196,7 @@ const relate = (entries: RadioRelationEntry[]): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;

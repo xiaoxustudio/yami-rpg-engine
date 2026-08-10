@@ -17,11 +17,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	select: [event: any];
-	record: [event: any];
-	popup: [event: any];
-	open: [event: any];
-	change: [event: any];
+	select: [event: Event & { value?: any }];
+	record: [event: Event & { value?: any }];
+	popup: [event: Event & { value?: any }];
+	open: [event: Event & { value?: any }];
+	change: [event: Event & { value?: any }];
 }>();
 
 const ym = ref<{ $el: HTMLElement | null } | null>(null);
@@ -34,10 +34,10 @@ onMounted(() => {
 	if (!el) return;
 	el.getMenuState = () => Menu.state;
 	// 经 el.on 注册（YMTreeList 的 on() 启用 select/record/popup/open 派发开关）
-	el.on('select', (event: any) => emit('select', event));
-	el.on('record', (event: any) => emit('record', event));
-	el.on('popup', (event: any) => emit('popup', event));
-	el.on('open', (event: any) => emit('open', event));
-	el.on('change', (event: any) => emit('change', event));
+	el.on('select', (event: Event & { value?: any }) => emit('select', event));
+	el.on('record', (event: Event & { value?: any }) => emit('record', event));
+	el.on('popup', (event: Event & { value?: any }) => emit('popup', event));
+	el.on('open', (event: Event & { value?: any }) => emit('open', event));
+	el.on('change', (event: Event & { value?: any }) => emit('change', event));
 });
 </script>

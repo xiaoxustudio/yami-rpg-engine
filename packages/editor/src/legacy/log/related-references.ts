@@ -5,33 +5,61 @@ import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface ReferenceItem {
+	type: 'comment' | 'path';
+	text: string;
+	id?: string;
+	order?: number;
+	count?: number;
+}
+
+type ReferenceContent = ReferenceItem | ReferenceItem[];
+
+type LocalEventShape = { type: string };
+type LocalScriptShape = { id: string };
+type SearchNodeShape = {
+	name: string;
+	class: string;
+	children: SearchNodeShape[];
+	[k: string]: any;
+};
+type TreeItemShape = {
+	name: string;
+	class: string;
+	id?: string;
+	children: TreeItemShape[];
+	[k: string]: any;
+};
+
 export const Reference = {
-	keydownMap: new Map<any, any>(),
-	keyupMap: new Map<any, any>(),
-	pointerdownMap: new Map<any, any>(),
-	pointermoveMap: new Map<any, any>(),
+	keydownMap: new Map<HTMLElement, (event: KeyboardEvent) => void>(),
+	keyupMap: new Map<HTMLElement, (event: KeyboardEvent) => void>(),
+	pointerdownMap: new Map<HTMLElement, (event: PointerEvent) => void>(),
+	pointermoveMap: new Map<HTMLElement, (event: PointerEvent) => void>(),
 	initialize: null as ((...args: unknown[]) => unknown) | null,
 	findAllGuids: null as
-		| ((targetGuid?: string) => { usedMap: any; innerMap: any; outerMap: any })
+		| ((targetGuid?: string) => {
+				usedMap: Record<string, ReferenceContent>;
+				innerMap: Record<string, boolean>;
+				outerMap: Record<string, ReferenceItem>;
+		  })
 		| null,
-	filterUselessComments: null as
-		| ((...args: unknown[]) => unknown[] & { isEmpty?: boolean })
-		| null,
-	findRelated: null as ((...args: unknown[]) => unknown) | null,
-	openRelated: null as ((...args: unknown[]) => unknown) | null,
-	findInvalid: null as ((...args: unknown[]) => unknown) | null,
-	openInvalid: null as ((...args: unknown[]) => unknown) | null,
-	findUnused: null as ((...args: unknown[]) => unknown) | null,
-	openUnused: null as ((...args: unknown[]) => unknown) | null,
-	openList: null as ((...args: unknown[]) => unknown) | null,
-	update: null as ((...args: unknown[]) => unknown) | null,
-	windowClosed: null as ((...args: unknown[]) => unknown) | null,
-	listSelect: null as ((...args: unknown[]) => unknown) | null,
-	listPopup: null as ((...args: unknown[]) => unknown) | null,
-	getKeydownListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
-	getKeyupListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
-	getPointerdownListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null,
-	getPointermoveListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null
+	filterUselessComments: null as ((...args: any[]) => any[] & { isEmpty?: boolean }) | null,
+	findRelated: null as ((...args: any[]) => any) | null,
+	openRelated: null as ((...args: any[]) => any) | null,
+	findInvalid: null as ((...args: any[]) => any) | null,
+	openInvalid: null as ((...args: any[]) => any) | null,
+	findUnused: null as ((...args: any[]) => any) | null,
+	openUnused: null as ((...args: any[]) => any) | null,
+	openList: null as ((...args: any[]) => any) | null,
+	update: null as ((...args: any[]) => any) | null,
+	windowClosed: null as ((...args: any[]) => any) | null,
+	listSelect: null as ((...args: any[]) => any) | null,
+	listPopup: null as ((...args: any[]) => any) | null,
+	getKeydownListener: null as ((...args: any[]) => (event: KeyboardEvent) => void) | null,
+	getKeyupListener: null as ((...args: any[]) => (event: KeyboardEvent) => void) | null,
+	getPointerdownListener: null as ((...args: any[]) => (event: PointerEvent) => void) | null,
+	getPointermoveListener: null as ((...args: any[]) => (event: PointerEvent) => void) | null
 };
 
 Reference.initialize = function () {
@@ -43,21 +71,21 @@ Reference.initialize = function () {
 };
 
 Reference.findAllGuids = function (targetGuid = '') {
-	const usedMap: Record<string, any> = {};
-	const innerMap: Record<string, any> = {};
-	const outerMap: Record<string, any> = {};
+	const usedMap: Record<string, ReferenceContent> = {};
+	const innerMap: Record<string, boolean> = {};
+	const outerMap: Record<string, ReferenceItem> = {};
 	const guidInText = /<(?:ref|image|global|global:):([0-9a-f]{16})>/g;
 	const guidInJSON = /"([0-9a-f]{16})\\?"|<(?:ref|image|global|global:):([0-9a-f]{16})>/g;
 	const guidInScript = /"[0-9a-f]{16}"|'[0-9a-f]{16}'/g;
 	const guidMap = Data.manifest.guidMap;
 	const { scenePresets, uiPresets } = Data;
-	const get = (Local.createGetter as any)('reference');
+	const get = Local.createGetter!('reference');
 	let fileId = '';
 	let order = 0;
 	const resetFileId = () => {
 		fileId = '';
 	};
-	const pushComment = (comment: any) => {
+	const pushComment = (comment: string) => {
 		comment = '******************** ' + comment + ' ********************';
 		usedMap['@' + order] = {
 			type: 'comment',
@@ -70,14 +98,14 @@ Reference.findAllGuids = function (targetGuid = '') {
 		};
 		order += 2;
 	};
-	let pushToUsedMap = (path: any, guid: any) => {
+	let pushToUsedMap = (path: string, guid: string) => {
 		if (guid) {
 			const text = `${path} : #${guid}`;
-			const usedList = (usedMap[guid] ??= []);
+			const usedList = (usedMap[guid] ??= []) as ReferenceItem[];
 			let existing = false;
 			for (const item of usedList) {
 				if (item.text === text) {
-					item.count++;
+					item.count = item.count! + 1;
 					existing = true;
 					break;
 				}
@@ -105,13 +133,13 @@ Reference.findAllGuids = function (targetGuid = '') {
 			}
 		}
 	};
-	const pushToUsedMap2 = (path: any, name: any, guid: any) => {
+	const pushToUsedMap2 = (path: string, name: string, guid: string) => {
 		if (guid) pushToUsedMap(`${path}/${name}`, guid);
 	};
-	let pushToInnerMap = (path: any, guid: any) => {
+	let pushToInnerMap = (path: string, guid: string) => {
 		if (guid) innerMap[guid] = true;
 	};
-	let pushToOuterMap = (path: any, guid: any, fileGuid?: any) => {
+	let pushToOuterMap = (path: string, guid: string, fileGuid?: string) => {
 		if (guid)
 			outerMap[guid] = {
 				type: 'path',
@@ -121,7 +149,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	if (targetGuid) {
 		const _pushToUsedMap = pushToUsedMap;
-		pushToUsedMap = (path: any, guid: any) => {
+		pushToUsedMap = (path: string, guid: string) => {
 			if (guid === targetGuid) {
 				_pushToUsedMap(path, guid);
 			}
@@ -129,11 +157,11 @@ Reference.findAllGuids = function (targetGuid = '') {
 		pushToInnerMap = Function.empty;
 		pushToOuterMap = Function.empty;
 	}
-	const getPathOfGuid = (guid: any) => {
+	const getPathOfGuid = (guid: string) => {
 		fileId = guid;
 		return guidMap[guid]?.file.aliasPath ?? 'unknown-path';
 	};
-	const searchLocalEvents = (events: any, dir: any) => {
+	const searchLocalEvents = (events: LocalEventShape[], dir: string) => {
 		for (const event of events) {
 			const path = `${dir}/events/${event.type}`;
 			const json = JSON.stringify(event);
@@ -143,7 +171,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 			}
 		}
 	};
-	const searchLocalScripts = (scripts: any, dir: any) => {
+	const searchLocalScripts = (scripts: LocalScriptShape[], dir: string) => {
 		for (const script of scripts) {
 			const path = `${dir}/scripts/${script.id}`;
 			const json = JSON.stringify(script);
@@ -153,13 +181,13 @@ Reference.findAllGuids = function (targetGuid = '') {
 			}
 		}
 	};
-	const searchText = (text: any, dir: any, name: any) => {
+	const searchText = (text: string, dir: string, name: string) => {
 		let match;
 		while ((match = guidInText.exec(text))) {
 			pushToUsedMap2(dir, name, match[1]);
 		}
 	};
-	const searchList = (dataList: any, dir: any, name: any) => {
+	const searchList = (dataList: unknown[], dir: string, name: string) => {
 		if (dataList.length === 0) return;
 		const json = JSON.stringify(dataList);
 		let match;
@@ -167,7 +195,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 			pushToUsedMap2(dir, name, match[1] ?? match[2]);
 		}
 	};
-	const searchData = (data: any, dir: any, name: any) => {
+	const searchData = (data: unknown, dir: string, name: string) => {
 		const json = JSON.stringify(data);
 		let match;
 		while ((match = guidInJSON.exec(json))) {
@@ -192,7 +220,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchUIs = () => {
 		pushComment(get('ui'));
-		const searchUIElements = (nodes: any, dir: any) => {
+		const searchUIElements = (nodes: SearchNodeShape[], dir: string) => {
 			for (const node of nodes) {
 				const path = `${dir}/${node.name}`;
 				pushToInnerMap(path, node.presetId);
@@ -236,7 +264,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchScenes = () => {
 		pushComment(get('scene'));
-		const searchSceneObjects = (nodes: any, dir: any) => {
+		const searchSceneObjects = (nodes: SearchNodeShape[], dir: string) => {
 			for (const node of nodes) {
 				const path = `${dir}/${node.name}`;
 				switch (node.class) {
@@ -405,7 +433,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	const searchTilesets = () => {
 		pushComment(get('tileset'));
-		const ignoreMap: Record<string, any> = {};
+		const ignoreMap: Record<string, boolean> = {};
 		for (const template of Data.autotiles) {
 			ignoreMap[template.id] = true;
 		}
@@ -426,14 +454,14 @@ Reference.findAllGuids = function (targetGuid = '') {
 		resetFileId();
 		pushComment(get('variable'));
 		const dir = 'Data/variables.json';
-		const searchItems = (items: any, dir: any) => {
+		const searchItems = (items: TreeItemShape[], dir: string) => {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
 					searchItems(item.children, path);
 					continue;
 				}
-				pushToOuterMap(path, item.id);
+				pushToOuterMap(path, item.id!);
 				const text = item.name + ',' + item.value + ',' + item.note;
 				let match;
 				while ((match = guidInText.exec(text))) {
@@ -447,15 +475,15 @@ Reference.findAllGuids = function (targetGuid = '') {
 		resetFileId();
 		pushComment(get('attribute'));
 		const dir = 'Data/attribute.json';
-		const searchItems = (items: any, dir: any) => {
+		const searchItems = (items: TreeItemShape[], dir: string) => {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
-					pushToInnerMap(path, item.id);
+					pushToInnerMap(path, item.id!);
 					searchItems(item.children, path);
 					continue;
 				}
-				pushToOuterMap(path, item.id);
+				pushToOuterMap(path, item.id!);
 				pushToUsedMap2(path, 'enum', item.enum);
 				const text = item.name + ',' + item.key + ',' + item.note;
 				let match;
@@ -470,15 +498,15 @@ Reference.findAllGuids = function (targetGuid = '') {
 		resetFileId();
 		pushComment(get('enumeration'));
 		const dir = 'Data/enumeration.json';
-		const searchItems = (items: any, dir: any) => {
+		const searchItems = (items: TreeItemShape[], dir: string) => {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
-					pushToInnerMap(path, item.id);
+					pushToInnerMap(path, item.id!);
 					searchItems(item.children, path);
 					continue;
 				}
-				pushToOuterMap(path, item.id);
+				pushToOuterMap(path, item.id!);
 				const text = item.name + ',' + item.value + ',' + item.note;
 				let match;
 				while ((match = guidInText.exec(text))) {
@@ -492,14 +520,14 @@ Reference.findAllGuids = function (targetGuid = '') {
 		resetFileId();
 		pushComment(get('localization'));
 		const dir = 'Data/localization.json';
-		const searchItems = (items: any, dir: any) => {
+		const searchItems = (items: TreeItemShape[], dir: string) => {
 			for (const item of items) {
 				const path = `${dir}/${item.name}`;
 				if (item.class === 'folder') {
 					searchItems(item.children, path);
 					continue;
 				}
-				pushToOuterMap(path, item.id);
+				pushToOuterMap(path, item.id!);
 				const json = JSON.stringify(item.contents);
 				let match;
 				while ((match = guidInJSON.exec(json))) {
@@ -635,7 +663,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	return { usedMap, innerMap, outerMap };
 };
 
-Reference.filterUselessComments = function (items: any) {
+Reference.filterUselessComments = function (items: ReferenceItem[]) {
 	const list = [];
 	const length = items.length;
 	for (let i = 0; i < length; i++) {
@@ -646,7 +674,7 @@ Reference.filterUselessComments = function (items: any) {
 	return list;
 };
 
-Reference.findRelated = function (guid: any) {
+Reference.findRelated = function (guid: string) {
 	const items = [];
 	const { usedMap } = this.findAllGuids!(guid);
 	for (const key of Object.keys(usedMap)) {
@@ -657,20 +685,20 @@ Reference.findRelated = function (guid: any) {
 			items.push(content);
 		}
 	}
-	items.sort((a, b) => a.order - b.order);
+	items.sort((a, b) => a.order! - b.order!);
 	const filtered = Reference.filterUselessComments!(items);
 	filtered.isEmpty = filtered.length === 0;
 	if (filtered.isEmpty) {
 		filtered.push({
 			type: 'comment',
-			text: (Local.get as any)('reference.no-related-found')
+			text: Local.get!('reference.no-related-found')
 		});
 	}
 	return filtered;
 };
 
-Reference.openRelated = function (guid: any) {
-	(Window.open as any)('reference');
+Reference.openRelated = function (guid: string) {
+	Window.open!('reference');
 	this.openList!(this.findRelated!(guid));
 };
 
@@ -688,21 +716,21 @@ Reference.findInvalid = function () {
 			}
 		}
 	}
-	items.sort((a, b) => a.order - b.order);
+	items.sort((a, b) => a.order! - b.order!);
 	const filtered = Reference.filterUselessComments!(items);
 	filtered.isEmpty = filtered.length === 0;
 	if (filtered.isEmpty) {
 		filtered.push({
 			type: 'comment',
-			text: (Local.get as any)('reference.no-invalid-found')
+			text: Local.get!('reference.no-invalid-found')
 		});
 	}
 	return filtered;
 };
 
-Reference.openInvalid = function (guid: any) {
-	(Window.open as any)('reference');
-	this.openList!(this.findInvalid!(guid));
+Reference.openInvalid = function (guid: string) {
+	Window.open!('reference');
+	this.openList!(this.findInvalid!());
 };
 
 Reference.findUnused = function () {
@@ -718,36 +746,38 @@ Reference.findUnused = function () {
 	if (filtered.isEmpty) {
 		filtered.push({
 			type: 'comment',
-			text: (Local.get as any)('reference.no-unused-found')
+			text: Local.get!('reference.no-unused-found')
 		});
 	}
 	return filtered;
 };
 
-Reference.openUnused = function (guid: any) {
-	(Window.open as any)('reference');
-	this.openList!(this.findUnused!(guid));
+Reference.openUnused = function (guid: string) {
+	Window.open!('reference');
+	this.openList!(this.findUnused!());
 };
 
-Reference.openList = function (items: any) {
-	(Window.open as any)('reference');
+Reference.openList = function (items: ReferenceItem[]) {
+	Window.open!('reference');
 	Reference.update!(items);
 };
 
-Reference.update = function (items: any) {
+Reference.update = function (items: ReferenceItem[]) {
 	const list = $('#reference-list').reload();
 	for (const item of items) {
-		const li = document.createElement('common-item');
+		const li = document.createElement('common-item') as HTMLElement & {
+			dataValue: ReferenceItem;
+		};
 		li.dataValue = item;
 		li.textContent = item.text;
 		if (item.type === 'comment') {
 			addClass(li, 'reference-comment');
 		}
-		if ('count' in item && item.count > 1) {
+		if ('count' in item && item.count! > 1) {
 			const counter = document.createElement('div');
 			addClass(counter, 'reference-count');
 			addClass(counter, 'text');
-			counter.textContent = item.count.toString();
+			counter.textContent = item.count!.toString();
 			li.appendChild(counter);
 		}
 		list.appendElement(li);
@@ -755,11 +785,11 @@ Reference.update = function (items: any) {
 	list.update();
 };
 
-Reference.windowClosed = function (event: any) {
+Reference.windowClosed = function (event: Event) {
 	clear($('#reference-list'));
 };
 
-Reference.listPopup = function (event: any) {
+Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {
 	const item = event.value;
 	if (item?.id) {
 		Menu.popup(
@@ -772,7 +802,7 @@ Reference.listPopup = function (event: any) {
 					label: `ID: ${item.id}`,
 					style: 'id',
 					click: () => {
-						navigator.clipboard.writeText(item.id);
+						navigator.clipboard.writeText(item.id!);
 					}
 				}
 			]
@@ -780,17 +810,15 @@ Reference.listPopup = function (event: any) {
 	}
 };
 
-Reference.getKeydownListener = function (list: any, winId = '') {
+Reference.getKeydownListener = function (list: HTMLElement, winId = '') {
 	let listener = this.keydownMap.get(list);
 	if (listener === undefined) {
-		listener = (event: any) => {
+		listener = (event: KeyboardEvent) => {
 			if (event.altKey) {
 				switch (event.code) {
 					case 'AltLeft':
 						if (
-							winId
-								? (Window.getTopWindow as any)()?.id === winId
-								: !(Window.getTopWindow as any)()
+							winId ? Window.getTopWindow!()?.id === winId : !Window.getTopWindow!()
 						) {
 							addClass(list, 'alt');
 							window.addEventListener('keyup', this.getKeyupListener!(list));
@@ -807,15 +835,15 @@ Reference.getKeydownListener = function (list: any, winId = '') {
 	return listener;
 };
 
-Reference.getKeyupListener = function (list: any) {
+Reference.getKeyupListener = function (list: HTMLElement) {
 	let listener = this.keyupMap.get(list);
 	if (listener === undefined) {
-		listener = (event: any) => {
+		listener = (event: KeyboardEvent) => {
 			if (!event.altKey) {
 				switch (event.code) {
 					case 'AltLeft':
 						removeClass(list, 'alt');
-						window.removeEventListener('keyup', listener);
+						(window as Window).removeEventListener('keyup', listener!);
 						window.removeEventListener(
 							'pointermove',
 							this.getPointermoveListener!(list)
@@ -828,17 +856,19 @@ Reference.getKeyupListener = function (list: any) {
 	return listener;
 };
 
-Reference.getPointerdownListener = function (list: any) {
+Reference.getPointerdownListener = function (list: HTMLElement) {
 	let listener = this.pointerdownMap.get(list);
 	if (listener === undefined) {
-		listener = (event: any) => {
+		listener = (event: PointerEvent) => {
 			if (event.altKey && event.button === 0) {
-				const element = event.target;
+				const element = event.target as HTMLElement & {
+					item?: { id?: string; presetId?: string };
+				};
 				if (element.tagName === 'NODE-ITEM') {
 					const item = element.item;
-					const guid = item.id ?? item.presetId;
+					const guid = item!.id ?? item!.presetId;
 					if (guid) {
-						// 阻止focus后快捷键不被禁用的情况
+						// 阻止focus后快捷键不被禁用的情�?
 						event.preventDefault();
 						event.stopImmediatePropagation();
 						Reference.openRelated!(guid);
@@ -850,14 +880,14 @@ Reference.getPointerdownListener = function (list: any) {
 	return listener;
 };
 
-Reference.getPointermoveListener = function (list: any) {
+Reference.getPointermoveListener = function (list: HTMLElement) {
 	let listener = this.pointermoveMap.get(list);
 	if (listener === undefined) {
-		listener = (event: any) => {
+		listener = (event: PointerEvent) => {
 			if (!event.altKey) {
 				removeClass(list, 'alt');
 				window.removeEventListener('keyup', this.getKeyupListener!(list));
-				window.removeEventListener('pointermove', listener);
+				(window as Window).removeEventListener('pointermove', listener!);
 			}
 		};
 	}

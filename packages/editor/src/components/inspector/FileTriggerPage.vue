@@ -136,6 +136,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -151,10 +152,10 @@ const local = useLocalStore();
 
 const onParamInput = (event: any) => {
 	const target = event?.target ?? document.activeElement;
-	(window as any).Inspector?.fileTrigger?.paramInput?.({ target });
+	Inspector?.fileTrigger?.paramInput?.({ target });
 };
 const onAnimationIdWrite = (value: any) => {
-	(window as any).Inspector?.fileTrigger?.animationIdWrite?.({ value });
+	Inspector?.fileTrigger?.animationIdWrite?.({ value });
 };
 
 onMounted(() => {

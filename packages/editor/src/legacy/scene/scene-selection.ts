@@ -1,9 +1,46 @@
 import { Scene } from './scene-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Vector } from '@/webgl/vector2.ts';
-Scene.selectObject = function (this: any, x: any, y: any) {
+import { Matrix } from '../webgl/matrix2.ts';
+
+type SceneObjectShape = { hidden?: boolean; locked?: boolean; [k: string]: any };
+type SceneSelectionThis = {
+	actors: SceneObjectShape[];
+	animations: SceneObjectShape[];
+	regions: SceneObjectShape[];
+	lights: SceneObjectShape[];
+	particles: SceneObjectShape[];
+	foregrounds: SceneObjectShape[];
+	doodads: SceneObjectShape[];
+	backgrounds: SceneObjectShape[];
+	showLight: boolean;
+	scale: number;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
+	tileWidth: number;
+	tileHeight: number;
+	sharedPoint: { set(x: number, y: number): { x: number; y: number } };
+	getConvertedCoords: (target: unknown) => { x: number; y: number };
+	getParallaxAnchor: (target: unknown, tiled?: boolean) => { x: number; y: number };
+	selectRegion: (x: number, y: number) => SceneObjectShape | null;
+	selectLight: (x: number, y: number) => SceneObjectShape | null;
+	selectParticleEmitter: (x: number, y: number) => SceneObjectShape | null;
+	selectSortedLayer: (x: number, y: number) => SceneObjectShape | null;
+	setRectWireframeVertices: (
+		vertices: Float32Array,
+		dl: number,
+		dt: number,
+		dr: number,
+		db: number,
+		matrix: Matrix
+	) => void;
+};
+
+Scene.selectObject = function (this: SceneSelectionThis, x: number, y: number) {
 	let precise = false;
-	let target: any = null;
+	let target: SceneObjectShape | null = null;
 	let weight = 0;
 
 	if (!target) {
@@ -59,8 +96,8 @@ Scene.selectObject = function (this: any, x: any, y: any) {
 	return target;
 };
 
-Scene.selectRegion = function (this: any, x: any, y: any) {
-	let target: any = null;
+Scene.selectRegion = function (this: SceneSelectionThis, x: number, y: number) {
+	let target: SceneObjectShape | null = null;
 	let weight = 0;
 	const regions = this.regions;
 	const length = regions.length;
@@ -86,8 +123,8 @@ Scene.selectRegion = function (this: any, x: any, y: any) {
 	return target;
 };
 
-Scene.selectLight = function (this: any, x: any, y: any) {
-	let target: any = null;
+Scene.selectLight = function (this: SceneSelectionThis, x: number, y: number) {
+	let target: SceneObjectShape | null = null;
 	let weight = 0;
 	const lights = this.lights;
 	const length = lights.length;
@@ -139,8 +176,8 @@ Scene.selectLight = function (this: any, x: any, y: any) {
 	return target;
 };
 
-Scene.selectParticleEmitter = function (this: any, x: any, y: any) {
-	let target: any = null;
+Scene.selectParticleEmitter = function (this: SceneSelectionThis, x: number, y: number) {
+	let target: SceneObjectShape | null = null;
 	let weight = 0;
 	const convert = this.getConvertedCoords;
 	const point = convert(this.sharedPoint.set(x, y));
@@ -193,7 +230,7 @@ Scene.selectParticleEmitter = function (this: any, x: any, y: any) {
 	return target;
 };
 
-Scene.selectSortedLayer = function (this: any, x: any, y: any) {
+Scene.selectSortedLayer = function (this: SceneSelectionThis, x: number, y: number) {
 	const sPoint = this.sharedPoint.set(x, y);
 	const dPoint = this.getConvertedCoords(sPoint);
 	const mx = dPoint.x;
@@ -201,7 +238,7 @@ Scene.selectSortedLayer = function (this: any, x: any, y: any) {
 	const tw = this.tileWidth;
 	const th = this.tileHeight;
 	for (let i = 0; i < 3; i++) {
-		let layers;
+		let layers: SceneObjectShape[] = [];
 		switch (i) {
 			case 0:
 				layers = this.foregrounds;
@@ -265,7 +302,14 @@ Scene.selectSortedLayer = function (this: any, x: any, y: any) {
 	return null;
 };
 
-Scene.drawOvalWireframe = function (this: any, ox: any, oy: any, hr: any, vr: any, color: any) {
+Scene.drawOvalWireframe = function (
+	this: SceneSelectionThis,
+	ox: number,
+	oy: number,
+	hr: number,
+	vr: number,
+	color: number
+) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const scale = this.scale;
@@ -304,7 +348,12 @@ Scene.drawOvalWireframe = function (this: any, ox: any, oy: any, hr: any, vr: an
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, vi / 2);
 };
 
-Scene.drawTargetAnchor = function (this: any, target: any, angle: any, color = 0xff00ff00) {
+Scene.drawTargetAnchor = function (
+	this: SceneSelectionThis,
+	target: unknown,
+	angle: number,
+	color = 0xff00ff00
+) {
 	const { x, y } = this.getConvertedCoords(target);
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -358,14 +407,14 @@ Scene.drawTargetAnchor = function (this: any, target: any, angle: any, color = 0
 };
 
 Scene.drawRectWireframe = function (
-	this: any,
-	dl: any,
-	dt: any,
-	dr: any,
-	db: any,
-	ax: any,
-	ay: any,
-	angle: any
+	this: SceneSelectionThis,
+	dl: number,
+	dt: number,
+	dr: number,
+	db: number,
+	ax: number,
+	ay: number,
+	angle: number
 ) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -389,14 +438,14 @@ Scene.drawRectWireframe = function (
 };
 
 Scene.drawRectWireframeOnTilemap = function (
-	this: any,
-	rl: any,
-	rt: any,
-	rw: any,
-	rh: any,
-	ax: any,
-	ay: any,
-	angle: any
+	this: SceneSelectionThis,
+	rl: number,
+	rt: number,
+	rw: number,
+	rh: number,
+	ax: number,
+	ay: number,
+	angle: number
 ) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -427,13 +476,13 @@ Scene.drawRectWireframeOnTilemap = function (
 };
 
 Scene.setRectWireframeVertices = function (
-	this: any,
-	vertices: any,
-	dl: any,
-	dt: any,
-	dr: any,
-	db: any,
-	matrix: any
+	this: SceneSelectionThis,
+	vertices: Float32Array,
+	dl: number,
+	dt: number,
+	dr: number,
+	db: number,
+	matrix: Matrix
 ) {
 	const a = matrix[0];
 	const b = matrix[1];

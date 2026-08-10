@@ -24,7 +24,7 @@ interface CommonListElement extends HTMLElement {
 	clear(): HTMLElement;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -59,7 +59,7 @@ const ym = ref<{
 	clear(): HTMLElement;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -81,7 +81,7 @@ const clearElements = (start: number): void => ym.value?.clearElements(start);
 const clear = (): HTMLElement => ym.value?.clear() as HTMLElement;
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -124,8 +124,10 @@ onMounted(() => {
 	el.clearElements = clearElements;
 	el.clear = clear;
 	el.on = on;
-	on('write', (e: any) => emit('write', e.value));
-	on('select', (e: any) => emit('select', e.value));
-	on('popup', (e: any) => emit('popup', e.value, e.clientX, e.clientY));
+	on('write', (e: Event & { value?: any }) => emit('write', e.value));
+	on('select', (e: Event & { value?: any }) => emit('select', e.value));
+	on('popup', (e: Event & { value?: any; clientX: number; clientY: number }) =>
+		emit('popup', e.value, e.clientX, e.clientY)
+	);
 });
 </script>

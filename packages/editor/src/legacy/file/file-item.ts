@@ -9,9 +9,10 @@ import { Local } from '@/tools/localization.ts';
 
 import { Path } from '@/util/config.ts';
 import { GL } from '@/webgl/webgl-init.ts';
+type FileMeta = InstanceType<typeof Meta>;
 
 export class FileItem {
-	meta: any | null;
+	meta: FileMeta | null;
 	name: string;
 	alias: string;
 	aliasPath: string;
@@ -19,11 +20,17 @@ export class FileItem {
 	extname: string;
 	path: string;
 	type: string;
-	stats: any | null;
+	stats: { isDirectory(): boolean; ino?: string | number; mtimeMs?: number } | null;
 	promise!: Promise<any> | null;
-	contexts: any | null;
+	contexts: Map<string, unknown> | null;
 
-	constructor(name: string, extname: string, path: string, type: string, stats: any) {
+	constructor(
+		name: string,
+		extname: string,
+		path: string,
+		type: string,
+		stats: { isDirectory(): boolean; ino?: string | number; mtimeMs?: number }
+	) {
 		let basename = Path.basename(name, extname);
 		const match = basename.match(FileItem.guidRegExp);
 		if (match) basename = basename.slice(0, match.index! - 1);
@@ -42,26 +49,32 @@ export class FileItem {
 
 		switch (type) {
 			case 'image':
-				GL.textureManager.updateImage(this.meta.guid);
+				GL.textureManager.updateImage(this.meta!.guid);
 				break;
 			case 'script':
-				Data.loadScript(this);
+				Data.loadScript(
+					this as unknown as {
+						meta?: { guid: string; code?: string };
+						promise?: Promise<unknown> | null;
+						path: string;
+					}
+				);
 				break;
 		}
 	}
 
 	get data() {
 		const { meta } = this;
-		const { guid } = meta;
+		const { guid } = meta!;
 		const { guidMap } = Data.manifest;
 		if (guidMap[guid] === meta) {
-			return meta.dataMap?.[guid];
+			return meta!.dataMap?.[guid];
 		}
 		return undefined;
 	}
 
-	createMeta(guid: any) {
-		const stats = this.stats;
+	createMeta(guid: string | undefined) {
+		const stats = this.stats!;
 		// 如果GUID不存在或冲突则新建GUID 如果GUID重复则不要修改避免丢失
 		if (guid === undefined) {
 			do {
@@ -84,10 +97,10 @@ export class FileItem {
 			}
 		}
 		this.meta = new Meta(this, guid);
-		this.meta.mtimeMs = stats.mtimeMs;
+		this.meta.mtimeMs = stats.mtimeMs ?? null;
 	}
 
-	updateFileName(guid: any) {
+	updateFileName(guid: string) {
 		const basename = this.basename;
 		const extname = this.extname;
 		// 如果代码被修改可能导致批量的错误命名结果 因此进行文件名组成部分类型检查
@@ -115,7 +128,7 @@ export class FileItem {
 		}
 	}
 
-	getContext(key: any) {
+	getContext(key: string) {
 		let contexts = this.contexts;
 		if (contexts === null) {
 			contexts = this.contexts = new Map();
@@ -145,14 +158,14 @@ export class FileItem {
 
 	static guidRegExp = /(?<=\.)[0-9a-f]{16}$/;
 
-	static guidConflictPaths: any[] = [];
-	static oversizeImagePaths: any[] = [];
+	static guidConflictPaths: string[] = [];
+	static oversizeImagePaths: string[] = [];
 
-	static isDataFile(file: any) {
-		return (FileItem.dataMapNames as any)[file.type] !== undefined;
+	static isDataFile(file: { type: string }) {
+		return (FileItem.dataMapNames as Record<string, string>)[file.type] !== undefined;
 	}
 
-	static addGuidConflictPaths(...paths: any[]) {
+	static addGuidConflictPaths(...paths: string[]) {
 		for (const path of paths) {
 			this.guidConflictPaths.append(path);
 		}
@@ -160,8 +173,8 @@ export class FileItem {
 	}
 
 	static warnGuidConflicts() {
-		const warnings = [(Local.get as any)('confirmation.guidConflict')];
-		(Window.confirm as any)(
+		const warnings = [Local.get!('confirmation.guidConflict')];
+		Window.confirm!(
 			{
 				message: warnings.concat(FileItem.guidConflictPaths).join('\n')
 			},
@@ -174,7 +187,7 @@ export class FileItem {
 		FileItem.guidConflictPaths.length = 0;
 	}
 
-	static addOversizeImagePaths(...paths: any[]) {
+	static addOversizeImagePaths(...paths: string[]) {
 		for (const path of paths) {
 			this.oversizeImagePaths.append(path);
 		}
@@ -183,9 +196,9 @@ export class FileItem {
 
 	static warnOversizeImages() {
 		const warnings = [
-			(Local.get as any)('confirmation.oversizeImage').replace('<size>', GL.maxTexSize)
+			Local.get!('confirmation.oversizeImage').replace('<size>', GL.maxTexSize)
 		];
-		(Window.confirm as any)(
+		Window.confirm!(
 			{
 				message: warnings.concat(FileItem.oversizeImagePaths).join('\n')
 			},

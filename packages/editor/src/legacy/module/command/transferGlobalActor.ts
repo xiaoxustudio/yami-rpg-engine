@@ -17,7 +17,7 @@ Command.cases.transferGlobalActor = new CommandSchema({
 			.push(Command.parsePosition(position));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.transferGlobalActor') + Token(': ') },
+			{ text: Local.get!('command.transferGlobalActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

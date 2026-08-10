@@ -5,23 +5,60 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Title } from '@/title/title-bar.ts';
+import { Texture as PrinterTexture } from '../webgl/texture.ts';
+
+type CanvasTextContext = CanvasRenderingContext2D & {
+	paddingItalic?: number;
+	paddingVertical?: number;
+	size?: number;
+	[k: string]: any;
+};
+
+interface TextEffectShape {
+	type: string;
+	shadowOffsetX?: number;
+	shadowOffsetY?: number;
+	strokeWidth?: number;
+	color?: string | number;
+}
+
+interface ImageElementShape {
+	startX: number;
+	startY: number;
+	image: string;
+	display?: string;
+	clip: { set(clip: number[]): void };
+	transform: { x: number; y: number; width: number; height: number };
+	destroy(): void;
+}
+
+interface TextCommandShape {
+	string: string;
+	x: number;
+	y: number;
+	font: string;
+	size: number;
+	color: string;
+	effect: TextEffectShape | null;
+	image: ImageElementShape | null;
+	imageWidth: number;
+	imageHeight: number;
+	imageSpacing: number;
+	horizontalWidth: number;
+	drawingMethod: (...args: unknown[]) => unknown;
+}
+
+type FontNameList = string[] & { remove(name: string): boolean };
 
 export class Printer {
 	static state: string | null = null;
 	static print: ((...args: unknown[]) => void) | null = null;
-	texture!: any | null;
-	// images 运行时挂载 .changed 标志（L56/L200/L469 读写）
-	images!: any[] & { changed?: boolean };
+	texture!: PrinterTexture | null;
+	// images 运行时挂�?.changed 标志（L56/L200/L469 读写�?
+	images!: ImageElementShape[] & { changed?: boolean };
 	canvas!: HTMLCanvasElement;
-	// CanvasRenderingContext2D 运行时挂载 .paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
-	context:
-		| (CanvasRenderingContext2D & {
-				paddingItalic?: number;
-				paddingVertical?: number;
-				size?: number;
-				[k: string]: any;
-		  })
-		| null;
+	// CanvasRenderingContext2D 运行时挂�?.paddingItalic/.paddingVertical/.size 扩展（printer 内赋值）
+	context: CanvasTextContext | null;
 	content!: string;
 	buffer!: string;
 	x!: number;
@@ -30,7 +67,7 @@ export class Printer {
 	height!: number;
 	index!: number;
 	wrapEnd!: number;
-	commands!: any[] | null;
+	commands!: TextCommandShape[] | null;
 	paddingLeft!: number;
 	paddingTop!: number;
 	paddingRight!: number;
@@ -49,18 +86,18 @@ export class Printer {
 	truncate!: boolean;
 	printWidth!: number;
 	printHeight!: number;
-	fonts!: any[];
-	styles!: any[];
-	weights!: any[];
-	sizes!: any[];
-	colors!: any[];
-	effects!: any[];
+	fonts!: string[];
+	styles!: string[];
+	weights!: string[];
+	sizes!: number[];
+	colors!: string[];
+	effects!: TextEffectShape[];
 
-	constructor(texture: any) {
-		texture.base.printer = this;
-		texture.base.onRestore = Printer.restoreTexture;
+	constructor(texture: PrinterTexture) {
+		texture.base!.printer = this;
+		texture.base!.onRestore = Printer.restoreTexture;
 		this.texture = texture;
-		this.images = [] as any[];
+		this.images = [] as Array<ImageElementShape> & { changed?: boolean };
 		this.images.changed = false;
 		this.canvas = document.createElement('canvas');
 		this.canvas.width = 0;
@@ -90,19 +127,19 @@ export class Printer {
 		this.truncate = false;
 		this.printWidth = Infinity;
 		this.printHeight = Infinity;
-		this.fonts = [Printer.font];
+		this.fonts = [Printer.font!];
 		this.styles = ['normal'];
 		this.weights = ['normal'];
-		this.sizes = [Printer.size];
-		this.colors = [Printer.color];
-		this.effects = [Printer.effect];
+		this.sizes = [Printer.size!];
+		this.colors = [Printer.color!];
+		this.effects = [Printer.effect!];
 	}
 
 	get direction() {
 		return this._direction;
 	}
 
-	set direction(value: any) {
+	set direction(value: string) {
 		this._direction = value;
 		switch (value) {
 			case 'horizontal-tb':
@@ -119,7 +156,7 @@ export class Printer {
 		return this._horizontalAlign;
 	}
 
-	set horizontalAlign(value: any) {
+	set horizontalAlign(value: string) {
 		this._horizontalAlign = value;
 		switch (value) {
 			case 'left':
@@ -138,7 +175,7 @@ export class Printer {
 		return this._verticalAlign;
 	}
 
-	set verticalAlign(value: any) {
+	set verticalAlign(value: string) {
 		this._verticalAlign = value;
 		switch (value) {
 			case 'top':
@@ -229,12 +266,12 @@ export class Printer {
 		return this.printHeight * Printer.scale;
 	}
 
-	setPrintArea(width: any, height: any) {
+	setPrintArea(width: number, height: number) {
 		this.printWidth = width;
 		this.printHeight = height;
 	}
 
-	setPadding(pl: any, pt: any, pr: any, pb: any) {
+	setPadding(pl: number, pt: number, pr: number, pb: number) {
 		this.paddingLeft = pl;
 		this.paddingTop = pt;
 		this.paddingRight = pr;
@@ -266,8 +303,8 @@ export class Printer {
 				this.paddingBottom = Math.max(paddingVertical, this.paddingBottom);
 				break;
 			case 'shadow': {
-				const shadowOffsetX = effect.shadowOffsetX * Printer.scale;
-				const shadowOffsetY = effect.shadowOffsetY * Printer.scale;
+				const shadowOffsetX = (effect.shadowOffsetX ?? 0) * Printer.scale;
+				const shadowOffsetY = (effect.shadowOffsetY ?? 0) * Printer.scale;
 				const shadowOffsetLeft = Math.max(-shadowOffsetX, 0);
 				const shadowOffsetTop = Math.max(-shadowOffsetY, 0);
 				const shadowOffsetRight = Math.max(shadowOffsetX, 0);
@@ -288,7 +325,7 @@ export class Printer {
 				break;
 			}
 			case 'stroke': {
-				const halfWidth = Math.ceil(effect.strokeWidth / 2) * Printer.scale;
+				const halfWidth = Math.ceil((effect.strokeWidth ?? 0) / 2) * Printer.scale;
 				this.paddingLeft = Math.max(
 					halfWidth + paddingItalic / 4 - this.x,
 					this.paddingLeft
@@ -309,7 +346,7 @@ export class Printer {
 		}
 	}
 
-	measureWidth(string: any) {
+	measureWidth(string: string) {
 		if (this.horizontal) {
 			return this.context!.measureText(string).width;
 		} else {
@@ -317,7 +354,7 @@ export class Printer {
 		}
 	}
 
-	measureHeight(string: any) {
+	measureHeight(string: string) {
 		if (this.horizontal) {
 			return this.getScaledSize!();
 		} else {
@@ -352,11 +389,13 @@ export class Printer {
 		command.x = this.x;
 		command.y = this.y;
 		command.font = context.font;
-		command.size = context.size;
+		command.size = context.size!;
 		command.color = color;
 		command.effect = effect;
 		command.horizontalWidth = horizontal ? measureWidth : measureHeight;
-		command.drawingMethod = (Printer as any)[Printer.drawingMethods![effect.type]];
+		command.drawingMethod = (
+			Printer as unknown as Record<string, (...args: unknown[]) => unknown>
+		)[Printer.drawingMethods![effect.type]];
 
 		Printer.lineWidth = 0;
 
@@ -375,7 +414,7 @@ export class Printer {
 		}
 	}
 
-	loadImage(guid: any, clip: any, width: any, height: any) {
+	loadImage(guid: string, clip: number[] | null, width: number, height: number) {
 		if (width * height === 0) return;
 
 		const horizontal = this.horizontal;
@@ -392,7 +431,7 @@ export class Printer {
 			this.newLine!();
 		}
 
-		const imageElement = new (UI.Image as any)(new (Inspector.uiText as any).create());
+		const imageElement: ImageElementShape = new UI.Image(new Inspector.uiText.create());
 		imageElement.startX = this.getRawX!();
 		imageElement.startY = this.getRawY!();
 		imageElement.image = guid;
@@ -419,7 +458,7 @@ export class Printer {
 		command.drawingMethod = Function.empty;
 
 		this.breakable = true;
-		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高度
+		// 根据不同的文本方向，计算下一个位置、行高、文本区域宽度、文本区域高�?
 		if (horizontal) {
 			this.x += imageWidth + letterSpacing;
 			this.lineHeight = Math.max(this.lineHeight, imageHeight);
@@ -567,7 +606,7 @@ export class Printer {
 			}
 		}
 		this.commands = null;
-		this.texture.fromImage(this.canvas);
+		this.texture!.fromImage(this.canvas);
 
 		Printer.resetCommands();
 	}
@@ -615,12 +654,12 @@ export class Printer {
 		}
 	}
 
-	draw(content: any) {
+	draw(content: string) {
 		this.content = content;
 		this.index = 0;
 		this.wrapEnd = 0;
 
-		this.commands = [] as any[];
+		this.commands = [] as Array<TextCommandShape> | null;
 
 		this.paddingLeft = 0;
 		this.paddingTop = 0;
@@ -815,13 +854,14 @@ export class Printer {
 			const operation = match[2] || 'set';
 			const value = parseInt(match[3]);
 			this.drawBuffer!();
+			const key = axis as 'x' | 'y';
 			const position =
 				operation === 'set'
 					? value
 					: operation === 'add'
-						? (this as any)[axis] + value
+						? (this as unknown as Record<'x' | 'y', number>)[key] + value
 						: null;
-			(this as any)[axis] = Math.max(position, 0);
+			(this as unknown as Record<'x' | 'y', number>)[key] = Math.max(position ?? 0, 0);
 			this.index += match[0].length;
 			return true;
 		}
@@ -902,19 +942,19 @@ export class Printer {
 		}
 		if ((match = string.match(regexps.image))) {
 			const guid = match[1];
-			let clip: any = null;
+			let clip: number[] | null = null;
 			let width = 0;
 			let height = 0;
 			if (!match[2]) {
-				// 存在1个参数
+				// 存在1个参�?
 				width = this.sizes[0];
 				height = this.sizes[0];
 			} else if (!match[4]) {
-				// 存在3个参数
+				// 存在3个参�?
 				width = parseInt(match[2]);
 				height = parseInt(match[3]);
 			} else {
-				// 存在5-7个参数
+				// 存在5-7个参�?
 				clip = [
 					parseInt(match[2]),
 					parseInt(match[3]),
@@ -935,25 +975,45 @@ export class Printer {
 	static scale = 1;
 	static sizeScale = 1;
 	static languageFont = '';
-	static font = null as any;
-	static size = null as any;
-	static color = null as any;
-	static effect = null as any;
+	static font: string | null = null;
+	static size: number | null = null;
+	static color: string | null = null;
+	static effect: { type: string } | null = null;
 	static wordWrap = 'break';
 	static highDefinition = false;
 	static lineWidth = 0;
 	static charWidths = null as Float64Array | null;
-	static commands = null as any[] | null;
+	static commands: TextCommandShape[] | null = null;
 	static commandCount = 0;
 	static commandMaximum = 0;
 	static drawingMethods = null as Record<string, string> | null;
-	static imported: any[] = [] as any[];
-	static importing: any[] = [] as any[];
+	static imported: FontNameList = [];
+	static importing: FontNameList = [];
 
-	static regexps: any = {
+	static regexps: {
+		colorIndex: RegExp;
+		color: RegExp;
+		colorRestore: RegExp;
+		font: RegExp;
+		fontRestore: RegExp;
+		italic: RegExp;
+		italicRestore: RegExp;
+		bold: RegExp;
+		boldRestore: RegExp;
+		fontSize: RegExp;
+		fontSizeRestore: RegExp;
+		textPosition: RegExp;
+		textShadow: RegExp;
+		textShadowRestore: RegExp;
+		textStroke: RegExp;
+		textStrokeRestore: RegExp;
+		textOutline: RegExp;
+		textOutlineRestore: RegExp;
+		image: RegExp;
+	} = {
 		// 使用索引颜色: [1]:Index(0-15)
 		colorIndex: /^<color:(\d|1[0-5])>$/i,
-		// 使用指定颜色: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
+		// 使用指定颜色: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可�?
 		color: /^<color:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		colorRestore: /^<\/color>$/i,
 		// 使用字体: [1]:字体族群
@@ -967,18 +1027,18 @@ export class Printer {
 		fontSize: /^<size:([1-9]\d|[1-3]\d\d|400)>$/i,
 		fontSizeRestore: /^<\/size>$/i,
 		textPosition: /^<(x|y):(?:(add),)?(-?(?:\d|[1-9]\d|[1-9]\d\d|1000))>$/i,
-		// 使用阴影效果: [1]:水平偏移(-9-9), [2]:垂直偏移(-9-9), [3]:R(00-ff), [4]:G(00-ff), [5]:B(00-ff), [6]:A(00-ff)(可选)
+		// 使用阴影效果: [1]:水平偏移(-9-9), [2]:垂直偏移(-9-9), [3]:R(00-ff), [4]:G(00-ff), [5]:B(00-ff), [6]:A(00-ff)(可�?
 		textShadow:
 			/^<shadow:(0|-?[1-9]),(0|-?[1-9]),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textShadowRestore: /^<\/shadow>$/i,
-		// 使用描边效果: [1]:描边宽度(1-20), [2]:R(00-ff), [3]:G(00-ff), [4]:B(00-ff), [5]:A(00-ff)(可选)
+		// 使用描边效果: [1]:描边宽度(1-20), [2]:R(00-ff), [3]:G(00-ff), [4]:B(00-ff), [5]:A(00-ff)(可�?
 		textStroke:
 			/^<stroke:([1-9]|1\d|20),([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textStrokeRestore: /^<\/stroke>$/i,
-		// 使用轮廓效果: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可选)
+		// 使用轮廓效果: [1]:R(00-ff), [2]:G(00-ff), [3]:B(00-ff), [4]:A(00-ff)(可�?
 		textOutline: /^<outline:([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?>$/i,
 		textOutlineRestore: /^<\/outline>$/i,
-		// 使用指定图像: [1]:GUID(16个字符), [2]:参数1(0-10000)(可选), [3]:参数2(0-10000)(可选), [4]:参数1(0-10000)(可选), [5]:参数2(0-10000)(可选), [6]:参数1(0-10000)(可选), [7]:参数2(0-10000)(可选)
+		// 使用指定图像: [1]:GUID(16个字�?, [2]:参数1(0-10000)(可�?, [3]:参数2(0-10000)(可�?, [4]:参数1(0-10000)(可�?, [5]:参数2(0-10000)(可�?, [6]:参数1(0-10000)(可�?, [7]:参数2(0-10000)(可�?
 		image: /^<image:([0-9a-f]{16})(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?(?:,(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000),(\d|[1-9]\d|[1-9]\d\d|[1-9]\d\d\d|10000))?>$/i
 	};
 
@@ -1017,11 +1077,11 @@ export class Printer {
 		return this.importFonts!(text.importedFonts);
 	}
 
-	static importFonts(imports: any) {
+	static importFonts(imports: string[]) {
 		const imported = this.imported;
 		const importing = this.importing;
 		const regexp = /([^/]+)\.\S+\.\S+$/;
-		const promises = [] as any[];
+		const promises: Promise<unknown>[] = [];
 		for (const guid of imports) {
 			const path = File.getPath!(guid);
 			const name = path.match(regexp)?.[1];
@@ -1035,9 +1095,9 @@ export class Printer {
 					path: path,
 					type: 'arraybuffer'
 				}).then(
-					(buffer: any) => {
+					(buffer: ArrayBuffer) => {
 						new FontFace(name, buffer).load().then(
-							(font: any) => {
+							(font: FontFace) => {
 								if (importing.remove(name)) {
 									document.fonts.add(font);
 									(
@@ -1063,23 +1123,23 @@ export class Printer {
 									).name = name;
 								}
 							},
-							(error: any) => {
+							(error: unknown) => {
 								importing.remove(name);
 							}
 						);
 					},
-					(error: any) => {
+					(error: unknown) => {
 						importing.remove(name);
 					}
 				)
 			);
 		}
 		return Promise.all(promises).then(() => {
-			(UI.updateElementFont as any)();
+			UI.updateElementFont();
 		});
 	}
 
-	static deleteFont(guid: any) {
+	static deleteFont(guid: string) {
 		const fonts = document.fonts;
 		for (const font of fonts) {
 			if (
@@ -1125,10 +1185,10 @@ export class Printer {
 		this.importing.length = 0;
 	}
 
-	static parseEffect(effect: any) {
+	static parseEffect(effect: TextEffectShape): TextEffectShape {
 		const copy = Object.clone(effect);
 		if (copy.color !== undefined) {
-			copy.color = CSSRGBA(copy.color);
+			copy.color = CSSRGBA(copy.color as string);
 		}
 		return copy;
 	}
@@ -1140,20 +1200,20 @@ export class Printer {
 			this.commandCount++;
 			return command;
 		} else {
-			const command = {
+			const command: TextCommandShape = {
 				string: '',
 				x: 0,
 				y: 0,
 				font: '',
 				size: 0,
-				color: 0,
-				effect: null as any,
-				image: null as any,
+				color: 0 as unknown as string,
+				effect: null as unknown as TextEffectShape | null,
+				image: null as unknown as ImageElementShape | null,
 				imageWidth: 0,
 				imageHeight: 0,
 				imageSpacing: 0,
 				horizontalWidth: 0,
-				drawingMethod: ''
+				drawingMethod: '' as unknown as (...args: unknown[]) => unknown
 			};
 			if (count < this.commandMaximum) {
 				this.commands![count] = command;
@@ -1178,7 +1238,7 @@ export class Printer {
 		this.commandCount = 0;
 	}
 
-	static restoreTexture(base: any) {
+	static restoreTexture(base: { restoreNormalTexture(): void; printer: Printer }) {
 		base.restoreNormalTexture();
 		Promise.resolve().then(() => {
 			const { content } = base.printer;
@@ -1187,7 +1247,7 @@ export class Printer {
 		});
 	}
 
-	static drawText(context: any, command: any, text: any) {
+	static drawText(context: CanvasTextContext, command: TextCommandShape, text: string) {
 		const { font, size, color } = command;
 		const x = command.x;
 		const y = command.y + size * 0.85;
@@ -1197,14 +1257,15 @@ export class Printer {
 		context.fillText(text, x, y);
 	}
 
-	static drawTextWithShadow(context: any, command: any, text: any) {
-		const { font, size, color, effect } = command;
+	static drawTextWithShadow(context: CanvasTextContext, command: TextCommandShape, text: string) {
+		const { font, size, color } = command;
+		const effect = command.effect!;
 		const x = command.x;
 		const y = command.y + size * 0.85;
-		const shadowX = effect.shadowOffsetX * Printer.scale;
-		const shadowY = effect.shadowOffsetY * Printer.scale;
+		const shadowX = (effect.shadowOffsetX ?? 0) * Printer.scale;
+		const shadowY = (effect.shadowOffsetY ?? 0) * Printer.scale;
 		context.font = font;
-		context.fillStyle = effect.color;
+		context.fillStyle = effect.color as string;
 		context.globalCompositeOperation = 'destination-over';
 		context.fillText(text, x + shadowX, y + shadowY);
 		context.fillStyle = color;
@@ -1212,14 +1273,15 @@ export class Printer {
 		context.fillText(text, x, y);
 	}
 
-	static drawTextWithStroke(context: any, command: any, text: any) {
-		const { font, size, color, effect } = command;
+	static drawTextWithStroke(context: CanvasTextContext, command: TextCommandShape, text: string) {
+		const { font, size, color } = command;
+		const effect = command.effect!;
 		const x = command.x;
 		const y = command.y + size * 0.85;
 		context.font = font;
 		context.lineJoin = 'round';
-		context.lineWidth = effect.strokeWidth * Printer.scale;
-		context.strokeStyle = effect.color;
+		context.lineWidth = (effect.strokeWidth ?? 0) * Printer.scale;
+		context.strokeStyle = effect.color as string;
 		context.globalCompositeOperation = 'destination-over';
 		context.strokeText(text, x, y);
 		context.fillStyle = color;
@@ -1227,13 +1289,18 @@ export class Printer {
 		context.fillText(text, x, y);
 	}
 
-	static drawTextWithOutline(context: any, command: any, text: any) {
-		const { font, size, color, effect } = command;
+	static drawTextWithOutline(
+		context: CanvasTextContext,
+		command: TextCommandShape,
+		text: string
+	) {
+		const { font, size, color } = command;
+		const effect = command.effect!;
 		const x = command.x;
 		const y = command.y + size * 0.85;
 		const offset = Printer.scale;
 		context.font = font;
-		context.fillStyle = effect.color;
+		context.fillStyle = effect.color as string;
 		context.fillText(text, x - offset, y);
 		context.fillText(text, x + offset, y);
 		context.fillText(text, x, y - offset);
@@ -1242,7 +1309,7 @@ export class Printer {
 		context.fillText(text, x, y);
 	}
 
-	static setLanguageFont(guid: any) {
+	static setLanguageFont(guid: string) {
 		if (this.languageFont !== guid) {
 			this.deleteFont!(this.languageFont);
 			this.languageFont = guid;
@@ -1261,32 +1328,32 @@ export class Printer {
 			if (name) {
 				this.importFonts!([guid]).then(() => {
 					this.font = `${name}, ${fontFamily}`;
-					(UI.updateElementFont as any)();
+					UI.updateElementFont();
 				});
 			}
 		}
 	}
 
-	static setSizeScale(scale: any) {
+	static setSizeScale(scale: number) {
 		if (this.sizeScale !== scale) {
 			this.sizeScale = scale;
-			(UI.updateAllPrinters as any)();
+			UI.updateAllPrinters();
 		}
 	}
 
 	static updateScale() {
 		this.scale = this.highDefinition ? 4 : 1;
-		(UI.updateAllPrinters as any)();
+		UI.updateAllPrinters();
 	}
 
-	static setWordWrap(wordWrap: any) {
+	static setWordWrap(wordWrap: string) {
 		if (this.wordWrap !== wordWrap) {
 			this.wordWrap = wordWrap;
-			(UI.updateAllPrinters as any)();
+			UI.updateAllPrinters();
 		}
 	}
 
-	static datachange(event: any) {
+	static datachange(event: Event & { key?: string }) {
 		if (event.key === 'config') {
 			const font = Data.config.text.fontFamily || 'sans-serif';
 			if (Printer.font !== font) {
@@ -1296,7 +1363,7 @@ export class Printer {
 						context.fontChanged = true;
 					}
 				}
-				(UI.updateElementFont as any)();
+				UI.updateElementFont();
 			}
 
 			const { importedFonts } = Data.config.text;

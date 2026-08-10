@@ -6,19 +6,31 @@ import { Inspector } from './inspector.ts';
 import { Sprite } from '@/sprite/sprite.ts';
 
 {
-	const AnimSpriteFrame = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimSpriteFrameData {
+		tint: Record<string, unknown>;
+		spriteX: number;
+		spriteY: number;
+		[k: string]: unknown;
+	}
+	interface AnimSpriteFrameShape {
+		target: AnimSpriteFrameData | null;
+		update: ((frame: AnimSpriteFrameData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimSpriteFrame: AnimSpriteFrameShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimSpriteFrame.initialize = function (this: any) {
+	AnimSpriteFrame.initialize = function (this: typeof AnimSpriteFrame) {
 		if (!$('#animSpriteFrame-tint-0-slider')) return;
 		$('#animSpriteFrame-tint-0-slider').synchronize($('#animSpriteFrame-tint-0'));
 		$('#animSpriteFrame-tint-1-slider').synchronize($('#animSpriteFrame-tint-1'));
@@ -40,7 +52,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
 			(el as HTMLElement).on(
 				'blur',
-				Inspector.inputBlur!(this, Animation, (data: any) => {
+				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -56,7 +68,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		Sprite.initialize();
 	};
 
-	AnimSpriteFrame.create = function (this: any) {
+	AnimSpriteFrame.create = function (this: typeof AnimSpriteFrame) {
 		return {
 			start: 0,
 			end: 1,
@@ -77,7 +89,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		};
 	};
 
-	AnimSpriteFrame.open = function (this: any, frame: any) {
+	AnimSpriteFrame.open = function (this: typeof AnimSpriteFrame, frame: AnimSpriteFrameData) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
@@ -102,7 +114,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		}
 	};
 
-	AnimSpriteFrame.close = function (this: any) {
+	AnimSpriteFrame.close = function (this: typeof AnimSpriteFrame) {
 		if (this.target) {
 			Animation.unselectMarquee!(this.target);
 			Sprite.close();
@@ -112,7 +124,10 @@ import { Sprite } from '@/sprite/sprite.ts';
 		}
 	};
 
-	AnimSpriteFrame.write = function (this: any, options: any) {
+	AnimSpriteFrame.write = function (
+		this: typeof AnimSpriteFrame,
+		options: Record<string, unknown>
+	) {
 		if (options.anchorX !== undefined) {
 			write($('#animSpriteFrame-anchorX'), options.anchorX);
 		}
@@ -142,7 +157,12 @@ import { Sprite } from '@/sprite/sprite.ts';
 		}
 	};
 
-	AnimSpriteFrame.update = function (this: any, frame: any, key: any, value: any) {
+	AnimSpriteFrame.update = function (
+		this: typeof AnimSpriteFrame,
+		frame: AnimSpriteFrameData,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'anchorX':
@@ -175,14 +195,18 @@ import { Sprite } from '@/sprite/sprite.ts';
 		Animation.requestRendering!();
 	};
 
-	AnimSpriteFrame.paramInput = function (this: any, event: any) {
+	AnimSpriteFrame.paramInput = function (this: typeof AnimSpriteFrame, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^animSpriteFrame-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		AnimSpriteFrame.update(AnimSpriteFrame.target, Inspector.getKey!(element), read(element));
+		AnimSpriteFrame.update!(
+			AnimSpriteFrame.target as AnimSpriteFrameData,
+			Inspector.getKey!(element),
+			read(element)
+		);
 	};
 
 	Inspector.animSpriteFrame = AnimSpriteFrame;

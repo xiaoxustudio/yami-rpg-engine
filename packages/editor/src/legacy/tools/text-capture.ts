@@ -12,99 +12,157 @@ import { Color } from './color-picker-window.ts';
 import { Local } from './localization.ts';
 import { Variable } from '@/variable/variable.ts';
 
+interface TagController {
+	open: (...args: any[]) => any;
+	confirm?: (...args: any[]) => any;
+	initialize?: () => void;
+	filter?: string;
+	proxy?: unknown;
+}
+
+type TagName =
+	| 'color'
+	| 'font'
+	| 'italic'
+	| 'bold'
+	| 'fontSize'
+	| 'textPosition'
+	| 'textEffect'
+	| 'image'
+	| 'localVariable'
+	| 'globalVariable'
+	| 'dynamicGlobalVariable'
+	| 'localization';
+
+type EventTargetElement = HTMLInputElement | HTMLTextAreaElement;
+
+interface EventListenerElement {
+	addEventListener(type: string, listener: EventListenerOrEventListenerObject): void;
+}
+
+interface ColorProxy {
+	color: string;
+	read(): string;
+	input(color: string): void;
+}
+
+interface ColorController {
+	proxy: ColorProxy;
+	open(params?: { color?: string }): void;
+}
+
+interface VariableProxy {
+	key: string;
+	filter: string;
+	element: EventTargetElement;
+	read(): string;
+	input(key: string): void;
+	getFocus(): unknown;
+}
+
+interface VariableController {
+	proxy: VariableProxy;
+	open(params?: { key?: string }): void;
+}
+
 export const Selection = {
-	target: null as any,
+	target: null as unknown as EventTargetElement,
 	inserting: false,
-	context: null as any,
+	context: null as unknown as {
+		target: EventTargetElement;
+		inserting: boolean;
+	},
 	regexps: {
 		local: /<local:(.*?)>/,
 		global: /<global:([0-9a-f]{16})?>/,
 		dynamicGlobal: /<global::([0-9a-f]{16})?>/,
 		ref: /<ref:([0-9a-f]{16})?>/
 	},
-	initialize: null as any,
-	saveContext: null as any,
-	restoreContext: null as any,
-	addEventListeners: null as any,
-	match: null as any,
-	insert: null as any,
-	edit: null as any,
-	wrap: null as any,
-	inputKeydown: null as any,
-	inputKeyup: null as any,
-	inputPointerdown: null as any,
-	inputPointerup: null as any,
-	color: null as any,
-	font: null as any,
-	italic: null as any,
-	bold: null as any,
-	fontSize: null as any,
-	textPosition: null as any,
-	textEffect: null as any,
-	image: null as any,
-	localVariable: null as any,
-	globalVariable: null as any,
-	dynamicGlobalVariable: null as any,
-	localization: null as any
+	initialize: null as unknown as (...args: any[]) => any,
+	saveContext: null as unknown as (...args: any[]) => any,
+	restoreContext: null as unknown as (...args: any[]) => any,
+	addEventListeners: null as unknown as (...args: any[]) => any,
+	match: null as unknown as (...args: any[]) => any,
+	insert: null as unknown as (...args: any[]) => any,
+	edit: null as unknown as (...args: any[]) => any,
+	wrap: null as unknown as (...args: any[]) => any,
+	inputKeydown: null as unknown as (...args: any[]) => any,
+	inputKeyup: null as unknown as (...args: any[]) => any,
+	inputPointerdown: null as unknown as (...args: any[]) => any,
+	inputPointerup: null as unknown as (...args: any[]) => any,
+	color: null as unknown as TagController,
+	font: null as unknown as TagController,
+	italic: null as unknown as TagController,
+	bold: null as unknown as TagController,
+	fontSize: null as unknown as TagController,
+	textPosition: null as unknown as TagController,
+	textEffect: null as unknown as TagController,
+	image: null as unknown as TagController,
+	localVariable: null as unknown as TagController,
+	globalVariable: null as unknown as TagController,
+	dynamicGlobalVariable: null as unknown as TagController,
+	localization: null as unknown as TagController
 };
 
-Selection.initialize = function (this: any) {
-	if (!$('#font-confirm')) return;
-	$('#font-confirm').addEventListener('click', this.font.confirm);
-	$('#fontSize-confirm').addEventListener('click', this.fontSize.confirm);
-	$('#textPosition-confirm').addEventListener('click', this.textPosition.confirm);
-	$('#textEffect-confirm').addEventListener('click', this.textEffect.confirm);
-	$('#insertImage-confirm').addEventListener('click', this.image.confirm);
-	$('#localVariable-confirm').addEventListener('click', this.localVariable.confirm);
+type SelectionShape = typeof Selection & { sizes?: string[] };
 
-	const exclusions = {
+Selection.initialize = function (this: SelectionShape) {
+	if (!$('#font-confirm')) return;
+	$('#font-confirm').addEventListener('click', this.font.confirm!);
+	$('#fontSize-confirm').addEventListener('click', this.fontSize.confirm!);
+	$('#textPosition-confirm').addEventListener('click', this.textPosition.confirm!);
+	$('#textEffect-confirm').addEventListener('click', this.textEffect.confirm!);
+	$('#insertImage-confirm').addEventListener('click', this.image.confirm!);
+	$('#localVariable-confirm').addEventListener('click', this.localVariable.confirm!);
+
+	const exclusions: Record<string, boolean> = {
 		'color-hex': true,
 		'command-searcher': true
 	};
 
 	for (const textbox of $('text-box')) {
-		if (!(exclusions as Record<string, any>)[textbox.id]) {
-			this.addEventListeners!(textbox.input);
+		if (!exclusions[textbox.id]) {
+			this.addEventListeners!(textbox.input!);
 		}
 	}
 
 	for (const textbox of $('text-area-var')) {
-		this.addEventListeners!(textbox.strBox);
+		this.addEventListeners!(textbox.strBox!);
 	}
 
 	for (const textarea of $('textarea')) {
 		this.addEventListeners!(textarea);
 	}
 
-	this.textPosition.initialize();
-	this.textEffect.initialize();
-	this.image.initialize();
-	this.localVariable.initialize();
+	this.textPosition.initialize!();
+	this.textEffect.initialize!();
+	this.image.initialize!();
+	this.localVariable.initialize!();
 };
 
-Selection.saveContext = function (this: any) {
+Selection.saveContext = function (this: SelectionShape) {
 	this.context = {
 		target: this.target,
 		inserting: this.inserting
 	};
 };
 
-Selection.restoreContext = function (this: any) {
+Selection.restoreContext = function (this: SelectionShape) {
 	if (this.context) {
 		this.target = this.context.target;
 		this.inserting = this.context.inserting;
 	}
 };
 
-Selection.addEventListeners = function (this, element: any) {
+Selection.addEventListeners = function (this: SelectionShape, element: EventListenerElement) {
 	element.addEventListener('keydown', this.inputKeydown);
 	element.addEventListener('keyup', this.inputKeyup);
 	element.addEventListener('pointerdown', this.inputPointerdown);
 	element.addEventListener('pointerup', this.inputPointerup);
-};
+} as unknown as (...args: any[]) => any;
 
-Selection.match = function (this: any) {
-	const target = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
+Selection.match = function (this: SelectionShape) {
+	const target = document.activeElement as EventTargetElement;
 	if (typeof target.selectionStart !== 'number') {
 		return;
 	}
@@ -121,11 +179,11 @@ Selection.match = function (this: any) {
 	const regexps = Printer.regexps;
 	const start = text.lastIndexOf('<', selectionEnd! - 1);
 	const end = text.indexOf('>', selectionStart) + 1;
-	let tag;
-	let params;
+	let tag: TagName | undefined;
+	let params: Record<string, unknown> | null | undefined;
 	if (start >= 0 && end > 0 && start < end && start <= selectionStart && end >= selectionEnd!) {
 		const string = text.slice(start, end);
-		let match;
+		let match: RegExpMatchArray | null;
 		if ((match = string.match(regexps.colorIndex))) {
 			tag = 'color';
 			params = {
@@ -181,11 +239,11 @@ Selection.match = function (this: any) {
 				color: `${match[1]}${match[2]}${match[3]}${match[4] || 'ff'}`
 			};
 		} else if ((match = string.match(regexps.image))) {
-			let image = match[1];
-			let mode;
-			let clip;
-			let width;
-			let height;
+			const image = match[1];
+			let mode: string;
+			let clip: number[] | undefined;
+			let width: number | undefined;
+			let height: number | undefined;
 			if (match[7]) {
 				mode = 'image-clip-size';
 				clip = [
@@ -194,8 +252,8 @@ Selection.match = function (this: any) {
 					parseInt(match[4]),
 					parseInt(match[5])
 				];
-				width = parseInt(match[6] ?? this.sizes[0]);
-				height = parseInt(match[7] ?? this.sizes[0]);
+				width = parseInt(match[6] ?? this.sizes![0]);
+				height = parseInt(match[7] ?? this.sizes![0]);
 			} else if (match[5]) {
 				mode = 'image-clip';
 				clip = [
@@ -259,28 +317,31 @@ Selection.match = function (this: any) {
 	}
 };
 
-Selection.insert = function (this, tag: any) {
-	const target = document.activeElement as HTMLInputElement | HTMLTextAreaElement;
+Selection.insert = function (this: SelectionShape, tag: TagName) {
+	const target = document.activeElement as EventTargetElement;
 	if (typeof target.selectionStart === 'number') {
 		this.target = target;
 		this.inserting = true;
-		(this as any)[tag].open!();
+		this[tag].open!();
 	}
-};
+} as unknown as (...args: any[]) => any;
 
-Selection.edit = function (this: any) {
+Selection.edit = function (this: SelectionShape) {
 	const match = this.match!();
 	if (match) {
 		const { tag, params } = match;
 		this.inserting = false;
-		(this as any)[tag].open!(params);
+		this[tag as TagName].open!(params);
 	}
 };
 
-Selection.wrap = function (this, { prefix, suffix }: any) {
+Selection.wrap = function (
+	this: SelectionShape,
+	{ prefix, suffix }: { prefix: string; suffix?: string }
+) {
 	const input = this.target;
-	const start = input.selectionStart;
-	const end = input.selectionEnd;
+	const start = input.selectionStart!;
+	const end = input.selectionEnd!;
 	input.focus();
 	if (this.inserting && start !== end) {
 		let string;
@@ -291,15 +352,15 @@ Selection.wrap = function (this, { prefix, suffix }: any) {
 			string = prefix;
 			input.selectionEnd = input.selectionStart;
 		}
-		input.parentNode.insert(string);
+		(input.parentNode as HTMLElement).insert(string);
 		input.selectionStart = start;
 	} else {
-		input.parentNode.insert(prefix);
+		(input.parentNode as HTMLElement).insert(prefix);
 		input.selectionStart = start;
 	}
-};
+} as unknown as (...args: any[]) => any;
 
-Selection.inputKeydown = function (this: any, event: any) {
+Selection.inputKeydown = function (this: SelectionShape, event: KeyboardEvent) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'KeyE':
@@ -307,9 +368,9 @@ Selection.inputKeydown = function (this: any, event: any) {
 				break;
 		}
 	}
-}.bind(Selection);
+}.bind(Selection) as unknown as (...args: any[]) => any;
 
-Selection.inputKeyup = function (this: any, event: any) {
+Selection.inputKeyup = function (this: SelectionShape, event: KeyboardEvent) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'KeyE':
@@ -317,21 +378,21 @@ Selection.inputKeyup = function (this: any, event: any) {
 				break;
 		}
 	}
-}.bind(Selection);
+}.bind(Selection) as unknown as (...args: any[]) => any;
 
-Selection.inputPointerdown = function (this: any, event: any) {
+Selection.inputPointerdown = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
 		case 2:
 			setTimeout(() => this.match!());
 			break;
 	}
-}.bind(Selection);
+}.bind(Selection) as unknown as (...args: any[]) => any;
 
-Selection.inputPointerup = function (this: any, event: any) {
+Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
 		case 2:
-			navigator.clipboard.readText().then((clipText: any) => {
-				const element = event.target;
+			navigator.clipboard.readText().then((clipText: string) => {
+				const element = event.target as EventTargetElement;
 				if (document.activeElement === element) {
 					const start = element.selectionStart;
 					const end = element.selectionEnd;
@@ -341,9 +402,15 @@ Selection.inputPointerup = function (this: any, event: any) {
 					const undoable = element.history.canUndo();
 					const redoable = element.history.canRedo();
 					const get = Local.createGetter!('menuTextBox');
-					const wrap = element.parentNode;
+					const wrap = element.parentNode as HTMLElement;
 					const menu = wrap.getAttribute('menu') ?? 'tag';
-					const tagItems = [] as any[];
+					const tagItems: {
+						label?: string;
+						accelerator?: string;
+						enabled?: boolean;
+						click?: () => void;
+						type?: string;
+					}[] = [];
 					tagItems.push(
 						{
 							label: get('tag.color'),
@@ -520,19 +587,19 @@ Selection.inputPointerup = function (this: any, event: any) {
 			});
 			break;
 	}
-}.bind(Selection);
+}.bind(Selection) as unknown as (...args: any[]) => any;
 
 Selection.color = {
-	open: function ({ color = '000000ff' } = {}) {
+	open: function (this: ColorController, { color = '000000ff' } = {}) {
 		this.proxy.color = color;
 		Color.open(this.proxy, true);
 	},
 	proxy: {
-		color: null as any,
-		read: function () {
+		color: null as unknown as string,
+		read: function (this: ColorProxy) {
 			return this.color;
 		},
-		input: function (this: any, color: any) {
+		input: function (this: ColorProxy, color: string) {
 			if (typeof color === 'string') {
 				color = Color.simplifyHexColor(color);
 			}
@@ -550,7 +617,7 @@ Selection.font = {
 		write($('#font-font'), font);
 		getFocus($('#font-font'), 'all');
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const font = read($('#font-font'));
 		if (!font) {
 			return getFocus($('#font-font'), 'all');
@@ -587,7 +654,7 @@ Selection.fontSize = {
 		write($('#fontSize-size'), size);
 		getFocus($('#fontSize-size'), 'all');
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const size = read($('#fontSize-size'));
 		Selection.wrap!({
 			prefix: `<size:${size}>`,
@@ -614,7 +681,7 @@ Selection.textPosition = {
 		write($('#textPosition-operation'), operation);
 		write($('#textPosition-value'), value);
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const axis = read($('#textPosition-axis'));
 		const operation = read($('#textPosition-operation'));
 		const value = read($('#textPosition-value'));
@@ -674,7 +741,7 @@ Selection.textEffect = {
 		write($('#textEffect-strokeWidth'), strokeWidth);
 		write($('#textEffect-color'), color);
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const type = read($('#textEffect-type'));
 		const color = Color.simplifyHexColor(read($('#textEffect-color')));
 		let string;
@@ -751,7 +818,7 @@ Selection.image = {
 		write($('#insertImage-width'), width);
 		write($('#insertImage-height'), height);
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const mode = read($('#insertImage-mode'));
 		const image = read($('#insertImage-image'));
 		if (image === '') return getFocus($('#insertImage-image'));
@@ -789,10 +856,10 @@ Selection.image = {
 
 Selection.localVariable = {
 	filter: 'all',
-	initialize: function () {
+	initialize: function (this: { filter: string }) {
 		TextSuggestion.listen!(
 			$('#localVariable-key') as unknown as TextSuggestionTarget,
-			VariableGetter.createVarListGenerator!(this)
+			VariableGetter.createVarListGenerator!(this as never)
 		);
 	},
 	open: function ({ key = '' } = {}) {
@@ -800,7 +867,7 @@ Selection.localVariable = {
 		write($('#localVariable-key'), key);
 		getFocus($('#localVariable-key'), 'all');
 	},
-	confirm: function (this: any, event: any) {
+	confirm: function (event: Event) {
 		const key = read($('#localVariable-key'));
 		if (!key) {
 			return getFocus($('#localVariable-key'), 'all');
@@ -814,7 +881,7 @@ Selection.localVariable = {
 };
 
 Selection.globalVariable = {
-	open: function ({ key = '' } = {}) {
+	open: function (this: VariableController, { key = '' } = {}) {
 		this.proxy.key = key;
 		this.proxy.element = Selection.target;
 		Variable.open(this.proxy);
@@ -822,24 +889,24 @@ Selection.globalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null as any,
-		read: function () {
+		element: null as unknown as EventTargetElement,
+		read: function (this: VariableProxy) {
 			return this.key;
 		},
-		input: function (this: any, key: any) {
+		input: function (this: VariableProxy, key: string) {
 			Selection.wrap!({
 				prefix: `<global:${key}>`,
 				suffix: ''
 			});
 		},
-		getFocus: function () {
+		getFocus: function (this: VariableProxy) {
 			return this.element ? getFocus(this.element) : undefined;
 		}
 	}
 };
 
 Selection.dynamicGlobalVariable = {
-	open: function ({ key = '' } = {}) {
+	open: function (this: VariableController, { key = '' } = {}) {
 		this.proxy.key = key;
 		this.proxy.element = Selection.target;
 		Variable.open(this.proxy);
@@ -847,34 +914,34 @@ Selection.dynamicGlobalVariable = {
 	proxy: {
 		key: '',
 		filter: '',
-		element: null as any,
-		read: function () {
+		element: null as unknown as EventTargetElement,
+		read: function (this: VariableProxy) {
 			return this.key;
 		},
-		input: function (this: any, key: any) {
+		input: function (this: VariableProxy, key: string) {
 			Selection.wrap!({
 				prefix: `<global::${key}>`,
 				suffix: ''
 			});
 		},
-		getFocus: function () {
+		getFocus: function (this: VariableProxy) {
 			return this.element ? getFocus(this.element) : undefined;
 		}
 	}
 };
 
 Selection.localization = {
-	open: function ({ key = '' } = {}) {
+	open: function (this: VariableController, { key = '' } = {}) {
 		this.proxy.key = key;
 		Selection.saveContext!();
 		Localization.open(this.proxy);
 	},
 	proxy: {
 		key: '',
-		read: function () {
+		read: function (this: VariableProxy) {
 			return this.key;
 		},
-		input: function (this: any, key: any) {
+		input: function (this: VariableProxy, key: string) {
 			Selection.wrap!({
 				prefix: `<ref:${key}>`,
 				suffix: ''

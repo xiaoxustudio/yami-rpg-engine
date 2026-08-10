@@ -34,12 +34,15 @@ UI.Text = class TextElement extends UI.Element {
 
 	static globalVarRegexp = /<global(::?)([0-9a-f]{16})>/g;
 
-	static replaceGlobalVariable(text: any) {
-		return text.replace(this.globalVarRegexp, (match: any, delimiter: any, varId: any) => {
-			const name = getVariable(varId)?.name;
-			const sign = delimiter === '::' ? '@' : '';
-			return name ? `<color:f0d0ff>${sign}${name}</color>` : match;
-		});
+	static replaceGlobalVariable(text: string) {
+		return text.replace(
+			this.globalVarRegexp,
+			(match: string, delimiter: string, varId: string) => {
+				const name = getVariable(varId)?.name;
+				const sign = delimiter === '::' ? '@' : '';
+				return name ? `<color:f0d0ff>${sign}${name}</color>` : match;
+			}
+		);
 	}
 
 	constructor(data: any) {
@@ -73,7 +76,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._direction;
 	}
 
-	set direction(value: any) {
+	set direction(value: string) {
 		if (this._direction !== value) {
 			this._direction = value;
 			if (this.printer) {
@@ -87,7 +90,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._horizontalAlign;
 	}
 
-	set horizontalAlign(value: any) {
+	set horizontalAlign(value: string) {
 		if (this._horizontalAlign !== value) {
 			switch (value) {
 				case 'left':
@@ -109,7 +112,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._verticalAlign;
 	}
 
-	set verticalAlign(value: any) {
+	set verticalAlign(value: string) {
 		if (this._verticalAlign !== value) {
 			switch (value) {
 				case 'top':
@@ -131,7 +134,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._content;
 	}
 
-	set content(value: any) {
+	set content(value: string) {
 		// 需要刷新语言包中的内容，不做差异判断
 		this._rawContent = value;
 		this._content = TextElement.replaceGlobalVariable(GameLocal.replace(value));
@@ -141,7 +144,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._size;
 	}
 
-	set size(value: any) {
+	set size(value: number) {
 		if (this._size !== value) {
 			this._size = value;
 			if (this.printer) {
@@ -155,7 +158,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._lineSpacing;
 	}
 
-	set lineSpacing(value: any) {
+	set lineSpacing(value: number) {
 		if (this._lineSpacing !== value) {
 			this._lineSpacing = value;
 			if (this.printer) {
@@ -169,7 +172,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._letterSpacing;
 	}
 
-	set letterSpacing(value: any) {
+	set letterSpacing(value: number) {
 		if (this._letterSpacing !== value) {
 			this._letterSpacing = value;
 			if (this.printer) {
@@ -183,7 +186,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._color;
 	}
 
-	set color(value: any) {
+	set color(value: string) {
 		if (this._color !== value) {
 			this._color = value;
 			if (this.printer) {
@@ -197,7 +200,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._font;
 	}
 
-	set font(value: any) {
+	set font(value: string) {
 		if (this._font !== value) {
 			this._font = value;
 			if (this.printer) {
@@ -211,7 +214,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._typeface;
 	}
 
-	set typeface(value: any) {
+	set typeface(value: string) {
 		if (this._typeface !== value) {
 			switch (value) {
 				case 'regular':
@@ -258,7 +261,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._overflow;
 	}
 
-	set overflow(value: any) {
+	set overflow(value: string) {
 		if (this._overflow !== value) {
 			this._overflow = value;
 			switch (value) {
@@ -409,7 +412,7 @@ UI.Text = class TextElement extends UI.Element {
 		}
 	}
 
-	resizeEmbeddedImages(offsetX: any, offsetY: any) {
+	resizeEmbeddedImages(offsetX: number, offsetY: number) {
 		const images = this.printer.images;
 		if (images.changed) {
 			images.changed = false;

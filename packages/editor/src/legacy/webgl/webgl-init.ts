@@ -1,5 +1,17 @@
 // @type {WebGLRenderingContext}
 export let GL: any;
+
+interface BackgroundColor {
+	r: number;
+	g: number;
+	b: number;
+}
+
+interface WebGLPrototypeBufferData {
+	_bufferData: WebGLRenderingContext['bufferData'];
+	bufferData: (target: GLenum, data: any, usage: any, offset: any, length: any) => void;
+}
+
 (() => {
 	const canvas = document.createElement('canvas');
 	canvas.width = 0;
@@ -8,13 +20,13 @@ export let GL: any;
 	canvas.style.width = '100%';
 	canvas.style.height = '100%';
 
-	const background = {
+	const background: Record<string, BackgroundColor> = {
 		light: { r: 0xc8, g: 0xc8, b: 0xc8 },
 		dark: { r: 0x20, g: 0x20, b: 0x20 }
 	};
 
 	window.addEventListener('themechange', function (event) {
-		const { r, g, b } = (background as any)[event.value];
+		const { r, g, b } = background[event.value];
 		GL.BACKGROUND_RED = r / 255;
 		GL.BACKGROUND_GREEN = g / 255;
 		GL.BACKGROUND_BLUE = b / 255;
@@ -62,9 +74,9 @@ export let GL: any;
 		GL.MAX = blend_minmax.MAX_EXT;
 
 		const prototype = WebGLRenderingContext.prototype;
-		(prototype as any)._bufferData = prototype.bufferData;
-		(prototype as any).bufferData = function (
-			target: any,
+		(prototype as unknown as WebGLPrototypeBufferData)._bufferData = prototype.bufferData;
+		(prototype as unknown as WebGLPrototypeBufferData).bufferData = function (
+			target: GLenum,
 			data: any,
 			usage: any,
 			offset: any,

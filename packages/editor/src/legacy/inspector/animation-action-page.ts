@@ -4,23 +4,34 @@ import { Inspector } from './inspector.ts';
 import { read, write } from '@/util/element-utils.ts';
 
 {
-	const AnimMotion = {
-		owner: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		createDir: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimMotionShape {
+		target: Record<string, unknown> | null;
+		create: ((motionId: string) => Record<string, unknown>) | null;
+		createDir: (() => Record<string, unknown>) | null;
+		open: ((motion: Record<string, unknown>) => void) | null;
+		close: (() => void) | null;
+		write: ((options: Record<string, unknown>) => void) | null;
+		update: ((motion: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimMotion: AnimMotionShape = {
+		owner: null,
+		target: null,
+		initialize: null,
+		create: null,
+		createDir: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimMotion.initialize = function (this: any) {
+	AnimMotion.initialize = function (this: typeof AnimMotion) {
 		if (!$('#animMotion-mode')) return;
 		this.owner = {
-			setTarget: (motion: any) => {
+			setTarget: (motion: Record<string, unknown>) => {
 				Animation.setMotion!(motion);
 				Inspector.open!('animMotion', motion);
 			}
@@ -43,7 +54,7 @@ import { read, write } from '@/util/element-utils.ts';
 		const elements = document.querySelectorAll(
 			'#animMotion-skip, #animMotion-loop, #animMotion-loopStart'
 		);
-		elMode.addEventListener('input', this.paramInput);
+		elMode.addEventListener('input', this.paramInput!);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('input', this.paramInput!)
 		);
@@ -55,7 +66,7 @@ import { read, write } from '@/util/element-utils.ts';
 		);
 	};
 
-	AnimMotion.create = function (this: any, motionId: any) {
+	AnimMotion.create = function (this: typeof AnimMotion, motionId: string) {
 		return {
 			class: 'motion',
 			id: motionId,
@@ -63,15 +74,15 @@ import { read, write } from '@/util/element-utils.ts';
 			skip: false,
 			loop: false,
 			loopStart: 0,
-			dirCases: [this.createDir()]
+			dirCases: [this.createDir!()]
 		};
 	};
 
-	AnimMotion.createDir = function (this: any) {
+	AnimMotion.createDir = function (this: typeof AnimMotion) {
 		return { layers: [] };
 	};
 
-	AnimMotion.open = function (this: any, motion: any) {
+	AnimMotion.open = function (this: typeof AnimMotion, motion: Record<string, unknown>) {
 		if (this.target !== motion) {
 			this.target = motion;
 
@@ -83,20 +94,25 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimMotion.close = function (this: any) {
+	AnimMotion.close = function (this: typeof AnimMotion) {
 		if (this.target) {
-			// 此处不能unselect并update Animation.list.unselect(this.target) Animation.updateTarget!()
+			// 濠殿喗绺块崐鏇⑺囬埡鍌溾枖鐎广儱鐗嗛崢纾歯select濡ょ姷鍋熼～鐖宒ate Animation.list.unselect(this.target) Animation.updateTarget!()
 			this.target = null;
 		}
 	};
 
-	AnimMotion.write = function (this: any, options: any) {
+	AnimMotion.write = function (this: typeof AnimMotion, options: Record<string, unknown>) {
 		if (options.mode !== undefined) {
 			write($('#animMotion-mode'), options.mode);
 		}
 	};
 
-	AnimMotion.update = function (this: any, motion: any, key: any, value: any) {
+	AnimMotion.update = function (
+		this: typeof AnimMotion,
+		motion: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'mode':
@@ -120,8 +136,12 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimMotion.paramInput = function (this: any, event: any) {
-		AnimMotion.update(AnimMotion.target, Inspector.getKey!(this), read(this));
+	AnimMotion.paramInput = function (this: typeof AnimMotion, event: Event) {
+		AnimMotion.update!(
+			AnimMotion.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.animMotion = AnimMotion;

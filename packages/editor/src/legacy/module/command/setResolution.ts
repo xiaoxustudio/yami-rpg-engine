@@ -24,7 +24,7 @@ Command.cases.setResolution = new CommandSchema({
 			.push(Command.parseVariableNumber(uiScale));
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.setResolution') + Token(': ') },
+			{ text: Local.get!('command.setResolution') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

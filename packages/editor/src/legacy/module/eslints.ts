@@ -2,7 +2,9 @@ import { EventBus } from './eventbus.ts';
 import { on, addClass } from '@/util/element-utils.ts';
 import { CommandList } from '@/components/command-list.ts';
 
-let _origUpdateCommandElement: any;
+let _origUpdateCommandElement:
+	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
+	| undefined;
 // command-list 内 command-item 元素运行时挂载的扩展字段
 interface CommandItemElement extends HTMLElement {
 	pre: HTMLElement;
@@ -10,14 +12,17 @@ interface CommandItemElement extends HTMLElement {
 	dataIndent: number;
 	eventBinding?: boolean;
 }
-export function updateCommandElement(this: any, element: CommandItemElement): any {
-	const ret = _origUpdateCommandElement.call(this, element);
+export function updateCommandElement(
+	this: typeof CommandList,
+	element: CommandItemElement
+): unknown {
+	const ret = _origUpdateCommandElement?.call(CommandList, element);
 
-	element.querySelectorAll('.command-mark-major').forEach((e: any) => {
+	element.querySelectorAll('.command-mark-major').forEach((e: Element) => {
 		e.remove();
 	});
 
-	element.querySelectorAll('.command-mark-minor').forEach((e: any) => {
+	element.querySelectorAll('.command-mark-minor').forEach((e: Element) => {
 		e.remove();
 	});
 
@@ -26,22 +31,26 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
-	element.lines = [] as any[];
+	element.lines = [];
 	for (let i = element.dataIndent; i >= 0; i--) {
 		let line = document.createElement('command-line');
 		addClass(line, 'command-line');
-		line.style.marginLeft = this.computeTextIndent!(i);
+		line.style.marginLeft = CommandList.prototype.computeTextIndent!.call(element, i);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
 	}
 
-	const list = (this as any).elements;
+	const list = CommandList.prototype.elements as unknown as {
+		count: number;
+		findIndex: (cb: (v: unknown) => boolean) => number;
+		[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
+	};
 	if (!element?.eventBinding) {
 		on(element, 'mouseenter', function () {
-			let indent: any = null;
+			let indent: number | null = null;
 			const { start, end } = range(
 				list,
-				list.findIndex((v: any) => v === element)
+				list.findIndex((v: unknown) => v === element)
 			);
 			for (let i = start; i <= end; i++) {
 				const element = list[i];
@@ -49,14 +58,15 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 					indent = element.dataIndent;
 				}
 				const needNode = element.lines?.[indent];
-				if (needNode && needNode.mark !== 'header') needNode.classList.add('hover');
+				if (needNode && (needNode as unknown as { mark?: string }).mark !== 'header')
+					needNode.classList.add('hover');
 			}
 		});
 		on(element, 'mouseleave', function () {
-			let indent: any = null;
+			let indent: number | null = null;
 			const { start, end } = range(
 				list,
-				list.findIndex((v: any) => v === element)
+				list.findIndex((v: unknown) => v === element)
 			);
 			for (let i = start; i <= end; i++) {
 				const element = list[i];
@@ -64,7 +74,8 @@ export function updateCommandElement(this: any, element: CommandItemElement): an
 					indent = element.dataIndent;
 				}
 				const needNode = element.lines?.[indent];
-				if (needNode && needNode.mark !== 'header') needNode.classList.remove('hover');
+				if (needNode && (needNode as unknown as { mark?: string }).mark !== 'header')
+					needNode.classList.remove('hover');
 			}
 		});
 		element.eventBinding = true;
@@ -84,13 +95,19 @@ export function ensureUpdateCommandElementOverride(): void {
 	CommandList.prototype.updateCommandElement = updateCommandElement;
 }
 
-export function applyCommandListInstanceOverride(commandList: any): void {
+export function applyCommandListInstanceOverride(commandList: typeof CommandList): void {
 	if (!commandList) return;
-	commandList.getSelectionPosition = function (this: any) {
+	commandList.prototype.getSelectionPosition = function (this: {
+		elements: { pre: HTMLElement }[];
+		active: number;
+	}) {
 		return this.elements[this.active].pre.getBoundingClientRect();
 	};
-	on(commandList, 'update', function (this: any) {
-		const list = this.elements;
+	on(commandList, 'update', function (this: { elements: { dataIndent: number }[] }) {
+		const list = CommandList.prototype.elements as unknown as {
+			count: number;
+			[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
+		};
 		for (let i = 0; i < list.count; i++) {
 			const e = list[i];
 			if (e.fold) {
@@ -105,7 +122,7 @@ export function applyCommandListInstanceOverride(commandList: any): void {
 					}
 				}
 			}
-			e.classList.add(e.mark);
+			e.classList.add(e.mark as unknown as string);
 		}
 	});
 }

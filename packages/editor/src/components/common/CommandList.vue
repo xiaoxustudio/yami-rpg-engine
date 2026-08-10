@@ -21,7 +21,8 @@ const ym = ref<{
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const method = (name: string) => {
-	return (...args: any[]): any => (root.value as any)?.[name](...args);
+	const el = root.value as (HTMLElement & Record<string, (...args: unknown[]) => unknown>) | null;
+	return (...args: unknown[]): unknown => el?.[name](...args);
 };
 
 defineExpose({

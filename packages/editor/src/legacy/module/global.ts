@@ -32,6 +32,7 @@ import OriginPackmeta from './packmeta.json';
 import { UI } from '@/ui/ui-window.ts';
 import { Updater } from '@/update/updater.ts';
 import { Variable } from '@/variable/variable.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import { shell } from 'electron';
 import Path from 'node:path';
 import os from 'node:os';
@@ -48,13 +49,15 @@ const moduleDir = moduleUrl.protocol === 'file:' ? Path.dirname(fileURLToPath(mo
 const fs = fsExtra;
 const yauzl = nodeYauzl;
 
+const Clipboard = getGlobalClipboard();
+
 export { yauzl, fs, GlobalPath };
 
 export const CommunityVersion = '26072501';
 
 EventBus.once('editor_loaded', () => {
 	const checkForProjectUpdatesOrigin = Editor.checkForProjectUpdates;
-	Editor.checkForProjectUpdates = function (this: any, verNum: any) {
+	Editor.checkForProjectUpdates = function (this: typeof Editor, verNum: unknown) {
 		checkForProjectUpdatesOrigin!.call(this, verNum);
 		if (!Data.config.deadzone) {
 			Data.config.deadzone = 0.4;
@@ -67,7 +70,7 @@ const packmetaPath = () => {
 	return Path.join(moduleDir, 'packmeta.json');
 };
 
-export let PackMeta: Record<string, any> = OriginPackmeta;
+export let PackMeta: Record<string, string> = OriginPackmeta;
 export const TemplatesPath =
 	typeof Path.resolve === 'function' ? Path.resolve(GlobalPath, 'Templates') : '';
 if (typeof fs.existsSync === 'function' && !fs.existsSync(TemplatesPath))
@@ -78,7 +81,7 @@ export function isNoResource() {
 	delete bak['Editor'];
 	delete bak['Project'];
 	delete bak['Community'];
-	const p = {};
+	const p = {} as Record<string, { check: boolean }> & { '@': boolean };
 	Object.defineProperty(p, '@', {
 		value: false,
 		enumerable: false,
@@ -87,7 +90,7 @@ export function isNoResource() {
 	try {
 		const checkArr: boolean[] = [];
 		Object.keys(bak).map((v) => {
-			p[v] ??= {};
+			p[v] ??= {} as { check: boolean };
 			p[v]['check'] = false;
 			const _path = Path.resolve(TemplatesPath, v) ?? '';
 			if (fs.existsSync(_path)) {
@@ -106,10 +109,10 @@ export function isNoResource() {
 
 export let NoResourceObj = isNoResource();
 
-export function setPackMeta(value: any) {
+export function setPackMeta(value: Record<string, string>) {
 	PackMeta = value;
 }
-export function setNoResourceObj(value: any) {
+export function setNoResourceObj(value: Record<string, { check: boolean }> & { '@': boolean }) {
 	NoResourceObj = value;
 }
 
@@ -129,7 +132,7 @@ window.addEventListener('localize', () => {
 const newProjectConfirm = $('#newProject-confirm');
 if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm!);
 export const TitleConfirmOld = NewProject.confirm;
-NewProject.confirm = function (this: any) {
+NewProject.confirm = function () {
 	const template = read($('#newProject-template'));
 	NoResourceObj = isNoResource();
 	if (
@@ -144,26 +147,37 @@ NewProject.confirm = function (this: any) {
 };
 if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm);
 
+type ZipEntryShape = { fileName: string };
+type ZipFileShape = {
+	readEntry(): void;
+	on(event: 'entry', listener: (entry: ZipEntryShape) => void): void;
+	on(event: 'end' | 'error', listener: (err: unknown) => void): void;
+	openReadStream(
+		entry: ZipEntryShape,
+		callback: (err: unknown, readStream: NodeJS.ReadableStream) => void
+	): void;
+};
+
 export const unzipWithProgress = async ({
 	zipPath,
 	outputDir,
 	onProgress
 }: {
-	zipPath: any;
-	outputDir: any;
-	onProgress: any;
+	zipPath: string;
+	outputDir: string;
+	onProgress: (progress: number) => void;
 }) => {
 	return new Promise((resolve, reject) => {
 		let totalFiles = 0;
 		let extractedFiles = 0;
 
-		yauzl.open(zipPath, { lazyEntries: true }, (err: any, zipfile: any) => {
+		yauzl.open(zipPath, { lazyEntries: true }, (err: unknown, zipfile: ZipFileShape) => {
 			if (err) return reject(err);
 			zipfile.on('entry', () => {
 				totalFiles++;
 			});
 			zipfile.readEntry();
-			zipfile.on('entry', (entry: any) => {
+			zipfile.on('entry', (entry: ZipEntryShape) => {
 				const destPath = Path.join(outputDir, entry.fileName);
 
 				if (entry.fileName.endsWith('/')) {
@@ -174,7 +188,7 @@ export const unzipWithProgress = async ({
 
 				fs.ensureDirSync(Path.dirname(destPath));
 
-				zipfile.openReadStream(entry, (err: any, readStream: any) => {
+				zipfile.openReadStream(entry, (err: unknown, readStream: NodeJS.ReadableStream) => {
 					if (err) return reject(err);
 
 					const writeStream = fs.createWriteStream(destPath);
@@ -194,7 +208,7 @@ export const unzipWithProgress = async ({
 				resolve('解压完成');
 			});
 
-			zipfile.on('error', (err: any) => {
+			zipfile.on('error', (err: unknown) => {
 				reject(err);
 			});
 		});
@@ -202,14 +216,24 @@ export const unzipWithProgress = async ({
 };
 
 EventBus.once('editor_loaded', () => {
-	CommandList.prototype.openEdit = function (this: any) {
+	CommandList.prototype.openEdit = function (this: HTMLElement) {
 		Window.open!('edit-data');
 		void EditDataInstance.open(this);
 	};
 });
 
-export function find_dItem(this: any, fn: any) {
-	var list = this.selections || [];
+interface SelectionItem {
+	class?: string;
+	parent?: SelectionItem;
+	element?: { nextSibling?: { item?: SelectionItem } } & HTMLElement;
+}
+
+export function find_dItem(
+	this: unknown,
+	fn: (dItem?: SelectionItem, insertBefore?: boolean) => unknown
+) {
+	const self = this as { selections?: SelectionItem[] };
+	var list = self.selections || [];
 	var cur = list[list.length - 1];
 	var next = cur?.element?.nextSibling?.item;
 	var insertBefore = false;
@@ -221,7 +245,7 @@ export function find_dItem(this: any, fn: any) {
 		return fn(cur);
 	}
 	if (!next) {
-		if (cur.parent.class == 'folder') {
+		if (cur.parent?.class == 'folder') {
 			return fn(cur.parent);
 		}
 		return fn();
@@ -240,8 +264,15 @@ export function find_dItem(this: any, fn: any) {
 // 列表 - 粘贴（延迟到应用加载完成，避免循环依赖 TDZ）
 EventBus.once('editor_loaded', () => {
 	if (Scene.list)
-		(Scene.list as any).paste = function (this: any, dItem: any, callback: any) {
-			const copy = (Clipboard as any).read('yami.scene.object');
+		Scene.list.paste = function (
+			this: HTMLElement & {
+				data?: unknown;
+				addNodeTo: (copy: unknown, dItem: unknown, insertBefore?: boolean) => void;
+			},
+			dItem: unknown,
+			callback: ((copy: unknown) => void) | undefined
+		) {
+			const copy = Clipboard.read('yami.scene.object');
 			if (copy && this.data) {
 				switch (copy.class) {
 					case 'tilemap':
@@ -252,9 +283,9 @@ EventBus.once('editor_loaded', () => {
 
 				var insertBefore = false;
 				if (dItem === 'auto') {
-					find_dItem.call(this, (a: any, b: any) => {
+					find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 						dItem = a;
-						insertBefore = b;
+						insertBefore = b as boolean;
 					});
 				}
 				callback?.(copy);
@@ -264,8 +295,12 @@ EventBus.once('editor_loaded', () => {
 		};
 
 	if (Enum.list)
-		(Enum.list as any).paste = function (this: any) {
-			const copy = (Clipboard as any).read('yami.data.enumeration');
+		Enum.list.paste = function (
+			this: HTMLElement & {
+				addNodeTo: (copy: unknown, dItem?: unknown, insertBefore?: boolean) => void;
+			}
+		) {
+			const copy = Clipboard.read('yami.data.enumeration');
 			if (copy) {
 				if (Enum.idMap![copy.id]) {
 					copy.id = Enum.createId!();
@@ -273,15 +308,19 @@ EventBus.once('editor_loaded', () => {
 					copy.name += ' - Copy';
 				}
 
-				find_dItem.call(this, (a: any, b: any) => {
+				find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 					this.addNodeTo(copy, a, b);
 				});
 			}
 		};
 
 	if (Variable.list)
-		(Variable.list as any).paste = function (this: any) {
-			const copy = (Clipboard as any).read('yami.data.variable');
+		Variable.list.paste = function (
+			this: HTMLElement & {
+				addNodeTo: (copy: unknown, dItem?: unknown, insertBefore?: boolean) => void;
+			}
+		) {
+			const copy = Clipboard.read('yami.data.variable');
 			if (copy) {
 				if (Variable.idMap[copy.id]) {
 					copy.id = Variable.createId();
@@ -289,15 +328,19 @@ EventBus.once('editor_loaded', () => {
 					copy.name += ' - Copy';
 				}
 
-				find_dItem.call(this, (a: any, b: any) => {
+				find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 					this.addNodeTo(copy, a, b);
 				});
 			}
 		};
 
 	if (Attribute.list)
-		(Attribute.list as any).paste = function (this: any) {
-			const copy = (Clipboard as any).read('yami.data.attribute');
+		Attribute.list!.paste = function (
+			this: HTMLElement & {
+				addNodeTo: (copy: unknown, dItem?: unknown, insertBefore?: boolean) => void;
+			}
+		) {
+			const copy = Clipboard.read('yami.data.attribute');
 			if (copy) {
 				if (Attribute.idMap![copy.id]) {
 					copy.id = Attribute.createId!();
@@ -305,30 +348,41 @@ EventBus.once('editor_loaded', () => {
 					copy.name += ' - Copy';
 				}
 
-				find_dItem.call(this, (a: any, b: any) => {
+				find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 					this.addNodeTo(copy, a, b);
 				});
 			}
 		};
 
 	if (Localization.list)
-		(Localization.list as any).paste = function (this: any) {
-			const copy = (Clipboard as any).read('yami.data.localization');
+		Localization.list!.paste = function (
+			this: HTMLElement & {
+				addNodeTo: (copy: unknown, dItem?: unknown, insertBefore?: boolean) => void;
+			}
+		) {
+			const copy = Clipboard.read('yami.data.localization');
 			if (copy) {
 				if (Localization.idMap[copy.id]) {
 					copy.id = Localization.createId();
 					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';
 				}
-				find_dItem.call(this, (a: any, b: any) => {
+				find_dItem.call(this, (a: unknown, b: boolean | undefined) => {
 					this.addNodeTo(copy, a, b);
 				});
 			}
 		};
 
 	if (UI.list)
-		(UI.list as any).paste = function (this: any, _: any, callback: any) {
-			const copy = (Clipboard as any).read('yami.ui.object');
+		UI.list.paste = function (
+			this: HTMLElement & {
+				data?: unknown;
+				addNodeTo: (copy: unknown, dItem?: unknown) => void;
+			},
+			_: unknown,
+			callback: ((copy: unknown) => void) | undefined
+		) {
+			const copy = Clipboard.read('yami.ui.object');
 			if (copy && this.data) {
 				callback?.(copy);
 				this.addNodeTo(copy, UI.target);
@@ -359,13 +413,13 @@ window.addEventListener(
 
 EventBus.once('editor_loaded', () => {
 	if (!AutoTile.templateList) return;
-	const originAutoTileTemplateUpdate = (AutoTile.templateList as any).update;
-	(AutoTile.templateList as any).update = function (this: any) {
+	const originAutoTileTemplateUpdate = AutoTile.templateList.update;
+	AutoTile.templateList.update = function (this: HTMLElement) {
 		originAutoTileTemplateUpdate.call(this);
 		const autoList = Object.keys(Data.tilesets)
 			.map((v) => Data.tilesets[v])
 			.filter((v) => v.type === 'auto');
-		const countMap: Record<string, any> = {};
+		const countMap: Record<string, number> = {};
 		const data = this.data;
 		for (let i = 0; i < autoList.length; i++) {
 			const tiles = autoList[i].tiles;
@@ -387,7 +441,7 @@ EventBus.once('editor_loaded', () => {
 			countElem.className = 'autoTile-count';
 			countElem.style.cssText =
 				'color: var(--team-relation-mark-color-friend);padding:4px 2px;margin-left: 4px;';
-			countElem.textContent = count;
+			countElem.textContent = count as unknown as string;
 			item.element.append(countElem);
 		}
 	};
@@ -407,13 +461,13 @@ window.addEventListener('localize', () => {
 		tabCommunity.textContent = Local.get!('menuOpenYami.update-log-tab-community');
 	if (tabDonation) tabDonation.textContent = Local.get!('menuOpenYami.update-log-tab-donation');
 });
-UpdateLog.initialize = function (this: any) {
+UpdateLog.initialize = function (this: typeof UpdateLog) {
 	UpdateLogInitializeOrigin!.call(this);
 
 	const tabsContainer = $('#update-log-tabs');
 	if (tabsContainer) {
-		tabsContainer.addEventListener('click', (event: any) => {
-			const btn = event.target?.closest?.('.update-log-tab');
+		tabsContainer.addEventListener('click', (event: MouseEvent) => {
+			const btn = (event.target as HTMLElement).closest?.('.update-log-tab');
 			if (btn) {
 				if (btn.id === 'update-log-tab-internal') {
 					UpdateLog.switchMode?.('internal');
@@ -428,7 +482,8 @@ UpdateLog.initialize = function (this: any) {
 };
 
 export const UpdateLogOpenOrigin = UpdateLog.open;
-UpdateLog.open = function (this: any, items: any = null) {
+UpdateLog.open = function (this: typeof UpdateLog, ...args: unknown[]) {
+	const items = args[0] as unknown[] | null;
 	if (items instanceof Array) {
 		Window.open!('update-log');
 		this.internalItems = items;
@@ -440,13 +495,14 @@ UpdateLog.open = function (this: any, items: any = null) {
 	}
 };
 
-export function markndownToHtml(markdown: any) {
+export function markndownToHtml(markdown: string) {
 	var md = new MarkdownIt();
 	return md.render(markdown);
 }
 
 export const UpdateLogUpdateOrigin = UpdateLog.update;
-UpdateLog.update = function (this: any, items: any) {
+UpdateLog.update = function (this: typeof UpdateLog, ...args: unknown[]) {
+	const items = args[0] as unknown[];
 	if (this.currentMode === 'internal') {
 		UpdateLogUpdateOrigin!.call(this, items);
 	} else {
@@ -454,7 +510,7 @@ UpdateLog.update = function (this: any, items: any) {
 			this.content = $('#update-log-content');
 		}
 		clear(this.content);
-		const communityItems = this.communityItems;
+		const communityItems = this.communityItems!;
 
 		for (const item of communityItems) {
 			if (item.title) {
@@ -482,14 +538,14 @@ UpdateLog.update = function (this: any, items: any) {
 	}
 };
 
-UpdateLog.switchMode = function (this: any, mode: any) {
+UpdateLog.switchMode = function (this: typeof UpdateLog, mode: any) {
 	if (mode === this.currentMode) return;
 	this.currentMode = mode;
 
 	if (mode === 'internal') {
 		this.update?.(this.internalItems);
 	} else if (mode === 'community') {
-		this.update?.(undefined as any);
+		this.update?.(undefined);
 	} else if (mode === 'donation') {
 		this.displayDonationList?.();
 	}
@@ -513,15 +569,15 @@ UpdateLog.switchMode = function (this: any, mode: any) {
 	}
 };
 
-UpdateLog.loadCommunityReleases = async function (this: any) {
+UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
 	try {
 		const response = await fetch(
 			'https://api.github.com/repos/Open-Yami-Community/yami-rpg-editor/releases'
 		);
 		if (!response.ok) throw new Error('Failed to fetch releases');
 		const releases = await response.json();
-		this.communityItems = this.parseCommunityReleases?.(releases);
-	} catch (error: any) {
+		this.communityItems = this.parseCommunityReleases?.(releases) as any[];
+	} catch (error) {
 		console.error('Failed to load community releases:', error);
 		this.communityItems = [
 			{
@@ -532,7 +588,7 @@ UpdateLog.loadCommunityReleases = async function (this: any) {
 	}
 };
 
-UpdateLog.displayDonationList = function (this: any) {
+UpdateLog.displayDonationList = function (this: typeof UpdateLog) {
 	clear(this.content);
 	const donationData = [
 		{
@@ -576,7 +632,8 @@ UpdateLog.displayDonationList = function (this: any) {
 	this.content.appendChild(donationList);
 };
 
-UpdateLog.parseCommunityReleases = function (this: any, releases: any) {
+UpdateLog.parseCommunityReleases = function (this: typeof UpdateLog, ...args: unknown[]) {
+	const releases = args[0] as Array<{ name?: string; body?: string }>;
 	const items = [];
 	for (const release of releases) {
 		items.push({
@@ -589,7 +646,7 @@ UpdateLog.parseCommunityReleases = function (this: any, releases: any) {
 
 export const UpdateLogWindowClosedOrigin = UpdateLog.windowClosed;
 
-UpdateLog.windowClosed = function (this: any) {
+UpdateLog.windowClosed = function (this: typeof UpdateLog) {
 	UpdateLogWindowClosedOrigin!.call(this);
 	UpdateLog.internalItems = [];
 	UpdateLog.communityItems = [];
@@ -598,9 +655,9 @@ UpdateLog.windowClosed = function (this: any) {
 
 /* 设置图块标签 */
 export const SetTileTag: {
-	callback: ((tag: any) => void) | null;
+	callback: ((tag: unknown) => void) | null;
 	initialize: (() => void) | null;
-	open: ((tag: any, callback: any) => void) | null;
+	open: ((tag: unknown, callback: (tag: unknown) => void) => void) | null;
 	windowClosed: (() => void) | null;
 	confirm: (() => void) | null;
 } = {
@@ -620,30 +677,38 @@ SetTileTag.initialize = function () {
 	on($('#setTileTag-confirm'), 'click', this.confirm!);
 };
 
-SetTileTag.open = function (tag: any, callback: any) {
+SetTileTag.open = function (tag: unknown, callback: (tag: unknown) => void) {
 	this.callback = callback;
 	Window.open!('setTileTag');
 	write($('#setTileTag-tag'), tag);
 	getFocus($('#setTileTag-tag'), 'all');
 };
 
-SetTileTag.windowClosed = function (this: any) {
+SetTileTag.windowClosed = function (this: typeof SetTileTag) {
 	this.callback = null;
 }.bind(SetTileTag);
 
-SetTileTag.confirm = function (this: any) {
+SetTileTag.confirm = function (this: typeof SetTileTag) {
 	this.callback!(read($('#setTileTag-tag')));
 	Window.close!('setTileTag');
 }.bind(SetTileTag);
 
-export function loadDtsFolder(folderPath: any, monaco: any, recursive = true) {
-	const disposables: any[] = [];
+export function loadDtsFolder(
+	folderPath: string,
+	monaco: typeof import('monaco-editor'),
+	recursive = true
+) {
+	const disposables: unknown[] = [];
+	const tsLang = monaco.languages.typescript as unknown as {
+		javascriptDefaults: { addExtraLib: (content: string, filePath?: string) => unknown };
+		typescriptDefaults: { addExtraLib: (content: string, filePath?: string) => unknown };
+	};
 
-	function walkDirectory(currentPath: any) {
+	function walkDirectory(currentPath: string) {
 		try {
 			const files = fs.readdirSync(currentPath);
 
-			files.forEach((file: any) => {
+			files.forEach((file: string) => {
 				const fullPath = Path.join(currentPath, file);
 
 				const stat = fs.statSync(fullPath);
@@ -659,18 +724,8 @@ export function loadDtsFolder(folderPath: any, monaco: any, recursive = true) {
 						const normalizedPath = fullPath.replace(/\\/g, '/');
 						const fileUri = 'file://' + normalizedPath;
 
-						disposables.push(
-							monaco.languages.typescript.javascriptDefaults.addExtraLib(
-								content,
-								fileUri
-							)
-						);
-						disposables.push(
-							monaco.languages.typescript.typescriptDefaults.addExtraLib(
-								content,
-								fileUri
-							)
-						);
+						disposables.push(tsLang.javascriptDefaults.addExtraLib(content, fileUri));
+						disposables.push(tsLang.typescriptDefaults.addExtraLib(content, fileUri));
 					} catch (readErr) {
 						console.error(`Failed to read file: ${fullPath}`, readErr);
 					}

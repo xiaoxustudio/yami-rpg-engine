@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Enum } from '@/enum/enum-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -43,22 +44,22 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListSelect = (event: any) => {
-	(window as any).Enum?.listSelect?.(event);
+	Enum?.listSelect?.(event);
 };
 const onListRecord = (event: any) => {
-	(window as any).Enum?.listRecord?.(event);
+	Enum?.listRecord?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).Enum?.listOpen?.(event);
+	Enum?.listOpen?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).Enum?.listPopup?.(event);
+	Enum?.listPopup?.(event);
 };
 const onNameInput = (value: string) => {
-	(window as any).Enum?.nameInput?.({ target: { value } });
+	Enum?.nameInput?.({ target: { value } });
 };
 const onValueInput = (value: string) => {
-	(window as any).Enum?.valueInput?.({ target: { value } });
+	Enum?.valueInput?.({ target: { value } });
 };
 
 onMounted(() => {

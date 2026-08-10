@@ -7,20 +7,30 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneLight = {
+	interface SceneLightShape {
+		target: SceneLightData | null;
+		update: ((light: SceneLightData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface SceneLightData {
+		instance: { measure(): void };
+		[k: string]: unknown;
+	}
+	const SceneLight: SceneLightShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	SceneLight.initialize = function (this: any) {
+	SceneLight.initialize = function (this: typeof SceneLight) {
 		if (!$('#sceneLight-name')) return;
 		this.nameBox = $('#sceneLight-name');
 		$('#sceneLight-type').loadItems([
@@ -59,7 +69,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneLight-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneLight-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneLight-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneLight-parameter-pane').bind($('#sceneLight-scripts'));
 
@@ -107,7 +119,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneLight.create = function (this: any) {
+	SceneLight.create = function (this: typeof SceneLight) {
 		return {
 			class: 'light',
 			name: 'Light',
@@ -137,7 +149,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneLight.open = function (this: any, light: any) {
+	SceneLight.open = function (this: typeof SceneLight, light: SceneLightData) {
 		if (this.target !== light) {
 			this.target = light;
 
@@ -165,7 +177,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.close = function (this: any) {
+	SceneLight.close = function (this: typeof SceneLight) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -177,7 +189,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.write = function (this: any, options: any) {
+	SceneLight.write = function (this: typeof SceneLight, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneLight-x'), options.x);
 		}
@@ -186,7 +198,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneLight.update = function (this: any, light: any, key: any, value: any) {
+	SceneLight.update = function (
+		this: typeof SceneLight,
+		light: SceneLightData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -239,8 +256,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneLight.paramInput = function (this: any, event: any) {
-		SceneLight.update!(SceneLight.target, Inspector.getKey!(this), read(this));
+	SceneLight.paramInput = function (this: typeof SceneLight, event: Event) {
+		SceneLight.update!(
+			SceneLight.target as SceneLightData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneLight = SceneLight;

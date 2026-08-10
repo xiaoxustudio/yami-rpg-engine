@@ -6,21 +6,27 @@ import { Color } from '@/tools/color-picker-window.ts';
 import { Selection } from '@/tools/text-capture.ts';
 import { shallowRef } from 'vue';
 
+interface ToolInstance {
+	open?: (...args: any[]) => void;
+	close?: () => void;
+	initialize?: () => void;
+}
+
 export const useToolStore = defineStore('tool', () => {
 	const activeTool = shallowRef<string | null>(null);
 
 	function getTool(name: string) {
-		return (window as any)[name];
+		return (window as unknown as Record<string, ToolInstance | undefined>)[name];
 	}
 
 	function openTool(name: string, ...args: any[]) {
-		const tool = (window as any)[name];
+		const tool = (window as unknown as Record<string, ToolInstance | undefined>)[name];
 		tool?.open?.(...args);
 		activeTool.value = name;
 	}
 
 	function closeTool(name: string) {
-		const tool = (window as any)[name];
+		const tool = (window as unknown as Record<string, ToolInstance | undefined>)[name];
 		tool?.close?.();
 		if (activeTool.value === name) {
 			activeTool.value = null;
@@ -28,7 +34,7 @@ export const useToolStore = defineStore('tool', () => {
 	}
 
 	function initializeTool(name: string) {
-		(window as any)[name]?.initialize?.();
+		(window as unknown as Record<string, ToolInstance | undefined>)[name]?.initialize?.();
 	}
 
 	function openColor(...args: any[]) {
@@ -139,12 +145,12 @@ export const useToolStore = defineStore('tool', () => {
 		return PresetObject?.buildNodes?.(...args);
 	}
 
-	function presetElementGetDefaultPresetId(...args: any[]) {
-		return PresetElement?.getDefaultPresetId?.(...args);
+	function presetElementGetDefaultPresetId() {
+		return PresetElement?.getDefaultPresetId?.();
 	}
 
-	function presetElementBuildNodes(...args: any[]) {
-		return PresetElement?.buildNodes?.(...args);
+	function presetElementBuildNodes(nodes: unknown) {
+		return PresetElement?.buildNodes?.(nodes as never);
 	}
 
 	function selectionSaveContext() {

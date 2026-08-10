@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -34,13 +35,13 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onTargetWrite = (value: any) => {
-	(window as any).Command?.cases?.registerEvent?.targetWrite?.({ value });
+	Command?.cases?.registerEvent?.targetWrite?.({ value });
 };
 const onOperationWrite = () => {
-	(window as any).Command?.cases?.registerEvent?.operationWrite?.();
+	Command?.cases?.registerEvent?.operationWrite?.();
 };
 const onTypeWrite = () => {
-	(window as any).Command?.cases?.registerEvent?.typeWrite?.();
+	Command?.cases?.registerEvent?.typeWrite?.();
 };
 
 onMounted(() => {

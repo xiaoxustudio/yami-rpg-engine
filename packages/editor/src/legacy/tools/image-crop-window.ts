@@ -8,33 +8,54 @@ import { Local } from './localization.ts';
 import { Cursor } from './pointer-object.ts';
 import { Path } from '@/util/config.ts';
 
+type CropTarget = {
+	getAttribute?: (name: string) => string | null;
+	input?: (value: number[]) => void;
+};
+
+type CropDrag = PointerEvent & {
+	mode: string;
+	scrollLeft: number;
+	scrollTop: number;
+};
+
+interface CropMarquee extends HTMLElement {
+	select(x: number, y: number, width: number, height: number): void;
+	scaleX: number;
+	scaleY: number;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
 export const ImageClip = {
-	window: null as any,
-	screen: null as any,
-	image: null as any,
-	marquee: null as any,
-	target: null as any,
-	symbol: null as any,
-	dragging: null as any,
-	initialize: null as any,
-	open: null as any,
-	loadImage: null as any,
-	updateImage: null as any,
-	updateTitle: null as any,
-	updateMarquee: null as any,
-	shiftMarquee: null as any,
-	scrollToMarquee: null as any,
-	startDragging: null as any,
-	dprchange: null as any,
-	windowClosed: null as any,
-	windowResize: null as any,
-	screenKeydown: null as any,
-	marqueePointerdown: null as any,
-	marqueeDoubleclick: null as any,
-	pointerup: null as any,
-	pointermove: null as any,
-	paramInput: null as any,
-	confirm: null as any
+	window: null as unknown as HTMLElement,
+	screen: null as unknown as HTMLElement,
+	image: null as unknown as HTMLImageElement,
+	marquee: null as unknown as CropMarquee,
+	target: null as unknown as CropTarget | null,
+	symbol: null as unknown as symbol | null,
+	dragging: null as unknown as CropDrag | null,
+	initialize: null as unknown as (...args: unknown[]) => any,
+	open: null as unknown as (...args: unknown[]) => any,
+	loadImage: null as unknown as (...args: unknown[]) => any,
+	updateImage: null as unknown as (...args: unknown[]) => any,
+	updateTitle: null as unknown as (...args: unknown[]) => any,
+	updateMarquee: null as unknown as (...args: unknown[]) => any,
+	shiftMarquee: null as unknown as (...args: unknown[]) => any,
+	scrollToMarquee: null as unknown as (...args: unknown[]) => any,
+	startDragging: null as unknown as (event: CropDrag) => void,
+	dprchange: null as unknown as (event: Event) => void,
+	windowClosed: null as unknown as (event: Event) => void,
+	windowResize: null as unknown as (event: Event) => void,
+	screenKeydown: null as unknown as (event: KeyboardEvent) => void,
+	marqueePointerdown: null as unknown as (event: PointerEvent) => void,
+	marqueeDoubleclick: null as unknown as (event: MouseEvent) => void,
+	pointerup: null as unknown as (event: PointerEvent) => void,
+	pointermove: null as unknown as (event: PointerEvent) => void,
+	paramInput: null as unknown as (event: Event) => void,
+	confirm: null as unknown as (event: Event) => void
 };
 
 function ensureDomBound() {
@@ -43,13 +64,13 @@ function ensureDomBound() {
 	if (!win) return;
 	ImageClip.window = win;
 	ImageClip.screen = $('#imageClip-screen');
-	ImageClip.image = $('#imageClip-image');
+	ImageClip.image = $('#imageClip-image') as HTMLImageElement;
 	hide(ImageClip.image!);
-	ImageClip.marquee = $('#imageClip-marquee');
+	ImageClip.marquee = $('#imageClip-marquee') as CropMarquee;
 	hide(ImageClip.marquee!);
 }
 
-ImageClip.initialize = function (this: any) {
+ImageClip.initialize = function (this: typeof ImageClip) {
 	ensureDomBound();
 	if (!this.window) return;
 	window.addEventListener('dprchange', this.dprchange);
@@ -64,7 +85,8 @@ ImageClip.initialize = function (this: any) {
 	on($('#imageClip-confirm'), 'click', this.confirm);
 };
 
-ImageClip.open = async function (this: any, target: any) {
+ImageClip.open = async function (this: typeof ImageClip, ...args: unknown[]) {
+	const target = args[0] as CropTarget;
 	this.target = target;
 	Window.open!('imageClip');
 
@@ -78,7 +100,7 @@ ImageClip.open = async function (this: any, target: any) {
 	this.loadImage!();
 };
 
-ImageClip.loadImage = function (this: any) {
+ImageClip.loadImage = function (this: typeof ImageClip) {
 	this.window.setTitle('');
 
 	const id = this.target?.getAttribute?.('image');
@@ -89,7 +111,7 @@ ImageClip.loadImage = function (this: any) {
 		image.src = File.route!(path);
 
 		const symbol = (this.symbol = Symbol());
-		new Promise((resolve: any) => {
+		new Promise((resolve: (img: HTMLImageElement) => void) => {
 			const intervalIndex = setInterval(() => {
 				if (image.naturalWidth !== 0) {
 					if (this.symbol === symbol) {
@@ -101,13 +123,13 @@ ImageClip.loadImage = function (this: any) {
 					resolve(image);
 				} else if (image.complete) {
 					clearInterval(intervalIndex);
-					resolve(null);
+					resolve(null as unknown as HTMLImageElement);
 				}
 			});
-		}).then((image: any) => {
+		}).then((image: HTMLImageElement | null) => {
 			if (this.symbol === symbol) {
 				this.symbol = null;
-				this.updateTitle!(path, image);
+				this.updateTitle!(path, image ?? (null as unknown as HTMLImageElement));
 			}
 		});
 	} else {
@@ -115,7 +137,7 @@ ImageClip.loadImage = function (this: any) {
 	}
 };
 
-ImageClip.updateImage = function (this: any) {
+ImageClip.updateImage = function (this: typeof ImageClip) {
 	const screen = this.screen;
 	const image = hide(this.image) as HTMLImageElement;
 	const marquee = hide(this.marquee) as HTMLElement & { scaleX: number; scaleY: number };
@@ -139,7 +161,9 @@ ImageClip.updateImage = function (this: any) {
 	show(marquee);
 };
 
-ImageClip.updateTitle = function (this: any, path: any, image: any) {
+ImageClip.updateTitle = function (this: typeof ImageClip, ...args: unknown[]) {
+	const path = args[0] as string;
+	const image = args[1] as HTMLImageElement | null;
 	let info;
 	if (path && image) {
 		const name = Path.basename!(path);
@@ -153,7 +177,7 @@ ImageClip.updateTitle = function (this: any, path: any, image: any) {
 	this.window.setTitle(info);
 };
 
-ImageClip.updateMarquee = function (this: any) {
+ImageClip.updateMarquee = function (this: typeof ImageClip) {
 	const read = getElementReader('imageClip');
 	const x = read('x');
 	const y = read('y');
@@ -162,7 +186,9 @@ ImageClip.updateMarquee = function (this: any) {
 	this.marquee.select(x, y, width, height);
 };
 
-ImageClip.shiftMarquee = function (this: any, ox: any, oy: any) {
+ImageClip.shiftMarquee = function (this: typeof ImageClip, ...args: unknown[]) {
+	const ox = args[0] as number;
+	const oy = args[1] as number;
 	const image = this.image;
 	const iw = image.naturalWidth;
 	const ih = image.naturalHeight;
@@ -181,7 +207,8 @@ ImageClip.shiftMarquee = function (this: any, ox: any, oy: any) {
 	this.scrollToMarquee!('active');
 };
 
-ImageClip.scrollToMarquee = function (this: any, mode: any) {
+ImageClip.scrollToMarquee = function (this: typeof ImageClip, ...args: unknown[]) {
+	const mode = args[0] as string;
 	const screen = this.screen;
 	const marquee = this.marquee;
 	const dpr = window.devicePixelRatio;
@@ -213,7 +240,7 @@ ImageClip.scrollToMarquee = function (this: any, mode: any) {
 	}
 };
 
-ImageClip.startDragging = function (this: any, event: any) {
+ImageClip.startDragging = function (this: typeof ImageClip, event: CropDrag) {
 	Cursor.open('cursor-grab');
 	this.dragging = event;
 	event.mode = 'scroll';
@@ -223,14 +250,14 @@ ImageClip.startDragging = function (this: any, event: any) {
 	window.addEventListener('pointermove', this.pointermove);
 };
 
-ImageClip.dprchange = function (this: any, event: any) {
+ImageClip.dprchange = function (this: typeof ImageClip, event: Event) {
 	if (!hasClass(this.image, 'hidden')) {
 		this.updateImage!();
 		this.updateMarquee!();
 	}
 }.bind(ImageClip);
 
-ImageClip.windowClosed = function (this: any, event: any) {
+ImageClip.windowClosed = function (this: typeof ImageClip, event: Event) {
 	if (this.dragging) {
 		this.pointerup!(this.dragging);
 	}
@@ -241,13 +268,13 @@ ImageClip.windowClosed = function (this: any, event: any) {
 	hide(this.marquee);
 }.bind(ImageClip);
 
-ImageClip.windowResize = function (this: any, event: any) {
+ImageClip.windowResize = function (this: typeof ImageClip, event: Event) {
 	if (!hasClass(this.image, 'hidden')) {
 		this.updateImage!();
 	}
 }.bind(ImageClip);
 
-ImageClip.screenKeydown = function (this: any, event: any) {
+ImageClip.screenKeydown = function (this: typeof ImageClip, event: KeyboardEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -277,7 +304,7 @@ ImageClip.screenKeydown = function (this: any, event: any) {
 	}
 }.bind(ImageClip);
 
-ImageClip.marqueePointerdown = function (this: any, event: any) {
+ImageClip.marqueePointerdown = function (this: typeof ImageClip, event: PointerEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -307,13 +334,13 @@ ImageClip.marqueePointerdown = function (this: any, event: any) {
 	}
 }.bind(ImageClip);
 
-ImageClip.marqueeDoubleclick = function (this: any, event: any) {
+ImageClip.marqueeDoubleclick = function (this: typeof ImageClip, event: MouseEvent) {
 	if (!event.altKey) {
 		this.confirm!(event);
 	}
 }.bind(ImageClip);
 
-ImageClip.pointerup = function (this: any, event: any) {
+ImageClip.pointerup = function (this: typeof ImageClip, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -327,7 +354,7 @@ ImageClip.pointerup = function (this: any, event: any) {
 	}
 }.bind(ImageClip);
 
-ImageClip.pointermove = function (this: any, event: any) {
+ImageClip.pointermove = function (this: typeof ImageClip, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -339,11 +366,11 @@ ImageClip.pointermove = function (this: any, event: any) {
 	}
 }.bind(ImageClip);
 
-ImageClip.paramInput = function (this: any, event: any) {
+ImageClip.paramInput = function (this: typeof ImageClip, event: Event) {
 	ImageClip.updateMarquee();
 };
 
-ImageClip.confirm = function (this: any, event: any) {
+ImageClip.confirm = function (this: typeof ImageClip, event: Event) {
 	const read = getElementReader('imageClip');
 	this.target?.input?.([read('x'), read('y'), read('width'), read('height')]);
 	Window.close!('imageClip');

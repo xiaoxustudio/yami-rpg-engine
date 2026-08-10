@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Localization } from '@/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -34,16 +35,16 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListSelect = (event: any) => {
-	(window as any).Localization?.listSelect?.(event);
+	Localization?.listSelect?.(event);
 };
 const onListRecord = (event: any) => {
-	(window as any).Localization?.listRecord?.(event);
+	Localization?.listRecord?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).Localization?.listOpen?.(event);
+	Localization?.listOpen?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).Localization?.listPopup?.(event);
+	Localization?.listPopup?.(event);
 };
 
 onMounted(() => {

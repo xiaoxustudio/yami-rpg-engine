@@ -3,6 +3,7 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
+import type { AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface AccessorConfig {
 	domKey: string;
@@ -18,16 +19,21 @@ function createPresetAccessor(config: AccessorConfig) {
 		initialize: null,
 		open: null,
 		confirm: null
-	} as any;
+	} as unknown as {
+		target: AccessorTarget | null;
+		initialize: ((this: typeof accessor) => void) | null;
+		open: ((this: typeof accessor, target: AccessorTarget) => void) | null;
+		confirm: ((this: typeof accessor, event: Event) => void) | null;
+	};
 
-	accessor.initialize = function (this: any) {
+	accessor.initialize = function (this: typeof accessor) {
 		if (!$(`#${domKey}-type`)) return;
 		$(`#${domKey}-type`).loadItems(items);
 		$(`#${domKey}-type`).enableHiddenMode().relate(relate);
 		$(`#${domKey}-confirm`).on('click', this.confirm);
 	};
 
-	accessor.open = function (this: any, target: any) {
+	accessor.open = function (this: typeof accessor, target: AccessorTarget) {
 		this.target = target;
 		Window.open!(domKey);
 
@@ -51,10 +57,10 @@ function createPresetAccessor(config: AccessorConfig) {
 		getFocus($(`#${domKey}-type`));
 	};
 
-	accessor.confirm = function (this: any, event: any) {
+	accessor.confirm = function (this: typeof accessor, event: Event) {
 		const read = getElementReader(domKey);
 		const type = read('type');
-		let getter;
+		let getter: Record<string, unknown>;
 		switch (type) {
 			case 'trigger':
 			case 'latest':
@@ -77,7 +83,7 @@ function createPresetAccessor(config: AccessorConfig) {
 				break;
 			}
 		}
-		this.target?.input?.(getter);
+		this.target?.input?.(getter!);
 		Window.close!(domKey);
 	}.bind(accessor);
 

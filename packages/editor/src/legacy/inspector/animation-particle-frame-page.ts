@@ -5,19 +5,25 @@ import { Inspector } from './inspector.ts';
 import { read, write } from '@/util/element-utils.ts';
 
 {
-	const AnimParticleFrame = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimParticleFrameShape {
+		target: Record<string, unknown> | null;
+		update: ((frame: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimParticleFrame: AnimParticleFrameShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimParticleFrame.initialize = function (this: any) {
+	AnimParticleFrame.initialize = function (this: typeof AnimParticleFrame) {
 		if (!$('#animParticleFrame-x')) return;
 		const elements =
 			document.querySelectorAll(`#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation,
@@ -32,7 +38,7 @@ import { read, write } from '@/util/element-utils.ts';
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener(
 				'blur',
-				Inspector.inputBlur!(this, Animation, (data: any) => {
+				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -41,7 +47,7 @@ import { read, write } from '@/util/element-utils.ts';
 		);
 	};
 
-	AnimParticleFrame.create = function (this: any) {
+	AnimParticleFrame.create = function (this: typeof AnimParticleFrame) {
 		return {
 			start: 0,
 			end: 1,
@@ -57,7 +63,10 @@ import { read, write } from '@/util/element-utils.ts';
 		};
 	};
 
-	AnimParticleFrame.open = function (this: any, frame: any) {
+	AnimParticleFrame.open = function (
+		this: typeof AnimParticleFrame,
+		frame: Record<string, unknown>
+	) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
@@ -75,7 +84,7 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimParticleFrame.close = function (this: any) {
+	AnimParticleFrame.close = function (this: typeof AnimParticleFrame) {
 		if (this.target) {
 			Animation.unselectMarquee!(this.target);
 			Curve.load!(null);
@@ -84,7 +93,10 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimParticleFrame.write = function (this: any, options: any) {
+	AnimParticleFrame.write = function (
+		this: typeof AnimParticleFrame,
+		options: Record<string, unknown>
+	) {
 		if (options.x !== undefined) {
 			write($('#animParticleFrame-x'), options.x);
 		}
@@ -102,7 +114,12 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimParticleFrame.update = function (this: any, frame: any, key: any, value: any) {
+	AnimParticleFrame.update = function (
+		this: typeof AnimParticleFrame,
+		frame: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'x':
@@ -126,8 +143,12 @@ import { read, write } from '@/util/element-utils.ts';
 		Animation.requestRendering!();
 	};
 
-	AnimParticleFrame.paramInput = function (this: any, event: any) {
-		AnimParticleFrame.update(AnimParticleFrame.target, Inspector.getKey!(this), read(this));
+	AnimParticleFrame.paramInput = function (this: typeof AnimParticleFrame, event: Event) {
+		AnimParticleFrame.update!(
+			AnimParticleFrame.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.animParticleFrame = AnimParticleFrame;

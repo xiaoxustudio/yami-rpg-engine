@@ -34,7 +34,7 @@ interface RadioBoxElement extends HTMLElement {
 	relate(entries: RadioRelationEntry[]): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -97,7 +97,7 @@ const relate = (entries: RadioRelationEntry[]): void => {
 };
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	state.proxy?.on(type, listener, options);
@@ -152,11 +152,11 @@ onMounted(() => {
 		el.appendChild(proxy);
 	}
 
-	proxy.on('write', (e: any) => {
+	proxy.on('write', (e: Event & { value: any }) => {
 		emit('write', e.value);
 		syncSelected();
 	});
-	proxy.on('input', (e: any) => {
+	proxy.on('input', (e: Event & { value: any }) => {
 		emit('input', e.value);
 		syncSelected();
 	});

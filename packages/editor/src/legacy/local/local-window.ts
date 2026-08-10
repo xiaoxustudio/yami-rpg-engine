@@ -30,69 +30,101 @@ import { Selection } from '@/tools/text-capture.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { type MenuItem } from '@ui-kit';
+import { type TreeListElement } from '@/components/tree-list.ts';
 import { ipcRenderer } from 'electron';
 
+interface LocalizationItem {
+	id?: string;
+	name: string;
+	class?: string;
+	expanded?: boolean;
+	children?: LocalizationItem[];
+	contents?: Record<string, string>;
+	element?: HTMLElement & { initText?: HTMLElement; attrValue?: string };
+}
+
+interface LocalizationTarget {
+	input?: (id: string) => void;
+}
+
+interface LocalizationHistoryData {
+	item: LocalizationItem;
+	language: string;
+	content: string;
+	response: unknown;
+}
+
+interface UndoableEditor {
+	undo?: () => void;
+	redo?: () => void;
+	history?: History;
+}
+
 export const Localization = {
-	list: null as any,
-	panel: null as any,
-	searcher: null as any,
-	inputs: null as any,
-	target: null as any,
-	data: null as any,
-	idMap: null as any,
-	languages: null as any,
-	history: null as any,
+	list: null as HTMLElement | null,
+	panel: null as HTMLElement | null,
+	searcher: null as HTMLElement | null,
+	inputs: null as Record<string, HTMLElement> | null,
+	target: null as LocalizationTarget | null,
+	data: null as LocalizationItem[] | null,
+	idMap: null as unknown as Record<string, boolean>,
+	languages: null as string[] | null,
+	history: null as History | null,
 	changed: false,
-	_previousActive: null as any,
-	initialize: null as any,
-	open: null as any,
-	undo: null as any,
-	redo: null as any,
-	createId: null as any,
-	register: null as any,
-	unregister: null as any,
-	getItemById: null as any,
-	openContentPanel: null as any,
-	closeContentPanel: null as any,
-	unpackLocalization: null as any,
-	packLocalization: null as any,
-	resizeTextArea: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	keydown: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listDoubleclick: null as any,
-	listSelect: null as any,
-	listRecord: null as any,
-	listOpen: null as any,
-	listPopup: null as any,
-	panelInput: null as any,
-	panelKeydown: null as any,
-	searcherInput: null as any,
-	confirm: null as any,
-	apply: null as any,
+	_previousActive: null as UndoableEditor | null,
+	initialize: null as unknown as (this: any) => void,
+	open: null as unknown as (this: any, target?: LocalizationTarget) => void,
+	undo: null as unknown as (this: any) => void,
+	redo: null as unknown as (this: any) => void,
+	createId: null as unknown as (this: any) => string,
+	register: null as unknown as (this: any, item: LocalizationItem) => void,
+	unregister: null as unknown as (this: any, item: LocalizationItem) => void,
+	getItemById: null as unknown as (this: any, id: string) => LocalizationItem | undefined,
+	openContentPanel: null as unknown as (this: any, item: LocalizationItem) => void,
+	closeContentPanel: null as unknown as (this: any) => void,
+	unpackLocalization: null as unknown as (this: any) => void,
+	packLocalization: null as unknown as (this: any) => void,
+	resizeTextArea: null as unknown as (this: any, target: HTMLElement) => void,
+	windowClose: null as unknown as (this: any, event: Event) => void,
+	windowClosed: null as unknown as (this: any, event: Event) => void,
+	keydown: null as unknown as (event: Event) => void,
+	listKeydown: null as unknown as (this: any, event: KeyboardEvent) => void,
+	listPointerdown: null as unknown as (this: any, event: PointerEvent) => void,
+	listDoubleclick: null as unknown as (this: any, event: MouseEvent) => void,
+	listSelect: null as unknown as (event: Event) => void,
+	listRecord: null as unknown as (event: Event) => void,
+	listOpen: null as unknown as (event: Event) => void,
+	listPopup: null as unknown as (
+		this: any,
+		event: Event & { clientX: number; clientY: number }
+	) => void,
+	panelInput: null as unknown as (event: Event) => void,
+	panelKeydown: null as unknown as (event: KeyboardEvent) => void,
+	searcherInput: null as unknown as (this: any, event: InputEvent) => void,
+	confirm: null as unknown as (this: any, event?: Event) => void,
+	apply: null as unknown as (this: any, event?: Event) => void,
 	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载,
-	createInputs: null as any,
-	fromExcel: null as any,
-	toExcel: null as any,
+	createInputs: null as unknown as (this: any) => void,
+	fromExcel: null as unknown as (this: any, event: Event) => Promise<void>,
+	toExcel: null as unknown as (this: any, event?: Event) => void,
 	// list 方法引用（ensureDomBound 内挂到真实 list 上）,
-	list_saveScroll: null as any,
-	list_restoreScroll: null as any,
-	list_cancelSearch: null as any,
-	list_createFolder: null as any,
-	list_createItem: null as any,
-	list_createIcon: null as any,
-	list_addElementClass: null as any,
-	list_updateItemClass: null as any,
-	list_updateItemName: null as any,
-	list_createInitText: null as any,
-	list_updateInitText: null as any,
-	list_onCreate: null as any,
-	list_onDelete: null as any,
-	list_onResume: null as any,
+	list_saveScroll: null as unknown as (this: any) => void,
+	list_restoreScroll: null as unknown as (this: any) => void,
+	list_cancelSearch: null as unknown as (this: any) => void,
+	list_createFolder: null as unknown as (this: any) => LocalizationItem,
+	list_createItem: null as unknown as (this: any) => LocalizationItem,
+	list_createIcon: null as unknown as (this: any, item: LocalizationItem) => HTMLElement,
+	list_addElementClass: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_updateItemClass: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_updateItemName: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_createInitText: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_updateInitText: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_onCreate: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_onDelete: null as unknown as (this: any, item: LocalizationItem) => void,
+	list_onResume: null as unknown as (this: any, item: LocalizationItem) => void,
 	state: null as string | null,
-	strings: null as Record<string, any> | null,
+	strings: null as Record<string, string> | null,
 	close: null as (() => void) | null,
 	saveToProject: null as ((project: any) => void) | null,
 	loadFromProject: null as ((project: any) => void) | null
@@ -150,7 +182,10 @@ Localization.initialize = function () {
 
 	this.searcher.addCloseButton();
 
-	(History.processors as any)['localization-list-operation'] = (operation: string, data: any) => {
+	History.processors['localization-list-operation'] = (
+		operation: string,
+		data: LocalizationHistoryData
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 		if (read(list) === null && this.panel.item !== null) {
@@ -158,10 +193,13 @@ Localization.initialize = function () {
 		}
 		this.changed = true;
 	};
-	(History.processors as any)['localization-content-change'] = (operation: string, data: any) => {
+	History.processors['localization-content-change'] = (
+		operation: string,
+		data: LocalizationHistoryData
+	) => {
 		const { item, language, content } = data;
-		data.content = item.contents[language];
-		item.contents[language] = content;
+		data.content = item.contents![language];
+		item.contents![language] = content;
 		if (this.panel.item === item) {
 			const textarea = this.inputs[language];
 			write(textarea, content);
@@ -179,7 +217,7 @@ Localization.initialize = function () {
 
 	on(list, 'keydown', this.listKeydown);
 	on(list, 'pointerdown', this.listPointerdown);
-	on(list, 'pointerdown', (Reference.getPointerdownListener as any)(list), {
+	on(list, 'pointerdown', Reference.getPointerdownListener!(list), {
 		capture: true
 	});
 	on(list, 'doubleclick', this.listDoubleclick, { capture: true });
@@ -196,11 +234,11 @@ Localization.initialize = function () {
 };
 
 Localization.createInputs = function () {
-	const inputs: Record<string, any> = (this.inputs = {});
+	const inputs: Record<string, HTMLElement> = (this.inputs = {});
 	for (const language of this.languages) {
 		const detailBox = createDetailBox();
 		const detailSummary = createDetailSummary();
-		detailSummary.textContent = (Local.get as any)('languages.' + language);
+		detailSummary.textContent = Local.get!('languages.' + language);
 		const textarea = createTextArea();
 		(textarea as HTMLElement & { language: string }).language = language;
 		textarea.setAttribute('menu', 'tag-global tag-dynamic-global-var');
@@ -209,11 +247,11 @@ Localization.createInputs = function () {
 		detailBox.appendChild(textarea);
 		this.panel.appendChild(detailBox);
 		inputs[language] = textarea;
-		(Selection.addEventListeners as any)(textarea);
+		Selection.addEventListeners(textarea);
 	}
 };
 
-Localization.open = function (target: any = null) {
+Localization.open = function (target: LocalizationTarget | null | undefined = null) {
 	this.target = target;
 	this._previousActive = UndoManager.getActive();
 	this.history = new History(100);
@@ -242,7 +280,7 @@ Localization.open = function (target: any = null) {
 	getFocus(list);
 
 	window.addEventListener('keydown', this.keydown);
-	window.addEventListener('keydown', (Reference.getKeydownListener as any)(list, 'localization'));
+	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'localization'));
 };
 
 Localization.undo = function () {
@@ -265,31 +303,34 @@ Localization.createId = function () {
 	return id;
 };
 
-Localization.register = function (item: any) {
+Localization.register = function (item: LocalizationItem) {
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Localization.register(child);
 		}
 	} else {
-		Localization.idMap[item.id] = true;
+		Localization.idMap[item.id!] = true;
 	}
 };
 
-Localization.unregister = function (item: any) {
+Localization.unregister = function (item: LocalizationItem) {
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Localization.unregister(child);
 		}
 	} else {
-		delete Localization.idMap[item.id];
+		delete Localization.idMap[item.id!];
 	}
 };
 
 Localization.getItemById = (function IIFE() {
-	const find = (items: any[], id: string): any => {
-		const length = items.length;
+	const find = (
+		items: LocalizationItem[] | null | undefined,
+		id: string
+	): LocalizationItem | undefined => {
+		const length = items!.length;
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.id === id) {
 				return item;
 			}
@@ -307,7 +348,7 @@ Localization.getItemById = (function IIFE() {
 	};
 })();
 
-Localization.openContentPanel = function (item: any) {
+Localization.openContentPanel = function (item: LocalizationItem) {
 	const panel = this.panel;
 	if (panel.item !== item) {
 		panel.item = item;
@@ -315,7 +356,7 @@ Localization.openContentPanel = function (item: any) {
 		const { inputs } = this;
 		for (const language of this.languages) {
 			const textarea = inputs[language];
-			write(textarea, item.contents[language]);
+			write(textarea, item.contents![language]);
 			this.resizeTextArea(textarea);
 		}
 	}
@@ -331,13 +372,13 @@ Localization.closeContentPanel = function () {
 
 Localization.unpackLocalization = (function IIFE() {
 	class ReferencedFolder {
-		data: any;
+		data: LocalizationItem;
 		class: string;
 		name: string;
-		children: any[];
-		constructor(item: any) {
+		children: LocalizationItem[];
+		constructor(item: LocalizationItem) {
 			this.data = item;
-			this.class = item.class;
+			this.class = item.class!;
 			this.name = item.name;
 			this.children = clone(item.children);
 		}
@@ -346,19 +387,19 @@ Localization.unpackLocalization = (function IIFE() {
 			return this.data.expanded;
 		}
 
-		set expanded(value: any) {
+		set expanded(value: boolean | undefined) {
 			this.data.expanded = value;
 			File.planToSave!(Data.manifest.project.localization);
 		}
 	}
-	const clone = (items: any[]) => {
-		const length = items.length;
+	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.class !== 'folder') {
-				copies[i] = (Object as any).clone(item);
-				Localization.idMap[item.id] = true;
+				copies[i] = Object.clone(item);
+				Localization.idMap[item.id!] = true;
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
@@ -368,18 +409,20 @@ Localization.unpackLocalization = (function IIFE() {
 	return function (this: any) {
 		this.idMap = {};
 		this.data = clone(Data.localization.list);
-		this.languages = Data.config.localization.languages.map((lang: any) => lang.name);
+		this.languages = Data.config.localization.languages.map(
+			(lang: { name: string }) => lang.name
+		);
 	};
 })();
 
 Localization.packLocalization = (function IIFE() {
-	const clone = (items: any[]) => {
-		const length = items.length;
+	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.class !== 'folder') {
-				copies[i] = (Object as any).clone(item);
+				copies[i] = Object.clone(item);
 			} else {
 				copies[i] = {
 					class: item.class,
@@ -397,17 +440,17 @@ Localization.packLocalization = (function IIFE() {
 	};
 })();
 
-Localization.resizeTextArea = function (textarea: any) {
+Localization.resizeTextArea = function (textarea: HTMLElement) {
 	const shadowDOM = textarea.querySelector('textarea');
 	textarea.style.height = '0';
-	textarea.style.height = `${(Math as any).clamp(shadowDOM.scrollHeight + 11, 40, 200)}px`;
+	textarea.style.height = `${Math.clamp(shadowDOM!.scrollHeight + 11, 40, 200)}px`;
 };
 
-Localization.windowClose = function (this: any, event: any) {
+Localization.windowClose = function (this: any, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = (Local.createGetter as any)('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedLocalization')
@@ -428,7 +471,7 @@ Localization.windowClose = function (this: any, event: any) {
 	}
 }.bind(Localization);
 
-Localization.windowClosed = function (this: any, event: any) {
+Localization.windowClosed = function (this: any, event: Event) {
 	this.data = null;
 	this.idMap = null;
 	this.inputs = null;
@@ -441,12 +484,12 @@ Localization.windowClosed = function (this: any, event: any) {
 	clear(this.panel);
 	this.closeContentPanel();
 	window.removeEventListener('keydown', this.keydown);
-	window.removeEventListener('keydown', (Reference.getKeydownListener as any)(this.list));
+	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list));
 }.bind(Localization);
 
 Localization.keydown = Shortcuts.createUndoRedo(Localization);
 
-Localization.listKeydown = function (this: any, event: any) {
+Localization.listKeydown = function (this: TreeListElement, event: KeyboardEvent) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -474,7 +517,7 @@ Localization.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Localization.listPointerdown = function (this: any, event: any) {
+Localization.listPointerdown = function (this: TreeListElement, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (event.target === this) {
@@ -488,7 +531,7 @@ Localization.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Localization.listDoubleclick = function (event: any) {
+Localization.listDoubleclick = function (event: MouseEvent) {
 	if (Localization.target && read(Localization.list)?.id !== undefined) {
 		getFocus(Localization.target);
 		event.stopPropagation();
@@ -497,16 +540,16 @@ Localization.listDoubleclick = function (event: any) {
 	}
 };
 
-Localization.listSelect = function (event: any) {
+Localization.listSelect = function (event: Event) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Localization.openContentPanel(item)
 		: Localization.closeContentPanel();
 };
 
-Localization.listRecord = function (event: any) {
+Localization.listRecord = function (event: Event) {
 	Localization.changed = true;
-	Localization.history.save({
+	Localization.history!.save({
 		type: 'localization-list-operation',
 		response: event.value
 	});
@@ -516,16 +559,16 @@ Localization.listOpen = function (event: any) {
 	Localization.listDoubleclick(event);
 };
 
-Localization.listPopup = function (this: any, event: any) {
-	const list = Localization.list;
+Localization.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+	const list = Localization.list!;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as any).has('yami.data.localization');
-	const undoable = Localization.history.canUndo();
-	const redoable = Localization.history.canRedo();
-	const get = (Local.createGetter as any)('menuLocalList');
-	const items: any[] = [
+	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.localization');
+	const undoable = Localization.history!.canUndo();
+	const redoable = Localization.history!.canRedo();
+	const get = Local.createGetter!('menuLocalList');
+	const items: MenuItem[] = [
 		{
 			label: get('create'),
 			submenu: [
@@ -605,7 +648,7 @@ Localization.listPopup = function (this: any, event: any) {
 			label: get('find-references'),
 			accelerator: 'Alt+LB',
 			click: () => {
-				(Reference.openRelated as any)(item.id);
+				Reference.openRelated!(item.id);
 			}
 		});
 	}
@@ -621,10 +664,10 @@ Localization.listPopup = function (this: any, event: any) {
 Localization.panelInput = function (event: any) {
 	const element = event.target;
 	if (element.tagName === 'TEXTAREA') {
-		const item = Localization.panel.item;
+		const item = Localization.panel!.item;
 		const textarea = element.parentNode;
 		const language = textarea.language;
-		const history = Localization.history;
+		const history = Localization.history!;
 		const index = history.index;
 		const length = history.length;
 		const record = history[index];
@@ -634,22 +677,22 @@ Localization.panelInput = function (event: any) {
 			record.item !== item ||
 			record.language !== language
 		) {
-			Localization.history.save({
+			Localization.history!.save({
 				type: 'localization-content-change',
 				item: item,
 				language: language,
-				content: item.contents[language]
+				content: item!.contents[language]
 			});
 		}
-		item.contents[language] = read(textarea);
+		item!.contents[language] = read(textarea);
 		Localization.resizeTextArea(textarea);
-		Localization.list.updateInitText(item);
+		Localization.list!.updateInitText(item);
 		Localization.changed = true;
 	}
 };
 
-Localization.panelKeydown = function (event: any) {
-	if (event.target.tagName === 'TEXTAREA' && (event.ctrlKey || event.metaKey)) {
+Localization.panelKeydown = function (event: KeyboardEvent) {
+	if ((event.target as HTMLElement).tagName === 'TEXTAREA' && (event.ctrlKey || event.metaKey)) {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -661,21 +704,21 @@ Localization.panelKeydown = function (event: any) {
 	}
 };
 
-Localization.searcherInput = function (this: any, event: any) {
+Localization.searcherInput = function (this: TextBox, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
 	const text = this.input!.value;
-	Localization.list.searchNodesDebounced(text);
+	Localization.list!.searchNodesDebounced(text);
 };
 
-Localization.confirm = function (this: any, event: any) {
+Localization.confirm = function (this: any, event?: Event) {
 	if (this.target) {
 		const item = read(this.list);
 		if (item?.id === undefined) {
 			return getFocus(this.list);
 		}
-		(Selection.restoreContext as any)();
+		Selection.restoreContext();
 		this.apply();
 		this.target?.input?.(item.id);
 	} else {
@@ -684,7 +727,7 @@ Localization.confirm = function (this: any, event: any) {
 	Window.close!('localization');
 }.bind(Localization);
 
-Localization.apply = function (this: any, event: any) {
+Localization.apply = function (this: any, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -695,7 +738,7 @@ Localization.apply = function (this: any, event: any) {
 	}
 }.bind(Localization);
 
-Localization.fromExcel = async function (this: any, event: any) {
+Localization.fromExcel = async function (this: any, event: Event) {
 	const items = await ipcRenderer.invoke('from-excel');
 	if (JSON.stringify(items) == JSON.stringify(Data.localization.list) || !items.length) return;
 	Data.localization.list = items;
@@ -706,7 +749,7 @@ Localization.fromExcel = async function (this: any, event: any) {
 	Localization.apply();
 }.bind(Localization);
 
-Localization.toExcel = function (this: any, event: any) {
+Localization.toExcel = function (this: any, event?: Event) {
 	ipcRenderer.invoke('to-excel', {
 		langs: this.languages,
 		list: Data.localization.list
@@ -716,31 +759,31 @@ Localization.toExcel = function (this: any, event: any) {
 // bindListClipboardMethods 改为 ensureDomBound 内调用（list 顶层为 null）
 
 // 列表 - 保存滚动状态
-Localization.list_saveScroll = function (this: any) {
+Localization.list_saveScroll = function (this: TreeListElement) {
 	const { localization } = Data;
 	// 将数据保存在外部可以切换项目后重置
-	if ((localization as any).scrollTop === undefined) {
+	if (localization.scrollTop === undefined) {
 		Object.defineProperty(localization, 'scrollTop', {
 			writable: true,
 			value: 0
 		});
 	}
-	(localization as any).scrollTop = this.scrollTop;
+	localization.scrollTop = this.scrollTop;
 };
 
 // 列表 - 恢复滚动状态
-Localization.list_restoreScroll = function (this: any) {
-	this.scrollTop = (Data.localization as any).scrollTop ?? 0;
+Localization.list_restoreScroll = function (this: TreeListElement) {
+	this.scrollTop = Data.localization.scrollTop ?? 0;
 };
 
 // 列表 - 取消搜索
-Localization.list_cancelSearch = function (this: any) {
+Localization.list_cancelSearch = function (this: TreeListElement) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
-		Localization.searcher.deleteInputContent();
+		Localization.searcher!.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
-		(active as any).focus();
+		active?.focus();
 	}
 };
 
@@ -757,7 +800,7 @@ Localization.list_createFolder = function () {
 // 列表 - 创建本地化项目
 Localization.list_createItem = function () {
 	const contents: Record<string, string> = {};
-	for (const language of Localization.languages) {
+	for (const language of Localization.languages!) {
 		contents[language] = '';
 	}
 	return {
@@ -768,7 +811,7 @@ Localization.list_createItem = function () {
 };
 
 // 列表 - 重写创建图标方法
-Localization.list_createIcon = function (item: any) {
+Localization.list_createIcon = function (item: LocalizationItem) {
 	const icon = document.createElement('node-icon');
 	if (item.class !== 'folder') {
 		addClass(icon, 'icon-string');
@@ -779,12 +822,12 @@ Localization.list_createIcon = function (item: any) {
 };
 
 // 列表 - 添加元素类名
-Localization.list_addElementClass = function (item: any) {
+Localization.list_addElementClass = function (item: LocalizationItem) {
 	addClass(item.element, 'localization-item');
 };
 
 // 列表 - 更新项目类名
-Localization.list_updateItemClass = function (item: any) {
+Localization.list_updateItemClass = function (item: LocalizationItem) {
 	if (item.class !== 'folder') {
 		addClass(item.element, 'reference');
 	} else {
@@ -793,15 +836,15 @@ Localization.list_updateItemClass = function (item: any) {
 };
 
 // 列表 - 重写更新项目名称方法
-Localization.list_updateItemName = function (this: any, item: any) {
+Localization.list_updateItemName = function (this: TreeListElement, item: LocalizationItem) {
 	TreeList.prototype.updateItemName.call(this, item);
 	this.updateInitText(item);
 };
 
 // 列表 - 创建初始化文本
-Localization.list_createInitText = function (item: any) {
+Localization.list_createInitText = function (item: LocalizationItem) {
 	if (item.class !== 'folder') {
-		const { element } = item;
+		const element = item.element!;
 		const initText = document.createElement('div');
 		addClass(initText, 'localization-init-text');
 		addClass(initText, 'text');
@@ -812,13 +855,13 @@ Localization.list_createInitText = function (item: any) {
 };
 
 // 列表 - 更新初始化文本
-Localization.list_updateInitText = function (item: any) {
+Localization.list_updateInitText = function (item: LocalizationItem) {
 	const { element } = item;
-	if (element.initText !== undefined) {
+	if (element?.initText !== undefined) {
 		let value = '';
-		for (const language of Localization.languages) {
-			if (item.contents[language]) {
-				value = item.contents[language];
+		for (const language of Localization.languages!) {
+			if (item.contents![language]) {
+				value = item.contents![language];
 				break;
 			}
 		}
@@ -839,16 +882,16 @@ Localization.list_updateInitText = function (item: any) {
 };
 
 // 列表 - 在创建数据时回调
-Localization.list_onCreate = function (item: any) {
+Localization.list_onCreate = function (item: LocalizationItem) {
 	Localization.register(item);
 };
 
 // 列表 - 在删除数据时回调
-Localization.list_onDelete = function (item: any) {
+Localization.list_onDelete = function (item: LocalizationItem) {
 	Localization.unregister(item);
 };
 
 // 列表 - 在恢复数据时回调
-Localization.list_onResume = function (item: any) {
+Localization.list_onResume = function (item: LocalizationItem) {
 	Localization.register(item);
 };

@@ -5,7 +5,7 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
-(Command.cases as any).setBoolean = new CommandSchema({
+Command.cases.setBoolean = new CommandSchema({
 	name: 'setBoolean',
 	onInitialize() {
 		$('#setBoolean-confirm').on('click', () => this.save!());

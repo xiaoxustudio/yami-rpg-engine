@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { PresetElement } from '@/tools/preset-element-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -26,10 +27,10 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const onUiIdWrite = (value: any) => {
-	(window as any).PresetElement?.uiIdWrite?.({ value });
+	PresetElement?.uiIdWrite?.({ value });
 };
 const onListOpen = (event: any) => {
-	(window as any).PresetElement?.listOpen?.(event);
+	PresetElement?.listOpen?.(event);
 };
 
 const local = useLocalStore();

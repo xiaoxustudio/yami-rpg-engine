@@ -1,5 +1,5 @@
 import { Scene } from './scene-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
 interface ParallaxData {
@@ -14,14 +14,19 @@ interface ParallaxData {
 	anchorX: number;
 	anchorY: number;
 	image: string;
-	[k: string]: any;
+	blend: string;
+	opacity: number;
+	enabled: boolean;
+	tint: number[];
+	light: string;
+	[k: string]: unknown;
 }
 
 export class Parallax {
 	data: ParallaxData;
 	shiftX: number;
 	shiftY: number;
-	texture: any;
+	texture: ImageTexture | null;
 
 	constructor(data: ParallaxData) {
 		this.data = data;
@@ -98,7 +103,7 @@ export class Parallax {
 				const gray = tint[3] / 255;
 				const modeMap = Parallax.lightSamplingModes;
 				const lightMode = Scene.showLight ? parallax.light : 'raw';
-				const lightModeIndex = (modeMap as Record<string, any>)[lightMode];
+				const lightModeIndex = modeMap[lightMode];
 				const matrix = gl.matrix.project(gl.flip, cr - cl, cb - ct).translate(-cl, -ct);
 				gl.bindVertexArray(program.vao);
 				gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
@@ -109,7 +114,7 @@ export class Parallax {
 				gl.uniform1i(program.u_ColorMode, 0);
 				gl.uniform4f(program.u_Tint, red, green, blue, gray);
 				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, 16);
-				gl.bindTexture(gl.TEXTURE_2D, texture.base.glTexture);
+				gl.bindTexture(gl.TEXTURE_2D, texture.base!.glTexture);
 				gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 				gl.blend = 'normal';
 			}
@@ -147,8 +152,8 @@ export class Parallax {
 			this.draw = Function.empty;
 			texture.on('load', () => {
 				Scene.requestRendering!();
-				delete (this as any).update;
-				delete (this as any).draw;
+				delete (this as unknown as { update?: unknown; draw?: unknown }).update;
+				delete (this as unknown as { update?: unknown; draw?: unknown }).draw;
 			});
 		}
 	}
@@ -160,5 +165,10 @@ export class Parallax {
 		this.texture = null;
 	}
 
-	static lightSamplingModes = { raw: 0, global: 1, anchor: 2, ambient: 3 };
+	static lightSamplingModes: Record<string, number> = {
+		raw: 0,
+		global: 1,
+		anchor: 2,
+		ambient: 3
+	};
 }

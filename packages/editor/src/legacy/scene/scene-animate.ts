@@ -4,13 +4,13 @@ import { Timer } from '@/util/timer.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
-Scene.requestAnimation = function (this: any) {
+Scene.requestAnimation = function (this: typeof Scene) {
 	if (this.state === 'open' && this.showAnimation) {
 		Timer.appendUpdater!('stageAnimation', this.updateAnimation);
 	}
 };
 
-Scene.updateAnimation = function (this: any, deltaTime: any) {
+Scene.updateAnimation = function (this: typeof Scene, deltaTime: number) {
 	const { animationInterval } = Scene;
 	if (animationInterval > 0) {
 		Scene.animationElapsed += deltaTime;
@@ -27,40 +27,40 @@ Scene.updateAnimation = function (this: any, deltaTime: any) {
 	}
 };
 
-Scene.stopAnimation = function (this: any) {
+Scene.stopAnimation = function (this: typeof Scene) {
 	Timer.removeUpdater!('stageAnimation', this.updateAnimation);
 };
 
-Scene.requestRendering = function (this: any) {
+Scene.requestRendering = function (this: typeof Scene) {
 	if (this.state === 'open') {
 		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
 
-Scene.renderingFunction = function (this: any) {
+Scene.renderingFunction = function (this: typeof Scene) {
 	Scene.updateAnimations!(0);
 	Scene.drawScene!();
 };
 
-Scene.stopRendering = function (this: any) {
+Scene.stopRendering = function (this: typeof Scene) {
 	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
 
 Scene.switchLayer = (function IIFE() {
-	let layerGroup: any = null;
-	let items: any = null;
-	let selection: any = undefined;
+	let layerGroup: HTMLElement | null = null;
+	let items: Record<string, HTMLElement> = { tilemap: null as unknown as HTMLElement };
+	let selection: HTMLElement | null | undefined = undefined;
 	const query = () => {
 		layerGroup = $('#scene-layer');
-		items = { tilemap: null as any };
+		items = { tilemap: null as unknown as HTMLElement };
 		if (layerGroup) {
 			for (const item of layerGroup.children) {
-				const layer = item.getAttribute('value');
-				items[layer] = item;
+				const layer = item.getAttribute('value')!;
+				items[layer] = item as HTMLElement;
 			}
 		}
 	};
-	return function (this: any, layer: any) {
+	return function (this: typeof Scene, layer: string) {
 		if (items === null || layerGroup === null) {
 			query();
 		}
@@ -103,24 +103,24 @@ Scene.switchLayer = (function IIFE() {
 })();
 
 Scene.switchBrush = (function IIFE() {
-	let list: any = null;
-	let items: any = null;
-	let selection: any = null;
+	let list: HTMLElement | null = null;
+	let items: Record<string, HTMLElement> | null = null;
+	let selection: HTMLElement | null | undefined = null;
 	const query = () => {
 		list = $('#scene-brush');
-		items = {} as Record<string, any>;
+		items = {} as Record<string, HTMLElement>;
 		if (list) {
 			for (const item of list.children) {
-				const brush = item.getAttribute('value');
-				items[brush] = item;
+				const brush = item.getAttribute('value')!;
+				items[brush] = item as HTMLElement;
 			}
 		}
 	};
-	return function (this: any, brush: any) {
+	return function (this: typeof Scene, brush: string) {
 		if (items === null || list === null) {
 			query();
 		}
-		const element = items[brush];
+		const element = items![brush];
 		if (selection === element) {
 			return;
 		}
@@ -147,7 +147,7 @@ Scene.switchBrush = (function IIFE() {
 	};
 })();
 
-Scene.switchGrid = function (this: any, enabled = !this.showGrid) {
+Scene.switchGrid = function (this: typeof Scene, enabled = !this.showGrid) {
 	const item = $('#scene-switch-grid');
 	if (enabled) {
 		addClass(item, 'selected');
@@ -158,7 +158,7 @@ Scene.switchGrid = function (this: any, enabled = !this.showGrid) {
 	this.requestRendering!();
 };
 
-Scene.switchLight = function (this: any, enabled = !this.showLight) {
+Scene.switchLight = function (this: typeof Scene, enabled = !this.showLight) {
 	const item = $('#scene-switch-light');
 	if (enabled) {
 		addClass(item, 'selected');
@@ -169,7 +169,7 @@ Scene.switchLight = function (this: any, enabled = !this.showLight) {
 	this.requestRendering!();
 };
 
-Scene.switchAnimation = function (this: any, enabled = !this.showAnimation) {
+Scene.switchAnimation = function (this: typeof Scene, enabled = !this.showAnimation) {
 	const item = $('#scene-switch-animation');
 	this.showAnimation = enabled;
 	if (enabled) {
@@ -183,7 +183,7 @@ Scene.switchAnimation = function (this: any, enabled = !this.showAnimation) {
 	this.requestRendering!();
 };
 
-Scene.switchSettings = function (this: any) {
+Scene.switchSettings = function (this: typeof Scene) {
 	if (!hasClass(Inspector.fileScene.button, 'selected')) {
 		Inspector.open!('fileScene', Scene.context.scene);
 	} else {
@@ -191,7 +191,7 @@ Scene.switchSettings = function (this: any) {
 	}
 };
 
-Scene.switchTerrain = function (this: any) {
+Scene.switchTerrain = function (this: typeof Scene) {
 	const context = this.marquee.key === 'terrain' ? this.marquee : this.marquee.saveData.terrain;
 	context.terrain = (context.terrain + 2) % 3;
 	if (this.brush === 'eraser') {
@@ -202,7 +202,7 @@ Scene.switchTerrain = function (this: any) {
 	}
 };
 
-Scene.resetAnimations = function (this: any) {
+Scene.resetAnimations = function (this: typeof Scene) {
 	if (this.state === 'open') {
 		for (const { player } of this.actors) {
 			player.clearParticles();
@@ -218,7 +218,7 @@ Scene.resetAnimations = function (this: any) {
 	}
 };
 
-Scene.updateFont = function (this: any) {
+Scene.updateFont = function (this: typeof Scene) {
 	const context = GL.context2d;
 	const size = window.devicePixelRatio * 12;
 	if (context.size !== size) {

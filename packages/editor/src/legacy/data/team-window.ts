@@ -6,43 +6,55 @@ import { File } from '@/file/file-system-core.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Codec } from '@/codec/codec.ts';
 import { Menu } from '@/components/menu-list.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import { Data } from './data-object.ts';
 import { Easing } from './transition-window.ts';
+
+const Clipboard = getGlobalClipboard();
 import { GUID } from '@/file/guid.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
 
+type TeamData = {
+	id: string;
+	name: string;
+	color: string;
+	relations: Record<string, number>;
+	collisions: Record<string, number>;
+	[k: string]: any;
+};
+
 export const Team = {
-	list: null as any,
-	data: null as any,
-	maximum: null as any,
+	list: null as HTMLElement | null,
+	data: null as Array<TeamData> | null,
+	maximum: null as number | null,
 	changed: false,
-	initialize: null as any,
-	open: null as any,
-	createId: null as any,
-	createData: null as any,
-	getItemById: null as any,
-	unpackTeams: null as any,
-	packTeams: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listSelect: null as any,
-	listChange: null as any,
-	listPopup: null as any,
-	confirm: null as any,
-	list_insert: null as any,
-	list_copy: null as any,
-	list_paste: null as any,
-	list_delete: null as any,
-	list_saveSelection: null as any,
-	list_restoreSelection: null as any,
-	list_createIcon: null as any,
-	list_updateIcon: null as any,
-	list_updateItemName: null as any,
-	list_createMarks: null as any,
-	list_updateMarks: null as any,
+	initialize: null as unknown as () => void,
+	open: null as unknown as (data?: unknown) => void,
+	createId: null as unknown as () => string,
+	createData: null as unknown as () => TeamData,
+	getItemById: null as unknown as (id: string) => any,
+	unpackTeams: null as unknown as () => void,
+	packTeams: null as unknown as () => void,
+	windowClose: null as unknown as (event: Event) => void,
+	windowClosed: null as unknown as (event: Event) => void,
+	listKeydown: null as unknown as (event: KeyboardEvent) => void,
+	listPointerdown: null as unknown as (event: PointerEvent) => void,
+	listSelect: null as unknown as (event: Event) => void,
+	listChange: null as unknown as (event: Event) => void,
+	listPopup: null as unknown as (event: PointerEvent & { value?: TeamData | null }) => void,
+	confirm: null as unknown as (event: Event) => void,
+	list_insert: null as unknown as (dItem: TeamData | null) => void,
+	list_copy: null as unknown as (item: TeamData | null) => void,
+	list_paste: null as unknown as (dItem: TeamData | null) => void,
+	list_delete: null as unknown as (item: TeamData) => void,
+	list_saveSelection: null as unknown as () => void,
+	list_restoreSelection: null as unknown as () => void,
+	list_createIcon: null as unknown as (item: TeamData) => void,
+	list_updateIcon: null as unknown as (item: TeamData) => void,
+	list_updateItemName: null as unknown as (item: TeamData) => void,
+	list_createMarks: null as unknown as (item: TeamData) => void,
+	list_updateMarks: null as unknown as (item: TeamData) => void,
 	state: null as string | null,
 	teams: null as Record<string, any> | null,
 	saveToProject: null as ((project: any) => void) | null,
@@ -79,12 +91,12 @@ function ensureDomBound() {
 	list.restoreSelection = Team.list_restoreSelection as unknown as (...args: unknown[]) => any;
 }
 
-Team.initialize = function (this: any) {
+Team.initialize = function (this: typeof Team) {
 	ensureDomBound();
 	if (!Team.list) return;
 	this.maximum = 256;
 
-	const { list } = this;
+	const list = this.list!;
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
@@ -103,17 +115,17 @@ Team.initialize = function (this: any) {
 	on($('#team-confirm'), 'click', this.confirm);
 };
 
-Team.open = function (this: any, data: any) {
+Team.open = function (this: typeof Team, data: unknown) {
 	Window.open!('team');
 
 	this.unpackTeams();
 
-	this.list.restoreSelection();
+	this.list!.restoreSelection();
 
 	getFocus(this.list);
 };
 
-Team.createId = function (this: any) {
+Team.createId = function (this: typeof Team) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -121,11 +133,11 @@ Team.createId = function (this: any) {
 	return id;
 };
 
-Team.createData = function (this: any) {
+Team.createData = function (this: typeof Team) {
 	const id = this.createId();
-	const relations = {} as Record<string, any>;
-	const collisions = {} as Record<string, any>;
-	const teams = this.data;
+	const relations = {} as Record<string, number>;
+	const collisions = {} as Record<string, number>;
+	const teams = this.data!;
 	for (const { id } of teams) {
 		relations[id] = 1;
 		collisions[id] = 1;
@@ -143,7 +155,7 @@ Team.createData = function (this: any) {
 
 Team.getItemById = Easing.getItemById;
 
-Team.unpackTeams = function (this: any) {
+Team.unpackTeams = function (this: typeof Team) {
 	const items = Data.teams.list;
 	const length = items.length;
 	const sRelations = Codec.decodeTeamData(Data.teams.relations, length);
@@ -152,8 +164,8 @@ Team.unpackTeams = function (this: any) {
 	const a = length * 2;
 	for (let i = 0; i < length; i++) {
 		const item = items[i];
-		const dRelations = {} as Record<string, any>;
-		const dCollisions = {} as Record<string, any>;
+		const dRelations = {} as Record<string, number>;
+		const dCollisions = {} as Record<string, number>;
 		for (let j = 0; j < i; j++) {
 			const ri = ((a - j + 1) / 2) * j - j + i;
 			const id = items[j].id;
@@ -178,8 +190,8 @@ Team.unpackTeams = function (this: any) {
 	this.data = copies;
 };
 
-Team.packTeams = function (this: any) {
-	const items = this.data;
+Team.packTeams = function (this: typeof Team) {
+	const items = this.data!;
 	const length = items.length;
 	const copies = new Array(length);
 	const dRelations = GL.arrays[0].uint8;
@@ -206,10 +218,10 @@ Team.packTeams = function (this: any) {
 	Data.createTeamMap();
 };
 
-Team.windowClose = function (this: any, event: any) {
+Team.windowClose = function (event: Event) {
 	if (Team.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedTeams')
@@ -230,12 +242,12 @@ Team.windowClose = function (this: any, event: any) {
 	}
 };
 
-Team.windowClosed = function (this: any, event: any) {
+Team.windowClosed = function (this: typeof Team, event: Event) {
 	this.data = null;
-	this.list.clear();
+	this.list!.clear();
 }.bind(Team);
 
-Team.listKeydown = function (this: any, event: any) {
+Team.listKeydown = function (this: any, event: KeyboardEvent) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -260,17 +272,17 @@ Team.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Team.listPointerdown = function (this: any, event: any) {
+Team.listPointerdown = function (this: any, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
-				const element = event.target.parentNode;
-				const team = element.item;
+				const element = (event.target as HTMLElement).parentNode as HTMLElement;
+				const team = element.item!;
 				return Color.open({
 					read: () => {
 						return team.color;
 					},
-					input: (color: any) => {
+					input: (color: string) => {
 						team.color = color;
 						this.updateIcon(team);
 						Team.changed = true;
@@ -278,9 +290,9 @@ Team.listPointerdown = function (this: any, event: any) {
 				});
 			}
 			if (hasClass(event.target, 'team-relation-mark')) {
-				const element = event.target.parentNode;
+				const element = (event.target as HTMLElement).parentNode as HTMLElement;
 				const teamA = this.read();
-				const teamB = element.item;
+				const teamB = element.item!;
 				teamA.relations[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.relations[teamA.id] ^= 1;
@@ -289,9 +301,9 @@ Team.listPointerdown = function (this: any, event: any) {
 				Team.changed = true;
 			}
 			if (hasClass(event.target, 'team-collision-mark')) {
-				const element = event.target.parentNode;
+				const element = (event.target as HTMLElement).parentNode as HTMLElement;
 				const teamA = this.read();
-				const teamB = element.item;
+				const teamB = element.item!;
 				teamA.collisions[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.collisions[teamA.id] ^= 1;
@@ -303,8 +315,8 @@ Team.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Team.listSelect = function (this: any, event: any) {
-	const list = Team.list;
+Team.listSelect = function (event: Event) {
+	const list = Team.list!;
 	for (const team of list.data) {
 		const element = team.element;
 		if (element !== undefined) {
@@ -316,19 +328,19 @@ Team.listSelect = function (this: any, event: any) {
 	}
 };
 
-Team.listChange = function (this: any, event: any) {
+Team.listChange = function () {
 	Team.changed = true;
 };
 
-Team.listPopup = function (this: any, event: any) {
-	const list = Team.list;
+Team.listPopup = function (event: PointerEvent & { value?: TeamData | null }) {
+	const list = Team.list!;
 	const item = event.value;
-	const length = Team.data.length;
+	const length = Team.data!.length;
 	const selected = !!item;
-	const insertable = length < Team.maximum;
-	const pastable = insertable && (Clipboard as any).has('yami.data.team');
+	const insertable = length < Team.maximum!;
+	const pastable = insertable && Clipboard.has('yami.data.team');
 	const deletable = selected && length > 1;
-	const get = Local.createGetter('menuTeamList');
+	const get = Local.createGetter!('menuTeamList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -379,7 +391,7 @@ Team.listPopup = function (this: any, event: any) {
 	);
 };
 
-Team.confirm = function (this: any, event: any) {
+Team.confirm = function (this: typeof Team, event: Event) {
 	if (this.changed) {
 		this.changed = false;
 		this.packTeams();
@@ -391,8 +403,8 @@ Team.confirm = function (this: any, event: any) {
 	Window.close!('team');
 }.bind(Team);
 
-Team.list_insert = function (this: any, dItem: any) {
-	if (this.data.length < Team.maximum) {
+Team.list_insert = function (this: any, dItem: TeamData | null) {
+	if (this.data.length < Team.maximum!) {
 		const team = Team.createData();
 		const id = team.id;
 		for (const item of this.data) {
@@ -403,20 +415,20 @@ Team.list_insert = function (this: any, dItem: any) {
 	}
 };
 
-Team.list_copy = function (this: any, item: any) {
+Team.list_copy = function (item: TeamData | null) {
 	if (item) {
-		(Clipboard as any).write('yami.data.team', item);
+		Clipboard.write('yami.data.team', item);
 	}
 };
 
-Team.list_paste = function (this: any, dItem: any) {
-	const copy = (Clipboard as any).read('yami.data.team');
+Team.list_paste = function (this: any, dItem: TeamData | null) {
+	const copy = Clipboard.read('yami.data.team');
 	if (copy) {
 		const dId = Team.createId();
 		const cRelations = copy.relations;
 		const cCollisions = copy.collisions;
-		const dRelations = {} as Record<string, any>;
-		const dCollisions = {} as Record<string, any>;
+		const dRelations = {} as Record<string, number>;
+		const dCollisions = {} as Record<string, number>;
 		for (const item of this.data) {
 			const sId = item.id;
 			const sRelations = item.relations;
@@ -438,10 +450,10 @@ Team.list_paste = function (this: any, dItem: any) {
 	}
 };
 
-Team.list_delete = function (this: any, item: any) {
+Team.list_delete = function (this: any, item: TeamData) {
 	const items = this.data;
 	if (items.length > 1) {
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -490,7 +502,7 @@ Team.list_restoreSelection = function (this: any) {
 	this.scrollToSelection();
 };
 
-Team.list_createIcon = function (this: any, item: any) {
+Team.list_createIcon = function (item: TeamData) {
 	const { element } = item;
 	const icon = document.createElement('node-icon');
 	addClass(icon, 'team-icon');
@@ -499,7 +511,7 @@ Team.list_createIcon = function (this: any, item: any) {
 	Team.list_updateIcon(item);
 };
 
-Team.list_updateIcon = function (this: any, item: any) {
+Team.list_updateIcon = function (item: TeamData) {
 	const icon = item.element.nodeIcon;
 	const color = item.color;
 	if (icon.color !== color) {
@@ -512,11 +524,11 @@ Team.list_updateIcon = function (this: any, item: any) {
 	}
 };
 
-Team.list_updateItemName = function (this: any, item: any) {
+Team.list_updateItemName = function (this: any, item: TeamData) {
 	this.updateTextNode(item);
 };
 
-Team.list_createMarks = function (this: any, item: any) {
+Team.list_createMarks = function (item: TeamData) {
 	const { element } = item;
 	const relationMark = document.createElement('div');
 	addClass(relationMark, 'team-relation-mark');
@@ -531,8 +543,8 @@ Team.list_createMarks = function (this: any, item: any) {
 	element.appendChild(collisionMark);
 };
 
-Team.list_updateMarks = function (this: any, item: any) {
-	const selection = Team.list.read();
+Team.list_updateMarks = function (item: TeamData) {
+	const selection = Team.list!.read();
 	if (selection === null) return;
 	const relationMark = item.element.relationMark;
 	const relations = selection.relations;

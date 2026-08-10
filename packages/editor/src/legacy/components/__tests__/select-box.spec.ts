@@ -1,9 +1,10 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
+import type { SelectBoxApi } from '@ui-kit';
 import { createSelectBox, selectBoxSetItemNames } from '@/components/select-box';
 
 describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）', () => {
 	it('createSelectBox returns select-box with api', () => {
-		const el = createSelectBox() as any;
+		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
 		expect(el.classList.contains('select-box')).toBe(true);
 		expect(typeof el.loadItems).toBe('function');
 		expect(typeof el.write).toBe('function');
@@ -12,7 +13,7 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 	});
 
 	it('selectBoxSetItemNames rewrite mode does not recurse（9.32 回归）', () => {
-		const el = createSelectBox() as any;
+		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
 		el.loadItems([
 			{ name: 'A', value: 'a' },
 			{ name: 'B', value: 'b' }
@@ -36,7 +37,7 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 	});
 
 	it('write/read roundtrip with loadItems', () => {
-		const el = createSelectBox() as any;
+		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
 		el.loadItems([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }

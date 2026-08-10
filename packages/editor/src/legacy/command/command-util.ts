@@ -1,7 +1,25 @@
 import { Command } from './command-object.ts';
 
-Command.forEachCommand = function (commands: any[], handler: (command: any) => void): void {
-	const forEach = (commands: any[]): void => {
+interface CommandBranch {
+	commands: CommandCase[];
+}
+
+interface CommandCase {
+	id: string;
+	params: {
+		choices: CommandBranch[];
+		branches: CommandBranch[];
+		elseCommands?: CommandCase[];
+		defaultCommands?: CommandCase[];
+		commands: CommandCase[];
+	};
+}
+
+Command.forEachCommand = function (
+	commands: CommandCase[],
+	handler: (command: CommandCase) => void
+): void {
+	const forEach = (commands: CommandCase[]): void => {
 		for (const command of commands) {
 			handler(command);
 			switch (command.id) {

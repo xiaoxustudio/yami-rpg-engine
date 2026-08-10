@@ -17,7 +17,14 @@ export class ImageTexture extends Texture {
 	guid!: string;
 	hframes!: number;
 	vframes!: number;
-	constructor(image: any, options: any = {}) {
+	constructor(
+		image:
+			| HTMLImageElement
+			| HTMLCanvasElement
+			| string
+			| ({ guid?: string } & Record<string, unknown>),
+		options: Record<string, unknown> = {}
+	) {
 		super(options);
 
 		const texture = GL.createImageTexture(image, options);
@@ -43,7 +50,7 @@ export class ImageTexture extends Texture {
 		});
 	}
 
-	updateSliceData(width: any, height: any, clip: any, border: any) {
+	updateSliceData(width: number, height: number, clip: Uint32Array | number[], border: number) {
 		if (!this.complete) return;
 		const { min, max } = Math;
 		const [cx, cy, cw, ch] = clip;
@@ -74,28 +81,30 @@ export class ImageTexture extends Texture {
 			this.sliceThresholds = new Float32Array(9 * 4);
 
 			const { gl } = this;
-			this.base.magFilter = gl.NEAREST;
-			this.base.minFilter = gl.NEAREST;
-			gl.bindTexture(gl.TEXTURE_2D, this.base.glTexture);
+			const base = this.base!;
+			base.magFilter = gl.NEAREST;
+			base.minFilter = gl.NEAREST;
+			gl.bindTexture(gl.TEXTURE_2D, base.glTexture);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		}
-		const bw = this.base.width;
-		const bh = this.base.height;
+		const base = this.base!;
+		const bw = base.width;
+		const bh = base.height;
 		const vertices = this.sliceVertices;
 		const thresholds = this.sliceThresholds;
 		let vi = 0;
 		let ti = 0;
 
 		const setVertices = (
-			sx: any,
-			sy: any,
-			sw: any,
-			sh: any,
-			dx: any,
-			dy: any,
-			dw: any,
-			dh: any
+			sx: number,
+			sy: number,
+			sw: number,
+			sh: number,
+			dx: number,
+			dy: number,
+			dw: number,
+			dh: number
 		) => {
 			if (sw * sh * dw * dh === 0) return;
 			const dl = dx;

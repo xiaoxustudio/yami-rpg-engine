@@ -134,7 +134,7 @@ GL.initialize = function () {
 	this.dashedLineProgram = this.createDashedLineProgram();
 };
 
-GL.createProgramWithShaders = function (vshader: any, fshader: any) {
+GL.createProgramWithShaders = function (vshader: string, fshader: string) {
 	const vertexShader = this.loadShader(this.VERTEX_SHADER, vshader);
 	const fragmentShader = this.loadShader(this.FRAGMENT_SHADER, fshader);
 	if (!vertexShader || !fragmentShader) {
@@ -161,7 +161,7 @@ GL.createProgramWithShaders = function (vshader: any, fshader: any) {
 	return program;
 };
 
-GL.loadShader = function (type: any, source: any) {
+GL.loadShader = function (type: number, source: string) {
 	const shader = this.createShader(type);
 	if (!shader) {
 		console.error('Unable to create shader');
@@ -1100,7 +1100,7 @@ GL.updateMasking = function () {
 GL.createBlendingUpdater = function () {
 	this.enable(this.BLEND);
 
-	const A = {
+	const A: Record<string, () => void> = {
 		normal: () => {
 			this.blendEquation(this.FUNC_ADD);
 			this.blendFuncSeparate(this.SRC_ALPHA, this.ONE_MINUS_SRC_ALPHA, this.ONE, this.ZERO);
@@ -1127,11 +1127,11 @@ GL.createBlendingUpdater = function () {
 	};
 
 	const resume = () => {
-		((updaters = A) as any)[blend]();
+		(updaters = A)[blend]();
 		this.enable(this.BLEND);
 	};
 
-	const B = {
+	const B: Record<string, () => void> = {
 		normal: resume,
 		screen: resume,
 		additive: resume,
@@ -1140,7 +1140,7 @@ GL.createBlendingUpdater = function () {
 		copy: resume
 	};
 
-	let updaters: any = A;
+	let updaters: Record<string, () => void> = A;
 	let blend = '';
 	return () => {
 		if (blend !== this.blend) {
@@ -1149,7 +1149,7 @@ GL.createBlendingUpdater = function () {
 	};
 };
 
-GL.setAmbientLight = function ({ red, green, blue }: any) {
+GL.setAmbientLight = function ({ red, green, blue }: { red: number; green: number; blue: number }) {
 	const ambient = this.ambient;
 	if (ambient.red !== red || ambient.green !== green || ambient.blue !== blue) {
 		ambient.red = red;
@@ -1219,7 +1219,7 @@ GL.updateLightTexSize = function () {
 };
 
 // WebGL上下文方法 - 更新采样器数量 避免chrome 69未绑定纹理警告
-GL.updateSamplerNum = function (samplerNum: any) {
+GL.updateSamplerNum = function (samplerNum: number) {
 	const program = this.program;
 	const lastNum = program.samplerNum;
 	if (lastNum !== samplerNum) {
@@ -1237,7 +1237,7 @@ GL.updateSamplerNum = function (samplerNum: any) {
 	}
 };
 
-GL.bindFBO = function (fbo: any) {
+GL.bindFBO = function (fbo: unknown) {
 	this.binding = fbo;
 	this.flip = 1;
 	this.bindFramebuffer(this.FRAMEBUFFER, fbo);
@@ -1249,7 +1249,7 @@ GL.unbindFBO = function () {
 	this.bindFramebuffer(this.FRAMEBUFFER, null);
 };
 
-GL.setViewport = function (x: any, y: any, width: any, height: any) {
+GL.setViewport = function (x: number, y: number, width: number, height: number) {
 	this.width = width;
 	this.height = height;
 	this.viewport(x, y, width, height);
@@ -1263,7 +1263,7 @@ GL.resetViewport = function () {
 	this.viewport(0, 0, width, height);
 };
 
-GL.resize = function (width: any, height: any) {
+GL.resize = function (width: number, height: number) {
 	const canvas = this.canvas;
 	if (canvas.width !== width) {
 		canvas.width = width;
@@ -1282,7 +1282,15 @@ GL.resize = function (width: any, height: any) {
 
 GL.drawImage = (function drawImage() {
 	const defTint = new Uint8Array(4);
-	return function (this: any, texture: any, dx: any, dy: any, dw: any, dh: any, tint = defTint) {
+	return function (
+		this: typeof GL,
+		texture: any,
+		dx: number,
+		dy: number,
+		dw: number,
+		dh: number,
+		tint = defTint
+	) {
 		if (!texture.complete) return;
 
 		const program = this.imageProgram.use();
@@ -1340,7 +1348,14 @@ GL.drawImage = (function drawImage() {
 	};
 })();
 
-GL.drawImageWithColor = function (texture: any, dx: any, dy: any, dw: any, dh: any, color: any) {
+GL.drawImageWithColor = function (
+	texture: any,
+	dx: number,
+	dy: number,
+	dw: number,
+	dh: number,
+	color: Array<number>
+) {
 	if (!texture.complete) return;
 
 	const program = this.imageProgram.use();
@@ -1382,10 +1397,10 @@ GL.drawImageWithColor = function (texture: any, dx: any, dy: any, dw: any, dh: a
 	vertices[14] = sr;
 	vertices[15] = st;
 
-	const red = (color & 0xff) / 255;
-	const green = ((color >> 8) & 0xff) / 255;
-	const blue = ((color >> 16) & 0xff) / 255;
-	const gray = ((color >> 24) & 0xff) / 255;
+	const red = (color[0] & 0xff) / 255;
+	const green = ((color[1] >> 8) & 0xff) / 255;
+	const blue = ((color[2] >> 16) & 0xff) / 255;
+	const gray = ((color[3] >> 24) & 0xff) / 255;
 
 	this.bindVertexArray(program.vao);
 	this.uniformMatrix3fv(program.u_Matrix, false, matrix);
@@ -1399,13 +1414,13 @@ GL.drawImageWithColor = function (texture: any, dx: any, dy: any, dw: any, dh: a
 
 GL.drawSliceImage = function (
 	texture: any,
-	dx: any,
-	dy: any,
-	dw: any,
-	dh: any,
-	clip: any,
-	border: any,
-	tint: any
+	dx: number,
+	dy: number,
+	dw: number,
+	dh: number,
+	clip: Array<number>,
+	border: Array<number>,
+	tint: Array<number>
 ) {
 	if (!texture.complete) return;
 
@@ -1455,7 +1470,7 @@ GL.drawSliceImage = function (
 	}
 };
 
-GL.fillRect = function (dx: any, dy: any, dw: any, dh: any, color: any) {
+GL.fillRect = function (dx: number, dy: number, dw: number, dh: number, color: Array<number>) {
 	const program = this.graphicProgram.use();
 	const vertices = this.arrays[0].float32;
 	const colors = this.arrays[0].uint32;
@@ -1502,7 +1517,14 @@ GL.fillTextWithOutline = (function fillTextWithOutline() {
 		{ ox: 0, oy: 1, rgba: 0 },
 		{ ox: 0, oy: 0, rgba: 0 }
 	];
-	return function (this: any, text: any, x: any, y: any, color: any, shadow: any) {
+	return function (
+		this: typeof GL,
+		text: string,
+		x: number,
+		y: number,
+		color: Array<number>,
+		shadow: number
+	) {
 		const context = this.context2d;
 		const size = context.size;
 		const measureWidth = context.measureText(text).width;
@@ -1523,7 +1545,7 @@ GL.fillTextWithOutline = (function fillTextWithOutline() {
 			offsets[1].rgba = shadow;
 			offsets[2].rgba = shadow;
 			offsets[3].rgba = shadow;
-			offsets[4].rgba = color;
+			offsets[4].rgba = color[0];
 			const program = this.textProgram.use();
 			const vertices = this.arrays[0].float32;
 			const colors = this.arrays[0].uint32;
@@ -1574,7 +1596,7 @@ GL.fillTextWithOutline = (function fillTextWithOutline() {
 	};
 })();
 
-GL.createNormalTexture = function (options: any = {}) {
+GL.createNormalTexture = function (options: Record<string, unknown> = {}) {
 	const magFilter = options.magFilter ?? this.NEAREST;
 	const minFilter = options.minFilter ?? this.LINEAR;
 	const texture = new BaseTexture();
@@ -1590,12 +1612,16 @@ GL.createNormalTexture = function (options: any = {}) {
 	return texture;
 };
 
-GL.createImageTexture = function (image: any, options: any = {}) {
+GL.createImageTexture = function (
+	image: HTMLImageElement | HTMLCanvasElement | null,
+	options: Record<string, unknown> = {}
+) {
+	const { gl } = GL;
 	const magFilter = options.magFilter ?? this.NEAREST;
 	const minFilter = options.minFilter ?? this.LINEAR;
-	const guid = image instanceof Image ? (image as any).guid : image;
+	const guid = image instanceof Image ? (image as unknown as { guid?: string }).guid : image;
 	const manager = this.textureManager;
-	let texture = manager.images[guid];
+	let texture = manager.images[guid as string];
 	if (!texture) {
 		texture = new BaseTexture();
 		texture.guid = guid;
@@ -1604,12 +1630,31 @@ GL.createImageTexture = function (image: any, options: any = {}) {
 		texture.magFilter = magFilter;
 		texture.minFilter = minFilter;
 		manager.append(texture);
-		manager.images[guid] = texture;
-		const initialize = (image: any) => {
-			if (manager.images[guid] === texture && image) {
+		manager.images[guid as string] = texture;
+		const initialize = (image: HTMLImageElement | HTMLCanvasElement | null) => {
+			texture.image = image;
+			texture.width =
+				image instanceof HTMLImageElement
+					? image.naturalWidth
+					: (image as HTMLCanvasElement).width;
+			texture.height =
+				image instanceof HTMLImageElement
+					? image.naturalHeight
+					: (image as HTMLCanvasElement).height;
+			if (manager.images[guid as string] === texture && image) {
 				texture.image = image;
-				texture.width = Math.min(image.naturalWidth, this.maxTexSize);
-				texture.height = Math.min(image.naturalHeight, this.maxTexSize);
+				texture.width = Math.min(
+					image instanceof HTMLImageElement
+						? image.naturalWidth
+						: (image as HTMLCanvasElement).width,
+					this.maxTexSize
+				);
+				texture.height = Math.min(
+					image instanceof HTMLImageElement
+						? image.naturalHeight
+						: (image as HTMLCanvasElement).height,
+					this.maxTexSize
+				);
 				this.bindTexture(this.TEXTURE_2D, texture.glTexture);
 				this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MAG_FILTER, magFilter);
 				this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MIN_FILTER, minFilter);
@@ -1633,7 +1678,7 @@ GL.createImageTexture = function (image: any, options: any = {}) {
 		};
 		image instanceof Image
 			? initialize(image)
-			: (File.get as any)({
+			: File.get!({
 					guid: guid,
 					type: 'image'
 				}).then(initialize);
@@ -1643,6 +1688,7 @@ GL.createImageTexture = function (image: any, options: any = {}) {
 };
 
 GL.createTextureFBO = function (texture: any) {
+	const { gl } = GL;
 	const fbo = this.createFramebuffer();
 	this.bindFramebuffer(this.FRAMEBUFFER, fbo);
 
@@ -1672,7 +1718,7 @@ GL.createTextureFBO = function (texture: any) {
 	this.bindFramebuffer(this.FRAMEBUFFER, null);
 	texture.depthStencilBuffer = depthStencilBuffer;
 
-	texture.resize = (width: any, height: any) => {
+	texture.resize = (width: number, height: number) => {
 		Texture.prototype.resize.call(texture, width, height);
 
 		this.bindRenderbuffer(this.RENDERBUFFER, depthStencilBuffer);

@@ -5,54 +5,54 @@ import { Updater } from '@/update/updater.ts';
 
 Editor.checkForEditorUpdates = function (this: any) {
 	if (!Editor.config) return;
-	const ver1 = (Editor.config as any).version;
+	const ver1 = Editor.config!.version;
 	const ver2 = Updater.latestEditorVersion;
-	const verNum1 = (Updater.getVersionNumber as any)(ver1);
-	const verNum2 = (Updater.getVersionNumber as any)(ver2);
+	const verNum1 = Updater.getVersionNumber!(ver1!);
+	const verNum2 = Updater.getVersionNumber!(ver2!);
 	if (verNum1 < verNum2) {
-		(Editor.config as any).version = ver2;
+		Editor.config!.version = ver2!;
 		console.warn(`升级编辑器版本：${ver1} -> ${ver2}`);
 	}
 };
 
 Editor.checkForProjectUpdates = async function (this: any) {
-	const ver1 = (Editor.project as any).version;
+	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
-	const verNum1 = (Updater.getVersionNumber as any)(ver1);
-	const verNum2 = (Updater.getVersionNumber as any)(ver2);
+	const verNum1 = Updater.getVersionNumber!(ver1!);
+	const verNum2 = Updater.getVersionNumber!(ver2!);
 	if (verNum1 < verNum2) {
 		console.warn(`升级项目版本：${ver1} -> ${ver2}`);
-		(Updater.updateProject as any)(verNum1);
-		(Updater.updateConfig as any)(verNum1);
-		(Updater.updateLocalEvents as any)(verNum1);
-		(Updater.updateGlobalEvents as any)(verNum1);
-		(Updater.updateActors as any)(verNum1);
-		(Updater.updateSkills as any)(verNum1);
-		(Updater.updateTriggers as any)(verNum1);
-		(Updater.updateItems as any)(verNum1);
-		(Updater.updateEquipments as any)(verNum1);
-		(Updater.updateStates as any)(verNum1);
-		(Updater.updateScenes as any)(verNum1);
-		(Updater.updateTilesets as any)(verNum1);
-		(Updater.updateElements as any)(verNum1);
-		(Updater.updateAnimations as any)(verNum1);
-		(Updater.updateParticles as any)(verNum1);
-		(Updater.updateTeams as any)(verNum1);
-		(Updater.updateToLatest as any)(ver1);
+		Updater.updateProject!(verNum1);
+		Updater.updateConfig!(verNum1);
+		Updater.updateLocalEvents!(verNum1);
+		Updater.updateGlobalEvents!(verNum1);
+		Updater.updateActors!(verNum1);
+		Updater.updateSkills!(verNum1);
+		Updater.updateTriggers!(verNum1);
+		Updater.updateItems!(verNum1);
+		Updater.updateEquipments!(verNum1);
+		Updater.updateStates!(verNum1);
+		Updater.updateScenes!(verNum1);
+		Updater.updateTilesets!(verNum1);
+		Updater.updateElements!(verNum1);
+		Updater.updateAnimations!(verNum1);
+		Updater.updateParticles!(verNum1);
+		Updater.updateTeams!(verNum1);
+		Updater.updateToLatest!(ver1!);
 
-		await (File.save as any)(false);
-		(Editor.project as any).version = ver2;
+		await File.save!(false);
+		Editor.project!.version = ver2!;
 
-		(Directory.update as any)();
+		Directory.update!();
 		console.log('项目升级完毕!');
 	}
 };
 
 Editor.isProjectVersionSupported = function (this: any) {
-	const ver1 = (Editor.project as any).version;
+	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
-	const verNum1 = (Updater.getVersionNumber as any)(ver1);
-	const verNum2 = (Updater.getVersionNumber as any)(ver2);
+	const verNum1 = Updater.getVersionNumber!(ver1!);
+	const verNum2 = Updater.getVersionNumber!(ver2!);
 	if (verNum1 <= verNum2) {
 		return true;
 	}

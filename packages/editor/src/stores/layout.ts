@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { Layout } from '@/layout/layout.ts';
+import { pinia } from './pinia';
+import type { EditorEvent } from '@/types/editor-event.ts';
 import { shallowRef } from 'vue';
 
 export const useLayoutStore = defineStore('layout', () => {
@@ -13,27 +15,31 @@ export const useLayoutStore = defineStore('layout', () => {
 		items.value = Layout?.items ?? null;
 	}
 
+	function getCurrentPage() {
+		return Layout?.manager?.index ?? 'home';
+	}
+
 	function switchLayout(name: string) {
 		Layout?.switchLayout?.(name);
 	}
 
-	function loadLayoutScheme() {
-		Layout?.loadLayoutScheme?.();
+	function loadLayoutScheme(key?: string) {
+		Layout?.loadLayoutScheme?.(key);
 	}
 
 	function saveLayoutScheme() {
 		Layout?.saveLayoutScheme?.();
 	}
 
-	function updateGroups() {
-		Layout?.updateGroups?.();
+	function updateGroups(force?: boolean) {
+		Layout?.updateGroups?.(force);
 	}
 
 	function initialize() {
 		Layout?.initialize?.();
 	}
 
-	function createGroups(item: any, parent: any) {
+	function createGroups(item: any, parent: HTMLElement) {
 		Layout?.createGroups?.(item, parent);
 	}
 
@@ -69,11 +75,11 @@ export const useLayoutStore = defineStore('layout', () => {
 		return Layout?.getKeyGroups?.();
 	}
 
-	function getGroupOfElement(element: any) {
-		return Layout?.getGroupOfElement?.(element);
+	function getGroupOfElement(element: HTMLElement) {
+		return Layout?.getGroupOfElement?.(element) ?? null;
 	}
 
-	function readyToFocus(element: any) {
+	function readyToFocus(element: HTMLElement) {
 		Layout?.readyToFocus?.(element);
 	}
 
@@ -105,67 +111,67 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.loadFromConfig?.(config);
 	}
 
-	function windowResize(event: any) {
+	function windowResize(event: EditorEvent) {
 		Layout?.windowResize?.(event);
 	}
 
-	function windowLocalize(event: any) {
+	function windowLocalize(event: EditorEvent) {
 		Layout?.windowLocalize?.(event);
 	}
 
-	function pageSwitch(event: any) {
+	function pageSwitch(event: EditorEvent) {
 		Layout?.pageSwitch?.(event);
 	}
 
-	function navWrite(event: any) {
+	function navWrite(event: EditorEvent) {
 		Layout?.navWrite?.(event);
 	}
 
-	function navPointerdown(event: any) {
+	function navPointerdown(event: EditorEvent) {
 		Layout?.navPointerdown?.(event);
 	}
 
-	function navDragstart(event: any) {
+	function navDragstart(event: EditorEvent) {
 		Layout?.navDragstart?.(event);
 	}
 
-	function navDragend(event: any) {
+	function navDragend(event: EditorEvent) {
 		Layout?.navDragend?.(event);
 	}
 
-	function navDragenter(event: any) {
+	function navDragenter(event: EditorEvent) {
 		Layout?.navDragenter?.(event);
 	}
 
-	function navDragleave(event: any) {
+	function navDragleave(event: EditorEvent) {
 		Layout?.navDragleave?.(event);
 	}
 
-	function navDragover(event: any) {
+	function navDragover(event: EditorEvent) {
 		Layout?.navDragover?.(event);
 	}
 
-	function navDrop(event: any) {
+	function navDrop(event: EditorEvent) {
 		Layout?.navDrop?.(event);
 	}
 
-	function regionDragleave(event: any) {
+	function regionDragleave(event: EditorEvent) {
 		Layout?.regionDragleave?.(event);
 	}
 
-	function regionDragover(event: any) {
+	function regionDragover(event: EditorEvent) {
 		Layout?.regionDragover?.(event);
 	}
 
-	function borderPointerdown(event: any) {
+	function borderPointerdown(event: EditorEvent) {
 		Layout?.borderPointerdown?.(event);
 	}
 
-	function pointerup(event: any) {
+	function pointerup(event: EditorEvent) {
 		Layout?.pointerup?.(event);
 	}
 
-	function pointermove(event: any) {
+	function pointermove(event: EditorEvent) {
 		Layout?.pointermove?.(event);
 	}
 
@@ -174,6 +180,7 @@ export const useLayoutStore = defineStore('layout', () => {
 		layouts,
 		items,
 		syncState,
+		getCurrentPage,
 		switchLayout,
 		loadLayoutScheme,
 		saveLayoutScheme,
@@ -215,3 +222,7 @@ export const useLayoutStore = defineStore('layout', () => {
 		pointermove
 	};
 });
+
+export function getLayoutStore() {
+	return useLayoutStore(pinia);
+}

@@ -64,7 +64,7 @@ const ym = ref<{
 	focus(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -79,14 +79,14 @@ const disable = (): void => ym.value?.disable();
 const focus = (): void => ym.value?.focus();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
 onMounted(() => {
-	const el = root.value as any;
+const el = root.value as HTMLElement & Record<'read' | 'write' | 'input' | 'enable' | 'disable' | 'on', any>;
 	if (!el) return;
 	el.read = read;
 	el.write = write;

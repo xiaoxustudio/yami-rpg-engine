@@ -8,22 +8,39 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneActor = {
+	interface SceneActorPlayer {
+		destroy(): void;
+		setAngle(angle: number): void;
+		setScale(scale: number): void;
+	}
+	interface SceneActorData {
+		player?: SceneActorPlayer;
+		data?: { scale?: number };
+		[k: string]: unknown;
+	}
+	interface SceneActorShape {
+		target: SceneActorData | null;
+		update: ((actor: SceneActorData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		typeWrite: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const SceneActor: SceneActorShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		datachange: null as any,
-		paramInput: null as any,
-		typeWrite: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		datachange: null,
+		paramInput: null,
+		typeWrite: null
 	};
 
-	SceneActor.initialize = function (this: any) {
+	SceneActor.initialize = function (this: typeof SceneActor) {
 		if (!$('#sceneActor-name')) return;
 		this.nameBox = $('#sceneActor-name');
 		$('#sceneActor-type').loadItems([
@@ -35,14 +52,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneActor-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneActor-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneActor-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneActor-parameter-pane').bind($('#sceneActor-scripts'));
 
 		$('#sceneActor-angle-slider').synchronize($('#sceneActor-angle'));
 		$('#sceneActor-scale-slider').synchronize($('#sceneActor-scale'));
 
-		window.addEventListener('datachange', this.datachange);
+		window.addEventListener('datachange', this.datachange as unknown as EventListener);
 		const elements =
 			document.querySelectorAll(`#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId,
     #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale`);
@@ -64,13 +83,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		(sliders as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.sliderBlur)
 		);
-		$('#sceneActor-type').addEventListener('write', this.typeWrite);
+		$('#sceneActor-type').addEventListener(
+			'write',
+			this.typeWrite! as unknown as EventListener
+		);
 		document
 			.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneActor.create = function (this: any) {
+	SceneActor.create = function (this: typeof SceneActor) {
 		return {
 			class: 'actor',
 			name: 'Actor',
@@ -91,7 +113,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneActor.open = function (this: any, actor: any) {
+	SceneActor.open = function (this: typeof SceneActor, actor: SceneActorData) {
 		if (this.target !== actor) {
 			this.target = actor;
 
@@ -113,7 +135,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.close = function (this: any) {
+	SceneActor.close = function (this: typeof SceneActor) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -125,7 +147,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.write = function (this: any, options: any) {
+	SceneActor.write = function (this: typeof SceneActor, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneActor-x'), options.x);
 		}
@@ -137,7 +159,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneActor.update = function (this: any, actor: any, key: any, value: any) {
+	SceneActor.update = function (
+		this: typeof SceneActor,
+		actor: SceneActorData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -157,7 +184,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'actorId':
 				if (actor.actorId !== value) {
 					actor.actorId = value;
-					actor.player.destroy();
+					actor.player!.destroy();
 					delete actor.data;
 					delete actor.player;
 					Scene.loadActorContext!(actor);
@@ -173,21 +200,21 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				if (actor.angle !== value) {
 					actor.angle = value;
 					if (actor.player) {
-						actor.player.setAngle(Math.radians(value));
+						actor.player.setAngle(Math.radians(value as number));
 					}
 				}
 				break;
 			case 'scale':
 				if (actor.scale !== value) {
 					actor.scale = value;
-					actor.player.setScale(value * (actor.data?.scale ?? 1));
+					actor.player!.setScale((value as number) * (actor.data?.scale ?? 1));
 				}
 				break;
 		}
 		Scene.requestRendering!();
 	};
 
-	SceneActor.datachange = function (this: any, event: any) {
+	SceneActor.datachange = function (this: typeof SceneActor, event: Event & { key: string }) {
 		if (this.target && event.key === 'teams') {
 			const elTeamId = $('#sceneActor-teamId');
 			elTeamId.loadItems(Data.createTeamItems!());
@@ -197,11 +224,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	}.bind(SceneActor);
 
-	SceneActor.paramInput = function (this: any, event: any) {
-		SceneActor.update(SceneActor.target, Inspector.getKey!(this), read(this));
+	SceneActor.paramInput = function (this: typeof SceneActor, event: Event) {
+		SceneActor.update!(
+			SceneActor.target as SceneActorData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
-	SceneActor.typeWrite = function (this: any, event: any) {
+	SceneActor.typeWrite = function (this: typeof SceneActor, event: Event & { value: unknown }) {
 		switch (event.value) {
 			case 'local':
 				show($('#sceneActor-scripts-detail'));

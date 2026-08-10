@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { Menubar } from '@/title/menu-bar.ts';
+import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 
 export const useMenubarStore = defineStore('menubar', () => {
@@ -21,27 +22,27 @@ export const useMenubarStore = defineStore('menubar', () => {
 		Menubar?.toggleFullScreen?.();
 	}
 
-	function popupFileMenu(target: any) {
+	function popupFileMenu(target: HTMLElement) {
 		Menubar?.popupFileMenu?.(target);
 	}
 
-	function popupEditMenu(target: any) {
+	function popupEditMenu(target: HTMLElement) {
 		Menubar?.popupEditMenu?.(target);
 	}
 
-	function popupViewMenu(target: any) {
+	function popupViewMenu(target: HTMLElement) {
 		Menubar?.popupViewMenu?.(target);
 	}
 
-	function popupWindowMenu(target: any) {
+	function popupWindowMenu(target: HTMLElement) {
 		Menubar?.popupWindowMenu?.(target);
 	}
 
-	function popupHelpMenu(target: any) {
+	function popupHelpMenu(target: HTMLElement) {
 		Menubar?.popupHelpMenu?.(target);
 	}
 
-	function popupOpenYamiMenu(target: any) {
+	function popupOpenYamiMenu(target: HTMLElement) {
 		Menubar?.popupOpenYamiMenu?.(target);
 	}
 
@@ -109,3 +110,7 @@ export const useMenubarStore = defineStore('menubar', () => {
 		hrefClick
 	};
 });
+
+export function getMenubarStore() {
+	return useMenubarStore(pinia);
+}

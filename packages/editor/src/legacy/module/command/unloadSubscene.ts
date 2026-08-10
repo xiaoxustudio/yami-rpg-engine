@@ -11,7 +11,7 @@ Command.cases.unloadSubscene = new CommandSchema({
 	customParse({ sceneId }: any) {
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.unloadSubscene') + Token(': ') },
+			{ text: Local.get!('command.unloadSubscene') + Token(': ') },
 			{ text: Command.parseVariableFile(sceneId) }
 		];
 	},

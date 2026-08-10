@@ -7,48 +7,48 @@ import { Scene } from '@/scene/scene-window.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import { Palette } from './palette.ts';
 
-export const TileNode = {
+export const TileNode: Record<string, any> = {
 	get canvas() {
 		return $('#autoTile-selectNode-canvas');
 	},
-	context: null as any,
+	context: null,
 	get screen() {
 		return $('#autoTile-selectNode-screen');
 	},
 	get marquee() {
 		return $('#autoTile-selectNode-marquee');
 	},
-	dragging: null as any,
-	nodes: null as any,
-	image: null as any,
-	offsetX: null as any,
-	offsetY: null as any,
-	hframes: null as any,
-	vframes: null as any,
-	scrollLeft: null as any,
-	scrollTop: null as any,
-	scrollRight: null as any,
-	scrollBottom: null as any,
-	initialize: null as any,
-	open: null as any,
-	updateTransform: null as any,
-	updateBackground: null as any,
-	drawNodes: null as any,
-	requestRendering: null as any,
-	renderingFunction: null as any,
-	stopRendering: null as any,
-	scrollToSelection: null as any,
-	getDevicePixelClientBoxSize: null as any,
-	dprchange: null as any,
-	windowClosed: null as any,
-	keydown: null as any,
-	screenScroll: null as any,
-	marqueePointerdown: null as any,
-	pointerup: null as any,
-	pointermove: null as any
+	dragging: null,
+	nodes: null,
+	image: null,
+	offsetX: null,
+	offsetY: null,
+	hframes: null,
+	vframes: null,
+	scrollLeft: null,
+	scrollTop: null,
+	scrollRight: null,
+	scrollBottom: null,
+	initialize: null,
+	open: null,
+	updateTransform: null,
+	updateBackground: null,
+	drawNodes: null,
+	requestRendering: null,
+	renderingFunction: null,
+	stopRendering: null,
+	scrollToSelection: null,
+	getDevicePixelClientBoxSize: null,
+	dprchange: null,
+	windowClosed: null,
+	keydown: null,
+	screenScroll: null,
+	marqueePointerdown: null,
+	pointerup: null,
+	pointermove: null
 };
 
-TileNode.initialize = function (this: any) {
+TileNode.initialize = function (this: typeof TileNode) {
 	if (!this.canvas) return;
 	this.context = this.canvas.getContext('2d');
 
@@ -58,7 +58,13 @@ TileNode.initialize = function (this: any) {
 	on(this.marquee, 'pointerdown', this.marqueePointerdown);
 };
 
-TileNode.open = function (this: any, nodes: any, image: any, offsetX: any, offsetY: any) {
+TileNode.open = function (
+	this: typeof TileNode,
+	nodes: unknown,
+	image: HTMLImageElement,
+	offsetX: number,
+	offsetY: number
+) {
 	const MAX_CONTENT_WIDTH = 1180;
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
@@ -67,8 +73,9 @@ TileNode.open = function (this: any, nodes: any, image: any, offsetX: any, offse
 	const screen = this.screen;
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;
-	const hframes = Math.min(nodes.length, 8);
-	const vframes = Math.ceil(nodes.length / 8);
+	const nodesArr = nodes as ArrayLike<unknown>;
+	const hframes = Math.min(nodesArr.length, 8);
+	const vframes = Math.ceil(nodesArr.length / 8);
 	const dpr = window.devicePixelRatio;
 	const innerWidth = tileWidth * hframes;
 	const innerHeight = tileHeight * vframes;
@@ -133,7 +140,7 @@ TileNode.open = function (this: any, nodes: any, image: any, offsetX: any, offse
 	this.requestRendering();
 };
 
-TileNode.updateTransform = function (this: any) {
+TileNode.updateTransform = function (this: typeof TileNode) {
 	const dpr = window.devicePixelRatio;
 	this.scrollLeft = this.screen.scrollLeft * dpr;
 	this.scrollTop = this.screen.scrollTop * dpr;
@@ -142,11 +149,11 @@ TileNode.updateTransform = function (this: any) {
 	this.context.setTransform(1, 0, 0, 1, -this.scrollLeft, -this.scrollTop);
 };
 
-TileNode.updateBackground = function (this: any, ...args: any[]) {
+TileNode.updateBackground = function (this: typeof TileNode, ...args: unknown[]) {
 	return Palette.updateBackground(...args);
 };
 
-TileNode.drawNodes = function (this: any) {
+TileNode.drawNodes = function (this: typeof TileNode) {
 	if (!this.nodes) return;
 	const context = this.context;
 	const tileset = Palette.tileset;
@@ -181,21 +188,21 @@ TileNode.drawNodes = function (this: any) {
 	}
 };
 
-TileNode.requestRendering = function (this: any) {
+TileNode.requestRendering = function (this: typeof TileNode) {
 	if (this.nodes !== null) {
 		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
 
-TileNode.renderingFunction = function (this: any) {
+TileNode.renderingFunction = function (this: typeof TileNode) {
 	TileNode.drawNodes!();
 };
 
-TileNode.stopRendering = function (this: any) {
+TileNode.stopRendering = function (this: typeof TileNode) {
 	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-TileNode.scrollToSelection = function (this: any) {
+TileNode.scrollToSelection = function (this: typeof TileNode) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const screen = this.screen;
@@ -217,7 +224,7 @@ TileNode.scrollToSelection = function (this: any) {
 	}
 };
 
-TileNode.getDevicePixelClientBoxSize = function (this: any, element: any) {
+TileNode.getDevicePixelClientBoxSize = function (this: typeof TileNode, element: HTMLElement) {
 	const elementRect = rect(element);
 	const elementCss = css(element);
 	if (elementCss.overflowX === 'scroll') {
@@ -240,7 +247,7 @@ TileNode.getDevicePixelClientBoxSize = function (this: any, element: any) {
 	return { width, height };
 };
 
-TileNode.dprchange = function (this: any, event: any) {
+TileNode.dprchange = function (this: typeof TileNode, event: Event) {
 	if (this.nodes !== null) {
 		const marquee = this.marquee;
 		const { x, y, width, height } = marquee;
@@ -249,7 +256,7 @@ TileNode.dprchange = function (this: any, event: any) {
 	}
 }.bind(TileNode);
 
-TileNode.windowClosed = function (this: any, event: any) {
+TileNode.windowClosed = function (this: typeof TileNode, event: Event) {
 	this.nodes = null;
 	this.image = null;
 	this.canvas.width = 0;
@@ -261,7 +268,7 @@ TileNode.windowClosed = function (this: any, event: any) {
 	window.removeEventListener('keydown', this.keydown);
 }.bind(TileNode);
 
-TileNode.keydown = function (this: any, event: any) {
+TileNode.keydown = function (this: typeof TileNode, event: KeyboardEvent) {
 	event.preventDefault();
 	if (this.dragging) {
 		return;
@@ -322,13 +329,13 @@ TileNode.keydown = function (this: any, event: any) {
 	}
 }.bind(TileNode);
 
-TileNode.screenScroll = function (this: any, event: any) {
+TileNode.screenScroll = function (this: typeof TileNode, event: Event) {
 	this.updateTransform();
 	this.updateBackground();
 	this.requestRendering();
 }.bind(TileNode);
 
-TileNode.marqueePointerdown = function (this: any, event: any) {
+TileNode.marqueePointerdown = function (this: typeof TileNode, event: PointerEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -336,10 +343,16 @@ TileNode.marqueePointerdown = function (this: any, event: any) {
 		case 0: {
 			if (event.altKey) {
 				this.dragging = event;
-				event.mode = 'scroll';
-				event.screen = event.target.parentNode;
-				event.scrollLeft = event.screen.scrollLeft;
-				event.scrollTop = event.screen.scrollTop;
+				const ev3 = event as unknown as {
+					mode: string;
+					screen: HTMLElement;
+					scrollLeft: number;
+					scrollTop: number;
+				};
+				ev3.mode = 'scroll';
+				ev3.screen = (event.target as HTMLElement).parentNode as HTMLElement;
+				ev3.scrollLeft = ev3.screen.scrollLeft;
+				ev3.scrollTop = ev3.screen.scrollTop;
 				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
@@ -360,10 +373,18 @@ TileNode.marqueePointerdown = function (this: any, event: any) {
 		}
 		case 2:
 			this.dragging = event;
-			event.mode = 'scroll';
-			event.screen = event.target.parentNode;
-			event.scrollLeft = event.screen.scrollLeft;
-			event.scrollTop = event.screen.scrollTop;
+			const ev4 = event as unknown as {
+				mode: string;
+				screen: HTMLElement;
+				scrollLeft: number;
+				scrollTop: number;
+				clientX: number;
+				clientY: number;
+			};
+			ev4.mode = 'scroll';
+			ev4.screen = (event.target as HTMLElement).parentNode as HTMLElement;
+			ev4.scrollLeft = ev4.screen.scrollLeft;
+			ev4.scrollTop = ev4.screen.scrollTop;
 			Cursor.open('cursor-grab');
 			window.addEventListener('pointerup', this.pointerup);
 			window.addEventListener('pointermove', this.pointermove);
@@ -371,7 +392,7 @@ TileNode.marqueePointerdown = function (this: any, event: any) {
 	}
 }.bind(TileNode);
 
-TileNode.pointerup = function (this: any, event: any) {
+TileNode.pointerup = function (this: typeof TileNode, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -412,7 +433,7 @@ TileNode.pointerup = function (this: any, event: any) {
 	}
 }.bind(TileNode);
 
-TileNode.pointermove = function (this: any, event: any) {
+TileNode.pointermove = function (this: typeof TileNode, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {

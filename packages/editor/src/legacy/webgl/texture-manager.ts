@@ -20,7 +20,7 @@ export class TextureManager {
 	updateImage(guid: string): void {
 		const texture = this.images[guid];
 		if (texture === undefined) return;
-		(File.get as any)({
+		File.get!({
 			guid: guid,
 			type: 'image'
 		}).then((image: any) => {

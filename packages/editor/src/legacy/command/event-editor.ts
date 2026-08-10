@@ -22,39 +22,94 @@ import {
 	getFocus
 } from '@/util/element-utils.ts';
 
+interface EventCommandShape {
+	id: string;
+	params: { type: string; eventId?: string; [k: string]: unknown };
+	[k: string]: unknown;
+}
+
+interface EventCommands extends Array<EventCommandShape> {
+	symbol?: symbol;
+	eventId?: string;
+	history: {
+		saveState(): void;
+		restoreState(): boolean;
+		stack: { commands: EventCommands }[];
+	};
+}
+
+interface EventEditorEventShape {
+	type: string;
+	enabled: boolean;
+	commands: EventCommands;
+	[k: string]: unknown;
+}
+
+interface EventListItem {
+	id: string;
+	name: string;
+	class: string;
+	type: string;
+	filter: string;
+	commands: EventCommands | null;
+	meta: unknown;
+	event: EventEditorEventShape;
+	callback: (() => void) | null;
+	changed: boolean;
+	inserting: boolean;
+	element: HTMLElement & {
+		initText?: HTMLElement;
+		attrValue?: string;
+		item?: EventListItem;
+	};
+}
+
+interface EventRelatedContext {
+	filter: string;
+	id?: string;
+	name?: string;
+	event?: EventEditorEventShape;
+}
+
 interface EventEditorList {
 	unselect(): void;
-	addNodeTo(item: any, parent: any): void;
+	addNodeTo(item: EventListItem, parent: EventListItem | null): void;
 	initialize(): void;
-	expandToSelection(focus?: any): void;
-	deleteNode(data: any): void;
+	expandToSelection(focus?: boolean): void;
+	deleteNode(data: EventListItem): void;
 	lastScrollTop: number;
 	selectIndex: ((index: number) => void) | null;
-	close: ((item?: any) => void) | null;
-	closeMultiple: ((items: any[], callback?: () => void) => void) | null;
-	closeBelow: ((item: any) => void) | null;
-	closeOthers: ((item: any) => void) | null;
+	close: ((item?: EventListItem) => void) | null;
+	closeMultiple: ((items: EventListItem[], callback?: () => void) => void) | null;
+	closeBelow: ((item: EventListItem) => void) | null;
+	closeOthers: ((item: EventListItem) => void) | null;
 	closeAll: (() => void) | null;
 	saveScroll: (() => void) | null;
 	restoreScroll: (() => void) | null;
-	defineProperties: ((item: any) => any) | null;
+	defineProperties: ((item: { id: string }) => EventListItem) | null;
 	createLocalEventItem:
-		| ((inserting: any, filter: any, name: any, event: any, callback: any) => any)
+		| ((
+				inserting: boolean,
+				filter: string,
+				name: string,
+				event: EventEditorEventShape,
+				callback: (() => void) | null
+		  ) => EventListItem)
 		| null;
-	createGlobalEventItem: ((guid: string) => any) | null;
-	createIcon: ((item: any) => HTMLElement) | null;
-	updateItemClass: ((item: any) => void) | null;
-	createInitText: ((item: any) => void) | null;
-	updateInitText: ((item: any) => void) | null;
-	updateItemName: ((item: any) => void) | null;
-	closeButtonClick: ((event: Event) => void) | null;
+	createGlobalEventItem: ((guid: string) => EventListItem) | null;
+	createIcon: ((item: EventListItem) => HTMLElement) | null;
+	updateItemClass: ((item: EventListItem) => void) | null;
+	createInitText: ((item: EventListItem) => void) | null;
+	updateInitText: ((item: EventListItem) => void) | null;
+	updateItemName: ((item: EventListItem) => void) | null;
+	closeButtonClick: ((event: MouseEvent) => void) | null;
 	removable: boolean;
 	foldable: boolean;
-	creators: any[];
-	updaters: any[];
-	bind(getter: () => any): void;
-	on(type: string, listener: (event: any) => void, options?: any): void;
-	off(type: string, listener: (event: any) => void, options?: any): void;
+	creators: unknown[];
+	updaters: unknown[];
+	bind(getter: () => EventListItem[] | null): void;
+	on(type: string, listener: (event: Event) => void, options?: AddEventListenerOptions): void;
+	off(type: string, listener: (event: Event) => void, options?: EventListenerOptions): void;
 	resize(): void;
 	update(): void;
 	hide(): HTMLElement | void;
@@ -63,39 +118,40 @@ interface EventEditorList {
 	addClass(name: string): void;
 	removeClass(name: string): void;
 	getFocus(): void;
-	read(): any;
-	select(item: any): void;
+	read(): unknown;
+	select(item: EventListItem): void;
 	scrollToSelection(mode?: string): void;
-	deleteNodeParameters(data: any): void;
+	deleteNodeParameters(data: EventListItem): void;
 	scrollToHome(): void;
 	scrollToEnd(): void;
 	style: CSSStyleDeclaration;
 	textContent: string;
-	parentNode: Node & { item?: any };
+	parentNode: Node & { item?: EventListItem };
 	contains(node: Node | null): boolean;
-	item: any;
+	data: EventListItem[];
+	item?: EventListItem;
 	class: string;
 	filter: string;
 	type: string;
 	name: string;
-	meta?: any;
-	event?: any;
-	callback?: any;
+	meta?: unknown;
+	event?: EventEditorEventShape;
+	callback?: (() => void) | null;
 	inserting?: boolean;
 	changed?: boolean;
 	// 运行时挂载的列表项集合
-	elements: any[] & { count: number };
+	elements: (HTMLElement & { item: EventListItem })[] & { count: number };
 	active: number | null;
-	varList?: any[];
-	commandList?: any;
+	varList?: unknown[];
+	commandList?: unknown;
 }
 
 type EventEditorMethod = ((...args: any[]) => any) | null;
 
 interface EventEditorShape {
 	state: string | null;
-	target: Record<string, any> | null;
-	planToSave: ((meta?: any) => void) | null;
+	target: Record<string, unknown> | null;
+	planToSave: ((meta?: Record<string, unknown>) => void) | null;
 	open: ((id: string) => void) | null;
 	close: ((id?: string) => void) | null;
 
@@ -104,9 +160,10 @@ interface EventEditorShape {
 	outerGutter: HTMLElement;
 	innerGutter: HTMLElement;
 	closing: boolean;
-	data: any[] | null;
-	caches: any[];
-	types: any;
+	data: EventListItem[] | null;
+	caches: EventCommands[];
+	types: Record<string, any>;
+	_initialized?: boolean;
 	initialize: (() => void) | null;
 	openLocalEvent: EventEditorMethod;
 	openGlobalEvent: EventEditorMethod;
@@ -148,55 +205,55 @@ interface EventEditorShape {
 }
 
 export const EventEditor: EventEditorShape = {
-	list: null as any,
-	commandList: null as any,
-	outerGutter: null as any,
-	innerGutter: null as any,
+	list: null as unknown as HTMLElement & EventEditorList,
+	commandList: null as unknown as HTMLElement & { [k: string]: any; innerHeight?: number },
+	outerGutter: null as unknown as HTMLElement,
+	innerGutter: null as unknown as HTMLElement,
 	closing: false,
-	data: null as any,
+	data: null,
 	caches: [],
-	types: null as any,
-	initialize: null as any,
-	openLocalEvent: null as any,
-	openGlobalEvent: null as any,
-	openRelatedEvents: null as any,
-	findRelatedEvents: null as any,
-	getAllLocalEvents: null as any,
-	clearAllEventClasses: null as any,
-	clearRelatedEventClasses: null as any,
-	save: null as any,
-	isChanged: null as any,
-	getItemById: null as any,
-	getItemByEvent: null as any,
-	openCommandList: null as any,
-	closeCommandList: null as any,
-	unpackOpenEvents: null as any,
-	packOpenEvents: null as any,
-	resizeGutter: null as any,
-	updateGutter: null as any,
-	appendCommandsToCaches: null as any,
-	fetchCommandBuffer: null as any,
-	clearCommandBuffers: null as any,
-	getGlobalEventName: null as any,
-	windowLocalize: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	windowResize: null as any,
-	windowKeydown: null as any,
-	windowKeyup: null as any,
-	windowPointermove: null as any,
-	listPointerdown: null as any,
-	listSelect: null as any,
-	listPopup: null as any,
-	typeInput: null as any,
-	commandListChange: null as any,
-	commandListUpdate: null as any,
-	commandListScroll: null as any,
-	confirm: null as any,
-	apply: null as any,
+	types: null as unknown as Record<string, any>,
+	initialize: null,
+	openLocalEvent: null,
+	openGlobalEvent: null,
+	openRelatedEvents: null,
+	findRelatedEvents: null,
+	getAllLocalEvents: null,
+	clearAllEventClasses: null,
+	clearRelatedEventClasses: null,
+	save: null,
+	isChanged: null,
+	getItemById: null,
+	getItemByEvent: null,
+	openCommandList: null,
+	closeCommandList: null,
+	unpackOpenEvents: null,
+	packOpenEvents: null,
+	resizeGutter: null,
+	updateGutter: null,
+	appendCommandsToCaches: null,
+	fetchCommandBuffer: null,
+	clearCommandBuffers: null,
+	getGlobalEventName: null,
+	windowLocalize: null,
+	windowClose: null,
+	windowClosed: null,
+	windowResize: null,
+	windowKeydown: null,
+	windowKeyup: null,
+	windowPointermove: null,
+	listPointerdown: null,
+	listSelect: null,
+	listPopup: null,
+	typeInput: null,
+	commandListChange: null,
+	commandListUpdate: null,
+	commandListScroll: null,
+	confirm: null,
+	apply: null,
 	state: null as string | null,
-	target: null as Record<string, any> | null,
-	planToSave: null as ((meta: any) => void) | null,
+	target: null as Record<string, unknown> | null,
+	planToSave: null as ((meta?: Record<string, unknown>) => void) | null,
 	open: null as ((id: string) => void) | null,
 	close: null as ((id?: string) => void) | null
 };
@@ -233,7 +290,7 @@ function ensureDomBound() {
 
 function bindListMethods() {
 	const list = EventEditor.list!;
-	list.selectIndex = function (index: number) {
+	list.selectIndex = function (this: HTMLElement & EventEditorList, index: number) {
 		const elements = this.elements;
 		const last = elements.count - 1;
 		const element = elements[Math.min(index, last)];
@@ -242,15 +299,15 @@ function bindListMethods() {
 		}
 	};
 
-	list.close = function (this: any, item?: any) {
+	list.close = function (this: HTMLElement & EventEditorList, item?: EventListItem) {
 		if (item === undefined) {
 			item = read(this);
 		}
 		if (item) {
 			const close = () => {
 				const index = this.data!.indexOf(item);
-				EventEditor.clearAllEventClasses!(item);
-				this.deleteNode!(item);
+				EventEditor.clearAllEventClasses!(item!);
+				this.deleteNode!(item!);
 				EventEditor.closeCommandList!();
 				this.selectIndex!(index);
 			};
@@ -275,7 +332,11 @@ function bindListMethods() {
 		}
 	};
 
-	list.closeMultiple = function (this: any, items: any[], callback?: () => void) {
+	list.closeMultiple = function (
+		this: HTMLElement & EventEditorList,
+		items: EventListItem[],
+		callback?: () => void
+	) {
 		if (items.length === 0) return;
 		const closeMultiple = () => {
 			for (const item of items) {
@@ -306,52 +367,55 @@ function bindListMethods() {
 		closeMultiple();
 	};
 
-	list.closeBelow = function (this: any, item: any) {
+	list.closeBelow = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		const index = this.data!.indexOf(item);
 		this.closeMultiple!(this.data.slice(index + 1));
 	};
 
-	list.closeOthers = function (this: any, item: any) {
+	list.closeOthers = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		const items = this.data.slice();
 		items.splice(items.indexOf(item), 1);
 		this.closeMultiple!(items);
 	};
 
-	list.closeAll = function (this: any) {
+	list.closeAll = function (this: HTMLElement & EventEditorList) {
 		const callback = () => EventEditor.closeCommandList!();
 		this.closeMultiple!(this.data.slice(), callback);
 	};
 
-	list.saveScroll = function (this: any) {
+	list.saveScroll = function (this: HTMLElement & EventEditorList) {
 		this.lastScrollTop = this.scrollTop;
 	};
 
-	list.restoreScroll = function (this: any) {
+	list.restoreScroll = function (this: HTMLElement & EventEditorList) {
 		this.scrollTop = this.lastScrollTop;
 	};
 
-	list.defineProperties = function (this: any, item: any) {
+	list.defineProperties = function (
+		this: HTMLElement & EventEditorList,
+		item: { id: string }
+	): EventListItem {
 		return Object.defineProperties(item, {
 			name: { writable: true, value: '' },
 			class: { writable: true, value: '' },
 			type: { writable: true, value: '' },
-			commands: { writable: true, value: null as any },
+			commands: { writable: true, value: null },
 			filter: { writable: true, value: '' },
-			meta: { writable: true, value: null as any },
-			event: { writable: true, value: null as any },
-			callback: { writable: true, value: null as any },
+			meta: { writable: true, value: null },
+			event: { writable: true, value: null },
+			callback: { writable: true, value: null },
 			changed: { writable: true, value: false },
 			inserting: { writable: true, value: false }
-		});
+		}) as EventListItem;
 	};
 
 	list.createLocalEventItem = function (
-		this: any,
-		inserting: any,
-		filter: any,
-		name: any,
-		event: any,
-		callback: any
+		this: HTMLElement & EventEditorList,
+		inserting: boolean,
+		filter: string,
+		name: string,
+		event: EventEditorEventShape,
+		callback: (() => void) | null
 	) {
 		const item = EventEditor.list.defineProperties!({ id: '' });
 		item.name = name;
@@ -365,7 +429,7 @@ function bindListMethods() {
 		return item;
 	};
 
-	list.createGlobalEventItem = function (this: any, guid: string) {
+	list.createGlobalEventItem = function (this: HTMLElement & EventEditorList, guid: string) {
 		const item = EventEditor.list.defineProperties!({ id: guid });
 		const event = Data.events[guid];
 		item.name = EventEditor.getGlobalEventName!(guid);
@@ -379,7 +443,7 @@ function bindListMethods() {
 		return item;
 	};
 
-	list.updateItemClass = function (this: any, item: any) {
+	list.updateItemClass = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		const { element } = item;
 		addClass(element, 'event-open-item');
 		if (item.filter === 'global') {
@@ -389,7 +453,7 @@ function bindListMethods() {
 		}
 	};
 
-	list.createIcon = function (this: any) {
+	list.createIcon = function (this: HTMLElement & EventEditorList) {
 		const closeButton = document.createElement('div');
 		closeButton.textContent = '×';
 		addClass(closeButton, 'event-close-button');
@@ -398,7 +462,7 @@ function bindListMethods() {
 		return closeButton;
 	};
 
-	list.createInitText = function (this: any, item: any) {
+	list.createInitText = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		const { element } = item;
 		const initText = document.createElement('div');
 		addClass(initText, 'event-init-text');
@@ -408,7 +472,7 @@ function bindListMethods() {
 		element.attrValue = '';
 	};
 
-	list.updateInitText = function (this: any, item: any) {
+	list.updateInitText = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		const { element } = item;
 		if (element.initText !== undefined) {
 			let typeName = '';
@@ -426,21 +490,23 @@ function bindListMethods() {
 		}
 	};
 
-	list.updateItemName = function (this: any, item: any) {
+	list.updateItemName = function (this: HTMLElement & EventEditorList, item: any) {
 		TreeList.prototype.updateItemName.call(this, item);
 		this.updateInitText!(item);
 	};
 
-	list.closeButtonClick = function (this: any, event: any) {
-		EventEditor.list.close!((event.target as any).parentNode.item);
+	list.closeButtonClick = function (this: HTMLElement & EventEditorList, event: MouseEvent) {
+		EventEditor.list.close!(
+			(event.target as HTMLElement & { parentNode: { item: EventListItem } }).parentNode.item
+		);
 	};
 }
 
-EventEditor.initialize = function (this: any) {
+EventEditor.initialize = function (this: EventEditorShape) {
 	ensureDomBound();
 	const { list } = this;
-	if (!list || (this as any)._initialized) return;
-	(this as any)._initialized = true;
+	if (!list || this._initialized) return;
+	this._initialized = true;
 	list.removable = true;
 	list.foldable = false;
 	list.bind!(() => this.data);
@@ -729,12 +795,12 @@ EventEditor.initialize = function (this: any) {
 };
 
 EventEditor.openLocalEvent = function (
-	this: any,
-	inserting: any,
-	filter: any,
-	name: any,
-	event: any,
-	callback: any
+	this: EventEditorShape,
+	inserting: boolean,
+	filter: string,
+	name: string,
+	event: EventEditorEventShape,
+	callback: (() => void) | null
 ) {
 	this.initialize!();
 	this.unpackOpenEvents!();
@@ -753,7 +819,7 @@ EventEditor.openLocalEvent = function (
 	return item;
 };
 
-EventEditor.openGlobalEvent = function (this: any, guid: any) {
+EventEditor.openGlobalEvent = function (this: EventEditorShape, guid: string) {
 	this.initialize!();
 	if (!Window.isWindowOpen!('event')) {
 		this.unpackOpenEvents!();
@@ -786,9 +852,9 @@ EventEditor.openGlobalEvent = function (this: any, guid: any) {
 	getFocus(list);
 };
 
-EventEditor.openRelatedEvents = function (this: any, contexts: any) {
+EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: EventRelatedContext[]) {
 	const list = this.list;
-	const items = [] as any[];
+	const items: EventListItem[] = [];
 	this.clearRelatedEventClasses!(...(this.data ?? []));
 	for (const context of contexts) {
 		let item;
@@ -796,7 +862,7 @@ EventEditor.openRelatedEvents = function (this: any, contexts: any) {
 			const { id } = context;
 			item = this.getItemById!(id);
 			if (!item) {
-				item = list.createGlobalEventItem!(id);
+				item = list.createGlobalEventItem!(id!);
 				TreeList.createParents!([item], null);
 				this.data!.push(item);
 			}
@@ -804,7 +870,7 @@ EventEditor.openRelatedEvents = function (this: any, contexts: any) {
 			const { filter, name, event } = context;
 			item = this.getItemByEvent!(event);
 			if (!item) {
-				item = list.createLocalEventItem!(false, filter, name, event, null);
+				item = list.createLocalEventItem!(false, filter, name!, event!, null);
 				TreeList.createParents!([item], null);
 				this.data!.push(item);
 			}
@@ -824,10 +890,10 @@ EventEditor.openRelatedEvents = function (this: any, contexts: any) {
 	}
 };
 
-EventEditor.findRelatedEvents = function (this: any, eventId: any) {
+EventEditor.findRelatedEvents = function (this: EventEditorShape, eventId: string) {
 	const guidMap = Data.manifest.guidMap;
-	const references = [] as any[];
-	const find = (event: any) => {
+	const references: EventRelatedContext[] = [];
+	const find = (event: EventEditorEventShape) => {
 		for (const command of event.commands) {
 			switch (command.id) {
 				case 'callEvent':
@@ -941,8 +1007,8 @@ EventEditor.findRelatedEvents = function (this: any, eventId: any) {
 	this.openRelatedEvents!(references);
 };
 
-EventEditor.getAllLocalEvents = function (this: any) {
-	const listMap = {} as Record<string, any>;
+EventEditor.getAllLocalEvents = function (this: EventEditorShape) {
+	const listMap = {} as Record<string, unknown[]>;
 	for (const [id, actor] of Object.entries<any>(Data.actors)) {
 		if (actor.events.length !== 0) {
 			listMap[id] = actor.events;
@@ -991,7 +1057,7 @@ EventEditor.getAllLocalEvents = function (this: any) {
 	return listMap;
 };
 
-EventEditor.clearAllEventClasses = function (this: any, ...items: any) {
+EventEditor.clearAllEventClasses = function (this: EventEditorShape, ...items: EventListItem[]) {
 	for (const item of items) {
 		removeClass(item.element, 'local-event');
 		removeClass(item.element, 'global-event');
@@ -999,14 +1065,17 @@ EventEditor.clearAllEventClasses = function (this: any, ...items: any) {
 	}
 };
 
-EventEditor.clearRelatedEventClasses = function (this: any, ...items: any) {
+EventEditor.clearRelatedEventClasses = function (
+	this: EventEditorShape,
+	...items: EventListItem[]
+) {
 	for (const item of items) {
 		removeClass(item.element, 'related-event');
 	}
 };
 
-EventEditor.save = function (this: any, item: any) {
-	const commands = item.commands;
+EventEditor.save = function (this: EventEditorShape, item: EventListItem) {
+	const commands = item.commands!;
 	commands.history.saveState();
 	this.appendCommandsToCaches!(commands);
 	const commandsClone = Object.clone(commands);
@@ -1021,7 +1090,7 @@ EventEditor.save = function (this: any, item: any) {
 	};
 };
 
-EventEditor.isChanged = function (this: any) {
+EventEditor.isChanged = function (this: EventEditorShape) {
 	for (const item of this.data!) {
 		if (item.changed) {
 			return true;
@@ -1030,7 +1099,7 @@ EventEditor.isChanged = function (this: any) {
 	return false;
 };
 
-EventEditor.getItemById = function (this: any, id: any) {
+EventEditor.getItemById = function (this: EventEditorShape, id: string) {
 	const items = this.data!;
 	const length = items.length;
 	for (let i = 0; i < length; i++) {
@@ -1042,7 +1111,7 @@ EventEditor.getItemById = function (this: any, id: any) {
 	return undefined;
 };
 
-EventEditor.getItemByEvent = function (this: any, event: any) {
+EventEditor.getItemByEvent = function (this: EventEditorShape, event: EventEditorEventShape) {
 	const items = this.data!;
 	const length = items.length;
 	for (let i = 0; i < length; i++) {
@@ -1054,7 +1123,7 @@ EventEditor.getItemByEvent = function (this: any, event: any) {
 	return undefined;
 };
 
-EventEditor.openCommandList = function (this: any, item: any) {
+EventEditor.openCommandList = function (this: EventEditorShape, item: EventListItem) {
 	this.fetchCommandBuffer!(item);
 	show($('#event-commands-fieldset'));
 	show($('#event-type'));
@@ -1078,15 +1147,15 @@ EventEditor.openCommandList = function (this: any, item: any) {
 	}
 };
 
-EventEditor.closeCommandList = function (this: any) {
+EventEditor.closeCommandList = function (this: EventEditorShape) {
 	clear(this.commandList);
 	hide($('#event-commands-fieldset'));
 	hide($('#event-type'));
 };
 
-EventEditor.unpackOpenEvents = function (this: any) {
-	const copies = [] as any[];
-	const events = (Editor.project as any).openEvents;
+EventEditor.unpackOpenEvents = function (this: EventEditorShape) {
+	const copies: EventListItem[] = [];
+	const events = Editor.project!.openEvents;
 	let i = events.length;
 	while (--i >= 0) {
 		if (Data.events[events[i].id] === undefined) {
@@ -1105,17 +1174,17 @@ EventEditor.unpackOpenEvents = function (this: any) {
 	this.data = copies;
 };
 
-EventEditor.packOpenEvents = function (this: any) {
-	const copies = [] as any[];
+EventEditor.packOpenEvents = function (this: EventEditorShape) {
+	const copies: EventListItem[] = [];
 	for (const item of this.data!) {
 		if (item.class === 'global') {
 			copies.push(item);
 		}
 	}
-	(Editor.project as any).openEvents = copies;
+	Editor.project!.openEvents = copies;
 };
 
-EventEditor.resizeGutter = function (this: any) {
+EventEditor.resizeGutter = function (this: EventEditorShape) {
 	const { outerGutter, innerGutter } = this;
 	const height = outerGutter.clientHeight;
 	if (height !== 0) {
@@ -1125,7 +1194,9 @@ EventEditor.resizeGutter = function (this: any) {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					const node = document.createElement('div') as any;
+					const node = document.createElement('div') as unknown as HTMLElement & {
+						number: number;
+					};
 					addClass(node, 'box');
 					addClass(node, 'event-commands-line-number');
 					node.number = -1;
@@ -1141,18 +1212,18 @@ EventEditor.resizeGutter = function (this: any) {
 	}
 };
 
-EventEditor.updateGutter = function (this: any, force: any) {
+EventEditor.updateGutter = function (this: EventEditorShape, force: boolean) {
 	const { commandList } = this;
 	const { scrollTop } = commandList;
 	const { outerGutter, innerGutter } = EventEditor;
 	const start = Math.floor(scrollTop / 20) + 1;
-	const end = (commandList.elements as any).count + 1;
+	const end = (commandList.elements as any[] & { count: number }).count + 1;
 	if (innerGutter.start !== start || force) {
 		innerGutter.start = start;
 		const nodes = innerGutter.childNodes;
 		const length = nodes.length;
 		for (let i = 0; i < length; i++) {
-			const node = nodes[i] as any;
+			const node = nodes[i] as HTMLElement & { number: number };
 			const number = start + i;
 			if (number < end) {
 				if (node.number !== number) {
@@ -1173,14 +1244,14 @@ EventEditor.updateGutter = function (this: any, force: any) {
 	outerGutter.scrollTop = (scrollTop + tolerance) % 20;
 };
 
-EventEditor.appendCommandsToCaches = function (this: any, commands: any) {
+EventEditor.appendCommandsToCaches = function (this: EventEditorShape, commands: EventCommands) {
 	const { caches } = this;
 	if (caches.push(commands) && caches.length > 50) {
 		caches.shift();
 	}
 };
 
-EventEditor.fetchCommandBuffer = function (this: any, item: any) {
+EventEditor.fetchCommandBuffer = function (this: EventEditorShape, item: EventListItem) {
 	if (item.commands) return;
 	const { event, id } = item;
 	const commands = event.commands;
@@ -1192,7 +1263,7 @@ EventEditor.fetchCommandBuffer = function (this: any, item: any) {
 	}
 
 	const symbol = commands.symbol;
-	let commandsClone = this.caches.find((target: any) => {
+	let commandsClone = this.caches.find((target) => {
 		return target.symbol === symbol;
 	});
 
@@ -1213,7 +1284,7 @@ EventEditor.fetchCommandBuffer = function (this: any, item: any) {
 	item.commands = commandsClone;
 };
 
-EventEditor.clearCommandBuffers = function (this: any) {
+EventEditor.clearCommandBuffers = function (this: EventEditorShape) {
 	const { commandList } = this;
 	for (const commands of this.caches) {
 		commandList.deleteCommandBuffers(commands);
@@ -1226,11 +1297,11 @@ EventEditor.clearCommandBuffers = function (this: any) {
 	}
 };
 
-EventEditor.getGlobalEventName = function (this: any, id: any) {
+EventEditor.getGlobalEventName = function (this: EventEditorShape, id: string) {
 	return Data.manifest.guidMap[id]?.file.basename ?? '';
 };
 
-EventEditor.windowLocalize = function (this: any, event: any) {
+EventEditor.windowLocalize = function (this: EventEditorShape, event: Event) {
 	const types = EventEditor.types;
 	const getType = Local.createGetter!('eventTypes');
 	const getTip = Local.createGetter!('eventTips');
@@ -1253,7 +1324,7 @@ EventEditor.windowLocalize = function (this: any, event: any) {
 	}
 };
 
-EventEditor.windowClose = function (this: any, event: any) {
+EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
 	this.closing = true;
 	if (this.isChanged!()) {
 		event.preventDefault();
@@ -1269,7 +1340,7 @@ EventEditor.windowClose = function (this: any, event: any) {
 						for (const item of this.data!) {
 							if (item.changed) {
 								item.changed = false;
-								const commands = item.commands;
+								const commands = item.commands!;
 								if (commands.history.restoreState()) {
 									this.appendCommandsToCaches!(commands);
 								} else {
@@ -1291,7 +1362,7 @@ EventEditor.windowClose = function (this: any, event: any) {
 	this.closing = false;
 }.bind(EventEditor);
 
-EventEditor.windowClosed = function (this: any, event: any) {
+EventEditor.windowClosed = function (this: EventEditorShape, event: Event) {
 	this.clearAllEventClasses!(...(this.data ?? []));
 	this.packOpenEvents!();
 	this.data = null;
@@ -1301,7 +1372,7 @@ EventEditor.windowClosed = function (this: any, event: any) {
 	window.removeEventListener('keydown', this.windowKeydown!);
 }.bind(EventEditor);
 
-EventEditor.windowResize = function (this: any, event: any) {
+EventEditor.windowResize = function (this: EventEditorShape, event: Event) {
 	const { list, commandList } = EventEditor;
 	const parent = commandList.parentNode as HTMLElement;
 	const outerHeight = parent.clientHeight;
@@ -1328,7 +1399,7 @@ EventEditor.windowResize = function (this: any, event: any) {
 	EventEditor.updateGutter!(true);
 };
 
-EventEditor.windowKeydown = function (this: any, event: any) {
+EventEditor.windowKeydown = function (this: EventEditorShape, event: KeyboardEvent) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
 			case 'KeyW':
@@ -1352,7 +1423,7 @@ EventEditor.windowKeydown = function (this: any, event: any) {
 	}
 };
 
-EventEditor.windowKeyup = function (this: any, event: any) {
+EventEditor.windowKeyup = function (this: EventEditorShape, event: KeyboardEvent) {
 	if (!event.altKey) {
 		switch (event.code) {
 			case 'AltLeft':
@@ -1365,7 +1436,7 @@ EventEditor.windowKeyup = function (this: any, event: any) {
 	}
 };
 
-EventEditor.windowPointermove = function (this: any, event: any) {
+EventEditor.windowPointermove = function (this: EventEditorShape, event: PointerEvent) {
 	if (!event.altKey) {
 		removeClass(EventEditor.list, 'alt');
 		removeClass(EventEditor.commandList, 'alt');
@@ -1374,9 +1445,9 @@ EventEditor.windowPointermove = function (this: any, event: any) {
 	}
 };
 
-EventEditor.listPointerdown = function (this: any, event: any) {
+EventEditor.listPointerdown = function (this: EventEditorShape, event: PointerEvent) {
 	if (event.altKey && event.button === 0) {
-		const element = event.target;
+		const element = event.target as HTMLElement & { item: EventListItem };
 		if (element.tagName === 'NODE-ITEM') {
 			const item = element.item;
 			if (item.id) {
@@ -1389,7 +1460,7 @@ EventEditor.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-EventEditor.listSelect = function (this: any, event: any) {
+EventEditor.listSelect = function (this: EventEditorShape, event: Event) {
 	const item = event.value;
 	EventEditor.openCommandList!(item);
 	if (item.element instanceof HTMLElement) {
@@ -1397,7 +1468,7 @@ EventEditor.listSelect = function (this: any, event: any) {
 	}
 };
 
-EventEditor.listPopup = function (this: any, event: any) {
+EventEditor.listPopup = function (this: EventEditorShape, event: Event) {
 	const item = event.value;
 	const selected = !!item;
 	const get = Local.createGetter!('menuEventList');
@@ -1448,7 +1519,7 @@ EventEditor.listPopup = function (this: any, event: any) {
 	);
 };
 
-EventEditor.typeInput = function (this: any, event: any) {
+EventEditor.typeInput = function (this: EventEditorShape, event: Event) {
 	const item = read(EventEditor.list);
 	if (!item.changed) {
 		item.changed = true;
@@ -1458,7 +1529,7 @@ EventEditor.typeInput = function (this: any, event: any) {
 	EventEditor.list.updateItemName!(item);
 };
 
-EventEditor.commandListChange = function (this: any, event: any) {
+EventEditor.commandListChange = function (this: EventEditorShape, event: Event) {
 	if (EventEditor.closing) return;
 	const item = read(EventEditor.list);
 	if (!item.changed) {
@@ -1468,21 +1539,21 @@ EventEditor.commandListChange = function (this: any, event: any) {
 	}
 };
 
-EventEditor.commandListUpdate = function (this: any, event: any) {
+EventEditor.commandListUpdate = function (this: EventEditorShape, event: Event) {
 	EventEditor.resizeGutter!();
 	EventEditor.updateGutter!(true);
 };
 
-EventEditor.commandListScroll = function (this: any, event: any) {
+EventEditor.commandListScroll = function (this: EventEditorShape, event: Event) {
 	EventEditor.updateGutter!(false);
 };
 
-EventEditor.confirm = function (this: any, event: any) {
+EventEditor.confirm = function (this: EventEditorShape, event: Event) {
 	this.apply!();
 	Window.close!('event');
 }.bind(EventEditor);
 
-EventEditor.apply = function (this: any, event: any) {
+EventEditor.apply = function (this: EventEditorShape, event: Event) {
 	for (const item of this.data!) {
 		switch (item.class) {
 			case 'global':

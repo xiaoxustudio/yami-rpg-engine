@@ -7,8 +7,8 @@ import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 export const RequestkeyValueBind = {
-	target: null as any,
-	type: null as any,
+	target: null as unknown as (string & { save?: () => any }) | null,
+	type: null as unknown as string | null,
 	initialize() {
 		this.target = null;
 		this.type = 'request-header';
@@ -32,7 +32,7 @@ export const RequestkeyValueBind = {
 	save() {
 		const read = getElementReader('request-keyValue');
 		const data = { key: read('key'), value: read('value') };
-		const headers = read(this.target);
+		const headers = read(this.target as unknown as string);
 		if (headers.some((item: any) => item.key === data.key)) {
 			headers.splice(
 				headers.findIndex((item: any) => item.key === data.key),
@@ -82,7 +82,7 @@ Command.cases.requestURL = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -92,7 +92,7 @@ Command.cases.requestURL = new CommandSchema({
 				}
 			);
 		}
-		const datas = [] as any[];
+		const datas: any[] = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },

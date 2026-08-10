@@ -4,18 +4,24 @@ import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const AnimParticleLayer = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimParticleLayerShape {
+		target: Record<string, unknown> | null;
+		update: ((layer: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimParticleLayer: AnimParticleLayerShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimParticleLayer.initialize = function (this: any) {
+	AnimParticleLayer.initialize = function (this: typeof AnimParticleLayer) {
 		if (!$('#animParticleLayer-position')) return;
 		$('#animParticleLayer-position').loadItems([
 			{ name: 'Absolute', value: 'absolute' },
@@ -43,7 +49,7 @@ import { Inspector } from './inspector.ts';
 		);
 		elements.on(
 			'blur',
-			Inspector.inputBlur!(this, Animation, (data: any) => {
+			Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
 				data.type = 'inspector-layer-change';
 				data.motion = this.motion;
 				data.direction = Animation.direction;
@@ -51,7 +57,7 @@ import { Inspector } from './inspector.ts';
 		);
 	};
 
-	AnimParticleLayer.create = function (this: any) {
+	AnimParticleLayer.create = function (this: typeof AnimParticleLayer) {
 		return {
 			class: 'particle',
 			name: 'Particle',
@@ -65,7 +71,10 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	AnimParticleLayer.open = function (this: any, layer: any) {
+	AnimParticleLayer.open = function (
+		this: typeof AnimParticleLayer,
+		layer: Record<string, unknown>
+	) {
 		if (this.target !== layer) {
 			this.target = layer;
 			this.motion = Animation.motion;
@@ -78,14 +87,19 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	AnimParticleLayer.close = function (this: any) {
+	AnimParticleLayer.close = function (this: typeof AnimParticleLayer) {
 		if (this.target) {
 			this.target = null;
 			this.motion = null;
 		}
 	};
 
-	AnimParticleLayer.update = function (this: any, layer: any, key: any, value: any) {
+	AnimParticleLayer.update = function (
+		this: typeof AnimParticleLayer,
+		layer: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'particleId':
@@ -106,8 +120,12 @@ import { Inspector } from './inspector.ts';
 		Animation.requestRendering!();
 	};
 
-	AnimParticleLayer.paramInput = function (this: any, event: any) {
-		AnimParticleLayer.update(AnimParticleLayer.target, Inspector.getKey!(this), read(this));
+	AnimParticleLayer.paramInput = function (this: typeof AnimParticleLayer, event: Event) {
+		AnimParticleLayer.update!(
+			AnimParticleLayer.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.animParticleLayer = AnimParticleLayer;

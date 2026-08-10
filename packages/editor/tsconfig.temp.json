@@ -1,0 +1,38 @@
+﻿{
+    "compilerOptions":  {
+                            "resolveJsonModule":  true
+                        },
+    "exclude":  [
+                    "build/**",
+                    "dist/**",
+                    "dist-electron/**",
+                    "jsons/**",
+                    "node_modules/**",
+                    "Project/Templates/**",
+                    "src/legacy/animation/**",
+                    "src/legacy/attribute/**",
+                    "src/legacy/browser/**",
+                    "src/legacy/command/**",
+                    "src/legacy/components/**",
+                    "src/legacy/data",
+                    "src/legacy/enum/**",
+                    "src/legacy/file/**",
+                    "src/legacy/inspector/**",
+                    "src/legacy/local/**",
+                    "src/legacy/main/**",
+                    "src/legacy/module/**",
+                    "src/legacy/palette/**",
+                    "src/legacy/particle/**",
+                    "src/legacy/plugin/**",
+                    "src/legacy/scene/**",
+                    "src/legacy/sprite/**",
+                    "src/legacy/title/**",
+                    "src/legacy/tools/**",
+                    "src/legacy/ui/**",
+                    "src/legacy/update/**",
+                    "src/legacy/variable/**",
+                    "src/legacy/version/**",
+                    "Unused/**"
+                ],
+    "extends":  "./tsconfig.strict.json"
+}

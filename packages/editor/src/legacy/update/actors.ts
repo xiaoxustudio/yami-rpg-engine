@@ -3,19 +3,19 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateActors = function (verNum: any) {
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
+Updater.updateActors = function (verNum: number) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const actors = Data.actors;
-		const keys = Object.keys((Inspector.fileActor as any).create());
-		for (const [guid, sActor] of Object.entries(actors)) {
+		const keys = Object.keys(Inspector.fileActor.create());
+		for (const [guid, sActor] of Object.entries<any>(actors)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			const dActor = (Inspector.fileActor as any).create();
+			const dActor = Inspector.fileActor.create();
 			for (const key of keys) {
-				if (key in (sActor as any)) {
-					dActor[key] = (sActor as any)[key];
+				if (key in sActor) {
+					dActor[key] = sActor[key];
 					continue;
 				}
 				switch (key) {
@@ -25,7 +25,7 @@ Updater.updateActors = function (verNum: any) {
 				}
 			}
 			actors[guid] = dActor;
-			(File.planToSave as any)(meta);
+			File.planToSave!(meta);
 		}
 	}
 };

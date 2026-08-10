@@ -7,8 +7,8 @@ import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 export const IndexBind = {
-	target: null as any,
-	type: null as any,
+	target: null as unknown as HTMLElement | null,
+	type: null as unknown as string | null,
 	initialize() {
 		this.target = null;
 		this.type = 'get-object-index';
@@ -48,7 +48,7 @@ Command.cases.getObjectProperty = new CommandSchema({
 		});
 	},
 	customParse({ variable, saveVariable, properties }: any) {
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}
@@ -100,7 +100,7 @@ Command.cases.setObjectProperty = new CommandSchema({
 		});
 	},
 	customParse({ variable, valueVariable, properties }: any) {
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}

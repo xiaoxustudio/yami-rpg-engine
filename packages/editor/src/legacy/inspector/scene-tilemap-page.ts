@@ -9,26 +9,59 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneTilemap = {
+	interface SceneTilemapLightItem {
+		name?: string;
+		tip?: string;
+		value: string | number;
+	}
+	interface SceneTilemapLightBox {
+		lightItems: {
+			all: SceneTilemapLightItem[];
+			tile: SceneTilemapLightItem[];
+			sprite: SceneTilemapLightItem[];
+		};
+		dataItems: SceneTilemapLightItem[] | null;
+		dataValue: unknown;
+		loadItems(items: SceneTilemapLightItem[]): void;
+		update(): void;
+		setItemNames:
+			| ((
+					this: SceneTilemapLightBox,
+					options: Record<string, string | { name?: string; tip?: string }>
+			  ) => void)
+			| null;
+		[k: string]: unknown;
+	}
+	interface SceneTilemapShape {
+		nameBox: HTMLElement | null;
+		lightBox: SceneTilemapLightBox | null;
+		target: Record<string, unknown> | null;
+		update: ((tilemap: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		layerWrite: ((event: Event & { value: unknown }) => void) | null;
+		layerInput: ((event: Event) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const SceneTilemap: SceneTilemapShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		lightBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		layerWrite: null as any,
-		layerInput: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		lightBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		layerWrite: null,
+		layerInput: null,
+		paramInput: null
 	};
 
-	SceneTilemap.initialize = function (this: any) {
+	SceneTilemap.initialize = function (this: typeof SceneTilemap) {
 		if (!$('#sceneTilemap-name')) return;
 		this.nameBox = $('#sceneTilemap-name');
-		this.lightBox = $('#sceneTilemap-light');
+		this.lightBox = $('#sceneTilemap-light') as unknown as SceneTilemapLightBox;
 		$('#sceneTilemap-layer').loadItems([
 			{ name: 'Background', value: 'background' },
 			{ name: 'Foreground', value: 'foreground' },
@@ -41,14 +74,17 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			ambient: { name: 'Ambient Light', value: 'ambient' },
 			anchor: { name: 'Anchor Sampling', value: 'anchor' }
 		};
-		this.lightBox.lightItems = {
+		this.lightBox!.lightItems = {
 			all: Object.values(items),
 			tile: [items.raw, items.global, items.ambient],
 			sprite: [items.raw, items.global, items.anchor]
 		};
 
-		// 光线采样选项 - 重写设置选项名字方法
-		this.lightBox.setItemNames = function (this: any, options: any) {
+		// 闂佺绻愰ˇ閬嶅吹鎼淬劍鐓傞柛銉ｅ妿婢瑰姊洪銏╂█闁?- 闂備焦褰冪粔鎾疮閹捐埖濯奸柛鎾楀懏鐎梻渚囧亜椤︾敻濡村澶婅Е鐎广儱鎳愰幗鐔兼煛閸屾繍娼愮痪?
+		this.lightBox!.setItemNames = function (
+			this: SceneTilemapLightBox,
+			options: Record<string, string | { name?: string; tip?: string }>
+		) {
 			const backup = this.dataItems;
 			this.dataItems = this.lightItems.all;
 			selectBoxSetItemNames(this, options);
@@ -68,7 +104,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#sceneTilemap-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneTilemap-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneTilemap-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneTilemap-parameter-pane').bind($('#sceneTilemap-scripts'));
 
@@ -86,8 +124,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		$('#sceneTilemap-layer').addEventListener('write', this.layerWrite);
-		$('#sceneTilemap-layer').addEventListener('input', this.layerInput);
+		$('#sceneTilemap-layer').addEventListener(
+			'write',
+			this.layerWrite! as unknown as EventListener
+		);
+		$('#sceneTilemap-layer').addEventListener('input', this.layerInput!);
 		document
 			.querySelectorAll('#sceneTilemap-width, #sceneTilemap-height')
 			.forEach((el) => el.addEventListener('change', this.paramInput!));
@@ -98,7 +139,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneTilemap.create = function (this: any, width = 4, height = 4) {
+	SceneTilemap.create = function (this: typeof SceneTilemap, width = 4, height = 4) {
 		const tiles = Scene.createTiles!(width, height);
 		return Codec.decodeTilemap!({
 			class: 'tilemap',
@@ -131,7 +172,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		});
 	};
 
-	SceneTilemap.open = function (this: any, tilemap: any) {
+	SceneTilemap.open = function (this: typeof SceneTilemap, tilemap: Record<string, unknown>) {
 		if (this.target !== tilemap) {
 			this.target = tilemap;
 
@@ -158,7 +199,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneTilemap.close = function (this: any) {
+	SceneTilemap.close = function (this: typeof SceneTilemap) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -170,7 +211,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneTilemap.write = function (this: any, options: any) {
+	SceneTilemap.write = function (this: typeof SceneTilemap, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneTilemap-x'), options.x);
 		}
@@ -185,7 +226,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneTilemap.update = function (this: any, tilemap: any, key: any, value: any) {
+	SceneTilemap.update = function (
+		this: typeof SceneTilemap,
+		tilemap: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -231,8 +277,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneTilemap.layerWrite = function (this: any, event: any) {
-		const lightBox = SceneTilemap.lightBox;
+	SceneTilemap.layerWrite = function (
+		this: typeof SceneTilemap,
+		event: Event & { value: unknown }
+	) {
+		const lightBox = SceneTilemap.lightBox!;
 		const type = event.value === 'object' ? 'sprite' : 'tile';
 		const items = lightBox.lightItems[type];
 		if (lightBox.dataItems !== items) {
@@ -240,11 +289,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneTilemap.layerInput = function (this: any, event: any) {
+	SceneTilemap.layerInput = function (this: typeof SceneTilemap, event: Event) {
 		if (Inspector.manager.focusing === this) {
-			const lightBox = SceneTilemap.lightBox;
+			const lightBox = SceneTilemap.lightBox!;
 			const value = read(lightBox);
-			for (const item of lightBox.dataItems) {
+			for (const item of lightBox.dataItems ?? []) {
 				if (item.value === value) {
 					return;
 				}
@@ -260,8 +309,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneTilemap.paramInput = function (this: any, event: any) {
-		SceneTilemap.update(SceneTilemap.target, Inspector.getKey!(this), read(this));
+	SceneTilemap.paramInput = function (this: typeof SceneTilemap, event: Event) {
+		SceneTilemap.update!(
+			SceneTilemap.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneTilemap = SceneTilemap;

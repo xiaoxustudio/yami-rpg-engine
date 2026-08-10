@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.switch = new CommandSchema({
 	name: 'switch',
-	defaultCommands: null as any,
+	defaultCommands: null,
 	onInitialize() {
 		const confirmEl = $('#switch-confirm');
 		if (!confirmEl) return;
@@ -36,7 +36,7 @@ Command.cases.switch = new CommandSchema({
 				{ color: 'flow' },
 				{ text: textCase + ' ' },
 				{ color: 'normal' },
-				{ text: SwitchBranch.parse(branch) },
+				{ text: SwitchBranch.parse!(branch) },
 				{ children: branch.commands }
 			);
 		}

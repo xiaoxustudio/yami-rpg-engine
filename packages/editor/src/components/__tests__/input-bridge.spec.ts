@@ -4,6 +4,20 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 
+interface TextBoxBridgeEl extends HTMLElement {
+	input: HTMLInputElement;
+	write(value: string): void;
+}
+
+interface SliderBoxBridgeEl extends HTMLElement {
+	input: HTMLInputElement;
+	write(value: number): void;
+}
+
+interface RadioBoxBridgeEl extends HTMLElement {
+	input(value: string): void;
+}
+
 describe('包装层输入事件转发（输入事件 Vue 化回归保护）', () => {
 	it('TextBox input 转发（input 元素事件 → emit input）', async () => {
 		const wrapper = mount(TextBox, {
@@ -11,7 +25,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TextBoxBridgeEl;
 		expect(typeof el.write).toBe('function');
 		el.write('Hello');
 		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
@@ -28,7 +42,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as SliderBoxBridgeEl;
 		expect(typeof el.write).toBe('function');
 		el.write(3);
 		el.input!.dispatchEvent(new Event('input', { bubbles: true }));
@@ -45,7 +59,7 @@ describe('包装层输入事件转发（输入事件 Vue 化回归保护）', ()
 			attachTo: document.body
 		});
 		await wrapper.vm.$nextTick();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as RadioBoxBridgeEl;
 		expect(typeof el.input).toBe('function');
 		el.input('a');
 		await wrapper.vm.$nextTick();

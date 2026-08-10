@@ -21,39 +21,39 @@ import { Select } from '@/components/select-list.ts';
 import { Local } from '@/tools/localization.ts';
 
 interface SelectBoxElement extends HTMLElement {
-	info: HTMLElement & { [k: string]: any };
+	info: HTMLElement & { [k: string]: unknown };
 	read(): any;
 	write(value: any): void;
 	write2(value: any): void;
 	writeDefault(): void;
 	input(value: any): void;
 	update(): void;
-	reselect(offset: any): void;
+	reselect(offset: number): void;
 	save(): void;
 	restore(): void;
 	enable(): void;
 	disable(): void;
 	loadItems(items: any): void;
 	setItemNames(options: any): void;
-	setTooltip(tip: any): void;
+	setTooltip(tip: string | (() => string)): void;
 	createTooltip(): void;
-	clear(): any;
-	enableHiddenMode(): any;
+	clear(): HTMLElement;
+	enableHiddenMode(): HTMLElement;
 	relate(entries: any): void;
 	toggleRelatedElements(): void;
 	enableElement(element: any): void;
 	disableElement(element: any): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
 
 interface Props {
 	id?: string;
-	modelValue?: any;
-	items?: any[];
+	modelValue?: unknown;
+	items?: unknown[];
 	disabled?: boolean;
 }
 
@@ -81,22 +81,22 @@ const ym = ref<{
 	writeDefault(): void;
 	input(value: any): void;
 	update(): void;
-	reselect(offset: any): void;
+	reselect(offset: number): void;
 	save(): void;
 	restore(): void;
 	enable(): void;
 	disable(): void;
 	loadItems(items: any): void;
 	setItemNames(options: any): void;
-	clear(): any;
-	enableHiddenMode(): any;
+	clear(): HTMLElement;
+	enableHiddenMode(): HTMLElement;
 	relate(entries: any): void;
 	toggleRelatedElements(): void;
 	enableElement(element: any): void;
 	disableElement(element: any): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -108,22 +108,24 @@ const write2 = (value: any): void => ym.value?.write2(value);
 const writeDefault = (): void => ym.value?.writeDefault();
 const input = (value: any): void => ym.value?.input(value);
 const update = (): void => ym.value?.update();
-const reselect = (offset: any): void => ym.value?.reselect(offset);
+const reselect = (offset: number): void => ym.value?.reselect(offset);
 const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const loadItems = (items: any): void => ym.value?.loadItems(items);
-const setItemNames = (options: any): void => {
-	const mapped: any = {};
+const setItemNames = (
+	options: Record<string, string | { name?: string; tip?: string }>
+): void => {
+	const mapped: Record<string, string | { name?: string; tip?: string }> = {};
 	for (const key of Object.keys(options ?? {})) {
 		const option = options[key];
 		if (typeof option === 'string') {
 			mapped[key] = option;
 		} else if (option && typeof option === 'object') {
-			const copy: any = { ...option };
+			const copy: { name?: string; tip?: string } = { ...option };
 			if ('tip' in copy) {
-				copy.tip = (Local.parseTip as any)(copy.tip, copy.name);
+				copy.tip = Local.parseTip(copy.tip, copy.name);
 			}
 			mapped[key] = copy;
 		}
@@ -131,22 +133,22 @@ const setItemNames = (options: any): void => {
 	ym.value?.setItemNames(mapped);
 	createTooltip();
 };
-const clear = (): any => ym.value?.clear();
-const enableHiddenMode = (): any => ym.value?.enableHiddenMode();
+const clear = (): HTMLElement => ym.value?.clear() as HTMLElement;
+const enableHiddenMode = (): HTMLElement => ym.value?.enableHiddenMode() as HTMLElement;
 const relate = (entries: any): void => ym.value?.relate(entries);
 const toggleRelatedElements = (): void => ym.value?.toggleRelatedElements();
 const enableElement = (element: any): void => ym.value?.enableElement(element);
 const disableElement = (element: any): void => ym.value?.disableElement(element);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
-const setTooltip = (tip: any): void => {
+const setTooltip = (tip: string | (() => string)): void => {
 	const el = root.value;
 	if (!el) return;
-	originalTip = tip;
+	originalTip = tip as string;
 	setTooltipElement(el, tip);
 };
 
@@ -155,7 +157,7 @@ const createTooltip = (): void => {
 	if (!el) return;
 	let tip = originalTip ?? '';
 	let options = '';
-	const items = (el as any).dataItems ?? [];
+	const items = el.dataItems as Array<{ tip?: string }> | null ?? [];
 	for (const item of items) {
 		if (item.tip) {
 			options += item.tip + '\n';
@@ -236,7 +238,7 @@ onMounted(() => {
 	el.enableElement = enableElement;
 	el.disableElement = disableElement;
 	el.on = on;
-	onElement(el, 'keydown', (event: any) => {
+	onElement(el, 'keydown', (event: KeyboardEvent) => {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -257,11 +259,11 @@ onMounted(() => {
 				break;
 		}
 	});
-	on('input', (e: any) => {
+	on('input', (e: Event & { value?: any }) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
 	});
-	on('write', (e: any) => emit('write', e.value));
+	on('write', (e: Event & { value?: any }) => emit('write', e.value));
 	el.addEventListener('change', () => emit('change', read()));
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();

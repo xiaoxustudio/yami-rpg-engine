@@ -8,11 +8,19 @@ import { Particle } from '@/particle/particle-window.ts';
 import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';
 
+type WindowFrame = HTMLElement & {
+	open(): unknown;
+	close(): boolean;
+	closeEventEnabled: boolean;
+	enableAmbient: boolean;
+};
+
 export const Window = {
 	get ambient() {
 		return $('#window-ambient');
 	},
 	frames: [] as HTMLElement[],
+	afterChange: null as (() => void) | null,
 	positionMode: 'center',
 	absolutePos: { x: 0, y: 0 },
 	overlapRoot: null as HTMLElement | null,
@@ -27,12 +35,17 @@ export const Window = {
 	saveActiveElement: null as (() => void) | null,
 	restoreActiveElement: null as (() => void) | null,
 	refocus: null as (() => void) | null,
-	confirm: null as ((options: any, items: any) => void) | null,
+	confirm: null as
+		| ((
+				options: { message?: string; close?: () => void },
+				items: Array<{ label?: string; click?: () => void }>
+		  ) => void)
+		| null,
 	keydown: null as ((event: KeyboardEvent) => void) | null,
-	cancel: null as ((event: any) => void) | null
+	cancel: null as ((event: Event) => void) | null
 };
 
-Window.initialize = function (this: any) {
+Window.initialize = function (this: typeof Window) {
 	const buttons = document.getElementsByName('cancel');
 	const length = buttons.length;
 	for (let i = 0; i < length; i++) {
@@ -40,7 +53,7 @@ Window.initialize = function (this: any) {
 	}
 };
 
-Window.open = function (this: any, id: string) {
+Window.open = function (this: typeof Window, id: string) {
 	const frames = this.frames;
 	const element = document.getElementById(id);
 	if (!element) {
@@ -83,11 +96,12 @@ Window.open = function (this: any, id: string) {
 				}
 			});
 		}
-		(element as any).open();
+		(element as WindowFrame).open();
+		this.afterChange?.();
 	}
 };
 
-Window.close = function (this: any, id: string | null = null) {
+Window.close = function (this: typeof Window, id: string | null = null) {
 	const frames = this.frames;
 	if (!frames.length) {
 		return;
@@ -98,7 +112,7 @@ Window.close = function (this: any, id: string | null = null) {
 		return;
 	}
 
-	if ((element as any).close()) {
+	if ((element as WindowFrame).close()) {
 		document.body.style.pointerEvents = 'inherit';
 		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
@@ -123,29 +137,30 @@ Window.close = function (this: any, id: string | null = null) {
 		if (this.overlapRoot === element) {
 			this.setPositionMode!('center');
 		}
+		this.afterChange?.();
 	}
 };
 
-Window.closeAll = function (this: any) {
+Window.closeAll = function (this: typeof Window) {
 	const frames = this.frames;
 	let i = frames.length;
 	while (--i >= 0) {
 		const frame = frames[i];
-		const enabled = (frame as any).closeEventEnabled;
-		frame.closeEventEnabled = false;
+		const enabled = (frame as WindowFrame).closeEventEnabled;
+		(frame as WindowFrame).closeEventEnabled = false;
 		this.close!(frame.id);
-		frame.closeEventEnabled = enabled;
+		(frame as WindowFrame).closeEventEnabled = enabled;
 	}
 };
 
-Window.isWindowOpen = function (this: any, id) {
+Window.isWindowOpen = function (this: typeof Window, id: string) {
 	for (const frame of this.frames) {
 		if (frame.id === id) return true;
 	}
 	return false;
 };
 
-Window.getTopWindow = function (this: any) {
+Window.getTopWindow = function (this: typeof Window) {
 	const { frames } = this;
 	if (frames.length !== 0) {
 		return frames[frames.length - 1];
@@ -153,7 +168,7 @@ Window.getTopWindow = function (this: any) {
 	return undefined;
 };
 
-Window.setPositionMode = function (this: any, mode: string) {
+Window.setPositionMode = function (this: typeof Window, mode: string) {
 	if (this.positionMode !== mode) {
 		if (this.overlapRoot) {
 			this.overlapRoot = null;
@@ -175,23 +190,23 @@ Window.setPositionMode = function (this: any, mode: string) {
 	}
 };
 
-Window.saveActiveElement = function (this: any) {
+Window.saveActiveElement = function (this: typeof Window) {
 	const { activeElement } = document;
-	if (activeElement !== document.body) {
+	if (activeElement !== null && activeElement !== document.body) {
 		this.activeElement = activeElement;
-		this.activeElement.blur();
+		activeElement.blur();
 	}
 };
 
-Window.restoreActiveElement = function (this: any) {
+Window.restoreActiveElement = function (this: typeof Window) {
 	if (this.activeElement) {
 		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
-		this.activeElement.focus({ preventScroll: true });
+		(this.activeElement as HTMLElement).focus();
 		this.activeElement = null;
 	}
 };
 
-Window.refocus = function (this: any) {
+Window.refocus = function (this: typeof Window) {
 	const active = document.activeElement;
 	if (active !== document.body) {
 		active!.blur();
@@ -200,7 +215,10 @@ Window.refocus = function (this: any) {
 };
 
 Window.confirm = (function IIFE() {
-	return function (options: any, items: any) {
+	return function (
+		options: { message?: string; close?: () => void },
+		items: Array<{ label?: string; click?: () => void }>
+	) {
 		const elWindow = $('#confirmation');
 		const elMessage = $('#confirmation-message');
 		const buttons = [
@@ -209,7 +227,7 @@ Window.confirm = (function IIFE() {
 			$('#confirmation-button-2')
 		];
 		const message = options.message ?? '';
-		const click = function (this: any, event: any) {
+		const click = function (this: HTMLElement, event: Event) {
 			Window.close!('confirmation');
 			const index = buttons.indexOf(this);
 			const item = items[index];
@@ -219,7 +237,7 @@ Window.confirm = (function IIFE() {
 			const button = buttons[i];
 			const item = items[i];
 			if (item) {
-				button.textContent = item.label;
+				button.textContent = item.label ?? '';
 				button.addEventListener('click', click);
 				show(button);
 			} else {
@@ -253,7 +271,7 @@ Window.confirm = (function IIFE() {
 	};
 })();
 
-Window.keydown = function (this: any, event) {
+Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'F4':
@@ -308,27 +326,28 @@ Window.keydown = function (this: any, event) {
 	}
 };
 
-Window.cancel = function (this: any, event) {
-	let element = event.target.parentNode;
+Window.cancel = function (this: typeof Window, event: Event) {
+	let element = (event.target as HTMLElement).parentNode;
 	while (element) {
 		if ((element as HTMLElement).classList.contains('window-frame')) {
-			return Window.close!(element.id);
+			return Window.close!((element as HTMLElement).id);
 		} else {
 			element = element.parentNode;
 		}
 	}
 };
 
-Window.ambient.update = function (this: any) {
-	const frames = Window.frames;
+Window.ambient.update = function (this: typeof Window) {
+	const { frames } = this;
+	const { ambient } = this;
 	let i = frames.length;
 	while (--i >= 0) {
 		const frame = frames[i];
-		if ((frame as any).enableAmbient) {
-			addClass(this, 'open');
-			this.style.zIndex = i + 1;
+		if ((frame as WindowFrame).enableAmbient) {
+			addClass(ambient, 'open');
+			ambient.style.zIndex = (i + 1).toString();
 			return;
 		}
 	}
-	removeClass(this, 'open');
+	removeClass(ambient, 'open');
 };

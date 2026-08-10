@@ -11,45 +11,49 @@ import { File } from '@/file/file-system-core.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Local } from '@/tools/localization.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import type { EditorProjectShape } from '@app/stores/editor';
 
 import { ctrl } from '@/util/event-accessors.ts';
+
+const Clipboard = getGlobalClipboard();
 
 interface CustomCommandData {
 	id: string;
 	enabled: boolean;
 	alias: string;
 	keywords: string;
-	parameters?: Record<string, any>;
+	parameters?: Record<string, unknown>;
 }
 
 // 自定义指令列表元素契约
 interface CustomCommandList {
 	removable: boolean;
-	creators: any[];
-	updaters: any[];
-	insert: ((dItem?: any) => void) | null;
+	creators: CustomCommandMethod[];
+	updaters: CustomCommandMethod[];
+	insert: ((dItem?: CustomCommandData | null) => void) | null;
 	toggle: ((item: CustomCommandData | null) => void) | null;
 	copy: ((item: CustomCommandData | null) => void) | null;
-	paste: ((dItem?: any) => void) | null;
-	delete: (item: any) => void;
+	paste: ((dItem?: CustomCommandData | null) => void) | null;
+	delete: (item: CustomCommandData | null) => void;
 	saveSelection: (() => void) | null;
 	restoreSelection: (() => void) | null;
-	updateNodeElement: any;
-	addElementClass: any;
-	updateTextNode: any;
-	updateToggleStyle: (item: any) => void;
-	createEditIcon: any;
+	updateNodeElement: CustomCommandMethod;
+	addElementClass: CustomCommandMethod;
+	updateTextNode: CustomCommandMethod;
+	updateToggleStyle: (item: CustomCommandData) => void;
+	createEditIcon: CustomCommandMethod;
 	edit: (item: CustomCommandData) => void;
-	bind(getter: () => any): void;
-	addEventListener(type: string, listener: (event: any) => void): void;
-	on(type: string, listener: (event: any) => void): void;
+	bind(getter: () => CustomCommandData[] | null): void;
+	addEventListener(type: string, listener: (event: Event) => void): void;
+	on<E extends Event>(type: string, listener: (event: E) => void): void;
 	getFocus(): void;
 	read(): CustomCommandData | null;
 	clear(): void;
 	update(): void;
 	select(item: CustomCommandData): void;
 	scrollToSelection(): void;
-	addNodeTo(node: any, dItem: any): void;
+	addNodeTo(node: CustomCommandData, dItem?: unknown): void;
 	data: CustomCommandData[];
 }
 
@@ -58,9 +62,9 @@ type CustomCommandMethod = ((...args: any[]) => any) | null;
 interface CustomCommandShape {
 	close: ((id?: string) => void) | null;
 	state: string | null;
-	commands: Record<string, any> | null;
-	saveToProject: ((project: any) => void) | null;
-	loadFromProject: ((project: any) => void) | null;
+	commands: CustomCommandData[] | null;
+	saveToProject: ((project: EditorProjectShape) => void) | null;
+	loadFromProject: ((project: EditorProjectShape) => void) | null;
 
 	list: CustomCommandList;
 	overviewPane: HTMLElement & {
@@ -73,7 +77,7 @@ interface CustomCommandShape {
 	};
 	settingsPane: HTMLElement & { hide(): HTMLElement; show(): HTMLElement };
 	data: CustomCommandData[] | null;
-	meta: any;
+	meta: unknown;
 	symbol: symbol | null;
 	changed: boolean;
 	initialize: (() => void) | null;
@@ -86,7 +90,7 @@ interface CustomCommandShape {
 	windowClose: ((event: Event) => void) | null;
 	windowClosed: ((event: Event) => void) | null;
 	pointerdown: CustomCommandMethod;
-	scriptChange: ((event: Event & { changedMeta: any }) => void) | null;
+	scriptChange: ((event: Event & { changedMeta: unknown }) => void) | null;
 	listKeydown: ((this: CustomCommandList, event: KeyboardEvent) => void) | null;
 	listSelect: ((event: Event & { value: CustomCommandData }) => void) | null;
 	listUnselect: (() => void) | null;
@@ -106,7 +110,7 @@ interface CustomCommandShape {
 		| null;
 	paramInput: ((this: HTMLElement & { id: string; read(): string }, event: Event) => void) | null;
 	confirm: ((event: Event) => void) | null;
-	apply: ((event: any) => void) | null;
+	apply: ((event: Event) => void) | null;
 	list_edit: CustomCommandMethod;
 	list_insert: CustomCommandMethod;
 	list_toggle: CustomCommandMethod;
@@ -117,45 +121,48 @@ interface CustomCommandShape {
 }
 
 export const CustomCommand: CustomCommandShape = {
-	list: null as any,
-	overviewPane: null as any,
-	overview: null as any,
-	settingsPane: null as any,
-	data: null as any,
-	meta: null as any,
-	symbol: null as any,
+	list: null as unknown as CustomCommandList,
+	overviewPane: null as unknown as HTMLElement & {
+		hide(): HTMLElement & { hide(): HTMLElement };
+		show(): HTMLElement;
+	},
+	overview: null as unknown as CustomCommandShape['overview'],
+	settingsPane: null as unknown as HTMLElement & { hide(): HTMLElement; show(): HTMLElement },
+	data: null,
+	meta: null,
+	symbol: null,
 	changed: false,
-	initialize: null as any,
-	open: null as any,
-	load: null as any,
-	unload: null as any,
-	loadOverview: null as any,
-	createData: null as any,
-	getItemById: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	pointerdown: null as any,
-	scriptChange: null as any,
-	listKeydown: null as any,
-	listSelect: null as any,
-	listUnselect: null as any,
-	listChange: null as any,
-	listPopup: null as any,
-	listOpen: null as any,
-	paramInput: null as any,
-	confirm: null as any,
-	apply: null as any,
-	list_edit: null as any,
-	list_insert: null as any,
-	list_toggle: null as any,
-	list_copy: null as any,
-	list_paste: null as any,
-	list_saveSelection: null as any,
-	list_restoreSelection: null as any,
+	initialize: null,
+	open: null,
+	load: null,
+	unload: null,
+	loadOverview: null,
+	createData: null,
+	getItemById: null,
+	windowClose: null,
+	windowClosed: null,
+	pointerdown: null,
+	scriptChange: null,
+	listKeydown: null,
+	listSelect: null,
+	listUnselect: null,
+	listChange: null,
+	listPopup: null,
+	listOpen: null,
+	paramInput: null,
+	confirm: null,
+	apply: null,
+	list_edit: null,
+	list_insert: null,
+	list_toggle: null,
+	list_copy: null,
+	list_paste: null,
+	list_saveSelection: null,
+	list_restoreSelection: null,
 	state: null as string | null,
-	commands: null as Record<string, any> | null,
-	saveToProject: null as ((project: any) => void) | null,
-	loadFromProject: null as ((project: any) => void) | null,
+	commands: null as CustomCommandData[] | null,
+	saveToProject: null,
+	loadFromProject: null,
 	close: null as ((id?: string) => void) | null
 };
 
@@ -173,7 +180,7 @@ function ensureDomBound() {
 	list.toggle = null as unknown as (...args: unknown[]) => any;
 	list.copy = null as unknown as (...args: unknown[]) => any;
 	list.paste = null as unknown as (...args: unknown[]) => any;
-	list.delete = PluginManager.list_delete;
+	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
 	list.saveSelection = null as unknown as (...args: unknown[]) => any;
 	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
 	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
@@ -292,7 +299,7 @@ CustomCommand.getItemById = Easing.getItemById;
 CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedCommands')
@@ -323,7 +330,7 @@ CustomCommand.windowClosed = function (this: CustomCommandShape, event: Event): 
 
 CustomCommand.pointerdown = PluginManager.pointerdown;
 
-CustomCommand.scriptChange = function (event: Event & { changedMeta: any }): void {
+CustomCommand.scriptChange = function (event: Event & { changedMeta: unknown }): void {
 	if (CustomCommand.meta === event.changedMeta) {
 		CustomCommand.loadOverview!();
 	}
@@ -383,9 +390,9 @@ CustomCommand.listPopup = function (
 	const list = CustomCommand.list;
 	const item = event.value;
 	const selected = !!item;
-	const pastable = (Clipboard as any).has('yami.data.customCommand');
+	const pastable = Clipboard.has('yami.data.customCommand');
 	const deletable = selected;
-	const get = Local.createGetter('menuCustomCommandList');
+	const get = Local.createGetter!('menuCustomCommandList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -474,7 +481,7 @@ CustomCommand.confirm = function (this: CustomCommandShape, event: Event): void 
 	Window.close!('command');
 }.bind(CustomCommand);
 
-CustomCommand.apply = function (this: CustomCommandShape, event: any): void {
+CustomCommand.apply = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
 		this.changed = false;
 
@@ -509,7 +516,7 @@ CustomCommand.list_edit = function (this: CustomCommandList, item: CustomCommand
 	);
 };
 
-CustomCommand.list_insert = function (this: CustomCommandList, dItem?: any): void {
+CustomCommand.list_insert = function (this: CustomCommandList, dItem?: unknown): void {
 	getSelectorInstance()?.open?.(
 		{
 			filter: 'script',
@@ -535,12 +542,12 @@ CustomCommand.list_toggle = function (
 
 CustomCommand.list_copy = function (item: CustomCommandData | null): void {
 	if (item) {
-		(Clipboard as any).write('yami.data.customCommand', item);
+		Clipboard.write('yami.data.customCommand', item);
 	}
 };
 
-CustomCommand.list_paste = function (this: CustomCommandList, dItem?: any): void {
-	const copy = (Clipboard as any).read('yami.data.customCommand');
+CustomCommand.list_paste = function (this: CustomCommandList, dItem?: unknown): void {
+	const copy = Clipboard.read('yami.data.customCommand');
 	if (copy) {
 		this.addNodeTo(copy, dItem);
 	}
@@ -548,7 +555,7 @@ CustomCommand.list_paste = function (this: CustomCommandList, dItem?: any): void
 
 CustomCommand.list_saveSelection = function (this: CustomCommandList): void {
 	const { commands } = Data;
-	if ((commands as any).selection === undefined) {
+	if (commands.selection === undefined) {
 		Object.defineProperty(commands, 'selection', {
 			writable: true,
 			value: ''
@@ -556,12 +563,12 @@ CustomCommand.list_saveSelection = function (this: CustomCommandList): void {
 	}
 	const selection = this.read();
 	if (selection) {
-		(commands as any).selection = selection.id;
+		commands.selection = selection.id;
 	}
 };
 
 CustomCommand.list_restoreSelection = function (this: CustomCommandList): void {
-	const id = (Data.commands as any).selection;
+	const id = Data.commands.selection;
 	const item = CustomCommand.getItemById!(id) ?? this.data[0];
 	this.select(item);
 	this.update();

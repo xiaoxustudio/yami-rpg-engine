@@ -21,7 +21,7 @@ Scene.createDefaultAnimation = (function IIFE() {
 		texture.base.protected = true;
 	});
 
-	return function (this: any, target: any) {
+	return function (this: any, target: object) {
 		if (!DefaultPlayer) {
 			const motion = Inspector.animMotion.create('ffffffffffffffff');
 			const data = { mode: '1-dir', sprites: [], motions: [motion] };
@@ -37,7 +37,7 @@ Scene.createDefaultAnimation = (function IIFE() {
 			frames[1].end = 2;
 			frames[1].spriteY = 1;
 			DefaultPlayer = class DefaultPlayer extends Animation.Player {
-				constructor(target: any) {
+				constructor(target: object) {
 					super(data);
 					this.target = target;
 					this.setMotion!(motion.id);

@@ -8,7 +8,7 @@ import { Token } from './mark-string-manager.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Local } from '@/tools/localization.ts';
 
-interface SwitchConditionData {
+export interface SwitchConditionData {
 	type:
 		| 'none'
 		| 'boolean'
@@ -42,12 +42,12 @@ interface SwitchConditionShape {
 }
 
 export const SwitchCondition: SwitchConditionShape = {
-	target: null as any,
-	initialize: null as any,
-	parse: null as any,
-	open: null as any,
-	save: null as any,
-	confirm: null as any
+	target: null,
+	initialize: null,
+	parse: null,
+	open: null,
+	save: null,
+	confirm: null
 };
 
 SwitchCondition.initialize = function (this: any): void {

@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue";
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from "@app/stores/inspector";
@@ -25,7 +26,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const onWrite = (value: any) => {
-	(window as any).Command?.cases?.removeAnimationComponent?.writeHandler?.({ value });
+	Command?.cases?.removeAnimationComponent?.writeHandler?.({ value });
 };
 
 const local = useLocalStore();

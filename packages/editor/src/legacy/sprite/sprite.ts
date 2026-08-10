@@ -6,95 +6,188 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Palette } from '@/palette/palette.ts';
+import type { EditorProjectShape } from '@app/stores/editor';
 
-export const Sprite = {
+interface SpriteScreen extends HTMLElement {
+	rawScrollLeft: number;
+	rawScrollTop: number;
+}
+
+interface SpriteMarquee extends HTMLElement {
+	visible: boolean;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	scaleX?: number;
+	scaleY?: number;
+	select(...args: unknown[]): void;
+}
+
+interface SpriteModule {
+	state: 'closed' | 'open' | 'suspended' | 'loading';
+	body: HTMLElement;
+	window: HTMLElement;
+	canvas: HTMLCanvasElement & { dpr?: number };
+	context: CanvasRenderingContext2D;
+	info: HTMLElement;
+	slider: HTMLElement;
+	screen: SpriteScreen;
+	marquee: SpriteMarquee;
+	symbol: symbol | null;
+	target: { spriteX: number; spriteY: number } | null;
+	hframes: number;
+	vframes: number;
+	image: CanvasImageSource | null;
+	dragging: PointerEvent | null;
+	showGrid: boolean;
+	gridColor: string;
+	zoom: number | null;
+	zoomTimer: Timer;
+	scale: number;
+	scaleX: number;
+	scaleY: number;
+	scaledUnitWidth: number;
+	scaledUnitHeight: number;
+	unitWidth: number;
+	unitHeight: number;
+	outerWidth: number;
+	outerHeight: number;
+	screenWidth: number;
+	screenHeight: number;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
+	centerOffsetX: number;
+	centerOffsetY: number;
+	paddingLeft: number;
+	paddingTop: number;
+	centerX: number;
+	centerY: number;
+	initialize: () => void;
+	open: (target: { spriteX: number; spriteY: number } | null) => void;
+	close: () => void;
+	suspend: () => void;
+	resume: () => void;
+	setZoom: (zoom: number) => void;
+	loadImage: () => Promise<void>;
+	updateTargetInfo: () => void;
+	resize: () => void;
+	getUnitCoords: (event: PointerEvent) => { x: number; y: number };
+	updateCamera: (x?: number, y?: number) => void;
+	updateTransform: () => void;
+	updateBackground: () => void;
+	drawSprite: () => void;
+	drawSpriteLayer: () => void;
+	drawGridLayer: () => void;
+	selectSprite: (hindex: number, vindex: number) => void;
+	scrollToSelection: () => void;
+	requestRendering: () => void;
+	renderingFunction: () => void;
+	stopRendering: () => void;
+	saveToProject: (project: EditorProjectShape) => void;
+	loadFromProject: (project: EditorProjectShape) => void;
+	windowResize: (event: Event) => void;
+	themechange: (event: Event) => void;
+	zoomFocus: (event: Event) => void;
+	zoomInput: (event: Event) => void;
+	screenKeydown: (event: KeyboardEvent) => void;
+	screenWheel: (event: WheelEvent) => void;
+	screenUserscroll: (event: Event) => void;
+	marqueePointerdown: (event: PointerEvent & { dragKey?: boolean }) => void;
+	pointerup: (event: PointerEvent) => void;
+	pointermove: (event: PointerEvent) => void;
+}
+
+export const Sprite: SpriteModule = {
 	state: 'closed',
-	body: null as any,
-	window: null as any,
-	canvas: null as any,
-	context: null as any,
-	info: null as any,
-	slider: null as any,
-	screen: null as any,
-	marquee: null as any,
-	symbol: null as any,
-	target: null as any,
-	hframes: null as any,
-	vframes: null as any,
-	image: null as any,
-	dragging: null as any,
+	body: null as unknown as HTMLElement,
+	window: null as unknown as HTMLElement,
+	canvas: null as unknown as HTMLCanvasElement & { dpr?: number },
+	context: null as unknown as CanvasRenderingContext2D,
+	info: null as unknown as HTMLElement,
+	slider: null as unknown as HTMLElement,
+	screen: null as unknown as SpriteScreen,
+	marquee: null as unknown as SpriteMarquee,
+	symbol: null,
+	target: null,
+	hframes: null as unknown as number,
+	vframes: null as unknown as number,
+	image: null,
+	dragging: null,
 	showGrid: true,
-	gridColor: null as any,
-	zoom: null as any,
-	zoomTimer: null as any,
-	scale: null as any,
-	scaleX: null as any,
-	scaleY: null as any,
-	scaledUnitWidth: null as any,
-	scaledUnitHeight: null as any,
-	unitWidth: null as any,
-	unitHeight: null as any,
-	outerWidth: null as any,
-	outerHeight: null as any,
-	screenWidth: null as any,
-	screenHeight: null as any,
-	scrollLeft: null as any,
-	scrollTop: null as any,
-	scrollRight: null as any,
-	scrollBottom: null as any,
-	centerOffsetX: null as any,
-	centerOffsetY: null as any,
-	paddingLeft: null as any,
-	paddingTop: null as any,
-	centerX: null as any,
-	centerY: null as any,
-	initialize: null as any,
-	open: null as any,
-	close: null as any,
-	suspend: null as any,
-	resume: null as any,
-	setZoom: null as any,
-	loadImage: null as any,
-	updateTargetInfo: null as any,
-	resize: null as any,
-	getUnitCoords: null as any,
-	updateCamera: null as any,
-	updateTransform: null as any,
-	updateBackground: null as any,
-	drawSprite: null as any,
-	drawSpriteLayer: null as any,
-	drawGridLayer: null as any,
-	selectSprite: null as any,
-	scrollToSelection: null as any,
-	requestRendering: null as any,
-	renderingFunction: null as any,
-	stopRendering: null as any,
-	saveToProject: null as any,
-	loadFromProject: null as any,
-	windowResize: null as any,
-	themechange: null as any,
-	zoomFocus: null as any,
-	zoomInput: null as any,
-	screenKeydown: null as any,
-	screenWheel: null as any,
-	screenUserscroll: null as any,
-	marqueePointerdown: null as any,
-	pointerup: null as any,
-	pointermove: null as any
+	gridColor: null as unknown as string,
+	zoom: null,
+	zoomTimer: null as unknown as Timer,
+	scale: null as unknown as number,
+	scaleX: null as unknown as number,
+	scaleY: null as unknown as number,
+	scaledUnitWidth: null as unknown as number,
+	scaledUnitHeight: null as unknown as number,
+	unitWidth: null as unknown as number,
+	unitHeight: null as unknown as number,
+	outerWidth: null as unknown as number,
+	outerHeight: null as unknown as number,
+	screenWidth: null as unknown as number,
+	screenHeight: null as unknown as number,
+	scrollLeft: null as unknown as number,
+	scrollTop: null as unknown as number,
+	scrollRight: null as unknown as number,
+	scrollBottom: null as unknown as number,
+	centerOffsetX: null as unknown as number,
+	centerOffsetY: null as unknown as number,
+	paddingLeft: null as unknown as number,
+	paddingTop: null as unknown as number,
+	centerX: null as unknown as number,
+	centerY: null as unknown as number,
+	initialize: null as unknown as () => void,
+	open: null as unknown as (target: { spriteX: number; spriteY: number } | null) => void,
+	close: null as unknown as () => void,
+	suspend: null as unknown as () => void,
+	resume: null as unknown as () => void,
+	setZoom: null as unknown as (zoom: number) => void,
+	loadImage: null as unknown as () => Promise<void>,
+	updateTargetInfo: null as unknown as () => void,
+	resize: null as unknown as () => void,
+	getUnitCoords: null as unknown as (event: PointerEvent) => { x: number; y: number },
+	updateCamera: null as unknown as (x?: number, y?: number) => void,
+	updateTransform: null as unknown as () => void,
+	updateBackground: Palette?.updateBackground ?? (() => {}),
+	drawSprite: null as unknown as () => void,
+	drawSpriteLayer: null as unknown as () => void,
+	drawGridLayer: null as unknown as () => void,
+	selectSprite: null as unknown as (hindex: number, vindex: number) => void,
+	scrollToSelection: null as unknown as () => void,
+	requestRendering: null as unknown as () => void,
+	renderingFunction: null as unknown as () => void,
+	stopRendering: null as unknown as () => void,
+	saveToProject: null as unknown as (project: EditorProjectShape) => void,
+	loadFromProject: null as unknown as (project: EditorProjectShape) => void,
+	windowResize: null as unknown as (event: Event) => void,
+	themechange: null as unknown as (event: Event) => void,
+	zoomFocus: null as unknown as (event: Event) => void,
+	zoomInput: null as unknown as (event: Event) => void,
+	screenKeydown: null as unknown as (event: KeyboardEvent) => void,
+	screenWheel: null as unknown as (event: WheelEvent) => void,
+	screenUserscroll: null as unknown as (event: Event) => void,
+	marqueePointerdown: null as unknown as (event: PointerEvent & { dragKey?: boolean }) => void,
+	pointerup: null as unknown as (event: PointerEvent) => void,
+	pointermove: null as unknown as (event: PointerEvent) => void
 };
 
-Sprite.initialize = function () {
+Sprite.initialize = function (this: typeof Sprite) {
 	this.body = $('#sprite-body');
 	this.window = $('#sprite-frame');
 	hide(this.window);
-	this.canvas = $('#sprite-canvas');
+	this.canvas = $('#sprite-canvas') as HTMLCanvasElement & { dpr?: number };
 	this.info = $('#sprite-info');
 	this.slider = $('#sprite-zoom');
-	this.screen = $('#sprite-screen');
-	this.marquee = $('#sprite-marquee');
+	this.screen = $('#sprite-screen') as SpriteScreen;
+	this.marquee = $('#sprite-marquee') as SpriteMarquee;
 	addScrollbars(this.screen);
 
-	this.context = this.canvas.getContext('2d', { desynchronized: true });
+	this.context = this.canvas.getContext('2d', { desynchronized: true })!;
 
 	this.zoomTimer = new Timer({
 		duration: 80,
@@ -119,7 +212,7 @@ Sprite.initialize = function () {
 	on(this.screen, 'userscroll', this.screenUserscroll);
 };
 
-Sprite.open = function (target: any) {
+Sprite.open = function (this: typeof Sprite, target: { spriteX: number; spriteY: number } | null) {
 	if (this.target !== target) {
 		this.close();
 		if (Animation.timelineMarquee.layer.sprite) {
@@ -130,7 +223,7 @@ Sprite.open = function (target: any) {
 	}
 };
 
-Sprite.close = function () {
+Sprite.close = function (this: typeof Sprite) {
 	if (this.state !== 'closed') {
 		this.state = 'closed';
 		this.symbol = null;
@@ -143,7 +236,7 @@ Sprite.close = function () {
 	}
 };
 
-Sprite.suspend = function () {
+Sprite.suspend = function (this: typeof Sprite) {
 	if (this.state === 'open') {
 		this.state = 'suspended';
 		hide(this.info);
@@ -152,7 +245,7 @@ Sprite.suspend = function () {
 	}
 };
 
-Sprite.resume = function () {
+Sprite.resume = function (this: typeof Sprite) {
 	if (this.state === 'suspended') {
 		this.state = 'open';
 		show(this.info);
@@ -163,7 +256,7 @@ Sprite.resume = function () {
 };
 
 Sprite.setZoom = (function IIFE() {
-	return function (this: typeof Sprite, zoom: any) {
+	return function (this: typeof Sprite, zoom: number) {
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -200,7 +293,7 @@ Sprite.setZoom = (function IIFE() {
 	};
 })();
 
-Sprite.loadImage = async function () {
+Sprite.loadImage = async function (this: typeof Sprite) {
 	const symbol = (this.symbol = Symbol());
 	const name = Animation.timelineMarquee.layer.sprite;
 	let texture = Animation.player.textures[name];
@@ -229,7 +322,7 @@ Sprite.loadImage = async function () {
 	}
 };
 
-Sprite.updateTargetInfo = function () {
+Sprite.updateTargetInfo = function (this: typeof Sprite) {
 	const { target } = this;
 	if (target) {
 		const x = target.spriteX;
@@ -240,7 +333,7 @@ Sprite.updateTargetInfo = function () {
 	}
 };
 
-Sprite.resize = function () {
+Sprite.resize = function (this: typeof Sprite) {
 	if (this.state === 'open') {
 		const scale = this.scale;
 		const scaledUnitWidth = Math.round(this.unitWidth * scale);
@@ -280,7 +373,7 @@ Sprite.resize = function () {
 		if (this.marquee.visible) {
 			this.marquee.select();
 		} else {
-			const target = this.target;
+			const target = this.target!;
 			const hindex = target.spriteX;
 			const vindex = target.spriteY;
 			this.centerX = hindex + 0.5;
@@ -313,7 +406,7 @@ Sprite.resize = function () {
 
 Sprite.getUnitCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: typeof Sprite, event: any) {
+	return function (this: typeof Sprite, event: PointerEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const suw = this.scaledUnitWidth;
 		const suh = this.scaledUnitHeight;
@@ -339,7 +432,7 @@ Sprite.updateCamera = function (this: typeof Sprite, x = this.centerX, y = this.
 	screen.scrollTop = (scrollY - (this.screenHeight >> 1) + toleranceY) / dpr;
 };
 
-Sprite.updateTransform = function () {
+Sprite.updateTransform = function (this: typeof Sprite) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const left = Math.roundTo(screen.scrollLeft * dpr, 4);
@@ -359,7 +452,7 @@ Sprite.updateTransform = function () {
 
 Sprite.updateBackground = Palette?.updateBackground ?? (() => {});
 
-Sprite.drawSprite = function () {
+Sprite.drawSprite = function (this: typeof Sprite) {
 	if (this.body.clientWidth > 0 && this.canvas.width !== 0 && this.canvas.height !== 0) {
 		const context = this.context;
 		const sl = this.scrollLeft;
@@ -373,7 +466,7 @@ Sprite.drawSprite = function () {
 	}
 };
 
-Sprite.drawSpriteLayer = function () {
+Sprite.drawSpriteLayer = function (this: typeof Sprite) {
 	const context = this.context;
 	const image = this.image;
 	const scaleX = this.scaleX;
@@ -386,10 +479,10 @@ Sprite.drawSpriteLayer = function () {
 	const sy = dy / scaleY;
 	const sw = dw / scaleX;
 	const sh = dh / scaleY;
-	context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+	context.drawImage(image!, sx, sy, sw, sh, dx, dy, dw, dh);
 };
 
-Sprite.drawGridLayer = function () {
+Sprite.drawGridLayer = function (this: typeof Sprite) {
 	if (this.showGrid) {
 		const context = this.context;
 		const sl = this.scrollLeft;
@@ -417,7 +510,7 @@ Sprite.drawGridLayer = function () {
 	}
 };
 
-Sprite.selectSprite = function (hindex: any, vindex: any) {
+Sprite.selectSprite = function (this: typeof Sprite, hindex: number, vindex: number) {
 	const target = this.target;
 	if (target !== null) {
 		this.marquee.select(hindex, vindex, 1, 1);
@@ -451,7 +544,7 @@ Sprite.selectSprite = function (hindex: any, vindex: any) {
 	}
 };
 
-Sprite.scrollToSelection = function () {
+Sprite.scrollToSelection = function (this: typeof Sprite) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const suw = this.scaledUnitWidth;
@@ -479,7 +572,7 @@ Sprite.scrollToSelection = function () {
 	}
 };
 
-Sprite.requestRendering = function () {
+Sprite.requestRendering = function (this: typeof Sprite) {
 	if (this.state === 'open') {
 		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
@@ -489,11 +582,11 @@ Sprite.renderingFunction = function () {
 	Sprite.drawSprite();
 };
 
-Sprite.stopRendering = function () {
+Sprite.stopRendering = function (this: typeof Sprite) {
 	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
 };
 
-Sprite.saveToProject = function (project: any) {
+Sprite.saveToProject = function (this: typeof Sprite, project: EditorProjectShape) {
 	const { sprite } = project;
 	const zoom = this.zoom;
 	if (zoom !== null) {
@@ -501,12 +594,12 @@ Sprite.saveToProject = function (project: any) {
 	}
 };
 
-Sprite.loadFromProject = function (project: any) {
+Sprite.loadFromProject = function (this: typeof Sprite, project: EditorProjectShape) {
 	const { sprite } = project;
 	this.setZoom(sprite.zoom);
 };
 
-Sprite.windowResize = function (this: typeof Sprite, event: any) {
+Sprite.windowResize = function (this: typeof Sprite, event: Event) {
 	if (this.body.clientWidth === 0) {
 		return this.suspend();
 	}
@@ -521,7 +614,7 @@ Sprite.windowResize = function (this: typeof Sprite, event: any) {
 	}
 }.bind(Sprite);
 
-Sprite.themechange = function (this: typeof Sprite, event: any) {
+Sprite.themechange = function (this: typeof Sprite, event: Event) {
 	switch (event.value) {
 		case 'light':
 			this.gridColor = 'rgba(0, 0, 0, 0.5)';
@@ -533,15 +626,15 @@ Sprite.themechange = function (this: typeof Sprite, event: any) {
 	this.requestRendering();
 }.bind(Sprite);
 
-Sprite.zoomFocus = function (event: any) {
+Sprite.zoomFocus = function (event: Event) {
 	Sprite.screen.focus();
 };
 
-Sprite.zoomInput = function (this: any, event: any) {
+Sprite.zoomInput = function (this: HTMLElement, event: Event) {
 	Sprite.setZoom(read(this));
 };
 
-Sprite.screenKeydown = function (event: any) {
+Sprite.screenKeydown = function (event: KeyboardEvent) {
 	if (Sprite.state === 'open' && Sprite.dragging === null) {
 		switch (event.code) {
 			case 'ArrowLeft':
@@ -575,11 +668,11 @@ Sprite.screenKeydown = function (event: any) {
 			}
 			case 'Minus':
 			case 'NumpadSubtract':
-				Sprite.setZoom(Sprite.zoom - 1);
+				Sprite.setZoom(Sprite.zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				Sprite.setZoom(Sprite.zoom + 1);
+				Sprite.setZoom(Sprite.zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -589,14 +682,14 @@ Sprite.screenKeydown = function (event: any) {
 	}
 };
 
-Sprite.screenWheel = function (this: typeof Sprite, event: any) {
+Sprite.screenWheel = function (this: typeof Sprite, event: WheelEvent) {
 	event.preventDefault();
 	if (event.deltaY !== 0 && this.dragging === null) {
-		this.setZoom(this.zoom + (event.deltaY > 0 ? -1 : 1));
+		this.setZoom(this.zoom! + (event.deltaY > 0 ? -1 : 1));
 	}
 }.bind(Sprite);
 
-Sprite.screenUserscroll = function (this: typeof Sprite, event: any) {
+Sprite.screenUserscroll = function (this: typeof Sprite, event: Event) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -607,9 +700,12 @@ Sprite.screenUserscroll = function (this: typeof Sprite, event: any) {
 	}
 }.bind(Sprite);
 
-Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
+Sprite.marqueePointerdown = function (
+	this: typeof Sprite,
+	event: PointerEvent & { dragKey?: boolean }
+) {
 	// 优先触发检查器输入框的blur事件
-	if ((Inspector.manager as any).focusing) {
+	if (Inspector.manager.focusing) {
 		document.activeElement!.blur();
 	}
 	if (this.dragging) {
@@ -622,7 +718,7 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 				event.mode = 'scroll';
 				event.scrollLeft = this.screen.scrollLeft;
 				event.scrollTop = this.screen.scrollTop;
-				(Cursor.open as any)('cursor-grab');
+				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
 				return;
@@ -639,20 +735,20 @@ Sprite.marqueePointerdown = function (this: typeof Sprite, event: any) {
 			event.mode = 'scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
-			(Cursor.open as any)('cursor-grab');
+			Cursor.open('cursor-grab');
 			window.addEventListener('pointerup', this.pointerup);
 			window.addEventListener('pointermove', this.pointermove);
 			break;
 	}
 }.bind(Sprite);
 
-Sprite.pointerup = function (this: typeof Sprite, event: any) {
+Sprite.pointerup = function (this: typeof Sprite, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
 			case 'scroll':
 				this.screen.endScrolling();
-				(Cursor.close as any)('cursor-grab');
+				Cursor.close('cursor-grab');
 				break;
 		}
 		this.dragging = null;
@@ -661,7 +757,7 @@ Sprite.pointerup = function (this: typeof Sprite, event: any) {
 	}
 }.bind(Sprite);
 
-Sprite.pointermove = function (this: typeof Sprite, event: any) {
+Sprite.pointermove = function (this: typeof Sprite, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {

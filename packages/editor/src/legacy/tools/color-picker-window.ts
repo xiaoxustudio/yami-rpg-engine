@@ -16,47 +16,55 @@ import { Data } from '@/data/data-object.ts';
 import { Local } from './localization.ts';
 import { Rename } from './rename-window.ts';
 
-export const Color = {
-	target: null as any,
-	dragging: null as any,
-	paletteX: null as any,
-	paletteY: null as any,
-	pillarY: null as any,
-	indexEnabled: null as any,
-	initialize: null as any,
-	open: null as any,
-	drawPalette: null as any,
-	drawPillar: null as any,
-	drawViewer: null as any,
-	setPaletteCursor: null as any,
-	setPillarCursor: null as any,
-	getRGBFromPalette: null as any,
-	getRGBFromPillar: null as any,
-	getRGBAFromHex: null as any,
-	getHexFromRGBA: null as any,
-	getCSSColorFromRGBA: null as any,
-	writeRGBAToInputs: null as any,
-	readRGBAFromInputs: null as any,
-	loadIndexedColors: null as any,
-	simplifyHexColor: null as any,
-	windowClosed: null as any,
-	palettePointerdown: null as any,
-	pillarPointerdown: null as any,
-	indexedColorInput: null as any,
-	indexedColorPointerdown: null as any,
-	pointerup: null as any,
-	pointermove: null as any,
-	hexBeforeinput: null as any,
-	hexInput: null as any,
-	rgbaInput: null as any,
-	confirm: null as any
+type ColorTarget = {
+	input?: (value: number | string) => void;
 };
 
-Color.initialize = function (this: any) {
+type ColorDrag = PointerEvent & {
+	mode: string;
+};
+
+export const Color = {
+	target: null as unknown as ColorTarget | null,
+	dragging: null as unknown as ColorDrag | null,
+	paletteX: null as unknown as number,
+	paletteY: null as unknown as number,
+	pillarY: null as unknown as number,
+	indexEnabled: null as unknown as boolean,
+	initialize: null as unknown as (...args: unknown[]) => any,
+	open: null as unknown as (...args: unknown[]) => any,
+	drawPalette: null as unknown as (...args: unknown[]) => any,
+	drawPillar: null as unknown as (...args: unknown[]) => any,
+	drawViewer: null as unknown as (...args: unknown[]) => any,
+	setPaletteCursor: null as unknown as (...args: unknown[]) => any,
+	setPillarCursor: null as unknown as (...args: unknown[]) => any,
+	getRGBFromPalette: null as unknown as (...args: unknown[]) => any,
+	getRGBFromPillar: null as unknown as (...args: unknown[]) => any,
+	getRGBAFromHex: null as unknown as (...args: unknown[]) => any,
+	getHexFromRGBA: null as unknown as (...args: unknown[]) => any,
+	getCSSColorFromRGBA: null as unknown as (...args: unknown[]) => any,
+	writeRGBAToInputs: null as unknown as (...args: unknown[]) => any,
+	readRGBAFromInputs: null as unknown as (...args: unknown[]) => any,
+	loadIndexedColors: null as unknown as (...args: unknown[]) => any,
+	simplifyHexColor: null as unknown as (...args: unknown[]) => any,
+	windowClosed: null as unknown as (event: Event) => void,
+	palettePointerdown: null as unknown as (event: ColorDrag) => void,
+	pillarPointerdown: null as unknown as (event: ColorDrag) => void,
+	indexedColorInput: null as unknown as (event: Event & { value?: string }) => void,
+	indexedColorPointerdown: null as unknown as (event: PointerEvent) => void,
+	pointerup: null as unknown as (event: PointerEvent) => void,
+	pointermove: null as unknown as (event: PointerEvent) => void,
+	hexBeforeinput: null as unknown as (event: InputEvent) => void,
+	hexInput: null as unknown as (event: Event) => void,
+	rgbaInput: null as unknown as (event: Event) => void,
+	confirm: null as unknown as (event: Event) => void
+};
+
+Color.initialize = function (this: typeof Color) {
 	if (!$('#color-hex')) return;
 	$('#color-hex').setMaxLength(8);
 
-	const colorIndex = $('#color-index') as any;
+	const colorIndex = $('#color-index') as HTMLElement & Record<'cancelable', boolean>;
 	if (colorIndex) colorIndex.cancelable = true;
 
 	$('#color')?.addEventListener('closed', this.windowClosed);
@@ -74,7 +82,9 @@ Color.initialize = function (this: any) {
 	on($('#color-confirm'), 'click', this.confirm);
 };
 
-Color.open = function (this: any, target: any, indexEnabled: any = false) {
+Color.open = function (this: typeof Color, ...args: unknown[]) {
+	const target = args[0] as ColorTarget;
+	const indexEnabled = (args[1] as boolean | undefined) ?? false;
 	this.target = target;
 	this.indexEnabled = indexEnabled;
 	Window.open!('color');
@@ -97,7 +107,7 @@ Color.open = function (this: any, target: any, indexEnabled: any = false) {
 	getFocus($('#color-hex'), 'all');
 };
 
-Color.drawPalette = function (this: any) {
+Color.drawPalette = function (this: typeof Color) {
 	const canvas = $('#color-palette-canvas');
 	if (!canvas.initialized) {
 		canvas.initialized = true;
@@ -144,7 +154,8 @@ Color.drawPalette = function (this: any) {
 	}
 };
 
-Color.drawPillar = function (this: any, [r, g, b]: any) {
+Color.drawPillar = function (this: typeof Color, ...args: unknown[]) {
+	const [r, g, b] = args[0] as [number, number, number];
 	const canvas = $('#color-pillar-canvas');
 	const context = canvas.getContext('2d');
 	const gradient = context.createLinearGradient(0, 0.5, 0, 255.5);
@@ -154,11 +165,14 @@ Color.drawPillar = function (this: any, [r, g, b]: any) {
 	context.fillRect(0, 0, 20, 256);
 };
 
-Color.drawViewer = function (this: any, [r, g, b, a]: any) {
+Color.drawViewer = function (this: typeof Color, ...args: unknown[]) {
+	const [r, g, b, a] = args[0] as [number, number, number, number];
 	$('#color-viewer').style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
-Color.setPaletteCursor = function (this: any, x: any, y: any) {
+Color.setPaletteCursor = function (this: typeof Color, ...args: unknown[]) {
+	const x = args[0] as number;
+	const y = args[1] as number;
 	const cursor = $('#color-palette-cursor');
 	this.paletteX = x;
 	this.paletteY = y;
@@ -166,13 +180,14 @@ Color.setPaletteCursor = function (this: any, x: any, y: any) {
 	cursor.style.top = `${y - 5}px`;
 };
 
-Color.setPillarCursor = function (this: any, y: any) {
+Color.setPillarCursor = function (this: typeof Color, ...args: unknown[]) {
+	const y = args[0] as number;
 	const cursor = $('#color-pillar-cursor');
 	this.pillarY = y;
 	cursor.style.top = `${y}px`;
 };
 
-Color.getRGBFromPalette = function (this: any) {
+Color.getRGBFromPalette = function (this: typeof Color) {
 	const x = Math.round(this.paletteX);
 	const y = Math.round(this.paletteY);
 	const canvas = $('#color-palette-canvas');
@@ -181,7 +196,7 @@ Color.getRGBFromPalette = function (this: any) {
 	return [r, g, b];
 };
 
-Color.getRGBFromPillar = function (this: any) {
+Color.getRGBFromPillar = function (this: typeof Color) {
 	const y = Math.round(this.pillarY);
 	const canvas = $('#color-pillar-canvas');
 	const context = canvas.getContext('2d');
@@ -189,7 +204,8 @@ Color.getRGBFromPillar = function (this: any) {
 	return [r, g, b];
 };
 
-Color.getRGBAFromHex = function (this: any, hex: any) {
+Color.getRGBAFromHex = function (this: typeof Color, ...args: unknown[]) {
+	const hex = args[0] as string;
 	const r = parseInt(hex.slice(0, 2) || '00', 16);
 	const g = parseInt(hex.slice(2, 4) || '00', 16);
 	const b = parseInt(hex.slice(4, 6) || '00', 16);
@@ -197,7 +213,8 @@ Color.getRGBAFromHex = function (this: any, hex: any) {
 	return [r, g, b, a];
 };
 
-Color.getHexFromRGBA = function (this: any, rgba: any) {
+Color.getHexFromRGBA = function (this: typeof Color, ...args: unknown[]) {
+	const rgba = args[0] as [number, number, number, number];
 	const r = rgba[0].toString(16).padStart(2, '0');
 	const g = rgba[1].toString(16).padStart(2, '0');
 	const b = rgba[2].toString(16).padStart(2, '0');
@@ -205,12 +222,14 @@ Color.getHexFromRGBA = function (this: any, rgba: any) {
 	return `${r}${g}${b}${a}`;
 };
 
-Color.getCSSColorFromRGBA = function (this: any, rgba: any) {
+Color.getCSSColorFromRGBA = function (this: typeof Color, ...args: unknown[]) {
+	const rgba = args[0] as [number, number, number, number];
 	const [r, g, b, a] = rgba;
 	return `rgba(${r}, ${g}, ${b}, ${a / 255})`;
 };
 
-Color.writeRGBAToInputs = function (this: any, [r, g, b, a]: any) {
+Color.writeRGBAToInputs = function (this: typeof Color, ...args: unknown[]) {
+	const [r, g, b, a] = args[0] as [number, number, number, number];
 	const writer = getElementWriter('color');
 	const hex = this.getHexFromRGBA([r, g, b, a]);
 	writer('hex', this.simplifyHexColor(hex));
@@ -220,7 +239,7 @@ Color.writeRGBAToInputs = function (this: any, [r, g, b, a]: any) {
 	writer('a', a);
 };
 
-Color.readRGBAFromInputs = function (this: any) {
+Color.readRGBAFromInputs = function (this: typeof Color) {
 	const reader = getElementReader('color');
 	const r = reader('r');
 	const g = reader('g');
@@ -229,7 +248,7 @@ Color.readRGBAFromInputs = function (this: any) {
 	return [r, g, b, a];
 };
 
-Color.loadIndexedColors = function (this: any) {
+Color.loadIndexedColors = function (this: typeof Color) {
 	const radios = document.getElementsByName('color-index');
 	const colors = Data.config.indexedColors;
 	const length = colors.length;
@@ -245,19 +264,20 @@ Color.loadIndexedColors = function (this: any) {
 
 Color.simplifyHexColor = (function IIFE() {
 	const regexp = /^([0-9a-f]{6})ff$/i;
-	return function (this: any, hex: any) {
+	return function (this: typeof Color, ...args: unknown[]) {
+		const hex = args[0] as string;
 		return hex.replace(regexp, '$1');
 	};
 })();
 
-Color.windowClosed = function (this: any, event: any) {
+Color.windowClosed = function (this: typeof Color, event: Event) {
 	$('#color-index').reset();
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
 }.bind(Color);
 
-Color.palettePointerdown = function (this: any, event: any) {
+Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
 	switch (event.button) {
 		case 0:
 		case -1: {
@@ -286,7 +306,7 @@ Color.palettePointerdown = function (this: any, event: any) {
 	}
 }.bind(Color);
 
-Color.pillarPointerdown = function (this: any, event: any) {
+Color.pillarPointerdown = function (this: typeof Color, event: ColorDrag) {
 	switch (event.button) {
 		case 0:
 		case -1: {
@@ -312,7 +332,7 @@ Color.pillarPointerdown = function (this: any, event: any) {
 	}
 }.bind(Color);
 
-Color.indexedColorInput = function (this: any, event: any) {
+Color.indexedColorInput = function (this: typeof Color, event: Event & { value?: string }) {
 	const index = event.value;
 	const hex = Data.config.indexedColors[index].code;
 	const rgba = this.getRGBAFromHex(hex);
@@ -321,17 +341,17 @@ Color.indexedColorInput = function (this: any, event: any) {
 	this.writeRGBAToInputs(rgba);
 	this.drawViewer(rgba);
 	if (!this.indexEnabled) {
-		event.target?.reset?.();
+		(event.target as { reset?: () => void })?.reset?.();
 	}
 }.bind(Color);
 
-Color.indexedColorPointerdown = function (this: any, event: any) {
+Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEvent) {
 	switch (event.button) {
 		case 2: {
-			const element = event.target;
+			const element = event.target as HTMLElement & { dataValue?: string };
 			const index = element.dataValue;
 			const indexedColor = Data.config.indexedColors[index];
-			const get = Local.createGetter('menuIndexedColor');
+			const get = Local.createGetter!('menuIndexedColor');
 			Menu.popup(
 				{
 					x: event.clientX,
@@ -355,7 +375,7 @@ Color.indexedColorPointerdown = function (this: any, event: any) {
 					{
 						label: get('rename'),
 						click: () => {
-							Rename.open(indexedColor.name, (name: any) => {
+							Rename.open(indexedColor.name, (name: string) => {
 								indexedColor.name = name;
 								setTooltip(element, name);
 								File.planToSave!(Data.manifest.project.config);
@@ -369,7 +389,7 @@ Color.indexedColorPointerdown = function (this: any, event: any) {
 	}
 }.bind(Color);
 
-Color.pointerup = function (this: any, event: any) {
+Color.pointerup = function (this: typeof Color, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		this.dragging = null;
@@ -378,7 +398,7 @@ Color.pointerup = function (this: any, event: any) {
 	}
 }.bind(Color);
 
-Color.pointermove = function (this: any, event: any) {
+Color.pointermove = function (this: typeof Color, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -390,7 +410,7 @@ Color.pointermove = function (this: any, event: any) {
 	}
 }.bind(Color);
 
-Color.hexBeforeinput = function (this: any, event: any) {
+Color.hexBeforeinput = function (this: typeof Color, event: InputEvent) {
 	if (event.inputType === 'insertText' && typeof event.data === 'string') {
 		const regexp = /[^0-9a-f]/i;
 		if (regexp.test(event.data)) {
@@ -400,7 +420,7 @@ Color.hexBeforeinput = function (this: any, event: any) {
 	}
 };
 
-Color.hexInput = function (this: any, event: any) {
+Color.hexInput = function (this: typeof Color, event: Event) {
 	const reader = getElementReader('color');
 	const writer = getElementWriter('color');
 	const oldHex = reader('hex');
@@ -419,7 +439,7 @@ Color.hexInput = function (this: any, event: any) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.rgbaInput = function (this: any, event: any) {
+Color.rgbaInput = function (this: typeof Color, event: Event) {
 	const reader = getElementReader('color');
 	const writer = getElementWriter('color');
 	const r = reader('r');
@@ -434,7 +454,7 @@ Color.rgbaInput = function (this: any, event: any) {
 	$('#color-index').reset();
 }.bind(Color);
 
-Color.confirm = function (this: any, event: any) {
+Color.confirm = function (this: typeof Color, event: Event) {
 	const index = read($('#color-index'));
 	if (this.indexEnabled && index !== null) {
 		this.target?.input?.(index);

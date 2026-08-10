@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import type { IpcRendererEvent } from 'electron';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { addClass, hasClass, hide, removeClass, show } from '@/util/element-utils';
@@ -15,9 +16,11 @@ import { FileItem } from '@/file/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Layout } from '@/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
+import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { ApkBuilder } from '@/module/apkbuilder.ts';
 import { WebServer } from '@/module/webserver.ts';
 import { Particle } from '@/particle/particle-window.ts';
+import { DynamicShape } from '@/types/legacy-shapes.ts';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
 import { Local } from '@/tools/localization.ts';
@@ -25,10 +28,22 @@ import { Local } from '@/tools/localization.ts';
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type TitleMethod = ((...args: any[]) => any) | null;
 
-interface TitleShape {
+interface TitleMeta {
+	guid?: string;
+	path?: string;
+	[k: string]: unknown;
+}
+
+interface TitleTab {
+	type: string;
+	meta: TitleMeta;
+	[k: string]: unknown;
+}
+
+interface TitleShape extends DynamicShape {
 	target: HTMLElement & { [k: string]: any };
 	tabBar: HTMLElement & { [k: string]: any };
-	theme: any | null;
+	theme: string;
 	maximized: boolean;
 	fullscreen: boolean;
 	initialize: (() => void) | null;
@@ -72,55 +87,55 @@ interface TitleShape {
 }
 
 export const Title: TitleShape = {
-	target: null as any,
-	tabBar: null as any,
-	theme: null as any,
+	target: null as unknown as HTMLElement & { [k: string]: any },
+	tabBar: null as unknown as HTMLElement & { [k: string]: any },
+	theme: null as unknown as string,
 	maximized: false,
 	fullscreen: false,
-	initialize: null as any,
-	newProject: null as any,
-	openProject: null as any,
-	closeProject: null as any,
-	deployment: null as any,
-	addRecentTab: null as any,
-	getClosedTabMeta: null as any,
-	openTab: null as any,
-	reopenClosedTab: null as any,
-	askWhetherToSave: null as any,
-	updateTitleName: null as any,
-	updateBodyClass: null as any,
-	updateAppRegion: null as any,
-	switchTheme: null as any,
-	dispatchThemechangeEvent: null as any,
-	playGame: null as any,
-	saveToConfig: null as any,
-	loadFromConfig: null as any,
-	saveToProject: null as any,
-	loadFromProject: null as any,
-	windowBeforeClose: null as any,
-	windowMaximize: null as any,
-	windowUnmaximize: null as any,
-	windowEnterFullScreen: null as any,
-	windowLeaveFullScreen: null as any,
-	windowDrop: null as any,
-	windowDirchange: null as any,
-	windowLocalize: null as any,
-	pointerenter: null as any,
-	pointermove: null as any,
-	tabBarPointerdown: null as any,
-	tabBarSelect: null as any,
-	tabBarClosed: null as any,
-	tabBarPopup: null as any,
-	playClick: null as any,
-	minimizeClick: null as any,
-	maximizeClick: null as any,
-	closeClick: null as any
+	initialize: null,
+	newProject: null,
+	openProject: null,
+	closeProject: null,
+	deployment: null,
+	addRecentTab: null,
+	getClosedTabMeta: null,
+	openTab: null,
+	reopenClosedTab: null,
+	askWhetherToSave: null,
+	updateTitleName: null,
+	updateBodyClass: null,
+	updateAppRegion: null,
+	switchTheme: null,
+	dispatchThemechangeEvent: null,
+	playGame: null,
+	saveToConfig: null,
+	loadFromConfig: null,
+	saveToProject: null,
+	loadFromProject: null,
+	windowBeforeClose: null,
+	windowMaximize: null,
+	windowUnmaximize: null,
+	windowEnterFullScreen: null,
+	windowLeaveFullScreen: null,
+	windowDrop: null,
+	windowDirchange: null,
+	windowLocalize: null,
+	pointerenter: null,
+	pointermove: null,
+	tabBarPointerdown: null,
+	tabBarSelect: null,
+	tabBarClosed: null,
+	tabBarPopup: null,
+	playClick: null,
+	minimizeClick: null,
+	maximizeClick: null,
+	closeClick: null
 };
 
-Title.initialize = function (this: any) {
+Title.initialize = function (this: TitleShape) {
 	this.target = $('#title');
 	this.tabBar = $('#title-tabBar');
-	ipcRenderer?.invoke?.('update-max-min-icon').then((mode: any) => {
+	ipcRenderer?.invoke?.('update-max-min-icon').then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
 				this.windowMaximize!(event);
@@ -139,7 +154,7 @@ Title.initialize = function (this: any) {
 	this.pointerenter!();
 
 	// 标签栏扩展方法 - 解析图标
-	this.tabBar.parseIcon = function (this: any, type: any) {
+	this.tabBar.parseIcon = function (type: string) {
 		switch (type) {
 			case 'scene':
 				return '\uf0ac';
@@ -153,35 +168,35 @@ Title.initialize = function (this: any) {
 	};
 
 	// 标签栏扩展方法 - 解析名称
-	this.tabBar.parseName = function (this: any, meta: any) {
-		return (File as any).parseMetaName(meta);
+	this.tabBar.parseName = function (meta: TitleMeta) {
+		return File.parseMetaName!(meta);
 	};
 
-	window.addEventListener('drop', this.windowDrop);
-	window.addEventListener('dirchange', this.windowDirchange);
-	window.addEventListener('localize', this.windowLocalize);
+	window.addEventListener('drop', this.windowDrop!);
+	window.addEventListener('dirchange', this.windowDirchange!);
+	window.addEventListener('localize', this.windowLocalize!);
 	this.tabBar.on('pointerdown', this.tabBarPointerdown);
 	// select/closed/popup 事件经 Vue 模板转发（AppShell @select/@closed/@popup → Title.tabBar*）
 
-	ipcRenderer?.on?.('before-close-window', this.windowBeforeClose);
-	ipcRenderer?.on?.('maximize', this.windowMaximize);
-	ipcRenderer?.on?.('unmaximize', this.windowUnmaximize);
-	ipcRenderer?.on?.('enter-full-screen', this.windowEnterFullScreen);
-	ipcRenderer?.on?.('leave-full-screen', this.windowLeaveFullScreen);
+	ipcRenderer?.on?.('before-close-window', this.windowBeforeClose!);
+	ipcRenderer?.on?.('maximize', this.windowMaximize!);
+	ipcRenderer?.on?.('unmaximize', this.windowUnmaximize!);
+	ipcRenderer?.on?.('enter-full-screen', this.windowEnterFullScreen!);
+	ipcRenderer?.on?.('leave-full-screen', this.windowLeaveFullScreen!);
 	NewProject.initialize!();
 	Deployment.initialize!();
 };
 
-Title.newProject = function (this: any) {
+Title.newProject = function (this: TitleShape) {
 	this.askWhetherToSave!(() => {
 		NewProject.open!();
 	});
 };
 
-Title.openProject = function (this: any) {
+Title.openProject = function (this: TitleShape) {
 	this.askWhetherToSave!(() => {
-		const dialogs = (Editor.config as any).dialogs;
-		const location = Path.normalize!(dialogs.open);
+		const dialogs = Editor.config!.dialogs!;
+		const location = Path.normalize!(dialogs.open!);
 		File.showOpenDialog!({
 			defaultPath: location,
 			filters: [
@@ -190,7 +205,7 @@ Title.openProject = function (this: any) {
 					extensions: ['yamirpg']
 				}
 			]
-		}).then(({ filePaths }: any) => {
+		}).then(({ filePaths }: { filePaths: string[] }) => {
 			if (filePaths.length === 1) {
 				Editor.open!(filePaths[0]);
 			}
@@ -198,7 +213,7 @@ Title.openProject = function (this: any) {
 	});
 };
 
-Title.closeProject = function (this: any) {
+Title.closeProject = function (this: TitleShape) {
 	this.askWhetherToSave!(() => {
 		Editor.close!();
 		WebServer.stop!();
@@ -208,14 +223,14 @@ Title.closeProject = function (this: any) {
 	});
 };
 
-Title.deployment = function (this: any) {
+Title.deployment = function (this: TitleShape) {
 	this.askWhetherToSave!(() => {
 		Deployment.open!();
 	});
 };
 
-Title.addRecentTab = function (this: any, guid: any) {
-	const tabs = (Editor.project as any).recentTabs;
+Title.addRecentTab = function (this: TitleShape, guid: string) {
+	const tabs = Editor.project!.recentTabs;
 	if (tabs.remove(guid)) {
 		tabs.unshift(guid);
 	} else {
@@ -226,8 +241,8 @@ Title.addRecentTab = function (this: any, guid: any) {
 	}
 };
 
-Title.getClosedTabMeta = function (this: any) {
-	const { recentTabs } = Editor.project as any;
+Title.getClosedTabMeta = function (this: TitleShape) {
+	const { recentTabs } = Editor.project!;
 	outer: for (const guid of recentTabs) {
 		for (const item of this.tabBar?.data ?? []) {
 			if (item.meta.guid === guid) {
@@ -239,7 +254,7 @@ Title.getClosedTabMeta = function (this: any) {
 	return undefined;
 };
 
-Title.openTab = function (this: any, file: any) {
+Title.openTab = function (this: TitleShape, file: FileItem) {
 	const { tabBar } = this;
 	const { meta, type } = file;
 	let context = tabBar.find(meta);
@@ -251,7 +266,7 @@ Title.openTab = function (this: any, file: any) {
 	tabBar.select(context);
 };
 
-Title.reopenClosedTab = function (this: any, meta: any) {
+Title.reopenClosedTab = function (this: TitleShape, meta: TitleMeta) {
 	meta = meta ?? this.getClosedTabMeta!();
 	if (meta) {
 		const file = Directory.getFile!(meta.path);
@@ -261,7 +276,7 @@ Title.reopenClosedTab = function (this: any, meta: any) {
 	}
 };
 
-Title.askWhetherToSave = function (this: any, callback: any) {
+Title.askWhetherToSave = function (this: TitleShape, callback: () => void) {
 	if (Data.manifest?.changes.length > 0) {
 		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
@@ -294,7 +309,7 @@ Title.askWhetherToSave = function (this: any, callback: any) {
 
 Title.updateTitleName = (function IIFE() {
 	const title = $('title')[0];
-	return function (this: any) {
+	return function (this: TitleShape) {
 		let text = 'Yami RPG Editor';
 		if (Editor.state === 'open') {
 			text = Data.config.window.title + ' - ' + text;
@@ -303,7 +318,7 @@ Title.updateTitleName = (function IIFE() {
 	};
 })();
 
-Title.updateBodyClass = function (this: any) {
+Title.updateBodyClass = function (this: TitleShape) {
 	if (this.maximized || this.fullscreen) {
 		addClass(document.body, 'maximized');
 		removeClass(document.body, 'border');
@@ -314,14 +329,14 @@ Title.updateBodyClass = function (this: any) {
 };
 
 // 应用拖拽区域无法自动更新 需要通过开关元素的显示来手动刷新
-Title.updateAppRegion = function (this: any) {
+Title.updateAppRegion = function (this: TitleShape) {
 	const { target } = this;
 	show(target.element);
 	// 强制刷新样式 target.element.css().display
 	setTimeout(() => hide(target.element));
 };
 
-Title.switchTheme = function (this: any, scheme: any) {
+Title.switchTheme = function (this: TitleShape, scheme: 'light' | 'dark') {
 	switch (scheme) {
 		case 'light':
 			if (removeClass(document.documentElement, 'dark')) {
@@ -338,14 +353,14 @@ Title.switchTheme = function (this: any, scheme: any) {
 
 Title.dispatchThemechangeEvent = (function IIFE() {
 	const themechange = new Event('themechange');
-	return function (this: any, theme: any) {
+	return function (this: TitleShape, theme: 'light' | 'dark') {
 		this.theme = theme;
 		themechange.value = theme;
 		window.dispatchEvent(themechange);
 	};
 })();
 
-Title.playGame = async function (this: any) {
+Title.playGame = async function (this: TitleShape) {
 	const element = $('#title-play');
 	if (Editor.state === 'open' && !getTitleStore().playing) {
 		getTitleStore().setPlaying(true);
@@ -361,18 +376,18 @@ Title.playGame = async function (this: any) {
 
 		ipcRenderer.send('create-player-window', File.root);
 
-		ipcRenderer.once('player-window-closed', (event: any) => {
+		ipcRenderer.once('player-window-closed', (event: IpcRendererEvent) => {
 			removeClass(element, 'selected');
 			getTitleStore().setPlaying(false);
 		});
 	}
 };
 
-Title.saveToConfig = function (this: any, config: any) {
+Title.saveToConfig = function (this: TitleShape, config: EditorConfigShape) {
 	config.theme = this.theme;
 };
 
-Title.loadFromConfig = function (this: any, config: any) {
+Title.loadFromConfig = function (this: TitleShape, config: EditorConfigShape) {
 	// theme 兜底：缺失或非法值时按当前 DOM 状态推断（html.dark 类 ⇒ dark，否则 light） 避免向下游派发 undefined 主题导致 webgl background[undefined] 解构炸
 	let { theme } = config;
 	if (theme !== 'light' && theme !== 'dark') {
@@ -389,7 +404,7 @@ Title.loadFromConfig = function (this: any, config: any) {
 	this.dispatchThemechangeEvent!(theme);
 };
 
-Title.saveToProject = function (this: any, project: any) {
+Title.saveToProject = function (this: TitleShape, project: EditorProjectShape) {
 	const items = this.tabBar.data;
 	const length = items.length;
 	const tabs = new Array(length);
@@ -402,7 +417,7 @@ Title.saveToProject = function (this: any, project: any) {
 	project.activeTab = tab?.meta.guid ?? '';
 };
 
-Title.loadFromProject = function (this: any, project: any) {
+Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape) {
 	const { openTabs, activeTab } = project;
 
 	const dirItem = {
@@ -458,7 +473,7 @@ Title.loadFromProject = function (this: any, project: any) {
 	Layout.manager.switch('directory');
 };
 
-Title.windowBeforeClose = function (this: any, event: any) {
+Title.windowBeforeClose = function (this: TitleShape, event: Event) {
 	if ((Window.frames?.length ?? 0) === 0) {
 		ipcRenderer.send('prevent-close-window');
 		Title.askWhetherToSave!(() => {
@@ -467,40 +482,40 @@ Title.windowBeforeClose = function (this: any, event: any) {
 	}
 };
 
-Title.windowMaximize = function (this: any, event: any) {
+Title.windowMaximize = function (this: TitleShape, event: Event) {
 	this.maximized = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowUnmaximize = function (this: any, event: any) {
+Title.windowUnmaximize = function (this: TitleShape, event: Event) {
 	this.maximized = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowEnterFullScreen = function (this: any, event: any) {
+Title.windowEnterFullScreen = function (this: TitleShape, event: Event) {
 	this.fullscreen = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowLeaveFullScreen = function (this: any, event: any) {
+Title.windowLeaveFullScreen = function (this: TitleShape, event: Event) {
 	this.fullscreen = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
-Title.windowDrop = function (this: any, event: any) {
+Title.windowDrop = function (this: TitleShape, event: DragEvent) {
 	if ((Window.frames?.length ?? 0) === 0) {
-		const { files } = event.dataTransfer;
+		const { files } = event.dataTransfer!;
 		for (const file of files) {
 			if (/\.yamirpg$/i.test(file.name)) {
 				this.askWhetherToSave!(() => {
-					Editor.open!(file.path);
+					Editor.open!((file as { path?: string }).path);
 				});
 			}
 		}
 	}
 }.bind(Title);
 
-Title.windowDirchange = function (this: any, event: any) {
+Title.windowDirchange = function (this: TitleShape, event: Event) {
 	const { tabBar } = Title;
 	if (!tabBar?.data) return;
 	for (const item of tabBar.data) {
@@ -515,27 +530,28 @@ Title.windowDirchange = function (this: any, event: any) {
 	}
 };
 
-Title.windowLocalize = function (this: any, event: any) {
+Title.windowLocalize = function (this: TitleShape, event: Event) {
 	const text = Title.tabBar.dirItem?.tab?.text;
 	if (text instanceof HTMLElement) {
 		text.textContent = Local.get!('common.directory');
 	}
 };
 
-Title.pointerenter = function (this: any, event: any) {
+Title.pointerenter = function (this: TitleShape, event: Event) {
 	const { target } = this;
 	if (!target.active) {
 		target.active = true;
-		target.style.WebkitAppRegion = 'drag';
+		(target.style as CSSStyleDeclaration & { WebkitAppRegion: string }).WebkitAppRegion =
+			'drag';
 		this.updateAppRegion!();
-		window.addEventListener('pointermove', this.pointermove);
+		window.addEventListener('pointermove', this.pointermove!);
 	}
 }.bind(Title);
 
-Title.pointermove = function (this: any, event: any) {
+Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 	const { target } = this;
 	if (target.active) {
-		let element = event.target;
+		let element: Node | null = event.target as Node | null;
 		while (element) {
 			if (element === target) {
 				return;
@@ -545,14 +561,15 @@ Title.pointermove = function (this: any, event: any) {
 		}
 		if (!element) {
 			target.active = false;
-			target.style.WebkitAppRegion = 'no-drag';
+			(target.style as CSSStyleDeclaration & { WebkitAppRegion: string }).WebkitAppRegion =
+				'no-drag';
 			this.updateAppRegion!();
-			window.removeEventListener('pointermove', this.pointermove);
+			window.removeEventListener('pointermove', this.pointermove!);
 		}
 	}
 }.bind(Title);
 
-Title.tabBarPointerdown = function (this: any, event: any) {
+Title.tabBarPointerdown = function (this: TitleShape, event: Event) {
 	switch (this.read!()?.type) {
 		case 'scene':
 			Layout.readyToFocus(Scene.screen);
@@ -568,7 +585,7 @@ Title.tabBarPointerdown = function (this: any, event: any) {
 	}
 };
 
-Title.tabBarSelect = function (this: any, event: any) {
+Title.tabBarSelect = function (this: TitleShape, event: Event) {
 	if (Layout.resizing) {
 		Layout.pointerup();
 	}
@@ -600,7 +617,7 @@ Title.tabBarSelect = function (this: any, event: any) {
 	}
 };
 
-Title.tabBarClosed = function (this: any, event: any) {
+Title.tabBarClosed = function (this: TitleShape, event: Event & { closedItems: TitleTab[] }) {
 	const { closedItems, lastValue } = event;
 	for (const context of closedItems) {
 		switch (context.type) {
@@ -614,7 +631,7 @@ Title.tabBarClosed = function (this: any, event: any) {
 				Animation.destroy!(context);
 				break;
 			case 'particle':
-				Particle.destroy!(context);
+				Particle.destroy!(context as any);
 				break;
 		}
 		if (context.meta.guid) {
@@ -633,7 +650,7 @@ Title.tabBarClosed = function (this: any, event: any) {
 	}
 };
 
-Title.tabBarPopup = function (this: any, event: any) {
+Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
 	const item = event.value;
 	if (!item) return;
 	const items = this.data;
@@ -671,19 +688,19 @@ Title.tabBarPopup = function (this: any, event: any) {
 	);
 };
 
-Title.playClick = function (this: any, event: any) {
+Title.playClick = function (this: TitleShape, event: MouseEvent) {
 	Title.playGame!();
 };
 
-Title.minimizeClick = function (this: any, event: any) {
+Title.minimizeClick = function (this: TitleShape, event: MouseEvent) {
 	ipcRenderer.send('minimize-window');
 };
 
-Title.maximizeClick = function (this: any, event: any) {
+Title.maximizeClick = function (this: TitleShape, event: MouseEvent) {
 	ipcRenderer.send('maximize-window');
 };
 
-Title.closeClick = function (this: any, event: any) {
+Title.closeClick = function (this: TitleShape, event: MouseEvent) {
 	Title.windowBeforeClose!();
 };
 
@@ -693,8 +710,8 @@ import { getTitleStore } from '@app/stores/title';
 for (const key of titleStateKeys) {
 	Object.defineProperty(Title, key, {
 		get: () => getTitleStore()[key],
-		set: (value: any) => {
-			(getTitleStore() as any)[key] = value;
+		set: (value: unknown) => {
+			(getTitleStore() as unknown as Record<'theme' | 'playing', any>)[key] = value;
 		},
 		configurable: true
 	});

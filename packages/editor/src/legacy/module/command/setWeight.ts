@@ -17,7 +17,7 @@ Command.cases.setWeight = new CommandSchema({
 			.push(Command.parseVariableNumber(weight));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setWeight') + Token(': ') },
+			{ text: Local.get!('command.setWeight') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

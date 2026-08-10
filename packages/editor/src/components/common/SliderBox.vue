@@ -36,7 +36,7 @@ interface SliderBoxElement extends HTMLElement {
 	enable(): void;
 	disable(): void;
 	updateFiller(): void;
-	synchronize(target: any): void;
+	synchronize(target: HTMLElement & { write(value: any): void; input: HTMLInputElement }): void;
 	on(
 		type: string,
 		listener: (event: any) => void,
@@ -114,7 +114,7 @@ const disable = (): void => {
 	}
 };
 
-const synchronize = (target: any): void => {
+const synchronize = (target: HTMLElement & { write(value: any): void; input: HTMLInputElement }): void => {
 	const el = root.value;
 	if (!el) return;
 	const slider = el as SliderBoxElement;

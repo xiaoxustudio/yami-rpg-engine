@@ -8,44 +8,78 @@ import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface NumberOperandData {
+	operation: string;
+	type: string;
+	value?: any;
+	variable?: { type: string; key: string };
+	method?: string;
+	decimals?: number;
+	min?: number;
+	max?: number;
+	start?: { type: string; [k: string]: any };
+	end?: { type: string; [k: string]: any };
+	search?: string;
+	property: string;
+	itemId?: string;
+	equipmentId?: string;
+	actor?: { type: string; [k: string]: any };
+	skill?: { type: string; [k: string]: any };
+	state?: { type: string; [k: string]: any };
+	equipment?: { type: string; [k: string]: any };
+	item?: { type: string; [k: string]: any };
+	trigger?: { type: string; [k: string]: any };
+	tilemap?: { type: string; [k: string]: any };
+	tilemapPosition?: { type: string; [k: string]: any };
+	key?: string;
+	element?: { type: string; [k: string]: any };
+	index?: number;
+	script?: string;
+	data: string;
+	touchId?: number;
+	teamId?: string;
+}
+
 interface NumberOperandTarget {
 	start: number;
 	save: () => any;
-	dataValue?: any;
+	dataValue?: NumberOperandData;
 	isPluginInput?: boolean;
 }
 
 interface NumberOperandShape {
 	target: NumberOperandTarget | null;
 	initialize: (() => void) | null;
-	parseMathMethod: ((operand: any) => string) | null;
-	parseStringMethod: ((operand: any) => string) | null;
-	parseObjectProperty: ((operand: any) => string) | null;
-	parseElementProperty: ((operand: any) => string) | null;
-	parseOther: ((operand: any) => string) | null;
-	parseOperand: ((operand: any) => string) | null;
-	parse: ((operand: any, data?: any, index?: number) => string) | null;
-	open: ((operand?: any) => void) | null;
+	parseMathMethod: ((operand: NumberOperandData) => string | undefined) | null;
+	parseStringMethod: ((operand: NumberOperandData) => string | undefined) | null;
+	parseObjectProperty: ((operand: NumberOperandData) => string | undefined) | null;
+	parseElementProperty: ((operand: NumberOperandData) => string) | null;
+	parseOther: ((operand: NumberOperandData) => string) | null;
+	parseOperand: ((operand: NumberOperandData) => string) | null;
+	parse:
+		| ((operand: NumberOperandData, data?: NumberOperandData[], index?: number) => string)
+		| null;
+	open: ((operand?: NumberOperandData) => void) | null;
 	save: (() => any) | null;
-	confirm: ((event: Event) => any) | null;
+	confirm: ((event: Event) => NumberOperandData) | null;
 }
 
 export const NumberOperand: NumberOperandShape = {
-	target: null as any,
-	initialize: null as any,
-	parseMathMethod: null as any,
-	parseStringMethod: null as any,
-	parseObjectProperty: null as any,
-	parseElementProperty: null as any,
-	parseOther: null as any,
-	parseOperand: null as any,
-	parse: null as any,
-	open: null as any,
-	save: null as any,
-	confirm: null as any
+	target: null,
+	initialize: null,
+	parseMathMethod: null,
+	parseStringMethod: null,
+	parseObjectProperty: null,
+	parseElementProperty: null,
+	parseOther: null,
+	parseOperand: null,
+	parse: null,
+	open: null,
+	save: null,
+	confirm: null
 };
 
-NumberOperand.initialize = function (this: any) {
+NumberOperand.initialize = function (this: typeof NumberOperand) {
 	const opEl = $('#setNumber-operation');
 	if (!opEl) return;
 	opEl.loadItems([
@@ -128,7 +162,7 @@ NumberOperand.initialize = function (this: any) {
 			{ case: 'other', targets: [$('#setNumber-operand-other-data')] }
 		]);
 
-	on($('#setNumber-operand-type'), 'write', (event: any) => {
+	on($('#setNumber-operand-type'), 'write', (event: Event & { value: string }) => {
 		let filter = 'all';
 		switch (event.value) {
 			case 'variable':
@@ -475,19 +509,19 @@ NumberOperand.initialize = function (this: any) {
 			}
 		]);
 
-	on($('#setNumber-operand'), 'open', (event: any) => {
+	on($('#setNumber-operand'), 'open', (event: Event) => {
 		$('#setNumber-operand-other-teamId').loadItems(Data.createTeamItems!());
 	});
 
-	on($('#setNumber-operand'), 'closed', (event: any) => {
+	on($('#setNumber-operand'), 'closed', (event: Event) => {
 		clear($('#setNumber-operand-other-teamId'));
 		$('#setNumber-operation').restore();
 	});
 
-	on($('#setNumber-operand-confirm'), 'click', this.confirm);
+	on($('#setNumber-operand-confirm'), 'click', this.confirm!);
 };
 
-NumberOperand.parseMathMethod = function (this: any, operand: any): any {
+NumberOperand.parseMathMethod = function (this: typeof NumberOperand, operand: NumberOperandData) {
 	const method = operand.method;
 	const label = Local.get!('command.setNumber.math.' + method);
 	switch (method) {
@@ -529,7 +563,10 @@ NumberOperand.parseMathMethod = function (this: any, operand: any): any {
 	}
 };
 
-NumberOperand.parseStringMethod = function (this: any, operand: any): any {
+NumberOperand.parseStringMethod = function (
+	this: typeof NumberOperand,
+	operand: NumberOperandData
+) {
 	const method = operand.method;
 	const methodName = Local.get!('command.setNumber.string.' + method);
 	switch (method) {
@@ -548,7 +585,10 @@ NumberOperand.parseStringMethod = function (this: any, operand: any): any {
 	}
 };
 
-NumberOperand.parseObjectProperty = function (this: any, operand: any): any {
+NumberOperand.parseObjectProperty = function (
+	this: typeof NumberOperand,
+	operand: NumberOperandData
+) {
 	const property = Local.get!('command.setNumber.object.' + operand.property);
 	switch (operand.property) {
 		case 'actor-x':
@@ -641,13 +681,16 @@ NumberOperand.parseObjectProperty = function (this: any, operand: any): any {
 	}
 };
 
-NumberOperand.parseElementProperty = function (this: any, operand: any) {
+NumberOperand.parseElementProperty = function (
+	this: typeof NumberOperand,
+	operand: NumberOperandData
+) {
 	const element = Command.parseElement!(operand.element);
 	const property = Local.get!('command.setNumber.element.' + operand.property);
 	return element + Token(' -> ') + property.replace('.', Token('.'));
 };
 
-NumberOperand.parseOther = function (this: any, operand: any) {
+NumberOperand.parseOther = function (this: typeof NumberOperand, operand: NumberOperandData) {
 	const label = Local.get!('command.setNumber.other.' + operand.data);
 	switch (operand.data) {
 		case 'touch-screen-x':
@@ -675,7 +718,7 @@ NumberOperand.parseOther = function (this: any, operand: any) {
 	}
 };
 
-NumberOperand.parseOperand = function (this: any, operand: any) {
+NumberOperand.parseOperand = function (this: typeof NumberOperand, operand: NumberOperandData) {
 	switch (operand.type) {
 		case 'constant':
 			return Command.setNumberColor!(operand.value.toString());
@@ -700,7 +743,12 @@ NumberOperand.parseOperand = function (this: any, operand: any) {
 	}
 };
 
-NumberOperand.parse = function (this: any, operand: any, data: any, index: any) {
+NumberOperand.parse = function (
+	this: typeof NumberOperand,
+	operand: NumberOperandData,
+	data: NumberOperandData[] | undefined,
+	index: number | undefined
+) {
 	let operation;
 	let operator;
 	if (index === 0) {
@@ -747,7 +795,7 @@ NumberOperand.parse = function (this: any, operand: any, data: any, index: any) 
 	}
 	let operandName = Command.removeTextTags!(this.parseOperand!(operand));
 	const currentPriority = operation.includes('()');
-	const nextPriority = data[index + 1]?.operation.includes('()');
+	const nextPriority = data![index! + 1]?.operation.includes('()');
 	if (!currentPriority && nextPriority) {
 		operandName = '(' + operandName;
 	}
@@ -758,16 +806,16 @@ NumberOperand.parse = function (this: any, operand: any, data: any, index: any) 
 };
 
 NumberOperand.open = function (
-	this: any,
+	this: typeof NumberOperand,
 	operand = {
 		operation: 'add',
 		type: 'constant',
 		value: 0
-	} as any
+	} as unknown as NumberOperandData
 ) {
 	Window.open!('setNumber-operand');
 
-	if (this.target.start === 0) {
+	if (this.target!.start === 0) {
 		$('#setNumber-operation').save();
 		show($('#setNumber-operation'));
 		getFocus($('#setNumber-operation'));
@@ -782,15 +830,21 @@ NumberOperand.open = function (
 
 	const write = getElementWriter('setNumber-operand');
 	let constantValue = 0;
-	let mathMethod = 'round';
+	let mathMethod: string | undefined = 'round';
 	let mathDecimals = 0;
 	let mathMin = 0;
 	let mathMax = 1;
-	let mathStartPosition = { type: 'actor', actor: { type: 'trigger' } };
-	let mathEndPosition = { type: 'actor', actor: { type: 'trigger' } };
-	let stringMethod = 'length';
+	let mathStartPosition: { type: string; [k: string]: any } = {
+		type: 'actor',
+		actor: { type: 'trigger' }
+	};
+	let mathEndPosition: { type: string; [k: string]: any } = {
+		type: 'actor',
+		actor: { type: 'trigger' }
+	};
+	let stringMethod: string | undefined = 'length';
 	let stringSearch = '';
-	let commonVariable = { type: 'local', key: '' };
+	let commonVariable: { type: string; key: string } | undefined = { type: 'local', key: '' };
 	let objectProperty = 'actor-x';
 	let objectItemId = '';
 	let objectEquipmentId = '';
@@ -803,11 +857,15 @@ NumberOperand.open = function (
 	let commonItem = { type: 'trigger' };
 	let commonTrigger = { type: 'trigger' };
 	let commonTilemap = { type: 'trigger' };
-	let tilemapPosition = { type: 'absolute', x: 0, y: 0 };
+	let tilemapPosition: { type: string; [k: string]: any } = {
+		type: 'absolute',
+		x: 0,
+		y: 0
+	};
 	let cooldownKey = Enum.getDefStringId!('cooldown-key');
-	let listIndex = 0;
-	let parameterKey = '';
-	let script = '';
+	let listIndex: number | undefined = 0;
+	let parameterKey: string | undefined = '';
+	let script: string | undefined = '';
 	let otherData = 'trigger-button';
 	let otherTouchId = 0;
 	let otherTeamId = Data.teams.list[0].id;
@@ -849,7 +907,7 @@ NumberOperand.open = function (
 			break;
 		case 'element':
 			elementProperty = operand.property;
-			elementElement = operand.element;
+			elementElement = operand.element!;
 			break;
 		case 'list':
 			commonVariable = operand.variable;
@@ -901,7 +959,7 @@ NumberOperand.open = function (
 	write('other-teamId', otherTeamId);
 };
 
-NumberOperand.save = function (this: any) {
+NumberOperand.save = function (this: typeof NumberOperand) {
 	const read = getElementReader('setNumber-operand');
 	const operation = read('operation');
 	const type = read('type');
@@ -1168,6 +1226,6 @@ NumberOperand.save = function (this: any) {
 	return operand;
 };
 
-NumberOperand.confirm = function (this: any, event: any) {
+NumberOperand.confirm = function (this: typeof NumberOperand, event: Event) {
 	return NumberOperand.target!.save();
 };

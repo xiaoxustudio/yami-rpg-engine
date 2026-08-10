@@ -7,27 +7,35 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneRegion = {
+	interface SceneRegionShape {
+		target: Record<string, unknown> | null;
+		update: ((region: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const SceneRegion: SceneRegionShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	SceneRegion.initialize = function (this: any) {
+	SceneRegion.initialize = function (this: typeof SceneRegion) {
 		if (!$('#sceneRegion-name')) return;
 		this.nameBox = $('#sceneRegion-name');
 		$('#sceneRegion-conditions').bind(new ConditionListInterface(this, Scene));
 
 		$('#sceneRegion-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneRegion-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneRegion-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneRegion-parameter-pane').bind($('#sceneRegion-scripts'));
 
@@ -47,7 +55,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneRegion.create = function (this: any) {
+	SceneRegion.create = function (this: typeof SceneRegion) {
 		return {
 			class: 'region',
 			name: 'Region',
@@ -66,7 +74,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneRegion.open = function (this: any, region: any) {
+	SceneRegion.open = function (this: typeof SceneRegion, region: Record<string, unknown>) {
 		if (this.target !== region) {
 			this.target = region;
 
@@ -83,7 +91,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.close = function (this: any) {
+	SceneRegion.close = function (this: typeof SceneRegion) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -95,7 +103,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.write = function (this: any, options: any) {
+	SceneRegion.write = function (this: typeof SceneRegion, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneRegion-x'), options.x);
 		}
@@ -104,7 +112,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneRegion.update = function (this: any, region: any, key: any, value: any) {
+	SceneRegion.update = function (
+		this: typeof SceneRegion,
+		region: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -132,8 +145,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneRegion.paramInput = function (this: any, event: any) {
-		SceneRegion.update(SceneRegion.target, Inspector.getKey!(this), read(this));
+	SceneRegion.paramInput = function (this: typeof SceneRegion, event: Event) {
+		SceneRegion.update!(
+			SceneRegion.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneRegion = SceneRegion;

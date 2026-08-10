@@ -57,7 +57,7 @@ const input = (value: number): void => {
 	dataValue.value = value % props.length;
 	if (inputEventEnabled.value) {
 		const inputEvent = new Event('input');
-		(inputEvent as any).value = dataValue.value;
+		inputEvent.value = dataValue.value;
 		root.value?.dispatchEvent(inputEvent);
 	}
 };

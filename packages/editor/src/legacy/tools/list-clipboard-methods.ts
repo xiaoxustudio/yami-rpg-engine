@@ -1,18 +1,29 @@
 import { Local } from '@/tools/localization.ts';
 import { Window } from '@/tools/window-object.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+
+const Clipboard = getGlobalClipboard();
+
+interface ListItem {
+	id: string;
+	name: string;
+	class?: string;
+	element?: unknown;
+	[k: string]: unknown;
+}
 
 interface ListWithElements {
-	elements?: any[] & { count?: number };
-	addNodeTo?: (item: any, dItem: any) => void;
-	deleteNode?: (item: any) => void;
-	select?: (item: any) => void;
-	copy?: (item: any) => void;
-	paste?: (dItem: any) => void;
-	delete?: (item: any) => void;
+	elements?: Array<HTMLElement & { item: ListItem }> & { count?: number };
+	addNodeTo?: (item: ListItem, dItem: unknown) => void;
+	deleteNode?: (item: ListItem) => void;
+	select?: (item: ListItem | unknown) => void;
+	copy?: (item: ListItem) => void;
+	paste?: (dItem: unknown) => void;
+	delete?: (item: ListItem) => void;
 }
 
 interface IdModule {
-	idMap: Record<string, any>;
+	idMap: Record<string, unknown>;
 	createId: () => string;
 }
 
@@ -34,14 +45,14 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 		else if (module.closeContentPanel) module.closeContentPanel();
 	};
 
-	list.copy = function (item: any) {
+	list.copy = function (item: ListItem) {
 		if (item && item.class !== 'folder') {
-			(globalThis as any).Clipboard.write(clipboardKey, item);
+			Clipboard.write(clipboardKey, item);
 		}
 	};
 
-	list.paste = function (dItem: any) {
-		const copy = (globalThis as any).Clipboard.read(clipboardKey);
+	list.paste = function (dItem: unknown) {
+		const copy = Clipboard.read(clipboardKey) as ListItem;
 		if (copy) {
 			if (module.idMap[copy.id]) {
 				copy.id = module.createId();
@@ -51,19 +62,21 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 		}
 	};
 
-	list.delete = function (item: any) {
+	list.delete = function (item: ListItem) {
 		if (item) {
-			const get = Local.createGetter('confirmation');
+			const get = Local.createGetter!('confirmation');
 			Window.confirm!(
 				{
-					message: get('deleteSingleFile').replace('<filename>', item.name)
+					message: get!('deleteSingleFile').replace('<filename>', item.name)
 				},
 				[
 					{
-						label: get('yes'),
+						label: get!('yes'),
 						click: () => {
 							const elements = this.elements ?? [];
-							const index = elements.indexOf(item.element);
+							const index = elements.indexOf(
+								item.element as HTMLElement & { item: ListItem }
+							);
 							this.deleteNode?.(item);
 							closePanel();
 							const last = (elements.count ?? elements.length) - 1;
@@ -74,7 +87,7 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 						}
 					},
 					{
-						label: get('no')
+						label: get!('no')
 					}
 				]
 			);

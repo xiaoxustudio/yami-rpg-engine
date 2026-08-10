@@ -4,18 +4,29 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIText = {
+	interface UITextShape {
+		target: UITextData | null;
+		update: ((node: UITextData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface UITextData {
+		effect: Record<string, unknown>;
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: unknown;
+	}
+	const UIText: UITextShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIText.initialize = function (this: any) {
+	UIText.initialize = function (this: typeof UIText) {
 		if (!$('#uiText-direction')) return;
 		$('#uiText-direction').loadItems([
 			{ name: 'Horizontal - TB', value: 'horizontal-tb' },
@@ -94,7 +105,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIText.create = function (this: any) {
+	UIText.create = function (this: typeof UIText) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 24;
@@ -127,7 +138,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIText.open = function (this: any, node: any) {
+	UIText.open = function (this: typeof UIText, node: UITextData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -153,7 +164,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIText.close = function (this: any) {
+	UIText.close = function (this: typeof UIText) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -162,7 +173,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIText.update = function (this: any, node: any, key: any, value: any) {
+	UIText.update = function (this: typeof UIText, node: UITextData, key: string, value: unknown) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -215,7 +226,7 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 			case 'content':
-				// 直接复制，更新语言包中的内容
+				// 闂佺儵鏅涢悺銊ф暜鐎涙ê绶炵€广儱鎳庨悡鎴︽煥濞戞ɑ婀版繛鎻掓健瀵剟骞忓畝濠傛闁荤喎鐨濋崑鎾绘煕閺嵮勫櫢闁煎灚鍨块幆鍐礋椤愩垺鏆ラ柣?
 				node[key] = value;
 				// element[key] = value
 				node.instances.setProperty(key, value);
@@ -235,7 +246,7 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 			case 'font': {
-				const font = value.trim();
+				const font = (value as string).trim();
 				if (node.font !== font) {
 					node.font = font;
 					// element.font = font
@@ -246,7 +257,7 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'effect-type':
 				if (node.effect.type !== value) {
 					const read = getElementReader('uiText-effect');
-					const effect: any = { type: value };
+					const effect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':
 							break;
@@ -285,8 +296,8 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIText.paramInput = function (this: any, event: any) {
-		UIText.update(UIText.target, Inspector.getKey!(this), read(this));
+	UIText.paramInput = function (this: typeof UIText, event: Event) {
+		UIText.update!(UIText.target as UITextData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiText = UIText;

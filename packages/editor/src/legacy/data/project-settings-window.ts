@@ -12,28 +12,55 @@ import { Local } from '@/tools/localization.ts';
 import { AttributeListInterface } from '@/tools/property-list.ts';
 import { getFocus, on, read, write } from '@/util/element-utils.ts';
 
+type ProjectData = {
+	window: { title: string };
+	localization: { languages: Array<{ name: string; font: string; scale: number }> };
+	[k: string]: any;
+};
+type ImportedFonts = {
+	fontId: string | null;
+	filter: string;
+	initialize(): void;
+	parse(fontId: string): string;
+	open(fontId?: string): void;
+	save(): string | null;
+	read(): string | null;
+	input(fontId: string): void;
+	[k: string]: any;
+};
+type LanguagesInterface = {
+	initialize(list: { inserting?: boolean }): void;
+	parse(language: { name: string }): Array<{ content: unknown; class?: string }>;
+	open(language?: { name: string; font: string; scale: number }): void;
+	save(): { name: string; font: string; scale: number };
+	update(): void;
+	createAllItems(): Array<{ name: string; value: string }>;
+	createValidItems(): Array<{ name: string; value: string }>;
+	[k: string]: any;
+};
+
 export const Project = {
-	data: null as any,
+	data: null as ProjectData | null,
 	changed: false,
-	importedFonts: null as any,
-	languages: null as any,
+	importedFonts: null as ImportedFonts | null,
+	languages: null as LanguagesInterface | null,
 	tscStarted: false,
-	initialize: null as any,
-	open: null as any,
-	startTSC: null as any,
-	stopTSC: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	projectChange: null as any,
-	dataChange: null as any,
-	paramInput: null as any,
-	confirm: null as any,
+	initialize: null as unknown as (...args: any[]) => any,
+	open: null as unknown as (...args: any[]) => any,
+	startTSC: null as unknown as (...args: any[]) => any,
+	stopTSC: null as unknown as (...args: any[]) => any,
+	windowClose: null as unknown as (...args: any[]) => any,
+	windowClosed: null as unknown as (...args: any[]) => any,
+	projectChange: null as unknown as (...args: any[]) => any,
+	dataChange: null as unknown as (...args: any[]) => any,
+	paramInput: null as unknown as (...args: any[]) => any,
+	confirm: null as unknown as (...args: any[]) => any,
 	state: null as string | null,
 	target: null as Record<string, any> | null,
 	close: null as (() => void) | null
 };
 
-Project.initialize = function (this: any) {
+Project.initialize = function (this: typeof Project) {
 	if (!$('#config-window-display')) return;
 	$('#config-window-display').loadItems([
 		{ name: 'Windowed', value: 'windowed' },
@@ -139,14 +166,14 @@ Project.initialize = function (this: any) {
 		.forEach((el) => on(el, 'input', this.paramInput));
 };
 
-Project.open = function (this: any) {
+Project.open = function (this: typeof Project) {
 	Window.open!('project-settings');
 
 	this.data = Object.clone(Data.config);
 
 	$('#config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
 
-	const write = getElementWriter('config', this.data);
+	const write = getElementWriter('config', this.data!);
 	write('window-title');
 	write('window-width');
 	write('window-height');
@@ -196,14 +223,14 @@ Project.open = function (this: any) {
 	write('deadzone');
 };
 
-Project.startTSC = function (this: any) {
+Project.startTSC = function (this: typeof Project) {
 	if (!this.tscStarted) {
 		this.tscStarted = true;
 		ipcRenderer.send('start-tsc', File.root);
 	}
 };
 
-Project.stopTSC = function (this: any) {
+Project.stopTSC = function (this: typeof Project) {
 	if (this.tscStarted) {
 		this.tscStarted = false;
 		ipcRenderer.send('stop-tsc');
@@ -211,10 +238,10 @@ Project.stopTSC = function (this: any) {
 	}
 };
 
-Project.windowClose = function (this: any, event: any) {
+Project.windowClose = function (this: typeof Project, event: Event) {
 	if (Project.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedProjectSettings')
@@ -235,11 +262,14 @@ Project.windowClose = function (this: any, event: any) {
 	}
 };
 
-Project.windowClosed = function (this: any, event: any) {
+Project.windowClosed = function (this: typeof Project, event: Event) {
 	Project.data = null;
 };
 
-Project.projectChange = function (this: any, event: any) {
+Project.projectChange = function (
+	this: typeof Project,
+	event: Event & { key?: string; last: { script: { autoCompile?: boolean } } }
+) {
 	if (event.key === 'config') {
 		const last = event.last.script;
 		const current = Data.config.script;
@@ -253,16 +283,16 @@ Project.projectChange = function (this: any, event: any) {
 	}
 };
 
-Project.dataChange = function (this: any, event: any) {
+Project.dataChange = function (this: typeof Project, event: Event) {
 	this.changed = true;
 }.bind(Project);
 
-Project.paramInput = function (this: any, event: any) {
+Project.paramInput = function (this: typeof Project, event: Event) {
 	const key = Inspector.getKey(this);
-	const value = read(this);
+	const value = read(this as unknown as HTMLElement);
 	const keys = key.split('-');
 	const end = keys.length - 1;
-	let node = Project.data;
+	let node = Project.data!;
 	for (let i = 0; i < end; i++) {
 		node = node[keys[i]];
 	}
@@ -272,28 +302,32 @@ Project.paramInput = function (this: any, event: any) {
 	}
 };
 
-(Project as any).filterDuplicateLanguages = function (this: any) {
-	const local = this.data.localization;
-	const languages = [] as any[];
+(
+	Project as unknown as { filterDuplicateLanguages: (this: typeof Project) => void }
+).filterDuplicateLanguages = function (this: typeof Project) {
+	const local = this.data!.localization;
+	const languages: Array<{ name: string; font: string; scale: number }> = [];
 	for (const language of local.languages) {
 		languages.push(language);
 	}
 	local.languages = languages;
 };
 
-Project.confirm = function (this: any, event: any) {
+Project.confirm = function (this: typeof Project, event: Event) {
 	if (this.changed) {
 		this.changed = false;
-		this.filterDuplicateLanguages();
+		(
+			this as typeof Project & { filterDuplicateLanguages: () => void }
+		).filterDuplicateLanguages();
 		const last = Data.config;
 		const title1 = Data.config.window.title;
-		const title2 = this.data.window.title;
+		const title2 = this.data!.window.title;
 		Data.config = this.data;
 		File.planToSave!(Data.manifest.project.config);
 		if (title1 !== title2) {
 			Title.updateTitleName!();
 		}
-		const datachange = new Event('datachange');
+		const datachange = new Event('datachange') as Event & { key: string; last: unknown };
 		datachange.key = 'config';
 		datachange.last = last;
 		window.dispatchEvent(datachange);
@@ -305,7 +339,7 @@ Project.importedFonts = {
 	fontId: null,
 	filter: 'font',
 	initialize: function () {},
-	parse: function (this: any, fontId: any) {
+	parse: function (this: ImportedFonts, fontId: string) {
 		return Command.removeTextTags(Command.parseFileName(fontId));
 	},
 	open: function (fontId = '') {
@@ -318,19 +352,19 @@ Project.importedFonts = {
 	read: function () {
 		return this.fontId;
 	},
-	input: function (this: any, fontId: any) {
+	input: function (this: ImportedFonts, fontId: string) {
 		this.fontId = fontId;
 		this.target?.save?.();
 	}
 };
 
 Project.languages = {
-	initialize: function (this: any, list: any) {
+	initialize: function (this: LanguagesInterface, list: { inserting?: boolean }) {
 		on($('#language-confirm'), 'click', () => {
 			if (list.inserting) {
-				const languages = Project.data.localization.languages;
+				const languages = Project.data!.localization.languages;
 				const langName = read($('#language-name'));
-				if (languages.find((lang: any) => lang.name === langName)) {
+				if (languages.find((lang: { name: string }) => lang.name === langName)) {
 					return getFocus($('#language-name'));
 				}
 			}
@@ -338,9 +372,9 @@ Project.languages = {
 			Window.close!('language');
 		});
 	},
-	parse: function (this: any, language: any) {
+	parse: function (this: LanguagesInterface, language: { name: string }) {
 		return [
-			{ content: Local.get('languages.' + language.name) },
+			{ content: Local.get!('languages.' + language.name) },
 			{ content: language.name, class: 'weak' }
 		];
 	},
@@ -362,14 +396,16 @@ Project.languages = {
 	update: function () {
 		const selectBox = $('#config-localization-default');
 		const defaultLang = read(selectBox);
-		selectBox.loadItems(Project.languages.createValidItems());
+		selectBox.loadItems(Project.languages!.createValidItems());
 		if (defaultLang) write(selectBox, defaultLang);
 	},
 	createAllItems: function () {
-		const items = [] as any[];
-		const languages = Local.get('languages');
+		const items: Array<{ name: string; value: string }> = [];
+		const languages = Local.get!('languages');
 		if (languages) {
-			for (const [value, name] of Object.entries(languages)) {
+			for (const [value, name] of Object.entries(
+				languages as unknown as Record<string, string>
+			)) {
 				if (value !== 'auto') {
 					items.push({ name, value });
 				}
@@ -378,13 +414,15 @@ Project.languages = {
 		return items;
 	},
 	createValidItems: function () {
-		const items = [] as any[];
-		const languages = Local.get('languages');
+		const items: Array<{ name: string; value: string }> = [];
+		const languages = Local.get!('languages');
 		if (languages) {
 			const langList = new Set(
-				Project.data.localization.languages.map((lang: any) => lang.name)
+				Project.data!.localization.languages.map((lang: { name: string }) => lang.name)
 			);
-			for (const [value, name] of Object.entries(languages)) {
+			for (const [value, name] of Object.entries(
+				languages as unknown as Record<string, string>
+			)) {
 				if (value === 'auto' || langList.has(value)) {
 					items.push({ name, value });
 				}

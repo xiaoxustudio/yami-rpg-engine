@@ -4,18 +4,26 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIProgressBar = {
+	interface UIProgressBarShape {
+		[k: string]: any;
+	}
+	interface UIProgressBarData {
+		color: { [k: string]: unknown };
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: any;
+	}
+	const UIProgressBar: UIProgressBarShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIProgressBar.initialize = function (this: any) {
+	UIProgressBar.initialize = function (this: typeof UIProgressBar) {
 		if (!$('#uiProgressBar-display')) return;
 		$('#uiProgressBar-display').loadItems([
 			{ name: 'Stretch', value: 'stretch' },
@@ -100,7 +108,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIProgressBar.create = function (this: any) {
+	UIProgressBar.create = function (this: typeof UIProgressBar) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -133,7 +141,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIProgressBar.open = function (this: any, node: any) {
+	UIProgressBar.open = function (this: typeof UIProgressBar, node: UIProgressBarData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -158,7 +166,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIProgressBar.close = function (this: any) {
+	UIProgressBar.close = function (this: typeof UIProgressBar) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -167,7 +175,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIProgressBar.update = function (this: any, node: any, key: any, value: any) {
+	UIProgressBar.update = function (
+		this: typeof UIProgressBar,
+		node: UIProgressBarData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -206,7 +219,7 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIProgressBar.paramInput = function (this: any, event: any) {
+	UIProgressBar.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		UIProgressBar.update(UIProgressBar.target, Inspector.getKey!(this), read(this));
 	};
 

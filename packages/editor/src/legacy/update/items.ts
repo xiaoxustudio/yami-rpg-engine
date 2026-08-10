@@ -3,23 +3,23 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateItems = function (verNum: any) {
-	if (verNum < Updater.getVersionNumber('1.0.122')) {
+Updater.updateItems = function (verNum: number) {
+	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const items = Data.items;
-		const keys = Object.keys((Inspector.fileItem as any).create());
-		for (const [guid, sItem] of Object.entries(items)) {
+		const keys = Object.keys(Inspector.fileItem.create());
+		for (const [guid, sItem] of Object.entries<any>(items)) {
 			const meta = Data.manifest.guidMap[guid];
 			if (meta === undefined) {
 				throw new Error(`Missing metadata: ${guid}`);
 			}
-			const dItem = (Inspector.fileItem as any).create();
+			const dItem = Inspector.fileItem.create();
 			for (const key of keys) {
-				if (key in (sItem as any)) {
-					dItem[key] = (sItem as any)[key];
+				if (key in sItem) {
+					dItem[key] = sItem[key];
 				}
 			}
 			items[guid] = dItem;
-			(File.planToSave as any)(meta);
+			File.planToSave!(meta);
 		}
 	}
 };

@@ -92,7 +92,7 @@ export class FolderItem {
 					continue;
 				}
 				const promise = FSP.stat(File.path!(path), bigint);
-				(promise as any).path = path;
+				promise.path = path;
 				promises[i] = promise;
 			}
 		}
@@ -110,7 +110,8 @@ export class FolderItem {
 			if (item === undefined || item.stats.mtimeMs !== stats.mtimeMs) {
 				const name = files[i].name;
 				const extname = Path.extname(name);
-				const type = (extnameToTypeMap as any)[extname.toLowerCase()] ?? 'other';
+				const type =
+					(extnameToTypeMap as Record<string, string>)[extname.toLowerCase()] ?? 'other';
 				try {
 					item = new FileItem(name, extname, path, type, stats);
 					if (item.promise instanceof Promise) {

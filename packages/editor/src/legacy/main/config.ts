@@ -9,38 +9,40 @@ import { Scene } from '@/scene/scene-window.ts';
 import { Title } from '@/title/title-bar.ts';
 import { UI } from '@/ui/ui-window.ts';
 
-Editor.saveConfig = function (this: any) {
+type LayoutConfigShape = Parameters<NonNullable<typeof Layout.saveToConfig>>[0];
+
+Editor.saveConfig = function (this: typeof Editor) {
 	const { config } = this;
 	if (!config) {
 		return;
 	}
 	try {
-		(Title.saveToConfig as any)(config);
-		(Layout.saveToConfig as any)(config);
+		Title.saveToConfig!(config);
+		Layout.saveToConfig!(config as LayoutConfigShape);
 		Scene.saveToConfig!(config);
-		(UI.saveToConfig as any)(config);
+		UI.saveToConfig(config as { colors: Record<string, any> });
 		Animation.saveToConfig!(config);
-		(Particle.saveToConfig as any)(config);
+		Particle.saveToConfig!(config as { colors: Record<string, string> });
 
 		const json = JSON.stringify(config, null, 2);
 		const last = config.code;
 		if (json && json !== last) {
 			const path = Path.resolve!(GlobalPath, 'config.json');
-			FSP.writeFile!(path, json).catch((error: any) => {
-				(Log.throw as any)(error);
+			FSP.writeFile!(path, json).catch((error: unknown) => {
+				Log.throw!(error);
 			});
 		}
-	} catch (error: any) {
-		(Log.throw as any)(error);
+	} catch (error: unknown) {
+		Log.throw!(error);
 	}
 };
 
-Editor.loadConfig = function (this: any) {
+Editor.loadConfig = function (this: typeof Editor) {
 	const { config } = this;
 	// schema 兜底：旧配置或首次启动可能缺字段，缺失则用默认值 （与 Project/default.json 保持一致），避免下游直取炸
 	if (config) {
 		const colors = (config.colors ??= {});
-		const colorDefaults = {
+		const colorDefaults: Record<string, string> = {
 			sceneBackground: '00000000',
 			uiBackground: '00000000',
 			uiForeground: '000000ff',
@@ -48,11 +50,11 @@ Editor.loadConfig = function (this: any) {
 			particleBackground: '203660ff'
 		};
 		for (const key in colorDefaults) {
-			if ((colors as Record<string, any>)[key] === undefined)
-				(colors as Record<string, any>)[key] = (colorDefaults as Record<string, any>)[key];
+			if ((colors as Record<string, string>)[key] === undefined)
+				(colors as Record<string, string>)[key] = colorDefaults[key];
 		}
 		const dialogs = (config.dialogs ??= {});
-		const dialogDefaults = {
+		const dialogDefaults: Record<string, string> = {
 			new: '',
 			open: '',
 			deploy: '',
@@ -60,10 +62,8 @@ Editor.loadConfig = function (this: any) {
 			export: ''
 		};
 		for (const key in dialogDefaults) {
-			if ((dialogs as Record<string, any>)[key] === undefined)
-				(dialogs as Record<string, any>)[key] = (dialogDefaults as Record<string, any>)[
-					key
-				];
+			if ((dialogs as Record<string, string>)[key] === undefined)
+				(dialogs as Record<string, string>)[key] = dialogDefaults[key];
 		}
 		// scriptEditor：脚本编辑器模式与路径
 		if (!config.scriptEditor) {
@@ -76,13 +76,13 @@ Editor.loadConfig = function (this: any) {
 		if (config.language === undefined) config.language = '';
 		if (config.project === undefined) config.project = '';
 		// recent 必须是数组：旧配置可能存了 null/对象/字符串等非数组值，下游 Editor.updatePath 会调 items.find/remove/unshift，非数组会炸
-		if (!Array.isArray(config.recent)) config.recent = [] as any[];
+		if (!Array.isArray(config.recent)) config.recent = [];
 		if (config.zoom === undefined) config.zoom = 1;
 	}
-	(Title.loadFromConfig as any)(config);
-	(Layout.loadFromConfig as any)(config);
-	Scene.loadFromConfig!(config);
-	(UI.loadFromConfig as any)(config);
-	Animation.loadFromConfig!(config);
-	(Particle.loadFromConfig as any)(config);
+	Title.loadFromConfig!(config!);
+	Layout.loadFromConfig!(config! as LayoutConfigShape);
+	Scene.loadFromConfig!(config!);
+	UI.loadFromConfig(config! as { colors: Record<string, any> });
+	Animation.loadFromConfig!(config!);
+	Particle.loadFromConfig!(config! as { colors: Record<string, string> });
 };

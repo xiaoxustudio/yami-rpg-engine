@@ -57,7 +57,7 @@ UI.Window = class WindowElement extends UI.Element {
 			this._layout = value;
 			switch (value) {
 				case 'normal':
-					delete (this as any).resize;
+					delete (this as unknown as { resize?: unknown }).resize;
 					break;
 				case 'horizontal-grid':
 					this.resize = WindowElement.horizontalGridResize;

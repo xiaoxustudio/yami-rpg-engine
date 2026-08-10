@@ -57,51 +57,51 @@ const windowApi = {
 	getTopWindow: () => Window.getTopWindow()
 };
 const glApi = { maxTexSize: GL.maxTexSize };
-const menuState = () => (Menu as any).state;
+const menuState = () => Menu.state;
 const clipboardApi = {
 	write: (type: string, data: any) => Clipboard?.write?.(type, data),
 	read: (type: string) => Clipboard?.read?.(type)
 };
 const referenceApi = {
-	findRelated: (guid: string) => (Reference as any).findRelated(guid),
-	openList: (list: any) => (Reference as any).openList(list),
-	openRelated: (guid: string) => (Reference as any).openRelated(guid)
+	findRelated: (guid: string) => Reference.findRelated?.(guid),
+	openList: (list: any) => Reference.openList?.(list),
+	openRelated: (guid: string) => Reference.openRelated?.(guid)
 };
 const localize = { createGetter: (key: string) => Local.createGetter(key) };
 const editorApi = { config: Editor.config };
 const directoryApi = {
-	sortFiles: (dir: any) => (Directory as any).sortFiles(dir),
-	getFolder: (path: string) => (Directory as any).getFolder(path),
-	update: () => (Directory as any).update(),
-	deleteFiles: (files: any[]) => (Directory as any).deleteFiles(files),
-	moveFiles: (path: string, dir: any[]) => (Directory as any).moveFiles(path, dir),
+	sortFiles: (dir: any) => Directory.sortFiles?.(dir),
+	getFolder: (path: string) => Directory.getFolder?.(path),
+	update: () => Directory.update?.(),
+	deleteFiles: (files: any[]) => Directory.deleteFiles?.(files),
+	moveFiles: (path: string, dir: any[]) => Directory.moveFiles?.(path, dir),
 	copyFiles: (path: string, dir: any[], prefix?: string) =>
-		(Directory as any).copyFiles(path, dir, prefix),
-	saveFiles: (files: any[]) => (Directory as any).saveFiles(files),
-	readdir: (paths: string[]) => (Directory as any).readdir(paths),
+		Directory.copyFiles?.(path, dir, prefix),
+	saveFiles: (files: any[]) => Directory.saveFiles?.(files),
+	readdir: (paths: string[]) => Directory.readdir?.(paths),
 	get assets() {
-		return (Directory as any).assets;
+		return Directory.assets;
 	},
 	get inoMap() {
-		return (Directory as any).inoMap;
+		return Directory.inoMap;
 	}
 };
 const fileSystemApi = {
 	path: (p: string) => File.path(p),
-	route: (p: string) => (File as any).route(p),
-	getPath: (guid: string) => (File as any).getPath(guid),
+	route: (p: string) => File.route?.(p),
+	getPath: (guid: string) => File.getPath?.(guid),
 	getFileName: (dir: string, name: string, ext?: string) =>
-		(File as any).getFileName(dir, name, ext),
-	getImageResolution: (p: string) => (File as any).getImageResolution(p),
-	showInExplorer: (p: string) => (File as any).showInExplorer(p),
-	showOpenDialog: (options: any) => (File as any).showOpenDialog(options),
-	showSaveDialog: (options: any) => (File as any).showSaveDialog(options),
+		File.getFileName?.(dir, name, ext),
+	getImageResolution: (p: string) => File.getImageResolution?.(p),
+	showInExplorer: (p: string) => File.showInExplorer?.(p),
+	showOpenDialog: (options: any) => File.showOpenDialog?.(options),
+	showSaveDialog: (options: any) => File.showSaveDialog?.(options),
 	mkdir: (p: string, options?: any) => FSP.mkdir(p, options),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
 	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
 	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
 	existsSync: (p: string) => FSP.existsSync(p),
-	addOversizeImagePaths: (p: string) => (FileItem as any).addOversizeImagePaths(p)
+	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)
 };
 const pathUtil = {
 	dirname: (p: string) => Path.dirname(p),

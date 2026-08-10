@@ -2,9 +2,9 @@ import { ipcRenderer } from 'electron';
 import nodeFs from 'node:fs';
 
 export const FS = nodeFs;
-export const FSP = (FS as any).promises ?? ({} as any);
+export const FSP = (FS.promises ?? {}) as unknown as Record<string, any>;
 
-FSP.writeFile = function (path: any, text: any, check = false as any) {
+FSP.writeFile = function (path: string, text: string | Buffer, check = false) {
 	const { invoke } = ipcRenderer;
 	return invoke('write-file', path, text, check);
 };

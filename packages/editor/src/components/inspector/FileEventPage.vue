@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -40,10 +41,10 @@ const local = useLocalStore();
 
 const onParamInput = (event: any) => {
 	const target = event?.target ?? document.activeElement;
-	(window as any).Inspector?.fileEvent?.paramInput?.({ target });
+	Inspector?.fileEvent?.paramInput?.({ target });
 };
 const onTypeWrite = (value: any) => {
-	(window as any).Inspector?.fileEvent?.typeWrite?.({ value });
+	Inspector?.fileEvent?.typeWrite?.({ value });
 };
 
 onMounted(() => {

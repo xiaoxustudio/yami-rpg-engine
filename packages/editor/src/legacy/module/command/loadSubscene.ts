@@ -19,7 +19,7 @@ Command.cases.loadSubscene = new CommandSchema({
 			.push(Command.parseVariableNumber(shiftY));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get('command.loadSubscene') + Token(': ') },
+			{ text: Local.get!('command.loadSubscene') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

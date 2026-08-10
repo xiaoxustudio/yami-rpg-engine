@@ -26,7 +26,7 @@ SceneShift.initialize = function () {
 	);
 };
 
-SceneShift.open = function (callback: any) {
+SceneShift.open = function (callback: (() => void) | null) {
 	this.callback = callback;
 	Window.open!('scene-shift');
 	write($('#scene-shift-x'), 0);
@@ -34,11 +34,11 @@ SceneShift.open = function (callback: any) {
 	getFocus($('#scene-shift-x'), 'all');
 };
 
-SceneShift.windowClosed = function (event: any) {
+SceneShift.windowClosed = function (event: Event) {
 	SceneShift.callback = null;
 };
 
-SceneShift.confirm = function (event: any) {
+SceneShift.confirm = function (event: Event) {
 	const x = read($('#scene-shift-x'));
 	const y = read($('#scene-shift-y'));
 	if (x === 0 && y === 0) {

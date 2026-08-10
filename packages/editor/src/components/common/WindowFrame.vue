@@ -75,7 +75,8 @@ const on = (
 defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement &
+		Record<'open' | 'close' | 'maximize' | 'unmaximize' | 'focus' | 'blur' | 'setTitle' | 'absolute' | 'setPosition' | 'on', any>;
 	if (!el) return;
 	el.open = open;
 	el.close = close;

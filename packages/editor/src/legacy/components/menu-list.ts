@@ -5,8 +5,8 @@ interface MenuListElement extends HTMLElement {
 	callback: (() => void) | null;
 	dataItems: MenuItem[] | null;
 	selection: HTMLElement | null;
-	popupTimer: any;
-	closeTimer: any;
+	popupTimer: ReturnType<typeof setTimeout> | null;
+	closeTimer: ReturnType<typeof setTimeout> | null;
 	parent: MenuApi | null;
 	submenu: MenuApi | null;
 	buttonPressed: boolean;
@@ -14,15 +14,15 @@ interface MenuListElement extends HTMLElement {
 	parentMenuItem: HTMLElement | null;
 	popup(options: MenuOptions, items: MenuItem[]): void;
 	computeMenuWidth(): void;
-	close(...args: unknown[]): any;
-	clear(...args: unknown[]): any;
-	createItem(...args: unknown[]): any;
-	select(...args: unknown[]): any;
-	unselect(...args: unknown[]): any;
+	close(...args: unknown[]): unknown;
+	clear(...args: unknown[]): unknown;
+	createItem(...args: unknown[]): unknown;
+	select(...args: unknown[]): unknown;
+	unselect(...args: unknown[]): unknown;
 	reselect(offset: number): void;
 	popupSubmenu(delay: number): void;
 	closeSubmenu(delay: number): void;
-	pointerenter(event: any): void;
+	pointerenter(event: Event): void;
 }
 
 export function attachMenuListApi(el: HTMLElement): void {
@@ -32,7 +32,7 @@ export function attachMenuListApi(el: HTMLElement): void {
 	box.computeMenuWidth = menu.computeMenuWidth;
 	box.close = menu.close;
 	box.clear = menu.clear;
-	box.createItem = menu.createItem as unknown as (...args: unknown[]) => any;
+	box.createItem = menu.createItem as unknown as (...args: unknown[]) => unknown;
 	box.select = menu.select;
 	box.unselect = menu.unselect;
 	box.reselect = menu.reselect;

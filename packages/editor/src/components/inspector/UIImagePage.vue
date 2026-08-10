@@ -347,6 +347,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -364,7 +365,7 @@ const local = useLocalStore();
 
 const onParamInput = (event: any) => {
 	const target = event?.target ?? document.activeElement;
-	(window as any).Inspector?.uiElement?.paramInput?.({ target });
+	Inspector?.uiElement?.paramInput?.({ target });
 };
 
 onMounted(() => {

@@ -44,9 +44,9 @@ const emit = defineEmits<{
 	'update:modelValue': [value: any];
 }>();
 
-const state = reactive({
+const state = reactive<{ fileValue: string; varValue: any }>({
 	fileValue: '',
-	varValue: null as any
+	varValue: null
 });
 
 const ym = ref<{
@@ -90,7 +90,7 @@ const write = (value: any): void => {
 	}
 };
 
-const switchMode = (target?: string): void => ym.value?.switch(target as any);
+const switchMode = (target?: string): void => ym.value?.switch(target);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const getFocus = (mode: any): any => ym.value?.getFocus(mode);
@@ -108,7 +108,8 @@ watch(
 );
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement &
+		Record<'read' | 'write' | 'switch' | 'enable' | 'disable' | 'getFocus' | 'on' | 'mode' | 'fileBox' | 'varBox', any>;
 	if (!el) return;
 	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	el.fileBox = getChildRoot(fileBoxRef.value);

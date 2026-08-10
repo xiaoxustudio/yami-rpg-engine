@@ -15,7 +15,7 @@ export const useCommandStore = defineStore('command', () => {
 		EventEditor?.initialize?.();
 	}
 
-	function open(target: any) {
+	function open(target: string) {
 		EventEditor?.open?.(target);
 	}
 

@@ -363,7 +363,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 		vertices: new Float32Array(28),
 		angles: new Float64Array(4),
 		array: new Float64Array(6),
-		vertexLength: null as any,
-		drawingLength: null as any
+		vertexLength: null as unknown as number,
+		drawingLength: null as unknown as number
 	};
 };

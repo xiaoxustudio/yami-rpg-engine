@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FilterBox from '@app/components/common/FilterBox.vue';
@@ -44,7 +45,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onInput = () => {
-	(window as any).Command?.cases?.tintImage?.input?.();
+	Command?.cases?.tintImage?.input?.();
 };
 
 onMounted(() => {

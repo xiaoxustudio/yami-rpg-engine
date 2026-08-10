@@ -3,15 +3,26 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const TilemapGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+interface TilemapTarget {
+	dataValue: {
+		type: string;
+		presetId: string;
+		variable: { type: string; key: string };
+	};
+	input: (getter: Record<string, any>) => void;
+	isPluginInput?: boolean;
+}
+
+export const TilemapGetter: AccessorBaseShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
-TilemapGetter.initialize = function (this: any) {
+TilemapGetter.initialize = function (this: typeof TilemapGetter) {
 	if (!$('#tilemapGetter-type')) return;
 	$('#tilemapGetter-type').loadItems([
 		{ name: 'Event Trigger Tilemap', value: 'trigger' },
@@ -26,10 +37,10 @@ TilemapGetter.initialize = function (this: any) {
 			{ case: 'variable', targets: [$('#tilemapGetter-variable')] }
 		]);
 
-	on($('#tilemapGetter-confirm'), 'click', this.confirm);
+	on($('#tilemapGetter-confirm'), 'click', this.confirm!);
 };
 
-TilemapGetter.open = function (this: any, target: any) {
+TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget) {
 	this.target = target;
 	Window.open!('tilemapGetter');
 
@@ -52,10 +63,10 @@ TilemapGetter.open = function (this: any, target: any) {
 	getFocus($('#tilemapGetter-type'));
 };
 
-TilemapGetter.confirm = function (this: any, event: any) {
+TilemapGetter.confirm = function (this: typeof TilemapGetter, event: Event) {
 	const read = getElementReader('tilemapGetter');
 	const type = read('type');
-	let getter;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'trigger':
 			getter = { type };
@@ -77,6 +88,6 @@ TilemapGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('tilemapGetter');
 }.bind(TilemapGetter);

@@ -10,20 +10,23 @@ interface PropertyKeyConfig {
 	value: string;
 	cases?: string[];
 	uiName?: string;
-	default?: any;
+	default?: unknown;
 	targets?: string[];
 }
 
-type ParserFn = (value: any, get: (key: string) => string, name: string) => string;
+type ParserFn = (value: unknown, get: (key: string) => string, name: string) => string;
 
 interface PropertyWindowConfig {
 	prefix: string;
 	locale: string;
 	keys: PropertyKeyConfig[];
-	parseValue?: (key: string, value: any, get: (key: string) => string) => string;
-	parsers?: Record<string, ParserFn>;
-	init?: (this: any) => void;
-	openData?: (defaults: Record<string, any>, key: string, value: any) => void;
+	parseValue?: (key: string, value: unknown, get: (key: string) => string) => string;
+	parsers?: Record<
+		string,
+		(value: unknown, get: (key: string) => string, name: string) => string
+	>;
+	init?: (this: PropertyWindow) => void;
+	openData?: (defaults: Record<string, unknown>, key: string, value: unknown) => void;
 	saveData?: (key: string, read: (k: string) => any) => any;
 	subRelates?: Array<{
 		selector: string;
@@ -33,37 +36,37 @@ interface PropertyWindowConfig {
 
 // 属性窗口返回契约
 interface PropertyWindow {
-	target: any;
+	target: (Record<string, unknown> & { save?: (() => unknown) | null }) | null;
 	initialize: (() => void) | null;
-	parse: ((data: { key: string; value: any }, listData?: boolean) => string) | null;
-	open: ((data?: { key: string; value: any }) => void) | null;
-	save: (() => { key: string; value: any }) | null;
-	confirm: ((event: Event) => { key: string; value: any }) | null;
+	parse: ((data: { key: string; value: unknown }, listData?: boolean) => string) | null;
+	open: ((data?: { key: string; value: unknown }) => void) | null;
+	save: (() => { key: string; value: unknown }) | null;
+	confirm: ((event: Event) => { key: string; value: unknown }) | null;
 }
 
 export function createPropertyWindow(config: PropertyWindowConfig): PropertyWindow {
 	const { prefix, locale, keys, parseValue, parsers, init, openData, saveData, subRelates } =
 		config;
 
-	const PropertyWindow = {
-		target: null as any,
-		initialize: null as any,
-		parse: null as any,
-		open: null as any,
-		save: null as any,
-		confirm: null as any
+	const PropertyWindow: PropertyWindow = {
+		target: null,
+		initialize: null,
+		parse: null,
+		open: null,
+		save: null,
+		confirm: null
 	};
 
-	PropertyWindow.initialize = function (this: any) {
+	PropertyWindow.initialize = function (this: PropertyWindow) {
 		if (!$(`#${prefix}-property-key`)) return;
-		const items = keys.map((k: any) => ({ name: k.name, value: k.value }));
+		const items = keys.map((k: PropertyKeyConfig) => ({ name: k.name, value: k.value }));
 		$(`#${prefix}-property-key`).loadItems(items);
 
-		const relates = keys.map((k: any) => {
+		const relates = keys.map((k: PropertyKeyConfig) => {
 			const caseValue = k.cases ?? k.value;
 			const uiName = k.uiName ?? k.value;
 			const targets = k.targets
-				? k.targets.map((id: any) => $(`#${prefix}-property-${id}`))
+				? k.targets.map((id: string) => $(`#${prefix}-property-${id}`))
 				: [$(`#${prefix}-property-${uiName}`)];
 			return { case: caseValue, targets };
 		});
@@ -71,9 +74,9 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 
 		if (subRelates) {
 			for (const sr of subRelates) {
-				const subRelates2 = sr.cases.map((c: any) => ({
+				const subRelates2 = sr.cases.map((c: { case: string; targets: string[] }) => ({
 					case: c.case,
-					targets: c.targets.map((id: any) => $(`#${prefix}-property-${id}`))
+					targets: c.targets.map((id: string) => $(`#${prefix}-property-${id}`))
 				}));
 				$(`#${prefix}-property-${sr.selector}`).enableHiddenMode().relate(subRelates2);
 			}
@@ -84,7 +87,11 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		$(`#${prefix}-property-confirm`).on('click', this.confirm);
 	};
 
-	PropertyWindow.parse = function (this: any, { key, value }: any, listData: any) {
+	PropertyWindow.parse = function (
+		this: PropertyWindow,
+		{ key, value }: { key: string; value: unknown },
+		listData?: boolean
+	) {
 		const get = Local.createGetter!(locale);
 		const name = get(key).replace('.', Token('.'));
 		let string;
@@ -104,7 +111,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		return string;
 	};
 
-	PropertyWindow.open = function (this: any, data: any) {
+	PropertyWindow.open = function (this: PropertyWindow, data?: { key: string; value: unknown }) {
 		const defaultKey = keys[0].value;
 		const defaultVal = keys[0].default;
 		const key = data?.key ?? defaultKey;
@@ -112,7 +119,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 
 		Window.open!(`${prefix}-property`);
 
-		const defaults = {} as Record<string, any>;
+		const defaults = {} as Record<string, unknown>;
 		for (const k of keys) {
 			defaults[k.uiName ?? k.value] = k.default;
 		}
@@ -131,7 +138,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		getFocus($(`#${prefix}-property-key`));
 	};
 
-	PropertyWindow.save = function (this: any) {
+	PropertyWindow.save = function (this: PropertyWindow) {
 		const read = getElementReader(`${prefix}-property`);
 		const key = read('key');
 		let value;
@@ -139,7 +146,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		if (saveData) {
 			value = saveData(key, read);
 		} else {
-			const keyObj = keys.find((k: any) => k.value === key);
+			const keyObj = keys.find((k: PropertyKeyConfig) => k.value === key);
 			value = read(keyObj?.uiName ?? key);
 		}
 
@@ -147,8 +154,8 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		return { key, value };
 	};
 
-	PropertyWindow.confirm = function (this: any, event: any) {
-		return PropertyWindow.target?.save?.();
+	PropertyWindow.confirm = function (this: PropertyWindow, event: Event) {
+		return PropertyWindow.target?.save?.() as { key: string; value: unknown };
 	};
 
 	return PropertyWindow;

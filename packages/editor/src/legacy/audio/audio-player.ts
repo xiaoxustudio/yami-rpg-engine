@@ -7,7 +7,7 @@ export class AudioPlayer {
 	audio: HTMLAudioElement & { path: string };
 	source: MediaElementAudioSourceNode;
 	panner: StereoPannerNode;
-	reverb: any | null;
+	reverb: Reverb | null;
 
 	constructor() {
 		const context = AudioManager.context!;
@@ -51,7 +51,7 @@ export class AudioPlayer {
 		this.panner.pan.value = Math.clamp(pan, -1, 1);
 	}
 
-	setReverb(dry: any, wet: any) {
+	setReverb(dry: number, wet: number) {
 		if (this.reverb === null && !(dry === 1 && wet === 0)) {
 			new Reverb(this);
 		}

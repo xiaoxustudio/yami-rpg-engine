@@ -3,50 +3,77 @@ import { GL } from '@/webgl/webgl-init.ts';
 
 // undefined按位运算等价于0，因此不会产生NaN
 
+interface TilemapData {
+	changed?: boolean;
+	code?: string;
+	tiles: Uint32Array;
+	tilesetMap: Record<string, string>;
+	reverseMap?: Record<string, number>;
+	width: number;
+	height: number;
+}
+interface SceneData {
+	terrainChanged?: boolean;
+	terrainArray?: Uint8Array;
+	terrains?: string;
+	width: number;
+	height: number;
+	objects: Array<{ class: string; children?: unknown[] }>;
+}
+
 export const Codec = {
 	textEncoder: new TextEncoder(),
 	textDecoder: new TextDecoder(),
-	encodeFile: null as ((buffer: any) => any) | null,
+	encodeFile: null as ((buffer: Uint8Array | string) => Uint8Array) | null,
 	encodeScene: null as ((scene: any) => any) | null,
 	decodeScene: null as ((scene: any) => any) | null,
 	encodeTilemap: null as ((tilemap: any) => void) | null,
 	decodeTilemap: null as ((tilemap: any) => any) | null,
-	encodeTiles: null as ((tiles: any) => any) | null,
-	decodeTiles: null as ((code: any, width: any, height: any) => any) | null,
-	encodeTerrains: null as ((terrains: any) => any) | null,
-	decodeTerrains: null as ((code: any, width: any, height: any) => any) | null,
-	encodeTeamData: null as ((data: any) => any) | null,
-	decodeTeamData: null as ((code: any, length: any) => Uint8Array) | null,
-	encodeClone: null as ((array: any, index: any, count: any) => any) | null,
-	decodeClone: null as ((array: any, index: any) => { index: number; count: number }) | null,
-	getTilemaps: null as ((scene: any) => any) | null
+	encodeTiles: null as ((tiles: Uint32Array) => string) | null,
+	decodeTiles: null as ((code: Uint8Array, width: number, height: number) => Uint32Array) | null,
+	encodeTerrains: null as ((terrains: Uint8Array) => string) | null,
+	decodeTerrains: null as
+		| ((code: Uint8Array, width: number, height: number) => Uint8Array)
+		| null,
+	encodeTeamData: null as ((data: any) => string) | null,
+	decodeTeamData: null as ((code: Uint8Array, length: number) => Uint8Array) | null,
+	encodeClone: null as ((array: Uint8Array, index: number, count: number) => number) | null,
+	decodeClone: null as
+		| ((array: Uint8Array, index: number) => { index: number; count: number })
+		| null,
+	getTilemaps: null as ((scene: any) => any[]) | null
 };
 
-Codec.encodeFile = function (buffer: any) {
+Codec.encodeFile = function (buffer: Uint8Array | string) {
 	if (typeof buffer === 'string') {
 		buffer = this.textEncoder.encode(buffer);
 	}
+	const bytes = buffer as Uint8Array;
 	for (let i = 0; i < 0x10; i++) {
-		buffer[i] += 0x80;
+		bytes[i] += 0x80;
 	}
-	return buffer;
+	return bytes;
 };
 
-Codec.encodeScene = function (scene: any) {
+Codec.encodeScene = function (scene: SceneData) {
 	const tilemaps = this.getTilemaps!(scene);
 	for (const tilemap of tilemaps) {
-		Codec.encodeTilemap!(tilemap);
+		Codec.encodeTilemap!(tilemap as any);
 	}
 	if (scene.terrainChanged) {
 		scene.terrainChanged = false;
-		scene.terrains = this.encodeTerrains!(scene.terrainArray);
+		scene.terrains = this.encodeTerrains!(scene.terrainArray!);
 	}
 	return scene;
 };
 
-Codec.decodeScene = function (scene: any) {
+Codec.decodeScene = function (scene: SceneData) {
 	if (scene.terrainArray === undefined) {
-		const terrainArray = this.decodeTerrains!(scene.terrains, scene.width, scene.height);
+		const terrainArray = this.decodeTerrains!(
+			scene.terrains! as unknown as Uint8Array,
+			scene.width,
+			scene.height
+		);
 		Object.defineProperty(scene, 'terrainArray', {
 			writable: true,
 			value: terrainArray
@@ -63,11 +90,11 @@ Codec.decodeScene = function (scene: any) {
 	return scene;
 };
 
-Codec.encodeTilemap = function (tilemap: any) {
+Codec.encodeTilemap = function (tilemap: TilemapData) {
 	if (tilemap.changed) {
 		tilemap.changed = false;
 		tilemap.code = Codec.encodeTiles!(tilemap.tiles);
-		const flags = {} as Record<string, any>;
+		const flags = {} as Record<string, boolean>;
 		const tilesetMap = tilemap.tilesetMap;
 		const indices = Object.keys(tilesetMap);
 		for (const index of indices) {
@@ -80,8 +107,8 @@ Codec.encodeTilemap = function (tilemap: any) {
 			if (index === 0) continue;
 			flags[index] = true;
 		}
-		const trimmedMap = {} as Record<string, any>;
-		const reverseMap = {} as Record<string, any>;
+		const trimmedMap = {} as Record<string, string>;
+		const reverseMap = {} as Record<string, number>;
 		for (const index of indices) {
 			if (flags[index]) {
 				const guid = tilesetMap[index];
@@ -94,20 +121,24 @@ Codec.encodeTilemap = function (tilemap: any) {
 	}
 };
 
-Codec.decodeTilemap = function (tilemap: any) {
-	const tiles = Codec.decodeTiles!(tilemap.code, tilemap.width, tilemap.height);
+Codec.decodeTilemap = function (tilemap: TilemapData) {
+	const tiles = Codec.decodeTiles!(
+		tilemap.code! as unknown as Uint8Array,
+		tilemap.width,
+		tilemap.height
+	);
 	Object.defineProperty(tilemap, 'tiles', { writable: true, value: tiles });
 	Object.defineProperty(tilemap, 'changed', { writable: true, value: false });
 	Object.defineProperty(tilemap, 'reverseMap', { writable: true, value: {} });
 	const { tilesetMap, reverseMap } = tilemap;
 	const entries = Object.entries(tilesetMap);
 	for (const [index, guid] of entries) {
-		(reverseMap as any)[guid as string] = parseInt(index);
+		reverseMap![guid as string] = parseInt(index);
 	}
 	return tilemap;
 };
 
-Codec.encodeTiles = function (tiles) {
+Codec.encodeTiles = function (tiles: Uint32Array) {
 	const { encodeClone } = this;
 	const TILES = tiles;
 	const TILES_LENGTH = TILES.length;
@@ -155,9 +186,9 @@ Codec.encodeTiles = function (tiles) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTiles = function (code, width, height) {
+Codec.decodeTiles = function (code: Uint8Array, width: number, height: number) {
 	const { decodeClone } = this;
-	const BYTES = this.textEncoder.encode(code);
+	const BYTES = code;
 	const BYTES_LENGTH = BYTES.length;
 	const TILES = Scene.createTiles(width, height);
 	const TILES_LENGTH = TILES.length;
@@ -212,7 +243,7 @@ Codec.decodeTiles = function (code, width, height) {
 	return TILES;
 };
 
-Codec.encodeTerrains = function (terrains: any) {
+Codec.encodeTerrains = function (terrains: Uint8Array) {
 	const { encodeClone } = this;
 	const TERRAINS = terrains;
 	const LENGTH = TERRAINS.length;
@@ -259,9 +290,9 @@ Codec.encodeTerrains = function (terrains: any) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTerrains = function (code: any, width: any, height: any) {
+Codec.decodeTerrains = function (code: Uint8Array, width: number, height: number) {
 	const { decodeClone } = this;
-	const BYTES = this.textEncoder.encode(code);
+	const BYTES = code;
 	const BYTES_LENGTH = BYTES.length;
 	const TERRAINS = Scene.createTerrains(width, height);
 	const TERRAINS_LENGTH = TERRAINS.length;
@@ -311,7 +342,7 @@ Codec.decodeTerrains = function (code: any, width: any, height: any) {
 	return TERRAINS;
 };
 
-Codec.encodeTeamData = function (data) {
+Codec.encodeTeamData = function (data: Uint8Array) {
 	const DATA = data;
 	const LENGTH = DATA.length;
 	const BYTES = GL.arrays[0].uint8;
@@ -331,8 +362,8 @@ Codec.encodeTeamData = function (data) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTeamData = function (code: any, length: any) {
-	const BYTES = this.textEncoder.encode(code);
+Codec.decodeTeamData = function (code: Uint8Array, length: number) {
+	const BYTES = code;
 	const BYTES_LENGTH = BYTES.length;
 	const DATA_LENGTH = ((length + 1) / 2) * length;
 	const DATA = new Uint8Array(DATA_LENGTH);
@@ -359,7 +390,7 @@ Codec.decodeTeamData = function (code: any, length: any) {
 	return DATA;
 };
 
-Codec.encodeClone = function (array, index, count) {
+Codec.encodeClone = function (array: Uint8Array, index: number, count: number): number {
 	const bits = Math.ceil(Math.log2(count + 1));
 	const bytes = Math.ceil(bits / 5);
 	for (let i = 0; i < bytes; i++) {
@@ -373,7 +404,7 @@ Codec.encodeClone = function (array, index, count) {
 
 Codec.decodeClone = (function IIFE() {
 	const response = { index: 0, count: 0 };
-	return (array: any, index: any) => {
+	return (array: Uint8Array, index: number) => {
 		let count = 0;
 		let code;
 		do {
@@ -387,11 +418,17 @@ Codec.decodeClone = (function IIFE() {
 })();
 
 Codec.getTilemaps = (function IIFE() {
-	const getTilemaps = (items: any, list: any) => {
+	const getTilemaps = (
+		items: Array<{ class: string; children?: unknown[] }>,
+		list: unknown[]
+	) => {
 		for (const item of items) {
 			switch (item.class) {
 				case 'folder':
-					getTilemaps(item.children, list);
+					getTilemaps(
+						item.children as Array<{ class: string; children?: unknown[] }>,
+						list
+					);
 					continue;
 				case 'tilemap':
 					list.push(item);
@@ -400,7 +437,7 @@ Codec.getTilemaps = (function IIFE() {
 		}
 		return list;
 	};
-	return function (scene: any) {
+	return function (scene: SceneData) {
 		return getTilemaps(scene.objects, []);
 	};
 })();

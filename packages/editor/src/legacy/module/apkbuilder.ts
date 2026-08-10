@@ -4,20 +4,30 @@ import { addClass, clear, enable } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from './global.ts';
+
+interface ApkConfig {
+	[k: string]: unknown;
+}
+
+interface ApkLogEntry {
+	done: boolean;
+	msg: string;
+}
+
 export const ApkBuilder = new (class {
-	logs: any[] = [] as any[];
+	logs: ApkLogEntry[] = [];
 	constructor() {
-		ipcRenderer?.on?.('apk-log', (_: any, log: any) => {
+		ipcRenderer?.on?.('apk-log', (_: unknown, log: ApkLogEntry) => {
 			this.logs.push(log);
 			this.apkLog!(log);
 		});
 	}
-	build(cfg: any) {
+	build(cfg: ApkConfig) {
 		clear($('#export-apk-content'));
 		const config = this.process!(cfg);
 		ipcRenderer.invoke('build-apk', config);
 	}
-	apkLog(log: any) {
+	apkLog(log: ApkLogEntry) {
 		const text = document.createElement('div');
 		text.textContent = log.msg;
 		addClass(text, 'export-apk-major');
@@ -35,7 +45,7 @@ export const ApkBuilder = new (class {
 		enable($('#export-apk-button'));
 	}
 	clearLog() {
-		this.logs = [] as any[];
+		this.logs = [];
 	}
 	stopBuild() {
 		ipcRenderer.invoke('stop-build-apk').then(() => {
@@ -45,27 +55,24 @@ export const ApkBuilder = new (class {
 	isBuilding() {
 		return ipcRenderer.sendSync('isBuilding-apk');
 	}
-	processPathOnly(line: any) {
-		const pathPrefix = Path.resolve!(Path.dirname!((Editor.config as any).project), 'apk');
+	processPathOnly(line: string) {
+		const pathPrefix = Path.resolve!(Path.dirname!(Editor.config!.project!), 'apk');
 		if (typeof line === 'string' && line?.startsWith('@')) {
 			return Path.resolve!(TemplatesPath, 'Apk', line.replace('@', '.'));
 		} else if (typeof line === 'string' && line?.startsWith('$')) {
 			return Path.resolve!(pathPrefix, line.replace('$', '.'));
 		} else if (typeof line === 'string' && line?.startsWith('~')) {
-			return Path.resolve!(
-				Path.dirname!((Editor.config as any).project),
-				line.replace('~', '.')
-			);
+			return Path.resolve!(Path.dirname!(Editor.config!.project!), line.replace('~', '.'));
 		}
 		return line;
 	}
-	process(cfg: any) {
+	process(cfg: ApkConfig) {
 		const config = JSON.parse(JSON.stringify(cfg));
 		const list = Object.keys(config);
-		list.forEach((v: any) => {
+		list.forEach((v: string) => {
 			config[v] = this.processPathOnly!(config[v]);
 		});
-		config.projectPath = Path.dirname!((Editor.config as any).project);
+		config.projectPath = Path.dirname!(Editor.config!.project!);
 		console.log(config);
 		return config;
 	}

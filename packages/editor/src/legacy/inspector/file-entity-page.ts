@@ -7,33 +7,43 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { AttributeListInterface } from '@/tools/property-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
+type FileEntityData = {
+	icon: string;
+	clip: number[];
+	inherit: string;
+	attributes: unknown[];
+	events: unknown[];
+	scripts: unknown[];
+	[k: string]: any;
+};
+
 interface FileEntityPage {
-	target: any;
-	meta: any;
+	target: FileEntityData | null;
+	meta: { file: unknown } | null;
 	initialize: () => void;
 	create: () => object;
-	open: (entity: any, meta: any) => void;
+	open: (entity: FileEntityData, meta: { file: unknown }) => void;
 	close: () => void;
-	update: (entity: any, key: string, value: any) => void;
-	paramInput: (event: any) => void;
-	listChange: (event: any) => void;
+	update: (entity: FileEntityData, key: string, value: unknown) => void;
+	paramInput: (event: Event) => void;
+	listChange: (event: Event) => void;
 }
 
 function createFileEntityPage(name: string, inspectorKey: string): FileEntityPage {
 	const domKey = 'file' + name;
 	const entity = {
-		target: null as any,
-		meta: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any,
-		listChange: null as any
-	} as FileEntityPage;
+		target: null,
+		meta: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null,
+		listChange: null
+	} as unknown as FileEntityPage;
 
-	entity.initialize = function (this: any) {
+	entity.initialize = function (this: FileEntityPage) {
 		if (!$(`#${domKey}-attributes`)) return;
 		$(`#${domKey}-attributes`).bind(new AttributeListInterface());
 		$(`#${domKey}-events`).bind(new EventListInterface(this));
@@ -47,7 +57,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
-	entity.create = function (this: any) {
+	entity.create = function (this: FileEntityPage) {
 		return {
 			icon: '',
 			clip: [0, 0, 32, 32],
@@ -58,7 +68,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		};
 	};
 
-	entity.open = function (this: any, target: any, meta: any) {
+	entity.open = function (this: FileEntityPage, target: FileEntityData, meta: { file: unknown }) {
 		if (this.meta !== meta) {
 			this.target = target;
 			this.meta = meta;
@@ -72,7 +82,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.close = function (this: any) {
+	entity.close = function (this: FileEntityPage) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -84,29 +94,34 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		}
 	};
 
-	entity.update = function (this: any, target: any, key: any, value: any) {
+	entity.update = function (
+		this: FileEntityPage,
+		target: FileEntityData,
+		key: string,
+		value: unknown
+	) {
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'icon':
 			case 'clip':
 				if (target[key] !== value) {
-					target[key] = value;
-					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
+					(target as Record<string, unknown>)[key] = value;
+					getBrowserInstance()?.body?.updateIcon?.(this.meta!.file);
 				}
 				break;
 			case 'inherit':
 				if (target[key] !== value) {
-					target[key] = value;
+					(target as Record<string, unknown>)[key] = value;
 				}
 				break;
 		}
 	};
 
-	entity.paramInput = function (this: any, event: any) {
-		entity.update(entity.target, Inspector.getKey!(this), read(this));
+	entity.paramInput = function (this: HTMLElement, event: Event) {
+		entity.update(entity.target!, Inspector.getKey!(this), read(this));
 	};
 
-	entity.listChange = function (this: any, event: any) {
+	entity.listChange = function (this: FileEntityPage, event: Event) {
 		File.planToSave!(entity.meta);
 	};
 

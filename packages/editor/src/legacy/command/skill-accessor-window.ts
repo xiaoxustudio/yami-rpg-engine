@@ -3,14 +3,20 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const SkillGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	confirm: null as any
+interface SkillGetterShape extends AccessorBaseShape {
+	checkDataForPlugin: ((data: any) => boolean) | null;
+	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
+}
+
+export const SkillGetter: SkillGetterShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	checkDataForPlugin: null,
+	createDefaultForPlugin: null,
+	confirm: null
 };
 
 SkillGetter.initialize = function (this: any) {

@@ -3,32 +3,33 @@ import { ImageTexture } from '@/webgl/image-texture.ts';
 
 Scene.Textures = class Textures {
 	state: string;
+	[k: string]: any;
 
 	constructor() {
 		this.state = 'open';
-		(this as any)[''] = null;
+		this[''] = null;
 	}
 
 	append(texture: any) {
 		if (this.state === 'open') {
-			(this as any)[texture.base.guid] = texture;
+			this[texture.base.guid] = texture;
 		}
 	}
 
 	load(guid: any) {
-		if (!(this as any)[guid]) {
+		if (!this[guid]) {
 			const texture = new ImageTexture(guid);
 			if (texture.complete) {
-				(this as any)[guid] = texture;
+				this[guid] = texture;
 				return Promise.resolve().then(() => {
 					Scene.requestRendering!();
 					return texture;
 				});
 			}
-			(this as any)[guid] = new Promise((resolve: any) => {
+			this[guid] = new Promise((resolve: any) => {
 				texture.on('load', () => {
-					if (this.state === 'open' && (this as any)[guid] instanceof Promise) {
-						(this as any)[guid] = texture;
+					if (this.state === 'open' && this[guid] instanceof Promise) {
+						this[guid] = texture;
 						Scene.requestRendering!();
 						return resolve(texture);
 					}
@@ -37,7 +38,7 @@ Scene.Textures = class Textures {
 				});
 			});
 		}
-		return (this as any)[guid];
+		return this[guid];
 	}
 
 	destroy() {

@@ -50,8 +50,8 @@ const emit = defineEmits<{
 	'update:modelValue': [value: any];
 }>();
 
-const state = reactive({
-	varValue: null as any
+const state = reactive<{ varValue: any }>({
+	varValue: null
 });
 
 const ym = ref<{
@@ -89,7 +89,7 @@ const write = (value: any): void => {
 	}
 };
 
-const switchMode = (target?: string): void => ym.value?.switch(target as any);
+const switchMode = (target?: string): void => ym.value?.switch(target);
 
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
@@ -108,7 +108,11 @@ watch(
 );
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement &
+		Record<
+			'read' | 'write' | 'switch' | 'enable' | 'disable' | 'getFocus' | 'on' | 'mode' | 'numBox' | 'varBox',
+			any
+		>;
 	if (!el) return;
 	el.read = read;
 	el.write = write;
@@ -125,7 +129,7 @@ onMounted(() => {
 			el.mode = cls.includes('variable') ? 'variable' : 'constant';
 			el.numBox = (ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
 			el.varBox = getChildRoot(varBoxRef.value);
-			if (el.varBox) (el.varBox as any).isPluginInput = false;
+			if (el.varBox) el.varBox.isPluginInput = false;
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
@@ -133,7 +137,7 @@ onMounted(() => {
 	);
 	watch(varBoxRef, (val) => {
 		el.varBox = getChildRoot(val);
-		if (el.varBox) (el.varBox as any).isPluginInput = false;
+		if (el.varBox) el.varBox.isPluginInput = false;
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

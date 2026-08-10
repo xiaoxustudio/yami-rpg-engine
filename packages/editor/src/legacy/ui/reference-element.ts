@@ -4,25 +4,32 @@ import { Data } from '@/data/data-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { UI } from './ui-window.ts';
 
-UI.Reference = class ReferenceElement extends UI.Element {
-	_prefabId: any = undefined;
-	_synchronous: any = undefined;
-	historyEnabled = false;
-	prefab: any = null;
-	paths: any = {};
+type ReferenceNodeShape = {
+	class?: string;
+	presetId: string;
+	children: ReferenceNodeShape[];
+	[k: string]: unknown;
+};
 
-	constructor(data: any) {
+UI.Reference = class ReferenceElement extends UI.Element {
+	_prefabId: string | undefined = undefined;
+	_synchronous: boolean | undefined = undefined;
+	historyEnabled = false;
+	prefab: ReferenceElement | null = null;
+	paths: Record<string, boolean> = {};
+
+	constructor(data: { presetId: string; prefabId: string; synchronous?: boolean }) {
 		super(data);
 		this.paths[data.presetId] = true;
 		this.prefabId = data.prefabId;
-		this.synchronous = data.synchronous;
+		this.synchronous = data.synchronous!;
 	}
 
-	get prefabId() {
+	get prefabId(): string | undefined {
 		return this._prefabId;
 	}
 
-	set prefabId(value: any) {
+	set prefabId(value: string) {
 		if (this._prefabId !== value) {
 			const firstTime = this._prefabId === undefined;
 			this._prefabId = value;
@@ -47,11 +54,11 @@ UI.Reference = class ReferenceElement extends UI.Element {
 		}
 	}
 
-	get synchronous() {
+	get synchronous(): boolean | undefined {
 		return this._synchronous;
 	}
 
-	set synchronous(value: any) {
+	set synchronous(value: boolean) {
 		if (this._synchronous !== value) {
 			this._synchronous = value;
 			if (value) {
@@ -101,7 +108,7 @@ UI.Reference = class ReferenceElement extends UI.Element {
 		this.resize();
 	}
 
-	loadElement(node: any, parent: any) {
+	loadElement(node: ReferenceNodeShape, parent: ReferenceElement) {
 		const { presetId } = node;
 		const { paths } = parent;
 		if (!(presetId in paths)) {
@@ -116,10 +123,11 @@ UI.Reference = class ReferenceElement extends UI.Element {
 	}
 
 	update() {
-		this.prefab.destroyChildren();
-		this.prefab.children.length = 0;
-		for (const node of this.prefab.node.children) {
-			this.loadElement(node, this.prefab);
+		const prefab = this.prefab!;
+		prefab.destroyChildren();
+		prefab.children.length = 0;
+		for (const node of prefab.node.children) {
+			this.loadElement(node, prefab);
 		}
 	}
 
@@ -135,100 +143,100 @@ UI.Reference = class ReferenceElement extends UI.Element {
 				get anchorX() {
 					return 0;
 				}
-				set anchorX(value: any) {
+				set anchorX(value: number) {
 					transform.anchorX = value;
 					parent.resize();
 				}
 				get anchorY() {
 					return 0;
 				}
-				set anchorY(value: any) {
+				set anchorY(value: number) {
 					transform.anchorY = value;
 					parent.resize();
 				}
 				get x() {
 					return 0;
 				}
-				set x(value: any) {}
+				set x(value: number) {}
 				get x2() {
 					return 0;
 				}
-				set x2(value: any) {}
+				set x2(value: number) {}
 				get y() {
 					return 0;
 				}
-				set y(value: any) {}
+				set y(value: number) {}
 				get y2() {
 					return 0;
 				}
-				set y2(value: any) {}
+				set y2(value: number) {}
 				get width() {
 					return 0;
 				}
-				set width(value: any) {
+				set width(value: number) {
 					transform.width = value;
 					parent.resize();
 				}
 				get width2() {
 					return 1;
 				}
-				set width2(value: any) {
+				set width2(value: number) {
 					transform.width2 = value;
 					parent.resize();
 				}
 				get height() {
 					return 0;
 				}
-				set height(value: any) {
+				set height(value: number) {
 					transform.height = value;
 					parent.resize();
 				}
 				get height2() {
 					return 1;
 				}
-				set height2(value: any) {
+				set height2(value: number) {
 					transform.height2 = value;
 					parent.resize();
 				}
 				get rotation() {
 					return 0;
 				}
-				set rotation(value: any) {
+				set rotation(value: number) {
 					transform.rotation = value;
 					parent.resize();
 				}
 				get scaleX() {
 					return 1;
 				}
-				set scaleX(value: any) {
+				set scaleX(value: number) {
 					transform.scaleX = value;
 					parent.resize();
 				}
 				get scaleY() {
 					return 1;
 				}
-				set scaleY(value: any) {
+				set scaleY(value: number) {
 					transform.scaleY = value;
 					parent.resize();
 				}
 				get skewX() {
 					return 0;
 				}
-				set skewX(value: any) {
+				set skewX(value: number) {
 					transform.skewX = value;
 					parent.resize();
 				}
 				get skewY() {
 					return 0;
 				}
-				set skewY(value: any) {
+				set skewY(value: number) {
 					transform.skewY = value;
 					parent.resize();
 				}
 				get opacity() {
 					return 1;
 				}
-				set opacity(value: any) {
+				set opacity(value: number) {
 					transform.opacity = value;
 					parent.resize();
 				}
@@ -245,67 +253,67 @@ UI.Reference = class ReferenceElement extends UI.Element {
 				get anchorX() {
 					return 0;
 				}
-				set anchorX(value: any) {}
+				set anchorX(value: number) {}
 				get anchorY() {
 					return 0;
 				}
-				set anchorY(value: any) {}
+				set anchorY(value: number) {}
 				get x() {
 					return 0;
 				}
-				set x(value: any) {}
+				set x(value: number) {}
 				get x2() {
 					return 0;
 				}
-				set x2(value: any) {}
+				set x2(value: number) {}
 				get y() {
 					return 0;
 				}
-				set y(value: any) {}
+				set y(value: number) {}
 				get y2() {
 					return 0;
 				}
-				set y2(value: any) {}
+				set y2(value: number) {}
 				get width() {
 					return 0;
 				}
-				set width(value: any) {}
+				set width(value: number) {}
 				get width2() {
 					return 1;
 				}
-				set width2(value: any) {}
+				set width2(value: number) {}
 				get height() {
 					return 0;
 				}
-				set height(value: any) {}
+				set height(value: number) {}
 				get height2() {
 					return 1;
 				}
-				set height2(value: any) {}
+				set height2(value: number) {}
 				get rotation() {
 					return 0;
 				}
-				set rotation(value: any) {}
+				set rotation(value: number) {}
 				get scaleX() {
 					return 1;
 				}
-				set scaleX(value: any) {}
+				set scaleX(value: number) {}
 				get scaleY() {
 					return 1;
 				}
-				set scaleY(value: any) {}
+				set scaleY(value: number) {}
 				get skewX() {
 					return 0;
 				}
-				set skewX(value: any) {}
+				set skewX(value: number) {}
 				get skewY() {
 					return 0;
 				}
-				set skewY(value: any) {}
+				set skewY(value: number) {}
 				get opacity() {
 					return 1;
 				}
-				set opacity(value: any) {}
+				set opacity(value: number) {}
 			})();
 		}
 		if (Inspector.uiElement.target === this.node) {

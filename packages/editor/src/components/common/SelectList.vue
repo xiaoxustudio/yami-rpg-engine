@@ -19,7 +19,7 @@ const ym = ref<{
 	select(element: HTMLElement): void;
 	unselect(): void;
 	reselect(offset: number): void;
-	open(target: any): void;
+	open(target: HTMLElement & { dataItems: any[]; dataValue: any }): void;
 	close(): void;
 	resize(): void;
 	createItems(items: any[]): void;
@@ -38,7 +38,7 @@ const write = (value: any): void => ym.value?.write(value);
 const select = (element: HTMLElement): void => ym.value?.select(element);
 const unselect = (): void => ym.value?.unselect();
 const reselect = (offset: number): void => ym.value?.reselect(offset);
-const open = (target: any): void => ym.value?.open(target);
+const open = (target: HTMLElement & { dataItems: any[]; dataValue: any }): void => ym.value?.open(target);
 const close = (): void => ym.value?.close();
 const resize = (): void => ym.value?.resize();
 const createItems = (items: any[]): void => ym.value?.createItems(items);

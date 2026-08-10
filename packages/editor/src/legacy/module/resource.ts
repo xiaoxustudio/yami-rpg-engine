@@ -21,7 +21,7 @@ import { Local } from '@/tools/localization.ts';
 
 interface TextBoxElement extends HTMLElement {
 	input?: HTMLInputElement | Record<string, any> | null;
-	write?: (value: any) => any;
+	write?: (value: unknown) => unknown;
 }
 export const Resources = new (class {
 	get window() {
@@ -153,7 +153,7 @@ export const Resources = new (class {
 		}
 	}
 
-	getFirstAnnouncementContent(text: any) {
+	getFirstAnnouncementContent(text: string) {
 		if (!text) return '';
 
 		const lines = text.split('\n');
@@ -182,7 +182,7 @@ export const Resources = new (class {
 		return contentLines.join('\n').trim();
 	}
 
-	async pingNode(url: any) {
+	async pingNode(url: string) {
 		if (!url) return -1;
 
 		const startTime = Date.now();
@@ -243,8 +243,8 @@ export const Resources = new (class {
 	}
 
 	/** @description 0 版本一致 | 1 v1版本大 | -1 v2版本大 */
-	compareVersions(v1: any, v2: any) {
-		const normalize = (version: any) => version.replace(/^v/, '');
+	compareVersions(v1: string, v2: string) {
+		const normalize = (version: string) => version.replace(/^v/, '');
 
 		const normalizedV1 = normalize(v1);
 		const normalizedV2 = normalize(v2);
@@ -275,7 +275,7 @@ export const Resources = new (class {
 			headers: {
 				type: 'application/json'
 			},
-			cache: 'no-cache'
+			...({ cache: 'no-cache' } as unknown as Record<string, unknown>)
 		}).catch((error) => {
 			console.log('downloadNetMeta error:', error?.message || error);
 			return { data: [] };
@@ -290,7 +290,7 @@ export const Resources = new (class {
 		);
 	}
 
-	formatFileSize(bytes: any) {
+	formatFileSize(bytes: number) {
 		if (bytes < 1024) {
 			return `${bytes} B`;
 		} else if (bytes < 1024 * 1024) {
@@ -302,7 +302,7 @@ export const Resources = new (class {
 		}
 	}
 
-	async getFileSize(resourceName: any) {
+	async getFileSize(resourceName: string) {
 		try {
 			const url = `https://github.com/Open-Yami-Community/yami-rpg-editor/releases/download/win/${resourceName}_pack.zip`;
 			const downloadurl = `${this.fastGithubPrefix}${url}`;
@@ -332,7 +332,7 @@ export const Resources = new (class {
 		return JSON.parse(fs.readFileSync(tempPath, 'utf-8'));
 	}
 
-	writeTemplate(val: any) {
+	writeTemplate(val: string) {
 		const tempPath = Path.resolve(TemplatesPath, 'template.json');
 		fs.writeFileSync(tempPath, JSON.stringify(val));
 	}
@@ -384,7 +384,7 @@ export const Resources = new (class {
 		let versionString = '';
 
 		for (let i of list) {
-			const elem = jsonParse.find((v: any) => v.path === i);
+			const elem = jsonParse.find((v: { path: string }) => v.path === i);
 			const elemVersion = elem?.version ?? '1.0.0';
 			if (this.compareVersions(elemVersion, PackMeta?.[i] ?? '1.0.0') === 0) {
 				continue;
@@ -412,12 +412,12 @@ export const Resources = new (class {
 		void this.checkEditorVersion();
 	}
 
-	temp(val: any) {
+	temp(val: string) {
 		const value = val.replace(/[.]/g, '_');
 		const targetPath = Path.resolve(TemplatesPath, `${val}_pack.zip`);
 		const _check = () => {
 			setNoResourceObj(isNoResource());
-			if ((NoResourceObj as any)[val].check) {
+			if (NoResourceObj[val].check) {
 				disable(button);
 				enable(buttonDelete);
 				enable(textbox);
@@ -431,7 +431,7 @@ export const Resources = new (class {
 			// 判断目录下是否有zip文件，有则删除它节省空间
 			if (fs.existsSync(targetPath)) fs.unlink(targetPath);
 		};
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 
 		const domPase = new DOMParser().parseFromString(
 			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
@@ -460,8 +460,8 @@ export const Resources = new (class {
 		const textbox = boxDom.querySelector('.text-box') as unknown as TextBoxElement;
 		const textboxInput = textbox.querySelector('input') as HTMLInputElement;
 		textbox.input = textboxInput;
-		textbox.write = (value: string): void => {
-			textboxInput.value = value;
+		textbox.write = (value: unknown): void => {
+			textboxInput.value = value as string;
 		};
 		disable(textbox);
 		textboxInput.readOnly = true;
@@ -474,11 +474,11 @@ export const Resources = new (class {
 		const speedText = boxDom.querySelector(`#resource-item-${value}-speed`)!;
 		const sizeText = boxDom.querySelector(`#resource-item-${value}-size`)!;
 
-		button.textContent = Local.get('confirmation.resource-download');
+		button.textContent = Local.get!('confirmation.resource-download');
 
 		this.getFileSize(val)
 			.then((size) => {
-				const get = Local.createGetter('confirmation');
+				const get = Local.createGetter!('confirmation');
 				const sizeLabel = get('resource-size-label') || '大小';
 				if (size > 0) {
 					sizeText.textContent = `${sizeLabel}: ${this.formatFileSize(size)}`;
@@ -487,12 +487,12 @@ export const Resources = new (class {
 				}
 			})
 			.catch(() => {
-				const get = Local.createGetter('confirmation');
+				const get = Local.createGetter!('confirmation');
 				const sizeLabel = get('resource-size-label') || '大小';
 				sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
 			});
 
-		let cancelDownload: any = null;
+		let cancelDownload: (() => void) | null = null;
 		let isDownloading = false;
 		let isDecompressing = false;
 		let lastLoaded = 0;
@@ -506,32 +506,33 @@ export const Resources = new (class {
 			isDownloading = true;
 			disable(button);
 			pauseButton.style.display = 'inline-block';
-			pauseButton.textContent = Local.get('confirmation.resource-pause') || '暂停';
+			pauseButton.textContent = Local.get!('confirmation.resource-pause') || '暂停';
 			progressContainer.style.display = 'flex';
 
 			progressBar.style.width = '0%';
 			progressText.textContent = '0%';
-			speedText.textContent = Local.get('confirmation.resource-speed') || '速度: 0 KB/s';
+			speedText.textContent = Local.get!('confirmation.resource-speed') || '速度: 0 KB/s';
 			lastLoaded = 0;
 			lastTime = Date.now();
 
 			Net.downloadFileWithProgress({
 				url: downloadurl,
 				outputPath: targetPath,
-				onCancelToken: (cancel: any) => {
+				onCancelToken: (cancel: () => void) => {
 					cancelDownload = cancel;
 				},
-				onProgress: (progressEvent: any) => {
+				onProgress: (progressEvent: unknown) => {
 					if (!isDownloading) return;
 
-					const percent = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+					const ev = progressEvent as { loaded: number; total: number };
+					const percent = Math.round((ev.loaded / ev.total) * 100);
 
 					progressBar.style.width = `${percent}%`;
 					progressText.textContent = `${percent}%`;
 
 					const now = Date.now();
 					const timeDiff = (now - lastTime) / 1000;
-					const loadedDiff = progressEvent.loaded - lastLoaded;
+					const loadedDiff = ev.loaded - lastLoaded;
 
 					if (timeDiff > 0.5) {
 						const speed = loadedDiff / timeDiff;
@@ -545,10 +546,11 @@ export const Resources = new (class {
 							speedText_str = `${(speed / 1024 / 1024).toFixed(2)} MB/s`;
 						}
 
-						const speedLabel = Local.get('confirmation.resource-speed-label') || '速度';
+						const speedLabel =
+							Local.get!('confirmation.resource-speed-label') || '速度';
 						speedText.textContent = `${speedLabel}: ${speedText_str}`;
 
-						lastLoaded = progressEvent.loaded;
+						lastLoaded = ev.loaded;
 						lastTime = now;
 					}
 				}
@@ -559,7 +561,7 @@ export const Resources = new (class {
 					progressContainer.style.display = 'none';
 					pauseButton.style.display = 'none';
 
-					button.textContent = Local.get('confirmation.resource-decompression');
+					button.textContent = Local.get!('confirmation.resource-decompression');
 					disable(button);
 					progressContainer.style.display = 'flex';
 					progressBar.style.background = 'linear-gradient(90deg, #2196f3, #42a5f5)';
@@ -567,7 +569,7 @@ export const Resources = new (class {
 					unzipWithProgress({
 						zipPath: targetPath,
 						outputDir: Path.resolve(Path.dirname(targetPath), val),
-						onProgress: (percent: any) => {
+						onProgress: (percent: number) => {
 							progressBar.style.width = `${percent}%`;
 							progressText.textContent = `${percent}%`;
 						}
@@ -576,12 +578,14 @@ export const Resources = new (class {
 							const remoteData = (await this.downloadNetMeta()).data;
 							const j = this.readTemplate();
 							j[val] =
-								remoteData.find((v: any) => val === v.path)?.version ?? '1.0.0';
+								remoteData.find(
+									(v: { path: string; version?: string }) => val === v.path
+								)?.version ?? '1.0.0';
 							this.writeTemplate(j);
 							setPackMeta(this.readTemplate());
 							isDecompressing = false;
 							_check();
-							button.textContent = Local.get('confirmation.resource-download');
+							button.textContent = Local.get!('confirmation.resource-download');
 							progressContainer.style.display = 'none';
 							progressBar.style.background =
 								'linear-gradient(90deg, #4caf50, #66bb6a)';
@@ -632,7 +636,7 @@ export const Resources = new (class {
 		});
 
 		const buttonDelete = boxDom.querySelector(`#resource-item-${value}-delete`)!;
-		buttonDelete.textContent = Local.get('common.delete');
+		buttonDelete.textContent = Local.get!('common.delete');
 		const tempPath = Path.resolve(TemplatesPath, val);
 		on(buttonDelete, 'click', () => {
 			if (fs.existsSync(tempPath)) fs.rmSync(tempPath, { recursive: true, force: true });

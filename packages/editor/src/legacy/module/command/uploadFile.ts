@@ -48,7 +48,7 @@ Command.cases.uploadFile = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },

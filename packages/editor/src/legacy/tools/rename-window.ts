@@ -3,11 +3,11 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, read, write } from '@/util/element-utils';
 
 export const Rename = {
-	callback: null as any,
-	initialize: null as any,
-	open: null as any,
-	windowClosed: null as any,
-	confirm: null as any
+	callback: null as unknown as ((value: any) => void) | null,
+	initialize: null as unknown as (...args: unknown[]) => any,
+	open: null as unknown as (...args: unknown[]) => any,
+	windowClosed: null as unknown as (...args: unknown[]) => any,
+	confirm: null as unknown as (...args: unknown[]) => any
 };
 
 Rename.initialize = function (this: any) {

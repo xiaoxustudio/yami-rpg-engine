@@ -15,6 +15,8 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
+import { type MenuItem } from '@ui-kit';
+import { type TreeListElement } from '@/components/tree-list.ts';
 const attributeStateKeys = [
 	'mode',
 	'target',
@@ -27,82 +29,132 @@ const attributeStateKeys = [
 ] as const;
 import { getAttributeStore } from '@app/stores/attribute';
 
+interface AttributeItem {
+	id: string;
+	class?: string;
+	key?: string;
+	type?: string;
+	name: string;
+	enum?: string;
+	note?: string;
+	expanded?: boolean;
+	children?: AttributeItem[];
+	element?: HTMLElement & {
+		group?: string;
+		groupText?: HTMLElement;
+		initText?: HTMLElement;
+		attrKey?: string;
+		nodeIcon?: HTMLElement;
+		noteIcon?: HTMLElement;
+		annotated?: boolean | null;
+	};
+}
+
+interface AttributeTarget {
+	input?: (id: string) => void;
+}
+
+interface AttributeHistoryData {
+	item: AttributeItem;
+	value: string;
+	settings: Record<string, string>;
+	response: unknown;
+}
+
 export const Attribute = {
-	list: null as any,
-	panel: null as any,
-	searcher: null as any,
+	list: null as HTMLElement | null,
+	panel: null as (HTMLElement & { attribute?: AttributeItem | null }) | null,
+	searcher: null as HTMLElement | null,
 	inputs: {
-		name: null as any,
-		key: null as any,
-		note: null as any,
-		enum: null as any,
-		enumBox: null as any
+		name: null as HTMLElement | null,
+		key: null as HTMLElement | null,
+		note: null as HTMLElement | null,
+		enum: null as HTMLElement | null,
+		enumBox: null as HTMLElement | null,
+		type: null as HTMLElement | null
 	},
-	mode: null as any,
-	target: null as any,
-	data: null as any,
-	idMap: null as any,
-	settings: null as any,
-	settingKeys: null as any,
-	history: null as any,
+	mode: null as string | null,
+	target: null as unknown as AttributeTarget,
+	data: null as AttributeItem[] | null,
+	idMap: null as unknown as Record<string, boolean>,
+	settings: null as unknown as Record<string, string>,
+	settingKeys: null as unknown as string[],
+	history: null as History | null,
 	changed: false,
-	initialize: null as any,
-	open: null as any,
-	undo: null as any,
-	redo: null as any,
-	createId: null as any,
-	register: null as any,
-	unregister: null as any,
-	getItemById: null as any,
-	setFolderGroup: null as any,
-	getGroup: null as any,
-	getAttribute: null as any,
-	getGroupAttribute: null as any,
-	getDefAttributeId: null as any,
-	getAttributeItems: null as any,
-	openPropertyPanel: null as any,
-	closePropertyPanel: null as any,
-	unpackAttribute: null as any,
-	packAttribute: null as any,
-	saveHistory: null as any,
-	windowClose: null as any,
-	windowClosed: null as any,
-	keydown: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listDoubleclick: null as any,
-	listSelect: null as any,
-	listRecord: null as any,
-	listOpen: null as any,
-	listPopup: null as any,
-	nameInput: null as any,
-	keyInput: null as any,
-	typeWrite: null as any,
-	typeInput: null as any,
-	enumInput: null as any,
-	noteInput: null as any,
-	panelKeydown: null as any,
-	searcherInput: null as any,
-	confirm: null as any,
-	apply: null as any,
-	list_saveScroll: null as any,
-	list_restoreScroll: null as any,
-	list_cancelSearch: null as any,
-	list_createFolder: null as any,
-	list_createAttribute: null as any,
-	list_createIcon: null as any,
-	list_updateIcon: null as any,
-	list_parseName: null as any,
-	list_addElementClass: null as any,
-	list_createGroupText: null as any,
-	list_updateGroupText: null as any,
-	list_createInitText: null as any,
-	list_updateInitText: null as any,
-	list_createNoteIcon: null as any,
-	list_updateNoteIcon: null as any,
-	list_onCreate: null as any,
-	list_onDelete: null as any,
-	list_onResume: null as any
+	initialize: null as unknown as (this: any) => void,
+	open: null as unknown as (this: any, target?: AttributeTarget, mode?: string) => void,
+	undo: null as unknown as (this: any) => void,
+	redo: null as unknown as (this: any) => void,
+	createId: null as unknown as (this: any) => string,
+	register: null as unknown as (this: any, item: AttributeItem) => void,
+	unregister: null as unknown as (this: any, item: AttributeItem) => void,
+	getItemById: null as unknown as (this: any, id: string) => AttributeItem | undefined,
+	setFolderGroup: null as unknown as (this: any, folder: AttributeItem, newGroup: string) => void,
+	getGroup: null as unknown as (this: any, groupKey: string) => any,
+	getAttribute: null as unknown as (this: any, attrId: string) => AttributeItem | undefined,
+	getGroupAttribute: null as unknown as (
+		this: any,
+		groupKey: string,
+		attrId: string
+	) => AttributeItem | undefined,
+	getDefAttributeId: null as unknown as (this: any, groupKey: string, type?: string) => string,
+	getAttributeItems: null as unknown as (
+		this: any,
+		groupKey: string,
+		attrType?: string,
+		allowNone?: boolean
+	) => any[],
+	openPropertyPanel: null as unknown as (this: any, attribute: AttributeItem) => void,
+	closePropertyPanel: null as unknown as (this: any) => void,
+	unpackAttribute: null as unknown as (this: any) => void,
+	packAttribute: null as unknown as (this: any) => void,
+	saveHistory: null as unknown as (
+		this: any,
+		item: AttributeItem,
+		key: string,
+		value?: string
+	) => void,
+	windowClose: null as unknown as (this: any, event: Event) => void,
+	windowClosed: null as unknown as (this: any, event: Event) => void,
+	keydown: null as unknown as (event: Event) => void,
+	listKeydown: null as unknown as (this: any, event: KeyboardEvent) => void,
+	listPointerdown: null as unknown as (this: any, event: PointerEvent) => void,
+	listDoubleclick: null as unknown as (this: any, event: MouseEvent) => void,
+	listSelect: null as unknown as (event: Event) => void,
+	listRecord: null as unknown as (event: Event) => void,
+	listOpen: null as unknown as (event: Event) => void,
+	listPopup: null as unknown as (
+		this: any,
+		event: Event & { clientX: number; clientY: number }
+	) => void,
+	nameInput: null as unknown as (event: Event) => void,
+	keyInput: null as unknown as (event: Event) => void,
+	typeWrite: null as unknown as (event: Event) => void,
+	typeInput: null as unknown as (event: Event) => void,
+	enumInput: null as unknown as (event: Event) => void,
+	noteInput: null as unknown as (event: InputEvent) => void,
+	panelKeydown: null as unknown as (event: KeyboardEvent) => void,
+	searcherInput: null as unknown as (this: any, event: InputEvent) => void,
+	confirm: null as unknown as (this: any, event?: Event) => void,
+	apply: null as unknown as (this: any, event?: Event) => void,
+	list_saveScroll: null as unknown as (this: any) => void,
+	list_restoreScroll: null as unknown as (this: any) => void,
+	list_cancelSearch: null as unknown as (this: any) => void,
+	list_createFolder: null as unknown as (this: any) => AttributeItem,
+	list_createAttribute: null as unknown as (this: any) => AttributeItem,
+	list_createIcon: null as unknown as (this: any, item: AttributeItem) => HTMLElement,
+	list_updateIcon: null as unknown as (this: any, item: AttributeItem) => void,
+	list_parseName: null as unknown as (this: any, item: AttributeItem) => string,
+	list_addElementClass: null as unknown as (this: any, item: AttributeItem) => void,
+	list_createGroupText: null as unknown as (this: any, item: AttributeItem) => void,
+	list_updateGroupText: null as unknown as (this: any, item: AttributeItem) => void,
+	list_createInitText: null as unknown as (this: any, item: AttributeItem) => void,
+	list_updateInitText: null as unknown as (this: any, item: AttributeItem) => void,
+	list_createNoteIcon: null as unknown as (this: any, item: AttributeItem) => void,
+	list_updateNoteIcon: null as unknown as (this: any, item: AttributeItem) => void,
+	list_onCreate: null as unknown as (this: any, item: AttributeItem) => void,
+	list_onDelete: null as unknown as (this: any, item: AttributeItem) => void,
+	list_onResume: null as unknown as (this: any, item: AttributeItem) => void
 };
 
 function ensureDomBound() {
@@ -174,7 +226,10 @@ Attribute.initialize = function (this: any) {
 
 	this.searcher.addCloseButton();
 
-	History.processors['attribute-list-operation'] = (operation: any, data: any) => {
+	History.processors['attribute-list-operation'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 		if (read(list) === null && this.panel.attribute !== null) {
@@ -182,14 +237,20 @@ Attribute.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-settings-change'] = (operation: any, data: any) => {
+	History.processors['attribute-settings-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { settings } = data;
 		data.settings = this.settings;
 		this.settings = settings;
 		list.update();
 		this.changed = true;
 	};
-	History.processors['attribute-name-change'] = (operation: any, data: any) => {
+	History.processors['attribute-name-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { item, value } = data;
 		data.value = item.name;
 		item.name = value;
@@ -203,9 +264,12 @@ Attribute.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-key-change'] = (operation: any, data: any) => {
+	History.processors['attribute-key-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { item, value } = data;
-		data.value = item.key;
+		data.value = item.key!;
 		item.key = value;
 		list.updateInitText(item);
 		if (this.panel.attribute === item) {
@@ -217,9 +281,12 @@ Attribute.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-type-change'] = (operation: any, data: any) => {
+	History.processors['attribute-type-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { item, value } = data;
-		data.value = item.type;
+		data.value = item.type!;
 		item.type = value;
 		list.updateIcon(item);
 		if (this.panel.attribute === item) {
@@ -231,9 +298,12 @@ Attribute.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-enum-change'] = (operation: any, data: any) => {
+	History.processors['attribute-enum-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { item, value } = data;
-		data.value = item.enum;
+		data.value = item.enum!;
 		item.enum = value;
 		if (this.panel.attribute === item) {
 			write(this.inputs.enum, value);
@@ -244,9 +314,12 @@ Attribute.initialize = function (this: any) {
 		}
 		this.changed = true;
 	};
-	History.processors['attribute-note-change'] = (operation: any, data: any) => {
+	History.processors['attribute-note-change'] = (
+		operation: string,
+		data: AttributeHistoryData
+	) => {
 		const { item, value } = data;
-		data.value = item.note;
+		data.value = item.note!;
 		item.note = value;
 		list.updateNoteIcon(item);
 		if (this.panel.attribute === item) {
@@ -280,7 +353,11 @@ Attribute.initialize = function (this: any) {
 	on($('#attribute-apply'), 'click', this.apply);
 };
 
-Attribute.open = function (this: any, target: any = null, mode: any = 'normal') {
+Attribute.open = function (
+	this: any,
+	target: AttributeTarget | null | undefined = null,
+	mode: string | null | undefined = 'normal'
+) {
 	this.mode = mode;
 	this.target = target;
 	this._previousActive = UndoManager.getActive();
@@ -332,29 +409,32 @@ Attribute.createId = function (this: any) {
 	return id;
 };
 
-Attribute.register = function (this: any, item: any) {
+Attribute.register = function (this: any, item: AttributeItem) {
 	Attribute.idMap[item.id] = true;
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Attribute.register(child);
 		}
 	}
 };
 
-Attribute.unregister = function (this: any, item: any) {
+Attribute.unregister = function (this: any, item: AttributeItem) {
 	delete Attribute.idMap[item.id];
 	if (item.class === 'folder') {
-		for (const child of item.children) {
+		for (const child of item.children!) {
 			Attribute.unregister(child);
 		}
 	}
 };
 
 Attribute.getItemById = (function IIFE() {
-	const find = (items: any, id: any): any => {
-		const length = items.length;
+	const find = (
+		items: AttributeItem[] | null | undefined,
+		id: string
+	): AttributeItem | undefined => {
+		const length = items!.length;
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.id === id) {
 				return item;
 			}
@@ -367,13 +447,13 @@ Attribute.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (this: any, id: any) {
+	return function (this: any, id: string) {
 		return find(this.data, id);
 	};
 })();
 
-Attribute.setFolderGroup = function (this: any, folder: any, newGroup: any) {
-	const oldGroup = folder.element.group;
+Attribute.setFolderGroup = function (this: any, folder: AttributeItem, newGroup: string) {
+	const oldGroup = folder.element!.group;
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
 		if (oldGroup) this.settings[oldGroup] = '';
@@ -387,27 +467,32 @@ Attribute.setFolderGroup = function (this: any, folder: any, newGroup: any) {
 	}
 };
 
-Attribute.getGroup = function (this: any, groupKey: any) {
+Attribute.getGroup = function (this: any, groupKey: string) {
 	return Data.attribute.context.getGroup(groupKey);
 };
 
-Attribute.getAttribute = function (this: any, attrId: any) {
+Attribute.getAttribute = function (this: any, attrId: string) {
 	return Data.attribute.context.getAttribute(attrId);
 };
 
-Attribute.getGroupAttribute = function (this: any, groupKey: any, attrId: any) {
+Attribute.getGroupAttribute = function (this: any, groupKey: string, attrId: string) {
 	return Data.attribute.context.getGroupAttribute(groupKey, attrId);
 };
 
-Attribute.getDefAttributeId = function (this: any, groupKey: any, type: any) {
+Attribute.getDefAttributeId = function (this: any, groupKey: string, type?: string) {
 	return Data.attribute.context.getDefAttributeId(groupKey, type);
 };
 
-Attribute.getAttributeItems = function (this: any, groupKey: any, attrType: any, allowNone: any) {
-	return Data.attribute.context.getAttributeItems(groupKey, attrType, allowNone);
+Attribute.getAttributeItems = function (
+	this: any,
+	groupKey: string,
+	attrType?: string,
+	allowNone?: boolean
+) {
+	return Data.attribute.context.getAttributeItems(groupKey, attrType!, allowNone!);
 };
 
-Attribute.openPropertyPanel = function (this: any, attribute: any) {
+Attribute.openPropertyPanel = function (this: any, attribute: AttributeItem) {
 	const panel = this.panel;
 	if (panel.attribute !== attribute) {
 		panel.attribute = attribute;
@@ -431,14 +516,14 @@ Attribute.closePropertyPanel = function (this: any) {
 
 Attribute.unpackAttribute = (function IIFE() {
 	class ReferencedFolder {
-		data: any;
+		data: AttributeItem;
 		class: string;
 		id: string;
 		name: string;
-		children: any[];
-		constructor(item: any) {
+		children: AttributeItem[];
+		constructor(item: AttributeItem) {
 			this.data = item;
-			this.class = item.class;
+			this.class = item.class!;
 			this.id = item.id;
 			this.name = item.name;
 			this.children = clone(item.children);
@@ -448,16 +533,16 @@ Attribute.unpackAttribute = (function IIFE() {
 			return this.data.expanded;
 		}
 
-		set expanded(value: any) {
+		set expanded(value: boolean | undefined) {
 			this.data.expanded = value;
 			File.planToSave!(Data.manifest.project.attribute);
 		}
 	}
-	const clone = (items: any) => {
-		const length = items.length;
+	const clone = (items: AttributeItem[] | null | undefined): AttributeItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			Attribute.idMap[item.id] = true;
 			if (item.class !== 'folder') {
 				copies[i] = Object.clone(item);
@@ -468,7 +553,7 @@ Attribute.unpackAttribute = (function IIFE() {
 		return copies;
 	};
 	return function (this: any) {
-		this.idMap = {} as Record<string, any>;
+		this.idMap = {};
 		this.data = clone(Data.attribute.keys);
 		this.settings = Object.clone(Data.attribute.settings);
 		if (!this.settingKeys) {
@@ -478,11 +563,11 @@ Attribute.unpackAttribute = (function IIFE() {
 })();
 
 Attribute.packAttribute = (function IIFE() {
-	const clone = (items: any) => {
-		const length = items.length;
+	const clone = (items: AttributeItem[] | null | undefined): AttributeItem[] => {
+		const length = items!.length;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
-			const item = items[i];
+			const item = items![i];
 			if (item.class !== 'folder') {
 				const copy = Object.clone(item);
 				if (copy.enum !== '' && copy.type !== 'enum') {
@@ -508,7 +593,7 @@ Attribute.packAttribute = (function IIFE() {
 	};
 })();
 
-Attribute.saveHistory = function (this: any, item: any, key: any, value: any) {
+Attribute.saveHistory = function (this: any, item: AttributeItem, key: string, value?: string) {
 	const type = `attribute-${key}-change`;
 	const history = this.history;
 	const index = history.index;
@@ -528,11 +613,11 @@ Attribute.saveHistory = function (this: any, item: any, key: any, value: any) {
 	}
 };
 
-Attribute.windowClose = function (this: any, event: any) {
+Attribute.windowClose = function (this: any, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter('confirmation');
+		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedAttributes')
@@ -553,7 +638,7 @@ Attribute.windowClose = function (this: any, event: any) {
 	}
 }.bind(Attribute);
 
-Attribute.windowClosed = function (this: any, event: any) {
+Attribute.windowClosed = function (this: any, event: Event) {
 	this.data = null;
 	this.idMap = null;
 	UndoManager.setActive(this._previousActive);
@@ -568,7 +653,7 @@ Attribute.windowClosed = function (this: any, event: any) {
 
 Attribute.keydown = Shortcuts.createUndoRedo(Attribute);
 
-Attribute.listKeydown = function (this: any, event: any) {
+Attribute.listKeydown = function (this: TreeListElement, event: KeyboardEvent) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -596,7 +681,7 @@ Attribute.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Attribute.listPointerdown = function (this: any, event: any) {
+Attribute.listPointerdown = function (this: TreeListElement, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (event.target === this) {
@@ -610,7 +695,7 @@ Attribute.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Attribute.listDoubleclick = function (this: any, event: any) {
+Attribute.listDoubleclick = function (event: MouseEvent) {
 	switch (Attribute.mode) {
 		case 'group':
 			if (read(Attribute.list)?.class === 'folder') {
@@ -629,28 +714,28 @@ Attribute.listDoubleclick = function (this: any, event: any) {
 	}
 };
 
-Attribute.listSelect = function (this: any, event: any) {
+Attribute.listSelect = function (event: Event) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Attribute.openPropertyPanel(item)
 		: Attribute.closePropertyPanel();
 };
 
-Attribute.listRecord = function (this: any, event: any) {
+Attribute.listRecord = function (event: Event) {
 	Attribute.changed = true;
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
 			// 如果是属性则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
-			if (Attribute.panel.attribute === item) {
+			if (Attribute.panel!.attribute === item) {
 				write(Attribute.inputs.name, newValue);
 				Attribute.saveHistory(item, 'name', oldValue);
 				break;
 			}
 		}
 		default:
-			Attribute.history.save({
+			Attribute.history!.save({
 				type: 'attribute-list-operation',
 				response: response
 			});
@@ -658,20 +743,20 @@ Attribute.listRecord = function (this: any, event: any) {
 	}
 };
 
-Attribute.listOpen = function (this: any, event: any) {
+Attribute.listOpen = function (event: any) {
 	Attribute.listDoubleclick(event);
 };
 
-Attribute.listPopup = function (this: any, event: any) {
-	const list = Attribute.list;
+Attribute.listPopup = function (event: Event & { clientX: number; clientY: number }) {
+	const list = Attribute.list!;
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as any).has('yami.data.attribute');
-	const undoable = Attribute.history.canUndo();
-	const redoable = Attribute.history.canRedo();
-	const get = Local.createGetter('menuAttributeList');
-	const items: any[] = [
+	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.attribute');
+	const undoable = Attribute.history!.canUndo();
+	const redoable = Attribute.history!.canRedo();
+	const get = Local.createGetter!('menuAttributeList');
+	const items: MenuItem[] = [
 		{
 			label: get('create'),
 			submenu: [
@@ -791,28 +876,28 @@ Attribute.listPopup = function (this: any, event: any) {
 	);
 };
 
-Attribute.nameInput = function (this: any, event: any) {
-	const item = Attribute.panel.attribute;
+Attribute.nameInput = function (event: any) {
+	const item = Attribute.panel!.attribute!;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'name', item.name);
 		item.name = event.target.value;
-		Attribute.list.updateItemName(item);
+		Attribute.list!.updateItemName(item);
 		Attribute.changed = true;
 	}
 };
 
-Attribute.keyInput = function (this: any, event: any) {
-	const item = Attribute.panel.attribute;
+Attribute.keyInput = function (event: any) {
+	const item = Attribute.panel!.attribute!;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'key', item.key);
 		item.key = event.target.value;
-		Attribute.list.updateInitText(item);
+		Attribute.list!.updateInitText(item);
 		Attribute.changed = true;
 	}
 };
 
-Attribute.typeWrite = function (this: any, event: any) {
-	const { style } = Attribute.inputs.enumBox;
+Attribute.typeWrite = function (event: Event) {
+	const { style } = Attribute.inputs.enumBox!;
 	switch (event.value) {
 		case 'enum':
 			style.visibility = 'visible';
@@ -826,34 +911,34 @@ Attribute.typeWrite = function (this: any, event: any) {
 	}
 };
 
-Attribute.typeInput = function (this: any, event: any) {
-	const item = Attribute.panel.attribute;
+Attribute.typeInput = function (event: Event) {
+	const item = Attribute.panel!.attribute!;
 	if (item === null) return;
 	Attribute.saveHistory(item, 'type', item.type);
 	item.type = event.value;
-	Attribute.list.updateIcon(item);
+	Attribute.list!.updateIcon(item);
 	Attribute.changed = true;
 };
 
-Attribute.enumInput = function (this: any, event: any) {
-	const item = Attribute.panel.attribute;
+Attribute.enumInput = function (event: Event) {
+	const item = Attribute.panel!.attribute!;
 	Attribute.saveHistory(item, 'enum', item.enum);
 	item.enum = event.value;
 	Attribute.changed = true;
 };
 
-Attribute.noteInput = function (this: any, event: any) {
+Attribute.noteInput = function (this: HTMLElement, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
-		const item = Attribute.panel.attribute;
+		const item = Attribute.panel!.attribute!;
 		Attribute.saveHistory(item, 'note', item.note);
 		item.note = read(this);
-		Attribute.list.updateNoteIcon(item);
+		Attribute.list!.updateNoteIcon(item);
 		Attribute.changed = true;
 	}
 };
 
-Attribute.panelKeydown = function (this: any, event: any) {
-	switch (event.target.tagName) {
+Attribute.panelKeydown = function (event: KeyboardEvent) {
+	switch ((event.target as HTMLElement).tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
 			if (event.ctrlKey || event.metaKey) {
@@ -870,15 +955,15 @@ Attribute.panelKeydown = function (this: any, event: any) {
 	}
 };
 
-Attribute.searcherInput = function (this: any, event: any) {
+Attribute.searcherInput = function (this: TextBox, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}
 	const text = this.input!.value;
-	Attribute.list.searchNodesDebounced(text);
+	Attribute.list!.searchNodesDebounced(text);
 };
 
-Attribute.confirm = function (this: any, event: any) {
+Attribute.confirm = function (this: any, event?: Event) {
 	switch (this.mode) {
 		case 'normal':
 			this.apply();
@@ -905,7 +990,7 @@ Attribute.confirm = function (this: any, event: any) {
 	Window.close!('attribute');
 }.bind(Attribute);
 
-Attribute.apply = function (this: any, event: any) {
+Attribute.apply = function (this: any, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -919,7 +1004,7 @@ Attribute.apply = function (this: any, event: any) {
 // bindListClipboardMethods 改为 ensureDomBound 内调用（list 顶层为 null）
 
 // 列表 - 保存滚动状态
-Attribute.list_saveScroll = function (this: any) {
+Attribute.list_saveScroll = function (this: TreeListElement) {
 	const { attribute } = Data;
 	// 将数据保存在外部可以切换项目后重置
 	if (attribute.scrollTop === undefined) {
@@ -932,15 +1017,15 @@ Attribute.list_saveScroll = function (this: any) {
 };
 
 // 列表 - 恢复滚动状态
-Attribute.list_restoreScroll = function (this: any) {
+Attribute.list_restoreScroll = function (this: TreeListElement) {
 	this.scrollTop = Data.attribute.scrollTop ?? 0;
 };
 
 // 列表 - 取消搜索
-Attribute.list_cancelSearch = function (this: any) {
+Attribute.list_cancelSearch = function (this: TreeListElement) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
-		Attribute.searcher.deleteInputContent();
+		Attribute.searcher!.deleteInputContent();
 		this.expandToSelection();
 		this.scrollToSelection();
 		active!.focus();
@@ -948,7 +1033,7 @@ Attribute.list_cancelSearch = function (this: any) {
 };
 
 // 列表 - 创建文件夹
-Attribute.list_createFolder = function (this: any) {
+Attribute.list_createFolder = function () {
 	return {
 		class: 'folder',
 		id: Attribute.createId(),
@@ -959,7 +1044,7 @@ Attribute.list_createFolder = function (this: any) {
 };
 
 // 列表 - 创建属性
-Attribute.list_createAttribute = function (this: any) {
+Attribute.list_createAttribute = function () {
 	return {
 		id: Attribute.createId(),
 		key: '',
@@ -979,10 +1064,10 @@ Attribute.list_createIcon = (function IIFE() {
 		enum: 'icon-string',
 		object: 'icon-object'
 	};
-	return function (this: any, item: any) {
+	return function (item: AttributeItem) {
 		const icon = document.createElement('node-icon');
 		if (item.class !== 'folder') {
-			addClass(icon, (classes as Record<string, any>)[item.type]);
+			addClass(icon, (classes as Record<string, string>)[item.type!]);
 		} else {
 			addClass(icon, 'icon-folder');
 		}
@@ -991,30 +1076,30 @@ Attribute.list_createIcon = (function IIFE() {
 })();
 
 // 列表 - 更新图标
-Attribute.list_updateIcon = function (this: any, item: any) {
+Attribute.list_updateIcon = function (this: TreeListElement, item: AttributeItem) {
 	const { element } = item;
 	if (element?.nodeIcon) {
-		const icon = this.createIcon(item);
+		const icon = this.createIcon(item) as HTMLElement;
 		element.replaceChild(icon, element.nodeIcon);
 		element.nodeIcon = icon;
 	}
 };
 
 // 列表 - 重写解析名称方法
-Attribute.list_parseName = function (this: any, item: any) {
+Attribute.list_parseName = function (item: AttributeItem) {
 	return GameLocal.replace(item.name);
 };
 
 // 列表 - 添加元素类名
-Attribute.list_addElementClass = function (this: any, item: any) {
+Attribute.list_addElementClass = function (item: AttributeItem) {
 	addClass(item.element, 'attribute-item');
 	addClass(item.element, 'reference');
 };
 
 // 列表 - 创建分组文本
-Attribute.list_createGroupText = function (this: any, item: any) {
+Attribute.list_createGroupText = function (item: AttributeItem) {
 	if (item.class === 'folder') {
-		const { element } = item;
+		const element = item.element!;
 		const groupText = document.createElement('div');
 		addClass(groupText, 'enum-init-text');
 		addClass(groupText, 'text');
@@ -1025,9 +1110,9 @@ Attribute.list_createGroupText = function (this: any, item: any) {
 };
 
 // 列表 - 更新分组文本
-Attribute.list_updateGroupText = function (this: any, item: any) {
+Attribute.list_updateGroupText = function (item: AttributeItem) {
 	const { element } = item;
-	if (element.groupText !== undefined) {
+	if (element?.groupText !== undefined) {
 		let group = '';
 		for (const key of Attribute.settingKeys) {
 			if (item.id === Attribute.settings[key]) {
@@ -1042,9 +1127,9 @@ Attribute.list_updateGroupText = function (this: any, item: any) {
 };
 
 // 列表 - 创建初始化文本
-Attribute.list_createInitText = function (this: any, item: any) {
+Attribute.list_createInitText = function (item: AttributeItem) {
 	if (item.class !== 'folder') {
-		const { element } = item;
+		const element = item.element!;
 		const initText = document.createElement('div');
 		addClass(initText, 'attribute-init-text');
 		addClass(initText, 'text');
@@ -1055,9 +1140,9 @@ Attribute.list_createInitText = function (this: any, item: any) {
 };
 
 // 列表 - 更新初始化文本
-Attribute.list_updateInitText = function (this: any, item: any) {
+Attribute.list_updateInitText = function (item: AttributeItem) {
 	const { element } = item;
-	if (element.initText !== undefined) {
+	if (element?.initText !== undefined) {
 		const { key } = item;
 		if (element.attrKey !== key) {
 			element.attrKey = key;
@@ -1067,9 +1152,9 @@ Attribute.list_updateInitText = function (this: any, item: any) {
 };
 
 // 列表 - 创建笔记图标
-Attribute.list_createNoteIcon = function (this: any, item: any) {
+Attribute.list_createNoteIcon = function (item: AttributeItem) {
 	if (item.class !== 'folder') {
-		const { element } = item;
+		const element = item.element!;
 		const noteIcon = document.createElement('node-icon');
 		addClass(noteIcon, 'icon-note');
 		noteIcon.textContent = '\uf27b';
@@ -1080,9 +1165,9 @@ Attribute.list_createNoteIcon = function (this: any, item: any) {
 };
 
 // 列表 - 更新笔记图标
-Attribute.list_updateNoteIcon = function (this: any, item: any) {
+Attribute.list_updateNoteIcon = function (item: AttributeItem) {
 	const { element } = item;
-	if (element.noteIcon !== undefined) {
+	if (element?.noteIcon !== undefined) {
 		const annotated = item.note !== '';
 		if (element.annotated !== annotated) {
 			element.annotated = annotated;
@@ -1092,25 +1177,25 @@ Attribute.list_updateNoteIcon = function (this: any, item: any) {
 };
 
 // 列表 - 在创建数据时回调
-Attribute.list_onCreate = function (this: any, item: any) {
+Attribute.list_onCreate = function (item: AttributeItem) {
 	Attribute.register(item);
 };
 
 // 列表 - 在删除数据时回调
-Attribute.list_onDelete = function (this: any, item: any) {
+Attribute.list_onDelete = function (item: AttributeItem) {
 	Attribute.unregister(item);
 };
 
 // 列表 - 在恢复数据时回调
-Attribute.list_onResume = function (this: any, item: any) {
+Attribute.list_onResume = function (item: AttributeItem) {
 	Attribute.register(item);
 };
 
 for (const key of attributeStateKeys) {
 	Object.defineProperty(Attribute, key, {
 		get: () => getAttributeStore().state[key],
-		set: (value: any) => {
-			(getAttributeStore().state as any)[key] = value;
+		set: (value: unknown) => {
+			(getAttributeStore().state as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

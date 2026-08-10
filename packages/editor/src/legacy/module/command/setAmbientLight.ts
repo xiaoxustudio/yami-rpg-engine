@@ -6,6 +6,15 @@ import { Data } from '@/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type SetAmbientLightData = {
+	red: number | string;
+	green: number | string;
+	blue: number | string;
+	easingId: string;
+	duration: number | string;
+	wait: boolean | string;
+};
+
 Command.cases.setAmbientLight = new CommandSchema({
 	name: 'setAmbientLight',
 	fields: [
@@ -22,20 +31,20 @@ Command.cases.setAmbientLight = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setAmbientLight').on('open', function (event: any) {
+		$('#setAmbientLight').on('open', function (event: Event) {
 			$('#setAmbientLight-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setAmbientLight').on('closed', function (event: any) {
+		$('#setAmbientLight').on('closed', function (event: Event) {
 			clear($('#setAmbientLight-easingId'));
 		});
 	},
-	parseColor(red: any, green: any, blue: any) {
+	parseColor(red: number | string, green: number | string, blue: number | string) {
 		const r = Command.parseVariableNumber!(red);
 		const g = Command.parseVariableNumber!(green);
 		const b = Command.parseVariableNumber!(blue);
 		return 'RGB' + Token('(') + r + Token(', ') + g + Token(', ') + b + Token(')');
 	},
-	customParse({ red, green, blue, easingId, duration, wait }: any) {
+	customParse({ red, green, blue, easingId, duration, wait }: SetAmbientLightData) {
 		const words = Command.words
 			.push(this.parseColor!(red, green, blue))
 			.push(Command.parseEasing!(easingId, duration, wait));

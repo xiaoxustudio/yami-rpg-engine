@@ -7,27 +7,44 @@ import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const SceneParticle = {
+	interface SceneParticleData {
+		emitter: {
+			angle: number;
+			opacity: unknown;
+			scale: unknown;
+			speed: unknown;
+		};
+		[k: string]: unknown;
+	}
+	interface SceneParticleShape {
+		target: SceneParticleData | null;
+		update: ((particle: SceneParticleData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const SceneParticle: SceneParticleShape = {
 		owner: Scene,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	SceneParticle.initialize = function (this: any) {
+	SceneParticle.initialize = function (this: typeof SceneParticle) {
 		if (!$('#sceneParticle-name')) return;
 		this.nameBox = $('#sceneParticle-name');
 		$('#sceneParticle-conditions').bind(new ConditionListInterface(this, Scene));
 
 		$('#sceneParticle-events').bind(new EventListInterface(this, Scene));
 
-		$('#sceneParticle-scripts').bind(new ScriptListInterface(this, Scene));
+		$('#sceneParticle-scripts').bind(
+			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
+		);
 
 		$('#sceneParticle-parameter-pane').bind($('#sceneParticle-scripts'));
 
@@ -65,7 +82,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	SceneParticle.create = function (this: any) {
+	SceneParticle.create = function (this: typeof SceneParticle) {
 		return {
 			class: 'particle',
 			name: 'Particle',
@@ -87,7 +104,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	SceneParticle.open = function (this: any, particle: any) {
+	SceneParticle.open = function (this: typeof SceneParticle, particle: SceneParticleData) {
 		if (this.target !== particle) {
 			this.target = particle;
 
@@ -107,7 +124,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.close = function (this: any) {
+	SceneParticle.close = function (this: typeof SceneParticle) {
 		if (this.target) {
 			Scene.list.unselect(this.target);
 			Scene.updateTarget!();
@@ -119,7 +136,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.write = function (this: any, options: any) {
+	SceneParticle.write = function (this: typeof SceneParticle, options: Record<string, unknown>) {
 		if (options.x !== undefined) {
 			write($('#sceneParticle-x'), options.x);
 		}
@@ -128,7 +145,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	SceneParticle.update = function (this: any, particle: any, key: any, value: any) {
+	SceneParticle.update = function (
+		this: typeof SceneParticle,
+		particle: SceneParticleData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'name':
@@ -158,7 +180,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				if (particle.angle !== value) {
 					particle.angle = value;
 					if (particle.emitter) {
-						particle.emitter.angle = Math.radians(value);
+						particle.emitter.angle = Math.radians(value as number);
 					}
 				}
 				break;
@@ -190,8 +212,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		Scene.requestRendering!();
 	};
 
-	SceneParticle.paramInput = function (this: any, event: any) {
-		SceneParticle.update!(SceneParticle.target, Inspector.getKey!(this), read(this));
+	SceneParticle.paramInput = function (this: typeof SceneParticle, event: Event) {
+		SceneParticle.update!(
+			SceneParticle.target as SceneParticleData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.sceneParticle = SceneParticle;

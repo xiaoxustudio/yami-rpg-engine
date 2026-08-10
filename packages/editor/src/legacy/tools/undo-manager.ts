@@ -1,7 +1,14 @@
-export const UndoManager = {
-	active: null as any,
+type ActiveEditorShape = {
+	state?: string;
+	undo?: ((...args: unknown[]) => unknown) | null;
+	redo?: ((...args: unknown[]) => unknown) | null;
+	history?: { canUndo(): boolean; canRedo(): boolean } | null;
+};
 
-	setActive(editor: any) {
+export const UndoManager = {
+	active: null as unknown as ActiveEditorShape | null,
+
+	setActive(editor: ActiveEditorShape | null) {
 		this.active = editor;
 	},
 
@@ -10,11 +17,11 @@ export const UndoManager = {
 	},
 
 	undo() {
-		this.active?.undo();
+		this.active?.undo?.();
 	},
 
 	redo() {
-		this.active?.redo();
+		this.active?.redo?.();
 	},
 
 	canUndo() {

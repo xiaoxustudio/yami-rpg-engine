@@ -7,7 +7,7 @@ import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 
-export const TileFrame = {
+export const TileFrame: Record<string, any> = {
 	get window() {
 		return $('#autoTile-frameIndex');
 	},
@@ -29,25 +29,25 @@ export const TileFrame = {
 	get info() {
 		return $('#autoTile-frameIndex-info');
 	},
-	dragging: null as any,
-	hframes: null as any,
-	vframes: null as any,
-	initialize: null as any,
-	open: null as any,
-	selectTileFrame: null as any,
-	scrollToSelection: null as any,
-	getDevicePixelClientBoxSize: null as any,
-	dprchange: null as any,
-	windowClosed: null as any,
-	keydown: null as any,
-	marqueePointerdown: null as any,
-	marqueePointermove: null as any,
-	marqueePointerleave: null as any,
-	pointerup: null as any,
-	pointermove: null as any
+	dragging: null,
+	hframes: null,
+	vframes: null,
+	initialize: null,
+	open: null,
+	selectTileFrame: null,
+	scrollToSelection: null,
+	getDevicePixelClientBoxSize: null,
+	dprchange: null,
+	windowClosed: null,
+	keydown: null,
+	marqueePointerdown: null,
+	marqueePointermove: null,
+	marqueePointerleave: null,
+	pointerup: null,
+	pointermove: null
 };
 
-TileFrame.initialize = function (this: any) {
+TileFrame.initialize = function (this: typeof TileFrame) {
 	if (!this.window) return;
 	window.addEventListener('dprchange', this.dprchange);
 	on(this.window, 'closed', this.windowClosed);
@@ -56,7 +56,7 @@ TileFrame.initialize = function (this: any) {
 	on(this.marquee, 'pointerleave', this.marqueePointerleave);
 };
 
-TileFrame.open = function (this: any) {
+TileFrame.open = function (this: typeof TileFrame) {
 	const MAX_CONTENT_WIDTH = 1180;
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
@@ -140,7 +140,7 @@ TileFrame.open = function (this: any) {
 	screen.scrollTop = Math.round(y - screenHeight / 2) / dpr;
 };
 
-TileFrame.selectTileFrame = function (this: any) {
+TileFrame.selectTileFrame = function (this: typeof TileFrame) {
 	let { x, y } = this.marquee;
 	x -= AutoTile.offsetX;
 	y -= AutoTile.offsetY;
@@ -153,7 +153,7 @@ TileFrame.selectTileFrame = function (this: any) {
 	}
 };
 
-TileFrame.scrollToSelection = function (this: any) {
+TileFrame.scrollToSelection = function (this: typeof TileFrame) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const screen = this.screen;
@@ -175,7 +175,7 @@ TileFrame.scrollToSelection = function (this: any) {
 	}
 };
 
-TileFrame.getDevicePixelClientBoxSize = function (this: any, element: any) {
+TileFrame.getDevicePixelClientBoxSize = function (this: typeof TileFrame, element: HTMLElement) {
 	const elementRect = rect(element);
 	const elementCss = css(element);
 	if (elementCss.overflowX === 'scroll') {
@@ -198,7 +198,7 @@ TileFrame.getDevicePixelClientBoxSize = function (this: any, element: any) {
 	return { width, height };
 };
 
-TileFrame.dprchange = function (this: any, event: any) {
+TileFrame.dprchange = function (this: typeof TileFrame, event: Event) {
 	if (this.hframes !== null) {
 		const marquee = this.marquee;
 		const { x, y, width, height } = marquee;
@@ -207,7 +207,7 @@ TileFrame.dprchange = function (this: any, event: any) {
 	}
 }.bind(TileFrame);
 
-TileFrame.windowClosed = function (this: any, event: any) {
+TileFrame.windowClosed = function (this: typeof TileFrame, event: Event) {
 	this.hframes = null;
 	this.vframes = null;
 	this.image.src = '';
@@ -217,7 +217,7 @@ TileFrame.windowClosed = function (this: any, event: any) {
 	window.removeEventListener('keydown', this.keydown);
 }.bind(TileFrame);
 
-TileFrame.keydown = function (this: any, event: any) {
+TileFrame.keydown = function (this: typeof TileFrame, event: KeyboardEvent) {
 	event.preventDefault();
 	if (this.dragging) {
 		return;
@@ -259,7 +259,10 @@ TileFrame.keydown = function (this: any, event: any) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerdown = function (this: any, event: any) {
+TileFrame.marqueePointerdown = function (
+	this: typeof TileFrame,
+	event: PointerEvent & { [k: string]: unknown }
+) {
 	if (this.dragging) {
 		return;
 	}
@@ -268,9 +271,13 @@ TileFrame.marqueePointerdown = function (this: any, event: any) {
 			if (event.altKey) {
 				this.dragging = event;
 				event.mode = 'scroll';
-				event.screen = event.target.parentNode;
-				event.scrollLeft = event.screen.scrollLeft;
-				event.scrollTop = event.screen.scrollTop;
+				const screen = (event.target as HTMLElement).parentNode as HTMLElement & {
+					scrollLeft: number;
+					scrollTop: number;
+				};
+				(event as unknown as { screen: typeof screen }).screen = screen;
+				(event as unknown as { scrollLeft: number }).scrollLeft = screen.scrollLeft;
+				(event as unknown as { scrollTop: number }).scrollTop = screen.scrollTop;
 				Cursor.open('cursor-grab');
 				window.addEventListener('pointerup', this.pointerup);
 				window.addEventListener('pointermove', this.pointermove);
@@ -289,9 +296,13 @@ TileFrame.marqueePointerdown = function (this: any, event: any) {
 		case 2:
 			this.dragging = event;
 			event.mode = 'scroll';
-			event.screen = event.target.parentNode;
-			event.scrollLeft = event.screen.scrollLeft;
-			event.scrollTop = event.screen.scrollTop;
+			const screen = (event.target as HTMLElement).parentNode as HTMLElement & {
+				scrollLeft: number;
+				scrollTop: number;
+			};
+			(event as unknown as { screen: typeof screen }).screen = screen;
+			(event as unknown as { scrollLeft: number }).scrollLeft = screen.scrollLeft;
+			(event as unknown as { scrollTop: number }).scrollTop = screen.scrollTop;
 			Cursor.open('cursor-grab');
 			window.addEventListener('pointerup', this.pointerup);
 			window.addEventListener('pointermove', this.pointermove);
@@ -299,7 +310,7 @@ TileFrame.marqueePointerdown = function (this: any, event: any) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointermove = function (this: any, event: any) {
+TileFrame.marqueePointermove = function (this: typeof TileFrame, event: PointerEvent) {
 	const info = this.info;
 	const marquee = this.marquee;
 	const coords = getRelativeCoords(event, marquee);
@@ -312,14 +323,14 @@ TileFrame.marqueePointermove = function (this: any, event: any) {
 	}
 }.bind(TileFrame);
 
-TileFrame.marqueePointerleave = function (this: any, event: any) {
+TileFrame.marqueePointerleave = function (this: typeof TileFrame, event: Event) {
 	const info = this.info;
 	info.x = -1;
 	info.y = -1;
 	info.textContent = '';
 }.bind(TileFrame);
 
-TileFrame.pointerup = function (this: any, event: any) {
+TileFrame.pointerup = function (this: typeof TileFrame, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -345,7 +356,7 @@ TileFrame.pointerup = function (this: any, event: any) {
 	}
 }.bind(TileFrame);
 
-TileFrame.pointermove = function (this: any, event: any) {
+TileFrame.pointermove = function (this: typeof TileFrame, event: PointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {

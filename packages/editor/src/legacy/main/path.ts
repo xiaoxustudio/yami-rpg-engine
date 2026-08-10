@@ -1,16 +1,16 @@
 import { Path } from '@/util/config.ts';
 import { Editor } from './editor.ts';
 
-Editor.updatePath = function (this: any, path: any) {
+Editor.updatePath = function (this: typeof Editor, path: string) {
 	const { config } = this;
 
-	config.project = path;
+	config!.project = path;
 
-	config.dialogs.open = Path.dirname!(path);
+	config!.dialogs!.open = Path.dirname!(path);
 
-	const items = config.recent;
+	const items = config!.recent!;
 	const date = Date.now();
-	const item = items.find((a: any) => a.path === path);
+	const item = items.find((a: { path: string }) => a.path === path);
 	if (item) {
 		item.date = date;
 		items.remove(item);

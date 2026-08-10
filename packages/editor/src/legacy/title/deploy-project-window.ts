@@ -28,15 +28,50 @@ const _modulePath =
 			: '';
 const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-type DeploymentState = 'passed' | 'open' | 'closed';
+type DeploymentState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
+
+type DeploymentPlatform = 'windows-x64' | 'mac-universal' | 'web';
+
+type DeploymentFileItem = {
+	folder?: boolean;
+	shell?: boolean;
+	srcPath?: string;
+	newPath?: string;
+	path?: string;
+	data?: unknown;
+	encrypt?: boolean;
+	parameters?: unknown;
+};
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type DeploymentMethod = ((...args: any[]) => any) | null;
 
+interface DeploymentManifest {
+	ui: Record<string, any>;
+	scenes: Record<string, any>;
+	actors: Record<string, any>;
+	skills: Record<string, any>;
+	items: Record<string, any>;
+	equipments: Record<string, any>;
+	triggers: Record<string, any>;
+	states: Record<string, any>;
+	events: Record<string, any>;
+	tilesets: Record<string, any>;
+	animations: Record<string, any>;
+	particles: Record<string, any>;
+	images: unknown[];
+	audio: unknown[];
+	videos: unknown[];
+	fonts: unknown[];
+	script: unknown[];
+	others: unknown[];
+	[k: string]: any;
+}
+
 interface DeploymentShape {
 	state: DeploymentState;
 	gamedir: string;
-	timer: any | null;
+	timer: Timer | null;
 	compress: boolean;
 	initialize: (() => void) | null;
 	open: DeploymentMethod;
@@ -57,25 +92,25 @@ interface DeploymentShape {
 export const Deployment: DeploymentShape = {
 	state: 'passed',
 	gamedir: '',
-	timer: null as any,
+	timer: null,
 	compress: false,
-	initialize: null as any,
-	open: null as any,
-	check: null as any,
-	readShellList: null as any,
-	readFileList: null as any,
-	readTsOutDir: null as any,
-	copyFilesTo: null as any,
-	compressJavaScript: null as any,
-	platformInput: null as any,
-	folderBeforeinput: null as any,
-	folderInput: null as any,
-	locationInput: null as any,
-	chooseClick: null as any,
-	confirm: null as any
+	initialize: null,
+	open: null,
+	check: null,
+	readShellList: null,
+	readFileList: null,
+	readTsOutDir: null,
+	copyFilesTo: null,
+	compressJavaScript: null,
+	platformInput: null,
+	folderBeforeinput: null,
+	folderInput: null,
+	locationInput: null,
+	chooseClick: null,
+	confirm: null
 };
 
-Deployment.initialize = function (this: any) {
+Deployment.initialize = function (this: typeof Deployment) {
 	const platform = $('#deployment-platform');
 	if (!platform) return;
 	platform.loadItems([
@@ -84,20 +119,20 @@ Deployment.initialize = function (this: any) {
 		{ name: 'Web / Android / iOS', value: 'web' }
 	]);
 
-	platform.addEventListener('input', this.platformInput);
+	platform.addEventListener('input', this.platformInput!);
 	// folder/location input 经 Vue 模板转发（Deployment.vue @input/@beforeinput → Deployment.*）
-	on($('#deployment-choose'), 'click', this.chooseClick);
-	on($('#deployment-confirm'), 'click', this.confirm);
-	$('#deployment-compress').addEventListener('change', (e: any) => {
+	on($('#deployment-choose'), 'click', this.chooseClick!);
+	on($('#deployment-confirm'), 'click', this.confirm!);
+	$('#deployment-compress').addEventListener('change', (e: Event) => {
 		Deployment.compress = read(e.target);
 	});
 };
 
-Deployment.open = function (this: any) {
+Deployment.open = function (this: typeof Deployment) {
 	Window.open!('deployment');
 	const write = getElementWriter('deployment');
-	const dialogs = (Editor.config as any).dialogs;
-	const location = Path.normalize!(dialogs.deploy);
+	const dialogs = Editor.config!.dialogs!;
+	const location = Path.normalize!(dialogs.deploy!);
 	write('platform', 'windows-x64');
 	write('folder', 'Output');
 	write('location', location);
@@ -105,7 +140,7 @@ Deployment.open = function (this: any) {
 	this.check!();
 };
 
-Deployment.check = function (this: any) {
+Deployment.check = function (this: typeof Deployment) {
 	let folder = read($('#deployment-folder'));
 	const location = read($('#deployment-location'));
 	const platform = read($('#deployment-platform'));
@@ -134,52 +169,54 @@ Deployment.check = function (this: any) {
 };
 
 Deployment.readShellList = (function IIFE() {
-	let root: any;
+	let root = '';
 	const options = { withFileTypes: true };
-	const read = (path: any, list: any) => {
-		return (FSP.readdir as any)(`${root}${path}`, options).then(async (files: any[]) => {
-			if (path) {
-				path += '/';
-			}
-			const promises = [] as any[];
-			for (const file of files) {
-				const newPath = `${path}${file.name}`;
-				const srcPath = `${root}${newPath}`;
-				if (file.isDirectory()) {
-					list.push({
-						folder: true,
-						shell: true,
-						srcPath: srcPath,
-						newPath: newPath
-					});
-					promises.push(read(newPath, list));
-				} else {
-					list.push({
-						shell: true,
-						srcPath: srcPath,
-						newPath: newPath
-					});
+	const read = (path: string, list: DeploymentFileItem[]) => {
+		return FSP.readdir(`${root}${path}`, options).then(
+			async (files: Array<{ name: string; isDirectory(): boolean }>) => {
+				if (path) {
+					path += '/';
 				}
+				const promises: Promise<unknown>[] = [];
+				for (const file of files) {
+					const newPath = `${path}${file.name}`;
+					const srcPath = `${root}${newPath}`;
+					if (file.isDirectory()) {
+						list.push({
+							folder: true,
+							shell: true,
+							srcPath: srcPath,
+							newPath: newPath
+						});
+						promises.push(read(newPath, list));
+					} else {
+						list.push({
+							shell: true,
+							srcPath: srcPath,
+							newPath: newPath
+						});
+					}
+				}
+				if (promises.length !== 0) {
+					await Promise.all(promises);
+				}
+				return list;
 			}
-			if (promises.length !== 0) {
-				await Promise.all(promises);
-			}
-			return list;
-		});
+		);
 	};
-	return function (this: any, rootDir: any) {
+	return function (rootDir: string) {
 		root = Path.resolve!(__dirname, rootDir) + '/';
 		return read('', []);
 	};
 })();
 
-Deployment.readFileList = async function (this: any, platform) {
+Deployment.readFileList = async function (this: typeof Deployment, platform: DeploymentPlatform) {
 	const encrypt = true;
 	const tsOutDir = Deployment.readTsOutDir!();
 	if (!tsOutDir) {
 		throw new Error('Unable to get "outDir" from "tsconfig.json".');
 	}
-	let fileList;
+	let fileList: DeploymentFileItem[] = [];
 	switch (platform) {
 		case 'windows-x64':
 			fileList = await this.readShellList!(Path.resolve!(TemplatesPath, 'electron-win-x64'));
@@ -192,7 +229,7 @@ Deployment.readFileList = async function (this: any, platform) {
 			this.gamedir = 'Contents/Resources/app/';
 			break;
 		case 'web':
-			fileList = [] as any[];
+			fileList = [];
 			this.gamedir = '';
 			break;
 	}
@@ -219,7 +256,7 @@ Deployment.readFileList = async function (this: any, platform) {
 		}
 	);
 	const fileIdMap = await Data.createReferencedFileIDMap!();
-	const manifest = {
+	const manifest: DeploymentManifest = {
 		ui: {},
 		scenes: {},
 		actors: {},
@@ -250,8 +287,8 @@ Deployment.readFileList = async function (this: any, platform) {
 		'animations',
 		'particles'
 	]) {
-		const sGroup = (Data as any)[key];
-		const dGroup = (manifest as any)[key];
+		const sGroup = Data[key];
+		const dGroup = manifest[key];
 		for (const guid of Object.keys(sGroup)) {
 			if (!fileIdMap[guid]) continue;
 			dGroup[guid] = sGroup[guid];
@@ -259,9 +296,9 @@ Deployment.readFileList = async function (this: any, platform) {
 	}
 	const guidAndExt = /\.[0-9a-f]{16}\.\S+$/;
 	for (const key of ['skills', 'items', 'equipments']) {
-		const dataGroup = (Data as any)[key];
-		const manifestGroup = (manifest as any)[key];
-		for (const { guid, path } of (Data.manifest as any)[key]) {
+		const dataGroup = Data[key];
+		const manifestGroup = manifest[key];
+		for (const { guid, path } of Data.manifest[key]) {
 			if (!fileIdMap[guid]) continue;
 			const data = dataGroup[guid];
 			if (data !== undefined) {
@@ -364,7 +401,7 @@ Deployment.readFileList = async function (this: any, platform) {
 			path = tsOutDir + path.replace(tsExtname, '.js');
 		}
 		const newPath = `Assets/${guid}.js`;
-		(manifest.script as any[]).push({
+		manifest.script.push({
 			path: newPath,
 			parameters: parameters
 		});
@@ -375,8 +412,8 @@ Deployment.readFileList = async function (this: any, platform) {
 	}
 	const fontNameRegexp = /([^/]+)\.\S+\.\S+$/;
 	for (const key of ['images', 'audio', 'videos', 'fonts', 'others']) {
-		const sMetaList = (Data.manifest as any)[key];
-		const dMetaList = (manifest as any)[key];
+		const sMetaList = Data.manifest[key];
+		const dMetaList = manifest[key];
 		for (const { guid, path, size } of sMetaList) {
 			if (!fileIdMap[guid]) continue;
 			const extname =
@@ -406,7 +443,7 @@ Deployment.readFileList = async function (this: any, platform) {
 	return fileList;
 };
 
-Deployment.readTsOutDir = function (this: any) {
+Deployment.readTsOutDir = function (this: typeof Deployment) {
 	const ts = FS.readFileSync!(File.path!('tsconfig.json'), 'utf8');
 	const match = ts.match(/"outDir"\s*:\s*"(.*?)"/);
 	let outDir;
@@ -419,7 +456,7 @@ Deployment.readTsOutDir = function (this: any) {
 	return outDir;
 };
 
-Deployment.copyFilesTo = function (this: any, dirPath: any) {
+Deployment.copyFilesTo = function (this: typeof Deployment, dirPath: string) {
 	Window.open!('copyProgress');
 	const platform = read($('#deployment-platform'));
 	const progressBar = $('#copyProgress-bar');
@@ -427,17 +464,17 @@ Deployment.copyFilesTo = function (this: any, dirPath: any) {
 	const { extnameToTypeMap } = FolderItem;
 	progressBar.style.width = '0';
 	progressInfo.textContent = '';
-	return this.readFileList!(platform).then((list: any) => {
+	return this.readFileList!(platform).then((list: DeploymentFileItem[]) => {
 		let total = 0;
 		let count = 0;
 		let info = '';
 		const dPath = `${dirPath}/`;
-		const promises = [] as any[];
+		const promises: Promise<unknown>[] = [];
 		const length = list.length;
 		for (let i = 0; i < length; i++) {
 			const item = list[i];
-			const srcPath = item.srcPath ?? File.path!(item.path);
-			const newPath = item.newPath ?? item.path;
+			const srcPath: string = item.srcPath ?? File.path!(item.path);
+			const newPath: string = item.newPath ?? item.path!;
 			const gamedir = item.shell ? '' : this.gamedir;
 			const dstPath = dPath + gamedir + newPath;
 			switch (item.folder) {
@@ -455,7 +492,7 @@ Deployment.copyFilesTo = function (this: any, dirPath: any) {
 						);
 					} else {
 						switch (
-							(extnameToTypeMap as Record<string, any>)[
+							(extnameToTypeMap as Record<string, string>)[
 								Path.extname!(srcPath).toLowerCase()
 							]
 						) {
@@ -514,24 +551,28 @@ Deployment.copyFilesTo = function (this: any, dirPath: any) {
 	});
 };
 
-Deployment.compressJavaScript = function (this: any, srcPath: any, dstPath: any) {
-	let uglifyJS;
+Deployment.compressJavaScript = function (
+	this: typeof Deployment,
+	srcPath: string,
+	dstPath: string
+) {
+	let uglifyJS: typeof uglifyJs | null;
 	try {
 		uglifyJS = uglifyJs;
 	} catch (e) {
 		uglifyJS = null;
 	}
 
-	return new Promise((resolve: any, reject: any) => {
+	return new Promise((resolve: (value: unknown) => void, reject: (reason?: unknown) => void) => {
 		if (!uglifyJS) {
 			// If uglify-js is not available, just copy the file
 			FSP.copyFile!(srcPath, dstPath).then(resolve, reject);
 			return;
 		}
 		FSP.readFile!(srcPath, 'utf8')
-			.then((code: any) => {
+			.then((code: string) => {
 				try {
-					const result = uglifyJS.minify(code, {
+					const result = uglifyJS!.minify(code, {
 						mangle: {
 							toplevel: false,
 							eval: true,
@@ -563,11 +604,11 @@ Deployment.compressJavaScript = function (this: any, srcPath: any, dstPath: any)
 	});
 };
 
-Deployment.platformInput = function (this: any, event: any) {
+Deployment.platformInput = function (this: typeof Deployment, event: Event) {
 	Deployment.check!();
 };
 
-Deployment.folderBeforeinput = function (this: any, event: any) {
+Deployment.folderBeforeinput = function (this: typeof Deployment, event: InputEvent) {
 	if (event.inputType === 'insertText' && typeof event.data === 'string') {
 		const regexp = /[\\/:*?"<>|"]/;
 		if (regexp.test(event.data)) {
@@ -577,7 +618,7 @@ Deployment.folderBeforeinput = function (this: any, event: any) {
 	}
 };
 
-Deployment.folderInput = function (this: any, event: any) {
+Deployment.folderInput = function (this: typeof Deployment, event: Event) {
 	const el = $('#deployment-folder');
 	const regexp = /[\\/:*?"<>|"]/g;
 	const oldName = read(el);
@@ -588,16 +629,16 @@ Deployment.folderInput = function (this: any, event: any) {
 	Deployment.check!();
 };
 
-Deployment.locationInput = function (this: any, event: any) {
+Deployment.locationInput = function (this: typeof Deployment, event: Event) {
 	Deployment.check!();
 };
 
-Deployment.chooseClick = function (this: any, event: any) {
+Deployment.chooseClick = function (this: typeof Deployment, event: Event) {
 	const input = $('#deployment-location');
 	File.showOpenDialog!({
 		defaultPath: read(input),
 		properties: ['openDirectory']
-	}).then(({ filePaths }: any) => {
+	}).then(({ filePaths }: { filePaths: string[] }) => {
 		if (filePaths.length === 1) {
 			write(input, filePaths[0]);
 			Deployment.check!();
@@ -605,7 +646,7 @@ Deployment.chooseClick = function (this: any, event: any) {
 	});
 };
 
-Deployment.confirm = function (this: any, event: any) {
+Deployment.confirm = function (this: typeof Deployment, event: Event) {
 	const platform = read($('#deployment-platform'));
 	const location = read($('#deployment-location'));
 	const folder = read($('#deployment-folder'));
@@ -615,7 +656,7 @@ Deployment.confirm = function (this: any, event: any) {
 		path += '.app';
 	}
 	return FSP.mkdir!(path, { recursive: true })
-		.then((done: any) => {
+		.then(() => {
 			return Deployment.copyFilesTo!(path);
 		})
 		.finally(() => {
@@ -626,9 +667,9 @@ Deployment.confirm = function (this: any, event: any) {
 			}
 		})
 		.then(() => {
-			(Editor.config as any).dialogs.deploy = Path.slash!(Path.resolve!(location));
+			Editor.config!.dialogs!.deploy = Path.slash!(Path.resolve!(location));
 		})
-		.catch((error: any) => {
+		.catch((error: Error) => {
 			Log.throw!(error);
 			Window.confirm!(
 				{

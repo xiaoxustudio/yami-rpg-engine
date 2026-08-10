@@ -131,16 +131,16 @@ const relate = (elements: HTMLElement[]): void => {
 const toggleRelatedElements = (): void => {
 	if (!isDisabled.value && state.dataValue) {
 		for (const element of state.relations) {
-			if (typeof (element as any).enable === 'function') {
-				(element as any).enable();
+			if (typeof element.enable === 'function') {
+				element.enable();
 			} else {
 				enableElement(element);
 			}
 		}
 	} else {
 		for (const element of state.relations) {
-			if (typeof (element as any).disable === 'function') {
-				(element as any).disable();
+			if (typeof element.disable === 'function') {
+				element.disable();
 			} else {
 				disableElement(element);
 			}

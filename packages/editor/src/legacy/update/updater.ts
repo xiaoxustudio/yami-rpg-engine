@@ -1,36 +1,63 @@
-export const Updater = {
+interface UpdaterShape {
+	latestEditorVersion: string;
+	latestProjectVersion: string;
+	getTSVersionWarning: (() => { message: string; confirm: string; cancel: string }) | null;
+	updateProject: ((verNum: number) => void) | null;
+	updateConfig: ((verNum: number) => void) | null;
+	updateLocalEvents: ((verNum: number) => void) | null;
+	updateGlobalEvents: ((verNum: number) => void) | null;
+	updateGlobalEvent: (meta: unknown) => void;
+	updateActors: ((verNum: number) => void) | null;
+	updateSkills: ((verNum: number) => void) | null;
+	updateTriggers: ((verNum: number) => void) | null;
+	updateItems: ((verNum: number) => void) | null;
+	updateEquipments: ((verNum: number) => void) | null;
+	updateStates: ((verNum: number) => void) | null;
+	updateScenes: ((verNum: number) => void) | null;
+	updateTilesets: ((verNum: number) => void) | null;
+	updateElements: ((verNum: number) => void) | null;
+	updateAnimations: ((verNum: number) => void) | null;
+	updateParticles: ((verNum: number) => void) | null;
+	updateTeams: ((verNum: number) => void) | null;
+	createLocalization: ((verNum: number) => Promise<void>) | null;
+	backupProject: (() => void) | null;
+	updateToLatest: ((version: string) => unknown) | null;
+	updateIncrementalChanges: (version: string) => unknown;
+	getTsVersionWarning: (() => { message: string; confirm: string; cancel: string }) | null;
+	getVersionNumber: ((version: string) => number) | null;
+}
+
+export const Updater: UpdaterShape = {
 	latestEditorVersion: '1.0.18',
 	latestProjectVersion: '1.0.147',
 	// runtime 挂载: version-warning.ts 中挂载 TS 版本警告函数
-	getTSVersionWarning: null as
-		| (() => { message: string; confirm: string; cancel: string })
-		| null,
-	updateProject: null as any,
-	updateConfig: null as any,
-	updateLocalEvents: null as any,
-	updateGlobalEvents: null as any,
-	updateGlobalEvent: null as any,
-	updateActors: null as any,
-	updateSkills: null as any,
-	updateTriggers: null as any,
-	updateItems: null as any,
-	updateEquipments: null as any,
-	updateStates: null as any,
-	updateScenes: null as any,
-	updateTilesets: null as any,
-	updateElements: null as any,
-	updateAnimations: null as any,
-	updateParticles: null as any,
-	updateTeams: null as any,
-	createLocalization: null as any,
-	backupProject: null as any,
-	updateToLatest: null as any,
-	updateIncrementalChanges: null as any,
-	getTsVersionWarning: null as any,
-	getVersionNumber: null as any
+	getTSVersionWarning: null,
+	updateProject: null,
+	updateConfig: null,
+	updateLocalEvents: null,
+	updateGlobalEvents: null,
+	updateGlobalEvent: null as unknown as (meta: unknown) => void,
+	updateActors: null,
+	updateSkills: null,
+	updateTriggers: null,
+	updateItems: null,
+	updateEquipments: null,
+	updateStates: null,
+	updateScenes: null,
+	updateTilesets: null,
+	updateElements: null,
+	updateAnimations: null,
+	updateParticles: null,
+	updateTeams: null,
+	createLocalization: null,
+	backupProject: null,
+	updateToLatest: null,
+	updateIncrementalChanges: null as unknown as (version: string) => unknown,
+	getTsVersionWarning: null,
+	getVersionNumber: null
 };
 
-Updater.getVersionNumber = function (version: any) {
+Updater.getVersionNumber = function (version: string) {
 	if (!version) return 0;
 	const nodes = version.split('.');
 	const a = parseInt(nodes[0]);

@@ -15,7 +15,7 @@ export const WebServer = new (class {
 		const startBtn = $('#qr-start-button');
 		if (!startBtn) return;
 		on(startBtn, 'click', () => {
-			this.start!(Path.slash((Editor.config as any).project));
+			this.start!(Path.slash(Editor.config!.project!));
 		});
 		on($('#qr-close-button'), 'click', () => this.stop!());
 	}
@@ -78,7 +78,7 @@ export const WebServer = new (class {
 		return FSP.mkdir(path, { recursive: true })
 			.then((done: any) => {
 				write($('#deployment-platform'), 'web');
-				return (Deployment as any).copyFilesTo(location);
+				return Deployment.copyFilesTo!(location);
 			})
 			.finally(() => {
 				Window.close!('copyProgress');
@@ -88,10 +88,10 @@ export const WebServer = new (class {
 				}
 			})
 			.then(() => {
-				(Editor.config as any).dialogs.deploy = Path.slash(Path.resolve(location));
+				Editor.config!.dialogs!.deploy = Path.slash(Path.resolve(location));
 			})
 			.catch((error: any) => {
-				(Log as any).throw(error);
+				Log.throw!(error);
 				Window.confirm!(
 					{
 						message: 'Failed to deploy project:\n' + error.message

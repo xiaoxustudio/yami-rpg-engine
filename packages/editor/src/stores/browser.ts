@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { Editor } from '@/main/editor.ts';
 import { Layout } from '@/layout/layout.ts';
 import { shallowRef } from 'vue';
@@ -22,6 +22,7 @@ import { $ } from '@/util/dom.ts';
 import { addClass, hasClass, rect, removeClass, seek } from '@/util/element-utils';
 import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@/types/file-browser-links.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import child_process from 'node:child_process';
 
 export interface FileBrowserBody {
@@ -91,7 +92,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		directory.value = Browser?.directory ?? null;
 	}
 
-	function pageResize(event: any) {
+	function pageResize(event: Event) {
 		const Browser = getBrowser();
 		if (!Browser?.body) return;
 		updateNavVisibility();
@@ -102,7 +103,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		Browser.body?.updateContentSize?.();
 	}
 
-	function bodyKeydown(event: any) {
+	function bodyKeydown(event: KeyboardEvent) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		if (event.ctrlKey || event.metaKey) {
@@ -123,7 +124,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 	}
 
-	function bodyOpen(event: any) {
+	function bodyOpen(event: Event & { value: FileItem }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const file = event.value;
@@ -132,31 +133,31 @@ export const useBrowserStore = defineStore('browser', () => {
 			case 'ui':
 			case 'animation':
 			case 'particle':
-				(Title as any).openTab(file);
+				Title.openTab?.(file);
 				break;
 			case 'event': {
 				const item = file.data;
 				if (item) {
-					(EventEditor as any).openGlobalEvent(file.meta.guid);
+					EventEditor.openGlobalEvent?.(file.meta.guid);
 				}
 				break;
 			}
 			case 'audio':
-				(Inspector as any).fileAudio.play();
+				Inspector.fileAudio?.play?.();
 				break;
 			case 'video':
-				(Inspector as any).fileVideo.play();
+				Inspector.fileVideo?.play?.();
 				break;
 			case 'script':
 				openScript(file.path);
 				break;
 			case 'other':
-				(File as any).openPath((File as any).route(file.path));
+				File.openPath?.(File.route?.(file.path));
 				break;
 		}
 	}
 
-	function bodySelect(event: any) {
+	function bodySelect(event: Event & { value: FileItem[] }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const files = event.value;
@@ -167,72 +168,70 @@ export const useBrowserStore = defineStore('browser', () => {
 			if (!meta) return;
 			switch (type) {
 				case 'tileset':
-					(Inspector as any).open('fileTileset', file.data, meta);
+					Inspector.open?.('fileTileset', file.data, meta);
 					break;
 				case 'actor':
-					(Inspector as any).open('fileActor', file.data, meta);
+					Inspector.open?.('fileActor', file.data, meta);
 					break;
 				case 'skill':
-					(Inspector as any).open('fileSkill', file.data, meta);
+					Inspector.open?.('fileSkill', file.data, meta);
 					break;
 				case 'trigger':
-					(Inspector as any).open('fileTrigger', file.data, meta);
+					Inspector.open?.('fileTrigger', file.data, meta);
 					break;
 				case 'item':
-					(Inspector as any).open('fileItem', file.data, meta);
+					Inspector.open?.('fileItem', file.data, meta);
 					break;
 				case 'equipment':
-					(Inspector as any).open('fileEquipment', file.data, meta);
+					Inspector.open?.('fileEquipment', file.data, meta);
 					break;
 				case 'state':
-					(Inspector as any).open('fileState', file.data, meta);
+					Inspector.open?.('fileState', file.data, meta);
 					break;
 				case 'event':
-					(Inspector as any).open('fileEvent', file.data, meta);
+					Inspector.open?.('fileEvent', file.data, meta);
 					break;
 				case 'image':
-					(Inspector as any).open('fileImage', file, meta);
+					Inspector.open?.('fileImage', file, meta);
 					break;
 				case 'audio':
-					(Inspector as any).open('fileAudio', file, meta);
+					Inspector.open?.('fileAudio', file, meta);
 					break;
 				case 'video':
-					(Inspector as any).open('fileVideo', file, meta);
+					Inspector.open?.('fileVideo', file, meta);
 					break;
 				case 'font':
-					(Inspector as any).open('fileFont', file, meta);
+					Inspector.open?.('fileFont', file, meta);
 					break;
 				case 'script':
-					(Inspector as any).open('fileScript', file, meta);
+					Inspector.open?.('fileScript', file, meta);
 					break;
 			}
 		}
 	}
 
-	function bodyUnselect(event: any) {
+	function bodyUnselect(event: Event & { value: FileItem[] }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		if ((Inspector as any).meta !== null) {
-			const meta = (Inspector as any).meta;
+		if (Inspector.meta !== null) {
+			const meta = Inspector.meta;
 			const files = event.value;
 			if (files.length === 1 && files[0].path === meta.path) {
-				(Inspector as any).close();
+				Inspector.close?.();
 			}
 		}
 	}
 
-	function bodyPopup(event: any) {
+	function bodyPopup(
+		event: Event & { raw: { target: unknown }; clientX: number; clientY: number }
+	) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const items: any[] = [];
 		const { target } = event.raw;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
-		const get = (Local as any).createGetter('menuFileBrowser');
-		const Clipboard = null as unknown as {
-			write(type: string, data: unknown): void;
-			read(type: string): unknown;
-			has(type: string): boolean;
-		};
+		const get = Local.createGetter!('menuFileBrowser');
+		const Clipboard = getGlobalClipboard();
 		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;
 		if ((seek(target, 'file-body-pane') as unknown as FileBrowserInstance) === Browser) {
@@ -241,9 +240,9 @@ export const useBrowserStore = defineStore('browser', () => {
 				creatable = true;
 				items.push(
 					{
-						label: get((Local as any).showInExplorer()),
+						label: get(Local.showInExplorer?.() ?? ''),
 						click: () => {
-							(File as any).openPath((File as any).route(folders[0].path));
+							File.openPath?.(File.route?.(folders[0].path));
 						}
 					},
 					{
@@ -263,13 +262,13 @@ export const useBrowserStore = defineStore('browser', () => {
 					{
 						label: get('find-invalid-references'),
 						click: () => {
-							(Reference as any).openInvalid();
+							Reference.openInvalid?.();
 						}
 					},
 					{
 						label: get('find-unused-references'),
 						click: () => {
-							(Reference as any).openUnused();
+							Reference.openUnused?.();
 						}
 					}
 				);
@@ -291,7 +290,7 @@ export const useBrowserStore = defineStore('browser', () => {
 					}
 				}
 				items.push({
-					label: get((Local as any).showInExplorer()),
+					label: get(Local.showInExplorer?.() ?? ''),
 					click: () => {
 						Browser.body?.showInExplorer?.();
 					}
@@ -343,7 +342,7 @@ export const useBrowserStore = defineStore('browser', () => {
 					{
 						label: get('delete'),
 						accelerator: 'Delete',
-						enabled: !(selections as unknown[]).includes((Directory as any).assets),
+						enabled: !(selections as unknown[]).includes(Directory.assets),
 						click: () => {
 							Browser.body?.deleteFiles?.();
 						}
@@ -360,7 +359,7 @@ export const useBrowserStore = defineStore('browser', () => {
 			}
 		}
 		if (items.length !== 0) {
-			(Menu as any).popup({ x: event.clientX, y: event.clientY }, items);
+			Menu.popup?.({ x: event.clientX, y: event.clientY }, items);
 		}
 	}
 
@@ -373,19 +372,21 @@ export const useBrowserStore = defineStore('browser', () => {
 		)?.searcher;
 		Browser.searcher?.addKeydownFilter?.();
 		Browser.page?.addEventListener('resize', pageResize);
-		Browser.body?.on?.('keydown', bodyKeydown);
-		Browser.body?.on?.('open', bodyOpen);
-		Browser.body?.on?.('select', bodySelect);
-		Browser.body?.on?.('unselect', bodyUnselect);
-		Browser.body?.on?.('popup', bodyPopup);
+		Browser.body?.on?.('keydown', bodyKeydown as (event: unknown) => void);
+		Browser.body?.on?.('open', bodyOpen as (event: unknown) => void);
+		Browser.body?.on?.('select', bodySelect as (event: unknown) => void);
+		Browser.body?.on?.('unselect', bodyUnselect as (event: unknown) => void);
+		Browser.body?.on?.('popup', bodyPopup as (event: unknown) => void);
 	}
 
 	function open(dir: string) {
 		getBrowser()?.open?.(dir);
+		syncState();
 	}
 
 	function close() {
 		getBrowser()?.close?.();
+		syncState();
 	}
 
 	function unselect(meta: any) {
@@ -429,11 +430,11 @@ export const useBrowserStore = defineStore('browser', () => {
 		const { mode = '', path = '' } = Editor.config?.scriptEditor ?? {};
 		switch (mode) {
 			case 'by-file-extension':
-				(File as any).openPath((File as any).path(filePath));
+				File.openPath?.(File.path?.(filePath));
 				break;
 			case 'specified-application':
 				if (path) {
-					const args = [(File as any).path(filePath)];
+					const args = [File.path?.(filePath)];
 					child_process.spawn(path, args);
 				}
 				break;
@@ -452,17 +453,17 @@ export const useBrowserStore = defineStore('browser', () => {
 		const fullname = `${basename}.${guid}.${extname}`;
 		const dirname = body?.getDirName?.() ?? '';
 		const path = `${dirname}/${fullname}`;
-		const route = (File as any).path(path);
+		const route = File.path?.(path);
 		const json = data instanceof Object ? JSON.stringify(data, null, 2) : data;
 		FSP.writeFile(route, json)
-			.then(() => (Directory as any).update())
+			.then(() => Directory.update?.())
 			.then((changed: boolean) => {
 				if (changed) {
-					const folder = (Directory as any).getFolder(dirname);
+					const folder = Directory.getFolder?.(dirname);
 					if (folder.path === dirname) {
 						Browser.nav?.load?.(folder);
 					}
-					const file = (Directory as any).getFile(path);
+					const file = Directory.getFile?.(path);
 					if (file?.path === path) {
 						body?.select?.(file);
 						body?.rename?.(file);
@@ -487,17 +488,17 @@ export const useBrowserStore = defineStore('browser', () => {
 		const fullname = `${basename}.${guid}.${extname}`;
 		const dirname = body?.getDirName?.() ?? '';
 		const path = `${dirname}/${fullname}`;
-		const route = (File as any).path(path);
+		const route = File.path?.(path);
 		const source = Path.resolve(TemplatesPath, 'script', filename);
 		FSP.copyFile(source, route)
-			.then(() => (Directory as any).update())
+			.then(() => Directory.update?.())
 			.then((changed: boolean) => {
 				if (changed) {
-					const folder = (Directory as any).getFolder(dirname);
+					const folder = Directory.getFolder?.(dirname);
 					if (folder.path === dirname) {
 						Browser.nav?.load?.(folder);
 					}
-					const file = (Directory as any).getFile(path);
+					const file = Directory.getFile?.(path);
 					if (file?.path === path) {
 						body?.select?.(file);
 						body?.rename?.(file);
@@ -543,12 +544,12 @@ export const useBrowserStore = defineStore('browser', () => {
 		const { view, folders } = project.browser;
 		const selections: any[] = [];
 		for (const path of folders) {
-			selections.push((Directory as any).getFolder(path));
+			selections.push(Directory.getFolder?.(path));
 		}
 		if (selections.length === 0) {
-			selections.push((Directory as any).assets);
+			selections.push(Directory.assets);
 		}
-		Browser.directory = (Directory as any).assets;
+		Browser.directory = Directory.assets as unknown as string;
 		Browser.body?.setViewIndex?.(view);
 		Browser.nav?.load?.(...selections);
 	}

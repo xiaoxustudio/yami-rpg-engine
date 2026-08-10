@@ -8,12 +8,19 @@ import { Data } from '@/data/data-object.ts';
 import { FSP } from '@/file/file-system.ts';
 import { Local } from '@/tools/localization.ts';
 
+type LocalizationListItem = {
+	class?: string;
+	children?: LocalizationListItem[];
+	id?: string;
+	contents?: Record<string, string>;
+};
+
 export const ExportLanguage: {
 	initialize: () => void;
 	open: () => void;
 	exportLanguagePack: (first: string, second: string) => string;
 	stringifyLanguagePack: (map: Record<string, string>) => string;
-	confirm: (event: any) => void;
+	confirm: (event: Event) => void;
 } = {
 	initialize: () => {},
 	open: () => {},
@@ -22,19 +29,19 @@ export const ExportLanguage: {
 	confirm: () => {}
 };
 
-ExportLanguage.initialize = function (this: any) {
+ExportLanguage.initialize = function (this: typeof ExportLanguage) {
 	if (!$('#exportLanguage-confirm')) return;
 	on($('#exportLanguage-confirm'), 'click', this.confirm);
 };
 
-ExportLanguage.open = function (this: any) {
+ExportLanguage.open = function (this: typeof ExportLanguage) {
 	Window.open!('exportLanguage');
 
-	const items = [] as any[];
-	const none = { name: (Local.get as any)('common.none'), value: '' };
+	const items: { name: string; value: string }[] = [];
+	const none = { name: Local.get!('common.none'), value: '' };
 	for (const language of Data.config.localization.languages) {
 		items.push({
-			name: (Local.get as any)('languages.' + language.name),
+			name: Local.get!('languages.' + language.name),
 			value: language.name
 		});
 	}
@@ -44,15 +51,19 @@ ExportLanguage.open = function (this: any) {
 	$('#exportLanguage-second').writeDefault();
 };
 
-ExportLanguage.exportLanguagePack = function (this: any, first: string, second: string) {
-	const pack: Record<string, string> = {} as Record<string, any>;
-	const loadText = (items: any[]) => {
+ExportLanguage.exportLanguagePack = function (
+	this: typeof ExportLanguage,
+	first: string,
+	second: string
+) {
+	const pack: Record<string, string> = {};
+	const loadText = (items: LocalizationListItem[]) => {
 		for (const item of items) {
 			if (item.class === 'folder') {
-				loadText(item.children);
+				loadText(item.children!);
 			} else {
 				const { id, contents } = item;
-				pack[id] = contents[first] || contents[second] || '';
+				pack[id!] = contents![first] || contents![second] || '';
 			}
 		}
 	};
@@ -60,7 +71,10 @@ ExportLanguage.exportLanguagePack = function (this: any, first: string, second: 
 	return this.stringifyLanguagePack!(pack);
 };
 
-ExportLanguage.stringifyLanguagePack = function (this: any, map: Record<string, string>) {
+ExportLanguage.stringifyLanguagePack = function (
+	this: typeof ExportLanguage,
+	map: Record<string, string>
+) {
 	const entries = Object.entries(map);
 	const length = entries.length;
 	const strings = new Array(length);
@@ -71,14 +85,14 @@ ExportLanguage.stringifyLanguagePack = function (this: any, map: Record<string, 
 	return strings.join('\n\n');
 };
 
-ExportLanguage.confirm = function (this: any, event: any) {
+ExportLanguage.confirm = function (this: typeof ExportLanguage, event: Event) {
 	Window.close!('exportLanguage');
-	const dialogs = (Editor.config as any).dialogs;
+	const dialogs = Editor.config!.dialogs as { import: string; export: string };
 	const first = read($('#exportLanguage-first'));
 	const second = read($('#exportLanguage-second'));
 	File.showSaveDialog!({
 		defaultPath: Path.resolve!(dialogs.export, first + '.txt')
-	}).then(({ filePath }: any) => {
+	}).then(({ filePath }: { filePath: string }) => {
 		if (filePath) {
 			dialogs.export = Path.slash!(Path.dirname!(filePath));
 			const string = ExportLanguage.exportLanguagePack!(first, second);

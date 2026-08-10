@@ -2,13 +2,16 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIContainer = {
+	interface UIContainerShape {
+		[k: string]: any;
+	}
+	const UIContainer: UIContainerShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null
 	};
 
 	UIContainer.initialize = function (this: any) {};

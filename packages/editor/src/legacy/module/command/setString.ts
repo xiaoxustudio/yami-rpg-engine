@@ -6,7 +6,7 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
-(Command.cases as any).setString = new CommandSchema({
+Command.cases.setString = new CommandSchema({
 	name: 'setString',
 	onInitialize() {
 		$('#setString-confirm').on('click', () => this.save!());
@@ -207,7 +207,7 @@ import { Local } from '@/tools/localization.ts';
 				}
 			]);
 	},
-	writeHandler(event: any) {
+	writeHandler(event: Event) {
 		let filter = 'all';
 		switch (event.value) {
 			case 'variable':
@@ -223,7 +223,7 @@ import { Local } from '@/tools/localization.ts';
 		}
 		$('#setString-operand-common-variable').filter = filter;
 	},
-	parseOperation(operation: any) {
+	parseOperation(operation: string) {
 		switch (operation) {
 			case 'set':
 				return ' = ';
@@ -387,7 +387,15 @@ import { Local } from '@/tools/localization.ts';
 				return this.parseOther!(operand);
 		}
 	},
-	customParse({ variable, operation, operand }: any) {
+	customParse({
+		variable,
+		operation,
+		operand
+	}: {
+		variable: unknown;
+		operation: string;
+		operand: unknown;
+	}) {
 		const varDesc = Command.parseVariable!(variable, 'string', operation === 'set');
 		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
 		const expression = this.parseOperand!(operand);
@@ -401,7 +409,7 @@ import { Local } from '@/tools/localization.ts';
 	customLoad({
 		variable = { type: 'local', key: '' },
 		operation = 'set',
-		operand = { type: 'constant', value: '' } as any
+		operand = { type: 'constant', value: '' } as Record<string, any>
 	}) {
 		let commonValue = '';
 		let stringMethod = 'char';

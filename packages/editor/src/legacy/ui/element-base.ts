@@ -30,7 +30,7 @@ UI.Element = class UIElement {
 		this.connected = false;
 	}
 
-	drawWireframe(color: any) {
+	drawWireframe(color: Array<number> | string) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;
@@ -97,7 +97,7 @@ UI.Element = class UIElement {
 
 	drawDefaultImage() {
 		GL.alpha = this.opacity;
-		GL.blend = (this as any).blend;
+		GL.blend = (this as unknown as { blend: string }).blend;
 		GL.matrix.set(UI.matrix).multiply(this.matrix);
 		GL.fillRect(this.x, this.y, this.width, this.height, 0x80ffffff);
 	}
@@ -172,7 +172,7 @@ UI.Element = class UIElement {
 		}
 	}
 
-	appendChildTo(element: any, index: any) {
+	appendChildTo(element: any, index: number) {
 		if (element instanceof UI.Element) {
 			if (element.parent instanceof UI.Element) {
 				UI.root.tryUpdateReferenceElements(element.parent);
@@ -254,7 +254,7 @@ UI.Element = class UIElement {
 		return false;
 	}
 
-	isPointIn(x: any, y: any) {
+	isPointIn(x: number, y: number) {
 		const W = this.width;
 		const H = this.height;
 		if (W * H === 0) {

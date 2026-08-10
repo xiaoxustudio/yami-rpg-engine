@@ -9,7 +9,7 @@ export const Log = {
 	get box() {
 		return $('#log-message');
 	},
-	list: [] as any[],
+	list: [] as unknown as any[],
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
 	throw: null as ((...args: unknown[]) => void) | null,
@@ -18,7 +18,7 @@ export const Log = {
 	update: null as (() => void) | null,
 	tick: null as (() => void) | null,
 	// runtime 挂载: main/initialize.ts 中挂载警告输出,
-	warn: null as ((message: string, ...args: any[]) => void) | null,
+	warn: null as ((message: string, ...args: unknown[]) => void) | null,
 	catchError: null as ((...args: unknown[]) => void) | null,
 	catchRejection: null as ((...args: unknown[]) => void) | null,
 	tscLog: null as ((...args: unknown[]) => void) | null,
@@ -40,7 +40,7 @@ Log.initialize = function () {
 	ipcRenderer?.on?.('tsc-log', this.tscLog!);
 };
 
-Log.throw = function (error: any) {
+Log.throw = function (error: unknown) {
 	if (this.devmode) {
 		throw error;
 	} else {
@@ -48,7 +48,7 @@ Log.throw = function (error: any) {
 	}
 };
 
-Log.print = function (item: any) {
+Log.print = function (item: unknown) {
 	if (this.list.length < 50) {
 		this.list.push(item);
 		this.update!();
@@ -75,8 +75,8 @@ Log.update = function () {
 					const LINE = path.nextElementSibling!;
 					const COLUMN = LINE.nextElementSibling!;
 					const file = File.route!(path.textContent);
-					const line = parseInt(LINE.textContent);
-					const column = parseInt(COLUMN.textContent);
+					const line = parseInt(LINE.textContent ?? '');
+					const column = parseInt(COLUMN.textContent ?? '');
 					ipcRenderer.send('open-vscode', file, line, column);
 				};
 			}
@@ -104,29 +104,35 @@ Log.tick = function () {
 	}
 };
 
-Log.catchError = function (event: any) {
+Log.catchError = function (event: unknown) {
+	const errorEvent = event as ErrorEvent;
+	if (errorEvent.message === 'ResizeObserver loop limit exceeded') {
+		errorEvent.preventDefault?.();
+		errorEvent.stopImmediatePropagation?.();
+		return;
+	}
 	if (Editor.state === 'open') {
 		Log.print!({
 			type: 'error',
-			message: event.message,
+			message: errorEvent.message,
 			duration: 6
 		});
 	}
 };
 
-Log.catchRejection = function (event: any) {
+Log.catchRejection = function (event: unknown) {
 	if (Editor.state === 'open') {
 		Log.print!({
 			type: 'error',
-			message: event.reason,
+			message: (event as PromiseRejectionEvent).reason,
 			duration: 6
 		});
 	}
 };
 
-Log.tscLog = function (event: any, tscMessage: any) {
+Log.tscLog = function (event: unknown, tscMessage: unknown) {
 	let duration = 6;
-	let message = tscMessage.replace('[2J[3J[H', '').trim();
+	let message = (tscMessage as string).replace('[2J[3J[H', '').trim();
 	if (message.includes('Starting')) {
 		Log.clear!();
 		duration = 6;
@@ -135,7 +141,7 @@ Log.tscLog = function (event: any, tscMessage: any) {
 	} else if (message.includes('error TS')) {
 		message = message.replace(
 			/^([^\s]+\.ts)\((\d+),(\d+)\)/gm,
-			(match: any, path: any, line: any, column: any) => {
+			(match: string, path: string, line: string, column: string) => {
 				const index = path.lastIndexOf('/');
 				if (index !== -1) {
 					path = `${path.slice(0, index + 1)}<log-strong>${path.slice(index + 1)}</log-strong>`;

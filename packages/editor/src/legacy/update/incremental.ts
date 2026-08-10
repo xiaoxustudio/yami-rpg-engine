@@ -19,41 +19,41 @@ const _modulePath =
 			: '';
 const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-Updater.updateIncrementalChanges = function (this: any, version: any) {
+Updater.updateIncrementalChanges = function (version: string) {
 	const verNum = Updater.getVersionNumber!(version);
-	const dstProjectDir = Path.dirname!((Editor.config as any).project);
+	const dstProjectDir = Path.dirname!(Editor.config!.project!);
 	const srcProjectDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update');
 	const srcScriptDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/script');
 	const srcPluginDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/plugins');
 	const dstScriptDir = Path.resolve!(dstProjectDir, 'Script');
 	const bakFolderDir = Path.resolve!(dstProjectDir, `${version}.bak`);
-	const messages: any[] = [] as any[];
+	const messages: unknown[] = [];
 	const copyedFiles = {} as Record<string, any>;
 	let isBackupFolderCreated = false;
 
 	const updater = new (class VersionUpdater {
 		showMessage() {
 			if (messages.length !== 0) {
-				(UpdateLog.open as any)(messages);
+				UpdateLog.open!(messages);
 			}
 		}
 
-		logVersion(version: any) {
+		logVersion(version: string) {
 			messages.push({ title: `Update ${version}` });
 		}
 
-		logMessage(...contents: any[]) {
+		logMessage(...contents: string[]) {
 			messages.push({ major: contents.join('\n') });
 		}
 
-		logReplace(dstPath: any) {
+		logReplace(dstPath: string) {
 			const path = Path.relative!(dstProjectDir, dstPath);
 			const message = `write: ${path}`;
 			messages.push({ minor: this.capitalize!(message) });
 			console.log(message);
 		}
 
-		capitalize(message: any) {
+		capitalize(message: string) {
 			return message.charAt(0).toUpperCase() + message.slice(1);
 		}
 
@@ -68,11 +68,11 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			}
 		}
 
-		copyFile(srcPath: any, dstPath: any) {
-			if ((copyedFiles as any)[dstPath]) {
+		copyFile(srcPath: string, dstPath: string) {
+			if (copyedFiles[dstPath]) {
 				return;
 			}
-			(copyedFiles as any)[dstPath] = true;
+			copyedFiles[dstPath] = true;
 			try {
 				if (FS.statSync!(dstPath).isFile()) {
 					this.makeBakupFolder!();
@@ -82,12 +82,12 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 					FS.copyFileSync!(srcPath, dstPath);
 					this.logReplace!(dstPath);
 				}
-			} catch (error: any) {
+			} catch (error: unknown) {
 				console.error(error);
 			}
 		}
 
-		copyFiles(...fileNames: any[]) {
+		copyFiles(...fileNames: string[]) {
 			for (const fileName of fileNames) {
 				const srcFilePath = Path.resolve!(srcProjectDir, fileName);
 				const dstFilePath = Path.resolve!(dstProjectDir, fileName);
@@ -95,7 +95,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			}
 		}
 
-		copyScripts(...fileNames: any[]) {
+		copyScripts(...fileNames: string[]) {
 			for (const fileName of fileNames) {
 				const srcScriptPath = Path.resolve!(srcScriptDir, fileName);
 				const dstScriptPath = Path.resolve!(dstScriptDir, fileName);
@@ -103,16 +103,16 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			}
 		}
 
-		copyPlugins(...filters: any[]) {
+		copyPlugins(...filters: string[]) {
 			const guidRegExp = /(?<=\.)[0-9a-f]{16}(?=\.\w+$)/;
 			const files = FS.readdirSync!(srcPluginDir, { withFileTypes: true });
 			for (const file of files) {
 				const guid = guidRegExp.exec(file.name)?.[0];
-				if (filters.length === 0 || filters.includes(guid)) {
+				if (filters.length === 0 || filters.includes(guid as string)) {
 					const meta = Data.manifest.guidMap[guid as string];
 					if (meta) {
 						const sPath = Path.resolve!(srcPluginDir, file.name);
-						const dPath = (File.path as any)(meta.path);
+						const dPath = File.path!(meta.path);
 						this.copyFile!(sPath, dPath);
 					}
 				}
@@ -125,25 +125,25 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			);
 		}
 
-		'1.0.123'(update: any) {
+		'1.0.123'(update: boolean) {
 			this.logMessage!('Fix the bug where the scene terrain was not applied.');
 			if (!update) return;
 			this.copyScripts!('scene.ts', 'actor.ts');
 		}
 
-		'1.0.124'(update: any) {
+		'1.0.124'(update: boolean) {
 			this.logMessage!('Add some event types to the global event script.');
 			if (!update) return;
 			this.copyScripts!('event.ts', 'yami/yami.script.d.ts');
 		}
 
-		'1.0.125'(update: any) {
+		'1.0.125'(update: boolean) {
 			this.logMessage!('Fix a bug where a "touch event" was not mapped to a "mouse event".');
 			if (!update) return;
 			this.copyScripts!('util.ts', 'input.ts');
 		}
 
-		'1.0.126'(update: any) {
+		'1.0.126'(update: boolean) {
 			this.logMessage!(
 				'Fix the incorrect behavior of the "mouse leave element" event in a special case.'
 			);
@@ -151,7 +151,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('ui.ts');
 		}
 
-		'1.0.127'(update: any) {
+		'1.0.127'(update: boolean) {
 			this.logMessage!(
 				'Prioritize the loading order of plugin scripts.',
 				'Add project settings options: Preload, Texture Sampling Mode.',
@@ -183,13 +183,13 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyPlugins!('78ad4052c278d184', 'ad08a4def6200207', 'bc72195fc998f0af');
 		}
 
-		'1.0.128'(update: any) {
+		'1.0.128'(update: boolean) {
 			this.logMessage!('Secret!');
 			if (!update) return;
 			this.copyScripts!('audio.ts', 'loader.ts', 'data.ts', 'yami/yami.data.d.ts');
 		}
 
-		'1.0.129'(update: any) {
+		'1.0.129'(update: boolean) {
 			this.logMessage!(
 				'The objects read in the event will undergo a validity check, and destroyed objects will no longer be retrieved.',
 				'Add "destroyed" property to element objects in code.'
@@ -198,7 +198,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('ui.ts', 'command.ts');
 		}
 
-		'1.0.130'(update: any) {
+		'1.0.130'(update: boolean) {
 			this.logMessage!(
 				'Extends the "Block" command with a new asynchronous execution option.',
 				'A warning is issued to the user for "Independent" commands running in the background for over 1 minute.',
@@ -217,7 +217,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			);
 		}
 
-		'1.0.131'(update: any) {
+		'1.0.131'(update: boolean) {
 			this.logMessage!(
 				'Fixed the bug where touch events on UI elements were incorrectly triggered.',
 				'Fixed the bug where immovable actors could still be pushed.',
@@ -237,7 +237,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyPlugins!('aa20eb36e72e9e90');
 		}
 
-		'1.0.134'(update: any) {
+		'1.0.134'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug in the pathfinding system where partial paths around obstacles were calculated incorrectly.',
 				'Fixed a bug where calling Flow.waitRaw could cause inaccurate timing in Flow.wait and Flow.transition.',
@@ -247,7 +247,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('scene.ts', 'event.ts', 'flow.ts', 'time.ts', 'util.ts');
 		}
 
-		'1.0.135'(update: any) {
+		'1.0.135'(update: boolean) {
 			this.logMessage!(
 				'Strictly limit the number of trigger hits to prevent exceeding the allowed count when multiple targets are hit simultaneously.',
 				'Removed some redundant code and corrected several incorrect comment names.'
@@ -264,7 +264,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			);
 		}
 
-		'1.0.136'(update: any) {
+		'1.0.136'(update: boolean) {
 			this.logMessage!(
 				'Removed the Steam online verification feature, allowing the editor to be opened directly without launching Steam.',
 				'Add a "Find in Project" menu item for applicable scene objects (Actor, Animation, Particle, Parallax).',
@@ -274,7 +274,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyPlugins!('4acd97b2c159796f');
 		}
 
-		'1.0.137'(update: any) {
+		'1.0.137'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug caused by version 1.0.131 where files were not automatically saved when closing the editor.',
 				'Fixed the trigger malfunction caused by version 1.0.135.'
@@ -283,7 +283,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('trigger.ts');
 		}
 
-		'1.0.139'(update: any) {
+		'1.0.139'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug where the application would forcibly exit after a 2-second timeout if no action was taken on the save prompt at exit.',
 				'Fixed a bug where UI animation elements with opacity less than 1 did not affect particles.',
@@ -303,10 +303,10 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 				'yami/yami.animation.d.ts',
 				'yami/yami.command.d.ts'
 			);
-			Updater.updateAnimations!();
+			Updater.updateAnimations!(0);
 		}
 
-		'1.0.140'(update: any) {
+		'1.0.140'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug where accessing a light source object through a variable in an event command caused an error.'
 			);
@@ -314,7 +314,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('command.ts');
 		}
 
-		'1.0.145'(update: any) {
+		'1.0.145'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug where entering conditional branches in the synchronous "Block" command caused an error.',
 				'Improved the implementation of "For Each" command to make it more reliable during jumps and exits.'
@@ -323,7 +323,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			this.copyScripts!('ui.ts', 'event.ts', 'command.ts', 'yami/yami.command.d.ts');
 		}
 
-		'1.0.146'(update: any) {
+		'1.0.146'(update: boolean) {
 			this.logMessage!(
 				'Fixed a bug where using numeric variables in the "Discard Targets" command had no effect.',
 				'Fixed a bug where the "Reference Element" was still created even when disabled.',
@@ -348,7 +348,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 			);
 		}
 
-		'1.0.147'(update: any) {
+		'1.0.147'(update: boolean) {
 			this.logMessage!(
 				'Improved the English and Simplified Chinese language packs.',
 				'Added the Traditional Chinese language pack.',
@@ -366,7 +366,7 @@ Updater.updateIncrementalChanges = function (this: any, version: any) {
 	const initialMinorVer = 122;
 	for (let minorVer = latestMinorVer; minorVer >= initialMinorVer; minorVer--) {
 		const version = `1.0.${minorVer}`;
-		const handler = (updater as any)[version];
+		const handler = (updater as unknown as Record<string, (update: boolean) => void>)[version];
 		if (handler) {
 			updater.logVersion(version);
 			handler.call(updater, currentMinorVer < minorVer);

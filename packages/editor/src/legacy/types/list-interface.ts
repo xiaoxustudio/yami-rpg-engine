@@ -7,9 +7,9 @@ export interface IListInterface {
 	// 接口类型标识（'condition'/'event'/'property'/'script'）
 	type: string;
 	// 所属编辑器（反向引用，多数为 Editor/Window 子类）
-	editor: any | null;
+	editor: { target?: unknown } | null;
 	// 所属对象（反向引用，多数为 Window/Inspector 子类）
-	owner: any | null;
+	owner: { history?: unknown } | null;
 	// 操作历史（运行时由 initialize 创建，故初始 null）
 	history: IEditableHistory | null;
 
@@ -23,5 +23,5 @@ export interface IFilteredListInterface extends IListInterface {
 
 // 带 script 字段的列表接口契约（script-list 专用）
 export interface IScriptListInterface extends IFilteredListInterface {
-	script: any | null;
+	script: { id: string; [k: string]: any } | null;
 }

@@ -32,18 +32,19 @@ import { useLocalStore } from '@app/stores/local';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { Deployment } from '@/title/deploy-project-window';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onFolderBeforeinput = (event: any) => {
-	(window as any).Deployment?.folderBeforeinput?.(event);
+	Deployment?.folderBeforeinput?.(event);
 };
 const onFolderInput = () => {
-	(window as any).Deployment?.folderInput?.();
+	Deployment?.folderInput?.();
 };
 const onLocationInput = () => {
-	(window as any).Deployment?.locationInput?.();
+	Deployment?.locationInput?.();
 };
 
 onMounted(() => {

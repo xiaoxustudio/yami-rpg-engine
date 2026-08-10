@@ -14,9 +14,9 @@ import { getMonaco } from '@/util/monaco.ts';
 
 Command.cases.script = new CommandSchema({
 	name: 'script',
-	editor: null as any,
-	model: null as any,
-	versionId: null as any,
+	editor: null,
+	model: null,
+	versionId: null,
 	changed: false,
 	fontSize: 14,
 	lineHeight: 14,
@@ -59,7 +59,7 @@ Command.cases.script = new CommandSchema({
 		$('#script')?.on('close', (event: any) => {
 			if (this.changed) {
 				event.preventDefault();
-				const get = Local.createGetter('confirmation');
+				const get = Local.createGetter!('confirmation');
 				Window.confirm!(
 					{
 						message: get('closeUnsavedScript'),
@@ -120,7 +120,7 @@ Command.cases.script = new CommandSchema({
 		if (!this.typesDispose) {
 			this.typesDispose.forEach((item: any) => item());
 		}
-		const projectDir = Path.dirname((Editor.config as any).project);
+		const projectDir = Path.dirname(Editor.config!.project!);
 		this.typesDispose = loadDtsFolder(Path.join(projectDir, 'Script'), monaco, true);
 	},
 	async customSave() {
@@ -140,7 +140,7 @@ Command.cases.script = new CommandSchema({
 				script = script.res;
 			}
 		} catch (error: any) {
-			const get = Local.createGetter('confirmation');
+			const get = Local.createGetter!('confirmation');
 			let continued = false;
 			return Window.confirm!(
 				{
@@ -185,7 +185,7 @@ Command.cases.script = new CommandSchema({
 		await this.createTheme!(theme);
 		this.editor = monaco.editor.create($('#script-script'), {
 			language: 'javascript',
-			theme: theme,
+			theme: theme ?? '',
 			tabSize: 2,
 			fontSize: this.fontSize,
 			lineHeight: this.lineHeight,
@@ -203,9 +203,9 @@ Command.cases.script = new CommandSchema({
 			overviewRulerBorder: false,
 			hideCursorInOverviewRuler: true,
 			automaticLayout: false,
-			hover: { enabled: true } as any,
+			hover: { enabled: true },
 			lightbulb: {
-				enabled: false as any
+				enabled: false as never
 			},
 			minimap: {
 				enabled: false
@@ -221,7 +221,7 @@ Command.cases.script = new CommandSchema({
 		$('#script-change').on('click', async () => {
 			const currentLanguage = this.editor.getModel().getLanguageId();
 			let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
-			const get = Local.createGetter('confirmation');
+			const get = Local.createGetter!('confirmation');
 			$('#script-change').name =
 				currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
 			$('#script-change').textContent = get(
@@ -289,7 +289,13 @@ Command.cases.script = new CommandSchema({
 		});
 	},
 	createTheme: (function IIFE() {
-		const themeData = {
+		interface EditorThemeData {
+			base: 'vs' | 'vs-dark';
+			inherit: boolean;
+			rules: Array<{ token: string; foreground: string }>;
+			colors: Record<string, string>;
+		}
+		const themeData: Record<string, EditorThemeData | null> = {
 			light: {
 				base: 'vs',
 				inherit: true,
@@ -438,10 +444,10 @@ Command.cases.script = new CommandSchema({
 		};
 		return async function (theme: any) {
 			const monaco = await getMonaco();
-			const options = (themeData as Record<string, any>)[theme];
+			const options = themeData[theme];
 			if (options instanceof Object && monaco instanceof Object) {
 				monaco.editor.defineTheme(theme, options);
-				(themeData as Record<string, any>)[theme] = null;
+				themeData[theme] = null;
 			}
 		};
 	})()

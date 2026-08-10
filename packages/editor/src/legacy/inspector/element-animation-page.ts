@@ -5,19 +5,30 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIAnimation = {
+	interface UIAnimationShape {
+		target: UIAnimationData | null;
+		update: ((node: UIAnimationData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		animationIdWrite: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface UIAnimationData {
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: unknown;
+	}
+	const UIAnimation: UIAnimationShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any,
-		animationIdWrite: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null,
+		animationIdWrite: null
 	};
 
-	UIAnimation.initialize = function (this: any) {
+	UIAnimation.initialize = function (this: typeof UIAnimation) {
 		if (!$('#uiAnimation-animation')) return;
 		$('#uiAnimation-animation').on('write', this.animationIdWrite);
 		const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
@@ -34,7 +45,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIAnimation.create = function (this: any) {
+	UIAnimation.create = function (this: typeof UIAnimation) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -62,7 +73,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIAnimation.open = function (this: any, node: any) {
+	UIAnimation.open = function (this: typeof UIAnimation, node: UIAnimationData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -79,7 +90,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIAnimation.close = function (this: any) {
+	UIAnimation.close = function (this: typeof UIAnimation) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -88,7 +99,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIAnimation.update = function (this: any, node: any, key: any, value: any) {
+	UIAnimation.update = function (
+		this: typeof UIAnimation,
+		node: UIAnimationData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -110,11 +126,15 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIAnimation.paramInput = function (this: any, event: any) {
-		UIAnimation.update!(UIAnimation.target, Inspector.getKey!(this), read(this));
+	UIAnimation.paramInput = function (this: typeof UIAnimation, event: Event) {
+		UIAnimation.update!(
+			UIAnimation.target as UIAnimationData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
-	UIAnimation.animationIdWrite = function (this: any, event: any) {
+	UIAnimation.animationIdWrite = function (this: typeof UIAnimation, event: Event) {
 		const elMotion = $('#uiAnimation-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));

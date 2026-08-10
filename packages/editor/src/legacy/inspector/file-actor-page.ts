@@ -15,24 +15,49 @@ import { AttributeListInterface } from '@/tools/property-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
-	const FileActor = {
-		target: null as any,
-		meta: null as any,
-		sprites: null as any,
-		skills: null as any,
-		equipments: null as any,
-		inventory: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		animationIdWrite: null as any,
-		paramInput: null as any,
-		listChange: null as any
+	type ActorShape = {
+		portrait: string;
+		clip: number[];
+		animationId: string;
+		idleMotion: string;
+		moveMotion: string;
+		rotatable: boolean;
+		passage: string;
+		speed: number;
+		shape: string;
+		size: number;
+		weight: number;
+		immovable: boolean;
+		scale: number;
+		priority: number;
+		inherit: string;
+		[k: string]: any;
+	};
+	type ListShape = {
+		save(): unknown;
+		on(event: string, listener: (event: Event) => void): void;
+	};
+	interface FileActorShape {
+		[k: string]: any;
+	}
+	const FileActor: FileActorShape = {
+		target: null,
+		meta: null,
+		sprites: null,
+		skills: null,
+		equipments: null,
+		inventory: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		animationIdWrite: null,
+		paramInput: null,
+		listChange: null
 	};
 
-	FileActor.initialize = function (this: any) {
+	FileActor.initialize = function (this: FileActorShape) {
 		if (!$('#fileActor-rotatable')) return;
 		$('#fileActor-rotatable').loadItems([
 			{ name: 'Yes', value: true },
@@ -71,7 +96,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 		$('#fileActor-parameter-pane').bind($('#fileActor-scripts'));
 
-		// animationId write + 15 控件 input 经 Vue 模板转发（FileActorPage.vue @write/@input → FileActor.*）
+		// animationId write + 15 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eActorPage.vue @write/@input 闂?FileActor.*闂?
 		document
 			.querySelectorAll(`#fileActor-sprites, #fileActor-attributes, #fileActor-skills, #fileActor-equipments,
     #fileActor-inventory, #fileActor-events, #fileActor-scripts
@@ -79,7 +104,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
-	FileActor.create = function (this: any) {
+	FileActor.create = function (this: FileActorShape) {
 		return {
 			portrait: '',
 			clip: [0, 0, 64, 64],
@@ -106,7 +131,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		};
 	};
 
-	FileActor.open = function (this: any, actor: any, meta: any) {
+	FileActor.open = function (this: FileActorShape, actor: ActorShape, meta: { guid: string }) {
 		if (this.meta !== meta) {
 			this.target = actor;
 			this.meta = meta;
@@ -137,7 +162,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileActor.close = function (this: any) {
+	FileActor.close = function (this: FileActorShape) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -153,20 +178,25 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileActor.update = function (this: any, actor: any, key: any, value: any) {
+	FileActor.update = function (
+		this: FileActorShape,
+		actor: ActorShape,
+		key: string,
+		value: unknown
+	) {
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'portrait':
 			case 'clip':
 				if (actor[key] !== value) {
-					actor[key] = value;
+					(actor as Record<string, unknown>)[key] = value;
 					getBrowserInstance()?.body?.updateIcon?.(this.meta.file);
 				}
 				break;
 			case 'animationId':
 				if (actor.animationId !== value) {
 					const id = actor.animationId;
-					actor.animationId = value;
+					actor.animationId = value as string;
 					if (Scene.actors instanceof Array) {
 						const animation = Data.animations[id];
 						for (const actor of Scene.actors) {
@@ -181,7 +211,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 			case 'idleMotion':
 				if (actor[key] !== value) {
-					actor[key] = value;
+					(actor as Record<string, unknown>)[key] = value;
 					if (Scene.actors instanceof Array) {
 						const id = actor.animationId;
 						const animation = Data.animations[id];
@@ -197,7 +227,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 			case 'rotatable':
 				if (actor.rotatable !== value) {
-					actor.rotatable = value;
+					actor.rotatable = value as boolean;
 					if (Scene.actors instanceof Array) {
 						for (const node of Scene.actors) {
 							if (node.data === actor) {
@@ -220,16 +250,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'immovable':
 			case 'inherit':
 				if (actor[key] !== value) {
-					actor[key] = value;
+					(actor as Record<string, unknown>)[key] = value;
 				}
 				break;
 			case 'scale':
 				if (actor.scale !== value) {
-					actor.scale = value;
+					actor.scale = value as number;
 					if (Scene.actors instanceof Array) {
 						for (const node of Scene.actors) {
 							if (node.data === actor) {
-								node.player.setScale(value * node.scale);
+								node.player.setScale((value as number) * node.scale);
 							}
 						}
 						Scene.requestRendering!();
@@ -238,7 +268,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 			case 'priority':
 				if (actor.priority !== value) {
-					actor.priority = value;
+					actor.priority = value as number;
 					if (Scene.actors instanceof Array) {
 						Scene.requestRendering!();
 					}
@@ -247,7 +277,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		}
 	};
 
-	FileActor.animationIdWrite = function (this: any, event: any) {
+	FileActor.animationIdWrite = function (
+		this: FileActorShape,
+		event: Event & { value?: string }
+	) {
 		if (!event.value) return;
 		const elIdleMotion = $('#fileActor-idleMotion');
 		const elMoveMotion = $('#fileActor-moveMotion');
@@ -258,7 +291,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elMoveMotion.write2(read(elMoveMotion));
 	};
 
-	FileActor.paramInput = function (this: any, event: any) {
+	FileActor.paramInput = function (this: FileActorShape, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
@@ -268,16 +301,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		FileActor.update(FileActor.target, Inspector.getKey!(element), read(element));
 	};
 
-	FileActor.listChange = function (this: any, event: any) {
+	FileActor.listChange = function (this: FileActorShape, event: Event) {
 		File.planToSave!(FileActor.meta);
 	};
 
 	FileActor.sprites = {
-		initialize: function (this, list: any) {
+		initialize: function (this, list: ListShape) {
 			$('#fileActor-sprite-confirm')?.on('click', () => list.save());
 
-			// 重载场景角色动画 - 改变事件
-			list.on('change', (event: any) => {
+			// 闂備焦褰冪粔宄懊归崶顒€鎹堕柣鎴炆戦悵顖炴偡濞嗘劕绗╅燑帮躬瀹曟繈濡歌閺?- 闂佽　鍋撻柣鐔告緲缂嶄礁霉濠婂喚鍎庢繛?
+			list.on('change', (event: Event) => {
 				const guid = FileActor.meta.guid;
 				if (Scene.actors instanceof Array) {
 					for (const actor of Scene.actors) {
@@ -289,7 +322,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 			});
 		},
-		parse: function ({ id, image }: any) {
+		parse: function ({ id, image }: { id: string; image: string }) {
 			Command.invalid = false;
 			const animationId = FileActor.target.animationId;
 			const spriteName = Command.parseSpriteName!(animationId, id);
@@ -329,10 +362,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileActor.skills = {
-		initialize: function (this, list: any) {
+		initialize: function (this, list: ListShape) {
 			$('#fileActor-skill-confirm')?.on('click', () => list.save());
 		},
-		parse: function ({ id, key }: any) {
+		parse: function ({ id, key }: { id: string; key: string }) {
 			Command.invalid = false;
 			const skillName = Command.parseFileName!(id);
 			const skillClass = Command.invalid ? 'invalid' : '';
@@ -374,10 +407,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileActor.equipments = {
-		initialize: function (this, list: any) {
+		initialize: function (this, list: ListShape) {
 			$('#fileActor-equipment-confirm')?.on('click', () => list.save());
 		},
-		parse: function ({ id, slot }: any) {
+		parse: function ({ id, slot }: { id: string; slot: string }) {
 			Command.invalid = false;
 			const equipmentName = Command.parseFileName!(id);
 			const equipmentClass = Command.invalid ? 'invalid' : '';
@@ -422,7 +455,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileActor.inventory = {
-		initialize: function (this, list: any) {
+		initialize: function (this, list: ListShape) {
 			$('#fileActor-inventory-confirm')?.on('click', () => list.save());
 
 			const invTypeEl = $('#fileActor-inventory-type');
@@ -451,7 +484,17 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 			]);
 		},
-		parse: function ({ type, id, quantity, money }: any) {
+		parse: function ({
+			type,
+			id,
+			quantity,
+			money
+		}: {
+			type: string;
+			id: string;
+			quantity: number;
+			money: number;
+		}) {
 			switch (type) {
 				case 'item': {
 					Command.invalid = false;

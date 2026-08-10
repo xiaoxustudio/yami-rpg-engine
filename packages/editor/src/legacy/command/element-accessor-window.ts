@@ -3,10 +3,11 @@ import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetElement } from '@/tools/preset-element-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface ElementGetterTarget {
 	dataValue: ElementData;
-	input: (getter: any) => void;
+	input: (getter: Record<string, any>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -23,32 +24,30 @@ interface ElementData {
 		| 'parent'
 		| 'variable';
 	presetId?: string;
-	ancestor?: any;
-	parent?: any;
-	focus?: any;
+	ancestor?: { type: string; [k: string]: any };
+	parent?: { type: string; [k: string]: any };
+	focus?: { type: string; [k: string]: any };
 	index?: number;
 	variable?: { type: string; key: string };
 }
 
-interface ElementGetterShape {
+interface ElementGetterShape extends AccessorBaseShape {
 	target: ElementGetterTarget | null;
-	initialize: (() => void) | null;
 	open: ((target: ElementGetterTarget) => void) | null;
 	checkDataForPlugin: ((data: any) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
-	confirm: ((event: Event) => void) | null;
 }
 
 export const ElementGetter: ElementGetterShape = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	confirm: null as any
+	target: null,
+	initialize: null,
+	open: null,
+	checkDataForPlugin: null,
+	createDefaultForPlugin: null,
+	confirm: null
 };
 
-ElementGetter.initialize = function (this: any): void {
+ElementGetter.initialize = function (this: typeof ElementGetter): void {
 	if (!$('#elementGetter-type')) return;
 	$('#elementGetter-type').loadItems([
 		{ name: 'Event Trigger Element', value: 'trigger' },
@@ -133,14 +132,14 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	getFocus($('#elementGetter-type'));
 };
 
-ElementGetter.checkDataForPlugin = function (this: any, data: any): boolean {
+ElementGetter.checkDataForPlugin = function (this: typeof ElementGetter, data: any): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'element';
 	}
 	return false;
 };
 
-ElementGetter.createDefaultForPlugin = function (this: any): {
+ElementGetter.createDefaultForPlugin = function (this: typeof ElementGetter): {
 	getter: string;
 	type: string;
 } {
@@ -150,7 +149,7 @@ ElementGetter.createDefaultForPlugin = function (this: any): {
 ElementGetter.confirm = function (this: ElementGetterShape, event: Event): void {
 	const read = getElementReader('elementGetter');
 	const type = read('type');
-	let getter: any;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'trigger':
 		case 'latest':
@@ -202,8 +201,8 @@ ElementGetter.confirm = function (this: ElementGetterShape, event: Event): void 
 		}
 	}
 	if (this.target!.isPluginInput) {
-		getter = { getter: 'element', ...getter };
+		getter = { getter: 'element', ...getter! };
 	}
-	this.target!.input(getter);
+	this.target!.input(getter!);
 	Window.close!('elementGetter');
 }.bind(ElementGetter);

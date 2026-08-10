@@ -2,30 +2,38 @@ import { $ } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { hide, show } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
+import { FileItem } from '@/file/file-item.ts';
+import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const FileImage = {
-		target: null as any,
-		meta: null as any,
-		symbol: null as any,
-		image: null as any,
-		initialize: null as any,
-		open: null as any,
-		close: null as any,
-		updateImage: null as any,
-		windowResize: null as any
+	interface FileImageShape {
+		image: HTMLImageElement | null;
+		updateImage: (() => void) | null;
+		windowResize: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const FileImage: FileImageShape = {
+		target: null,
+		meta: null,
+		symbol: null,
+		image: null,
+		initialize: null,
+		open: null,
+		close: null,
+		updateImage: null,
+		windowResize: null
 	};
 
-	FileImage.initialize = function (this: any) {
+	FileImage.initialize = function (this: typeof FileImage) {
 		if (!$('#fileImage-image')) return;
-		this.image = $('#fileImage-image');
+		this.image = $('#fileImage-image') as HTMLImageElement;
 
 		$('#fileImage').on('resize', this.windowResize);
 		$('#fileImage-image-detail').on('toggle', this.windowResize);
 	};
 
-	FileImage.open = function (this: any, file: any, meta: any) {
+	FileImage.open = function (this: typeof FileImage, file: FileItem, meta: FileMeta | null) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -33,18 +41,18 @@ import { Inspector } from './inspector.ts';
 			const elName = $('#fileImage-name');
 			const elSize = $('#fileImage-size');
 			const elResolution = $('#fileImage-resolution');
-			const size = Number(file.stats.size);
+			const size = Number((file.stats as unknown as { size: number }).size);
 			elName.textContent = file.basename + file.extname;
 			elSize.textContent = File.parseFileSize!(size);
 			elResolution.textContent = '';
 
-			const image = this.image;
+			const image = this.image!;
 			hide(image);
 			const path = File.route!(file.path);
 			image.src = path;
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve: any, reject: any) => {
+			new Promise<void>((resolve: () => void, reject: () => void) => {
 				const intervalIndex = setInterval(() => {
 					if (image.naturalWidth !== 0) {
 						clearInterval(intervalIndex);
@@ -57,7 +65,7 @@ import { Inspector } from './inspector.ts';
 			}).then(() => {
 				if (this.symbol === symbol) {
 					this.symbol = null;
-					this.updateImage();
+					this.updateImage!();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
 					elResolution.textContent = `${width} x ${height}`;
@@ -66,20 +74,20 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileImage.close = function (this: any) {
+	FileImage.close = function (this: typeof FileImage) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
 			this.symbol = null;
-			this.image.src = '';
+			this.image!.src = '';
 		}
 	};
 
-	FileImage.updateImage = function (this: any) {
-		const image = this.image;
+	FileImage.updateImage = function (this: typeof FileImage) {
+		const image = this.image!;
 		hide(image);
-		const frame = image.parentNode;
+		const frame = image.parentElement!;
 		const frameBox = CSS.getDevicePixelContentBoxSize(frame);
 		const cw = frameBox.width;
 		const ch = frameBox.height;
@@ -111,9 +119,9 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileImage.windowResize = function (this: any, event: any) {
+	FileImage.windowResize = function (this: typeof FileImage, event: Event) {
 		if (FileImage.target !== null && FileImage.symbol === null) {
-			FileImage.updateImage();
+			FileImage.updateImage!();
 		}
 	};
 

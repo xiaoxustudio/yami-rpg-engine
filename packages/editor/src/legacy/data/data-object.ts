@@ -11,7 +11,56 @@ import { Reference } from '@/log/related-references.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { dataKeys, getDataStore } from '@app/stores/data';
 
-export const Data: any = {
+type DataEntry = { guid?: string; name?: string; [k: string]: unknown };
+
+type GUIDItem = { id: string };
+type VariableNode = {
+	id: string;
+	name: string;
+	value?: unknown;
+	note?: string;
+	children?: VariableNode[];
+};
+type LocalizationNode = { id: string; children?: LocalizationNode[] };
+type PresetNode = { class?: string; children: PresetNode[]; presetId: string };
+type ScriptFile = {
+	meta?: { guid: string; code?: string };
+	promise?: Promise<unknown> | null;
+	path: string;
+};
+
+interface DataModule {
+	loadAll: () => Promise<any>;
+	loadMeta: () => Promise<any>;
+	loadFile: (filename: string) => Promise<any>;
+	loadScene: (guid: string) => Promise<any>;
+	close: () => void;
+	createEasingItems: () => Array<{ name: string; value: string }>;
+	createTeamItems: () => Array<{ name: string; value: string }>;
+	createDataMaps: () => void;
+	createGUIDMap: (list: Array<GUIDItem>) => void;
+	createTeamMap: () => void;
+	createVariableMap: () => void;
+	createAttributeContext: () => void;
+	createEnumerationContext: () => void;
+	createLocalizationMap: () => void;
+	createReferencedFileIDMap: () => Record<string, boolean>;
+	generateVariableEnumScript: () => void;
+	registerScenePresets: (sceneId: string) => void;
+	unregisterScenePresets: (sceneId: string) => void;
+	registerUiPresets: (uiId: string) => void;
+	unregisterUiPresets: (uiId: string) => void;
+	createManifest: () => void;
+	saveManifest: () => any;
+	filterManifest: (manifest: Manifest & Record<string, any>) => Record<string, any>;
+	inheritMetaData: () => void;
+	parseGUID: (meta: { path: string }) => string;
+	loadScript: (file: ScriptFile) => Promise<void>;
+	jsonReplacer: (key: string, value: unknown) => any;
+	[k: string]: any;
+}
+
+export const Data: DataModule = {
 	manifest: null,
 	scenePresets: null,
 	uiPresets: null,
@@ -38,34 +87,38 @@ export const Data: any = {
 	animations: null,
 	particles: null,
 	tilesets: null,
-	loadAll: null,
-	loadMeta: null,
-	loadFile: null,
-	loadScene: null,
-	close: null,
-	createEasingItems: null,
-	createTeamItems: null,
-	createDataMaps: null,
-	createGUIDMap: null,
-	createTeamMap: null,
-	createVariableMap: null,
-	createAttributeContext: null,
-	createEnumerationContext: null,
-	createReferencedFileIDMap: null,
-	generateVariableEnumScript: null,
-	registerScenePresets: null,
-	unregisterScenePresets: null,
-	registerUiPresets: null,
-	unregisterUiPresets: null,
-	createManifest: null,
-	saveManifest: null,
-	filterManifest: null,
-	inheritMetaData: null,
-	parseGUID: null,
-	loadScript: null
+	loadAll: null as unknown as () => Promise<any>,
+	loadMeta: null as unknown as () => Promise<any>,
+	loadFile: null as unknown as (filename: string) => Promise<any>,
+	loadScene: null as unknown as (guid: string) => Promise<any>,
+	close: null as unknown as () => void,
+	createEasingItems: null as unknown as () => Array<{ name: string; value: string }>,
+	createTeamItems: null as unknown as () => Array<{ name: string; value: string }>,
+	createDataMaps: null as unknown as () => void,
+	createGUIDMap: null as unknown as (list: Array<GUIDItem>) => void,
+	createTeamMap: null as unknown as () => void,
+	createVariableMap: null as unknown as () => void,
+	createAttributeContext: null as unknown as () => void,
+	createEnumerationContext: null as unknown as () => void,
+	createLocalizationMap: null as unknown as () => void,
+	createReferencedFileIDMap: null as unknown as () => Record<string, boolean>,
+	generateVariableEnumScript: null as unknown as () => void,
+	registerScenePresets: null as unknown as (sceneId: string) => void,
+	unregisterScenePresets: null as unknown as (sceneId: string) => void,
+	registerUiPresets: null as unknown as (uiId: string) => void,
+	unregisterUiPresets: null as unknown as (uiId: string) => void,
+	createManifest: null as unknown as () => void,
+	saveManifest: null as unknown as () => any,
+	filterManifest: null as unknown as (
+		manifest: Manifest & Record<string, any>
+	) => Record<string, any>,
+	inheritMetaData: null as unknown as () => void,
+	parseGUID: null as unknown as (meta: { path: string }) => string,
+	loadScript: null as unknown as (file: ScriptFile) => Promise<void>,
+	jsonReplacer: null as unknown as (key: string, value: unknown) => any
 };
 
-Data.loadAll = function (this: any) {
+Data.loadAll = function (this: typeof Data) {
 	this.createDataMaps();
 
 	this.createManifest();
@@ -93,32 +146,32 @@ Data.loadAll = function (this: any) {
 	});
 };
 
-Data.loadMeta = function (this: any) {
+Data.loadMeta = function (this: typeof Data) {
 	const path = 'Data/manifest.json';
 	return File.get!({
 		path: path,
 		type: 'json'
 	}).then(
-		(data: any) => {
+		(data: unknown) => {
 			if (data === null) return;
 			Object.defineProperty(this.manifest, 'last', {
 				configurable: true,
 				value: data
 			});
 		},
-		(error: any) => {
+		(error: Error) => {
 			error.message = path;
 			throw error;
 		}
 	);
 };
 
-Data.loadFile = function (this: any, filename: any) {
+Data.loadFile = function (this: typeof Data, filename: string) {
 	const path = `Data/${filename}.json`;
 	return File.get!({
 		path: path,
 		type: 'json'
-	}).then((data: any) => {
+	}).then((data: unknown) => {
 		if (!data) {
 			throw new SyntaxError(path);
 		}
@@ -133,17 +186,17 @@ Data.loadFile = function (this: any, filename: any) {
 	});
 };
 
-Data.loadScene = function (this: any, guid: any) {
+Data.loadScene = function (this: typeof Data, guid: string) {
 	const { scenes } = this;
 	if (scenes[guid]) {
-		return new Promise((resolve: any) => {
+		return new Promise<unknown>((resolve) => {
 			resolve(Codec.decodeScene(scenes[guid]));
 		});
 	}
 
 	const meta = this.manifest.guidMap[guid];
 	if (!meta) {
-		return new Promise((resolve: any, reject: any) => {
+		return new Promise<never>((resolve, reject) => {
 			reject(new URIError('Metadata is undefined.'));
 		});
 	}
@@ -151,17 +204,17 @@ Data.loadScene = function (this: any, guid: any) {
 	return File.get!({
 		path: path,
 		type: 'text'
-	}).then((code: any) => {
+	}).then((code: string) => {
 		try {
 			return Codec.decodeScene((scenes[guid] = code));
-		} catch (error: any) {
-			error.message = `${path}\n${error.message}`;
+		} catch (error: unknown) {
+			(error as Error).message = `${path}\n${(error as Error).message}`;
 			throw error;
 		}
 	});
 };
 
-Data.close = function (this: any) {
+Data.close = function (this: typeof Data) {
 	this.manifest = null;
 	this.scenePresets = null;
 	this.uiPresets = null;
@@ -188,11 +241,11 @@ Data.close = function (this: any) {
 	this.tilesets = null;
 };
 
-Data.createEasingItems = function (this: any) {
+Data.createEasingItems = function (this: typeof Data) {
 	let items = this.easings.items;
 	if (items === undefined) {
 		// 把属性写入数组中不会被保存到文件
-		items = this.easings.items = [] as any[];
+		items = this.easings.items = [];
 		const easings = this.easings;
 		const length = easings.length;
 		const digits = Number.computeIndexDigits(length);
@@ -208,10 +261,10 @@ Data.createEasingItems = function (this: any) {
 	return items;
 };
 
-Data.createTeamItems = function (this: any) {
+Data.createTeamItems = function (this: typeof Data) {
 	let items = this.teams.list.items;
 	if (items === undefined) {
-		items = this.teams.list.items = [] as any[];
+		items = this.teams.list.items = [];
 		const teams = this.teams.list;
 		const length = teams.length;
 		const digits = Number.computeIndexDigits(length);
@@ -227,26 +280,26 @@ Data.createTeamItems = function (this: any) {
 	return items;
 };
 
-Data.createDataMaps = function (this: any) {
-	this.scenePresets = {} as Record<string, any>;
-	this.uiPresets = {} as Record<string, any>;
-	this.actors = {} as Record<string, any>;
-	this.skills = {} as Record<string, any>;
-	this.triggers = {} as Record<string, any>;
-	this.items = {} as Record<string, any>;
-	this.equipments = {} as Record<string, any>;
-	this.states = {} as Record<string, any>;
-	this.events = {} as Record<string, any>;
-	this.scripts = {} as Record<string, any>;
-	this.scenes = {} as Record<string, any>;
-	this.ui = {} as Record<string, any>;
-	this.animations = {} as Record<string, any>;
-	this.particles = {} as Record<string, any>;
-	this.tilesets = {} as Record<string, any>;
+Data.createDataMaps = function (this: typeof Data) {
+	this.scenePresets = {} as Record<string, { sceneId: string; data: Record<string, unknown> }>;
+	this.uiPresets = {} as Record<string, { uiId: string; data: Record<string, unknown> }>;
+	this.actors = {} as Record<string, DataEntry>;
+	this.skills = {} as Record<string, DataEntry>;
+	this.triggers = {} as Record<string, DataEntry>;
+	this.items = {} as Record<string, DataEntry>;
+	this.equipments = {} as Record<string, DataEntry>;
+	this.states = {} as Record<string, DataEntry>;
+	this.events = {} as Record<string, DataEntry>;
+	this.scripts = {} as Record<string, DataEntry>;
+	this.scenes = {} as Record<string, DataEntry>;
+	this.ui = {} as Record<string, DataEntry>;
+	this.animations = {} as Record<string, DataEntry>;
+	this.particles = {} as Record<string, DataEntry>;
+	this.tilesets = {} as Record<string, DataEntry>;
 };
 
-Data.createGUIDMap = function (this: any, list: any) {
-	const map = {} as Record<string, any>;
+Data.createGUIDMap = function (this: typeof Data, list: Array<GUIDItem>) {
+	const map = {} as Record<string, GUIDItem>;
 	for (const item of list) {
 		map[item.id] = item;
 	}
@@ -256,8 +309,8 @@ Data.createGUIDMap = function (this: any, list: any) {
 	});
 };
 
-Data.createTeamMap = function (this: any) {
-	const map = {} as Record<string, any>;
+Data.createTeamMap = function (this: typeof Data) {
+	const map = {} as Record<string, GUIDItem>;
 	const teams = this.teams;
 	for (const item of teams.list) {
 		map[item.id] = item;
@@ -269,7 +322,7 @@ Data.createTeamMap = function (this: any) {
 };
 
 Data.createVariableMap = (function IIFE() {
-	const set = (items: any, map: any) => {
+	const set = (items: VariableNode[], map: Record<string, VariableNode>) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children, map);
@@ -278,8 +331,8 @@ Data.createVariableMap = (function IIFE() {
 			}
 		}
 	};
-	return function (this: any) {
-		const map = {} as Record<string, any>;
+	return function (this: typeof Data) {
+		const map = {} as Record<string, VariableNode>;
 		set(this.variables, map);
 		Object.defineProperty(this.variables, 'map', {
 			configurable: true,
@@ -288,23 +341,23 @@ Data.createVariableMap = (function IIFE() {
 	};
 })();
 
-Data.createAttributeContext = function (this: any) {
+Data.createAttributeContext = function (this: typeof Data) {
 	Object.defineProperty(this.attribute, 'context', {
 		configurable: true,
 		value: new AttributeContext(this.attribute)
 	});
 };
 
-Data.createEnumerationContext = function (this: any) {
+Data.createEnumerationContext = function (this: typeof Data) {
 	Object.defineProperty(this.enumeration, 'context', {
 		configurable: true,
 		value: new EnumerationContext(this.enumeration)
 	});
 };
 
-Data.createLocalizationMap = function (this: any) {
-	const map = {} as Record<string, any>;
-	const set = (items: any) => {
+Data.createLocalizationMap = function (this: typeof Data) {
+	const map = {} as Record<string, LocalizationNode>;
+	const set = (items: LocalizationNode[]) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children);
@@ -320,8 +373,8 @@ Data.createLocalizationMap = function (this: any) {
 	});
 };
 
-Data.createReferencedFileIDMap = function (this: any) {
-	const usedMap = {} as Record<string, any>;
+Data.createReferencedFileIDMap = function (this: typeof Data) {
+	const usedMap = {} as Record<string, boolean>;
 	const list = [
 		Object.values(this.ui),
 		Object.values(this.scenes),
@@ -341,7 +394,7 @@ Data.createReferencedFileIDMap = function (this: any) {
 		this.config
 	];
 	const { scenePresets, uiPresets } = Data;
-	const markToMap = (guid: any) => {
+	const markToMap = (guid: string) => {
 		usedMap[guid] = true;
 		if (guid in scenePresets) {
 			usedMap[scenePresets[guid].sceneId] = true;
@@ -356,13 +409,13 @@ Data.createReferencedFileIDMap = function (this: any) {
 	while ((match = guid.exec(code))) {
 		markToMap(match[1]);
 	}
-	for (const event of Object.values(this.events) as any[]) {
+	for (const event of Object.values<any>(this.events)) {
 		if (event.type !== 'common') {
 			markToMap(event.guid);
 		}
 	}
 	const guidInScript = /"[0-9a-f]{16}"|'[0-9a-f]{16}'/g;
-	for (const meta of Object.values(this.scripts) as any[]) {
+	for (const meta of Object.values<any>(this.scripts)) {
 		if (meta.guid in usedMap) {
 			const code = meta.code;
 			while ((match = guidInScript.exec(code))) {
@@ -373,15 +426,15 @@ Data.createReferencedFileIDMap = function (this: any) {
 	return usedMap;
 };
 
-Data.generateVariableEnumScript = function (this: any) {
+Data.generateVariableEnumScript = function (this: typeof Data) {
 	const regexp = /^[\p{ID_Start}][\p{ID_Continue}]*$/u;
 	const spaces = / +/g;
 	const wraps = /\n+/g;
-	const validItems = [] as any[];
-	const invalidItems = [] as any[];
-	const duplicateItems = [] as any[];
-	const flags = {} as Record<string, any>;
-	const set = (items: any) => {
+	const validItems: Array<{ id: string; name: string; value: unknown; note?: string }> = [];
+	const invalidItems: VariableNode[] = [];
+	const duplicateItems: VariableNode[] = [];
+	const flags = {} as Record<string, boolean>;
+	const set = (items: VariableNode[]) => {
 		for (const item of items) {
 			if (item.children) {
 				set(item.children);
@@ -419,7 +472,7 @@ Data.generateVariableEnumScript = function (this: any) {
 				const value = item.value;
 				const type = typeof value;
 				let init;
-				switch (type) {
+				switch (typeof value) {
 					case 'boolean':
 						init = ` = ${value.toString()}`;
 						break;
@@ -436,7 +489,7 @@ Data.generateVariableEnumScript = function (this: any) {
 						init = '';
 						break;
 				}
-				let note = item.note.trim();
+				let note = item.note!.trim();
 				if (note !== '') {
 					note = '\n   *  \n   *  ' + note.replace(wraps, '  \n   *  ');
 				}
@@ -464,13 +517,13 @@ Data.generateVariableEnumScript = function (this: any) {
 			.then(() => {
 				console.log(`write: ${path}`);
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				console.warn(error);
 			});
 	}
 };
 
-Data.registerScenePresets = function (this: any, sceneId: any) {
+Data.registerScenePresets = function (this: typeof Data, sceneId: string) {
 	const scene = this.scenes[sceneId];
 	if (scene) {
 		let changed = false;
@@ -482,7 +535,7 @@ Data.registerScenePresets = function (this: any, sceneId: any) {
 			} while (id in scenePresets);
 			return id;
 		};
-		const setMap = (nodes: any) => {
+		const setMap = (nodes: PresetNode[]) => {
 			for (const node of nodes) {
 				if (node.class === 'folder') {
 					setMap(node.children);
@@ -507,11 +560,11 @@ Data.registerScenePresets = function (this: any, sceneId: any) {
 	}
 };
 
-Data.unregisterScenePresets = function (this: any, sceneId: any) {
+Data.unregisterScenePresets = function (this: typeof Data, sceneId: string) {
 	const scene = this.scenes[sceneId];
 	if (scene) {
 		const { scenePresets } = this;
-		const unlink = (nodes: any) => {
+		const unlink = (nodes: PresetNode[]) => {
 			for (const node of nodes) {
 				const { presetId } = node;
 				if (scenePresets[presetId]?.sceneId === sceneId) {
@@ -526,7 +579,7 @@ Data.unregisterScenePresets = function (this: any, sceneId: any) {
 	}
 };
 
-Data.registerUiPresets = function (this: any, uiId: any) {
+Data.registerUiPresets = function (this: typeof Data, uiId: string) {
 	const ui = this.ui[uiId];
 	if (ui) {
 		let changed = false;
@@ -538,7 +591,7 @@ Data.registerUiPresets = function (this: any, uiId: any) {
 			} while (id in uiPresets);
 			return id;
 		};
-		const setMap = (nodes: any) => {
+		const setMap = (nodes: PresetNode[]) => {
 			for (const node of nodes) {
 				if (uiPresets[node.presetId]) {
 					node.presetId = generatePresetId();
@@ -562,11 +615,11 @@ Data.registerUiPresets = function (this: any, uiId: any) {
 	}
 };
 
-Data.unregisterUiPresets = function (this: any, uiId: any) {
+Data.unregisterUiPresets = function (this: typeof Data, uiId: string) {
 	const ui = this.ui[uiId];
 	if (ui) {
 		const { uiPresets } = this;
-		const unlink = (nodes: any) => {
+		const unlink = (nodes: PresetNode[]) => {
 			for (const node of nodes) {
 				const { presetId } = node;
 				if (uiPresets[presetId]?.uiId === uiId) {
@@ -581,12 +634,12 @@ Data.unregisterUiPresets = function (this: any, uiId: any) {
 	}
 };
 
-Data.createManifest = function (this: any) {
+Data.createManifest = function (this: typeof Data) {
 	this.manifest = new Manifest();
 };
 
-Data.saveManifest = function (this: any) {
-	const manifest = this.manifest;
+Data.saveManifest = function (this: typeof Data) {
+	const manifest = this.manifest as Manifest | null;
 	if (manifest?.changed) {
 		manifest.changed = false;
 		const copy = Data.filterManifest(manifest);
@@ -599,7 +652,7 @@ Data.saveManifest = function (this: any) {
 				.then(() => {
 					manifest.code = json;
 				})
-				.catch((error: any) => {
+				.catch((error: unknown) => {
 					Log.throw!(error);
 				});
 		}
@@ -608,7 +661,7 @@ Data.saveManifest = function (this: any) {
 };
 
 // JSON.stringify replacer：丢弃 dataMap/file/group/manifest/code/meta/project/changes/metaList 运行期反引用键，阻断循环
-Data.jsonReplacer = function (this: any, key: any, value: any) {
+Data.jsonReplacer = function (key: string, value: unknown) {
 	switch (key) {
 		case 'dataMap':
 		case 'file':
@@ -624,8 +677,8 @@ Data.jsonReplacer = function (this: any, key: any, value: any) {
 	return value;
 };
 
-Data.filterManifest = function (this: any, manifest: any) {
-	const copy: any = {} as Record<string, any>;
+Data.filterManifest = function (this: typeof Data, manifest: Manifest & Record<string, any>) {
+	const copy: Record<string, any> = {};
 	for (const key of Object.keys(manifest)) {
 		copy[key] = manifest[key];
 	}
@@ -643,8 +696,13 @@ Data.filterManifest = function (this: any, manifest: any) {
 	return copy;
 };
 
-Data.inheritMetaData = function (this: any) {
-	const manifest = this.manifest;
+Data.inheritMetaData = function (this: typeof Data) {
+	const manifest = this.manifest as Manifest & {
+		last?: {
+			scenes: Array<{ path: string; x: number; y: number }>;
+			tilesets: Array<{ path: string; x: number; y: number }>;
+		};
+	};
 	const last = manifest.last;
 	const map = manifest.guidMap;
 	if (last === undefined) return;
@@ -669,13 +727,13 @@ Data.inheritMetaData = function (this: any) {
 
 Data.parseGUID = (function IIFE() {
 	const regexp = /(?<=\.)[0-9a-f]{16}(?=\.\S+$)/;
-	return function (this: any, meta: any) {
+	return function (this: typeof Data, meta: { path: string }) {
 		const match = meta.path.match(regexp);
 		return match ? match[0] : '';
 	};
 })();
 
-Data.loadScript = async function (this: any, file: any) {
+Data.loadScript = async function (this: typeof Data, file: ScriptFile) {
 	const meta = file.meta;
 	if (meta !== undefined) {
 		const { scripts } = this;
@@ -685,12 +743,12 @@ Data.loadScript = async function (this: any, file: any) {
 			path: file.path,
 			type: 'text'
 		})
-			.then((code: any) => {
+			.then((code: string) => {
 				meta.code = code;
 				PluginManager.parseMeta!(meta, code);
 				return (scripts[guid] = meta);
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				delete scripts[guid];
 			});
 	}
@@ -699,7 +757,7 @@ Data.loadScript = async function (this: any, file: any) {
 for (const key of dataKeys) {
 	Object.defineProperty(Data, key, {
 		get: () => getDataStore().data[key],
-		set: (value: any) => {
+		set: (value: unknown) => {
 			getDataStore().data[key] = value;
 		},
 		configurable: true

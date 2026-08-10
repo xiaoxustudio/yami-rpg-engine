@@ -2,10 +2,11 @@ import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface PositionGetterTarget {
 	dataValue: PositionData;
-	input: (getter: any) => void;
+	input: (getter: Record<string, any>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -13,33 +14,31 @@ interface PositionData {
 	type: 'absolute' | 'relative' | 'actor' | 'trigger' | 'light' | 'region' | 'object' | 'mouse';
 	x?: number;
 	y?: number;
-	actor?: any;
-	trigger?: any;
-	light?: any;
-	region?: any;
+	actor?: { type: string; [k: string]: any };
+	trigger?: { type: string; [k: string]: any };
+	light?: { type: string; [k: string]: any };
+	region?: { type: string; [k: string]: any };
 	mode?: string;
 	objectId?: string;
 }
 
-interface PositionGetterShape {
+interface PositionGetterShape extends AccessorBaseShape {
 	target: PositionGetterTarget | null;
-	initialize: (() => void) | null;
 	open: ((target: PositionGetterTarget) => void) | null;
 	checkDataForPlugin: ((data: any) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string; x: number; y: number }) | null;
-	confirm: ((event: Event) => void) | null;
 }
 
 export const PositionGetter: PositionGetterShape = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	confirm: null as any
+	target: null,
+	initialize: null,
+	open: null,
+	checkDataForPlugin: null,
+	createDefaultForPlugin: null,
+	confirm: null
 };
 
-PositionGetter.initialize = function (this: any): void {
+PositionGetter.initialize = function (this: typeof PositionGetter): void {
 	if (!$('#positionGetter-type')) return;
 	$('#positionGetter-type').loadItems([
 		{ name: 'Absolute Coordinates', value: 'absolute' },
@@ -135,14 +134,14 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	getFocus($('#positionGetter-type'));
 };
 
-PositionGetter.checkDataForPlugin = function (this: any, data: any): boolean {
+PositionGetter.checkDataForPlugin = function (this: typeof PositionGetter, data: any): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'position';
 	}
 	return false;
 };
 
-PositionGetter.createDefaultForPlugin = function (this: any): {
+PositionGetter.createDefaultForPlugin = function (this: typeof PositionGetter): {
 	getter: string;
 	type: string;
 	x: number;
@@ -154,7 +153,7 @@ PositionGetter.createDefaultForPlugin = function (this: any): {
 PositionGetter.confirm = function (this: PositionGetterShape, event: Event): void {
 	const read = getElementReader('positionGetter');
 	const type = read('type');
-	let getter: any;
+	let getter: Record<string, any> | undefined;
 	switch (type) {
 		case 'absolute': {
 			const x = read('common-x');
@@ -202,8 +201,8 @@ PositionGetter.confirm = function (this: PositionGetterShape, event: Event): voi
 			break;
 	}
 	if (this.target!.isPluginInput) {
-		getter = { getter: 'position', ...getter };
+		getter = { getter: 'position', ...getter! };
 	}
-	this.target!.input(getter);
+	this.target!.input(getter!);
 	Window.close!('positionGetter');
 }.bind(PositionGetter);

@@ -63,42 +63,45 @@ import TabBar from './components/common/TabBar.vue';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
 import { defineAsyncComponent } from 'vue';
+import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
+import { useMenubarStore } from '@app/stores/menubar';
 
 const title = useTitleStore();
+const menubar = useMenubarStore();
 
 const onPlayClick = () => {
-	(window as any).Title?.playGame?.();
+	title.playGame();
 };
 const onMinimizeClick = () => {
-	(window as any).Title?.minimizeClick?.();
+	title.minimizeClick();
 };
 const onMaximizeClick = () => {
-	(window as any).Title?.maximizeClick?.();
+	title.maximizeClick();
 };
 const onCloseClick = () => {
-	(window as any).Title?.closeClick?.();
+	title.closeClick();
 };
 const onTitlePointerenter = () => {
-	(window as any).Title?.pointerenter?.();
+	title.pointerenter();
 };
 const onTabBarSelect = (event: any) => {
-	(window as any).Title?.tabBarSelect?.(event);
+	title.tabBarSelect(event);
 };
 const onTabBarClosed = (event: any) => {
-	(window as any).Title?.tabBarClosed?.(event);
+	title.tabBarClosed(event);
 };
 const onTabBarPopup = (event: any) => {
-	(window as any).Title?.tabBarPopup?.(event);
+	title.tabBarPopup(event);
 };
 const onMenuPointerdown = (event: PointerEvent) => {
-	(window as any).Menubar?.pointerdown?.(event);
+	menubar.pointerdown(event);
 };
 const onMenuPointerup = (event: PointerEvent) => {
-	(window as any).Menubar?.pointerup?.(event);
+	menubar.pointerup(event);
 };
 const onMenuPointerover = (event: PointerEvent) => {
-	(window as any).Menubar?.pointerover?.(event);
+	menubar.pointerover(event);
 };
 
 const toolModules = import.meta.glob('./components/tools/*.vue');
@@ -130,10 +133,10 @@ const onAsyncError = (error: any, retry: any, fail: any, attempts: number) => {
 };
 const asyncComp = (loader: any) => defineAsyncComponent({ loader, onError: onAsyncError });
 const toolComponents = Object.fromEntries(
-	Object.entries(toolModules).map(([path, loader]) => [path, asyncComp(loader as any)])
+	Object.entries(toolModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
 );
 const commandComponents = Object.fromEntries(
-	Object.entries(commandModules).map(([path, loader]) => [path, asyncComp(loader as any)])
+	Object.entries(commandModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
 );
 const inspectorSpecialTargets = new Set(['fileImage', 'fileFont', 'fileScript', 'fileAudio', 'fileVideo', 'fileTileset']);
 const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => {
@@ -144,8 +147,8 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 	return {
 		value,
 		target,
-		comp: asyncComp(loader as any)
+		comp: asyncComp(loader as unknown as () => Promise<Component>)
 	};
 });
-(window as any).__lazyComponentsReady__ = lazyComponentsReady;
+(window as unknown as { __lazyComponentsReady__?: boolean }).__lazyComponentsReady__ = lazyComponentsReady;
 </script>

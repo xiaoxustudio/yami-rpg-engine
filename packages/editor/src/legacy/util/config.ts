@@ -2,14 +2,15 @@ import { ipcRenderer } from 'electron';
 import nodePath from 'node:path';
 import os from 'node:os';
 import nodeFs from 'node:fs';
-export const Path: typeof nodePath & { slash: (path: string) => string } = nodePath as any;
+export const Path: typeof nodePath & { slash: (path: string) => string } =
+	nodePath as typeof nodePath & { slash: (path: string) => string };
 
 export const GlobalPathForDir = os.homedir?.() ?? '';
 export const ConfigDir = '.openyami';
 export const GlobalPath =
 	typeof Path.resolve === 'function' ? Path.resolve(GlobalPathForDir, ConfigDir) : '';
 
-if (typeof (window as any).__nodeRequire === 'function') {
+if (typeof (window as unknown as Record<string, unknown>).__nodeRequire === 'function') {
 	{
 		const dir = Path.resolve(GlobalPath);
 		if (!nodeFs.existsSync(dir)) {
@@ -40,7 +41,7 @@ if (typeof (window as any).__nodeRequire === 'function') {
 							.catch((error) => 'C:')
 							.then((docPath) => {
 								for (const key of Object.keys(config.dialogs)) {
-									config.dialogs[key] = (Path as any).slash(docPath);
+									config.dialogs[key] = Path.slash(docPath);
 								}
 								return config;
 							});

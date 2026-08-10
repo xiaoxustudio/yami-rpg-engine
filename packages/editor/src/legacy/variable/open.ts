@@ -11,14 +11,14 @@ import { Variable } from './variable.ts';
 
 Variable.open = function (this: any, target: any = null) {
 	this.target = target;
-	(this as any)._previousActive = UndoManager.getActive();
+	this._previousActive = UndoManager.getActive();
 	this.history = new History(100);
 	UndoManager.setActive(this);
 	this.unpackVariables();
 	Window.open!('variable');
 
 	const list = this.list;
-	const item = !target ? undefined : this.getVariableById(read(target as any));
+	const item = !target ? undefined : this.getVariableById(read(target));
 	if (item && item.class !== 'folder') {
 		list.initialize();
 		list.select(item);
@@ -29,7 +29,7 @@ Variable.open = function (this: any, target: any = null) {
 	} else {
 		list.update();
 		list.restoreScroll();
-		if ((target as any) instanceof Object) {
+		if (target instanceof Object) {
 			list.select(list.data[0]);
 		}
 	}
@@ -37,7 +37,7 @@ Variable.open = function (this: any, target: any = null) {
 	getFocus(list);
 
 	window.addEventListener('keydown', this.keydown);
-	window.addEventListener('keydown', (Reference.getKeydownListener as any)(list, 'variable'));
+	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'variable'));
 };
 
 Variable.undo = function (this: any) {
@@ -83,7 +83,7 @@ Variable.apply = function (this: any, event: any) {
 		this.changed = false;
 
 		this.packVariables();
-		(File.planToSave as any)(Data.manifest.project.variables);
+		File.planToSave!(Data.manifest.project.variables);
 
 		window.dispatchEvent(new Event('variablechange'));
 	}

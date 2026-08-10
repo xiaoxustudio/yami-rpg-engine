@@ -9,24 +9,34 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
 {
-	const FileScene = {
-		button: null as any,
-		owner: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface FileSceneShape {
+		[k: string]: any;
+	}
+	interface FileSceneData {
+		width: number;
+		height: number;
+		tileWidth: number;
+		tileHeight: number;
+		[k: string]: any;
+	}
+	const FileScene: FileSceneShape = {
+		button: null,
+		owner: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	FileScene.initialize = function (this: any) {
+	FileScene.initialize = function (this: typeof FileScene) {
 		if (!$('#scene-switch-settings')) return;
 		this.button = $('#scene-switch-settings');
 		this.owner = {
-			setTarget: (target: any) => {
+			setTarget: (target: unknown) => {
 				if (this.target !== target) {
 					Inspector.open!('fileScene', target);
 				}
@@ -78,16 +88,23 @@ import { GL } from '@/webgl/webgl-init.ts';
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
 	};
 
-	FileScene.create = function (this: any) {
-		const objects = [] as any[];
-		const filters = {} as Record<string, any>;
-		const folders = (Editor.project as any).scene.defaultFolders;
+	FileScene.create = function (this: typeof FileScene) {
+		const objects: {
+			class: string;
+			name: string;
+			expanded: boolean;
+			hidden: boolean;
+			locked: boolean;
+			children: unknown[];
+		}[] = [];
+		const filters = {} as Record<string, unknown>;
+		const folders = Editor.project!.scene.defaultFolders;
 		for (const name of Object.values(folders)) {
-			if ((name as string) && (filters as any)[name as string] === undefined) {
-				(filters as any)[name as string] = true;
+			if (name && filters[name as string] === undefined) {
+				filters[name as string] = true;
 				objects.push({
 					class: 'folder',
-					name: name,
+					name: name as string,
 					expanded: true,
 					hidden: false,
 					locked: false,
@@ -124,7 +141,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		);
 	};
 
-	FileScene.open = function (this: any, scene: any) {
+	FileScene.open = function (this: typeof FileScene, scene: FileSceneData) {
 		if (this.target !== scene) {
 			this.target = scene;
 
@@ -144,7 +161,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.close = function (this: any) {
+	FileScene.close = function (this: typeof FileScene) {
 		if (this.target) {
 			this.target = null;
 
@@ -155,7 +172,10 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.write = function (this: any, options: any) {
+	FileScene.write = function (
+		this: typeof FileScene,
+		options: { width?: number; height?: number }
+	) {
 		if (options.width !== undefined) {
 			write($('#fileScene-width'), options.width);
 		}
@@ -164,7 +184,12 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.update = function (this: any, _: any, key: any, value: any) {
+	FileScene.update = function (
+		this: typeof FileScene,
+		_: FileSceneData,
+		key: string,
+		value: unknown
+	) {
 		Scene.planToSave!();
 		switch (key) {
 			case 'width':
@@ -203,7 +228,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.paramInput = function (this: any, event: any) {
+	FileScene.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		FileScene.update!(FileScene.target, Inspector.getKey!(this), read(this));
 	};
 

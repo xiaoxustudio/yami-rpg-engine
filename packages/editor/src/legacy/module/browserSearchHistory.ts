@@ -1,7 +1,40 @@
 import { SettingConfig } from './settingconfig';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass } from '@/util/element-utils';
-export const BrowserSearchHistory: any = {
+
+interface ThemeStyles {
+	dropdown: Record<string, unknown>;
+	item: { color: string; hoverBg: string };
+}
+
+interface BrowserSearchHistoryShape {
+	histories: string[];
+	input: Element | null;
+	dropdown: HTMLElement | null;
+	outsideHandler: ((event: Event) => void) | null;
+	themeObserver: MutationObserver | null;
+	initialize?: (this: BrowserSearchHistoryShape) => void;
+	bind?: (this: BrowserSearchHistoryShape, searcher: HTMLElement) => void;
+	getInput?: (this: BrowserSearchHistoryShape, searcher: HTMLElement) => Element | null;
+	getLimit?: (this: BrowserSearchHistoryShape) => number;
+	add?: (this: BrowserSearchHistoryShape, keyword: string) => void;
+	remove?: (this: BrowserSearchHistoryShape, keyword: string) => void;
+	focus?: (this: HTMLInputElement) => void;
+	blur?: (this: HTMLInputElement) => void;
+	getThemeStyles?: (this: BrowserSearchHistoryShape) => ThemeStyles;
+	initThemeObserver?: (this: BrowserSearchHistoryShape) => void;
+	createDropdown?: (this: BrowserSearchHistoryShape) => void;
+	show?: (this: BrowserSearchHistoryShape, input: HTMLInputElement) => void;
+	createItem?: (
+		this: BrowserSearchHistoryShape,
+		input: HTMLInputElement,
+		keyword: string,
+		styles: ThemeStyles
+	) => HTMLElement;
+	hide?: (this: BrowserSearchHistoryShape) => void;
+}
+
+export const BrowserSearchHistory: BrowserSearchHistoryShape = {
 	histories: [],
 	input: null,
 	dropdown: null,
@@ -9,33 +42,33 @@ export const BrowserSearchHistory: any = {
 	themeObserver: null
 };
 
-BrowserSearchHistory.initialize = function () {
+BrowserSearchHistory.initialize = function (this: BrowserSearchHistoryShape) {
 	const browser = getBrowserInstance();
 	if (!browser) return;
 	const initialize = browser.initialize;
 	browser.initialize = function () {
 		initialize?.call(this);
-		BrowserSearchHistory.bind(this.searcher);
+		BrowserSearchHistory.bind!(this.searcher!);
 	};
 };
 
-BrowserSearchHistory.bind = function (searcher: any) {
-	const input = this.getInput(searcher);
+BrowserSearchHistory.bind = function (this: BrowserSearchHistoryShape, searcher: HTMLElement) {
+	const input = this.getInput!(searcher);
 	if (!input || input === this.input) return;
 	this.input = input;
-	input.addEventListener('focus', this.focus);
-	input.addEventListener('blur', this.blur);
-	this.initThemeObserver();
+	input.addEventListener('focus', this.focus!);
+	input.addEventListener('blur', this.blur!);
+	this.initThemeObserver!();
 };
 
-BrowserSearchHistory.getInput = function (searcher: any) {
+BrowserSearchHistory.getInput = function (this: BrowserSearchHistoryShape, searcher: HTMLElement) {
 	if (!searcher) return null;
 	return (
 		searcher.querySelector?.('.text-box-input') ?? searcher.querySelector?.('input') ?? searcher
 	);
 };
 
-BrowserSearchHistory.getLimit = function () {
+BrowserSearchHistory.getLimit = function (this: BrowserSearchHistoryShape) {
 	const config =
 		typeof SettingConfig !== 'undefined'
 			? SettingConfig.config?.other?.browserSearchHistoryLimit
@@ -44,7 +77,7 @@ BrowserSearchHistory.getLimit = function () {
 	return Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 9) : 9;
 };
 
-BrowserSearchHistory.add = function (keyword: any) {
+BrowserSearchHistory.add = function (this: BrowserSearchHistoryShape, keyword: string) {
 	if (!keyword) return;
 	const k = keyword.trim();
 	if (!k) return;
@@ -54,23 +87,23 @@ BrowserSearchHistory.add = function (keyword: any) {
 	if (this.histories.length > 9) this.histories.length = 9;
 };
 
-BrowserSearchHistory.remove = function (keyword: any) {
+BrowserSearchHistory.remove = function (this: BrowserSearchHistoryShape, keyword: string) {
 	const idx = this.histories.indexOf(keyword);
 	if (idx !== -1) this.histories.splice(idx, 1);
 };
 
-BrowserSearchHistory.focus = function () {
-	BrowserSearchHistory.show(this);
+BrowserSearchHistory.focus = function (this: HTMLInputElement) {
+	BrowserSearchHistory.show!(this);
 };
 
-BrowserSearchHistory.blur = function () {
-	BrowserSearchHistory.add(this.value);
+BrowserSearchHistory.blur = function (this: HTMLInputElement) {
+	BrowserSearchHistory.add!(this.value);
 	setTimeout(() => {
-		BrowserSearchHistory.hide();
+		BrowserSearchHistory.hide!();
 	}, 150);
 };
 
-BrowserSearchHistory.getThemeStyles = function () {
+BrowserSearchHistory.getThemeStyles = function (this: BrowserSearchHistoryShape): ThemeStyles {
 	const isDarkTheme = document.documentElement.classList.contains('dark');
 	return {
 		dropdown: {
@@ -88,13 +121,13 @@ BrowserSearchHistory.getThemeStyles = function () {
 	};
 };
 
-BrowserSearchHistory.initThemeObserver = function () {
+BrowserSearchHistory.initThemeObserver = function (this: BrowserSearchHistoryShape) {
 	if (this.themeObserver) return;
 	this.themeObserver = new MutationObserver(() => {
 		if (!this.dropdown) return;
-		const styles = this.getThemeStyles();
+		const styles = this.getThemeStyles!();
 		Object.assign(this.dropdown.style, styles.dropdown);
-		for (const item of this.dropdown.querySelectorAll('.browser-search-item')) {
+		for (const item of this.dropdown.querySelectorAll<HTMLElement>('.browser-search-item')) {
 			item.style.color = styles.item.color;
 			item.style.background = '';
 		}
@@ -105,7 +138,7 @@ BrowserSearchHistory.initThemeObserver = function () {
 	});
 };
 
-BrowserSearchHistory.createDropdown = function () {
+BrowserSearchHistory.createDropdown = function (this: BrowserSearchHistoryShape) {
 	if (this.dropdown) return;
 	const el = document.createElement('div');
 	el.className = 'browser-search-history-dropdown';
@@ -121,7 +154,7 @@ BrowserSearchHistory.createDropdown = function () {
 		scrollbarWidth: 'none',
 		msOverflowStyle: 'none'
 	});
-	Object.assign(el.style, this.getThemeStyles().dropdown);
+	Object.assign(el.style, this.getThemeStyles!().dropdown);
 	el.addEventListener('mousedown', (event) => {
 		event.preventDefault();
 	});
@@ -129,17 +162,17 @@ BrowserSearchHistory.createDropdown = function () {
 	this.dropdown = el;
 };
 
-BrowserSearchHistory.show = function (input: any) {
-	this.createDropdown();
-	const el = this.dropdown;
+BrowserSearchHistory.show = function (this: BrowserSearchHistoryShape, input: HTMLInputElement) {
+	this.createDropdown!();
+	const el = this.dropdown!;
 	if (this.histories.length === 0) {
 		el.style.display = 'none';
 		return;
 	}
 	el.innerHTML = '';
-	const styles = this.getThemeStyles();
-	for (const keyword of this.histories.slice(0, this.getLimit())) {
-		el.appendChild(this.createItem(input, keyword, styles));
+	const styles = this.getThemeStyles!();
+	for (const keyword of this.histories.slice(0, this.getLimit!())) {
+		el.appendChild(this.createItem!(input, keyword, styles));
 	}
 	const anchor = input.closest?.('text-box') ?? input;
 	const rect = anchor.getBoundingClientRect();
@@ -153,16 +186,21 @@ BrowserSearchHistory.show = function (input: any) {
 		this.outsideHandler = null;
 	}
 	setTimeout(() => {
-		this.outsideHandler = (event: any) => {
-			if (!el.contains(event.target) && event.target !== input) {
-				this.hide();
+		this.outsideHandler = (event: Event) => {
+			if (!el.contains(event.target as Node) && event.target !== input) {
+				this.hide!();
 			}
 		};
 		document.addEventListener('mousedown', this.outsideHandler);
 	}, 0);
 };
 
-BrowserSearchHistory.createItem = function (input: any, keyword: any, styles: any) {
+BrowserSearchHistory.createItem = function (
+	this: BrowserSearchHistoryShape,
+	input: HTMLInputElement,
+	keyword: string,
+	styles: ThemeStyles
+): HTMLElement {
 	const item = document.createElement('div');
 	item.className = 'browser-search-item';
 	Object.assign(item.style, {
@@ -190,22 +228,22 @@ BrowserSearchHistory.createItem = function (input: any, keyword: any, styles: an
 	deleteButton.addEventListener('click', (event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		this.remove(keyword);
+		this.remove!(keyword);
 		item.remove();
 		if (this.histories.length === 0) {
-			this.hide();
+			this.hide!();
 		} else {
-			this.show(input);
+			this.show!(input);
 		}
 	});
 	item.addEventListener('click', () => {
 		input.value = keyword;
 		input.dispatchEvent(new Event('input', { bubbles: true }));
 		input.focus();
-		this.hide();
+		this.hide!();
 	});
 	item.addEventListener('mouseover', () => {
-		item.style.background = this.getThemeStyles().item.hoverBg;
+		item.style.background = this.getThemeStyles!().item.hoverBg;
 	});
 	item.addEventListener('mouseout', () => {
 		item.style.background = '';
@@ -215,7 +253,7 @@ BrowserSearchHistory.createItem = function (input: any, keyword: any, styles: an
 	return item;
 };
 
-BrowserSearchHistory.hide = function () {
+BrowserSearchHistory.hide = function (this: BrowserSearchHistoryShape) {
 	if (!this.dropdown) return;
 	this.dropdown.style.display = 'none';
 	if (this.outsideHandler) {
@@ -224,4 +262,4 @@ BrowserSearchHistory.hide = function () {
 	}
 };
 
-BrowserSearchHistory.initialize();
+BrowserSearchHistory.initialize!();

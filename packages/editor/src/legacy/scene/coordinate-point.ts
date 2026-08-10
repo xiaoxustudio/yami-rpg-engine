@@ -9,7 +9,7 @@ Scene.Point = class Point {
 		this.y = 0;
 	}
 
-	set(x: any, y: any) {
+	set(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 		return this;

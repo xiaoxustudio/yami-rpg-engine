@@ -7,21 +7,32 @@ import { GUID } from '@/file/guid.ts';
 import { Inspector } from './inspector.ts';
 
 {
-	const FileAnimation = {
-		button: null as any,
-		owner: null as any,
-		target: null as any,
-		sprites: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any
+	interface FileAnimationShape {
+		button: HTMLElement | null;
+		owner: unknown;
+		target: unknown;
+		sprites: unknown;
+		initialize: ((this: typeof FileAnimation) => void) | null;
+		create: ((this: typeof FileAnimation) => unknown) | null;
+		open: ((this: typeof FileAnimation, animation: any) => void) | null;
+		close: ((this: typeof FileAnimation) => void) | null;
+		[k: string]: unknown;
+	}
+	const FileAnimation: FileAnimationShape = {
+		button: null,
+		owner: null,
+		target: null,
+		sprites: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null
 	};
 
-	FileAnimation.initialize = function (this: any) {
+	FileAnimation.initialize = function (this: typeof FileAnimation) {
 		this.button = $('#animation-switch-settings');
 		this.owner = {
-			setTarget: (target: any) => {
+			setTarget: (target: unknown) => {
 				if (this.target !== target) {
 					Inspector.open!('fileAnimation', target);
 				}
@@ -39,14 +50,14 @@ import { Inspector } from './inspector.ts';
 		$('#fileAnimation-sprites')?.on('change', Animation.listChange);
 	};
 
-	FileAnimation.create = function (this: any) {
+	FileAnimation.create = function (this: typeof FileAnimation) {
 		return {
 			sprites: [],
 			motions: []
 		};
 	};
 
-	FileAnimation.open = function (this: any, animation: any) {
+	FileAnimation.open = function (this: typeof FileAnimation, animation: any) {
 		if (this.target !== animation) {
 			this.target = animation;
 
@@ -57,7 +68,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileAnimation.close = function (this: any) {
+	FileAnimation.close = function (this: typeof FileAnimation) {
 		if (this.target) {
 			this.target = null;
 
@@ -66,17 +77,17 @@ import { Inspector } from './inspector.ts';
 	};
 
 	FileAnimation.sprites = {
-		list: null as any,
+		list: null,
 		spriteId: '',
-		initialize: function (this: any, list: any) {
+		initialize: function (this: typeof FileAnimation, list: HTMLElement) {
 			$('#fileAnimation-sprite-confirm')?.on('click', () => list.save());
 
 			this.list = list;
 
 			this.history = new Inspector.ParamHistory!(FileAnimation, FileAnimation.owner, list);
 
-			// 重载动画纹理 - 改变事件
-			list.on('change', (event: any) => {
+			// 闂備焦褰冪粔宄懊归崶顒€绀夐柕濞у嫭姣庣紓浣瑰劤濠€閬嶅箖?- 闂佽　鍋撻柣鐔告緲缂嶄礁霉濠婂喚鍎庢繛?
+			list.on('change', (event: Event) => {
 				if (Animation.sprites) {
 					if (Animation.sprites.listItems) {
 						Animation.sprites.listItems = undefined;
@@ -85,18 +96,33 @@ import { Inspector } from './inspector.ts';
 				}
 			});
 		},
-		parse: function ({ name, image, hframes, vframes }: any) {
+		parse: function ({
+			name,
+			image,
+			hframes,
+			vframes
+		}: {
+			name: string;
+			image: string;
+			hframes: number;
+			vframes: number;
+		}) {
 			const fileName = Command.removeTextTags!(Command.parseFileName!(image));
 			return [name, `${fileName} [${hframes}x${vframes}]`];
 		},
-		createExclusionMap: function () {
+		createExclusionMap: function (this: { list: { data: { id: string }[] } }) {
 			const exclusions = {} as Record<string, any>;
 			for (const sprite of this.list.data) {
 				exclusions[sprite.id] = true;
 			}
 			return exclusions;
 		},
-		createSpriteId: function (this: any, exclusions: any = this.createExclusionMap!()) {
+		createSpriteId: function (
+			this: typeof FileAnimation,
+			exclusions: Record<string, boolean> = (
+				FileAnimation.interface as { createExclusionMap: () => Record<string, boolean> }
+			).createExclusionMap()
+		) {
 			let id;
 			do {
 				id = GUID.generate64bit();
@@ -104,8 +130,14 @@ import { Inspector } from './inspector.ts';
 			return id;
 		},
 		open: function (
-			this: any,
-			{ name = '', id = this.createSpriteId!(), image = '', hframes = 1, vframes = 1 } = {}
+			this: typeof FileAnimation,
+			{
+				name = '',
+				id = (FileAnimation.interface as { createSpriteId: () => string }).createSpriteId(),
+				image = '',
+				hframes = 1,
+				vframes = 1
+			} = {}
 		) {
 			Window.open!('fileAnimation-sprite');
 			const write = getElementWriter('fileAnimation-sprite');
@@ -113,14 +145,14 @@ import { Inspector } from './inspector.ts';
 			write('image', image);
 			write('hframes', hframes);
 			write('vframes', vframes);
-			(this as any).spriteId = id;
+			this.spriteId = id;
 			if (!name) {
 				getFocus($('#fileAnimation-sprite-name'));
 			} else {
 				getFocus($('#fileAnimation-sprite-image'));
 			}
 		},
-		save: function () {
+		save: function (this: { spriteId: string }) {
 			const read = getElementReader('fileAnimation-sprite');
 			const name = read('name').trim();
 			if (!name) {
@@ -133,11 +165,17 @@ import { Inspector } from './inspector.ts';
 			Window.close!('fileAnimation-sprite');
 			return { name, id, image, hframes, vframes };
 		},
-		onPaste: function (this: any, list: any, copies: any) {
-			const exclusions = this.createExclusionMap!();
-			for (const sprite of copies) {
+		onPaste: function (this: typeof FileAnimation, list: HTMLElement, copies: unknown[]) {
+			const exclusions = (
+				FileAnimation.interface as { createExclusionMap: () => Record<string, boolean> }
+			).createExclusionMap();
+			for (const sprite of copies as Array<{ id: string }>) {
 				if (sprite.id in exclusions) {
-					const id = this.createSpriteId!(exclusions);
+					const id = (
+						FileAnimation.interface as {
+							createSpriteId: (exclusions?: Record<string, boolean>) => string;
+						}
+					).createSpriteId(exclusions);
 					sprite.id = id;
 				}
 				exclusions[sprite.id] = true;

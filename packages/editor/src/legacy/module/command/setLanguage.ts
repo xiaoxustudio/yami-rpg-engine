@@ -12,8 +12,8 @@ Command.cases.setLanguage = new CommandSchema({
 	customParse({ language }: any) {
 		return [
 			{ color: 'system' },
-			{ text: Local.get('command.setLanguage') + Token(': ') },
-			{ text: Local.get('languages.' + language) }
+			{ text: Local.get!('command.setLanguage') + Token(': ') },
+			{ text: Local.get!('languages.' + language) }
 		];
 	},
 	onLoad(data: any) {
@@ -27,7 +27,7 @@ Command.cases.setLanguage = new CommandSchema({
 	},
 	createLanguageItems() {
 		const items = [];
-		const languages = Local.get('languages');
+		const languages = Local.get!('languages');
 		if (languages) {
 			const langList = new Set(
 				Data.config.localization.languages.map((lang: any) => lang.name)

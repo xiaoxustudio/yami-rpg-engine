@@ -3,7 +3,10 @@ import { write } from '@/util/element-utils.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import { Variable } from './variable.ts';
+
+const Clipboard = getGlobalClipboard();
 
 Variable.listSelect = function (event: any) {
 	const item = event.value;
@@ -38,10 +41,10 @@ Variable.listPopup = function (this: any, event: any) {
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as any).has('yami.data.variable');
+	const pastable = Clipboard.has('yami.data.variable');
 	const undoable = Variable.history.canUndo();
 	const redoable = Variable.history.canRedo();
-	const get = (Local.createGetter as any)('menuVariableList');
+	const get = Local.createGetter!('menuVariableList');
 	const items: any[] = [
 		{
 			label: get('create'),
@@ -122,11 +125,11 @@ Variable.listPopup = function (this: any, event: any) {
 			label: get('find-references'),
 			accelerator: 'Alt+LB',
 			click: () => {
-				(Reference.openRelated as any)(item.id);
+				Reference.openRelated!(item.id);
 			}
 		});
 	}
-	(Menu.popup as any)(
+	Menu.popup(
 		{
 			x: event.clientX,
 			y: event.clientY
@@ -137,7 +140,7 @@ Variable.listPopup = function (this: any, event: any) {
 
 Variable.listOpen = function (event: any) {
 	if (event.value.class !== 'folder' && Variable.target instanceof Object) {
-		(Variable.target as any).getFocus?.();
+		Variable.target.getFocus?.();
 		Variable.confirm();
 	}
 };

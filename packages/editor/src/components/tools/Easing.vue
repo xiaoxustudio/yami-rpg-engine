@@ -103,6 +103,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Easing } from '@/data/transition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -114,16 +115,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const onListSelect = (event: any) => {
-	(window as any).Easing?.listSelect?.(event);
+	Easing?.listSelect?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).Easing?.listOpen?.(event);
+	Easing?.listOpen?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).Easing?.listPopup?.(event);
+	Easing?.listPopup?.(event);
 };
 const onListChange = (event: any) => {
-	(window as any).Easing?.dataChange?.(event);
+	Easing?.dataChange?.(event);
 };
 
 const local = useLocalStore();

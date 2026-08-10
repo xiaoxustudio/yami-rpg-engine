@@ -1,17 +1,17 @@
 ﻿import { describe, expect, it } from 'vitest';
-import { getDataStore, dataKeys } from '@app/stores/data';
+import { getDataStore, dataKeys, type ManifestShape } from '@app/stores/data';
 
 describe('useDataStore（Data 状态桥接）', () => {
 	it('setManifest 承载 manifest 且可读回', () => {
 		const store = getDataStore();
-		store.setManifest({ guidMap: { g1: { id: 'x' } } } as any);
+		store.setManifest({ guidMap: { g1: { id: 'x' } } } as unknown as ManifestShape);
 		expect(store.manifest?.guidMap.g1.id).toBe('x');
 		expect(store.data.manifest?.guidMap.g1.id).toBe('x');
 	});
 
 	it('setManifest 替换引用（shallowRef 语义）', () => {
 		const store = getDataStore();
-		store.setManifest({ guidMap: {} } as any);
+		store.setManifest({ guidMap: {} } as unknown as ManifestShape);
 		expect(store.manifest?.guidMap).toEqual({});
 		store.setManifest(null);
 		expect(store.manifest).toBe(null);

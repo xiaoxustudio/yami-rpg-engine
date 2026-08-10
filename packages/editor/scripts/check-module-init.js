@@ -16,6 +16,8 @@ const EXCLUDE = [
 	'types/list-interface.ts',
 	'types/marquee-area.ts',
 	'types/tree-data.ts',
+	'types/legacy-shapes.ts',
+	'types/global-clipboard.ts',
 	// util/：工具函数/惰性单例，Vue 组件与 store 直接 import
 	'util/element-utils.ts',
 	'util/doubleclick.ts',

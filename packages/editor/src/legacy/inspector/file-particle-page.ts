@@ -1,8 +1,11 @@
-﻿import { Inspector } from './inspector.ts';
+import { Inspector } from './inspector.ts';
 
 {
-	const FileParticle = {
-		create: null as any
+	interface FileParticleShape {
+		[k: string]: any;
+	}
+	const FileParticle: FileParticleShape = {
+		create: null
 	};
 
 	FileParticle.create = function (this: any) {

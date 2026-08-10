@@ -21,7 +21,7 @@ Variable.unpackVariables = (function IIFE() {
 
 		set expanded(value: any) {
 			this.data.expanded = value;
-			(File.planToSave as any)(Data.manifest.project.variables);
+			File.planToSave!(Data.manifest.project.variables);
 		}
 	}
 	const clone = (items: any[]) => {
@@ -31,7 +31,7 @@ Variable.unpackVariables = (function IIFE() {
 			const item = items[i];
 			if (item.class !== 'folder') {
 				Variable.idMap[item.id] = true;
-				copies[i] = (Object as any).clone(item);
+				copies[i] = Object.clone(item);
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
@@ -51,7 +51,7 @@ Variable.packVariables = (function IIFE() {
 		for (let i = 0; i < length; i++) {
 			const item = items[i];
 			if (item.class !== 'folder') {
-				copies[i] = (Object as any).clone(item);
+				copies[i] = Object.clone(item);
 			} else {
 				copies[i] = {
 					class: item.class,

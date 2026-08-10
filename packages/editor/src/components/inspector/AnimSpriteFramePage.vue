@@ -206,6 +206,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
+import { Sprite } from '@/sprite/sprite.ts';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
@@ -219,23 +221,23 @@ const local = useLocalStore();
 
 const onParamInput = (event: any) => {
 	const target = event?.target ?? document.activeElement;
-	(window as any).Inspector?.animSpriteFrame?.paramInput?.({ target });
+	Inspector?.animSpriteFrame?.paramInput?.({ target });
 };
 
 const onZoomInput = (value: number) => {
-	(window as any).Sprite?.setZoom?.(value);
+	Sprite?.setZoom?.(value);
 };
 const onZoomFocus = () => {
-	(window as any).Sprite?.zoomFocus?.();
+	Sprite?.zoomFocus?.();
 };
 const onScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).Sprite?.screenKeydown?.(event);
+	Sprite?.screenKeydown?.(event);
 };
 const onScreenWheel = (event: WheelEvent) => {
-	(window as any).Sprite?.screenWheel?.(event);
+	Sprite?.screenWheel?.(event);
 };
 const onMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).Sprite?.marqueePointerdown?.(event);
+	Sprite?.marqueePointerdown?.(event);
 };
 
 onMounted(() => {

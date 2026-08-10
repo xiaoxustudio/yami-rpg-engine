@@ -1,5 +1,5 @@
 export class UIInstanceList extends Array {
-	setProperty(key: string, value: any): void {
+	setProperty(key: string, value: unknown): void {
 		const keys = key.split('-');
 		const last = keys.length - 1;
 		const property = keys[last];

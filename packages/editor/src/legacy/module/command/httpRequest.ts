@@ -61,7 +61,7 @@ Command.cases.httpRequest = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -71,7 +71,7 @@ Command.cases.httpRequest = new CommandSchema({
 				}
 			);
 		}
-		const datas = [] as any[];
+		const datas: any[] = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },
@@ -81,7 +81,7 @@ Command.cases.httpRequest = new CommandSchema({
 				}
 			);
 		}
-		const extra = [] as any[];
+		const extra: any[] = [];
 		if (timeout !== '' && timeout !== null && timeout !== undefined) {
 			extra.push(
 				{ text: ' , ' },

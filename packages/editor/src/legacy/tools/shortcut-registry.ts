@@ -12,7 +12,13 @@ export const ShortcutRegistry = {
 };
 
 export const Shortcuts = {
-	createClipboard(target: any) {
+	createClipboard(target: {
+		copy?: () => void;
+		paste?: () => void;
+		cut?: () => void;
+		duplicate?: () => void;
+		selectAll?: () => void;
+	}) {
 		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
@@ -47,7 +53,7 @@ export const Shortcuts = {
 		};
 	},
 
-	createUndoRedo(target: any) {
+	createUndoRedo(target: { undo?: () => void; redo?: () => void }) {
 		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
@@ -67,7 +73,18 @@ export const Shortcuts = {
 		};
 	},
 
-	createListOps(target: any) {
+	createListOps(target: {
+		copy?: () => void;
+		paste?: () => void;
+		cut?: () => void;
+		duplicate?: () => void;
+		selectAll?: () => void;
+		undo?: () => void;
+		redo?: () => void;
+		insert?: () => void;
+		cancelSearch?: () => void;
+		delete?: () => void;
+	}) {
 		return function (event: any) {
 			if (event.ctrlKey || event.metaKey) {
 				switch (event.code) {
@@ -128,7 +145,7 @@ export const Shortcuts = {
 		};
 	},
 
-	createScroll(target: any) {
+	createScroll(target: HTMLElement) {
 		let scrollKeys = 0;
 		let scrollTimer: any = null;
 

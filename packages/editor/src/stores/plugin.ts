@@ -3,7 +3,7 @@ import { PluginManager } from '@/plugin/plugin.ts';
 import { shallowRef } from 'vue';
 
 export const usePluginStore = defineStore('plugin', () => {
-	const plugins = shallowRef<any[] | Record<string, any>>([]);
+	const plugins = shallowRef<Record<string, any>>([]);
 
 	function syncState() {
 		plugins.value = PluginManager?.plugins ?? [];

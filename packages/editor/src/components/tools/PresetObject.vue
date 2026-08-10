@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { PresetObject } from '@/tools/scene-preset-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -28,10 +29,10 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onSceneIdWrite = (value: any) => {
-	(window as any).PresetObject?.sceneIdWrite?.({ value });
+	PresetObject?.sceneIdWrite?.({ value });
 };
 const onListOpen = (event: any) => {
-	(window as any).PresetObject?.listOpen?.(event);
+	PresetObject?.listOpen?.(event);
 };
 
 onMounted(() => {

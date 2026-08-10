@@ -21,14 +21,22 @@ interface TextSuggestionList {
 	createComment: ListMethod;
 	selectDefaultCommand: ListMethod;
 	updateNodeElement: ListMethod;
-	elements: any[] & { count: number };
+	elements: Array<{ item: TextSuggestionItem }> & { count: number };
 	selection: TextSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
 	style: CSSStyleDeclaration;
 	bind(getter: () => any): void;
-	addEventListener(type: string, listener: (event: any) => void, options?: any): void;
-	on(type: string, listener: (event: any) => void): void;
-	removeEventListener(type: string, listener: (event: any) => void, options?: any): void;
+	addEventListener(
+		type: string,
+		listener: (event: Event) => void,
+		options?: Record<string, unknown>
+	): void;
+	on(type: string, listener: (event: Event) => void): void;
+	removeEventListener(
+		type: string,
+		listener: (event: Event) => void,
+		options?: Record<string, unknown>
+	): void;
 	update(): HTMLElement | void;
 	clear(): void;
 	hide(): HTMLElement | void;
@@ -52,8 +60,16 @@ export interface TextSuggestionTarget {
 	rect?(): { left: number; top: number; bottom: number; width: number };
 	read?(): string;
 	contains(node: Node | null): boolean;
-	addEventListener(type: string, listener: (event: any) => void, options?: any): void;
-	removeEventListener(type: string, listener: (event: any) => void, options?: any): void;
+	addEventListener(
+		type: string,
+		listener: (event: Event) => void,
+		options?: Record<string, unknown>
+	): void;
+	removeEventListener(
+		type: string,
+		listener: (event: Event) => void,
+		options?: Record<string, unknown>
+	): void;
 }
 
 type TextBoxMethod = ((this: TextSuggestionTarget, event: any) => void) | null;
@@ -73,7 +89,7 @@ interface TextSuggestionShape {
 	textBoxBlur: TextBoxMethod;
 	textBoxKeydown: TextBoxMethod;
 	textBoxInput: TextBoxMethod;
-	listPointerdown: ((this: TextSuggestionList, event: PointerEvent) => void) | null;
+	listPointerdown: ((this: TextSuggestionList, event: Event) => void) | null;
 	listUpdate: ((this: TextSuggestionList, event: Event) => void) | null;
 	listOpen:
 		| ((this: TextSuggestionList, event: Event & { value: TextSuggestionItem }) => void)
@@ -267,7 +283,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 	}
 };
 
-TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: PointerEvent): void {
+TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Event): void {
 	const element = event.target as HTMLElement & {
 		item: TextSuggestionItem;
 		tagName: string;
@@ -330,11 +346,11 @@ TextSuggestion.list.updateNodeElement = function (
 	element: HTMLElement & { item: TextSuggestionItem; initialized?: boolean }
 ): void {
 	if (!element.initialized) {
-		(element as any).initialized = true;
-		(this as any).createIcon(element);
-		(this as any).createText(element);
-		(this as any).createRefCount(element);
-		(this as any).createComment(element);
+		element.initialized = true;
+		this.createIcon!(element);
+		this.createText!(element);
+		this.createRefCount!(element);
+		this.createComment!(element);
 		addClass(element, 'text-suggestion-item');
 	}
 };

@@ -169,7 +169,7 @@ export class AttributeListInterface implements IListInterface {
 		return { key, value };
 	}
 
-	static target = null;
+	static target: HTMLElement | null = null;
 
 	static initialize() {
 		this.typeBox.loadItems([
@@ -198,12 +198,12 @@ export class AttributeListInterface implements IListInterface {
 
 		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
 		$('#object-attribute-confirm')?.on('click', (event: any) => {
-			(this.target as any)!.save();
+			this.target!.save();
 		});
 	}
 
 	static keyWrite(event: any) {
-		const group = (this as any).target?.getAttribute?.('group');
+		const group = this.target?.getAttribute?.('group') as unknown as string;
 		const attr = Attribute.getGroupAttribute(group, event.value);
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);

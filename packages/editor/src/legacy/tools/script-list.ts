@@ -7,23 +7,57 @@ import { FileItem } from '@/file/file-item.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 
+import { IEditableHistory } from '@/types/history.ts';
 import { IScriptListInterface } from '@/types/list-interface.ts';
 
+interface ScriptData {
+	id: string;
+	enabled?: boolean;
+	parameters?: Record<string, unknown>;
+}
+
+interface ScriptListItem {
+	id: string;
+	enabled?: boolean;
+	element?: HTMLElement & {
+		parentNode?: HTMLElement & { updateScriptIcon?: (item: ScriptListItem) => void };
+	};
+	scripts?: unknown[];
+}
+
+interface ScriptListTarget {
+	save: () => void;
+}
+
+interface ScriptListElement {
+	elements: HTMLElement[];
+	read: () => ScriptListItem[];
+	togglable?: boolean;
+	addEventListener(type: string, listener: (event: Event) => void): void;
+	contains(target: Node): boolean;
+	object: { script: ScriptData | null };
+	inserting?: boolean;
+	focus: () => void;
+	select: (n: number) => void;
+	save: () => void;
+	classList: DOMTokenList;
+}
+
 export class ScriptListInterface implements IScriptListInterface {
-	target!: (HTMLElement & { [k: string]: any }) | null;
+	target!: (HTMLElement & { [k: string]: unknown }) | null;
 	type!: string;
 	filter!: string;
-	script: any | null;
-	editor: any | null;
-	owner: any | null;
-	history: any | null;
+	script: ScriptData | null = null;
+	editor: { target?: ScriptListItem } | null = null;
+	owner: { history?: unknown } | null = null;
+	history: IEditableHistory | null = null;
 
-	constructor(editor?: any, owner?: any) {
+	constructor(editor?: { target?: ScriptListItem }, owner?: unknown) {
 		this.editor = editor ?? null;
 		this.owner = owner ?? null;
 	}
 
-	initialize(list: any): void {
+	initialize(list: ScriptListElement & HTMLElement): void {
 		list.togglable = true;
 		this.target = null;
 		this.script = null;
@@ -42,7 +76,7 @@ export class ScriptListInterface implements IScriptListInterface {
 		list.addEventListener('drop', ScriptListInterface.listDrop);
 	}
 
-	parse(script: any): any {
+	parse(script: ScriptData): unknown[] {
 		const box = document.createElement('div');
 		addClass(box, 'box');
 		box.textContent = '\uf044';
@@ -53,12 +87,12 @@ export class ScriptListInterface implements IScriptListInterface {
 		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
 	}
 
-	update(list: any) {
+	update(list: ScriptListElement) {
 		const elements = list.elements;
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
-			const flags = {} as Record<string, any>;
+			const flags = {} as Record<string, boolean>;
 			for (let i = length - 1; i >= 0; i--) {
 				const { id } = items[i];
 				if (flags[id]) {
@@ -74,12 +108,12 @@ export class ScriptListInterface implements IScriptListInterface {
 			const element = item.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				(list as any).updateScriptIcon(item);
+				list.updateScriptIcon!(item);
 			}
 		}
 	}
 
-	open(script = PluginManager.createData()) {
+	open(script: ScriptData = PluginManager.createData()) {
 		this.script = script;
 		getSelectorInstance()?.open?.(this, false);
 	}
@@ -89,69 +123,70 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	read() {
-		return this.script.id;
+		return this.script!.id;
 	}
 
-	input(scriptId: any) {
-		this.script.id = scriptId;
-		this.target!.save();
+	input(scriptId: string) {
+		this.script!.id = scriptId;
+		(this.target as unknown as ScriptListTarget).save();
 	}
 
 	static listPointerdown = (function IIFE() {
-		let element: any = null;
+		let element: HTMLElement | null = null;
 		const once = { once: true };
-		const pointerup = (event: any) => {
-			if (element.contains(event.target)) {
-				const el = element.parentNode;
+		const pointerup = (event: PointerEvent) => {
+			if (element && element.contains(event.target as Node)) {
+				const el = element.parentNode as HTMLElement & {
+					dataItem?: { id: string };
+					item?: { id: string };
+				};
 				const item = el.dataItem ?? el.item;
 				const path = File.getPath!(item.id);
 				if (path) getBrowserInstance()?.openScript?.(path);
 			}
 			element = null;
 		};
-		return function (event: any) {
+		return function (event: PointerEvent) {
 			if (event.button === 0 && hasClass(event.target, 'box')) {
-				element = event.target;
+				element = event.target as HTMLElement;
 				// 自动过滤重复侦听器，无需额外检查
 				window.addEventListener('pointerup', pointerup, once);
 			}
 		};
 	})();
 
-	static listDragenter(event: any) {
-		return ScriptListInterface.listDragover.call(this, event);
+	static listDragenter(this: ScriptListElement, event: Event) {
+		return ScriptListInterface.listDragover.call(this, event as DragEvent);
 	}
 
-	static listDragleave(event: any) {
-		const self: any = this;
-		if (!self.contains(event.relatedTarget)) {
-			removeClass(self, 'dragover');
+	static listDragleave(this: ScriptListElement, event: Event) {
+		if (!this.contains((event as DragEvent).relatedTarget as Node)) {
+			removeClass(this as unknown as HTMLElement, 'dragover');
 		}
 	}
 
-	static listDragover(event: any) {
+	static listDragover(this: ScriptListElement, event: Event) {
 		if (getBrowserInstance()?.dragging) {
 			const file = getBrowserInstance()?.body?.activeFile;
 			if (file instanceof FileItem && file.type === 'script') {
-				event.dataTransfer.dropEffect = 'move';
+				(event as DragEvent).dataTransfer!.dropEffect = 'move';
 				event.preventDefault();
-				addClass(this as any, 'dragover');
+				addClass(this as unknown as HTMLElement, 'dragover');
 			}
 		}
 	}
 
-	static listDrop(event: any) {
+	static listDrop(this: ScriptListElement, event: Event) {
 		const file = getBrowserInstance()?.body?.activeFile;
 		if (file instanceof FileItem) {
 			const script = PluginManager.createData();
-			script.id = file.meta.guid;
-			const self: any = this;
-			self.object.script = script;
-			self.inserting = true;
-			self.focus();
-			self.select(Infinity);
-			self.save();
-			removeClass(self, 'dragover');
+			script.id = file.meta!.guid;
+			this.object.script = script;
+			this.inserting = true;
+			this.focus();
+			this.select(Infinity);
+			this.save();
+			removeClass(this as unknown as HTMLElement, 'dragover');
 		}
 	}
 }

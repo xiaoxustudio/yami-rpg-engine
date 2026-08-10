@@ -17,7 +17,7 @@ Command.cases.removeTarget = new CommandSchema({
 			.push(Command.parseActor(target));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.removeTarget') + Token(': ') },
+			{ text: Local.get!('command.removeTarget') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

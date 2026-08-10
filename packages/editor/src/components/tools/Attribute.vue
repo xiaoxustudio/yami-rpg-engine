@@ -83,6 +83,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Attribute } from '@/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -97,35 +98,35 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onListSelect = (event: any) => {
-	(window as any).Attribute?.listSelect?.(event);
+	Attribute?.listSelect?.(event);
 };
 const onListRecord = (event: any) => {
-	(window as any).Attribute?.listRecord?.(event);
+	Attribute?.listRecord?.(event);
 };
 const onListOpen = (event: any) => {
-	(window as any).Attribute?.listOpen?.(event);
+	Attribute?.listOpen?.(event);
 };
 const onListPopup = (event: any) => {
-	(window as any).Attribute?.listPopup?.(event);
+	Attribute?.listPopup?.(event);
 };
 const onNameInput = (value: string) => {
-	(window as any).Attribute?.nameInput?.({ target: { value } });
+	Attribute?.nameInput?.({ target: { value } });
 };
 const onKeyInput = (value: string) => {
-	(window as any).Attribute?.keyInput?.({ target: { value } });
+	Attribute?.keyInput?.({ target: { value } });
 };
 let lastTypeValue: any;
 let lastTypeWriteValue: any;
 const onTypeInput = (value: any) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
-		(window as any).Attribute?.typeInput?.({ value });
+		Attribute?.typeInput?.({ value });
 	}
 };
 const onTypeWrite = (value: any) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
-		(window as any).Attribute?.typeWrite?.({ value });
+		Attribute?.typeWrite?.({ value });
 	}
 };
 

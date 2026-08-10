@@ -30,7 +30,7 @@ Command.cases.if = new CommandSchema({
 				...(index === 0 ? [] : [{ text: textElse + ' ' }]),
 				{ text: textIf + ' ' },
 				{ color: 'normal' },
-				{ text: IfBranch.parse(branch) },
+				{ text: IfBranch.parse!(branch) },
 				{ children: branch.commands }
 			);
 		}

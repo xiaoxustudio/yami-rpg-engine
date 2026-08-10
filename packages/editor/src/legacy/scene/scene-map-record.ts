@@ -1,32 +1,47 @@
 import { Scene } from './scene-window.ts';
 import { History } from '@/tools/history.ts';
 (() => {
-	let tilemap: any = null;
-	let mapData: any = null;
-	let changes: any = null;
-	let states: any = null;
+	interface TilemapBuffer extends Uint32Array {
+		width: number;
+		height: number;
+		changed?: boolean;
+		tilesetMap?: Record<string, string>;
+		tiles?: Uint32Array;
+	}
+	interface MapData {
+		tiles?: Uint32Array;
+		terrains?: Uint8Array;
+		width?: number;
+		height?: number;
+		length: number;
+		[index: number]: number;
+	}
+	let tilemap: TilemapBuffer | null = null;
+	let mapData: MapData | null = null;
+	let changes: unknown = null;
+	let states: unknown = null;
 	let count = 0;
 	let length = 0;
 
-	Scene.beginMapRecord = function (this: any) {
+	Scene.beginMapRecord = function (this: typeof Scene) {
 		switch (this.layer) {
 			case 'tilemap':
 				tilemap = this.tilemap;
-				mapData = tilemap.tiles;
+				mapData = (tilemap ? tilemap.tiles : null) as MapData | null;
 				break;
 			case 'terrain':
 				tilemap = null;
-				mapData = this.terrains;
+				mapData = this.terrains as MapData | null;
 				break;
 		}
-		if (length < mapData.length) {
+		if (mapData && length < mapData.length) {
 			length = mapData.length;
 			changes = new Uint32Array(length * 2);
 			states = new Uint8Array(length);
 		}
 	};
 
-	Scene.closeMapRecord = function (this: any) {
+	Scene.closeMapRecord = function (this: typeof Scene) {
 		if (mapData !== null) {
 			tilemap = null;
 			mapData = null;
@@ -37,14 +52,14 @@ import { History } from '@/tools/history.ts';
 		}
 	};
 
-	Scene.saveMapRecord = function (this: any) {
+	Scene.saveMapRecord = function (this: typeof Scene) {
 		if (count === 0) return;
 		if (tilemap) {
 			tilemap.changed = true;
 			this.history.save({
 				type: 'scene-tilemap-change',
 				tilemap: tilemap,
-				changes: changes.slice(0, count),
+				changes: (changes as Uint32Array).slice(0, count),
 				tilesetMap: tilemap.tilesetMap
 			});
 		} else {
@@ -52,59 +67,64 @@ import { History } from '@/tools/history.ts';
 			this.history.save({
 				type: 'scene-terrain-change',
 				terrains: mapData,
-				changes: changes.slice(0, count)
+				changes: (changes as Uint32Array).slice(0, count)
 			});
 		}
 		for (let i = 0; i < count; i += 2) {
-			states[changes[i]] = 0;
+			(states as Uint8Array)[(changes as Uint32Array)[i]] = 0;
 		}
 		count = 0;
 	};
 
-	Scene.recordMapData = function (this: any, index: any) {
-		if (states[index] === 0) {
-			states[index] = 1;
-			changes[count] = index;
-			changes[count + 1] = mapData[index];
+	Scene.recordMapData = function (this: typeof Scene, index: number) {
+		if ((states as Uint8Array)[index] === 0) {
+			(states as Uint8Array)[index] = 1;
+			(changes as Uint32Array)[count] = index;
+			(changes as Uint32Array)[count + 1] = (mapData as MapData)[index];
 			count += 2;
 		}
 	};
 
-	Scene.restoreMapData = function (this: any) {
+	Scene.restoreMapData = function (this: typeof Scene) {
+		const ch = changes as Uint32Array;
+		const st = states as Uint8Array;
+		const md = mapData as MapData;
 		for (let i = count - 2; i >= 0; i -= 2) {
-			const index = changes[i];
-			mapData[index] = changes[i + 1];
-			states[index] = 0;
+			const index = ch[i];
+			md[index] = ch[i + 1];
+			st[index] = 0;
 		}
 		count = 0;
 	};
 
-	Scene.undoMapData = function (this: any, mapData: any, changes: any) {
-		const length = changes.length;
+	Scene.undoMapData = function (this: typeof Scene, mapData: MapData, changes: unknown) {
+		const ch = changes as Uint32Array;
+		const length = ch.length;
 		for (let i = length - 1; i > 0; i -= 2) {
-			const ti = changes[i - 1];
-			const code = changes[i];
-			changes[i] = mapData[ti];
+			const ti = ch[i - 1];
+			const code = ch[i];
+			ch[i] = mapData[ti];
 			mapData[ti] = code;
 		}
 	};
 
-	Scene.redoMapData = function (this: any, mapData: any, changes: any) {
-		const length = changes.length;
+	Scene.redoMapData = function (this: typeof Scene, mapData: MapData, changes: unknown) {
+		const ch = changes as Uint32Array;
+		const length = ch.length;
 		for (let i = 1; i < length; i += 2) {
-			const ti = changes[i - 1];
-			const code = changes[i];
-			changes[i] = mapData[ti];
+			const ti = ch[i - 1];
+			const code = ch[i];
+			ch[i] = mapData[ti];
 			mapData[ti] = code;
 		}
 	};
 })();
 
 Scene.createHistory = (function IIFE() {
-	const onSave = (data: any) => {
+	const onSave = (data: { layer?: string }) => {
 		data.layer = Scene.tilemap ?? Scene.layer;
 	};
-	const onRestore = (data: any) => {
+	const onRestore = (data: { layer?: string }) => {
 		const { layer } = data;
 		switch (layer) {
 			case 'object':
@@ -116,7 +136,7 @@ Scene.createHistory = (function IIFE() {
 				break;
 		}
 	};
-	return function (this: any) {
+	return function (this: typeof Scene) {
 		const history = new History(100);
 		history.onSave = onSave;
 		history.onRestore = onRestore;

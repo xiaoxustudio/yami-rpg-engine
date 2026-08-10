@@ -1,4 +1,4 @@
-{
+﻿{
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"strictNullChecks": true,
@@ -40,7 +40,7 @@
 	},
 	"include": ["src/**/*.ts", "src/**/*.vue", "main/**/*.ts", "Project/global.d.ts"],
 	"exclude": [
-		"src/legacy/**",
+		                "src/legacy/version/**",
 		"Project/Templates/**",
 		"node_modules/**",
 		"dist/**",
@@ -50,3 +50,11 @@
 		"jsons/**"
 	]
 }
+
+
+
+
+
+
+
+

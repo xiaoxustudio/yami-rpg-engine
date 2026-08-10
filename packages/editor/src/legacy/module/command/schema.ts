@@ -97,8 +97,8 @@ export class CommandSchema {
 			this[key] = config[key];
 		}
 		if (this.noWindow) {
-			(this as any).load = null as unknown as (...args: unknown[]) => any;
-			(this as any).initialize = null as unknown as (...args: unknown[]) => any;
+			this.load = null as unknown as (...args: unknown[]) => any;
+			this.initialize = null as unknown as (...args: unknown[]) => any;
 		}
 	}
 
@@ -108,7 +108,7 @@ export class CommandSchema {
 	}
 
 	createDefault() {
-		const data: Record<string, any> = {};
+		const data: Record<string, unknown> = {};
 		for (const field of this.fields) {
 			const value = this._getDefault!(field);
 			if (value !== undefined) {
@@ -160,7 +160,7 @@ export class CommandSchema {
 		if (this.customSave) {
 			return this.customSave!();
 		}
-		const data: Record<string, any> = {};
+		const data: Record<string, unknown> = {};
 		let focusTarget = null;
 		for (const field of this.fields) {
 			const value = read($(`#${this.name}-${field.domId ?? field.key}`));
@@ -245,7 +245,7 @@ export class CommandSchema {
 		} catch (error) {
 			console.error('[initAll] Command.custom initialize failed:', error);
 		}
-		for (const [caseName, object] of Object.entries<any>(Command.cases)) {
+		for (const [caseName, object] of Object.entries(Command.cases)) {
 			try {
 				object.initialize?.();
 			} catch (error) {
@@ -341,7 +341,7 @@ export class CommandSchema {
 		target?.save?.({ id, params });
 		const handler = CommandSchema._resolve(id);
 		if (handler !== undefined) {
-			(handler as any).load && Window.close!(id);
+			!handler.noWindow && Window.close!(id);
 		} else {
 			Window.close!('scriptCommand');
 		}

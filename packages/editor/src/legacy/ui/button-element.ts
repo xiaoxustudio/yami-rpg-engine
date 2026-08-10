@@ -1,10 +1,80 @@
 import { Inspector } from '@/inspector/inspector.ts';
 import { UI } from './ui-window.ts';
 
+interface TextEffectShape {
+	type: string;
+	shadowOffsetX?: number;
+	shadowOffsetY?: number;
+	strokeWidth?: number;
+	color?: string | number;
+}
+
+interface ButtonData {
+	imageOpacity: number;
+	imagePadding: number;
+	textPadding: number;
+	normalImage: string;
+	normalClip: number[];
+	hoverImage: string;
+	hoverClip: number[];
+	activeImage: string;
+	activeClip: number[];
+	normalColor: string;
+	hoverColor: string;
+	activeColor: string;
+	imageEffect: string;
+	normalTint: number[];
+	hoverTint: number[];
+	activeTint: number[];
+	textEffect: TextEffectShape;
+	[k: string]: any;
+}
+
+interface ShadowImageShape {
+	transform: { width: number; height: number; opacity: number; [k: string]: any };
+	image: string;
+	display: string;
+	flip: string;
+	clip: number[];
+	border: number;
+	tint: number[];
+	visible: boolean;
+	parent: InstanceType<typeof UI.Element> | null;
+	connected: boolean;
+	resize(): void;
+	draw(): void;
+	destroy(): void;
+	[k: string]: any;
+}
+
+interface ShadowTextShape {
+	transform: { width: number; height: number; [k: string]: any };
+	content: string;
+	size: number;
+	font: string;
+	direction: string;
+	horizontalAlign: string;
+	verticalAlign: string;
+	lineSpacing: number;
+	letterSpacing: number;
+	color: string;
+	typeface: string;
+	effect: unknown;
+	visible: boolean;
+	parent: InstanceType<typeof UI.Element> | null;
+	connected: boolean;
+	updateTextContent(): void;
+	updatePrinter(): void;
+	resize(): void;
+	draw(): void;
+	destroy(): void;
+	[k: string]: any;
+}
+
 UI.Button = class ButtonElement extends UI.Element {
 	state: string;
-	shadowImage: any;
-	shadowText: any;
+	shadowImage: ShadowImageShape;
+	shadowText: ShadowTextShape;
 	_imagePadding!: number;
 	_textPadding!: number;
 	normalImage: string;
@@ -22,7 +92,7 @@ UI.Button = class ButtonElement extends UI.Element {
 	hoverTint: number[];
 	activeTint: number[];
 
-	constructor(data: any) {
+	constructor(data: ButtonData) {
 		super(data);
 		this.state = 'normal';
 		this.shadowImage = this.createShadowImage(data);
@@ -49,7 +119,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this._imagePadding;
 	}
 
-	set imagePadding(value: any) {
+	set imagePadding(value: number) {
 		if (this._imagePadding !== value) {
 			this._imagePadding = value;
 			this.shadowImage.transform.width = -value * 2;
@@ -64,7 +134,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this._textPadding;
 	}
 
-	set textPadding(value: any) {
+	set textPadding(value: number) {
 		if (this._textPadding !== value) {
 			this._textPadding = value;
 			this.shadowText.transform.width = -value * 2;
@@ -79,7 +149,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.image;
 	}
 
-	set image(value: any) {
+	set image(value: string) {
 		this.shadowImage.image = value;
 	}
 
@@ -87,7 +157,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.display;
 	}
 
-	set display(value: any) {
+	set display(value: string) {
 		this.shadowImage.display = value;
 	}
 
@@ -95,7 +165,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.flip;
 	}
 
-	set flip(value: any) {
+	set flip(value: string) {
 		this.shadowImage.flip = value;
 	}
 
@@ -103,7 +173,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.clip;
 	}
 
-	set clip(value: any) {
+	set clip(value: number[]) {
 		this.shadowImage.clip = value;
 	}
 
@@ -111,7 +181,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.border;
 	}
 
-	set border(value: any) {
+	set border(value: number) {
 		this.shadowImage.border = value;
 	}
 
@@ -119,7 +189,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowImage.transform.opacity;
 	}
 
-	set imageOpacity(value: any) {
+	set imageOpacity(value: number) {
 		this.shadowImage.transform.opacity = value;
 		if (this.connected) {
 			this.shadowImage.resize();
@@ -130,7 +200,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.content;
 	}
 
-	set content(value: any) {
+	set content(value: string) {
 		this.shadowText.content = value;
 	}
 
@@ -138,7 +208,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.size;
 	}
 
-	set size(value: any) {
+	set size(value: number) {
 		this.shadowText.size = value;
 	}
 
@@ -146,7 +216,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.font;
 	}
 
-	set font(value: any) {
+	set font(value: string) {
 		this.shadowText.font = value;
 	}
 
@@ -154,7 +224,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.direction;
 	}
 
-	set direction(value: any) {
+	set direction(value: string) {
 		this.shadowText.direction = value;
 	}
 
@@ -162,7 +232,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.horizontalAlign;
 	}
 
-	set horizontalAlign(value: any) {
+	set horizontalAlign(value: string) {
 		this.shadowText.horizontalAlign = value;
 	}
 
@@ -170,7 +240,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.verticalAlign;
 	}
 
-	set verticalAlign(value: any) {
+	set verticalAlign(value: string) {
 		this.shadowText.verticalAlign = value;
 	}
 
@@ -178,7 +248,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.lineSpacing;
 	}
 
-	set lineSpacing(value: any) {
+	set lineSpacing(value: number) {
 		this.shadowText.lineSpacing = value;
 	}
 
@@ -186,7 +256,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.letterSpacing;
 	}
 
-	set letterSpacing(value: any) {
+	set letterSpacing(value: number) {
 		this.shadowText.letterSpacing = value;
 	}
 
@@ -194,7 +264,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.color;
 	}
 
-	set color(value: any) {
+	set color(value: string) {
 		this.shadowText.color = value;
 	}
 
@@ -202,7 +272,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.typeface;
 	}
 
-	set typeface(value: any) {
+	set typeface(value: string) {
 		this.shadowText.typeface = value;
 	}
 
@@ -210,11 +280,11 @@ UI.Button = class ButtonElement extends UI.Element {
 		return this.shadowText.effect;
 	}
 
-	set textEffect(value: any) {
+	set textEffect(value: unknown) {
 		this.shadowText.effect = value;
 	}
 
-	createShadowImage(data: any) {
+	createShadowImage(data: ButtonData): ShadowImageShape {
 		const image = data.normalImage;
 		const clip = data.normalClip;
 		const tint = [0, 0, 0, 0];
@@ -225,7 +295,7 @@ UI.Button = class ButtonElement extends UI.Element {
 		return element;
 	}
 
-	createShadowText(data: any) {
+	createShadowText(data: ButtonData): ShadowTextShape {
 		const color = data.normalColor;
 		const effect = data.textEffect;
 		const transform = this.createShadowTransform();

@@ -2,7 +2,10 @@ import { Data } from '@/data/data-object.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Palette } from '@/palette/palette.ts';
 import { Scene } from './scene-window.ts';
-Scene.edit = function (this: any, x: any, y: any, width: any, height: any) {
+
+type TileBuffer = Uint32Array & { width: number; height: number; rowOffset: number };
+type TerrainBuffer = Uint8Array & { width: number; height: number; rowOffset: number };
+Scene.edit = function (this: typeof Scene, x: number, y: number, width: number, height: number) {
 	switch (this.brush) {
 		case 'eraser':
 		case 'pencil':
@@ -24,7 +27,13 @@ Scene.edit = function (this: any, x: any, y: any, width: any, height: any) {
 	this.planToSave();
 };
 
-Scene.editInPencilMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.editInPencilMode = function (
+	this: typeof Scene,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -61,7 +70,13 @@ Scene.editInPencilMode = function (this: any, x: any, y: any, width: any, height
 	}
 };
 
-Scene.editInRectMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.editInRectMode = function (
+	this: typeof Scene,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -106,7 +121,13 @@ Scene.editInRectMode = function (this: any, x: any, y: any, width: any, height: 
 	}
 };
 
-Scene.editInOvalMode = function (this: any, x: any, y: any, width: any, height: any) {
+Scene.editInOvalMode = function (
+	this: typeof Scene,
+	x: number,
+	y: number,
+	width: number,
+	height: number
+) {
 	const context = this.tilemap ?? this;
 	const mapWidth = context.width;
 	const mapHeight = context.height;
@@ -123,8 +144,8 @@ Scene.editInOvalMode = function (this: any, x: any, y: any, width: any, height: 
 	const ox = x + (width - 1) / 2;
 	const oy = y + (height - 1) / 2;
 	let ovalWidth!: number | undefined;
-	let ovalFlags: any;
-	let edgeFlags: any;
+	let ovalFlags: Uint8Array = new Uint8Array(0);
+	let edgeFlags: Uint8Array = new Uint8Array(0);
 	if (layer !== 'terrain' && !shiftKey) {
 		const bx = Math.max(x, 0) - 1;
 		const by = Math.max(y, 0) - 1;
@@ -198,8 +219,11 @@ Scene.editInOvalMode = function (this: any, x: any, y: any, width: any, height: 
 	}
 };
 
-Scene.editInFillMode = function (this: any, x: any, y: any) {
-	let mapData: any, mapWidth: any, mapHeight: any, bitShift: any;
+Scene.editInFillMode = function (this: typeof Scene, x: number, y: number) {
+	let mapData: Uint32Array = new Uint32Array(0),
+		mapWidth: number = 0,
+		mapHeight: number = 0,
+		bitShift: number = 0;
 	let shiftKey, sTiles;
 	const layer = this.layer;
 	switch (layer) {
@@ -243,7 +267,7 @@ Scene.editInFillMode = function (this: any, x: any, y: any) {
 	const di = x + y * mapWidth;
 	const key = mapData[di] >> bitShift;
 
-	const getFlag = (x: any, y: any) => {
+	const getFlag = (x: number, y: number) => {
 		if (x < 0 || x >= mapWidth || y < 0 || y >= mapHeight) {
 			minX = min(x, minX);
 			minY = min(y, minY);
@@ -378,7 +402,14 @@ Scene.editInFillMode = function (this: any, x: any, y: any) {
 	}
 };
 
-Scene.setTile = function (this: any, sTiles: any, sx: any, sy: any, dx: any, dy: any) {
+Scene.setTile = function (
+	this: typeof Scene,
+	sTiles: TileBuffer,
+	sx: number,
+	sy: number,
+	dx: number,
+	dy: number
+) {
 	const sw = sTiles.width;
 	const sh = sTiles.height;
 	const sro = sTiles.rowOffset;
@@ -416,7 +447,7 @@ Scene.setTile = function (this: any, sTiles: any, sx: any, sy: any, dx: any, dy:
 	}
 };
 
-Scene.setTileFrame = function (this: any, x: any, y: any) {
+Scene.setTileFrame = function (this: typeof Scene, x: number, y: number) {
 	const tilemap = this.tilemap;
 	const width = tilemap.width;
 	const height = tilemap.height;
@@ -488,7 +519,7 @@ Scene.setTileFrame = function (this: any, x: any, y: any) {
 	}
 };
 
-Scene.setTerrain = function (this: any, x: any, y: any) {
+Scene.setTerrain = function (this: typeof Scene, x: number, y: number) {
 	const terrain = this.marquee.terrain;
 	const terrains = this.terrains;
 	const ro = terrains.rowOffset;
@@ -497,29 +528,29 @@ Scene.setTerrain = function (this: any, x: any, y: any) {
 	terrains[pi] = terrain;
 };
 
-Scene.createTiles = function (this: any, width: any, height: any) {
-	const tiles: any = new Uint32Array(width * height);
+Scene.createTiles = function (this: typeof Scene, width: number, height: number) {
+	const tiles: TileBuffer = new Uint32Array(width * height) as TileBuffer;
 	tiles.width = width;
 	tiles.height = height;
 	tiles.rowOffset = width;
 	return tiles;
 };
 
-Scene.cloneTiles = function (this: any, sTiles: any) {
-	const dTiles: any = new Uint32Array(sTiles);
+Scene.cloneTiles = function (this: typeof Scene, sTiles: TileBuffer) {
+	const dTiles: TileBuffer = new Uint32Array(sTiles) as TileBuffer;
 	dTiles.width = sTiles.width;
 	dTiles.height = sTiles.height;
 	dTiles.rowOffset = sTiles.rowOffset;
 	return dTiles;
 };
 
-Scene.createTerrains = function (this: any, width: any, height: any) {
-	const terrains: any = new Uint8Array(width * height);
+Scene.createTerrains = function (this: typeof Scene, width: number, height: number) {
+	const terrains: TerrainBuffer = new Uint8Array(width * height) as TerrainBuffer;
 	terrains.rowOffset = width;
 	return terrains;
 };
 
-Scene.getNewTilesetIndex = function (this: any, tilesetMap: any) {
+Scene.getNewTilesetIndex = function (this: typeof Scene, tilesetMap: Record<string, string>) {
 	for (let i = 1; i < 256; i++) {
 		if (tilesetMap[i] === undefined) {
 			return i;

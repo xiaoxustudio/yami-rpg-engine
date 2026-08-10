@@ -74,7 +74,8 @@ export const ButtonProperty = createPropertyWindow({
 		{ name: 'Size', value: 'size', default: 16 },
 		{ name: 'Letter Spacing', value: 'letterSpacing', default: 0 }
 	],
-	openData(defaults: any, key: any, value: any) {
+	openData(defaults: Record<string, unknown>, key: string, value: unknown) {
+		const array = value as unknown[];
 		switch (key) {
 			case 'normalImage':
 			case 'hoverImage':
@@ -84,25 +85,25 @@ export const ButtonProperty = createPropertyWindow({
 			case 'normalClip':
 			case 'hoverClip':
 			case 'activeClip':
-				defaults['clip-0'] = value[0];
-				defaults['clip-1'] = value[1];
-				defaults['clip-2'] = value[2];
-				defaults['clip-3'] = value[3];
+				defaults['clip-0'] = array[0];
+				defaults['clip-1'] = array[1];
+				defaults['clip-2'] = array[2];
+				defaults['clip-3'] = array[3];
 				break;
 			case 'normalTint':
 			case 'hoverTint':
 			case 'activeTint':
-				defaults['tint-0'] = value[0];
-				defaults['tint-1'] = value[1];
-				defaults['tint-2'] = value[2];
-				defaults['tint-3'] = value[3];
+				defaults['tint-0'] = array[0];
+				defaults['tint-1'] = array[1];
+				defaults['tint-2'] = array[2];
+				defaults['tint-3'] = array[3];
 				break;
 			default:
 				defaults[key] = value;
 				break;
 		}
 	},
-	saveData(key: any, read: any) {
+	saveData(key: string, read: (k: string) => any) {
 		switch (key) {
 			case 'normalImage':
 			case 'hoverImage':
@@ -121,66 +122,72 @@ export const ButtonProperty = createPropertyWindow({
 		}
 	},
 	parsers: {
-		normalImage: (value: string): string => Command.parseFileName!(value),
-		hoverImage: (value: string): string => Command.parseFileName!(value),
-		activeImage: (value: string): string => Command.parseFileName!(value),
-		normalClip: (value: number[]): string => {
+		normalImage: (value: unknown): string => Command.parseFileName!(value as string),
+		hoverImage: (value: unknown): string => Command.parseFileName!(value as string),
+		activeImage: (value: unknown): string => Command.parseFileName!(value as string),
+		normalClip: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		hoverClip: (value: number[]): string => {
+		hoverClip: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		activeClip: (value: number[]): string => {
+		activeClip: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		normalTint: (value: number[]): string => {
+		normalTint: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		hoverTint: (value: number[]): string => {
+		hoverTint: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		activeTint: (value: number[]): string => {
+		activeTint: (value: unknown): string => {
+			const arr = value as number[];
 			const params = [
-				Command.setNumberColor!(value[0]),
-				Command.setNumberColor!(value[1]),
-				Command.setNumberColor!(value[2]),
-				Command.setNumberColor!(value[3])
+				Command.setNumberColor!(arr[0]),
+				Command.setNumberColor!(arr[1]),
+				Command.setNumberColor!(arr[2]),
+				Command.setNumberColor!(arr[3])
 			];
 			return params.join(Token(', '));
 		},
-		content: (value: any): string => Command.parseVariableTemplate!(value),
-		imageOpacity: (value: number): string => Command.setNumberColor!(value),
-		size: (value: number): string => Command.setNumberColor!(value),
-		letterSpacing: (value: number): string => Command.setNumberColor!(value)
+		content: (value: unknown): string => Command.parseVariableTemplate!(value),
+		imageOpacity: (value: unknown): string => Command.setNumberColor!(value as number),
+		size: (value: unknown): string => Command.setNumberColor!(value as number),
+		letterSpacing: (value: unknown): string => Command.setNumberColor!(value as number)
 	}
 });

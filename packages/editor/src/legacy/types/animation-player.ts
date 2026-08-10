@@ -2,12 +2,19 @@
 
 export interface AnimationMotion {
 	key: string;
-	[key: string]: any;
+	mode: string;
+	dirCases: Array<{
+		loaded?: unknown;
+		layers: Array<{ frames: Array<{ key?: unknown }> }>;
+	}>;
+	[key: string]: unknown;
 }
 
 export interface AnimationSprite {
 	id: string;
-	[key: string]: any;
+	hframes: number;
+	vframes: number;
+	[key: string]: unknown;
 }
 
 export type AnimationImageMap = Record<string, string>;

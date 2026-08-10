@@ -11,7 +11,7 @@ Command.cases.waitForVideo = new CommandSchema({
 	customParse({ element }: any) {
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.waitForVideo') + Token(': ') },
+			{ text: Local.get!('command.waitForVideo') + Token(': ') },
 			{ text: Command.parseElement(element) }
 		];
 	},

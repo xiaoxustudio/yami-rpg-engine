@@ -20,7 +20,7 @@ Command.cases.createObject = new CommandSchema({
 			.push(Command.parsePosition(position));
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.createObject') + Token(': ') },
+			{ text: Local.get!('command.createObject') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

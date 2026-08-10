@@ -29,10 +29,10 @@ function buildTokenMap(): Record<string, string> {
 		' -> ': Command.setDelimiterColor(' -> '),
 		'...': Command.setDelimiterColor('...'),
 		get none() {
-			return Command.setBooleanColor(Local.get('common.none'));
+			return Command.setBooleanColor(Local.get!('common.none'));
 		},
 		get null() {
-			return Command.setBooleanColor(Local.get('common.null'));
+			return Command.setBooleanColor(Local.get!('common.null'));
 		}
 	};
 }

@@ -16,13 +16,26 @@ import { Scene } from './scene-window.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
-Scene.webglRestored = function (this: any, event: any) {
+import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import type { MenuItem } from '@ui-kit';
+
+type SceneItem = {
+	class: string;
+	element: HTMLElement & { [k: string]: any };
+	[k: string]: any;
+};
+
+type DragEventItem = PointerEvent & { [k: string]: any };
+
+type ScrollableScreen = HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+
+Scene.webglRestored = function (this: typeof Scene, event: Event) {
 	if (Scene.state === 'open') {
 		Scene.requestRendering!();
 	}
 };
 
-Scene.windowResize = function (this: any, event: any) {
+Scene.windowResize = function (this: typeof Scene, event: Event) {
 	this.updateHead();
 	if (this.state === 'open') {
 		this.resize();
@@ -30,17 +43,20 @@ Scene.windowResize = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.themechange = function (this: any, event: any) {
+Scene.themechange = function (this: typeof Scene, event: Event) {
 	this.requestRendering();
 }.bind(Scene);
 
-Scene.dprchange = function (this: any, event: any) {
+Scene.dprchange = function (this: typeof Scene, event: Event) {
 	if (this.state === 'open') {
 		this.updateFont();
 	}
 }.bind(Scene);
 
-Scene.datachange = function (this: any, event: any) {
+Scene.datachange = function (
+	this: typeof Scene,
+	event: { key: string; last: { lightArea?: number } }
+) {
 	if (this.state === 'open') {
 		switch (event.key) {
 			case 'config':
@@ -54,7 +70,7 @@ Scene.datachange = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.keydown = function (this: any, event: any) {
+Scene.keydown = function (this: typeof Scene, event: KeyboardEvent) {
 	if (Scene.state === 'open' && Scene.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
@@ -112,7 +128,7 @@ Scene.keydown = function (this: any, event: any) {
 	}
 };
 
-Scene.headPointerdown = function (this: any, event: any) {
+Scene.headPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== Scene.screen) {
@@ -121,10 +137,10 @@ Scene.headPointerdown = function (this: any, event: any) {
 	}
 };
 
-Scene.switchPointerdown = function (this: any, event: any) {
+Scene.switchPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as Element;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'grid':
@@ -142,11 +158,11 @@ Scene.switchPointerdown = function (this: any, event: any) {
 	}
 };
 
-Scene.layerPointerdown = function (this: any, event: any) {
+Scene.layerPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (!Scene.dragging) {
-				const element = event.target;
+				const element = event.target as Element;
 				if (hasClass(element, 'item') && !hasClass(element, 'selected')) {
 					const value = element.getAttribute('value');
 					switch (value) {
@@ -155,7 +171,7 @@ Scene.layerPointerdown = function (this: any, event: any) {
 							Scene.switchLayer!(value);
 							break;
 						default:
-							Scene.openTilemap!(Scene.tilemaps.shortcuts[value]);
+							Scene.openTilemap!(Scene.tilemaps.shortcuts[value!]);
 							break;
 					}
 				}
@@ -164,11 +180,11 @@ Scene.layerPointerdown = function (this: any, event: any) {
 	}
 };
 
-Scene.brushPointerdown = function (this: any, event: any) {
+Scene.brushPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (!Scene.dragging) {
-				const element = event.target;
+				const element = event.target as Element;
 				if (hasClass(element, 'item') && !hasClass(element, 'selected')) {
 					Scene.switchBrush!(element.getAttribute('value'));
 				}
@@ -177,15 +193,15 @@ Scene.brushPointerdown = function (this: any, event: any) {
 	}
 };
 
-Scene.zoomFocus = function (this: any, event: any) {
+Scene.zoomFocus = function (this: HTMLElement, event: Event) {
 	Scene.screen.focus();
 };
 
-Scene.zoomInput = function (this: any, event: any) {
+Scene.zoomInput = function (this: HTMLElement, event: Event) {
 	Scene.setZoom!(read(this));
 };
 
-Scene.screenKeydown = function (this: any, event: any) {
+Scene.screenKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 	if (this.state === 'open' && (this.dragging === null || event.code === 'ShiftLeft')) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -375,7 +391,7 @@ Scene.screenKeydown = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.shiftKeyup = function (this: any, event: any) {
+Scene.shiftKeyup = function (this: typeof Scene, event: KeyboardEvent | undefined) {
 	if (!this.shiftKey) {
 		return;
 	}
@@ -404,7 +420,7 @@ Scene.shiftKeyup = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.translationKeyup = function (this: any, event: any) {
+Scene.translationKeyup = function (this: typeof Scene, event: KeyboardEvent | undefined) {
 	if (this.translationKey === 0b0000) {
 		return;
 	}
@@ -433,7 +449,7 @@ Scene.translationKeyup = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.screenWheel = function (this: any, event: any) {
+Scene.screenWheel = function (this: typeof Scene, event: WheelEvent) {
 	if (this.state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
@@ -443,25 +459,26 @@ Scene.screenWheel = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.screenUserscroll = function (this: any, event: any) {
+Scene.screenUserscroll = function (this: typeof Scene, event: Event) {
 	if (this.state === 'open') {
-		this.screen.rawScrollLeft = this.screen.scrollLeft;
-		this.screen.rawScrollTop = this.screen.scrollTop;
+		const screen = this.screen as ScrollableScreen;
+		screen.rawScrollLeft = screen.scrollLeft;
+		screen.rawScrollTop = screen.scrollTop;
 		this.updateTransform();
 		this.requestRendering();
 		this.marquee.resize();
-		this.screen.updateScrollbars();
+		screen.updateScrollbars();
 	}
 }.bind(Scene);
 
-Scene.screenBlur = function (this: any, event: any) {
+Scene.screenBlur = function (this: typeof Scene, event: FocusEvent) {
 	this.shiftKeyup();
 	this.translationKeyup();
 	this.pointerup();
 	// this.marqueePointerleave()
 }.bind(Scene);
 
-Scene.screenDragenter = function (this: any, event: any) {
+Scene.screenDragenter = function (this: HTMLElement, event: DragEvent) {
 	const file = getBrowserInstance()?.body?.activeFile as { type?: string } | undefined;
 	switch (file?.type) {
 		case 'actor':
@@ -472,15 +489,15 @@ Scene.screenDragenter = function (this: any, event: any) {
 	}
 };
 
-Scene.screenDragleave = function (this: any, event: any) {
-	if (!this.contains(event.relatedTarget)) {
+Scene.screenDragleave = function (this: HTMLElement, event: DragEvent) {
+	if (!this.contains(event.relatedTarget as Node | null)) {
 		Scene.deletePreviewObject!();
 	}
 };
 
-Scene.screenDragover = function (this: any, event: any) {
+Scene.screenDragover = function (this: HTMLElement, event: DragEvent) {
 	if (Scene.previewObject) {
-		event.dataTransfer.dropEffect = 'move';
+		event.dataTransfer!.dropEffect = 'move';
 		event.preventDefault();
 		const integer = !event.shiftKey;
 		const object = Scene.previewObject;
@@ -497,7 +514,7 @@ Scene.screenDragover = function (this: any, event: any) {
 	}
 };
 
-Scene.screenDrop = function (this: any, event: any) {
+Scene.screenDrop = function (this: HTMLElement, event: DragEvent) {
 	if (Scene.previewObject) {
 		const kind = Scene.previewObject.class;
 		const folder = Scene.getDefaultObjectFolder!(kind);
@@ -509,7 +526,7 @@ Scene.screenDrop = function (this: any, event: any) {
 	}
 };
 
-Scene.marqueePointerdown = function (this: any, event: any) {
+Scene.marqueePointerdown = function (this: typeof Scene, event: DragEventItem) {
 	if (this.dragging) {
 		return;
 	}
@@ -612,12 +629,13 @@ Scene.marqueePointerdown = function (this: any, event: any) {
 						window.addEventListener('pointerup', this.pointerup);
 						window.addEventListener('pointermove', this.pointermove);
 						this.screen.addScrollListener('both', this.scale / 2, false, () => {
+							const screen = this.screen as ScrollableScreen;
 							this.screen.beginScrolling();
-							this.screen.rawScrollLeft = this.screen.scrollLeft;
-							this.screen.rawScrollTop = this.screen.scrollTop;
+							screen.rawScrollLeft = screen.scrollLeft;
+							screen.rawScrollTop = screen.scrollTop;
 							this.updateTransform();
 							this.requestRendering();
-							this.screen.updateScrollbars();
+							screen.updateScrollbars();
 							this.pointermove(event.latest);
 						});
 					}
@@ -684,7 +702,7 @@ Scene.marqueePointerdown = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.marqueePointermove = function (this: any, event: any) {
+Scene.marqueePointermove = function (this: typeof Scene, event: PointerEvent) {
 	const marquee = this.marquee;
 	if (!this.dragging) {
 		marquee.pointerevent = event;
@@ -726,7 +744,7 @@ Scene.marqueePointermove = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.marqueePointerleave = function (this: any, event: any) {
+Scene.marqueePointerleave = function (this: typeof Scene, event: PointerEvent) {
 	if (this.marquee.pointerevent !== null) {
 		this.marquee.pointerevent = null;
 		if (!this.dragging && !(this.layer === 'object' && this.target !== null)) {
@@ -735,7 +753,7 @@ Scene.marqueePointerleave = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.marqueeDoubleclick = function (this: any, event: any) {
+Scene.marqueeDoubleclick = function (this: typeof Scene, event: MouseEvent) {
 	switch (this.layer) {
 		case 'object':
 			if (!this.target) return;
@@ -762,7 +780,7 @@ Scene.marqueeDoubleclick = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.pointerup = function (this: any, event: any) {
+Scene.pointerup = function (this: typeof Scene, event: PointerEvent | undefined) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -818,7 +836,7 @@ Scene.pointerup = function (this: any, event: any) {
 				this.screen.removeScrollListener();
 				break;
 			case 'ready-to-scroll':
-				if (event.target === this.marquee) {
+				if (event?.target === this.marquee) {
 					const { x, y } = this.getTileCoords(event);
 					const object = this.selectObject(x, y);
 					this.setTarget(object);
@@ -836,7 +854,7 @@ Scene.pointerup = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.pointermove = function (this: any, event: any) {
+Scene.pointermove = function (this: typeof Scene, event: PointerEvent) {
 	const { dragging, marquee } = this;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -1025,16 +1043,16 @@ Scene.pointermove = function (this: any, event: any) {
 	}
 }.bind(Scene);
 
-Scene.menuPopup = function (this: any, event: any) {
+Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 	const { x, y } = this.getTileCoords(event, true);
 	const isInScene = x >= 0 && x < this.width && y >= 0 && y < this.height;
 	if (this.target || isInScene) {
 		this.translationKeyup();
 		const target = this.target;
 		const selected = !!target;
-		const pastable = (Clipboard as any).has('yami.scene.object');
-		const get = Local.createGetter('menuScene');
-		const menuItems: any[] = [
+		const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
+		const get = Local.createGetter!('menuScene');
+		const menuItems: MenuItem[] = [
 			{
 				label: get('create'),
 				enabled: isInScene,
@@ -1189,7 +1207,7 @@ Scene.menuPopup = function (this: any, event: any) {
 		const file = Scene.getObjectFile!(target);
 		if (file !== undefined) {
 			menuItems.push({
-				label: Local.get('common.findInProject'),
+				label: Local.get!('common.findInProject'),
 				enabled: file instanceof FileItem,
 				click: () => {
 					Scene.openFileLocation!(target);
@@ -1235,18 +1253,21 @@ Scene.menuPopup = function (this: any, event: any) {
 	}
 };
 
-Scene.searcherInput = function (this: any, event: any) {
+Scene.searcherInput = function (
+	this: HTMLElement & { input?: HTMLInputElement | null },
+	event: InputEvent
+) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input!.value;
 		Scene.list.searchNodesDebounced(text);
 	}
 };
 
-Scene.listKeydown = function (this: any, event: any) {
+Scene.listKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
-	const item = read(this);
+	const item = read(this as unknown as HTMLElement);
 	const isFile = item && item.class !== 'folder';
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -1286,13 +1307,13 @@ Scene.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Scene.listPointerdown = function (this: any, event: any) {
+Scene.listPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as Element;
 			switch (element.tagName) {
 				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode;
+					const { item } = element.parentNode as Element & { item: SceneItem };
 					if (!this.canSwitchState(item)) {
 						return;
 					}
@@ -1300,7 +1321,7 @@ Scene.listPointerdown = function (this: any, event: any) {
 					const backups = this.setRecursiveStates(item, 'hidden', !hidden);
 					this.updateFolderState(item.parent, 'hidden');
 					this.update();
-					dispatchChangeEvent(this);
+					dispatchChangeEvent(this as unknown as HTMLElement);
 					Scene.requestRendering!();
 					Scene.history.save({
 						type: 'scene-object-hidden',
@@ -1311,7 +1332,7 @@ Scene.listPointerdown = function (this: any, event: any) {
 					break;
 				}
 				case 'LOCK-ICON': {
-					const { item } = element.parentNode;
+					const { item } = element.parentNode as Element & { item: SceneItem };
 					if (!this.canSwitchState(item)) {
 						return;
 					}
@@ -1319,7 +1340,7 @@ Scene.listPointerdown = function (this: any, event: any) {
 					const backups = this.setRecursiveStates(item, 'locked', !locked);
 					this.updateFolderState(item.parent, 'hidden');
 					this.update();
-					dispatchChangeEvent(this);
+					dispatchChangeEvent(this as unknown as HTMLElement);
 					Scene.history.save({
 						type: 'scene-object-locked',
 						item: item,
@@ -1337,7 +1358,7 @@ Scene.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Scene.listSelect = function (this: any, event: any) {
+Scene.listSelect = function (this: typeof Scene, event: Event & { value: SceneItem }) {
 	const item = event.value;
 	switch (item.class) {
 		case 'folder':
@@ -1360,7 +1381,18 @@ Scene.listSelect = function (this: any, event: any) {
 	}
 };
 
-Scene.listRecord = function (this: any, event: any) {
+Scene.listRecord = function (
+	this: typeof Scene,
+	event: Event & {
+		value: {
+			type: string;
+			dItem: SceneItem;
+			item: SceneItem;
+			source: SceneItem;
+			destination: SceneItem;
+		};
+	}
+) {
 	const list = Scene.list;
 	const response = event.value;
 	switch (response.type) {
@@ -1409,11 +1441,11 @@ Scene.listRecord = function (this: any, event: any) {
 	}
 };
 
-Scene.listPopup = function (this: any, event: any) {
+Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneItem | null }) {
 	const list = Scene.list;
 	const item = event.value;
-	const menuItems: any[] = [] as any[];
-	const get = Local.createGetter('menuSceneList');
+	const menuItems: MenuItem[] = [];
+	const get = Local.createGetter!('menuSceneList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -1437,7 +1469,7 @@ Scene.listPopup = function (this: any, event: any) {
 						label: get('shift'),
 						enabled: item.tiles.length !== 0,
 						click: () => {
-							SceneShift.open!((x: any, y: any) => {
+							SceneShift.open!((x: number, y: number) => {
 								Scene.history.save({
 									type: 'scene-tilemap-shift',
 									tilemap: item,
@@ -1625,7 +1657,7 @@ Scene.listPopup = function (this: any, event: any) {
 	const file = Scene.getObjectFile!(item);
 	if (file !== undefined) {
 		menuItems.push({
-			label: Local.get('common.findInProject'),
+			label: Local.get!('common.findInProject'),
 			enabled: file instanceof FileItem,
 			click: () => {
 				Scene.openFileLocation!(item);
@@ -1640,7 +1672,7 @@ Scene.listPopup = function (this: any, event: any) {
 			{
 				label: get('shiftAll'),
 				click: () => {
-					SceneShift.open!((x: any, y: any) => {
+					SceneShift.open!((x: number, y: number) => {
 						const changes = Scene.computeObjectShifting!(x, y);
 						Scene.history.save({
 							type: 'scene-shift',
@@ -1671,7 +1703,7 @@ Scene.listPopup = function (this: any, event: any) {
 	);
 };
 
-Scene.listOpen = function (this: any, event: any) {
+Scene.listOpen = function (this: typeof Scene, event: Event & { value: SceneItem }) {
 	const item = event.value;
 	switch (item.class) {
 		case 'tilemap':
@@ -1688,7 +1720,10 @@ Scene.listOpen = function (this: any, event: any) {
 	}
 };
 
-Scene.listRename = function (this: any, response: any) {
+Scene.listRename = function (
+	this: typeof Scene,
+	response: { item: SceneItem; oldValue: unknown; newValue: unknown }
+) {
 	const target = response.item;
 	switch (target.class) {
 		case 'folder':
@@ -1723,11 +1758,11 @@ Scene.listRename = function (this: any, response: any) {
 	}
 };
 
-Scene.listChange = function (this: any, event: any) {
+Scene.listChange = function (this: typeof Scene, event: Event) {
 	Scene.planToSave!();
 };
 
-Scene.listPageResize = function (this: any, event: any) {
+Scene.listPageResize = function (this: typeof Scene, event: Event) {
 	Scene.list.updateHead!();
 	Scene.list.resize();
 };

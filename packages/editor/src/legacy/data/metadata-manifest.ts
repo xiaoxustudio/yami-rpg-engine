@@ -3,32 +3,40 @@ import { Meta } from './metadata.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Title } from '@/title/title-bar.ts';
 
+export type FileMeta = InstanceType<typeof Meta>;
+
+interface ProjectMeta {
+	guid: string;
+	path: string;
+	dataMap: unknown;
+}
+
 export class Manifest {
-	actors: any[] = [];
-	skills: any[] = [];
-	triggers: any[] = [];
-	items: any[] = [];
-	equipments: any[] = [];
-	states: any[] = [];
-	events: any[] = [];
-	scenes: any[] = [];
-	tilesets: any[] = [];
-	ui: any[] = [];
-	animations: any[] = [];
-	particles: any[] = [];
-	images: any[] = [];
-	metaList: any[] = [];
-	guidMap: Record<string, any> = {};
-	pathMap: Record<string, any> = {};
+	actors: FileMeta[] = [];
+	skills: FileMeta[] = [];
+	triggers: FileMeta[] = [];
+	items: FileMeta[] = [];
+	equipments: FileMeta[] = [];
+	states: FileMeta[] = [];
+	events: FileMeta[] = [];
+	scenes: FileMeta[] = [];
+	tilesets: FileMeta[] = [];
+	ui: FileMeta[] = [];
+	animations: FileMeta[] = [];
+	particles: FileMeta[] = [];
+	images: FileMeta[] = [];
+	metaList: FileMeta[] = [];
+	guidMap: Record<string, FileMeta> = {};
+	pathMap: Record<string, FileMeta> = {};
 	changed: boolean = false;
-	audio: any[] = [];
-	videos: any[] = [];
-	fonts: any[] = [];
-	script: any[] = [];
-	others: any[] = [];
+	audio: FileMeta[] = [];
+	videos: FileMeta[] = [];
+	fonts: FileMeta[] = [];
+	script: FileMeta[] = [];
+	others: FileMeta[] = [];
 	// 以下字段由 constructor 内 Object.defineProperties 挂载（非枚举）
-	declare project: Record<string, any>;
-	declare changes: any[];
+	declare project: Record<string, ProjectMeta>;
+	declare changes: FileMeta[];
 	declare code: string;
 
 	constructor() {
@@ -48,7 +56,7 @@ export class Manifest {
 		const { versionId } = Meta;
 		let i = metaList.length;
 		while (--i >= 0) {
-			const meta = metaList[i];
+			const meta = metaList[i]!;
 			// 如果版本ID不一致，表示文件已被删除
 			if (meta.versionId !== versionId) {
 				this.deleteMeta(meta);
@@ -56,7 +64,7 @@ export class Manifest {
 		}
 	}
 
-	deleteMeta(meta: any) {
+	deleteMeta(meta: FileMeta) {
 		const { guidMap } = this;
 		const { pathMap } = this;
 		const { guid, path } = meta;

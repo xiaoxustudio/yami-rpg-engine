@@ -4,18 +4,29 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIDialogBox = {
+	interface UIDialogBoxShape {
+		target: UIDialogBoxData | null;
+		update: ((node: UIDialogBoxData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	interface UIDialogBoxData {
+		effect: Record<string, unknown>;
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: unknown;
+	}
+	const UIDialogBox: UIDialogBoxShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIDialogBox.initialize = function (this: any) {
+	UIDialogBox.initialize = function (this: typeof UIDialogBox) {
 		if (!$('#uiDialogBox-typeface')) return;
 		$('#uiDialogBox-typeface').loadItems([
 			{ name: 'Regular', value: 'regular' },
@@ -84,7 +95,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIDialogBox.create = function (this: any) {
+	UIDialogBox.create = function (this: typeof UIDialogBox) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 24;
@@ -114,7 +125,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIDialogBox.open = function (this: any, node: any) {
+	UIDialogBox.open = function (this: typeof UIDialogBox, node: UIDialogBoxData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -137,7 +148,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIDialogBox.close = function (this: any) {
+	UIDialogBox.close = function (this: typeof UIDialogBox) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -146,12 +157,17 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIDialogBox.update = function (this: any, node: any, key: any, value: any) {
+	UIDialogBox.update = function (
+		this: typeof UIDialogBox,
+		node: UIDialogBoxData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'content':
-				// 直接复制，更新语言包中的内容
+				// 闂佺儵鏅涢悺銊ф暜鐎涙ê绶炵€广儱鎳庨悡鎴︽煥濞戞ɑ婀版繛鎻掓健瀵剟骞忓畝濠傛闁荤喎鐨濋崑鎾绘煕閺嵮勫櫢闁煎灚鍨块幆鍐礋椤愩垺鏆ラ柣?
 				node[key] = value;
 				// element[key] = value
 				node.instances.setProperty(key, value);
@@ -170,7 +186,7 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 			case 'font': {
-				const font = value.trim();
+				const font = (value as string).trim();
 				if (node.font !== font) {
 					node.font = font;
 					// element.font = font
@@ -181,7 +197,7 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'effect-type':
 				if (node.effect.type !== value) {
 					const read = getElementReader('uiDialogBox-effect');
-					const effect: any = { type: value };
+					const effect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':
 							break;
@@ -220,8 +236,12 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIDialogBox.paramInput = function (this: any, event: any) {
-		UIDialogBox.update(UIDialogBox.target, Inspector.getKey!(this), read(this));
+	UIDialogBox.paramInput = function (this: typeof UIDialogBox, event: Event) {
+		UIDialogBox.update!(
+			UIDialogBox.target as UIDialogBoxData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.uiDialogBox = UIDialogBox;

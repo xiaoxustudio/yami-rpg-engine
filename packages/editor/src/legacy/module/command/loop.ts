@@ -23,7 +23,7 @@ Command.cases.loop = new CommandSchema({
 	customParse({ mode, conditions, commands }: any) {
 		const contents: any[] = [{ fold: true }, { color: 'flow' }];
 		if (conditions.length !== 0) {
-			const condition = IfBranch.parse({ mode, conditions });
+			const condition = IfBranch.parse!({ mode, conditions });
 			contents.push(
 				{ text: Local.get!('command.loop.while') },
 				{ color: 'restore' },

@@ -4,18 +4,27 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIWindow = {
+	interface UIWindowShape {
+		[k: string]: any;
+	}
+	interface UIWindowData {
+		layout: string;
+		overflow: string;
+		instances: { setProperty(key: string, value: unknown): void; resize(): void };
+		[k: string]: any;
+	}
+	const UIWindow: UIWindowShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIWindow.initialize = function (this: any) {
+	UIWindow.initialize = function (this: typeof UIWindow) {
 		if (!$('#uiWindow-layout')) return;
 		$('#uiWindow-layout').loadItems([
 			{ name: 'Normal', value: 'normal' },
@@ -62,7 +71,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIWindow.create = function (this: any) {
+	UIWindow.create = function (this: typeof UIWindow) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -92,7 +101,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIWindow.open = function (this: any, node: any) {
+	UIWindow.open = function (this: typeof UIWindow, node: UIWindowData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -111,7 +120,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIWindow.close = function (this: any) {
+	UIWindow.close = function (this: typeof UIWindow) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -120,14 +129,19 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIWindow.update = function (this: any, node: any, key: any, value: any) {
+	UIWindow.update = function (
+		this: typeof UIWindow,
+		node: UIWindowData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
 			case 'layout':
 			case 'overflow':
 				if (node[key] !== value) {
-					node[key] = value;
+					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
 				}
@@ -151,7 +165,7 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIWindow.paramInput = function (this: any, event: any) {
+	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		UIWindow.update!(UIWindow.target, Inspector.getKey!(this), read(this));
 	};
 

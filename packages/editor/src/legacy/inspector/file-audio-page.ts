@@ -7,44 +7,47 @@ import { Inspector } from './inspector.ts';
 import { Timer } from '@/util/timer.ts';
 
 {
-	const FileAudio = {
-		target: null as any,
-		meta: null as any,
-		symbol: null as any,
-		promise: null as any,
-		progress: null as any,
-		progressFiller: null as any,
-		pointer: null as any,
-		currentTimeInfo: null as any,
-		pointerTimeInfo: null as any,
-		canvas: null as any,
-		context: null as any,
-		dataArray: null as any,
-		intervals: null as any,
-		intensities: null as any,
-		rotation: null as any,
-		lineColor: null as any,
-		initialize: null as any,
-		open: null as any,
-		close: null as any,
-		play: null as any,
-		writeParams: null as any,
-		updateParams: null as any,
-		updateParamInfos: null as any,
-		updateCanvas: null as any,
-		formatTime: null as any,
-		requestAnimation: null as any,
-		updateAnimation: null as any,
-		stopAnimation: null as any,
-		themechange: null as any,
-		windowResize: null as any,
-		paramInput: null as any,
-		progressPointerdown: null as any,
-		progressPointermove: null as any,
-		progressPointerleave: null as any
+	interface FileAudioShape {
+		[k: string]: any;
+	}
+	const FileAudio: FileAudioShape = {
+		target: null,
+		meta: null,
+		symbol: null,
+		promise: null,
+		progress: null,
+		progressFiller: null,
+		pointer: null,
+		currentTimeInfo: null,
+		pointerTimeInfo: null,
+		canvas: null,
+		context: null,
+		dataArray: null,
+		intervals: null,
+		intensities: null,
+		rotation: null,
+		lineColor: null,
+		initialize: null,
+		open: null,
+		close: null,
+		play: null,
+		writeParams: null,
+		updateParams: null,
+		updateParamInfos: null,
+		updateCanvas: null,
+		formatTime: null,
+		requestAnimation: null,
+		updateAnimation: null,
+		stopAnimation: null,
+		themechange: null,
+		windowResize: null,
+		paramInput: null,
+		progressPointerdown: null,
+		progressPointermove: null,
+		progressPointerleave: null
 	};
 
-	FileAudio.initialize = function (this: any) {
+	FileAudio.initialize = function (this: typeof FileAudio) {
 		if (!$('#fileAudio-progress')) return;
 		this.progress = $('#fileAudio-progress');
 		this.progressFiller = $('#fileAudio-progress-filler');
@@ -77,7 +80,7 @@ import { Timer } from '@/util/timer.ts';
 		this.progress.addEventListener('pointerleave', this.progressPointerleave);
 	};
 
-	FileAudio.open = function (this: any, file: any, meta: any) {
+	FileAudio.open = function (this: typeof FileAudio, file: any, meta: any) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -101,9 +104,9 @@ import { Timer } from '@/util/timer.ts';
 				audio.src = File.route!(path);
 
 				removeClass(this.progress, 'visible');
-				// 保留对返回的原始promise的引用 以便可以取消解码音频数据的操作
+				// 婵烇絽娲︾换鍕汲閳ь剟鎮楅悽娈挎敯缂佺粯鍨垮畷鍫曟倷閸偆鏆犻梺鍛婎焽閸犲酣锝為幁娓瀘mise闂佹眹鍔岀€氼剛妲愰埡鍛仺?婵炲濮伴崕鎵矚閸洖鐭楁い鏍ㄧ懁缁ㄤ即鏌涘▎鎰缂佸顥撻幉鎾晲閸モ晛鐏ｉ梻鍌氾攻婵炲﹪銆傞崼鏇炴瀬闁绘鐗嗙粊锕傛煟閵娿儱顏柟濂告敱閹?
 				const promise = (this.promise = AudioManager.getWaveform!(meta.guid));
-				promise.then((url: any) => {
+				promise.then((url: string) => {
 					if (this.promise === promise) {
 						this.promise = null;
 						this.progress.style.webkitMaskImage = url;
@@ -116,7 +119,7 @@ import { Timer } from '@/util/timer.ts';
 			this.requestAnimation!();
 
 			const symbol = (this.symbol = Symbol());
-			new Promise<void>((resolve: any) => {
+			new Promise<void>((resolve: () => void) => {
 				if (isNaN(audio.duration)) {
 					audio.addEventListener(
 						'loadedmetadata',
@@ -140,7 +143,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.close = function (this: any) {
+	FileAudio.close = function (this: typeof FileAudio) {
 		if (this.target) {
 			if (this.promise) {
 				this.promise.canceled = true;
@@ -154,7 +157,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.play = function (this: any) {
+	FileAudio.play = function (this: typeof FileAudio) {
 		if (this.target !== null) {
 			const { audio } = AudioManager.player!;
 			if (audio.paused) {
@@ -165,7 +168,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.writeParams = function (this: any, params: any) {
+	FileAudio.writeParams = function (this: typeof FileAudio, params: any) {
 		write($('#fileAudio-volume'), params.volume);
 		write($('#fileAudio-pan'), params.pan);
 		write($('#fileAudio-dry'), params.dry);
@@ -173,20 +176,20 @@ import { Timer } from '@/util/timer.ts';
 		this.updateParamInfos!(params);
 	};
 
-	FileAudio.updateParams = function (this: any, params: any) {
+	FileAudio.updateParams = function (this: typeof FileAudio, params: any) {
 		AudioManager.player!.setVolume(params.volume);
 		AudioManager.player!.setPan(params.pan);
 		AudioManager.player!.setReverb(params.dry, params.wet);
 	};
 
-	FileAudio.updateParamInfos = function (this: any, params: any) {
+	FileAudio.updateParamInfos = function (this: typeof FileAudio, params: any) {
 		$('#fileAudio-volume-info').textContent = `${params.volume * 100}%`;
 		$('#fileAudio-pan-info').textContent = `${params.pan * 100}%`;
 		$('#fileAudio-dry-info').textContent = `${params.dry * 100}%`;
 		$('#fileAudio-wet-info').textContent = `${params.wet * 100}%`;
 	};
 
-	FileAudio.updateCanvas = function (this: any) {
+	FileAudio.updateCanvas = function (this: typeof FileAudio) {
 		const manager = Inspector.manager;
 		const canvas = this.canvas;
 		const scrollTop = manager.scrollTop;
@@ -217,7 +220,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.formatTime = function (this: any, time: any) {
+	FileAudio.formatTime = function (this: typeof FileAudio, time: number) {
 		const pad = Number.padZero;
 		const length = Math.floor(time);
 		const hours = Math.floor(length / 3600);
@@ -228,13 +231,13 @@ import { Timer } from '@/util/timer.ts';
 			: `${minutes}:${pad(seconds, 60)}`;
 	};
 
-	FileAudio.requestAnimation = function (this: any) {
+	FileAudio.requestAnimation = function (this: typeof FileAudio) {
 		if (this.target !== null) {
 			Timer.appendUpdater!('sharedAnimation', this.updateAnimation);
 		}
 	};
 
-	FileAudio.updateAnimation = function (this: any, deltaTime: any) {
+	FileAudio.updateAnimation = function (this: typeof FileAudio, deltaTime: number) {
 		const audio = AudioManager.player!.audio;
 		const currentTime = audio.currentTime;
 		const duration = audio.duration || Infinity;
@@ -295,7 +298,7 @@ import { Timer } from '@/util/timer.ts';
 			intervalSum += intervals[j];
 			intensityAverage += intensities[j];
 			intensityCount++;
-			// 取最近150ms的强度平均值(平滑过渡)
+			// 闂佸憡鐟﹂悧妤€銆掗懜鍨氦?50ms闂佹眹鍔岀€氼剙顔忔潏銊﹀劅闁挎洍鍋撻梺瑙ｆ櫊瀹曟悂宕惰閸?濡ょ姷鍋犲▍鏇犲垝閿旇姤浜ら柛銉ｅ妽鐠?
 			if (intervalSum >= 150) {
 				break;
 			}
@@ -360,11 +363,11 @@ import { Timer } from '@/util/timer.ts';
 		FileAudio.rotation -= (Math.PI * deltaTime) / 15000;
 	};
 
-	FileAudio.stopAnimation = function (this: any) {
+	FileAudio.stopAnimation = function (this: typeof FileAudio) {
 		Timer.removeUpdater!('sharedAnimation', this.updateAnimation);
 	};
 
-	FileAudio.themechange = function (this: any, event: any) {
+	FileAudio.themechange = function (this: typeof FileAudio, event: Event) {
 		switch (event.value) {
 			case 'light':
 				this.lineColor = '#000000';
@@ -375,13 +378,13 @@ import { Timer } from '@/util/timer.ts';
 		}
 	}.bind(FileAudio);
 
-	FileAudio.windowResize = function (this: any, event: any) {
+	FileAudio.windowResize = function (this: typeof FileAudio, event: Event) {
 		if (FileAudio.target !== null && FileAudio.symbol === null) {
 			FileAudio.updateCanvas();
 		}
 	};
 
-	FileAudio.paramInput = function (this: any, event: any) {
+	FileAudio.paramInput = function (this: typeof FileAudio, event: Event) {
 		const read = getElementReader('fileAudio');
 		const params = {
 			volume: read('volume'),
@@ -393,7 +396,7 @@ import { Timer } from '@/util/timer.ts';
 		this.updateParamInfos!(params);
 	}.bind(FileAudio);
 
-	FileAudio.progressPointerdown = function (this: any, event: any) {
+	FileAudio.progressPointerdown = function (this: typeof FileAudio, event: PointerEvent) {
 		switch (event.button) {
 			case 0: {
 				const { audio } = AudioManager.player!;
@@ -406,7 +409,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.progressPointermove = function (this: any, event: any) {
+	FileAudio.progressPointermove = function (this: typeof FileAudio, event: PointerEvent) {
 		const { pointer, pointerTimeInfo } = FileAudio;
 		const { duration } = AudioManager.player!.audio;
 		if (!isNaN(duration)) {
@@ -425,7 +428,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.progressPointerleave = function (this: any, event: any) {
+	FileAudio.progressPointerleave = function (this: typeof FileAudio, event: PointerEvent) {
 		const { pointer, pointerTimeInfo } = FileAudio;
 		if (pointer.time !== -1) {
 			pointer.time = -1;

@@ -1,7 +1,7 @@
 ﻿import { UI } from './ui-window.ts';
 
 UI.DialogBox = class DialogBoxElement extends UI.Text {
-	constructor(data: any) {
+	constructor(data: Record<string, unknown>) {
 		super({
 			...data,
 			direction: 'horizontal-tb',

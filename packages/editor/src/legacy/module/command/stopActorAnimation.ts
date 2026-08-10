@@ -11,7 +11,7 @@ Command.cases.stopActorAnimation = new CommandSchema({
 	customParse({ actor }: any) {
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.stopActorAnimation') + Token(': ') },
+			{ text: Local.get!('command.stopActorAnimation') + Token(': ') },
 			{ text: Command.parseActor(actor) }
 		];
 	},

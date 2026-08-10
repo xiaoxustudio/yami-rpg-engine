@@ -6,7 +6,7 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
-(Command.cases as any).setObject = new CommandSchema({
+Command.cases.setObject = new CommandSchema({
 	name: 'setObject',
 	onInitialize() {
 		$('#setObject-confirm').on('click', () => this.save!());
@@ -91,17 +91,17 @@ import { Local } from '@/tools/localization.ts';
 		variable = { type: 'local', key: '' },
 		operand = {
 			type: 'none',
-			actor: null as any,
-			skill: null as any,
-			state: null as any,
-			equipment: null as any,
-			item: null as any,
-			trigger: null as any,
-			light: null as any,
-			object: null as any,
-			element: null as any,
-			variable: null as any,
-			index: null as any
+			actor: null,
+			skill: null,
+			state: null,
+			equipment: null,
+			item: null,
+			trigger: null,
+			light: null,
+			object: null,
+			element: null,
+			variable: null,
+			index: null
 		}
 	}: any) {
 		const write = getElementWriter('setObject');

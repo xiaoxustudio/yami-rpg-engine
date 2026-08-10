@@ -39,172 +39,258 @@ import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { StageColor } from '@/util/stage-color.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Matrix } from '@/webgl/matrix2.ts';
+import { Matrix } from '../webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
+import type { MenuItem } from '@ui-kit';
+import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import type { DynamicShape } from '@/types/legacy-shapes.ts';
 
-export const UI = {
+interface ControlPoint {
+	x: number;
+	y: number;
+	angle: number;
+}
+
+interface UIControlPoints {
+	rotate: Record<'TL' | 'TR' | 'BL' | 'BR', ControlPoint>;
+	resize: Record<'T' | 'L' | 'R' | 'B' | 'TL' | 'TR' | 'BL' | 'BR', ControlPoint>;
+	list: ControlPoint[];
+}
+
+interface UIShape {
+	state: string;
+	page: HTMLElement;
+	head: HTMLElement & { left?: number };
+	body: HTMLElement;
+	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
+	history: History;
+	controlPoints: UIControlPoints | null;
+	controlPointActive: ControlPoint | null;
+	controlPointRotation: number;
+	translationKey: number;
+	translationTimer: Timer | null;
+	zoomTimer: Timer | null;
+	background: StageColor;
+	foreground: StageColor;
+	matrix: Matrix;
+	zoom: number;
+	scale: number;
+	scaleX: number;
+	scaleY: number;
+	outerWidth: number;
+	outerHeight: number;
+	scrollLeft: number;
+	scrollTop: number;
+	scrollRight: number;
+	scrollBottom: number;
+	centerX: number;
+	centerY: number;
+	centerOffsetX: number;
+	centerOffsetY: number;
+	padding: number;
+	paddingLeft: number;
+	paddingTop: number;
+	width: number;
+	height: number;
+	inspectorTypeMap: Record<string, string>;
+	[k: string]: any;
+}
+
+type UINodeShape = { class: string; children: UINodeShape[]; [k: string]: any };
+
+interface UIContextShape {
+	meta: { guid: string; path: string };
+	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, any>;
+	editor?: {
+		target: UINodeShape | null;
+		root: UINodeShape | null;
+		history: History;
+		centerX: number;
+		centerY: number;
+	} & Record<string, any>;
+	fontChanged?: boolean;
+	languageChanged?: boolean;
+	scalingChanged?: boolean;
+	[k: string]: any;
+}
+
+type UIPointerEvent = PointerEvent & {
+	dragKey?: boolean;
+	absoluteAnchorX?: number;
+	absoluteAnchorY?: number;
+	lastAngle?: number;
+	rotationRadians?: number;
+	startRotation?: number;
+	startWidth?: number;
+	startHeight?: number;
+	node?: UINodeShape;
+	enabled?: boolean;
+	startX?: number;
+	startY?: number;
+};
+
+export const UI: UIShape = {
 	state: 'closed',
 	page: $('#ui'),
 	head: $('#ui-head'),
 	body: hide($('#ui-body')),
-	screen: $('#ui-screen'),
-	marquee: $('#ui-marquee') || ({} as any),
+	screen: $('#ui-screen') as HTMLElement & { rawScrollLeft: number; rawScrollTop: number },
+	marquee: $('#ui-marquee') || {},
 	searcher: $('#ui-searcher'),
-	list: $('#ui-list') || ({} as any),
-	dragging: null as any,
-	target: null as any,
-	hover: null as any,
-	history: null as any,
-	controlPoints: null as any,
-	controlPointActive: null as any,
-	controlPointRotation: null as any,
-	controlPointTexture: null as any,
+	list: $('#ui-list') || {},
+	dragging: null,
+	target: null,
+	hover: null,
+	history: null as unknown as History,
+	controlPoints: null,
+	controlPointActive: null,
+	controlPointRotation: null as unknown as number,
 	translationKey: 0b0000,
-	translationTimer: null as any,
-	background: null as any,
-	foreground: null as any,
-	matrix: null as any,
-	zoom: null as any,
-	zoomTimer: null as any,
-	scale: null as any,
-	scaleX: null as any,
-	scaleY: null as any,
-	outerWidth: null as any,
-	outerHeight: null as any,
-	scrollLeft: null as any,
-	scrollTop: null as any,
-	scrollRight: null as any,
-	scrollBottom: null as any,
-	centerX: null as any,
-	centerY: null as any,
-	centerOffsetX: null as any,
-	centerOffsetY: null as any,
-	padding: null as any,
-	paddingLeft: null as any,
-	paddingTop: null as any,
-	inspectorTypeMap: null as any,
-	context: null as any,
-	meta: null as any,
-	width: null as any,
-	height: null as any,
-	nodes: null as any,
-	root: null as any,
-	initialize: null as any,
-	open: null as any,
-	load: null as any,
-	save: null as any,
-	close: null as any,
-	destroy: null as any,
-	copy: null as any,
-	paste: null as any,
-	duplicate: null as any,
-	create: null as any,
-	createPrefab: null as any,
-	delete: null as any,
-	toggle: null as any,
-	undo: null as any,
-	redo: null as any,
-	setZoom: null as any,
-	setSize: null as any,
-	setHover: null as any,
-	setTarget: null as any,
-	revealTarget: null as any,
-	shiftAnchor: null as any,
-	shiftTarget: null as any,
-	resizeTarget: null as any,
-	rotateTarget: null as any,
-	setControlPoint: null as any,
-	updateHover: null as any,
-	updateTarget: null as any,
-	updateTargetItem: null as any,
-	updateElementFont: null as any,
-	updateElementLanguage: null as any,
-	updateElementTextScaling: null as any,
-	updateIndexedColor: null as any,
-	updateControlPoints: null as any,
-	updateAllTexts: null as any,
-	updateAllPrinters: null as any,
-	updateAllReferences: null as any,
-	updateElement: null as any,
-	deleteElement: null as any,
-	updateHead: null as any,
-	resize: null as any,
-	getPointerCoords: null as any,
-	updateCamera: null as any,
-	updateTransform: null as any,
-	registerPreset: null as any,
-	unregisterPreset: null as any,
-	createPrefabItem: null as any,
-	hasPrefab: null as any,
-	setAsPrefab: null as any,
-	unsetAsPrefab: null as any,
-	clearInvalidPrefabs: null as any,
-	createElement: null as any,
-	loadElement: null as any,
-	drawBackground: null as any,
-	drawElements: null as any,
-	drawCoordinateAxes: null as any,
-	drawHoverWireframe: null as any,
-	drawTargetWireframe: null as any,
-	drawTargetAnchor: null as any,
-	drawControlPoints: null as any,
-	selectControlPoint: null as any,
-	selectObject: null as any,
-	requestRendering: null as any,
-	renderingFunction: null as any,
-	stopRendering: null as any,
-	switchSettings: null as any,
-	planToSave: null as any,
-	saveToConfig: null as any,
-	loadFromConfig: null as any,
-	saveToProject: null as any,
-	loadFromProject: null as any,
-	webglRestored: null as any,
-	windowResize: null as any,
-	themechange: null as any,
-	localizationchange: null as any,
-	keydown: null as any,
-	headPointerdown: null as any,
-	switchPointerdown: null as any,
-	shortcutPointerdown: null as any,
-	zoomFocus: null as any,
-	zoomInput: null as any,
-	screenKeydown: null as any,
-	translationKeyup: null as any,
-	screenWheel: null as any,
-	screenUserscroll: null as any,
-	screenBlur: null as any,
-	marqueePointerdown: null as any,
-	marqueePointermove: null as any,
-	marqueePointerleave: null as any,
-	marqueeDoubleclick: null as any,
-	pointerup: null as any,
-	pointermove: null as any,
-	menuPopup: null as any,
-	searcherInput: null as any,
-	listKeydown: null as any,
-	listPointerdown: null as any,
-	listSelect: null as any,
-	listRecord: null as any,
-	listPopup: null as any,
-	listOpen: null as any,
-	listRename: null as any,
-	listChange: null as any,
-	listPageResize: null as any,
-	Element: null as any,
-	Root: null as any,
-	Image: null as any,
-	Text: null as any,
-	TextBox: null as any,
-	DialogBox: null as any,
-	ProgressBar: null as any,
-	Button: null as any,
-	Animation: null as any,
-	Video: null as any,
-	Window: null as any,
-	Container: null as any,
-	Reference: null as any,
-	createShortcut: null as any
+	translationTimer: null,
+	background: null as unknown as StageColor,
+	foreground: null as unknown as StageColor,
+	matrix: null as unknown as Matrix,
+	zoom: null as unknown as number,
+	zoomTimer: null,
+	scale: null as unknown as number,
+	scaleX: null as unknown as number,
+	scaleY: null as unknown as number,
+	outerWidth: null as unknown as number,
+	outerHeight: null as unknown as number,
+	scrollLeft: null as unknown as number,
+	scrollTop: null as unknown as number,
+	scrollRight: null as unknown as number,
+	scrollBottom: null as unknown as number,
+	centerX: null as unknown as number,
+	centerY: null as unknown as number,
+	centerOffsetX: null as unknown as number,
+	centerOffsetY: null as unknown as number,
+	padding: null as unknown as number,
+	paddingLeft: null as unknown as number,
+	paddingTop: null as unknown as number,
+	inspectorTypeMap: null as unknown as Record<string, string>,
+	context: null,
+	meta: null,
+	width: null as unknown as number,
+	height: null as unknown as number,
+	nodes: null,
+	root: null,
+	initialize: null,
+	open: null,
+	load: null,
+	save: null,
+	close: null,
+	destroy: null,
+	copy: null,
+	paste: null,
+	duplicate: null,
+	create: null,
+	createPrefab: null,
+	delete: null,
+	toggle: null,
+	undo: null,
+	redo: null,
+	setZoom: null,
+	setSize: null,
+	setHover: null,
+	setTarget: null,
+	revealTarget: null,
+	shiftAnchor: null,
+	shiftTarget: null,
+	resizeTarget: null,
+	rotateTarget: null,
+	setControlPoint: null,
+	updateHover: null,
+	updateTarget: null,
+	updateTargetItem: null,
+	updateElementFont: null,
+	updateElementLanguage: null,
+	updateElementTextScaling: null,
+	updateIndexedColor: null,
+	updateControlPoints: null,
+	updateAllTexts: null,
+	updateAllPrinters: null,
+	updateAllReferences: null,
+	updateElement: null,
+	deleteElement: null,
+	updateHead: null,
+	resize: null,
+	getPointerCoords: null,
+	updateCamera: null,
+	updateTransform: null,
+	registerPreset: null,
+	unregisterPreset: null,
+	createPrefabItem: null,
+	hasPrefab: null,
+	setAsPrefab: null,
+	unsetAsPrefab: null,
+	clearInvalidPrefabs: null,
+	createElement: null,
+	loadElement: null,
+	drawBackground: null,
+	drawElements: null,
+	drawCoordinateAxes: null,
+	drawHoverWireframe: null,
+	drawTargetWireframe: null,
+	drawTargetAnchor: null,
+	drawControlPoints: null,
+	selectControlPoint: null,
+	selectObject: null,
+	requestRendering: null,
+	renderingFunction: null,
+	stopRendering: null,
+	switchSettings: null,
+	planToSave: null,
+	saveToConfig: null,
+	loadFromConfig: null,
+	saveToProject: null,
+	loadFromProject: null,
+	webglRestored: null,
+	windowResize: null,
+	themechange: null,
+	localizationchange: null,
+	keydown: null,
+	headPointerdown: null,
+	switchPointerdown: null,
+	shortcutPointerdown: null,
+	zoomFocus: null,
+	zoomInput: null,
+	screenKeydown: null,
+	translationKeyup: null,
+	screenWheel: null,
+	screenUserscroll: null,
+	screenBlur: null,
+	marqueePointerdown: null,
+	marqueePointermove: null,
+	marqueePointerleave: null,
+	marqueeDoubleclick: null,
+	pointerup: null,
+	pointermove: null,
+	menuPopup: null,
+	searcherInput: null,
+	listKeydown: null,
+	listPointerdown: null,
+	listSelect: null,
+	listRecord: null,
+	listPopup: null,
+	listOpen: null,
+	listRename: null,
+	listChange: null,
+	listPageResize: null,
+	Element: null,
+	Root: null,
+	Image: null,
+	Text: null,
+	TextBox: null,
+	DialogBox: null,
+	ProgressBar: null,
+	Button: null,
+	Animation: null,
+	Video: null,
+	Window: null,
+	Container: null,
+	Reference: null,
+	createShortcut: null
 };
 
 UI.marquee.resize = null as unknown as (...args: unknown[]) => any;
@@ -253,11 +339,11 @@ UI.list.onRemove = null;
 UI.list.onDelete = null;
 UI.list.onResume = null;
 
-UI.initialize = function (this: any) {
+UI.initialize = function (this: UIShape) {
 	this.page = $('#ui');
 	this.head = $('#ui-head');
 	this.body = hide($('#ui-body'));
-	this.screen = $('#ui-screen');
+	this.screen = $('#ui-screen') as HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
 	const oldMarquee = this.marquee;
 	this.marquee = $('#ui-marquee');
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
@@ -290,7 +376,7 @@ UI.initialize = function (this: any) {
 			BL: { x: 0, y: 0, angle: 135 },
 			BR: { x: 0, y: 0, angle: 45 }
 		},
-		list: null as any
+		list: null as unknown as { x: number; y: number; angle: number }[]
 	};
 	// 控制点按优先级从低到高排序
 	points.list = [
@@ -312,7 +398,7 @@ UI.initialize = function (this: any) {
 	File.get!({
 		local: 'Images/ui_control_point.png',
 		type: 'image'
-	}).then((image: any) => {
+	}).then((image: { guid?: string; [k: string]: any }) => {
 		if (!image) return;
 		image.guid = 'ui:control-point';
 		this.controlPointTexture = new ImageTexture(image);
@@ -321,7 +407,7 @@ UI.initialize = function (this: any) {
 
 	this.translationTimer = new Timer({
 		duration: Infinity,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			if (this.state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
@@ -359,7 +445,7 @@ UI.initialize = function (this: any) {
 
 	this.zoomTimer = new Timer({
 		duration: 80,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			if (this.state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
@@ -403,21 +489,33 @@ UI.initialize = function (this: any) {
 	list.creators?.push(list.updateConditionIcon);
 	// 其 creators/updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
 
-	History.processors['ui-object-create'] = (operation: any, data: any) => {
+	History.processors['ui-object-create'] = (
+		operation: string,
+		data: { response: { item: UINodeShape } & Record<string, any> }
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['ui-object-delete'] = (operation: any, data: any) => {
+	History.processors['ui-object-delete'] = (
+		operation: string,
+		data: { response: { item: UINodeShape } & Record<string, any> }
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['ui-object-remove'] = (operation: any, data: any) => {
+	History.processors['ui-object-remove'] = (
+		operation: string,
+		data: { response: { item: UINodeShape } & Record<string, any> }
+	) => {
 		const { response } = data;
 		const { item } = response;
 		list.restore(operation, response);
 		UI.updateElement!(item);
 	};
-	History.processors['ui-object-toggle'] = (operation: any, data: any) => {
+	History.processors['ui-object-toggle'] = (
+		operation: string,
+		data: { item: UINodeShape; oldValue: boolean; newValue: boolean }
+	) => {
 		const { item, oldValue, newValue } = data;
 		if (operation === 'undo') {
 			item.enabled = oldValue;
@@ -427,7 +525,15 @@ UI.initialize = function (this: any) {
 		list.updateConditionIcon(item);
 		UI.planToSave!();
 	};
-	History.processors['ui-object-hidden'] = (operation: any, data: any) => {
+	History.processors['ui-object-hidden'] = (
+		operation: string,
+		data: {
+			item: UINodeShape;
+			oldValues1: unknown[];
+			oldValues2: unknown[];
+			newValue: boolean;
+		}
+	) => {
 		const { item, oldValues1, oldValues2, newValue } = data;
 		const { instance } = item;
 		if (operation === 'undo') {
@@ -441,7 +547,10 @@ UI.initialize = function (this: any) {
 		UI.requestRendering!();
 		UI.planToSave!();
 	};
-	History.processors['ui-object-locked'] = (operation: any, data: any) => {
+	History.processors['ui-object-locked'] = (
+		operation: string,
+		data: { item: UINodeShape; oldValues: unknown[]; newValue: boolean }
+	) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates(item, 'locked', oldValues);
@@ -451,7 +560,10 @@ UI.initialize = function (this: any) {
 		list.update();
 		UI.planToSave!();
 	};
-	History.processors['ui-target-anchor'] = (operation: any, data: any) => {
+	History.processors['ui-target-anchor'] = (
+		operation: string,
+		data: { editor: DynamicShape; target: UINodeShape; anchorX: number; anchorY: number }
+	) => {
 		const { editor, target, anchorX, anchorY } = data;
 		const { instances, transform } = target;
 		data.anchorX = transform.anchorX;
@@ -467,7 +579,10 @@ UI.initialize = function (this: any) {
 		UI.requestRendering!();
 		UI.planToSave!();
 	};
-	History.processors['ui-target-shift'] = (operation: any, data: any) => {
+	History.processors['ui-target-shift'] = (
+		operation: string,
+		data: { editor: DynamicShape; target: UINodeShape; x: number; y: number }
+	) => {
 		const { editor, target, x, y } = data;
 		const { instances, transform } = target;
 		data.x = transform.x;
@@ -483,7 +598,10 @@ UI.initialize = function (this: any) {
 		UI.requestRendering!();
 		UI.planToSave!();
 	};
-	History.processors['ui-target-resize'] = (operation: any, data: any) => {
+	History.processors['ui-target-resize'] = (
+		operation: string,
+		data: { editor: DynamicShape; target: UINodeShape; width: number; height: number }
+	) => {
 		const { editor, target, width, height } = data;
 		const { instances, transform } = target;
 		data.width = transform.width;
@@ -499,7 +617,10 @@ UI.initialize = function (this: any) {
 		UI.requestRendering!();
 		UI.planToSave!();
 	};
-	History.processors['ui-target-rotate'] = (operation: any, data: any) => {
+	History.processors['ui-target-rotate'] = (
+		operation: string,
+		data: { editor: DynamicShape; target: UINodeShape; rotation: number }
+	) => {
 		const { editor, target, rotation } = data;
 		const { instances, transform } = target;
 		data.rotation = transform.rotation;
@@ -537,7 +658,7 @@ UI.initialize = function (this: any) {
 	on(list.page, 'resize', this.listPageResize);
 };
 
-UI.open = function (this: any, context: any) {
+UI.open = function (this: UIShape, context: UIContextShape) {
 	if (this.context === context) {
 		return;
 	}
@@ -573,28 +694,28 @@ UI.open = function (this: any, context: any) {
 	}
 };
 
-UI.load = function (this: any, context: any) {
+UI.load = function (this: UIShape, context: UIContextShape) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
 		context.editor = {
-			target: null as any,
+			target: null,
 			root: new UI.Root!(),
 			history: new History(100),
-			centerX: context.ui.width / 2,
-			centerY: context.ui.height / 2
+			centerX: context.ui!.width / 2,
+			centerY: context.ui!.height / 2
 			// listScrollTop: 0,
 		};
 	}
 	const { ui, editor } = context;
 
-	this.width = ui.width;
-	this.height = ui.height;
-	this.nodes = ui.nodes;
+	this.width = ui!.width;
+	this.height = ui!.height;
+	this.nodes = ui!.nodes;
 
-	this.root = editor.root;
-	this.history = editor.history;
-	this.centerX = editor.centerX;
-	this.centerY = editor.centerY;
+	this.root = editor!.root;
+	this.history = editor!.history;
+	this.centerX = editor!.centerX;
+	this.centerY = editor!.centerY;
 
 	if (firstLoad) {
 		const nodes = this.nodes;
@@ -609,7 +730,7 @@ UI.load = function (this: any, context: any) {
 	this.list.update();
 	// this.list.scrollTop = editor.listScrollTop
 
-	this.setTarget!(editor.target);
+	this.setTarget!(editor!.target);
 
 	if (this.context.fontChanged) {
 		this.updateElementFont!();
@@ -626,7 +747,7 @@ UI.load = function (this: any, context: any) {
 	UndoManager.setActive!(UI);
 };
 
-UI.save = function (this: any) {
+UI.save = function (this: UIShape) {
 	if (this.state === 'open') {
 		const { ui, editor } = this.context;
 
@@ -643,7 +764,7 @@ UI.save = function (this: any) {
 	}
 };
 
-UI.close = function (this: any) {
+UI.close = function (this: UIShape) {
 	if (this.state !== 'closed') {
 		this.screen.blur();
 		if (Inspector.type === 'fileUI') {
@@ -655,7 +776,7 @@ UI.close = function (this: any) {
 		this.meta = null;
 		this.nodes = null;
 		this.root = null;
-		this.history = null;
+		this.history = null as unknown as History;
 		write(this.searcher, '');
 		clear(this.list);
 		hide(this.body);
@@ -664,46 +785,46 @@ UI.close = function (this: any) {
 	}
 };
 
-UI.destroy = function (this: any, context: any) {
+UI.destroy = function (this: UIShape, context: UIContextShape) {
 	if (!context.editor) return;
 	if (this.context === context) {
 		this.save!();
 		this.close!();
 	}
 	// 销毁UI组件实例
-	context.editor.root.destroy();
-	TreeList.deleteCaches!(context.ui.nodes);
+	context.editor.root!.destroy();
+	TreeList.deleteCaches!(context.ui!.nodes);
 };
 
-UI.copy = function (this: any) {
+UI.copy = function (this: UIShape) {
 	if (this.state === 'open' && this.target !== null) {
 		this.list.copy(this.target);
 	}
 };
 
-UI.paste = function (this: any, x: any, y: any) {
+UI.paste = function (this: UIShape, x?: number, y?: number) {
 	if (this.state === 'open' && this.dragging === null) {
 		if (x === undefined) {
 			x = this.centerX;
 			y = this.centerY;
 		}
-		this.list.paste(null, (data: any) => {
+		this.list.paste(null, (data: { transform: { x: number; y: number } }) => {
 			const { transform } = data;
-			transform.x = Math.round(x);
+			transform.x = Math.round(x!);
 			transform.x = 0;
-			transform.y = Math.round(y);
+			transform.y = Math.round(y!);
 			transform.y = 0;
 		});
 	}
 };
 
-UI.duplicate = function (this: any) {
+UI.duplicate = function (this: UIShape) {
 	if (this.target) {
 		this.list.duplicate(this.target);
 	}
 };
 
-UI.create = function (this: any, kind: any, x: any, y: any) {
+UI.create = function (this: UIShape, kind: string, x: number, y: number) {
 	const map = this.inspectorTypeMap;
 	const key = map[kind];
 	const editor = Inspector[key];
@@ -713,7 +834,18 @@ UI.create = function (this: any, kind: any, x: any, y: any) {
 	this.list.addNodeTo(node);
 };
 
-UI.createPrefab = function (this: any, prefab: any, parent: any, x: any, y: any) {
+UI.createPrefab = function (
+	this: UIShape,
+	prefab: {
+		name: string;
+		presetId: string;
+		transform: { x: number; y: number; [k: string]: any };
+		[k: string]: any;
+	},
+	parent: UINodeShape | null,
+	x?: number,
+	y?: number
+) {
 	const reference = Inspector.uiReference.create!();
 	reference.name = prefab.name;
 	reference.prefabId = prefab.presetId;
@@ -730,7 +862,7 @@ UI.createPrefab = function (this: any, prefab: any, parent: any, x: any, y: any)
 	this.list.addNodeTo(reference, parent);
 };
 
-UI.createShortcut = function (this: any, item: any) {
+UI.createShortcut = function (this: UIShape, item: UINodeShape) {
 	const reference = Inspector.uiReference.create!();
 	reference.name = this.list.generateUniqueName(item);
 	reference.prefabId = item.presetId;
@@ -745,24 +877,24 @@ UI.createShortcut = function (this: any, item: any) {
 	}
 };
 
-UI.delete = function (this: any) {
+UI.delete = function (this: UIShape) {
 	if (this.state === 'open' && this.target !== null && this.dragging === null) {
 		this.list.delete(this.target);
 	}
 };
 
-UI.toggle = function (this: any) {
+UI.toggle = function (this: UIShape) {
 	this.list.toggle(this.target);
 };
 
-UI.undo = function (this: any) {
+UI.undo = function (this: UIShape) {
 	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
-UI.redo = function (this: any) {
+UI.redo = function (this: UIShape) {
 	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
@@ -770,7 +902,7 @@ UI.redo = function (this: any) {
 };
 
 UI.setZoom = (function IIFE() {
-	return function (this: any, zoom: any) {
+	return function (this: UIShape, zoom: number) {
 		const slider = $('#ui-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -796,7 +928,7 @@ UI.setZoom = (function IIFE() {
 			this.zoom = zoom;
 			if (slider) write(slider, zoom);
 			if (this.state === 'open') {
-				const timer = this.zoomTimer;
+				const timer = this.zoomTimer!;
 				timer.start = this.scale;
 				timer.end = scale;
 				timer.elapsed = 0;
@@ -808,7 +940,7 @@ UI.setZoom = (function IIFE() {
 	};
 })();
 
-UI.setSize = function (this: any, width: any, height: any) {
+UI.setSize = function (this: UIShape, width: number, height: number) {
 	if (this.width !== width) {
 		this.centerX = (this.centerX * width) / this.width;
 		this.width = width;
@@ -821,14 +953,14 @@ UI.setSize = function (this: any, width: any, height: any) {
 	this.requestRendering!();
 };
 
-UI.setHover = function (this: any, hover: any) {
+UI.setHover = function (this: UIShape, hover: UINodeShape | null) {
 	if (this.hover !== hover) {
 		this.hover = hover;
 		this.requestRendering!();
 	}
 };
 
-UI.setTarget = function (this: any, target: any) {
+UI.setTarget = function (this: UIShape, target: UINodeShape | null) {
 	if (this.target !== target) {
 		this.target = target;
 		this.updateTargetItem!();
@@ -846,10 +978,10 @@ UI.setTarget = function (this: any, target: any) {
 UI.revealTarget = (function IIFE() {
 	const timer = new Timer({
 		duration: 200,
-		update: (timer: any) => {
+		update: (timer: Timer) => {
 			const { target } = timer;
 			if (target === UI.target) {
-				const easing = (Easing.EasingMap as any).easeInOut;
+				const easing = Easing.EasingMap.easeInOut;
 				const time = easing.ease(timer.elapsed / timer.duration);
 				const x = timer.startX * (1 - time) + timer.endX * time;
 				const y = timer.startY * (1 - time) + timer.endY * time;
@@ -868,11 +1000,11 @@ UI.revealTarget = (function IIFE() {
 				return false;
 			}
 		},
-		callback: (timer: any) => {
+		callback: (timer: Timer) => {
 			timer.target = null;
 		}
 	});
-	return function (this: any) {
+	return function (this: UIShape) {
 		const target = this.target;
 		if (target && !timer.target) {
 			const instance = target.instance;
@@ -914,7 +1046,7 @@ UI.revealTarget = (function IIFE() {
 	};
 })();
 
-UI.shiftAnchor = function (this: any, anchorX: any, anchorY: any) {
+UI.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number) {
 	const target = this.target;
 	if (target !== null) {
 		this.planToSave!();
@@ -952,7 +1084,7 @@ UI.shiftAnchor = function (this: any, anchorX: any, anchorY: any) {
 	}
 };
 
-UI.shiftTarget = function (this: any, x: any, y: any) {
+UI.shiftTarget = function (this: UIShape, x: number, y: number) {
 	const target = this.target;
 	if (target !== null) {
 		this.planToSave!();
@@ -994,10 +1126,10 @@ UI.shiftTarget = function (this: any, x: any, y: any) {
 					instancesCtor: instances?.constructor?.name,
 					instancesProto: Object.getPrototypeOf(instances)?.constructor?.name,
 					instancesContent: Array.isArray(instances)
-						? instances.map((e: any) => `${typeof e}:${e}`)
+						? instances.map((e: unknown) => `${typeof e}:${e}`)
 						: String(instances),
-					instancesSetType: typeof (instances as any).set,
-					instancesSetName: (instances as any).set?.name,
+					instancesSetType: typeof instances.set,
+					instancesSetName: instances.set?.name,
 					instancesIsMap: instances instanceof Map,
 					instancesIsArray: Array.isArray(instances),
 					instancesOwnKeys: Object.keys(instances)
@@ -1016,7 +1148,7 @@ UI.shiftTarget = function (this: any, x: any, y: any) {
 	}
 };
 
-UI.resizeTarget = function (this: any, width: any, height: any) {
+UI.resizeTarget = function (this: UIShape, width?: number, height?: number) {
 	const target = this.target;
 	if (target !== null) {
 		this.planToSave!();
@@ -1062,7 +1194,7 @@ UI.resizeTarget = function (this: any, width: any, height: any) {
 	}
 };
 
-UI.rotateTarget = function (this: any, rotation: any) {
+UI.rotateTarget = function (this: UIShape, rotation: number) {
 	const target = this.target;
 	if (target !== null) {
 		this.planToSave!();
@@ -1098,10 +1230,10 @@ UI.rotateTarget = function (this: any, rotation: any) {
 	}
 };
 
-UI.setControlPoint = function (this: any, point: any) {
+UI.setControlPoint = function (this: UIShape, point: ControlPoint | null) {
 	if (this.controlPointActive !== point) {
 		this.controlPointActive = point;
-		const points = this.controlPoints;
+		const points = this.controlPoints!;
 		let cursor;
 		switch (point) {
 			case null:
@@ -1134,24 +1266,24 @@ UI.setControlPoint = function (this: any, point: any) {
 				break;
 			}
 		}
-		this.body.style.cursor = cursor;
+		this.body.style.cursor = cursor!;
 	}
 };
 
-UI.updateHover = function (this: any) {
+UI.updateHover = function (this: UIShape) {
 	if (this.hover && !this.hover.instance) {
 		this.setHover!(null);
 	}
 };
 
-UI.updateTarget = function (this: any) {
+UI.updateTarget = function (this: UIShape) {
 	const item = read(this.list);
 	if (item !== this.target) {
 		this.setTarget!(item);
 	}
 };
 
-UI.updateTargetItem = function (this: any) {
+UI.updateTargetItem = function (this: UIShape) {
 	const { target } = this;
 	if (target !== null) {
 		const { list } = this;
@@ -1165,12 +1297,12 @@ UI.updateTargetItem = function (this: any) {
 	}
 };
 
-UI.updateElementFont = function (this: any) {
+UI.updateElementFont = function (this: UIShape) {
 	if (this.state === 'open') {
 		if (this.context.fontChanged) {
 			delete this.context.fontChanged;
 		}
-		const update = (element: any) => {
+		const update = (element: UINodeShape) => {
 			if (
 				element instanceof UI.Text ||
 				element instanceof UI.TextBox ||
@@ -1200,12 +1332,12 @@ UI.updateElementFont = function (this: any) {
 	}
 };
 
-UI.updateElementLanguage = function (this: any) {
+UI.updateElementLanguage = function (this: UIShape) {
 	if (this.state === 'open') {
 		if (this.context.languageChanged) {
 			delete this.context.languageChanged;
 		}
-		const update = (elements: any) => {
+		const update = (elements: UINodeShape[]) => {
 			for (const element of elements) {
 				element.updateTextContent?.();
 				update(element.children);
@@ -1216,12 +1348,12 @@ UI.updateElementLanguage = function (this: any) {
 	}
 };
 
-UI.updateElementTextScaling = function (this: any) {
+UI.updateElementTextScaling = function (this: UIShape) {
 	if (this.state === 'open') {
 		if (this.context.scalingChanged) {
 			delete this.context.scalingChanged;
 		}
-		const update = (elements: any): void => {
+		const update = (elements: UINodeShape[]): void => {
 			for (const element of elements) {
 				element.updatePrinter?.();
 				update(element.children);
@@ -1232,11 +1364,11 @@ UI.updateElementTextScaling = function (this: any) {
 	}
 };
 
-UI.updateIndexedColor = function (this: any, index: any) {
+UI.updateIndexedColor = function (this: UIShape, index: number) {
 	if (this.state === 'open') {
 		const TextElement = UI.Text;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
-		const update = (element: any): void => {
+		const update = (element: UINodeShape): void => {
 			if (element instanceof TextElement && regexp.test(element.content)) {
 				element.printer.reset();
 				this.requestRendering!();
@@ -1251,11 +1383,11 @@ UI.updateIndexedColor = function (this: any, index: any) {
 	}
 };
 
-UI.updateControlPoints = function (this: any) {
+UI.updateControlPoints = function (this: UIShape) {
 	if (this.target !== null) {
 		const POINT_RADIUS = 4 / this.scale;
 		const { instance } = this.target;
-		const points = this.controlPoints;
+		const points = this.controlPoints!;
 		const matrix = instance.matrix;
 		const L = instance.x;
 		const T = instance.y;
@@ -1323,7 +1455,7 @@ UI.updateControlPoints = function (this: any) {
 	}
 };
 
-UI.updateAllTexts = function (this: any) {
+UI.updateAllTexts = function (this: UIShape) {
 	if (!Title.tabBar.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
@@ -1333,7 +1465,7 @@ UI.updateAllTexts = function (this: any) {
 	this.updateElementLanguage!();
 };
 
-UI.updateAllPrinters = function (this: any) {
+UI.updateAllPrinters = function (this: UIShape) {
 	if (!Title.tabBar.data) return;
 	for (const context of Title.tabBar.data) {
 		if (context.type === 'ui') {
@@ -1343,9 +1475,9 @@ UI.updateAllPrinters = function (this: any) {
 	this.updateElementTextScaling!();
 };
 
-UI.updateAllReferences = function (this: any) {
+UI.updateAllReferences = function (this: UIShape) {
 	if (this.state === 'open') {
-		const update = (elements: any): void => {
+		const update = (elements: UINodeShape[]): void => {
 			for (const element of elements) {
 				if (element instanceof UI.Reference) {
 					element.update();
@@ -1358,14 +1490,14 @@ UI.updateAllReferences = function (this: any) {
 	}
 };
 
-UI.updateElement = function (this: any, target: any) {
+UI.updateElement = function (this: UIShape, target: UINodeShape) {
 	let nodes;
 	let instance;
 	if (this.nodes.includes(target)) {
 		nodes = this.nodes;
 		instance = this.root;
 	} else {
-		const find = (node: any): any => {
+		const find = (node: UINodeShape): UINodeShape | null => {
 			const children = node.children;
 			if (children.includes(target)) {
 				return node;
@@ -1381,7 +1513,7 @@ UI.updateElement = function (this: any, target: any) {
 		const node = find({
 			instance: this.root,
 			children: this.nodes
-		});
+		} as unknown as UINodeShape);
 		if (node) {
 			nodes = node.children;
 			instance = node.instance;
@@ -1393,15 +1525,15 @@ UI.updateElement = function (this: any, target: any) {
 	this.requestRendering!();
 };
 
-UI.deleteElement = function (this: any, target: any) {
+UI.deleteElement = function (this: UIShape, target: UINodeShape) {
 	target.instance.remove();
 	target.instance.destroy();
 };
 
-UI.updateHead = function (this: any) {
+UI.updateHead = function (this: UIShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement!(head) as any;
+		const { nav } = Layout.getGroupOfElement!(head)!;
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
@@ -1413,7 +1545,7 @@ UI.updateHead = function (this: any) {
 	}
 };
 
-UI.resize = function (this: any) {
+UI.resize = function (this: UIShape) {
 	if (this.state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const scaledPadding = Math.round(this.padding * scale);
@@ -1452,7 +1584,7 @@ UI.resize = function (this: any) {
 
 UI.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: any, event: any) {
+	return function (this: UIShape, event: PointerEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - this.paddingLeft) / this.scaleX;
@@ -1461,7 +1593,7 @@ UI.getPointerCoords = (function IIFE() {
 	};
 })();
 
-UI.updateCamera = function (this: any, x = this.centerX, y = this.centerY) {
+UI.updateCamera = function (this: UIShape, x = this.centerX, y = this.centerY) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const scrollX = x * this.scaleX + this.paddingLeft;
@@ -1475,7 +1607,7 @@ UI.updateCamera = function (this: any, x = this.centerX, y = this.centerY) {
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
 
-UI.updateTransform = function (this: any) {
+UI.updateTransform = function (this: UIShape) {
 	const dpr = window.devicePixelRatio;
 	const screen = this.screen;
 	const left = Math.roundTo(screen.scrollLeft * dpr - this.paddingLeft, 4);
@@ -1505,7 +1637,7 @@ UI.registerPreset = (function IIFE() {
 		} while (id in uiPresets);
 		return id;
 	};
-	const registerPreset = (node: any) => {
+	const registerPreset = (node: UINodeShape) => {
 		const { uiPresets } = Data;
 		// 新元素或元素ID冲突，生成新ID
 		if (node.presetId === '' || node.presetId in uiPresets) {
@@ -1519,23 +1651,28 @@ UI.registerPreset = (function IIFE() {
 			registerPreset(child);
 		}
 	};
-	return function (this: any, node: any) {
+	return function (this: UIShape, node: UINodeShape) {
 		registerPreset(node);
 	};
 })();
 
-UI.unregisterPreset = function (this: any, node: any) {
+UI.unregisterPreset = function (this: UIShape, node: UINodeShape) {
 	delete Data.uiPresets[node.presetId];
 	for (const child of node.children) {
 		UI.unregisterPreset!(child);
 	}
 };
 
-UI.createPrefabItem = function (this: any, parent: any, x: any, y: any) {
-	const { uiPrefabs } = Editor.project as any;
-	const items = [] as any[];
+UI.createPrefabItem = function (
+	this: UIShape,
+	parent?: UINodeShape | null,
+	x?: number,
+	y?: number
+) {
+	const { uiPrefabs } = Editor.project!;
+	const items: Array<{ label: string; data: UINodeShape; click: () => void }> = [];
 	if (uiPrefabs.length !== 0) {
-		const click = function (this: any) {
+		const click = function (this: { data: UINodeShape }) {
 			UI.createPrefab!(this.data, parent, x, y);
 		};
 		const map = Data.uiPresets;
@@ -1553,32 +1690,27 @@ UI.createPrefabItem = function (this: any, parent: any, x: any, y: any) {
 	return {
 		label: Local.get!('menuUIList.create.prefab'),
 		enabled: items.length !== 0,
-		submenu: items.sort((a: any, b: any) => a.label.localeCompare(b.label))
+		submenu: items.sort((a, b) => a.label.localeCompare(b.label))
 	};
 };
 
-UI.hasPrefab = function (this: any, node: any) {
-	return (Editor.project as any).uiPrefabs.includes(node.presetId);
+UI.hasPrefab = function (this: UIShape, node: UINodeShape) {
+	return Editor.project!.uiPrefabs.includes(node.presetId);
 };
 
-UI.setAsPrefab = function (this: any, node: any) {
-	if ((Editor.project as any).uiPrefabs.push(node.presetId)) {
+UI.setAsPrefab = function (this: UIShape, node: UINodeShape) {
+	if (Editor.project!.uiPrefabs.push(node.presetId)) {
 		UI.list.updateIcon(node);
 	}
 };
 
-UI.unsetAsPrefab = function (this: any, node: any) {
-	if (
-		(Editor.project as any).uiPrefabs.splice(
-			(Editor.project as any).uiPrefabs.indexOf(node.presetId),
-			1
-		)
-	) {
+UI.unsetAsPrefab = function (this: UIShape, node: UINodeShape) {
+	if (Editor.project!.uiPrefabs.splice(Editor.project!.uiPrefabs.indexOf(node.presetId), 1)) {
 		UI.list.updateIcon(node);
 	}
 };
 
-UI.clearInvalidPrefabs = function (this: any, uiPrefabs: any) {
+UI.clearInvalidPrefabs = function (this: UIShape, uiPrefabs: string[]) {
 	let i = uiPrefabs.length;
 	while (--i >= 0) {
 		const guid = uiPrefabs[i];
@@ -1588,7 +1720,7 @@ UI.clearInvalidPrefabs = function (this: any, uiPrefabs: any) {
 	}
 };
 
-UI.createElement = function (this: any, node: any, main: any) {
+UI.createElement = function (this: UIShape, node: UINodeShape, main?: boolean) {
 	let instance;
 	switch (node.class) {
 		case 'image':
@@ -1642,7 +1774,7 @@ UI.createElement = function (this: any, node: any, main: any) {
 	return instance;
 };
 
-UI.loadElement = function (this: any, node: any, parent: any) {
+UI.loadElement = function (this: UIShape, node: UINodeShape, parent?: UINodeShape) {
 	const instance = this.createElement!(node, true);
 	if (parent !== undefined) {
 		parent.appendChild(instance);
@@ -1652,17 +1784,17 @@ UI.loadElement = function (this: any, node: any, parent: any) {
 	}
 };
 
-UI.drawBackground = function (this: any) {
+UI.drawBackground = function (this: UIShape) {
 	const gl = GL;
 	gl.clearColor(...this.background.getGLRGBA());
 	gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
-UI.drawElements = function (this: any) {
+UI.drawElements = function (this: UIShape) {
 	this.root.draw();
 };
 
-UI.drawCoordinateAxes = function (this: any) {
+UI.drawCoordinateAxes = function (this: UIShape) {
 	if (this.target !== null) {
 		const { parent } = this.target.instance;
 		const gl = GL;
@@ -1734,7 +1866,7 @@ UI.drawCoordinateAxes = function (this: any) {
 	}
 };
 
-UI.drawHoverWireframe = function (this: any) {
+UI.drawHoverWireframe = function (this: UIShape) {
 	if (this.hover !== null && this.hover !== this.target) {
 		const { instance } = this.hover;
 		if (instance.visible) {
@@ -1743,14 +1875,14 @@ UI.drawHoverWireframe = function (this: any) {
 	}
 };
 
-UI.drawTargetWireframe = function (this: any) {
+UI.drawTargetWireframe = function (this: UIShape) {
 	if (this.target !== null) {
 		const { instance } = this.target;
 		instance.drawWireframe(0xffc0ff00);
 	}
 };
 
-UI.drawTargetAnchor = function (this: any) {
+UI.drawTargetAnchor = function (this: UIShape) {
 	if (this.target !== null) {
 		const { instance } = this.target;
 		const gl = GL;
@@ -1787,7 +1919,7 @@ UI.drawTargetAnchor = function (this: any) {
 	}
 };
 
-UI.drawControlPoints = function (this: any) {
+UI.drawControlPoints = function (this: UIShape) {
 	const target = this.target;
 	const texture = this.controlPointTexture;
 	if (target !== null && texture !== null) {
@@ -1796,7 +1928,7 @@ UI.drawControlPoints = function (this: any) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		let vi = 0;
-		const { list } = this.controlPoints;
+		const { list } = this.controlPoints!;
 		const length = list.length;
 		for (let i = 4; i < length; i++) {
 			const { x, y } = list[i];
@@ -1836,10 +1968,10 @@ UI.drawControlPoints = function (this: any) {
 	}
 };
 
-UI.selectControlPoint = function (this: any, x: any, y: any) {
+UI.selectControlPoint = function (this: UIShape, x: number, y: number) {
 	if (this.target !== null && !(this.target.class === 'reference' && this.target.synchronous)) {
 		const radius = 6 / this.scale;
-		const { list } = this.controlPoints;
+		const { list } = this.controlPoints!;
 		for (let i = list.length - 1; i >= 0; i--) {
 			const point = list[i];
 			const sx = point.x - radius;
@@ -1855,7 +1987,7 @@ UI.selectControlPoint = function (this: any, x: any, y: any) {
 };
 
 UI.selectObject = (function IIFE() {
-	const find = (elements: any, x: any, y: any): any => {
+	const find = (elements: UINodeShape[], x: number, y: number): UINodeShape | null => {
 		const length = elements.length;
 		for (let i = length - 1; i >= 0; i--) {
 			const element = elements[i];
@@ -1872,18 +2004,18 @@ UI.selectObject = (function IIFE() {
 		}
 		return null;
 	};
-	return function (this: any, x: any, y: any) {
+	return function (this: UIShape, x: number, y: number) {
 		return find(this.root.children, x, y);
 	};
 })();
 
-UI.requestRendering = function (this: any) {
+UI.requestRendering = function (this: UIShape) {
 	if (this.state === 'open') {
 		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
 
-UI.renderingFunction = function (this: any) {
+UI.renderingFunction = function (this: UIShape) {
 	if (GL.width * GL.height !== 0) {
 		UI.drawBackground!();
 		UI.drawElements!();
@@ -1895,11 +2027,11 @@ UI.renderingFunction = function (this: any) {
 	}
 };
 
-UI.stopRendering = function (this: any) {
+UI.stopRendering = function (this: UIShape) {
 	Timer.removeUpdater!('stageRendering', this.renderingFunction);
 };
 
-UI.switchSettings = function (this: any) {
+UI.switchSettings = function (this: UIShape) {
 	if (!hasClass(Inspector.fileUI.button, 'selected')) {
 		Inspector.open!('fileUI', UI);
 	} else {
@@ -1907,16 +2039,16 @@ UI.switchSettings = function (this: any) {
 	}
 };
 
-UI.planToSave = function (this: any) {
+UI.planToSave = function (this: UIShape) {
 	File.planToSave!(this.meta);
 };
 
-UI.saveToConfig = function (this: any, config: any) {
+UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, any> }) {
 	config.colors.uiBackground = this.background.hex;
 	config.colors.uiForeground = this.foreground.hex;
 };
 
-UI.loadFromConfig = function (this: any, config: any) {
+UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, any> }) {
 	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
 		if (this.state === 'open') {
@@ -1926,24 +2058,27 @@ UI.loadFromConfig = function (this: any, config: any) {
 	});
 };
 
-UI.saveToProject = function (this: any, project: any) {
+UI.saveToProject = function (
+	this: UIShape,
+	project: { ui: { zoom?: number } & Record<string, any>; uiPrefabs?: string[] }
+) {
 	const { ui, uiPrefabs } = project;
 	ui.zoom = this.zoom ?? ui.zoom;
 	UI.clearInvalidPrefabs!(uiPrefabs ?? []);
 };
 
-UI.loadFromProject = function (this: any, project: any) {
+UI.loadFromProject = function (this: UIShape, project: { ui: { zoom: number } }) {
 	const { ui } = project;
 	this.setZoom!(ui.zoom);
 };
 
-UI.webglRestored = function (this: any, event: any) {
+UI.webglRestored = function (this: UIShape, event: Event) {
 	if (UI.state === 'open') {
 		UI.requestRendering!();
 	}
 };
 
-UI.windowResize = function (this: any, event: any) {
+UI.windowResize = function (this: UIShape, event: Event) {
 	this.updateHead!();
 	if (this.state === 'open') {
 		this.resize!();
@@ -1952,15 +2087,15 @@ UI.windowResize = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.themechange = function (this: any, event: any) {
+UI.themechange = function (this: UIShape, event: Event) {
 	this.requestRendering!();
 }.bind(UI);
 
-UI.localizationchange = function (this: any, event: any) {
+UI.localizationchange = function (this: UIShape, event: Event) {
 	this.updateAllTexts!();
 }.bind(UI);
 
-UI.keydown = function (this: any, event: any) {
+UI.keydown = function (this: UIShape, event: KeyboardEvent) {
 	if (UI.state === 'open' && UI.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
@@ -1976,7 +2111,7 @@ UI.keydown = function (this: any, event: any) {
 	}
 };
 
-UI.headPointerdown = function (this: any, event: any) {
+UI.headPointerdown = function (this: UIShape, event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== UI.screen) {
@@ -1985,10 +2120,10 @@ UI.headPointerdown = function (this: any, event: any) {
 	}
 };
 
-UI.switchPointerdown = function (this: any, event: any) {
+UI.switchPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'settings':
@@ -2000,10 +2135,10 @@ UI.switchPointerdown = function (this: any, event: any) {
 	}
 };
 
-UI.shortcutPointerdown = function (this: any, event: any) {
+UI.shortcutPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'item')) {
 				UI.create!(element.getAttribute('value'), 0, 0);
 			}
@@ -2012,15 +2147,15 @@ UI.shortcutPointerdown = function (this: any, event: any) {
 	}
 };
 
-UI.zoomFocus = function (this: any, event: any) {
+UI.zoomFocus = function (this: UIShape, event: Event) {
 	UI.screen.focus();
 };
 
-UI.zoomInput = function (this: any, event: any) {
+UI.zoomInput = function (this: UIShape, event: Event & { value?: number }) {
 	UI.setZoom!(read(this));
 };
 
-UI.screenKeydown = function (this: any, event: any) {
+UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 	if (this.state === 'open' && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -2066,7 +2201,7 @@ UI.screenKeydown = function (this: any, event: any) {
 			case 'KeyA':
 				if ((this.translationKey & 0b0001) === 0) {
 					this.translationKey |= 0b0001;
-					this.translationTimer.add();
+					this.translationTimer!.add();
 					this.screen.beginScrolling();
 					window.addEventListener('keyup', this.translationKeyup);
 				}
@@ -2074,7 +2209,7 @@ UI.screenKeydown = function (this: any, event: any) {
 			case 'KeyW':
 				if ((this.translationKey & 0b0010) === 0) {
 					this.translationKey |= 0b0010;
-					this.translationTimer.add();
+					this.translationTimer!.add();
 					this.screen.beginScrolling();
 					window.addEventListener('keyup', this.translationKeyup);
 				}
@@ -2082,7 +2217,7 @@ UI.screenKeydown = function (this: any, event: any) {
 			case 'KeyD':
 				if ((this.translationKey & 0b0100) === 0) {
 					this.translationKey |= 0b0100;
-					this.translationTimer.add();
+					this.translationTimer!.add();
 					this.screen.beginScrolling();
 					window.addEventListener('keyup', this.translationKeyup);
 				}
@@ -2090,7 +2225,7 @@ UI.screenKeydown = function (this: any, event: any) {
 			case 'KeyS':
 				if ((this.translationKey & 0b1000) === 0) {
 					this.translationKey |= 0b1000;
-					this.translationTimer.add();
+					this.translationTimer!.add();
 					this.screen.beginScrolling();
 					window.addEventListener('keyup', this.translationKeyup);
 				}
@@ -2148,7 +2283,7 @@ UI.screenKeydown = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.translationKeyup = function (this: any, event: any) {
+UI.translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
 	if (this.translationKey === 0b0000) {
 		return;
 	}
@@ -2171,13 +2306,13 @@ UI.translationKeyup = function (this: any, event: any) {
 		}
 	}
 	if (this.translationKey === 0b0000) {
-		this.translationTimer.remove();
+		this.translationTimer!.remove();
 		this.screen.endScrolling();
 		window.removeEventListener('keyup', this.translationKeyup);
 	}
 }.bind(UI);
 
-UI.screenWheel = function (this: any, event: any) {
+UI.screenWheel = function (this: UIShape, event: WheelEvent) {
 	if (this.state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
@@ -2187,7 +2322,7 @@ UI.screenWheel = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.screenUserscroll = function (this: any, event: any) {
+UI.screenUserscroll = function (this: UIShape, event: Event) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -2198,13 +2333,13 @@ UI.screenUserscroll = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.screenBlur = function (this: any, event: any) {
+UI.screenBlur = function (this: UIShape, event: FocusEvent) {
 	this.translationKeyup!();
 	this.pointerup!();
 	// this.marqueePointerleave!()
 }.bind(UI);
 
-UI.marqueePointerdown = function (this: any, event: any) {
+UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -2222,7 +2357,7 @@ UI.marqueePointerdown = function (this: any, event: any) {
 			}
 			if (this.controlPointActive && this.target) {
 				const { transform } = this.target;
-				const points = this.controlPoints;
+				const points = this.controlPoints!;
 				this.dragging = event;
 				switch (this.controlPointActive) {
 					case points.rotate.TL:
@@ -2301,7 +2436,7 @@ UI.marqueePointerdown = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.marqueePointermove = function (this: any, event: any) {
+UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
 		const { x, y } = this.getPointerCoords!(event);
@@ -2321,21 +2456,21 @@ UI.marqueePointermove = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.marqueePointerleave = function (this: any, event: any) {
+UI.marqueePointerleave = function (this: UIShape, event: UIPointerEvent) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		this.setHover!(null);
 	}
 }.bind(UI);
 
-UI.marqueeDoubleclick = function (this: any, event: any) {
+UI.marqueeDoubleclick = function (this: UIShape, event: UIPointerEvent) {
 	if (this.target) {
 		this.screenBlur!();
 		this.revealTarget!();
 	}
 }.bind(UI);
 
-UI.pointerup = function (this: any, event: any) {
+UI.pointerup = function (this: UIShape, event?: UIPointerEvent) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
@@ -2352,11 +2487,11 @@ UI.pointerup = function (this: any, event: any) {
 				this.requestRendering!();
 				break;
 			case 'ready-to-scroll':
-				if (event.target === this.marquee) {
-					const { x, y } = this.getPointerCoords!(event);
+				if (event!.target === this.marquee) {
+					const { x, y } = this.getPointerCoords!(event!);
 					const object = this.selectObject!(x, y);
 					this.setTarget!(object);
-					this.menuPopup!(event);
+					this.menuPopup!(event!);
 				}
 				break;
 			case 'scroll':
@@ -2370,7 +2505,7 @@ UI.pointerup = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.pointermove = function (this: any, event: any) {
+UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 	const { dragging } = this;
 	if (dragging && relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
@@ -2400,8 +2535,8 @@ UI.pointermove = function (this: any, event: any) {
 				if (this.target) {
 					const { instance } = this.target;
 					const { parent, transform } = instance;
-					const points = this.controlPoints;
-					const point = this.controlPointActive;
+					const points = this.controlPoints!;
+					const point = this.controlPointActive!;
 					const angle = Math.radians(point.angle + this.controlPointRotation);
 					const distX = ((event.clientX - dragging.clientX) * dpr) / this.scaleX;
 					const distY = ((event.clientY - dragging.clientY) * dpr) / this.scaleY;
@@ -2558,12 +2693,12 @@ UI.pointermove = function (this: any, event: any) {
 	}
 }.bind(UI);
 
-UI.menuPopup = function (this: any, event: any) {
+UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	this.translationKeyup!();
 	const { x, y } = this.getPointerCoords!(event);
 	const target = this.target;
 	const selected = !!target;
-	const pastable = (Clipboard as any).has('yami.ui.object');
+	const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
 	const get = Local.createGetter!('menuUIList');
 	const items = [
 		{
@@ -2740,14 +2875,14 @@ UI.menuPopup = function (this: any, event: any) {
 	);
 };
 
-UI.searcherInput = function (this: any, event: any) {
+UI.searcherInput = function (this: UIShape, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input!.value;
 		UI.list.searchNodesDebounced(text);
 	}
 };
 
-UI.listKeydown = function (this: any, event: any) {
+UI.listKeydown = function (this: UIShape, event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
@@ -2788,13 +2923,13 @@ UI.listKeydown = function (this: any, event: any) {
 	}
 };
 
-UI.listPointerdown = function (this: any, event: any) {
+UI.listPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			switch (element.tagName) {
 				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode;
+					const { item } = element.parentNode as unknown as { item: UINodeShape };
 					const { instance, hidden } = item;
 					const backups1 = this.setRecursiveStates!(item, 'hidden', !hidden);
 					const backups2 = this.setRecursiveStates!(instance, 'visible', hidden);
@@ -2817,7 +2952,7 @@ UI.listPointerdown = function (this: any, event: any) {
 					break;
 				}
 				case 'LOCK-ICON': {
-					const { item } = element.parentNode;
+					const { item } = element.parentNode as unknown as { item: UINodeShape };
 					const { locked } = item;
 					const backups = this.setRecursiveStates!(item, 'locked', !locked);
 					this.update!();
@@ -2839,11 +2974,11 @@ UI.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-UI.listSelect = function (this: any, event: any) {
+UI.listSelect = function (this: UIShape, event: Event) {
 	UI.setTarget!(event.value);
 };
 
-UI.listRecord = function (this: any, event: any) {
+UI.listRecord = function (this: UIShape, event: Event) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename':
@@ -2870,14 +3005,14 @@ UI.listRecord = function (this: any, event: any) {
 	}
 };
 
-UI.listPopup = function (this: any, event: any) {
+UI.listPopup = function (this: UIShape, event: Event) {
 	const list = UI.list;
 	const item = event.value;
-	const menuItems = [] as any[];
+	const menuItems: MenuItem[] = [];
 	const get = Local.createGetter!('menuUIList');
 	const selected = !!item;
 	const copyable = selected;
-	const pastable = (Clipboard as any).has('yami.ui.object');
+	const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
 	const deletable = selected;
 	const renamable = selected;
 	menuItems.push({
@@ -3027,7 +3162,7 @@ UI.listPopup = function (this: any, event: any) {
 			accelerator: 'F2',
 			enabled: renamable,
 			click: () => {
-				(this as any).rename(item);
+				this.rename(item);
 			}
 		},
 		{
@@ -3076,11 +3211,14 @@ UI.listPopup = function (this: any, event: any) {
 	);
 };
 
-UI.listOpen = function (this: any, event: any) {
+UI.listOpen = function (this: UIShape, event: Event) {
 	UI.revealTarget!(event.value);
 };
 
-UI.listRename = function (this: any, response: any) {
+UI.listRename = function (
+	this: UIShape,
+	response: { item: UINodeShape; oldValue: string; newValue: string }
+) {
 	const editor = Inspector.uiElement;
 	const target = response.item;
 	const input = editor.nameBox;
@@ -3100,32 +3238,36 @@ UI.listRename = function (this: any, response: any) {
 	});
 };
 
-UI.listChange = function (this: any, event: any) {
+UI.listChange = function (this: UIShape, event: Event) {
 	UI.planToSave!();
 };
 
-UI.listPageResize = function (this: any, event: any) {
+UI.listPageResize = function (this: UIShape, event: Event) {
 	UI.list.updateHead();
 	UI.list.resize();
 };
 
 // 选框 - 调整目标
-UI.marquee.resize = function (this: any) {
+UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEvent | null }) {
 	if (this.pointerevent) {
-		UI.marqueePointermove!(this.pointerevent);
+		UI.marqueePointermove!(this.pointerevent!);
 	}
 };
 
 // 列表 - 复制
-UI.list.copy = function (this: any, item: any) {
+UI.list.copy = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	if (item) {
-		(Clipboard as any).write('yami.ui.object', item);
+		(Clipboard as unknown as GlobalClipboardHost).write('yami.ui.object', item);
 	}
 };
 
 // 列表 - 粘贴
-UI.list.paste = function (this: any, dItem: any, callback: any) {
-	const copy = (Clipboard as any).read('yami.ui.object');
+UI.list.paste = function (
+	this: HTMLElement & { [k: string]: any },
+	dItem: UINodeShape | null,
+	callback?: (data: unknown) => void
+) {
+	const copy = (Clipboard as unknown as GlobalClipboardHost).read('yami.ui.object');
 	if (copy && this.data) {
 		callback?.(copy);
 		this.addNodeTo!(copy, dItem);
@@ -3134,7 +3276,7 @@ UI.list.paste = function (this: any, dItem: any, callback: any) {
 };
 
 // 列表 - 删除
-UI.list.delete = function (this: any, item: any) {
+UI.list.delete = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	if (item) {
 		this.deleteNode!(item);
 		UI.requestRendering!();
@@ -3142,7 +3284,7 @@ UI.list.delete = function (this: any, item: any) {
 };
 
 // 列表 - 开关
-UI.list.toggle = function (this: any, item: any) {
+UI.list.toggle = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	if (item) {
 		UI.history.save({
 			type: 'ui-object-toggle',
@@ -3157,7 +3299,7 @@ UI.list.toggle = function (this: any, item: any) {
 };
 
 // 列表 - 取消搜索
-UI.list.cancelSearch = function (this: any) {
+UI.list.cancelSearch = function (this: HTMLElement & { [k: string]: any }) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		UI.searcher.deleteInputContent();
@@ -3220,7 +3362,7 @@ UI.list.createIcon = (function IIFE() {
 			addClass(icon, 'icon-ui-container');
 			return icon;
 		},
-		reference: (item: any) => {
+		reference: (item: UINodeShape) => {
 			const icon = document.createElement('node-icon');
 			const preset = Data.uiPresets[item.prefabId];
 			switch (preset?.data.class ?? 'reference') {
@@ -3264,8 +3406,10 @@ UI.list.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (this: any, item: any) {
-		const icon = (iconCreators as any)[item.class](item);
+	return function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+		const icon = (iconCreators as Record<string, (item?: UINodeShape) => HTMLElement>)[
+			item.class
+		](item);
 		if (UI.hasPrefab!(item)) {
 			addClass(icon, 'icon-ui-set-as-prefab');
 		}
@@ -3274,7 +3418,7 @@ UI.list.createIcon = (function IIFE() {
 })();
 
 // 列表 - 更新图标
-UI.list.updateIcon = function (this: any, item: any) {
+UI.list.updateIcon = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	const { element } = item;
 	if (element?.nodeIcon) {
 		const icon = this.createIcon!(item);
@@ -3284,10 +3428,14 @@ UI.list.updateIcon = function (this: any, item: any) {
 };
 
 // 列表 - 更新头部位置
-UI.list.updateHead = function (this: any) {
+UI.list.updateHead = function (
+	this: HTMLElement & { page: HTMLElement; head: HTMLElement & { left?: number } } & {
+		[k: string]: any;
+	}
+) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = Layout.getGroupOfElement!(head) as any;
+		const { nav } = Layout.getGroupOfElement!(head)!;
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
@@ -3299,7 +3447,10 @@ UI.list.updateHead = function (this: any) {
 };
 
 // 列表 - 创建条件图标
-UI.list.createConditionIcon = function (this: any, item: any) {
+UI.list.createConditionIcon = function (
+	this: HTMLElement & { [k: string]: any },
+	item: UINodeShape
+) {
 	const { element } = item;
 	const conditionIcon = document.createElement('node-icon');
 	addClass(conditionIcon, 'icon-conditional');
@@ -3309,7 +3460,10 @@ UI.list.createConditionIcon = function (this: any, item: any) {
 };
 
 // 列表 - 更新条件图标
-UI.list.updateConditionIcon = function (this: any, item: any) {
+UI.list.updateConditionIcon = function (
+	this: HTMLElement & { [k: string]: any },
+	item: UINodeShape
+) {
 	const { element, enabled } = item;
 	const condition = enabled ? 'none' : 'absent';
 	if (element.condition !== condition) {
@@ -3330,19 +3484,19 @@ UI.list.updateConditionIcon = function (this: any, item: any) {
 };
 
 // 列表 - 在创建数据时回调
-UI.list.onCreate = function (this: any, item: any) {
+UI.list.onCreate = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 };
 
 // 列表 - 在迁移数据时回调
-UI.list.onRemove = function (this: any, item: any) {
+UI.list.onRemove = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	UI.updateElement!(item);
 };
 
 // 列表 - 在删除数据时回调
-UI.list.onDelete = function (this: any, item: any) {
+UI.list.onDelete = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	UI.unregisterPreset!(item);
 	UI.deleteElement!(item);
 	UI.updateHover!();
@@ -3351,7 +3505,7 @@ UI.list.onDelete = function (this: any, item: any) {
 };
 
 // 列表 - 在恢复数据时回调
-UI.list.onResume = function (this: any, item: any) {
+UI.list.onResume = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);

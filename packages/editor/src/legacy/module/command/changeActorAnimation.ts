@@ -17,7 +17,7 @@ Command.cases.changeActorAnimation = new CommandSchema({
 			.push(Command.parseFileName(animationId));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.changeActorAnimation') + Token(': ') },
+			{ text: Local.get!('command.changeActorAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

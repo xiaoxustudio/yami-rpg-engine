@@ -5,19 +5,57 @@ import { Inspector } from './inspector.ts';
 import { Particle } from '@/particle/particle-window.ts';
 
 {
-	const ParticleLayer = {
+	interface ParticleLayerShape {
+		target: ParticleLayerData | null;
+		paramInput: ((event: Event) => void) | null;
+		update: ((layer: ParticleLayerData, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
+	}
+	interface ParticleLayerData {
+		area: {
+			type?: unknown;
+			x?: unknown;
+			y?: unknown;
+			width?: unknown;
+			height?: unknown;
+			radius?: unknown;
+			[k: string]: unknown;
+		};
+		color: {
+			mode?: unknown;
+			rgba?: unknown[];
+			min?: unknown[];
+			max?: unknown[];
+			easingId?: unknown;
+			startMin?: unknown[];
+			startMax?: unknown[];
+			endMin?: unknown[];
+			endMax?: unknown[];
+			tint?: unknown[];
+			[k: string]: unknown;
+		};
+		sprite: {
+			mode?: unknown;
+			hframes?: unknown;
+			vframes?: unknown;
+			interval?: unknown;
+			[k: string]: unknown;
+		};
+		[k: string]: unknown;
+	}
+	const ParticleLayer: ParticleLayerShape = {
 		owner: Particle,
-		target: null as any,
-		nameBox: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		nameBox: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	ParticleLayer.initialize = function (this: any) {
+	ParticleLayer.initialize = function (this: typeof ParticleLayer) {
 		if (!$('#particleLayer-name')) return;
 		this.nameBox = $('#particleLayer-name');
 		$('#particleLayer-area-type').loadItems([
@@ -180,7 +218,7 @@ import { Particle } from '@/particle/particle-window.ts';
     #particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider,
     #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider`);
 		const blurHandler = Inspector.inputBlur!(this, Particle);
-		(elements as unknown as HTMLElement[]).forEach((el) => on(el, 'input', this.paramInput));
+		(elements as unknown as HTMLElement[]).forEach((el) => on(el, 'input', this.paramInput!));
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			on(el, 'focus', Inspector.inputFocus)
 		);
@@ -191,7 +229,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		(sliders as unknown as HTMLElement[]).forEach((el) => on(el, 'blur', Inspector.sliderBlur));
 	};
 
-	ParticleLayer.create = function (this: any) {
+	ParticleLayer.create = function (this: typeof ParticleLayer) {
 		return {
 			class: 'particle',
 			name: 'Layer',
@@ -255,7 +293,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		};
 	};
 
-	ParticleLayer.open = function (this: any, layer: any) {
+	ParticleLayer.open = function (this: typeof ParticleLayer, layer: ParticleLayerData) {
 		if (this.target !== layer) {
 			this.target = layer;
 
@@ -362,7 +400,7 @@ import { Particle } from '@/particle/particle-window.ts';
 		}
 	};
 
-	ParticleLayer.close = function (this: any) {
+	ParticleLayer.close = function (this: typeof ParticleLayer) {
 		if (this.target) {
 			Particle.list.unselect!(this.target);
 			Particle.updateTarget!();
@@ -370,7 +408,12 @@ import { Particle } from '@/particle/particle-window.ts';
 		}
 	};
 
-	ParticleLayer.update = function (this: any, layer: any, key: any, value: any) {
+	ParticleLayer.update = function (
+		this: typeof ParticleLayer,
+		layer: ParticleLayerData,
+		key: string,
+		value: unknown
+	) {
 		const layerInstance = Particle.emitter.getLayer(layer);
 		Particle.planToSave!();
 		switch (key) {
@@ -445,7 +488,7 @@ import { Particle } from '@/particle/particle-window.ts';
 			case 'interval':
 				if (layer.interval !== value) {
 					layer.interval = value;
-					if (layerInstance.elapsed >= value) {
+					if (layerInstance.elapsed >= (value as number)) {
 						layerInstance.elapsed = 0;
 					}
 					if (value === 0) {
@@ -653,9 +696,9 @@ import { Particle } from '@/particle/particle-window.ts';
 			case 'color-tint-3': {
 				const keys = key.split('-');
 				const last = keys.length - 1;
-				let node = layer;
+				let node: Record<string, unknown> = layer;
 				for (let i = 0; i < last; i++) {
-					node = node[keys[i]];
+					node = node[keys[i]] as Record<string, unknown>;
 				}
 				const property = keys[last];
 				if (node[property] !== value) {
@@ -667,8 +710,12 @@ import { Particle } from '@/particle/particle-window.ts';
 		Particle.requestRendering!();
 	};
 
-	ParticleLayer.paramInput = function (this: any, event: any) {
-		ParticleLayer.update(ParticleLayer.target, Inspector.getKey!(this), read(this));
+	ParticleLayer.paramInput = function (this: typeof ParticleLayer, event: Event) {
+		ParticleLayer.update!(
+			ParticleLayer.target as ParticleLayerData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.particleLayer = ParticleLayer;

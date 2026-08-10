@@ -2,9 +2,9 @@ import { Editor } from './editor.ts';
 
 (function main() {
 	const start = () => {
-		(Editor.initialize as any)();
+		Editor.initialize!();
 	};
-	if ((window as any).__SKIP_AUTO_INIT__) {
+	if ((window as unknown as Record<string, any>).__SKIP_AUTO_INIT__) {
 		window.addEventListener('vue-app-mounted', start, { once: true });
 		return;
 	}

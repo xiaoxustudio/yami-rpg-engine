@@ -2,30 +2,37 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, disable, enable, read, removeClass } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
+import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
 import { Palette } from '@/palette/palette.ts';
 import { Scene } from '@/scene/scene-window.ts';
 
 {
-	const FileTileset = {
-		target: null as any,
-		meta: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface FileTilesetShape {
+		target: Record<string, unknown> | null;
+		meta: FileMeta | null;
+		update: ((tileset: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
+	}
+	const FileTileset: FileTilesetShape = {
+		target: null,
+		meta: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	FileTileset.initialize = function (this: any) {
+	FileTileset.initialize = function (this: typeof FileTileset) {
 		if (!$('#fileTileset-image')) return;
-		// 6 控件 input + width/height change 经 Vue 模板转发（FileTilesetPage.vue @input/@change → FileTileset.*）
+		// 6 闂佺鐭囬崒娑卞仺 input + width/height change 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eTilesetPage.vue @input/@change 闂?FileTileset.*闂?
 
 		Palette.initialize!();
 	};
 
-	FileTileset.create = function (this: any, type: any) {
+	FileTileset.create = function (this: typeof FileTileset, type: string) {
 		switch (type) {
 			case 'normal':
 				return {
@@ -60,7 +67,11 @@ import { Scene } from '@/scene/scene-window.ts';
 		}
 	};
 
-	FileTileset.open = function (this: any, tileset: any, meta: any) {
+	FileTileset.open = function (
+		this: typeof FileTileset,
+		tileset: Record<string, unknown>,
+		meta: FileMeta | null
+	) {
 		if (this.meta !== meta) {
 			this.target = tileset;
 			this.meta = meta;
@@ -89,7 +100,7 @@ import { Scene } from '@/scene/scene-window.ts';
 		}
 	};
 
-	FileTileset.close = function (this: any) {
+	FileTileset.close = function (this: typeof FileTileset) {
 		if (this.target) {
 			removeClass(Inspector.manager, 'overflow-visible');
 			getBrowserInstance()?.unselect?.(this.meta);
@@ -99,7 +110,12 @@ import { Scene } from '@/scene/scene-window.ts';
 		}
 	};
 
-	FileTileset.update = function (this: any, tileset: any, key: any, value: any) {
+	FileTileset.update = function (
+		this: typeof FileTileset,
+		tileset: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		File.planToSave!(this.meta);
 		switch (key) {
 			case 'image':
@@ -138,14 +154,18 @@ import { Scene } from '@/scene/scene-window.ts';
 		Scene.requestRendering!();
 	};
 
-	FileTileset.paramInput = function (this: any, event: any) {
+	FileTileset.paramInput = function (this: typeof FileTileset, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileTileset-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileTileset.update(FileTileset.target, Inspector.getKey!(element), read(element));
+		FileTileset.update!(
+			FileTileset.target as Record<string, unknown>,
+			Inspector.getKey!(element),
+			read(element)
+		);
 	};
 
 	Inspector.fileTileset = FileTileset;

@@ -56,15 +56,17 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	(el as any).popup = popup;
-	(el as any).computeMenuWidth = computeMenuWidth;
-	(el as any).close = close;
-	(el as any).clear = clear;
-	(el as any).createItem = createItem;
-	(el as any).select = select;
-	(el as any).unselect = unselect;
-	(el as any).reselect = reselect;
-	(el as any).popupSubmenu = popupSubmenu;
-	(el as any).closeSubmenu = closeSubmenu;
+	Object.assign(el, {
+		popup,
+		computeMenuWidth,
+		close,
+		clear,
+		createItem,
+		select,
+		unselect,
+		reselect,
+		popupSubmenu,
+		closeSubmenu
+	});
 });
 </script>

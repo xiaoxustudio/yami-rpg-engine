@@ -21,15 +21,15 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 	_font!: string;
 	_color!: string;
 	_colorInt!: number;
-	textX: any;
-	textY: any;
-	textWidth: any;
-	textShiftY: any;
-	innerWidth: any;
-	innerHeight: any;
-	selectionY: any;
-	selectionWidth: any;
-	selectionHeight: any;
+	textX: number | null;
+	textY: number | null;
+	textWidth: number | null;
+	textShiftY: number | null;
+	innerWidth: number | null;
+	innerHeight: number | null;
+	selectionY: number | null;
+	selectionWidth: number | null;
+	selectionHeight: number | null;
 	_selectionColor!: string;
 	_selectionColorInt!: number;
 	_selectionBgColor!: string;
@@ -70,7 +70,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._type;
 	}
 
-	set type(value: any) {
+	set type(value: string) {
 		if (this._type !== value) {
 			this._type = value;
 			switch (value) {
@@ -88,7 +88,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._align;
 	}
 
-	set align(value: any) {
+	set align(value: string) {
 		this._align = value;
 		if (this.connected) {
 			this.calculateTextPosition!();
@@ -99,7 +99,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._padding;
 	}
 
-	set padding(value: any) {
+	set padding(value: number) {
 		if (this._padding !== value) {
 			this._padding = value;
 			if (this.connected) {
@@ -112,7 +112,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._size;
 	}
 
-	set size(value: any) {
+	set size(value: number) {
 		if (this._size !== value) {
 			this._size = value;
 			if (this.printer) {
@@ -126,12 +126,12 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._font;
 	}
 
-	set font(value: any) {
+	set font(value: string) {
 		if (this._font !== value) {
 			this._font = value;
 			if (this.printer) {
 				this.printer.reset();
-				this.printer.fonts[0] = value || Printer.font;
+				this.printer.fonts[0] = value || (Printer.font as string);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._color;
 	}
 
-	set color(value: any) {
+	set color(value: string) {
 		if (this._color !== value) {
 			this._color = value;
 			this._colorInt = INTRGBA(value);
@@ -151,7 +151,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._selectionColor;
 	}
 
-	set selectionColor(value: any) {
+	set selectionColor(value: string) {
 		if (this._selectionColor !== value) {
 			this._selectionColor = value;
 			this._selectionColorInt = INTRGBA(value);
@@ -162,7 +162,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		return this._selectionBgColor;
 	}
 
-	set selectionBgColor(value: any) {
+	set selectionBgColor(value: string) {
 		if (this._selectionBgColor !== value) {
 			this._selectionBgColor = value;
 			this._selectionBgColorInt = INTRGBA(value);
@@ -176,7 +176,7 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			printer = new Printer(texture);
 			printer.matchTag = Function.empty as () => boolean;
 			printer.sizes[0] = this.size;
-			printer.fonts[0] = this.font || Printer.font;
+			printer.fonts[0] = this.font || (Printer.font as string);
 			printer.colors[0] = '#ffffff';
 			printer.effects[0] = { type: 'none' };
 			this.texture = texture;
@@ -217,12 +217,12 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			if (UI.hover === this.node) {
 				const dx = this.textX;
 				const dy = this.selectionY;
-				const dw = this.selectionWidth;
-				const dh = this.selectionHeight;
+				const dw = this.selectionWidth!;
+				const dh = this.selectionHeight!;
 				GL.fillRect!(dx, dy, dw, dh, this._selectionBgColorInt);
-				const sy = this.textShiftY;
-				const sw = Math.min(this.textWidth, this.innerWidth);
-				const sh = this.innerHeight;
+				const sy = this.textShiftY!;
+				const sw = Math.min(this.textWidth!, this.innerWidth!);
+				const sh = this.innerHeight!;
 				texture.clip(0, sy * scale, sw * scale, sh * scale);
 				GL.drawImageWithColor!(
 					texture,
@@ -234,11 +234,18 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 				);
 			} else {
 				if (this.content) {
-					const sy = this.textShiftY;
-					const sw = Math.min(this.textWidth, this.innerWidth);
-					const sh = this.innerHeight;
+					const sy = this.textShiftY!;
+					const sw = Math.min(this.textWidth!, this.innerWidth!);
+					const sh = this.innerHeight!;
 					texture.clip(0, sy * scale, sw * scale, sh * scale);
-					GL.drawImageWithColor!(texture, this.textX, this.textY, sw, sh, this._colorInt);
+					GL.drawImageWithColor!(
+						texture,
+						this.textX!,
+						this.textY!,
+						sw,
+						sh,
+						this._colorInt
+					);
 				}
 			}
 		}
@@ -269,26 +276,26 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			this.textWidth = textWidth;
 			this.textShiftY = Math.max(paddingTop - vpadding, 0);
 			this.innerWidth = Math.max(this.width - this.padding * 2, 0);
-			this.innerHeight = Math.min(this.height + this.y - this.textY, textHeight);
+			this.innerHeight = Math.min(this.height + this.y - this.textY!, textHeight);
 			this.selectionY = this.y + Math.max(vpadding, 0);
-			this.selectionWidth = Math.min(this.innerWidth, printer.width / scale);
+			this.selectionWidth = Math.min(this.innerWidth!, printer.width / scale);
 			this.selectionHeight = Math.min(this.height, size);
 			switch (this.align) {
 				case 'center':
-					if (textWidth < this.innerWidth) {
-						this.textX += (this.innerWidth - textWidth) / 2;
+					if (textWidth < this.innerWidth!) {
+						this.textX! += (this.innerWidth! - textWidth) / 2;
 					}
 					break;
 				case 'right':
-					if (textWidth < this.innerWidth) {
-						this.textX += this.innerWidth - textWidth + 1;
+					if (textWidth < this.innerWidth!) {
+						this.textX! += this.innerWidth! - textWidth + 1;
 					}
 					break;
 			}
 			const scaleX = Math.max(this.transform.scaleX, 1);
 			const scaleY = Math.max(this.transform.scaleY, 1);
-			this.textX = Math.round(this.textX * scaleX) / scaleX;
-			this.textY = Math.round(this.textY * scaleY) / scaleY;
+			this.textX = Math.round(this.textX! * scaleX) / scaleX;
+			this.textY = Math.round(this.textY! * scaleY) / scaleY;
 		}
 	}
 

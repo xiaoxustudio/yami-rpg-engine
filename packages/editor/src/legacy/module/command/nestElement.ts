@@ -16,7 +16,7 @@ Command.cases.nestElement = new CommandSchema({
 		const cElement = Command.parseElement(child);
 		return [
 			{ color: 'element' },
-			{ text: Local.get('command.nestElement') + Token(': ') },
+			{ text: Local.get!('command.nestElement') + Token(': ') },
 			{ text: pElement + Token(' -> ') + cElement }
 		];
 	},

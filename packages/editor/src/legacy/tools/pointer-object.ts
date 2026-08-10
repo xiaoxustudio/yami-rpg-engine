@@ -2,12 +2,16 @@
 
 import { $ } from '@/util/dom.ts';
 import { addClass, removeClass } from '@/util/element-utils';
-export const Cursor = {
+export const Cursor: {
+	readonly region: HTMLElement;
+	open: (this: typeof Cursor, className: string) => void;
+	close: (this: typeof Cursor, className: string) => void;
+} = {
 	get region() {
 		return $('#cursor-region');
 	},
-	open: null as any,
-	close: null as any
+	open: null as unknown as (this: typeof Cursor, className: string) => void,
+	close: null as unknown as (this: typeof Cursor, className: string) => void
 };
 
 Cursor.open = function (className: string) {

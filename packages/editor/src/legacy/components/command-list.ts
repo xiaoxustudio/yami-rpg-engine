@@ -2,7 +2,8 @@ import {
 	createCommandListApi,
 	createCommandListElement,
 	commandListPrototype,
-	commandListStatics
+	commandListStatics,
+	type CommandListApiOptions
 } from '@ui-kit';
 import { SettingConfig } from '@/module/settingconfig';
 import { getVariable } from '@/util/safe.ts';
@@ -19,12 +20,9 @@ import { GameLocal } from '@/local/local-object.ts';
 import { SearchString } from '@/module/searchstring.ts';
 import { Local } from '@/tools/localization.ts';
 import { setTooltip } from '@/util/element-utils.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 
-const Clipboard = null as unknown as {
-	write(type: string, data: unknown): void;
-	read(type: string): unknown;
-	has(type: string): boolean;
-};
+const Clipboard = getGlobalClipboard();
 
 const options = {
 	command: {
@@ -34,7 +32,7 @@ const options = {
 		edit: (list: any, command?: any) => Command.edit(list, command),
 		parseUnlinkedId: (id: string) => Command.parseUnlinkedId(id),
 		colorizeCodeLines: (items: HTMLElement[], code: string) =>
-			(Command.cases as any).script.colorizeCodeLines(items, code)
+			Command.cases.script.colorizeCodeLines(items, code)
 	},
 	dataLookup: {
 		attribute: (id: string) => Attribute.getAttribute(id),
@@ -53,8 +51,8 @@ const options = {
 	settingConfig: SettingConfig,
 	localize: {
 		language: () => Local.language,
-		get: (key: string) => Local.get(key),
-		createGetter: (key: string) => Local.createGetter(key)
+		get: (key: string) => Local.get!(key),
+		createGetter: (key: string) => Local.createGetter!(key)
 	},
 	commandSuggestion: {
 		searcher: () => CommandSuggestion.searcher
@@ -88,15 +86,15 @@ export const CommandList: CommandListStaticsType = {
 	unhighlightTexts: commandListStatics.unhighlightTexts,
 	textPointerenter: commandListStatics.textPointerenter,
 	textPointerleave: commandListStatics.textPointerleave,
-	prototype: commandListPrototype as any
+	prototype: commandListPrototype
 };
 
 export const commandListOptions = options;
 
 export function attachCommandListApi(el: HTMLElement): void {
-	createCommandListApi(el, options as any);
+	createCommandListApi(el, options as unknown as CommandListApiOptions);
 }
 
 export function createCommandList(): HTMLElement {
-	return createCommandListElement(options as any);
+	return createCommandListElement(options as unknown as CommandListApiOptions);
 }

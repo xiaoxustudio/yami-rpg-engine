@@ -10,8 +10,8 @@ import { getMonaco } from '@/util/monaco';
 export const EditDataInstance = new (class {
 	editor: any = null;
 	model: any = null;
-	versionId: any = null;
-	commandList: any = null;
+	versionId: number | null = null;
+	commandList: unknown = null;
 	changed = false;
 	fontSize = 14;
 	lineHeight = 14;
@@ -22,10 +22,11 @@ export const EditDataInstance = new (class {
 	};
 	isCreated = false;
 	mark = $('#edit-data-mark');
-	editorParent: any = null;
-	editorDom: any = null;
-	eventListDom: any = null;
+	editorParent: HTMLElement | null = null;
+	editorDom: HTMLElement | null = null;
+	eventListDom: HTMLElement | null = null;
 	currentContent: any = null;
+	createTheme: (() => void) | null = null;
 	constructor() {}
 
 	bindDom() {
@@ -39,7 +40,7 @@ export const EditDataInstance = new (class {
 		});
 		on($('#edit-data-confirm'), 'click', this.save.bind(this));
 
-		on(this.editorParent, 'close', (event: any) => {
+		on(this.editorParent, 'close', (event: Event) => {
 			if (this.changed) {
 				event.preventDefault();
 				const get = Local.createGetter!('confirmation');
@@ -66,7 +67,7 @@ export const EditDataInstance = new (class {
 			}
 		});
 
-		on(this.editorParent, 'keydown', (event: any) => {
+		on(this.editorParent, 'keydown', (event: KeyboardEvent) => {
 			if (hasClass(event.target, 'inputarea')) {
 				switch (event.code) {
 					case 'Enter':
@@ -84,7 +85,7 @@ export const EditDataInstance = new (class {
 		return hasClass($('#edit-data'), 'maximized');
 	}
 	resize() {
-		const content = this.editorDom;
+		const content = this.editorDom!;
 		const parent = content.parentElement;
 		if (!this.isMaximized()) {
 			content.style.width = '';
@@ -92,20 +93,20 @@ export const EditDataInstance = new (class {
 			const boundingRect = content.getBoundingClientRect();
 			this.editor.layout({
 				width: boundingRect.width,
-				height: parent.clientHeight - 60
+				height: parent!.clientHeight - 60
 			});
 		} else {
-			const boundingRect = content.getBoundingClientRect();
+			const boundingRect = content!.getBoundingClientRect();
 			// 保持content左右间距相同
-			content.style.width = parent.clientWidth - boundingRect.left * 2 + 'px';
-			content.style.height = parent.clientHeight - 60 + 'px';
+			content!.style.width = parent!.clientWidth - boundingRect.left * 2 + 'px';
+			content!.style.height = parent!.clientHeight - 60 + 'px';
 			this.editor.layout({
-				width: parseFloat(content.style.width),
-				height: parseFloat(content.style.height)
+				width: parseFloat(content!.style.width),
+				height: parseFloat(content!.style.height)
 			});
 		}
 	}
-	parseJSON(text: any): any {
+	parseJSON(text: string): unknown {
 		try {
 			const vaild = JSON.parse(text);
 			if (vaild.id && vaild.params) {
@@ -136,16 +137,16 @@ export const EditDataInstance = new (class {
 		const modelValue = this.model.getValue();
 		const parse = this.parseJSON(modelValue);
 		if (!parse) return;
-		const originalStart = this.eventListDom.start;
-		const originalEnd = this.eventListDom.end;
+		const originalStart = (this.eventListDom as unknown as { start: unknown }).start;
+		const originalEnd = (this.eventListDom as unknown as { end: unknown }).end;
 
 		let hasChanges = false;
 
 		if (Array.isArray(this.currentContent)) {
 			for (const ind in this.currentContent) {
 				const { node, value }: any = this.currentContent[ind];
-				if (!(ind in parse)) continue;
-				const changeContent = parse[ind];
+				if (!(ind in (parse as object))) continue;
+				const changeContent = (parse as Record<string | number, unknown>)[ind];
 				if (JSON.stringify(value) === JSON.stringify(changeContent)) continue;
 
 				const list = node.dataList;
@@ -174,24 +175,24 @@ export const EditDataInstance = new (class {
 
 		// 如果有修改，触发 change 事件以标记数据需要保存
 		if (hasChanges) {
-			this.eventListDom.dispatchEvent(new Event('change', { bubbles: true }));
+			this.eventListDom!.dispatchEvent(new Event('change', { bubbles: true }));
 		}
 
-		this.eventListDom.update();
-		this.eventListDom.select(originalStart, originalEnd);
+		this.eventListDom!.update();
+		this.eventListDom!.select(originalStart, originalEnd);
 
 		this.currentContent = null;
 		this.setChangeState(false);
 		Window.close!('edit-data');
 	}
-	async colorizeCodeLines(items: any, code: any) {
+	async colorizeCodeLines(items: any, code: string) {
 		const monaco = await getMonaco();
 		const text = document.createElement('div');
 		addClass(text, 'text');
 		const options = this.colorOptions;
 		text.textContent = code;
 		options.theme = Title.theme;
-		(this as any).createTheme(Title.theme);
+		(this.createTheme as (theme: string) => void)(Title.theme);
 		monaco.editor.colorizeElement(text, options);
 		let index = setInterval(() => {
 			if (text.children.length !== 0) {
@@ -209,16 +210,16 @@ export const EditDataInstance = new (class {
 			}
 		});
 	}
-	async open(current: any) {
+	async open(current: unknown) {
 		const monaco = await getMonaco();
 		this.bindDom();
 		if (!this.isCreated) {
 			this.isCreated = true;
 			const { theme } = Title;
-			await (Command.cases as any).script.createTheme(theme);
-			this.editor = monaco.editor.create(this.editorDom, {
+			await Command.cases.script.createTheme(theme);
+			this.editor = monaco.editor.create(this.editorDom!, {
 				language: 'json',
-				theme: theme,
+				theme: theme ?? '',
 				tabSize: 2,
 				fontSize: this.fontSize,
 				lineHeight: this.lineHeight,
@@ -236,9 +237,9 @@ export const EditDataInstance = new (class {
 				overviewRulerBorder: false,
 				hideCursorInOverviewRuler: true,
 				automaticLayout: false,
-				hover: false as any,
+				hover: { enabled: false },
 				lightbulb: {
-					enabled: false as any
+					enabled: false as never
 				},
 				minimap: {
 					enabled: false
@@ -294,7 +295,7 @@ export const EditDataInstance = new (class {
 	}
 	loadData() {
 		this.currentContent = null;
-		const { elements, start, end } = this.commandList;
+		const { elements, start, end } = this.commandList as any;
 		const sElement = elements[start];
 		if (start === end) {
 			const sData = sElement.dataItem;
@@ -309,7 +310,7 @@ export const EditDataInstance = new (class {
 			this.model.setValue(JSON.stringify(this.currentContent.value, null, 2));
 		} else {
 			const value = [];
-			const includeArr: any[] = [];
+			const includeArr: unknown[] = [];
 			for (let index = start; index <= end; index++) {
 				const elem = elements[index];
 				const eData = elem.dataItem;
@@ -334,7 +335,7 @@ export const EditDataInstance = new (class {
 			);
 		}
 	}
-	setChangeState(changed: any) {
+	setChangeState(changed: boolean) {
 		if (this.changed !== changed) {
 			this.changed = changed;
 			if (changed) {

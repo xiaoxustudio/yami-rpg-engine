@@ -15,7 +15,7 @@ export const path = nodePath;
 // 配置持久化与生命周期管理；UI 渲染委托给 SettingRenderer。
 
 export const SettingConfig = new (class {
-	config = {} as any;
+	config: Record<string, any> = {};
 	/** DOM 是否已渲染（localize 回调据此判断是否需要重新本地化） */
 	private _rendered = false;
 	/** localize 回调是否已绑定，避免重复注册 */

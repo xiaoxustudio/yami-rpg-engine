@@ -5,28 +5,28 @@ import { Editor } from '@/main/editor.ts';
 import { webFrame } from 'electron';
 
 export const Zoom = {
-	initialize: null as any,
-	getFactor: null as any,
-	open: null as any,
-	confirm: null as any
+	initialize: null as unknown as (...args: unknown[]) => any,
+	getFactor: null as unknown as (...args: unknown[]) => any,
+	open: null as unknown as (...args: unknown[]) => any,
+	confirm: null as unknown as (...args: unknown[]) => any
 };
 
-Zoom.initialize = function (this: any) {
+Zoom.initialize = function (this: typeof Zoom) {
 	if (!$('#zoom-confirm')) return;
 	$('#zoom-confirm').on('click', this.confirm);
 };
 
-Zoom.open = function (this: any) {
+Zoom.open = function (this: typeof Zoom) {
 	Window.open!('zoom');
 	write($('#zoom-factor'), this.getFactor!());
 	getFocus($('#zoom-factor'), 'all');
 };
 
-Zoom.getFactor = function (this: any) {
+Zoom.getFactor = function (this: typeof Zoom) {
 	return webFrame.getZoomFactor();
 };
 
-Zoom.confirm = function (this: any, event: any) {
+Zoom.confirm = function (this: typeof Zoom) {
 	Window.close!('zoom');
-	webFrame.setZoomFactor((Editor.config as any).zoom);
+	webFrame.setZoomFactor(Editor.config!.zoom!);
 };

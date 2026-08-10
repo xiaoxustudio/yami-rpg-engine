@@ -29,17 +29,75 @@ import { Scene } from '@/scene/scene-window.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
+import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
 import { StageColor } from '@/util/stage-color.ts';
 import { Timer } from '@/util/timer.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Matrix } from '@/webgl/matrix2.ts';
+import { Matrix } from '../webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
 type ParticleState = 'closed' | 'open';
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type ParticleMethod = ((...args: any[]) => any) | null;
+
+interface ParticleLayerShape {
+	data: Record<string, any>;
+	elements: Array<Record<string, any>> & { count: number };
+	unitWidth: number;
+	unitHeight: number;
+	texture: unknown;
+	draw: () => void;
+	[k: string]: any;
+}
+
+interface ParticleEmitterShape {
+	startX: number;
+	startY: number;
+	layers: ParticleLayerShape[];
+	calculateOuterRect: () => {
+		left: number;
+		top: number;
+		right: number;
+		bottom: number;
+		hasArea: boolean;
+	};
+	update: (deltaTime: number) => void;
+	updateLayers: () => void;
+	updateEasing: () => void;
+	clear: () => void;
+	destroy: () => void;
+	[k: string]: any;
+}
+
+// 粒子编辑器上下文（tab 传入 + open/load 运行时挂载 editor）
+interface ParticleContextShape {
+	meta: { guid: string; path: string } & Record<string, any>;
+	particle?: Record<string, any>;
+	editor: {
+		target: unknown;
+		emitter: ParticleEmitterShape;
+		history: History;
+		centerX: number;
+		centerY: number;
+		paused: boolean;
+	};
+	[k: string]: any;
+}
+
+// history processor 记录数据（particle-layer-create/delete/remove/hidden）
+interface ParticleHistoryData {
+	item: { hidden: boolean } & Record<string, any>;
+	oldValue: boolean;
+	newValue: boolean;
+	response?: Record<string, any>;
+	[k: string]: any;
+}
+
+// config 中 colors 运行时必有（save/load 访问 colors.particleBackground）
+type ParticleConfigShape = EditorConfigShape & { colors: NonNullable<EditorConfigShape['colors']> };
 
 interface ParticleShape {
 	state: ParticleState;
@@ -48,7 +106,7 @@ interface ParticleShape {
 	body: HTMLElement;
 	info: HTMLElement;
 	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
-	marquee: HTMLElement & { pointerevent: any };
+	marquee: HTMLElement & { pointerevent: unknown };
 	list: HTMLElement & {
 		// 运行时挂载的列表方法（Scene.list / Particle.list 共享）
 		create: ((...args: any[]) => any) | null;
@@ -68,46 +126,54 @@ interface ParticleShape {
 		updateItemName: ((...args: any[]) => any) | null;
 		[k: string]: any;
 	};
-	dragging: any | null;
-	target: any | null;
+	dragging: (PointerEvent & Record<string, any>) | null;
+	target: {
+		area: {
+			type: 'rectangle' | 'circle';
+			x: number;
+			y: number;
+			width: number;
+			height: number;
+			radius: number;
+		} & Record<string, any>;
+	} | null;
 	paused: boolean;
-	history: any | null;
+	history: History | null;
 	restartKey: boolean;
 	translationKey: number;
-	translationTimer: any | null;
+	translationTimer: Timer | null;
 	showAxes: boolean;
 	showWireframe: boolean;
 	showAnchor: boolean;
-	background: any | null;
-	matrix: any | null;
-	speed: any | null;
-	zoom: any | null;
-	zoomTimer: any | null;
-	scale: any | null;
-	scaleX: any | null;
-	scaleY: any | null;
-	outerWidth: any | null;
-	outerHeight: any | null;
-	scrollLeft: any | null;
-	scrollTop: any | null;
-	scrollRight: any | null;
-	scrollBottom: any | null;
-	centerX: any | null;
-	centerY: any | null;
-	centerOffsetX: any | null;
-	centerOffsetY: any | null;
-	padding: any | null;
-	context: any | null;
-	meta: any | null;
-	layers: any[] | null;
-	emitter: any | null;
+	background: StageColor;
+	matrix: Matrix | null;
+	speed: number | null;
+	zoom: number | null;
+	zoomTimer: Timer | null;
+	scale: number | null;
+	scaleX: number | null;
+	scaleY: number | null;
+	outerWidth: number | null;
+	outerHeight: number | null;
+	scrollLeft: number | null;
+	scrollTop: number | null;
+	scrollRight: number | null;
+	scrollBottom: number | null;
+	centerX: number | null;
+	centerY: number | null;
+	centerOffsetX: number | null;
+	centerOffsetY: number | null;
+	padding: number | null;
+	context: ParticleContextShape | null;
+	meta: ParticleContextShape['meta'] | null;
+	layers: ParticleLayerShape[] | null;
+	emitter: ParticleEmitterShape;
 	initialize: (() => void) | null;
 	open: ParticleMethod;
-	load: ((context?: any) => void) | null;
+	load: ((context: ParticleContextShape) => void) | null;
 	save: ParticleMethod;
 	close: (() => void) | null;
-	// destroy(context) 运行时有参数 —— 不能签为无参 (() => void) | null
-	destroy: ((context?: any) => void) | null;
+	destroy: ((context: ParticleContextShape) => void) | null;
 	restart: ParticleMethod;
 	undo: ParticleMethod;
 	redo: ParticleMethod;
@@ -175,9 +241,9 @@ interface ParticleShape {
 	listPopup: ParticleMethod;
 	listChange: ParticleMethod;
 	// classes（运行时挂载 ParticleEmitter/ParticleLayer/ParticleElement 类）
-	Emitter: any | null;
-	Layer: any | null;
-	Element: any | null;
+	Emitter: { new (data: any): ParticleEmitterShape };
+	Layer: { new (emitter: ParticleEmitterShape, data: any): ParticleLayerShape };
+	Element: { new (arg: any): Record<string, any>; stage: Record<string, any> };
 }
 
 export const Particle: ParticleShape = {
@@ -207,7 +273,7 @@ export const Particle: ParticleShape = {
 	showAxes: true,
 	showWireframe: false,
 	showAnchor: false,
-	background: null,
+	background: null as unknown as StageColor,
 	matrix: null,
 	speed: null,
 	zoom: null,
@@ -229,7 +295,7 @@ export const Particle: ParticleShape = {
 	context: null,
 	meta: null,
 	layers: null,
-	emitter: null,
+	emitter: null as unknown as ParticleEmitterShape,
 	initialize: null,
 	open: null,
 	load: null,
@@ -302,9 +368,11 @@ export const Particle: ParticleShape = {
 	listRecord: null,
 	listPopup: null,
 	listChange: null,
-	Emitter: null,
-	Layer: null,
-	Element: null
+	Emitter: null as unknown as { new (data: any): ParticleEmitterShape },
+	Layer: null as unknown as {
+		new (emitter: ParticleEmitterShape, data: any): ParticleLayerShape;
+	},
+	Element: null as unknown as { new (arg: any): Record<string, any>; stage: Record<string, any> }
 };
 
 Particle.list.create = null as unknown as (...args: unknown[]) => any;
@@ -313,11 +381,11 @@ Particle.list.paste = null as unknown as (...args: unknown[]) => any;
 Particle.list.delete = null as unknown as (...args: unknown[]) => any;
 Particle.list.createIcon = null as unknown as (...args: unknown[]) => any;
 Particle.list.updateIcon = function (...args) {
-	return (Scene.list.updateIcon as any)(...args);
+	return Scene.list.updateIcon!(...args);
 };
 Particle.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any;
 Particle.list.updateVisibilityIcon = function (...args) {
-	return (Scene.list.updateVisibilityIcon as any)(...args);
+	return Scene.list.updateVisibilityIcon!(...args);
 };
 Particle.list.onCreate = null;
 Particle.list.onRemove = null;
@@ -350,7 +418,7 @@ Particle.initialize = function () {
 		update: (timer) => {
 			if (this.state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
-				const step = (Timer.deltaTime * 1.5) / this.scale;
+				const step = (Timer.deltaTime * 1.5) / this.scale!;
 				let x = 0;
 				let y = 0;
 				if (key & 0b0001) {
@@ -368,8 +436,8 @@ Particle.initialize = function () {
 				const screen = this.screen;
 				const sl = screen.scrollLeft;
 				const st = screen.scrollTop;
-				const cx = Math.roundTo(this.centerX + x, 4);
-				const cy = Math.roundTo(this.centerY + y, 4);
+				const cx = Math.roundTo(this.centerX! + x, 4);
+				const cy = Math.roundTo(this.centerY! + y, 4);
 				this.updateCamera!(cx, cy);
 				this.updateTransform!();
 				if (screen.scrollLeft !== sl || screen.scrollTop !== st) {
@@ -404,17 +472,20 @@ Particle.initialize = function () {
 	const { list } = this;
 	list.removable = true;
 	list.renamable = true;
-	(list as any).bind(() => this.layers);
-	(list as any).creators?.push(list.createVisibilityIcon);
-	(list as any).updaters?.push(list.updateVisibilityIcon);
+	list.bind(() => this.layers);
+	list.creators?.push(list.createVisibilityIcon);
+	list.updaters?.push(list.updateVisibilityIcon);
 
-	(History.processors as any)['particle-layer-create'] =
-		(History.processors as any)['particle-layer-delete'] =
-		(History.processors as any)['particle-layer-remove'] =
-			(operation: any, data: any) => {
+	History.processors['particle-layer-create'] =
+		History.processors['particle-layer-delete'] =
+		History.processors['particle-layer-remove'] =
+			(operation: string, data: ParticleHistoryData) => {
 				list.restore(operation, data.response);
 			};
-	(History.processors as any)['particle-layer-hidden'] = (operation: any, data: any) => {
+	History.processors['particle-layer-hidden'] = (
+		operation: string,
+		data: ParticleHistoryData
+	) => {
 		const { item, oldValue, newValue } = data;
 		item.hidden = operation === 'undo' ? oldValue : newValue;
 		list.update();
@@ -441,7 +512,7 @@ Particle.initialize = function () {
 	on(this.list, 'change', this.listChange!);
 };
 
-Particle.open = function (context) {
+Particle.open = function (this: typeof Particle, context: ParticleContextShape) {
 	if (this.context === context) {
 		return;
 	}
@@ -464,8 +535,8 @@ Particle.open = function (context) {
 		this.requestAnimation!();
 		this.requestRendering!();
 	} else {
-		(Layout.manager as any).switch('directory');
-		(Window.confirm as any)(
+		Layout.manager.switch('directory');
+		Window.confirm!(
 			{
 				message: `Failed to read file: ${meta.path}`
 			},
@@ -478,11 +549,11 @@ Particle.open = function (context) {
 	}
 };
 
-Particle.load = function (context) {
+Particle.load = function (this: typeof Particle, context: ParticleContextShape) {
 	if (!context.editor) {
 		context.editor = {
 			target: null,
-			emitter: new Particle.Emitter(context.particle),
+			emitter: new Particle.Emitter(context.particle!),
 			history: new History(100),
 			centerX: 0,
 			centerY: 0,
@@ -491,7 +562,7 @@ Particle.load = function (context) {
 	}
 	const { particle, editor } = context;
 
-	this.layers = particle.layers;
+	this.layers = particle!.layers;
 
 	this.emitter = editor.emitter;
 	this.history = editor.history;
@@ -513,13 +584,13 @@ Particle.load = function (context) {
 
 Particle.save = function () {
 	if (this.state === 'open') {
-		const { editor } = this.context;
+		const { editor } = this.context!;
 
 		editor.target = this.target;
 		editor.emitter = this.emitter;
-		editor.history = this.history;
-		editor.centerX = this.centerX;
-		editor.centerY = this.centerY;
+		editor.history = this.history!;
+		editor.centerX = this.centerX!;
+		editor.centerY = this.centerY!;
 		editor.paused = this.paused;
 	}
 };
@@ -532,7 +603,7 @@ Particle.close = function () {
 		this.context = null;
 		this.meta = null;
 		this.layers = null;
-		this.emitter = null;
+		this.emitter = null as unknown as ParticleEmitterShape;
 		this.history = null;
 		hide(this.body);
 		this.stopAnimation!();
@@ -541,14 +612,14 @@ Particle.close = function () {
 	}
 };
 
-Particle.destroy = function (context) {
+Particle.destroy = function (this: typeof Particle, context: ParticleContextShape) {
 	if (!context.editor) return;
 	if (this.context === context) {
 		this.save!();
 		this.close!();
 	}
 	context.editor.emitter.destroy();
-	TreeList.deleteCaches(context.particle.layers);
+	TreeList.deleteCaches(context.particle!.layers);
 };
 
 Particle.restart = function () {
@@ -557,19 +628,19 @@ Particle.restart = function () {
 };
 
 Particle.undo = function () {
-	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
-		this.history.restore('undo');
+	if (this.state === 'open' && !this.dragging && this.history!.canUndo()) {
+		this.history!.restore('undo');
 	}
 };
 
 Particle.redo = function () {
-	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
-		this.history.restore('redo');
+	if (this.state === 'open' && !this.dragging && this.history!.canRedo()) {
+		this.history!.restore('redo');
 	}
 };
 
 Particle.setSpeed = (function IIFE() {
-	return function (this: ParticleShape, speed) {
+	return function (this: ParticleShape, speed: number) {
 		this.speed = speed;
 		const numberBox = $('#particle-speed');
 		if (numberBox) write(numberBox, speed);
@@ -577,7 +648,7 @@ Particle.setSpeed = (function IIFE() {
 })();
 
 Particle.setZoom = (function IIFE() {
-	return function (this: ParticleShape, zoom) {
+	return function (this: ParticleShape, zoom: number) {
 		const slider = $('#particle-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -603,8 +674,8 @@ Particle.setZoom = (function IIFE() {
 			this.zoom = zoom;
 			if (slider) write(slider, zoom);
 			if (this.state === 'open') {
-				const timer = this.zoomTimer;
-				timer.start = this.scale;
+				const timer = this.zoomTimer!;
+				timer.start = this.scale!;
 				timer.end = scale;
 				timer.elapsed = 0;
 				timer.add();
@@ -615,15 +686,15 @@ Particle.setZoom = (function IIFE() {
 	};
 })();
 
-Particle.setTarget = function (target) {
+Particle.setTarget = function (target: ParticleShape['target']) {
 	if (this.target !== target) {
 		this.target = target;
 		this.updateTargetItem!();
 		this.requestRendering!();
 		if (target) {
-			(Inspector.open as any)('particleLayer', target);
+			Inspector.open('particleLayer', target);
 		} else {
-			(Inspector.close as any)();
+			Inspector.close();
 		}
 	}
 };
@@ -665,7 +736,7 @@ Particle.updateParticleInfo = function () {
 Particle.updateHead = function () {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
-		const { nav } = (Layout.getGroupOfElement as any)(head);
+		const { nav } = Layout.getGroupOfElement!(head)!;
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
@@ -691,12 +762,12 @@ Particle.updateHead = function () {
 
 Particle.resize = function () {
 	if (this.state === 'open' && this.screen && this.screen.clientWidth !== 0) {
-		const scale = this.scale;
+		const scale = this.scale!;
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
-		const stageWidth = screenWidth + this.padding;
-		const stageHeight = screenHeight + this.padding;
+		const stageWidth = screenWidth + this.padding!;
+		const stageHeight = screenHeight + this.padding!;
 		const innerWidth = Math.round(stageWidth * scale);
 		const innerHeight = Math.round(stageHeight * scale);
 		const outerWidth = Math.max(screenWidth, innerWidth);
@@ -721,8 +792,8 @@ Particle.getPointerCoords = (function IIFE() {
 	return function (this: ParticleShape, event) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
-		point.x = (coords.x * dpr - (this.outerWidth >> 1)) / this.scaleX;
-		point.y = (coords.y * dpr - (this.outerHeight >> 1)) / this.scaleY;
+		point.x = (coords.x * dpr - (this.outerWidth! >> 1)) / this.scaleX!;
+		point.y = (coords.y * dpr - (this.outerHeight! >> 1)) / this.scaleY!;
 		return point;
 	};
 })();
@@ -730,13 +801,13 @@ Particle.getPointerCoords = (function IIFE() {
 Particle.updateCamera = function (this: ParticleShape, x = this.centerX, y = this.centerY) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
-	const scrollX = x * this.scaleX + this.outerWidth / 2;
-	const scrollY = y * this.scaleY + this.outerHeight / 2;
+	const scrollX = x * this.scaleX! + this.outerWidth! / 2;
+	const scrollY = y * this.scaleY! + this.outerHeight! / 2;
 	const toleranceForDPR = 0.0001;
 	screen.rawScrollLeft =
-		Math.clamp(scrollX - this.centerOffsetX, 0, this.outerWidth - GL.width) / dpr;
+		Math.clamp(scrollX - this.centerOffsetX!, 0, this.outerWidth! - GL.width) / dpr;
 	screen.rawScrollTop =
-		Math.clamp(scrollY - this.centerOffsetY, 0, this.outerHeight - GL.height) / dpr;
+		Math.clamp(scrollY - this.centerOffsetY!, 0, this.outerHeight! - GL.height) / dpr;
 	screen.scrollLeft = (scrollX - (GL.width >> 1) + toleranceForDPR) / dpr;
 	screen.scrollTop = (scrollY - (GL.height >> 1) + toleranceForDPR) / dpr;
 };
@@ -744,26 +815,25 @@ Particle.updateCamera = function (this: ParticleShape, x = this.centerX, y = thi
 Particle.updateTransform = function () {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
-	const left = Math.roundTo(screen.scrollLeft * dpr - (this.outerWidth >> 1), 4);
-	const top = Math.roundTo(screen.scrollTop * dpr - (this.outerHeight >> 1), 4);
+	const left = Math.roundTo(screen.scrollLeft * dpr - (this.outerWidth! >> 1), 4);
+	const top = Math.roundTo(screen.scrollTop * dpr - (this.outerHeight! >> 1), 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
-	this.scrollLeft = left / this.scaleX;
-	this.scrollTop = top / this.scaleY;
-	this.scrollRight = right / this.scaleX;
-	this.scrollBottom = bottom / this.scaleY;
-	this.matrix
-		.reset()
-		.scale(this.scaleX, this.scaleY)
-		.translate(-this.scrollLeft, -this.scrollTop);
-	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX;
-	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY;
-	this.centerX = Math.roundTo((scrollX - this.outerWidth / 2) / this.scaleX, 4);
-	this.centerY = Math.roundTo((scrollY - this.outerHeight / 2) / this.scaleY, 4);
+	this.scrollLeft = left / this.scaleX!;
+	this.scrollTop = top / this.scaleY!;
+	this.scrollRight = right / this.scaleX!;
+	this.scrollBottom = bottom / this.scaleY!;
+	this.matrix!.reset()
+		.scale(this.scaleX!, this.scaleY!)
+		.translate(-this.scrollLeft!, -this.scrollTop!);
+	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX!;
+	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY!;
+	this.centerX = Math.roundTo((scrollX - this.outerWidth! / 2) / this.scaleX!, 4);
+	this.centerY = Math.roundTo((scrollY - this.outerHeight! / 2) / this.scaleY!, 4);
 };
 
-Particle.updateElements = function (deltaTime) {
-	this.emitter.update(deltaTime * this.speed);
+Particle.updateElements = function (deltaTime: number) {
+	this.emitter.update(deltaTime * this.speed!);
 };
 
 Particle.drawElements = function () {
@@ -784,10 +854,10 @@ Particle.drawCoordinateAxes = function () {
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(Particle.matrix);
 		// 避免缩放时虚线抖动
-		const L = -10000 / this.scaleX;
-		const T = -10000 / this.scaleY;
-		const R = 10000 / this.scaleX;
-		const B = 10000 / this.scaleY;
+		const L = -10000 / this.scaleX!;
+		const T = -10000 / this.scaleY!;
+		const R = 10000 / this.scaleX!;
+		const B = 10000 / this.scaleY!;
 		const a = matrix[0];
 		const b = matrix[1];
 		const c = matrix[3];
@@ -843,8 +913,8 @@ Particle.drawEmitterWireframe = function () {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const ox = 0.5 / this.scaleX;
-	const oy = 0.5 / this.scaleY;
+	const ox = 0.5 / this.scaleX!;
+	const oy = 0.5 / this.scaleY!;
 	const L = emitter.outerLeft + ox;
 	const T = emitter.outerTop + oy;
 	const R = emitter.outerRight - ox;
@@ -880,7 +950,7 @@ Particle.drawEmitterAnchor = function () {
 	}
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
-	const matrix = this.matrix;
+	const matrix = this.matrix!;
 	const a = matrix[0];
 	const b = matrix[1];
 	const c = matrix[3];
@@ -920,8 +990,8 @@ Particle.drawAreaWireframe = function () {
 			const ay = area.y;
 			const aw = area.width;
 			const ah = area.height;
-			const ox = 0.5 / this.scaleX;
-			const oy = 0.5 / this.scaleY;
+			const ox = 0.5 / this.scaleX!;
+			const oy = 0.5 / this.scaleY!;
 			const L = ax - aw * 0.5 + ox;
 			const T = ay - ah * 0.5 + oy;
 			const R = Math.max(L, ax + aw * 0.5 - ox);
@@ -1131,7 +1201,7 @@ Particle.computeOuterRect = function () {
 	}
 };
 
-Particle.selectEmitter = function (x, y) {
+Particle.selectEmitter = function (x: number, y: number) {
 	const emitter = this.emitter;
 	if (
 		x >= emitter.outerLeft &&
@@ -1150,7 +1220,7 @@ Particle.requestAnimation = function () {
 	}
 };
 
-Particle.updateAnimation = function (deltaTime) {
+Particle.updateAnimation = function (deltaTime: number) {
 	Particle.updateElements!(deltaTime);
 	Particle.updateParticleInfo!();
 	if (Timer.updaters.stageRendering !== Particle.renderingFunction) {
@@ -1229,17 +1299,17 @@ Particle.planToSave = function () {
 	File.planToSave!(this.meta);
 };
 
-Particle.saveToConfig = function (config) {
+Particle.saveToConfig = function (config: ParticleConfigShape) {
 	config.colors.particleBackground = this.background.hex;
 };
 
-Particle.loadFromConfig = function (config) {
+Particle.loadFromConfig = function (config: ParticleConfigShape) {
 	this.background = new StageColor(config.colors.particleBackground, () =>
 		this.requestRendering!()
 	);
 };
 
-Particle.saveToProject = function (project) {
+Particle.saveToProject = function (project: EditorProjectShape) {
 	const { particle } = project;
 	particle.wireframe = this.showWireframe ?? particle.wireframe;
 	particle.anchor = this.showAnchor ?? particle.anchor;
@@ -1247,7 +1317,7 @@ Particle.saveToProject = function (project) {
 	particle.zoom = this.zoom ?? particle.zoom;
 };
 
-Particle.loadFromProject = function (project) {
+Particle.loadFromProject = function (project: EditorProjectShape) {
 	const { particle } = project;
 	this.switchWireframe!(particle.wireframe);
 	this.switchAnchor!(particle.anchor);
@@ -1255,13 +1325,13 @@ Particle.loadFromProject = function (project) {
 	this.setZoom!(particle.zoom);
 };
 
-Particle.webglRestored = function (event: any) {
+Particle.webglRestored = function (event: Event) {
 	if (Particle.state === 'open') {
 		Particle.requestRendering!();
 	}
 };
 
-Particle.windowResize = function (this: ParticleShape, event: any) {
+Particle.windowResize = function (this: ParticleShape, event: Event) {
 	this.updateHead!();
 	if (this.state === 'open') {
 		this.resize!();
@@ -1270,17 +1340,17 @@ Particle.windowResize = function (this: ParticleShape, event: any) {
 	}
 }.bind(Particle);
 
-Particle.themechange = function (this: ParticleShape, event: any) {
+Particle.themechange = function (this: ParticleShape, event: Event) {
 	this.requestRendering!();
 }.bind(Particle);
 
-Particle.datachange = function (event: any) {
+Particle.datachange = function (event: Event) {
 	if (Particle.state === 'open' && event.key === 'easings') {
 		Particle.emitter.updateEasing();
 	}
 };
 
-Particle.keydown = function (event: any) {
+Particle.keydown = function (event: KeyboardEvent) {
 	if (Particle.state === 'open' && Particle.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
@@ -1305,7 +1375,7 @@ Particle.keydown = function (event: any) {
 	}
 };
 
-Particle.restartKeyup = function (event: any) {
+Particle.restartKeyup = function (event: KeyboardEvent) {
 	if (!Particle.restartKey) {
 		return;
 	}
@@ -1322,7 +1392,7 @@ Particle.restartKeyup = function (event: any) {
 	}
 };
 
-Particle.headPointerdown = function (event: any) {
+Particle.headPointerdown = function (event: PointerEvent) {
 	if (!(event.target instanceof HTMLInputElement)) {
 		event.preventDefault();
 		if (document.activeElement !== Particle.screen) {
@@ -1331,10 +1401,10 @@ Particle.headPointerdown = function (event: any) {
 	}
 };
 
-Particle.viewPointerdown = function (event: any) {
+Particle.viewPointerdown = function (event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'wireframe':
@@ -1348,10 +1418,10 @@ Particle.viewPointerdown = function (event: any) {
 	}
 };
 
-Particle.controlPointerdown = function (event: any) {
+Particle.controlPointerdown = function (event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			if (hasClass(element, 'item')) {
 				switch (element.getAttribute('value')) {
 					case 'restart':
@@ -1365,19 +1435,19 @@ Particle.controlPointerdown = function (event: any) {
 	}
 };
 
-Particle.speedInput = function (this: any, event: any) {
+Particle.speedInput = function (this: HTMLElement, event: Event) {
 	Particle.speed = read(this);
 };
 
-Particle.zoomFocus = function (event: any) {
+Particle.zoomFocus = function (event: Event) {
 	Particle.screen.focus();
 };
 
-Particle.zoomInput = function (this: any, event: any) {
+Particle.zoomInput = function (this: HTMLElement, event: Event) {
 	Particle.setZoom!(read(this));
 };
 
-Particle.screenKeydown = function (this: ParticleShape, event: any) {
+Particle.screenKeydown = function (this: ParticleShape, event: KeyboardEvent) {
 	if (this.state === 'open' && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
@@ -1388,11 +1458,11 @@ Particle.screenKeydown = function (this: ParticleShape, event: any) {
 		switch (event.code) {
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom!(this.zoom - 1);
+				this.setZoom!(this.zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom!(this.zoom + 1);
+				this.setZoom!(this.zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -1402,17 +1472,17 @@ Particle.screenKeydown = function (this: ParticleShape, event: any) {
 	}
 }.bind(Particle);
 
-Particle.screenWheel = function (this: ParticleShape, event: any) {
+Particle.screenWheel = function (this: ParticleShape, event: WheelEvent) {
 	if (this.state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom!(this.zoom + step);
+			this.setZoom!(this.zoom! + step);
 		}
 	}
 }.bind(Particle);
 
-Particle.screenUserscroll = function (this: ParticleShape, event: any) {
+Particle.screenUserscroll = function (this: ParticleShape, event: Event) {
 	if (this.state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
@@ -1421,12 +1491,15 @@ Particle.screenUserscroll = function (this: ParticleShape, event: any) {
 	}
 }.bind(Particle);
 
-Particle.screenBlur = function (this: ParticleShape, event: any) {
+Particle.screenBlur = function (this: ParticleShape, event: Event) {
 	// this.translationKeyup() this.pointerup()
 	this.marqueePointerleave!();
 }.bind(Particle);
 
-Particle.marqueePointerdown = function (this: ParticleShape, event: any) {
+Particle.marqueePointerdown = function (
+	this: ParticleShape,
+	event: PointerEvent & { dragKey?: boolean; startX?: number; startY?: number; enabled?: boolean }
+) {
 	if (this.dragging) {
 		return;
 	}
@@ -1455,14 +1528,14 @@ Particle.marqueePointerdown = function (this: ParticleShape, event: any) {
 			event.mode = 'scroll';
 			event.scrollLeft = this.screen.scrollLeft;
 			event.scrollTop = this.screen.scrollTop;
-			(Cursor.open as any)('cursor-grab');
+			Cursor.open('cursor-grab');
 			window.addEventListener('pointerup', this.pointerup!);
 			window.addEventListener('pointermove', this.pointermove!);
 			break;
 	}
 }.bind(Particle);
 
-Particle.marqueePointermove = function (this: ParticleShape, event: any) {
+Particle.marqueePointermove = function (this: ParticleShape, event: PointerEvent) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
 		const { x, y } = this.getPointerCoords!(event);
@@ -1474,7 +1547,7 @@ Particle.marqueePointermove = function (this: ParticleShape, event: any) {
 	}
 }.bind(Particle);
 
-Particle.marqueePointerleave = function (this: ParticleShape, event: any) {
+Particle.marqueePointerleave = function (this: ParticleShape, event: PointerEvent) {
 	if (this.marquee.pointerevent) {
 		this.marquee.pointerevent = null;
 		if (this.emitter?.active) {
@@ -1484,7 +1557,7 @@ Particle.marqueePointerleave = function (this: ParticleShape, event: any) {
 	}
 }.bind(Particle);
 
-Particle.pointerup = function (event: any) {
+Particle.pointerup = function (event: PointerEvent | undefined) {
 	const { dragging } = Particle;
 	if (dragging === null) {
 		return;
@@ -1497,7 +1570,7 @@ Particle.pointerup = function (event: any) {
 			case 'object-move':
 				break;
 			case 'scroll':
-				(Cursor.close as any)('cursor-grab');
+				Cursor.close('cursor-grab');
 				break;
 		}
 		Particle.dragging = null;
@@ -1506,7 +1579,7 @@ Particle.pointerup = function (event: any) {
 	}
 };
 
-Particle.pointermove = function (event: any) {
+Particle.pointermove = function (event: PointerEvent) {
 	const { dragging } = Particle;
 	if (dragging && relate(dragging, event)) {
 		switch (dragging.mode) {
@@ -1525,8 +1598,8 @@ Particle.pointermove = function (event: any) {
 				}
 				const emitter = Particle.emitter;
 				const dpr = window.devicePixelRatio;
-				const distX = ((event.clientX - dragging.clientX) * dpr) / Particle.scaleX;
-				const distY = ((event.clientY - dragging.clientY) * dpr) / Particle.scaleY;
+				const distX = ((event.clientX - dragging.clientX) * dpr) / Particle.scaleX!;
+				const distY = ((event.clientY - dragging.clientY) * dpr) / Particle.scaleY!;
 				const x = Math.round(dragging.startX + distX);
 				const y = Math.round(dragging.startY + distY);
 				if (emitter.startX !== x || emitter.startY !== y) {
@@ -1546,7 +1619,7 @@ Particle.pointermove = function (event: any) {
 	}
 };
 
-Particle.listKeydown = function (this: any, event: any) {
+Particle.listKeydown = function (this: ParticleShape['list'], event: KeyboardEvent) {
 	if (!this.data) {
 		return;
 	}
@@ -1576,19 +1649,21 @@ Particle.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Particle.listPointerdown = function (this: any, event: any) {
+Particle.listPointerdown = function (this: ParticleShape['list'], event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target;
+			const element = event.target as HTMLElement;
 			switch (element.tagName) {
 				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode;
+					const { item } = element.parentNode as unknown as {
+						item: { hidden: boolean } & Record<string, any>;
+					};
 					const { hidden } = item;
 					item.hidden = !hidden;
 					this.update();
 					dispatchChangeEvent(this);
 					Particle.requestRendering!();
-					Particle.history.save({
+					Particle.history!.save({
 						type: 'particle-layer-hidden',
 						item: item,
 						oldValue: hidden,
@@ -1602,21 +1677,21 @@ Particle.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Particle.listSelect = function (event: any) {
+Particle.listSelect = function (event: Event) {
 	Particle.setTarget!(event.value);
 };
 
-Particle.listRecord = function (event: any) {
+Particle.listRecord = function (event: Event) {
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
-			const editor = (Inspector as any).particleLayer;
+			const editor = Inspector.particleLayer;
 			const input = editor.nameBox;
 			const { item, oldValue, newValue } = response;
 			write(input, newValue);
 			Particle.updateParticleInfo!();
 			Particle.requestRendering!();
-			Particle.history.save({
+			Particle.history!.save({
 				type: 'inspector-change',
 				editor: editor,
 				target: item,
@@ -1631,19 +1706,19 @@ Particle.listRecord = function (event: any) {
 			break;
 		}
 		case 'create':
-			Particle.history.save({
+			Particle.history!.save({
 				type: 'particle-layer-create',
 				response: response
 			});
 			break;
 		case 'delete':
-			Particle.history.save({
+			Particle.history!.save({
 				type: 'particle-layer-delete',
 				response: response
 			});
 			break;
 		case 'remove':
-			Particle.history.save({
+			Particle.history!.save({
 				type: 'particle-layer-remove',
 				response: response
 			});
@@ -1651,21 +1726,21 @@ Particle.listRecord = function (event: any) {
 	}
 };
 
-Particle.listPopup = function (this: any, event: any) {
+Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent) {
 	const item = event.value;
-	const get = (Local.createGetter as any)('menuParticleList');
+	const get = Local.createGetter!('menuParticleList');
 	let copyable;
 	let pastable;
 	let deletable;
 	let renamable;
 	if (item) {
 		copyable = true;
-		pastable = (Clipboard as any).has('yami.particle.layer');
+		pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = true;
 		renamable = true;
 	} else {
 		copyable = false;
-		pastable = (Clipboard as any).has('yami.particle.layer');
+		pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = false;
 		renamable = false;
 	}
@@ -1729,25 +1804,25 @@ Particle.listPopup = function (this: any, event: any) {
 	);
 };
 
-Particle.listChange = function (event: any) {
+Particle.listChange = function (event: Event) {
 	Particle.planToSave!();
 };
 
 // 列表 - 创建
 Particle.list.create = function (dItem) {
-	this.addNodeTo((Inspector as any).particleLayer.create(), dItem);
+	this.addNodeTo(Inspector.particleLayer.create(), dItem);
 };
 
 // 列表 - 复制
 Particle.list.copy = function (item) {
 	if (item) {
-		(Clipboard as any).write('yami.particle.layer', item);
+		(Clipboard as unknown as GlobalClipboardHost).write('yami.particle.layer', item);
 	}
 };
 
 // 列表 - 粘贴
 Particle.list.paste = function (dItem) {
-	const copy = (Clipboard as any).read('yami.particle.layer');
+	const copy = (Clipboard as unknown as GlobalClipboardHost).read('yami.particle.layer');
 	if (copy && this.data) {
 		this.addNodeTo(copy, dItem);
 	}

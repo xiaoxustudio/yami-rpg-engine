@@ -11,7 +11,7 @@ Command.cases.deleteActor = new CommandSchema({
 	customParse({ actor }: any) {
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.deleteActor') + Token(': ') },
+			{ text: Local.get!('command.deleteActor') + Token(': ') },
 			{ text: Command.parseActor(actor) }
 		];
 	},

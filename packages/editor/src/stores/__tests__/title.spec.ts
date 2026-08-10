@@ -30,4 +30,21 @@ describe('useTitleStore（Title 状态桥接）', () => {
 		store.setPlaying(false);
 		expect(store.playing).toBe(false);
 	});
+
+	it('桥方法存在且惰性可调用（jsdom 下 Title 未挂载，可选链安全）', () => {
+		const store = getTitleStore();
+		for (const method of [
+			'playGame',
+			'minimizeClick',
+			'maximizeClick',
+			'closeClick',
+			'pointerenter',
+			'tabBarSelect',
+			'tabBarClosed',
+			'tabBarPopup'
+		]) {
+			expect(typeof store[method as keyof typeof store]).toBe('function');
+		}
+		expect(() => store.playGame()).not.toThrow();
+	});
 });

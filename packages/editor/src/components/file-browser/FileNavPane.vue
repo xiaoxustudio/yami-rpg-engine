@@ -28,14 +28,14 @@ interface Props {
 const props = defineProps<Props>();
 
 const directoryApi = {
-	sortFiles: (dir: any) => (Directory as any).sortFiles(dir),
-	getFolder: (path: string) => (Directory as any).getFolder(path),
-	update: () => (Directory as any).update(),
+	sortFiles: (dir: any) => Directory.sortFiles?.(dir),
+	getFolder: (path: string) => Directory.getFolder?.(path),
+	update: () => Directory.update?.(),
 	get assets() {
-		return (Directory as any).assets;
+		return Directory.assets;
 	},
 	get inoMap() {
-		return (Directory as any).inoMap;
+		return Directory.inoMap;
 	}
 };
 
@@ -46,7 +46,7 @@ const fileSystem = {
 };
 
 const pathUtil = { dirname: (p: string) => Path.dirname(p) };
-const menuState = () => (Menu as any).state;
+const menuState = () => Menu.state;
 
 const ym = ref<{
 	el: HTMLElement | null;

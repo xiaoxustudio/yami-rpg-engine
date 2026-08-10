@@ -43,18 +43,19 @@ export const DialogBoxProperty = createPropertyWindow({
 		$('#setDialogBox-property-effect-type').loadItems($('#uiDialogBox-effect-type').dataItems);
 		$('#setDialogBox-property-blend').loadItems($('#uiDialogBox-blend').dataItems);
 	},
-	openData(defaults: any, key: any, value: any) {
+	openData(defaults: Record<string, unknown>, key: string, value: unknown) {
 		if (key === 'effect') {
-			defaults['effect-type'] = value.type;
-			defaults['effect-shadowOffsetX'] = value.shadowOffsetX ?? 1;
-			defaults['effect-shadowOffsetY'] = value.shadowOffsetY ?? 1;
-			defaults['effect-strokeWidth'] = value.strokeWidth ?? 1;
-			defaults['effect-color'] = value.color ?? '000000ff';
+			const effect = value as Record<string, unknown>;
+			defaults['effect-type'] = effect.type;
+			defaults['effect-shadowOffsetX'] = effect.shadowOffsetX ?? 1;
+			defaults['effect-shadowOffsetY'] = effect.shadowOffsetY ?? 1;
+			defaults['effect-strokeWidth'] = effect.strokeWidth ?? 1;
+			defaults['effect-color'] = effect.color ?? '000000ff';
 		} else {
 			defaults[key] = value;
 		}
 	},
-	saveData(key: any, read: any) {
+	saveData(key: string, read: (k: string) => unknown) {
 		if (key === 'effect') {
 			switch (read('effect-type')) {
 				case 'none':
@@ -82,22 +83,29 @@ export const DialogBoxProperty = createPropertyWindow({
 		return read(key);
 	},
 	parsers: {
-		content: (value: any) => Command.parseVariableTemplate!(value),
-		interval: (value: any) => Command.setNumberColor!(value),
-		size: (value: any) => Command.setNumberColor!(value),
-		lineSpacing: (value: any) => Command.setNumberColor!(value),
-		letterSpacing: (value: any) => Command.setNumberColor!(value),
-		color: (value: any) => Command.parseHexColor!(Color.simplifyHexColor(value)),
-		font: (value: any, get: any) =>
+		content: (value: unknown) => Command.parseVariableTemplate!(value),
+		interval: (value: unknown) => Command.setNumberColor!(value),
+		size: (value: unknown) => Command.setNumberColor!(value),
+		lineSpacing: (value: unknown) => Command.setNumberColor!(value),
+		letterSpacing: (value: unknown) => Command.setNumberColor!(value),
+		color: (value: unknown) => Command.parseHexColor!(Color.simplifyHexColor(value)),
+		font: (value: unknown, get: (key: string) => string) =>
 			value ? Command.setStringColor!(value) : get('font.default'),
-		effect: (value: any, get: any, name: any): any => {
-			switch (value.type) {
+		effect: (value: unknown, get: (key: string) => string, name: string): string => {
+			const v = value as {
+				type: string;
+				shadowOffsetX?: unknown;
+				shadowOffsetY?: unknown;
+				strokeWidth?: unknown;
+				color?: unknown;
+			};
+			switch (v.type) {
 				case 'none':
 					return name + Token('(') + get('effect.none') + Token(')');
 				case 'shadow': {
-					const x = Command.setNumberColor!(value.shadowOffsetX);
-					const y = Command.setNumberColor!(value.shadowOffsetY);
-					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
+					const x = Command.setNumberColor!(v.shadowOffsetX);
+					const y = Command.setNumberColor!(v.shadowOffsetY);
+					const color = Command.parseHexColor!(Color.simplifyHexColor(v.color));
 					return (
 						name +
 						Token('(') +
@@ -112,8 +120,8 @@ export const DialogBoxProperty = createPropertyWindow({
 					);
 				}
 				case 'stroke': {
-					const width = Command.setNumberColor!(value.strokeWidth);
-					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
+					const width = Command.setNumberColor!(v.strokeWidth);
+					const color = Command.parseHexColor!(Color.simplifyHexColor(v.color));
 					return (
 						name +
 						Token('(') +
@@ -126,13 +134,15 @@ export const DialogBoxProperty = createPropertyWindow({
 					);
 				}
 				case 'outline': {
-					const color = Command.parseHexColor!(Color.simplifyHexColor(value.color));
+					const color = Command.parseHexColor!(Color.simplifyHexColor(v.color));
 					return (
 						name + Token('(') + get('effect.outline') + Token(', ') + color + Token(')')
 					);
 				}
+				default:
+					return name;
 			}
 		},
-		blend: (value: any) => Command.parseBlend!(value)
+		blend: (value: unknown) => Command.parseBlend!(value)
 	}
 });

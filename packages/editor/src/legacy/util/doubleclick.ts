@@ -24,7 +24,7 @@ const pointerdown = function (
 					event.timeStamp - last.timeStamp < 500 &&
 					Math.abs(event.clientX - last.clientX) < 4 &&
 					Math.abs(event.clientY - last.clientY) < 4 &&
-					isInContent(this as any, event)
+					isInContent(this, event)
 				) {
 					if (!event.target!.dispatchEvent(new PointerEvent('doubleclick', event))) {
 						event.preventDefault();
@@ -46,7 +46,7 @@ export const attachDoubleclick = function (
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ) {
-	element.addEventListener('pointerdown', pointerdown as any);
+	element.addEventListener('pointerdown', pointerdown as unknown as EventListener);
 	element.addEventListener('doubleclick', listener, options);
 };
 
@@ -55,6 +55,6 @@ export const detachDoubleclick = function (
 	listener: (event: any) => void,
 	options?: boolean | AddEventListenerOptions
 ) {
-	element.removeEventListener('pointerdown', pointerdown as any, options);
+	element.removeEventListener('pointerdown', pointerdown as unknown as EventListener, options);
 	element.removeEventListener('doubleclick', listener, options);
 };

@@ -383,176 +383,181 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import { Scene } from '@/scene/scene-window.ts';
+import { UI } from '@/ui/ui-window.ts';
+import { Animation } from '@/animation/animation-window.ts';
+import { Particle } from '@/particle/particle-window.ts';
+import { Curve } from '@/animation/curve-window.ts';
 
 const onSceneHeadPointerdown = (event: PointerEvent) => {
-	(window as any).Scene?.headPointerdown?.(event);
+	Scene?.headPointerdown?.(event);
 };
 const onSceneSwitchPointerdown = (event: PointerEvent) => {
-	(window as any).Scene?.switchPointerdown?.(event);
+	Scene?.switchPointerdown?.(event);
 };
 const onSceneLayerPointerdown = (event: PointerEvent) => {
-	(window as any).Scene?.layerPointerdown?.(event);
+	Scene?.layerPointerdown?.(event);
 };
 const onSceneBrushPointerdown = (event: PointerEvent) => {
-	(window as any).Scene?.brushPointerdown?.(event);
+	Scene?.brushPointerdown?.(event);
 };
 const onSceneZoomInput = (value: number) => {
-	(window as any).Scene?.setZoom?.(value);
+	Scene?.setZoom?.(value);
 };
 const onSceneZoomFocus = () => {
-	(window as any).Scene?.zoomFocus?.();
+	Scene?.zoomFocus?.();
 };
 const onSceneScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).Scene?.screenKeydown?.(event);
+	Scene?.screenKeydown?.(event);
 };
 const onSceneScreenWheel = (event: WheelEvent) => {
-	(window as any).Scene?.screenWheel?.(event);
+	Scene?.screenWheel?.(event);
 };
 const onSceneMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).Scene?.marqueePointerdown?.(event);
+	Scene?.marqueePointerdown?.(event);
 };
 const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
-	(window as any).Scene?.marqueeDoubleclick?.(event);
+	Scene?.marqueeDoubleclick?.(event);
 };
 const onEasingIdWrite = (value: any) => {
-	(window as any).Curve?.easingIdWrite?.({ value });
+	Curve?.easingIdWrite?.({ value });
 };
 const onEasingIdInput = (value: any) => {
-	(window as any).Curve?.easingIdInput?.({ value });
+	Curve?.easingIdInput?.({ value });
 };
-const onUiListChange = (event: any) => {
-	(window as any).UI?.listChange?.(event);
+const onUiListChange = (event: Event) => {
+	UI?.listChange?.(event);
 };
-const onAnimationListSelect = (event: any) => {
-	(window as any).Animation?.listSelect?.(event);
+const onAnimationListSelect = (event: Event & { value?: any }) => {
+	Animation?.listSelect?.(event);
 };
-const onAnimationListRecord = (event: any) => {
-	(window as any).Animation?.listRecord?.(event);
+const onAnimationListRecord = (event: Event & { value?: any }) => {
+	Animation?.listRecord?.(event);
 };
-const onAnimationListOpen = (event: any) => {
-	(window as any).Animation?.listOpen?.(event);
+const onAnimationListOpen = (event: Event & { value?: any }) => {
+	Animation?.listOpen?.(event);
 };
-const onAnimationListPopup = (event: any) => {
-	(window as any).Animation?.listPopup?.(event);
+const onAnimationListPopup = (event: Event & { value?: any }) => {
+	Animation?.listPopup?.(event);
 };
-const onAnimationListChange = (event: any) => {
-	(window as any).Animation?.listChange?.(event);
+const onAnimationListChange = (event: Event) => {
+	Animation?.listChange?.(event);
 };
-const onLayerListSelect = (event: any) => {
-	(window as any).Animation?.layerListSelect?.(event);
+const onLayerListSelect = (event: Event & { value?: any }) => {
+	Animation?.layerListSelect?.(event);
 };
-const onLayerListRecord = (event: any) => {
-	(window as any).Animation?.layerListRecord?.(event);
+const onLayerListRecord = (event: Event & { value?: any }) => {
+	Animation?.layerListRecord?.(event);
 };
-const onLayerListPopup = (event: any) => {
-	(window as any).Animation?.layerListPopup?.(event);
+const onLayerListPopup = (event: Event & { value?: any }) => {
+	Animation?.layerListPopup?.(event);
 };
-const onLayerListChange = (event: any) => {
-	(window as any).Animation?.layerListChange?.(event);
+const onLayerListChange = (event: Event) => {
+	Animation?.layerListChange?.(event);
 };
 const onTimelineToolbarPointerdown = (event: PointerEvent) => {
-	(window as any).Animation?.timelineToolbarPointerdown?.(event);
+	Animation?.timelineToolbarPointerdown?.(event);
 };
 const onUiHeadPointerdown = (event: PointerEvent) => {
-	(window as any).UI?.headPointerdown?.(event);
+	UI?.headPointerdown?.(event);
 };
 const onUiSwitchPointerdown = (event: PointerEvent) => {
-	(window as any).UI?.switchPointerdown?.(event);
+	UI?.switchPointerdown?.(event);
 };
 const onUiShortcutPointerdown = (event: PointerEvent) => {
-	(window as any).UI?.shortcutPointerdown?.(event);
+	UI?.shortcutPointerdown?.(event);
 };
 const onUiZoomInput = (value: number) => {
-	(window as any).UI?.setZoom?.(value);
+	UI?.setZoom?.(value);
 };
 const onUiZoomFocus = () => {
-	(window as any).UI?.zoomFocus?.();
+	UI?.zoomFocus?.();
 };
 const onUiScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).UI?.screenKeydown?.(event);
+	UI?.screenKeydown?.(event);
 };
 const onUiScreenWheel = (event: WheelEvent) => {
-	(window as any).UI?.screenWheel?.(event);
+	UI?.screenWheel?.(event);
 };
 const onUiMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).UI?.marqueePointerdown?.(event);
+	UI?.marqueePointerdown?.(event);
 };
 const onUiMarqueeDoubleclick = (event: PointerEvent) => {
-	(window as any).UI?.marqueeDoubleclick?.(event);
+	UI?.marqueeDoubleclick?.(event);
 };
 const onAnimationHeadPointerdown = (event: PointerEvent) => {
-	(window as any).Animation?.headPointerdown?.(event);
+	Animation?.headPointerdown?.(event);
 };
 const onAnimationSwitchPointerdown = (event: PointerEvent) => {
-	(window as any).Animation?.switchPointerdown?.(event);
+	Animation?.switchPointerdown?.(event);
 };
 const onAnimationZoomInput = (value: number) => {
-	(window as any).Animation?.setZoom?.(value);
+	Animation?.setZoom?.(value);
 };
 const onAnimationZoomFocus = () => {
-	(window as any).Animation?.zoomFocus?.();
+	Animation?.zoomFocus?.();
 };
 const onAnimationScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).Animation?.screenKeydown?.(event);
+	Animation?.screenKeydown?.(event);
 };
 const onAnimationScreenWheel = (event: WheelEvent) => {
-	(window as any).Animation?.screenWheel?.(event);
+	Animation?.screenWheel?.(event);
 };
 const onAnimationMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).Animation?.marqueePointerdown?.(event);
+	Animation?.marqueePointerdown?.(event);
 };
 const onAnimationMarqueeDoubleclick = (event: PointerEvent) => {
-	(window as any).Animation?.marqueeDoubleclick?.(event);
+	Animation?.marqueeDoubleclick?.(event);
 };
 const onParticleHeadPointerdown = (event: PointerEvent) => {
-	(window as any).Particle?.headPointerdown?.(event);
+	Particle?.headPointerdown?.(event);
 };
 const onParticleViewPointerdown = (event: PointerEvent) => {
-	(window as any).Particle?.viewPointerdown?.(event);
+	Particle?.viewPointerdown?.(event);
 };
 const onParticleControlPointerdown = (event: PointerEvent) => {
-	(window as any).Particle?.controlPointerdown?.(event);
+	Particle?.controlPointerdown?.(event);
 };
 const onParticleZoomInput = (value: number) => {
-	(window as any).Particle?.setZoom?.(value);
+	Particle?.setZoom?.(value);
 };
 const onParticleZoomFocus = () => {
-	(window as any).Particle?.zoomFocus?.();
+	Particle?.zoomFocus?.();
 };
 const onParticleScreenKeydown = (event: KeyboardEvent) => {
-	(window as any).Particle?.screenKeydown?.(event);
+	Particle?.screenKeydown?.(event);
 };
 const onParticleScreenWheel = (event: WheelEvent) => {
-	(window as any).Particle?.screenWheel?.(event);
+	Particle?.screenWheel?.(event);
 };
 const onParticleMarqueePointerdown = (event: PointerEvent) => {
-	(window as any).Particle?.marqueePointerdown?.(event);
+	Particle?.marqueePointerdown?.(event);
 };
-const onSceneListSelect = (event: any) => {
-	(window as any).Scene?.listSelect?.(event);
+const onSceneListSelect = (event: Event & { value?: any }) => {
+	Scene?.listSelect?.(event);
 };
-const onSceneListRecord = (event: any) => {
-	(window as any).Scene?.listRecord?.(event);
+const onSceneListRecord = (event: Event & { value?: any }) => {
+	Scene?.listRecord?.(event);
 };
-const onSceneListPopup = (event: any) => {
-	(window as any).Scene?.listPopup?.(event);
+const onSceneListPopup = (event: Event & { value?: any }) => {
+	Scene?.listPopup?.(event);
 };
-const onSceneListOpen = (event: any) => {
-	(window as any).Scene?.listOpen?.(event);
+const onSceneListOpen = (event: Event & { value?: any }) => {
+	Scene?.listOpen?.(event);
 };
-const onSceneListChange = (event: any) => {
-	(window as any).Scene?.listChange?.(event);
+const onSceneListChange = (event: Event) => {
+	Scene?.listChange?.(event);
 };
-const onUiListSelect = (event: any) => {
-	(window as any).UI?.listSelect?.(event);
+const onUiListSelect = (event: Event) => {
+	UI?.listSelect?.(event);
 };
-const onUiListRecord = (event: any) => {
-	(window as any).UI?.listRecord?.(event);
+const onUiListRecord = (event: Event) => {
+	UI?.listRecord?.(event);
 };
-const onUiListPopup = (event: any) => {
-	(window as any).UI?.listPopup?.(event);
+const onUiListPopup = (event: Event) => {
+	UI?.listPopup?.(event);
 };
-const onUiListOpen = (event: any) => {
-	(window as any).UI?.listOpen?.(event);
+const onUiListOpen = (event: Event) => {
+	UI?.listOpen?.(event);
 };
 </script>

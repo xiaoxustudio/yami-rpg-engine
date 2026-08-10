@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+import { Title } from '@/title/title-bar.ts';
 
 export interface TitleShape {
 	theme: string | null;
@@ -17,7 +18,51 @@ export const useTitleStore = defineStore('title', () => {
 		playing.value = value;
 	}
 
-	return { theme, playing, setPlaying };
+	function playGame() {
+		Title.playGame?.();
+	}
+
+	function minimizeClick() {
+		Title.minimizeClick?.();
+	}
+
+	function maximizeClick() {
+		Title.maximizeClick?.();
+	}
+
+	function closeClick() {
+		Title.closeClick?.();
+	}
+
+	function pointerenter() {
+		Title.pointerenter?.();
+	}
+
+	function tabBarSelect(event: unknown) {
+		Title.tabBarSelect?.(event);
+	}
+
+	function tabBarClosed(event: unknown) {
+		Title.tabBarClosed?.(event);
+	}
+
+	function tabBarPopup(event: unknown) {
+		Title.tabBarPopup?.(event);
+	}
+
+	return {
+		theme,
+		playing,
+		setPlaying,
+		playGame,
+		minimizeClick,
+		maximizeClick,
+		closeClick,
+		pointerenter,
+		tabBarSelect,
+		tabBarClosed,
+		tabBarPopup
+	};
 });
 
 export function getTitleStore() {

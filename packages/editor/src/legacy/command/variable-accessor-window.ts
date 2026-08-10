@@ -4,7 +4,7 @@ import { getFocus, on } from '@/util/element-utils';
 import { getVariable } from '@/util/safe.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { EventEditor } from './event-editor.ts';
-import { TextSuggestion } from './text-tip.ts';
+import { TextSuggestion, TextSuggestionTarget } from './text-tip.ts';
 import { selectBoxSetItemNames } from '@/components/select-box.ts';
 
 interface VariableGetterTarget {
@@ -12,14 +12,14 @@ interface VariableGetterTarget {
 	dataValue: {
 		type: string;
 		key: string;
-		actor?: any;
-		skill?: any;
-		state?: any;
-		equipment?: any;
-		item?: any;
-		element?: any;
+		actor?: { type: string; [k: string]: any };
+		skill?: { type: string; [k: string]: any };
+		state?: { type: string; [k: string]: any };
+		equipment?: { type: string; [k: string]: any };
+		item?: { type: string; [k: string]: any };
+		element?: { type: string; [k: string]: any };
 	};
-	input: (getter: any) => void;
+	input: (getter: Record<string, any>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -42,7 +42,7 @@ interface VariableGetterShape {
 		loadItems(items: any[]): void;
 		selectBox: HTMLElement & {
 			textContent: string;
-			write(v: any): void;
+			write(v: unknown): void;
 			read(): any;
 			invalid: boolean;
 			dataItems: any[];
@@ -57,7 +57,7 @@ interface VariableGetterShape {
 	_openCore: (target: VariableGetterTarget, filter: string, prefix: string) => void;
 	isNone: (variable: { key: string }) => boolean;
 	loadPresetKeys: (group: string) => void;
-	checkDataForPlugin: (data: any) => boolean;
+	checkDataForPlugin: (data: { getter?: string }) => boolean;
 	createDefaultForPlugin: () => { getter: string; type: string; key: string };
 	createVarListGenerator: (filterObject: VariableGetterShape) => () => any[];
 	typeWrite: (event: Event & { value: string }) => void;
@@ -72,29 +72,29 @@ export const VariableGetter: VariableGetterShape = {
 		loadItems: (items: any[]) => void;
 		selectBox: HTMLElement & {
 			textContent: string;
-			write: (v: any) => void;
+			write: (v: unknown) => void;
 			read: () => any;
 			invalid: boolean;
 			dataItems: any[];
 		};
 	},
-	target: null as any,
-	filter: null as any,
-	types: null as any,
-	_state: null as any,
-	initialize: null as any,
-	open: null as any,
-	_openCore: null as any,
-	isNone: null as any,
-	loadPresetKeys: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	createVarListGenerator: null as any,
-	typeWrite: null as any,
-	typeInput: null as any,
-	confirm: null as any,
-	confirm2: null as any,
-	_confirmCore: null as any
+	target: null,
+	filter: null,
+	types: null,
+	_state: null as unknown as VariableGetterShape['_state'],
+	initialize: null as unknown as VariableGetterShape['initialize'],
+	open: null as unknown as VariableGetterShape['open'],
+	_openCore: null as unknown as VariableGetterShape['_openCore'],
+	isNone: null as unknown as VariableGetterShape['isNone'],
+	loadPresetKeys: null as unknown as VariableGetterShape['loadPresetKeys'],
+	checkDataForPlugin: null as unknown as VariableGetterShape['checkDataForPlugin'],
+	createDefaultForPlugin: null as unknown as VariableGetterShape['createDefaultForPlugin'],
+	createVarListGenerator: null as unknown as VariableGetterShape['createVarListGenerator'],
+	typeWrite: null as unknown as VariableGetterShape['typeWrite'],
+	typeInput: null as unknown as VariableGetterShape['typeInput'],
+	confirm: null as unknown as VariableGetterShape['confirm'],
+	confirm2: null as unknown as VariableGetterShape['confirm2'],
+	_confirmCore: null as unknown as VariableGetterShape['_confirmCore']
 };
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
@@ -102,7 +102,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 		loadItems: (items: any[]) => void;
 		selectBox: HTMLElement & {
 			textContent: string;
-			write: (v: any) => void;
+			write: (v: unknown) => void;
 			read: () => any;
 			invalid: boolean;
 			dataItems: any[];
@@ -121,9 +121,9 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 		element: { name: 'Element Attribute', value: 'element' }
 	};
 	const allTypes = Object.values(types);
-	const writableTypes = allTypes.filter((item: any) => item.value !== 'item');
+	const writableTypes = allTypes.filter((item: VarTypeItem) => item.value !== 'item');
 	const deletableTypes = writableTypes.filter(
-		(item: any) => item.value !== 'global' && item.value !== 'self'
+		(item: VarTypeItem) => item.value !== 'global' && item.value !== 'self'
 	);
 	const objectTypes = [types.local, types.global, types.element];
 	const objectTypes2 = [types.local, types.global];
@@ -157,7 +157,10 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 			{ case: 'element', targets: [element, presetKey] }
 		]);
 
-	$('#variableGetter-type').setItemNames = function (this: any, options: any) {
+	$('#variableGetter-type').setItemNames = function (
+		this: HTMLElement & { dataItems: VarTypeItem[] },
+		options: any
+	) {
 		const backup = this.dataItems;
 		this.dataItems = allTypes;
 		selectBoxSetItemNames(this, options);
@@ -176,19 +179,19 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 			}
 		]);
 	on($('#variableGetter2-confirm'), 'click', this.confirm2);
-	(TextSuggestion.listen as any)(
-		$('#variableGetter-common-key'),
+	TextSuggestion.listen!(
+		$('#variableGetter-common-key') as unknown as TextSuggestionTarget,
 		VariableGetter.createVarListGenerator(this)
 	);
 
 	// 递归状态（按窗口名隔离，避免覆盖主窗口的 target/filter）
-	this._state = { variableGetter: null as any, variableGetter2: null };
+	this._state = { variableGetter: null, variableGetter2: null };
 
 	on($('#variableGetter-type'), 'write', this.typeWrite);
 	on($('#variableGetter-type'), 'input', this.typeInput);
 	on($('#variableGetter-confirm'), 'click', this.confirm);
-	(TextSuggestion.listen as any)(
-		$('#variableGetter-common-key'),
+	TextSuggestion.listen!(
+		$('#variableGetter-common-key') as unknown as TextSuggestionTarget,
 		VariableGetter.createVarListGenerator(this)
 	);
 };
@@ -252,7 +255,7 @@ VariableGetter._openCore = function (
 				globalKey = key;
 				break;
 			case 'element':
-				element = variable.element;
+				element = variable.element!;
 				presetKey = key;
 				break;
 		}
@@ -282,32 +285,32 @@ VariableGetter._openCore = function (
 				break;
 			case 'actor':
 				this.loadPresetKeys(type);
-				actor = variable.actor;
+				actor = variable.actor!;
 				presetKey = key;
 				break;
 			case 'skill':
 				this.loadPresetKeys(type);
-				skill = variable.skill;
+				skill = variable.skill!;
 				presetKey = key;
 				break;
 			case 'state':
 				this.loadPresetKeys(type);
-				state = variable.state;
+				state = variable.state!;
 				presetKey = key;
 				break;
 			case 'equipment':
 				this.loadPresetKeys(type);
-				equipment = variable.equipment;
+				equipment = variable.equipment!;
 				presetKey = key;
 				break;
 			case 'item':
 				this.loadPresetKeys(type);
-				item = variable.item;
+				item = variable.item!;
 				presetKey = key;
 				break;
 			case 'element':
 				this.loadPresetKeys(type);
-				element = variable.element;
+				element = variable.element!;
 				presetKey = key;
 				break;
 		}
@@ -328,7 +331,7 @@ VariableGetter._openCore = function (
 	Window.open!(prefix);
 };
 
-VariableGetter.isNone = function (this: any, variable: { key: string }): boolean {
+VariableGetter.isNone = function (this: typeof VariableGetter, variable: { key: string }): boolean {
 	return variable.key === '';
 };
 
@@ -351,14 +354,17 @@ VariableGetter.loadPresetKeys = function (this: VariableGetterShape, group: stri
 	this.keyBox.loadItems(items);
 };
 
-VariableGetter.checkDataForPlugin = function (this: any, data: any): boolean {
+VariableGetter.checkDataForPlugin = function (
+	this: typeof VariableGetter,
+	data: { getter?: string }
+): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'variable';
 	}
 	return false;
 };
 
-VariableGetter.createDefaultForPlugin = function (this: any): {
+VariableGetter.createDefaultForPlugin = function (this: typeof VariableGetter): {
 	getter: string;
 	type: string;
 	key: string;
@@ -367,7 +373,7 @@ VariableGetter.createDefaultForPlugin = function (this: any): {
 };
 
 VariableGetter.createVarListGenerator = function (
-	this: any,
+	this: typeof VariableGetter,
 	filterObject: VariableGetterShape
 ): () => any[] {
 	return function (): any[] {
@@ -406,7 +412,9 @@ VariableGetter.createVarListGenerator = function (
 				stack.push({ command: element.dataItem, indent });
 			}
 		}
-		const getNamespaceRoot = (command: any): any => {
+		const getNamespaceRoot = (
+			command: { id: string; params?: { namespace?: string; operation?: string } } | null
+		): { id: string; params?: { namespace?: string; operation?: string } } | null => {
 			let current = command;
 			while (current) {
 				if (
@@ -426,18 +434,23 @@ VariableGetter.createVarListGenerator = function (
 		const activeCommand = activeElement?.dataItem ?? activeElement?.dataParent ?? null;
 		const activeNamespace = activeCommand ? getNamespaceRoot(activeCommand) : null;
 
-		return (list.varList ?? []).filter((item: any) => {
-			if (filter !== 'any' && item.type !== 'any' && filter !== item.type) {
-				return false;
+		return (list.varList ?? []).filter(
+			(item: { type: string; command?: { id: string } | null }) => {
+				if (filter !== 'any' && item.type !== 'any' && filter !== item.type) {
+					return false;
+				}
+				const itemCommand = item.command;
+				const itemNamespace = itemCommand ? getNamespaceRoot(itemCommand) : null;
+				return itemNamespace === activeNamespace;
 			}
-			const itemCommand = item.command;
-			const itemNamespace = itemCommand ? getNamespaceRoot(itemCommand) : null;
-			return itemNamespace === activeNamespace;
-		});
+		);
 	};
 };
 
-VariableGetter.typeWrite = function (this: any, event: Event & { value: string }): void {
+VariableGetter.typeWrite = function (
+	this: typeof VariableGetter,
+	event: Event & { value: string }
+): void {
 	const type = event.value;
 	switch (type) {
 		case 'actor':
@@ -451,7 +464,10 @@ VariableGetter.typeWrite = function (this: any, event: Event & { value: string }
 	}
 };
 
-VariableGetter.typeInput = function (this: any, event: Event & { value: string }): void {
+VariableGetter.typeInput = function (
+	this: typeof VariableGetter,
+	event: Event & { value: string }
+): void {
 	const type = event.value;
 	switch (type) {
 		case 'actor':
@@ -570,6 +586,6 @@ VariableGetter._confirmCore = function (this: VariableGetterShape, prefix: strin
 	if (target.isPluginInput) {
 		getter = { getter: 'variable', ...getter };
 	}
-	target?.input?.(getter);
+	target?.input?.(getter!);
 	Window.close!(prefix);
 };

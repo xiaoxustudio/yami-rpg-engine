@@ -3,13 +3,18 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetElement } from '@/tools/preset-element-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const AncestorGetter = {
-	target: null as any,
+interface AncestorGetterShape extends AccessorBaseShape {
+	dependsOn: string[];
+}
+
+export const AncestorGetter: AncestorGetterShape = {
+	target: null,
 	dependsOn: ['ElementGetter'],
-	initialize: null as any,
-	open: null as any,
-	confirm: null as any
+	initialize: null,
+	open: null,
+	confirm: null
 };
 
 AncestorGetter.initialize = function (this: any) {
@@ -33,7 +38,7 @@ AncestorGetter.open = function (this: any, target: any) {
 	this.target = target;
 	Window.open!('ancestorGetter');
 
-	let presetId = PresetElement.getDefaultPresetId();
+	let presetId = PresetElement.getDefaultPresetId!();
 	let variable = { type: 'local', key: '' };
 	const element = target.dataValue;
 	switch (element.type) {

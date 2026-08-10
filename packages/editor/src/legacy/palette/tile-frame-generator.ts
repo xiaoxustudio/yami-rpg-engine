@@ -2,12 +2,12 @@ import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus, read, on } from '@/util/element-utils.ts';
 
-export const FrameGenerator = {
-	callback: null as any,
-	initialize: null as any,
-	open: null as any,
-	windowClosed: null as any,
-	confirm: null as any
+export const FrameGenerator: Record<string, any> = {
+	callback: null,
+	initialize: null,
+	open: null,
+	windowClosed: null,
+	confirm: null
 };
 
 FrameGenerator.initialize = function (this: any) {

@@ -23,13 +23,13 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		const vBar = parent.querySelector('.scroll-bar.vertical');
 		expect(hBar).toBeTruthy();
 		expect(vBar).toBeTruthy();
-		expect((hBar as any).target).toBe(target);
-		expect((vBar as any).target).toBe(target);
+		expect((hBar as HTMLElement).target).toBe(target);
+		expect((vBar as HTMLElement).target).toBe(target);
 
 		// 拖拽 vertical thumb → scrollTop 更新 + userscroll 派发（marquee 同步链）
 		let userscrollCount = 0;
 		target?.addEventListener?.('userscroll', () => userscrollCount++);
-		const thumb = (vBar as any).thumb;
+		const thumb = (vBar as HTMLElement & { thumb?: HTMLElement }).thumb;
 		const fire = (el: any, type: string, props: any) => {
 			const ev = new PointerEvent(type, {
 				bubbles: true,
@@ -61,12 +61,12 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		Object.defineProperty(target, 'scrollHeight', { value: 300, configurable: true });
 
 		addScrollbars(target);
-		(target as any).updateScrollbars();
-		const hBar = parent.querySelector('.scroll-bar.horizontal');
-		const vBar = parent.querySelector('.scroll-bar.vertical');
+		target.updateScrollbars();
+		const hBar = parent.querySelector('.scroll-bar.horizontal')!;
+		const vBar = parent.querySelector('.scroll-bar.vertical')!;
 		expect(hBar.classList.contains('with-corner')).toBe(true);
 		expect(vBar.classList.contains('with-corner')).toBe(true);
-		expect(parent.querySelector('scroll-corner').classList.contains('visible')).toBe(true);
+		expect(parent.querySelector('scroll-corner')!.classList.contains('visible')).toBe(true);
 
 		parent.remove();
 	});

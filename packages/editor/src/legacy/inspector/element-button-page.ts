@@ -4,18 +4,33 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIButton = {
+	interface UIButtonShape {
+		[k: string]: any;
+	}
+	interface UIButtonData {
+		textEffect: {
+			type?: unknown;
+			shadowOffsetX?: unknown;
+			shadowOffsetY?: unknown;
+			strokeWidth?: unknown;
+			color?: unknown;
+			[k: string]: unknown;
+		};
+		instances: { setProperty(key: string, value: unknown): void };
+		[k: string]: unknown;
+	}
+	const UIButton: UIButtonShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIButton.initialize = function (this: any) {
+	UIButton.initialize = function (this: typeof UIButton) {
 		if (!$('#uiButton-display')) return;
 		$('#uiButton-display').loadItems([
 			{ name: 'Stretch', value: 'stretch' },
@@ -169,7 +184,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIButton.create = function (this: any) {
+	UIButton.create = function (this: typeof UIButton) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 24;
@@ -220,7 +235,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIButton.open = function (this: any, node: any) {
+	UIButton.open = function (this: typeof UIButton, node: UIButtonData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -272,7 +287,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIButton.close = function (this: any) {
+	UIButton.close = function (this: typeof UIButton) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -281,7 +296,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIButton.update = function (this: any, node: any, key: any, value: any) {
+	UIButton.update = function (
+		this: typeof UIButton,
+		node: UIButtonData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		// const element = node.instance
 		switch (key) {
@@ -350,7 +370,7 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 				break;
 			case 'content':
-				// 直接复制，更新语言包中的内容
+				// 闂佺儵鏅涢悺銊ф暜鐎涙ê绶炵€广儱鎳庨悡鎴︽煥濞戞ɑ婀版繛鎻掓健瀵剟骞忓畝濠傛闁荤喎鐨濋崑鎾绘煕閺嵮勫櫢闁煎灚鍨块幆鍐礋椤愩垺鏆ラ柣?
 				node[key] = value;
 				// element[key] = value
 				node.instances.setProperty(key, value);
@@ -389,8 +409,8 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'activeTint-2':
 			case 'activeTint-3': {
 				const [property, index] = key.split('-');
-				if (node[property][index] !== value) {
-					node[property][index] = value;
+				if ((node[property] as unknown[])[Number(index)] !== value) {
+					(node[property] as unknown[])[Number(index)] = value;
 					// element[property][index] = value element.state = 'changed'
 					node.instances.setProperty(key, value);
 					node.instances.setProperty('state', 'changed');
@@ -400,7 +420,7 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'textEffect-type':
 				if (node.textEffect.type !== value) {
 					const read = getElementReader('uiButton-textEffect');
-					const textEffect: any = { type: value };
+					const textEffect: Record<string, unknown> = { type: value };
 					switch (value) {
 						case 'none':
 							break;
@@ -439,7 +459,7 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIButton.paramInput = function (this: any, event: any) {
+	UIButton.paramInput = function (this: HTMLElement & { [k: string]: unknown }, event: Event) {
 		UIButton.update(UIButton.target, Inspector.getKey!(this), read(this));
 	};
 

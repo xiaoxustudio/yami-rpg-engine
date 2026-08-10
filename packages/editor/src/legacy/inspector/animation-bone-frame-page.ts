@@ -5,19 +5,25 @@ import { Inspector } from './inspector.ts';
 import { read, write } from '@/util/element-utils.ts';
 
 {
-	const AnimJointFrame = {
-		motion: null as any,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		write: null as any,
-		update: null as any,
-		paramInput: null as any
+	interface AnimJointFrameShape {
+		target: Record<string, unknown> | null;
+		update: ((frame: Record<string, unknown>, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
+	}
+	const AnimJointFrame: AnimJointFrameShape = {
+		motion: null,
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		write: null,
+		update: null,
+		paramInput: null
 	};
 
-	AnimJointFrame.initialize = function (this: any) {
+	AnimJointFrame.initialize = function (this: typeof AnimJointFrame) {
 		if (!$('#animJointFrame-x')) return;
 		const elements =
 			document.querySelectorAll(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
@@ -31,7 +37,7 @@ import { read, write } from '@/util/element-utils.ts';
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener(
 				'blur',
-				Inspector.inputBlur!(this, Animation, (data: any) => {
+				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
 					data.type = 'inspector-frame-change';
 					data.motion = this.motion;
 					data.direction = Animation.direction;
@@ -40,7 +46,7 @@ import { read, write } from '@/util/element-utils.ts';
 		);
 	};
 
-	AnimJointFrame.create = function (this: any) {
+	AnimJointFrame.create = function (this: typeof AnimJointFrame) {
 		return {
 			start: 0,
 			end: 1,
@@ -54,7 +60,7 @@ import { read, write } from '@/util/element-utils.ts';
 		};
 	};
 
-	AnimJointFrame.open = function (this: any, frame: any) {
+	AnimJointFrame.open = function (this: typeof AnimJointFrame, frame: Record<string, unknown>) {
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
@@ -70,7 +76,7 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimJointFrame.close = function (this: any) {
+	AnimJointFrame.close = function (this: typeof AnimJointFrame) {
 		if (this.target) {
 			Animation.unselectMarquee!(this.target);
 			Curve.load!(null);
@@ -79,7 +85,10 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimJointFrame.write = function (this: any, options: any) {
+	AnimJointFrame.write = function (
+		this: typeof AnimJointFrame,
+		options: Record<string, unknown>
+	) {
 		if (options.x !== undefined) {
 			write($('#animJointFrame-x'), options.x);
 		}
@@ -97,7 +106,12 @@ import { read, write } from '@/util/element-utils.ts';
 		}
 	};
 
-	AnimJointFrame.update = function (this: any, frame: any, key: any, value: any) {
+	AnimJointFrame.update = function (
+		this: typeof AnimJointFrame,
+		frame: Record<string, unknown>,
+		key: string,
+		value: unknown
+	) {
 		Animation.planToSave!();
 		switch (key) {
 			case 'x':
@@ -115,8 +129,12 @@ import { read, write } from '@/util/element-utils.ts';
 		Animation.requestRendering!();
 	};
 
-	AnimJointFrame.paramInput = function (this: any, event: any) {
-		AnimJointFrame.update(AnimJointFrame.target, Inspector.getKey!(this), read(this));
+	AnimJointFrame.paramInput = function (this: typeof AnimJointFrame, event: Event) {
+		AnimJointFrame.update!(
+			AnimJointFrame.target as Record<string, unknown>,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.animJointFrame = AnimJointFrame;

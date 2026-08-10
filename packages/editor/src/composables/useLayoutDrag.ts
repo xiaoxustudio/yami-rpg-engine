@@ -5,55 +5,55 @@ export function useLayoutDrag() {
 		return Layout;
 	};
 
-	function onNavDragstart(event: any) {
+	function onNavDragstart(event: DragEvent) {
 		getLayout()?.navDragstart?.(event);
 	}
 
-	function onNavDragend(event: any) {
+	function onNavDragend(event: Event) {
 		getLayout()?.navDragend?.(event);
 	}
 
-	function onNavDragenter(event: any) {
+	function onNavDragenter(event: DragEvent) {
 		getLayout()?.navDragenter?.(event);
 	}
 
-	function onNavDragleave(event: any) {
+	function onNavDragleave(event: Event) {
 		getLayout()?.navDragleave?.(event);
 	}
 
-	function onNavDragover(event: any) {
+	function onNavDragover(event: DragEvent) {
 		getLayout()?.navDragover?.(event);
 	}
 
-	function onNavDrop(event: any) {
+	function onNavDrop(event: Event) {
 		getLayout()?.navDrop?.(event);
 	}
 
-	function onRegionDragleave(event: any) {
+	function onRegionDragleave(event: Event) {
 		getLayout()?.regionDragleave?.(event);
 	}
 
-	function onRegionDragover(event: any) {
+	function onRegionDragover(event: DragEvent) {
 		getLayout()?.regionDragover?.(event);
 	}
 
-	function onBorderPointerdown(event: any) {
+	function onBorderPointerdown(event: Event) {
 		getLayout()?.borderPointerdown?.(event);
 	}
 
-	function onPointerup(event: any) {
+	function onPointerup(event: Event) {
 		getLayout()?.pointerup?.(event);
 	}
 
-	function onPointermove(event: any) {
+	function onPointermove(event: Event) {
 		getLayout()?.pointermove?.(event);
 	}
 
-	function onNavPointerdown(event: any) {
+	function onNavPointerdown(event: Event) {
 		getLayout()?.navPointerdown?.(event);
 	}
 
-	function onNavWrite(event: any) {
+	function onNavWrite(event: Event) {
 		getLayout()?.navWrite?.(event);
 	}
 

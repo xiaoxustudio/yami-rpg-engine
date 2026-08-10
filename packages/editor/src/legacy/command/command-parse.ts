@@ -9,13 +9,37 @@ import { File } from '@/file/file-system-core.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { Local } from '@/tools/localization.ts';
 
-Command.parseBlend = function (this: any, blend: string): any {
+interface CommandObjectShape {
+	type: string;
+	[k: string]: any;
+}
+
+interface CommandNode {
+	id: string;
+	params?: CommandObjectShape;
+	children?: CommandNode[];
+	[k: string]: any;
+}
+
+interface TextContent {
+	text?: string;
+	textId?: string;
+	tooltip?: string;
+	class?: string;
+	color?: string;
+	[k: string]: any;
+}
+
+Command.parseBlend = function (this: typeof Command, blend: string): string {
 	return Local.get!('blend.' + blend);
 };
 
-Command.fetchVariables = function (this: any, commands: any[] & { eventId?: string }): any {
+Command.fetchVariables = function (
+	this: typeof Command,
+	commands: CommandNode[] & { eventId?: string }
+): any[] {
 	const eventId = commands.eventId ?? '';
-	const calledEvents: any[] = [eventId];
+	const calledEvents: string[] = [eventId];
 	let eventIndex = 0;
 	this.returnType = Data.events[eventId]?.returnType ?? 'none';
 	this.saveVars = true;
@@ -48,7 +72,7 @@ Command.fetchVariables = function (this: any, commands: any[] & { eventId?: stri
 			});
 		}
 	};
-	const fetchVariables = (commands: any[]): void => {
+	const fetchVariables = (commands: CommandNode[]): void => {
 		for (const command of commands) {
 			const { id, params } = command;
 			if (id == null || id[0] === '!') continue;
@@ -56,27 +80,33 @@ Command.fetchVariables = function (this: any, commands: any[] & { eventId?: stri
 			if (id === 'callEvent') {
 				if (params?.type === 'global' && calledEvents.append(params.eventId)) {
 					const file = Data.manifest.guidMap[params.eventId]?.file;
-					if (file instanceof FileItem && !file.data.namespace) {
+					if (
+						file instanceof FileItem &&
+						!(file as unknown as { data?: { namespace?: unknown } }).data?.namespace
+					) {
 						let lastEventName = this.eventName;
 						let lasteventIndex = this.eventIndex;
 						this.eventName = file.basename;
 						this.eventIndex = ++eventIndex;
 						fetchParameters(params.eventId);
-						fetchVariables(file.data.commands);
+						fetchVariables(
+							(file as unknown as { data?: { commands?: CommandNode[] } }).data
+								?.commands ?? []
+						);
 						this.eventName = lastEventName;
 						this.eventIndex = lasteventIndex;
 					}
 				}
 			}
 			const handler = this.cases[id];
-			let contents;
+			let contents: CommandNode[];
 			try {
 				contents = handler
 					? handler.parse(params ?? {})
 					: this.custom.parse(id, params ?? {});
 			} catch (err) {
 				reportError(err, `Command.fetchVariables (id=${id})`);
-				contents = [] as any[];
+				contents = [];
 			}
 			for (const content of contents) {
 				if (content.children) {
@@ -92,16 +122,16 @@ Command.fetchVariables = function (this: any, commands: any[] & { eventId?: stri
 	this.eventIndex = 0;
 	this.eventName = '';
 	this.saveVars = false;
-	this.variables = [] as any[];
+	this.variables = [];
 	return variables;
 };
 
 Command.parseVariable = function (
-	this: any,
-	variable: any,
+	this: typeof Command,
+	variable: CommandObjectShape,
 	valueType: string = '',
 	isLeftValue: boolean = false
-): any {
+): string | undefined {
 	const key = variable.key;
 	switch (variable.type) {
 		case 'local': {
@@ -188,13 +218,13 @@ Command.parseVariable = function (
 	}
 };
 
-Command.parseGlobalVariable = function (this: any, id: string): any {
+Command.parseGlobalVariable = function (this: typeof Command, id: string): string {
 	if (id === '') return Token('none');
 	const variable = getVariable(id);
 	return variable ? variable.name : Command.parseUnlinkedId!(id);
 };
 
-Command.parseAttributeGroup = function (this: any, groupKey: string): any {
+Command.parseAttributeGroup = function (this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Attribute.getGroup!(groupKey);
 	if (group) return GameLocal.replace!(group.groupName);
@@ -204,7 +234,12 @@ Command.parseAttributeGroup = function (this: any, groupKey: string): any {
 
 Command.parseAttributeKey = (function () {
 	const i = / +/g;
-	return function (this: any, groupKey: string, attrId: string, valueType?: string): any {
+	return function (
+		this: typeof Command,
+		groupKey: string,
+		attrId: string,
+		valueType?: string
+	): string {
 		const attr = groupKey
 			? Attribute.getGroupAttribute!(groupKey, attrId)
 			: Attribute.getAttribute!(attrId);
@@ -219,7 +254,11 @@ Command.parseAttributeKey = (function () {
 	};
 })();
 
-Command.parseAttributeTag = function (this: any, id: string, valueType?: string): any {
+Command.parseAttributeTag = function (
+	this: typeof Command,
+	id: string,
+	valueType?: string
+): string {
 	return Token('<') + Command.parseAttributeKey!('', id, valueType) + Token('>');
 };
 
@@ -241,7 +280,11 @@ Command.parseVariableTag = (function IIFE() {
 		string.replace(local, localReplacer).replace(global, globalReplacer);
 })();
 
-Command.parseVariableNumber = function (this: any, number: any, unit?: string): any {
+Command.parseVariableNumber = function (
+	this: typeof Command,
+	number: CommandObjectShape | number,
+	unit?: string
+): string | undefined {
 	switch (typeof number) {
 		case 'number': {
 			const text = Command.setNumberColor!(number);
@@ -254,7 +297,10 @@ Command.parseVariableNumber = function (this: any, number: any, unit?: string): 
 	}
 };
 
-Command.parseVariableString = function (this: any, string: any): any {
+Command.parseVariableString = function (
+	this: typeof Command,
+	string: CommandObjectShape | string
+): string | undefined {
 	switch (typeof string) {
 		case 'string':
 			return Command.setStringColor!(`"${Command.parseMultiLineString!(string)}"`);
@@ -263,7 +309,11 @@ Command.parseVariableString = function (this: any, string: any): any {
 	}
 };
 
-Command.parseVariableTemplate = function (this: any, content: any, maxLength: number = 0): any {
+Command.parseVariableTemplate = function (
+	this: typeof Command,
+	content: CommandObjectShape | string,
+	maxLength: number = 0
+): string | undefined {
 	switch (typeof content) {
 		case 'string': {
 			const tag = Command.parseVariableTag!(GameLocal.replace!(content));
@@ -278,7 +328,11 @@ Command.parseVariableTemplate = function (this: any, content: any, maxLength: nu
 	}
 };
 
-Command.parseVariableAttr = function (this: any, groupKey: string, attrId: any): any {
+Command.parseVariableAttr = function (
+	this: typeof Command,
+	groupKey: string,
+	attrId: CommandObjectShape | string
+): string | undefined {
 	switch (typeof attrId) {
 		case 'string':
 			return Command.parseAttributeKey!(groupKey, attrId);
@@ -287,7 +341,11 @@ Command.parseVariableAttr = function (this: any, groupKey: string, attrId: any):
 	}
 };
 
-Command.parseVariableEnum = function (this: any, groupKey: string, enumId: any): any {
+Command.parseVariableEnum = function (
+	this: typeof Command,
+	groupKey: string,
+	enumId: CommandObjectShape | string
+): string | undefined {
 	switch (typeof enumId) {
 		case 'string':
 			return Command.parseGroupEnumString!(groupKey, enumId);
@@ -296,7 +354,10 @@ Command.parseVariableEnum = function (this: any, groupKey: string, enumId: any):
 	}
 };
 
-Command.parseVariableFile = function (this: any, fileId: any): any {
+Command.parseVariableFile = function (
+	this: typeof Command,
+	fileId: CommandObjectShape | string
+): string | undefined {
 	switch (typeof fileId) {
 		case 'string':
 			return Command.parseFileName!(fileId);
@@ -305,7 +366,10 @@ Command.parseVariableFile = function (this: any, fileId: any): any {
 	}
 };
 
-Command.parseVariableTeam = function (this: any, id: any): any {
+Command.parseVariableTeam = function (
+	this: typeof Command,
+	id: CommandObjectShape | string
+): string | undefined {
 	switch (typeof id) {
 		case 'string':
 			return Command.parseTeam!(id);
@@ -316,27 +380,35 @@ Command.parseVariableTeam = function (this: any, id: any): any {
 
 Command.parseMultiLineString = (function IIFE() {
 	const regexp = /\n/g;
-	return function (this: any, string: string): any {
+	return function (this: typeof Command, string: string): string {
 		return string.replace(regexp, '\\n');
 	};
 })();
 
-Command.parseSpriteName = function (this: any, animationId: string, spriteId: string): any {
+Command.parseSpriteName = function (
+	this: typeof Command,
+	animationId: string,
+	spriteId: string
+): string {
 	if (spriteId === '') return Token('none');
 	const animation = Data.animations[animationId];
-	const sprite = animation?.sprites.find((a: any) => a.id === spriteId);
+	const sprite = animation?.sprites.find((a: { id: string; name: string }) => a.id === spriteId);
 	if (sprite) return sprite.name;
 	this.invalid = true;
 	return Command.parseUnlinkedId!(spriteId);
 };
 
-Command.parseEventType = function (this: any, groupKey: string, eventType: string): any {
+Command.parseEventType = function (
+	this: typeof Command,
+	groupKey: string,
+	eventType: string
+): string {
 	return (
 		Local.get!('eventTypes.' + eventType) || Command.parseGroupEnumString!(groupKey, eventType)
 	);
 };
 
-Command.parseEnumGroup = function (this: any, groupKey: string): any {
+Command.parseEnumGroup = function (this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Enum.getGroup!(groupKey);
 	if (group) return GameLocal.replace!(group.groupName);
@@ -344,7 +416,7 @@ Command.parseEnumGroup = function (this: any, groupKey: string): any {
 	return Command.parseUnlinkedId!(groupKey);
 };
 
-Command.parseEnumString = function (this: any, stringId: string): any {
+Command.parseEnumString = function (this: typeof Command, stringId: string): string {
 	if (stringId === '') return Token('none');
 	const string = Enum.getString!(stringId);
 	if (string) {
@@ -356,11 +428,15 @@ Command.parseEnumString = function (this: any, stringId: string): any {
 	return textId + Command.setStringColor!(Command.parseUnlinkedId!(stringId));
 };
 
-Command.parseEnumStringTag = function (this: any, stringId: string): any {
+Command.parseEnumStringTag = function (this: typeof Command, stringId: string): string {
 	return Token('<') + Command.parseEnumString!(stringId) + Token('>');
 };
 
-Command.parseGroupEnumString = function (this: any, groupKey: string, stringId: string): any {
+Command.parseGroupEnumString = function (
+	this: typeof Command,
+	groupKey: string,
+	stringId: string
+): string {
 	if (stringId === '') return Token('none');
 	const string = Enum.getGroupString!(groupKey, stringId);
 	const textId = Command.setTextId!(`enum-string-${stringId}-${stringId}`);
@@ -369,19 +445,26 @@ Command.parseGroupEnumString = function (this: any, groupKey: string, stringId: 
 	return textId + Command.setStringColor!(Command.parseUnlinkedId!(stringId));
 };
 
-Command.parseListItem = function (this: any, variable: any, index: any): any {
+Command.parseListItem = function (
+	this: typeof Command,
+	variable: CommandObjectShape,
+	index: CommandObjectShape | number
+): string {
 	const listName = Command.parseVariable!(variable, 'object');
 	const listIndex = Command.parseVariableNumber!(index);
 	return listName + Token('[') + listIndex + Token(']');
 };
 
-Command.parseParameter = function (this: any, key: any): any {
+Command.parseParameter = function (this: typeof Command, key: CommandObjectShape | string): string {
 	const label = Local.get!('parameter.param');
 	const paramKey = Command.parseVariableString!(key);
 	return label + Token('(') + paramKey + Token(')');
 };
 
-Command.parseActor = function (this: any, actor: any): any {
+Command.parseActor = function (
+	this: typeof Command,
+	actor: CommandObjectShape
+): string | undefined {
 	switch (actor.type) {
 		case 'trigger':
 			return Command.setTextId!('actor-object-trigger') + Local.get!('actor.trigger');
@@ -417,7 +500,10 @@ Command.parseActor = function (this: any, actor: any): any {
 	}
 };
 
-Command.parseSkill = function (this: any, skill: any): any {
+Command.parseSkill = function (
+	this: typeof Command,
+	skill: CommandObjectShape
+): string | undefined {
 	switch (skill.type) {
 		case 'trigger':
 			return Command.setTextId!('skill-object-trigger') + Local.get!('skill.trigger');
@@ -444,7 +530,10 @@ Command.parseSkill = function (this: any, skill: any): any {
 	}
 };
 
-Command.parseState = function (this: any, state: any): any {
+Command.parseState = function (
+	this: typeof Command,
+	state: CommandObjectShape
+): string | undefined {
 	switch (state.type) {
 		case 'trigger':
 			return Command.setTextId!('state-object-trigger') + Local.get!('state.trigger');
@@ -464,7 +553,10 @@ Command.parseState = function (this: any, state: any): any {
 	}
 };
 
-Command.parseEquipment = function (this: any, equipment: any): any {
+Command.parseEquipment = function (
+	this: typeof Command,
+	equipment: CommandObjectShape
+): string | undefined {
 	switch (equipment.type) {
 		case 'trigger':
 			return Command.setTextId!('equipment-object-trigger') + Local.get!('equipment.trigger');
@@ -493,7 +585,7 @@ Command.parseEquipment = function (this: any, equipment: any): any {
 	}
 };
 
-Command.parseItem = function (this: any, item: any): any {
+Command.parseItem = function (this: typeof Command, item: CommandObjectShape): string | undefined {
 	switch (item.type) {
 		case 'trigger':
 			return Command.setTextId!('item-object-trigger') + Local.get!('item.trigger');
@@ -520,7 +612,10 @@ Command.parseItem = function (this: any, item: any): any {
 	}
 };
 
-Command.parsePosition = function (this: any, position: any): any {
+Command.parsePosition = function (
+	this: typeof Command,
+	position: CommandObjectShape
+): string | undefined {
 	switch (position.type) {
 		case 'absolute': {
 			const x = Command.parseVariableNumber!(position.x);
@@ -582,7 +677,10 @@ Command.parsePosition = function (this: any, position: any): any {
 	}
 };
 
-Command.parseAngle = function (this: any, angle: any): any {
+Command.parseAngle = function (
+	this: typeof Command,
+	angle: CommandObjectShape
+): string | undefined {
 	const type = angle.type;
 	const desc = Local.get!('angle.' + type);
 	switch (type) {
@@ -597,7 +695,10 @@ Command.parseAngle = function (this: any, angle: any): any {
 	}
 };
 
-Command.parseTrigger = function (this: any, trigger: any): any {
+Command.parseTrigger = function (
+	this: typeof Command,
+	trigger: CommandObjectShape
+): string | undefined {
 	switch (trigger.type) {
 		case 'trigger':
 			return Command.setTextId!('trigger-object-trigger') + Local.get!('trigger.trigger');
@@ -612,7 +713,10 @@ Command.parseTrigger = function (this: any, trigger: any): any {
 	}
 };
 
-Command.parseLight = function (this: any, light: any): any {
+Command.parseLight = function (
+	this: typeof Command,
+	light: CommandObjectShape
+): string | undefined {
 	switch (light.type) {
 		case 'trigger':
 			return Command.setTextId!('light-object-trigger') + Local.get!('light.trigger');
@@ -629,7 +733,10 @@ Command.parseLight = function (this: any, light: any): any {
 	}
 };
 
-Command.parseRegion = function (this: any, region: any): any {
+Command.parseRegion = function (
+	this: typeof Command,
+	region: CommandObjectShape
+): string | undefined {
 	switch (region.type) {
 		case 'trigger':
 			return Command.setTextId!('region-object-trigger') + Local.get!('region.trigger');
@@ -638,7 +745,10 @@ Command.parseRegion = function (this: any, region: any): any {
 	}
 };
 
-Command.parseTilemap = function (this: any, tilemap: any): any {
+Command.parseTilemap = function (
+	this: typeof Command,
+	tilemap: CommandObjectShape
+): string | undefined {
 	switch (tilemap.type) {
 		case 'trigger':
 			return Command.setTextId!('tilemap-object-trigger') + Local.get!('tilemap.trigger');
@@ -649,7 +759,10 @@ Command.parseTilemap = function (this: any, tilemap: any): any {
 	}
 };
 
-Command.parseObject = function (this: any, object: any): any {
+Command.parseObject = function (
+	this: typeof Command,
+	object: CommandObjectShape
+): string | undefined {
 	switch (object.type) {
 		case 'trigger':
 			return Command.setTextId!('preset-object-trigger') + Local.get!('object.trigger');
@@ -666,7 +779,10 @@ Command.parseObject = function (this: any, object: any): any {
 	}
 };
 
-Command.parseElement = function (this: any, element: any): any {
+Command.parseElement = function (
+	this: typeof Command,
+	element: CommandObjectShape
+): string | undefined {
 	switch (element.type) {
 		case 'trigger':
 			return Command.setTextId!('element-object-trigger') + Local.get!('element.trigger');
@@ -718,7 +834,7 @@ Command.parseElement = function (this: any, element: any): any {
 	}
 };
 
-Command.parsePresetObject = function (this: any, presetId: string): any {
+Command.parsePresetObject = function (this: typeof Command, presetId: string): string {
 	if (presetId === '') return Token('none');
 	const name = Data.scenePresets[presetId]?.data.name;
 	const textId = Command.setTextId!(`scene-object-${presetId}`);
@@ -727,7 +843,11 @@ Command.parsePresetObject = function (this: any, presetId: string): any {
 		: textId + Command.setPresetColor!(Command.parseUnlinkedId!(presetId));
 };
 
-Command.parsePresetElement = function (this: any, presetId: string, detailed: boolean = true): any {
+Command.parsePresetElement = function (
+	this: typeof Command,
+	presetId: string,
+	detailed: boolean = true
+): string {
 	if (presetId === '') return Token('none');
 	const uiId = Data.uiPresets[presetId]?.uiId ?? '';
 	const preset = Data.uiPresets[presetId]?.data;
@@ -749,18 +869,18 @@ Command.parsePresetElement = function (this: any, presetId: string, detailed: bo
 	}
 };
 
-Command.parseTeam = function (this: any, id: string): any {
+Command.parseTeam = function (this: typeof Command, id: string): string {
 	const team = Data.teams.map[id];
 	if (team) return team.name;
 	this.invalid = true;
 	return Command.parseUnlinkedId!(id);
 };
 
-Command.parseHexColor = function (this: any, hex: string): any {
+Command.parseHexColor = function (this: typeof Command, hex: string): string {
 	return Command.setStringColor!('#' + hex);
 };
 
-Command.parseActorSelector = function (this: any, selector: string): any {
+Command.parseActorSelector = function (this: typeof Command, selector: string): string | undefined {
 	switch (selector) {
 		case 'enemy':
 		case 'friend':
@@ -772,16 +892,16 @@ Command.parseActorSelector = function (this: any, selector: string): any {
 	}
 };
 
-Command.parseFileName = function (this: any, id: string): any {
+Command.parseFileName = function (this: typeof Command, id: string): string {
 	if (id === '') return Token('none');
 	const meta = Data.manifest.guidMap[id];
 	const textId = Command.setTextId!(`file-string-${id}`);
-	if (meta) return textId + Command.setFileColor!((File as any).parseMetaName(meta));
+	if (meta) return textId + Command.setFileColor!(File.parseMetaName!(meta));
 	this.invalid = true;
 	return textId + Command.setFileColor!(Command.parseUnlinkedId!(id));
 };
 
-Command.parseAudioType = function (this: any, type: string): any {
+Command.parseAudioType = function (this: typeof Command, type: string): string | undefined {
 	switch (type) {
 		case 'bgm':
 			return 'BGM';
@@ -797,7 +917,7 @@ Command.parseAudioType = function (this: any, type: string): any {
 	}
 };
 
-Command.parseWait = function (this: any, wait: boolean): any {
+Command.parseWait = function (this: typeof Command, wait: boolean): string {
 	switch (wait) {
 		case false:
 			return '';
@@ -806,7 +926,12 @@ Command.parseWait = function (this: any, wait: boolean): any {
 	}
 };
 
-Command.parseEasing = function (this: any, easingId: string, duration: number, wait: boolean): any {
+Command.parseEasing = function (
+	this: typeof Command,
+	easingId: string,
+	duration: number,
+	wait: boolean
+): string {
 	if (duration === 0) return '';
 	const easing = Data.easings.map[easingId];
 	const time = Command.parseVariableNumber!(duration, 'ms');
@@ -814,19 +939,19 @@ Command.parseEasing = function (this: any, easingId: string, duration: number, w
 	return wait ? info + Token(', ') + Local.get!('transition.wait') : info;
 };
 
-Command.parseUnlinkedId = function (this: any, name: string): any {
+Command.parseUnlinkedId = function (this: typeof Command, name: string): string {
 	return name ? `#${name}` : '';
 };
 
 Command.parseTextTags = (function IIFE() {
 	const regexp = /\$_(\S+?)_\$([\s\S]*?)\$_\/_\$/g;
-	return function (this: any, contents: any[]): any[] {
+	return function (this: typeof Command, contents: TextContent[]): TextContent[] {
 		let i = contents.length;
 		while (--i >= 0) {
 			const content = contents[i];
 			if (content.text !== undefined) {
 				const text = content.text;
-				const inserts = [] as any[];
+				const inserts: TextContent[] = [];
 				let end = 0;
 				let match;
 				while ((match = regexp.exec(text))) {
@@ -861,7 +986,7 @@ Command.parseTextTags = (function IIFE() {
 
 Command.removeTextTags = (function IIFE() {
 	const regexp = /\$_textId_\$(?:\S+?)_\/_\$|\$_(?:\S+?)_\$/g;
-	return function (this: any, string: string): any {
+	return function (this: typeof Command, string: string): string {
 		return string.replace(regexp, '');
 	};
 })();

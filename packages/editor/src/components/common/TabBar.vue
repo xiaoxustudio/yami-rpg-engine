@@ -14,9 +14,9 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-	select: [event: any];
-	closed: [event: any];
-	popup: [event: any];
+	select: [event: Event & { value?: any }];
+	closed: [event: Event & { value?: any }];
+	popup: [event: Event & { value?: any }];
 }>();
 
 const updateAppRegion = (): void => Title.updateAppRegion();
@@ -38,7 +38,7 @@ const ym = ref<{
 	clear(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -60,7 +60,7 @@ const find = (meta: any): any => ym.value?.find(meta);
 const clear = (): void => ym.value?.clear();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -83,7 +83,8 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as HTMLElement &
+		Record<'read' | 'write' | 'update' | 'parseTabName' | 'select' | 'unselect' | 'insert' | 'close' | 'closeByProperty' | 'closeOtherTabs' | 'closeTabsToTheRight' | 'find' | 'clear' | 'on', any>;
 	if (!el) return;
 	el.read = read;
 	el.write = write;
@@ -101,8 +102,8 @@ onMounted(() => {
 	el.on = on;
 
 	// 经 el.on 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
-	el.on('select', (event: any) => emit('select', event));
-	el.on('closed', (event: any) => emit('closed', event));
-	el.on('popup', (event: any) => emit('popup', event));
+	el.on('select', (event: Event & { value?: any }) => emit('select', event));
+	el.on('closed', (event: Event & { value?: any }) => emit('closed', event));
+	el.on('popup', (event: Event & { value?: any }) => emit('popup', event));
 });
 </script>

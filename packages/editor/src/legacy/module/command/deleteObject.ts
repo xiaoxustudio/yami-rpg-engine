@@ -11,7 +11,7 @@ Command.cases.deleteObject = new CommandSchema({
 	customParse({ object }: any) {
 		return [
 			{ color: 'object' },
-			{ text: Local.get('command.deleteObject') + Token(': ') },
+			{ text: Local.get!('command.deleteObject') + Token(': ') },
 			{ text: Command.parseObject(object) }
 		];
 	},

@@ -17,7 +17,7 @@ Command.cases.appendTarget = new CommandSchema({
 			.push(Command.parseActor(target));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.appendTarget') + Token(': ') },
+			{ text: Local.get!('command.appendTarget') + Token(': ') },
 			{ text: words.join() }
 		];
 	},

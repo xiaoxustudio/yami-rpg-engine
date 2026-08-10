@@ -2,26 +2,53 @@ import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, on, read, write } from '@/util/element-utils';
 import { Command } from './command-object.ts';
-import { SwitchCondition } from './match-condition-window.ts';
+import { SwitchCondition, type SwitchConditionData } from './match-condition-window.ts';
 
-export const SwitchBranch = {
-	target: null as any,
-	commands: null as any,
-	initialize: null as any,
-	parse: null as any,
-	open: null as any,
-	save: null as any,
-	windowClosed: null as any,
-	confirm: null as any
+interface SwitchBranchTarget {
+	save: () => any;
+	inserting?: boolean;
+	[k: string]: unknown;
+}
+
+interface SwitchBranchData {
+	conditions: SwitchConditionData[];
+	commands: unknown[];
+	[k: string]: unknown;
+}
+
+interface SwitchBranchShape {
+	target: SwitchBranchTarget | null;
+	commands: unknown[] | null;
+	initialize: (() => void) | null;
+	parse: ((branch: SwitchBranchData, listData?: boolean) => string) | null;
+	open: ((branch: SwitchBranchData) => void) | null;
+	save: (() => unknown) | null;
+	windowClosed: ((event: Event) => void) | null;
+	confirm: ((event: Event) => void) | null;
+}
+
+export const SwitchBranch: SwitchBranchShape = {
+	target: null,
+	commands: null,
+	initialize: null,
+	parse: null,
+	open: null,
+	save: null,
+	windowClosed: null,
+	confirm: null
 };
 
-SwitchBranch.initialize = function (this: any) {
+SwitchBranch.initialize = function (this: typeof SwitchBranch): void {
 	if (!$('#switch-branch')) return;
-	on($('#switch-branch'), 'closed', this.windowClosed);
-	on($('#switch-branch-confirm'), 'click', this.confirm);
+	on($('#switch-branch'), 'closed', this.windowClosed!);
+	on($('#switch-branch-confirm'), 'click', this.confirm!);
 };
 
-SwitchBranch.parse = function (this: any, branch: any, listData: any) {
+SwitchBranch.parse = function (
+	this: typeof SwitchBranch,
+	branch: SwitchBranchData,
+	listData?: boolean
+): string {
 	const words = Command.words;
 	for (const condition of branch.conditions) {
 		words.push(SwitchCondition.parse!(condition));
@@ -33,9 +60,9 @@ SwitchBranch.parse = function (this: any, branch: any, listData: any) {
 	return string;
 };
 
-SwitchBranch.open = function (this: any, branch: any) {
-	if (this.target.inserting) {
-		SwitchCondition.target = this.target;
+SwitchBranch.open = function (this: typeof SwitchBranch, branch: SwitchBranchData): void {
+	if (this.target!.inserting) {
+		SwitchCondition.target = this.target!;
 		SwitchCondition.open!();
 	} else {
 		Window.open!('switch-branch');
@@ -44,12 +71,12 @@ SwitchBranch.open = function (this: any, branch: any) {
 		this.commands = branch.commands;
 	}
 };
-SwitchBranch.save = function (this: any) {
-	if (this.target.inserting) {
+SwitchBranch.save = function (this: typeof SwitchBranch): unknown {
+	if (this.target!.inserting) {
 		const condition = SwitchCondition.save!();
 		if (condition !== undefined) {
 			const conditions = [condition];
-			const commands = [] as any[];
+			const commands: unknown[] = [];
 			return { conditions, commands };
 		}
 	} else {
@@ -64,11 +91,11 @@ SwitchBranch.save = function (this: any) {
 	}
 };
 
-SwitchBranch.windowClosed = function (this: any, event: any) {
+SwitchBranch.windowClosed = function (this: typeof SwitchBranch, event: Event): void {
 	SwitchBranch.commands = null;
 	clear($('#switch-branch-conditions'));
 };
 
-SwitchBranch.confirm = function (this: any, event: any) {
+SwitchBranch.confirm = function (this: typeof SwitchBranch, event: Event): void {
 	return SwitchBranch.target?.save?.();
 };

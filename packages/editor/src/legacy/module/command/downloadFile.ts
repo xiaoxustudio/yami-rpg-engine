@@ -59,7 +59,7 @@ Command.cases.downloadFile = new CommandSchema({
 			{ text: rateCallback },
 			{ text: ' -> ' }
 		];
-		const contents = [] as any[];
+		const contents: any[] = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -69,7 +69,7 @@ Command.cases.downloadFile = new CommandSchema({
 				}
 			);
 		}
-		const datas = [] as any[];
+		const datas: any[] = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },

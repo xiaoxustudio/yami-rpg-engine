@@ -2,14 +2,20 @@ import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const StateGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	confirm: null as any
+interface StateGetterShape extends AccessorBaseShape {
+	checkDataForPlugin: ((data: any) => boolean) | null;
+	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
+}
+
+export const StateGetter: StateGetterShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	checkDataForPlugin: null,
+	createDefaultForPlugin: null,
+	confirm: null
 };
 
 StateGetter.initialize = function (this: any) {

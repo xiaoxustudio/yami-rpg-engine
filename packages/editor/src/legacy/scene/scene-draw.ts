@@ -8,7 +8,7 @@ import { Matrix } from '@/webgl/matrix2.ts';
 import { Texture } from '@/webgl/texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
-Scene.drawScene = function (this: any) {
+Scene.drawScene = function (this: typeof Scene) {
 	if (GL.width * GL.height === 0) {
 		return;
 	}
@@ -57,7 +57,7 @@ Scene.drawScene = function (this: any) {
 	}
 };
 
-Scene.drawBackgrounds = function (this: any) {
+Scene.drawBackgrounds = function (this: typeof Scene) {
 	GL.clearColor!(...this.background.getGLRGBA());
 	GL.clear!(GL.COLOR_BUFFER_BIT);
 	const activeId = this.activeTilemapId;
@@ -80,7 +80,7 @@ Scene.drawBackgrounds = function (this: any) {
 	GL.alpha = 1;
 };
 
-Scene.drawForegrounds = function (this: any) {
+Scene.drawForegrounds = function (this: typeof Scene) {
 	const activeId = this.activeTilemapId;
 	const foregrounds = this.foregrounds;
 	const length = foregrounds.length;
@@ -102,7 +102,7 @@ Scene.drawForegrounds = function (this: any) {
 	GL.alpha = 1;
 };
 
-Scene.updateAnimations = function (this: any, deltaTime: any) {
+Scene.updateAnimations = function (this: typeof Scene, deltaTime: number) {
 	const lightmap = GL.reflectedLightMap;
 	const area = Data.config.animationArea;
 	const th = this.tileHeight;
@@ -156,7 +156,7 @@ Scene.updateAnimations = function (this: any, deltaTime: any) {
 	}
 };
 
-Scene.updateParticles = function (this: any, deltaTime: any) {
+Scene.updateParticles = function (this: typeof Scene, deltaTime: number) {
 	if (this.showAnimation) {
 		const lightmap = GL.reflectedLightMap;
 		const area = Data.config.animationArea;
@@ -193,7 +193,25 @@ Scene.updateParticles = function (this: any, deltaTime: any) {
 	}
 };
 
-Scene.drawTilemap = function (this: any, tilemap: any, id: any) {
+Scene.drawTilemap = function (
+	this: typeof Scene,
+	tilemap: {
+		width: number;
+		height: number;
+		anchorX: number;
+		anchorY: number;
+		offsetX: number;
+		offsetY: number;
+		opacity: number;
+		enabled: boolean;
+		light: string;
+		blend: string;
+		tilesetMap: { [k: number]: string };
+		tiles: { width: number; height: number; rowOffset: number; [k: number]: number };
+		[k: string]: unknown;
+	},
+	id: number
+) {
 	let layer, opacity;
 	const activeId = this.activeTilemapId;
 	if (activeId === -1 || id === activeId) {
@@ -227,7 +245,7 @@ Scene.drawTilemap = function (this: any, tilemap: any, id: any) {
 	);
 };
 
-Scene.drawTilePreview = function (this: any) {
+Scene.drawTilePreview = function (this: typeof Scene) {
 	const marquee = this.marquee;
 	if (marquee.visible && marquee.previewTiles) {
 		const mm = marquee.tilesetMap;
@@ -246,15 +264,15 @@ Scene.drawTilePreview = function (this: any) {
 };
 
 Scene.drawTileLayer = function (
-	this: any,
-	layer: any,
-	light: any,
-	blend: any,
-	opacity: any,
-	tilesetMap: any,
-	tiles: any,
-	ox: any,
-	oy: any
+	this: typeof Scene,
+	layer: 'upper' | 'lower',
+	light: string,
+	blend: string,
+	opacity: number,
+	tilesetMap: { [k: number]: string },
+	tiles: { width: number; height: number; rowOffset: number; [k: number]: number },
+	ox: number,
+	oy: number
 ) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
@@ -446,7 +464,7 @@ Scene.drawTileLayer = function (
 	}
 };
 
-Scene.drawGridLayer = function (this: any) {
+Scene.drawGridLayer = function (this: typeof Scene) {
 	if (this.showGrid && this.width * this.height) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
@@ -502,7 +520,7 @@ Scene.drawGridLayer = function (this: any) {
 	}
 };
 
-Scene.drawRegionLayer = function (this: any) {
+Scene.drawRegionLayer = function (this: typeof Scene) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
@@ -575,7 +593,7 @@ Scene.drawRegionLayer = function (this: any) {
 	}
 };
 
-Scene.drawRegionBorders = function (this: any) {
+Scene.drawRegionBorders = function (this: typeof Scene) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const tw = this.tileWidth;
@@ -655,7 +673,7 @@ Scene.drawRegionBorders = function (this: any) {
 	}
 };
 
-Scene.drawObjectLayer = function (this: any) {
+Scene.drawObjectLayer = function (this: typeof Scene) {
 	const { max, min, floor, ceil, round } = Math;
 	const activeId = this.activeTilemapId;
 	const translucent = activeId !== -1 && activeId < 0x20000;
@@ -1023,7 +1041,7 @@ Scene.drawObjectLayer = function (this: any) {
 	}
 };
 
-Scene.drawDirectLightLayer = function (this: any) {
+Scene.drawDirectLightLayer = function (this: typeof Scene) {
 	if (this.showLight) {
 		GL.matrix.reset();
 		GL.blend = 'additive';
@@ -1032,7 +1050,7 @@ Scene.drawDirectLightLayer = function (this: any) {
 	}
 };
 
-Scene.drawNameLayer = function (this: any) {
+Scene.drawNameLayer = function (this: typeof Scene) {
 	if (this.target?.name) {
 		const gl = GL;
 		const sl = this.scrollLeft * this.scaleX;
@@ -1049,7 +1067,7 @@ Scene.drawNameLayer = function (this: any) {
 	}
 };
 
-Scene.drawTerrainLayer = function (this: any) {
+Scene.drawTerrainLayer = function (this: typeof Scene) {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const terrains = this.terrains;
@@ -1286,7 +1304,7 @@ Scene.drawTerrainLayer = function (this: any) {
 	}
 };
 
-Scene.drawLightTextures = function (this: any) {
+Scene.drawLightTextures = function (this: typeof Scene) {
 	if (this.showLight) {
 		const gl = GL;
 		const ambient = this.ambient;
@@ -1422,7 +1440,7 @@ Scene.drawLightTextures = function (this: any) {
 	}
 };
 
-Scene.drawTileMarquee = function (this: any) {
+Scene.drawTileMarquee = function (this: typeof Scene) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const gl = GL;
@@ -1453,8 +1471,8 @@ Scene.drawTileMarquee = function (this: any) {
 		vertices[6] = dr + ox;
 		vertices[7] = dt + oy;
 		let vi = 8;
-		let valid: any = null;
-		let invalid: any = null;
+		let valid: number | { start: number; count: number } | null = null;
+		let invalid: number | { start: number; count: number } | null = null;
 		const context = Scene.tilemap ?? Scene;
 		const sw = context.width;
 		const sh = context.height;
@@ -1543,14 +1561,14 @@ Scene.drawTileMarquee = function (this: any) {
 		}
 		if (valid !== null) {
 			valid = {
-				start: valid * 0.75,
+				start: (valid as number) * 0.75,
 				count: 6
 			};
 		}
 		if (invalid !== null) {
 			invalid = {
-				start: invalid * 0.75,
-				count: (vi - invalid) * 0.75
+				start: (invalid as number) * 0.75,
+				count: (vi - (invalid as number)) * 0.75
 			};
 		}
 		const program = gl.graphicProgram.use();
@@ -1563,18 +1581,28 @@ Scene.drawTileMarquee = function (this: any) {
 		gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
 		if (valid !== null) {
 			gl.vertexAttrib4fv(program.a_Color, marquee.backgroundColor);
-			gl.drawElements(gl.TRIANGLES, valid.count, gl.UNSIGNED_INT, valid.start * 4);
+			gl.drawElements(
+				gl.TRIANGLES,
+				(valid as { start: number; count: number }).count,
+				gl.UNSIGNED_INT,
+				(valid as { start: number; count: number }).start * 4
+			);
 		}
 		if (invalid !== null) {
 			gl.vertexAttrib4fv(program.a_Color, marquee.backgroundColorInvalid);
-			gl.drawElements(gl.TRIANGLES, invalid.count, gl.UNSIGNED_INT, invalid.start * 4);
+			gl.drawElements(
+				gl.TRIANGLES,
+				(invalid as { start: number; count: number }).count,
+				gl.UNSIGNED_INT,
+				(invalid as { start: number; count: number }).start * 4
+			);
 		}
 		gl.vertexAttrib4fv(program.a_Color, marquee.borderColor);
 		gl.drawArrays(gl.LINE_LOOP, 0, 4);
 	}
 };
 
-Scene.drawTerrainMarquee = function (this: any) {
+Scene.drawTerrainMarquee = function (this: typeof Scene) {
 	const marquee = this.marquee;
 	if (marquee.visible) {
 		const gl = GL;
@@ -1624,7 +1652,7 @@ Scene.drawTerrainMarquee = function (this: any) {
 	}
 };
 
-Scene.drawTilemapWireframe = function (this: any) {
+Scene.drawTilemapWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'tilemap') {
 		const tilemap = this.target;
 		const anchor = this.getParallaxAnchor!(tilemap);
@@ -1657,7 +1685,7 @@ Scene.drawTilemapWireframe = function (this: any) {
 	}
 };
 
-Scene.drawAnimationWireframe = function (this: any) {
+Scene.drawAnimationWireframe = function (this: typeof Scene) {
 	switch (this.target?.class) {
 		case 'actor':
 		case 'animation': {
@@ -1688,7 +1716,7 @@ Scene.drawAnimationWireframe = function (this: any) {
 	}
 };
 
-Scene.drawAnimationAnchor = function (this: any) {
+Scene.drawAnimationAnchor = function (this: typeof Scene) {
 	switch (this.target?.class) {
 		case 'actor': {
 			const team = Data.teams.map[this.target.teamId];
@@ -1702,7 +1730,7 @@ Scene.drawAnimationAnchor = function (this: any) {
 	}
 };
 
-Scene.drawLightWireframe = function (this: any) {
+Scene.drawLightWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'light') {
 		const light = this.target;
 		const tw = this.tileWidth;
@@ -1751,7 +1779,7 @@ Scene.drawLightWireframe = function (this: any) {
 	}
 };
 
-Scene.drawRegionWireframe = function (this: any) {
+Scene.drawRegionWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'region') {
 		const region = this.target;
 		const tw = this.tileWidth;
@@ -1777,7 +1805,7 @@ Scene.drawRegionWireframe = function (this: any) {
 	}
 };
 
-Scene.drawParticleEmitterWireframe = function (this: any) {
+Scene.drawParticleEmitterWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'particle') {
 		const particle = this.target;
 		const rect = particle.emitter?.bounding;
@@ -1796,7 +1824,7 @@ Scene.drawParticleEmitterWireframe = function (this: any) {
 	}
 };
 
-Scene.drawParallaxWireframe = function (this: any) {
+Scene.drawParallaxWireframe = function (this: typeof Scene) {
 	if (this.target?.class === 'parallax') {
 		const parallax = this.target;
 		const sl = this.scrollLeft;
@@ -1825,7 +1853,7 @@ Scene.drawParallaxWireframe = function (this: any) {
 	}
 };
 
-Scene.createStartPositionTexture = function (this: any) {
+Scene.createStartPositionTexture = function (this: typeof Scene) {
 	let texture = this.startPositionTexture;
 	if (texture === null) {
 		const canvas = document.createElement('canvas');
@@ -1850,7 +1878,7 @@ Scene.createStartPositionTexture = function (this: any) {
 	return texture;
 };
 
-Scene.drawStartPosition = function (this: any) {
+Scene.drawStartPosition = function (this: typeof Scene) {
 	const { startPosition } = Data.config;
 	if (startPosition.sceneId === this.meta.guid) {
 		const tw = this.tileWidth;

@@ -11,7 +11,7 @@ Command.cases.setPlayerActor = new CommandSchema({
 	customParse({ actor }: any) {
 		return [
 			{ color: 'actor' },
-			{ text: Local.get('command.setPlayerActor') + Token(': ') },
+			{ text: Local.get!('command.setPlayerActor') + Token(': ') },
 			{ text: Command.parseActor(actor) }
 		];
 	},

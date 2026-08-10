@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { NewProject } from '@/title/new-project-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -34,13 +35,13 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onFolderBeforeinput = (event: any) => {
-	(window as any).NewProject?.folderBeforeinput?.(event);
+	NewProject?.folderBeforeinput?.(event);
 };
 const onFolderInput = () => {
-	(window as any).NewProject?.folderInput?.();
+	NewProject?.folderInput?.();
 };
 const onLocationInput = () => {
-	(window as any).NewProject?.locationInput?.();
+	NewProject?.locationInput?.();
 };
 
 onMounted(() => {

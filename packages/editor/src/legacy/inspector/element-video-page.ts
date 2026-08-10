@@ -4,18 +4,29 @@ import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
 {
-	const UIVideo = {
+	interface UIVideoShape {
+		[k: string]: any;
+	}
+	interface UIVideoData {
+		video: string;
+		playbackRate: number;
+		loop: boolean;
+		flip: string;
+		blend: string;
+		[k: string]: any;
+	}
+	const UIVideo: UIVideoShape = {
 		owner: UI,
-		target: null as any,
-		initialize: null as any,
-		create: null as any,
-		open: null as any,
-		close: null as any,
-		update: null as any,
-		paramInput: null as any
+		target: null,
+		initialize: null,
+		create: null,
+		open: null,
+		close: null,
+		update: null,
+		paramInput: null
 	};
 
-	UIVideo.initialize = function (this: any) {
+	UIVideo.initialize = function (this: typeof UIVideo) {
 		if (!$('#uiVideo-loop')) return;
 		$('#uiVideo-loop').loadItems([
 			{ name: 'Once', value: false },
@@ -46,7 +57,7 @@ import { UI } from '@/ui/ui-window.ts';
 		);
 	};
 
-	UIVideo.create = function (this: any) {
+	UIVideo.create = function (this: typeof UIVideo) {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -71,7 +82,7 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIVideo.open = function (this: any, node: any) {
+	UIVideo.open = function (this: typeof UIVideo, node: UIVideoData) {
 		if (this.target !== node) {
 			this.target = node;
 
@@ -85,7 +96,7 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIVideo.close = function (this: any) {
+	UIVideo.close = function (this: typeof UIVideo) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();
@@ -94,7 +105,12 @@ import { UI } from '@/ui/ui-window.ts';
 		}
 	};
 
-	UIVideo.update = function (this: any, node: any, key: any, value: any) {
+	UIVideo.update = function (
+		this: typeof UIVideo,
+		node: UIVideoData,
+		key: string,
+		value: unknown
+	) {
 		UI.planToSave!();
 		switch (key) {
 			case 'video':
@@ -103,14 +119,14 @@ import { UI } from '@/ui/ui-window.ts';
 			case 'flip':
 			case 'blend':
 				if (node[key] !== value) {
-					node[key] = value;
+					(node as Record<string, unknown>)[key] = value;
 				}
 				break;
 		}
 		UI.requestRendering!();
 	};
 
-	UIVideo.paramInput = function (this: any, event: any) {
+	UIVideo.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
 		UIVideo.update(UIVideo.target, Inspector.getKey!(this), read(this));
 	};
 

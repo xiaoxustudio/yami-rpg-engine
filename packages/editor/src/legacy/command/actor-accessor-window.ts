@@ -3,14 +3,20 @@ import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
-export const ActorGetter = {
-	target: null as any,
-	initialize: null as any,
-	open: null as any,
-	checkDataForPlugin: null as any,
-	createDefaultForPlugin: null as any,
-	confirm: null as any
+interface ActorGetterShape extends AccessorBaseShape {
+	checkDataForPlugin: ((data: any) => boolean) | null;
+	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
+}
+
+export const ActorGetter: ActorGetterShape = {
+	target: null,
+	initialize: null,
+	open: null,
+	checkDataForPlugin: null,
+	createDefaultForPlugin: null,
+	confirm: null
 };
 
 ActorGetter.initialize = function (this: any) {
@@ -45,7 +51,7 @@ ActorGetter.open = function (this: any, target: any) {
 
 	let memberId = 0;
 	let actorId = '';
-	let presetId = (PresetObject.getDefaultPresetId as any)('actor');
+	let presetId = PresetObject.getDefaultPresetId('actor');
 	let variable = { type: 'local', key: '' };
 	const actor = target.dataValue;
 	switch (actor.type) {

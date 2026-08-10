@@ -1,20 +1,30 @@
 import { defineStore } from 'pinia';
 import { Window } from '@/tools/window-object.ts';
+import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 
 export const useWindowStore = defineStore('window', () => {
-	const topWindow = shallowRef<any>(null);
-	const windows = shallowRef<any[]>([]);
+	const topWindow = shallowRef<HTMLElement | null>(null);
+	const windows = shallowRef<HTMLElement[]>([]);
 
 	function syncState() {
 		topWindow.value = Window?.getTopWindow?.() ?? null;
+		windows.value = [...(Window?.frames ?? [])];
 	}
 
-	function getTopWindow() {
+	function getWindows(): HTMLElement[] {
+		return [...(Window?.frames ?? [])];
+	}
+
+	function getTopWindow(): HTMLElement | null {
 		return Window?.getTopWindow?.() ?? null;
 	}
 
-	function confirm(options: any, buttons: any[]) {
+	interface WindowButton {
+		label?: string;
+		click?: () => void;
+	}
+	function confirm(options: { message?: string; close?: () => void }, buttons: WindowButton[]) {
 		return Window?.confirm?.(options, buttons);
 	}
 
@@ -35,7 +45,7 @@ export const useWindowStore = defineStore('window', () => {
 	}
 
 	function isWindowOpen(id: string) {
-		return Window?.isWindowOpen?.(id);
+		return Window?.isWindowOpen?.(id) ?? false;
 	}
 
 	function setPositionMode(mode: string) {
@@ -54,11 +64,11 @@ export const useWindowStore = defineStore('window', () => {
 		Window?.refocus?.();
 	}
 
-	function keydown(event: any) {
+	function keydown(event: KeyboardEvent) {
 		Window?.keydown?.(event);
 	}
 
-	function cancel(event: any) {
+	function cancel(event: Event) {
 		Window?.cancel?.(event);
 	}
 
@@ -66,6 +76,7 @@ export const useWindowStore = defineStore('window', () => {
 		topWindow,
 		windows,
 		syncState,
+		getWindows,
 		getTopWindow,
 		confirm,
 		initialize,
@@ -81,3 +92,7 @@ export const useWindowStore = defineStore('window', () => {
 		cancel
 	};
 });
+
+export function getWindowStore() {
+	return useWindowStore(pinia);
+}
