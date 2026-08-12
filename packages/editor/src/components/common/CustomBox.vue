@@ -20,6 +20,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMCustomBox } from '@ui-kit';
 import { customBoxOptions } from '../../legacy/components/custom-box-opts';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -99,12 +100,7 @@ const el = root.value as HTMLElement & {
 	): void;
 };
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.enable = enable;
-	el.disable = disable;
-	el.on = on;
+	attachElementApi(el, { read, write, input, enable, disable, on });
 });
 </script>
 

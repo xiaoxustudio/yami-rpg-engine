@@ -18,6 +18,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMNumberBox } from '@ui-kit';
 import { NumberHistory } from '@/components/number-history';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface NumberBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -99,13 +100,7 @@ onMounted(() => {
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
 	input.history = new NumberHistory(input);
-	el.input = input;
-	el.read = read;
-	el.write = write;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
+	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
 	input.addEventListener('change', () => {
 		const val = read();
 		emit('update:modelValue', val);

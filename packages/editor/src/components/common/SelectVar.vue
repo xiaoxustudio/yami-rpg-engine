@@ -18,6 +18,7 @@ import { YMSelectVar } from '@ui-kit';
 import { defVar } from '@/components/select-var';
 import { Select } from '@/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -113,14 +114,7 @@ onMounted(() => {
 		mode: string;
 	};
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.switch = switchMode;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
-	el.loadItems = loadItems;
+	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on, loadItems });
 	el.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
 	el.varBox = getChildRoot(varBoxRef.value);
 	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';

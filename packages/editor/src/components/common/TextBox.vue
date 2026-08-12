@@ -6,6 +6,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextBox } from '@ui-kit';
 import { TextHistory } from '@/components/text-history';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface TextBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -118,21 +119,23 @@ onMounted(() => {
 	const input = ym.value?.input ?? null;
 	if (!el || !input) return;
 	input.history = new TextHistory(input);
-	el.input = input;
-	el.read = read;
-	el.write = write;
-	el.insert = insert;
-	el.enable = enable;
-	el.disable = disable;
-	el.focus = focus;
-	el.getFocus = getFocus;
-	el.setPlaceholder = setPlaceholder;
-	el.setMaxLength = setMaxLength;
-	el.fitContent = fitContent;
-	el.deleteInputContent = deleteInputContent;
-	el.addCloseButton = addCloseButton;
-	el.addKeydownFilter = addKeydownFilter;
-	el.on = on;
+	attachElementApi(el, {
+		input,
+		read,
+		write,
+		insert,
+		enable,
+		disable,
+		focus,
+		getFocus,
+		setPlaceholder,
+		setMaxLength,
+		fitContent,
+		deleteInputContent,
+		addCloseButton,
+		addKeydownFilter,
+		on
+	});
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

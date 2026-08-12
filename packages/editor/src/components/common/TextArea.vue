@@ -7,6 +7,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextArea } from '@ui-kit';
 import { TextHistory } from '@/components/text-history';
 import { listenDraggingScrollbarEvent } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface TextAreaElement extends HTMLElement {
 	input: HTMLTextAreaElement;
@@ -83,13 +84,7 @@ onMounted(() => {
 	input.history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
 	el.input = input;
-	el.read = read;
-	el.write = write;
-	el.insert = insert;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
+	attachElementApi(el, { read, write, insert, enable, disable, getFocus, on });
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

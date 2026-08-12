@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMGamepadBox } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface GamepadBoxElement extends HTMLElement {
 	read(): number | null;
@@ -41,10 +42,6 @@ defineExpose({ read, write, enable, disable, getFocus, root });
 onMounted(() => {
 	const el = root.value as GamepadBoxElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
+	attachElementApi(el, { read, write, enable, disable, getFocus });
 });
 </script>

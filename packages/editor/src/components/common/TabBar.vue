@@ -6,6 +6,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
 import { Title } from '@/title/title-bar';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -120,20 +121,22 @@ onMounted(() => {
 		) => void;
 	};
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.update = update;
-	el.parseTabName = parseTabName;
-	el.select = select;
-	el.unselect = unselect;
-	el.insert = insert;
-	el.close = close;
-	el.closeByProperty = closeByProperty;
-	el.closeOtherTabs = closeOtherTabs;
-	el.closeTabsToTheRight = closeTabsToTheRight;
-	el.find = find;
-	el.clear = clear;
-	el.on = on;
+	attachElementApi(el, {
+		read,
+		write,
+		update,
+		parseTabName,
+		select,
+		unselect,
+		insert,
+		close,
+		closeByProperty,
+		closeOtherTabs,
+		closeTabsToTheRight,
+		find,
+		clear,
+		on
+	});
 
 	// 经 el.on 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
 	el.on('select', (event: Event & { value?: TabItemData }) => emit('select', event));

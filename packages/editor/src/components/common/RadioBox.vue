@@ -22,6 +22,7 @@ import {
 	type RadioProxyElement,
 	type RadioRelationEntry
 } from '@/components/radio-proxy';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;
@@ -172,13 +173,7 @@ onMounted(() => {
 	});
 	if (props.disabled) disable();
 
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.enable = enable;
-	el.disable = disable;
-	el.relate = relate;
-	el.on = on;
+	attachElementApi(el, { read, write, input, enable, disable, relate, on });
 
 	syncSelected();
 });

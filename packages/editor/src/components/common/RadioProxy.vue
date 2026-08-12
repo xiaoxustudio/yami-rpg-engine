@@ -12,6 +12,7 @@ import {
 	disable,
 	dispatchChangeEvent
 } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface RadioRelationTarget extends HTMLElement {
 	enable?(): void;
@@ -217,14 +218,7 @@ defineExpose({ read, write, input, reset, enable, disable, relate, on, root });
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.reset = reset;
-	el.enable = enable;
-	el.disable = disable;
-	el.relate = relate;
-	el.on = on;
+	attachElementApi(el, { read, write, input, reset, enable, disable, relate, on });
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
 		get: () => dataValue.value,

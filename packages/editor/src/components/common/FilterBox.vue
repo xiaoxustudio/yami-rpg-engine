@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMFilterBox } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface FilterBoxElement extends HTMLElement {
 	read(): [number, number, number, number] | null;
@@ -40,9 +41,6 @@ defineExpose({ read, write, update, clear, root });
 onMounted(() => {
 	const el = root.value as FilterBoxElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.update = update;
-	el.clear = clear;
+	attachElementApi(el, { read, write, update, clear });
 });
 </script>

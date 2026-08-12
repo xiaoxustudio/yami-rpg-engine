@@ -19,6 +19,7 @@ import { ParamListHistory } from '@/components/param-history';
 import { ctrl as ctrlText } from '@/util/event-accessors';
 import { Menu } from '@/components/menu-list';
 import { Local } from '@/tools/localization';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -99,12 +100,6 @@ onMounted(() => {
 		): void;
 	};
 	if (!el) return;
-	el.bind = bind;
-	el.read = read;
-	el.write = write;
-	el.update = update;
-	el.select = select;
-	el.clear = clear;
-	el.on = on;
+	attachElementApi(el, { bind, read, write, update, select, clear, on });
 });
 </script>

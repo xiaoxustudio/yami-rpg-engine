@@ -34,6 +34,7 @@ import { Local } from '@/tools/localization';
 import { Selection } from '@/tools/text-capture';
 import { measureText as measureTextUtil } from '@/util/dom';
 import { setTooltip as setTooltipUtil } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -94,11 +95,7 @@ defineExpose({ bind, rewrite, update, clear, on, root });
 onMounted(() => {
 const el = root.value as HTMLElement & Record<'bind' | 'rewrite' | 'update' | 'clear' | 'on', any>;
 	if (!el) return;
-	el.bind = bind;
-	el.rewrite = rewrite;
-	el.update = update;
-	el.clear = clear;
-	el.on = on;
+	attachElementApi(el, { bind, rewrite, update, clear, on });
 });
 </script>
 

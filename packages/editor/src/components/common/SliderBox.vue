@@ -22,6 +22,7 @@ import {
 	showChildNodes,
 	read as readElement
 } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;
@@ -209,13 +210,7 @@ onMounted(() => {
 	el.focusEventEnabled = false;
 	el.blurEventEnabled = false;
 	el.activeWheel = props.activeWheel;
-	el.read = read;
-	el.write = write;
-	el.enable = enable;
-	el.disable = disable;
-	el.updateFiller = updateFiller;
-	el.synchronize = synchronize;
-	el.on = on;
+	attachElementApi(el, { read, write, enable, disable, updateFiller, synchronize, on });
 
 	el.addEventListener('input', () => {
 		const value = read();

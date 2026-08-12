@@ -26,6 +26,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMFileVar } from '@ui-kit';
 import { defVar } from '@/components/file-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -128,13 +129,7 @@ onMounted(() => {
 	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	el.fileBox = getChildRoot(fileBoxRef.value);
 	el.varBox = getChildRoot(varBoxRef.value);
-	el.read = read;
-	el.write = write;
-	el.switch = switchMode;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
+	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
 	watch(
 		() => root.value?.className,
 		() => {

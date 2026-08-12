@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMPageManager } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface PageManagerElement extends HTMLElement {
 	switch(value: unknown): void;
@@ -51,8 +52,7 @@ defineExpose({ switch: switchover, on, root });
 onMounted(() => {
 	const el = root.value as PageManagerElement | null;
 	if (!el) return;
-	el.switch = switchover;
-	el.on = on;
+	attachElementApi(el, { switch: switchover, on });
 	// YMPageManager dispatches a native `switch` event on the root; relay it
 	// to the Vue `switch` emit so parent components can listen via @switch.
 	el.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>

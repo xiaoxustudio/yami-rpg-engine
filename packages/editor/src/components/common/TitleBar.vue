@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMTitleBar } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -36,6 +37,6 @@ defineExpose({ on, root });
 onMounted(() => {
 	const el = root.value as HTMLElement & Record<'on', typeof on>;
 	if (!el) return;
-	el.on = on;
+	attachElementApi(el, { on });
 });
 </script>

@@ -17,6 +17,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { YMStringVar } from '@ui-kit';
 import { defVar } from '@/components/string-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -105,13 +106,7 @@ onMounted(() => {
 		varBox: HTMLElement | null;
 	};
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.switch = switchMode;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
+	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
 	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
 	watch(
 		() => root.value?.className,

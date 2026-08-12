@@ -19,6 +19,7 @@ import {
 } from '@/util/element-utils';
 import { Select } from '@/components/select-list.ts';
 import { Local } from '@/tools/localization.ts';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
 	info: HTMLElement & { [k: string]: unknown };
@@ -216,28 +217,30 @@ onMounted(() => {
 	const el = root.value as SelectBoxElement | null;
 	if (!el) return;
 	el.tabIndex = 0;
-	el.read = read;
-	el.write = write;
-	el.write2 = write2;
-	el.writeDefault = writeDefault;
-	el.input = input;
-	el.update = update;
-	el.reselect = reselect;
-	el.save = save;
-	el.restore = restore;
-	el.enable = enable;
-	el.disable = disable;
-	el.loadItems = loadItems;
-	el.setItemNames = setItemNames;
-	el.setTooltip = setTooltip;
-	el.createTooltip = createTooltip;
-	el.clear = clear;
-	el.enableHiddenMode = enableHiddenMode;
-	el.relate = relate;
-	el.toggleRelatedElements = toggleRelatedElements;
-	el.enableElement = enableElement;
-	el.disableElement = disableElement;
-	el.on = on;
+	attachElementApi(el, {
+		read,
+		write,
+		write2,
+		writeDefault,
+		input,
+		update,
+		reselect,
+		save,
+		restore,
+		enable,
+		disable,
+		loadItems,
+		setItemNames,
+		setTooltip,
+		createTooltip,
+		clear,
+		enableHiddenMode,
+		relate,
+		toggleRelatedElements,
+		enableElement,
+		disableElement,
+		on
+	});
 	onElement(el, 'keydown', (event: KeyboardEvent) => {
 		switch (event.code) {
 			case 'Enter':

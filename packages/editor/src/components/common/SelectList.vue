@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMSelectList, type SelectItem } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -73,20 +74,22 @@ defineExpose({
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.select = select;
-	el.unselect = unselect;
-	el.reselect = reselect;
-	el.open = open;
-	el.close = close;
-	el.resize = resize;
-	el.createItems = createItems;
-	el.pageUp = pageUp;
-	el.pageDown = pageDown;
-	el.getElementIndexOfSelection = getElementIndexOfSelection;
-	el.scrollToSelection = scrollToSelection;
-	el.clearElements = clearElements;
-	el.clear = clear;
+	attachElementApi(el, {
+		read,
+		write,
+		select,
+		unselect,
+		reselect,
+		open,
+		close,
+		resize,
+		createItems,
+		pageUp,
+		pageDown,
+		getElementIndexOfSelection,
+		scrollToSelection,
+		clearElements,
+		clear
+	});
 });
 </script>

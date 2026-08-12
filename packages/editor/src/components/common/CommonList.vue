@@ -6,6 +6,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMCommonList } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface CommonListElement extends HTMLElement {
 	read(): unknown;
@@ -109,21 +110,23 @@ onMounted(() => {
 	if (!el) return;
 	el.tabIndex = 0;
 	listenDraggingScrollbarEvent(el);
-	el.read = read;
-	el.write = write;
-	el.reload = reload;
-	el.appendElement = appendElement;
-	el.update = update;
-	el.resize = resize;
-	el.updateHeadAndFoot = updateHeadAndFoot;
-	el.updateOnResize = updateOnResize;
-	el.select = select;
-	el.unselect = unselect;
-	el.scrollToItem = scrollToItem;
-	el.selectRelative = selectRelative;
-	el.clearElements = clearElements;
-	el.clear = clear;
-	el.on = on;
+	attachElementApi(el, {
+		read,
+		write,
+		reload,
+		appendElement,
+		update,
+		resize,
+		updateHeadAndFoot,
+		updateOnResize,
+		select,
+		unselect,
+		scrollToItem,
+		selectRelative,
+		clearElements,
+		clear,
+		on
+	});
 	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	on('select', (e: Event & { value?: unknown }) => emit('select', e.value));
 	on('popup', (e: Event & { value?: unknown; clientX: number; clientY: number }) =>

@@ -13,6 +13,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMColorBox } from '@ui-kit';
 import { Color } from '@/tools/color-picker-window';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface ColorBoxElement extends HTMLElement {
 	dataValue: string;
@@ -105,12 +106,7 @@ onMounted(() => {
 	});
 	el.foreground = el.querySelector('.color-box-foreground') as HTMLElement;
 	el.inputEventEnabled = false;
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.enable = enable;
-	el.disable = disable;
-	el.on = on;
+	attachElementApi(el, { read, write, input, enable, disable, on });
 	el.addEventListener('keydown', (event: KeyboardEvent) => {
 		switch (event.code) {
 			case 'Enter':

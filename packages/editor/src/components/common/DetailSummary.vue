@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMDetailSummary } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface DetailSummaryElement extends HTMLElement {
 	toggle(): void;
@@ -38,7 +39,6 @@ defineExpose({ toggle, on, root });
 onMounted(() => {
 	const el = root.value as DetailSummaryElement | null;
 	if (!el) return;
-	el.toggle = toggle;
-	el.on = on;
+	attachElementApi(el, { toggle, on });
 });
 </script>

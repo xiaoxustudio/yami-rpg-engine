@@ -21,6 +21,7 @@ import {
 	disable as disableElement,
 	dispatchChangeEvent
 } from '@/util/element-utils';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface CheckBoxElement extends HTMLElement {
 	read(): boolean;
@@ -174,14 +175,9 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 onMounted(() => {
 	const el = root.value as CheckBoxElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.enable = enable;
-	el.disable = disable;
-	el.relate = relate;
-	el.on = on;
+	attachElementApi(el, { read, write, input, enable, disable, relate, on });
 	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
 		get: () => state.dataValue,
 		set: (value: boolean) => {
 			state.dataValue = !!value;

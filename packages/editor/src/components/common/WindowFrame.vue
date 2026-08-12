@@ -20,6 +20,7 @@ import { computed, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@/layout/layout';
 import { Local } from '@/tools/localization';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -78,15 +79,6 @@ onMounted(() => {
 	const el = root.value as HTMLElement &
 		Record<'open' | 'close' | 'maximize' | 'unmaximize' | 'focus' | 'blur' | 'setTitle' | 'absolute' | 'setPosition' | 'on', any>;
 	if (!el) return;
-	el.open = open;
-	el.close = close;
-	el.maximize = maximize;
-	el.unmaximize = unmaximize;
-	el.focus = focus;
-	el.blur = blur;
-	el.setTitle = setTitle;
-	el.absolute = absolute;
-	el.setPosition = setPosition;
-	el.on = on;
+	attachElementApi(el, { open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on });
 });
 </script>

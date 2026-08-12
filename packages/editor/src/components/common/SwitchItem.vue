@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMSwitchItem } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface SwitchItemElement extends HTMLDivElement {
 	read(): number;
@@ -79,10 +80,7 @@ watch(() => props.disabled, (val) => (isDisabled.value = val));
 onMounted(() => {
 	const el = root.value as SwitchItemElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.update = update;
-	el.on = on;
+	attachElementApi(el, { read, write, update, on });
 	Object.defineProperty(el, 'dataValue', {
 		get: () => dataValue.value,
 		set: (value: number) => {

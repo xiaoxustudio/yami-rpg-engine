@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMMarqueeArea } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface Props {
 	id?: string;
@@ -35,10 +36,6 @@ defineExpose({ save, restore, resize, clear, select, root });
 onMounted(() => {
 	const el = root.value as HTMLElement & Record<'save' | 'restore' | 'resize' | 'clear' | 'select', any>;
 	if (!el) return;
-	el.save = save;
-	el.restore = restore;
-	el.resize = resize;
-	el.clear = clear;
-	el.select = select;
+	attachElementApi(el, { save, restore, resize, clear, select });
 });
 </script>

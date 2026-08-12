@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMNavBar } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface NavBarElement extends HTMLElement {
 	read(): unknown;
@@ -52,9 +53,6 @@ defineExpose({ read, write, unselect, on, root });
 onMounted(() => {
 	const el = root.value as NavBarElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.unselect = unselect;
-	el.on = on;
+	attachElementApi(el, { read, write, unselect, on });
 });
 </script>

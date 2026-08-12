@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMKeyboardBox } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface KeyboardBoxElement extends HTMLElement {
 	input: HTMLInputElement;
@@ -67,13 +68,7 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 onMounted(() => {
 	const el = root.value as KeyboardBoxElement | null;
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.inputCode = inputCode;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
-	el.on = on;
+	attachElementApi(el, { read, write, inputCode, enable, disable, getFocus, on });
 	el.input = ym.value?.input as HTMLInputElement;
 	on('input', (event: Event) => emit('input', event.value));
 	on('focus', () => emit('focus'));
