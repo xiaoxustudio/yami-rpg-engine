@@ -123,6 +123,7 @@ export const Inspector: DynamicShape = {
 
 Inspector.initialize = function (this: typeof Inspector) {
 	this.manager = $('#inspector-page-manager');
+	if (!this.manager) return;
 	this.manager.focusing = null;
 	this.manager.oldValue = null;
 	listenDraggingScrollbarEvent(this.manager, this.scrollPointerdown, {

@@ -27,16 +27,16 @@ import { read } from '@/util/element-utils.ts';
 
 	UIImage.initialize = function (this: typeof UIImage) {
 		if (!$('#uiImage-display')) return;
-		$('#uiImage-display').loadItems([
+		$('#uiImage-display')?.loadItems?.([
 			{ name: 'Stretch', value: 'stretch' },
 			{ name: 'Tile', value: 'tile' },
 			{ name: 'Clip', value: 'clip' },
 			{ name: 'Slice', value: 'slice' }
 		]);
 
-		$('#uiImage-display')
-			.enableHiddenMode()
-			.relate([
+		const elDisplay = $('#uiImage-display');
+		if (elDisplay)
+			elDisplay.enableHiddenMode().relate([
 				{
 					case: ['stretch', 'tile'],
 					targets: [$('#uiImage-flip'), $('#uiImage-shift-box')]
@@ -51,24 +51,24 @@ import { read } from '@/util/element-utils.ts';
 				}
 			]);
 
-		$('#uiImage-flip').loadItems([
+		$('#uiImage-flip')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Horizontal', value: 'horizontal' },
 			{ name: 'Vertical', value: 'vertical' },
 			{ name: 'Both', value: 'both' }
 		]);
 
-		$('#uiImage-blend').loadItems([
+		$('#uiImage-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' },
 			{ name: 'Mask', value: 'mask' }
 		]);
 
-		$('#uiImage-tint-0-slider').synchronize($('#uiImage-tint-0'));
-		$('#uiImage-tint-1-slider').synchronize($('#uiImage-tint-1'));
-		$('#uiImage-tint-2-slider').synchronize($('#uiImage-tint-2'));
-		$('#uiImage-tint-3-slider').synchronize($('#uiImage-tint-3'));
+		$('#uiImage-tint-0-slider')?.synchronize?.($('#uiImage-tint-0'));
+		$('#uiImage-tint-1-slider')?.synchronize?.($('#uiImage-tint-1'));
+		$('#uiImage-tint-2-slider')?.synchronize?.($('#uiImage-tint-2'));
+		$('#uiImage-tint-3-slider')?.synchronize?.($('#uiImage-tint-3'));
 
 		const elements = document.querySelectorAll(`#uiImage-image,
     #uiImage-display, #uiImage-flip, #uiImage-blend,

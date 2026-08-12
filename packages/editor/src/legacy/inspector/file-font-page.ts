@@ -36,7 +36,7 @@ import { Inspector } from './inspector.ts';
 		write(this.input, 'Yami RPG Editor');
 		this.textInput({ target: this.input!.input });
 
-		$('#fileFont').addEventListener('resize', this.windowResize);
+		$('#fileFont')?.addEventListener('resize', this.windowResize);
 		this.input!.addEventListener('input', this.textInput);
 	};
 

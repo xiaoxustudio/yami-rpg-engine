@@ -62,7 +62,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		if (!$('#sceneTilemap-name')) return;
 		this.nameBox = $('#sceneTilemap-name');
 		this.lightBox = $('#sceneTilemap-light') as unknown as SceneTilemapLightBox;
-		$('#sceneTilemap-layer').loadItems([
+		$('#sceneTilemap-layer')?.loadItems?.([
 			{ name: 'Background', value: 'background' },
 			{ name: 'Foreground', value: 'foreground' },
 			{ name: 'Object', value: 'object' }
@@ -94,21 +94,21 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			}
 		};
 
-		$('#sceneTilemap-blend').loadItems([
+		$('#sceneTilemap-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#sceneTilemap-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneTilemap-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneTilemap-events').bind(new EventListInterface(this, Scene));
+		$('#sceneTilemap-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneTilemap-scripts').bind(
+		$('#sceneTilemap-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneTilemap-parameter-pane').bind($('#sceneTilemap-scripts'));
+		$('#sceneTilemap-parameter-pane')?.bind?.($('#sceneTilemap-scripts'));
 
 		const elements =
 			document.querySelectorAll(`#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order,
@@ -124,11 +124,11 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		$('#sceneTilemap-layer').addEventListener(
+		$('#sceneTilemap-layer')?.addEventListener(
 			'write',
 			this.layerWrite! as unknown as EventListener
 		);
-		$('#sceneTilemap-layer').addEventListener('input', this.layerInput!);
+		$('#sceneTilemap-layer')?.addEventListener('input', this.layerInput!);
 		document
 			.querySelectorAll('#sceneTilemap-width, #sceneTilemap-height')
 			.forEach((el) => el.addEventListener('change', this.paramInput!));

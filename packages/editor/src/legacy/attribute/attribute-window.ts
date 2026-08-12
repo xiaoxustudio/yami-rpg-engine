@@ -299,9 +299,9 @@ Attribute.initialize = function (this: typeof Attribute) {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	this.panel.attribute = null;
+	if (this.panel) this.panel.attribute = null;
 
-	this.searcher.addCloseButton();
+	this.searcher?.addCloseButton?.();
 
 	History.processors['attribute-list-operation'] = (
 		operation: string,

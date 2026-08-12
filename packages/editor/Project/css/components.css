@@ -1,4 +1,4 @@
-/* --------------------------------
+﻿/* --------------------------------
  * 按钮
  * --------------------------------
  */
@@ -2016,11 +2016,16 @@ file-nav-icon.icon-folder.expanded {
 	display: flex;
 	position: absolute;
 	flex: 1 0 auto;
-	top: -25px;
+	top: 0;
+	left: 18%;
 	right: 0;
 	height: 24px;
 	overflow: hidden;
 	background-color: var(--group-head-background);
+}
+
+.file-browser.hide-nav-pane > .file-head-pane {
+	left: 0;
 }
 
 .file-head-address {
@@ -2151,13 +2156,16 @@ file-head-address-arrow::before {
 	position: absolute;
 	left: 18%;
 	right: 0;
-	height: 100%;
+	top: 24px;
+	height: calc(100% - 24px);
 	overflow-x: hidden;
 	overflow-y: auto;
 }
 
 .file-browser.hide-nav-pane > .file-body-pane {
 	left: 0;
+	top: 24px;
+	height: calc(100% - 24px);
 }
 
 .file-body-pane.horizontal {
@@ -2327,14 +2335,10 @@ file-body-name {
 }
 
 .file-body-content.list {
-	display: grid;
-	padding: 4px 0;
+	display: block;
+	position: relative;
+	padding: 0;
 	text-align: left;
-	grid-auto-flow: column;
-	align-content: space-between;
-	grid-column-gap: 2px;
-	grid-template-columns: repeat(auto-fill, 240px);
-	grid-template-rows: repeat(auto-fill, 20px);
 	/* width: 100%; */
 	height: 100%;
 	font-size: 1em;
@@ -2343,6 +2347,7 @@ file-body-name {
 }
 
 .file-body-content.list > file-body-item {
+	position: absolute;
 	width: 240px;
 	height: 20px;
 	overflow: hidden;
@@ -2385,8 +2390,9 @@ file-body-name {
 }
 
 .file-body-content.small {
-	display: grid;
-	padding: 0 4px;
+	display: block;
+	position: relative;
+	padding: 0;
 	text-align: center;
 	justify-content: space-evenly;
 	grid-column-gap: 2px;
@@ -2399,6 +2405,7 @@ file-body-name {
 
 /* 必须指定file-body-item的宽度，否则可能是0px高度 */
 .file-body-content.small > file-body-item {
+	position: absolute;
 	width: 40px;
 	height: 72px;
 }
@@ -2421,8 +2428,9 @@ file-body-name {
 }
 
 .file-body-content.medium {
-	display: grid;
-	padding: 0 4px;
+	display: block;
+	position: relative;
+	padding: 0;
 	text-align: center;
 	justify-content: space-evenly;
 	grid-column-gap: 2px;
@@ -2434,6 +2442,7 @@ file-body-name {
 }
 
 .file-body-content.medium > file-body-item {
+	position: absolute;
 	width: 72px;
 	height: 104px;
 }
@@ -2456,8 +2465,9 @@ file-body-name {
 }
 
 .file-body-content.large {
-	display: grid;
-	padding: 0 4px;
+	display: block;
+	position: relative;
+	padding: 0;
 	text-align: center;
 	justify-content: space-evenly;
 	grid-column-gap: 2px;
@@ -2469,6 +2479,7 @@ file-body-name {
 }
 
 .file-body-content.large > file-body-item {
+	position: absolute;
 	width: 136px;
 	height: 168px;
 }
@@ -2491,8 +2502,9 @@ file-body-name {
 }
 
 .file-body-content.huge {
-	display: grid;
-	padding: 0 4px;
+	display: block;
+	position: relative;
+	padding: 0;
 	text-align: center;
 	justify-content: space-evenly;
 	grid-column-gap: 2px;
@@ -2504,6 +2516,7 @@ file-body-name {
 }
 
 .file-body-content.huge > file-body-item {
+	position: absolute;
 	width: 264px;
 	height: 296px;
 }

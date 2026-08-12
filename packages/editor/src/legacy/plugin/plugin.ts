@@ -282,7 +282,9 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	getListConfig(list).updaters.push(list.updateTextNode);
 	getListConfig(list).creators.push(list.createEditIcon);
 
-	(this.parameterPane as TreeListElement).bind(list);
+	if (this.parameterPane) {
+		(this.parameterPane as TreeListElement).bind(list);
+	}
 
 	on($('#plugin'), 'close', this.windowClose!);
 	on($('#plugin'), 'closed', this.windowClosed!);

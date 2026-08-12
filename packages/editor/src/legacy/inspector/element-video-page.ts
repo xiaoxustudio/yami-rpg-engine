@@ -31,19 +31,19 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIVideo.initialize = function (this: typeof UIVideo) {
 		if (!$('#uiVideo-loop')) return;
-		$('#uiVideo-loop').loadItems([
+		$('#uiVideo-loop')?.loadItems?.([
 			{ name: 'Once', value: false },
 			{ name: 'Loop', value: true }
 		]);
 
-		$('#uiVideo-flip').loadItems([
+		$('#uiVideo-flip')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Horizontal', value: 'horizontal' },
 			{ name: 'Vertical', value: 'vertical' },
 			{ name: 'Both', value: 'both' }
 		]);
 
-		$('#uiVideo-blend').loadItems([
+		$('#uiVideo-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }

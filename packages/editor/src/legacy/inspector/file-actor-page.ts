@@ -59,42 +59,42 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 	FileActor.initialize = function (this: FileActorShape) {
 		if (!$('#fileActor-rotatable')) return;
-		$('#fileActor-rotatable').loadItems([
+		$('#fileActor-rotatable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 
-		$('#fileActor-passage').loadItems([
+		$('#fileActor-passage')?.loadItems?.([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },
 			{ name: 'Unrestricted', value: 'unrestricted' }
 		]);
 
-		$('#fileActor-shape').loadItems([
+		$('#fileActor-shape')?.loadItems?.([
 			{ name: 'Square', value: 'square' },
 			{ name: 'Circle', value: 'circle' }
 		]);
 
-		$('#fileActor-immovable').loadItems([
+		$('#fileActor-immovable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 
-		$('#fileActor-attributes').bind(new AttributeListInterface());
+		$('#fileActor-attributes')?.bind?.(new AttributeListInterface());
 
-		$('#fileActor-sprites').bind(this.sprites);
+		$('#fileActor-sprites')?.bind?.(this.sprites);
 
-		$('#fileActor-skills').bind(this.skills);
+		$('#fileActor-skills')?.bind?.(this.skills);
 
-		$('#fileActor-equipments').bind(this.equipments);
+		$('#fileActor-equipments')?.bind?.(this.equipments);
 
-		$('#fileActor-inventory').bind(this.inventory);
+		$('#fileActor-inventory')?.bind?.(this.inventory);
 
-		$('#fileActor-events').bind(new EventListInterface(this));
+		$('#fileActor-events')?.bind?.(new EventListInterface(this));
 
-		$('#fileActor-scripts').bind(new ScriptListInterface());
+		$('#fileActor-scripts')?.bind?.(new ScriptListInterface());
 
-		$('#fileActor-parameter-pane').bind($('#fileActor-scripts'));
+		$('#fileActor-parameter-pane')?.bind?.($('#fileActor-scripts'));
 
 		// animationId write + 15 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eActorPage.vue @write/@input 闂?FileActor.*闂?
 		document

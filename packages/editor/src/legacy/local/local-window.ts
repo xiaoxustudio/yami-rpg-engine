@@ -251,9 +251,9 @@ Localization.initialize = function () {
 	getListConfig(list).creators.push(list.createInitText);
 	getListConfig(list).creators.push(list.updateInitText);
 
-	this.panel!.item = null;
+	if (this.panel) this.panel.item = null;
 
-	this.searcher!.addCloseButton();
+	this.searcher?.addCloseButton?.();
 
 	History.processors['localization-list-operation'] = (
 		operation: string,

@@ -75,6 +75,10 @@ export { $ };
 export const getElementReader = function (prefix: string) {
 	return function (suffix: string): any {
 		const element = $(`#${prefix}-${suffix}`) as HTMLElement & { read?: () => unknown };
+		if (!element) {
+			console.warn(`[reader] element not found: #${prefix}-${suffix}`);
+			return undefined;
+		}
 		return typeof element.read === 'function' ? element.read() : element.dataValue;
 	};
 };
@@ -89,6 +93,10 @@ export const getElementWriter = function (prefix: string, bindingObject?: Record
 			}
 		}
 		const element: HTMLElement = $(`#${prefix}-${suffix}`);
+		if (!element) {
+			console.warn(`[writer] element not found: #${prefix}-${suffix}`);
+			return;
+		}
 		if (typeof element.write === 'function') {
 			element.write(value);
 		} else {

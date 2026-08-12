@@ -33,21 +33,21 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneLight.initialize = function (this: typeof SceneLight) {
 		if (!$('#sceneLight-name')) return;
 		this.nameBox = $('#sceneLight-name');
-		$('#sceneLight-type').loadItems([
+		$('#sceneLight-type')?.loadItems?.([
 			{ name: 'Point', value: 'point' },
 			{ name: 'Area', value: 'area' }
 		]);
 
-		$('#sceneLight-blend').loadItems([
+		$('#sceneLight-blend')?.loadItems?.([
 			{ name: 'Screen', value: 'screen' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' },
 			{ name: 'Max', value: 'max' }
 		]);
 
-		$('#sceneLight-type')
-			.enableHiddenMode()
-			.relate([
+		const elLightType = $('#sceneLight-type');
+		if (elLightType)
+			elLightType.enableHiddenMode().relate([
 				{
 					case: 'point',
 					targets: [$('#sceneLight-range-box'), $('#sceneLight-intensity-box')]
@@ -65,27 +65,27 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 			]);
 
-		$('#sceneLight-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneLight-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneLight-events').bind(new EventListInterface(this, Scene));
+		$('#sceneLight-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneLight-scripts').bind(
+		$('#sceneLight-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneLight-parameter-pane').bind($('#sceneLight-scripts'));
+		$('#sceneLight-parameter-pane')?.bind?.($('#sceneLight-scripts'));
 
-		$('#sceneLight-range-slider').synchronize($('#sceneLight-range'));
-		$('#sceneLight-intensity-slider').synchronize($('#sceneLight-intensity'));
-		$('#sceneLight-anchorX-slider').synchronize($('#sceneLight-anchorX'));
-		$('#sceneLight-anchorY-slider').synchronize($('#sceneLight-anchorY'));
-		$('#sceneLight-width-slider').synchronize($('#sceneLight-width'));
-		$('#sceneLight-height-slider').synchronize($('#sceneLight-height'));
-		$('#sceneLight-angle-slider').synchronize($('#sceneLight-angle'));
-		$('#sceneLight-red-slider').synchronize($('#sceneLight-red'));
-		$('#sceneLight-green-slider').synchronize($('#sceneLight-green'));
-		$('#sceneLight-blue-slider').synchronize($('#sceneLight-blue'));
-		$('#sceneLight-direct-slider').synchronize($('#sceneLight-direct'));
+		$('#sceneLight-range-slider')?.synchronize?.($('#sceneLight-range'));
+		$('#sceneLight-intensity-slider')?.synchronize?.($('#sceneLight-intensity'));
+		$('#sceneLight-anchorX-slider')?.synchronize?.($('#sceneLight-anchorX'));
+		$('#sceneLight-anchorY-slider')?.synchronize?.($('#sceneLight-anchorY'));
+		$('#sceneLight-width-slider')?.synchronize?.($('#sceneLight-width'));
+		$('#sceneLight-height-slider')?.synchronize?.($('#sceneLight-height'));
+		$('#sceneLight-angle-slider')?.synchronize?.($('#sceneLight-angle'));
+		$('#sceneLight-red-slider')?.synchronize?.($('#sceneLight-red'));
+		$('#sceneLight-green-slider')?.synchronize?.($('#sceneLight-green'));
+		$('#sceneLight-blue-slider')?.synchronize?.($('#sceneLight-blue'));
+		$('#sceneLight-direct-slider')?.synchronize?.($('#sceneLight-direct'));
 
 		const elements = document.querySelectorAll(`
     #sceneLight-name, #sceneLight-type,

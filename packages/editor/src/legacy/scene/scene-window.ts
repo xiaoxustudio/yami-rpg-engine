@@ -600,8 +600,8 @@ Scene.initialize = function (this: SceneShape) {
 
 	this.sharedPoint = new Scene.Point!();
 
-	this.searcher.addCloseButton();
-	this.searcher.addKeydownFilter();
+	this.searcher?.addCloseButton?.();
+	this.searcher?.addKeydownFilter?.();
 
 	const { list } = this;
 	getListConfig(list).removable = true;

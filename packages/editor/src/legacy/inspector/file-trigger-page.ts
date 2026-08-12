@@ -48,7 +48,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 	FileTrigger.initialize = function (this: typeof FileTrigger) {
 		if (!$('#fileTrigger-selector')) return;
-		$('#fileTrigger-selector').loadItems([
+		$('#fileTrigger-selector')?.loadItems?.([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },
@@ -57,35 +57,35 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			{ name: 'Any', value: 'any' }
 		]);
 
-		$('#fileTrigger-onHitWalls').loadItems([
+		$('#fileTrigger-onHitWalls')?.loadItems?.([
 			{ name: 'Penetrate', value: 'penetrate' },
 			{ name: 'Destroy', value: 'destroy' }
 		]);
 
-		$('#fileTrigger-onHitActors').loadItems([
+		$('#fileTrigger-onHitActors')?.loadItems?.([
 			{ name: 'Penetrate', value: 'penetrate' },
 			{ name: 'Destroy', value: 'destroy' },
 			{ name: 'Destroy After Multiple Hits', value: 'penetrate-destroy' }
 		]);
 
-		$('#fileTrigger-onHitActors')
-			.enableHiddenMode()
-			.relate([
+		const elOnHitActors = $('#fileTrigger-onHitActors');
+		if (elOnHitActors)
+			elOnHitActors.enableHiddenMode().relate([
 				{
 					case: 'penetrate-destroy',
 					targets: [$('#fileTrigger-hitCount')]
 				}
 			]);
 
-		$('#fileTrigger-shape-type').loadItems([
+		$('#fileTrigger-shape-type')?.loadItems?.([
 			{ name: 'Rectangle', value: 'rectangle' },
 			{ name: 'Circle', value: 'circle' },
 			{ name: 'Sector', value: 'sector' }
 		]);
 
-		$('#fileTrigger-shape-type')
-			.enableHiddenMode()
-			.relate([
+		const elShapeType = $('#fileTrigger-shape-type');
+		if (elShapeType)
+			elShapeType.enableHiddenMode().relate([
 				{
 					case: 'rectangle',
 					targets: [
@@ -101,26 +101,28 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 			]);
 
-		$('#fileTrigger-hitMode').loadItems([
+		$('#fileTrigger-hitMode')?.loadItems?.([
 			{ name: 'Once', value: 'once' },
 			{ name: 'Once On Overlap', value: 'once-on-overlap' },
 			{ name: 'Repeat', value: 'repeat' }
 		]);
 
-		$('#fileTrigger-hitMode')
-			.enableHiddenMode()
-			.relate([{ case: 'repeat', targets: [$('#fileTrigger-hitInterval')] }]);
+		const elHitMode = $('#fileTrigger-hitMode');
+		if (elHitMode)
+			elHitMode
+				.enableHiddenMode()
+				.relate([{ case: 'repeat', targets: [$('#fileTrigger-hitInterval')] }]);
 
-		$('#fileTrigger-rotatable').loadItems([
+		$('#fileTrigger-rotatable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 
-		$('#fileTrigger-events').bind(new EventListInterface(this));
+		$('#fileTrigger-events')?.bind?.(new EventListInterface(this));
 
-		$('#fileTrigger-scripts').bind(new ScriptListInterface());
+		$('#fileTrigger-scripts')?.bind?.(new ScriptListInterface());
 
-		$('#fileTrigger-parameter-pane').bind($('#fileTrigger-scripts'));
+		$('#fileTrigger-parameter-pane')?.bind?.($('#fileTrigger-scripts'));
 
 		// animationId write + 22 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eTriggerPage.vue @write/@input 闂?FileTrigger.*闂?
 		document

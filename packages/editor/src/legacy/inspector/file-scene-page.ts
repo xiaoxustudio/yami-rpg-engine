@@ -49,16 +49,16 @@ import { GL } from '@/webgl/webgl-init.ts';
 			}
 		};
 
-		$('#fileScene-ambient-red-slider').synchronize($('#fileScene-ambient-red'));
-		$('#fileScene-ambient-green-slider').synchronize($('#fileScene-ambient-green'));
-		$('#fileScene-ambient-blue-slider').synchronize($('#fileScene-ambient-blue'));
-		$('#fileScene-ambient-direct-slider').synchronize($('#fileScene-ambient-direct'));
+		$('#fileScene-ambient-red-slider')?.synchronize?.($('#fileScene-ambient-red'));
+		$('#fileScene-ambient-green-slider')?.synchronize?.($('#fileScene-ambient-green'));
+		$('#fileScene-ambient-blue-slider')?.synchronize?.($('#fileScene-ambient-blue'));
+		$('#fileScene-ambient-direct-slider')?.synchronize?.($('#fileScene-ambient-direct'));
 
-		$('#fileScene-events').bind(new EventListInterface(this, this.owner));
+		$('#fileScene-events')?.bind?.(new EventListInterface(this, this.owner));
 
-		$('#fileScene-scripts').bind(new ScriptListInterface(this, this.owner));
+		$('#fileScene-scripts')?.bind?.(new ScriptListInterface(this, this.owner));
 
-		$('#fileScene-parameter-pane').bind($('#fileScene-scripts'));
+		$('#fileScene-parameter-pane')?.bind?.($('#fileScene-scripts'));
 
 		const elements = document.querySelectorAll(`#fileScene-tileWidth, #fileScene-tileHeight,
     #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct`);

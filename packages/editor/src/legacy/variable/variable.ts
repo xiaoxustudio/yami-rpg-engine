@@ -243,8 +243,8 @@ Variable.initialize = function () {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	this.panel.variable = null as unknown as Record<string, unknown>;
-	this.searcher.addCloseButton();
+	if (this.panel) this.panel.variable = null as unknown as Record<string, unknown>;
+	this.searcher?.addCloseButton?.();
 
 	History.processors['variable-list-operation'] = (
 		operation: string,

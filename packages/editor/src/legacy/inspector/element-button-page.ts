@@ -32,16 +32,16 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIButton.initialize = function (this: typeof UIButton) {
 		if (!$('#uiButton-display')) return;
-		$('#uiButton-display').loadItems([
+		$('#uiButton-display')?.loadItems?.([
 			{ name: 'Stretch', value: 'stretch' },
 			{ name: 'Tile', value: 'tile' },
 			{ name: 'Clip', value: 'clip' },
 			{ name: 'Slice', value: 'slice' }
 		]);
 
-		$('#uiButton-display')
-			.enableHiddenMode()
-			.relate([
+		const elDisplay = $('#uiButton-display');
+		if (elDisplay)
+			elDisplay.enableHiddenMode().relate([
 				{
 					case: ['stretch', 'tile'],
 					targets: [$('#uiButton-flip')]
@@ -66,23 +66,23 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiButton-flip').loadItems([
+		$('#uiButton-flip')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Horizontal', value: 'horizontal' },
 			{ name: 'Vertical', value: 'vertical' },
 			{ name: 'Both', value: 'both' }
 		]);
 
-		$('#uiButton-imageEffect').loadItems([
+		$('#uiButton-imageEffect')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Tint', value: 'tint-1' },
 			{ name: 'Tint (Normal, Hover)', value: 'tint-2' },
 			{ name: 'Tint (Normal, Hover, Active)', value: 'tint-3' }
 		]);
 
-		$('#uiButton-imageEffect')
-			.enableHiddenMode()
-			.relate([
+		const elImageEffect = $('#uiButton-imageEffect');
+		if (elImageEffect)
+			elImageEffect.enableHiddenMode().relate([
 				{
 					case: 'tint-1',
 					targets: [$('#uiButton-normalTint-box')]
@@ -101,28 +101,28 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiButton-direction').loadItems([
+		$('#uiButton-direction')?.loadItems?.([
 			{ name: 'Horizontal', value: 'horizontal-tb' },
 			{ name: 'Vertical', value: 'vertical-lr' }
 		]);
 
-		$('#uiButton-typeface').loadItems([
+		$('#uiButton-typeface')?.loadItems?.([
 			{ name: 'Regular', value: 'regular' },
 			{ name: 'Bold', value: 'bold' },
 			{ name: 'Italic', value: 'italic' },
 			{ name: 'Bold Italic', value: 'bold-italic' }
 		]);
 
-		$('#uiButton-textEffect-type').loadItems([
+		$('#uiButton-textEffect-type')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Shadow', value: 'shadow' },
 			{ name: 'Stroke', value: 'stroke' },
 			{ name: 'Outline', value: 'outline' }
 		]);
 
-		$('#uiButton-textEffect-type')
-			.enableHiddenMode()
-			.relate([
+		const elTextEffectType = $('#uiButton-textEffect-type');
+		if (elTextEffectType)
+			elTextEffectType.enableHiddenMode().relate([
 				{
 					case: 'shadow',
 					targets: [
@@ -144,11 +144,11 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiButton-imagePadding-slider').synchronize($('#uiButton-imagePadding'));
-		$('#uiButton-imageOpacity-slider').synchronize($('#uiButton-imageOpacity'));
-		$('#uiButton-size-slider').synchronize($('#uiButton-size'));
-		$('#uiButton-letterSpacing-slider').synchronize($('#uiButton-letterSpacing'));
-		$('#uiButton-textPadding-slider').synchronize($('#uiButton-textPadding'));
+		$('#uiButton-imagePadding-slider')?.synchronize?.($('#uiButton-imagePadding'));
+		$('#uiButton-imageOpacity-slider')?.synchronize?.($('#uiButton-imageOpacity'));
+		$('#uiButton-size-slider')?.synchronize?.($('#uiButton-size'));
+		$('#uiButton-letterSpacing-slider')?.synchronize?.($('#uiButton-letterSpacing'));
+		$('#uiButton-textPadding-slider')?.synchronize?.($('#uiButton-textPadding'));
 
 		const elements = document.querySelectorAll(`#uiButton-display,
     #uiButton-normalImage, #uiButton-normalClip,

@@ -29,8 +29,8 @@ import { Inspector } from './inspector.ts';
 		if (!$('#fileImage-image')) return;
 		this.image = $('#fileImage-image') as HTMLImageElement;
 
-		$('#fileImage').on('resize', this.windowResize);
-		$('#fileImage-image-detail').on('toggle', this.windowResize);
+		$('#fileImage')?.on?.('resize', this.windowResize);
+		$('#fileImage-image-detail')?.on?.('toggle', this.windowResize);
 	};
 
 	FileImage.open = function (this: typeof FileImage, file: FileItem, meta: FileMeta | null) {

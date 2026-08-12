@@ -30,7 +30,7 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIAnimation.initialize = function (this: typeof UIAnimation) {
 		if (!$('#uiAnimation-animation')) return;
-		$('#uiAnimation-animation').on('write', this.animationIdWrite);
+		$('#uiAnimation-animation')?.on?.('write', this.animationIdWrite);
 		const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
     #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
     #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);

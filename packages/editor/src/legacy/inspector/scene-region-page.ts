@@ -29,15 +29,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneRegion.initialize = function (this: typeof SceneRegion) {
 		if (!$('#sceneRegion-name')) return;
 		this.nameBox = $('#sceneRegion-name');
-		$('#sceneRegion-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneRegion-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneRegion-events').bind(new EventListInterface(this, Scene));
+		$('#sceneRegion-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneRegion-scripts').bind(
+		$('#sceneRegion-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneRegion-parameter-pane').bind($('#sceneRegion-scripts'));
+		$('#sceneRegion-parameter-pane')?.bind?.($('#sceneRegion-scripts'));
 
 		const elements = document.querySelectorAll(`#sceneRegion-name, #sceneRegion-color,
     #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height`);

@@ -76,9 +76,9 @@ import { UI } from '@/ui/ui-window.ts';
 			{ name: 'Skipped', value: 'skipped' }
 		]);
 
-		$('#uiElement-events').bind(new EventListInterface(this, UI));
+		$('#uiElement-events')?.bind?.(new EventListInterface(this, UI));
 
-		$('#uiElement-scripts').bind(new ScriptListInterface(this, UI));
+		$('#uiElement-scripts')?.bind?.(new ScriptListInterface(this, UI));
 
 		this.parameterPane.bind($('#uiElement-scripts'));
 

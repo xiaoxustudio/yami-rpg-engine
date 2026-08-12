@@ -38,21 +38,21 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneParticle.initialize = function (this: typeof SceneParticle) {
 		if (!$('#sceneParticle-name')) return;
 		this.nameBox = $('#sceneParticle-name');
-		$('#sceneParticle-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneParticle-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneParticle-events').bind(new EventListInterface(this, Scene));
+		$('#sceneParticle-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneParticle-scripts').bind(
+		$('#sceneParticle-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneParticle-parameter-pane').bind($('#sceneParticle-scripts'));
+		$('#sceneParticle-parameter-pane')?.bind?.($('#sceneParticle-scripts'));
 
-		$('#sceneParticle-angle-slider').synchronize($('#sceneParticle-angle'));
-		$('#sceneParticle-scale-slider').synchronize($('#sceneParticle-scale'));
-		$('#sceneParticle-speed-slider').synchronize($('#sceneParticle-speed'));
-		$('#sceneParticle-opacity-slider').synchronize($('#sceneParticle-opacity'));
-		$('#sceneParticle-priority-slider').synchronize($('#sceneParticle-priority'));
+		$('#sceneParticle-angle-slider')?.synchronize?.($('#sceneParticle-angle'));
+		$('#sceneParticle-scale-slider')?.synchronize?.($('#sceneParticle-scale'));
+		$('#sceneParticle-speed-slider')?.synchronize?.($('#sceneParticle-speed'));
+		$('#sceneParticle-opacity-slider')?.synchronize?.($('#sceneParticle-opacity'));
+		$('#sceneParticle-priority-slider')?.synchronize?.($('#sceneParticle-priority'));
 
 		const elements = document.querySelectorAll(`#sceneParticle-name, #sceneParticle-particleId,
     #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle,

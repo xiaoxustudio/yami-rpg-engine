@@ -27,24 +27,26 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIProgressBar.initialize = function (this: typeof UIProgressBar) {
 		if (!$('#uiProgressBar-display')) return;
-		$('#uiProgressBar-display').loadItems([
+		$('#uiProgressBar-display')?.loadItems?.([
 			{ name: 'Stretch', value: 'stretch' },
 			{ name: 'Clip', value: 'clip' }
 		]);
 
-		$('#uiProgressBar-display')
-			.enableHiddenMode()
-			.relate([{ case: 'clip', targets: [$('#uiProgressBar-clip')] }]);
+		const elDisplay = $('#uiProgressBar-display');
+		if (elDisplay)
+			elDisplay
+				.enableHiddenMode()
+				.relate([{ case: 'clip', targets: [$('#uiProgressBar-clip')] }]);
 
-		$('#uiProgressBar-type').loadItems([
+		$('#uiProgressBar-type')?.loadItems?.([
 			{ name: 'Horizontal', value: 'horizontal' },
 			{ name: 'Vertical', value: 'vertical' },
 			{ name: 'Round', value: 'round' }
 		]);
 
-		$('#uiProgressBar-type')
-			.enableHiddenMode()
-			.relate([
+		const elType = $('#uiProgressBar-type');
+		if (elType)
+			elType.enableHiddenMode().relate([
 				{
 					case: 'round',
 					targets: [
@@ -56,20 +58,20 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiProgressBar-blend').loadItems([
+		$('#uiProgressBar-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#uiProgressBar-colorMode').loadItems([
+		$('#uiProgressBar-colorMode')?.loadItems?.([
 			{ name: 'Texture Sampling', value: 'texture' },
 			{ name: 'Fixed', value: 'fixed' }
 		]);
 
-		$('#uiProgressBar-colorMode')
-			.enableHiddenMode()
-			.relate([
+		const elColorMode = $('#uiProgressBar-colorMode');
+		if (elColorMode)
+			elColorMode.enableHiddenMode().relate([
 				{
 					case: 'fixed',
 					targets: [
@@ -81,10 +83,10 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiProgressBar-color-0-slider').synchronize($('#uiProgressBar-color-0'));
-		$('#uiProgressBar-color-1-slider').synchronize($('#uiProgressBar-color-1'));
-		$('#uiProgressBar-color-2-slider').synchronize($('#uiProgressBar-color-2'));
-		$('#uiProgressBar-color-3-slider').synchronize($('#uiProgressBar-color-3'));
+		$('#uiProgressBar-color-0-slider')?.synchronize?.($('#uiProgressBar-color-0'));
+		$('#uiProgressBar-color-1-slider')?.synchronize?.($('#uiProgressBar-color-1'));
+		$('#uiProgressBar-color-2-slider')?.synchronize?.($('#uiProgressBar-color-2'));
+		$('#uiProgressBar-color-3-slider')?.synchronize?.($('#uiProgressBar-color-3'));
 
 		const elements = document.querySelectorAll(`#uiProgressBar-image,
     #uiProgressBar-display, #uiProgressBar-clip,

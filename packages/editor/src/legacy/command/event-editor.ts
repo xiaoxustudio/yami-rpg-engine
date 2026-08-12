@@ -779,6 +779,7 @@ EventEditor.initialize = function (this: EventEditorShape) {
 		relatedElements: []
 	};
 
+	if (!this.commandList || !this.innerGutter) return;
 	const INNER_HEIGHT = 600;
 	Object.defineProperty(this.commandList, 'innerHeight', {
 		configurable: true,

@@ -43,23 +43,23 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneActor.initialize = function (this: typeof SceneActor) {
 		if (!$('#sceneActor-name')) return;
 		this.nameBox = $('#sceneActor-name');
-		$('#sceneActor-type').loadItems([
+		$('#sceneActor-type')?.loadItems?.([
 			{ name: 'Local Actor', value: 'local' },
 			{ name: 'Global Actor', value: 'global' }
 		]);
 
-		$('#sceneActor-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneActor-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneActor-events').bind(new EventListInterface(this, Scene));
+		$('#sceneActor-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneActor-scripts').bind(
+		$('#sceneActor-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneActor-parameter-pane').bind($('#sceneActor-scripts'));
+		$('#sceneActor-parameter-pane')?.bind?.($('#sceneActor-scripts'));
 
-		$('#sceneActor-angle-slider').synchronize($('#sceneActor-angle'));
-		$('#sceneActor-scale-slider').synchronize($('#sceneActor-scale'));
+		$('#sceneActor-angle-slider')?.synchronize?.($('#sceneActor-angle'));
+		$('#sceneActor-scale-slider')?.synchronize?.($('#sceneActor-scale'));
 
 		window.addEventListener('datachange', this.datachange as unknown as EventListener);
 		const elements =
@@ -83,7 +83,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		(sliders as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.sliderBlur)
 		);
-		$('#sceneActor-type').addEventListener(
+		$('#sceneActor-type')?.addEventListener(
 			'write',
 			this.typeWrite! as unknown as EventListener
 		);

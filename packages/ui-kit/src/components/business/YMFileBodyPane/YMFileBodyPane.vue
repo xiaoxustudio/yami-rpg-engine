@@ -110,11 +110,13 @@ interface FileBodyItemApi extends HTMLElement {
 interface FileBodyContentApi extends HTMLElement {
 	range?: Uint32Array;
 	count?: number;
+	cpl?: number;
 	countPerLine?: number;
 	normalCountPerLine?: number;
 	scrollCountPerLine?: number;
 	scrollCount?: number;
 	itemSize?: number;
+	itemWidth?: number;
 	visibleLines?: number;
 }
 
@@ -345,6 +347,7 @@ let elements: (FileBodyItemApi | undefined)[] & {
 	count: number;
 	start: number;
 	end: number;
+	cpl: number;
 };
 let activeFile: FileBodyFile | null = null;
 let selections: FileBodyFile[] = [];
@@ -355,6 +358,7 @@ let unselectEventEnabled = false;
 let popupEventEnabled = false;
 let textBox: FileBodyTextBox;
 let windowKeydownHandler: (event: KeyboardEvent) => void;
+let windowResizeHandler: () => void;
 let resizeObserver: ResizeObserver | null = null;
 
 function setViewIndex(idx: number): void {
@@ -455,17 +459,31 @@ function resize(): void {
 	if (ch === 0) return;
 	const [start, end] = computeStartAndEnd();
 	updateContentSize();
-	if (els.start !== start || els.end !== end) {
+	const cpl = (contentEl.value as FileBodyContentApi).countPerLine!;
+	if (els.start !== start || els.end !== end || els.cpl !== cpl) {
 		els.start = start;
 		els.end = end;
+		els.cpl = cpl;
 		updateContentOffset();
 		const versionId = els.versionId++;
+		const content = contentEl.value as FileBodyContentApi;
+		const { countPerLine, itemSize, itemWidth } = content;
 		for (let i = start; i < end; i++) {
 			const element = els[i]!;
 			element.versionId = versionId;
+			if (viewMode === 'list') {
+				const col = Math.floor(i / countPerLine!);
+				const row = i % countPerLine!;
+				element.style.left = `${col * itemWidth! + 4}px`;
+				element.style.top = `${row * 20}px`;
+			} else {
+				const col = i % countPerLine!;
+				const row = Math.floor(i / countPerLine!);
+				element.style.left = `${col * itemWidth! + 4}px`;
+				element.style.top = `${row * itemSize! + 4}px`;
+			}
 			updateOnResize(element);
 		}
-		const content = contentEl.value as FileBodyContentApi;
 		const nodes = content.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
@@ -489,8 +507,12 @@ function resize(): void {
 }
 
 function computeGridProperties(): void {
+	const node = el.value as FileBodyPaneApi;
+	if (rect(node).width <= 0) return;
 	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
+	elements.start = -1;
+	elements.end = -1;
 	switch (viewMode) {
 		case 'list':
 			return computeListGridProperties();
@@ -525,6 +547,7 @@ function computeListGridProperties(): void {
 	const scrollCountPerLine = Math.max(Math.floor((oh - SCROLLBAR_HEIGHT) / ih), 1);
 	const scrollCount = Math.floor(ow / iw) * normalCountPerLine + 1;
 	content.itemSize = iw;
+	content.itemWidth = iw;
 	content.visibleLines = visibleLines;
 	content.normalCountPerLine = normalCountPerLine;
 	content.scrollCountPerLine = scrollCountPerLine;
@@ -549,6 +572,7 @@ function computeTileGridProperties(width: number, height: number): void {
 	const scrollCountPerLine = Math.max(Math.floor((ow - SCROLLBAR_WIDTH) / iw), 1);
 	const scrollCount = Math.floor(oh / ih) * normalCountPerLine + 1;
 	content.itemSize = ih;
+	content.itemWidth = iw;
 	content.visibleLines = visibleLines;
 	content.normalCountPerLine = normalCountPerLine;
 	content.scrollCountPerLine = scrollCountPerLine;
@@ -579,8 +603,10 @@ function updateContentSize(): void {
 	const node = el.value as FileBodyPaneApi;
 	const content = contentEl.value as FileBodyContentApi;
 	const count = elements.count;
-	if (node.clientHeight !== 0 && content.count !== count) {
+	const cpl = content.countPerLine;
+	if (node.clientHeight !== 0 && (content.count !== count || content.cpl !== cpl)) {
 		content.count = count;
+		content.cpl = cpl;
 		const PADDING = 4;
 		const GAP = 2;
 		const { style, countPerLine, itemSize } = content;
@@ -596,20 +622,13 @@ function updateContentSize(): void {
 
 function updateContentOffset(): void {
 	const content = contentEl.value as FileBodyContentApi;
-	const PADDING = 4;
-	const start = elements.start;
-	const { style, countPerLine, itemSize } = content;
-	const padding = (start / countPerLine!) * itemSize! + PADDING;
-	if (viewMode === 'list') {
-		style.paddingLeft = `${padding}px`;
-	} else {
-		style.paddingTop = `${padding}px`;
-	}
-}
-
-function resetContentStyle(): void {
+	const { style } = content;
+	style.paddingLeft = '';
+	style.paddingTop = '';
+}function resetContentStyle(): void {
 	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
+	content.cpl = -1;
 	const { style } = content;
 	switch (viewMode) {
 		case 'list':
@@ -1851,6 +1870,7 @@ onMounted(() => {
 	elements.count = 0;
 	elements.start = -1;
 	elements.end = -1;
+	elements.cpl = -1;
 
 	content.range = new Uint32Array(2);
 	Object.defineProperty(content, 'countPerLine', {
@@ -1864,7 +1884,16 @@ onMounted(() => {
 	textBox = createTextBox();
 	node.textBox = textBox;
 
-	node.addEventListener('scroll', resize);
+	let resizeRaf = 0;
+	const scrollResize = (): void => {
+		if (resizeRaf) return;
+		resizeRaf = requestAnimationFrame(() => {
+			resizeRaf = 0;
+			resize();
+		});
+	};
+
+	node.addEventListener('scroll', scrollResize);
 	node.addEventListener('keydown', keydown);
 	node.addEventListener('pointerdown', pointerdown);
 	node.addEventListener('pointerup', pointerup);
@@ -1873,12 +1902,29 @@ onMounted(() => {
 
 	if (typeof ResizeObserver !== 'undefined') {
 		resizeObserver = new ResizeObserver(() => {
-			if (node.clientHeight > 0 && elements.count > 0) {
-				resize();
-			}
+			requestAnimationFrame(() => {
+				if (node.clientHeight > 0 && elements.count > 0) {
+					computeGridProperties();
+					elements.start = -1;
+					elements.end = -1;
+					resize();
+				}
+			});
 		});
 		resizeObserver.observe(node);
 	}
+
+	windowResizeHandler = () => {
+		requestAnimationFrame(() => {
+			if (node.clientHeight > 0 && elements.count > 0) {
+				computeGridProperties();
+				elements.start = -1;
+				elements.end = -1;
+				resize();
+			}
+		});
+	};
+	window.addEventListener('resize', windowResizeHandler);
 
 	windowKeydownHandler = windowKeydown;
 	window.addEventListener('keydown', windowKeydownHandler);
@@ -1937,6 +1983,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
 	window.removeEventListener('keydown', windowKeydownHandler);
+	window.removeEventListener('resize', windowResizeHandler);
 	resizeObserver?.disconnect?.();
 });
 

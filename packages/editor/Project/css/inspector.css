@@ -803,6 +803,8 @@
 
 #selector-browser > .file-nav-pane {
 	width: 240px;
+	top: 24px;
+	height: calc(100% - 24px);
 	border-right: var(--selector-browser-border);
 }
 
@@ -815,6 +817,8 @@
 
 #selector-browser > .file-body-pane {
 	left: 240px;
+	top: 24px;
+	height: calc(100% - 24px);
 }
 
 #selector-confirm {

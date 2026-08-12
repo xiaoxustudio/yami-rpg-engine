@@ -28,15 +28,15 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIWindow.initialize = function (this: typeof UIWindow) {
 		if (!$('#uiWindow-layout')) return;
-		$('#uiWindow-layout').loadItems([
+		$('#uiWindow-layout')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Horizontal Grid', value: 'horizontal-grid' },
 			{ name: 'Vertical Grid', value: 'vertical-grid' }
 		]);
 
-		$('#uiWindow-layout')
-			.enableHiddenMode()
-			.relate([
+		const elLayout = $('#uiWindow-layout');
+		if (elLayout)
+			elLayout.enableHiddenMode().relate([
 				{
 					case: 'normal',
 					targets: [$('#uiWindow-scrollX'), $('#uiWindow-scrollY')]
@@ -56,7 +56,7 @@ import { UI } from '@/ui/ui-window.ts';
 				}
 			]);
 
-		$('#uiWindow-overflow').loadItems([
+		$('#uiWindow-overflow')?.loadItems?.([
 			{ name: 'Visible', value: 'visible' },
 			{ name: 'Hidden', value: 'hidden' }
 		]);

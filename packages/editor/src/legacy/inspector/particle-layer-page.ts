@@ -58,16 +58,16 @@ import { Particle } from '@/particle/particle-window.ts';
 	ParticleLayer.initialize = function (this: typeof ParticleLayer) {
 		if (!$('#particleLayer-name')) return;
 		this.nameBox = $('#particleLayer-name');
-		$('#particleLayer-area-type').loadItems([
+		$('#particleLayer-area-type')?.loadItems?.([
 			{ name: 'Point', value: 'point' },
 			{ name: 'Rectangle', value: 'rectangle' },
 			{ name: 'Circle', value: 'circle' },
 			{ name: 'Screen Edge', value: 'edge' }
 		]);
 
-		$('#particleLayer-area-type')
-			.enableHiddenMode()
-			.relate([
+		const elAreaType = $('#particleLayer-area-type');
+		if (elAreaType)
+			elAreaType.enableHiddenMode().relate([
 				{
 					case: 'point',
 					targets: [$('#particleLayer-area-x'), $('#particleLayer-area-y')]
@@ -91,49 +91,49 @@ import { Particle } from '@/particle/particle-window.ts';
 				}
 			]);
 
-		$('#particleLayer-blend').loadItems([
+		$('#particleLayer-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#particleLayer-light').loadItems([
+		$('#particleLayer-light')?.loadItems?.([
 			{ name: 'Raw', value: 'raw' },
 			{ name: 'Global Sampling', value: 'global' },
 			{ name: 'Ambient Light', value: 'ambient' }
 		]);
 
-		$('#particleLayer-sort').loadItems([
+		$('#particleLayer-sort')?.loadItems?.([
 			{ name: 'Youngest in Front', value: 'youngest-in-front' },
 			{ name: 'Oldest in Front', value: 'oldest-in-front' },
 			{ name: 'By Scale Factor', value: 'by-scale-factor' }
 		]);
 
-		$('#particleLayer-sprite-mode').loadItems([
+		$('#particleLayer-sprite-mode')?.loadItems?.([
 			{ name: 'Random', value: 'random' },
 			{ name: 'Animation', value: 'animation' },
 			{ name: 'Animation(Loop)', value: 'animation-loop' }
 		]);
 
-		$('#particleLayer-sprite-mode')
-			.enableHiddenMode()
-			.relate([
+		const elSpriteMode = $('#particleLayer-sprite-mode');
+		if (elSpriteMode)
+			elSpriteMode.enableHiddenMode().relate([
 				{
 					case: ['animation', 'animation-loop'],
 					targets: [$('#particleLayer-sprite-interval')]
 				}
 			]);
 
-		$('#particleLayer-color-mode').loadItems([
+		$('#particleLayer-color-mode')?.loadItems?.([
 			{ name: 'Fixed', value: 'fixed' },
 			{ name: 'Random', value: 'random' },
 			{ name: 'Easing', value: 'easing' },
 			{ name: 'Texture Sampling', value: 'texture' }
 		]);
 
-		$('#particleLayer-color-mode')
-			.enableHiddenMode()
-			.relate([
+		const elColorMode = $('#particleLayer-color-mode');
+		if (elColorMode)
+			elColorMode.enableHiddenMode().relate([
 				{
 					case: 'fixed',
 					targets: [$('#particleLayer-color-rgba-box')]
@@ -163,10 +163,10 @@ import { Particle } from '@/particle/particle-window.ts';
 				}
 			]);
 
-		$('#particleLayer-color-tint-0-slider').synchronize($('#particleLayer-color-tint-0'));
-		$('#particleLayer-color-tint-1-slider').synchronize($('#particleLayer-color-tint-1'));
-		$('#particleLayer-color-tint-2-slider').synchronize($('#particleLayer-color-tint-2'));
-		$('#particleLayer-color-tint-3-slider').synchronize($('#particleLayer-color-tint-3'));
+		$('#particleLayer-color-tint-0-slider')?.synchronize?.($('#particleLayer-color-tint-0'));
+		$('#particleLayer-color-tint-1-slider')?.synchronize?.($('#particleLayer-color-tint-1'));
+		$('#particleLayer-color-tint-2-slider')?.synchronize?.($('#particleLayer-color-tint-2'));
+		$('#particleLayer-color-tint-3-slider')?.synchronize?.($('#particleLayer-color-tint-3'));
 
 		const elements = document.querySelectorAll(`#particleLayer-name,
     #particleLayer-area-type, #particleLayer-area-x, #particleLayer-area-y,

@@ -39,38 +39,38 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneParallax.initialize = function (this: typeof SceneParallax) {
 		if (!$('#sceneParallax-name')) return;
 		this.nameBox = $('#sceneParallax-name');
-		$('#sceneParallax-layer').loadItems([
+		$('#sceneParallax-layer')?.loadItems?.([
 			{ name: 'Background', value: 'background' },
 			{ name: 'Foreground', value: 'foreground' }
 		]);
 
-		$('#sceneParallax-light').loadItems([
+		$('#sceneParallax-light')?.loadItems?.([
 			{ name: 'Raw', value: 'raw' },
 			{ name: 'Global Sampling', value: 'global' },
 			{ name: 'Anchor Sampling', value: 'anchor' },
 			{ name: 'Ambient Light', value: 'ambient' }
 		]);
 
-		$('#sceneParallax-blend').loadItems([
+		$('#sceneParallax-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#sceneParallax-tint-0-slider').synchronize($('#sceneParallax-tint-0'));
-		$('#sceneParallax-tint-1-slider').synchronize($('#sceneParallax-tint-1'));
-		$('#sceneParallax-tint-2-slider').synchronize($('#sceneParallax-tint-2'));
-		$('#sceneParallax-tint-3-slider').synchronize($('#sceneParallax-tint-3'));
+		$('#sceneParallax-tint-0-slider')?.synchronize?.($('#sceneParallax-tint-0'));
+		$('#sceneParallax-tint-1-slider')?.synchronize?.($('#sceneParallax-tint-1'));
+		$('#sceneParallax-tint-2-slider')?.synchronize?.($('#sceneParallax-tint-2'));
+		$('#sceneParallax-tint-3-slider')?.synchronize?.($('#sceneParallax-tint-3'));
 
-		$('#sceneParallax-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneParallax-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneParallax-events').bind(new EventListInterface(this, Scene));
+		$('#sceneParallax-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneParallax-scripts').bind(
+		$('#sceneParallax-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneParallax-parameter-pane').bind($('#sceneParallax-scripts'));
+		$('#sceneParallax-parameter-pane')?.bind?.($('#sceneParallax-scripts'));
 
 		const elements = document.querySelectorAll(`#sceneParallax-name,
     #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order,

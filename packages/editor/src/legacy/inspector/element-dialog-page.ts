@@ -28,33 +28,33 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIDialogBox.initialize = function (this: typeof UIDialogBox) {
 		if (!$('#uiDialogBox-typeface')) return;
-		$('#uiDialogBox-typeface').loadItems([
+		$('#uiDialogBox-typeface')?.loadItems?.([
 			{ name: 'Regular', value: 'regular' },
 			{ name: 'Bold', value: 'bold' },
 			{ name: 'Italic', value: 'italic' },
 			{ name: 'Bold Italic', value: 'bold-italic' }
 		]);
 
-		$('#uiDialogBox-effect-type').loadItems([
+		$('#uiDialogBox-effect-type')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Shadow', value: 'shadow' },
 			{ name: 'Stroke', value: 'stroke' },
 			{ name: 'Outline', value: 'outline' }
 		]);
 
-		$('#uiDialogBox-blend').loadItems([
+		$('#uiDialogBox-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#uiDialogBox-size-slider').synchronize($('#uiDialogBox-size'));
-		$('#uiDialogBox-lineSpacing-slider').synchronize($('#uiDialogBox-lineSpacing'));
-		$('#uiDialogBox-letterSpacing-slider').synchronize($('#uiDialogBox-letterSpacing'));
+		$('#uiDialogBox-size-slider')?.synchronize?.($('#uiDialogBox-size'));
+		$('#uiDialogBox-lineSpacing-slider')?.synchronize?.($('#uiDialogBox-lineSpacing'));
+		$('#uiDialogBox-letterSpacing-slider')?.synchronize?.($('#uiDialogBox-letterSpacing'));
 
-		$('#uiDialogBox-effect-type')
-			.enableHiddenMode()
-			.relate([
+		const elEffectType = $('#uiDialogBox-effect-type');
+		if (elEffectType)
+			elEffectType.enableHiddenMode().relate([
 				{
 					case: 'shadow',
 					targets: [

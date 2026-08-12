@@ -28,46 +28,46 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UIText.initialize = function (this: typeof UIText) {
 		if (!$('#uiText-direction')) return;
-		$('#uiText-direction').loadItems([
+		$('#uiText-direction')?.loadItems?.([
 			{ name: 'Horizontal - TB', value: 'horizontal-tb' },
 			{ name: 'Vertical - LR', value: 'vertical-lr' },
 			{ name: 'Vertical - RL', value: 'vertical-rl' }
 		]);
 
-		$('#uiText-typeface').loadItems([
+		$('#uiText-typeface')?.loadItems?.([
 			{ name: 'Regular', value: 'regular' },
 			{ name: 'Bold', value: 'bold' },
 			{ name: 'Italic', value: 'italic' },
 			{ name: 'Bold Italic', value: 'bold-italic' }
 		]);
 
-		$('#uiText-effect-type').loadItems([
+		$('#uiText-effect-type')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Shadow', value: 'shadow' },
 			{ name: 'Stroke', value: 'stroke' },
 			{ name: 'Outline', value: 'outline' }
 		]);
 
-		$('#uiText-overflow').loadItems([
+		$('#uiText-overflow')?.loadItems?.([
 			{ name: 'Visible', value: 'visible' },
 			{ name: 'Wrap', value: 'wrap' },
 			{ name: 'Truncate', value: 'truncate' },
 			{ name: 'Wrap Truncate', value: 'wrap-truncate' }
 		]);
 
-		$('#uiText-blend').loadItems([
+		$('#uiText-blend')?.loadItems?.([
 			{ name: 'Normal', value: 'normal' },
 			{ name: 'Additive', value: 'additive' },
 			{ name: 'Subtract', value: 'subtract' }
 		]);
 
-		$('#uiText-size-slider').synchronize($('#uiText-size'));
-		$('#uiText-lineSpacing-slider').synchronize($('#uiText-lineSpacing'));
-		$('#uiText-letterSpacing-slider').synchronize($('#uiText-letterSpacing'));
+		$('#uiText-size-slider')?.synchronize?.($('#uiText-size'));
+		$('#uiText-lineSpacing-slider')?.synchronize?.($('#uiText-lineSpacing'));
+		$('#uiText-letterSpacing-slider')?.synchronize?.($('#uiText-letterSpacing'));
 
-		$('#uiText-effect-type')
-			.enableHiddenMode()
-			.relate([
+		const elEffectType = $('#uiText-effect-type');
+		if (elEffectType)
+			elEffectType.enableHiddenMode().relate([
 				{
 					case: 'shadow',
 					targets: [

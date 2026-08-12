@@ -368,9 +368,9 @@ Enum.initialize = function (this: typeof Enum) {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	this.panel.enumString = null;
+	if (this.panel) this.panel.enumString = null;
 
-	this.searcher.addCloseButton();
+	this.searcher?.addCloseButton?.();
 
 	History.processors['enum-list-operation'] = (operation: string, data: EnumHistoryData) => {
 		const { response } = data;

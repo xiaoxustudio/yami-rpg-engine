@@ -41,20 +41,20 @@ import { UI } from '@/ui/ui-window.ts';
 
 	UITextBox.initialize = function (this: typeof UITextBox) {
 		if (!$('#uiTextBox-type')) return;
-		$('#uiTextBox-type').loadItems([
+		$('#uiTextBox-type')?.loadItems?.([
 			{ name: 'Text', value: 'text' },
 			{ name: 'Number', value: 'number' }
 		]);
 
-		$('#uiTextBox-align').loadItems([
+		$('#uiTextBox-align')?.loadItems?.([
 			{ name: 'Left', value: 'left' },
 			{ name: 'Center', value: 'center' },
 			{ name: 'Right', value: 'right' }
 		]);
 
-		$('#uiTextBox-type')
-			.enableHiddenMode()
-			.relate([
+		const elType = $('#uiTextBox-type');
+		if (elType)
+			elType.enableHiddenMode().relate([
 				{
 					case: 'text',
 					targets: [$('#uiTextBox-text'), $('#uiTextBox-maxLength')]

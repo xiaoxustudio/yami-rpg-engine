@@ -47,28 +47,28 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	SceneAnimation.initialize = function (this: typeof SceneAnimation) {
 		if (!$('#sceneAnimation-name')) return;
 		this.nameBox = $('#sceneAnimation-name');
-		$('#sceneAnimation-rotatable').loadItems([
+		$('#sceneAnimation-rotatable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 
-		$('#sceneAnimation-conditions').bind(new ConditionListInterface(this, Scene));
+		$('#sceneAnimation-conditions')?.bind?.(new ConditionListInterface(this, Scene));
 
-		$('#sceneAnimation-events').bind(new EventListInterface(this, Scene));
+		$('#sceneAnimation-events')?.bind?.(new EventListInterface(this, Scene));
 
-		$('#sceneAnimation-scripts').bind(
+		$('#sceneAnimation-scripts')?.bind?.(
 			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
 		);
 
-		$('#sceneAnimation-parameter-pane').bind($('#sceneAnimation-scripts'));
+		$('#sceneAnimation-parameter-pane')?.bind?.($('#sceneAnimation-scripts'));
 
-		$('#sceneAnimation-angle-slider').synchronize($('#sceneAnimation-angle'));
-		$('#sceneAnimation-scale-slider').synchronize($('#sceneAnimation-scale'));
-		$('#sceneAnimation-speed-slider').synchronize($('#sceneAnimation-speed'));
-		$('#sceneAnimation-opacity-slider').synchronize($('#sceneAnimation-opacity'));
-		$('#sceneAnimation-priority-slider').synchronize($('#sceneAnimation-priority'));
+		$('#sceneAnimation-angle-slider')?.synchronize?.($('#sceneAnimation-angle'));
+		$('#sceneAnimation-scale-slider')?.synchronize?.($('#sceneAnimation-scale'));
+		$('#sceneAnimation-speed-slider')?.synchronize?.($('#sceneAnimation-speed'));
+		$('#sceneAnimation-opacity-slider')?.synchronize?.($('#sceneAnimation-opacity'));
+		$('#sceneAnimation-priority-slider')?.synchronize?.($('#sceneAnimation-priority'));
 
-		$('#sceneAnimation-animationId').on('write', this.animationIdWrite);
+		$('#sceneAnimation-animationId')?.on?.('write', this.animationIdWrite);
 		const elements =
 			document.querySelectorAll(`#sceneAnimation-name, #sceneAnimation-animationId,
     #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y,

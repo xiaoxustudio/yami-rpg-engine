@@ -209,8 +209,8 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).updaters.push(list.updateTextNode);
 	getListConfig(list).creators.push(list.createEditIcon);
 
-	$('#command').addEventListener('close', this.windowClose!);
-	$('#command').addEventListener('closed', this.windowClosed!);
+	$('#command')?.addEventListener('close', this.windowClose!);
+	$('#command')?.addEventListener('closed', this.windowClosed!);
 	list.on('keydown', this.listKeydown!);
 	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	list.on('unselect', this.listUnselect!);

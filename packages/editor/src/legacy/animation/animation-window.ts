@@ -590,7 +590,7 @@ Animation.initialize = function (this: typeof Animation) {
 	this.outerPointerArea = $('#animation-timeline-pointer-area-outer');
 	this.innerPointerArea = $('#animation-timeline-pointer-area-inner');
 	this.pointer = $('#animation-timeline-pointer');
-	addSetScrollMethod(this.screen);
+	this.screen && addSetScrollMethod(this.screen);
 	hide(this.body);
 	hide(this.timeline);
 	hide(this.timelineCursor);

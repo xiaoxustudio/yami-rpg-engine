@@ -358,7 +358,7 @@ UI.initialize = function (this: UIShape) {
 	}
 	this.list.page = $('#ui-element');
 	this.list.head = $('#ui-list-head');
-	addScrollbars(this.screen);
+	this.screen && addScrollbars(this.screen);
 
 	const points = {
 		rotate: {

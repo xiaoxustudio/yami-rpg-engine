@@ -77,12 +77,12 @@ import { Timer } from '@/util/timer.ts';
 		this.intensities.index = 0;
 
 		window.addEventListener('themechange', this.themechange);
-		$('#fileAudio').addEventListener('resize', this.windowResize);
-		$('#fileAudio-frequency-detail').addEventListener('toggle', this.windowResize);
-		$('#fileAudio-volume').addEventListener('input', this.paramInput);
-		$('#fileAudio-pan').addEventListener('input', this.paramInput);
-		$('#fileAudio-dry').addEventListener('input', this.paramInput);
-		$('#fileAudio-wet').addEventListener('input', this.paramInput);
+		$('#fileAudio')?.addEventListener('resize', this.windowResize);
+		$('#fileAudio-frequency-detail')?.addEventListener('toggle', this.windowResize);
+		$('#fileAudio-volume')?.addEventListener('input', this.paramInput);
+		$('#fileAudio-pan')?.addEventListener('input', this.paramInput);
+		$('#fileAudio-dry')?.addEventListener('input', this.paramInput);
+		$('#fileAudio-wet')?.addEventListener('input', this.paramInput);
 		this.progress.addEventListener('pointerdown', this.progressPointerdown);
 		this.progress.addEventListener('pointermove', this.progressPointermove);
 		this.progress.addEventListener('pointerleave', this.progressPointerleave);
