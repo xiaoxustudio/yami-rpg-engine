@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import { Team } from '@/data/team-window.ts';
+import type { TeamShape } from './data';
+import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 
 export const useTeamStore = defineStore('team', () => {
 	const state = shallowRef<string>('closed');
-	const teams = shallowRef<any[] | Record<string, any>>([]);
+	const teams = shallowRef<TeamShape[] | Record<string, TeamShape>>([]);
 
 	function syncState() {
 		state.value = Team?.state ?? 'closed';
@@ -15,7 +17,7 @@ export const useTeamStore = defineStore('team', () => {
 		Team?.initialize?.();
 	}
 
-	function open(data?: any) {
+	function open(data?: unknown) {
 		Team?.open?.(data);
 	}
 
@@ -31,7 +33,7 @@ export const useTeamStore = defineStore('team', () => {
 		return Team?.createData?.();
 	}
 
-	function getItemById(id: any) {
+	function getItemById(id: string) {
 		return Team?.getItemById?.(id);
 	}
 
@@ -43,15 +45,15 @@ export const useTeamStore = defineStore('team', () => {
 		return Team?.packTeams?.();
 	}
 
-	function confirm(event?: any) {
-		Team?.confirm?.(event);
+	function confirm(event?: Event) {
+		Team?.confirm?.(event as Event);
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: EditorProjectShape) {
 		Team?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: EditorProjectShape) {
 		Team?.loadFromProject?.(project);
 	}
 

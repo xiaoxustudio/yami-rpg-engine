@@ -1,5 +1,5 @@
 import { Scene } from './scene-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 
 Scene.Textures = class Textures {
 	state: string;
@@ -10,13 +10,13 @@ Scene.Textures = class Textures {
 		this[''] = null;
 	}
 
-	append(texture: any) {
+	append(texture: ImageTexture) {
 		if (this.state === 'open') {
-			this[texture.base.guid] = texture;
+			this[texture.base!.guid as string] = texture;
 		}
 	}
 
-	load(guid: any) {
+	load(guid: string) {
 		if (!this[guid]) {
 			const texture = new ImageTexture(guid);
 			if (texture.complete) {
@@ -26,7 +26,7 @@ Scene.Textures = class Textures {
 					return texture;
 				});
 			}
-			this[guid] = new Promise((resolve: any) => {
+			this[guid] = new Promise<ImageTexture | null>((resolve) => {
 				texture.on('load', () => {
 					if (this.state === 'open' && this[guid] instanceof Promise) {
 						this[guid] = texture;

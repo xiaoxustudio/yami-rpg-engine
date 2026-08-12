@@ -1,4 +1,5 @@
 ﻿import { defineStore } from 'pinia';
+import type { MenuItem } from '@ui-kit';
 import { Window } from '@/tools/window-object.ts';
 import { shallowRef } from 'vue';
 import { $ } from '@/util/dom.ts';
@@ -37,7 +38,7 @@ export interface SelectorInstance {
 	close?(): void;
 	allowNone?: boolean;
 	lastDir?: string;
-	filters?: unknown[];
+	filters?: unknown[] | null;
 	nav?: HTMLElement & {
 		load?(...folders: unknown[]): void;
 		selections?: unknown[];
@@ -91,6 +92,16 @@ export const useSelectorStore = defineStore('selector', () => {
 		target.value = Selector?.target ?? null;
 	}
 
+	let confirmBound = false;
+
+	function bindConfirm() {
+		if (confirmBound) return;
+		const button = $('#selector-confirm');
+		if (!button) return;
+		button.addEventListener('click', confirm);
+		confirmBound = true;
+	}
+
 	function initialize() {
 		const Selector = getSelector();
 		if (!Selector) return;
@@ -101,9 +112,9 @@ export const useSelectorStore = defineStore('selector', () => {
 		Selector.body?.on?.('open', bodyOpen);
 		Selector.body?.on?.('popup', bodyPopup);
 		Selector.head?.searcher?.on?.('keydown', searcherKeydown);
-		$('#selector').on('closed', windowClosed);
-		$('#selector').on('resize', windowResize);
-		$('#selector-confirm').addEventListener('click', confirm);
+		$('#selector')?.on?.('closed', windowClosed);
+		$('#selector')?.on?.('resize', windowResize);
+		bindConfirm();
 		EventBus.once('editor_loaded', () => {
 			if (Selector.head && Selector.head?.searcher) {
 				if (Selector.head?.searcher) {
@@ -113,9 +124,13 @@ export const useSelectorStore = defineStore('selector', () => {
 		});
 	}
 
-	function open(t: any, allowNoneParam = true) {
+	function open(
+		t: { read(): string; filter?: string; input?(value?: unknown): void },
+		allowNoneParam = true
+	) {
 		const Selector = getSelector();
 		if (!Selector) return;
+		bindConfirm();
 		Selector.target = t;
 		Selector.allowNone = allowNoneParam;
 		target.value = t;
@@ -159,22 +174,20 @@ export const useSelectorStore = defineStore('selector', () => {
 		}
 	}
 
-	function confirm(event?: any) {
+	function confirm(event?: Event) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		if (Selector.dragging) return;
 		const files = Selector.body?.selections ?? [];
 		switch (files.length) {
-			case 1:
-				if ((files as unknown[])[0] instanceof FileItem) {
-					const file = files[0] as { meta?: { guid?: string } } | undefined;
-					const meta = file?.meta;
-					if (meta !== undefined) {
-						Selector.target?.input?.(meta?.guid);
-						Window.close?.('selector');
-					}
+			case 1: {
+				const meta = (files[0] as { meta?: { guid?: string } })?.meta;
+				if (meta !== undefined) {
+					Selector.target?.input?.(meta?.guid);
+					Window.close?.('selector');
 				}
 				break;
+			}
 			case 0:
 				if (Selector.allowNone) {
 					Selector.target?.input?.('');
@@ -184,20 +197,20 @@ export const useSelectorStore = defineStore('selector', () => {
 		}
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: { selector?: { view?: number } }) {
 		const Selector = getSelector();
 		if (!Selector) return;
 		const { selector } = project;
 		const { viewIndex } = Selector.body ?? {};
-		selector.view = viewIndex ?? selector.view;
+		selector!.view = viewIndex ?? selector!.view;
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: { selector?: { view?: number } }) {
 		const Selector = getSelector();
 		if (!Selector) return;
-		const { view } = project.selector;
+		const { view } = project.selector!;
 		Selector.directory = [Directory.assets];
-		Selector.body?.setViewIndex?.(view);
+		Selector.body?.setViewIndex?.(view as number);
 	}
 
 	function windowClosed(event: Event) {
@@ -282,7 +295,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	) {
 		const Selector = getSelector();
 		if (!Selector) return;
-		const items: any[] = [];
+		const items: MenuItem[] = [];
 		const { target: rawTarget } = event.raw;
 		const { browser, nav } = Selector.links ?? {};
 		const get = Local.createGetter!('menuFileBrowser');

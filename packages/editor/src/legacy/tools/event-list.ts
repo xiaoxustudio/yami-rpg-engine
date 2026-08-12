@@ -6,26 +6,62 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { Local } from './localization.ts';
 
 import { IListInterface } from '@/types/list-interface.ts';
+import { HistoryData, IEditableHistory } from '@/types/history.ts';
+
+interface EventListTargetShape {
+	guid?: string;
+	presetId?: string;
+	events?: unknown;
+	element?: HTMLElement | null;
+}
+
+interface EventListEventShape {
+	type: string;
+	enabled: boolean;
+}
+
+interface EventListDom extends HTMLElement {
+	inserting?: boolean;
+}
+
+const FILTER_BY_LIST_ID: Record<string, string> = {
+	'fileActor-events': 'actor',
+	'sceneActor-events': 'actor',
+	'fileSkill-events': 'skill',
+	'fileState-events': 'state',
+	'fileEquipment-events': 'equipment',
+	'fileItem-events': 'item',
+	'fileTrigger-events': 'trigger',
+	'fileScene-events': 'scene',
+	'fileAnimation-events': 'animation',
+	'sceneAnimation-events': 'animation',
+	'sceneLight-events': 'light',
+	'sceneParallax-events': 'parallax',
+	'sceneParticle-events': 'particle',
+	'sceneRegion-events': 'region',
+	'sceneTilemap-events': 'tilemap',
+	'uiElement-events': 'element'
+};
 
 export class EventListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
 	filter!: string;
-	editor!: any | null;
-	owner!: any | null;
-	eventItem!: any | null;
+	editor!: { target?: unknown } | null;
+	owner!: { history?: unknown } | null;
+	eventItem!: Record<string, unknown> | null;
 	editCallback!: (() => void) | null;
 	insertCallback!: (() => void) | null;
-	history!: any | null;
+	history!: IEditableHistory | null;
 
-	constructor(editor?: any, owner?: any) {
-		this.editor = editor ?? null;
-		this.owner = owner ?? null;
+	constructor(editor?: unknown, owner?: unknown) {
+		this.editor = (editor as { target?: unknown } | null) ?? null;
+		this.owner = (owner as { history?: unknown } | null) ?? null;
 	}
 
-	initialize(list: any): void {
+	initialize(list: EventListDom): void {
 		list.togglable = true;
-		this.filter = list.getAttribute('filter');
+		this.filter = list.getAttribute('filter') ?? FILTER_BY_LIST_ID[list.id] ?? 'global';
 		this.type = `${this.filter}.event`;
 		this.editCallback = () => list.save();
 		this.insertCallback = () => {
@@ -33,24 +69,24 @@ export class EventListInterface implements IListInterface {
 				list.save();
 				list.inserting = false;
 			} else {
-				list.start--;
+				list.start!--;
 				list.save();
-				list.select(list.start + 1);
+				list.select(list.start! + 1);
 			}
 		};
 
 		const { editor, owner } = this;
 		if (editor && owner) {
 			this.history = new Inspector.ParamHistory!(editor, owner, list);
-			this.history.save = EventListInterface.historySave;
+			this.history!.save = EventListInterface.historySave;
 		}
 
-		window.addEventListener('localize', (event: any) => {
+		window.addEventListener('localize', (event: Event) => {
 			if (list.data) list.update();
 		});
 	}
 
-	parse(event: any) {
+	parse(event: EventListEventShape) {
 		const { type } = event;
 		if (EventListInterface.guidRegExp.test(type)) {
 			Command.invalid = false;
@@ -68,12 +104,12 @@ export class EventListInterface implements IListInterface {
 		};
 	}
 
-	update(list: any) {
+	update(list: HTMLElement) {
 		const elements = list.elements;
 		const items = list.read();
 		const length = items.length;
 		if (length !== 0) {
-			const flags = {} as Record<string, any>;
+			const flags = {} as Record<string, boolean>;
 			for (let i = length - 1; i >= 0; i--) {
 				const { type } = items[i];
 				if (flags[type]) {
@@ -84,9 +120,9 @@ export class EventListInterface implements IListInterface {
 			}
 		}
 
-		const item = this.editor?.target;
+		const item = this.editor?.target as EventListTargetShape | undefined;
 		if (item?.events === list.read()) {
-			const element = item.element;
+			const element = item!.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
 				list.updateEventIcon(item);
@@ -94,7 +130,7 @@ export class EventListInterface implements IListInterface {
 		}
 	}
 
-	open(event: any) {
+	open(event?: EventListEventShape) {
 		const filter = this.filter;
 		let callback = this.editCallback;
 		let inserting = false;
@@ -103,7 +139,7 @@ export class EventListInterface implements IListInterface {
 			callback = this.insertCallback;
 			inserting = true;
 		}
-		const target = this.editor.target;
+		const target = this.editor!.target as EventListTargetShape;
 		if (target.guid) {
 			const id = target.guid;
 			const fileName = Data.manifest.guidMap[id]?.file.basename;
@@ -138,7 +174,7 @@ export class EventListInterface implements IListInterface {
 
 	static guidRegExp = /^[0-9a-f]{16}$/;
 
-	static historySave(data: any) {
+	static historySave(data: HistoryData) {
 		Inspector.ParamHistory.prototype.save.call(this, data);
 		if (data.type === 'inspector-param-replace') {
 			delete data.swap.commands.symbol;

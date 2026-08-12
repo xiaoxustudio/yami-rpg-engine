@@ -88,7 +88,7 @@ function ensureDomBound() {
 	PresetElement.ui = $('#presetElement-uiId');
 	PresetElement.list = list as PresetElementList;
 	PresetElement.searcher = $('#presetElement-searcher');
-	PresetElement.list.createIcon = null as unknown as (...args: unknown[]) => any;
+	PresetElement.list.createIcon = null as unknown as (...args: unknown[]) => unknown;
 }
 
 PresetElement.initialize = function (this: typeof PresetElement) {
@@ -198,7 +198,7 @@ PresetElement.searcherInput = function (this: typeof PresetElement, event: Input
 	const text = this.searcher.value;
 	const list = PresetElement.list;
 	list.searchNodes(text);
-	const elements = list.elements as any[] & { count: number };
+	const elements = list.elements as Array<{ item: PresetElementListItem }> & { count: number };
 	for (let i = 0; i < elements.count; i++) {
 		const { item } = elements[i];
 		if (item.class !== 'folder') {

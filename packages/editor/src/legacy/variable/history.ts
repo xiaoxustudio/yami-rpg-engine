@@ -1,6 +1,6 @@
 import { Variable } from './variable.ts';
 
-Variable.saveHistory = function (item: any, key: string, value: any) {
+Variable.saveHistory = function (item: unknown, key: string, value: unknown) {
 	const type = `variable-${key}-change`;
 	const history = this.history;
 	const index = history.index;

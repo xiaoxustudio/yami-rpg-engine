@@ -20,8 +20,22 @@ Command.cases.loop = new CommandSchema({
 			clear($('#loop-conditions'));
 		});
 	},
-	customParse({ mode, conditions, commands }: any) {
-		const contents: any[] = [{ fold: true }, { color: 'flow' }];
+	customParse({
+		mode,
+		conditions,
+		commands
+	}: {
+		mode: string;
+		conditions: Array<{ type: string }>;
+		commands: unknown;
+	}) {
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [{ fold: true }, { color: 'flow' }];
 		if (conditions.length !== 0) {
 			const condition = IfBranch.parse!({ mode, conditions });
 			contents.push(
@@ -39,7 +53,15 @@ Command.cases.loop = new CommandSchema({
 		);
 		return contents;
 	},
-	customLoad({ mode = 'all', conditions = [], commands = [] }) {
+	customLoad({
+		mode = 'all',
+		conditions = [],
+		commands = []
+	}: {
+		mode: string;
+		conditions: unknown[];
+		commands: unknown;
+	}) {
 		const write = getElementWriter('loop');
 		write('mode', mode);
 		write('conditions', conditions.slice());

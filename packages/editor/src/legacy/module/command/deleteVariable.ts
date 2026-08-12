@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.deleteVariable = new CommandSchema({
 	name: 'deleteVariable',
 	fields: [{ key: 'variable', default: { type: 'local', key: '' } }],
-	customParse({ variable }: any) {
+	customParse({ variable }: { variable: unknown }) {
 		return [
 			{ color: 'variable' },
 			{ text: Local.get!('command.deleteVariable.alias') + ' ' },

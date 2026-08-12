@@ -507,7 +507,7 @@ Directory.createInoMap = (function IIFE() {
 		map: Record<string | number, FileItem | FolderItem>,
 		item: FileItem | FolderItem
 	) => {
-		map[item.stats.ino] = item;
+		map[item.stats!.ino!] = item;
 		if (item instanceof FolderItem) {
 			const children = item.children;
 			const length = children.length;

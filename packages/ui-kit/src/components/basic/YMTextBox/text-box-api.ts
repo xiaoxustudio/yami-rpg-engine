@@ -9,20 +9,20 @@ export interface TextBoxApi extends HTMLElement {
 	lastText: string;
 	hiddenNodes: HTMLElement[];
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	insert(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	focus(...args: unknown[]): any;
-	getFocus(...args: unknown[]): any;
-	setPlaceholder(...args: unknown[]): any;
-	setMaxLength(...args: unknown[]): any;
-	fitContent(...args: unknown[]): any;
-	deleteInputContent(...args: unknown[]): any;
-	addCloseButton(...args: unknown[]): any;
+	read(...args: unknown[]): string;
+	write(...args: unknown[]): void;
+	insert(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	focus(...args: unknown[]): void;
+	getFocus(...args: unknown[]): unknown;
+	setPlaceholder(...args: unknown[]): void;
+	setMaxLength(...args: unknown[]): void;
+	fitContent(...args: unknown[]): void;
+	deleteInputContent(...args: unknown[]): void;
+	addCloseButton(...args: unknown[]): void;
 	addKeydownFilter(fn: (event: KeyboardEvent) => boolean): void;
-	on(...args: unknown[]): any;
+	on(...args: unknown[]): void;
 }
 
 const clamp = (value: number, min: number, max: number): number =>
@@ -47,7 +47,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	const read = (): string => input.value;
 	const write = (value: string): void => {
 		input.value = value;
-		(box as any).lastText = value;
+		box.lastText = value;
 	};
 	const insert = (value: string): void => {
 		input.dispatchEvent(
@@ -133,7 +133,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 	};
 	const on = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void => {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
@@ -167,7 +167,7 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 		{ capture: true }
 	);
 	input.addEventListener('input', () => {
-		(box as any).lastText = read();
+		box.lastText = read();
 	});
 	input.addEventListener('change', () => {
 		box.dispatchEvent(new Event('change', { bubbles: true }));

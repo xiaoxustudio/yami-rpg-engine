@@ -5,12 +5,14 @@ import { UI } from '@/ui/ui-window.ts';
 
 {
 	interface UIProgressBarShape {
-		[k: string]: any;
+		target: UIProgressBarData | null;
+		update: ((node: UIProgressBarData, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
 	}
 	interface UIProgressBarData {
 		color: { [k: string]: unknown };
 		instances: { setProperty(key: string, value: unknown): void };
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 	const UIProgressBar: UIProgressBarShape = {
 		owner: UI,
@@ -219,8 +221,15 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIProgressBar.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
-		UIProgressBar.update(UIProgressBar.target, Inspector.getKey!(this), read(this));
+	UIProgressBar.paramInput = function (
+		this: HTMLElement & { [k: string]: unknown },
+		event: Event
+	) {
+		UIProgressBar.update!(
+			UIProgressBar.target as UIProgressBarData,
+			Inspector.getKey!(this),
+			read(this)
+		);
 	};
 
 	Inspector.uiProgressBar = UIProgressBar;

@@ -6,18 +6,31 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type RequestKeyValue = {
+	key: string | { key: string };
+	value: string | { key: string };
+};
+
+type RequestURLCommandData = {
+	url?: string | { key: string };
+	method?: string;
+	headers?: RequestKeyValue[];
+	data?: RequestKeyValue[];
+	callback?: string;
+};
+
 export const RequestkeyValueBind = {
-	target: null as unknown as (string & { save?: () => any }) | null,
+	target: null as unknown as (string & { save?: () => unknown }) | null,
 	type: null as unknown as string | null,
 	initialize() {
 		this.target = null;
 		this.type = 'request-header';
 		$('#request-keyValue-confirm')?.on('click', this.confirm);
 	},
-	parse(i: any) {
+	parse(i: RequestKeyValue) {
 		return `${typeof i.key === 'string' ? i.key : i.key.key} = ${typeof i.value === 'string' ? i.value : i.value.key}`;
 	},
-	open(item: any) {
+	open(item: RequestKeyValue | null) {
 		Window.open!('request-keyValue');
 		if (!item) {
 			write($('#request-keyValue-value'), '');
@@ -33,9 +46,9 @@ export const RequestkeyValueBind = {
 		const read = getElementReader('request-keyValue');
 		const data = { key: read('key'), value: read('value') };
 		const headers = read(this.target as unknown as string);
-		if (headers.some((item: any) => item.key === data.key)) {
+		if (headers.some((item: RequestKeyValue) => item.key === data.key)) {
 			headers.splice(
-				headers.findIndex((item: any) => item.key === data.key),
+				headers.findIndex((item: RequestKeyValue) => item.key === data.key),
 				1,
 				data
 			);
@@ -67,8 +80,14 @@ Command.cases.requestURL = new CommandSchema({
 		$('#requestURL-data').bind(RequestkeyValueBind);
 		$('#requestURL-confirm')?.on('click', () => this.save!());
 	},
-	customParse({ url = '', method = 'GET', headers = [], data = [], callback = '' }: any) {
-		const head = [
+	customParse({
+		url = '',
+		method = 'GET',
+		headers = [],
+		data = [],
+		callback = ''
+	}: RequestURLCommandData) {
+		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
 			{ text: Local.get!('command.requestURL') },
 			{ text: ' , ' },
@@ -82,7 +101,7 @@ Command.cases.requestURL = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents: any[] = [];
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -92,7 +111,7 @@ Command.cases.requestURL = new CommandSchema({
 				}
 			);
 		}
-		const datas: any[] = [];
+		const datas: Array<{ text?: string; color?: string }> = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },

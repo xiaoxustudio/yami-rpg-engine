@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createSelectBoxElement } from '../select-box-api';
+import type { SelectBoxApi } from '../select-box-api';
 
 describe('createSelectBoxElement', () => {
 	it('creates a select-box element with api attached', () => {
-		const el = createSelectBoxElement() as any;
+		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		expect(el.classList.contains('select-box')).toBe(true);
 		expect(typeof el.loadItems).toBe('function');
 		expect(typeof el.read).toBe('function');
@@ -16,7 +17,7 @@ describe('createSelectBoxElement', () => {
 	});
 
 	it('loadItems + write + read roundtrip with names', () => {
-		const el = createSelectBoxElement() as any;
+		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		el.loadItems([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
@@ -27,7 +28,7 @@ describe('createSelectBoxElement', () => {
 	});
 
 	it('write2 falls back to first item when value unknown', () => {
-		const el = createSelectBoxElement() as any;
+		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		el.loadItems([
 			{ name: 'A', value: 'a' },
 			{ name: 'B', value: 'b' }
@@ -37,7 +38,7 @@ describe('createSelectBoxElement', () => {
 	});
 
 	it('enableHiddenMode returns element for chaining', () => {
-		const el = createSelectBoxElement() as any;
+		const el = createSelectBoxElement() as unknown as SelectBoxApi;
 		const result = el.enableHiddenMode();
 		expect(result).toBe(el);
 	});

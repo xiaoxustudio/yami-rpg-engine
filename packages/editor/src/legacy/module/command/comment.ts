@@ -6,7 +6,7 @@ import { CommandSchema } from './schema.ts';
 Command.cases.comment = new CommandSchema({
 	name: 'comment',
 	fields: [{ key: 'comment', domId: 'comment', default: '', required: true }],
-	customParse({ comment }: any) {
+	customParse({ comment }: { comment: string }) {
 		const lines = comment.split('\n');
 		const contents = [];
 		for (const line of lines) {

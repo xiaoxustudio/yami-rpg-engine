@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setTarget = new CommandSchema({
 	name: 'setTarget',
 	fields: [{ key: 'actor', default: { type: 'trigger' } }],
-	customParse({ actor }: any) {
+	customParse({ actor }: { actor: unknown }) {
 		return [
 			{ color: 'actor' },
 			{ text: Local.get!('command.setTarget') + Token(': ') },

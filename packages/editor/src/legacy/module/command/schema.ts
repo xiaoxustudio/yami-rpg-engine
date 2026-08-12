@@ -24,29 +24,49 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface CommandField {
+	key: string;
+	domId?: string;
+	required?: boolean;
+	default?: unknown;
+	[k: string]: unknown;
+}
+
+type CommandContent = Record<string, unknown>;
+
+interface CommandTarget {
+	scrollAndResize?: () => void;
+	getSelectionPosition?: () => { x: number; y: number } | null;
+}
+
+interface CommandRecord {
+	id: string;
+	params?: Record<string, unknown>;
+}
+
 interface CommandSchemaConfig {
 	name: string;
-	fields?: any[];
+	fields?: CommandField[];
 	children?: boolean;
 	confirmId?: string;
-	onParse?: (data: any, contents: any[]) => void;
-	onLoad?: (data: any) => void;
-	onSave?: (data: any) => void;
+	onParse?(data: Record<string, unknown>, contents: CommandContent[]): void;
+	onLoad?(data: Record<string, unknown>): void;
+	onSave?(data: Record<string, unknown>): void;
 	onInitialize?: () => void;
 	initialize?: () => void;
-	parse?: (data: any) => any;
-	customParse?: (data: any) => any;
-	load?: (data: any) => void;
-	customLoad?: (data: any) => void;
-	save?: () => any;
-	customSave?: () => any;
+	parse?(data: Record<string, unknown>): CommandContent[];
+	customParse?(data: Record<string, unknown>): CommandContent[];
+	load?(data: Record<string, unknown>): void;
+	customLoad?(data: Record<string, unknown>): void;
+	save?: () => unknown;
+	customSave?: () => unknown;
 	noWindow?: boolean;
 	[k: string]: any;
 }
 
 export class CommandSchema {
 	name: string;
-	fields: any[];
+	fields: CommandField[];
 	children: boolean;
 	confirmId: string;
 	onParse;
@@ -97,13 +117,13 @@ export class CommandSchema {
 			this[key] = config[key];
 		}
 		if (this.noWindow) {
-			this.load = null as unknown as (...args: unknown[]) => any;
-			this.initialize = null as unknown as (...args: unknown[]) => any;
+			this.load = null as unknown as (...args: unknown[]) => unknown;
+			this.initialize = null as unknown as (...args: unknown[]) => unknown;
 		}
 	}
 
 	// 取字段默认值（支持函数延迟求值）
-	_getDefault(field: any) {
+	_getDefault(field: CommandField) {
 		return typeof field.default === 'function' ? field.default() : field.default;
 	}
 
@@ -125,7 +145,7 @@ export class CommandSchema {
 		on($(`#${this.confirmId}`), 'click', () => this.save!());
 	}
 
-	parse(data: any) {
+	parse(data: Record<string, unknown>) {
 		if (this.customParse) {
 			return this.customParse!(data);
 		}
@@ -143,7 +163,7 @@ export class CommandSchema {
 		return contents;
 	}
 
-	load(data: any) {
+	load(data: Record<string, unknown>) {
 		if (this.customLoad) {
 			return this.customLoad!(data);
 		}
@@ -181,11 +201,11 @@ export class CommandSchema {
 
 	// --- 静态分发方法 ---
 
-	static _resolve(id: any) {
+	static _resolve(id: string) {
 		return Command.cases[id];
 	}
 
-	static _topoSort(names: any, getDeps: any) {
+	static _topoSort(names: string[], getDeps: (name: string) => string[]) {
 		const graph: Map<string, string[]> = new Map(names.map((n: string) => [n, []]));
 		const inDegree: Map<string, number> = new Map(names.map((n: string) => [n, 0]));
 		for (const name of names) {
@@ -198,7 +218,7 @@ export class CommandSchema {
 		const queue = names.filter((n: string) => inDegree.get(n) === 0);
 		const result = [];
 		while (queue.length) {
-			const node = queue.shift();
+			const node = queue.shift()!;
 			result.push(node);
 			for (const next of graph.get(node)!) {
 				inDegree.set(next, inDegree.get(next)! - 1);
@@ -210,7 +230,7 @@ export class CommandSchema {
 
 	static initAll() {
 		Command.words = new Command.WordList();
-		const subMap: { [k: string]: any } = {
+		const subMap: Record<string, { dependsOn?: string[]; initialize: (() => void) | null }> = {
 			CommandSuggestion,
 			TextSuggestion,
 			VariableGetter,
@@ -231,11 +251,11 @@ export class CommandSchema {
 		};
 		const sorted = CommandSchema._topoSort(
 			Object.keys(subMap),
-			(name: string) => subMap[name].dependsOn
+			(name: string) => subMap[name].dependsOn ?? []
 		);
 		for (const name of sorted) {
 			try {
-				subMap[name].initialize();
+				subMap[name].initialize!();
 			} catch (error) {
 				console.error(`[initAll] ${name} initialize failed:`, error);
 			}
@@ -254,7 +274,7 @@ export class CommandSchema {
 		}
 	}
 
-	static insert(target: any, id: any) {
+	static insert(target: CommandTarget, id: string) {
 		Command.target = target;
 		if (id) {
 			target?.scrollAndResize?.();
@@ -263,7 +283,7 @@ export class CommandSchema {
 		CommandSuggestion.open?.();
 	}
 
-	static open(id: any) {
+	static open(id: string) {
 		const handler = CommandSchema._resolve(id);
 		if (handler !== undefined) {
 			Command.id = id;
@@ -301,7 +321,7 @@ export class CommandSchema {
 		}
 	}
 
-	static edit(target: any, command: any) {
+	static edit(target: CommandTarget, command: CommandRecord) {
 		const { id, params } = command;
 		const handler = CommandSchema._resolve(id);
 		if (handler?.load instanceof Function) {
@@ -315,7 +335,7 @@ export class CommandSchema {
 				Window.absolutePos.y = point.y;
 				Window.open!(id);
 				Window.setPositionMode!('overlap');
-				handler.load(params);
+				handler.load(params!);
 			}
 		}
 		if (handler) return;
@@ -331,12 +351,12 @@ export class CommandSchema {
 				Window.absolutePos.y = point.y;
 				Window.open!('scriptCommand');
 				Window.setPositionMode!('overlap');
-				Command.custom.load(id, params);
+				Command.custom.load(id, params!);
 			}
 		}
 	}
 
-	static save(params: any) {
+	static save(params: Record<string, unknown>) {
 		const { id, target } = Command;
 		target?.save?.({ id, params });
 		const handler = CommandSchema._resolve(id);
@@ -347,7 +367,7 @@ export class CommandSchema {
 		}
 	}
 
-	static parse(command: any, varMap: any) {
+	static parse(command: CommandRecord | null, varMap: Record<string, unknown>) {
 		Command.varMap = varMap;
 		let id = command?.id;
 		if (id == null) {
@@ -359,7 +379,7 @@ export class CommandSchema {
 			id = id.slice(1);
 		}
 		Command.invalid = false;
-		const params = command.params ?? {};
+		const params = command!.params ?? {};
 		const handler = CommandSchema._resolve(id);
 		try {
 			const contents = handler ? handler.parse(params) : Command.custom.parse(id, params);

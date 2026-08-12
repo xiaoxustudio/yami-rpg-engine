@@ -5,6 +5,16 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSyn
 import { join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import vueDevTools from 'vite-plugin-vue-devtools';
+import type { Connect, ViteDevServer, IndexHtmlTransformContext } from 'vite';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
+type BundleEntry = {
+	type: string;
+	fileName?: string;
+	source?: unknown;
+	code?: string;
+	map?: unknown;
+};
 
 // 递归复制目录（保留静态资源到 dist）
 const copyDirRecursive = (src: string, dest: string) => {
@@ -100,33 +110,35 @@ export default defineConfig({
 		// dev 模式走 /local-file/?path= 代理绕过 file:// 限制
 		{
 			name: 'local-file-proxy',
-			configureServer(server: any) {
-				server.middlewares.use((req: any, res: any, next: any) => {
-					if (!req.url?.startsWith('/local-file/')) {
-						return next();
+			configureServer(server: ViteDevServer) {
+				server.middlewares.use(
+					(req: IncomingMessage, res: ServerResponse, next: Connect.NextFunction) => {
+						if (!req.url?.startsWith('/local-file/')) {
+							return next();
+						}
+						const url = new URL(req.url, 'http://localhost');
+						const path = url.searchParams.get('path');
+						if (!path) {
+							res.statusCode = 400;
+							res.end('Missing path param');
+							return;
+						}
+						const diskPath = (
+							path.startsWith('file://')
+								? fileURLToPath(path)
+								: path.replace(/[#?]ver=\d+$/, '')
+						).replace(/[\\/]{2,}/g, '/');
+						try {
+							const buf = readFileSync(diskPath);
+							res.setHeader('Content-Type', 'application/octet-stream');
+							res.setHeader('Access-Control-Allow-Origin', '*');
+							res.end(buf);
+						} catch {
+							res.statusCode = 404;
+							res.end(`File not found: ${diskPath}`);
+						}
 					}
-					const url = new URL(req.url, 'http://localhost');
-					const path = url.searchParams.get('path');
-					if (!path) {
-						res.statusCode = 400;
-						res.end('Missing path param');
-						return;
-					}
-					const diskPath = (
-						path.startsWith('file://')
-							? fileURLToPath(path)
-							: path.replace(/[#?]ver=\d+$/, '')
-					).replace(/[\\/]{2,}/g, '/');
-					try {
-						const buf = readFileSync(diskPath);
-						res.setHeader('Content-Type', 'application/octet-stream');
-						res.setHeader('Access-Control-Allow-Origin', '*');
-						res.end(buf);
-					} catch {
-						res.statusCode = 404;
-						res.end(`File not found: ${diskPath}`);
-					}
-				});
+				);
 			}
 		},
 		{
@@ -134,8 +146,8 @@ export default defineConfig({
 			enforce: 'post',
 			transformIndexHtml: {
 				order: 'post',
-				handler(html: string, ctx: any) {
-					const bundle = ctx.bundle as Record<string, any> | undefined;
+				handler(html: string, ctx: IndexHtmlTransformContext) {
+					const bundle = ctx.bundle as Record<string, BundleEntry> | undefined;
 					if (!bundle) return html;
 					const monacoName = Object.keys(bundle).find((name) =>
 						name.startsWith('assets/editor.api2-')
@@ -209,7 +221,7 @@ export default defineConfig({
 					);
 				}
 			},
-			generateBundle(_: any, bundle: Record<string, any>) {
+			generateBundle(_: unknown, bundle: Record<string, BundleEntry>) {
 				for (const name of Object.keys(bundle)) {
 					const c = bundle[name];
 					// oxlint-disable-next-line unicorn/prefer-string-starts-ends-with

@@ -53,10 +53,10 @@ export const PresetObject = {
 	searcher: null as unknown as HTMLElement,
 	target: null as unknown as PresetTarget | null,
 	nodes: null as unknown as PresetNode[] | null,
-	initialize: null as unknown as (...args: unknown[]) => any,
+	initialize: null as unknown as () => void,
 	open: null as unknown as ((target: PresetTarget) => void) | null,
-	buildNodes: null as unknown as (...args: unknown[]) => PresetNode[],
-	getDefaultPresetId: null as unknown as (...args: unknown[]) => string,
+	buildNodes: null as unknown as (nodes: PresetNode[], className: string) => PresetNode[],
+	getDefaultPresetId: null as unknown as (className?: string) => string,
 	windowClosed: null as unknown as (event: Event) => void,
 	sceneIdWrite: null as unknown as (event: Event & { value?: string }) => void,
 	listOpen: null as unknown as (event: Event) => void,
@@ -72,7 +72,7 @@ function ensureDomBound() {
 	PresetObject.scene = $('#presetObject-sceneId');
 	PresetObject.list = list as PresetListElement;
 	PresetObject.searcher = $('#presetObject-searcher');
-	PresetObject.list.createIcon = null as unknown as (...args: unknown[]) => any;
+	PresetObject.list.createIcon = null as unknown as (...args: unknown[]) => unknown;
 }
 
 PresetObject.initialize = function (this: typeof PresetObject) {
@@ -206,7 +206,7 @@ PresetObject.searcherInput = function (this: typeof PresetObject, event: InputEv
 	const text = this.searcher.value;
 	const list = PresetObject.list;
 	list.searchNodes(text);
-	const elements = list.elements as any[] & { count: number };
+	const elements = list.elements as Array<{ item: PresetListItem }> & { count: number };
 	for (let i = 0; i < elements.count; i++) {
 		const { item } = elements[i];
 		if (item.class !== 'folder') {

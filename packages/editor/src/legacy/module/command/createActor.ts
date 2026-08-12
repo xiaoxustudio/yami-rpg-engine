@@ -10,14 +10,24 @@ Command.cases.createActor = new CommandSchema({
 	name: 'createActor',
 	onInitialize() {
 		$('#createActor-confirm').on('click', () => this.save!());
-		$('#createActor').on('open', function (event: any) {
+		$('#createActor').on('open', function (event: Event) {
 			$('#createActor-teamId').loadItems(Data.createTeamItems!());
 		});
-		$('#createActor').on('closed', function (event: any) {
+		$('#createActor').on('closed', function (event: Event) {
 			clear($('#createActor-teamId'));
 		});
 	},
-	customParse({ actorId, teamId, position, angle }: any) {
+	customParse({
+		actorId,
+		teamId,
+		position,
+		angle
+	}: {
+		actorId: unknown;
+		teamId: unknown;
+		position: unknown;
+		angle: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseFileName!(actorId))
 			.push(Command.parseTeam!(teamId))

@@ -42,6 +42,20 @@ import { Scene } from '@/scene/scene-window.ts';
 import { Home } from '@/title/home-page.ts';
 import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';
+import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import { ActorGetter } from '@/command/actor-accessor-window.ts';
+import { AncestorGetter } from '@/command/ancestor-accessor-window.ts';
+import { AngleGetter } from '@/command/angle-accessor-window.ts';
+import { ElementGetter } from '@/command/element-accessor-window.ts';
+import { EquipmentGetter } from '@/command/equipment-accessor-window.ts';
+import { ItemGetter } from '@/command/item-accessor-window.ts';
+import { PositionGetter } from '@/command/position-accessor-window.ts';
+import { RegionGetter } from '@/command/region-accessor-window.ts';
+import { SkillGetter } from '@/command/skill-accessor-window.ts';
+import { StateGetter } from '@/command/state-accessor-window.ts';
+import { TilemapGetter } from '@/command/tilemap-accessor-window.ts';
+import { TriggerGetter } from '@/command/trigger-accessor-window.ts';
+import { LightGetter, ObjectGetter } from '@/command/preset-accessor-factory.ts';
 import { ArrayList } from '@/tools/array-window.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -108,7 +122,7 @@ interface EditorGlobals {
 }
 
 interface SingletonShape {
-	initialize?: ((...args: any[]) => any) | null;
+	initialize?: (() => void) | null;
 	dependsOn?: string[];
 	[k: string]: unknown;
 }
@@ -222,6 +236,21 @@ Editor.initialize = async function (this: typeof Editor) {
 			Printer,
 			Color,
 			Variable,
+			VariableGetter,
+			ActorGetter,
+			AncestorGetter,
+			AngleGetter,
+			ElementGetter,
+			EquipmentGetter,
+			ItemGetter,
+			PositionGetter,
+			RegionGetter,
+			SkillGetter,
+			StateGetter,
+			TilemapGetter,
+			TriggerGetter,
+			LightGetter,
+			ObjectGetter,
 			Attribute,
 			Enum,
 			Localization,

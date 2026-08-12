@@ -19,19 +19,19 @@ interface RadioRelationTarget extends HTMLElement {
 }
 
 interface RadioRelationEntry {
-	case: any;
+	case: number | string | boolean | null;
 	targets: RadioRelationTarget[];
 }
 
 interface RadioProxyElement extends HTMLElement {
-	dataValue: any;
+	dataValue: number | string | boolean | null;
 	relations: RadioRelationEntry[];
 	cancelable: boolean;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
+	read(): number | string | boolean | null;
+	write(value: number | string | boolean | null): void;
+	input(value: number | string | boolean | null): void;
 	reset(): void;
 	enable(): void;
 	disable(): void;
@@ -45,19 +45,19 @@ interface RadioProxyElement extends HTMLElement {
 }
 
 const emit = defineEmits<{
-	write: [value: any];
-	input: [value: any, lastValue: any];
+	write: [value: number | string | boolean | null];
+	input: [value: number | string | boolean | null, lastValue: number | string | boolean | null];
 }>();
 
 const root = ref<RadioProxyElement | null>(null);
 
-const dataValue = ref<any>(null);
+const dataValue = ref<number | string | boolean | null>(null);
 const relations = ref<RadioRelationEntry[]>([]);
 const cancelable = ref(false);
 const writeEventEnabled = ref(false);
 const inputEventEnabled = ref(false);
 
-const read = (): any => dataValue.value;
+const read = (): number | string | boolean | null => dataValue.value;
 
 const toggleRelatedElements = (): void => {
 	const el = root.value;
@@ -102,7 +102,7 @@ const toggleRelatedElements = (): void => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: number | string | boolean | null): void => {
 	const el = root.value;
 	if (!el) return;
 	const elements = document.getElementsByName(
@@ -121,7 +121,7 @@ const write = (value: any): void => {
 	}
 	if (writeEventEnabled.value) {
 		const write = new Event('write') as Event & {
-			value: any;
+			value: number | string | boolean | null;
 		};
 		write.value = dataValue.value;
 		el.dispatchEvent(write);
@@ -129,7 +129,7 @@ const write = (value: any): void => {
 	emit('write', dataValue.value);
 };
 
-const input = (value: any): void => {
+const input = (value: number | string | boolean | null): void => {
 	const el = root.value;
 	if (!el) return;
 	const lastValue = dataValue.value;
@@ -137,8 +137,8 @@ const input = (value: any): void => {
 		write(value);
 		if (inputEventEnabled.value) {
 			const input = new Event('input') as Event & {
-				value: any;
-				lastValue: any;
+				value: number | string | boolean | null;
+				lastValue: number | string | boolean | null;
 			};
 			input.value = dataValue.value;
 			input.lastValue = lastValue;

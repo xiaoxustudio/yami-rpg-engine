@@ -31,7 +31,21 @@ Command.cases.moveCamera = new CommandSchema({
 			clear($('#moveCamera-easingId'));
 		});
 	},
-	customParse({ mode, position, actor, easingId, duration, wait }: any) {
+	customParse({
+		mode,
+		position,
+		actor,
+		easingId,
+		duration,
+		wait
+	}: {
+		mode: string;
+		position: unknown;
+		actor: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words.push(Local.get!('command.moveCamera.' + mode));
 		switch (mode) {
 			case 'position':

@@ -19,7 +19,15 @@ Command.cases.setItem = new CommandSchema({
 			{ name: 'Decrease', value: 'decrease' }
 		]);
 	},
-	customParse({ item, operation, quantity }: any) {
+	customParse({
+		item,
+		operation,
+		quantity
+	}: {
+		item: unknown;
+		operation: string;
+		quantity: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseItem!(item))
 			.push(Local.get!('command.setItem.' + operation));

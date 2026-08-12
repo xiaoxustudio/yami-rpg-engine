@@ -1,11 +1,12 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMStringVar from '../YMStringVar.vue';
+import type { StringVarApi } from '../string-var-api';
 
 describe('YMStringVar', () => {
 	it('write string stays constant and stores value', () => {
 		const wrapper = mount(YMStringVar, { props: { modelValue: 'hello' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as StringVarApi;
 		expect(vm.read()).toBe('hello');
 		expect(wrapper.classes()).toContain('constant');
 		expect(wrapper.find('input').exists()).toBe(true);
@@ -13,7 +14,7 @@ describe('YMStringVar', () => {
 
 	it('write object switches to variable mode', async () => {
 		const wrapper = mount(YMStringVar);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as StringVarApi;
 		vm.write({ type: 'local', key: 'name' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -23,7 +24,7 @@ describe('YMStringVar', () => {
 
 	it('switch toggles modes', async () => {
 		const wrapper = mount(YMStringVar, { props: { modelValue: 'a' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as StringVarApi;
 		vm.switch();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -50,7 +51,7 @@ describe('YMStringVar', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMStringVar, { props: { modelValue: 'a' } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as StringVarApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');

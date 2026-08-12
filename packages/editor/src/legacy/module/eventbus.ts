@@ -1,10 +1,10 @@
 export const EventBus = new (class EventBus {
-	events: { [k: string]: Array<(...args: any[]) => any> } = {};
+	events: { [k: string]: Array<(data?: unknown) => void> } = {};
 	constructor() {
 		this.events = {};
 	}
 
-	on(eventName: any, callback: any) {
+	on(eventName: string, callback: (data?: unknown) => void) {
 		if (!this.events[eventName]) {
 			this.events[eventName] = [];
 		}
@@ -15,17 +15,17 @@ export const EventBus = new (class EventBus {
 		};
 	}
 
-	off(eventName: any, callback: any) {
+	off(eventName: string, callback: (data?: unknown) => void) {
 		if (!this.events[eventName]) return;
 
-		this.events[eventName] = this.events[eventName].filter((cb: any) => cb !== callback);
+		this.events[eventName] = this.events[eventName].filter((cb) => cb !== callback);
 
 		if (this.events[eventName].length === 0) {
 			delete this.events[eventName];
 		}
 	}
 
-	emit(eventName: any, data?: any) {
+	emit(eventName: string, data?: unknown) {
 		if (!this.events[eventName]) return;
 
 		const callbacks = [...this.events[eventName]];
@@ -39,8 +39,8 @@ export const EventBus = new (class EventBus {
 		});
 	}
 
-	once(eventName: any, callback: any) {
-		const wrapper = (data: any) => {
+	once(eventName: string, callback: (data?: unknown) => void) {
+		const wrapper = (data?: unknown) => {
 			callback(data);
 			this.off(eventName, wrapper);
 		};

@@ -1,4 +1,5 @@
 import { ctrl } from '@/util/event-accessors.ts';
+import type { MenuItem } from '@ui-kit';
 import { write } from '@/util/element-utils.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { Reference } from '@/log/related-references.ts';
@@ -8,14 +9,14 @@ import { Variable } from './variable.ts';
 
 const Clipboard = getGlobalClipboard();
 
-Variable.listSelect = function (event: any) {
+Variable.listSelect = function (event: Event) {
 	const item = event.value;
 	return item.class !== 'folder'
 		? Variable.openPropertyPanel(item)
 		: Variable.closePropertyPanel();
 };
 
-Variable.listRecord = function (event: any) {
+Variable.listRecord = function (event: Event) {
 	Variable.changed = true;
 	const response = event.value;
 	switch (response.type) {
@@ -37,7 +38,10 @@ Variable.listRecord = function (event: any) {
 	}
 };
 
-Variable.listPopup = function (this: any, event: any) {
+Variable.listPopup = function (
+	this: HTMLElement & { createVariable: () => unknown },
+	event: Event
+) {
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
@@ -45,7 +49,7 @@ Variable.listPopup = function (this: any, event: any) {
 	const undoable = Variable.history.canUndo();
 	const redoable = Variable.history.canRedo();
 	const get = Local.createGetter!('menuVariableList');
-	const items: any[] = [
+	const items: MenuItem[] = [
 		{
 			label: get('create'),
 			submenu: [
@@ -138,7 +142,7 @@ Variable.listPopup = function (this: any, event: any) {
 	);
 };
 
-Variable.listOpen = function (event: any) {
+Variable.listOpen = function (event: Event) {
 	if (event.value.class !== 'folder' && Variable.target instanceof Object) {
 		Variable.target.getFocus?.();
 		Variable.confirm();

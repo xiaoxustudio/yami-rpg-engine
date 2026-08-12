@@ -13,7 +13,17 @@ Command.cases.setResolution = new CommandSchema({
 		{ key: 'sceneScale', default: 1 },
 		{ key: 'uiScale', default: 1 }
 	],
-	customParse({ width, height, sceneScale, uiScale }: any) {
+	customParse({
+		width,
+		height,
+		sceneScale,
+		uiScale
+	}: {
+		width: unknown;
+		height: unknown;
+		sceneScale: unknown;
+		uiScale: unknown;
+	}) {
 		const words = Command.words
 			.push(
 				Command.parseVariableNumber(width) +

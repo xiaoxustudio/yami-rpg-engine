@@ -14,7 +14,7 @@ export const Meta = (function IIFE() {
 		other: 'others'
 	};
 	const loaderDescriptor = { path: null as string | null, type: 'json' };
-	const fileDescriptor = { writable: true, value: null };
+	const fileDescriptor = { writable: true, value: null as unknown as FileItem };
 	const guidDescriptor = { writable: true, value: '' };
 	const codeDescriptor = { writable: true, value: '' };
 	const groupDescriptor = { value: null };
@@ -42,10 +42,10 @@ export const Meta = (function IIFE() {
 		// script 类型运行时由 Object.defineProperty 挂载（非枚举）
 		declare code: string;
 
-		constructor(file: any, guid: string) {
+		constructor(file: FileItem, guid: string) {
 			const { type, path } = file;
 			this.path = path;
-			this.size = Number(file.stats.size);
+			this.size = Number((file.stats as unknown as { size: number }).size);
 
 			switch (type) {
 				case 'scene':
@@ -89,8 +89,8 @@ export const Meta = (function IIFE() {
 								break;
 						}
 					})
-					.catch((error: any) => {
-						console.log(`读取失败: ${error.message}`);
+					.catch((error: unknown) => {
+						console.log(`读取失败: ${(error as Error).message}`);
 					});
 			}
 

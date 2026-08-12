@@ -22,7 +22,7 @@ export const WebServer = new (class {
 	get enable() {
 		return ipcRenderer.sendSync('get-server-state');
 	}
-	start(path: any) {
+	start(path: string) {
 		ipcRenderer.invoke('start-server', {
 			port: this.port,
 			path
@@ -30,7 +30,7 @@ export const WebServer = new (class {
 		window.addEventListener('beforeunload', this.stop);
 		this.load!();
 	}
-	toDataUrl(url: any) {
+	toDataUrl(url: string) {
 		return ipcRenderer.invoke('to-qrcode', url);
 	}
 	getIp() {
@@ -71,12 +71,12 @@ export const WebServer = new (class {
 		});
 		this.load!();
 	}
-	update(projectPath: any) {
+	update(projectPath: string) {
 		if (!this.enable) return;
 		const path = Path.dirname(projectPath);
 		const location = Path.join(path, '.preview');
 		return FSP.mkdir(path, { recursive: true })
-			.then((done: any) => {
+			.then((done: unknown) => {
 				write($('#deployment-platform'), 'web');
 				return Deployment.copyFilesTo!(location);
 			})
@@ -90,11 +90,11 @@ export const WebServer = new (class {
 			.then(() => {
 				Editor.config!.dialogs!.deploy = Path.slash(Path.resolve(location));
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				Log.throw!(error);
 				Window.confirm!(
 					{
-						message: 'Failed to deploy project:\n' + error.message
+						message: 'Failed to deploy project:\n' + (error as Error).message
 					},
 					[
 						{

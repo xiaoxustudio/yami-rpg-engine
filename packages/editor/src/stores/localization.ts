@@ -1,10 +1,21 @@
 import { defineStore } from 'pinia';
 import { Localization } from '@/local/local-window.ts';
+import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+
+type LocalizationItemShape = {
+	id?: string;
+	name: string;
+	class?: string;
+	expanded?: boolean;
+	children?: LocalizationItemShape[];
+	contents?: Record<string, string>;
+	element?: HTMLElement & { initText?: HTMLElement; attrValue?: string };
+};
 
 export const useLocalizationStore = defineStore('localization', () => {
 	const state = shallowRef<string>('closed');
-	const strings = shallowRef<Record<string, any>>({});
+	const strings = shallowRef<Record<string, string>>({});
 
 	function syncState() {
 		state.value = Localization?.state ?? 'closed';
@@ -15,7 +26,7 @@ export const useLocalizationStore = defineStore('localization', () => {
 		Localization?.initialize?.();
 	}
 
-	function open(target?: any) {
+	function open(target?: { input?: (id: string) => void }) {
 		Localization?.open?.(target);
 	}
 
@@ -35,15 +46,15 @@ export const useLocalizationStore = defineStore('localization', () => {
 		return Localization?.createId?.();
 	}
 
-	function register(item: any) {
+	function register(item: LocalizationItemShape) {
 		Localization?.register?.(item);
 	}
 
-	function unregister(item: any) {
+	function unregister(item: LocalizationItemShape) {
 		Localization?.unregister?.(item);
 	}
 
-	function openContentPanel(item: any) {
+	function openContentPanel(item: LocalizationItemShape) {
 		Localization?.openContentPanel?.(item);
 	}
 
@@ -51,23 +62,23 @@ export const useLocalizationStore = defineStore('localization', () => {
 		Localization?.closeContentPanel?.();
 	}
 
-	function confirm(event?: any) {
+	function confirm(event?: Event) {
 		Localization?.confirm?.(event);
 	}
 
-	function apply(event?: any) {
+	function apply(event?: Event) {
 		Localization?.apply?.(event);
 	}
 
-	function toExcel(event?: any) {
+	function toExcel(event?: Event) {
 		Localization?.toExcel?.(event);
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: EditorProjectShape) {
 		Localization?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: EditorProjectShape) {
 		Localization?.loadFromProject?.(project);
 	}
 

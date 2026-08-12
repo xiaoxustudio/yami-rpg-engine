@@ -10,7 +10,7 @@ interface DetailSummaryElement extends HTMLElement {
 	toggle(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+	listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -48,13 +48,13 @@ const pointerdown = (event: PointerEvent): void => {
 	}
 };
 
-const on = (
-	type: string,
-	listener: (event: any) => void,
-	options?: boolean | AddEventListenerOptions
-): void => {
-	root.value?.addEventListener(type, listener as EventListener, options);
-};
+	const on = (
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void => {
+		root.value?.addEventListener(type, listener as EventListener, options);
+	};
 
 onMounted(() => {
 	const el = root.value;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMNavBar from '../YMNavBar.vue';
+import type { NavBarApi } from '../nav-bar-api';
 
 const mountNav = () =>
 	mount(YMNavBar, {
@@ -25,8 +26,8 @@ describe('YMNavBar', () => {
 
 	it('write selects matching nav-item and emits write', async () => {
 		const wrapper = mountNav();
-		const vm = wrapper.vm as any;
-		const el = wrapper.element as any;
+		const vm = wrapper.vm as unknown as NavBarApi;
+		const el = wrapper.element as unknown as NavBarApi;
 		el.on('write', () => {});
 		vm.write('b');
 		await wrapper.vm.$nextTick();
@@ -37,15 +38,15 @@ describe('YMNavBar', () => {
 
 	it('read returns selected value', () => {
 		const wrapper = mountNav();
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NavBarApi;
 		vm.write('a');
 		expect(vm.read()).toBe('a');
 	});
 
 	it('selects nav-item on pointerdown and emits select', async () => {
 		const wrapper = mountNav();
-		const vm = wrapper.vm as any;
-		const el = wrapper.element as any;
+		const vm = wrapper.vm as unknown as NavBarApi;
+		const el = wrapper.element as unknown as NavBarApi;
 		el.on('select', () => {});
 		pointerdown(wrapper.findAll('.nav-item')[1].element);
 		await wrapper.vm.$nextTick();
@@ -54,7 +55,7 @@ describe('YMNavBar', () => {
 
 	it('unselect clears selection', () => {
 		const wrapper = mountNav();
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NavBarApi;
 		vm.write('a');
 		vm.unselect();
 		expect(vm.read()).toBeUndefined();

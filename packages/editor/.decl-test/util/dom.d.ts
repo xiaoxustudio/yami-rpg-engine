@@ -11,4 +11,4 @@ export declare const getElementReader: (prefix: string) => (suffix: string) => a
 export declare const getElementWriter: (
 	prefix: string,
 	bindingObject?: Record<string, any>
-) => (suffix: string | number, value?: any) => void;
+) => (suffix: string | number, value?: unknown) => void;

@@ -15,10 +15,10 @@ interface TextAreaElement extends HTMLElement {
 	insert(value: string): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): void;
+	getFocus(mode?: string): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -51,10 +51,10 @@ const ym = ref<{
 	insert(value: string): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): void;
+	getFocus(mode?: string): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -65,10 +65,10 @@ const write = (value: string): void => ym.value?.write(value);
 const insert = (value: string): void => ym.value?.insert(value);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const getFocus = (mode: any): void => ym.value?.getFocus(mode);
+const getFocus = (mode?: string): void => ym.value?.getFocus(mode);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

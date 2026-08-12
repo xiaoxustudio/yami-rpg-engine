@@ -5,7 +5,7 @@ Scene.marquee.save = function (this: typeof Scene.marquee, key = 'default') {
 	let data;
 	switch (key) {
 		case 'object':
-			data = {} as Record<string, any>;
+			data = {} as Record<string, unknown>;
 			break;
 		case 'tile':
 			data = {

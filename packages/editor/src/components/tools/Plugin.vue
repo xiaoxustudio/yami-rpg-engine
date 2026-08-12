@@ -43,16 +43,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
-const onListSelect = (event: any) => {
+const onListSelect = (event: Event & { value?: unknown }) => {
 	PluginManager?.listSelect?.(event);
 };
-const onListPopup = (event: any) => {
+const onListPopup = (event: PointerEvent & { value?: unknown }) => {
 	PluginManager?.listPopup?.(event);
 };
-const onListChange = (event: any) => {
+const onListChange = (event: Event & { value?: unknown }) => {
 	PluginManager?.listChange?.(event);
 };
-const onListOpen = (event: any) => {
+const onListOpen = (event: Event & { value?: unknown }) => {
 	PluginManager?.listOpen?.(event);
 };
 

@@ -1,12 +1,12 @@
 import { macRedoKey } from '@/util/event-accessors';
 export const ShortcutRegistry = {
-	shortcuts: {} as Record<string, any>,
+	shortcuts: {} as Record<string, (...args: unknown[]) => boolean>,
 
-	register(id: any, handler: any) {
+	register(id: string, handler: (...args: unknown[]) => boolean) {
 		this.shortcuts[id] = handler;
 	},
 
-	get(id: any) {
+	get(id: string) {
 		return this.shortcuts[id];
 	}
 };
@@ -19,9 +19,9 @@ export const Shortcuts = {
 		duplicate?: () => void;
 		selectAll?: () => void;
 	}) {
-		return function (event: any) {
-			if (event.ctrlKey || event.metaKey) {
-				switch (event.code) {
+		return function (event: Event) {
+			if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
+				switch ((event as KeyboardEvent).code) {
 					case 'KeyC':
 						if (target.copy) {
 							target?.copy?.();
@@ -54,11 +54,11 @@ export const Shortcuts = {
 	},
 
 	createUndoRedo(target: { undo?: () => void; redo?: () => void }) {
-		return function (event: any) {
-			if (event.ctrlKey || event.metaKey) {
-				switch (event.code) {
+		return function (event: Event) {
+			if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
+				switch ((event as KeyboardEvent).code) {
 					case 'KeyZ':
-						if (!macRedoKey(event) && target.undo) {
+						if (!macRedoKey(event as KeyboardEvent) && target.undo) {
 							target?.undo?.();
 						}
 						return true;
@@ -85,9 +85,9 @@ export const Shortcuts = {
 		cancelSearch?: () => void;
 		delete?: () => void;
 	}) {
-		return function (event: any) {
-			if (event.ctrlKey || event.metaKey) {
-				switch (event.code) {
+		return function (event: Event) {
+			if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
+				switch ((event as KeyboardEvent).code) {
 					case 'KeyC':
 						if (target.copy) {
 							target?.copy?.();
@@ -114,7 +114,7 @@ export const Shortcuts = {
 						}
 						return true;
 					case 'KeyZ':
-						if (!macRedoKey(event) && target.undo) {
+						if (!macRedoKey(event as KeyboardEvent) && target.undo) {
 							target?.undo?.();
 						}
 						return true;
@@ -125,14 +125,17 @@ export const Shortcuts = {
 						return true;
 				}
 			}
-			if (event.code === 'Insert') {
+			if ((event as KeyboardEvent).code === 'Insert') {
 				if (target.insert) {
 					target?.insert?.();
 				}
 				return true;
 			}
-			if (event.code === 'Delete' || event.code === 'Backspace') {
-				if (event.ctrlKey || event.metaKey) {
+			if (
+				(event as KeyboardEvent).code === 'Delete' ||
+				(event as KeyboardEvent).code === 'Backspace'
+			) {
+				if ((event as KeyboardEvent).ctrlKey || (event as KeyboardEvent).metaKey) {
 					if (target.cancelSearch) {
 						target?.cancelSearch?.();
 					}
@@ -147,11 +150,11 @@ export const Shortcuts = {
 
 	createScroll(target: HTMLElement) {
 		let scrollKeys = 0;
-		let scrollTimer: any = null;
+		let scrollTimer: number | null = null;
 
 		function updateScroll() {
 			if (scrollKeys === 0) {
-				cancelAnimationFrame(scrollTimer);
+				cancelAnimationFrame(scrollTimer!);
 				scrollTimer = null;
 				return;
 			}
@@ -165,11 +168,14 @@ export const Shortcuts = {
 			scrollTimer = requestAnimationFrame(updateScroll);
 		}
 
-		return function (event: any) {
-			if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+		return function (event: Event) {
+			if (
+				(event.target as HTMLElement).tagName === 'INPUT' ||
+				(event.target as HTMLElement).tagName === 'TEXTAREA'
+			) {
 				return false;
 			}
-			const key = event.code;
+			const key = (event as KeyboardEvent).code;
 			const down = event.type === 'keydown';
 			let bit = 0;
 			switch (key) {

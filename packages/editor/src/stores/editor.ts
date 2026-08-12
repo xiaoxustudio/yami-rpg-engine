@@ -10,9 +10,9 @@ export interface EditorConfigShape {
 	project?: string;
 	projectPath?: string;
 	zoom?: number;
-	recent?: any[];
+	recent?: { path: string; date?: number }[];
 	theme?: string;
-	layout?: any;
+	layout?: unknown;
 	colors?: {
 		sceneBackground?: string;
 		uiBackground?: string;
@@ -34,12 +34,19 @@ export interface EditorConfigShape {
 // Editor.project 结构（宽类型起步——字段随迁移细化）
 export interface EditorProjectShape {
 	version?: string;
-	scene?: any;
-	uiPrefabs?: any;
-	openEvents?: any;
-	recentTabs?: any;
-	openTabs?: any;
-	activeTab?: any;
+	scene?: unknown;
+	uiPrefabs?: string[];
+	openEvents?: Array<{
+		id: string;
+		name?: string;
+		class?: string;
+		type?: string;
+		filter?: string;
+	}>;
+	recentTabs?: string[];
+	openTabs?: string[];
+	activeTab?: string;
+	selector?: { view?: number };
 	[key: string]: any;
 }
 

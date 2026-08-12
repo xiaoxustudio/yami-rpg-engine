@@ -2,12 +2,22 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMParameterPane from '../YMParameterPane.vue';
 
-const makeInput = (): any => {
-	const el: any = document.createElement('div');
+interface MockInputElement extends HTMLElement {
+	dataValue: unknown;
+	read: () => unknown;
+	write: (v: unknown) => void;
+	enable: () => void;
+	disable: () => void;
+	update: () => void;
+	clear: () => void;
+}
+
+const makeInput = (): MockInputElement => {
+	const el = document.createElement('div') as unknown as MockInputElement;
 	el.classList.add('mock-input');
 	el.dataValue = null;
 	el.read = () => el.dataValue;
-	el.write = (v: any) => {
+	el.write = (v: unknown) => {
 		el.dataValue = v;
 	};
 	el.enable = () => {};
@@ -18,7 +28,42 @@ const makeInput = (): any => {
 	return el;
 };
 
-const makeControls = (): any => ({
+type MockControls = {
+	checkBox(): HTMLElement;
+	colorBox(): HTMLElement;
+	keyboardBox(): HTMLElement;
+	customBox(): HTMLElement;
+	detailBox(): HTMLElement;
+	detailSummary(): HTMLElement;
+	numberBox(): HTMLElement;
+	numberVar(): HTMLElement;
+	selectBox(): HTMLElement;
+	textBox(): HTMLElement;
+};
+
+type MockScriptList = HTMLElement & {
+	data?: unknown;
+	object?: { update(): void };
+	history?: { save(): void };
+};
+
+interface ParameterPaneElement extends HTMLElement {
+	[k: string]: unknown;
+	bind: (list: unknown) => void;
+	rewrite: () => void;
+	update: () => void;
+	clear: () => void;
+	on: (name: string, cb: (e: unknown) => void) => void;
+	createCheckBox: () => void;
+	createNumberBox: () => void;
+	createTextBox: () => void;
+	createSelectBox: () => void;
+	createCustomBox: () => void;
+	applyAffix: (input: HTMLElement, affix: { prefix?: string; suffix?: string }) => void;
+	getData: () => unknown;
+}
+
+const makeControls = (): MockControls => ({
 	checkBox: () => {
 		const input = makeInput();
 		input.classList.add('check-box');
@@ -40,14 +85,17 @@ const makeControls = (): any => ({
 		return input;
 	},
 	detailBox: () => {
-		const box: any = document.createElement('div');
+		const box = document.createElement('div') as unknown as HTMLElement & {
+			meta: unknown;
+			data: unknown;
+		};
 		box.classList.add('detail-box');
 		box.meta = null;
 		box.data = null;
 		return box;
 	},
 	detailSummary: () => {
-		const s: any = document.createElement('div');
+		const s = document.createElement('div');
 		s.classList.add('detail-summary');
 		return s;
 	},
@@ -73,9 +121,16 @@ const makeControls = (): any => ({
 	}
 });
 
-const makeTypeRegistry = (): any => ({
+const makeTypeRegistry = (): {
+	get(type: string): {
+		create(
+			pane: HTMLElement,
+			parameter: unknown
+		): { tag: string; label: HTMLElement; input: MockInputElement };
+	};
+} => ({
 	get: (type: string) => ({
-		create: (_pane: HTMLElement, param: any) => {
+		create: (_pane: HTMLElement, param: unknown) => {
 			const label = document.createElement('div');
 			label.classList.add('text');
 			const input = makeInput();
@@ -85,7 +140,7 @@ const makeTypeRegistry = (): any => ({
 	})
 });
 
-const makeProps = (overrides: any = {}) => ({
+const makeProps = (overrides: Record<string, unknown> = {}) => ({
 	controls: makeControls(),
 	typeRegistry: makeTypeRegistry(),
 	dataManifest: () => ({ guidMap: {} }),
@@ -98,7 +153,7 @@ describe('YMParameterPane', () => {
 	it('mounts and exposes api', () => {
 		const wrapper = mount(YMParameterPane, { props: makeProps() });
 		expect(wrapper.element.classList.contains('parameter-pane')).toBe(true);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParameterPaneElement;
 		for (const name of [
 			'bind',
 			'rewrite',
@@ -134,8 +189,8 @@ describe('YMParameterPane', () => {
 				})
 			})
 		});
-		const el = wrapper.element as any;
-		const scriptList: any = document.createElement('div');
+		const el = wrapper.element as unknown as ParameterPaneElement;
+		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [{ id: 's1', parameters: { a: 'A1', b: 5 } }];
 		scriptList.object = { update: () => {} };
@@ -146,15 +201,15 @@ describe('YMParameterPane', () => {
 		expect(wrapper.element.querySelectorAll('.mock-input').length).toBe(2);
 		expect(wrapper.element.querySelector('.text').textContent).toBe('a');
 		const inputs = wrapper.element.querySelectorAll('.mock-input');
-		expect((inputs[0] as any).dataValue).toBe('A1');
-		expect((inputs[1] as any).dataValue).toBe(5);
+		expect((inputs[0] as HTMLElement & { dataValue?: unknown }).dataValue).toBe('A1');
+		expect((inputs[1] as HTMLElement & { dataValue?: unknown }).dataValue).toBe(5);
 	});
 
 	it('bind wraps param-list object.update', () => {
 		const wrapper = mount(YMParameterPane, { props: makeProps() });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParameterPaneElement;
 		let updates = 0;
-		const scriptList: any = document.createElement('div');
+		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [];
 		scriptList.object = {
@@ -180,8 +235,8 @@ describe('YMParameterPane', () => {
 				})
 			})
 		});
-		const el = wrapper.element as any;
-		const scriptList: any = document.createElement('div');
+		const el = wrapper.element as unknown as ParameterPaneElement;
+		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		const params = { a: 'A1' };
 		scriptList.data = [{ id: 's1', parameters: params }];
@@ -189,7 +244,9 @@ describe('YMParameterPane', () => {
 		scriptList.history = { save: () => {} };
 		el.bind(scriptList);
 		el.update();
-		const input = wrapper.element.querySelector('.mock-input') as any;
+		const input = wrapper.element.querySelector('.mock-input') as unknown as HTMLElement & {
+			[k: string]: unknown;
+		};
 		input.dataValue = 'A2';
 		input.parameters = params;
 		input.key = 'a';
@@ -214,8 +271,8 @@ describe('YMParameterPane', () => {
 				})
 			})
 		});
-		const el = wrapper.element as any;
-		const scriptList: any = document.createElement('div');
+		const el = wrapper.element as unknown as ParameterPaneElement;
+		const scriptList: MockScriptList = document.createElement('div');
 		scriptList.classList.add('param-list');
 		scriptList.data = [{ id: 's1', parameters: { a: 'A1' } }];
 		scriptList.object = { update: () => {} };
@@ -232,9 +289,9 @@ describe('YMParameterPane', () => {
 				measureText: () => ({ width: 10 })
 			})
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParameterPaneElement;
 		const input = makeInput();
-		const innerInput: any = document.createElement('input');
+		const innerInput = document.createElement('input');
 		input.appendChild(innerInput);
 		el.applyAffix(input, { prefix: '$', suffix: 'px' });
 		expect(input.querySelector('.param-affix.left')?.textContent).toBe('$');

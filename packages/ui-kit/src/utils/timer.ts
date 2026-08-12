@@ -1,5 +1,5 @@
 export class Timer {
-	target: any = null;
+	target: EventTarget | null = null;
 	running = false;
 	elapsed = 0;
 	playbackRate = 1;

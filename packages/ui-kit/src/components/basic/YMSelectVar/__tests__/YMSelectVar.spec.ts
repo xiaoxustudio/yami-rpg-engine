@@ -1,6 +1,7 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMSelectVar from '../YMSelectVar.vue';
+import type { SelectVarApi } from '../select-var-api';
 
 const items = [
 	{ value: 'a', name: 'Alpha' },
@@ -10,7 +11,7 @@ const items = [
 describe('YMSelectVar', () => {
 	it('write value stays constant and stores value', () => {
 		const wrapper = mount(YMSelectVar, { props: { items, modelValue: 'b' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectVarApi;
 		expect(vm.read()).toBe('b');
 		expect(wrapper.classes()).toContain('constant');
 		expect(wrapper.find('.select-box').exists()).toBe(true);
@@ -18,7 +19,7 @@ describe('YMSelectVar', () => {
 
 	it('write object switches to variable mode', async () => {
 		const wrapper = mount(YMSelectVar, { props: { items } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectVarApi;
 		vm.write({ type: 'local', key: 'sel' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -28,7 +29,7 @@ describe('YMSelectVar', () => {
 
 	it('switch toggles modes', async () => {
 		const wrapper = mount(YMSelectVar, { props: { items, modelValue: 'a' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectVarApi;
 		vm.switch();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -51,7 +52,7 @@ describe('YMSelectVar', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMSelectVar, { props: { items, modelValue: 'a' } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as SelectVarApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');

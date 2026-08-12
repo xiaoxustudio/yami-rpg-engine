@@ -9,7 +9,17 @@ const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientWidth', { value: 300, configurable: true });
 };
 
-const makeData = (): any[] => [
+interface TreeData {
+	id: string;
+	name: string;
+	class: string;
+	expanded?: boolean;
+	parent?: TreeData | null;
+	element?: HTMLElement;
+	children: TreeData[];
+}
+
+const makeData = (): TreeData[] => [
 	{
 		id: 'folder1',
 		name: 'Folder',
@@ -23,10 +33,37 @@ const makeData = (): any[] => [
 	{ id: 'item1', name: 'Item 1', class: 'file', children: [] }
 ];
 
+interface TreeListElement extends HTMLElement {
+	[k: string]: unknown;
+	bind: (fn: () => TreeData[]) => void;
+	update: () => void;
+	read: () => TreeData | null;
+	select: (item: TreeData) => void;
+	unselect: () => void;
+	rename: (item: TreeData) => void;
+	deleteNode: (item: TreeData) => void;
+	addNodeTo: (node: TreeData, parent: TreeData) => void;
+	restore: (mode: string, response: unknown) => void;
+	searchNodes: (text: string) => void;
+	duplicate: () => void;
+	on: (name: string, cb: (e: Event & { value: unknown }) => void) => void;
+	keydown: () => void;
+	pointerdown: () => void;
+	dragstart: () => void;
+	drop: () => void;
+	expandSelection: () => void;
+	getItemByProperties: (props: { id: string }) => TreeData | null;
+	elements: { count: number } & { [i: number]: HTMLElement & { textIndent?: number } };
+	root: TreeData | null;
+	renamable: boolean;
+	display: string;
+	searchResults: { name: string }[];
+}
+
 describe('YMTreeList', () => {
 	it('attach exposes full api on root element', () => {
 		const wrapper = mount(YMTreeList, { attrs: { id: 'tl1' } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		expect(el.classList.contains('tree-list')).toBe(true);
 		for (const name of [
 			'bind',
@@ -52,7 +89,7 @@ describe('YMTreeList', () => {
 
 	it('bind and update render nodes with indentation', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -68,35 +105,35 @@ describe('YMTreeList', () => {
 
 	it('select highlights element and read returns item', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
 		el.update();
 		el.select(data[1]);
 		expect(el.read()).toBe(data[1]);
-		expect(data[1].element.classList.contains('selected')).toBe(true);
+		expect(data[1].element!.classList.contains('selected')).toBe(true);
 		el.unselect();
 		expect(el.read()).toBe(null);
-		expect(data[1].element.classList.contains('selected')).toBe(false);
+		expect(data[1].element!.classList.contains('selected')).toBe(false);
 	});
 
 	it('select dispatches select event when enabled', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
 		el.update();
-		let selected = null;
-		el.on('select', (e: any) => (selected = e.value));
+		let selected: unknown = null;
+		el.on('select', (e: Event & { value: unknown }) => (selected = e.value));
 		el.select(data[1]);
 		expect(selected).toBe(data[1]);
 	});
 
 	it('expandSelection toggles folder expansion', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -112,7 +149,7 @@ describe('YMTreeList', () => {
 
 	it('addNodeTo inserts node and expands ancestors', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -125,7 +162,7 @@ describe('YMTreeList', () => {
 
 	it('deleteNode removes node', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -137,21 +174,24 @@ describe('YMTreeList', () => {
 
 	it('searchNodes filters to matches', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
 		el.update();
 		el.searchNodes('Child');
 		expect(el.display).toBe('search');
-		expect(el.searchResults.map((i: any) => i.name)).toEqual(['Child A', 'Child B']);
+		expect(el.searchResults.map((i: { name: string }) => i.name)).toEqual([
+			'Child A',
+			'Child B'
+		]);
 		el.searchNodes('');
 		expect(el.display).toBe('normal');
 	});
 
 	it('restore undo create removes node', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -166,7 +206,7 @@ describe('YMTreeList', () => {
 
 	it('rename via textBox updates item name', async () => {
 		const wrapper = mount(YMTreeList, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);
@@ -177,17 +217,17 @@ describe('YMTreeList', () => {
 		el.select(item);
 		el.rename(item);
 		const textBox = treeListStatics.textBox;
-		expect(textBox.parentNode).toBe(item.element);
+		expect(textBox.parentNode).toBe(item.element!);
 		textBox.write('Renamed');
 		textBox.input.blur();
 		await new Promise((r) => setTimeout(r, 10));
 		expect(item.name).toBe('Renamed');
-		expect(item.element.querySelector('.text-box')).toBe(null);
+		expect(item.element!.querySelector('.text-box')).toBe(null);
 	});
 
 	it('getItemByProperties finds nested node', () => {
 		const wrapper = mount(YMTreeList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TreeListElement;
 		mockHeight(el);
 		const data = makeData();
 		el.bind(() => data);

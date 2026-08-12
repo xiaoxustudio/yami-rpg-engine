@@ -20,7 +20,17 @@ Command.cases.playAudio = new CommandSchema({
 			.enableHiddenMode()
 			.relate([{ case: 'se-attenuated', targets: [$('#playAudio-location')] }]);
 	},
-	customParse({ type, audio, volume, location }: any) {
+	customParse({
+		type,
+		audio,
+		volume,
+		location
+	}: {
+		type: string;
+		audio: unknown;
+		volume: unknown;
+		location: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseAudioType!(type))
 			.push(Command.parseFileName!(audio))

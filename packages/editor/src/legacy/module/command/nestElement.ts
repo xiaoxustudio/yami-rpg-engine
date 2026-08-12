@@ -11,7 +11,7 @@ Command.cases.nestElement = new CommandSchema({
 		{ key: 'parent', domId: 'parent', default: { type: 'trigger' } },
 		{ key: 'child', domId: 'child', default: { type: 'latest' } }
 	],
-	customParse({ parent, child }: any) {
+	customParse({ parent, child }: { parent: unknown; child: unknown }) {
 		const pElement = Command.parseElement(parent);
 		const cElement = Command.parseElement(child);
 		return [

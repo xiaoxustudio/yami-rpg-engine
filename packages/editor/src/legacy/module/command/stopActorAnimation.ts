@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.stopActorAnimation = new CommandSchema({
 	name: 'stopActorAnimation',
 	fields: [{ key: 'actor', default: { type: 'trigger' } }],
-	customParse({ actor }: any) {
+	customParse({ actor }: { actor: unknown }) {
 		return [
 			{ color: 'actor' },
 			{ text: Local.get!('command.stopActorAnimation') + Token(': ') },

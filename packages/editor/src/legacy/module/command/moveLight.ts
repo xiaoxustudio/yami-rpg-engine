@@ -16,15 +16,27 @@ Command.cases.moveLight = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#moveLight').on('open', function (event: any) {
+		$('#moveLight').on('open', function (event: Event) {
 			$('#moveLight-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#moveLight').on('closed', function (event: any) {
+		$('#moveLight').on('closed', function (event: Event) {
 			clear($('#moveLight-properties'));
 			clear($('#moveLight-easingId'));
 		});
 	},
-	customParse({ light, properties, easingId, duration, wait }: any) {
+	customParse({
+		light,
+		properties,
+		easingId,
+		duration,
+		wait
+	}: {
+		light: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words.push(Command.parseLight!(light));
 		for (const property of properties) {
 			words.push(LightProperty.parse!(property));
@@ -42,6 +54,12 @@ Command.cases.moveLight = new CommandSchema({
 		easingId = Data.easings[0].id,
 		duration = 0,
 		wait = false
+	}: {
+		light: unknown;
+		properties: unknown[];
+		easingId: string;
+		duration: number;
+		wait: boolean;
 	}) {
 		const write = getElementWriter('moveLight');
 		write('light', light);

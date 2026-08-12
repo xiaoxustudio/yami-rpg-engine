@@ -26,4 +26,4 @@ export function subtract<T>(a: T[], b: T[]): T[] {
 	return a.filter((item) => !b.includes(item));
 }
 
-export const empty: any[] = [];
+export const empty: never[] = [];

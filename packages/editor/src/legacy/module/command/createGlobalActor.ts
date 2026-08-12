@@ -14,14 +14,14 @@ Command.cases.createGlobalActor = new CommandSchema({
 	],
 	onInitialize() {
 		$('#createGlobalActor-confirm').on('click', () => this.save!());
-		$('#createGlobalActor').on('open', function (event: any) {
+		$('#createGlobalActor').on('open', function (event: Event) {
 			$('#createGlobalActor-teamId').loadItems(Data.createTeamItems!());
 		});
-		$('#createGlobalActor').on('closed', function (event: any) {
+		$('#createGlobalActor').on('closed', function (event: Event) {
 			clear($('#createGlobalActor-teamId'));
 		});
 	},
-	customParse({ actorId, teamId }: any) {
+	customParse({ actorId, teamId }: { actorId: unknown; teamId: unknown }) {
 		const words = Command.words
 			.push(Command.parseFileName!(actorId))
 			.push(Command.parseTeam!(teamId));

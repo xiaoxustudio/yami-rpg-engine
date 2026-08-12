@@ -159,29 +159,29 @@ const onListOpen = (event: Event) => {
 const onNameInput = (value: string) => {
 	Variable?.nameInput?.({ target: { value } });
 };
-let lastSortValue: any;
-let lastSortWriteValue: any;
-let lastTypeValue: any;
-let lastTypeWriteValue: any;
-const onSortInput = (value: any) => {
+let lastSortValue: number | string | boolean | undefined;
+let lastSortWriteValue: number | string | boolean | undefined;
+let lastTypeValue: number | string | boolean | undefined;
+let lastTypeWriteValue: number | string | boolean | undefined;
+const onSortInput = (value: number | string | boolean) => {
 	if (lastSortValue !== value) {
 		lastSortValue = value;
 		Variable?.sortInput?.({ value });
 	}
 };
-const onSortWrite = (value: any) => {
+const onSortWrite = (value: number | string | boolean) => {
 	if (lastSortWriteValue !== value) {
 		lastSortWriteValue = value;
 		Variable?.sortWrite?.({ value });
 	}
 };
-const onTypeInput = (value: any) => {
+const onTypeInput = (value: number | string | boolean) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
 		Variable?.typeInput?.({ value });
 	}
 };
-const onTypeWrite = (value: any) => {
+const onTypeWrite = (value: number | string | boolean) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
 		Variable?.typeWrite?.({ value });

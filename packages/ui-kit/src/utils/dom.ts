@@ -1,7 +1,10 @@
 export const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
-export const addClass = (el: any, className: string): boolean => {
+export const addClass = (
+	el: { classList?: DOMTokenList } | null | undefined,
+	className: string
+): boolean => {
 	if (!el || !el.classList) return false;
 	if (!el.classList.contains(className)) {
 		el.classList.add(className);
@@ -10,7 +13,10 @@ export const addClass = (el: any, className: string): boolean => {
 	return false;
 };
 
-export const removeClass = (el: any, className: string): boolean => {
+export const removeClass = (
+	el: { classList?: DOMTokenList } | null | undefined,
+	className: string
+): boolean => {
 	if (!el || !el.classList) return false;
 	if (el.classList.contains(className)) {
 		el.classList.remove(className);
@@ -19,21 +25,23 @@ export const removeClass = (el: any, className: string): boolean => {
 	return false;
 };
 
-export const hasClass = (el: any, className: string): boolean =>
-	!!el && !!el.classList && el.classList.contains(className);
+export const hasClass = (
+	el: { classList?: DOMTokenList } | null | undefined,
+	className: string
+): boolean => !!el && !!el.classList && el.classList.contains(className);
 
-export const hide = (el: any): HTMLElement => {
+export const hide = (el: HTMLElement | null | undefined): HTMLElement => {
 	if (el) addClass(el, 'hidden');
-	return el;
+	return el as HTMLElement;
 };
 
-export const show = (el: any): HTMLElement => {
+export const show = (el: HTMLElement | null | undefined): HTMLElement => {
 	if (el) removeClass(el, 'hidden');
-	return el;
+	return el as HTMLElement;
 };
 
-export const seek = (el: any, tagName: string, count = 1): HTMLElement => {
-	let element: HTMLElement = el;
+export const seek = (el: EventTarget | null, tagName: string, count = 1): HTMLElement => {
+	let element: HTMLElement = el as HTMLElement;
 	while (count-- > 0) {
 		if (
 			element.tagName !== tagName.toUpperCase() &&
@@ -47,26 +55,34 @@ export const seek = (el: any, tagName: string, count = 1): HTMLElement => {
 	return element;
 };
 
-export const css = (el: any): CSSStyleDeclaration => getComputedStyle(el as Element);
+export const css = (el: Element): CSSStyleDeclaration => getComputedStyle(el);
 
-export const rect = (el: any): DOMRect => el.getBoundingClientRect();
+export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingClientRect();
 
-export const read = (el: any): any => {
-	if (typeof (el as any).read === 'function') {
-		return (el as any).read();
+export const read = (
+	el: HTMLElement | { read?: () => unknown; dataValue?: unknown } | null | undefined
+): unknown => {
+	if (el && 'read' in el && typeof el.read === 'function') {
+		return el.read();
 	}
-	return (el as any).dataValue;
+	if (el && 'dataValue' in el) {
+		return el.dataValue;
+	}
+	return undefined;
 };
 
-export const write = (el: any, value: any): void => {
-	if (typeof (el as any).write === 'function') {
-		(el as any).write(value);
-	} else {
-		(el as any).dataValue = value;
+export const write = (
+	el: HTMLElement | { write?: (value: unknown) => void; dataValue?: unknown } | null | undefined,
+	value: unknown
+): void => {
+	if (el && 'write' in el && typeof el.write === 'function') {
+		el.write(value);
+	} else if (el) {
+		(el as { dataValue?: unknown }).dataValue = value;
 	}
 };
 
-export const hasScrollBar = (el: any): boolean =>
+export const hasScrollBar = (el: HTMLElement): boolean =>
 	el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
 
 export const rasterize = (csspx: number): number => {
@@ -76,9 +92,9 @@ export const rasterize = (csspx: number): number => {
 
 export const relate = (a: PointerEvent, b: PointerEvent): boolean => a.pointerId === b.pointerId;
 
-export const debounce = <T extends (...args: any[]) => void>(callback: T, delay: number): T => {
+export const debounce = <T extends (...args: never[]) => void>(callback: T, delay: number): T => {
 	let timer: ReturnType<typeof setTimeout> | null = null;
-	return ((...args: any[]) => {
+	return ((...args: Parameters<T>) => {
 		if (timer !== null) {
 			clearTimeout(timer);
 		}
@@ -89,12 +105,15 @@ export const debounce = <T extends (...args: any[]) => void>(callback: T, delay:
 	}) as T;
 };
 
-export const getRelativeCoords = (event: PointerEvent, el: any): { x: number; y: number } => {
+export const getRelativeCoords = (
+	event: PointerEvent,
+	el: HTMLElement
+): { x: number; y: number } => {
 	const r = rect(el);
 	return { x: event.clientX - r.left, y: event.clientY - r.top };
 };
 
-export const isInContent = (el: any, event: PointerEvent): boolean => {
+export const isInContent = (el: HTMLElement, event: PointerEvent): boolean => {
 	const coords = getRelativeCoords(event, el);
 	const x = coords.x - el.scrollLeft;
 	const y = coords.y - el.scrollTop;
@@ -102,24 +121,27 @@ export const isInContent = (el: any, event: PointerEvent): boolean => {
 };
 
 const changeEvent = new Event('change');
-export const dispatchChangeEvent = (el: any, index = 0): void => {
+export const dispatchChangeEvent = (
+	el: { dispatchEvent: (event: Event) => unknown },
+	index = 0
+): void => {
 	el.dispatchEvent(changeEvent);
 };
 
 const updateEvent = new Event('update');
-export const dispatchUpdateEvent = (el: any): void => {
+export const dispatchUpdateEvent = (el: { dispatchEvent: (event: Event) => unknown }): void => {
 	el.dispatchEvent(updateEvent);
 };
 
 export const getWindowFramesLength = (): number => {
-	const win = (window as any).Window;
+	const win = (window as Window & { Window?: { frames?: { length: number } } }).Window;
 	return (win?.frames?.length ?? 0) + 1;
 };
 
 let lastDoubleclick: PointerEvent | null = null;
 
 const doubleclickPointerdown = function (
-	this: any,
+	this: HTMLElement,
 	event: PointerEvent & { cmdOrCtrlKey?: boolean; doubleclickProcessed?: boolean }
 ): void {
 	if (
@@ -156,14 +178,14 @@ const doubleclickPointerdown = function (
 
 export const attachDoubleclick = (
 	element: EventTarget,
-	listener: (event: any) => void,
+	listener: (event: PointerEvent) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	element.addEventListener('pointerdown', doubleclickPointerdown as any);
-	element.addEventListener('doubleclick', listener, options);
+	element.addEventListener('pointerdown', doubleclickPointerdown as unknown as EventListener);
+	element.addEventListener('doubleclick', listener as EventListener, options);
 };
 
-export const macRedoKey = (e: any): boolean =>
+export const macRedoKey = (e: KeyboardEvent): boolean =>
 	typeof navigator !== 'undefined' && navigator.platform.includes('Mac')
 		? e.metaKey && e.shiftKey && e.code === 'KeyZ'
 		: false;

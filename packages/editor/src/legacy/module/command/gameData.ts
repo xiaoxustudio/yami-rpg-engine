@@ -24,7 +24,15 @@ Command.cases.gameData = new CommandSchema({
 				{ case: ['load', 'delete'], targets: [$('#gameData-index')] }
 			]);
 	},
-	customParse({ operation, index, variables }: any) {
+	customParse({
+		operation,
+		index,
+		variables
+	}: {
+		operation: string;
+		index: unknown;
+		variables: string;
+	}) {
 		const words = Command.words
 			.push(Local.get!('command.gameData.' + operation))
 			.push(Command.parseVariableNumber!(index));
@@ -34,7 +42,7 @@ Command.cases.gameData = new CommandSchema({
 					const label = Local.get!('command.gameData.variables');
 					const keys = variables
 						.split(/\s*,\s*/)
-						.map((key: any) => Command.setVariableColor!(key));
+						.map((key: string) => Command.setVariableColor!(key));
 					const string = keys.join(Token(', '));
 					words.push(label + ' ' + Token('{') + string + Token('}'));
 				}

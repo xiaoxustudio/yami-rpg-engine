@@ -23,7 +23,7 @@ Command.cases.setElement = new CommandSchema({
 			{ name: 'Move to Last', value: 'move-to-last' }
 		]);
 	},
-	customParse({ element, operation }: any) {
+	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
 			.push(Local.get!('command.setElement.' + operation));

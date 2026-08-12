@@ -7,20 +7,20 @@ export interface FileMetaShape {
 	guid: string;
 	path: string;
 	file?: { basename: string; aliasPath: string };
-	overview?: { plugin?: string; [k: string]: any };
-	[k: string]: any;
+	overview?: { plugin?: string; [k: string]: unknown };
+	[k: string]: unknown;
 }
 
 export interface DataEntryShape {
 	guid?: string;
 	name?: string;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 export interface ProjectMetaShape {
 	guid: string;
 	path: string;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 // Manifest 结构类型（对齐 legacy metadata-manifest.ts 字段——宽类型起步，随迁移细化）
@@ -55,13 +55,13 @@ export interface ManifestShape {
 // 场景预设映射（registerScenePresets 写入：sceneId + 数据节点）
 export interface ScenePresetShape {
 	sceneId: string;
-	data: { [k: string]: any };
+	data: { [k: string]: unknown };
 }
 
 // UI 预设映射（registerUiPresets 写入：uiId + 数据节点）
 export interface UiPresetShape {
 	uiId: string;
-	data: { [k: string]: any };
+	data: { [k: string]: unknown };
 }
 
 // guid → 数据对象映射（createDataMaps 初始化为 {}）
@@ -92,7 +92,7 @@ export interface TeamShape {
 	id: string;
 	name?: string;
 	color?: string;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 export interface TeamsShape {
@@ -104,7 +104,7 @@ export interface TeamsShape {
 export interface LocalizationItemShape {
 	id: string;
 	contents?: Record<string, string>;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 export interface LocalizationShape {
@@ -114,7 +114,7 @@ export interface LocalizationShape {
 
 // 属性/枚举数据（createAttributeContext/createEnumerationContext：数组 + context）
 export interface ContextDataShape extends Array<DataEntryShape> {
-	context?: Record<string, any>;
+	context?: Record<string, unknown>;
 }
 
 export interface DataShape {
@@ -141,8 +141,8 @@ export interface DataShape {
 	attribute: ContextDataShape | null;
 	enumeration: ContextDataShape | null;
 	localization: LocalizationShape | null;
-	plugins: any | null;
-	commands: any | null;
+	plugins: Record<string, unknown> | null;
+	commands: DataListShape | null;
 	config: Record<string, any> | null;
 }
 
@@ -212,7 +212,7 @@ export const useDataStore = defineStore('data', () => {
 	}
 
 	function setData(key: keyof DataShape, value: DataShape[keyof DataShape]) {
-		data[key] = value;
+		(data as unknown as Record<string, unknown>)[key] = value;
 	}
 
 	return { data, manifest, setManifest, setData };

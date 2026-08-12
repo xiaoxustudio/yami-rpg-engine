@@ -1,6 +1,6 @@
 export declare const Window: {
 	ambient: any;
-	frames: any[];
+	frames: HTMLElement[];
 	positionMode: string;
 	absolutePos: {
 		x: number;

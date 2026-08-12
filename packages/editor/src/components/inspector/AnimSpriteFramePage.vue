@@ -219,7 +219,7 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 const animation = useAnimationStore();
 const local = useLocalStore();
 
-const onParamInput = (event: any) => {
+const onParamInput = (event: Event) => {
 	const target = event?.target ?? document.activeElement;
 	Inspector?.animSpriteFrame?.paramInput?.({ target });
 };

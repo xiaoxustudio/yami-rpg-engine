@@ -14,7 +14,7 @@ Command.cases.activateScene = new CommandSchema({
 			{ name: 'Scene B', value: 1 }
 		]);
 	},
-	parsePointer(pointer: any) {
+	parsePointer(pointer: number) {
 		switch (pointer) {
 			case 0:
 				return 'A';
@@ -22,7 +22,7 @@ Command.cases.activateScene = new CommandSchema({
 				return 'B';
 		}
 	},
-	customParse({ pointer }: any) {
+	customParse({ pointer }: { pointer: number }) {
 		return [
 			{ color: 'scene' },
 			{ text: Local.get!('command.activateScene') + Token(': ') },

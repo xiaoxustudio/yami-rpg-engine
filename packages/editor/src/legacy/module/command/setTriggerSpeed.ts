@@ -11,7 +11,7 @@ Command.cases.setTriggerSpeed = new CommandSchema({
 		{ key: 'trigger', default: { type: 'trigger' } },
 		{ key: 'speed', default: 0 }
 	],
-	customParse({ trigger, speed }: any) {
+	customParse({ trigger, speed }: { trigger: unknown; speed: unknown }) {
 		const words = Command.words
 			.push(Command.parseTrigger(trigger))
 			.push(Command.parseVariableNumber(speed, 't/s'));

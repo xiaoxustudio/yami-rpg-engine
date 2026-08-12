@@ -9,10 +9,10 @@ import { computed, onMounted, ref } from 'vue';
 import { YMPageManager } from '@ui-kit';
 
 interface PageManagerElement extends HTMLElement {
-	switch(value: any): void;
+	switch(value: unknown): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -24,25 +24,25 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const emit = defineEmits<{
-	switch: [last: any, value: any];
+	switch: [last: unknown, value: unknown];
 }>();
 
 const ym = ref<{
 	root: HTMLElement | null;
-	switch(value: any): void;
+	switch(value: unknown): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const switchover = (value: any): void => ym.value?.switch(value);
+const switchover = (value: unknown): void => ym.value?.switch(value);
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -55,6 +55,8 @@ onMounted(() => {
 	el.on = on;
 	// YMPageManager dispatches a native `switch` event on the root; relay it
 	// to the Vue `switch` emit so parent components can listen via @switch.
-	el.addEventListener('switch', (e: any) => emit('switch', e.last, e.value));
+	el.addEventListener('switch', (e: Event & { last?: unknown; value?: unknown }) =>
+		emit('switch', e.last, e.value)
+	);
 });
 </script>

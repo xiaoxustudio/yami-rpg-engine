@@ -26,20 +26,20 @@ import {
 interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;
 	input: HTMLInputElement;
-	synchronizer: HTMLElement & { value: any; [k: string]: any };
-	bar: HTMLElement & { [k: string]: any };
+	synchronizer: HTMLElement & { write(value: number | string): void; input: HTMLInputElement };
+	bar: HTMLElement;
 	activeWheel: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	read(): number;
-	write(value: any): void;
+	write(value: number | string): void;
 	enable(): void;
 	disable(): void;
 	updateFiller(): void;
-	synchronize(target: HTMLElement & { write(value: any): void; input: HTMLInputElement }): void;
+	synchronize(target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -92,7 +92,7 @@ const input = computed<HTMLInputElement | null>(() => ym.value?.input ?? null);
 
 const read = (): number => ym.value?.read() ?? 0;
 
-const write = (value: any): void => ym.value?.write(value);
+const write = (value: number | string): void => ym.value?.write(value);
 
 const updateFiller = (): void => ym.value?.updateFiller();
 
@@ -114,7 +114,7 @@ const disable = (): void => {
 	}
 };
 
-const synchronize = (target: HTMLElement & { write(value: any): void; input: HTMLInputElement }): void => {
+const synchronize = (target: HTMLElement & { write(value: number | string): void; input: HTMLInputElement }): void => {
 	const el = root.value;
 	if (!el) return;
 	const slider = el as SliderBoxElement;
@@ -131,12 +131,12 @@ const synchronize = (target: HTMLElement & { write(value: any): void; input: HTM
 			slider.input.focus();
 		};
 
-		const sliderInput = (event?: any) => {
+		const sliderInput = (event?: Event) => {
 			writeNumber.call(number, readElement(slider));
 			if (event) number.dispatchEvent(new Event('input'));
 		};
 
-		const numberInput = (event?: any) => {
+		const numberInput = (event?: Event) => {
 			writeSlider.call(slider, readElement(number));
 			if (event) slider.dispatchEvent(new Event('input'));
 		};
@@ -161,7 +161,7 @@ const synchronize = (target: HTMLElement & { write(value: any): void; input: HTM
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -202,7 +202,7 @@ onMounted(() => {
 	const fillerEl = ym.value?.filler ?? null;
 	const barEl = ym.value?.bar ?? null;
 
-	el.bar = barEl as HTMLElement & { [k: string]: any };
+	el.bar = barEl as HTMLElement;
 	el.filler = fillerEl as HTMLElement;
 	el.input = inputEl as HTMLInputElement;
 	el.synchronizer = null;

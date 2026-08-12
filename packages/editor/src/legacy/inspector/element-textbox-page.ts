@@ -5,7 +5,10 @@ import { UI } from '@/ui/ui-window.ts';
 
 {
 	interface UITextBoxShape {
-		[k: string]: any;
+		target: UITextBoxData | null;
+		update: ((node: UITextBoxData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
 	}
 	interface UITextBoxData {
 		type: string;
@@ -23,7 +26,7 @@ import { UI } from '@/ui/ui-window.ts';
 		selectionColor: string;
 		selectionBgColor: string;
 		instances: { setProperty(key: string, value: unknown): void };
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 	const UITextBox: UITextBoxShape = {
 		owner: UI,
@@ -191,7 +194,7 @@ import { UI } from '@/ui/ui-window.ts';
 					(node as Record<string, unknown>)[key] = value;
 					// element[key] = value
 					node.instances.setProperty(key, value);
-					($('#uiTextBox-number').input! as Record<string, any>)[key] = value;
+					($('#uiTextBox-number').input! as Record<string, unknown>)[key] = value;
 				}
 				break;
 			case 'decimals':
@@ -206,8 +209,8 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UITextBox.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
-		UITextBox.update(UITextBox.target, Inspector.getKey!(this), read(this));
+	UITextBox.paramInput = function (this: typeof UITextBox, event: Event) {
+		UITextBox.update!(UITextBox.target as UITextBoxData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiTextBox = UITextBox;

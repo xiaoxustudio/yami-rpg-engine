@@ -7,7 +7,7 @@ import { Selection } from '@/tools/text-capture.ts';
 import { shallowRef } from 'vue';
 
 interface ToolInstance {
-	open?: (...args: any[]) => void;
+	open?: (...args: unknown[]) => void;
 	close?: () => void;
 	initialize?: () => void;
 }
@@ -19,7 +19,7 @@ export const useToolStore = defineStore('tool', () => {
 		return (window as unknown as Record<string, ToolInstance | undefined>)[name];
 	}
 
-	function openTool(name: string, ...args: any[]) {
+	function openTool(name: string, ...args: unknown[]) {
 		const tool = (window as unknown as Record<string, ToolInstance | undefined>)[name];
 		tool?.open?.(...args);
 		activeTool.value = name;
@@ -37,43 +37,43 @@ export const useToolStore = defineStore('tool', () => {
 		(window as unknown as Record<string, ToolInstance | undefined>)[name]?.initialize?.();
 	}
 
-	function openColor(...args: any[]) {
+	function openColor(...args: unknown[]) {
 		openTool('Color', ...args);
 	}
 
-	function openImageClip(...args: any[]) {
+	function openImageClip(...args: unknown[]) {
 		openTool('ImageClip', ...args);
 	}
 
-	function openRename(...args: any[]) {
+	function openRename(...args: unknown[]) {
 		openTool('Rename', ...args);
 	}
 
-	function openSetKey(...args: any[]) {
+	function openSetKey(...args: unknown[]) {
 		openTool('SetKey', ...args);
 	}
 
-	function openSetQuantity(...args: any[]) {
+	function openSetQuantity(...args: unknown[]) {
 		openTool('SetQuantity', ...args);
 	}
 
-	function openZoom(...args: any[]) {
+	function openZoom(...args: unknown[]) {
 		openTool('Zoom', ...args);
 	}
 
-	function openPresetObject(...args: any[]) {
+	function openPresetObject(...args: unknown[]) {
 		openTool('PresetObject', ...args);
 	}
 
-	function openPresetElement(...args: any[]) {
+	function openPresetElement(...args: unknown[]) {
 		openTool('PresetElement', ...args);
 	}
 
-	function openArrayList(...args: any[]) {
+	function openArrayList(...args: unknown[]) {
 		openTool('ArrayList', ...args);
 	}
 
-	function openSelection(...args: any[]) {
+	function openSelection(...args: unknown[]) {
 		openTool('Selection', ...args);
 	}
 
@@ -117,19 +117,19 @@ export const useToolStore = defineStore('tool', () => {
 		initializeTool('Selection');
 	}
 
-	function colorGetRGBAFromHex(...args: any[]) {
+	function colorGetRGBAFromHex(...args: unknown[]) {
 		return Color?.getRGBAFromHex?.(...args);
 	}
 
-	function colorGetHexFromRGBA(...args: any[]) {
+	function colorGetHexFromRGBA(...args: unknown[]) {
 		return Color?.getHexFromRGBA?.(...args);
 	}
 
-	function colorGetCSSColorFromRGBA(...args: any[]) {
+	function colorGetCSSColorFromRGBA(...args: unknown[]) {
 		return Color?.getCSSColorFromRGBA?.(...args);
 	}
 
-	function colorSimplifyHexColor(...args: any[]) {
+	function colorSimplifyHexColor(...args: unknown[]) {
 		return Color?.simplifyHexColor?.(...args);
 	}
 
@@ -137,20 +137,25 @@ export const useToolStore = defineStore('tool', () => {
 		return Zoom?.getFactor?.();
 	}
 
-	function presetObjectGetDefaultPresetId(...args: any[]) {
-		return PresetObject?.getDefaultPresetId?.(...args);
+	function presetObjectGetDefaultPresetId(className?: string) {
+		return PresetObject?.getDefaultPresetId?.(className);
 	}
 
-	function presetObjectBuildNodes(...args: any[]) {
-		return PresetObject?.buildNodes?.(...args);
+	function presetObjectBuildNodes(
+		nodes: Parameters<typeof PresetObject.buildNodes>[0],
+		className: Parameters<typeof PresetObject.buildNodes>[1]
+	) {
+		return PresetObject?.buildNodes?.(nodes, className);
 	}
 
 	function presetElementGetDefaultPresetId() {
 		return PresetElement?.getDefaultPresetId?.();
 	}
 
-	function presetElementBuildNodes(nodes: unknown) {
-		return PresetElement?.buildNodes?.(nodes as never);
+	function presetElementBuildNodes(
+		nodes: Parameters<NonNullable<typeof PresetElement.buildNodes>>[0]
+	) {
+		return PresetElement?.buildNodes?.(nodes);
 	}
 
 	function selectionSaveContext() {
@@ -165,16 +170,16 @@ export const useToolStore = defineStore('tool', () => {
 		return Selection?.match?.();
 	}
 
-	function selectionInsert(...args: any[]) {
-		Selection?.insert?.(...args);
+	function selectionInsert(tag: Parameters<typeof Selection.insert>[0]) {
+		Selection?.insert?.(tag);
 	}
 
 	function selectionEdit() {
 		Selection?.edit?.();
 	}
 
-	function selectionWrap(...args: any[]) {
-		Selection?.wrap?.(...args);
+	function selectionWrap(params: Parameters<typeof Selection.wrap>[0]) {
+		Selection?.wrap?.(params);
 	}
 
 	return {

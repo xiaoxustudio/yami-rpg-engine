@@ -3,7 +3,7 @@ import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 export interface ColorBoxApiOptions {
 	modelValue?: string;
 	disabled?: boolean;
-	colorPicker?: ((box: any) => void) | null;
+	colorPicker?: ((box: ColorBoxApi) => void) | null;
 }
 
 export interface ColorBoxApi extends HTMLElement {
@@ -11,12 +11,12 @@ export interface ColorBoxApi extends HTMLElement {
 	dataValue: string | null;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	input(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	input(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	on(...args: unknown[]): void;
 	keydown(event: KeyboardEvent): void;
 	mouseclick(event: Event): void;
 }
@@ -73,7 +73,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 				const input = new Event('input') as Event & {
 					value: string;
 				};
-				input.value = box.dataValue;
+				input.value = box.dataValue ?? '';
 				box.dispatchEvent(input);
 			}
 			dispatchChangeEvent(box);
@@ -94,7 +94,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
@@ -109,7 +109,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!(event as any).cmdOrCtrlKey) {
+				if (!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 					event.stopPropagation();
 					box.mouseclick(event);
 				}

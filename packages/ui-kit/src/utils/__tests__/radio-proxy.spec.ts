@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createRadioProxy, radioProxyMap, RadioProxy } from '../radio-proxy';
+import type { RadioProxyElement } from '../radio-proxy';
 
-function makeProxy(id: string, value: any = null) {
-	const el = createRadioProxy() as any;
+function makeProxy(id: string, value: unknown = null) {
+	const el = createRadioProxy() as unknown as RadioProxyElement;
 	el.id = id;
 	el.setAttribute('name', id);
 	el.dataValue = value;
@@ -13,7 +14,7 @@ function makeProxy(id: string, value: any = null) {
 
 describe('radio-proxy', () => {
 	it('createRadioProxy builds hidden div with api', () => {
-		const el = createRadioProxy() as any;
+		const el = createRadioProxy() as unknown as RadioProxyElement;
 		expect(el.className).toBe('radio-proxy');
 		expect(el.style.display).toBe('none');
 		expect(typeof el.read).toBe('function');

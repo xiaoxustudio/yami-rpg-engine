@@ -2,15 +2,21 @@ import { Scene } from '@/scene/scene-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { Easing } from '@/data/transition-window.ts';
 import { Particle } from './particle-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import type { ParticleEmitterShape } from './particle-window.ts';
+import type { ParticleElementLayer } from './particle-element.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 
 interface ParticleLayerData {
 	interval: number;
 	delay: number;
 	area: {
 		type: 'edge' | 'point' | 'rectangle' | 'circle';
-		[k: string]: any;
-	};
+		x?: number;
+		y?: number;
+		width?: number;
+		height?: number;
+		radius?: number;
+	} & Record<string, unknown>;
 	[k: string]: any;
 }
 
@@ -20,22 +26,22 @@ interface ParticleElement {
 }
 
 Particle.Layer = class ParticleLayer {
-	emitter: any;
+	emitter: ParticleEmitterShape;
 	data: ParticleLayerData;
-	texture: any;
+	texture: ImageTexture | null;
 	textureWidth: number;
 	textureHeight: number;
 	unitWidth: number;
 	unitHeight: number;
 	elapsed: number;
-	easing: any;
+	easing!: Float32Array | null;
 	capacity: number;
 	count: number;
 	stocks: number;
 	elements: ParticleElement[] & { count: number };
 	reserves: ParticleElement[] & { count: number };
 
-	constructor(emitter: any, data: ParticleLayerData) {
+	constructor(emitter: ParticleEmitterShape, data: ParticleLayerData) {
 		this.emitter = emitter;
 		this.data = data;
 		this.texture = null;
@@ -59,7 +65,7 @@ Particle.Layer = class ParticleLayer {
 		this.loadTexture!();
 	}
 
-	emitParticles(deltaTime: any) {
+	emitParticles(deltaTime: number) {
 		let stocks = this.stocks;
 		if (stocks === 0) return;
 		this.elapsed += deltaTime * this.emitter.speed;
@@ -88,7 +94,9 @@ Particle.Layer = class ParticleLayer {
 					}
 				}
 				for (let i = this.capacity; i < maximum; i++) {
-					elements[eCount++] = new Particle.Element!(this);
+					elements[eCount++] = new Particle.Element!(
+						this as unknown as ParticleElementLayer
+					);
 					this.capacity = i + 1;
 					count--;
 					stocks--;
@@ -103,7 +111,7 @@ Particle.Layer = class ParticleLayer {
 		}
 	}
 
-	updateParticles(deltaTime: any) {
+	updateParticles(deltaTime: number) {
 		const elements = this.elements;
 		const eCount = elements.count;
 		if (eCount === 0) return 0;
@@ -217,7 +225,7 @@ Particle.Layer = class ParticleLayer {
 			const lightMode = Scene.state === 'open' && Scene.showLight ? data.light : 'raw';
 			gl.uniform1i(program.u_LightMode, ParticleLayer.lightSamplingModes[lightMode]);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
-			gl.bindTexture(gl.TEXTURE_2D, texture!.base.glTexture);
+			gl.bindTexture(gl.TEXTURE_2D, texture!.base!.glTexture);
 			gl.drawElements(gl.TRIANGLES, (vi / 20) * 6, gl.UNSIGNED_INT, 0);
 			gl.alpha = 1;
 			gl.blend = 'normal';
@@ -228,7 +236,7 @@ Particle.Layer = class ParticleLayer {
 		const guid = this.data.image;
 		const texture = this.texture;
 		if (texture instanceof ImageTexture) {
-			if (texture.complete && texture.base.guid === guid) {
+			if (texture.complete && texture.base!.guid === guid) {
 				this.calculateElementSize!();
 				return;
 			}
@@ -329,8 +337,8 @@ Particle.Layer = class ParticleLayer {
 		}
 	}
 
-	static _sharedUint32A: any;
-	static _sharedUint32B: any;
+	static _sharedUint32A: Uint32Array | null;
+	static _sharedUint32B: Uint32Array | null;
 
 	static maximum = 1000;
 

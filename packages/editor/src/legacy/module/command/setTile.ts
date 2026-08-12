@@ -10,7 +10,21 @@ Command.cases.setTile = new CommandSchema({
 	onInitialize() {
 		$('#setTile-confirm').on('click', () => this.save!());
 	},
-	customParse({ tilemap, tilemapX, tilemapY, tilesetId, tilesetX, tilesetY }: any) {
+	customParse({
+		tilemap,
+		tilemapX,
+		tilemapY,
+		tilesetId,
+		tilesetX,
+		tilesetY
+	}: {
+		tilemap: unknown;
+		tilemapX: unknown;
+		tilemapY: unknown;
+		tilesetId: unknown;
+		tilesetX: unknown;
+		tilesetY: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseTilemap!(tilemap))
 			.push(Command.parseVariableNumber!(tilemapX))

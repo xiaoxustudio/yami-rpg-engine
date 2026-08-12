@@ -5,6 +5,15 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface SetBooleanOperand {
+	type: string;
+	value: boolean;
+	variable: { type: string; key: string };
+	index: number;
+	key: string;
+	script: string;
+}
+
 Command.cases.setBoolean = new CommandSchema({
 	name: 'setBoolean',
 	onInitialize() {
@@ -50,7 +59,7 @@ Command.cases.setBoolean = new CommandSchema({
 		]);
 		// setBoolean-operand-type write 经 Vue 模板转发（setBoolean.vue @write → Command.cases.setBoolean.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		let filter = 'all';
 		switch (event.value) {
 			case 'variable':
@@ -62,7 +71,7 @@ Command.cases.setBoolean = new CommandSchema({
 		}
 		$('#setBoolean-common-variable').filter = filter;
 	},
-	parseOperation(operation: any) {
+	parseOperation(operation: string) {
 		switch (operation) {
 			case 'set':
 				return ' = ';
@@ -76,7 +85,7 @@ Command.cases.setBoolean = new CommandSchema({
 				return ' ^= ';
 		}
 	},
-	parseOperand(operand: any) {
+	parseOperand(operand: SetBooleanOperand) {
 		switch (operand.type) {
 			case 'constant':
 				return Command.setBooleanColor!(operand.value.toString());
@@ -90,7 +99,15 @@ Command.cases.setBoolean = new CommandSchema({
 				return Command.setScriptColor!(operand.script);
 		}
 	},
-	customParse({ variable, operation, operand }: any) {
+	customParse({
+		variable,
+		operation,
+		operand
+	}: {
+		variable: unknown;
+		operation: string;
+		operand: SetBooleanOperand;
+	}) {
 		const varDesc = Command.parseVariable!(variable, 'boolean', operation === 'set');
 		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
 		const value = this.parseOperand!(operand);
@@ -104,7 +121,11 @@ Command.cases.setBoolean = new CommandSchema({
 	customLoad({
 		variable = { type: 'local', key: '' },
 		operation = 'set',
-		operand = { type: 'constant', value: false }
+		operand = { type: 'constant', value: false } as SetBooleanOperand
+	}: {
+		variable?: unknown;
+		operation?: string;
+		operand?: SetBooleanOperand;
 	}) {
 		const write = getElementWriter('setBoolean');
 		let constantValue = false;
@@ -112,7 +133,7 @@ Command.cases.setBoolean = new CommandSchema({
 		let listIndex = 0;
 		let parameterKey = '';
 		let script = '';
-		const op: any = operand;
+		const op = operand ?? ({ type: 'constant', value: false } as SetBooleanOperand);
 		switch (op.type) {
 			case 'constant':
 				constantValue = op.value;

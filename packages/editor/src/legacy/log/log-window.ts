@@ -9,7 +9,7 @@ export const Log = {
 	get box() {
 		return $('#log-message');
 	},
-	list: [] as unknown as any[],
+	list: [] as unknown as { type: string; message: string; duration: number }[],
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
 	throw: null as ((...args: unknown[]) => void) | null,
@@ -22,7 +22,7 @@ export const Log = {
 	catchError: null as ((...args: unknown[]) => void) | null,
 	catchRejection: null as ((...args: unknown[]) => void) | null,
 	tscLog: null as ((...args: unknown[]) => void) | null,
-	logs: null as any[] | null,
+	logs: null as { type: string; message: string; duration: number }[] | null,
 	log: null as ((message: string) => void) | null,
 	error: null as ((message: string) => void) | null,
 	open: null as ((...args: unknown[]) => void) | null,
@@ -50,7 +50,7 @@ Log.throw = function (error: unknown) {
 
 Log.print = function (item: unknown) {
 	if (this.list.length < 50) {
-		this.list.push(item);
+		this.list.push(item as { type: string; message: string; duration: number });
 		this.update!();
 	}
 };

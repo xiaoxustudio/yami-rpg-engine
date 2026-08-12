@@ -31,7 +31,11 @@ export class EnumerationContext extends TreeDataContext {
 			if (group) {
 				const itemCache = this.itemCache;
 				for (const string of group.itemList) {
-					let item = itemCache[string.id];
+					let item = itemCache[string.id] as {
+						value: string;
+						name?: string;
+						tip?: unknown;
+					};
 					if (item === undefined) {
 						item = itemCache[string.id] = {
 							value: string.id
@@ -39,7 +43,9 @@ export class EnumerationContext extends TreeDataContext {
 					}
 					const name = GameLocal.replace(string.name ?? '');
 					item.name = name;
-					item.tip = string.note ? Local.parseTip!(string.note, name) : undefined;
+					item.tip = string.note
+						? Local.parseTip!(string.note as string, name)
+						: undefined;
 					items.push(item);
 				}
 			}
@@ -50,7 +56,7 @@ export class EnumerationContext extends TreeDataContext {
 				items.push(this.createNoneItem());
 			}
 			return items;
-		});
+		}) as unknown[];
 	}
 
 	getMergedItems(
@@ -58,14 +64,21 @@ export class EnumerationContext extends TreeDataContext {
 		groupKey: string,
 		mergedKey: string = 'merged'
 	) {
-		const key = `${groupKey}-${mergedKey}`;
+		const headKey = (headItems ?? [])
+			.map((item) => (item as { value?: string })?.value ?? '')
+			.join(',');
+		const key = `${groupKey}-${mergedKey}-${headKey}`;
 		return this.getCachedItems(key, () => {
 			const items = [...(headItems ?? [])];
 			const group = this.groupMap[groupKey];
 			if (group) {
 				const itemCache = this.itemCache;
 				for (const string of group.itemList) {
-					let item = itemCache[string.id];
+					let item = itemCache[string.id] as {
+						value: string;
+						name?: string;
+						tip?: unknown;
+					};
 					if (item === undefined) {
 						item = itemCache[string.id] = {
 							value: string.id
@@ -73,7 +86,9 @@ export class EnumerationContext extends TreeDataContext {
 					}
 					const name = GameLocal.replace(string.name ?? '');
 					item.name = name;
-					item.tip = string.note ? Local.parseTip!(string.note, name) : undefined;
+					item.tip = string.note
+						? Local.parseTip!(string.note as string, name)
+						: undefined;
 					items.push(item);
 				}
 			}

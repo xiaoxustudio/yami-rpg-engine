@@ -6,10 +6,26 @@ import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 
 import { getMonaco } from '@/util/monaco';
+import type * as monacoNs from 'monaco-editor';
+
+interface EditDataNodeShape {
+	dataItem?: { id: string; params: unknown; commands: unknown };
+	dataParent?: unknown;
+	mark?: string;
+	dataList: Record<string, unknown>[];
+	dataIndex: number;
+}
+
+interface EditDataContentItem {
+	node: EditDataNodeShape;
+	value: { id: string; params: unknown; commands: unknown };
+}
 
 export const EditDataInstance = new (class {
-	editor: any = null;
-	model: any = null;
+	editor = null as unknown as monacoNs.editor.IStandaloneCodeEditor & {
+		getFocus?: () => void;
+	};
+	model = null as unknown as monacoNs.editor.ITextModel;
 	versionId: number | null = null;
 	commandList: unknown = null;
 	changed = false;
@@ -25,7 +41,7 @@ export const EditDataInstance = new (class {
 	editorParent: HTMLElement | null = null;
 	editorDom: HTMLElement | null = null;
 	eventListDom: HTMLElement | null = null;
-	currentContent: any = null;
+	currentContent: EditDataContentItem[] | EditDataContentItem | null = null;
 	createTheme: (() => void) | null = null;
 	constructor() {}
 
@@ -144,9 +160,13 @@ export const EditDataInstance = new (class {
 
 		if (Array.isArray(this.currentContent)) {
 			for (const ind in this.currentContent) {
-				const { node, value }: any = this.currentContent[ind];
+				const item: EditDataContentItem = this.currentContent[ind as unknown as number];
+				const { node, value } = item;
 				if (!(ind in (parse as object))) continue;
-				const changeContent = (parse as Record<string | number, unknown>)[ind];
+				const changeContent = (parse as Record<string | number, unknown>)[ind] as Record<
+					string,
+					unknown
+				>;
 				if (JSON.stringify(value) === JSON.stringify(changeContent)) continue;
 
 				const list = node.dataList;
@@ -159,8 +179,8 @@ export const EditDataInstance = new (class {
 				list[dataIndex] = changeContent;
 				hasChanges = true;
 			}
-		} else if (JSON.stringify(this.currentContent.value) !== JSON.stringify(parse)) {
-			const node = this.currentContent.node;
+		} else if (JSON.stringify(this.currentContent!.value) !== JSON.stringify(parse)) {
+			const node = this.currentContent!.node;
 
 			const list = node.dataList;
 			const dataIndex = node.dataIndex;
@@ -169,7 +189,7 @@ export const EditDataInstance = new (class {
 				delete list[dataIndex].buffer;
 			}
 
-			list[dataIndex] = parse;
+			list[dataIndex] = parse as Record<string, unknown>;
 			hasChanges = true;
 		}
 
@@ -185,7 +205,7 @@ export const EditDataInstance = new (class {
 		this.setChangeState(false);
 		Window.close!('edit-data');
 	}
-	async colorizeCodeLines(items: any, code: string) {
+	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
 		const text = document.createElement('div');
 		addClass(text, 'text');
@@ -251,38 +271,40 @@ export const EditDataInstance = new (class {
 				}
 			});
 
-			this.model = this.editor.getModel();
+			this.model = this.editor.getModel()!;
 
 			// 编辑器 - 获得焦点
-			this.editor.getFocus = function (this: any) {
+			this.editor.getFocus = function (this: { focus: () => void }) {
 				setTimeout(() => this.focus());
 			};
 
-			this.editor.onKeyDown((event: any) => {
-				event = event.browserEvent;
-				if (event.ctrlKey) {
-					switch (event.code) {
+			this.editor.onKeyDown((event: { browserEvent: KeyboardEvent }) => {
+				const { browserEvent } = event;
+				if (browserEvent.ctrlKey) {
+					switch (browserEvent.code) {
 						case 'Enter':
-							event.preventDefault();
-							event.stopPropagation();
+							browserEvent.preventDefault();
+							browserEvent.stopPropagation();
 							// this.save()
 							break;
 					}
 				}
 			});
 
-			this.editor.onDidChangeModelContent((event: any) => {
-				if (event.isFlush) return;
-				if (event.isUndoing || event.isRedoing) {
-					const versionId = this.model.getAlternativeVersionId();
-					const changed = this.versionId !== versionId;
-					if (this.changed !== changed) {
-						this.setChangeState(changed);
+			this.editor.onDidChangeModelContent(
+				(event: { isFlush: boolean; isUndoing: boolean; isRedoing: boolean }) => {
+					if (event.isFlush) return;
+					if (event.isUndoing || event.isRedoing) {
+						const versionId = this.model.getAlternativeVersionId();
+						const changed = this.versionId !== versionId;
+						if (this.changed !== changed) {
+							this.setChangeState(changed);
+						}
+					} else if (!this.changed) {
+						this.setChangeState(true);
 					}
-				} else if (!this.changed) {
-					this.setChangeState(true);
 				}
-			});
+			);
 		}
 		this.model.setValue('');
 		this.versionId = this.model.getAlternativeVersionId();
@@ -295,10 +317,14 @@ export const EditDataInstance = new (class {
 	}
 	loadData() {
 		this.currentContent = null;
-		const { elements, start, end } = this.commandList as any;
+		const { elements, start, end } = this.commandList as {
+			elements: EditDataNodeShape[];
+			start: number;
+			end: number;
+		};
 		const sElement = elements[start];
 		if (start === end) {
-			const sData = sElement.dataItem;
+			const sData = sElement.dataItem!;
 			this.currentContent = {
 				node: sElement,
 				value: {
@@ -309,7 +335,7 @@ export const EditDataInstance = new (class {
 			};
 			this.model.setValue(JSON.stringify(this.currentContent.value, null, 2));
 		} else {
-			const value = [];
+			const value: EditDataContentItem[] = [];
 			const includeArr: unknown[] = [];
 			for (let index = start; index <= end; index++) {
 				const elem = elements[index];
@@ -328,7 +354,7 @@ export const EditDataInstance = new (class {
 			this.currentContent = value;
 			this.model.setValue(
 				JSON.stringify(
-					value.map((v: any) => v.value),
+					value.map((v: EditDataContentItem) => v.value),
 					null,
 					2
 				)

@@ -6,6 +6,15 @@ import { CommandSchema } from './schema.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
 
+type RenderOutlineOperation = 'add' | 'remove' | 'reset';
+
+type RenderOutlineData = {
+	operation: RenderOutlineOperation;
+	actor: unknown;
+	color: unknown;
+	[k: string]: unknown;
+};
+
 Command.cases.renderOutline = new CommandSchema({
 	name: 'renderOutline',
 	onInitialize() {
@@ -25,7 +34,7 @@ Command.cases.renderOutline = new CommandSchema({
 				{ case: 'remove', targets: [$('#renderOutline-actor')] }
 			]);
 	},
-	customParse({ operation, actor, color }: any) {
+	customParse({ operation, actor, color }: RenderOutlineData) {
 		const label = Local.get!('command.renderOutline.' + operation);
 		const words = Command.words;
 		switch (operation) {

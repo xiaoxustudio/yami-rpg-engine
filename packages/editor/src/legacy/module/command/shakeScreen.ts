@@ -19,14 +19,28 @@ Command.cases.shakeScreen = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#shakeScreen').on('open', function (event: any) {
+		$('#shakeScreen').on('open', function (event: Event) {
 			$('#shakeScreen-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#shakeScreen').on('closed', function (event: any) {
+		$('#shakeScreen').on('closed', function (event: Event) {
 			clear($('#shakeScreen-easingId'));
 		});
 	},
-	customParse({ mode, power, speed, easingId, duration, wait }: any) {
+	customParse({
+		mode,
+		power,
+		speed,
+		easingId,
+		duration,
+		wait
+	}: {
+		mode: string;
+		power: unknown;
+		speed: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Local.get!('command.shakeScreen.' + mode))
 			.push(Command.setNumberColor!(power))

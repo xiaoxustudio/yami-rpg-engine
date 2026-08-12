@@ -37,7 +37,15 @@ Command.parseBlend = function (this: typeof Command, blend: string): string {
 Command.fetchVariables = function (
 	this: typeof Command,
 	commands: CommandNode[] & { eventId?: string }
-): any[] {
+): Array<{
+	name: string;
+	type: string;
+	comment: string;
+	evIndex: number;
+	isLeftValue: boolean;
+	refCount: number;
+	command?: unknown;
+}> {
 	const eventId = commands.eventId ?? '';
 	const calledEvents: string[] = [eventId];
 	let eventIndex = 0;
@@ -99,7 +107,7 @@ Command.fetchVariables = function (
 				}
 			}
 			const handler = this.cases[id];
-			let contents: CommandNode[];
+			let contents: TextContent[];
 			try {
 				contents = handler
 					? handler.parse(params ?? {})
@@ -227,7 +235,7 @@ Command.parseGlobalVariable = function (this: typeof Command, id: string): strin
 Command.parseAttributeGroup = function (this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Attribute.getGroup!(groupKey);
-	if (group) return GameLocal.replace!(group.groupName);
+	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName);
 	this.invalid = true;
 	return Command.parseUnlinkedId!(groupKey);
 };
@@ -411,7 +419,7 @@ Command.parseEventType = function (
 Command.parseEnumGroup = function (this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Enum.getGroup!(groupKey);
-	if (group) return GameLocal.replace!(group.groupName);
+	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName);
 	this.invalid = true;
 	return Command.parseUnlinkedId!(groupKey);
 };

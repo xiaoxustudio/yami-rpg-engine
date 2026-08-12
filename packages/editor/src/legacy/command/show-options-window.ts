@@ -5,7 +5,7 @@ import { Command } from './command-object.ts';
 import { GameLocal } from '@/local/local-object.ts';
 
 interface ChoicesTarget {
-	save: () => any;
+	save: () => unknown;
 	[k: string]: unknown;
 }
 
@@ -73,5 +73,5 @@ Choices.windowClosed = function (this: typeof Choices, event: Event): void {
 };
 
 Choices.confirm = function (this: typeof Choices, event: Event): void {
-	return Choices.target?.save?.();
+	Choices.target?.save?.();
 };

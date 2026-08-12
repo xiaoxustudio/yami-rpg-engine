@@ -3,27 +3,45 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Scene } from './scene-window.ts';
 import { StageColor } from '@/util/stage-color.ts';
-Scene.getObjectFile = function (this: any, sceneObject: any) {
+import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
+
+interface SceneObjectShape {
+	class?: string;
+	data?: { guid?: string };
+	emitter?: { data: { guid: string } };
+	image?: string;
+}
+
+interface SceneStateShape {
+	grid?: unknown;
+	light?: unknown;
+	animation?: unknown;
+	layer?: unknown;
+	brush?: unknown;
+	zoom?: unknown;
+}
+
+Scene.getObjectFile = function (this: typeof Scene, sceneObject: SceneObjectShape) {
 	switch (sceneObject?.class) {
 		case 'actor':
 		case 'animation': {
 			const guid = sceneObject.data?.guid;
-			return Data.manifest.guidMap[guid]?.file ?? null;
+			return Data.manifest.guidMap[guid!]?.file ?? null;
 		}
 		case 'particle': {
 			const guid = sceneObject.emitter?.data.guid;
-			return Data.manifest.guidMap[guid]?.file ?? null;
+			return Data.manifest.guidMap[guid!]?.file ?? null;
 		}
 		case 'parallax': {
 			const guid = sceneObject.image;
-			return Data.manifest.guidMap[guid]?.file ?? null;
+			return Data.manifest.guidMap[guid!]?.file ?? null;
 		}
 		default:
 			return undefined;
 	}
 };
 
-Scene.openFileLocation = function (this: any, sceneObject: any) {
+Scene.openFileLocation = function (this: typeof Scene, sceneObject: SceneObjectShape) {
 	const file = Scene.getObjectFile!(sceneObject);
 	if (file instanceof FileItem) {
 		getBrowserInstance()?.body?.openFileLocation?.(file);
@@ -32,16 +50,18 @@ Scene.openFileLocation = function (this: any, sceneObject: any) {
 	}
 };
 
-Scene.saveToConfig = function (this: any, config: any) {
-	config.colors.sceneBackground = this.background.hex;
+Scene.saveToConfig = function (this: typeof Scene, config: EditorConfigShape) {
+	config.colors!.sceneBackground = this.background.hex;
 };
 
-Scene.loadFromConfig = function (this: any, config: any) {
-	this.background = new StageColor(config.colors.sceneBackground, () => this.requestRendering());
+Scene.loadFromConfig = function (this: typeof Scene, config: EditorConfigShape) {
+	this.background = new StageColor(config.colors!.sceneBackground!, () =>
+		this.requestRendering()
+	);
 };
 
-Scene.saveToProject = function (this: any, project: any) {
-	const { scene } = project;
+Scene.saveToProject = function (this: typeof Scene, project: EditorProjectShape) {
+	const scene = project.scene as SceneStateShape;
 	this.closeTilemap();
 	scene.grid = this.showGrid ?? scene.grid;
 	scene.light = this.showLight ?? scene.light;
@@ -51,8 +71,8 @@ Scene.saveToProject = function (this: any, project: any) {
 	scene.zoom = this.zoom ?? scene.zoom;
 };
 
-Scene.loadFromProject = function (this: any, project: any) {
-	const { scene } = project;
+Scene.loadFromProject = function (this: typeof Scene, project: EditorProjectShape) {
+	const scene = project.scene as SceneStateShape;
 	this.switchGrid(scene.grid);
 	this.switchLight(scene.light);
 	this.switchAnimation(scene.animation);

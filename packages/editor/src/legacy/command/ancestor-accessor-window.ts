@@ -1,9 +1,9 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetElement } from '@/tools/preset-element-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface AncestorGetterShape extends AccessorBaseShape {
 	dependsOn: string[];
@@ -17,11 +17,13 @@ export const AncestorGetter: AncestorGetterShape = {
 	confirm: null
 };
 
-AncestorGetter.initialize = function (this: any) {
+AncestorGetter.initialize = function (this: AncestorGetterShape) {
 	if (!$('#ancestorGetter-type')) return;
 	const inclusions = new Set(['trigger', 'latest', 'by-id', 'variable']);
 	$('#ancestorGetter-type').loadItems(
-		$('#elementGetter-type').dataItems?.filter((a: any) => inclusions.has(a.value))
+		$('#elementGetter-type').dataItems?.filter((a) =>
+			inclusions.has((a as { value: string }).value)
+		)
 	);
 
 	$('#ancestorGetter-type')
@@ -31,10 +33,10 @@ AncestorGetter.initialize = function (this: any) {
 			{ case: 'variable', targets: [$('#ancestorGetter-variable')] }
 		]);
 
-	on($('#ancestorGetter-confirm'), 'click', this.confirm);
+	on($('#ancestorGetter-confirm'), 'click', this.confirm!);
 };
 
-AncestorGetter.open = function (this: any, target: any) {
+AncestorGetter.open = function (this: AncestorGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('ancestorGetter');
 
@@ -58,7 +60,7 @@ AncestorGetter.open = function (this: any, target: any) {
 	getFocus($('#ancestorGetter-type'));
 };
 
-AncestorGetter.confirm = function (this: any, event: any) {
+AncestorGetter.confirm = function (this: AncestorGetterShape, event: Event) {
 	const read = getElementReader('ancestorGetter');
 	const type = read('type');
 	let getter;
@@ -84,6 +86,6 @@ AncestorGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('ancestorGetter');
 }.bind(AncestorGetter);

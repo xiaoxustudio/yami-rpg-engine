@@ -95,7 +95,7 @@ const select = (x?: number, y?: number, width?: number, height?: number): void =
 defineExpose({ save, restore, resize, clear, select, root });
 
 onMounted(() => {
-	const element = root.value as any;
+	const element = root.value as HTMLElement & { [k: string]: unknown };
 	if (!element) {
 		return;
 	}
@@ -107,9 +107,9 @@ onMounted(() => {
 	element.selection = selection.value;
 	for (const key of ['x', 'y', 'width', 'height', 'scaleX', 'scaleY', 'visible', 'saveData'] as const) {
 		Object.defineProperty(element, key, {
-			get: () => (state as any)[key],
-			set: (value: any) => {
-				(state as any)[key] = value;
+			get: () => state[key],
+			set: (value: unknown) => {
+				state[key] = value as never;
 			},
 			configurable: true
 		});

@@ -9,7 +9,7 @@ interface AngleTarget {
 		position: { type: string; actor: { type: string } };
 		degrees: number;
 	};
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -74,7 +74,7 @@ AngleGetter.open = function (this: typeof AngleGetter, target: AngleTarget) {
 AngleGetter.confirm = function (this: typeof AngleGetter, event: Event) {
 	const read = getElementReader('angleGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'position': {
 			const position = read('position-position');

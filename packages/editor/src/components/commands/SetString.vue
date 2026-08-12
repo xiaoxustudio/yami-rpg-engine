@@ -127,7 +127,7 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
-const onWrite = (value: any) => {
+const onWrite = (value: unknown) => {
 	Command?.cases?.setString?.writeHandler?.({ value });
 };
 

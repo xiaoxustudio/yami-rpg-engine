@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setCursor = new CommandSchema({
 	name: 'setCursor',
 	fields: [{ key: 'image', default: '' }],
-	customParse({ image }: any) {
+	customParse({ image }: { image: unknown }) {
 		return [
 			{ color: 'system' },
 			{ text: Local.get!('command.setCursor') + Token(': ') },

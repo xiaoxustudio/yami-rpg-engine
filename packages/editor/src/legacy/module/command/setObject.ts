@@ -6,6 +6,31 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type ObjectRef = {
+	type: string;
+	[k: string]: unknown;
+};
+
+type SetObjectOperand = {
+	type: string;
+	actor?: ObjectRef | null;
+	skill?: ObjectRef | null;
+	state?: ObjectRef | null;
+	equipment?: ObjectRef | null;
+	item?: ObjectRef | null;
+	trigger?: ObjectRef | null;
+	light?: ObjectRef | null;
+	object?: ObjectRef | null;
+	element?: ObjectRef | null;
+	variable?: ObjectRef | null;
+	index?: ObjectRef | number | null;
+};
+
+type SetObjectData = {
+	variable: ObjectRef;
+	operand: SetObjectOperand;
+};
+
 Command.cases.setObject = new CommandSchema({
 	name: 'setObject',
 	onInitialize() {
@@ -49,7 +74,7 @@ Command.cases.setObject = new CommandSchema({
 				}
 			]);
 	},
-	parseOperand(operand: any) {
+	parseOperand(operand: SetObjectOperand) {
 		switch (operand.type) {
 			case 'none':
 				return Token('null');
@@ -77,7 +102,7 @@ Command.cases.setObject = new CommandSchema({
 				return Command.parseListItem!(operand.variable, operand.index);
 		}
 	},
-	customParse({ variable, operand }: any) {
+	customParse({ variable, operand }: SetObjectData) {
 		const varDesc = Command.parseVariable!(variable, 'object', true);
 		const object = this.parseOperand!(operand);
 		return [
@@ -103,19 +128,19 @@ Command.cases.setObject = new CommandSchema({
 			variable: null,
 			index: null
 		}
-	}: any) {
+	}: SetObjectData) {
 		const write = getElementWriter('setObject');
-		let operandActor = { type: 'trigger' };
-		let operandSkill = { type: 'trigger' };
-		let operandState = { type: 'trigger' };
-		let operandEquipment = { type: 'trigger' };
-		let operandItem = { type: 'trigger' };
-		let operandTrigger = { type: 'trigger' };
-		let operandLight = { type: 'trigger' };
-		let operandObject = { type: 'trigger' };
-		let operandElement = { type: 'trigger' };
-		let operandVariable = { type: 'local', key: '' };
-		let operandListIndex = 0;
+		let operandActor: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandSkill: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandState: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandEquipment: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandItem: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandTrigger: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandLight: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandObject: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandElement: ObjectRef | null | undefined = { type: 'trigger' };
+		let operandVariable: ObjectRef | null | undefined = { type: 'local', key: '' };
+		let operandListIndex: ObjectRef | number | null | undefined = 0;
 		switch (operand.type) {
 			case 'actor':
 				operandActor = operand.actor;

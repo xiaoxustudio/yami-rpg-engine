@@ -15,7 +15,7 @@ interface LocalComponentShape {
 export const useLocalStore = defineStore('local', () => {
 	const language = shallowRef<string>('en');
 	const active = shallowRef<string | null>(null);
-	const languages = shallowRef<any[]>([]);
+	const languages = shallowRef<{ key: string; alias: string; filename: string }[]>([]);
 	const properties = shallowRef<Record<string, string>>({});
 	const components = shallowRef<Record<string, LocalComponentShape>>({});
 	let listening = false;
@@ -40,7 +40,7 @@ export const useLocalStore = defineStore('local', () => {
 		active.value = value;
 	}
 
-	function setLanguages(value: any[]) {
+	function setLanguages(value: { key: string; alias: string; filename: string }[]) {
 		languages.value = value;
 	}
 

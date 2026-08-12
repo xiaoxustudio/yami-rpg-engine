@@ -54,7 +54,7 @@ const controls = {
 	textBox: () => textBoxFactory()
 };
 
-const dataManifest = (): any => Data.manifest;
+const dataManifest = (): { guidMap: Record<string, unknown> } | null => Data.manifest;
 const plugin = computed(() => PluginManager);
 const localize = (key: string): string => Local.get(key);
 const selection = computed(() => Selection);
@@ -66,7 +66,7 @@ const setTooltip = (el: HTMLElement, tip: string): void => setTooltipUtil(el, ti
 const ym = ref<{
 	root: HTMLElement | null;
 	bind(scriptList: HTMLElement): void;
-	rewrite(parameters: any, key: string): void;
+	rewrite(parameters: Record<string, unknown>, key: string): void;
 	update(): void;
 	clear(): void;
 	on(
@@ -79,7 +79,8 @@ const ym = ref<{
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const bind = (scriptList: HTMLElement): void => ym.value?.bind(scriptList);
-const rewrite = (parameters: any, key: string): void => ym.value?.rewrite(parameters, key);
+const rewrite = (parameters: Record<string, unknown>, key: string): void =>
+	ym.value?.rewrite(parameters, key);
 const update = (): void => ym.value?.update();
 const clear = (): void => ym.value?.clear();
 const on = (

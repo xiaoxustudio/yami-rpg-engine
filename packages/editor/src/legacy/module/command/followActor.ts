@@ -42,7 +42,7 @@ Command.cases.followActor = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 	},
-	parseActors(actor: any, target: any) {
+	parseActors(actor: unknown, target: unknown) {
 		const sActor = Command.parseActor!(actor);
 		const dActor = Command.parseActor!(target);
 		return sActor + Token(' -> ') + dActor;
@@ -60,7 +60,20 @@ Command.cases.followActor = new CommandSchema({
 		bypass,
 		once,
 		wait
-	}: any) {
+	}: {
+		actor: unknown;
+		target: unknown;
+		mode: string;
+		minDist: unknown;
+		maxDist: unknown;
+		offset: number;
+		vertDist: number;
+		bufferDist: number;
+		navigate: unknown;
+		bypass: unknown;
+		once: unknown;
+		wait: unknown;
+	}) {
 		if (bufferDist === undefined) {
 			bufferDist = 0;
 		}

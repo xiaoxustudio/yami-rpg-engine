@@ -50,7 +50,7 @@ const ym = ref<{
 	setPosition(x: number, y: number, r: DOMRect): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -68,7 +68,7 @@ const absolute = (left: number, top: number): void => ym.value?.absolute(left, t
 const setPosition = (x: number, y: number, r: DOMRect): void => ym.value?.setPosition(x, y, r);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

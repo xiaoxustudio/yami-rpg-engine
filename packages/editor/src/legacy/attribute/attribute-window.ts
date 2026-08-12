@@ -61,100 +61,176 @@ interface AttributeHistoryData {
 	response: unknown;
 }
 
-export const Attribute = {
-	list: null as HTMLElement | null,
-	panel: null as (HTMLElement & { attribute?: AttributeItem | null }) | null,
-	searcher: null as HTMLElement | null,
+interface AttributeWindowShape {
+	list: TreeListElement;
+	panel: HTMLElement & { attribute?: AttributeItem | null };
+	searcher: HTMLElement;
 	inputs: {
-		name: null as HTMLElement | null,
-		key: null as HTMLElement | null,
-		note: null as HTMLElement | null,
-		enum: null as HTMLElement | null,
-		enumBox: null as HTMLElement | null,
-		type: null as HTMLElement | null
-	},
-	mode: null as string | null,
-	target: null as unknown as AttributeTarget,
-	data: null as AttributeItem[] | null,
-	idMap: null as unknown as Record<string, boolean>,
-	settings: null as unknown as Record<string, string>,
-	settingKeys: null as unknown as string[],
-	history: null as History | null,
-	changed: false,
-	initialize: null as unknown as (this: any) => void,
-	open: null as unknown as (this: any, target?: AttributeTarget, mode?: string) => void,
-	undo: null as unknown as (this: any) => void,
-	redo: null as unknown as (this: any) => void,
-	createId: null as unknown as (this: any) => string,
-	register: null as unknown as (this: any, item: AttributeItem) => void,
-	unregister: null as unknown as (this: any, item: AttributeItem) => void,
-	getItemById: null as unknown as (this: any, id: string) => AttributeItem | undefined,
-	setFolderGroup: null as unknown as (this: any, folder: AttributeItem, newGroup: string) => void,
-	getGroup: null as unknown as (this: any, groupKey: string) => any,
-	getAttribute: null as unknown as (this: any, attrId: string) => AttributeItem | undefined,
-	getGroupAttribute: null as unknown as (
-		this: any,
+		name: HTMLElement | null;
+		key: HTMLElement | null;
+		note: HTMLElement | null;
+		enum: HTMLElement | null;
+		enumBox: HTMLElement | null;
+		type: HTMLElement | null;
+	};
+	mode: string | null;
+	target: AttributeTarget | null;
+	data: AttributeItem[] | null;
+	idMap: Record<string, boolean>;
+	settings: Record<string, string>;
+	settingKeys: string[];
+	history: History;
+	changed: boolean;
+	_previousActive: ReturnType<typeof UndoManager.getActive>;
+	initialize: (this: typeof Attribute) => void;
+	open: (this: typeof Attribute, target?: AttributeTarget, mode?: string) => void;
+	undo: (this: typeof Attribute) => void;
+	redo: (this: typeof Attribute) => void;
+	createId: (this: typeof Attribute) => string;
+	register: (this: typeof Attribute, item: AttributeItem) => void;
+	unregister: (this: typeof Attribute, item: AttributeItem) => void;
+	getItemById: (this: typeof Attribute, id: string) => AttributeItem | undefined;
+	setFolderGroup: (this: typeof Attribute, folder: AttributeItem, newGroup: string) => void;
+	getGroup: (this: typeof Attribute, groupKey: string) => unknown;
+	getAttribute: (this: typeof Attribute, attrId: string) => AttributeItem | undefined;
+	getGroupAttribute: (
+		this: typeof Attribute,
 		groupKey: string,
 		attrId: string
-	) => AttributeItem | undefined,
-	getDefAttributeId: null as unknown as (this: any, groupKey: string, type?: string) => string,
-	getAttributeItems: null as unknown as (
-		this: any,
+	) => AttributeItem | undefined;
+	getDefAttributeId: (this: typeof Attribute, groupKey: string, type?: string) => string;
+	getAttributeItems: (
+		this: typeof Attribute,
 		groupKey: string,
 		attrType?: string,
 		allowNone?: boolean
-	) => any[],
-	openPropertyPanel: null as unknown as (this: any, attribute: AttributeItem) => void,
-	closePropertyPanel: null as unknown as (this: any) => void,
-	unpackAttribute: null as unknown as (this: any) => void,
-	packAttribute: null as unknown as (this: any) => void,
-	saveHistory: null as unknown as (
-		this: any,
-		item: AttributeItem,
-		key: string,
-		value?: string
-	) => void,
-	windowClose: null as unknown as (this: any, event: Event) => void,
-	windowClosed: null as unknown as (this: any, event: Event) => void,
-	keydown: null as unknown as (event: Event) => void,
-	listKeydown: null as unknown as (this: any, event: KeyboardEvent) => void,
-	listPointerdown: null as unknown as (this: any, event: PointerEvent) => void,
-	listDoubleclick: null as unknown as (this: any, event: MouseEvent) => void,
-	listSelect: null as unknown as (event: Event) => void,
-	listRecord: null as unknown as (event: Event) => void,
-	listOpen: null as unknown as (event: Event) => void,
-	listPopup: null as unknown as (
-		this: any,
+	) => Array<{ value: string }>;
+	openPropertyPanel: (this: typeof Attribute, attribute: AttributeItem) => void;
+	closePropertyPanel: (this: typeof Attribute) => void;
+	unpackAttribute: (this: typeof Attribute) => void;
+	packAttribute: (this: typeof Attribute) => void;
+	saveHistory: (this: typeof Attribute, item: AttributeItem, key: string, value?: string) => void;
+	windowClose: (this: typeof Attribute, event: Event) => void;
+	windowClosed: (this: typeof Attribute, event: Event) => void;
+	keydown: (event: Event) => void;
+	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
+	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
+	listDoubleclick: (event: MouseEvent) => void;
+	listSelect: (event: Event) => void;
+	listRecord: (event: Event) => void;
+	listOpen: (event: MouseEvent) => void;
+	listPopup: (
+		this: typeof Attribute,
 		event: Event & { clientX: number; clientY: number }
-	) => void,
-	nameInput: null as unknown as (event: Event) => void,
-	keyInput: null as unknown as (event: Event) => void,
-	typeWrite: null as unknown as (event: Event) => void,
-	typeInput: null as unknown as (event: Event) => void,
-	enumInput: null as unknown as (event: Event) => void,
-	noteInput: null as unknown as (event: InputEvent) => void,
-	panelKeydown: null as unknown as (event: KeyboardEvent) => void,
-	searcherInput: null as unknown as (this: any, event: InputEvent) => void,
-	confirm: null as unknown as (this: any, event?: Event) => void,
-	apply: null as unknown as (this: any, event?: Event) => void,
-	list_saveScroll: null as unknown as (this: any) => void,
-	list_restoreScroll: null as unknown as (this: any) => void,
-	list_cancelSearch: null as unknown as (this: any) => void,
-	list_createFolder: null as unknown as (this: any) => AttributeItem,
-	list_createAttribute: null as unknown as (this: any) => AttributeItem,
-	list_createIcon: null as unknown as (this: any, item: AttributeItem) => HTMLElement,
-	list_updateIcon: null as unknown as (this: any, item: AttributeItem) => void,
-	list_parseName: null as unknown as (this: any, item: AttributeItem) => string,
-	list_addElementClass: null as unknown as (this: any, item: AttributeItem) => void,
-	list_createGroupText: null as unknown as (this: any, item: AttributeItem) => void,
-	list_updateGroupText: null as unknown as (this: any, item: AttributeItem) => void,
-	list_createInitText: null as unknown as (this: any, item: AttributeItem) => void,
-	list_updateInitText: null as unknown as (this: any, item: AttributeItem) => void,
-	list_createNoteIcon: null as unknown as (this: any, item: AttributeItem) => void,
-	list_updateNoteIcon: null as unknown as (this: any, item: AttributeItem) => void,
-	list_onCreate: null as unknown as (this: any, item: AttributeItem) => void,
-	list_onDelete: null as unknown as (this: any, item: AttributeItem) => void,
-	list_onResume: null as unknown as (this: any, item: AttributeItem) => void
+	) => void;
+	nameInput: (event: InputEvent & { target: HTMLInputElement }) => void;
+	keyInput: (event: InputEvent & { target: HTMLInputElement }) => void;
+	typeWrite: (event: Event) => void;
+	typeInput: (event: Event) => void;
+	enumInput: (event: Event) => void;
+	noteInput: (this: HTMLElement, event: InputEvent) => void;
+	panelKeydown: (event: KeyboardEvent) => void;
+	searcherInput: (this: TextBox, event: InputEvent) => void;
+	confirm: (this: typeof Attribute, event?: Event) => void;
+	apply: (this: typeof Attribute, event?: Event) => void;
+	list_saveScroll: (this: TreeListElement) => void;
+	list_restoreScroll: (this: TreeListElement) => void;
+	list_cancelSearch: (this: TreeListElement) => void;
+	list_createFolder: (this: typeof Attribute) => AttributeItem;
+	list_createAttribute: (this: typeof Attribute) => AttributeItem;
+	list_createIcon: (this: typeof Attribute, item: AttributeItem) => HTMLElement;
+	list_updateIcon: (this: TreeListElement, item: AttributeItem) => void;
+	list_parseName: (this: typeof Attribute, item: AttributeItem) => string;
+	list_addElementClass: (this: typeof Attribute, item: AttributeItem) => void;
+	list_createGroupText: (this: typeof Attribute, item: AttributeItem) => void;
+	list_updateGroupText: (this: typeof Attribute, item: AttributeItem) => void;
+	list_createInitText: (this: typeof Attribute, item: AttributeItem) => void;
+	list_updateInitText: (this: typeof Attribute, item: AttributeItem) => void;
+	list_createNoteIcon: (this: typeof Attribute, item: AttributeItem) => void;
+	list_updateNoteIcon: (this: typeof Attribute, item: AttributeItem) => void;
+	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
+	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
+	list_onResume: (this: typeof Attribute, item: AttributeItem) => void;
+}
+
+export const Attribute: AttributeWindowShape = {
+	list: null as unknown as AttributeWindowShape['list'],
+	panel: null as unknown as AttributeWindowShape['panel'],
+	searcher: null as unknown as AttributeWindowShape['searcher'],
+	inputs: {
+		name: null,
+		key: null,
+		note: null,
+		enum: null,
+		enumBox: null,
+		type: null
+	},
+	mode: null,
+	target: null,
+	data: null,
+	idMap: null as unknown as AttributeWindowShape['idMap'],
+	settings: null as unknown as AttributeWindowShape['settings'],
+	settingKeys: null as unknown as AttributeWindowShape['settingKeys'],
+	history: null as unknown as AttributeWindowShape['history'],
+	changed: false,
+	_previousActive: null,
+	initialize: null as unknown as AttributeWindowShape['initialize'],
+	open: null as unknown as AttributeWindowShape['open'],
+	undo: null as unknown as AttributeWindowShape['undo'],
+	redo: null as unknown as AttributeWindowShape['redo'],
+	createId: null as unknown as AttributeWindowShape['createId'],
+	register: null as unknown as AttributeWindowShape['register'],
+	unregister: null as unknown as AttributeWindowShape['unregister'],
+	getItemById: null as unknown as AttributeWindowShape['getItemById'],
+	setFolderGroup: null as unknown as AttributeWindowShape['setFolderGroup'],
+	getGroup: null as unknown as AttributeWindowShape['getGroup'],
+	getAttribute: null as unknown as AttributeWindowShape['getAttribute'],
+	getGroupAttribute: null as unknown as AttributeWindowShape['getGroupAttribute'],
+	getDefAttributeId: null as unknown as AttributeWindowShape['getDefAttributeId'],
+	getAttributeItems: null as unknown as AttributeWindowShape['getAttributeItems'],
+	openPropertyPanel: null as unknown as AttributeWindowShape['openPropertyPanel'],
+	closePropertyPanel: null as unknown as AttributeWindowShape['closePropertyPanel'],
+	unpackAttribute: null as unknown as AttributeWindowShape['unpackAttribute'],
+	packAttribute: null as unknown as AttributeWindowShape['packAttribute'],
+	saveHistory: null as unknown as AttributeWindowShape['saveHistory'],
+	windowClose: null as unknown as AttributeWindowShape['windowClose'],
+	windowClosed: null as unknown as AttributeWindowShape['windowClosed'],
+	keydown: null as unknown as AttributeWindowShape['keydown'],
+	listKeydown: null as unknown as AttributeWindowShape['listKeydown'],
+	listPointerdown: null as unknown as AttributeWindowShape['listPointerdown'],
+	listDoubleclick: null as unknown as AttributeWindowShape['listDoubleclick'],
+	listSelect: null as unknown as AttributeWindowShape['listSelect'],
+	listRecord: null as unknown as AttributeWindowShape['listRecord'],
+	listOpen: null as unknown as AttributeWindowShape['listOpen'],
+	listPopup: null as unknown as AttributeWindowShape['listPopup'],
+	nameInput: null as unknown as AttributeWindowShape['nameInput'],
+	keyInput: null as unknown as AttributeWindowShape['keyInput'],
+	typeWrite: null as unknown as AttributeWindowShape['typeWrite'],
+	typeInput: null as unknown as AttributeWindowShape['typeInput'],
+	enumInput: null as unknown as AttributeWindowShape['enumInput'],
+	noteInput: null as unknown as AttributeWindowShape['noteInput'],
+	panelKeydown: null as unknown as AttributeWindowShape['panelKeydown'],
+	searcherInput: null as unknown as AttributeWindowShape['searcherInput'],
+	confirm: null as unknown as AttributeWindowShape['confirm'],
+	apply: null as unknown as AttributeWindowShape['apply'],
+	list_saveScroll: null as unknown as AttributeWindowShape['list_saveScroll'],
+	list_restoreScroll: null as unknown as AttributeWindowShape['list_restoreScroll'],
+	list_cancelSearch: null as unknown as AttributeWindowShape['list_cancelSearch'],
+	list_createFolder: null as unknown as AttributeWindowShape['list_createFolder'],
+	list_createAttribute: null as unknown as AttributeWindowShape['list_createAttribute'],
+	list_createIcon: null as unknown as AttributeWindowShape['list_createIcon'],
+	list_updateIcon: null as unknown as AttributeWindowShape['list_updateIcon'],
+	list_parseName: null as unknown as AttributeWindowShape['list_parseName'],
+	list_addElementClass: null as unknown as AttributeWindowShape['list_addElementClass'],
+	list_createGroupText: null as unknown as AttributeWindowShape['list_createGroupText'],
+	list_updateGroupText: null as unknown as AttributeWindowShape['list_updateGroupText'],
+	list_createInitText: null as unknown as AttributeWindowShape['list_createInitText'],
+	list_updateInitText: null as unknown as AttributeWindowShape['list_updateInitText'],
+	list_createNoteIcon: null as unknown as AttributeWindowShape['list_createNoteIcon'],
+	list_updateNoteIcon: null as unknown as AttributeWindowShape['list_updateNoteIcon'],
+	list_onCreate: null as unknown as AttributeWindowShape['list_onCreate'],
+	list_onDelete: null as unknown as AttributeWindowShape['list_onDelete'],
+	list_onResume: null as unknown as AttributeWindowShape['list_onResume']
 };
 
 function ensureDomBound() {
@@ -170,18 +246,18 @@ function ensureDomBound() {
 	Attribute.inputs.note = $('#attribute-note');
 	Attribute.inputs.enum = $('#attribute-enum');
 	Attribute.inputs.enumBox = $('#attribute-enum-box');
-	list.copy = null as unknown as (...args: unknown[]) => any;
-	list.paste = null as unknown as (...args: unknown[]) => any;
-	list.delete = null as unknown as (...args: unknown[]) => any;
+	list.copy = null as unknown as (...args: unknown[]) => void;
+	list.paste = null as unknown as (...args: unknown[]) => void;
+	list.delete = null as unknown as (...args: unknown[]) => void;
 	list.saveScroll = Attribute.list_saveScroll;
 	list.restoreScroll = Attribute.list_restoreScroll;
 	list.cancelSearch = Attribute.list_cancelSearch;
 	list.createFolder = Attribute.list_createFolder;
 	list.createAttribute = Attribute.list_createAttribute;
-	list.createIcon = Attribute.list_createIcon as unknown as (...args: unknown[]) => any;
-	list.updateIcon = Attribute.list_updateIcon as unknown as (...args: unknown[]) => any;
+	list.createIcon = Attribute.list_createIcon as (item: unknown) => unknown;
+	list.updateIcon = Attribute.list_updateIcon as (item: unknown) => unknown;
 	list.parseName = Attribute.list_parseName;
-	list.addElementClass = Attribute.list_addElementClass as unknown as (...args: unknown[]) => any;
+	list.addElementClass = Attribute.list_addElementClass;
 	list.createGroupText = Attribute.list_createGroupText;
 	list.updateGroupText = Attribute.list_updateGroupText;
 	list.createInitText = Attribute.list_createInitText;
@@ -207,7 +283,7 @@ Object.defineProperty(Attribute.inputs, 'type', {
 	configurable: true
 });
 
-Attribute.initialize = function (this: any) {
+Attribute.initialize = function (this: typeof Attribute) {
 	ensureDomBound();
 	if (!Attribute.list) return;
 	const { list } = this;
@@ -354,7 +430,7 @@ Attribute.initialize = function (this: any) {
 };
 
 Attribute.open = function (
-	this: any,
+	this: typeof Attribute,
 	target: AttributeTarget | null | undefined = null,
 	mode: string | null | undefined = 'normal'
 ) {
@@ -389,19 +465,19 @@ Attribute.open = function (
 	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'attribute'));
 };
 
-Attribute.undo = function (this: any) {
+Attribute.undo = function (this: typeof Attribute) {
 	if (this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
-Attribute.redo = function (this: any) {
+Attribute.redo = function (this: typeof Attribute) {
 	if (this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
 
-Attribute.createId = function (this: any) {
+Attribute.createId = function (this: typeof Attribute) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -409,7 +485,7 @@ Attribute.createId = function (this: any) {
 	return id;
 };
 
-Attribute.register = function (this: any, item: AttributeItem) {
+Attribute.register = function (this: typeof Attribute, item: AttributeItem) {
 	Attribute.idMap[item.id] = true;
 	if (item.class === 'folder') {
 		for (const child of item.children!) {
@@ -418,7 +494,7 @@ Attribute.register = function (this: any, item: AttributeItem) {
 	}
 };
 
-Attribute.unregister = function (this: any, item: AttributeItem) {
+Attribute.unregister = function (this: typeof Attribute, item: AttributeItem) {
 	delete Attribute.idMap[item.id];
 	if (item.class === 'folder') {
 		for (const child of item.children!) {
@@ -447,12 +523,16 @@ Attribute.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (this: any, id: string) {
+	return function (this: typeof Attribute, id: string) {
 		return find(this.data, id);
 	};
 })();
 
-Attribute.setFolderGroup = function (this: any, folder: AttributeItem, newGroup: string) {
+Attribute.setFolderGroup = function (
+	this: typeof Attribute,
+	folder: AttributeItem,
+	newGroup: string
+) {
 	const oldGroup = folder.element!.group;
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
@@ -467,24 +547,24 @@ Attribute.setFolderGroup = function (this: any, folder: AttributeItem, newGroup:
 	}
 };
 
-Attribute.getGroup = function (this: any, groupKey: string) {
+Attribute.getGroup = function (this: typeof Attribute, groupKey: string) {
 	return Data.attribute.context.getGroup(groupKey);
 };
 
-Attribute.getAttribute = function (this: any, attrId: string) {
+Attribute.getAttribute = function (this: typeof Attribute, attrId: string) {
 	return Data.attribute.context.getAttribute(attrId);
 };
 
-Attribute.getGroupAttribute = function (this: any, groupKey: string, attrId: string) {
+Attribute.getGroupAttribute = function (this: typeof Attribute, groupKey: string, attrId: string) {
 	return Data.attribute.context.getGroupAttribute(groupKey, attrId);
 };
 
-Attribute.getDefAttributeId = function (this: any, groupKey: string, type?: string) {
+Attribute.getDefAttributeId = function (this: typeof Attribute, groupKey: string, type?: string) {
 	return Data.attribute.context.getDefAttributeId(groupKey, type);
 };
 
 Attribute.getAttributeItems = function (
-	this: any,
+	this: typeof Attribute,
 	groupKey: string,
 	attrType?: string,
 	allowNone?: boolean
@@ -492,7 +572,7 @@ Attribute.getAttributeItems = function (
 	return Data.attribute.context.getAttributeItems(groupKey, attrType!, allowNone!);
 };
 
-Attribute.openPropertyPanel = function (this: any, attribute: AttributeItem) {
+Attribute.openPropertyPanel = function (this: typeof Attribute, attribute: AttributeItem) {
 	const panel = this.panel;
 	if (panel.attribute !== attribute) {
 		panel.attribute = attribute;
@@ -506,7 +586,7 @@ Attribute.openPropertyPanel = function (this: any, attribute: AttributeItem) {
 	}
 };
 
-Attribute.closePropertyPanel = function (this: any) {
+Attribute.closePropertyPanel = function (this: typeof Attribute) {
 	const panel = this.panel;
 	if (panel.attribute) {
 		panel.attribute = null;
@@ -552,7 +632,7 @@ Attribute.unpackAttribute = (function IIFE() {
 		}
 		return copies;
 	};
-	return function (this: any) {
+	return function (this: typeof Attribute) {
 		this.idMap = {};
 		this.data = clone(Data.attribute.keys);
 		this.settings = Object.clone(Data.attribute.settings);
@@ -586,14 +666,19 @@ Attribute.packAttribute = (function IIFE() {
 		}
 		return copies;
 	};
-	return function (this: any) {
+	return function (this: typeof Attribute) {
 		Data.attribute.keys = clone(this.data);
 		Data.attribute.settings = Object.clone(this.settings);
 		Data.createAttributeContext();
 	};
 })();
 
-Attribute.saveHistory = function (this: any, item: AttributeItem, key: string, value?: string) {
+Attribute.saveHistory = function (
+	this: typeof Attribute,
+	item: AttributeItem,
+	key: string,
+	value?: string
+) {
 	const type = `attribute-${key}-change`;
 	const history = this.history;
 	const index = history.index;
@@ -613,7 +698,7 @@ Attribute.saveHistory = function (this: any, item: AttributeItem, key: string, v
 	}
 };
 
-Attribute.windowClose = function (this: any, event: Event) {
+Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
@@ -638,12 +723,12 @@ Attribute.windowClose = function (this: any, event: Event) {
 	}
 }.bind(Attribute);
 
-Attribute.windowClosed = function (this: any, event: Event) {
+Attribute.windowClosed = function (this: typeof Attribute, event: Event) {
 	this.data = null;
-	this.idMap = null;
+	this.idMap = null as unknown as Record<string, boolean>;
 	UndoManager.setActive(this._previousActive);
 	this._previousActive = null;
-	this.history = null;
+	this.history = null as unknown as History;
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
@@ -743,7 +828,7 @@ Attribute.listRecord = function (event: Event) {
 	}
 };
 
-Attribute.listOpen = function (event: any) {
+Attribute.listOpen = function (event: MouseEvent) {
 	Attribute.listDoubleclick(event);
 };
 
@@ -876,7 +961,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 	);
 };
 
-Attribute.nameInput = function (event: any) {
+Attribute.nameInput = function (event: InputEvent & { target: HTMLInputElement }) {
 	const item = Attribute.panel!.attribute!;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'name', item.name);
@@ -886,7 +971,7 @@ Attribute.nameInput = function (event: any) {
 	}
 };
 
-Attribute.keyInput = function (event: any) {
+Attribute.keyInput = function (event: InputEvent & { target: HTMLInputElement }) {
 	const item = Attribute.panel!.attribute!;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'key', item.key);
@@ -963,7 +1048,7 @@ Attribute.searcherInput = function (this: TextBox, event: InputEvent) {
 	Attribute.list!.searchNodesDebounced(text);
 };
 
-Attribute.confirm = function (this: any, event?: Event) {
+Attribute.confirm = function (this: typeof Attribute, event?: Event) {
 	switch (this.mode) {
 		case 'normal':
 			this.apply();
@@ -990,7 +1075,7 @@ Attribute.confirm = function (this: any, event?: Event) {
 	Window.close!('attribute');
 }.bind(Attribute);
 
-Attribute.apply = function (this: any, event?: Event) {
+Attribute.apply = function (this: typeof Attribute, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 

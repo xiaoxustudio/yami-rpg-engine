@@ -5,11 +5,11 @@ import { dispatchChangeEvent } from './dom';
 export type HistoryOperation = 'undo' | 'redo';
 
 export interface IEditableHistory {
-	stack: any[];
+	stack: unknown[];
 	index: number;
 	reset(): void;
-	save(data: any): void;
-	restore(operation: any): void;
+	save(data?: unknown): void;
+	restore(operation: HistoryOperation): void;
 	canUndo(): boolean;
 	canRedo(): boolean;
 }
@@ -20,8 +20,8 @@ export interface ICapacityHistory extends IEditableHistory {
 
 export const HistoryTimer = new Timer({
 	duration: 2000,
-	callback: (timer: any) => {
-		timer.complete = true;
+	callback: (timer: Timer) => {
+		(timer as Timer & { complete: boolean }).complete = true;
 	}
 }) as unknown as Omit<Timer, 'start'> & {
 	complete: boolean;
@@ -49,21 +49,21 @@ HistoryTimer.finish = function (): void {
 
 export class NumberHistory implements IEditableHistory {
 	static restoring: boolean;
-	input: any;
-	stack: any[];
+	input: HTMLInputElement;
+	stack: { value: string }[];
 	index: number;
 	lastValue: string;
-	history: any;
-	value: any;
+	history!: NumberHistory;
+	value!: string;
 
-	constructor(input: any) {
+	constructor(input: HTMLInputElement) {
 		this.input = input;
 		this.stack = [];
 		this.index = -1;
 		this.lastValue = '';
 
 		input.addEventListener('keydown', this.inputKeydown);
-		input.addEventListener('input', this.inputInput);
+		input.addEventListener('input', this.inputInput as EventListener);
 		input.addEventListener('blur', this.inputBlur);
 	}
 
@@ -95,7 +95,7 @@ export class NumberHistory implements IEditableHistory {
 		}
 	}
 
-	restore(operation: any) {
+	restore(operation: HistoryOperation) {
 		let index = this.index;
 		if (operation === 'redo') {
 			index++;
@@ -131,7 +131,7 @@ export class NumberHistory implements IEditableHistory {
 		return this.index + 1 < this.stack.length;
 	}
 
-	inputKeydown(event: any) {
+	inputKeydown(event: KeyboardEvent) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyZ':
@@ -146,7 +146,7 @@ export class NumberHistory implements IEditableHistory {
 		}
 	}
 
-	inputInput(event: any) {
+	inputInput(event: InputEvent) {
 		if (!NumberHistory.restoring) {
 			switch (event.inputType) {
 				case 'insertCompositionText':
@@ -180,7 +180,7 @@ export class NumberHistory implements IEditableHistory {
 		}
 	}
 
-	inputBlur(event: any) {
+	inputBlur(event: FocusEvent) {
 		HistoryTimer.finish();
 	}
 }
@@ -188,25 +188,37 @@ export class NumberHistory implements IEditableHistory {
 NumberHistory.restoring = false;
 
 export class TextHistory implements IEditableHistory {
-	input: HTMLElement & { [k: string]: any };
-	stack: any[];
+	input: (HTMLInputElement | HTMLTextAreaElement) & {
+		replace?: (value: string | number) => void;
+	};
+	stack: {
+		deleted: string;
+		inserted: string;
+		lastStart: number;
+		lastEnd: number;
+		editingStart: number;
+	}[];
 	index: number;
 	inputType: string;
 	deleted: string;
 	inserted: string;
-	lastInsert: string;
+	lastInsert: string | null;
 	lastStart: number;
 	lastEnd: number;
 	editingStart: number;
 	selectionStart: number;
 	selectionEnd: number;
-	history: any;
+	history!: TextHistory;
 
 	static restoring: boolean;
 	static eventStruct: { inputType: string; data: string | null };
 	static inputReplace: (value: string | number) => void;
 
-	constructor(input: any) {
+	constructor(
+		input: (HTMLInputElement | HTMLTextAreaElement) & {
+			replace?: (value: string | number) => void;
+		}
+	) {
 		this.input = input;
 		this.stack = [];
 		this.index = -1;
@@ -222,12 +234,12 @@ export class TextHistory implements IEditableHistory {
 
 		input.replace = TextHistory.inputReplace;
 
-		input.addEventListener('keydown', this.inputKeydown);
-		input.addEventListener('beforeinput', this.inputBeforeinput);
-		input.addEventListener('input', this.inputInput);
-		input.addEventListener('blur', this.inputBlur);
-		input.addEventListener('compositionstart', this.inputCompositionstart);
-		input.addEventListener('compositionend', this.inputCompositionEnd);
+		input.addEventListener('keydown', this.inputKeydown as EventListener);
+		input.addEventListener('beforeinput', this.inputBeforeinput as EventListener);
+		input.addEventListener('input', this.inputInput as EventListener);
+		input.addEventListener('blur', this.inputBlur as EventListener);
+		input.addEventListener('compositionstart', this.inputCompositionstart as EventListener);
+		input.addEventListener('compositionend', this.inputCompositionEnd as EventListener);
 	}
 
 	reset() {
@@ -272,7 +284,7 @@ export class TextHistory implements IEditableHistory {
 		}
 	}
 
-	restore(operation: any) {
+	restore(operation: HistoryOperation) {
 		if (operation === 'undo') {
 			this.save();
 		}
@@ -338,18 +350,18 @@ export class TextHistory implements IEditableHistory {
 		return this.index + 1 < this.stack.length;
 	}
 
-	updateStates(event: any) {
+	updateStates(event: InputEvent | { inputType: string; data: string | null }) {
 		const { input } = this;
 		const inputType = event.inputType;
 		if (this.inputType !== inputType) {
 			this.inputType = inputType ?? 'unknown';
 			this.inserted = '';
 			this.deleted = '';
-			this.lastStart = input.selectionStart;
-			this.lastEnd = input.selectionEnd;
-			this.editingStart = input.selectionStart;
+			this.lastStart = input.selectionStart!;
+			this.lastEnd = input.selectionEnd!;
+			this.editingStart = input.selectionStart!;
 			if (input.selectionStart !== input.selectionEnd) {
-				this.deleted = input.value.slice(input.selectionStart, input.selectionEnd);
+				this.deleted = input.value.slice(input.selectionStart!, input.selectionEnd!);
 			}
 		}
 		switch (inputType) {
@@ -363,22 +375,22 @@ export class TextHistory implements IEditableHistory {
 				break;
 			case 'deleteContentForward':
 				if (
-					input.selectionStart < input.value.length &&
+					input.selectionStart! < input.value.length &&
 					input.selectionStart === input.selectionEnd
 				) {
-					const char = input.value[input.selectionStart];
+					const char = input.value[input.selectionStart!];
 					this.deleted = this.deleted + char;
 				}
 				break;
 			case 'deleteContentBackward':
-				if (input.selectionStart > 0 && input.selectionStart === input.selectionEnd) {
-					const char = input.value[input.selectionStart - 1];
+				if (input.selectionStart! > 0 && input.selectionStart === input.selectionEnd) {
+					const char = input.value[input.selectionStart! - 1];
 					this.deleted = char + this.deleted;
 					this.editingStart--;
 				}
 				break;
 			case 'replaceText':
-				this.inserted = event.data;
+				this.inserted = event.data!;
 				break;
 			default:
 				if (event.data) {
@@ -391,14 +403,14 @@ export class TextHistory implements IEditableHistory {
 		}
 	}
 
-	updateSelection(event: any) {
+	updateSelection(event: { data: string | null }) {
 		const { input } = this;
 		this.lastInsert = event.data;
-		this.selectionStart = input.selectionStart;
-		this.selectionEnd = input.selectionEnd;
+		this.selectionStart = input.selectionStart!;
+		this.selectionEnd = input.selectionEnd!;
 	}
 
-	inputKeydown(event: any) {
+	inputKeydown(event: KeyboardEvent) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyZ':
@@ -413,7 +425,7 @@ export class TextHistory implements IEditableHistory {
 		}
 	}
 
-	inputBeforeinput(event: any) {
+	inputBeforeinput(event: InputEvent | { inputType: string; data: string | null }) {
 		const { history } = this;
 		switch (event.inputType) {
 			case 'insertCompositionText':
@@ -470,7 +482,7 @@ export class TextHistory implements IEditableHistory {
 		history.updateStates(event);
 	}
 
-	inputInput(event: any) {
+	inputInput(event: InputEvent) {
 		switch (event.inputType) {
 			case 'insertCompositionText':
 				break;
@@ -484,11 +496,11 @@ export class TextHistory implements IEditableHistory {
 		}
 	}
 
-	inputBlur(event: any) {
+	inputBlur(event: FocusEvent) {
 		HistoryTimer.finish();
 	}
 
-	inputCompositionstart(event: any) {
+	inputCompositionstart(event: CompositionEvent) {
 		const { history } = this;
 		const struct = TextHistory.eventStruct;
 		struct.data = null;
@@ -497,7 +509,7 @@ export class TextHistory implements IEditableHistory {
 		history.updateSelection(event);
 	}
 
-	inputCompositionEnd(event: any) {
+	inputCompositionEnd(event: CompositionEvent) {
 		const { history } = this;
 		if (event.data || history.deleted) {
 			const struct = TextHistory.eventStruct;
@@ -522,7 +534,10 @@ TextHistory.inputReplace = (function IIFE() {
 		inputType: 'replaceText',
 		data: null
 	};
-	return function (this: any, value: string | number) {
+	return function (
+		this: (HTMLInputElement | HTMLTextAreaElement) & { history: TextHistory },
+		value: string | number
+	) {
 		if (typeof value === 'number') {
 			value = value.toString();
 		}
@@ -533,22 +548,33 @@ TextHistory.inputReplace = (function IIFE() {
 	};
 })();
 
+interface CommandHistoryData {
+	type: 'insert' | 'replace' | 'delete' | 'toggle';
+	parent: unknown;
+	array?: unknown[];
+	index?: number;
+	commands: unknown[];
+	method?: string;
+}
+
 export class CommandHistory implements ICapacityHistory {
 	list: HTMLElement & {
-		select(start: any, end?: any): void;
+		unfoldCommand(parent: unknown): void;
+		select(start: number, end?: number): void;
 		scrollToSelection(mode?: string): void;
 		update(...args: any[]): void;
 		dispatchChangeEvent(): void;
-		getRangeByData(data: any): [number, number];
-		[k: string]: any;
+		getRangeByData(data: unknown): [number, number];
+		enableItems(commands: unknown[]): void;
+		disableItems(commands: unknown[]): void;
 	};
-	stack: any[];
+	stack: CommandHistoryData[];
 	index: number;
 	capacity: number;
 	versionId: number;
 	lastState: number;
 
-	constructor(list: any) {
+	constructor(list: CommandHistory['list']) {
 		this.list = list;
 		this.stack = [];
 		this.index = -1;
@@ -564,7 +590,7 @@ export class CommandHistory implements ICapacityHistory {
 		}
 	}
 
-	save(data: any) {
+	save(data: CommandHistoryData) {
 		const stack = this.stack;
 		const length = this.index + 1;
 		if (length < stack.length) {
@@ -582,7 +608,7 @@ export class CommandHistory implements ICapacityHistory {
 		this.versionId++;
 	}
 
-	restore(operation: any) {
+	restore(operation: HistoryOperation) {
 		const index =
 			operation === 'undo' ? this.index : operation === 'redo' ? this.index + 1 : null;
 
@@ -597,15 +623,15 @@ export class CommandHistory implements ICapacityHistory {
 					const eCommand = commands[length - 1];
 					list.unfoldCommand(parent);
 					if (operation === 'undo') {
-						if (index + length <= array.length) {
+						if (index! + length <= array!.length) {
 							const start = list.getRangeByData(sCommand)[0];
-							array.splice(index, length);
+							array!.splice(index!, length);
 							list.update();
 							list.select(start);
 						}
 					} else {
-						if (index <= array.length) {
-							array.splice(index, 0, ...commands);
+						if (index! <= array!.length) {
+							array!.splice(index!, 0, ...commands);
 							list.update();
 							list.select(
 								list.getRangeByData(sCommand)[0],
@@ -620,14 +646,14 @@ export class CommandHistory implements ICapacityHistory {
 					const [oldCommand, newCommand] = commands;
 					list.unfoldCommand(parent);
 					if (operation === 'undo') {
-						if (index < array.length) {
-							array[index] = oldCommand;
+						if (index! < array!.length) {
+							array![index!] = oldCommand;
 							list.update();
 							list.select(...list.getRangeByData(oldCommand));
 						}
 					} else {
-						if (index < array.length) {
-							array[index] = newCommand;
+						if (index! < array!.length) {
+							array![index!] = newCommand;
 							list.update();
 							list.select(...list.getRangeByData(newCommand));
 						}
@@ -641,8 +667,8 @@ export class CommandHistory implements ICapacityHistory {
 					const eCommand = commands[length - 1];
 					list.unfoldCommand(parent);
 					if (operation === 'undo') {
-						if (index <= array.length) {
-							array.splice(index, 0, ...commands);
+						if (index! <= array!.length) {
+							array!.splice(index!, 0, ...commands);
 							list.update();
 							list.select(
 								list.getRangeByData(sCommand)[0],
@@ -650,9 +676,9 @@ export class CommandHistory implements ICapacityHistory {
 							);
 						}
 					} else {
-						if (index + length <= array.length) {
+						if (index! + length <= array!.length) {
 							const start = list.getRangeByData(sCommand)[0];
-							array.splice(index, length);
+							array!.splice(index!, length);
 							list.update();
 							list.select(start);
 						}
@@ -718,9 +744,10 @@ export class CommandHistory implements ICapacityHistory {
 				this.restore('redo');
 				steps--;
 			}
-			delete (list as any).update;
-			delete (list as any).select;
-			delete (list as any).scrollToSelection;
+			const proxy = list as unknown as Record<string, unknown>;
+			delete proxy.update;
+			delete proxy.select;
+			delete proxy.scrollToSelection;
 			return true;
 		}
 		return false;

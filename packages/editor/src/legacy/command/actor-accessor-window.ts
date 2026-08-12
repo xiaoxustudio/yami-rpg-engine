@@ -3,10 +3,10 @@ import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface ActorGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -19,7 +19,7 @@ export const ActorGetter: ActorGetterShape = {
 	confirm: null
 };
 
-ActorGetter.initialize = function (this: any) {
+ActorGetter.initialize = function (this: ActorGetterShape) {
 	if (!$('#actorGetter-type')) return;
 	$('#actorGetter-type').loadItems([
 		{ name: 'Event Trigger Actor', value: 'trigger' },
@@ -45,7 +45,7 @@ ActorGetter.initialize = function (this: any) {
 	$('#actorGetter-confirm').on('click', this.confirm);
 };
 
-ActorGetter.open = function (this: any, target: any) {
+ActorGetter.open = function (this: ActorGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('actorGetter');
 
@@ -82,18 +82,18 @@ ActorGetter.open = function (this: any, target: any) {
 	getFocus($('#actorGetter-type'));
 };
 
-ActorGetter.checkDataForPlugin = function (this: any, data: any) {
+ActorGetter.checkDataForPlugin = function (this: ActorGetterShape, data: unknown) {
 	if (data instanceof Object) {
-		return data.getter === 'actor';
+		return (data as { getter?: string }).getter === 'actor';
 	}
 	return false;
 };
 
-ActorGetter.createDefaultForPlugin = function (this: any) {
+ActorGetter.createDefaultForPlugin = function (this: ActorGetterShape) {
 	return { getter: 'actor', type: 'trigger' };
 };
 
-ActorGetter.confirm = function (this: any, event: any) {
+ActorGetter.confirm = function (this: ActorGetterShape, event: Event) {
 	const read = getElementReader('actorGetter');
 	const type = read('type');
 	let getter;
@@ -135,9 +135,9 @@ ActorGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	if (this.target.isPluginInput) {
+	if (this.target!.isPluginInput) {
 		getter = { getter: 'actor', ...getter };
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('actorGetter');
 }.bind(ActorGetter);

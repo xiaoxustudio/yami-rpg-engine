@@ -8,7 +8,7 @@ export function useElement<T extends HTMLElement = HTMLElement>(): Ref<T | null>
 export function useEventListener(
 	target: Ref<EventTarget | null> | EventTarget,
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ) {
 	const el = 'value' in target ? target : { value: target };

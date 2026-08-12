@@ -12,13 +12,13 @@ export interface KeyboardBoxApi extends HTMLElement {
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	inputCode(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	getFocus(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	inputCode(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	getFocus(...args: unknown[]): void;
+	on(...args: unknown[]): void;
 }
 
 const codeToKey = (code: string): string => {
@@ -63,7 +63,7 @@ export function attachKeyboardBoxApi(
 				event.stopImmediatePropagation();
 				break;
 			default:
-				box.inputCode((event as any).keyCode || 0);
+				box.inputCode((event as KeyboardEvent & { keyCode?: number }).keyCode || 0);
 				input.value = codeToKey(event.code);
 				break;
 		}
@@ -92,7 +92,7 @@ export function attachKeyboardBoxApi(
 				const inputEvent = new InputEvent('input') as InputEvent & {
 					value: number;
 				};
-				inputEvent.value = box.dataValue;
+				inputEvent.value = box.dataValue ?? 0;
 				box.dispatchEvent(inputEvent);
 			}
 			dispatchChangeEvent(box);
@@ -130,7 +130,7 @@ export function attachKeyboardBoxApi(
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

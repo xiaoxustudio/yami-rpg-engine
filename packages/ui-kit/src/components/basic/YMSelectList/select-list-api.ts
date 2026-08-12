@@ -12,23 +12,28 @@ import {
 	commonListUpdateHeadAndFoot,
 	commonListResize
 } from '../../../utils/common-list';
+import type { CommonListLike } from '../../../utils/common-list';
 export interface SelectItem {
-	value: any;
+	value: unknown;
 	name: string;
 	tip?: string;
 }
 
-export interface SelectTarget extends HTMLElement {
+export type SelectTarget = HTMLElement & {
 	dataItems: SelectItem[];
-	dataValue: any;
-	input(...args: unknown[]): any;
-}
+	dataValue: unknown;
+	input(...args: unknown[]): void;
+};
 
 export interface SelectListApiOptions {
 	setTooltip?: (el: HTMLElement, tip: string) => void;
 }
 
-export interface SelectListApi extends HTMLElement {
+type SelectItemElement = HTMLElement & {
+	dataValue?: unknown;
+};
+
+export type SelectListApi = HTMLElement & {
 	state: 'open' | 'closed';
 	target: SelectTarget | null;
 	elements: HTMLElement[] & {
@@ -40,14 +45,15 @@ export interface SelectListApi extends HTMLElement {
 		foot: HTMLElement | null;
 	};
 	selection: HTMLElement | null;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	select(...args: unknown[]): any;
-	unselect(...args: unknown[]): any;
-	reselect(...args: unknown[]): any;
-	open(...args: unknown[]): any;
-	close(...args: unknown[]): any;
-	resize(...args: unknown[]): any;
+	innerHeight: number;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	select(...args: unknown[]): void;
+	unselect(...args: unknown[]): void;
+	reselect(...args: unknown[]): void;
+	open(...args: unknown[]): void;
+	close(...args: unknown[]): void;
+	resize(...args: unknown[]): void;
 	updateHeadAndFoot(): void;
 	updateOnResize(): void;
 	createItems(items: SelectItem[]): void;
@@ -56,13 +62,13 @@ export interface SelectListApi extends HTMLElement {
 	getElementIndexOfSelection(defIndex: number): number;
 	scrollToSelection(): void;
 	clearElements(start: number): void;
-	clear(...args: unknown[]): any;
+	clear(...args: unknown[]): HTMLElement;
 	pointermove(event: PointerEvent): void;
 	windowKeydown(event: KeyboardEvent): void;
 	windowPointerdown(event: PointerEvent): void;
 	windowResize(event?: Event): void;
 	windowBlur(event: Event): void;
-}
+};
 
 export function createSelectListApi(
 	el: HTMLElement,
@@ -86,15 +92,15 @@ export function createSelectListApi(
 	box.elements.foot = null;
 	box.selection = null;
 
-	const read = (): any => (box.selection as any)?.dataValue;
+	const read = (): unknown => (box.selection as SelectItemElement | null)?.dataValue;
 
-	const write = (value: any): void => {
+	const write = (value: unknown): void => {
 		const elements = box.elements;
 		const count = elements.count;
 		if (count !== 0) {
 			let target = elements[0];
 			for (let i = 0; i < count; i++) {
-				if ((elements[i] as any).dataValue === value) {
+				if ((elements[i] as SelectItemElement).dataValue === value) {
 					target = elements[i];
 					break;
 				}
@@ -169,11 +175,11 @@ export function createSelectListApi(
 	};
 
 	const resize = (): void => {
-		commonListResize(box);
+		commonListResize(box as unknown as CommonListLike);
 	};
 
 	const updateHeadAndFoot = (): void => {
-		commonListUpdateHeadAndFoot(box);
+		commonListUpdateHeadAndFoot(box as unknown as CommonListLike);
 	};
 
 	const updateOnResize = (): void => {};
@@ -186,7 +192,7 @@ export function createSelectListApi(
 		for (const item of items) {
 			const li = document.createElement('div');
 			addClass(li, 'select-item');
-			(li as any).dataValue = item.value;
+			(li as SelectItemElement).dataValue = item.value as SelectItemElement['dataValue'];
 			li.textContent = item.name;
 			if (item.tip) {
 				setTooltip(li, item.tip);
@@ -194,7 +200,7 @@ export function createSelectListApi(
 			elements[elements.count++] = li;
 		}
 
-		commonListClearElements(box, elements.count);
+		commonListClearElements(box as unknown as CommonListLike, elements.count);
 	};
 
 	const pageUp = (selectFlag: boolean): void => {
@@ -239,7 +245,7 @@ export function createSelectListApi(
 			if (index !== -1) {
 				const scrollTop = clamp(
 					box.scrollTop,
-					index * 20 + 20 - (box as any).innerHeight,
+					index * 20 + 20 - box.innerHeight,
 					index * 20
 				);
 				if (box.scrollTop !== scrollTop) {
@@ -250,13 +256,13 @@ export function createSelectListApi(
 	};
 
 	const clearElements = (start: number): void => {
-		commonListClearElements(box, start);
+		commonListClearElements(box as unknown as CommonListLike, start);
 	};
 
 	const clear = (): HTMLElement => {
 		unselect();
 		box.textContent = '';
-		commonListClearElements(box, 0);
+		commonListClearElements(box as unknown as CommonListLike, 0);
 		box.elements.count = 0;
 		box.elements.start = -1;
 		box.elements.end = -1;
@@ -267,7 +273,7 @@ export function createSelectListApi(
 	const pointermove = (event: PointerEvent): void => {
 		const element = (event.target as HTMLElement).closest('.select-item') as HTMLElement | null;
 		if (element && !hasClass(element, 'selected')) {
-			write((element as any).dataValue);
+			write((element as SelectItemElement).dataValue);
 		}
 	};
 
@@ -337,7 +343,7 @@ export function createSelectListApi(
 					if (event.altKey) {
 						return;
 					}
-					target.input((item as any).dataValue);
+					target.input((item as SelectItemElement).dataValue);
 				}
 				close();
 				return;

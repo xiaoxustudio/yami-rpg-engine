@@ -4,7 +4,7 @@ import { shallowRef } from 'vue';
 
 export const useCommandStore = defineStore('command', () => {
 	const state = shallowRef<string>('closed');
-	const target = shallowRef<any>(null);
+	const target = shallowRef<Record<string, unknown> | null>(null);
 
 	function syncState() {
 		state.value = EventEditor?.state ?? 'closed';
@@ -27,19 +27,25 @@ export const useCommandStore = defineStore('command', () => {
 		EventEditor?.planToSave?.();
 	}
 
-	function openLocalEvent(inserting: any, filter: any, name: any, event: any, callback: any) {
+	function openLocalEvent(
+		inserting: boolean,
+		filter: string,
+		name: string,
+		event: unknown,
+		callback: (() => void) | null
+	) {
 		EventEditor?.openLocalEvent?.(inserting, filter, name, event, callback);
 	}
 
-	function openGlobalEvent(guid: any) {
+	function openGlobalEvent(guid: string) {
 		EventEditor?.openGlobalEvent?.(guid);
 	}
 
-	function openRelatedEvents(contexts: any) {
+	function openRelatedEvents(contexts: unknown[]) {
 		EventEditor?.openRelatedEvents?.(contexts);
 	}
 
-	function findRelatedEvents(eventId: any) {
+	function findRelatedEvents(eventId: string) {
 		return EventEditor?.findRelatedEvents?.(eventId);
 	}
 
@@ -47,15 +53,15 @@ export const useCommandStore = defineStore('command', () => {
 		return EventEditor?.getAllLocalEvents?.();
 	}
 
-	function clearAllEventClasses(...items: any[]) {
+	function clearAllEventClasses(...items: unknown[]) {
 		return EventEditor?.clearAllEventClasses?.(...items);
 	}
 
-	function clearRelatedEventClasses(...items: any[]) {
+	function clearRelatedEventClasses(...items: unknown[]) {
 		return EventEditor?.clearRelatedEventClasses?.(...items);
 	}
 
-	function save(item: any) {
+	function save(item: unknown) {
 		EventEditor?.save?.(item);
 	}
 
@@ -63,15 +69,15 @@ export const useCommandStore = defineStore('command', () => {
 		return EventEditor?.isChanged?.();
 	}
 
-	function getItemById(id: any) {
+	function getItemById(id: string) {
 		return EventEditor?.getItemById?.(id);
 	}
 
-	function getItemByEvent(event: any) {
+	function getItemByEvent(event: unknown) {
 		return EventEditor?.getItemByEvent?.(event);
 	}
 
-	function openCommandList(item: any) {
+	function openCommandList(item: unknown) {
 		EventEditor?.openCommandList?.(item);
 	}
 
@@ -87,15 +93,15 @@ export const useCommandStore = defineStore('command', () => {
 		return EventEditor?.packOpenEvents?.();
 	}
 
-	function getGlobalEventName(id: any) {
+	function getGlobalEventName(id: string) {
 		return EventEditor?.getGlobalEventName?.(id);
 	}
 
-	function confirm(event?: any) {
+	function confirm(event?: Event) {
 		EventEditor?.confirm?.(event);
 	}
 
-	function apply(event?: any) {
+	function apply(event?: Event) {
 		EventEditor?.apply?.(event);
 	}
 

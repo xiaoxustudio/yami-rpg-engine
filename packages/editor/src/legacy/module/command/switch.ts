@@ -21,8 +21,22 @@ Command.cases.switch = new CommandSchema({
 			clear($('#switch-branches'));
 		});
 	},
-	customParse({ variable, branches, defaultCommands }: any) {
-		const contents: any[] = [
+	customParse({
+		variable,
+		branches,
+		defaultCommands
+	}: {
+		variable: unknown;
+		branches: Array<{ commands: unknown }>;
+		defaultCommands: unknown;
+	}) {
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [
 			{ fold: true },
 			{ color: 'flow' },
 			{ text: Local.get!('command.switch') + ' ' },
@@ -36,7 +50,7 @@ Command.cases.switch = new CommandSchema({
 				{ color: 'flow' },
 				{ text: textCase + ' ' },
 				{ color: 'normal' },
-				{ text: SwitchBranch.parse!(branch) },
+				{ text: SwitchBranch.parse!(branch as never) },
 				{ children: branch.commands }
 			);
 		}
@@ -50,7 +64,15 @@ Command.cases.switch = new CommandSchema({
 		contents.push({ color: 'flow' }, { text: Local.get!('command.switch.end') });
 		return contents;
 	},
-	customLoad({ variable = { type: 'local', key: '' }, branches = [], defaultCommands = null }) {
+	customLoad({
+		variable = { type: 'local', key: '' },
+		branches = [],
+		defaultCommands = null
+	}: {
+		variable: unknown;
+		branches: unknown[];
+		defaultCommands: unknown;
+	}) {
 		const write = getElementWriter('switch');
 		write('variable', variable);
 		write('branches', branches.slice());

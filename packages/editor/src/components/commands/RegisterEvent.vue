@@ -34,7 +34,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onTargetWrite = (value: any) => {
+const onTargetWrite = (value: unknown) => {
 	Command?.cases?.registerEvent?.targetWrite?.({ value });
 };
 const onOperationWrite = () => {

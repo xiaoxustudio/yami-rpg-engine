@@ -51,12 +51,12 @@ interface DataModule {
 	registerUiPresets: (uiId: string) => void;
 	unregisterUiPresets: (uiId: string) => void;
 	createManifest: () => void;
-	saveManifest: () => any;
-	filterManifest: (manifest: Manifest & Record<string, any>) => Record<string, any>;
+	saveManifest: () => Promise<void> | null;
+	filterManifest: (manifest: Manifest & Record<string, unknown>) => Record<string, unknown>;
 	inheritMetaData: () => void;
 	parseGUID: (meta: { path: string }) => string;
 	loadScript: (file: ScriptFile) => Promise<void>;
-	jsonReplacer: (key: string, value: unknown) => any;
+	jsonReplacer: (key: string, value: unknown) => unknown;
 	[k: string]: any;
 }
 
@@ -108,14 +108,14 @@ export const Data: DataModule = {
 	registerUiPresets: null as unknown as (uiId: string) => void,
 	unregisterUiPresets: null as unknown as (uiId: string) => void,
 	createManifest: null as unknown as () => void,
-	saveManifest: null as unknown as () => any,
+	saveManifest: null as unknown as () => Promise<void> | null,
 	filterManifest: null as unknown as (
-		manifest: Manifest & Record<string, any>
-	) => Record<string, any>,
+		manifest: Manifest & Record<string, unknown>
+	) => Record<string, unknown>,
 	inheritMetaData: null as unknown as () => void,
 	parseGUID: null as unknown as (meta: { path: string }) => string,
 	loadScript: null as unknown as (file: ScriptFile) => Promise<void>,
-	jsonReplacer: null as unknown as (key: string, value: unknown) => any
+	jsonReplacer: null as unknown as (key: string, value: unknown) => unknown
 };
 
 Data.loadAll = function (this: typeof Data) {
@@ -206,7 +206,7 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 		type: 'text'
 	}).then((code: string) => {
 		try {
-			return Codec.decodeScene((scenes[guid] = code));
+			return Codec.decodeScene((scenes[guid] = code as any));
 		} catch (error: unknown) {
 			(error as Error).message = `${path}\n${(error as Error).message}`;
 			throw error;
@@ -642,7 +642,7 @@ Data.saveManifest = function (this: typeof Data) {
 	const manifest = this.manifest as Manifest | null;
 	if (manifest?.changed) {
 		manifest.changed = false;
-		const copy = Data.filterManifest(manifest);
+		const copy = Data.filterManifest(manifest as Manifest & Record<string, unknown>);
 		// replacer 剥离运行期反引用键（dataMap、file、group、manifest、code 等），避免循环
 		const json = JSON.stringify(copy, Data.jsonReplacer, 2);
 		const last = manifest.code;
@@ -677,15 +677,15 @@ Data.jsonReplacer = function (key: string, value: unknown) {
 	return value;
 };
 
-Data.filterManifest = function (this: typeof Data, manifest: Manifest & Record<string, any>) {
-	const copy: Record<string, any> = {};
+Data.filterManifest = function (this: typeof Data, manifest: Manifest & Record<string, unknown>) {
+	const copy: Record<string, unknown> = {};
 	for (const key of Object.keys(manifest)) {
 		copy[key] = manifest[key];
 	}
 	copy.images = Object.clone(manifest.images);
 	copy.audio = Object.clone(manifest.audio);
 	const { usedMap } = Reference.findAllGuids!();
-	for (const list of [copy.images, copy.audio]) {
+	for (const list of [copy.images, copy.audio] as Array<Array<{ path: string; size: number }>>) {
 		for (const meta of list) {
 			const guid = Data.parseGUID(meta);
 			if (usedMap[guid] === undefined) {
@@ -758,7 +758,7 @@ for (const key of dataKeys) {
 	Object.defineProperty(Data, key, {
 		get: () => getDataStore().data[key],
 		set: (value: unknown) => {
-			getDataStore().data[key] = value;
+			(getDataStore().data as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMKeyboardBox from '../YMKeyboardBox.vue';
+import type { KeyboardBoxApi } from '../keyboard-box-api';
 
 describe('YMKeyboardBox', () => {
 	it('read/write roundtrip', () => {
 		const wrapper = mount(YMKeyboardBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
 		vm.write(65);
 		expect(vm.read()).toBe(65);
 		expect((wrapper.find('input').element as HTMLInputElement).value).toBe('65');
@@ -13,10 +14,10 @@ describe('YMKeyboardBox', () => {
 
 	it('inputCode dispatches input event with value', async () => {
 		const wrapper = mount(YMKeyboardBox);
-		const vm = wrapper.vm as any;
-		const el = wrapper.element as any;
-		const events: any[] = [];
-		el.on('input', (e: any) => events.push(e.value));
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
+		const el = wrapper.element as unknown as KeyboardBoxApi;
+		const events: unknown[] = [];
+		el.on('input', (e: Event & { value: unknown }) => events.push(e.value));
 		vm.inputCode(42);
 		await wrapper.vm.$nextTick();
 		expect(events).toEqual([42]);
@@ -25,7 +26,7 @@ describe('YMKeyboardBox', () => {
 
 	it('backspace clears value to 0 and empties input', async () => {
 		const wrapper = mount(YMKeyboardBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
 		vm.write(65);
 		const input = wrapper.find('input');
 		await input.trigger('keydown', { code: 'Backspace' });
@@ -49,7 +50,7 @@ describe('YMKeyboardBox', () => {
 
 	it('disable hides children and adds class', () => {
 		const wrapper = mount(YMKeyboardBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as KeyboardBoxApi;
 		vm.disable();
 		expect(wrapper.classes()).toContain('disabled');
 		expect((wrapper.find('input').element as HTMLElement).style.display).toBe('none');
@@ -59,17 +60,17 @@ describe('YMKeyboardBox', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMKeyboardBox);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as KeyboardBoxApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.getFocus).toBe('function');
-		expect(el.input.tagName).toBe('INPUT');
+		expect(el.input!.tagName).toBe('INPUT');
 	});
 
 	it('on(focus) enables focus event forwarding', async () => {
 		const wrapper = mount(YMKeyboardBox);
-		const el = wrapper.element as any;
-		const events: any[] = [];
+		const el = wrapper.element as unknown as KeyboardBoxApi;
+		const events: unknown[] = [];
 		el.on('focus', () => events.push(1));
 		const input = wrapper.find('input');
 		await input.trigger('focus');

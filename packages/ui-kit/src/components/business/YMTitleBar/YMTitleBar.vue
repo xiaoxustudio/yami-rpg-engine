@@ -2,8 +2,8 @@
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
 
-function getWindow(): any {
-	return (window as any).Window;
+function getWindow(): { close(id?: string): void } | undefined {
+	return (window as unknown as Window & { Window?: { close(id?: string): void } }).Window;
 }
 
 interface Props {
@@ -18,7 +18,7 @@ let dragging: PointerEvent | null = null;
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -130,7 +130,7 @@ const doubleclick = (event: Event): void => {
 defineExpose({ pointerdown, mouseclick, doubleclick, on, root });
 
 onMounted(() => {
-	const el = root.value as (HTMLDivElement & { [k: string]: any }) | null;
+	const el = root.value as (HTMLDivElement & { [k: string]: unknown }) | null;
 	if (!el) {
 		return;
 	}

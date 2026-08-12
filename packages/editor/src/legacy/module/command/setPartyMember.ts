@@ -18,7 +18,7 @@ Command.cases.setPartyMember = new CommandSchema({
 			{ name: 'Remove', value: 'remove' }
 		]);
 	},
-	customParse({ operation, actor }: any) {
+	customParse({ operation, actor }: { operation: string; actor: unknown }) {
 		const words = Command.words
 			.push(Local.get!('command.setPartyMember.' + operation))
 			.push(Command.parseActor!(actor));

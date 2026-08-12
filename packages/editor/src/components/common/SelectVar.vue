@@ -6,7 +6,7 @@
 				type="variable"
 				filter="all"
 				:model-value="state.varValue ?? defVar"
-				@update:model-value="(v: any) => (state.varValue = v)"
+				@update:model-value="(v: unknown) => (state.varValue = v)"
 			/>
 		</template>
 	</YMSelectVar>
@@ -21,8 +21,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 
 interface Props {
 	id?: string;
-	modelValue?: any;
-	items?: any[];
+	modelValue?: unknown;
+	items?: unknown[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -31,40 +31,43 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
+	'update:modelValue': [value: unknown];
 }>();
 
-const state = reactive<{ varValue: any }>({
+const state = reactive<{ varValue: unknown }>({
 	varValue: null
 });
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	switch(mode?: string): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): any;
+	getFocus(mode?: string): void;
+	loadItems(items: unknown[]): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
 const varBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const getChildRoot = (instance: any): HTMLElement | null => {
+const getChildRoot = (
+	instance: { $el?: Element | null; root?: HTMLElement | null } | null
+): HTMLElement | null => {
 	if (!instance) return null;
 	if (instance.$el instanceof HTMLElement) return instance.$el;
 	if (instance.root instanceof HTMLElement) return instance.root;
 	return null;
 };
 
-const read = (): any => ym.value?.read();
+const read = (): unknown => ym.value?.read();
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	ym.value?.write(value);
 	if (typeof value === 'object' && value !== null) {
 		state.varValue = value;
@@ -76,13 +79,13 @@ const write = (value: any): void => {
 const switchMode = (target?: string): void => ym.value?.switch(target);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const getFocus = (mode: any): any => ym.value?.getFocus(mode);
+const getFocus = (mode?: string): void => ym.value?.getFocus(mode);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
-const loadItems = (items: any[]): void => ym.value?.loadItems(items);
+const loadItems = (items: unknown[]): void => ym.value?.loadItems(items);
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, loadItems, root });
 
@@ -92,8 +95,23 @@ watch(
 );
 
 onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<'read' | 'write' | 'switch' | 'enable' | 'disable' | 'getFocus' | 'on' | 'loadItems' | 'selectBox' | 'varBox' | 'mode', any>;
+	const el = root.value as HTMLElement & {
+		read: () => unknown;
+		write: (value: unknown) => void;
+		switch: (mode?: string) => void;
+		enable: () => void;
+		disable: () => void;
+		getFocus: (mode?: string) => void;
+		on: (
+			type: string,
+			listener: (event: Event) => void,
+			options?: boolean | AddEventListenerOptions
+		) => void;
+		loadItems: (items: unknown[]) => void;
+		selectBox: HTMLElement | null;
+		varBox: HTMLElement | null;
+		mode: string;
+	};
 	if (!el) return;
 	el.read = read;
 	el.write = write;

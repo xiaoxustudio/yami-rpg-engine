@@ -38,7 +38,7 @@ describe('YMDetailBox', () => {
 
 	it('emits toggle on open/close via exposed methods', async () => {
 		const wrapper = mount(YMDetailBox, { props: { open: false } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		vm.open();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.emitted('toggle')![0]).toEqual(['open']);
@@ -49,7 +49,7 @@ describe('YMDetailBox', () => {
 
 	it('does not re-emit toggle when already open', async () => {
 		const wrapper = mount(YMDetailBox, { props: { open: true } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		vm.open();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.emitted('toggle')).toBeUndefined();

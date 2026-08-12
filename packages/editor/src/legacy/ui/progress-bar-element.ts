@@ -1,9 +1,25 @@
 import { UI } from './ui-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
+interface ProgressBarElementData {
+	image?: string;
+	display?: string;
+	clip?: number[];
+	type?: string;
+	step?: number;
+	centerX?: number;
+	centerY?: number;
+	startAngle?: number;
+	centralAngle?: number;
+	progress?: number;
+	colorMode?: string;
+	color?: number[];
+	blend?: string;
+}
+
 UI.ProgressBar = class ProgressBarElement extends UI.Element {
-	texture: any;
+	texture: ImageTexture | null;
 	_image!: string;
 	display: string;
 	clip: number[];
@@ -18,29 +34,29 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 	color: number[];
 	blend: string;
 
-	constructor(data: any) {
+	constructor(data: ProgressBarElementData = {}) {
 		super(data);
 		this.texture = null;
-		this.image = data.image;
-		this.display = data.display;
-		this.clip = data.clip;
-		this.type = data.type;
-		this.step = data.step;
-		this.centerX = data.centerX;
-		this.centerY = data.centerY;
-		this.startAngle = data.startAngle;
-		this.centralAngle = data.centralAngle;
-		this.progress = data.progress;
-		this.colorMode = data.colorMode;
-		this.color = data.color;
-		this.blend = data.blend;
+		this.image = data.image!;
+		this.display = data.display!;
+		this.clip = data.clip!;
+		this.type = data.type!;
+		this.step = data.step!;
+		this.centerX = data.centerX!;
+		this.centerY = data.centerY!;
+		this.startAngle = data.startAngle!;
+		this.centralAngle = data.centralAngle!;
+		this.progress = data.progress!;
+		this.colorMode = data.colorMode!;
+		this.color = data.color!;
+		this.blend = data.blend!;
 	}
 
 	get image() {
 		return this._image;
 	}
 
-	set image(value: any) {
+	set image(value: string) {
 		if (this._image !== value) {
 			this._image = value;
 			if (this.texture) {
@@ -68,7 +84,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 			const { base } = texture;
 			switch (this.display) {
 				case 'stretch':
-					texture.clip(0, 0, base.width, base.height);
+					texture.clip(0, 0, base!.width, base!.height);
 					break;
 				case 'clip':
 					texture.clip(...(this.clip as [number, number, number, number]));
@@ -107,7 +123,7 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 				}
 			}
 			GL.bufferData!(GL.ARRAY_BUFFER, vertices, GL.STREAM_DRAW, 0, vertexLength);
-			GL.bindTexture!(GL.TEXTURE_2D, base.glTexture);
+			GL.bindTexture!(GL.TEXTURE_2D, base!.glTexture);
 			GL.drawArrays!(GL.TRIANGLE_FAN, 0, drawingLength);
 		}
 
@@ -122,8 +138,8 @@ UI.ProgressBar = class ProgressBarElement extends UI.Element {
 		const y = texture.y;
 		const w = texture.width;
 		const h = texture.height;
-		const tw = texture.base.width;
-		const th = texture.base.height;
+		const tw = texture.base!.width;
+		const th = texture.base!.height;
 		const response = UI.ProgressBar.response;
 		const vertices = response.vertices;
 		const step = this.step;

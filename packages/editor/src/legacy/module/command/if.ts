@@ -19,8 +19,20 @@ Command.cases.if = new CommandSchema({
 			clear($('#if-branches'));
 		});
 	},
-	customParse({ branches, elseCommands }: any) {
-		const contents: any[] = [{ fold: true }];
+	customParse({
+		branches,
+		elseCommands
+	}: {
+		branches: Array<{ commands: unknown }>;
+		elseCommands: unknown;
+	}) {
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [{ fold: true }];
 		const textIf = Local.get!('command.if');
 		const textElse = Local.get!('command.if.else');
 		for (let index = 0; index < branches.length; index++) {
@@ -30,7 +42,7 @@ Command.cases.if = new CommandSchema({
 				...(index === 0 ? [] : [{ text: textElse + ' ' }]),
 				{ text: textIf + ' ' },
 				{ color: 'normal' },
-				{ text: IfBranch.parse!(branch) },
+				{ text: IfBranch.parse!(branch as never) },
 				{ children: branch.commands }
 			);
 		}
@@ -44,7 +56,13 @@ Command.cases.if = new CommandSchema({
 		contents.push({ color: 'flow' }, { text: Local.get!('command.if.end') });
 		return contents;
 	},
-	customLoad({ branches = [], elseCommands = null }) {
+	customLoad({
+		branches = [],
+		elseCommands = null
+	}: {
+		branches: unknown[];
+		elseCommands: unknown;
+	}) {
 		const write = getElementWriter('if');
 		write('branches', branches.slice());
 		write('else', !!elseCommands);

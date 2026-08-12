@@ -5,13 +5,15 @@ import { UI } from '@/ui/ui-window.ts';
 
 {
 	interface UIWindowShape {
-		[k: string]: any;
+		target: UIWindowData | null;
+		update: ((node: UIWindowData, key: string, value: unknown) => void) | null;
+		[k: string]: unknown;
 	}
 	interface UIWindowData {
 		layout: string;
 		overflow: string;
 		instances: { setProperty(key: string, value: unknown): void; resize(): void };
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 	const UIWindow: UIWindowShape = {
 		owner: UI,
@@ -165,8 +167,8 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
-		UIWindow.update!(UIWindow.target, Inspector.getKey!(this), read(this));
+	UIWindow.paramInput = function (this: HTMLElement & { [k: string]: unknown }, event: Event) {
+		UIWindow.update!(UIWindow.target as UIWindowData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiWindow = UIWindow;

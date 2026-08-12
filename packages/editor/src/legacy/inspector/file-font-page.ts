@@ -5,6 +5,12 @@ import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 
 {
+	interface FileFontFileShape {
+		stats: { size: number };
+		basename: string;
+		extname: string;
+		path: string;
+	}
 	interface FileFontShape {
 		[k: string]: any;
 	}
@@ -22,7 +28,7 @@ import { Inspector } from './inspector.ts';
 		textInput: null
 	};
 
-	FileFont.initialize = function (this: any) {
+	FileFont.initialize = function (this: FileFontShape) {
 		if (!$('#fileFont-content')) return;
 		this.previews = $('.fileFont-preview');
 
@@ -34,7 +40,7 @@ import { Inspector } from './inspector.ts';
 		this.input!.addEventListener('input', this.textInput);
 	};
 
-	FileFont.open = function (this: any, file: any, meta: any) {
+	FileFont.open = function (this: FileFontShape, file: FileFontFileShape, meta: unknown) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -69,7 +75,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.close = function (this: any) {
+	FileFont.close = function (this: FileFontShape) {
 		if (this.target) {
 			if (this.font instanceof FontFace) {
 				document.fonts.delete(this.font);
@@ -82,7 +88,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.windowResize = function (this: any, event: any) {
+	FileFont.windowResize = function (this: FileFontShape, event: Event) {
 		const previews = FileFont.previews;
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
@@ -91,8 +97,8 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.textInput = function (this: any, event: any) {
-		const text = event.target.value;
+	FileFont.textInput = function (this: FileFontShape, event: InputEvent) {
+		const text = (event.target as HTMLInputElement).value;
 		for (const element of FileFont.previews) {
 			element.textContent = text;
 		}

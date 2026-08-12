@@ -3,7 +3,7 @@ export interface TreeDataItem {
 	class: string;
 	name: string;
 	children?: TreeDataItem[];
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface TreeDataGroup {
@@ -13,11 +13,11 @@ export interface TreeDataGroup {
 }
 
 export interface TreeDataCache {
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface TreeDataLists {
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface LocalizeAdapter {
@@ -31,11 +31,15 @@ export class TreeDataContext {
 	itemLists: TreeDataLists;
 	localize: LocalizeAdapter | null;
 
-	constructor(data: any, keysField: any, localize: LocalizeAdapter | null = null) {
-		const itemMap: Record<string, any> = {};
-		const groupMap: Record<string, any> = {};
+	constructor(
+		data: Record<string, unknown> & { settings: Record<string, string> },
+		keysField: string,
+		localize: LocalizeAdapter | null = null
+	) {
+		const itemMap: Record<string, TreeDataItem> = {};
+		const groupMap: Record<string, TreeDataGroup> = {};
 
-		const load = (groupKeys: string[], items: any[]) => {
+		const load = (groupKeys: string[], items: TreeDataItem[]) => {
 			for (const item of items) {
 				const itemKey = item.id;
 				itemMap[itemKey] = item;
@@ -46,7 +50,7 @@ export class TreeDataContext {
 						itemList: []
 					};
 					groupKeys.push(itemKey);
-					load(groupKeys, item.children);
+					load(groupKeys, item.children as TreeDataItem[]);
 					groupKeys.pop();
 					continue;
 				}
@@ -57,16 +61,14 @@ export class TreeDataContext {
 				}
 			}
 		};
-		load([], data[keysField]);
+		load([], data[keysField] as TreeDataItem[]);
 
 		const settings = data.settings;
 		for (const [key, groupId] of Object.entries(settings)) {
-			if ((groupId as any) in groupMap) {
-				groupMap[key as any] = groupMap[groupId as any];
+			const groupKey = groupId as unknown as string;
+			if (groupKey in groupMap) {
+				groupMap[key] = groupMap[groupKey];
 			} else {
-				if (groupId !== '') {
-					settings[key] = '';
-				}
 				groupMap[key] = {
 					groupName: '',
 					itemMap: {},
@@ -81,18 +83,18 @@ export class TreeDataContext {
 		this.localize = localize;
 	}
 
-	getGroup(groupKey: any) {
+	getGroup(groupKey: string) {
 		return this.groupMap[groupKey];
 	}
 
-	getCachedItems(key: any, builder: any) {
+	getCachedItems(key: string, builder: () => unknown) {
 		if (!this.itemLists[key]) {
 			this.itemLists[key] = builder();
 		}
 		return this.itemLists[key];
 	}
 
-	createItem(id: any, name: any, extra: any) {
+	createItem(id: string, name: string, extra: object) {
 		return { name, value: id, ...extra };
 	}
 

@@ -14,6 +14,52 @@ import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 import { Selection } from '@/tools/text-capture.ts';
 
+interface CallEventArg {
+	type: string;
+	key: string;
+	value?: unknown;
+	note?: string;
+}
+
+interface CallEventObject {
+	type: string;
+	[k: string]: unknown;
+}
+
+interface CallEventParams {
+	type: string;
+	actor?: CallEventObject;
+	skill?: CallEventObject;
+	state?: CallEventObject;
+	equipment?: CallEventObject;
+	item?: CallEventObject;
+	light?: CallEventObject;
+	element?: CallEventObject;
+	eventId?: string;
+	eventArgs?: CallEventArg[];
+	eventResult?: CallEventResultData;
+	eventType?: string;
+}
+
+interface CallEventMeta {
+	parameters: CallEventArg[];
+	[k: string]: unknown;
+}
+
+interface CallEventResultData {
+	type: string;
+	variable?: { type: string; key: string };
+}
+
+interface CallEventInputApi {
+	loadItems?(items: unknown[]): void;
+	numBox?: { input?: HTMLInputElement; decimals?: number };
+	strBox?: HTMLElement | null;
+	type?: string | null;
+	filter?: string | null;
+	on?(type: string, listener: (event: Event) => void): void;
+}
+
 Command.cases.callEvent = new CommandSchema({
 	name: 'callEvent',
 	windowFrame: null,
@@ -79,11 +125,14 @@ Command.cases.callEvent = new CommandSchema({
 			this.clearGlobalEventElements!();
 		});
 	},
-	typeWrite(event: any) {
+	typeWrite(event: Event & { value: string }) {
 		const type = event.value;
 		if (type !== 'inherited') {
 			const elEventType = $('#callEvent-eventType');
-			const eventTypes = Enum.getMergedItems!(EventEditor.types[type], type + '-event');
+			const eventTypes = Enum.getMergedItems!(
+				EventEditor.types?.[type] ?? EventEditor.types?.all,
+				type + '-event'
+			);
 			elEventType.loadItems(eventTypes);
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
@@ -93,7 +142,7 @@ Command.cases.callEvent = new CommandSchema({
 		}
 		this.resizeWindow!();
 	},
-	eventIdWrite(event: any) {
+	eventIdWrite(event: Event & { value: string }) {
 		this.eventArgs = this.readEventArgs!();
 		this.clearGlobalEventElements!();
 		const id = event.value;
@@ -111,7 +160,7 @@ Command.cases.callEvent = new CommandSchema({
 		}
 		this.resizeWindow!();
 	},
-	eventIdInput(event: any) {
+	eventIdInput(event: Event & { value: string }) {
 		if (this.eventArgs) {
 			this.writeEventArgs!(this.eventArgs);
 		}
@@ -139,16 +188,17 @@ Command.cases.callEvent = new CommandSchema({
 			this.eventResult = null;
 		}
 	},
-	createParameterElements(parameter: any) {
+	createParameterElements(parameter: CallEventArg) {
 		const { type, key, note } = parameter;
 		const label = document.createElement('div');
 		addClass(label, 'text');
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
 		label.textContent = name;
-		let input: any;
+		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
+			CallEventInputApi;
 		switch (type) {
 			case 'boolean':
-				input = createSelectBox();
+				input = createSelectBox() as unknown as HTMLElement & CallEventInputApi;
 				input.loadItems([
 					{ name: 'False', value: false },
 					{ name: 'True', value: true }
@@ -156,55 +206,55 @@ Command.cases.callEvent = new CommandSchema({
 				break;
 			case 'number':
 				input = createNumberVar();
-				input.numBox.input!.min = '-1000000000';
-				input.numBox.input!.max = '1000000000';
-				input.numBox.decimals = 10;
+				input.numBox!.input!.min = '-1000000000';
+				input.numBox!.input!.max = '1000000000';
+				input.numBox!.decimals = 10;
 				break;
 			case 'string':
 				input = createTextAreaVar();
-				input.strBox.setAttribute(
+				input.strBox!.setAttribute(
 					'menu',
 					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
 				);
 				addClass(input, 'callEvent-argument-string');
 				input.on('change', () => this.resizeWindow!());
-				Selection.addEventListeners!(input.strBox);
+				Selection.addEventListeners!(input.strBox!);
 				break;
 			case 'object':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
 			case 'actor':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'actor';
 				break;
 			case 'skill':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'skill';
 				break;
 			case 'state':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'state';
 				break;
 			case 'equipment':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'equipment';
 				break;
 			case 'item':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'item';
 				break;
 			case 'trigger':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'trigger';
 				break;
 			case 'light':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'light';
 				break;
 			case 'element':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'element';
 				break;
 		}
@@ -217,28 +267,29 @@ Command.cases.callEvent = new CommandSchema({
 		this.gridBox.appendChild(input);
 		this.parameters.push({ key, type, label, input });
 	},
-	createEventResultElements(type: any) {
-		let input: any;
+	createEventResultElements(type: string) {
+		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
+			CallEventInputApi;
 		switch (type) {
 			case 'none':
 				return;
 			case 'boolean':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'boolean';
 				break;
 			case 'number':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'number';
 				break;
 			case 'string':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'string';
 				break;
 			case 'object':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
@@ -250,7 +301,7 @@ Command.cases.callEvent = new CommandSchema({
 			case 'trigger':
 			case 'light':
 			case 'element':
-				input = createCustomBox();
+				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
 				input.type = 'variable';
 				input.filter = 'object';
 				break;
@@ -268,7 +319,7 @@ Command.cases.callEvent = new CommandSchema({
 		this.gridBox.appendChild(input);
 		this.eventResult = { type, label, input };
 	},
-	parseEventArgs(event: any, args: any) {
+	parseEventArgs(event: CallEventMeta, args: CallEventArg[]) {
 		const words = Command.words;
 		if (event) {
 			const flags = {} as Record<string, boolean>;
@@ -295,10 +346,10 @@ Command.cases.callEvent = new CommandSchema({
 		if (info) info = `(${info})`;
 		return info;
 	},
-	parseEventArgInput(arg: any) {
+	parseEventArgInput(arg: CallEventArg) {
 		switch (arg.type) {
 			case 'boolean':
-				return Command.setBooleanColor!(arg.value.toString());
+				return Command.setBooleanColor!(arg.value!.toString());
 			case 'number':
 				return Command.parseVariableNumber!(arg.value);
 			case 'string':
@@ -323,7 +374,7 @@ Command.cases.callEvent = new CommandSchema({
 				return Command.parseElement!(arg.value);
 		}
 	},
-	getDefaultArgValue(type: any) {
+	getDefaultArgValue(type: string) {
 		switch (type) {
 			case 'boolean':
 				return false;
@@ -344,7 +395,7 @@ Command.cases.callEvent = new CommandSchema({
 				return { type: 'trigger' };
 		}
 	},
-	writeEventArgs(args: any) {
+	writeEventArgs(args: CallEventArg[]) {
 		outer: for (const { type, key, input } of this.parameters) {
 			for (const arg of args) {
 				if (arg.key === key && arg.type === type) {
@@ -356,7 +407,7 @@ Command.cases.callEvent = new CommandSchema({
 		}
 	},
 	readEventArgs() {
-		const args: any[] = [];
+		const args: CallEventArg[] = [];
 		for (const { type, key, input } of this.parameters) {
 			const value = read(input);
 			if (type === 'object' && VariableGetter.isNone!(value)) {
@@ -367,7 +418,7 @@ Command.cases.callEvent = new CommandSchema({
 		}
 		return args;
 	},
-	writeEventResult(eventResult: any) {
+	writeEventResult(eventResult: CallEventResultData) {
 		if (this.eventResult === null) return;
 		if (eventResult.type === 'none') return;
 		const baseTypes = 'boolean|number|string';
@@ -376,14 +427,14 @@ Command.cases.callEvent = new CommandSchema({
 			eventResult.type === this.eventResult.type ||
 			(baseTypes.includes(eventResult.type) &&
 				baseTypes.includes(this.eventResult.type) &&
-				eventResult.variable.type === 'local') ||
+				eventResult.variable!.type === 'local') ||
 			(objectTypes.includes(eventResult.type) && objectTypes.includes(this.eventResult.type))
 		) {
 			write(this.eventResult.input, eventResult.variable);
 		}
 	},
 	readEventResult() {
-		const eventResult: any = { type: 'none' };
+		const eventResult: CallEventResultData = { type: 'none' };
 		if (this.eventResult !== null) {
 			eventResult.type = this.eventResult.type;
 			eventResult.variable = read(this.eventResult.input);
@@ -403,7 +454,20 @@ Command.cases.callEvent = new CommandSchema({
 		eventArgs,
 		eventResult,
 		eventType
-	}: any) {
+	}: {
+		type: string;
+		actor: unknown;
+		skill: unknown;
+		state: unknown;
+		equipment: unknown;
+		item: unknown;
+		light: unknown;
+		element: unknown;
+		eventId: string;
+		eventArgs: unknown;
+		eventResult: { type: string; variable: unknown };
+		eventType: unknown;
+	}) {
 		const words = Command.words;
 		switch (type) {
 			case 'global': {
@@ -411,11 +475,11 @@ Command.cases.callEvent = new CommandSchema({
 					eventArgs = [];
 				}
 				if (eventResult === undefined) {
-					eventResult = { type: 'none' };
+					eventResult = { type: 'none', variable: undefined };
 				}
 				let leftValue = '';
 				let eventName = Command.parseFileName!(eventId);
-				const event = Data.events[eventId];
+				const event = Data.events[eventId!];
 				if (!event) break;
 				switch (eventResult.type) {
 					case 'none':
@@ -492,7 +556,7 @@ Command.cases.callEvent = new CommandSchema({
 		if (eventType) {
 			words.push(Command.parseEventType!(type + '-event', eventType));
 		}
-		const contents: any[] = [
+		const contents: Record<string, unknown>[] = [
 			{ color: 'flow' },
 			{ text: Local.get!('command.callEvent.alias') + Token(': ') },
 			{ text: words.join() }

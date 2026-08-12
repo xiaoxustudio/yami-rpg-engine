@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.deleteGlobalActor = new CommandSchema({
 	name: 'deleteGlobalActor',
 	fields: [{ key: 'actorId', default: '', required: true }],
-	customParse({ actorId }: any) {
+	customParse({ actorId }: { actorId: unknown }) {
 		const words = Command.words.push(Command.parseFileName(actorId));
 		return [
 			{ color: 'actor' },

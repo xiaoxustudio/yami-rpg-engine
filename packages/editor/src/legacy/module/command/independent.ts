@@ -5,7 +5,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.independent = new CommandSchema({
 	name: 'independent',
 	noWindow: true,
-	customParse({ commands }: any) {
+	customParse({ commands }: { commands: unknown }) {
 		return [
 			{ fold: true },
 			{ color: 'flow' },

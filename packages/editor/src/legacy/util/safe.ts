@@ -1,7 +1,8 @@
 import { Data } from '@/data/data-object.ts';
+import type { VariableNodeShape } from '@app/stores/data';
 
 // 安全获取全局变量 注意：Data.variables 在部分阶段为 null（见 data-object.js），直接访问 Data.variables.map[key] 会抛 TypeError，故统一走此函数
-export function getVariable(id: string | number | null | undefined): any {
+export function getVariable(id: string | number | null | undefined): VariableNodeShape | undefined {
 	if (id == null) return undefined;
 	return Data.variables?.map[id];
 }
@@ -20,7 +21,7 @@ export function debounce<T extends (...args: any[]) => void>(
 	delay = 150
 ): T & { cancel(): void } {
 	let timer: ReturnType<typeof setTimeout> | undefined;
-	const debounced = function (this: any, ...args: any[]) {
+	const debounced = function (this: unknown, ...args: unknown[]) {
 		if (timer !== undefined) clearTimeout(timer);
 		timer = setTimeout(() => {
 			timer = undefined;
@@ -38,8 +39,8 @@ export function debounce<T extends (...args: any[]) => void>(
 
 export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T & { cancel(): void } {
 	let handle: number | undefined;
-	let lastArgs: any[];
-	const throttled = function (this: any, ...args: any[]) {
+	let lastArgs: unknown[];
+	const throttled = function (this: unknown, ...args: unknown[]) {
 		lastArgs = args;
 		if (handle === undefined) {
 			handle = requestAnimationFrame(() => {

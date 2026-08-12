@@ -26,9 +26,9 @@ import {
 interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;
 	dataValue: number | string | boolean;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
+	read(): number | string | boolean | null | undefined;
+	write(value: number | string | boolean): void;
+	input(value: number | string | boolean): void;
 	enable(): void;
 	disable(): void;
 	relate(entries: RadioRelationEntry[]): void;
@@ -53,9 +53,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	write: [value: any];
-	input: [value: any];
-	change: [value: any];
+	write: [value: number | string | boolean];
+	input: [value: number | string | boolean];
+	change: [value: number | string | boolean];
 }>();
 
 const ym = ref<{
@@ -79,11 +79,11 @@ const isStandard = computed(
 		(typeof attrs.class === 'string' && /\bstandard\b/.test(attrs.class))
 );
 
-const read = (): any => state.proxy?.read();
-const write = (value: any): void => {
+const read = (): number | string | boolean | null | undefined => state.proxy?.read();
+const write = (value: number | string | boolean): void => {
 	state.proxy?.write(value);
 };
-const input = (value: any): void => {
+const input = (value: number | string | boolean): void => {
 	state.proxy?.input(value);
 };
 const enable = (): void => {
@@ -152,11 +152,11 @@ onMounted(() => {
 		el.appendChild(proxy);
 	}
 
-	proxy.on('write', (e: Event & { value: any }) => {
+	proxy.on('write', (e: Event & { value: number | string | boolean }) => {
 		emit('write', e.value);
 		syncSelected();
 	});
-	proxy.on('input', (e: Event & { value: any }) => {
+	proxy.on('input', (e: Event & { value: number | string | boolean }) => {
 		emit('input', e.value);
 		syncSelected();
 	});

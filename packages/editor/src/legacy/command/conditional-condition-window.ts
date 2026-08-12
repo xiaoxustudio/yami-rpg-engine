@@ -10,8 +10,8 @@ import { Local } from '@/tools/localization.ts';
 import { on, clear, getFocus } from '@/util/element-utils.ts';
 
 interface IfConditionTarget {
-	save: () => any;
-	dataValue?: any;
+	save: () => unknown;
+	dataValue?: unknown;
 	isPluginInput?: boolean;
 }
 
@@ -52,7 +52,7 @@ declare global {
 			| 'gamepad'
 			| 'mouse'
 			| 'variable';
-		value?: any;
+		value?: string | number | boolean;
 		attributeId?: string;
 		stringId?: string;
 		keycode?: string;
@@ -83,8 +83,8 @@ interface IfConditionShape {
 	parseOther: ((condition: IfConditionData) => string) | null;
 	parse: ((condition: IfConditionData, listData?: boolean) => string) | null;
 	open: ((condition?: IfConditionData) => void) | null;
-	save: (() => any) | null;
-	confirm: ((event: Event) => any) | null;
+	save: (() => unknown) | null;
+	confirm: ((event: Event) => unknown) | null;
 }
 
 export const IfCondition: IfConditionShape = {

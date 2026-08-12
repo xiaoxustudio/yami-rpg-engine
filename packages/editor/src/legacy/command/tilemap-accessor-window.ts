@@ -11,7 +11,7 @@ interface TilemapTarget {
 		presetId: string;
 		variable: { type: string; key: string };
 	};
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -66,7 +66,7 @@ TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget
 TilemapGetter.confirm = function (this: typeof TilemapGetter, event: Event) {
 	const read = getElementReader('tilemapGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'trigger':
 			getter = { type };

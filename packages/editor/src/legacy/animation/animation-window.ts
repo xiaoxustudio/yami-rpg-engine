@@ -31,7 +31,7 @@ import { Enum } from '@/enum/enum-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Layout } from '@/layout/layout.ts';
 import { GameLocal } from '@/local/local-object.ts';
-import { Particle } from '@/particle/particle-window.ts';
+import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.ts';
 import { SceneShift } from '@/scene/move-scene.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { Sprite } from '@/sprite/sprite.ts';
@@ -49,11 +49,141 @@ const Clipboard = getGlobalClipboard();
 
 type AnimationState = 'closed' | 'open';
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
-type AnimationMethod = ((...args: any[]) => any) | null;
-
 // DOM 元素字段：运行时挂载大量扩展方法（.hide()/.show()/.update()/.write()/.on() 等），统一用 HTMLElement & {[ k: string ]: any} 兜底，避免穷举
 type AnimationElement = HTMLElement & { [k: string]: any };
+
+type AnimationFrame = {
+	start: number;
+	end: number;
+	rotation?: number;
+	easingId?: string;
+	x?: number;
+	y?: number;
+	key?: HTMLElement & { start?: number; length?: number; easing?: boolean };
+	[k: string]: unknown;
+};
+type AnimationLayer = {
+	class: string;
+	frames: AnimationFrame[];
+	children: AnimationLayer[];
+	timeline?: HTMLElement & { layer?: AnimationLayer };
+	expanded?: boolean;
+	[k: string]: unknown;
+};
+type AnimationMotion = {
+	id: string;
+	mode: string;
+	dirCases: { layers: AnimationLayer[]; [k: string]: unknown }[];
+	loop?: boolean | null;
+	element: HTMLElement & {
+		enumId?: string;
+		textNode: Text;
+		loopIcon?: HTMLElement;
+		loop?: boolean | null;
+	};
+	[k: string]: unknown;
+};
+type AnimationContext = {
+	layer: { class: string; sprite: string; [k: string]: unknown };
+	frame: AnimationFrame;
+	matrix: number[];
+	anchorX: number;
+	anchorY: number;
+	pivotX: number;
+	pivotY: number;
+	emitter?: ParticleEmitterShape;
+	parent: AnimationContext | null;
+	[k: string]: unknown;
+};
+type AnimationMarquee = { layer: AnimationLayer; x: number; length: number; [k: string]: unknown };
+type AnimationFileContext = {
+	meta: { guid: string; path: string; [k: string]: unknown };
+	animation: {
+		mode: string;
+		sprites: Array<{
+			id: string;
+			image: string;
+			hframes: number;
+			vframes: number;
+			[k: string]: unknown;
+		}>;
+		motions: AnimationMotion[];
+		[k: string]: unknown;
+	};
+	[k: string]: any;
+};
+type AnimationFrameData = { copies: AnimationFrame[]; length: number };
+
+type AnimationHistoryObject = { response: unknown };
+type AnimationHistoryMotionId = { motion: AnimationMotion; direction: number; id: string };
+type AnimationHistoryMotionMode = {
+	motion: AnimationMotion;
+	direction: number;
+	mode: string;
+	dirCases: AnimationMotion['dirCases'];
+};
+type AnimationHistoryLayerOperation = {
+	motion: AnimationMotion;
+	direction: number;
+	response: unknown;
+};
+type AnimationHistoryLayerState = {
+	motion: AnimationMotion;
+	direction: number;
+	item: AnimationLayer;
+	oldValues: unknown;
+	newValue: boolean;
+};
+type AnimationHistoryLayerShift = {
+	motion: AnimationMotion;
+	direction: number;
+	layer: AnimationLayer;
+	shiftX: number;
+	shiftY: number;
+};
+type AnimationHistoryFrames = {
+	motion: AnimationMotion;
+	direction: number;
+	changes: { layer: AnimationLayer; frames: AnimationFrame[] }[];
+	sMarquee: { layer: AnimationLayer; x: number; length: number };
+	dMarquee: { layer: AnimationLayer; x: number; length: number };
+};
+type AnimationHistoryEasing = {
+	motion: AnimationMotion;
+	direction: number;
+	target: AnimationFrame & { easingId?: string; key: HTMLElement & { easing?: boolean } };
+	easingId: string;
+};
+type AnimationHistoryTargetShift = {
+	motion: AnimationMotion;
+	direction: number;
+	editor: { target: unknown };
+	target: AnimationFrame & { x: number; y: number };
+	x: number;
+	y: number;
+};
+type AnimationHistoryTargetResize = {
+	motion: AnimationMotion;
+	direction: number;
+	editor: { target: unknown };
+	target: AnimationFrame & { scaleX: number; scaleY: number };
+	scaleX: number;
+	scaleY: number;
+};
+type AnimationHistoryTargetRotate = {
+	motion: AnimationMotion;
+	direction: number;
+	editor: { target: unknown };
+	target: AnimationFrame & { rotation: number };
+	rotation: number;
+};
+type AnimationHistoryTargetIndex = {
+	motion: AnimationMotion;
+	direction: number;
+	target: AnimationFrame & { spriteX: number; spriteY: number };
+	hindex: number;
+	vindex: number;
+};
 
 interface AnimationShape {
 	state: AnimationState;
@@ -601,19 +731,31 @@ Animation.initialize = function (this: typeof Animation) {
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
 
-	History.processors['animation-object-create'] = (operation: string, data: any) => {
+	History.processors['animation-object-create'] = (
+		operation: string,
+		data: AnimationHistoryObject
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-object-delete'] = (operation: string, data: any) => {
+	History.processors['animation-object-delete'] = (
+		operation: string,
+		data: AnimationHistoryObject
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-object-remove'] = (operation: string, data: any) => {
+	History.processors['animation-object-remove'] = (
+		operation: string,
+		data: AnimationHistoryObject
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['animation-motion-id-change'] = (operation: string, data: any) => {
+	History.processors['animation-motion-id-change'] = (
+		operation: string,
+		data: AnimationHistoryMotionId
+	) => {
 		const { motion, id } = data;
 		data.id = motion.id;
 		motion.id = id;
@@ -622,7 +764,10 @@ Animation.initialize = function (this: typeof Animation) {
 		list.scrollToSelection();
 		Animation.planToSave!();
 	};
-	History.processors['animation-motion-mode-change'] = (operation: string, data: any) => {
+	History.processors['animation-motion-mode-change'] = (
+		operation: string,
+		data: AnimationHistoryMotionMode
+	) => {
 		const { motion, direction, mode, dirCases } = data;
 		data.mode = motion.mode;
 		data.dirCases = motion.dirCases;
@@ -637,7 +782,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.setDirection!(direction);
 		Animation.planToSave!();
 	};
-	History.processors['animation-layer-rename'] = (operation: string, data: any) => {
+	History.processors['animation-layer-rename'] = (
+		operation: string,
+		data: AnimationHistoryLayerOperation
+	) => {
 		const { motion, direction, response } = data;
 		Animation.setMotion!(motion);
 		Animation.setDirection!(direction);
@@ -646,14 +794,17 @@ Animation.initialize = function (this: typeof Animation) {
 	History.processors['animation-layer-create'] =
 		History.processors['animation-layer-delete'] =
 		History.processors['animation-layer-remove'] =
-			(operation: string, data: any) => {
+			(operation: string, data: AnimationHistoryLayerOperation) => {
 				const { motion, direction, response } = data;
 				Animation.contextLoaded = false;
 				Animation.setMotion!(motion);
 				Animation.setDirection!(direction);
 				layerList.restore(operation, response);
 			};
-	History.processors['animation-layer-hidden'] = (operation: string, data: any) => {
+	History.processors['animation-layer-hidden'] = (
+		operation: string,
+		data: AnimationHistoryLayerState
+	) => {
 		const { motion, direction, item, oldValues, newValue } = data;
 		Animation.setMotion!(motion);
 		Animation.setDirection!(direction);
@@ -666,7 +817,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.requestRendering!();
 		Animation.planToSave!();
 	};
-	History.processors['animation-layer-locked'] = (operation: string, data: any) => {
+	History.processors['animation-layer-locked'] = (
+		operation: string,
+		data: AnimationHistoryLayerState
+	) => {
 		const { motion, direction, item, oldValues, newValue } = data;
 		Animation.setMotion!(motion);
 		Animation.setDirection!(direction);
@@ -678,7 +832,10 @@ Animation.initialize = function (this: typeof Animation) {
 		layerList.update();
 		Animation.planToSave!();
 	};
-	History.processors['animation-layer-shift'] = (operation: string, data: any) => {
+	History.processors['animation-layer-shift'] = (
+		operation: string,
+		data: AnimationHistoryLayerShift
+	) => {
 		const { motion, direction, layer, shiftX, shiftY } = data;
 		Animation.setMotion!(motion);
 		Animation.setDirection!(direction);
@@ -693,7 +850,10 @@ Animation.initialize = function (this: typeof Animation) {
 		layerList.scrollToSelection();
 		Animation.planToSave!();
 	};
-	History.processors['animation-frames-change'] = (operation: string, data: any) => {
+	History.processors['animation-frames-change'] = (
+		operation: string,
+		data: AnimationHistoryFrames
+	) => {
 		const { motion, direction, changes, sMarquee, dMarquee } = data;
 		for (const change of changes) {
 			const { layer, frames } = change;
@@ -710,9 +870,12 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.scrollToMarquee!(false);
 		Animation.planToSave!();
 	};
-	History.processors['animation-easing-change'] = (operation: string, data: any) => {
+	History.processors['animation-easing-change'] = (
+		operation: string,
+		data: AnimationHistoryEasing
+	) => {
 		const { motion, direction, target, easingId } = data;
-		data.easingId = target.easingId;
+		data.easingId = target.easingId!;
 		target.easingId = easingId;
 		if (Curve.target === target) {
 			write(Curve.list, easingId);
@@ -725,7 +888,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.requestRendering!();
 		Animation.planToSave!();
 	};
-	History.processors['animation-target-shift'] = (operation: string, data: any) => {
+	History.processors['animation-target-shift'] = (
+		operation: string,
+		data: AnimationHistoryTargetShift
+	) => {
 		const { editor, motion, direction, target, x, y } = data;
 		data.x = target.x;
 		data.y = target.y;
@@ -741,7 +907,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.requestRendering!();
 		Animation.planToSave!();
 	};
-	History.processors['animation-target-resize'] = (operation: string, data: any) => {
+	History.processors['animation-target-resize'] = (
+		operation: string,
+		data: AnimationHistoryTargetResize
+	) => {
 		const { editor, motion, direction, target, scaleX, scaleY } = data;
 		data.scaleX = target.scaleX;
 		data.scaleY = target.scaleY;
@@ -757,7 +926,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.requestRendering!();
 		Animation.planToSave!();
 	};
-	History.processors['animation-target-rotate'] = (operation: string, data: any) => {
+	History.processors['animation-target-rotate'] = (
+		operation: string,
+		data: AnimationHistoryTargetRotate
+	) => {
 		const { editor, motion, direction, target, rotation } = data;
 		data.rotation = target.rotation;
 		target.rotation = rotation;
@@ -771,7 +943,10 @@ Animation.initialize = function (this: typeof Animation) {
 		Animation.requestRendering!();
 		Animation.planToSave!();
 	};
-	History.processors['animation-target-index'] = (operation: string, data: any) => {
+	History.processors['animation-target-index'] = (
+		operation: string,
+		data: AnimationHistoryTargetIndex
+	) => {
 		const { motion, direction, target, hindex, vindex } = data;
 		data.hindex = target.spriteX;
 		data.vindex = target.spriteY;
@@ -828,7 +1003,7 @@ Animation.initialize = function (this: typeof Animation) {
 	Curve.initialize!();
 };
 
-Animation.open = function (this: typeof Animation, context: any) {
+Animation.open = function (this: typeof Animation, context: AnimationFileContext) {
 	if (this.context === context) {
 		return;
 	}
@@ -864,7 +1039,7 @@ Animation.open = function (this: typeof Animation, context: any) {
 	}
 };
 
-Animation.load = function (this: typeof Animation, context: any) {
+Animation.load = function (this: typeof Animation, context: AnimationFileContext) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
 		const data = { mode: '1-dir', sprites: [], motions: [] };
@@ -959,14 +1134,16 @@ Animation.close = function (this: typeof Animation) {
 	}
 };
 
-Animation.destroy = function (this: typeof Animation, context: any) {
+Animation.destroy = function (this: typeof Animation, context: AnimationFileContext) {
 	if (!context.editor) return;
 	if (this.context === context) {
 		this.save!();
 		this.close!();
 	}
 	context.editor.player.destroy();
-	TreeList.deleteCaches!(context.animation.motions);
+	TreeList.deleteCaches!(
+		context.animation.motions as unknown as Parameters<typeof TreeList.deleteCaches>[0]
+	);
 };
 
 Animation.play = function (this: typeof Animation) {
@@ -1029,7 +1206,7 @@ Animation.redo = function (this: typeof Animation) {
 	}
 };
 
-Animation.openLayer = function (this: typeof Animation, layer: any) {
+Animation.openLayer = function (this: typeof Animation, layer: AnimationLayer) {
 	this.layerList.selectWithNoEvent(layer);
 	switch (layer.class) {
 		case 'joint':
@@ -1172,7 +1349,7 @@ Animation.nextKeyFrame = function (this: typeof Animation) {
 };
 
 Animation.setSpeed = (function IIFE() {
-	return function (this: typeof Animation, speed: any) {
+	return function (this: typeof Animation, speed: number) {
 		this.speed = speed;
 		const numberBox = $('#animation-speed');
 		if (numberBox) write(numberBox, speed);
@@ -1180,7 +1357,7 @@ Animation.setSpeed = (function IIFE() {
 })();
 
 Animation.setZoom = (function IIFE() {
-	return function (this: typeof Animation, zoom: any) {
+	return function (this: typeof Animation, zoom: number) {
 		const slider = $('#animation-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
@@ -1224,14 +1401,14 @@ Animation.setZoom = (function IIFE() {
 	};
 })();
 
-Animation.setHover = function (this: typeof Animation, hover: any) {
+Animation.setHover = function (this: typeof Animation, hover: AnimationFrame | null) {
 	if (this.hover !== hover) {
 		this.hover = hover;
 		this.requestRendering!();
 	}
 };
 
-Animation.setMotion = function (this: typeof Animation, motion: any) {
+Animation.setMotion = function (this: typeof Animation, motion: AnimationMotion | null) {
 	if (this.motion !== motion) {
 		this.motion = motion;
 		this.updateMotionItem!();
@@ -1259,7 +1436,7 @@ Animation.setMotion = function (this: typeof Animation, motion: any) {
 	}
 };
 
-Animation.setMotionMode = function (this: typeof Animation, mode: any) {
+Animation.setMotionMode = function (this: typeof Animation, mode: string) {
 	if (!this.motion) return;
 	const dirCases = this.motion.dirCases;
 	this.history.save({
@@ -1280,7 +1457,7 @@ Animation.setMotionMode = function (this: typeof Animation, mode: any) {
 	}
 };
 
-Animation.setDirection = function (this: typeof Animation, direction: any) {
+Animation.setDirection = function (this: typeof Animation, direction: number) {
 	if (!this.motion) return;
 	const dirCases = this.motion.dirCases;
 	const dirIndex = Math.min(direction, dirCases.length - 1);
@@ -1329,12 +1506,12 @@ Animation.createDirItems = function (this: typeof Animation) {
 	}
 };
 
-Animation.editMotion = function (this: typeof Animation, motion: any) {
+Animation.editMotion = function (this: typeof Animation, motion: AnimationMotion) {
 	const proxy = {
 		read() {
 			return motion.id;
 		},
-		input(id: any) {
+		input(id: string) {
 			if (motion.id !== id) {
 				Animation.history.save({
 					type: 'animation-motion-id-change',
@@ -1350,12 +1527,12 @@ Animation.editMotion = function (this: typeof Animation, motion: any) {
 	Enum.open!(proxy, 'string');
 };
 
-Animation.getNewMotionId = function (this: typeof Animation, callback: any) {
+Animation.getNewMotionId = function (this: typeof Animation, callback: (id: string) => void) {
 	const proxy = {
 		read() {
 			return '';
 		},
-		input(id: any) {
+		input(id: string) {
 			callback(id);
 		}
 	};
@@ -1413,7 +1590,7 @@ Animation.revealTarget = (function IIFE() {
 	};
 })();
 
-Animation.shiftTarget = function (this: typeof Animation, x: any, y: any) {
+Animation.shiftTarget = function (this: typeof Animation, x: number, y: number) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
@@ -1453,7 +1630,7 @@ Animation.shiftTarget = function (this: typeof Animation, x: any, y: any) {
 	}
 };
 
-Animation.resizeTarget = function (this: typeof Animation, scaleX: any, scaleY: any) {
+Animation.resizeTarget = function (this: typeof Animation, scaleX: number, scaleY: number) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
@@ -1497,7 +1674,7 @@ Animation.resizeTarget = function (this: typeof Animation, scaleX: any, scaleY: 
 	}
 };
 
-Animation.rotateTarget = function (this: typeof Animation, rotation: any) {
+Animation.rotateTarget = function (this: typeof Animation, rotation: number) {
 	const context = this.targetContext;
 	const target = this.target;
 	if (context !== null && target !== null) {
@@ -1535,7 +1712,10 @@ Animation.rotateTarget = function (this: typeof Animation, rotation: any) {
 	}
 };
 
-Animation.setControlPoint = function (this: typeof Animation, point: any) {
+Animation.setControlPoint = function (
+	this: typeof Animation,
+	point: { x: number; y: number; angle: number } | null
+) {
 	if (this.controlPointActive !== point) {
 		this.controlPointActive = point;
 		const points = this.controlPoints;
@@ -1559,7 +1739,7 @@ Animation.setControlPoint = function (this: typeof Animation, point: any) {
 			case points.rectResize.TR:
 			case points.rectResize.BL:
 			case points.rectResize.BR: {
-				const angle = Math.modDegrees(point.angle + this.controlPointRotation, 180);
+				const angle = Math.modDegrees(point!.angle + this.controlPointRotation, 180);
 				if (angle < 22.5 || angle >= 157.5) {
 					cursor = 'ew-resize';
 				} else if (angle < 67.5) {
@@ -1691,7 +1871,7 @@ Animation.stopPlayingSound = function (this: typeof Animation) {
 	AudioManager.se?.stop();
 };
 
-Animation.updateControlPoints = function (this: typeof Animation, context: any) {
+Animation.updateControlPoints = function (this: typeof Animation, context: AnimationContext) {
 	let L, T, R, B;
 	const { layer, frame } = context;
 	switch (layer.class) {
@@ -1785,12 +1965,12 @@ Animation.updateControlPoints = function (this: typeof Animation, context: any) 
 	rectResize.BL.y = y2 + oy2 - oy1;
 	rectResize.BR.x = x3 + ox3 - ox2;
 	rectResize.BR.y = y3 + oy3 - oy2;
-	let rotation = frame.rotation;
-	let node = context;
+	let rotation = frame.rotation!;
+	let node: AnimationContext | null = context;
 	while ((node = node.parent)) {
 		const frame = node.frame;
 		if (frame !== null) {
-			rotation += frame.rotation;
+			rotation += frame.rotation!;
 		}
 	}
 	this.controlPointRotation = rotation;
@@ -1869,7 +2049,7 @@ Animation.getPointerCoords = (function IIFE() {
 
 Animation.getFrameCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: typeof Animation, event: PointerEvent, clamp: any = false) {
+	return function (this: typeof Animation, event: PointerEvent, clamp: boolean = false) {
 		const list = this.outerTimelineList;
 		const coords = getRelativeCoords(event, list);
 		let x = Math.floor(coords.x / 16);
@@ -1888,7 +2068,7 @@ Animation.getFrameCoords = (function IIFE() {
 	};
 })();
 
-Animation.getKeyFrame = function (this: typeof Animation, x: any, y: any) {
+Animation.getKeyFrame = function (this: typeof Animation, x: number, y: number) {
 	if (this.timelineMarquee.isPointIn(x, y)) {
 		const { layer, x: sx, length } = this.timelineMarquee;
 		const ex = sx + length;
@@ -1904,7 +2084,7 @@ Animation.getKeyFrame = function (this: typeof Animation, x: any, y: any) {
 	return null;
 };
 
-Animation.getLayerIndex = function (this: typeof Animation, layer: any) {
+Animation.getLayerIndex = function (this: typeof Animation, layer: AnimationLayer) {
 	const timelines = this.innerTimelineList.childNodes;
 	const length = timelines.length;
 	for (let i = 0; i < length; i++) {
@@ -1915,7 +2095,7 @@ Animation.getLayerIndex = function (this: typeof Animation, layer: any) {
 	return -1;
 };
 
-Animation.getMotionListItems = function (this: typeof Animation, animationId: any) {
+Animation.getMotionListItems = function (this: typeof Animation, animationId: string) {
 	const motions = Data.animations[animationId]?.motions;
 	if (!motions)
 		return [
@@ -1931,7 +2111,7 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: an
 			value: undefined
 		});
 	}
-	const items: any[] = [];
+	const items: { name: string; value: string }[] = [];
 	const flags = {} as Record<string, boolean>;
 	for (const motion of motions) {
 		const enumId = motion.id;
@@ -1952,7 +2132,7 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: an
 	return items;
 };
 
-Animation.getSpriteListItems = function (this: typeof Animation, animationId: any) {
+Animation.getSpriteListItems = function (this: typeof Animation, animationId: string) {
 	const sprites = Data.animations[animationId]?.sprites;
 	if (!sprites) return [{ name: 'No Image', value: '' }];
 
@@ -2096,7 +2276,7 @@ Animation.updatePointer = function (this: typeof Animation) {
 	}
 };
 
-Animation.updateCursor = function (this: typeof Animation, x: any, y: any) {
+Animation.updateCursor = function (this: typeof Animation, x: number, y: number) {
 	const { timelineCursor } = this;
 	if (timelineCursor.x !== x || timelineCursor.y !== y) {
 		timelineCursor.x = x;
@@ -2111,7 +2291,12 @@ Animation.updateCursor = function (this: typeof Animation, x: any, y: any) {
 	}
 };
 
-Animation.selectFrame = function (this: typeof Animation, frame: any, fStart: any, fLength: any) {
+Animation.selectFrame = function (
+	this: typeof Animation,
+	frame: AnimationFrame | null,
+	fStart?: number,
+	fLength?: number
+) {
 	if (!frame) {
 		return this.unselectMarquee!();
 	}
@@ -2150,10 +2335,10 @@ Animation.selectFrame = function (this: typeof Animation, frame: any, fStart: an
 
 Animation.selectMarquee = function (
 	this: typeof Animation,
-	x: any,
-	y: any,
-	length: any,
-	origin: any
+	x: number,
+	y: number,
+	length: number,
+	origin: number | undefined
 ) {
 	this.stop!();
 	const timelines = this.innerTimelineList.childNodes;
@@ -2178,7 +2363,7 @@ Animation.selectMarquee = function (
 	}
 };
 
-Animation.unselectMarquee = function (this: typeof Animation, frame: any) {
+Animation.unselectMarquee = function (this: typeof Animation, frame?: AnimationFrame | null) {
 	const marquee = this.timelineMarquee;
 	if (frame !== undefined ? this.target === frame : marquee.layer !== null) {
 		marquee.layer = null;
@@ -2214,7 +2399,7 @@ Animation.updateMarquee = function (this: typeof Animation) {
 	hide(marquee);
 };
 
-Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: any) {
+Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: boolean) {
 	const { x, y, length, origin } = this.timelineMarquee;
 	if (y !== -1) {
 		const list = this.outerTimelineList;
@@ -2235,7 +2420,12 @@ Animation.scrollToMarquee = function (this: typeof Animation, shiftKey: any) {
 	}
 };
 
-Animation.updateMarqueeShift = function (this: typeof Animation, x: any, y: any, length: any) {
+Animation.updateMarqueeShift = function (
+	this: typeof Animation,
+	x: number,
+	y: number,
+	length?: number
+) {
 	const timelines = this.innerTimelineList.childNodes;
 	const marquee = this.timelineMarqueeShift;
 	marquee.layer =
@@ -2254,7 +2444,7 @@ Animation.updateMarqueeShift = function (this: typeof Animation, x: any, y: any,
 	}
 };
 
-Animation.selectFrameRelative = function (this: typeof Animation, direction: any) {
+Animation.selectFrameRelative = function (this: typeof Animation, direction: string) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2282,7 +2472,7 @@ Animation.selectFrameRelative = function (this: typeof Animation, direction: any
 	this.loadFrames!(x);
 };
 
-Animation.selectFrameAtHomeEnd = function (this: typeof Animation, direction: any) {
+Animation.selectFrameAtHomeEnd = function (this: typeof Animation, direction: string) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2330,7 +2520,7 @@ Animation.selectAllFramesOfKey = function (this: typeof Animation) {
 	}
 };
 
-Animation.multiSelectFramesRelative = function (this: typeof Animation, direction: any) {
+Animation.multiSelectFramesRelative = function (this: typeof Animation, direction: string) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2360,7 +2550,7 @@ Animation.multiSelectFramesRelative = function (this: typeof Animation, directio
 	this.loadFrames!(forward ? x + length - 1 : x);
 };
 
-Animation.multiSelectFramesToHomeEnd = function (this: typeof Animation, direction: any) {
+Animation.multiSelectFramesToHomeEnd = function (this: typeof Animation, direction: string) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -2473,7 +2663,7 @@ Animation.loadTextures = function (this: typeof Animation) {
 	}
 };
 
-Animation.loadFrames = function (this: typeof Animation, index: any, forceReload = false) {
+Animation.loadFrames = function (this: typeof Animation, index: number, forceReload = false) {
 	const player = this.player;
 	const fe = player.length;
 	const fi = Math.min(Math.max(index, 0), fe - 1);
@@ -2590,7 +2780,7 @@ Animation.drawEmitters = function (this: typeof Animation) {
 	}
 };
 
-Animation.emitParticles = function (this: typeof Animation, deltaTime: any) {
+Animation.emitParticles = function (this: typeof Animation, deltaTime: number) {
 	const { player } = this;
 	const { contexts } = player;
 	const { count } = contexts;
@@ -2618,7 +2808,7 @@ Animation.emitParticles = function (this: typeof Animation, deltaTime: any) {
 	}
 };
 
-Animation.updateParticles = function (this: typeof Animation, deltaTime: any) {
+Animation.updateParticles = function (this: typeof Animation, deltaTime: number) {
 	this.particleUpdating = false;
 	const { emitters } = this.player;
 	let i = emitters.length;
@@ -2935,7 +3125,11 @@ Animation.drawTargetWireframe = function (this: typeof Animation) {
 	}
 };
 
-Animation.drawSpriteWireframe = function (this: typeof Animation, context: any, color: any) {
+Animation.drawSpriteWireframe = function (
+	this: typeof Animation,
+	context: AnimationContext,
+	color: number
+) {
 	const key = context.layer.sprite;
 	const texture = this.player.textures[key];
 	if (!texture) return;
@@ -3003,7 +3197,11 @@ Animation.drawSpriteWireframe = function (this: typeof Animation, context: any, 
 	gl.drawArrays(gl.LINE_LOOP, 0, 4);
 };
 
-Animation.drawEmitterWireframe = function (this: typeof Animation, context: any, color: any) {
+Animation.drawEmitterWireframe = function (
+	this: typeof Animation,
+	context: AnimationContext,
+	color: number
+) {
 	const emitter = context.emitter;
 	if (!emitter?.hasArea) return;
 	const gl = GL;
@@ -3154,7 +3352,7 @@ Animation.drawSpriteControlPoints = function (this: typeof Animation) {
 };
 
 Animation.createTimelines = (function IIFE() {
-	const createTimelines = (layers: any) => {
+	const createTimelines = (layers: AnimationLayer[]) => {
 		for (const layer of layers) {
 			let { timeline } = layer;
 			if (timeline === undefined) {
@@ -3221,7 +3419,7 @@ Animation.createTimelines = (function IIFE() {
 	};
 })();
 
-Animation.getFrame = function (this: typeof Animation, frames: any, x: any) {
+Animation.getFrame = function (this: typeof Animation, frames: AnimationFrame[], x: number) {
 	const length = frames.length;
 	for (let i = 0; i < length; i++) {
 		const frame = frames[i];
@@ -3234,7 +3432,7 @@ Animation.getFrame = function (this: typeof Animation, frames: any, x: any) {
 	return null;
 };
 
-Animation.sortFrames = function (this: typeof Animation, frames: any) {
+Animation.sortFrames = function (this: typeof Animation, frames: AnimationFrame[]) {
 	let end = 0;
 	const length = frames.length;
 	for (let i = 0; i < length; i++) {
@@ -3249,7 +3447,12 @@ Animation.sortFrames = function (this: typeof Animation, frames: any) {
 	}
 };
 
-Animation.shiftFrames = function (this: typeof Animation, frames: any, start: any, offset: any) {
+Animation.shiftFrames = function (
+	this: typeof Animation,
+	frames: AnimationFrame[],
+	start: number,
+	offset: number
+) {
 	const length = frames.length;
 	for (let i = start; i < length; i++) {
 		const frame = this.cloneFrame!(frames, i);
@@ -3260,11 +3463,11 @@ Animation.shiftFrames = function (this: typeof Animation, frames: any, start: an
 
 Animation.saveFrames = function (
 	this: typeof Animation,
-	layers: any,
-	sMarquee: any,
-	dMarquee = sMarquee
+	layers: AnimationLayer[],
+	sMarquee: AnimationMarquee,
+	dMarquee: AnimationMarquee = sMarquee
 ) {
-	const changes: any[] = [];
+	const changes: { layer: AnimationLayer; frames: AnimationFrame[] }[] = [];
 	for (const layer of layers) {
 		const frames = layer.frames.slice();
 		changes.push({ layer, frames });
@@ -3280,7 +3483,7 @@ Animation.saveFrames = function (
 	});
 };
 
-Animation.cloneFrame = function (this: typeof Animation, frames: any, index: any) {
+Animation.cloneFrame = function (this: typeof Animation, frames: AnimationFrame[], index: number) {
 	const frame = frames[index];
 	const clone = (frames[index] = Object.clone(frame));
 	return Object.defineProperty(clone, 'key', {
@@ -3435,7 +3638,7 @@ Animation.copyFrame = function (this: typeof Animation, returnData = false) {
 		return;
 	}
 	let { layer, x, length } = marquee;
-	const copies: any[] = [];
+	const copies: AnimationFrame[] = [];
 	const ex = x + length;
 	const frames = layer.frames;
 	const fLength = frames.length;
@@ -3471,7 +3674,11 @@ Animation.copyFrame = function (this: typeof Animation, returnData = false) {
 	}
 };
 
-Animation.pasteFrame = function (this: typeof Animation, data: any, destination: any) {
+Animation.pasteFrame = function (
+	this: typeof Animation,
+	data: AnimationFrameData | null | undefined,
+	destination: AnimationMarquee | null | undefined
+) {
 	const { layer, x, y, length: sLength } = destination ?? this.timelineMarquee;
 	if (!data) data = Clipboard.read(`yami.animFrame.${layer.class}`);
 	if (!data || y === -1) {
@@ -3598,7 +3805,12 @@ Animation.adjustMarquee = function (this: typeof Animation) {
 	}
 };
 
-Animation.shiftLayerPosition = function (this: typeof Animation, layer: any, x: any, y: any) {
+Animation.shiftLayerPosition = function (
+	this: typeof Animation,
+	layer: AnimationLayer,
+	x: number,
+	y: number
+) {
 	let editor;
 	if (Inspector.animJointFrame.target) {
 		editor = Inspector.animJointFrame;
@@ -3611,8 +3823,8 @@ Animation.shiftLayerPosition = function (this: typeof Animation, layer: any, x: 
 	}
 	const target = editor?.target;
 	for (const frame of layer.frames) {
-		frame.x += x;
-		frame.y += y;
+		frame.x = frame.x! + x;
+		frame.y = frame.y! + y;
 		if (frame === target) {
 			write(editor, {
 				x: frame.x,
@@ -3624,7 +3836,7 @@ Animation.shiftLayerPosition = function (this: typeof Animation, layer: any, x: 
 	this.requestRendering!();
 };
 
-Animation.shiftSelectedFrames = function (this: typeof Animation, mode: any) {
+Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) {
 	const marquee = this.timelineMarquee;
 	if (marquee.y === -1) {
 		return;
@@ -3693,7 +3905,7 @@ Animation.shiftSelectedFrames = function (this: typeof Animation, mode: any) {
 	}
 };
 
-Animation.selectControlPoint = function (this: typeof Animation, x: any, y: any) {
+Animation.selectControlPoint = function (this: typeof Animation, x: number, y: number) {
 	const target = this.target;
 	const context = this.targetContext;
 	if (target !== null && context !== null) {
@@ -3735,10 +3947,10 @@ Animation.selectControlPoint = function (this: typeof Animation, x: any, y: any)
 	return null;
 };
 
-Animation.selectObject = function (this: typeof Animation, x: any, y: any) {
+Animation.selectObject = function (this: typeof Animation, x: number, y: number) {
 	const { contexts } = this.player;
 	const last = contexts.count - 1;
-	let target: any = null;
+	let target: AnimationFrame | null = null;
 	let weight = 0;
 
 	// 选择关节对象 - 节点
@@ -3858,7 +4070,12 @@ Animation.selectObject = function (this: typeof Animation, x: any, y: any) {
 	return target;
 };
 
-Animation.isPointInFrame = function (this: typeof Animation, context: any, x: any, y: any) {
+Animation.isPointInFrame = function (
+	this: typeof Animation,
+	context: AnimationContext,
+	x: number,
+	y: number
+) {
 	const key = context.layer.sprite;
 	const texture = this.player.textures[key];
 	if (!texture) return false;
@@ -3935,7 +4152,7 @@ Animation.requestAnimation = function (this: typeof Animation) {
 	}
 };
 
-Animation.updateAnimation = function (this: typeof Animation, deltaTime: any) {
+Animation.updateAnimation = function (this: typeof Animation, deltaTime: number) {
 	deltaTime *= Animation.speed;
 	if (Animation.playing) {
 		const { start, end } = Animation.getAnimationRange!();
@@ -4080,17 +4297,35 @@ Animation.planToSave = function (this: typeof Animation) {
 	File.planToSave!(this.meta);
 };
 
-Animation.saveToConfig = function (this: typeof Animation, config: any) {
+Animation.saveToConfig = function (
+	this: typeof Animation,
+	config: { colors: { animationBackground: string } }
+) {
 	config.colors.animationBackground = this.background.hex;
 };
 
-Animation.loadFromConfig = function (this: typeof Animation, config: any) {
+Animation.loadFromConfig = function (
+	this: typeof Animation,
+	config: { colors: { animationBackground: string } }
+) {
 	this.background = new StageColor(config.colors.animationBackground, () =>
 		this.requestRendering!()
 	);
 };
 
-Animation.saveToProject = function (this: typeof Animation, project: any) {
+Animation.saveToProject = function (
+	this: typeof Animation,
+	project: {
+		animation: {
+			mark: boolean;
+			onionskin: boolean;
+			mirror: boolean;
+			loop: boolean;
+			speed: number;
+			zoom: number;
+		};
+	}
+) {
 	const { animation } = project;
 	animation.mark = this.showMark ?? animation.mark;
 	animation.onionskin = this.showOnionskin ?? animation.onionskin;
@@ -4100,7 +4335,19 @@ Animation.saveToProject = function (this: typeof Animation, project: any) {
 	animation.zoom = this.zoom ?? animation.zoom;
 };
 
-Animation.loadFromProject = function (this: typeof Animation, project: any) {
+Animation.loadFromProject = function (
+	this: typeof Animation,
+	project: {
+		animation: {
+			mark: boolean;
+			onionskin: boolean;
+			mirror: boolean;
+			loop: boolean;
+			speed: number;
+			zoom: number;
+		};
+	}
+) {
 	const { animation } = project;
 	this.switchMark!(animation.mark);
 	this.switchOnionskin!(animation.onionskin);
@@ -4380,7 +4627,24 @@ Animation.screenBlur = function (this: typeof Animation, event: Event) {
 
 Animation.marqueePointerdown = function (
 	this: typeof Animation,
-	event: PointerEvent & { [k: string]: any }
+	event: PointerEvent & {
+		dragKey?: boolean;
+		mode?: string;
+		scrollLeft?: number;
+		scrollTop?: number;
+		absoluteAnchorX?: number;
+		absoluteAnchorY?: number;
+		lastAngle?: number;
+		rotationRadians?: number;
+		startRotation?: number;
+		startScaleX?: number;
+		startScaleY?: number;
+		startWidth?: number;
+		startHeight?: number;
+		enabled?: boolean;
+		startX?: number;
+		startY?: number;
+	}
 ) {
 	if (this.dragging || !this.motion) {
 		return;
@@ -4735,7 +4999,7 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 	}
 };
 
-Animation.searcherInput = function (this: typeof Animation, event: Event & { inputType?: any }) {
+Animation.searcherInput = function (this: typeof Animation, event: Event & { inputType?: string }) {
 	if (event.inputType !== 'insertCompositionText') {
 		const text = this.input!.value;
 		Animation.list.searchNodesDebounced(text);
@@ -4778,7 +5042,7 @@ Animation.listKeydown = function (this: typeof Animation, event: KeyboardEvent) 
 Animation.listPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement & { item?: any };
+			const element = event.target as HTMLElement & { item?: AnimationMotion };
 			if (element.tagName === 'NODE-ITEM' && hasClass(element, 'selected')) {
 				Inspector.open!('animMotion', element.item);
 			}
@@ -4790,11 +5054,17 @@ Animation.listPointerdown = function (this: typeof Animation, event: PointerEven
 	}
 };
 
-Animation.listSelect = function (this: typeof Animation, event: Event & { value?: any }) {
-	Animation.setMotion!(event.value);
+Animation.listSelect = function (
+	this: typeof Animation,
+	event: Event & { value?: AnimationMotion | null }
+) {
+	Animation.setMotion!(event.value!);
 };
 
-Animation.listRecord = function (this: typeof Animation, event: Event & { value?: any }) {
+Animation.listRecord = function (
+	this: typeof Animation,
+	event: Event & { value: { type: string } }
+) {
 	const response = event.value;
 	const { type } = response;
 	switch (type) {
@@ -4809,11 +5079,14 @@ Animation.listRecord = function (this: typeof Animation, event: Event & { value?
 	}
 };
 
-Animation.listOpen = function (this: typeof Animation, event: Event & { value?: any }) {
-	Animation.editMotion!(event.value);
+Animation.listOpen = function (this: typeof Animation, event: Event & { value?: AnimationMotion }) {
+	Animation.editMotion!(event.value!);
 };
 
-Animation.listPopup = function (this: typeof Animation, event: MouseEvent & { value?: any }) {
+Animation.listPopup = function (
+	this: typeof Animation,
+	event: MouseEvent & { value?: AnimationMotion | null }
+) {
 	const list = Animation.list;
 	const item = event.value;
 	const get = Local.createGetter!('menuAnimationList');
@@ -4851,7 +5124,7 @@ Animation.listPopup = function (this: typeof Animation, event: MouseEvent & { va
 			{
 				label: get('insert'),
 				click: () => {
-					Animation.getNewMotionId!((motionId: any) => {
+					Animation.getNewMotionId!((motionId: string) => {
 						const motion = Inspector.animMotion.create(motionId);
 						list.addNodeTo(motion, item);
 						Inspector.open!('animMotion', motion);
@@ -4908,7 +5181,7 @@ Animation.listPageResize = function (this: typeof Animation, event: Event) {
 };
 
 Animation.dirListPointerdown = function (this: typeof Animation, event: PointerEvent) {
-	const element = event.target as HTMLElement & { direction?: any };
+	const element = event.target as HTMLElement & { direction?: number };
 	if (element.tagName === 'ANIM-DIR' && !hasClass(element, 'selected')) {
 		Animation.setDirection!(element.direction);
 		Inspector.close!();
@@ -4997,7 +5270,7 @@ Animation.layerListKeydown = function (this: typeof Animation, event: KeyboardEv
 Animation.layerListPointerdown = function (this: typeof Animation, event: PointerEvent) {
 	switch (event.button) {
 		case 0: {
-			const element = event.target as HTMLElement & { item?: any };
+			const element = event.target as HTMLElement & { item?: AnimationLayer };
 			switch (element.tagName) {
 				case 'NODE-ITEM':
 					if (hasClass(element, 'selected')) {
@@ -5005,11 +5278,13 @@ Animation.layerListPointerdown = function (this: typeof Animation, event: Pointe
 					}
 					break;
 				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode as HTMLElement & { item?: any };
+					const { item } = element.parentNode as HTMLElement & { item: AnimationLayer };
 					const { hidden } = item;
 					const backups = this.setRecursiveStates!(item, 'hidden', !hidden);
 					this.update!();
-					dispatchChangeEvent(this);
+					dispatchChangeEvent(
+						this as unknown as { dispatchEvent(event: Event): boolean }
+					);
 					Animation.requestRendering!();
 					Animation.history.save({
 						type: 'animation-layer-hidden',
@@ -5022,11 +5297,13 @@ Animation.layerListPointerdown = function (this: typeof Animation, event: Pointe
 					break;
 				}
 				case 'LOCK-ICON': {
-					const { item } = element.parentNode as HTMLElement & { item?: any };
+					const { item } = element.parentNode as HTMLElement & { item: AnimationLayer };
 					const { locked } = item;
 					const backups = this.setRecursiveStates!(item, 'locked', !locked);
 					this.update!();
-					dispatchChangeEvent(this);
+					dispatchChangeEvent(
+						this as unknown as { dispatchEvent(event: Event): boolean }
+					);
 					Animation.history.save({
 						type: 'animation-layer-locked',
 						motion: Animation.motion,
@@ -5043,11 +5320,17 @@ Animation.layerListPointerdown = function (this: typeof Animation, event: Pointe
 	}
 };
 
-Animation.layerListSelect = function (this: typeof Animation, event: Event & { value?: any }) {
-	Animation.openLayer!(event.value);
+Animation.layerListSelect = function (
+	this: typeof Animation,
+	event: Event & { value?: AnimationLayer | null }
+) {
+	Animation.openLayer!(event.value!);
 };
 
-Animation.layerListRecord = function (this: typeof Animation, event: Event & { value?: any }) {
+Animation.layerListRecord = function (
+	this: typeof Animation,
+	event: Event & { value: { type: string } }
+) {
 	const response = event.value;
 	const { type } = response;
 	switch (type) {
@@ -5066,7 +5349,10 @@ Animation.layerListRecord = function (this: typeof Animation, event: Event & { v
 	}
 };
 
-Animation.layerListPopup = function (this: typeof Animation, event: MouseEvent & { value?: any }) {
+Animation.layerListPopup = function (
+	this: typeof Animation,
+	event: MouseEvent & { value?: AnimationLayer | null }
+) {
 	const list = Animation.layerList;
 	const item = event.value;
 	const get = Local.createGetter!('menuAnimationLayerList');
@@ -5168,7 +5454,7 @@ Animation.layerListPopup = function (this: typeof Animation, event: MouseEvent &
 				label: get('shift'),
 				enabled: 0 < item?.frames.length,
 				click: () => {
-					SceneShift.open!((x: any, y: any) => {
+					SceneShift.open!((x: number, y: number) => {
 						Animation.history.save({
 							type: 'animation-layer-shift',
 							motion: Animation.motion,
@@ -5317,7 +5603,17 @@ Animation.outerTimelineListBlur = function (this: typeof Animation, event: Event
 
 Animation.outerTimelineListPointerdown = function (
 	this: typeof Animation,
-	event: PointerEvent & { [k: string]: any }
+	event: PointerEvent & {
+		dragKey?: boolean;
+		mode?: string;
+		scrollLeft?: number;
+		scrollTop?: number;
+		layer?: unknown;
+		pointerdownX?: number;
+		pointerdownY?: number;
+		enableDblclickEvent?: boolean;
+		latest?: unknown;
+	}
 ) {
 	if (Animation.dragging) {
 		return;
@@ -5616,7 +5912,7 @@ Animation.innerTimelineListDblclick = function (this: typeof Animation, event: P
 	if (this.pointerevent.enableDblclickEvent) {
 		const { x, y } = Animation.getFrameCoords!(event);
 		const timelines = Animation.innerTimelineList.childNodes;
-		const layer = (timelines[y] as HTMLElement & { layer?: any })?.layer;
+		const layer = (timelines[y] as HTMLElement & { layer?: AnimationLayer })?.layer;
 		if (layer !== undefined) {
 			for (const frame of layer.frames) {
 				const start = frame.start;
@@ -5639,14 +5935,14 @@ Animation.marquee.resize = function (this: typeof Animation) {
 };
 
 // 列表 - 复制
-Animation.list.copy = function (this: typeof Animation, item: any) {
+Animation.list.copy = function (this: typeof Animation, item: AnimationMotion) {
 	if (item) {
 		Clipboard.write('yami.animation.object', item);
 	}
 };
 
 // 列表 - 粘贴
-Animation.list.paste = function (this: typeof Animation, dItem: any) {
+Animation.list.paste = function (this: typeof Animation, dItem: AnimationMotion | null) {
 	const copy = Clipboard.read('yami.animation.object');
 	if (copy && this.data) {
 		this.addNodeTo!(copy, dItem);
@@ -5654,7 +5950,7 @@ Animation.list.paste = function (this: typeof Animation, dItem: any) {
 };
 
 // 列表 - 删除
-Animation.list.delete = function (this: typeof Animation, item: any) {
+Animation.list.delete = function (this: typeof Animation, item: AnimationMotion) {
 	if (item) {
 		this.deleteNode!(item);
 	}
@@ -5694,7 +5990,7 @@ Animation.list.createIcon = function (this: typeof Animation) {
 };
 
 // 列表 - 重写创建文本方法
-Animation.list.createText = function (this: typeof Animation, item: any) {
+Animation.list.createText = function (this: typeof Animation, item: unknown) {
 	const textNode = document.createElement('div');
 	addClass(textNode, 'text');
 	textNode.style.pointerEvents = 'none';
@@ -5702,7 +5998,7 @@ Animation.list.createText = function (this: typeof Animation, item: any) {
 };
 
 // 列表 - 更新文本
-Animation.list.updateText = function (this: typeof Animation, item: any) {
+Animation.list.updateText = function (this: typeof Animation, item: AnimationMotion) {
 	const { element } = item;
 	if (element.enumId !== item.id) {
 		element.enumId = item.id;
@@ -5714,7 +6010,7 @@ Animation.list.updateText = function (this: typeof Animation, item: any) {
 };
 
 // 列表 - 创建循环图标
-Animation.list.createLoopIcon = function (this: typeof Animation, item: any) {
+Animation.list.createLoopIcon = function (this: typeof Animation, item: AnimationMotion) {
 	const { element } = item;
 	const loopIcon = document.createElement('node-icon');
 	addClass(loopIcon, 'icon-loop');
@@ -5725,13 +6021,13 @@ Animation.list.createLoopIcon = function (this: typeof Animation, item: any) {
 };
 
 // 列表 - 更新循环图标
-Animation.list.updateLoopIcon = function (this: typeof Animation, item: any) {
+Animation.list.updateLoopIcon = function (this: typeof Animation, item: AnimationMotion) {
 	const { element } = item;
 	if (element.loopIcon !== undefined) {
 		const loop = item.loop;
 		if (element.loop !== loop) {
 			element.loop = loop;
-			loop ? show(element.loopIcon) : hide(element.loopIcon);
+			loop ? show(element.loopIcon!) : hide(element.loopIcon!);
 		}
 	}
 };
@@ -5761,7 +6057,11 @@ Animation.layerList.update = function (this: typeof Animation) {
 };
 
 // 图层列表 - 创建图层
-Animation.layerList.create = function (this: typeof Animation, dItem: any, type: any) {
+Animation.layerList.create = function (
+	this: typeof Animation,
+	dItem: AnimationLayer | null,
+	type: string
+) {
 	let data;
 	switch (type) {
 		case 'joint':
@@ -5781,14 +6081,14 @@ Animation.layerList.create = function (this: typeof Animation, dItem: any, type:
 };
 
 // 图层列表 - 复制
-Animation.layerList.copy = function (this: typeof Animation, item: any) {
+Animation.layerList.copy = function (this: typeof Animation, item: AnimationLayer) {
 	if (item) {
 		Clipboard.write('yami.animation.layer', item);
 	}
 };
 
 // 图层列表 - 粘贴
-Animation.layerList.paste = function (this: typeof Animation, dItem: any) {
+Animation.layerList.paste = function (this: typeof Animation, dItem: AnimationLayer | null) {
 	const copy = Clipboard.read('yami.animation.layer');
 	if (copy && this.data) {
 		this.addNodeTo!(copy, dItem);
@@ -5796,7 +6096,7 @@ Animation.layerList.paste = function (this: typeof Animation, dItem: any) {
 };
 
 // 图层列表 - 删除
-Animation.layerList.delete = function (this: typeof Animation, item: any) {
+Animation.layerList.delete = function (this: typeof Animation, item: AnimationLayer) {
 	if (item) {
 		this.deleteNode!(item);
 	}
@@ -5826,13 +6126,15 @@ Animation.layerList.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (this: typeof Animation, item: any) {
-		return (iconCreators as Record<string, () => HTMLElement>)[item.class]();
+	return function (this: typeof Animation, item: unknown) {
+		return (iconCreators as Record<string, () => HTMLElement>)[
+			(item as { class: string }).class
+		]();
 	};
 })();
 
 // 图层列表 - 在删除数据时回调
-Animation.layerList.onDelete = function (this: typeof Animation, item: any) {
+Animation.layerList.onDelete = function (this: typeof Animation, item: AnimationLayer) {
 	const editor = Inspector[Inspector.type];
 	if (editor?.target === item) {
 		Inspector.close!();
@@ -5865,9 +6167,9 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 // 时间轴列表 - 恢复动作和图层对象
 Animation.outerTimelineList.restoreMotionAndLayer = function (
 	this: typeof Animation,
-	motion: any,
-	direction: any,
-	layer: any
+	motion: AnimationMotion | null,
+	direction: number,
+	layer: AnimationLayer
 ) {
 	const { updateTimeline } = Animation;
 	Animation.updateTimeline = Function.empty;
@@ -5878,7 +6180,7 @@ Animation.outerTimelineList.restoreMotionAndLayer = function (
 };
 
 // 时间轴选框 - 判断点是否在选框区域内
-Animation.timelineMarquee.isPointIn = function (this: typeof Animation, x: any, y: any) {
+Animation.timelineMarquee.isPointIn = function (this: typeof Animation, x: number, y: number) {
 	return x >= this.x && x < this.x + this.length && y === this.y;
 };
 

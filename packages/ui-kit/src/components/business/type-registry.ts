@@ -1,20 +1,37 @@
 export interface TypeRegistryDataSource {
-	createEasingItems(): any[];
-	createTeamItems(): any[];
-	getAttributeItems(filter: string, flag: string, unlinked: boolean): any[];
-	getStringItems(filter: string, flag: boolean): any[];
+	createEasingItems(): unknown[];
+	createTeamItems(): unknown[];
+	getAttributeItems(filter: string, flag: string, unlinked: boolean): unknown[];
+	getStringItems(filter: string, flag: boolean): unknown[];
 }
 
 interface Pane {
-	createCheckBox(): any;
-	createColorBox(): any;
-	createCustomBox(): any;
-	createKeyboardBox(): any;
-	createNumberBox(): any;
-	createNumberVar(): any;
-	createRepeatableGroup(param?: Param): any;
-	createSelectBox(): any;
-	createTextBox(): any;
+	createCheckBox(): unknown;
+	createColorBox(): unknown;
+	createCustomBox(): { input: { type: string; filter?: string; isPluginInput?: boolean } };
+	createKeyboardBox(): unknown;
+	createNumberBox(): {
+		input: {
+			input: { min: string; max: string };
+			decimals?: number;
+			setPlaceholder(placeholder: string): void;
+		};
+	};
+	createNumberVar(): {
+		input: {
+			numBox: {
+				input: { min: string; max: string };
+				decimals?: number;
+				setPlaceholder(placeholder: string): void;
+			};
+			varBox: { isPluginInput?: boolean };
+		};
+	};
+	createRepeatableGroup(param?: Param): unknown;
+	createSelectBox(): {
+		input: { loadItems(items: unknown[] | undefined): void; branched?: boolean };
+	};
+	createTextBox(): { input: { setPlaceholder(placeholder: string): void } };
 }
 
 interface Param {
@@ -22,15 +39,20 @@ interface Param {
 	max?: number;
 	decimals?: number;
 	placeholder?: string;
-	dataItems?: any[];
+	dataItems?: unknown[];
 	wrap?: boolean;
 	filter?: string;
 }
 
+interface RegistryEntry {
+	component: string;
+	create(...args: any[]): any;
+}
+
 export interface TypeRegistryApi {
 	types: Record<string, any>;
-	register(type: string, config: any): void;
-	get(type: string): any;
+	register(type: string, config: unknown): void;
+	get(type: string): RegistryEntry;
 	has(type: string): boolean;
 }
 
@@ -38,7 +60,7 @@ export function createTypeRegistry(dataSource: TypeRegistryDataSource): TypeRegi
 	const TypeRegistry: TypeRegistryApi = {
 		types: {},
 
-		register(type: string, config: any) {
+		register(type: string, config: unknown) {
 			this.types[type] = config;
 		},
 

@@ -32,6 +32,7 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
+import type { EditorProjectShape } from '@app/stores/editor';
 import { ipcRenderer } from 'electron';
 
 interface LocalizationItem {
@@ -56,111 +57,182 @@ interface LocalizationHistoryData {
 }
 
 interface UndoableEditor {
-	undo?: () => void;
-	redo?: () => void;
-	history?: History;
+	undo?: ((...args: unknown[]) => unknown) | null;
+	redo?: ((...args: unknown[]) => unknown) | null;
+	history?: { canUndo(): boolean; canRedo(): boolean } | null;
 }
 
-export const Localization = {
-	list: null as HTMLElement | null,
-	panel: null as HTMLElement | null,
-	searcher: null as HTMLElement | null,
+interface LocalizationShape {
+	list: TreeListElement | null;
+	panel: (HTMLElement & { item: LocalizationItem | null }) | null;
+	searcher: (HTMLElement & { addCloseButton(): void; deleteInputContent(): void }) | null;
+	inputs: Record<string, HTMLElement> | null;
+	target: LocalizationTarget | null;
+	data: LocalizationItem[] | null;
+	idMap: Record<string, unknown> | null;
+	languages: string[] | null;
+	history: History | null;
+	changed: boolean;
+	_previousActive: UndoableEditor | null;
+	initialize: (this: LocalizationShape) => void;
+	open: (this: LocalizationShape, target?: LocalizationTarget) => void;
+	undo: (this: LocalizationShape) => void;
+	redo: (this: LocalizationShape) => void;
+	createId: (this: LocalizationShape) => string;
+	register: (this: LocalizationShape, item: LocalizationItem) => void;
+	unregister: (this: LocalizationShape, item: LocalizationItem) => void;
+	getItemById: (this: LocalizationShape, id: string) => LocalizationItem | undefined;
+	openContentPanel: (this: LocalizationShape, item: LocalizationItem) => void;
+	closeContentPanel: (this: LocalizationShape) => void;
+	unpackLocalization: (this: LocalizationShape) => void;
+	packLocalization: (this: LocalizationShape) => void;
+	resizeTextArea: (this: LocalizationShape, target: HTMLElement) => void;
+	windowClose: (this: LocalizationShape, event: Event) => void;
+	windowClosed: (this: LocalizationShape, event: Event) => void;
+	keydown: (event: Event) => void;
+	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
+	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
+	listDoubleclick: (event: MouseEvent) => void;
+	listSelect: (event: Event) => void;
+	listRecord: (event: Event) => void;
+	listOpen: (event: MouseEvent) => void;
+	listPopup: (this: TreeListElement, event: Event) => void;
+	panelInput: (event: Event) => void;
+	panelKeydown: (event: KeyboardEvent) => void;
+	searcherInput: (this: TextBox, event: InputEvent) => void;
+	confirm: (this: LocalizationShape, event?: Event) => void;
+	apply: (this: LocalizationShape, event?: Event) => void;
+	createInputs: (this: LocalizationShape) => void;
+	fromExcel: (this: LocalizationShape, event: Event) => Promise<void>;
+	toExcel: (this: LocalizationShape, event?: Event) => void;
+	list_saveScroll: (this: TreeListElement) => void;
+	list_restoreScroll: (this: TreeListElement) => void;
+	list_cancelSearch: (this: TreeListElement) => void;
+	list_createFolder: (this: TreeListElement) => LocalizationItem;
+	list_createItem: (this: TreeListElement) => LocalizationItem;
+	list_createIcon: (this: TreeListElement, item: LocalizationItem) => HTMLElement;
+	list_addElementClass: (this: TreeListElement, item: LocalizationItem) => void;
+	list_updateItemClass: (this: TreeListElement, item: LocalizationItem) => void;
+	list_updateItemName: (this: TreeListElement, item: LocalizationItem) => void;
+	list_createInitText: (this: TreeListElement, item: LocalizationItem) => void;
+	list_updateInitText: (this: TreeListElement, item: LocalizationItem) => void;
+	list_onCreate: (this: TreeListElement, item: LocalizationItem) => void;
+	list_onDelete: (this: TreeListElement, item: LocalizationItem) => void;
+	list_onResume: (this: TreeListElement, item: LocalizationItem) => void;
+	state: string;
+	strings: Record<string, string> | null;
+	close: (() => void) | null;
+	saveToProject: ((project: EditorProjectShape) => void) | null;
+	loadFromProject: ((project: EditorProjectShape) => void) | null;
+}
+
+export const Localization: LocalizationShape = {
+	list: null as unknown as TreeListElement | null,
+	panel: null as unknown as (HTMLElement & { item: LocalizationItem | null }) | null,
+	searcher: null as unknown as
+		| (HTMLElement & {
+				addCloseButton(): void;
+				deleteInputContent(): void;
+		  })
+		| null,
 	inputs: null as Record<string, HTMLElement> | null,
 	target: null as LocalizationTarget | null,
 	data: null as LocalizationItem[] | null,
-	idMap: null as unknown as Record<string, boolean>,
+	idMap: null as unknown as Record<string, unknown>,
 	languages: null as string[] | null,
 	history: null as History | null,
 	changed: false,
 	_previousActive: null as UndoableEditor | null,
-	initialize: null as unknown as (this: any) => void,
-	open: null as unknown as (this: any, target?: LocalizationTarget) => void,
-	undo: null as unknown as (this: any) => void,
-	redo: null as unknown as (this: any) => void,
-	createId: null as unknown as (this: any) => string,
-	register: null as unknown as (this: any, item: LocalizationItem) => void,
-	unregister: null as unknown as (this: any, item: LocalizationItem) => void,
-	getItemById: null as unknown as (this: any, id: string) => LocalizationItem | undefined,
-	openContentPanel: null as unknown as (this: any, item: LocalizationItem) => void,
-	closeContentPanel: null as unknown as (this: any) => void,
-	unpackLocalization: null as unknown as (this: any) => void,
-	packLocalization: null as unknown as (this: any) => void,
-	resizeTextArea: null as unknown as (this: any, target: HTMLElement) => void,
-	windowClose: null as unknown as (this: any, event: Event) => void,
-	windowClosed: null as unknown as (this: any, event: Event) => void,
-	keydown: null as unknown as (event: Event) => void,
-	listKeydown: null as unknown as (this: any, event: KeyboardEvent) => void,
-	listPointerdown: null as unknown as (this: any, event: PointerEvent) => void,
-	listDoubleclick: null as unknown as (this: any, event: MouseEvent) => void,
-	listSelect: null as unknown as (event: Event) => void,
-	listRecord: null as unknown as (event: Event) => void,
-	listOpen: null as unknown as (event: Event) => void,
-	listPopup: null as unknown as (
-		this: any,
-		event: Event & { clientX: number; clientY: number }
-	) => void,
-	panelInput: null as unknown as (event: Event) => void,
-	panelKeydown: null as unknown as (event: KeyboardEvent) => void,
-	searcherInput: null as unknown as (this: any, event: InputEvent) => void,
-	confirm: null as unknown as (this: any, event?: Event) => void,
-	apply: null as unknown as (this: any, event?: Event) => void,
+	initialize: null as unknown as LocalizationShape['initialize'],
+	open: null as unknown as LocalizationShape['open'],
+	undo: null as unknown as LocalizationShape['undo'],
+	redo: null as unknown as LocalizationShape['redo'],
+	createId: null as unknown as LocalizationShape['createId'],
+	register: null as unknown as LocalizationShape['register'],
+	unregister: null as unknown as LocalizationShape['unregister'],
+	getItemById: null as unknown as LocalizationShape['getItemById'],
+	openContentPanel: null as unknown as LocalizationShape['openContentPanel'],
+	closeContentPanel: null as unknown as LocalizationShape['closeContentPanel'],
+	unpackLocalization: null as unknown as LocalizationShape['unpackLocalization'],
+	packLocalization: null as unknown as LocalizationShape['packLocalization'],
+	resizeTextArea: null as unknown as LocalizationShape['resizeTextArea'],
+	windowClose: null as unknown as LocalizationShape['windowClose'],
+	windowClosed: null as unknown as LocalizationShape['windowClosed'],
+	keydown: null as unknown as LocalizationShape['keydown'],
+	listKeydown: null as unknown as LocalizationShape['listKeydown'],
+	listPointerdown: null as unknown as LocalizationShape['listPointerdown'],
+	listDoubleclick: null as unknown as LocalizationShape['listDoubleclick'],
+	listSelect: null as unknown as LocalizationShape['listSelect'],
+	listRecord: null as unknown as LocalizationShape['listRecord'],
+	listOpen: null as unknown as LocalizationShape['listOpen'],
+	listPopup: null as unknown as LocalizationShape['listPopup'],
+	panelInput: null as unknown as LocalizationShape['panelInput'],
+	panelKeydown: null as unknown as LocalizationShape['panelKeydown'],
+	searcherInput: null as unknown as LocalizationShape['searcherInput'],
+	confirm: null as unknown as LocalizationShape['confirm'],
+	apply: null as unknown as LocalizationShape['apply'],
 	// runtime 挂载: createInputs/fromExcel/toExcel 在本文件下方动态挂载,
-	createInputs: null as unknown as (this: any) => void,
-	fromExcel: null as unknown as (this: any, event: Event) => Promise<void>,
-	toExcel: null as unknown as (this: any, event?: Event) => void,
+	createInputs: null as unknown as LocalizationShape['createInputs'],
+	fromExcel: null as unknown as LocalizationShape['fromExcel'],
+	toExcel: null as unknown as LocalizationShape['toExcel'],
 	// list 方法引用（ensureDomBound 内挂到真实 list 上）,
-	list_saveScroll: null as unknown as (this: any) => void,
-	list_restoreScroll: null as unknown as (this: any) => void,
-	list_cancelSearch: null as unknown as (this: any) => void,
-	list_createFolder: null as unknown as (this: any) => LocalizationItem,
-	list_createItem: null as unknown as (this: any) => LocalizationItem,
-	list_createIcon: null as unknown as (this: any, item: LocalizationItem) => HTMLElement,
-	list_addElementClass: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_updateItemClass: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_updateItemName: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_createInitText: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_updateInitText: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_onCreate: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_onDelete: null as unknown as (this: any, item: LocalizationItem) => void,
-	list_onResume: null as unknown as (this: any, item: LocalizationItem) => void,
-	state: null as string | null,
+	list_saveScroll: null as unknown as LocalizationShape['list_saveScroll'],
+	list_restoreScroll: null as unknown as LocalizationShape['list_restoreScroll'],
+	list_cancelSearch: null as unknown as LocalizationShape['list_cancelSearch'],
+	list_createFolder: null as unknown as LocalizationShape['list_createFolder'],
+	list_createItem: null as unknown as LocalizationShape['list_createItem'],
+	list_createIcon: null as unknown as LocalizationShape['list_createIcon'],
+	list_addElementClass: null as unknown as LocalizationShape['list_addElementClass'],
+	list_updateItemClass: null as unknown as LocalizationShape['list_updateItemClass'],
+	list_updateItemName: null as unknown as LocalizationShape['list_updateItemName'],
+	list_createInitText: null as unknown as LocalizationShape['list_createInitText'],
+	list_updateInitText: null as unknown as LocalizationShape['list_updateInitText'],
+	list_onCreate: null as unknown as LocalizationShape['list_onCreate'],
+	list_onDelete: null as unknown as LocalizationShape['list_onDelete'],
+	list_onResume: null as unknown as LocalizationShape['list_onResume'],
+	state: null as unknown as string,
 	strings: null as Record<string, string> | null,
 	close: null as (() => void) | null,
-	saveToProject: null as ((project: any) => void) | null,
-	loadFromProject: null as ((project: any) => void) | null
+	saveToProject: null as ((project: EditorProjectShape) => void) | null,
+	loadFromProject: null as ((project: EditorProjectShape) => void) | null
 };
 
 function ensureDomBound() {
 	if (Localization.list) return;
 	const list = $('#localization-list');
 	if (!list) return;
-	Localization.list = list;
-	Localization.panel = $('#localization-inspector');
+	Localization.list = list as unknown as TreeListElement;
+	Localization.panel = $('#localization-inspector') as unknown as HTMLElement & {
+		item: LocalizationItem | null;
+	};
 	hide(Localization.panel);
-	Localization.searcher = $('#localization-searcher');
-	list.copy = null as unknown as (...args: unknown[]) => any;
-	list.paste = null as unknown as (...args: unknown[]) => any;
-	list.delete = null as unknown as (...args: unknown[]) => any;
+	Localization.searcher = $('#localization-searcher') as unknown as HTMLElement & {
+		addCloseButton(): void;
+		deleteInputContent(): void;
+	};
+	list.copy = null as unknown as (...args: unknown[]) => unknown;
+	list.paste = null as unknown as (...args: unknown[]) => unknown;
+	list.delete = null as unknown as (...args: unknown[]) => unknown;
 	list.saveScroll = Localization.list_saveScroll;
 	list.restoreScroll = Localization.list_restoreScroll;
 	list.cancelSearch = Localization.list_cancelSearch;
 	list.createFolder = Localization.list_createFolder;
-	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => any;
-	list.createIcon = Localization.list_createIcon as unknown as (...args: unknown[]) => any;
+	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => unknown;
+	list.createIcon = Localization.list_createIcon as unknown as (...args: unknown[]) => unknown;
 	list.addElementClass = Localization.list_addElementClass as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 	list.updateItemClass = Localization.list_updateItemClass;
 	list.updateItemName = Localization.list_updateItemName as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 	list.createInitText = Localization.list_createInitText;
 	list.updateInitText = Localization.list_updateInitText;
 	list.onCreate = Localization.list_onCreate;
 	list.onDelete = Localization.list_onDelete;
 	list.onResume = Localization.list_onResume;
 	bindListClipboardMethods({
-		module: Localization,
+		module: { ...Localization, idMap: Localization.idMap! },
 		list,
 		clipboardKey: 'yami.data.localization'
 	});
@@ -169,7 +241,7 @@ function ensureDomBound() {
 Localization.initialize = function () {
 	ensureDomBound();
 	if (!Localization.list) return;
-	const { list } = this;
+	const list = this.list!;
 	list.removable = true;
 	list.renamable = true;
 	list.bind(() => this.data);
@@ -178,9 +250,9 @@ Localization.initialize = function () {
 	list.creators?.push(list.createInitText);
 	list.creators?.push(list.updateInitText);
 
-	this.panel.item = null;
+	this.panel!.item = null;
 
-	this.searcher.addCloseButton();
+	this.searcher!.addCloseButton();
 
 	History.processors['localization-list-operation'] = (
 		operation: string,
@@ -188,7 +260,7 @@ Localization.initialize = function () {
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
-		if (read(list) === null && this.panel.item !== null) {
+		if (read(list) === null && this.panel!.item !== null) {
 			this.closeContentPanel();
 		}
 		this.changed = true;
@@ -200,8 +272,8 @@ Localization.initialize = function () {
 		const { item, language, content } = data;
 		data.content = item.contents![language];
 		item.contents![language] = content;
-		if (this.panel.item === item) {
-			const textarea = this.inputs[language];
+		if (this.panel!.item === item) {
+			const textarea = this.inputs![language];
 			write(textarea, content);
 			this.resizeTextArea(textarea);
 		} else {
@@ -235,7 +307,7 @@ Localization.initialize = function () {
 
 Localization.createInputs = function () {
 	const inputs: Record<string, HTMLElement> = (this.inputs = {});
-	for (const language of this.languages) {
+	for (const language of this.languages!) {
 		const detailBox = createDetailBox();
 		const detailSummary = createDetailSummary();
 		detailSummary.textContent = Local.get!('languages.' + language);
@@ -245,7 +317,7 @@ Localization.createInputs = function () {
 		addClass(textarea, 'localization-text-area');
 		detailBox.appendChild(detailSummary);
 		detailBox.appendChild(textarea);
-		this.panel.appendChild(detailBox);
+		this.panel!.appendChild(detailBox);
 		inputs[language] = textarea;
 		Selection.addEventListeners(textarea);
 	}
@@ -260,7 +332,7 @@ Localization.open = function (target: LocalizationTarget | null | undefined = nu
 	this.createInputs();
 	Window.open!('localization');
 
-	const list = this.list;
+	const list = this.list!;
 	const item = !target ? undefined : this.getItemById(read(target));
 	if (item) {
 		list.initialize();
@@ -284,14 +356,14 @@ Localization.open = function (target: LocalizationTarget | null | undefined = nu
 };
 
 Localization.undo = function () {
-	if (this.history.canUndo()) {
-		this.history.restore('undo');
+	if (this.history!.canUndo()) {
+		this.history!.restore('undo');
 	}
 };
 
 Localization.redo = function () {
-	if (this.history.canRedo()) {
-		this.history.restore('redo');
+	if (this.history!.canRedo()) {
+		this.history!.restore('redo');
 	}
 };
 
@@ -299,7 +371,7 @@ Localization.createId = function () {
 	let id;
 	do {
 		id = GUID.generate64bit();
-	} while (this.idMap[id]);
+	} while (!!this.idMap![id]);
 	return id;
 };
 
@@ -309,7 +381,7 @@ Localization.register = function (item: LocalizationItem) {
 			Localization.register(child);
 		}
 	} else {
-		Localization.idMap[item.id!] = true;
+		Localization.idMap![item.id!] = true;
 	}
 };
 
@@ -319,7 +391,7 @@ Localization.unregister = function (item: LocalizationItem) {
 			Localization.unregister(child);
 		}
 	} else {
-		delete Localization.idMap[item.id!];
+		delete Localization.idMap![item.id!];
 	}
 };
 
@@ -343,18 +415,18 @@ Localization.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (this: any, id: string) {
+	return function (this: LocalizationShape, id: string) {
 		return find(this.data, id);
 	};
 })();
 
 Localization.openContentPanel = function (item: LocalizationItem) {
-	const panel = this.panel;
+	const panel = this.panel!;
 	if (panel.item !== item) {
 		panel.item = item;
 		show(panel);
-		const { inputs } = this;
-		for (const language of this.languages) {
+		const inputs = this.inputs!;
+		for (const language of this.languages!) {
 			const textarea = inputs[language];
 			write(textarea, item.contents![language]);
 			this.resizeTextArea(textarea);
@@ -363,7 +435,7 @@ Localization.openContentPanel = function (item: LocalizationItem) {
 };
 
 Localization.closeContentPanel = function () {
-	const panel = this.panel;
+	const panel = this.panel!;
 	if (panel.item) {
 		panel.item = null;
 		hide(panel);
@@ -399,14 +471,14 @@ Localization.unpackLocalization = (function IIFE() {
 			const item = items![i];
 			if (item.class !== 'folder') {
 				copies[i] = Object.clone(item);
-				Localization.idMap[item.id!] = true;
+				Localization.idMap![item.id!] = true;
 			} else {
 				copies[i] = new ReferencedFolder(item);
 			}
 		}
 		return copies;
 	};
-	return function (this: any) {
+	return function (this: LocalizationShape) {
 		this.idMap = {};
 		this.data = clone(Data.localization.list);
 		this.languages = Data.config.localization.languages.map(
@@ -434,7 +506,7 @@ Localization.packLocalization = (function IIFE() {
 		}
 		return copies;
 	};
-	return function (this: any) {
+	return function (this: LocalizationShape) {
 		Data.localization.list = clone(this.data);
 		Data.createLocalizationMap();
 	};
@@ -446,8 +518,8 @@ Localization.resizeTextArea = function (textarea: HTMLElement) {
 	textarea.style.height = `${Math.clamp(shadowDOM!.scrollHeight + 11, 40, 200)}px`;
 };
 
-Localization.windowClose = function (this: any, event: Event) {
-	this.list.saveScroll();
+Localization.windowClose = function (this: LocalizationShape, event: Event) {
+	this.list!.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
 		const get = Local.createGetter!('confirmation');
@@ -471,7 +543,7 @@ Localization.windowClose = function (this: any, event: Event) {
 	}
 }.bind(Localization);
 
-Localization.windowClosed = function (this: any, event: Event) {
+Localization.windowClosed = function (this: LocalizationShape, event: Event) {
 	this.data = null;
 	this.idMap = null;
 	this.inputs = null;
@@ -484,7 +556,7 @@ Localization.windowClosed = function (this: any, event: Event) {
 	clear(this.panel);
 	this.closeContentPanel();
 	window.removeEventListener('keydown', this.keydown);
-	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list));
+	window.removeEventListener('keydown', Reference.getKeydownListener!(this.list!));
 }.bind(Localization);
 
 Localization.keydown = Shortcuts.createUndoRedo(Localization);
@@ -555,7 +627,7 @@ Localization.listRecord = function (event: Event) {
 	});
 };
 
-Localization.listOpen = function (event: any) {
+Localization.listOpen = function (event: MouseEvent) {
 	Localization.listDoubleclick(event);
 };
 
@@ -661,11 +733,11 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	);
 };
 
-Localization.panelInput = function (event: any) {
-	const element = event.target;
+Localization.panelInput = function (event: Event) {
+	const element = event.target as HTMLElement;
 	if (element.tagName === 'TEXTAREA') {
 		const item = Localization.panel!.item;
-		const textarea = element.parentNode;
+		const textarea = element.parentNode as HTMLElement & { language: string };
 		const language = textarea.language;
 		const history = Localization.history!;
 		const index = history.index;
@@ -681,10 +753,10 @@ Localization.panelInput = function (event: any) {
 				type: 'localization-content-change',
 				item: item,
 				language: language,
-				content: item!.contents[language]
+				content: item!.contents![language]
 			});
 		}
-		item!.contents[language] = read(textarea);
+		item!.contents![language] = read(textarea);
 		Localization.resizeTextArea(textarea);
 		Localization.list!.updateInitText(item);
 		Localization.changed = true;
@@ -712,7 +784,7 @@ Localization.searcherInput = function (this: TextBox, event: InputEvent) {
 	Localization.list!.searchNodesDebounced(text);
 };
 
-Localization.confirm = function (this: any, event?: Event) {
+Localization.confirm = function (this: LocalizationShape, event?: Event) {
 	if (this.target) {
 		const item = read(this.list);
 		if (item?.id === undefined) {
@@ -727,7 +799,7 @@ Localization.confirm = function (this: any, event?: Event) {
 	Window.close!('localization');
 }.bind(Localization);
 
-Localization.apply = function (this: any, event?: Event) {
+Localization.apply = function (this: LocalizationShape, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 
@@ -738,7 +810,7 @@ Localization.apply = function (this: any, event?: Event) {
 	}
 }.bind(Localization);
 
-Localization.fromExcel = async function (this: any, event: Event) {
+Localization.fromExcel = async function (this: LocalizationShape, event: Event) {
 	const items = await ipcRenderer.invoke('from-excel');
 	if (JSON.stringify(items) == JSON.stringify(Data.localization.list) || !items.length) return;
 	Data.localization.list = items;
@@ -749,7 +821,7 @@ Localization.fromExcel = async function (this: any, event: Event) {
 	Localization.apply();
 }.bind(Localization);
 
-Localization.toExcel = function (this: any, event?: Event) {
+Localization.toExcel = function (this: LocalizationShape, event?: Event) {
 	ipcRenderer.invoke('to-excel', {
 		langs: this.languages,
 		list: Data.localization.list

@@ -31,7 +31,7 @@ interface CheckBoxElement extends HTMLElement {
 	relate(elements: HTMLElement[]): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 	dataValue: boolean;
@@ -150,7 +150,7 @@ const toggleRelatedElements = (): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -193,11 +193,11 @@ onMounted(() => {
 			state.relations = value;
 		}
 	});
-	onElement(el, 'input', (e: any) => {
+	onElement(el, 'input', (e: Event & { value?: unknown }) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
 	});
-	onElement(el, 'write', (e: any) => emit('write', e.value));
+	onElement(el, 'write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	onElement(el, 'change', () => emit('change', read()));
 	if (props.modelValue) write(true);
 	if (props.disabled) disable();

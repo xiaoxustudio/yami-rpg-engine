@@ -11,7 +11,7 @@ Command.cases.setTriggerMotion = new CommandSchema({
 		{ key: 'trigger', default: { type: 'trigger' } },
 		{ key: 'motion', default: '', required: true }
 	],
-	customParse({ trigger, motion }: any) {
+	customParse({ trigger, motion }: { trigger: unknown; motion: unknown }) {
 		const words = Command.words
 			.push(Command.parseTrigger(trigger))
 			.push(Command.parseEnumString(motion));

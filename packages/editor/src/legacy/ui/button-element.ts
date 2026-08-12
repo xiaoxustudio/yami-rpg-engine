@@ -27,11 +27,10 @@ interface ButtonData {
 	hoverTint: number[];
 	activeTint: number[];
 	textEffect: TextEffectShape;
-	[k: string]: any;
 }
 
 interface ShadowImageShape {
-	transform: { width: number; height: number; opacity: number; [k: string]: any };
+	transform: { width: number; height: number; opacity: number };
 	image: string;
 	display: string;
 	flip: string;
@@ -44,11 +43,10 @@ interface ShadowImageShape {
 	resize(): void;
 	draw(): void;
 	destroy(): void;
-	[k: string]: any;
 }
 
 interface ShadowTextShape {
-	transform: { width: number; height: number; [k: string]: any };
+	transform: { width: number; height: number };
 	content: string;
 	size: number;
 	font: string;
@@ -68,7 +66,6 @@ interface ShadowTextShape {
 	resize(): void;
 	draw(): void;
 	destroy(): void;
-	[k: string]: any;
 }
 
 UI.Button = class ButtonElement extends UI.Element {

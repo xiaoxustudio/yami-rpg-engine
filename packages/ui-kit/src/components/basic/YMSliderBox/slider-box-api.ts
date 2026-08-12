@@ -1,11 +1,12 @@
 ﻿import { addClass, removeClass, read } from '../../../utils/dom';
+import type { NumberBoxApi } from '../YMNumberBox/number-box-api';
 
 export interface SliderBoxApiOptions {
 	min?: string;
 	max?: string;
 	step?: string;
 	activeWheel?: boolean;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
@@ -13,21 +14,21 @@ export interface SliderBoxApi extends HTMLElement {
 	bar?: HTMLElement | null;
 	filler?: HTMLElement | null;
 	input?: HTMLInputElement;
-	synchronizer: HTMLElement & { value: any; [k: string]: any };
+	synchronizer: NumberBoxApi | null;
 	step: number;
 	activeWheel: boolean;
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
+	read(...args: unknown[]): number;
+	write(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
 	updateFiller(): void;
-	synchronize(target: any): void;
-	on(...args: unknown[]): any;
-	sliderInput(event?: any): void;
-	inputWheel(event: any): void;
+	synchronize(target: NumberBoxApi): void;
+	on(...args: unknown[]): void;
+	sliderInput(event?: Event): void;
+	inputWheel(event: WheelEvent): void;
 }
 
 const roundTo = (value: number, decimals: number): number => {
@@ -68,7 +69,7 @@ export function attachSliderBoxApi(
 	box.bar = bar;
 	box.filler = filler;
 	box.input = input;
-	box.synchronizer = null as any;
+	box.synchronizer = null;
 	box.focusEventEnabled = false;
 	box.blurEventEnabled = false;
 
@@ -81,9 +82,9 @@ export function attachSliderBoxApi(
 	el.appendChild(input);
 
 	box.updateFiller = function (): void {
-		const value = read(box);
-		if ((filler as any).value !== value) {
-			(filler as any).value = value;
+		const value = read(box) as number;
+		if ((filler as HTMLElement & { value?: number }).value !== value) {
+			(filler as HTMLElement & { value?: number }).value = value;
 			const min = parseFloat(input.min);
 			const max = parseFloat(input.max);
 			if (min !== max) {
@@ -97,8 +98,8 @@ export function attachSliderBoxApi(
 		return parseFloat(input.value);
 	};
 
-	box.write = function (value: any): void {
-		input.value = value;
+	box.write = function (value: unknown): void {
+		input.value = value as string;
 		box.updateFiller();
 	};
 
@@ -114,7 +115,7 @@ export function attachSliderBoxApi(
 		}
 	};
 
-	box.synchronize = function (target: any): void {
+	box.synchronize = function (target: NumberBoxApi): void {
 		const slider = box;
 		const number = target;
 		if (slider.synchronizer) {
@@ -133,12 +134,12 @@ export function attachSliderBoxApi(
 				slider.input!.focus();
 			};
 
-			const sliderInput = (event?: any) => {
+			const sliderInput = (event?: Event) => {
 				writeNumber.call(number, read(slider));
 				event && number.dispatchEvent(new Event('input'));
 			};
 
-			const numberInput = (event?: any) => {
+			const numberInput = (event?: Event) => {
 				writeSlider.call(slider, read(number));
 				event && slider.dispatchEvent(new Event('input'));
 			};
@@ -149,12 +150,12 @@ export function attachSliderBoxApi(
 			input.addEventListener('input', sliderInput);
 			number.input.addEventListener('input', numberInput);
 
-			slider.write = (value: any) => {
+			slider.write = (value: unknown) => {
 				writeSlider.call(slider, value);
 				sliderInput();
 			};
 
-			number.write = (value: any) => {
+			number.write = (value: unknown) => {
 				writeNumber.call(number, value);
 				numberInput();
 			};
@@ -165,12 +166,12 @@ export function attachSliderBoxApi(
 		box.updateFiller();
 	};
 
-	box.inputWheel = function (event: any): void {
+	box.inputWheel = function (event: WheelEvent): void {
 		if (event.deltaY === 0) return;
-		const parent = this.parentNode as any;
+		const parent = this.parentNode as (HTMLElement & { activeWheel?: boolean }) | null;
 		if (parent?.activeWheel) {
 			event.preventDefault();
-			const inputEl: any = this;
+			const inputEl = this as unknown as HTMLInputElement;
 			const last = inputEl.value;
 			inputEl.value = String(
 				roundTo(
@@ -191,7 +192,7 @@ export function attachSliderBoxApi(
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

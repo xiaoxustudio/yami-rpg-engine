@@ -10,7 +10,7 @@ Object.assign(target, {
 	has(format: string): boolean {
 		return ipcRenderer.sendSync('clipboard-has', format) as boolean;
 	},
-	read(format: string): any {
+	read(format: string): unknown {
 		return ipcRenderer.sendSync('clipboard-read', format);
 	},
 	write(format: string, object: unknown): void {

@@ -27,13 +27,13 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onListSelect = (event: any) => {
+const onListSelect = (event: Event & { value?: unknown }) => {
 	Team?.listSelect?.(event);
 };
-const onListPopup = (event: any) => {
+const onListPopup = (event: PointerEvent & { value?: unknown }) => {
 	Team?.listPopup?.(event);
 };
-const onListChange = (event: any) => {
+const onListChange = (event: Event & { value?: unknown }) => {
 	Team?.listChange?.(event);
 };
 

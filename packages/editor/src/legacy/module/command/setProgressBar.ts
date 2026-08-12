@@ -11,11 +11,17 @@ Command.cases.setProgressBar = new CommandSchema({
 	onInitialize() {
 		$('#setProgressBar-confirm').on('click', () => this.save!());
 		$('#setProgressBar-properties').bind(ProgressBarProperty);
-		$('#setProgressBar').on('closed', (event: any) => {
+		$('#setProgressBar').on('closed', (event: Event) => {
 			clear($('#setProgressBar-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(ProgressBarProperty.parse!(property));
@@ -26,7 +32,13 @@ Command.cases.setProgressBar = new CommandSchema({
 			{ text: words.join() }
 		];
 	},
-	customLoad({ element = { type: 'trigger' }, properties = [] }) {
+	customLoad({
+		element = { type: 'trigger' },
+		properties = []
+	}: {
+		element: unknown;
+		properties: unknown[];
+	}) {
 		const write = getElementWriter('setProgressBar');
 		write('element', element);
 		write('properties', properties.slice());

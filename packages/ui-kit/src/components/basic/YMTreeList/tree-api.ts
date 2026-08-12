@@ -16,11 +16,15 @@ import {
 } from '../../../utils/dom';
 import { Timer } from '../../../utils/timer';
 import {
+	type CommonListLike,
 	commonListClearElements,
 	commonListUpdateHeadAndFoot,
 	commonListResize
 } from '../../../utils/common-list';
-import { createDragAndDropHintElement } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
+import {
+	createDragAndDropHintElement,
+	type DragAndDropHintApi
+} from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
 export const treeListStatics = {
 	createParents: (function IIFE() {
 		const descriptor = {
@@ -28,7 +32,7 @@ export const treeListStatics = {
 			writable: true,
 			value: null
 		};
-		const createParents = (items: any[], parent: any): void => {
+		const createParents = (items: TreeItem[], parent: TreeItem | null): void => {
 			const length = items.length;
 			for (let i = 0; i < length; i++) {
 				const item = items[i];
@@ -37,18 +41,18 @@ export const treeListStatics = {
 				}
 				item.parent = parent;
 				const { children } = item;
-				if (children?.length > 0) {
+				if (children && children.length > 0) {
 					createParents(children, item);
 				}
 			}
 		};
-		return function (items: any[], parent: any): void {
+		return function (items: TreeItem[], parent: TreeItem | null): void {
 			createParents(items, parent);
 		};
 	})(),
 
 	deleteCaches: (function IIFE() {
-		const uninstall = (items: any[]): void => {
+		const uninstall = (items: TreeItem[]): void => {
 			for (const item of items) {
 				delete item.element;
 				delete item.parent;
@@ -57,14 +61,14 @@ export const treeListStatics = {
 				}
 			}
 		};
-		return function (data: any): void {
+		return function (data: TreeItem[] & { initialized?: unknown }): void {
 			uninstall(data);
 			delete data.initialized;
 		};
 	})(),
 
 	padding: (function IIFE() {
-		const padding: any = document.createElement('div');
+		const padding: HTMLDivElement & { count?: number } = document.createElement('div');
 		addClass(padding, 'box');
 		padding.style.display = 'block';
 		padding.style.width = '1px';
@@ -72,7 +76,15 @@ export const treeListStatics = {
 	})(),
 
 	textBox: (function IIFE() {
-		const textBox: any = document.createElement('div');
+		const textBox = document.createElement('div') as HTMLDivElement & {
+			input: HTMLInputElement;
+			hiddenNodes: HTMLElement[] | null;
+			lastText: string;
+			read: () => string;
+			write: (value: string) => void;
+			getFocus: (mode: string | null) => HTMLInputElement;
+			fitContent: () => void;
+		};
 		addClass(textBox, 'text-box');
 		addClass(textBox, 'node-list-text-box');
 		const input = document.createElement('input');
@@ -120,24 +132,27 @@ export const treeListStatics = {
 			input.style.width = `${width}px`;
 		};
 
-		textBox.addEventListener('keydown', function (this: any, event: KeyboardEvent) {
+		textBox.addEventListener('keydown', function (this: HTMLElement, event: KeyboardEvent) {
 			event.stopPropagation();
 			switch (event.code) {
 				case 'Enter':
 				case 'NumpadEnter':
 				case 'Escape': {
-					const item = this.parentNode as any;
-					const list = item.parentNode as any;
-					this.input.blur();
+					const item = this.parentNode as HTMLElement & { parentNode: HTMLElement };
+					const list = item.parentNode;
+					(this as HTMLDivElement & { input: HTMLInputElement }).input.blur();
 					list.focus();
 					break;
 				}
 			}
 		});
 
-		textBox.addEventListener('input', function (this: any) {
-			this.fitContent();
-		});
+		textBox.addEventListener(
+			'input',
+			function (this: HTMLDivElement & { fitContent: () => void }) {
+				this.fitContent();
+			}
+		);
 
 		textBox.addEventListener('select', (event: Event) => {
 			event.stopPropagation();
@@ -152,21 +167,21 @@ export const treeListStatics = {
 		});
 
 		textBox.addEventListener('blur', function (this: any) {
-			const element = this.parentNode as any;
-			const list = element.parentNode as any;
-			const item = (element as any).item;
+			const element = this.parentNode;
+			const list = element.parentNode;
+			const item = element.item;
 			const name = this.read().trim();
 			for (const node of this.hiddenNodes) {
 				removeClass(node, 'hidden');
 			}
-			this.hiddenNodes = null as any;
+			this.hiddenNodes = null;
 			this.remove();
 			const last = item.name;
 			if (last !== name) {
 				item.name = name;
 				list.updateItemName(item);
 				if (list.recordEventEnabled) {
-					const record: any = new Event('record');
+					const record: ValueEvent = new Event('record') as ValueEvent;
 					const response = {
 						type: 'rename',
 						item: item,
@@ -190,8 +205,46 @@ export interface TreeListApiOptions {
 	getMenuState?: () => string;
 }
 
-const cloneNode = (node: any): any => {
-	const copy: any = {};
+type NodeElement = HTMLElement & {
+	item?: TreeItem;
+	indent: number;
+	changed: boolean;
+	textNode?: Text | null;
+	folderMark?: HTMLElement | null;
+	nodeIcon: HTMLElement;
+	markVisible: boolean;
+	markIndent: number;
+	textIndent: number;
+	expanded: boolean;
+};
+
+type TreeItem = {
+	name: string;
+	class?: string;
+	children?: TreeItem[];
+	parent?: TreeItem | null;
+	element?: NodeElement;
+	expanded?: boolean;
+	id?: string;
+	presetId?: string;
+	[key: string]: unknown;
+};
+
+type NodeItemElement = HTMLElement & {
+	item?: TreeItem;
+};
+
+type ValueEvent = Event & { value: unknown };
+
+type PopupEvent = Event & { value: unknown; clientX: number; clientY: number };
+
+type TreeListDragEvent = DragEvent & {
+	offsetY?: number;
+	hint?: DragAndDropHintApi;
+};
+
+const cloneNode = (node: TreeItem): TreeItem => {
+	const copy: Record<string, unknown> = {};
 	for (const key of Object.keys(node)) {
 		if (key === 'element' || key === 'parent') continue;
 		const value = node[key];
@@ -201,23 +254,26 @@ const cloneNode = (node: any): any => {
 			copy[key] = value;
 		}
 	}
-	return copy;
+	return copy as TreeItem;
 };
 
 export const treeListPrototype: Record<string, (...args: any[]) => any> = {
-	bind: function (this: any, getter: any): any {
+	bind: function (
+		this: HTMLElement & { [k: string]: unknown },
+		getter: () => TreeItem[]
+	): HTMLElement {
 		return Object.defineProperty(this, 'data', { get: getter });
 	},
 
-	read: function (this: any): any {
-		const { selections } = this;
+	read: function (this: HTMLElement & { [k: string]: unknown }): TreeItem | null {
+		const selections = this.selections as TreeItem[];
 		return selections.length === 1 ? selections[0] : null;
 	},
 
-	initialize: function (this: any): void {
-		const { data } = this;
+	initialize: function (this: HTMLElement & { [k: string]: unknown }): void {
+		const data = this.data as TreeItem[] & { initialized?: unknown };
 		if (!data.initialized) {
-			treeListStatics.createParents(this.data, this.root);
+			treeListStatics.createParents(data, this.root as TreeItem | null);
 			Object.defineProperty(data, 'initialized', {
 				configurable: true,
 				value: true
@@ -258,22 +314,22 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.update();
 	},
 
-	resize: function (this: any): any {
-		return commonListResize(this);
+	resize: function (this: HTMLElement & { [k: string]: unknown }): void {
+		return commonListResize(this as unknown as CommonListLike);
 	},
 
-	updateHeadAndFoot: function (this: any): any {
-		return commonListUpdateHeadAndFoot(this);
+	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
+		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
 	},
 
-	updateOnResize: function (this: any, element: any): void {
+	updateOnResize: function (this: any, element: NodeElement): void {
 		if (element.changed) {
 			element.changed = false;
 			this.updateNodeElement(element);
 		}
 	},
 
-	createFlatItems: function (this: any, data: any): void {
+	createFlatItems: function (this: any, data: TreeItem[]): void {
 		const elements = this.elements;
 		const length = data.length;
 		for (let i = 0; i < length; i++) {
@@ -282,7 +338,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	createIndentedItems: function (this: any, data: any, parent: any, indent: any): void {
+	createIndentedItems: function (
+		this: any,
+		data: TreeItem[],
+		parent: TreeItem | null,
+		indent: number
+	): void {
 		const elements = this.elements;
 		const length = data.length;
 		for (let i = 0; i < length; i++) {
@@ -292,16 +353,16 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				throw new Error('No parent!');
 			}
 			item.parent = parent;
-			if (item.expanded && item.children.length !== 0) {
-				this.createIndentedItems(item.children, item, indent + 1);
+			if (item.expanded && item.children!.length !== 0) {
+				this.createIndentedItems(item.children!, item, indent + 1);
 			}
 		}
 	},
 
-	searchNodes: function (this: any, keyword: any): void {
+	searchNodes: function (this: any, keyword: string | RegExp): void {
 		const { data } = this;
 		if (!data) return;
-		if (keyword instanceof RegExp || keyword.length !== 0) {
+		if (keyword instanceof RegExp || (keyword as string).length !== 0) {
 			if (this.display === 'normal') {
 				this.display = 'search';
 			}
@@ -309,7 +370,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				keyword = keyword.replace(/[(){}\\^$*+?.|[\]]/g, '\\$&');
 				keyword = new RegExp(keyword, 'i');
 			}
-			this.searchNodesAlgorithm(data, (this.keyword = keyword), (this.searchResults = []));
+			this.searchNodesAlgorithm(
+				data,
+				(this.keyword = keyword) as RegExp,
+				(this.searchResults = [])
+			);
 		} else {
 			if (this.display === 'search') {
 				this.display = 'normal';
@@ -320,11 +385,19 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.update();
 	},
 
-	searchNodesDebounced: function (this: any, keyword: any): void {
-		(this._searchNodesDebounced ??= debounce((kw: any) => this.searchNodes(kw), 150))(keyword);
+	searchNodesDebounced: function (this: any, keyword: string | RegExp): void {
+		(this._searchNodesDebounced ??= debounce(
+			(kw: string | RegExp) => this.searchNodes(kw),
+			150
+		))(keyword);
 	},
 
-	searchNodesAlgorithm: function (this: any, data: any, keyword: any, list: any): void {
+	searchNodesAlgorithm: function (
+		this: any,
+		data: TreeItem[],
+		keyword: RegExp,
+		list: TreeItem[]
+	): void {
 		const length = data.length;
 		for (let i = 0; i < length; i++) {
 			const item = data[i];
@@ -342,17 +415,21 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	createNodeElement: function (this: any, item: any, indent: any): any {
-		let element = item.element;
+	createNodeElement: function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem,
+		indent: number
+	): NodeElement {
+		let element: NodeElement | undefined = item.element;
 		if (element === undefined) {
-			element = document.createElement('node-item');
+			element = document.createElement('node-item') as NodeElement;
 			element.item = item;
 			Object.defineProperty(item, 'element', {
 				configurable: true,
 				value: element
 			});
 
-			if (this.selections.includes(item)) {
+			if ((this.selections as (TreeItem | undefined)[]).includes(item)) {
 				addClass(element, 'selected');
 			}
 		}
@@ -361,23 +438,23 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return element;
 	},
 
-	updateNodeElement: function (this: any, element: any): void {
+	updateNodeElement: function (this: any, element: NodeElement): void {
 		const { item } = element;
 		if (!element.textNode) {
 			let folderMark = null;
 			let markVisible = false;
 			let markIndent = this.foldable ? 16 : 0;
-			if (item.children instanceof Array) {
+			if (item!.children instanceof Array) {
 				folderMark = document.createElement('folder-mark');
 				markVisible = true;
 				markIndent = 0;
 				element.appendChild(folderMark);
 			}
 
-			const nodeIcon = this.createIcon(item);
+			const nodeIcon = this.createIcon(item!);
 			element.appendChild(nodeIcon);
 
-			const textNode = this.createText(item);
+			const textNode = this.createText(item!);
 			element.appendChild(textNode);
 
 			element.draggable = true;
@@ -390,19 +467,19 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			element.textNode = textNode;
 
 			for (const creator of this.creators) {
-				creator(item);
+				creator(item!);
 			}
 		}
 
-		if (item.expanded !== undefined) {
-			const markVisible = item.children.length !== 0;
+		if (item!.expanded !== undefined) {
+			const markVisible = item!.children!.length !== 0;
 			if (element.markVisible !== markVisible) {
 				element.markVisible = markVisible;
-				element.folderMark.style.visibility = markVisible ? 'inherit' : 'hidden';
+				element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
 			}
 
-			const expanded = markVisible && item.expanded;
-			if (item.class === 'folder') {
+			const expanded = markVisible && item!.expanded;
+			if (item!.class === 'folder') {
 				if (element.expanded !== expanded) {
 					element.expanded = expanded;
 					switch (expanded) {
@@ -442,7 +519,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	deleteNodeElements: function (this: any, data: any): void {
+	deleteNodeElements: function (this: any, data: TreeItem[]): void {
 		const length = data.length;
 		for (let i = 0; i < length; i++) {
 			const item = data[i];
@@ -450,13 +527,16 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				delete item.element;
 			}
 			const { children } = item;
-			if (children?.length > 0) {
+			if (children && children.length > 0) {
 				this.deleteNodeElements(children);
 			}
 		}
 	},
 
-	createIcon: function (this: any, item: any): HTMLElement {
+	createIcon: function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem
+	): HTMLElement {
 		const icon = document.createElement('node-icon');
 		switch (item.class) {
 			case 'folder':
@@ -469,18 +549,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return icon;
 	},
 
-	createText: function (this: any, item: any): Text {
+	createText: function (this: any, item: TreeItem): Text {
 		return document.createTextNode(this.parseName(item));
 	},
 
-	parseName: function (this: any, item: any): string {
+	parseName: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): string {
 		return item.name;
 	},
 
-	updateItemName: function (this: any, item: any): void {
+	updateItemName: function (this: any, item: TreeItem): void {
 		if (item?.element?.textNode) {
 			const element = item.element;
-			const text = element.textNode;
+			const text = element.textNode!;
 			const last = text.nodeValue;
 			const name = this.parseName(item);
 			text.nodeValue = name;
@@ -493,10 +573,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	getItemByProperties: function (this: any, properties: any): any {
+	getItemByProperties: function (
+		this: HTMLElement & { [k: string]: unknown },
+		properties: object
+	): TreeItem | undefined {
 		const entries = Object.entries(properties);
 
-		const find = (items: any[]): any => {
+		const find = (items: TreeItem[]): TreeItem | undefined => {
 			const length = items.length;
 			for (let i = 0; i < length; i++) {
 				const item = items[i];
@@ -519,10 +602,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 			return undefined;
 		};
-		return find(this.data);
+		return find(this.data as TreeItem[]);
 	},
 
-	contain: function (this: any, node: any, target: any): boolean {
+	contain: function (
+		this: HTMLElement & { [k: string]: unknown },
+		node: unknown,
+		target: TreeItem | null | undefined
+	): boolean {
 		while (target instanceof Object) {
 			if (target === node) {
 				return true;
@@ -532,23 +619,26 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		return false;
 	},
 
-	renameNode: function (this: any, item: any, newName: any): void {
+	renameNode: function (this: any, item: TreeItem | null, newName: string): void {
 		if (item) {
 			item.name = newName;
 			this.updateItemName(item);
 		}
 	},
 
-	resetItemName: function (this: any, item: any): void {
+	resetItemName: function (this: any, item: TreeItem | null): void {
 		if (item) {
 			item.name = this.generateCopyName(item);
 			this.updateItemName(item);
 		}
 	},
 
-	generateUniqueName: function (this: any, item: any): string {
-		const flags: Record<string, any> = {};
-		const items = item.parent.children;
+	generateUniqueName: function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem
+	): string {
+		const flags: Record<string, boolean> = {};
+		const items = item.parent!.children!;
 		for (const sibling of items) {
 			flags[sibling.name] = true;
 		}
@@ -561,11 +651,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	duplicate: function (this: any, item: any): void {
+	duplicate: function (this: any, item: TreeItem): void {
 		const copy = cloneNode(item);
 		copy.name = this.generateUniqueName(item);
-		const index = item.parent.children.indexOf(item);
-		const next = item.parent.children[index + 1];
+		const index = item.parent!.children!.indexOf(item);
+		const next = item.parent!.children![index + 1];
 		if (next) {
 			this.addNodeTo(copy, next, true);
 		} else {
@@ -573,7 +663,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	addNodeTo: function (this: any, sItem: any, dItem: any, insertBefore: any = false): void {
+	addNodeTo: function (
+		this: any,
+		sItem: TreeItem,
+		dItem: TreeItem | null | undefined,
+		insertBefore: boolean = false
+	): void {
 		if (!sItem) {
 			return;
 		}
@@ -588,13 +683,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		if (dItem === data) {
 			dList = data;
 			dIndex = dList.length;
-		} else if (dItem.children && !insertBefore) {
-			dList = dItem.children;
+		} else if (dItem!.children && !insertBefore) {
+			dList = dItem!.children;
 			dIndex = dList.length;
 		} else {
-			dList = dItem.parent.children;
+			dList = dItem!.parent!.children;
 			if (dList instanceof Array) {
-				dIndex = dList.indexOf(dItem);
+				dIndex = dList.indexOf(dItem!);
 			}
 		}
 		if (dList) {
@@ -605,16 +700,16 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				treeListStatics.createParents([sItem], null);
 			}
 
-			let item = dItem;
+			let item = dItem!;
 			while (item.parent !== undefined) {
 				if (item.expanded === false) {
 					item.expanded = true;
 				}
-				item = item.parent;
+				item = item.parent!;
 			}
 
 			if (this.recordEventEnabled) {
-				const record: any = new Event('record');
+				const record: ValueEvent = new Event('record') as ValueEvent;
 				const response = {
 					type: 'create',
 					sItem: sItem,
@@ -633,14 +728,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	deleteNode: function (this: any, item: any): void {
-		const items = item.parent.children;
+	deleteNode: function (this: any, item: TreeItem): void {
+		const items = item.parent!.children!;
 		if (items instanceof Array) {
 			const index = items.indexOf(item);
 			items.splice(index, 1);
 
 			if (this.recordEventEnabled) {
-				const record: any = new Event('record');
+				const record: ValueEvent = new Event('record') as ValueEvent;
 				const response = {
 					type: 'delete',
 					items: items,
@@ -658,14 +753,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	removeItemTo: function (this: any, sItem: any, dItem: any): void {
+	removeItemTo: function (this: any, sItem: TreeItem, dItem: TreeItem | null | undefined): void {
 		if (sItem === dItem || (this.lockDirectory && dItem === this.root)) {
 			return;
 		}
 		const sParent = sItem.parent;
 		if (sParent && dItem) {
-			const sList = sParent.children;
-			const dList = dItem.children;
+			const sList = sParent.children!;
+			const dList = dItem.children!;
 			const sIndex = sList.indexOf(sItem);
 			sList.splice(sIndex, 1);
 			const dIndex = dList.length;
@@ -678,7 +773,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 
 			if (this.recordEventEnabled) {
-				const record: any = new Event('record');
+				const record: ValueEvent = new Event('record') as ValueEvent;
 				const response = {
 					type: 'remove',
 					item: sItem,
@@ -703,25 +798,29 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	removeItemToInsert: function (this: any, sItem: any, dItem: any): void {
-		if (sItem === dItem || (this.lockDirectory && dItem.parent === this.root)) {
+	removeItemToInsert: function (
+		this: any,
+		sItem: TreeItem,
+		dItem: TreeItem | null | undefined
+	): void {
+		if (sItem === dItem || (this.lockDirectory && dItem!.parent === this.root)) {
 			return;
 		}
 		const sParent = sItem.parent;
-		const dParent = dItem.parent;
+		const dParent = dItem!.parent;
 		if (sParent && dParent) {
-			const sList = sParent.children;
-			const dList = dParent.children;
+			const sList = sParent.children!;
+			const dList = dParent.children!;
 			const sIndex = sList.indexOf(sItem);
 			sList.splice(sIndex, 1);
-			const dIndex = dList.indexOf(dItem);
+			const dIndex = dList.indexOf(dItem!);
 			dList.splice(dIndex, 0, sItem);
 			if (sList === dList && sIndex === dIndex) {
 				return;
 			}
 
 			if (this.recordEventEnabled) {
-				const record: any = new Event('record');
+				const record: ValueEvent = new Event('record') as ValueEvent;
 				const response = {
 					type: 'remove',
 					item: sItem,
@@ -746,13 +845,21 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	restore: function (this: any, operation: any, response: any): void {
+	restore: function (
+		this: any,
+		operation: string,
+		response: { type: string; [k: string]: unknown }
+	): void {
 		if (this.display === 'search') {
 			this.searchResults = [];
 		}
 		switch (response.type) {
 			case 'rename': {
-				const { item, oldValue, newValue } = response;
+				const { item, oldValue, newValue } = response as unknown as {
+					item: TreeItem;
+					oldValue: string;
+					newValue: string;
+				};
 				if (operation === 'undo') {
 					item.name = oldValue;
 				} else {
@@ -769,7 +876,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				break;
 			}
 			case 'create': {
-				const { sItem, dItem, insertBefore } = response;
+				const { sItem, dItem, insertBefore } = response as unknown as {
+					sItem: TreeItem;
+					dItem: TreeItem | null | undefined;
+					insertBefore: boolean;
+				};
 				if (operation === 'undo') {
 					const enabled = this.recordEventEnabled;
 					this.recordEventEnabled = false;
@@ -785,7 +896,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				break;
 			}
 			case 'delete': {
-				const { items, index, item } = response;
+				const { items, index, item } = response as unknown as {
+					items: TreeItem[];
+					index: number;
+					item: TreeItem;
+				};
 				if (operation === 'undo') {
 					if (index <= items.length) {
 						items.splice(index, 0, item);
@@ -808,11 +923,15 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				break;
 			}
 			case 'remove': {
-				const { item, source, destination } = response;
+				const { item, source, destination } = response as unknown as {
+					item: TreeItem;
+					source: { parent: TreeItem; index: number };
+					destination: { parent: TreeItem; index: number };
+				};
 				const { parent: sParent, index: sIndex } = source;
 				const { parent: dParent, index: dIndex } = destination;
-				const sList = sParent.children;
-				const dList = dParent.children;
+				const sList = sParent.children!;
+				const dList = dParent.children!;
 				if (operation === 'undo') {
 					if (item.parent !== undefined) {
 						item.parent = sParent;
@@ -844,15 +963,18 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	open: function (this: any, item: any): void {
+	open: function (
+		this: HTMLElement & { [k: string]: unknown },
+		item: TreeItem | null | undefined
+	): void {
 		if (item && this.openEventEnabled) {
-			const open: any = new Event('open');
+			const open: ValueEvent = new Event('open') as ValueEvent;
 			open.value = item;
 			this.dispatchEvent(open);
 		}
 	},
 
-	select: function (this: any, item: any): void {
+	select: function (this: any, item: TreeItem | null | undefined): void {
 		if (item instanceof Object && this.read() !== item) {
 			this.unselect();
 			this.selections.push(item);
@@ -860,27 +982,27 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				addClass(item.element, 'selected');
 			}
 			if (this.selectEventEnabled) {
-				const select: any = new Event('select');
+				const select: ValueEvent = new Event('select') as ValueEvent;
 				select.value = this.read();
 				this.dispatchEvent(select);
 			}
 		}
 	},
 
-	selectWithNoEvent: function (this: any, item: any): void {
+	selectWithNoEvent: function (this: any, item: TreeItem | null | undefined): void {
 		const enabled = this.selectEventEnabled;
 		this.selectEventEnabled = false;
 		this.select(item);
 		this.selectEventEnabled = enabled;
 	},
 
-	unselect: function (this: any, item?: any): void {
-		let selections: any[] = [];
+	unselect: function (this: HTMLElement & { [k: string]: unknown }, item?: TreeItem): void {
+		let selections: TreeItem[] = [];
 		if (item === undefined) {
-			selections = this.selections;
+			selections = this.selections as TreeItem[];
 		}
-		if (this.selections.includes(item)) {
-			selections = [item];
+		if ((this.selections as (TreeItem | undefined)[]).includes(item)) {
+			selections = [item!];
 		}
 		if (selections.length !== 0) {
 			treeListStatics.textBox.input.blur();
@@ -891,7 +1013,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 			}
 			if (this.unselectEventEnabled) {
-				const select: any = new Event('unselect');
+				const select: ValueEvent = new Event('unselect') as ValueEvent;
 				select.value = selections;
 				this.dispatchEvent(select);
 			}
@@ -899,7 +1021,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	unselectIn: function (this: any, item: any): void {
+	unselectIn: function (this: any, item: TreeItem): void {
 		const targets = [];
 		for (let target of this.selections) {
 			let node = target;
@@ -916,7 +1038,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	selectRelative: function (this: any, direction: any): void {
+	selectRelative: function (this: any, direction: string): void {
 		const elements = this.elements;
 		const count = elements.count;
 		if (count > 0) {
@@ -963,8 +1085,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	expandToItem: function (this: any, item: any, update = true): void {
-		item = item.parent;
+	expandToItem: function (this: any, item: TreeItem | null | undefined, update = true): void {
+		item = item!.parent!;
 		if (!item) return;
 		let changed = false;
 		while (item.expanded !== undefined) {
@@ -972,7 +1094,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				item.expanded = true;
 				changed = true;
 			}
-			item = item.parent;
+			item = item.parent!;
 		}
 		if (changed && update) {
 			this.update();
@@ -1015,7 +1137,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	scrollToHome: function (this: any): void {
 		const element = this.elements[0];
 		if (element instanceof HTMLElement) {
-			this.select((element as any).item);
+			this.select((element as NodeItemElement).item);
 		}
 		this.scroll(0, 0);
 	},
@@ -1025,12 +1147,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		const index = elements.count - 1;
 		const element = elements[index];
 		if (element instanceof HTMLElement) {
-			this.select((element as any).item);
+			this.select((element as NodeItemElement).item);
 		}
 		this.scroll(0, this.scrollHeight);
 	},
 
-	pageUp: function (this: any, select: any): void {
+	pageUp: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
 			const bottom = this.scrollTop + this.clientHeight;
@@ -1043,7 +1165,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scrollBy(0, -scrollLines * 20);
 	},
 
-	pageDown: function (this: any, select: any): void {
+	pageDown: function (this: any, select: boolean): void {
 		const scrollLines = Math.floor(this.clientHeight / 20) - 1;
 		if (select) {
 			const count = this.elements.count;
@@ -1056,19 +1178,19 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.scrollBy(0, +scrollLines * 20);
 	},
 
-	getElementIndexOfSelection: function (this: any, defIndex: any): number {
+	getElementIndexOfSelection: function (this: any, defIndex: number): number {
 		const item = this.read();
 		return item ? this.elements.indexOf(item.element) : defIndex;
 	},
 
-	rename: function (this: any, item: any): void {
+	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
 		if (this.renamable) {
 			const { element } = item;
 			const { textBox } = treeListStatics;
-			if (document.activeElement === this && !textBox.parentNode && element.parentNode) {
+			if (document.activeElement === this && !textBox.parentNode && element!.parentNode) {
 				const nodes = [];
-				const { folderMark, nodeIcon } = element;
-				for (const node of element.childNodes) {
+				const { folderMark, nodeIcon } = element!;
+				for (const node of element!.childNodes) {
 					if (
 						node instanceof HTMLElement &&
 						node !== folderMark &&
@@ -1078,9 +1200,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						nodes.push(node);
 					}
 				}
-				textBox.lastText = element.textNode.nodeValue;
-				element.textNode.nodeValue = '';
-				element.appendChild(textBox);
+				textBox.lastText = element!.textNode!.nodeValue as string;
+				element!.textNode!.nodeValue = '';
+				element!.appendChild(textBox);
 				textBox.hiddenNodes = nodes;
 				textBox.write(item.name);
 				textBox.getFocus('all');
@@ -1089,8 +1211,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	cancelRenaming: function (this: any): void {
-		const { timer } = this;
+	cancelRenaming: function (this: HTMLElement & { [k: string]: unknown }): void {
+		const timer = this.timer as Timer;
 		if (timer.target) {
 			timer.target = null;
 		}
@@ -1100,9 +1222,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	insertPaddingAndClear: function (this: any): void {
+	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {
 		const padding = treeListStatics.padding;
-		let count = this.elements.count;
+		let count = (this.elements as CommonListLike['elements']).count;
 		if (this.padded) count++;
 		if (padding.count !== count) {
 			padding.count = count;
@@ -1117,11 +1239,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	clearElements: function (this: any, start: any): void {
-		commonListClearElements(this, start);
+	clearElements: function (this: HTMLElement & { [k: string]: unknown }, start: number): void {
+		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
-	clear: function (this: any): any {
+	clear: function (this: any): HTMLElement {
 		if (this.display === 'search') {
 			this.display = 'normal';
 			this.keyword = null;
@@ -1138,9 +1260,9 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	on: function (
-		this: any,
+		this: HTMLElement & { [k: string]: unknown },
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void {
 		this.addEventListener(type, listener, options);
@@ -1166,7 +1288,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	keydown: function (this: any, event: any): void {
+	keydown: function (this: any, event: KeyboardEvent & { cmdOrCtrlKey: boolean }): void {
 		if (!this.data) {
 			return;
 		}
@@ -1226,22 +1348,22 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	pointerdown: function (this: any, event: any): void {
+	pointerdown: function (this: any, event: PointerEvent): void {
 		this.dragend();
 		this.cancelRenaming();
 		switch (event.button) {
 			case 0: {
-				const element = event.target;
+				const element = event.target as NodeElement;
 				if (element.tagName === 'FOLDER-MARK') {
 					event.preventDefault();
-					const { item } = element.parentNode;
-					item.expanded = !item.expanded;
+					const { item } = element.parentNode as NodeElement;
+					item!.expanded = !item!.expanded;
 					this.update();
 					dispatchChangeEvent(this);
 				} else {
 					if (element.tagName === 'NODE-ITEM') {
 						if (!hasClass(element, 'selected')) {
-							this.select((element as any).item);
+							this.select(element.item);
 						} else if (
 							this.renamable &&
 							this.getMenuState() === 'closed' &&
@@ -1257,14 +1379,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			case 2: {
 				const element = seek(event.target, 'node-item');
 				if (element.tagName === 'NODE-ITEM' && !hasClass(element, 'selected')) {
-					this.select((element as any).item);
+					this.select((element as NodeItemElement).item);
 				}
 				break;
 			}
 		}
 	},
 
-	pointerup: function (this: any, event: any): void {
+	pointerup: function (this: any, event: PointerEvent): void {
 		if (this.dragging || !this.data) {
 			return;
 		}
@@ -1280,13 +1402,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				if (this.popupEventEnabled && document.activeElement === this) {
 					const element = seek(event.target, 'node-item');
 					if (element.tagName === 'NODE-ITEM' && hasClass(element, 'selected')) {
-						const popup: any = new Event('popup');
-						popup.value = (element as any).item;
+						const popup: PopupEvent = new Event('popup') as PopupEvent;
+						popup.value = (element as NodeItemElement).item;
 						popup.clientX = event.clientX;
 						popup.clientY = event.clientY;
 						this.dispatchEvent(popup);
 					} else {
-						const popup: any = new Event('popup');
+						const popup: PopupEvent = new Event('popup') as PopupEvent;
 						popup.value = null;
 						popup.clientX = event.clientX;
 						popup.clientY = event.clientY;
@@ -1297,11 +1419,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	doubleclick: function (this: any, event: any): void {
-		const element = event.target;
+	doubleclick: function (this: any, event: MouseEvent): void {
+		const element = event.target as NodeItemElement;
 		if (element.tagName === 'NODE-ITEM') {
 			this.cancelRenaming();
-			const item = (element as any).item;
+			const item = element.item!;
 			if (item.class === 'folder') {
 				item.expanded = !item.expanded;
 				this.update();
@@ -1312,14 +1434,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	dragstart: function (this: any, event: any): void {
+	dragstart: function (this: any, event: TreeListDragEvent): void {
 		if (
 			this.removable &&
 			!this.dragging &&
 			this.display === 'normal' &&
 			this.read() !== null &&
 			!treeListStatics.textBox.parentNode &&
-			(this.lockDirectory === false || this.read().class !== 'folder')
+			(this.lockDirectory === false || this.read()!.class !== 'folder')
 		) {
 			this.dragging = event;
 			Object.defineProperty(event, 'offsetY', { writable: true });
@@ -1336,11 +1458,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	dragend: function (this: any, event?: any): void {
+	dragend: function (this: any, event?: DragEvent): void {
 		if (this.dragging) {
 			removeClass(this, 'dragging');
 			removeClass(this.dragging.hint.target, 'hint');
-			(this.parentNode as any).removeChild(this.dragging.hint);
+			this.parentNode.removeChild(this.dragging.hint);
 			this.dragging = null;
 			this.removeEventListener('dragenter', this.dragenter);
 			this.removeEventListener('dragleave', this.dragleave);
@@ -1349,34 +1471,34 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	dragenter: function (this: any, event: any): void {
+	dragenter: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
 		if (this.dragging) {
 			event.preventDefault();
-			event.dataTransfer.dropEffect = 'move';
+			event.dataTransfer!.dropEffect = 'move';
 		}
 	},
 
-	dragleave: function (this: any, event: any): void {
-		if (this.dragging && !this.contains(event.relatedTarget)) {
-			this.dragging.offsetY = -1;
-			hide(this.dragging.hint);
+	dragleave: function (this: HTMLElement & { [k: string]: unknown }, event: DragEvent): void {
+		if (this.dragging && !this.contains(event.relatedTarget as Node)) {
+			(this.dragging as TreeListDragEvent).offsetY = -1;
+			hide((this.dragging as TreeListDragEvent).hint);
 		}
 	},
 
-	dragover: function (this: any, event: any): void {
+	dragover: function (this: any, event: TreeListDragEvent): void {
 		const { dragging } = this;
 		if (dragging) {
 			event.preventDefault();
-			event.dataTransfer.dropEffect = 'move';
+			event.dataTransfer!.dropEffect = 'move';
 			if (dragging.offsetY === event.offsetY) {
 				return;
 			}
 			dragging.offsetY = event.offsetY;
 			const element = seek(event.target, 'node-item');
-			const hint: any = show(dragging.hint);
+			const hint = show(dragging.hint) as DragAndDropHintApi;
 			if (element.tagName === 'NODE-ITEM') {
 				const sItem = dragging.target.item;
-				const dItem = (element as any).item;
+				const dItem = (element as NodeItemElement).item!;
 				if (this.contain(sItem, dItem)) {
 					{
 						hide(hint);
@@ -1384,8 +1506,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					}
 				}
 
-				const offsetY = event.offsetY;
-				const position = dItem.children
+				const offsetY = event.offsetY!;
+				const position = dItem!.children
 					? offsetY < 4
 						? 'before'
 						: offsetY < 16
@@ -1448,7 +1570,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	drop: function (this: any, event: any): void {
+	drop: function (this: any, event: DragEvent): void {
 		const { dragging } = this;
 		if (!dragging) {
 			return;
@@ -1486,7 +1608,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this.dragend();
 	},
 
-	dataChange: function (this: any, event: any): void {
+	dataChange: function (this: any, event: Event): void {
 		if (this.display === 'search') {
 			this.searchNodes(this.keyword);
 		}
@@ -1494,7 +1616,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 };
 
 export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions): HTMLElement {
-	const list = el as any;
+	const list = el as HTMLElement & { [k: string]: any };
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.getMenuState = getMenuState;
 
@@ -1508,7 +1630,14 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.searchResults = [];
 	list.creators = [];
 	list.updaters = [];
-	const elements: any = [];
+	const elements = [] as unknown as (NodeElement | undefined)[] & {
+		versionId: number;
+		count: number;
+		start: number;
+		end: number;
+		head: unknown;
+		foot: unknown;
+	};
 	elements.versionId = 0;
 	elements.count = 0;
 	elements.start = -1;
@@ -1521,7 +1650,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	});
 	list.timer = new Timer({
 		duration: 500,
-		callback: (timer: any) => {
+		callback: (timer: Timer) => {
 			const item = list.read();
 			if (item instanceof Object) {
 				const target = timer.target;

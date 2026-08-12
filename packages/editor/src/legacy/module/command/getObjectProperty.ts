@@ -6,6 +6,20 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type ObjectPropertyItem = { text: string };
+
+type GetObjectPropertyCommandData = {
+	variable: unknown;
+	saveVariable: unknown;
+	properties: ObjectPropertyItem[];
+};
+
+type SetObjectPropertyCommandData = {
+	variable: unknown;
+	valueVariable: unknown;
+	properties: ObjectPropertyItem[];
+};
+
 export const IndexBind = {
 	target: null as unknown as HTMLElement | null,
 	type: null as unknown as string | null,
@@ -14,10 +28,10 @@ export const IndexBind = {
 		this.type = 'get-object-index';
 		$('#ObjectProperty-index-confirm')?.on('click', this.confirm);
 	},
-	parse(item: any) {
-		return `${item.text}`;
+	parse(item: ObjectPropertyItem | null) {
+		return `${item!.text}`;
 	},
-	open(item: any) {
+	open(item: ObjectPropertyItem | null) {
 		Window.open!('ObjectProperty-index');
 		getFocus($('#ObjectProperty-index-name'));
 		if (item) {
@@ -47,17 +61,19 @@ Command.cases.getObjectProperty = new CommandSchema({
 			clear($('#getObjectProperty-list'));
 		});
 	},
-	customParse({ variable, saveVariable, properties }: any) {
-		const contents: any[] = [];
+	customParse({ variable, saveVariable, properties }: GetObjectPropertyCommandData) {
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}
-		return [
-			{ color: 'variable' },
-			{ text: Local.get!('command.getObjectProperty') + ' ' },
-			{ text: Command.parseVariable!(saveVariable, 'any') + '=' },
-			{ text: Command.parseVariable!(variable, 'any') + '.' }
-		].concat(contents.slice(1));
+		return (
+			[
+				{ color: 'variable' },
+				{ text: Local.get!('command.getObjectProperty') + ' ' },
+				{ text: Command.parseVariable!(saveVariable, 'any') + '=' },
+				{ text: Command.parseVariable!(variable, 'any') + '.' }
+			] as Array<{ text?: string; color?: string }>
+		).concat(contents.slice(1));
 	},
 	customLoad({
 		variable = { type: 'local', key: '' },
@@ -99,16 +115,18 @@ Command.cases.setObjectProperty = new CommandSchema({
 			clear($('#setObjectProperty-list'));
 		});
 	},
-	customParse({ variable, valueVariable, properties }: any) {
-		const contents: any[] = [];
+	customParse({ variable, valueVariable, properties }: SetObjectPropertyCommandData) {
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of properties) {
 			contents.push({ text: '.' }, { color: 'normal' }, { text: i.text });
 		}
-		return [
-			{ color: 'variable' },
-			{ text: Local.get!('command.setObjectProperty') + ' ' },
-			{ text: Command.parseVariable!(variable, 'any') + '.' }
-		]
+		return (
+			[
+				{ color: 'variable' },
+				{ text: Local.get!('command.setObjectProperty') + ' ' },
+				{ text: Command.parseVariable!(variable, 'any') + '.' }
+			] as Array<{ text?: string; color?: string }>
+		)
 			.concat(contents.slice(1))
 			.concat([{ text: '=' + Command.parseVariable!(valueVariable, 'any') }]);
 	},

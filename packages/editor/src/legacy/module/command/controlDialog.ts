@@ -20,7 +20,7 @@ Command.cases.controlDialog = new CommandSchema({
 			{ name: 'Print Next Page', value: 'print-next-page' }
 		]);
 	},
-	customParse({ element, operation }: any) {
+	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
 			.push(Local.get!('command.controlDialog.' + operation));

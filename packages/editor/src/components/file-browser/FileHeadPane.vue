@@ -9,22 +9,19 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { YMFileHeadPane } from '@ui-kit';
+import { YMFileHeadPane, type MenuItem, type MenuOptions } from '@ui-kit';
 import { Menu } from '@/components/menu-list.ts';
 import { FolderItem } from '@/file/folder-item.ts';
+import { FileBrowserLinks } from '@/types/file-browser-links.ts';
 
 interface Props {
-	links: {
-		browser: any;
-		nav: any;
-		body: any;
-	};
+	links: FileBrowserLinks;
 }
 
 const props = defineProps<Props>();
 
-const menuPopup = (options: any, items: any[]): void => Menu.popup(options, items);
-const isFolderItem = (obj: any): boolean => obj instanceof FolderItem;
+const menuPopup = (options: MenuOptions, items: MenuItem[]): void => Menu.popup(options, items);
+const isFolderItem = (obj: unknown): boolean => obj instanceof FolderItem;
 
 const ym = ref<{
 	el: HTMLElement | null;

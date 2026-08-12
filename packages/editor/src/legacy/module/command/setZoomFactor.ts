@@ -20,14 +20,24 @@ Command.cases.setZoomFactor = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setZoomFactor').on('open', function (event: any) {
+		$('#setZoomFactor').on('open', function (event: Event) {
 			$('#setZoomFactor-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setZoomFactor').on('closed', function (event: any) {
+		$('#setZoomFactor').on('closed', function (event: Event) {
 			clear($('#setZoomFactor-easingId'));
 		});
 	},
-	customParse({ zoom, easingId, duration, wait }: any) {
+	customParse({
+		zoom,
+		easingId,
+		duration,
+		wait
+	}: {
+		zoom: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseVariableNumber!(zoom))
 			.push(Command.parseEasing!(easingId, duration, wait));

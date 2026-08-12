@@ -5,7 +5,10 @@ import { UI } from '@/ui/ui-window.ts';
 
 {
 	interface UIVideoShape {
-		[k: string]: any;
+		target: UIVideoData | null;
+		update: ((node: UIVideoData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		[k: string]: unknown;
 	}
 	interface UIVideoData {
 		video: string;
@@ -13,7 +16,7 @@ import { UI } from '@/ui/ui-window.ts';
 		loop: boolean;
 		flip: string;
 		blend: string;
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 	const UIVideo: UIVideoShape = {
 		owner: UI,
@@ -126,8 +129,8 @@ import { UI } from '@/ui/ui-window.ts';
 		UI.requestRendering!();
 	};
 
-	UIVideo.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
-		UIVideo.update(UIVideo.target, Inspector.getKey!(this), read(this));
+	UIVideo.paramInput = function (this: typeof UIVideo, event: Event) {
+		UIVideo.update!(UIVideo.target as UIVideoData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiVideo = UIVideo;

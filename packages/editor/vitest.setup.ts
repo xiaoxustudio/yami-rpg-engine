@@ -14,7 +14,7 @@ const mockContext = {
 	getContextAttributes: () => null,
 	getShaderPrecisionFormat: () => ({ rangeMin: 0, rangeMax: 0, precision: 0 })
 };
-HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): any {
+HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): typeof mockContext {
 	return mockContext;
 } as any;
 

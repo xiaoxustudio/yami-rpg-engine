@@ -56,14 +56,17 @@ describe('element-utils 低依赖工具（回归保护）', () => {
 	});
 
 	it('read/write use el.read/write or dataValue', () => {
-		const el: any = document.createElement('div');
+		const el = document.createElement('div') as HTMLElement & { dataValue?: unknown };
 		el.dataValue = 42;
 		expect(read(el)).toBe(42);
 		write(el, 99);
 		expect(el.dataValue).toBe(99);
 
-		const el2: any = document.createElement('div');
-		el2.write = (v: any) => {
+		const el2 = document.createElement('div') as HTMLElement & {
+			_v?: unknown;
+			write?: (v: unknown) => void;
+		};
+		el2.write = (v: unknown) => {
 			el2._v = v;
 		};
 		write(el2, 'x');

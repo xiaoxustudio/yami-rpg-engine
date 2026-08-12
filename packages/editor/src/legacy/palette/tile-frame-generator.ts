@@ -10,7 +10,7 @@ export const FrameGenerator: Record<string, any> = {
 	confirm: null
 };
 
-FrameGenerator.initialize = function (this: any) {
+FrameGenerator.initialize = function (this: typeof FrameGenerator) {
 	const el = $('#autoTile-generateFrames-strideX');
 	if (!el) return;
 	write(el, 0);
@@ -25,17 +25,20 @@ FrameGenerator.initialize = function (this: any) {
 	if (confirmEl) on(confirmEl, 'click', this.confirm);
 };
 
-FrameGenerator.open = function (this: any, callback: any) {
+FrameGenerator.open = function (
+	this: typeof FrameGenerator,
+	callback: (strideX: number, strideY: number, count: number) => void
+) {
 	this.callback = callback;
 	Window.open!('autoTile-generateFrames');
 	getFocus($('#autoTile-generateFrames-strideX'), 'all');
 };
 
-FrameGenerator.windowClosed = function (this: any, event: any) {
+FrameGenerator.windowClosed = function (this: typeof FrameGenerator, event: Event) {
 	this.callback = null;
 }.bind(FrameGenerator);
 
-FrameGenerator.confirm = function (this: any, event: any) {
+FrameGenerator.confirm = function (this: typeof FrameGenerator, event: Event) {
 	const strideX = read($('#autoTile-generateFrames-strideX'));
 	const strideY = read($('#autoTile-generateFrames-strideY'));
 	const count = read($('#autoTile-generateFrames-count'));

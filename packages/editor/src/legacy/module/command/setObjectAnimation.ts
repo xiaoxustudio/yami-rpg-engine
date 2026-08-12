@@ -81,14 +81,14 @@ Command.cases.setObjectAnimation = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setObjectAnimation').on('open', function (event: any) {
+		$('#setObjectAnimation').on('open', function (event: Event) {
 			$('#setObjectAnimation-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setObjectAnimation').on('closed', function (event: any) {
+		$('#setObjectAnimation').on('closed', function (event: Event) {
 			clear($('#setObjectAnimation-easingId'));
 		});
 	},
-	parseTint(operation: any, [red, green, blue, gray]: any[]) {
+	parseTint(operation: string, [red, green, blue, gray]: number[]) {
 		const label = Local.get!('command.setObjectAnimation.' + operation);
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
@@ -123,7 +123,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 				return label + Token('(') + _gray + Token(')');
 		}
 	},
-	parseProperty(operation: any, property: any) {
+	parseProperty(operation: string, property: string | number) {
 		const label = Local.get!('command.setObjectAnimation.' + operation);
 		return label + Token('(') + Command.parseVariableNumber!(property) + Token(')');
 	},
@@ -138,7 +138,18 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		easingId,
 		duration,
 		wait
-	}: any) {
+	}: {
+		sort: string;
+		object: { type: string; [k: string]: unknown };
+		operation: string;
+		tint: number[];
+		opacity: string | number;
+		offsetY: string | number;
+		rotation: string | number;
+		easingId: string;
+		duration: string | number;
+		wait: boolean;
+	}) {
 		const words = Command.words;
 		words.push(Local.get!('command.setObjectAnimation.sort.' + sort));
 		switch (sort) {
@@ -187,6 +198,17 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		easingId = Data.easings[0].id,
 		duration = 0,
 		wait = false
+	}: {
+		sort?: string;
+		object?: { type: string; [k: string]: unknown };
+		operation?: string;
+		tint?: number[];
+		opacity?: string | number;
+		offsetY?: string | number;
+		rotation?: string | number;
+		easingId?: string;
+		duration?: string | number;
+		wait?: boolean;
 	}) {
 		const write = getElementWriter('setObjectAnimation');
 		let actor = { type: 'trigger' };

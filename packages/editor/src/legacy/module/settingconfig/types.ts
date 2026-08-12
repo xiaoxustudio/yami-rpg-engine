@@ -8,13 +8,13 @@ export type SettingType = 'text' | 'number' | 'checkbox' | 'select';
 /** 传给 optionsFn 的上下文：提供 i18n getter 与当前 config，便于生成下拉项 */
 export interface OptionContext {
 	get: (key: string) => string;
-	config: any;
+	config: Record<string, unknown>;
 }
 
 /** 下拉选项 */
 export interface SelectItem {
 	name: string;
-	value: any;
+	value: string | number;
 }
 
 /** 单个设置项的配置定义 */
@@ -24,7 +24,7 @@ export interface SettingOption {
 	/** 控件类型 */
 	type: SettingType;
 	/** 默认值 */
-	default: any;
+	default: string | number | boolean;
 	/** 自定义 DOM id（默认 setting-{sectionPath...}-{key}） */
 	id?: string;
 	/** 不渲染 UI，仅参与默认值生成（如 apkPath/isSign 这类被其他模块依赖的隐藏配置） */
@@ -38,9 +38,9 @@ export interface SettingOption {
 	/** select: 选项生成函数（可异步，支持动态/远程选项） */
 	optionsFn?: (ctx: OptionContext) => SelectItem[] | Promise<SelectItem[]>;
 	/** 校验函数：返回 null 表示通过，返回字符串表示错误信息 */
-	validate?: (value: any, config: any) => string | null;
+	validate?: (value: string | number | boolean, config: Record<string, unknown>) => string | null;
 	/** 变更回调：值变化时触发（config 已更新） */
-	onChange?: (value: any, config: any) => void;
+	onChange?: (value: string | number | boolean, config: Record<string, unknown>) => void;
 	/** 动态路径提示：鼠标悬停时显示 ApkBuilder.processPathOnly 处理后的路径 */
 	tooltipPath?: boolean;
 	/** 命名标签的 properties 键（仅 recent/update 等不在 components 中的项需要） */

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMSelectBox from '../YMSelectBox.vue';
+import type { SelectBoxApi } from '../select-box-api';
 
 const items = [
 	{ value: 'a', name: 'Alpha' },
@@ -10,7 +11,7 @@ const items = [
 describe('YMSelectBox', () => {
 	it('read/write roundtrip and update text', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		vm.write('b');
 		expect(vm.read()).toBe('b');
 		expect(wrapper.find('.select-box-text').text()).toBe('Beta');
@@ -18,16 +19,16 @@ describe('YMSelectBox', () => {
 
 	it('write2 falls back to default when value missing', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		vm.write2('zzz');
 		expect(vm.read()).toBe('a');
 	});
 
 	it('input emits change and input events', async () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const vm = wrapper.vm as any;
-		const el = wrapper.element as any;
-		const changes: any[] = [];
+		const vm = wrapper.vm as unknown as SelectBoxApi;
+		const el = wrapper.element as unknown as SelectBoxApi;
+		const changes: unknown[] = [];
 		el.addEventListener('change', () => changes.push(1));
 		vm.input('b');
 		await wrapper.vm.$nextTick();
@@ -37,7 +38,7 @@ describe('YMSelectBox', () => {
 
 	it('reselect moves between items', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		vm.write('a');
 		vm.reselect(1);
 		expect(vm.read()).toBe('b');
@@ -56,7 +57,7 @@ describe('YMSelectBox', () => {
 		expect(itemsInPopup).toHaveLength(2);
 		await itemsInPopup[1].trigger('pointerdown');
 		await wrapper.vm.$nextTick();
-		expect((wrapper.vm as any).read()).toBe('b');
+		expect((wrapper.vm as unknown as SelectBoxApi).read()).toBe('b');
 		expect(wrapper.find('.select-popup').exists()).toBe(false);
 	});
 
@@ -72,7 +73,7 @@ describe('YMSelectBox', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as SelectBoxApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.loadItems).toBe('function');
@@ -81,7 +82,7 @@ describe('YMSelectBox', () => {
 
 	it('save/restore roundtrip', () => {
 		const wrapper = mount(YMSelectBox, { props: { items } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as SelectBoxApi;
 		vm.write('a');
 		vm.save();
 		vm.write('b');

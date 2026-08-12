@@ -12,20 +12,41 @@ import {
 } from '../../../utils/dom';
 
 interface PaneControlFactory {
-	checkBox(): any;
-	colorBox(): any;
-	keyboardBox(): any;
-	customBox(): any;
-	detailBox(): any;
-	detailSummary(): any;
-	numberBox(): any;
-	numberVar(): any;
-	selectBox(): any;
-	textBox(): any;
+	checkBox(): HTMLElement;
+	colorBox(): HTMLElement;
+	keyboardBox(): HTMLElement;
+	customBox(): HTMLElement;
+	detailBox(): HTMLElement;
+	detailSummary(): HTMLElement;
+	numberBox(): HTMLElement;
+	numberVar(): HTMLElement;
+	selectBox(): HTMLElement;
+	textBox(): HTMLElement;
+}
+
+interface ParamDef {
+	type: string;
+	key: string;
+	alias?: string;
+	desc?: string;
+	prefix?: string;
+	suffix?: string;
+	readonly?: boolean;
+	validate?: boolean;
+	hidden?: boolean;
+	group?: string;
+	value?: unknown;
+	repeatableGroup?: { parameters: ParamDef[] };
+}
+
+interface ScriptDef {
+	id: string;
+	parameters: Record<string, unknown>;
+	[k: string]: unknown;
 }
 
 interface TypeRegistryConfig {
-	create(pane: HTMLElement, parameter: any): any;
+	create(pane: HTMLElement, parameter: ParamDef): ParamWrap | null;
 }
 
 interface SelectionAdapter {
@@ -36,13 +57,74 @@ interface SelectionAdapter {
 }
 
 interface PluginAdapter {
-	reconstruct(script: any): boolean;
-	checkValidate(param: any, val: any): boolean;
+	reconstruct(script: ScriptDef): boolean;
+	checkValidate(param: ParamDef, val: unknown): boolean;
 }
 
 interface SelectListAdapter {
 	target: HTMLElement | null;
 	close(): void;
+}
+
+interface DetailWrap {
+	tag: string;
+	box: DetailBoxElement;
+	summary: HTMLElement | null;
+	grid: HTMLElement;
+	children: ParamWrap[];
+}
+
+interface DetailBoxElement extends HTMLElement {
+	meta?: DetailMeta | null;
+	data?: ScriptDef | null;
+	wrap?: DetailWrap;
+}
+
+interface DetailMeta {
+	manager: { states: Record<string, unknown> };
+	parameters: ParamDef[];
+}
+
+interface ParamInput extends HTMLElement {
+	parameters?: Record<string, unknown> | null;
+	key?: string | null;
+	branched?: boolean;
+	inputEventEnabled?: boolean;
+	enable?(): void;
+	disable?(): void;
+	clear?(): void;
+	update?(): void;
+	input?: HTMLElement & { value?: string };
+	numBox?: { input: HTMLElement & { value?: string } };
+}
+
+interface ParamWrap {
+	tag: string;
+	label: HTMLElement;
+	input: ParamInput;
+}
+
+interface RepeatableRowWrap {
+	param: ParamDef;
+	tag?: string;
+	label: HTMLElement;
+	input: ParamInput;
+}
+
+interface RecycleWrap {
+	tag: string;
+	label: HTMLElement;
+	input: ParamInput;
+	box: DetailBoxElement;
+	children: ParamWrap[];
+}
+
+interface RepeatableGroupInput extends HTMLElement {
+	setTooltip: () => void;
+	parameters: Record<string, unknown> | null;
+	key: string | null;
+	read: () => any[];
+	write: (value: Array<Record<string, unknown>>) => void;
 }
 
 interface Props {
@@ -78,7 +160,7 @@ const root = ref<HTMLElement | null>(null);
 
 let el: HTMLElement & { [k: string]: any } | null = null;
 
-const createControl = (kind: keyof PaneControlFactory): any => {
+const createControl = (kind: keyof PaneControlFactory): HTMLElement | null => {
 	const factory = props.controls as PaneControlFactory | null;
 	if (!factory) return null;
 	switch (kind) {
@@ -129,10 +211,12 @@ const bind = (scriptList: HTMLElement): void => {
 	const self = el!;
 	self.scriptList = scriptList;
 	if (scriptList.classList.contains('param-list')) {
-		const { object } = scriptList as unknown as { object: any };
+		const { object } = scriptList as unknown as {
+			object: { update: (...args: unknown[]) => unknown };
+		};
 		const { update } = object;
-		self.getData = () => (scriptList as unknown as { data: any }).data;
-		object.update = (...args: any[]) => {
+		self.getData = () => (scriptList as unknown as { data: ScriptDef[] }).data;
+		object.update = (...args: unknown[]) => {
 			update.apply(object, args);
 			self.update();
 		};
@@ -145,7 +229,7 @@ const bind = (scriptList: HTMLElement): void => {
 	}
 };
 
-const rewrite = (parameters: any, key: string): void => {
+const rewrite = (parameters: Record<string, unknown>, key: string): void => {
 	const self = el!;
 	for (const wrap of self.wraps) {
 		const script = wrap.box.data;
@@ -154,7 +238,7 @@ const rewrite = (parameters: any, key: string): void => {
 		for (const { input } of wrap.children) {
 			if (input.key === key) {
 				write(input, parameters[key]);
-				self.scriptList && dispatchChangeEvent(self.scriptList as any);
+				self.scriptList && dispatchChangeEvent(self.scriptList);
 				if (input.branched) {
 					getPlugin()?.reconstruct(script);
 					self.updateParamDisplay(wrap.box);
@@ -209,10 +293,10 @@ const update = (): void => {
 			groupOrder.unshift('');
 		}
 		const createParamRow = (
-			box: any,
+			box: HTMLElement,
 			grid: HTMLElement,
-			children: any[],
-			parameter: any
+			children: ParamWrap[],
+			parameter: ParamDef
 		) => {
 			const inputWrap = self.createParamInput(parameter)!;
 			const { label, input } = inputWrap;
@@ -223,8 +307,8 @@ const update = (): void => {
 			self.updateParamInput(inputWrap, parameters[key]);
 			label.textContent = name;
 			getSetTooltip()?.(input as HTMLElement, tip);
-			(input as any).parameters = parameters;
-			(input as any).key = key;
+			input.parameters = parameters;
+			input.key = key;
 			grid.appendChild(label);
 			if (parameter.prefix || parameter.suffix) {
 				self.applyAffix(input, parameter);
@@ -236,7 +320,7 @@ const update = (): void => {
 			}
 			if (parameter.validate) {
 				const validateInput = () => {
-					const val = (input as any).parameters?.[(input as any).key];
+					const val = input.parameters?.[input.key];
 					const ok =
 						val !== undefined && !!getPlugin()?.checkValidate(parameter, val);
 					if (ok) {
@@ -274,7 +358,7 @@ const update = (): void => {
 		}
 	}
 	if (changed) {
-		self.scriptList && dispatchChangeEvent(self.scriptList as any);
+		self.scriptList && dispatchChangeEvent(self.scriptList);
 	}
 	if (self.updateEventEnabled) {
 		dispatchUpdateEvent(self);
@@ -283,7 +367,7 @@ const update = (): void => {
 	window.addEventListener('script-change', scriptChange);
 };
 
-const enableInput = (el: any): void => {
+const enableInput = (el: ParamInput): void => {
 	if (el && typeof el.enable === 'function') {
 		el.enable();
 	} else {
@@ -291,7 +375,7 @@ const enableInput = (el: any): void => {
 	}
 };
 
-const disableInput = (el: any): void => {
+const disableInput = (el: ParamInput): void => {
 	if (el && typeof el.disable === 'function') {
 		el.disable();
 	} else {
@@ -310,7 +394,7 @@ const appendHeadPad = (): void => {
 	self.appendChild(headPad);
 };
 
-const createDetailBox = (): any => {
+const createDetailBox = (): DetailWrap => {
 	const self = el!;
 	const { detailBoxes } = self;
 	let box: HTMLElement;
@@ -320,20 +404,20 @@ const createDetailBox = (): any => {
 			box.removeChild(box.firstChild);
 		}
 	} else {
-		box = createControl('detailBox');
+		box = createControl('detailBox')!;
 	}
 	const tag = 'detail-box';
 	const summary = createControl('detailSummary');
 	const grid = document.createElement('div');
 	addClass(grid, 'detail-grid');
-	const wrap = { tag, box, summary, grid, children: [] as any[] };
-	box.appendChild(summary);
+	const wrap: DetailWrap = { tag, box, summary, grid, children: [] };
+	box.appendChild(summary!);
 	box.appendChild(grid);
-	(box as any).wrap = wrap;
+	(box as HTMLElement & { wrap?: DetailWrap }).wrap = wrap;
 	return wrap;
 };
 
-const createParamInput = (parameter: any): any => {
+const createParamInput = (parameter: ParamDef): ParamWrap | null | undefined => {
 	const config = getTypeConfig(parameter.type);
 	if (config) {
 		return config.create(el!, parameter);
@@ -341,7 +425,7 @@ const createParamInput = (parameter: any): any => {
 	return undefined;
 };
 
-const updateParamInput = (wrap: any, value: any): void => {
+const updateParamInput = (wrap: ParamWrap, value: unknown): void => {
 	switch (wrap.tag) {
 		case 'check-box':
 		case 'text-box':
@@ -351,14 +435,14 @@ const updateParamInput = (wrap: any, value: any): void => {
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else {
-				wrap.input.input.value = value.toString();
+				wrap.input.input!.value = (value as { toString(): string }).toString();
 			}
 			break;
 		case 'number-var':
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else if (typeof value === 'number') {
-				wrap.input.numBox.input.value = value.toString();
+				wrap.input.numBox!.input.value = value.toString();
 			}
 			break;
 		case 'keyboard-box':
@@ -370,7 +454,7 @@ const updateParamInput = (wrap: any, value: any): void => {
 			if (read(wrap.input) !== value) {
 				write(wrap.input, value);
 			} else {
-				wrap.input.update();
+				wrap.input.update!();
 			}
 			break;
 		case 'repeatable-group':
@@ -381,14 +465,15 @@ const updateParamInput = (wrap: any, value: any): void => {
 	}
 };
 
-const updateParamDisplay = (detailBox: any): void => {
-	const { states } = detailBox.meta.manager;
-	const mParams = detailBox.meta.parameters;
-	const paramMap: Record<string, any> = {};
+const updateParamDisplay = (detailBox: DetailBoxElement): void => {
+	const { states } = detailBox.meta!.manager;
+	const mParams = detailBox.meta!.parameters;
+	const paramMap: Record<string, ParamDef> = {};
 	for (const p of mParams) paramMap[p.key] = p;
-	for (const wrap of detailBox.wrap.children) {
+	const wraps = detailBox.wrap!.children;
+	for (const wrap of wraps) {
 		const key = wrap.input.key;
-		switch (states[key]) {
+		switch (states[key!]) {
 			case false:
 				hide(wrap.label);
 				hide(wrap.input);
@@ -399,12 +484,12 @@ const updateParamDisplay = (detailBox: any): void => {
 				continue;
 		}
 	}
-	for (const wrap of detailBox.wrap.children) {
+	for (const wrap of wraps) {
 		const key = wrap.input.key;
-		const param = paramMap[key];
+		const param = paramMap[key!];
 		const parameters = wrap.input.parameters;
 		if (param?.validate && parameters) {
-			const value = parameters[key];
+			const value = parameters[key!];
 			const ok = !!getPlugin()?.checkValidate(param, value);
 			if (ok) {
 				removeClass(wrap.input, 'validate-error');
@@ -417,7 +502,7 @@ const updateParamDisplay = (detailBox: any): void => {
 	}
 };
 
-const createCheckBox = (): any => {
+const createCheckBox = (): ParamWrap => {
 	const self = el!;
 	const { checkBoxes } = self;
 	if (checkBoxes.length !== 0) {
@@ -428,14 +513,14 @@ const createCheckBox = (): any => {
 	addClass(label, 'text');
 	const input = createControl('checkBox');
 	if (input) {
-		(input as any).inputEventEnabled = true;
+		(input as ParamInput).inputEventEnabled = true;
 		addClass(input, 'standard');
 		addClass(input, 'large');
 	}
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createNumberBox = (): any => {
+const createNumberBox = (): ParamWrap => {
 	const self = el!;
 	const { numberBoxes } = self;
 	if (numberBoxes.length !== 0) {
@@ -445,10 +530,10 @@ const createNumberBox = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('numberBox');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createNumberVar = (): any => {
+const createNumberVar = (): ParamWrap => {
 	const self = el!;
 	const { numberVars } = self;
 	if (numberVars.length !== 0) {
@@ -458,10 +543,10 @@ const createNumberVar = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('numberVar');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createTextBox = (): any => {
+const createTextBox = (): ParamWrap => {
 	const self = el!;
 	const { textBoxes } = self;
 	if (textBoxes.length !== 0) {
@@ -486,10 +571,10 @@ const createTextBox = (): any => {
 			input.addEventListener('pointerup', selection.inputPointerup);
 		}
 	}
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createSelectBox = (): any => {
+const createSelectBox = (): ParamWrap => {
 	const self = el!;
 	const { selectBoxes } = self;
 	if (selectBoxes.length !== 0) {
@@ -499,10 +584,10 @@ const createSelectBox = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('selectBox');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createKeyboardBox = (): any => {
+const createKeyboardBox = (): ParamWrap => {
 	const self = el!;
 	const { keyboardBoxes } = self;
 	if (keyboardBoxes.length !== 0) {
@@ -512,10 +597,10 @@ const createKeyboardBox = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('keyboardBox');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createColorBox = (): any => {
+const createColorBox = (): ParamWrap => {
 	const self = el!;
 	const { colorBoxes } = self;
 	if (colorBoxes.length !== 0) {
@@ -525,10 +610,10 @@ const createColorBox = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('colorBox');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createCustomBox = (): any => {
+const createCustomBox = (): ParamWrap => {
 	const self = el!;
 	const { customBoxes } = self;
 	if (customBoxes.length !== 0) {
@@ -538,11 +623,11 @@ const createCustomBox = (): any => {
 	const label = document.createElement('div');
 	addClass(label, 'text');
 	const input = createControl('customBox');
-	return { tag, label, input };
+	return { tag, label, input: input as ParamInput };
 };
 
-const createRepeatableGroup = (parameter: any): any => {
-	const template = parameter.repeatableGroup.parameters;
+const createRepeatableGroup = (parameter: ParamDef): ParamWrap => {
+	const template = parameter.repeatableGroup!.parameters;
 	const tag = 'repeatable-group';
 	const label = document.createElement('div');
 	addClass(label, 'text');
@@ -555,22 +640,23 @@ const createRepeatableGroup = (parameter: any): any => {
 	addBtn.className = 'add-row-btn';
 	container.appendChild(rowsEl);
 	container.appendChild(addBtn);
-	(container as any).setTooltip = () => {};
-	(container as any).parameters = null;
-	(container as any).key = null;
+	const input = container as unknown as RepeatableGroupInput;
+	input.setTooltip = () => {};
+	input.parameters = null;
+	input.key = null;
 	const pane = el!;
-	(container as any).read = function () {
-		const result: any[] = [];
-		for (const rowEl of rowsEl.children as any) {
+	input.read = function () {
+		const result: Array<Record<string, unknown>> = [];
+		for (const rowEl of rowsEl.children) {
 			const data: Record<string, any> = {};
-			for (const { param, input } of (rowEl as any).wraps) {
+			for (const { param, input } of (rowEl as HTMLElement & { wraps: RepeatableRowWrap[] }).wraps) {
 				data[param.key] = read(input);
 			}
 			result.push(data);
 		}
 		return result;
 	};
-	(container as any).write = function (value: any[]) {
+	input.write = function (value: Array<Record<string, unknown>>) {
 		rowsEl.innerHTML = '';
 		let arr = value;
 		if (!arr || arr.length === 0) {
@@ -595,28 +681,28 @@ const createRepeatableGroup = (parameter: any): any => {
 			const grid = document.createElement('div');
 			addClass(grid, 'detail-grid');
 			row.appendChild(grid);
-			(row as any).wraps = template.map((subParam: any) => {
+			(row as HTMLElement & { wraps?: RepeatableRowWrap[] }).wraps = template.map((subParam: ParamDef): RepeatableRowWrap => {
 				const config = getTypeConfig(subParam.type);
 				const wrap = config ? config.create(pane, subParam) : null;
 				const val =
 					item[subParam.key] !== undefined ? item[subParam.key] : subParam.value;
 				if (wrap) {
-					(wrap as any).label.textContent = '';
-					(wrap as any).input.parameters = item;
-					(wrap as any).input.key = subParam.key;
-					write((wrap as any).input, val);
-					enableInput((wrap as any).input);
-					removeClass((wrap as any).input, 'validate-error');
+					wrap.label.textContent = '';
+					wrap.input.parameters = item;
+					wrap.input.key = subParam.key;
+					write(wrap.input, val);
+					enableInput(wrap.input);
+					removeClass(wrap.input, 'validate-error');
 					if (subParam.readonly) {
-						disableInput((wrap as any).input);
+						disableInput(wrap.input);
 					}
-					grid.appendChild((wrap as any).label);
+					grid.appendChild(wrap.label);
 					if (subParam.prefix || subParam.suffix) {
-						pane.applyAffix((wrap as any).input, subParam);
+						pane.applyAffix(wrap.input, subParam);
 					}
-					grid.appendChild((wrap as any).input);
+					grid.appendChild(wrap.input);
 				}
-				return { param: subParam, ...wrap };
+				return { param: subParam, ...wrap } as RepeatableRowWrap;
 			});
 			rowsEl.appendChild(row);
 		}
@@ -627,15 +713,15 @@ const createRepeatableGroup = (parameter: any): any => {
 		for (const subParam of template) {
 			empty[subParam.key] = subParam.value;
 		}
-		const data = (container as any).read();
+		const data = input.read();
 		data.push(empty);
-		(container as any).write(data);
+		input.write(data);
 		container.dispatchEvent(new Event('change', { bubbles: true }));
 	};
 	return { tag, label, input: container };
 };
 
-const recycle = (wrap: any): void => {
+const recycle = (wrap: RecycleWrap): void => {
 	const self = el!;
 	switch (wrap.tag) {
 		case 'detail-box': {
@@ -671,7 +757,7 @@ const recycle = (wrap: any): void => {
 			wrap.input.remove();
 			wrap.input.parameters = null;
 			wrap.input.key = null;
-			wrap.input.clear();
+			wrap.input.clear!();
 			self.selectBoxes.push(wrap);
 			break;
 		case 'color-box':
@@ -707,7 +793,7 @@ const clear = (): void => {
 		wraps.length = 0;
 		self.textContent = '';
 	}
-	if (!(self.scriptList as any)?.data) {
+	if (!self.scriptList?.data) {
 		window.removeEventListener('script-change', scriptChange);
 	}
 };
@@ -725,17 +811,20 @@ const on = (
 
 const componentChange = (event: Event): void => {
 	const self = el!;
-	let element = event.target as any as HTMLElement;
+	let element = event.target as HTMLElement;
 	if (element.tagName === 'INPUT') {
 		element = element.parentNode as HTMLElement;
 	}
 	if ((element.parentNode as HTMLElement | null)?.classList?.contains('number-var')) {
 		element = element.parentNode as HTMLElement;
 	}
-	const { parameters, key } = element as any;
+	const { parameters, key } = element as HTMLElement & {
+		parameters: Record<string, unknown>;
+		key: string;
+	};
 	const { scriptList } = self;
 	if (scriptList?.classList?.contains('param-list')) {
-		const { history } = scriptList as any;
+		const { history } = scriptList;
 		const { editor } = history;
 		if (editor) {
 			history.save({
@@ -750,28 +839,28 @@ const componentChange = (event: Event): void => {
 			});
 		}
 	}
-	parameters[key] = read(element as any);
-	scriptList && dispatchChangeEvent(scriptList as any, 1);
+	parameters[key] = read(element);
+	scriptList && dispatchChangeEvent(scriptList, 1);
 	const grid = element.parentNode as HTMLElement;
-	const detail = grid.parentNode as any;
+	const detail = grid.parentNode as DetailBoxElement | null;
 	if (detail?.meta) {
-		if ((element as any).branched) {
-			getPlugin()?.reconstruct(detail.data);
+		if ((element as HTMLElement & { branched?: boolean }).branched) {
+			getPlugin()?.reconstruct(detail.data!);
 		}
 		self.updateParamDisplay(detail);
 		self.onResize?.();
 	}
 };
 
-const applyAffix = (input: HTMLElement, param: any): void => {
-	const font = 'var(--font-family-mono)';
+const applyAffix = (input: HTMLElement, param: ParamDef): void => {
+	const font = 'var(--ym-font-mono)';
 	if (param.prefix) {
 		const pre = document.createElement('div');
 		pre.textContent = param.prefix;
 		addClass(pre, 'param-affix');
 		addClass(pre, 'left');
 		addClass(pre, 'text');
-		(input as any).insertBefore(pre, (input as any).input);
+		input.insertBefore(pre, (input as HTMLElement & { input: HTMLElement }).input);
 	}
 	if (param.suffix) {
 		const suf = document.createElement('div');
@@ -779,16 +868,16 @@ const applyAffix = (input: HTMLElement, param: any): void => {
 		addClass(suf, 'param-affix');
 		addClass(suf, 'right');
 		addClass(suf, 'text');
-		(input as any).insertBefore(suf, (input as any).input);
+		input.insertBefore(suf, (input as HTMLElement & { input: HTMLElement }).input);
 	}
-	if ((input as any).input) {
+	if ((input as HTMLElement & { input: HTMLElement }).input) {
 		if (param.prefix) {
 			const pw = getMeasureText(param.prefix, font).width + 8;
-			(input as any).input.style.paddingLeft = pw + 'px';
+			(input as HTMLElement & { input: HTMLElement }).input.style.paddingLeft = pw + 'px';
 		}
 		if (param.suffix) {
 			const sw = getMeasureText(param.suffix, font).width + 8;
-			(input as any).input.style.paddingRight = sw + 'px';
+			(input as HTMLElement & { input: HTMLElement }).input.style.paddingRight = sw + 'px';
 		}
 	}
 };
@@ -805,10 +894,10 @@ const windowLocalize = (event: Event): void => {
 	}
 };
 
-const scriptChange = (event: any): void => {
+const scriptChange = (event: Event): void => {
 	const self = el!;
 	for (const meta of self.metas) {
-		if (meta === event.changedMeta) {
+		if (meta === (event as Event & { changedMeta?: unknown }).changedMeta) {
 			const selectList = props.selectList;
 			if (selectList && self.contains(selectList.target as HTMLElement)) {
 				selectList.close();
@@ -846,7 +935,7 @@ defineExpose({
 });
 
 onMounted(() => {
-	const self = root.value as any;
+	const self = root.value as HTMLElement & { [k: string]: any };
 	if (!self) return;
 	el = self;
 	self.scriptList = null;

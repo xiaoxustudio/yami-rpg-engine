@@ -17,12 +17,20 @@ Command.cases.removeAnimationComponent = new CommandSchema({
 		$('#removeAnimationComponent-confirm').on('click', () => this.save!());
 		// removeAnimationComponent-animationId write 经 Vue 模板转发（removeAnimationComponent.vue @write → Command.cases.removeAnimationComponent.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		const elMotion = $('#removeAnimationComponent-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	},
-	customParse({ actor, animationId, motion }: any) {
+	customParse({
+		actor,
+		animationId,
+		motion
+	}: {
+		actor: unknown;
+		animationId: unknown;
+		motion: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseFileName!(animationId))

@@ -6,7 +6,7 @@ import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface PositionGetterTarget {
 	dataValue: PositionData;
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -14,10 +14,10 @@ interface PositionData {
 	type: 'absolute' | 'relative' | 'actor' | 'trigger' | 'light' | 'region' | 'object' | 'mouse';
 	x?: number;
 	y?: number;
-	actor?: { type: string; [k: string]: any };
-	trigger?: { type: string; [k: string]: any };
-	light?: { type: string; [k: string]: any };
-	region?: { type: string; [k: string]: any };
+	actor?: { type: string };
+	trigger?: { type: string };
+	light?: { type: string };
+	region?: { type: string };
 	mode?: string;
 	objectId?: string;
 }
@@ -25,7 +25,7 @@ interface PositionData {
 interface PositionGetterShape extends AccessorBaseShape {
 	target: PositionGetterTarget | null;
 	open: ((target: PositionGetterTarget) => void) | null;
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string; x: number; y: number }) | null;
 }
 
@@ -134,7 +134,7 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	getFocus($('#positionGetter-type'));
 };
 
-PositionGetter.checkDataForPlugin = function (this: typeof PositionGetter, data: any): boolean {
+PositionGetter.checkDataForPlugin = function (this: typeof PositionGetter, data: unknown): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'position';
 	}
@@ -153,7 +153,7 @@ PositionGetter.createDefaultForPlugin = function (this: typeof PositionGetter): 
 PositionGetter.confirm = function (this: PositionGetterShape, event: Event): void {
 	const read = getElementReader('positionGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'absolute': {
 			const x = read('common-x');

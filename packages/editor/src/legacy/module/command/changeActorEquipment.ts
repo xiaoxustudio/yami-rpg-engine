@@ -45,7 +45,19 @@ Command.cases.changeActorEquipment = new CommandSchema({
 				}
 			]);
 	},
-	customParse({ actor, operation, slot, equipmentId, equipment }: any) {
+	customParse({
+		actor,
+		operation,
+		slot,
+		equipmentId,
+		equipment
+	}: {
+		actor: unknown;
+		operation: string;
+		slot: unknown;
+		equipmentId: unknown;
+		equipment: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Local.get!('command.changeActorEquipment.' + operation));

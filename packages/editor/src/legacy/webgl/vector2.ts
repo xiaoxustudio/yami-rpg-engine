@@ -1,7 +1,7 @@
 export class Vector {
 	x: number;
 	y: number;
-	constructor(x: any = 0, y: any = 0) {
+	constructor(x: number = 0, y: number = 0) {
 		this.x = x;
 		this.y = y;
 	}
@@ -11,7 +11,7 @@ export class Vector {
 		return Math.sqrt(x * x + y * y);
 	}
 
-	set length(value: any) {
+	set length(value: number) {
 		const { length } = this;
 		if (length !== 0) {
 			const ratio = value / length;
@@ -20,13 +20,13 @@ export class Vector {
 		}
 	}
 
-	set(x: any, y: any) {
+	set(x: number, y: number) {
 		this.x = x;
 		this.y = y;
 		return this;
 	}
 
-	add(vector: any) {
+	add(vector: Vector) {
 		this.x += vector.x;
 		this.y += vector.y;
 		return this;
@@ -34,14 +34,14 @@ export class Vector {
 
 	// 叉乘 cross(vector) { return this.x * vector.y - this.y * vector.x }
 
-	cos(vector: any) {
+	cos(vector: Vector) {
 		const a = this.x * vector.x + this.y * vector.y;
 		const b = Math.sqrt(this.x ** 2 + this.y ** 2);
 		const c = Math.sqrt(vector.x ** 2 + vector.y ** 2);
 		return a / (b * c);
 	}
 
-	sin(vector: any) {
+	sin(vector: Vector) {
 		const cos = this.cos(vector);
 		return Math.sqrt(1 - cos ** 2);
 	}

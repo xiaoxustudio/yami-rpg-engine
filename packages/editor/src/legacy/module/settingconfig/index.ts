@@ -30,7 +30,7 @@ export const SettingConfig = new (class {
 		return typeof path.join === 'function' ? path.join(GlobalPath, 'yami-config.json') : '';
 	}
 	/** 由 schema 派生默认 config（含 hidden 隐藏项） */
-	get defaultConfig() {
+	get defaultConfig(): Record<string, unknown> {
 		return buildDefaultConfig(settingSchema);
 	}
 
@@ -99,7 +99,10 @@ export const SettingConfig = new (class {
 		}
 		this.config = JSON.parse(nodeFs.readFileSync(this.configPath, 'utf-8'));
 		// 兜底：旧 yami-config.json 中某字段可能为 null（用户手动改或旧版写入），Reflect.has(null) 会抛错中断 load()
-		const patch = (_p_obj: any, _t_obj: any) => {
+		const patch = (
+			_p_obj: Record<string, unknown>,
+			_t_obj: Record<string, unknown>
+		): Record<string, unknown> => {
 			if (_t_obj === null || typeof _t_obj !== 'object') {
 				_t_obj = {};
 			}
@@ -108,7 +111,10 @@ export const SettingConfig = new (class {
 					_t_obj[key] = _p_obj[key];
 				}
 				if (typeof _p_obj[key] === 'object') {
-					_t_obj[key] = patch(_p_obj[key], _t_obj[key]);
+					_t_obj[key] = patch(
+						_p_obj[key] as Record<string, unknown>,
+						_t_obj[key] as Record<string, unknown>
+					);
 				}
 			}
 			return _t_obj;
@@ -117,9 +123,10 @@ export const SettingConfig = new (class {
 		// 兜底：旧 yami-config.json 可能缺子段，patch() 对已存在但缺子字段的补不全，Object.assign 强合
 		for (const key of Object.keys(this.defaultConfig)) {
 			this.config[key] ??= {};
-			for (const sub of Object.keys(this.defaultConfig[key])) {
+			const defaultSection = this.defaultConfig[key] as Record<string, unknown>;
+			for (const sub of Object.keys(defaultSection)) {
 				if (this.config[key][sub] === undefined) {
-					this.config[key][sub] = this.defaultConfig[key][sub];
+					this.config[key][sub] = defaultSection[sub];
 				}
 			}
 		}

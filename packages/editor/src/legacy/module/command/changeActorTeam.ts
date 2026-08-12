@@ -14,14 +14,14 @@ Command.cases.changeActorTeam = new CommandSchema({
 	],
 	onInitialize() {
 		on($('#changeActorTeam-confirm'), 'click', () => this.save!());
-		on($('#changeActorTeam'), 'open', function (event: any) {
+		on($('#changeActorTeam'), 'open', function (event: Event) {
 			$('#changeActorTeam-teamId').loadItems(Data.createTeamItems!());
 		});
-		on($('#changeActorTeam'), 'closed', function (event: any) {
+		on($('#changeActorTeam'), 'closed', function (event: Event) {
 			clear($('#changeActorTeam-teamId'));
 		});
 	},
-	customParse({ actor, teamId }: any) {
+	customParse({ actor, teamId }: { actor: unknown; teamId: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseTeam!(teamId));

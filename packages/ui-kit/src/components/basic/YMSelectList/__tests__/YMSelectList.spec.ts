@@ -9,8 +9,18 @@ const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'clientWidth', { value: 200, configurable: true });
 };
 
-const makeTarget = (value = 'b'): any => {
-	const target: any = document.createElement('div');
+const makeTarget = (
+	value = 'b'
+): HTMLElement & {
+	dataItems: { value: string; name: string; tip?: string }[];
+	dataValue: string;
+	input?: (v: unknown) => void;
+} => {
+	const target = document.createElement('div') as unknown as HTMLElement & {
+		dataItems: { value: string; name: string; tip?: string }[];
+		dataValue: string;
+		input?: (v: unknown) => void;
+	};
 	target.classList.add('select-box');
 	const rect = { left: 10, top: 100, bottom: 120, width: 150, height: 20 };
 	Object.defineProperty(target, 'getBoundingClientRect', {
@@ -30,7 +40,7 @@ const makeTarget = (value = 'b'): any => {
 describe('YMSelectList', () => {
 	it('open renders items and positions', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		const target = makeTarget();
 		vm.open(target);
@@ -49,7 +59,7 @@ describe('YMSelectList', () => {
 
 	it('open selects current value', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		const target = makeTarget('b');
 		vm.open(target);
@@ -61,7 +71,7 @@ describe('YMSelectList', () => {
 
 	it('write selects matching item', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		vm.open(makeTarget('a'));
 		vm.write('c');
@@ -73,11 +83,11 @@ describe('YMSelectList', () => {
 
 	it('keyboard Enter commits value to target', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		const target = makeTarget('a');
 		let inputted = null;
-		target.input = (v: any) => (inputted = v);
+		target.input = (v: unknown) => (inputted = v);
 		vm.open(target);
 		vm.write('b');
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter', bubbles: true }));
@@ -87,7 +97,7 @@ describe('YMSelectList', () => {
 
 	it('Escape closes', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		vm.open(makeTarget());
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', bubbles: true }));
@@ -96,7 +106,7 @@ describe('YMSelectList', () => {
 
 	it('arrow keys navigate selection', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		vm.open(makeTarget('a'));
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowDown', bubbles: true }));
@@ -108,11 +118,11 @@ describe('YMSelectList', () => {
 
 	it('pointerdown on item commits and closes', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		const target = makeTarget('a');
 		let inputted = null;
-		target.input = (v: any) => (inputted = v);
+		target.input = (v: unknown) => (inputted = v);
 		vm.open(target);
 		const items = Array.from(wrapper.element.querySelectorAll('.select-item')) as HTMLElement[];
 		items[1].dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
@@ -122,7 +132,7 @@ describe('YMSelectList', () => {
 
 	it('external pointerdown closes', () => {
 		const wrapper = mount(YMSelectList, { attachTo: document.body });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		mockHeight(wrapper.element);
 		vm.open(makeTarget());
 		const outside = document.createElement('div');
@@ -149,7 +159,7 @@ describe('YMSelectList', () => {
 
 	it('exposes api through component instance', () => {
 		const wrapper = mount(YMSelectList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		for (const name of ['open', 'close', 'read', 'write', 'select', 'unselect', 'reselect']) {
 			expect(typeof vm[name], name).toBe('function');
 		}

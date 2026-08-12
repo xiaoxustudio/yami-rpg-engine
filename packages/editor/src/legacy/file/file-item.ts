@@ -21,7 +21,7 @@ export class FileItem {
 	path: string;
 	type: string;
 	stats: { isDirectory(): boolean; ino?: string | number; mtimeMs?: number } | null;
-	promise!: Promise<any> | null;
+	promise?: Promise<any> | null;
 	contexts: Map<string, unknown> | null;
 
 	constructor(

@@ -4,14 +4,23 @@ import { FileItem } from './file-item.ts';
 import { File } from './file-system-core.ts';
 import { FSP } from './file-system.ts';
 
+interface FolderUpdateContext {
+	changed: boolean;
+	promises: Promise<unknown>[];
+}
+
+interface FolderContext {
+	expanded: boolean;
+}
+
 export class FolderItem {
 	name: string;
 	path: string;
-	stats: any | null;
+	stats: { isDirectory(): boolean; ino?: string | number; mtimeMs?: number } | null;
 	parent: FolderItem | null;
 	children: FileItem[];
 	subfolders: FolderItem[];
-	contexts: Map<string, any> | null;
+	contexts: Map<string, FolderContext> | null;
 
 	constructor(name: string, path: string, parent: FolderItem | null) {
 		this.name = name;
@@ -23,7 +32,7 @@ export class FolderItem {
 		this.contexts = null;
 	}
 
-	getContext(key: string): any {
+	getContext(key: string): FolderContext {
 		let contexts = this.contexts;
 		if (contexts === null) {
 			contexts = this.contexts = new Map();
@@ -40,7 +49,7 @@ export class FolderItem {
 		return context;
 	}
 
-	async update(context = { changed: false, promises: [] }) {
+	async update(context: FolderUpdateContext = { changed: false, promises: [] }) {
 		const bigint = FolderItem.bigint;
 		const path = File.path!(this.path);
 		const pStat = FSP.stat(path, bigint);
@@ -54,8 +63,8 @@ export class FolderItem {
 		return context;
 	}
 
-	async readdir(context: any) {
-		const map: Record<string, any> = {};
+	async readdir(context: FolderUpdateContext) {
+		const map: Record<string, FileItem | FolderItem> = {};
 		const nodes = this.children;
 		if (nodes instanceof Array) {
 			const length = nodes.length;
@@ -107,32 +116,33 @@ export class FolderItem {
 			const path = promise.path;
 			const stats = response;
 			let item = map[path];
-			if (item === undefined || item.stats.mtimeMs !== stats.mtimeMs) {
+			if (item === undefined || item.stats?.mtimeMs !== stats.mtimeMs) {
 				const name = files[i].name;
 				const extname = Path.extname(name);
 				const type =
 					(extnameToTypeMap as Record<string, string>)[extname.toLowerCase()] ?? 'other';
 				try {
 					item = new FileItem(name, extname, path, type, stats);
-					if (item.promise instanceof Promise) {
+					const promise = (item as FileItem).promise;
+					if (promise instanceof Promise) {
 						context.promises.push(
-							item.promise.finally(() => {
-								delete item.promise;
+							promise.finally(() => {
+								delete (item as FileItem).promise;
 							})
 						);
 					}
-				} catch (error: any) {
+				} catch (error: unknown) {
 					console.warn(error);
 					continue;
 				}
 			}
-			if (item.meta.versionId !== Meta.versionId) {
-				item.meta.versionId = Meta.versionId;
+			if ((item as FileItem).meta!.versionId !== Meta.versionId) {
+				(item as FileItem).meta!.versionId = Meta.versionId;
 				children.push(item);
 				context.changed = true;
 			}
 		}
-		this.children = children;
+		this.children = children as FileItem[];
 		this.subfolders = subfolders;
 	}
 
@@ -172,7 +182,7 @@ export class FolderItem {
 
 	static bigint = { bigint: true };
 
-	static async create(path: any) {
+	static async create(path: string) {
 		const name = Path.basename(path);
 		const item = new FolderItem(name, path, null);
 		return item;

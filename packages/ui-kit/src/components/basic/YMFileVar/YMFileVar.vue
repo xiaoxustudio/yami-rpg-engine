@@ -3,28 +3,28 @@ import { nextTick, onMounted, ref, watch } from 'vue';
 
 interface Props {
 	id?: string;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	disabled: false
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 
 const mode = ref<'constant' | 'variable'>('constant');
 const fileValue = ref('');
-const varValue = ref<any>(null);
+const varValue = ref<{ key?: string } | null>(null);
 
-const read = (): any => {
+const read = (): string | { key?: string } | null => {
 	switch (mode.value) {
 		case 'constant':
 			return fileValue.value;
@@ -33,7 +33,7 @@ const read = (): any => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	switch (typeof value) {
 		case 'string':
 			switchMode('constant');
@@ -42,7 +42,7 @@ const write = (value: any): void => {
 		case 'object':
 			switchMode('variable');
 			fileValue.value = '';
-			varValue.value = value;
+			varValue.value = value as { key?: string } | null;
 			break;
 	}
 };
@@ -57,7 +57,7 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as any).mode = target;
+			(el as HTMLElement & { mode?: string }).mode = target;
 		}
 		mode.value = target;
 		if (focus) {
@@ -93,7 +93,7 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg: any): any => {
+const getFocus = (modeArg?: unknown): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant': {
 			const fileSlot = root.value?.querySelector('.file-var-file') as HTMLElement | null;
@@ -110,7 +110,7 @@ const getFocus = (modeArg: any): any => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -150,8 +150,8 @@ const onFileInput = (value: string): void => {
 	emit('update:modelValue', value);
 };
 
-const onVarInput = (value: any): void => {
-	varValue.value = value;
+const onVarInput = (value: unknown): void => {
+	varValue.value = value as { key?: string } | null;
 	emit('input', value);
 	emit('update:modelValue', value);
 };
@@ -171,14 +171,14 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).switch = switchMode;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
-	(el as any).mode = mode.value;
+	(el as HTMLElement & { [k: string]: unknown }).read = read;
+	(el as HTMLElement & { [k: string]: unknown }).write = write;
+	(el as HTMLElement & { [k: string]: unknown }).switch = switchMode;
+	(el as HTMLElement & { [k: string]: unknown }).enable = enable;
+	(el as HTMLElement & { [k: string]: unknown }).disable = disable;
+	(el as HTMLElement & { [k: string]: unknown }).getFocus = getFocus;
+	(el as HTMLElement & { [k: string]: unknown }).on = on;
+	(el as HTMLElement & { [k: string]: unknown }).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

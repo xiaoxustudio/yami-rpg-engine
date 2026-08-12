@@ -75,7 +75,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
-const onParamInput = (event: any) => {
+const onParamInput = (event: Event) => {
 	const target = event?.target ?? document.activeElement;
 	Inspector?.uiElement?.paramInput?.({ target });
 };

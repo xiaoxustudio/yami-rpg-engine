@@ -4,9 +4,9 @@ import { GL } from '@/webgl/webgl-init.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Animation } from './animation-window.ts';
 import { Easing } from '@/data/transition-window.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Matrix } from '@/webgl/matrix2.ts';
+import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
+import { Matrix } from '../webgl/matrix2.ts';
 import {
 	AnimationMotion,
 	AnimationSprite,
@@ -15,6 +15,8 @@ import {
 } from '@/types/animation-player.ts';
 
 interface AnimationData {
+	sprites: Array<AnimationSprite & { image: string }>;
+	motions: Array<AnimationMotion & { id: string }>;
 	[k: string]: any;
 }
 
@@ -36,16 +38,16 @@ Animation.Player = class AnimationPlayer {
 	direction!: number;
 	mirror!: string | boolean;
 	data!: AnimationData;
-	dirMap!: any[];
-	dirCases!: any[] | null;
-	layers!: any[] | null;
-	motion!: any | null;
+	dirMap!: { index: number; mirror: boolean }[];
+	dirCases!: AnimationMotion['dirCases'] | null;
+	layers!: PlayerLayer[] | null;
+	motion!: AnimationMotion | null;
 	motions!: Record<string, AnimationMotion>;
 	sprites!: Record<string, AnimationSprite>;
 	images!: AnimationImageMap;
 	textures!: AnimationTextureMap | null;
-	contexts!: any[] & { count?: number };
-	emitters!: any[] & { count?: number };
+	contexts!: PlayerContext[] & { count?: number };
+	emitters!: ParticleEmitterShape[] & { count?: number };
 	isUIComponent!: boolean;
 
 	constructor(animation: AnimationData) {
@@ -101,7 +103,7 @@ Animation.Player = class AnimationPlayer {
 		const params = this.dirMap[this.direction];
 		if (params) {
 			const dirCase = this.dirCases![params.index];
-			this.layers = dirCase.layers;
+			this.layers = dirCase.layers as PlayerLayer[];
 			this.destroyContextEmitters();
 			this.loadContexts(this.contexts);
 			this.computeLength();
@@ -199,7 +201,7 @@ Animation.Player = class AnimationPlayer {
 		this.images = Object.setPrototypeOf(images, this.images);
 	}
 
-	updateFrameParameters(contexts: any[] & { count?: number }, index: number) {
+	updateFrameParameters(contexts: PlayerContext[] & { count?: number }, index: number) {
 		const { count } = contexts as { count: number };
 		outer: for (let i = 0; i < count; i++) {
 			const context = contexts[i];
@@ -216,9 +218,9 @@ Animation.Player = class AnimationPlayer {
 						const time = Easing.get!(easingId).ease(
 							(index - start) / (next.start - start)
 						);
-						context.update(frame, time, next);
+						context.update!(frame, time, next);
 					} else {
-						context.update(frame);
+						context.update!(frame);
 					}
 					continue outer;
 				}
@@ -246,7 +248,7 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	loadContexts(contexts: any) {
+	loadContexts(contexts: PlayerContext[] & { count?: number }) {
 		AnimationPlayer.loadContexts(this, contexts);
 	}
 
@@ -255,7 +257,7 @@ Animation.Player = class AnimationPlayer {
 			this.index += (deltaTime * this.speed) / AnimationPlayer.step;
 			// 如果动画播放结束
 			if (this.index >= this.end) {
-				if (this.motion.loop) {
+				if (this.motion!.loop) {
 					this.index = (this.index % this.end) + this.loopStart;
 				} else {
 					// 否则设为尾帧索引，执行结束回调
@@ -279,8 +281,8 @@ Animation.Player = class AnimationPlayer {
 		}
 		const lastFrame = length - 1;
 		this.length = length;
-		this.loopStart = motion.loop ? Math.min(motion.loopStart, lastFrame) : 0;
-		this.end = motion.skip && this.loopStart < lastFrame ? lastFrame : length;
+		this.loopStart = motion!.loop ? Math.min(motion!.loopStart as number, lastFrame) : 0;
+		this.end = motion!.skip && this.loopStart < lastFrame ? lastFrame : length;
 	}
 
 	emitParticles(deltaTime: number) {
@@ -365,7 +367,7 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	drawSprite(context: any, texture: any, light: any) {
+	drawSprite(context: PlayerContext, texture: ImageTexture, light: string | undefined) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const attributes = gl.arrays[0].uint32;
@@ -375,13 +377,13 @@ Animation.Player = class AnimationPlayer {
 		const layer = context.layer;
 		const frame = context.frame;
 		const tint = context.tint;
-		const base = texture.base;
+		const base = texture.base!;
 		const tw = base.width;
 		const th = base.height;
 		const sw = texture.width;
 		const sh = texture.height;
-		const sx = frame.spriteX * sw;
-		const sy = frame.spriteY * sh;
+		const sx = frame!.spriteX * sw;
+		const sy = frame!.spriteY * sh;
 		const L = -(sw * context.anchorX + context.pivotX);
 		const T = -(sh * context.anchorY + context.pivotY);
 		const R = L + sw;
@@ -410,7 +412,7 @@ Animation.Player = class AnimationPlayer {
 			light = Scene.showLight ? layer.light : 'raw';
 		}
 		const vi = response[0] * 8;
-		const mode = AnimationPlayer.lightSamplingModes[light];
+		const mode = AnimationPlayer.lightSamplingModes[light ?? 'raw'];
 		const alpha = Math.round(context.opacity * 255);
 		const param = response[1] | (alpha << 8) | (mode << 16);
 		const redGreen = tint[0] + (tint[1] << 16) + 0x00ff00ff;
@@ -468,8 +470,8 @@ Animation.Player = class AnimationPlayer {
 						const { floor, max } = Math;
 						const { base } = texture;
 						const { hframes, vframes } = sprite;
-						const width = floor(max(base.width / hframes, 1));
-						const height = floor(max(base.height / vframes, 1));
+						const width = floor(max(base!.width / hframes, 1));
+						const height = floor(max(base!.height / vframes, 1));
 						texture.width = width;
 						texture.height = height;
 						textures![spriteId] = texture;
@@ -628,7 +630,10 @@ Animation.Player = class AnimationPlayer {
 		this.step = 1000 / Data.config.animation.frameRate;
 	}
 
-	static loadContexts(animation: any, contexts: any) {
+	static loadContexts(
+		animation: AnimationPlayer,
+		contexts: PlayerContext[] & { count?: number }
+	) {
 		contexts.count = 0;
 		if (animation.layers !== null) {
 			// 如果动画已设置动作，加载所有图层上下文
@@ -636,14 +641,19 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	static #loadContext(animation: any, layers: any, parent: any, contexts: any) {
+	static #loadContext(
+		animation: AnimationPlayer,
+		layers: PlayerLayer[],
+		parent: PlayerContext | null,
+		contexts: PlayerContext[] & { count?: number }
+	) {
 		for (const layer of layers) {
-			let context = contexts[contexts.count];
+			let context: PlayerContext | undefined = contexts[contexts.count!];
 			if (context === undefined) {
-				context = contexts[contexts.count] = {
+				context = contexts[contexts.count!] = {
 					animation: animation,
 					parent: null,
-					layer: null,
+					layer: null as unknown as PlayerLayer,
 					frame: null,
 					matrix: new Matrix(),
 					anchorX: 0,
@@ -655,7 +665,7 @@ Animation.Player = class AnimationPlayer {
 					reset: AnimationPlayer.contextReset
 				};
 			}
-			contexts.count++;
+			contexts.count!++;
 			context.parent = parent;
 			context.layer = layer;
 			switch (layer.class) {
@@ -678,7 +688,7 @@ Animation.Player = class AnimationPlayer {
 		}
 	}
 
-	static contextReset(this: any) {
+	static contextReset(this: PlayerContext) {
 		const parent = this.parent;
 		const matrix = this.matrix;
 		if (parent !== null) {
@@ -691,7 +701,12 @@ Animation.Player = class AnimationPlayer {
 		this.frame = null;
 	}
 
-	static contextUpdate(this: any, frame: any, time: any, next: any) {
+	static contextUpdate(
+		this: PlayerContext,
+		frame: PlayerFrame,
+		time?: number,
+		next?: PlayerFrame
+	) {
 		const parent = this.parent;
 		const matrix = this.matrix;
 		if (parent !== null) {
@@ -708,20 +723,25 @@ Animation.Player = class AnimationPlayer {
 		let scaleY = frame.scaleY;
 		let opacity = frame.opacity;
 		if (next !== undefined) {
-			const reverse = 1 - time;
-			positionX = positionX * reverse + next.x * time;
-			positionY = positionY * reverse + next.y * time;
-			rotation = rotation * reverse + next.rotation * time;
-			scaleX = scaleX * reverse + next.scaleX * time;
-			scaleY = scaleY * reverse + next.scaleY * time;
-			opacity = opacity * reverse + next.opacity * time;
+			const reverse = 1 - time!;
+			positionX = positionX * reverse + next.x * time!;
+			positionY = positionY * reverse + next.y * time!;
+			rotation = rotation * reverse + next.rotation * time!;
+			scaleX = scaleX * reverse + next.scaleX * time!;
+			scaleY = scaleY * reverse + next.scaleY * time!;
+			opacity = opacity * reverse + next.opacity * time!;
 		}
 		matrix.translate(positionX, positionY).rotate(Math.radians(rotation)).scale(scaleX, scaleY);
 		this.opacity *= opacity;
 		this.frame = frame;
 	}
 
-	static contextUpdateSprite(this: any, frame: any, time: any, next: any) {
+	static contextUpdateSprite(
+		this: PlayerContext,
+		frame: PlayerFrame,
+		time?: number,
+		next?: PlayerFrame
+	) {
 		AnimationPlayer.contextUpdate.call(this, frame, time, next);
 		let anchorX = frame.anchorX;
 		let anchorY = frame.anchorY;
@@ -732,15 +752,15 @@ Animation.Player = class AnimationPlayer {
 		let blue = frame.tint[2];
 		let gray = frame.tint[3];
 		if (next !== undefined) {
-			const reverse = 1 - time;
-			anchorX = anchorX * reverse + next.anchorX * time;
-			anchorY = anchorY * reverse + next.anchorY * time;
-			pivotX = pivotX * reverse + next.pivotX * time;
-			pivotY = pivotY * reverse + next.pivotY * time;
-			red = Math.clamp(red * reverse + next.tint[0] * time, -255, 255);
-			green = Math.clamp(green * reverse + next.tint[1] * time, -255, 255);
-			blue = Math.clamp(blue * reverse + next.tint[2] * time, -255, 255);
-			gray = Math.clamp(gray * reverse + next.tint[3] * time, 0, 255);
+			const reverse = 1 - time!;
+			anchorX = anchorX * reverse + next.anchorX * time!;
+			anchorY = anchorY * reverse + next.anchorY * time!;
+			pivotX = pivotX * reverse + next.pivotX * time!;
+			pivotY = pivotY * reverse + next.pivotY * time!;
+			red = Math.clamp(red * reverse + next.tint[0] * time!, -255, 255);
+			green = Math.clamp(green * reverse + next.tint[1] * time!, -255, 255);
+			blue = Math.clamp(blue * reverse + next.tint[2] * time!, -255, 255);
+			gray = Math.clamp(gray * reverse + next.tint[3] * time!, 0, 255);
 		}
 		let tint = this.tint;
 		if (tint === undefined) {
@@ -756,7 +776,12 @@ Animation.Player = class AnimationPlayer {
 		tint[3] = gray;
 	}
 
-	static contextUpdateParticle(this: any, frame: any, time: any, next: any) {
+	static contextUpdateParticle(
+		this: PlayerContext,
+		frame: PlayerFrame,
+		time?: number,
+		next?: PlayerFrame
+	) {
 		AnimationPlayer.contextUpdate.call(this, frame, time, next);
 		let emitter = this.emitter;
 		if (emitter === undefined) {
@@ -772,12 +797,64 @@ Animation.Player = class AnimationPlayer {
 		let scale = frame.scale * this.animation.scale;
 		let speed = frame.speed;
 		if (next !== undefined) {
-			const reverse = 1 - time;
-			scale = scale * reverse + next.scale * time;
-			speed = speed * reverse + next.speed * time;
+			const reverse = 1 - time!;
+			scale = scale * reverse + next.scale * time!;
+			speed = speed * reverse + next.speed * time!;
 		}
 		emitter.scale = scale;
 		emitter.speed = speed;
 		emitter.opacity = this.opacity;
 	}
 };
+
+interface PlayerFrame {
+	start: number;
+	end: number;
+	easingId?: string;
+	x: number;
+	y: number;
+	rotation: number;
+	scaleX: number;
+	scaleY: number;
+	opacity: number;
+	anchorX: number;
+	anchorY: number;
+	pivotX: number;
+	pivotY: number;
+	tint: Int16Array | number[];
+	spriteX: number;
+	spriteY: number;
+	scale: number;
+	speed: number;
+}
+
+interface PlayerLayer {
+	class: string;
+	children: PlayerLayer[];
+	frames: PlayerFrame[];
+	[k: string]: any;
+}
+
+interface PlayerAnimation {
+	layers: PlayerLayer[] | null;
+	opacity: number;
+	scale: number;
+	emitters: ParticleEmitterShape[] & { count?: number };
+}
+
+interface PlayerContext {
+	animation: PlayerAnimation;
+	parent: PlayerContext | null;
+	layer: PlayerLayer;
+	frame: PlayerFrame | null;
+	matrix: Matrix;
+	anchorX: number;
+	anchorY: number;
+	pivotX: number;
+	pivotY: number;
+	opacity: number;
+	update: ((frame: PlayerFrame, time?: number, next?: PlayerFrame) => void) | null;
+	reset: () => void;
+	emitter?: ParticleEmitterShape;
+	[k: string]: any;
+}

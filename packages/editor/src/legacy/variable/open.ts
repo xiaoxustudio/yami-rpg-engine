@@ -9,17 +9,19 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { Variable } from './variable.ts';
 
-Variable.open = function (this: any, target: any = null) {
-	this.target = target;
+Variable.open = function (this: typeof Variable, target: unknown = null) {
+	this.target = target as { getFocus?: () => unknown } | null;
 	this._previousActive = UndoManager.getActive();
 	this.history = new History(100);
 	UndoManager.setActive(this);
-	this.unpackVariables();
+	this.unpackVariables!();
 	Window.open!('variable');
 
 	const list = this.list;
-	const item = !target ? undefined : this.getVariableById(read(target));
-	if (item && item.class !== 'folder') {
+	const item = !target
+		? undefined
+		: (this.getVariableById!(read(target)) as { class?: string } | undefined);
+	if (item && (item as { class?: string }).class !== 'folder') {
 		list.initialize();
 		list.select(item);
 		list.expandToSelection(false);
@@ -36,30 +38,30 @@ Variable.open = function (this: any, target: any = null) {
 
 	getFocus(list);
 
-	window.addEventListener('keydown', this.keydown);
+	window.addEventListener('keydown', this.keydown!);
 	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'variable'));
 };
 
-Variable.undo = function (this: any) {
+Variable.undo = function (this: typeof Variable) {
 	if (this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
-Variable.redo = function (this: any) {
+Variable.redo = function (this: typeof Variable) {
 	if (this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
 
-Variable.confirm = function (this: any, event: any) {
+Variable.confirm = function (this: typeof Variable, event?: Event) {
 	const target = this.target;
 	if (target instanceof Object) {
 		const variable = this.panel.variable;
 		if (variable === null) {
 			return getFocus(this.list);
 		}
-		const filter = target.filter;
+		const filter = (target as { filter?: string }).filter;
 		switch (filter) {
 			case 'boolean':
 			case 'number':
@@ -70,19 +72,19 @@ Variable.confirm = function (this: any, event: any) {
 				}
 				break;
 		}
-		this.apply();
-		target?.input?.(variable.id);
+		this.apply!(undefined as unknown as Event);
+		(target as { input?: (value: unknown) => void }).input?.(variable.id);
 	} else {
-		this.apply();
+		this.apply!(undefined as unknown as Event);
 	}
 	Window.close!('variable');
 }.bind(Variable);
 
-Variable.apply = function (this: any, event: any) {
+Variable.apply = function (this: typeof Variable, event: Event) {
 	if (this.changed) {
 		this.changed = false;
 
-		this.packVariables();
+		this.packVariables!();
 		File.planToSave!(Data.manifest.project.variables);
 
 		window.dispatchEvent(new Event('variablechange'));

@@ -3,15 +3,15 @@ export type HistoryOperation = 'undo' | 'redo';
 
 // 操作历史基础契约（栈式 undo/redo）
 export interface IEditableHistory {
-	stack: any[];
+	stack: HistoryData[];
 	// 当前指针（-1 表示空）
 	index: number;
 
 	reset(): void;
 
-	save(data: any): void;
+	save(data: HistoryData): void;
 	// 恢复数据（undo/redo）
-	restore(operation: any): void;
+	restore(operation: HistoryOperation): void;
 
 	canUndo(): boolean;
 
@@ -32,9 +32,9 @@ export interface IArrayHistory {
 
 	reset(): void;
 
-	save(data: any): void;
+	save(data: HistoryData): void;
 	// 恢复数据（undo/redo）
-	restore(operation: any): void;
+	restore(operation: HistoryOperation): void;
 
 	canUndo(): boolean;
 
@@ -44,7 +44,7 @@ export interface IArrayHistory {
 // 带 owner 反向引用的历史契约（condition-list/event-list/property-list/script-list 共用）
 export interface IOwnedHistory extends IEditableHistory {
 	// 所属对象（反向引用，多数为 Editor/Window 子类）
-	owner: any | null;
+	owner: { history?: unknown } | null;
 }
 
 // 历史数据基础契约。 各 History 类的 stack 元素都至少含 type 字段（'insert'/'replace'/'delete'/'toggle'/'custom'）， 用于 restore 分支判断。其余字段（array/index/items/commands/value 等）按场景扩展。
@@ -59,7 +59,7 @@ export type HistoryToggleMethod = 'enable' | 'disable';
 export interface HistoryToggleData extends HistoryData {
 	type: 'toggle';
 	method: HistoryToggleMethod;
-	items: any[];
+	items: unknown[];
 }
 
 export type HistoryListOperation = 'insert' | 'replace' | 'delete' | 'toggle';

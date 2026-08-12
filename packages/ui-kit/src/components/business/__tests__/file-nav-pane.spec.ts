@@ -2,20 +2,28 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
 
-function makeFile(name: string, subfolders: any[] = []) {
-	const file: any = {
+interface FileItem {
+	name: string;
+	path: string;
+	stats: { ino: string };
+	subfolders: FileItem[];
+	getContext(element: HTMLElement): { element: undefined; expanded: boolean };
+}
+
+function makeFile(name: string, subfolders: FileItem[] = []) {
+	const file: FileItem = {
 		name,
 		path: `C:/test/${name}`,
 		subfolders,
 		stats: { ino: name },
-		getContext: () => ({})
+		getContext: () => ({ element: undefined, expanded: false })
 	};
-	const ctx: any = { element: undefined, expanded: false };
+	const ctx: { element: undefined; expanded: boolean } = { element: undefined, expanded: false };
 	file.getContext = () => ctx;
 	return file;
 }
 
-function makeProps(extra: any = {}) {
+function makeProps(extra: Record<string, unknown> = {}) {
 	const browser = { display: 'normal', update: vi.fn(), restoreDisplay: vi.fn() };
 	const links = { browser, nav: null, body: null };
 	return {
@@ -39,6 +47,15 @@ function makeProps(extra: any = {}) {
 	};
 }
 
+interface FileNavPaneElement extends HTMLElement {
+	[k: string]: unknown;
+	load: () => void;
+	update: () => void;
+	select: (...files: unknown[]) => void;
+	clear: () => void;
+	links: unknown;
+}
+
 describe('YMFileNavPane', () => {
 	let host: HTMLElement;
 
@@ -55,7 +72,7 @@ describe('YMFileNavPane', () => {
 	it('mounts and exposes core api', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as FileNavPaneElement;
 		expect(el.className).toContain('file-nav-pane');
 		expect(typeof el.load).toBe('function');
 		expect(typeof el.update).toBe('function');
@@ -68,7 +85,7 @@ describe('YMFileNavPane', () => {
 	it('load selects folders and calls browser update', async () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
-		(wrapper.element as any).links = props.links;
+		(wrapper.element as unknown as FileNavPaneElement).links = props.links;
 		const file = makeFile('Assets');
 		wrapper.vm.select(file);
 		expect(wrapper.vm.getSelections()).toContain(file);
@@ -80,8 +97,8 @@ describe('YMFileNavPane', () => {
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
 		const a = makeFile('A');
 		const b = makeFile('B');
-		(wrapper.vm as any).select(a);
-		(wrapper.vm as any).select(a, b);
+		(wrapper.vm as unknown as FileNavPaneElement).select(a);
+		(wrapper.vm as unknown as FileNavPaneElement).select(a, b);
 		expect(wrapper.vm.getSelections()).toEqual([a, b]);
 		wrapper.vm.unselect();
 		expect(wrapper.vm.getSelections()).toEqual([]);
@@ -93,7 +110,7 @@ describe('YMFileNavPane', () => {
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
 		const sub = makeFile('Sub');
 		const file = makeFile('Folder', [sub]);
-		(wrapper.vm as any).select(file);
+		(wrapper.vm as unknown as FileNavPaneElement).select(file);
 		const el = wrapper.element;
 		el.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight', bubbles: true }));
 		expect(file.getContext(el).expanded).toBe(true);
@@ -107,8 +124,10 @@ describe('YMFileNavPane', () => {
 		const wrapper = mount(YMFileNavPane, { props, attachTo: host });
 		const sub = makeFile('Sub');
 		const file = makeFile('Folder', [sub]);
-		const el = wrapper.element as any;
-		const element = document.createElement('file-nav-item') as any;
+		const el = wrapper.element as unknown as FileNavPaneElement;
+		const element = document.createElement('file-nav-item') as unknown as HTMLElement & {
+			[k: string]: unknown;
+		};
 		element.file = file;
 		const folderMark = document.createElement('folder-mark');
 		element.appendChild(folderMark);

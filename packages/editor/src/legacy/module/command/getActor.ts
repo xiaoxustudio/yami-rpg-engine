@@ -8,6 +8,24 @@ import { Data } from '@/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type GetActorCommandData = {
+	variable: unknown;
+	position: unknown;
+	area: string;
+	size?: number;
+	radius?: number;
+	selector: string;
+	teamId?: string;
+	condition: string;
+	attribute?: string;
+	divisor?: string;
+	activation: string;
+	exclusion: string;
+	exclusionActor?: unknown;
+	exclusionTeamId?: string;
+	active?: boolean;
+};
+
 Command.cases.getActor = new CommandSchema({
 	name: 'getActor',
 	onInitialize() {
@@ -73,17 +91,17 @@ Command.cases.getActor = new CommandSchema({
 				{ case: 'actor', targets: [$('#getActor-exclusionActor')] },
 				{ case: 'team', targets: [$('#getActor-exclusionTeamId')] }
 			]);
-		$('#getActor').on('open', function (event: any) {
+		$('#getActor').on('open', function (event: Event) {
 			const items = Data.createTeamItems!();
 			$('#getActor-teamId').loadItems(items);
 			$('#getActor-exclusionTeamId').loadItems(items);
 		});
-		$('#getActor').on('closed', function (event: any) {
+		$('#getActor').on('closed', function (event: Event) {
 			clear($('#getActor-teamId'));
 			clear($('#getActor-exclusionTeamId'));
 		});
 	},
-	remapSelectorPatch(selector: any) {
+	remapSelectorPatch(selector: string) {
 		switch (selector) {
 			case 'team-enemy':
 				return 'enemy';
@@ -95,7 +113,7 @@ Command.cases.getActor = new CommandSchema({
 				return selector;
 		}
 	},
-	remapActivationPatch(activation: any, active: any) {
+	remapActivationPatch(activation: string, active?: boolean) {
 		switch (active) {
 			case true:
 				return 'active';
@@ -105,7 +123,7 @@ Command.cases.getActor = new CommandSchema({
 				return activation;
 		}
 	},
-	parseCondition(condition: any, attribute: any, divisor: any) {
+	parseCondition(condition: string, attribute?: string, divisor?: string) {
 		const label = Local.get!('command.getActor.condition.' + condition);
 		switch (condition) {
 			case 'nearest':
@@ -145,7 +163,7 @@ Command.cases.getActor = new CommandSchema({
 		exclusionActor,
 		exclusionTeamId,
 		active
-	}: any) {
+	}: GetActorCommandData) {
 		selector = this.remapSelectorPatch!(selector);
 		activation = this.remapActivationPatch!(activation, active);
 		condition = condition ?? 'nearest';
@@ -206,7 +224,7 @@ Command.cases.getActor = new CommandSchema({
 		exclusionActor = { type: 'trigger' },
 		exclusionTeamId = Data.teams.list[0].id,
 		active
-	}: any) {
+	}: GetActorCommandData) {
 		selector = this.remapSelectorPatch!(selector);
 		activation = this.remapActivationPatch!(activation, active);
 		const attrItems = Attribute.getAttributeItems!('actor', 'number');

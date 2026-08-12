@@ -20,7 +20,7 @@ Editor.saveConfig = function (this: typeof Editor) {
 		Title.saveToConfig!(config);
 		Layout.saveToConfig!(config as LayoutConfigShape);
 		Scene.saveToConfig!(config);
-		UI.saveToConfig(config as { colors: Record<string, any> });
+		UI.saveToConfig(config as { colors: Record<string, string> });
 		Animation.saveToConfig!(config);
 		Particle.saveToConfig!(config as { colors: Record<string, string> });
 
@@ -82,7 +82,7 @@ Editor.loadConfig = function (this: typeof Editor) {
 	Title.loadFromConfig!(config!);
 	Layout.loadFromConfig!(config! as LayoutConfigShape);
 	Scene.loadFromConfig!(config!);
-	UI.loadFromConfig(config! as { colors: Record<string, any> });
+	UI.loadFromConfig(config! as { colors: Record<string, string> });
 	Animation.loadFromConfig!(config!);
 	Particle.loadFromConfig!(config! as { colors: Record<string, string> });
 };

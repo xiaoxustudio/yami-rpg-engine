@@ -1,17 +1,26 @@
 import { defineStore } from 'pinia';
 import { Easing } from '@/data/transition-window.ts';
+import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+
+type EasingDataShape = {
+	id: string;
+	key: string;
+	name: string;
+	points: { x: number; y: number }[];
+	[k: string]: unknown;
+};
 
 export const useEasingStore = defineStore('easing', () => {
 	const state = shallowRef<string>('closed');
-	const target = shallowRef<any>(null);
+	const target = shallowRef<Record<string, unknown> | null>(null);
 
 	function syncState() {
 		state.value = Easing?.state ?? 'closed';
 		target.value = Easing?.target ?? null;
 	}
 
-	function open(target?: any) {
+	function open(target?: unknown) {
 		Easing?.open?.(target);
 	}
 
@@ -19,23 +28,23 @@ export const useEasingStore = defineStore('easing', () => {
 		Easing?.close?.();
 	}
 
-	function load(easing: any) {
+	function load(easing: EasingDataShape) {
 		Easing?.load?.(easing);
 	}
 
-	function insert(dItem: any) {
+	function insert(dItem: EasingDataShape) {
 		Easing?.insert?.(dItem);
 	}
 
-	function copy(item: any) {
+	function copy(item: EasingDataShape) {
 		Easing?.copy?.(item);
 	}
 
-	function paste(dItem: any) {
+	function paste(dItem: EasingDataShape) {
 		Easing?.paste?.(dItem);
 	}
 
-	function delete_(item: any) {
+	function delete_(item: EasingDataShape) {
 		Easing?.delete?.(item);
 	}
 
@@ -47,11 +56,11 @@ export const useEasingStore = defineStore('easing', () => {
 		return Easing?.createData?.();
 	}
 
-	function setEasingKey(item: any) {
+	function setEasingKey(item: EasingDataShape) {
 		return Easing?.setEasingKey?.(item);
 	}
 
-	function getItemById(id: any) {
+	function getItemById(id: string) {
 		return Easing?.getItemById?.(id);
 	}
 
@@ -63,11 +72,11 @@ export const useEasingStore = defineStore('easing', () => {
 		Easing?.requestRendering?.();
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: EditorProjectShape) {
 		Easing?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: EditorProjectShape) {
 		Easing?.loadFromProject?.(project);
 	}
 

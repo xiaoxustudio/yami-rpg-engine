@@ -3,7 +3,17 @@ import { mount } from '@vue/test-utils';
 import YMFileBodyPane from '../YMFileBodyPane/YMFileBodyPane.vue';
 
 function makeFile(name: string, type = 'image') {
-	const file: any = {
+	const file: {
+		name: string;
+		basename: string;
+		extname: string;
+		path: string;
+		type: string;
+		stats: { mtimeMs: number };
+		meta: { guid: string };
+		data: null;
+		getContext: (element: HTMLElement) => { element: HTMLElement | undefined };
+	} = {
 		name,
 		basename: name,
 		extname: '.png',
@@ -11,14 +21,15 @@ function makeFile(name: string, type = 'image') {
 		type,
 		stats: { mtimeMs: 1 },
 		meta: { guid: `guid-${name}` },
-		data: null
+		data: null,
+		getContext: () => ({ element: undefined })
 	};
-	const ctx: any = { element: undefined };
+	const ctx: { element: HTMLElement | undefined } = { element: undefined };
 	file.getContext = () => ctx;
 	return file;
 }
 
-function makeProps(extra: any = {}) {
+function makeProps(extra: Record<string, unknown> = {}) {
 	const browser = {
 		display: 'normal',
 		update: vi.fn(),
@@ -87,6 +98,18 @@ function makeProps(extra: any = {}) {
 	};
 }
 
+interface FileBodyPaneElement extends HTMLElement {
+	[k: string]: unknown;
+	updateFiles: () => void;
+	select: (a: unknown, b?: unknown) => void;
+	unselect: () => void;
+	setViewIndex: (index: number) => void;
+	clear: () => void;
+	content: unknown;
+	selections: unknown[];
+	elements: { count: number } & { [i: number]: HTMLElement | undefined };
+}
+
 describe('YMFileBodyPane', () => {
 	let host: HTMLElement;
 
@@ -103,7 +126,7 @@ describe('YMFileBodyPane', () => {
 	it('mounts and exposes core api', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as FileBodyPaneElement;
 		expect(el.className).toContain('file-body-pane');
 		expect(typeof el.updateFiles).toBe('function');
 		expect(typeof el.select).toBe('function');
@@ -118,10 +141,10 @@ describe('YMFileBodyPane', () => {
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
 		const a = makeFile('A');
 		const b = makeFile('B');
-		(wrapper.vm as any).select(a, b);
-		expect((wrapper.element as any).selections).toEqual([a, b]);
+		(wrapper.vm as unknown as FileBodyPaneElement).select(a, b);
+		expect((wrapper.element as unknown as FileBodyPaneElement).selections).toEqual([a, b]);
 		wrapper.vm.unselect();
-		expect((wrapper.element as any).selections).toEqual([]);
+		expect((wrapper.element as unknown as FileBodyPaneElement).selections).toEqual([]);
 		wrapper.unmount();
 	});
 
@@ -135,7 +158,7 @@ describe('YMFileBodyPane', () => {
 			}
 		});
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
-		(wrapper.vm as any).setViewIndex(2);
+		(wrapper.vm as unknown as FileBodyPaneElement).setViewIndex(2);
 		expect(viewWrite).toHaveBeenCalledWith(2);
 		expect(wrapper.element.querySelector('.file-body-content')?.className).toContain('medium');
 		wrapper.unmount();
@@ -157,9 +180,11 @@ describe('YMFileBodyPane', () => {
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
 		Object.defineProperty(wrapper.element, 'clientHeight', { value: 300, configurable: true });
 		Object.defineProperty(wrapper.element, 'clientWidth', { value: 400, configurable: true });
-		(wrapper.element as any).updateFiles();
+		(wrapper.element as unknown as FileBodyPaneElement).updateFiles();
 		await new Promise((r) => setTimeout(r, 30));
-		expect((wrapper.element as any).elements.count).toBeGreaterThan(0);
+		expect((wrapper.element as unknown as FileBodyPaneElement).elements.count).toBeGreaterThan(
+			0
+		);
 		wrapper.unmount();
 	});
 
@@ -167,8 +192,8 @@ describe('YMFileBodyPane', () => {
 		const props = makeProps();
 		const wrapper = mount(YMFileBodyPane, { props, attachTo: host });
 		const a = makeFile('A');
-		(wrapper.vm as any).select(a);
-		const node = wrapper.element as any;
+		(wrapper.vm as unknown as FileBodyPaneElement).select(a);
+		const node = wrapper.element as unknown as FileBodyPaneElement;
 		const ctx = a.getContext(node);
 		ctx.element = document.createElement('div');
 		node.elements[0] = ctx.element;

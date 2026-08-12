@@ -87,7 +87,7 @@ const getFocus = (mode: string): HTMLInputElement | null => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -135,7 +135,7 @@ const inputKeydown = (event: KeyboardEvent): void => {
 
 onMounted(() => {
 	input.value?.addEventListener('keydown', inputKeydown);
-	const el = root.value as any;
+	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
 	el.read = read;
 	el.write = write;

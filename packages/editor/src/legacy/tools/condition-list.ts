@@ -5,18 +5,27 @@ import { Command } from '@/command/command-object.ts';
 import { IfCondition } from '@/command/conditional-condition-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { IListInterface } from '@/types/list-interface.ts';
+import { IEditableHistory } from '@/types/history.ts';
+import type { History } from '@/tools/history.ts';
 import { Local } from './localization.ts';
+
+interface ConditionData {
+	type: string;
+	key?: string;
+	operation?: string;
+	value?: string | number | boolean;
+}
 
 export class ConditionListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
-	history!: any | null;
-	editor!: any | null;
-	owner!: any | null;
+	history!: IEditableHistory | null;
+	editor!: { target?: unknown } | null;
+	owner!: { history?: unknown } | null;
 
-	constructor(editor?: any, owner?: any) {
-		this.editor = editor ?? null;
-		this.owner = owner ?? null;
+	constructor(editor?: unknown, owner?: unknown) {
+		this.editor = (editor as { target?: unknown } | null) ?? null;
+		this.owner = (owner as { history?: unknown } | null) ?? null;
 	}
 
 	initialize(list: HTMLElement): void {
@@ -25,11 +34,15 @@ export class ConditionListInterface implements IListInterface {
 
 		const { editor, owner } = this;
 		if (editor && owner) {
-			this.history = new Inspector.ParamHistory!(editor, owner, list);
+			this.history = new Inspector.ParamHistory!(
+				editor as { target: unknown },
+				owner as { history: History },
+				list
+			) as unknown as IEditableHistory;
 		}
 	}
 
-	parseVariable(condition: any): any {
+	parseVariable(condition: ConditionData): string | undefined {
 		switch (condition.type) {
 			case 'global-boolean':
 			case 'global-number':
@@ -42,7 +55,7 @@ export class ConditionListInterface implements IListInterface {
 		}
 	}
 
-	parse(condition: any) {
+	parse(condition: ConditionData) {
 		const variable = this.parseVariable!(condition);
 		switch (condition.type) {
 			case 'global-boolean':
@@ -50,7 +63,7 @@ export class ConditionListInterface implements IListInterface {
 				const operator = Command.removeTextTags!(
 					IfCondition.parseBooleanOperation!(condition)
 				);
-				const value = condition.value.toString();
+				const value = condition.value!.toString();
 				return `${variable} ${operator} ${value}`;
 			}
 			case 'global-number':
@@ -58,7 +71,7 @@ export class ConditionListInterface implements IListInterface {
 				const operator = Command.removeTextTags!(
 					IfCondition.parseNumberOperation!(condition)
 				);
-				const value = condition.value.toString();
+				const value = condition.value!.toString();
 				return `${variable} ${operator} ${value}`;
 			}
 			case 'global-string':
@@ -72,19 +85,24 @@ export class ConditionListInterface implements IListInterface {
 		}
 	}
 
-	update(list: any) {
-		const item = this.editor?.target;
+	update(list: HTMLElement) {
+		const item = this.editor?.target as {
+			conditions?: unknown;
+			element?: { parentNode?: Node };
+		};
 		if (item?.conditions === list.read()) {
 			const element = item.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				list.updateConditionIcon(item);
+				(
+					list as HTMLElement & { updateConditionIcon: (item: unknown) => void }
+				).updateConditionIcon(item);
 			}
 		}
 	}
 
 	open(
-		condition = {
+		condition: ConditionData = {
 			type: 'global-boolean',
 			key: '',
 			operation: 'equal',
@@ -94,27 +112,27 @@ export class ConditionListInterface implements IListInterface {
 		Window.open!('condition');
 		ConditionListInterface.target = this.target;
 		const write = getElementWriter('condition');
-		let booleanOperation = 'equal';
-		let booleanValue = true;
-		let numberOperation = 'equal';
+		let booleanOperation: string | undefined = 'equal';
+		let booleanValue: string | number | boolean | undefined = true;
+		let numberOperation: string | undefined = 'equal';
 		let numberValue = 0;
-		let stringOperation = 'equal';
+		let stringOperation: string | undefined = 'equal';
 		let stringValue = '';
 		switch (condition.type) {
 			case 'global-boolean':
 			case 'self-boolean':
-				booleanOperation = condition.operation;
-				booleanValue = condition.value;
+				booleanOperation = condition.operation!;
+				booleanValue = condition.value as boolean;
 				break;
 			case 'global-number':
 			case 'self-number':
-				numberOperation = condition.operation;
-				numberValue = condition.value as unknown as number;
+				numberOperation = condition.operation!;
+				numberValue = condition.value as number;
 				break;
 			case 'global-string':
 			case 'self-string':
-				stringOperation = condition.operation;
-				stringValue = condition.value as unknown as string;
+				stringOperation = condition.operation!;
+				stringValue = condition.value as string;
 				break;
 		}
 		write('type', condition.type);
@@ -248,7 +266,7 @@ export class ConditionListInterface implements IListInterface {
 		]);
 
 		// 条件类型写入事件
-		$('#condition-type').on('write', (event: any) => {
+		$('#condition-type').on('write', (event: Event & { value: string }) => {
 			const type = event.value;
 			switch (type) {
 				case 'global-boolean':
@@ -260,7 +278,7 @@ export class ConditionListInterface implements IListInterface {
 		});
 
 		// 确定按钮 - 鼠标点击事件
-		$('#condition-confirm').on('click', (event: any) => {
+		$('#condition-confirm').on('click', (event: Event) => {
 			ConditionListInterface.target!.save();
 		});
 	}

@@ -30,7 +30,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		let userscrollCount = 0;
 		target?.addEventListener?.('userscroll', () => userscrollCount++);
 		const thumb = (vBar as HTMLElement & { thumb?: HTMLElement }).thumb;
-		const fire = (el: any, type: string, props: any) => {
+		const fire = (el: EventTarget, type: string, props: PointerEventInit) => {
 			const ev = new PointerEvent(type, {
 				bubbles: true,
 				cancelable: true,
@@ -41,7 +41,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 			el.dispatchEvent(ev);
 			return ev;
 		};
-		fire(thumb, 'pointerdown', { clientX: 15, clientY: 20 });
+		fire(thumb!, 'pointerdown', { clientX: 15, clientY: 20 });
 		fire(window, 'pointermove', { clientX: 15, clientY: 80, pointerId: 1 });
 		expect(target.scrollTop).toBeGreaterThan(0);
 		expect(userscrollCount).toBeGreaterThan(0);

@@ -2,10 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMGamepadBox from '../YMGamepadBox.vue';
 
+interface GamepadBoxElement extends HTMLElement {
+	[k: string]: unknown;
+	read: () => unknown;
+	write: (v: number) => void;
+	getFocus: () => void;
+	enable: () => void;
+	disable: () => void;
+}
+
 describe('YMGamepadBox', () => {
 	it('read/write roundtrip with button name', () => {
 		const wrapper = mount(YMGamepadBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as GamepadBoxElement;
 		vm.write(0);
 		expect(vm.read()).toBe(0);
 		expect((wrapper.find('input').element as HTMLInputElement).value).toBe('A');
@@ -15,7 +24,7 @@ describe('YMGamepadBox', () => {
 
 	it('write(-1) clears the input', () => {
 		const wrapper = mount(YMGamepadBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as GamepadBoxElement;
 		vm.write(3);
 		vm.write(-1);
 		expect((wrapper.find('input').element as HTMLInputElement).value).toBe('');
@@ -23,10 +32,10 @@ describe('YMGamepadBox', () => {
 
 	it('backspace key clears and dispatches change', async () => {
 		const wrapper = mount(YMGamepadBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as GamepadBoxElement;
 		vm.write(2);
-		const el = wrapper.element as any;
-		const events: any[] = [];
+		const el = wrapper.element as unknown as GamepadBoxElement;
+		const events: unknown[] = [];
 		el.addEventListener('change', () => events.push(1));
 		await wrapper.find('input').trigger('keydown', { code: 'Backspace' });
 		expect(vm.read()).toBe(-1);
@@ -35,7 +44,7 @@ describe('YMGamepadBox', () => {
 
 	it('disable hides children and adds class', () => {
 		const wrapper = mount(YMGamepadBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as GamepadBoxElement;
 		vm.disable();
 		expect(wrapper.classes()).toContain('disabled');
 		vm.enable();
@@ -44,7 +53,7 @@ describe('YMGamepadBox', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMGamepadBox);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as GamepadBoxElement;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.getFocus).toBe('function');

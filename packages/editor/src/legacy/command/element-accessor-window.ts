@@ -7,7 +7,7 @@ import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface ElementGetterTarget {
 	dataValue: ElementData;
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -24,9 +24,9 @@ interface ElementData {
 		| 'parent'
 		| 'variable';
 	presetId?: string;
-	ancestor?: { type: string; [k: string]: any };
-	parent?: { type: string; [k: string]: any };
-	focus?: { type: string; [k: string]: any };
+	ancestor?: { type: string };
+	parent?: { type: string };
+	focus?: { type: string };
 	index?: number;
 	variable?: { type: string; key: string };
 }
@@ -34,7 +34,7 @@ interface ElementData {
 interface ElementGetterShape extends AccessorBaseShape {
 	target: ElementGetterTarget | null;
 	open: ((target: ElementGetterTarget) => void) | null;
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -132,7 +132,7 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	getFocus($('#elementGetter-type'));
 };
 
-ElementGetter.checkDataForPlugin = function (this: typeof ElementGetter, data: any): boolean {
+ElementGetter.checkDataForPlugin = function (this: typeof ElementGetter, data: unknown): boolean {
 	if (data instanceof Object) {
 		return (data as { getter?: string }).getter === 'element';
 	}
@@ -149,7 +149,7 @@ ElementGetter.createDefaultForPlugin = function (this: typeof ElementGetter): {
 ElementGetter.confirm = function (this: ElementGetterShape, event: Event): void {
 	const read = getElementReader('elementGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'trigger':
 		case 'latest':

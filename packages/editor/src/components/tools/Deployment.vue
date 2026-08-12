@@ -37,7 +37,7 @@ import { Deployment } from '@/title/deploy-project-window';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onFolderBeforeinput = (event: any) => {
+const onFolderBeforeinput = (event: InputEvent) => {
 	Deployment?.folderBeforeinput?.(event);
 };
 const onFolderInput = () => {

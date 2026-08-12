@@ -9,7 +9,18 @@ interface BackgroundColor {
 
 interface WebGLPrototypeBufferData {
 	_bufferData: WebGLRenderingContext['bufferData'];
-	bufferData: (target: GLenum, data: any, usage: any, offset: any, length: any) => void;
+	bufferData: (
+		target: GLenum,
+		data: {
+			BYTES_PER_ELEMENT: number;
+			buffer: ArrayBufferLike;
+			byteLength: number;
+			byteOffset: number;
+		},
+		usage: GLenum,
+		offset: number,
+		length: number
+	) => void;
 }
 
 (() => {
@@ -77,10 +88,15 @@ interface WebGLPrototypeBufferData {
 		(prototype as unknown as WebGLPrototypeBufferData)._bufferData = prototype.bufferData;
 		(prototype as unknown as WebGLPrototypeBufferData).bufferData = function (
 			target: GLenum,
-			data: any,
-			usage: any,
-			offset: any,
-			length: any
+			data: {
+				BYTES_PER_ELEMENT: number;
+				buffer: ArrayBufferLike;
+				byteLength: number;
+				byteOffset: number;
+			},
+			usage: GLenum,
+			offset: number,
+			length: number
 		) {
 			if (length !== undefined) {
 				length *= data.BYTES_PER_ELEMENT;

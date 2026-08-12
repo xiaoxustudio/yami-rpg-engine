@@ -20,7 +20,15 @@ Command.cases.setTriggerDuration = new CommandSchema({
 			{ name: 'Decrease', value: 'decrease' }
 		]);
 	},
-	customParse({ trigger, operation, duration }: any) {
+	customParse({
+		trigger,
+		operation,
+		duration
+	}: {
+		trigger: unknown;
+		operation: string;
+		duration: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseTrigger!(trigger))
 			.push(Local.get!('command.setTriggerDuration.' + operation))

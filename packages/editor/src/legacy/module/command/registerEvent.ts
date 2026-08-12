@@ -7,6 +7,18 @@ import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 import { getFocus, hide, read, show, write } from '@/util/element-utils';
 
+type RegisterEventData = {
+	target: string;
+	actor?: { type: string; [k: string]: unknown };
+	element?: { type: string; [k: string]: unknown };
+	operation: string;
+	type: string;
+	priority?: boolean;
+	tag?: string;
+	commands?: unknown[];
+	namespace?: boolean;
+};
+
 Command.cases.registerEvent = new CommandSchema({
 	name: 'registerEvent',
 	commands: [],
@@ -30,11 +42,14 @@ Command.cases.registerEvent = new CommandSchema({
 			{ name: 'Reset', value: 'reset' }
 		]);
 	},
-	targetWrite(event: any) {
+	targetWrite(event: { value: string }) {
 		const type = event.value;
 		const elEventType = $('#registerEvent-type');
 		const registerType = 'register_' + type;
-		const eventTypes = Enum.getMergedItems!(EventEditor.types[registerType], type + '-event');
+		const eventTypes = Enum.getMergedItems!(
+			EventEditor.types?.[registerType] ?? EventEditor.types?.all,
+			type + '-event'
+		);
 		this.switchTypeAndTagInput!();
 		elEventType.loadItems(eventTypes);
 		elEventType.createTooltip();
@@ -48,12 +63,12 @@ Command.cases.registerEvent = new CommandSchema({
 	typeWrite() {
 		this.switchPriority!();
 	},
-	switchTypeAndTagInput(event: any) {
-		const showElement = (input: any) => {
+	switchTypeAndTagInput(event: Event) {
+		const showElement = (input: HTMLElement) => {
 			show(input.previousElementSibling);
 			show(input);
 		};
-		const hideElement = (input: any) => {
+		const hideElement = (input: HTMLElement) => {
 			hide(input.previousElementSibling);
 			hide(input);
 		};
@@ -147,7 +162,7 @@ Command.cases.registerEvent = new CommandSchema({
 		tag,
 		commands,
 		namespace
-	}: any) {
+	}: RegisterEventData) {
 		const words = Command.words;
 		switch (target) {
 			case 'global':
@@ -213,7 +228,13 @@ Command.cases.registerEvent = new CommandSchema({
 			words.push(Local.get!('command.registerEvent.namespace'));
 		}
 
-		const contents: any[] = [
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [
 			{ color: 'flow' },
 			{
 				text: Local.get!('command.registerEvent.alias.' + operation) + Token(': ')

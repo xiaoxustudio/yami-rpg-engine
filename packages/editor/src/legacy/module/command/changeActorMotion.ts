@@ -19,12 +19,12 @@ Command.cases.changeActorMotion = new CommandSchema({
 			{ name: 'Move', value: 'move' }
 		]);
 	},
-	parseMapping(type: any, motion: any) {
+	parseMapping(type: string, motion: unknown) {
 		const motionType = Local.get!('command.changeActorMotion.type.' + type);
 		const motionName = Command.parseEnumString!(motion);
 		return motionType + Token(' -> ') + motionName;
 	},
-	customParse({ actor, type, motion }: any) {
+	customParse({ actor, type, motion }: { actor: unknown; type: string; motion: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(this.parseMapping!(type, motion));

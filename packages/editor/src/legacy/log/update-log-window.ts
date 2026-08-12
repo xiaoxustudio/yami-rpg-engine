@@ -3,7 +3,7 @@ import { Window } from '@/tools/window-object.ts';
 import { on, addClass, clear } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
 
-interface UpdateLogItem {
+export interface UpdateLogItem {
 	title?: string;
 	major?: string;
 	minor?: string;
@@ -12,8 +12,8 @@ interface UpdateLogItem {
 export const UpdateLog = {
 	content: $('#update-log-content'),
 	currentMode: null as string | null,
-	internalItems: null as unknown as any[] | null,
-	communityItems: null as unknown as any[] | null,
+	internalItems: null as unknown as UpdateLogItem[] | null,
+	communityItems: null as unknown as UpdateLogItem[] | null,
 	open: null as ((...args: unknown[]) => unknown) | null,
 	update: null as ((...args: unknown[]) => unknown) | null,
 	initialize: null as ((...args: unknown[]) => unknown) | null,

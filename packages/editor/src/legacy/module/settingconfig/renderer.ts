@@ -6,7 +6,7 @@ import type { SettingOption, SettingSection } from './types.ts';
 
 /** 渲染引擎宿主：提供当前 config。load() 后 config 会被重新赋值，故用属性访问而非捕获引用 */
 export interface SettingHost {
-	config: any;
+	config: Record<string, unknown>;
 }
 
 /**
@@ -32,17 +32,17 @@ export class SettingRenderer {
 		return opt.id ?? `setting-${[...sectionPath, opt.key].join('-')}`;
 	}
 	/** 按 sectionPath 读取 config 中该选项的值 */
-	private readConfig(sectionPath: string[], optKey: string) {
-		let v: any = this.host.config;
-		for (const p of sectionPath) v = v?.[p];
-		return v?.[optKey];
+	private readConfig(sectionPath: string[], optKey: string): unknown {
+		let v: unknown = this.host.config;
+		for (const p of sectionPath) v = (v as Record<string, unknown> | undefined)?.[p];
+		return (v as Record<string, unknown> | undefined)?.[optKey];
 	}
 	/** 按 sectionPath 写入 config 中该选项的值 */
-	private writeConfig(sectionPath: string[], optKey: string, value: any) {
-		let v: any = this.host.config;
+	private writeConfig(sectionPath: string[], optKey: string, value: string | number | boolean) {
+		let v: Record<string, unknown> = this.host.config;
 		for (const p of sectionPath) {
 			if (v[p] == null || typeof v[p] !== 'object') v[p] = {};
-			v = v[p];
+			v = v[p] as Record<string, unknown>;
 		}
 		v[optKey] = value;
 	}
@@ -133,7 +133,7 @@ export class SettingRenderer {
 			`#${this.optionId(sectionPath, opt)}`
 		)[0] as HTMLElement;
 		if (!el) return;
-		on(el, 'input', (e: any) => {
+		on(el, 'input', (e: Event & { value?: unknown }) => {
 			const value = this.readValue(e);
 			this.writeConfig(sectionPath, opt.key, value);
 			if (opt.validate) this.showValidation(el, opt.validate(value, this.host.config));
@@ -142,7 +142,10 @@ export class SettingRenderer {
 		// 动态路径提示：悬停时用 ApkBuilder.processPathOnly 解析后路径覆盖静态 tip
 		if (opt.tooltipPath) {
 			on(el, 'mouseenter', () => {
-				setTooltip(el, ApkBuilder.processPathOnly(this.readConfig(sectionPath, opt.key)));
+				setTooltip(
+					el,
+					ApkBuilder.processPathOnly(this.readConfig(sectionPath, opt.key) as string)
+				);
 			});
 		}
 	}
@@ -152,9 +155,10 @@ export class SettingRenderer {
 	 * - text/number 控件的 input 事件由内部 <input> 冒泡，e.target.value 为字符串
 	 * - checkbox/select 在元素上派发，e.value 为实际值
 	 */
-	private readValue(e: any) {
-		if (e.target && Reflect.has(e.target, 'value')) return e.target.value;
-		return e.value;
+	private readValue(e: Event & { value?: unknown }): string | number | boolean {
+		if (e.target && Reflect.has(e.target, 'value'))
+			return (e.target as unknown as { value: string | number | boolean }).value;
+		return e.value as string | number | boolean;
 	}
 
 	/** 写入当前 config 值到控件 */
@@ -180,7 +184,7 @@ export class SettingRenderer {
 	}
 
 	/** 校验结果可视化：错误时加 invalid 类，通过则移除 */
-	private showValidation(el: any, error: string | null) {
+	private showValidation(el: HTMLElement, error: string | null) {
 		if (error) {
 			addClass(el, 'invalid');
 		} else {

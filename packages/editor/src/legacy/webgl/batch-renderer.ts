@@ -1,15 +1,54 @@
+import { BaseTexture } from './base-texture.ts';
+
+interface ShaderProgramShape {
+	use(): void;
+	vao: unknown;
+}
+
+interface GLShape {
+	arrays: { 0: { float32: Uint32Array } };
+	textureManager: { map: Record<string, BaseTexture> };
+	maxTexUnits: number;
+	program: ShaderProgramShape | null;
+	bindVertexArray: (vao: unknown) => void;
+	bufferData: (
+		target: GLenum,
+		data: {
+			BYTES_PER_ELEMENT: number;
+			buffer: ArrayBufferLike;
+			byteLength: number;
+			byteOffset: number;
+		},
+		usage: GLenum,
+		offset: number,
+		length: number
+	) => void;
+	ARRAY_BUFFER: GLenum;
+	STREAM_DRAW: GLenum;
+	blend: string;
+	updateBlending: () => void;
+	activeTexture: (unit: GLenum) => void;
+	TEXTURE0: GLenum;
+	bindTexture: (target: GLenum, texture: WebGLTexture | null) => void;
+	TEXTURE_2D: GLenum;
+	updateSamplerNum: (count: number) => void;
+	drawElements: (mode: GLenum, count: number, type: GLenum, offset: number) => void;
+	TRIANGLES: GLenum;
+	UNSIGNED_INT: GLenum;
+}
+
 export class BatchRenderer {
 	response: Uint32Array;
 	// 以下字段在 constructor 内由词法 const 挂载（箭头函数闭包），统一用函数类型契约
 	setAttrSize: (size: number) => void;
 	getEndIndex: () => number;
 	setBlendMode: (blend: string) => void;
-	bindProgram: (program: any) => void;
+	bindProgram: (program: ShaderProgramShape) => void;
 	unbindProgram: () => void;
-	push: (...args: any[]) => void;
+	push: (texIndex: number) => void;
 	draw: () => void;
 
-	constructor(gl: any) {
+	constructor(gl: GLShape) {
 		const vertices = gl.arrays[0].float32;
 		const texMap = gl.textureManager.map;
 		const texUnits = gl.maxTexUnits - 1;
@@ -23,9 +62,9 @@ export class BatchRenderer {
 		let startIndex = 0;
 		let endIndex = 0;
 		let blendMode = 'normal';
-		let program: any = null;
+		let program: ShaderProgramShape | null = null;
 
-		const setAttrSize = (size: any) => {
+		const setAttrSize = (size: number) => {
 			attrSize = size;
 		};
 
@@ -33,7 +72,7 @@ export class BatchRenderer {
 			return endIndex;
 		};
 
-		const setBlendMode = (blend: any) => {
+		const setBlendMode = (blend: string) => {
 			if (blendMode !== blend) {
 				draw();
 				blendMode = blend;
@@ -48,7 +87,7 @@ export class BatchRenderer {
 			program = null;
 		};
 
-		const push = (texIndex: any) => {
+		const push = (texIndex: number) => {
 			let samplerIndex = samplers[texIndex];
 			if (samplerIndex === -1) {
 				samplerIndex = samplerLength;

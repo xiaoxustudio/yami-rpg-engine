@@ -1,20 +1,30 @@
 import { dispatchChangeEvent } from '../../../utils/dom';
 
+interface ParamListLike {
+	data: unknown;
+	update(): void;
+	select(start: number, end?: number): void;
+	enableItems(items: unknown[]): void;
+	disableItems(items: unknown[]): void;
+	scrollToSelection(): void;
+	dispatchEvent(event: Event): unknown;
+}
+
 export interface HistoryData {
 	type: string;
-	array: any[];
+	array: unknown[];
 	index?: number;
-	items?: any[];
-	swap?: any;
+	items?: unknown[];
+	swap?: unknown;
 	method?: string;
 }
 
 export class ParamListHistory {
-	list: any;
+	list: ParamListLike;
 	stack: HistoryData[];
 	index: number;
 
-	constructor(list: any) {
+	constructor(list: ParamListLike) {
 		this.list = list;
 		this.stack = [];
 		this.index = -1;
@@ -43,7 +53,7 @@ export class ParamListHistory {
 		}
 	}
 
-	restore(operation: any): void {
+	restore(operation: 'undo' | 'redo'): void {
 		const index =
 			operation === 'undo' ? this.index : operation === 'redo' ? this.index + 1 : null;
 
@@ -72,7 +82,12 @@ export class ParamListHistory {
 		return this.index + 1 < this.stack.length;
 	}
 
-	static restore(list: any, data: HistoryData, type: string, operation: any): void {
+	static restore(
+		list: ParamListLike,
+		data: HistoryData,
+		type: string,
+		operation: 'undo' | 'redo'
+	): void {
 		const loaded = list.data === data.array;
 		switch (type) {
 			case 'insert': {
@@ -137,9 +152,9 @@ export class ParamListHistory {
 					(operation === 'undo' && method === 'disable') ||
 					(operation === 'redo' && method === 'enable')
 				) {
-					list.enableItems(items);
+					list.enableItems(items!);
 				} else {
-					list.disableItems(items);
+					list.disableItems(items!);
 				}
 				const length = items!.length;
 				const sItem = items![0];

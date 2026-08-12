@@ -26,7 +26,17 @@ Command.cases.setCooldown = new CommandSchema({
 			{ name: 'Decrease', value: 'decrease' }
 		]);
 	},
-	customParse({ actor, operation, key, cooldown }: any) {
+	customParse({
+		actor,
+		operation,
+		key,
+		cooldown
+	}: {
+		actor: unknown;
+		operation: string;
+		key: unknown;
+		cooldown: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Local.get!('command.setCooldown.' + operation))

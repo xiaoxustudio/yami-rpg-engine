@@ -7,6 +7,16 @@ interface Props {
 	padded?: boolean;
 }
 
+interface TreeListRootElement extends HTMLElement {
+	resize: EventListener;
+	keydown: EventListener;
+	pointerdown: EventListener;
+	pointerup: EventListener;
+	dragstart: EventListener;
+	dragend: EventListener;
+	dataChange: EventListener;
+}
+
 const props = withDefaults(defineProps<Props>(), {
 	padded: false
 });
@@ -21,13 +31,15 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	root.value?.removeEventListener('scroll', (root.value as any).resize);
-	root.value?.removeEventListener('keydown', (root.value as any).keydown);
-	root.value?.removeEventListener('pointerdown', (root.value as any).pointerdown);
-	root.value?.removeEventListener('pointerup', (root.value as any).pointerup);
-	root.value?.removeEventListener('dragstart', (root.value as any).dragstart);
-	root.value?.removeEventListener('dragend', (root.value as any).dragend);
-	root.value?.removeEventListener('change', (root.value as any).dataChange);
+	const el = root.value as TreeListRootElement | null;
+	if (!el) return;
+	el.removeEventListener('scroll', el.resize);
+	el.removeEventListener('keydown', el.keydown);
+	el.removeEventListener('pointerdown', el.pointerdown);
+	el.removeEventListener('pointerup', el.pointerup);
+	el.removeEventListener('dragstart', el.dragstart);
+	el.removeEventListener('dragend', el.dragend);
+	el.removeEventListener('change', el.dataChange);
 });
 </script>
 

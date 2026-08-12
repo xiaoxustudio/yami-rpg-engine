@@ -14,6 +14,7 @@ import {
 	getRelativeCoords
 } from '../../../utils/dom';
 import {
+	type CommonListLike,
 	commonListClearElements,
 	commonListResize,
 	commonListUpdateHeadAndFoot
@@ -22,12 +23,12 @@ import { attachScrollListener } from '../YMParamList/scroll-listener';
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
-const cmdOrCtrlKey = (event: any): boolean => (isMac ? event.metaKey : event.ctrlKey);
+const cmdOrCtrlKey = (event: KeyboardEvent): boolean => (isMac ? event.metaKey : event.ctrlKey);
 
-const macRedoKey = (event: any): boolean =>
+const macRedoKey = (event: KeyboardEvent): boolean =>
 	isMac ? event.metaKey && event.shiftKey && event.code === 'KeyZ' : false;
 
-const arrayAppend = (arr: any[], item: any): void => {
+const arrayAppend = (arr: unknown[], item: unknown): void => {
 	arr[arr.length] = item;
 };
 
@@ -36,17 +37,17 @@ const compress = (str: string): string => str.replace(/\s+/g, ' ').trim();
 const alphabetCode = /^Key[A-Z]$/;
 
 interface CommandAdapter {
-	parse(item: any, varMap: any): any[];
-	fetchVariables(data: any): any[];
-	insert(list: any, id?: string): void;
-	edit(list: any, command?: any): void;
+	parse(item: Record<string, unknown>, varMap: Record<string, unknown>): CommandContent[];
+	fetchVariables(data: Record<string, unknown>): VariableItem[];
+	insert(list: HTMLElement, id?: string): void;
+	edit(list: HTMLElement, command?: CommandData): void;
 	parseUnlinkedId(id: string): string;
 	colorizeCodeLines(items: HTMLElement[], code: string): void;
 }
 
 interface DataLookupAdapter {
-	attribute(id: string): any;
-	enumString(id: string): any;
+	attribute(id: string): { name: string } | null | undefined;
+	enumString(id: string): { name: string } | null | undefined;
 	gameLocalReplace(text: string): string;
 	guidMap?: Record<string, any> | (() => Record<string, any>);
 	scenePresets?: Record<string, any> | (() => Record<string, any>);
@@ -59,24 +60,99 @@ interface LocalizeAdapter {
 	createGetter(key: string): (key: string) => string;
 }
 
+type CommandBuffer = (CommandItemElement | CommandData[])[] & { enabled?: boolean };
+
+type CommandData = {
+	id: string;
+	params: { type?: string; eventId?: string } & Record<string, unknown>;
+	commands?: CommandData[];
+	folded?: boolean;
+	buffer?: CommandBuffer;
+	history?: unknown;
+	[k: string]: unknown;
+};
+
+type CommandList = CommandData[] & { blank?: CommandItemElement };
+
+type CommandContent = {
+	text?: string;
+	color?: string;
+	textId?: string;
+	tooltip?: string;
+	class?: string;
+	break?: boolean;
+	fold?: boolean;
+	children?: CommandData[];
+	script?: string;
+};
+
+type CommandItemElement = HTMLElement & {
+	contents: CommandContent[] | null;
+	dataKey: boolean;
+	dataParent: CommandData | null;
+	dataList: CommandList;
+	dataItem: CommandData | null;
+	dataIndex: number;
+	dataIndent: number;
+	enabled?: boolean;
+	fold?: HTMLElement;
+	folded?: boolean;
+	ellipsis?: HTMLElement | null;
+};
+
+type VariableItem = {
+	name: string;
+	type: string;
+	class?: string;
+	refCount: number;
+	evIndex?: number;
+	isLeftValue?: boolean;
+};
+
+type CommandHistory = {
+	save(data: unknown): void;
+	restore(mode: string): void;
+	canUndo(): boolean;
+	canRedo(): boolean;
+};
+
+type ListPointerEvent = PointerEvent & {
+	mode?: 'select';
+	itemIndex?: number;
+	itemHeight?: number;
+	latest?: PointerEvent;
+};
+
+type FindSearchMode = {
+	caseInsensitive: boolean;
+	regex: boolean;
+	matchLine: boolean;
+};
+
+type FindResult = {
+	node: HTMLElement;
+	index: number;
+	sub: HTMLElement | null;
+};
+
 interface ClipboardAdapter {
-	write(type: string, data: any): void;
-	read(type: string): any;
+	write(type: string, data: unknown): void;
+	read(type: string): CommandData[];
 	has(type: string): boolean;
 }
 
 export interface CommandListApiOptions {
 	command?: CommandAdapter | null;
 	dataLookup?: DataLookupAdapter | null;
-	commandHistory?: new (list: any) => any;
+	commandHistory?: new (list: HTMLElement) => CommandHistory;
 	clipboard?: ClipboardAdapter | null;
 	settingConfig?: { config: { other: { copyAsTextKeepEmptyLine: boolean } } } | null;
 	localize?: LocalizeAdapter | null;
 	commandSuggestion?: { searcher: { input: HTMLInputElement } } | null;
 	eventEditor?: { openGlobalEvent(id: string): void } | null;
-	searchString?: { open(list: any): void } | null;
-	menuPopup?: (options: any, items: any[]) => void;
-	getVariable?: (key: string) => any;
+	searchString?: { open(list: HTMLElement): void } | null;
+	menuPopup?: (options: { x: number; y: number }, items: unknown[]) => void;
+	getVariable?: (key: string) => { name: string } | null | undefined;
 	ctrl?: (key: string) => string;
 	setTooltip?: (el: HTMLElement, tip: string) => void;
 }
@@ -84,14 +160,24 @@ export interface CommandListApiOptions {
 export const commandListStatics = {
 	alphabetCode,
 	highlightedTexts: [] as HTMLElement[],
-	textPointerenter: function (this: any): void {
+	textPointerenter: function (this: GlobalEventHandlers & { [k: string]: unknown }): void {
 		commandListStatics.unhighlightTexts();
-		commandListStatics.highlightTexts(this);
+		commandListStatics.highlightTexts(
+			this as unknown as { varSpace: string; varType: string; varKey: string }
+		);
 	},
 	textPointerleave: function (): void {
 		commandListStatics.unhighlightTexts();
 	},
-	highlightTexts({ varSpace, varType, varKey }: any): void {
+	highlightTexts({
+		varSpace,
+		varType,
+		varKey
+	}: {
+		varSpace: string;
+		varType: string;
+		varKey: string;
+	}): void {
 		switch (varType) {
 			case 'boolean':
 			case 'number':
@@ -127,11 +213,11 @@ export const commandListStatics = {
 };
 
 export const commandListPrototype: Record<string, (...args: any[]) => any> = {
-	read: function (this: any): any {
-		return this.data;
+	read: function (this: HTMLElement & { [k: string]: unknown }): CommandData | null {
+		return this.data as CommandData | null;
 	},
 
-	write: function (this: any, data: any): void {
+	write: function (this: any, data: CommandData): void {
 		const options = this.__options;
 		this.data = data;
 		this.textContent = '';
@@ -168,23 +254,28 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.resize();
 	},
 
-	resize: function (this: any, ...args: any[]): void {
+	resize: function (this: any, ...args: unknown[]): void {
 		commonListResize(this);
 
 		this.scheduleCheckVariables();
 	},
 
-	updateHeadAndFoot: function (this: any): void {
-		return commonListUpdateHeadAndFoot(this);
+	updateHeadAndFoot: function (this: HTMLElement & { [k: string]: unknown }): void {
+		return commonListUpdateHeadAndFoot(this as unknown as CommonListLike);
 	},
 
-	updateOnResize: function (this: any, element: any): void {
+	updateOnResize: function (this: any, element: CommandItemElement): void {
 		if (element.contents !== null) {
 			this.updateCommandElement(element);
 		}
 	},
 
-	createFoldedCommandBuffer: function (this: any, buffer: any, indent: any, parent: any): void {
+	createFoldedCommandBuffer: function (
+		this: any,
+		buffer: CommandBuffer,
+		indent: number,
+		parent: CommandData | null
+	): void {
 		for (const commands of buffer) {
 			if (commands instanceof Array) {
 				const length = commands.length;
@@ -199,12 +290,17 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	createItems: function (this: any, commands: any, indent: any, parent: any = null): void {
+	createItems: function (
+		this: any,
+		commands: CommandList,
+		indent: number,
+		parent: CommandData | null = null
+	): void {
 		const elements = this.elements;
 		const length = commands.length;
 		for (let i = 0; i < length; i++) {
 			const buffer = this.createCommandBuffer(commands, i, indent, parent);
-			if (buffer[0].dataItem?.folded) {
+			if ((buffer[0] as CommandItemElement).dataItem?.folded) {
 				elements[elements.count++] = buffer[0];
 				this.createFoldedCommandBuffer(buffer, indent + 1, commands[i]);
 				continue;
@@ -224,11 +320,17 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		elements[elements.count++] = this.createBlankElement(commands, length, indent, parent);
 	},
 
-	createCommandBuffer: function (this: any, commands: any, index: any, indent: any, parent: any) {
-		const options = this.__options;
+	createCommandBuffer: function (
+		this: HTMLElement & { [k: string]: unknown },
+		commands: CommandList,
+		index: number,
+		indent: number,
+		parent: CommandData | null
+	): CommandBuffer {
+		const options = this.__options as CommandListApiOptions;
 		const command = commands[index];
 		let buffer = command.buffer;
-		if (buffer === undefined || buffer[0]?.contents === null) {
+		if (buffer === undefined || (buffer[0] as CommandItemElement)?.contents === null) {
 			// contents 为 null 说明已渲染过但 DOM 可能已被 clear 清空（窗口关闭重开等场景），强制重建避免复用后文本缺失
 			if (buffer !== undefined) {
 				delete command.buffer;
@@ -241,13 +343,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				value: buffer
 			});
 
-			let li: any;
+			let li: CommandItemElement;
 			let textId = '';
 			let tooltip = '';
 			let className = '';
 			let color = '';
 			let mainColor = 'normal';
-			li = document.createElement('div');
+			li = document.createElement('div') as unknown as CommandItemElement;
 			addClass(li, 'command-item');
 			li.contents = [];
 			li.dataKey = true;
@@ -258,7 +360,9 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			li.dataIndent = indent;
 			buffer.push(li);
 
-			const contents = options.command ? options.command.parse(command, this.varMap) : [];
+			const contents = options.command
+				? options.command.parse(command, this.varMap as Record<string, unknown>)
+				: [];
 			const length = contents.length;
 			for (let i = 0; i < length; i++) {
 				const content = contents[i];
@@ -301,7 +405,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				if (content.break !== undefined) {
-					li = document.createElement('div');
+					li = document.createElement('div') as unknown as CommandItemElement;
 					addClass(li, 'command-item');
 					li.contents = [];
 					li.dataKey = false;
@@ -314,16 +418,16 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				if (content.fold !== undefined) {
-					(li as any).fold = document.createElement('command-fold');
-					addClass((li as any).fold, 'command-fold');
-					li.appendChild((li as any).fold);
+					(li as CommandItemElement).fold = document.createElement('command-fold');
+					addClass((li as CommandItemElement).fold!, 'command-fold');
+					li.appendChild((li as CommandItemElement).fold!);
 				}
 
 				if (content.children !== undefined) {
 					buffer.push(content.children);
 
 					if (i < length) {
-						li = document.createElement('div');
+						li = document.createElement('div') as unknown as CommandItemElement;
 						addClass(li, 'command-item');
 						li.contents = [];
 						li.dataKey = false;
@@ -356,7 +460,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					const items = new Array(slength);
 					items[0] = li;
 					for (let i = 1; i < slength; i++) {
-						li = document.createElement('div');
+						li = document.createElement('div') as unknown as CommandItemElement;
 						addClass(li, 'command-item');
 						li.contents = [];
 						li.dataKey = false;
@@ -379,10 +483,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 		}
 
-		if (buffer[0].dataIndex !== index) {
+		if ((buffer[0] as CommandItemElement).dataIndex !== index) {
 			for (const target of buffer) {
 				if (target instanceof HTMLElement) {
-					(target as any).dataIndex = index;
+					(target as CommandItemElement).dataIndex = index;
 				}
 			}
 		}
@@ -408,7 +512,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return buffer;
 	},
 
-	updateCommandElement: function (this: any, element: any): void {
+	updateCommandElement: function (this: any, element: CommandItemElement): void {
 		const options = this.__options;
 		element.style.textIndent = this.computeTextIndent(element.dataIndent);
 
@@ -424,12 +528,14 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			element.insertBefore(mark, element.firstElementChild);
 		}
 
-		for (const content of element.contents) {
+		for (const content of element.contents!) {
 			if (content.text !== undefined) {
-				const text = document.createElement('div') as HTMLDivElement & { [k: string]: any };
+				const text = document.createElement('div') as HTMLDivElement & {
+					[k: string]: unknown;
+				};
 				addClass(text, 'command-text');
 				text.textContent = content.text;
-				addClass(text, content.color);
+				addClass(text, content.color!);
 				if (content.textId) {
 					let id = content.textId;
 					const i = id.indexOf('-');
@@ -447,7 +553,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							break;
 						case 'attribute':
 						case 'enum': {
-							const string = text.varKey;
+							const string = text.varKey as string;
 							const i = string.lastIndexOf('-');
 							text.varKey = string.slice(0, i);
 							text.varId = string.slice(i + 1);
@@ -466,9 +572,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							break;
 					}
 					text.name = id;
-					addClass(text, text.varType + '-type');
+					addClass(text, (text.varType as string) + '-type');
 					addClass(text, 'command-text-identifier');
-					text.onpointerenter = commandListStatics.textPointerenter;
+					text.onpointerenter = commandListStatics.textPointerenter as unknown as (
+						this: GlobalEventHandlers,
+						ev: PointerEvent
+					) => any;
 					text.onpointerleave = commandListStatics.textPointerleave;
 				}
 				if (content.tooltip) {
@@ -486,15 +595,19 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				continue;
 			}
 		}
-		element.contents = null;
+		element.contents = null as unknown as { text?: string; color?: string; fold?: boolean }[] &
+			CommandContent[];
 
 		this.updateCommandElementFold(element);
 	},
 
-	updateCommandElementFold: function (this: any, element: any): void {
+	updateCommandElementFold: function (
+		this: HTMLElement & { [k: string]: unknown },
+		element: CommandItemElement
+	): void {
 		if (element?.fold) {
 			const command = element.dataItem;
-			const folded = !!command.folded;
+			const folded = !!command!.folded;
 			if (element.folded !== folded) {
 				element.folded = folded;
 				if (folded) {
@@ -516,7 +629,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	deleteCommandBuffers: function (this: any, commands: any): void {
+	deleteCommandBuffers: function (this: any, commands: CommandData[]): void {
 		for (const command of commands) {
 			const { buffer } = command;
 			if (!buffer) continue;
@@ -529,10 +642,16 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	createBlankElement: function (this: any, commands: any, index: any, indent: any, parent: any) {
+	createBlankElement: function (
+		this: HTMLElement & { [k: string]: unknown },
+		commands: CommandList,
+		index: number,
+		indent: number,
+		parent: CommandData | null
+	): CommandItemElement {
 		let blank = commands.blank;
 		if (blank === undefined) {
-			blank = document.createElement('div');
+			blank = document.createElement('div') as unknown as CommandItemElement;
 			addClass(blank, 'command-item');
 
 			blank.contents = [];
@@ -553,7 +672,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 
 		if (parent) {
-			const { enabled } = parent.buffer;
+			const { enabled } = parent.buffer!;
 			if (blank.enabled !== enabled) {
 				blank.enabled = enabled;
 				if (enabled) {
@@ -567,8 +686,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return blank;
 	},
 
-	computeTextIndent: function (this: any, indent: any): string {
-		const lang = this.__options.localize?.language;
+	computeTextIndent: function (
+		this: HTMLElement & { [k: string]: unknown },
+		indent: number
+	): string {
+		const lang = (this.__options as CommandListApiOptions).localize?.language;
 		switch (lang) {
 			case 'en-US':
 				return indent * 4 + 'ch';
@@ -577,7 +699,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	select: function (this: any, start: any, end: any = start): void {
+	select: function (this: any, start: number, end: number = start): void {
 		if (start > end) {
 			[start, end] = [end, start];
 		}
@@ -628,7 +750,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.reselect();
 	},
 
-	selectMultiple: function (this: any, active: any): void {
+	selectMultiple: function (this: any, active: number): void {
 		const origin = this.origin;
 		this.select(origin, active);
 		this.origin = origin;
@@ -640,9 +762,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		this.active = this.getRangeByIndex(this.end)[0];
 	},
 
-	unselect: function (this: any): void {
+	unselect: function (this: HTMLElement & { [k: string]: unknown }): void {
 		if (this.start !== null) {
-			const { selections } = this;
+			const { selections } = this as unknown as {
+				selections: (CommandItemElement | undefined)[] & { count: number };
+			};
 			const { count } = selections;
 			for (let i = 0; i < count; i++) {
 				removeClass(selections[i], 'selected');
@@ -718,7 +842,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	pageUp: function (this: any, select: any): void {
+	pageUp: function (this: any, select: boolean): void {
 		let anchor = this.anchor;
 		if (anchor === null) {
 			anchor = this.active;
@@ -737,7 +861,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	pageDown: function (this: any, select: any): void {
+	pageDown: function (this: any, select: boolean): void {
 		let anchor = this.anchor;
 		if (anchor === null) {
 			anchor = this.active;
@@ -759,7 +883,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	selectMultipleTo: function (this: any, index: any): void {
+	selectMultipleTo: function (this: any, index: number): void {
 		if (this.start !== null) {
 			this.selectMultiple(index);
 			const elements = this.elements;
@@ -919,8 +1043,11 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	getRangeByIndex: function (this: any, index: any): number[] {
-		const elements = this.elements;
+	getRangeByIndex: function (
+		this: HTMLElement & { [k: string]: unknown },
+		index: number
+	): number[] {
+		const elements = this.elements as CommandItemElement[] & { count: number };
 		const count = elements.count;
 		const element = elements[index];
 		const data = element.dataItem;
@@ -947,10 +1074,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return [start, end];
 	},
 
-	getRangeByData: function (this: any, data: any): number[] {
-		const elements = this.elements;
+	getRangeByData: function (
+		this: HTMLElement & { [k: string]: unknown },
+		data: CommandData
+	): number[] {
+		const elements = this.elements as CommandItemElement[] & { count: number };
 		const count = elements.count;
-		let indent;
+		let indent: number;
 		let start = 0;
 		let end = 0;
 		for (let i = 0; i < count; i++) {
@@ -964,8 +1094,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		for (let i = start + 1; i < count; i++) {
 			const element = elements[i];
 			if (
-				element.dataIndent < indent ||
-				(element.dataIndent === indent && element.dataKey === true)
+				element.dataIndent < indent! ||
+				(element.dataIndent === indent! && element.dataKey === true)
 			) {
 				end = i - 1;
 				break;
@@ -974,7 +1104,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		return [start, end];
 	},
 
-	isParentEnabled: function (this: any, element: any): boolean {
+	isParentEnabled: function (
+		this: HTMLElement & { [k: string]: unknown },
+		element: CommandItemElement
+	): boolean {
 		return element.dataParent?.buffer?.enabled ?? true;
 	},
 
@@ -991,7 +1124,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	edit: function (this: any, data?: any): void {
+	edit: function (this: any, data?: CommandData): void {
 		const options = this.__options;
 		if (this.start !== null) {
 			const elements = this.elements;
@@ -1006,7 +1139,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					break;
 				case false: {
 					const command = element.dataItem;
-					if (command.buffer.enabled) {
+					if (command!.buffer!.enabled) {
 						options.command?.edit(this, command);
 					}
 					break;
@@ -1015,7 +1148,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	fold: function (this: any, element?: any): void {
+	fold: function (this: any, element?: CommandItemElement): void {
 		if (element === undefined && this.start !== null) {
 			const elements = this.elements;
 			const startItem = elements[this.start].dataItem;
@@ -1040,12 +1173,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	unfoldCommand: function (this: any, command: any): void {
+	unfoldCommand: function (this: any, command: CommandData | null): void {
 		let changed = false;
-		const commands: any[] = [];
+		const commands: CommandData[] = [];
 		while (command && !commands.includes(command)) {
 			commands.push(command);
-			const element = command.buffer?.[0];
+			const element = command.buffer?.[0] as CommandItemElement | undefined;
 			if (command.folded) {
 				delete command.folded;
 				this.updateCommandElementFold(element);
@@ -1093,8 +1226,8 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				return;
 			}
 			let method = 'disable';
-			const commands: any[] = [];
-			const append = (element: any) => {
+			const commands: CommandData[] = [];
+			const append = (element: CommandItemElement) => {
 				if (element.dataKey && element.dataItem) {
 					const command = element.dataItem;
 					const enabled = command.id[0] !== '!';
@@ -1113,13 +1246,13 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							break;
 					}
 					if (command.folded) {
-						for (const object of command.buffer) {
+						for (const object of command.buffer!) {
 							if (!Array.isArray(object)) continue;
 							for (const child of object) {
 								if (!child.buffer) continue;
 								for (const element of child.buffer) {
 									if (element instanceof HTMLElement) {
-										append(element);
+										append(element as CommandItemElement);
 									}
 								}
 							}
@@ -1156,7 +1289,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	enableItems: function (this: any, commands: any): void {
+	enableItems: function (
+		this: HTMLElement & { [k: string]: unknown },
+		commands: CommandData[]
+	): void {
 		for (const command of commands) {
 			if (command.id[0] === '!') {
 				command.id = command.id.slice(1);
@@ -1164,7 +1300,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	disableItems: function (this: any, commands: any): void {
+	disableItems: function (
+		this: HTMLElement & { [k: string]: unknown },
+		commands: CommandData[]
+	): void {
 		for (const command of commands) {
 			if (command.id[0] !== '!') {
 				command.id = '!' + command.id;
@@ -1248,7 +1387,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				};
 
 				if (dataItem.commands) {
-					(command as any).commands = dataItem.commands;
+					(command as { commands?: CommandData[] }).commands = dataItem.commands;
 				}
 
 				commands.push(command);
@@ -1259,7 +1398,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		}
 	},
 
-	generateExecutableCode: function (this: any, commands: any): string {
+	generateExecutableCode: function (
+		this: HTMLElement & { [k: string]: unknown },
+		commands: CommandData[]
+	): string {
 		const commandsJson = JSON.stringify(commands, null, 2);
 
 		const code = `const commands = ${commandsJson};
@@ -1349,7 +1491,7 @@ try {
 		}
 	},
 
-	save: function (this: any, command: any): void {
+	save: function (this: any, command: CommandData): void {
 		if (this.start !== null) {
 			const elements = this.elements;
 			const element = elements[this.start];
@@ -1388,12 +1530,14 @@ try {
 		}
 	},
 
-	getSelectionPosition: function (this: any): any {
+	getSelectionPosition: function (
+		this: HTMLElement & { [k: string]: unknown }
+	): { x: number; y: number } | null {
 		if (this.start === null) {
 			return null;
 		}
-		const elements = this.elements;
-		const element = elements[this.start];
+		const elements = this.elements as CommandItemElement[];
+		const element = elements[this.start as number];
 		if (!element.parentNode) {
 			return null;
 		}
@@ -1407,11 +1551,11 @@ try {
 		return { x, y };
 	},
 
-	clearElements: function (this: any, start: any): void {
-		commonListClearElements(this, start);
+	clearElements: function (this: HTMLElement & { [k: string]: unknown }, start: number): void {
+		commonListClearElements(this as unknown as CommonListLike, start);
 	},
 
-	clear: function (this: any): any {
+	clear: function (this: any): HTMLElement {
 		this.unselect();
 		this.textContent = '';
 		this.data = null;
@@ -1430,10 +1574,18 @@ try {
 		return this;
 	},
 
-	analyzeVariables: function (this: any): any {
+	analyzeVariables: function (this: any): {
+		varList: VariableItem[];
+		varMap: Record<string, VariableItem>;
+	} {
 		const options = this.__options;
 		const data = this.read();
-		function checkLeftValue(variable: any, varMap: any, varList: any[], flags: any): void {
+		function checkLeftValue(
+			variable: VariableItem,
+			varMap: Record<string, VariableItem>,
+			varList: VariableItem[],
+			flags: Record<string, boolean>
+		): void {
 			const { name, type } = variable;
 			if (flags[name]) {
 				let varItem = varMap[name + type];
@@ -1457,7 +1609,12 @@ try {
 			}
 		}
 
-		function checkOperator(variable: any, varMap: any, varList: any[], flags: any): void {
+		function checkOperator(
+			variable: VariableItem,
+			varMap: Record<string, VariableItem>,
+			varList: VariableItem[],
+			flags: Record<string, boolean>
+		): void {
 			const { name, type } = variable;
 			if (flags[name]) {
 				const varItem =
@@ -1478,13 +1635,13 @@ try {
 			}
 		}
 
-		const varMap: Record<string, any> = {};
-		const varList: any[] = [];
-		const leftValues: any[] = [];
-		const operators: any[] = [];
-		const flags: Record<string, any> = { '': true };
+		const varMap: Record<string, VariableItem> = {};
+		const varList: (VariableItem & { icon?: string })[] = [];
+		const leftValues: VariableItem[] = [];
+		const operators: VariableItem[] = [];
+		const flags: Record<string, boolean> = { '': true };
 
-		for (const variable of options.command?.fetchVariables(data) ?? []) {
+		for (const variable of options.command?.fetchVariables(data!) ?? []) {
 			(variable.isLeftValue ? leftValues : operators).push(variable);
 		}
 
@@ -1509,7 +1666,7 @@ try {
 		};
 		varList.sort((a, b) => {
 			if (a.evIndex !== b.evIndex) {
-				return a.evIndex - b.evIndex;
+				return a.evIndex! - b.evIndex!;
 			}
 			if (a.type !== b.type) {
 				return orders[a.type] - orders[b.type];
@@ -1530,15 +1687,15 @@ try {
 		});
 	},
 
-	checkVariables: function (this: any): void {
-		const options = this.__options;
-		const varMap = this.varMap;
+	checkVariables: function (this: HTMLElement & { [k: string]: unknown }): void {
+		const options = this.__options as CommandListApiOptions;
+		const varMap = this.varMap as Record<string, VariableItem>;
 		const varTypes = ['boolean', 'number', 'string', 'object', 'any'];
 		for (const text of this.getElementsByClassName(
 			'local-variable-identifier'
-		) as HTMLCollectionOf<HTMLElement & { [k: string]: any }>) {
-			const type = text.varType;
-			const key = text.varKey;
+		) as HTMLCollectionOf<HTMLElement & { [k: string]: unknown }>) {
+			const type = text.varType as string;
+			const key = text.varKey as string;
 			if (!key) continue;
 			let varItem;
 			if (type !== 'any') {
@@ -1547,7 +1704,7 @@ try {
 				for (const varType of varTypes) {
 					if ((varItem = varMap[key + varType])) {
 						if (text.currentType !== varType) {
-							removeClass(text, text.currentType + '-type');
+							removeClass(text, (text.currentType as string) + '-type');
 							text.currentType = varType;
 							addClass(text, varType + '-type');
 						}
@@ -1570,8 +1727,8 @@ try {
 		const lookup = options.dataLookup;
 		for (const text of this.getElementsByClassName(
 			'global-variable-identifier'
-		) as HTMLCollectionOf<HTMLElement & { [k: string]: any }>) {
-			const key = text.varKey;
+		) as HTMLCollectionOf<HTMLElement & { [k: string]: unknown }>) {
+			const key = text.varKey as string;
 			if (key === '') continue;
 			const variable = options.getVariable ? options.getVariable(key) : null;
 			if (variable) {
@@ -1588,9 +1745,9 @@ try {
 		}
 
 		for (const text of this.getElementsByClassName('attribute-identifier') as HTMLCollectionOf<
-			HTMLElement & { [k: string]: any }
+			HTMLElement & { [k: string]: unknown }
 		>) {
-			const id = text.varId;
+			const id = text.varId as string;
 			const attr = lookup?.attribute(id);
 			if (attr) {
 				removeClass(text, 'invalid');
@@ -1608,9 +1765,9 @@ try {
 		}
 
 		for (const text of this.getElementsByClassName('enum-identifier') as HTMLCollectionOf<
-			HTMLElement & { [k: string]: any }
+			HTMLElement & { [k: string]: unknown }
 		>) {
-			const id = text.varId;
+			const id = text.varId as string;
 			const string = lookup?.enumString(id);
 			if (string) {
 				removeClass(text, 'invalid');
@@ -1626,9 +1783,9 @@ try {
 		}
 
 		for (const text of this.getElementsByClassName('file-identifier') as HTMLCollectionOf<
-			HTMLElement & { [k: string]: any }
+			HTMLElement & { [k: string]: unknown }
 		>) {
-			const fileId = text.varKey;
+			const fileId = text.varKey as string;
 			if (fileId === '') continue;
 			const guidMap =
 				typeof lookup?.guidMap === 'function' ? lookup.guidMap() : (lookup?.guidMap ?? {});
@@ -1647,9 +1804,9 @@ try {
 		}
 
 		for (const text of this.getElementsByClassName('scene-identifier') as HTMLCollectionOf<
-			HTMLElement & { [k: string]: any }
+			HTMLElement & { [k: string]: unknown }
 		>) {
-			const presetId = text.varKey;
+			const presetId = text.varKey as string;
 			if (presetId === '') continue;
 			const scenePresets =
 				typeof lookup?.scenePresets === 'function'
@@ -1664,9 +1821,9 @@ try {
 		}
 
 		for (const text of this.getElementsByClassName('ui-identifier') as HTMLCollectionOf<
-			HTMLElement & { [k: string]: any }
+			HTMLElement & { [k: string]: unknown }
 		>) {
-			const presetId = text.varKey;
+			const presetId = text.varKey as string;
 			if (presetId === '') continue;
 			const uiPresets =
 				typeof lookup?.uiPresets === 'function'
@@ -1681,30 +1838,33 @@ try {
 		}
 	},
 
-	tryGetEventId: function (this: any, data: any): string | undefined {
+	tryGetEventId: function (
+		this: HTMLElement & { [k: string]: unknown },
+		data: CommandData | null | undefined
+	): string | undefined {
 		const id = data?.id;
 		if (id === 'callEvent' || id === '!callEvent') {
-			if (data.params.type === 'global') {
-				return data.params.eventId;
+			if (data!.params.type === 'global') {
+				return data!.params.eventId;
 			}
 		}
 		return undefined;
 	},
 
-	listFocus: function (this: any, event: any): void {
+	listFocus: function (this: any, event: FocusEvent): void {
 		if (!this.focusing) {
 			this.focusing = true;
 			this.start !== null ? this.reselect() : this.select(0);
 		}
 	},
 
-	listBlur: function (this: any, event: any): void {
+	listBlur: function (this: any, event: FocusEvent): void {
 		if (this.dragging) {
 			this.windowPointerup(this.dragging);
 		}
 		if (this.focusing) {
 			let element = this;
-			while ((element = element.parentNode as any)) {
+			while ((element = element.parentNode)) {
 				if (element.nodeType !== Node.ELEMENT_NODE) {
 					continue;
 				}
@@ -1723,12 +1883,12 @@ try {
 
 	findString: function (
 		this: any,
-		str: any,
-		elements: any,
-		searchMode: any = { caseInsensitive: false, regex: false, matchLine: false }
-	): any[] {
+		str: string | RegExp,
+		elements: CommandItemElement[],
+		searchMode: FindSearchMode = { caseInsensitive: false, regex: false, matchLine: false }
+	): FindResult[] {
 		if (searchMode.regex) {
-			const strOri = str.trim();
+			const strOri = (str as string).trim();
 			try {
 				str = new RegExp(
 					strOri.substring(strOri.indexOf('/') + 1, strOri.lastIndexOf('/')),
@@ -1745,7 +1905,7 @@ try {
 					continue;
 				}
 				if (searchMode.regex && str instanceof RegExp) {
-					if (str.test(element.textContent))
+					if (str.test(element.textContent ?? ''))
 						findList.push({
 							node: element,
 							index: i,
@@ -1753,14 +1913,14 @@ try {
 						});
 				} else if (
 					searchMode.caseInsensitive &&
-					element.textContent.toLowerCase().includes(str.toLowerCase())
+					element.textContent!.toLowerCase().includes((str as string).toLowerCase())
 				)
 					findList.push({
 						node: element,
 						index: i,
 						sub: null
 					});
-				else if (element.textContent.includes(str))
+				else if (element.textContent!.includes(str as string))
 					findList.push({
 						node: element,
 						index: i,
@@ -1773,9 +1933,11 @@ try {
 				if (!buffer) continue;
 				for (const item of buffer) {
 					if (item instanceof Array) {
-						const realNode = item.map((v: any) => v.buffer[0]);
+						const realNode = item.map(
+							(v: CommandData) => v.buffer![0] as CommandItemElement
+						);
 						const _subfind = this.findString(str, realNode, searchMode).map(
-							(v: any) => ({
+							(v: FindResult) => ({
 								...v,
 								sub: element
 							})
@@ -1789,9 +1951,9 @@ try {
 								sub: element
 							});
 					} else if (
-						item.textContent.includes(str) ||
+						item.textContent.includes(str as string) ||
 						(searchMode.caseInsensitive &&
-							item.textContent.toLowerCase().includes(str.toLowerCase()))
+							item.textContent.toLowerCase().includes((str as string).toLowerCase()))
 					) {
 						findList.push({ node: item, index: i, sub: element });
 					}
@@ -1808,25 +1970,25 @@ try {
 						continue;
 					}
 					if (searchMode.regex && str instanceof RegExp) {
-						if (str.test(node.textContent))
+						if (str.test(node.textContent ?? ''))
 							findList.push({
 								node,
 								index: i,
 								sub: element
 							});
 					} else if (
-						node.textContent.includes(str) ||
+						node.textContent!.includes(str as string) ||
 						(searchMode.caseInsensitive &&
-							node.textContent.toLowerCase().includes(str.toLowerCase()))
+							node.textContent!.toLowerCase().includes((str as string).toLowerCase()))
 					) {
-						findList.push({ node, index: i, sub: null });
+						findList.push({ node: node as HTMLElement, index: i, sub: null });
 					}
 				}
 		}
 		return findList;
 	},
 
-	scrollToRow: function (this: any, targetIndex: any, position: any = 'center'): void {
+	scrollToRow: function (this: any, targetIndex: number, position: string = 'center'): void {
 		const count = this.elements.count;
 		const rowHeight = 20;
 
@@ -1855,7 +2017,7 @@ try {
 		this.resize(this);
 	},
 
-	keydown: function (this: any, event: any): void {
+	keydown: function (this: any, event: KeyboardEvent): void {
 		const options = this.__options;
 		if (cmdOrCtrlKey(event)) {
 			switch (event.code) {
@@ -1995,36 +2157,39 @@ try {
 		}
 	},
 
-	pointerdown: function (this: any, event: any): void {
+	pointerdown: function (this: any, event: ListPointerEvent): void {
 		const options = this.__options;
 		if (this.dragging) {
 			return;
 		}
 		switch (event.button) {
 			case 0: {
-				let element = event.target;
-				let index;
+				let element: CommandItemElement | null = null;
+				element = event.target as CommandItemElement | null;
+				let index = -1;
 				if (element === this) {
-					if (isInContent(element, event)) {
+					if (isInContent(element as HTMLElement, event)) {
 						index = this.elements.count - 1;
 					}
 				} else if (hasClass(element, 'command-fold')) {
-					this.fold(element.parentNode);
+					this.fold((element as HTMLElement).parentNode as unknown as CommandItemElement);
 					break;
 				} else {
-					element = (element as HTMLElement)?.closest?.('.command-item');
+					element = (element as HTMLElement)?.closest?.(
+						'.command-item'
+					) as CommandItemElement | null;
 					if (element && hasClass(element, 'command-item')) {
-						index = read(element);
+						index = read(element) as number;
 					}
 				}
 				if (index >= 0) {
-					element = this.elements[index];
+					element = this.elements[index] as CommandItemElement;
 					if (event.shiftKey && this.start !== null) {
 						this.selectMultipleTo(index);
 					} else {
 						this.select(index);
 						if (event.altKey) {
-							const eventId = this.tryGetEventId(element.dataItem);
+							const eventId = this.tryGetEventId(element!.dataItem);
 							if (eventId) {
 								options.eventEditor?.openGlobalEvent(eventId);
 								event.preventDefault();
@@ -2036,26 +2201,29 @@ try {
 					this.dragging = event;
 					event.mode = 'select';
 					event.itemIndex = index;
-					event.itemHeight = element.clientHeight;
+					event.itemHeight = element!.clientHeight;
 					window.addEventListener('pointerup', this.windowPointerup);
 					window.addEventListener('pointermove', this.windowPointermove);
 					this.scrollListener.addScrollListener('vertical', 2, true, () => {
-						this.windowPointermove(event.latest);
+						this.windowPointermove(event.latest!);
 					});
 				}
 				break;
 			}
 			case 2: {
-				let element = event.target;
-				let index;
+				let element: CommandItemElement | null = null;
+				element = event.target as CommandItemElement | null;
+				let index = -1;
 				if (element === this) {
-					if (isInContent(element, event)) {
+					if (isInContent(element as HTMLElement, event)) {
 						index = this.elements.count - 1;
 					}
 				} else {
-					element = (element as HTMLElement)?.closest?.('.command-item');
+					element = (element as HTMLElement)?.closest?.(
+						'.command-item'
+					) as CommandItemElement | null;
 					if (element && hasClass(element, 'command-item')) {
-						index = read(element);
+						index = read(element) as number;
 					}
 				}
 				if (index >= 0) {
@@ -2069,7 +2237,7 @@ try {
 		}
 	},
 
-	pointerup: function (this: any, event: any): void {
+	pointerup: function (this: any, event: ListPointerEvent): void {
 		const options = this.__options;
 		if (this.dragging) {
 			return;
@@ -2093,7 +2261,7 @@ try {
 					const get =
 						options.localize?.createGetter('menuCommandList') ?? ((key: string) => key);
 					const ctrl = options.ctrl ?? ((key: string) => 'Ctrl+' + key);
-					const menuItems: any[] = [
+					const menuItems: unknown[] = [
 						{
 							label: get('edit'),
 							accelerator: 'Enter',
@@ -2234,8 +2402,8 @@ try {
 		}
 	},
 
-	doubleclick: function (this: any, event: any): void {
-		if (this.start !== null && !hasClass(event.target, 'command-fold')) {
+	doubleclick: function (this: any, event: MouseEvent): void {
+		if (this.start !== null && !hasClass(event.target as HTMLElement | null, 'command-fold')) {
 			const elements = this.elements;
 			const sData = elements[this.start].dataItem;
 			const eData = elements[this.end].dataItem;
@@ -2295,7 +2463,7 @@ export function createCommandListApi(
 	el: HTMLElement,
 	options: CommandListApiOptions = {}
 ): HTMLElement {
-	const list = el as any;
+	const list = el as HTMLElement & { [k: string]: any };
 	list.__options = options;
 
 	if (Object.getPrototypeOf(commandListPrototype) !== HTMLElement.prototype) {
@@ -2308,7 +2476,14 @@ export function createCommandListApi(
 	list.data = null;
 	list.varList = null;
 	list.varMap = null;
-	list.elements = [];
+	list.elements = [] as unknown as unknown[] & {
+		versionId: number;
+		count: number;
+		start: number;
+		end: number;
+		head: unknown;
+		foot: unknown;
+	};
 	list.elements.versionId = 0;
 	list.elements.count = 0;
 	list.elements.start = -1;
@@ -2317,8 +2492,8 @@ export function createCommandListApi(
 	list.elements.foot = null;
 	list.selections = [];
 	list.selections.count = 0;
-	list.start = null;
-	list.end = null;
+	list.start = null as unknown as number;
+	list.end = null as unknown as number;
 	list.origin = null;
 	list.active = null;
 	list.anchor = null;

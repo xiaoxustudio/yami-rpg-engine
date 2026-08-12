@@ -19,7 +19,7 @@ interface SwitchItemElement extends HTMLDivElement {
 	update(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 	dataValue: number;
@@ -64,7 +64,7 @@ const input = (value: number): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);

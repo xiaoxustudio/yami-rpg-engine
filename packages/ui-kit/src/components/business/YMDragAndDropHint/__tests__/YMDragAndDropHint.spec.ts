@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMDragAndDropHint from '../YMDragAndDropHint.vue';
 import { createDragAndDropHintElement } from '../drag-and-drop-hint-api';
+import type { DragAndDropHintApi } from '../drag-and-drop-hint-api';
 
 describe('YMDragAndDropHint', () => {
 	it('mounts with api on element', () => {
 		const wrapper = mount(YMDragAndDropHint);
 		expect(wrapper.element.classList.contains('drag-and-drop-hint')).toBe(true);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as DragAndDropHintApi;
 		expect(typeof el.measure).toBe('function');
 		expect(typeof el.moveUp).toBe('function');
 		expect(typeof el.moveDown).toBe('function');
@@ -16,7 +17,7 @@ describe('YMDragAndDropHint', () => {
 
 	it('set applies coordinates', () => {
 		const wrapper = mount(YMDragAndDropHint);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as DragAndDropHintApi;
 		el.set({ left: 10, top: 20, width: 30, height: 40 });
 		expect(el.style.left).toBe('10px');
 		expect(el.style.top).toBe('20px');
@@ -28,7 +29,7 @@ describe('YMDragAndDropHint', () => {
 
 	it('set skips unchanged coords', () => {
 		const wrapper = mount(YMDragAndDropHint);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as DragAndDropHintApi;
 		el.set({ left: 10, top: 20, width: 30, height: 40 });
 		el.set({ left: 10, top: 20, width: 30, height: 40 });
 		expect(el.style.left).toBe('10px');
@@ -36,7 +37,7 @@ describe('YMDragAndDropHint', () => {
 
 	it('moveUp and moveDown toggle z-index', () => {
 		const wrapper = mount(YMDragAndDropHint);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as DragAndDropHintApi;
 		el.moveUp();
 		expect(el.upper).toBe(true);
 		expect(el.style.zIndex).toBe('1');
@@ -47,7 +48,7 @@ describe('YMDragAndDropHint', () => {
 
 	it('measure computes coords relative to parent', () => {
 		const wrapper = mount(YMDragAndDropHint, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as DragAndDropHintApi;
 		const parent = document.createElement('div');
 		parent.style.cssText =
 			'position:relative;border-left:2px solid black;border-top:3px solid black;';

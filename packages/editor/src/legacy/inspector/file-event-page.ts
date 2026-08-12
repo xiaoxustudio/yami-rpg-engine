@@ -24,14 +24,16 @@ import { Local } from '@/tools/localization.ts';
 	interface FileEventList {
 		save(): void;
 		on?(type: string, listener: (event: Event) => void): void;
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 
 	interface FileEventPage {
 		target: FileEventData | null;
 		meta: { file: unknown } | null;
 		parameters: FileEventList;
-		[k: string]: any;
+		update: ((event: FileEventData, key: string, value: unknown) => void) | null;
+		listChange: ((event: Event) => void) | null;
+		[k: string]: unknown;
 	}
 
 	const FileEvent = {
@@ -78,7 +80,7 @@ import { Local } from '@/tools/localization.ts';
 	};
 
 	FileEvent.create = function (this: FileEventPage, filter: string) {
-		const type = EventEditor.types[filter][0].value;
+		const type = EventEditor.types?.[filter]?.[0]?.value ?? 'common';
 		switch (filter) {
 			case 'global':
 				return {
@@ -106,7 +108,7 @@ import { Local } from '@/tools/localization.ts';
 			this.meta = meta;
 
 			$('#fileEvent-type').loadItems(
-				Enum.getMergedItems!(EventEditor.types.global, 'global-event')
+				Enum.getMergedItems!(EventEditor.types?.global, 'global-event')
 			);
 
 			const write = getElementWriter('fileEvent', event);
@@ -168,7 +170,7 @@ import { Local } from '@/tools/localization.ts';
 			if (new RegExp('^fileEvent-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileEvent.update(FileEvent.target!, Inspector.getKey!(element), read(element));
+		FileEvent.update!(FileEvent.target!, Inspector.getKey!(element), read(element));
 	};
 
 	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {

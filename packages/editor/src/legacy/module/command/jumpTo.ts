@@ -7,6 +7,16 @@ import { TextSuggestion, type TextSuggestionTarget } from '@/command/text-tip.ts
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type LabelCommand = {
+	id: string;
+	params: { name: string; [k: string]: unknown };
+};
+
+type JumpToData = {
+	operation: string;
+	label: string;
+};
+
 Command.cases.jumpTo = new CommandSchema({
 	name: 'jumpTo',
 	onInitialize() {
@@ -25,10 +35,10 @@ Command.cases.jumpTo = new CommandSchema({
 			.relate([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
 	},
 	loadLabels() {
-		const items: any[] = [];
+		const items: Array<{ name: string; icon: string }> = [];
 		const commands = read(EventEditor.commandList);
 		if (!commands) return items;
-		Command.forEachCommand!(commands, (command: any) => {
+		Command.forEachCommand!(commands, (command: LabelCommand) => {
 			if (command.id === 'label') {
 				items.push({
 					name: command.params.name,
@@ -36,9 +46,11 @@ Command.cases.jumpTo = new CommandSchema({
 				});
 			}
 		});
-		return items.sort((a: any, b: any) => a.name.localeCompare(b.name));
+		return items.sort((a: { name: string }, b: { name: string }) =>
+			a.name.localeCompare(b.name)
+		);
 	},
-	customParse({ operation, label }: any) {
+	customParse({ operation, label }: JumpToData) {
 		const words = Command.words;
 		switch (operation) {
 			case 'jump':

@@ -105,15 +105,22 @@ Curve.initialize = function (this: typeof Curve) {
 	this.list.defaultItem = { name: 'No Easing', value: '' };
 
 	// 过渡方式 - 重写设置选项名字方法
-	this.list.setItemNames = function (this: typeof Curve, options: Record<string, string>) {
-		const item = this.list!.defaultItem;
+	this.list.setItemNames = function (
+		this: HTMLElement & {
+			defaultItem?: { name: string; value: string };
+			dataValue?: unknown;
+			update?: () => void;
+		},
+		options: Record<string, string>
+	) {
+		const item = this.defaultItem!;
 		const key = item.value;
 		const name = options[key];
 		if (name !== undefined) {
 			item.name = name;
 		}
-		if (this.list!.dataValue !== null) {
-			this.list!.update();
+		if (this.dataValue !== null) {
+			this.update?.();
 		}
 	};
 

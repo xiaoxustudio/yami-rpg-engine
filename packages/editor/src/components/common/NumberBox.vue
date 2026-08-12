@@ -22,13 +22,13 @@ import { NumberHistory } from '@/components/number-history';
 interface NumberBoxElement extends HTMLElement {
 	input: HTMLInputElement;
 	read(): number;
-	write(value: any): void;
+	write(value: unknown): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): void;
+	getFocus(mode?: string): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -67,26 +67,26 @@ const ym = ref<{
 	root: HTMLElement | null;
 	input: HTMLInputElement | null;
 	read(): number;
-	write(value: any): void;
+	write(value: unknown): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): void;
+	getFocus(mode?: string): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const read = (): number => ym.value?.read() ?? 0;
-const write = (value: any): void => ym.value?.write(value);
+const write = (value: unknown): void => ym.value?.write(value);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const getFocus = (mode: any): void => ym.value?.getFocus(mode);
+const getFocus = (mode?: string): void => ym.value?.getFocus(mode);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

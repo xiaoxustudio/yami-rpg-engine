@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setLanguage = new CommandSchema({
 	name: 'setLanguage',
 	fields: [{ key: 'language', default: 'auto' }],
-	customParse({ language }: any) {
+	customParse({ language }: { language: string }) {
 		return [
 			{ color: 'system' },
 			{ text: Local.get!('command.setLanguage') + Token(': ') },
 			{ text: Local.get!('languages.' + language) }
 		];
 	},
-	onLoad(data: any) {
+	onLoad(data: Record<string, unknown>) {
 		const el = $('#setLanguage-language');
 		el.loadItems(this.createLanguageItems!());
 		write(el, data.language ?? 'auto');
@@ -30,7 +30,7 @@ Command.cases.setLanguage = new CommandSchema({
 		const languages = Local.get!('languages');
 		if (languages) {
 			const langList = new Set(
-				Data.config.localization.languages.map((lang: any) => lang.name)
+				Data.config.localization.languages.map((lang: { name: string }) => lang.name)
 			);
 			for (const [value, name] of Object.entries(languages)) {
 				if (value === 'auto' || langList.has(value)) {

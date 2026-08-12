@@ -12,11 +12,17 @@ interface CommandItemElement extends HTMLElement {
 	dataIndent: number;
 	eventBinding?: boolean;
 }
+
+interface CommandListShape {
+	count: number;
+	findIndex: (cb: (v: unknown) => boolean) => number;
+	[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
+}
 export function updateCommandElement(
-	this: typeof CommandList,
+	this: typeof CommandList & { computeTextIndent: (indent: number) => string },
 	element: CommandItemElement
 ): unknown {
-	const ret = _origUpdateCommandElement?.call(CommandList, element);
+	const ret = _origUpdateCommandElement?.call(this, element);
 
 	element.querySelectorAll('.command-mark-major').forEach((e: Element) => {
 		e.remove();
@@ -35,16 +41,15 @@ export function updateCommandElement(
 	for (let i = element.dataIndent; i >= 0; i--) {
 		let line = document.createElement('command-line');
 		addClass(line, 'command-line');
-		line.style.marginLeft = CommandList.prototype.computeTextIndent!.call(element, i);
+		line.style.marginLeft = this.computeTextIndent!(i);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
 	}
 
-	const list = CommandList.prototype.elements as unknown as {
-		count: number;
-		findIndex: (cb: (v: unknown) => boolean) => number;
-		[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
-	};
+	const list = ((this as unknown as { elements?: CommandListShape }).elements ??
+		(CommandList.prototype.elements as unknown as
+			| CommandListShape
+			| undefined)) as CommandListShape;
 	if (!element?.eventBinding) {
 		on(element, 'mouseenter', function () {
 			let indent: number | null = null;
@@ -95,16 +100,22 @@ export function ensureUpdateCommandElementOverride(): void {
 	CommandList.prototype.updateCommandElement = updateCommandElement;
 }
 
-export function applyCommandListInstanceOverride(commandList: typeof CommandList): void {
+export function applyCommandListInstanceOverride(
+	commandList: typeof CommandList | HTMLElement
+): void {
 	if (!commandList) return;
-	commandList.prototype.getSelectionPosition = function (this: {
+	const prototype =
+		'prototype' in commandList && commandList.prototype
+			? (commandList as typeof CommandList).prototype
+			: (commandList as HTMLElement);
+	(prototype as HTMLElement & Record<string, any>).getSelectionPosition = function (this: {
 		elements: { pre: HTMLElement }[];
 		active: number;
 	}) {
 		return this.elements[this.active].pre.getBoundingClientRect();
 	};
 	on(commandList, 'update', function (this: { elements: { dataIndent: number }[] }) {
-		const list = CommandList.prototype.elements as unknown as {
+		const list = this.elements as unknown as {
 			count: number;
 			[i: number]: CommandItemElement & { fold?: boolean; mark?: unknown; buffer?: unknown };
 		};
@@ -128,7 +139,7 @@ export function applyCommandListInstanceOverride(commandList: typeof CommandList
 }
 
 export function range(
-	elements: any,
+	elements: CommandListShape,
 	start: number,
 	end: number = start
 ): { start: number; end: number; indent?: number } {

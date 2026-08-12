@@ -20,10 +20,10 @@ Command.cases.setState = new CommandSchema({
 			{ name: 'Decrease Time', value: 'decrease-time' }
 		]);
 	},
-	parseOperation(operation: any) {
+	parseOperation(operation: string) {
 		return Local.get!('command.setState.' + operation);
 	},
-	customParse({ state, operation, time }: any) {
+	customParse({ state, operation, time }: { state: unknown; operation: string; time: unknown }) {
 		const words = Command.words
 			.push(Command.parseState!(state))
 			.push(this.parseOperation!(operation))

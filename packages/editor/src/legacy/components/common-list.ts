@@ -7,7 +7,9 @@ import {
 	listenDraggingScrollbarEvent
 } from '@/util/element-utils.ts';
 
-type CommonListElements = any[] & {
+type CommonListElement = HTMLElement & { dataValue?: unknown; versionId?: number };
+
+type CommonListElements = (CommonListElement | undefined)[] & {
 	versionId: number;
 	count: number;
 	start: number;
@@ -63,10 +65,10 @@ export class CommonList extends HTMLElement {
 		if (count !== 0) {
 			this.unselect();
 			let index = 0;
-			let target = elements[index];
+			let target = elements[index]!;
 			for (let i = 0; i < count; i++) {
-				if (elements[i].dataValue === value) {
-					target = elements[(index = i)];
+				if (elements[i]!.dataValue === value) {
+					target = elements[(index = i)]!;
 					break;
 				}
 			}
@@ -164,7 +166,7 @@ export class CommonList extends HTMLElement {
 					}
 					break;
 			}
-			this.select(elements[index]);
+			this.select(elements[index]!);
 		}
 	}
 
@@ -301,7 +303,7 @@ export class CommonList extends HTMLElement {
 			self.updateHeadAndFoot();
 			const versionId = elements.versionId++;
 			for (let i = start; i < end; i++) {
-				const element = elements[i];
+				const element = elements[i]!;
 				(element as HTMLElement & { versionId?: number }).versionId = versionId;
 				self.updateOnResize(element);
 			}
@@ -319,9 +321,9 @@ export class CommonList extends HTMLElement {
 				self.appendChild(elements.foot!);
 			}
 			for (let i = end - 2; i >= start; i--) {
-				const element = elements[i];
+				const element = elements[i]!;
 				if (element.parentNode === null) {
-					const next = elements[i + 1];
+					const next = elements[i + 1]!;
 					self.insertBefore(element, next);
 				}
 			}
@@ -343,9 +345,9 @@ export class CommonList extends HTMLElement {
 			const pad = (self as HTMLElement & { padded?: boolean }).padded ? 1 : 0;
 			const mt = start * 20;
 			const mb = (count - end + pad) * 20;
-			elements.head = elements[start];
+			elements.head = elements[start]!;
 			elements.head!.style.marginTop = `${mt}px`;
-			elements.foot = elements[end - 1];
+			elements.foot = elements[end - 1]!;
 			elements.foot!.style.marginBottom = `${mb}px`;
 		}
 	};

@@ -3,9 +3,9 @@ import { show, hide } from '../../../utils/dom';
 export interface DetailBoxApi extends HTMLElement {
 	_initialized: boolean;
 	toggle(): void;
-	open(...args: unknown[]): any;
-	close(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	open(...args: unknown[]): void;
+	close(...args: unknown[]): void;
+	on(...args: unknown[]): void;
 }
 
 export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
@@ -63,7 +63,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

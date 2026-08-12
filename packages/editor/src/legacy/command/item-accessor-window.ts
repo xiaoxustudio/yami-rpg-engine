@@ -3,10 +3,10 @@ import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface ItemGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -19,7 +19,7 @@ export const ItemGetter: ItemGetterShape = {
 	confirm: null
 };
 
-ItemGetter.initialize = function (this: any) {
+ItemGetter.initialize = function (this: ItemGetterShape) {
 	if (!$('#itemGetter-type')) return;
 	$('#itemGetter-type').loadItems([
 		{ name: 'Event Trigger Item', value: 'trigger' },
@@ -46,7 +46,7 @@ ItemGetter.initialize = function (this: any) {
 	$('#itemGetter-confirm').on('click', this.confirm);
 };
 
-ItemGetter.open = function (this: any, target: any) {
+ItemGetter.open = function (this: ItemGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('itemGetter');
 
@@ -81,18 +81,18 @@ ItemGetter.open = function (this: any, target: any) {
 	getFocus($('#itemGetter-type'));
 };
 
-ItemGetter.checkDataForPlugin = function (this: any, data: any) {
+ItemGetter.checkDataForPlugin = function (this: ItemGetterShape, data: unknown) {
 	if (data instanceof Object) {
-		return data.getter === 'item';
+		return (data as { getter?: string }).getter === 'item';
 	}
 	return false;
 };
 
-ItemGetter.createDefaultForPlugin = function (this: any) {
+ItemGetter.createDefaultForPlugin = function (this: ItemGetterShape) {
 	return { getter: 'item', type: 'trigger' };
 };
 
-ItemGetter.confirm = function (this: any, event: any) {
+ItemGetter.confirm = function (this: ItemGetterShape, event: Event) {
 	const read = getElementReader('itemGetter');
 	const type = read('type');
 	let getter;
@@ -128,9 +128,9 @@ ItemGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	if (this.target.isPluginInput) {
+	if (this.target!.isPluginInput) {
 		getter = { getter: 'item', ...getter };
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('itemGetter');
 }.bind(ItemGetter);

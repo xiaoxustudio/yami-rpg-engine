@@ -5,6 +5,7 @@ import {
 	commandListStatics,
 	type CommandListApiOptions
 } from '@ui-kit';
+import type { MenuItem, MenuOptions } from '@ui-kit';
 import { SettingConfig } from '@/module/settingconfig';
 import { getVariable } from '@/util/safe.ts';
 import { CommandHistory } from './command-history.ts';
@@ -26,10 +27,11 @@ const Clipboard = getGlobalClipboard();
 
 const options = {
 	command: {
-		parse: (item: any, varMap: any) => Command.parse(item, varMap),
-		fetchVariables: (data: any) => Command.fetchVariables(data),
-		insert: (list: any, id?: string) => Command.insert(list, id),
-		edit: (list: any, command?: any) => Command.edit(list, command),
+		parse: (item: Record<string, unknown>, varMap: Record<string, unknown>) =>
+			Command.parse(item, varMap),
+		fetchVariables: (data: Record<string, unknown>) => Command.fetchVariables(data),
+		insert: (list: HTMLElement, id?: string) => Command.insert(list, id),
+		edit: (list: HTMLElement, command?: Record<string, unknown>) => Command.edit(list, command),
 		parseUnlinkedId: (id: string) => Command.parseUnlinkedId(id),
 		colorizeCodeLines: (items: HTMLElement[], code: string) =>
 			Command.cases.script.colorizeCodeLines(items, code)
@@ -44,7 +46,7 @@ const options = {
 	},
 	commandHistory: CommandHistory,
 	clipboard: {
-		write: (type: string, data: any) => Clipboard?.write?.(type, data),
+		write: (type: string, data: unknown) => Clipboard?.write?.(type, data),
 		read: (type: string) => Clipboard?.read?.(type),
 		has: (type: string) => Clipboard?.has?.(type)
 	},
@@ -61,9 +63,9 @@ const options = {
 		openGlobalEvent: (id: string) => EventEditor.openGlobalEvent!(id)
 	},
 	searchString: {
-		open: (list: any) => SearchString.open(list)
+		open: (list: Parameters<typeof SearchString.open>[0]) => SearchString.open(list)
 	},
-	menuPopup: (popupOptions: any, items: any[]) => Menu.popup(popupOptions, items),
+	menuPopup: (popupOptions: MenuOptions, items: MenuItem[]) => Menu.popup(popupOptions, items),
 	getVariable,
 	ctrl: (key: string) => ctrl(key),
 	setTooltip: (el: HTMLElement, tip: string) => setTooltip(el, tip)
@@ -72,10 +74,10 @@ const options = {
 interface CommandListStaticsType {
 	alphabetCode: RegExp;
 	highlightedTexts: HTMLElement[];
-	highlightTexts: (data: any) => void;
+	highlightTexts: (data: { varSpace: string; varType: string; varKey: string }) => void;
 	unhighlightTexts: () => void;
-	textPointerenter: (event: any) => void;
-	textPointerleave: (event: any) => void;
+	textPointerenter: (event: PointerEvent) => void;
+	textPointerleave: (event: PointerEvent) => void;
 	prototype: Record<string, (...args: any[]) => any>;
 }
 

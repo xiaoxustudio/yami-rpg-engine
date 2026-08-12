@@ -31,8 +31,8 @@ export const useProjectStore = defineStore('project', () => {
 		Project?.stopTSC?.();
 	}
 
-	function confirm(event?: any) {
-		Project?.confirm?.(event);
+	function confirm(event?: Event) {
+		Project?.confirm?.(event!);
 	}
 
 	return {

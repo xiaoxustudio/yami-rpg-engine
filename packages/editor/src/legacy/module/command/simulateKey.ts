@@ -19,7 +19,7 @@ Command.cases.simulateKey = new CommandSchema({
 			{ name: 'Release', value: 'release' }
 		]);
 	},
-	customParse({ operation, keycode }: any) {
+	customParse({ operation, keycode }: { operation: string; keycode: unknown }) {
 		const words = Command.words
 			.push(Local.get!('command.simulateKey.' + operation))
 			.push(Command.setStringColor!(keycode));

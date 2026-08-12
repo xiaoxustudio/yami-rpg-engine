@@ -25,7 +25,7 @@ interface TextSuggestionList {
 	selection: TextSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
 	style: CSSStyleDeclaration;
-	bind(getter: () => any): void;
+	bind(getter: () => TextSuggestionItem[] | null): void;
 	addEventListener(
 		type: string,
 		listener: (event: Event) => void,
@@ -72,7 +72,7 @@ export interface TextSuggestionTarget {
 	): void;
 }
 
-type TextBoxMethod = ((this: TextSuggestionTarget, event: any) => void) | null;
+type TextBoxMethod = ((this: TextSuggestionTarget, event: Event) => void) | null;
 
 interface TextSuggestionShape {
 	list: TextSuggestionList;
@@ -150,12 +150,12 @@ export const TextSuggestion: TextSuggestionShape = {
 	listOpen: null
 };
 
-TextSuggestion.list.updateNodeElement = null as unknown as (...args: unknown[]) => any;
-TextSuggestion.list.createIcon = null as unknown as (...args: unknown[]) => any;
-TextSuggestion.list.createText = null as unknown as (...args: unknown[]) => any;
-TextSuggestion.list.createRefCount = null as unknown as (...args: unknown[]) => any;
-TextSuggestion.list.createComment = null as unknown as (...args: unknown[]) => any;
-TextSuggestion.list.selectDefaultCommand = null as unknown as (...args: unknown[]) => any;
+TextSuggestion.list.updateNodeElement = null;
+TextSuggestion.list.createIcon = null;
+TextSuggestion.list.createText = null;
+TextSuggestion.list.createRefCount = null;
+TextSuggestion.list.createComment = null;
+TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 	const element = $('#text-suggestions');
@@ -268,7 +268,7 @@ TextSuggestion.textBoxKeydown = function (this: TextSuggestionTarget, event: Key
 				break;
 		}
 	}
-};
+} as unknown as TextBoxMethod;
 
 TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: InputEvent): void {
 	if (
@@ -281,7 +281,7 @@ TextSuggestion.textBoxInput = function (this: TextSuggestionTarget, event: Input
 		TextSuggestion.list.searchNodes(text);
 		TextSuggestion.list.selectDefaultCommand!();
 	}
-};
+} as unknown as TextBoxMethod;
 
 TextSuggestion.listPointerdown = function (this: TextSuggestionList, event: Event): void {
 	const element = event.target as HTMLElement & {

@@ -2,10 +2,10 @@ import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface StateGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -18,7 +18,7 @@ export const StateGetter: StateGetterShape = {
 	confirm: null
 };
 
-StateGetter.initialize = function (this: any) {
+StateGetter.initialize = function (this: StateGetterShape) {
 	if (!$('#stateGetter-type')) return;
 	$('#stateGetter-type').loadItems([
 		{ name: 'Event Trigger State', value: 'trigger' },
@@ -37,10 +37,10 @@ StateGetter.initialize = function (this: any) {
 			{ case: 'variable', targets: [$('#stateGetter-variable')] }
 		]);
 
-	on($('#stateGetter-confirm'), 'click', this.confirm);
+	on($('#stateGetter-confirm'), 'click', this.confirm!);
 };
 
-StateGetter.open = function (this: any, target: any) {
+StateGetter.open = function (this: StateGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('stateGetter');
 
@@ -67,18 +67,18 @@ StateGetter.open = function (this: any, target: any) {
 	getFocus($('#stateGetter-type'));
 };
 
-StateGetter.checkDataForPlugin = function (this: any, data: any) {
+StateGetter.checkDataForPlugin = function (this: StateGetterShape, data: unknown) {
 	if (data instanceof Object) {
-		return data.getter === 'state';
+		return (data as { getter?: string }).getter === 'state';
 	}
 	return false;
 };
 
-StateGetter.createDefaultForPlugin = function (this: any) {
+StateGetter.createDefaultForPlugin = function (this: StateGetterShape) {
 	return { getter: 'state', type: 'trigger' };
 };
 
-StateGetter.confirm = function (this: any, event: any) {
+StateGetter.confirm = function (this: StateGetterShape, event: Event) {
 	const read = getElementReader('stateGetter');
 	const type = read('type');
 	let getter;
@@ -105,9 +105,9 @@ StateGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	if (this.target.isPluginInput) {
+	if (this.target!.isPluginInput) {
 		getter = { getter: 'state', ...getter };
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('stateGetter');
 }.bind(StateGetter);

@@ -29,7 +29,10 @@ export function hide(el: HTMLElement): void {
 export function css(el: HTMLElement, property: string): string;
 export function css(el: HTMLElement, property: string, value: string): void;
 export function css(el: HTMLElement, properties: Record<string, string>): void;
-export function css(el: HTMLElement, ...args: any[]): any {
+export function css(
+	el: HTMLElement,
+	...args: [string] | [string, string] | [Record<string, string>]
+): string | void {
 	if (args.length === 1) {
 		return (getComputedStyle(el as Element) as unknown as Record<string, string>)[
 			args[0] as string
@@ -54,7 +57,7 @@ export function rect(el: HTMLElement): DOMRect {
 export function on(
 	el: EventTarget,
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void {
 	el.addEventListener(type, listener as EventListener, options);
@@ -63,7 +66,7 @@ export function on(
 export function off(
 	el: EventTarget,
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | EventListenerOptions
 ): void {
 	el.removeEventListener(type, listener as EventListener, options);

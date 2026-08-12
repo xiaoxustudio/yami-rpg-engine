@@ -6,6 +6,23 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type SetAnimationComponentData = {
+	actor: unknown;
+	animationId: string;
+	motion: string;
+	operation: string;
+	angle: unknown;
+	scale: number;
+	speed: number;
+	opacity: number;
+	priority: number;
+	offsetY: number;
+	spriteId: string;
+	image: string;
+	playMotion: string;
+	wait: boolean;
+};
+
 Command.cases.setAnimationComponent = new CommandSchema({
 	name: 'setAnimationComponent',
 	onInitialize() {
@@ -69,7 +86,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		]);
 		// setAnimationComponent-animationId write 经 Vue 模板转发（setAnimationComponent.vue @write → Command.cases.setAnimationComponent.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		const elMotion = $('#setAnimationComponent-motion');
 		const elPlayMotion = $('#setAnimationComponent-playMotion');
 		const elSpriteId = $('#setAnimationComponent-spriteId');
@@ -82,11 +99,11 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		elPlayMotion.write2(read(elPlayMotion));
 		elSpriteId.write2(read(elSpriteId));
 	},
-	parsePriority(priority: any) {
+	parsePriority(priority: number) {
 		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority === 0 ? abs : priority > 0 ? Token('+') + abs : Token('-') + abs;
 	},
-	parseOffsetY(offsetY: any) {
+	parseOffsetY(offsetY: number) {
 		const abs = Command.setNumberColor!(Math.abs(offsetY)) + 'px';
 		return offsetY >= 0 ? abs : Token('-') + abs;
 	},
@@ -105,7 +122,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		image,
 		playMotion,
 		wait
-	}: any) {
+	}: SetAnimationComponentData) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseFileName!(animationId))

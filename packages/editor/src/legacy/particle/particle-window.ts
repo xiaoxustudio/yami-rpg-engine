@@ -1,4 +1,4 @@
-import { relate, getRelativeCoords } from '@/util/element-utils';
+﻿import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
@@ -37,23 +37,51 @@ import { Timer } from '@/util/timer.ts';
 import { ImageTexture } from '@/webgl/image-texture.ts';
 import { Matrix } from '../webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
+import type { ParticleElementLayer } from './particle-element.ts';
 
 type ParticleState = 'closed' | 'open';
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type ParticleMethod = ((...args: any[]) => any) | null;
 
-interface ParticleLayerShape {
-	data: Record<string, any>;
+type ParticleEmitterDataShape = {
+	layers: ParticleLayerDataShape[];
+} & Record<string, unknown>;
+
+type ParticleLayerDataShape = {
+	interval: number;
+	delay: number;
+	area: {
+		type: 'edge' | 'point' | 'rectangle' | 'circle';
+		x?: number;
+		y?: number;
+		width?: number;
+		height?: number;
+		radius?: number;
+	} & Record<string, unknown>;
+} & Record<string, unknown>;
+
+type ParticleElementShape = {
+	x: number;
+	y: number;
+	anchorX: number;
+	anchorY: number;
+	rotationAngle: number;
+	scaleFactor: number;
+	[k: string]: any;
+};
+
+export interface ParticleLayerShape {
+	data: { name?: string; hidden?: boolean } & Record<string, unknown>;
 	elements: Array<Record<string, any>> & { count: number };
 	unitWidth: number;
 	unitHeight: number;
 	texture: unknown;
-	draw: () => void;
+	draw: (opacity?: number) => void;
 	[k: string]: any;
 }
 
-interface ParticleEmitterShape {
+export interface ParticleEmitterShape {
 	startX: number;
 	startY: number;
 	layers: ParticleLayerShape[];
@@ -62,6 +90,8 @@ interface ParticleEmitterShape {
 		top: number;
 		right: number;
 		bottom: number;
+		width: number;
+		height: number;
 		hasArea: boolean;
 	};
 	update: (deltaTime: number) => void;
@@ -74,8 +104,8 @@ interface ParticleEmitterShape {
 
 // 粒子编辑器上下文（tab 传入 + open/load 运行时挂载 editor）
 interface ParticleContextShape {
-	meta: { guid: string; path: string } & Record<string, any>;
-	particle?: Record<string, any>;
+	meta: { guid: string; path: string } & Record<string, unknown>;
+	particle?: Record<string, unknown>;
 	editor: {
 		target: unknown;
 		emitter: ParticleEmitterShape;
@@ -84,20 +114,26 @@ interface ParticleContextShape {
 		centerY: number;
 		paused: boolean;
 	};
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 // history processor 记录数据（particle-layer-create/delete/remove/hidden）
 interface ParticleHistoryData {
-	item: { hidden: boolean } & Record<string, any>;
+	item: { hidden: boolean } & Record<string, unknown>;
 	oldValue: boolean;
 	newValue: boolean;
-	response?: Record<string, any>;
-	[k: string]: any;
+	response?: Record<string, unknown>;
+	[k: string]: unknown;
 }
 
 // config 中 colors 运行时必有（save/load 访问 colors.particleBackground）
 type ParticleConfigShape = EditorConfigShape & { colors: NonNullable<EditorConfigShape['colors']> };
+
+type ParticleListItem = {
+	image?: string;
+	sprite: { hframes: number; vframes: number };
+	element: HTMLElement & { hiddenIcon?: HTMLElement; hiddenState?: unknown };
+};
 
 interface ParticleShape {
 	state: ParticleState;
@@ -109,24 +145,48 @@ interface ParticleShape {
 	marquee: HTMLElement & { pointerevent: unknown };
 	list: HTMLElement & {
 		// 运行时挂载的列表方法（Scene.list / Particle.list 共享）
-		create: ((...args: any[]) => any) | null;
-		copy: ((...args: any[]) => any) | null;
-		paste: ((...args: any[]) => any) | null;
-		delete: ((...args: any[]) => any) | null;
-		createIcon: ((...args: any[]) => any) | null;
-		updateIcon: ((...args: any[]) => any) | null;
-		createVisibilityIcon: ((...args: any[]) => any) | null;
-		updateVisibilityIcon: ((...args: any[]) => any) | null;
-		onCreate: ((...args: any[]) => any) | null;
-		onRemove: ((...args: any[]) => any) | null;
-		onDelete: ((...args: any[]) => any) | null;
-		onResume: ((...args: any[]) => any) | null;
+		create: ((dItem?: unknown) => unknown) | null;
+		copy: ((item?: unknown) => unknown) | null;
+		paste: ((dItem?: unknown) => unknown) | null;
+		delete: ((item?: unknown) => unknown) | null;
+		createIcon: ((item?: ParticleListItem) => unknown) | null;
+		updateIcon: ((item?: ParticleListItem) => unknown) | null;
+		createVisibilityIcon: ((item?: ParticleListItem) => unknown) | null;
+		updateVisibilityIcon: ((item?: ParticleListItem) => unknown) | null;
+		onCreate: ((item?: unknown) => unknown) | null;
+		onRemove: ((item?: unknown) => unknown) | null;
+		onDelete: ((item?: unknown) => unknown) | null;
+		onResume: ((item?: unknown) => unknown) | null;
 		// inspector 调用路径（particle-layer-page.ts:411/426）
-		unselect: ((...args: any[]) => any) | null;
-		updateItemName: ((...args: any[]) => any) | null;
-		[k: string]: any;
+		unselect: ((item?: unknown) => unknown) | null;
+		updateItemName: ((item?: unknown) => unknown) | null;
+		// TreeList 运行时挂载
+		data: unknown;
+		removable: boolean;
+		renamable: boolean;
+		bind: (data: () => unknown) => void;
+		creators: unknown[];
+		updaters: unknown[];
+		update: () => void;
+		restore: (operation: string, response?: unknown) => void;
+		selectWithNoEvent: (target: unknown) => void;
+		scrollToSelection: () => void;
+		addNodeTo: (node: unknown, dItem?: unknown) => void;
+		deleteNode: (item: unknown) => void;
+		rename: (item: unknown) => void;
+		[k: string]: unknown;
 	};
-	dragging: (PointerEvent & Record<string, any>) | null;
+	dragging:
+		| (PointerEvent & {
+				mode?: 'object-move' | 'scroll';
+				dragKey?: boolean;
+				enabled?: boolean;
+				startX?: number;
+				startY?: number;
+				scrollLeft?: number;
+				scrollTop?: number;
+		  })
+		| null;
 	target: {
 		area: {
 			type: 'rectangle' | 'circle';
@@ -135,7 +195,7 @@ interface ParticleShape {
 			width: number;
 			height: number;
 			radius: number;
-		} & Record<string, any>;
+		} & Record<string, unknown>;
 	} | null;
 	paused: boolean;
 	history: History | null;
@@ -174,21 +234,21 @@ interface ParticleShape {
 	save: ParticleMethod;
 	close: (() => void) | null;
 	destroy: ((context: ParticleContextShape) => void) | null;
-	restart: ParticleMethod;
-	undo: ParticleMethod;
-	redo: ParticleMethod;
+	restart: (() => void) | null;
+	undo: (() => void) | null;
+	redo: (() => void) | null;
 	setSpeed: ParticleMethod;
 	setZoom: ParticleMethod;
 	setTarget: ParticleMethod;
 	updateTarget: ParticleMethod;
 	updateTargetItem: ParticleMethod;
-	updateParticleInfo: ParticleMethod;
-	updateHead: ParticleMethod;
-	resize: ParticleMethod;
+	updateParticleInfo: (() => void) | null;
+	updateHead: (() => void) | null;
+	resize: (() => void) | null;
 	getPointerCoords: ParticleMethod;
 	updateCamera: ParticleMethod;
 	updateTransform: ParticleMethod;
-	updateElements: ParticleMethod;
+	updateElements: ((deltaTime: number) => void) | null;
 	drawElements: ParticleMethod;
 	drawBackground: ParticleMethod;
 	drawCoordinateAxes: ParticleMethod;
@@ -197,18 +257,18 @@ interface ParticleShape {
 	drawAreaWireframe: ParticleMethod;
 	drawElementWireframes: ParticleMethod;
 	drawElementAnchors: ParticleMethod;
-	computeOuterRect: ParticleMethod;
-	selectEmitter: ParticleMethod;
-	requestAnimation: ParticleMethod;
-	updateAnimation: ParticleMethod;
-	stopAnimation: ParticleMethod;
-	requestRendering: ParticleMethod;
-	renderingFunction: ParticleMethod;
-	stopRendering: ParticleMethod;
+	computeOuterRect: (() => void) | null;
+	selectEmitter: ((x: number, y: number) => boolean) | null;
+	requestAnimation: (() => void) | null;
+	updateAnimation: ((deltaTime: number) => void) | null;
+	stopAnimation: (() => void) | null;
+	requestRendering: (() => void) | null;
+	renderingFunction: (() => void) | null;
+	stopRendering: (() => void) | null;
 	switchWireframe: ParticleMethod;
 	switchAnchor: ParticleMethod;
 	switchPause: ParticleMethod;
-	planToSave: ParticleMethod;
+	planToSave: (() => void) | null;
 	saveToConfig: ParticleMethod;
 	loadFromConfig: ParticleMethod;
 	saveToProject: ParticleMethod;
@@ -241,9 +301,14 @@ interface ParticleShape {
 	listPopup: ParticleMethod;
 	listChange: ParticleMethod;
 	// classes（运行时挂载 ParticleEmitter/ParticleLayer/ParticleElement 类）
-	Emitter: { new (data: any): ParticleEmitterShape };
-	Layer: { new (emitter: ParticleEmitterShape, data: any): ParticleLayerShape };
-	Element: { new (arg: any): Record<string, any>; stage: Record<string, any> };
+	Emitter: { new (data: ParticleEmitterDataShape): ParticleEmitterShape };
+	Layer: {
+		new (emitter: ParticleEmitterShape, data: ParticleLayerDataShape): ParticleLayerShape;
+	};
+	Element: {
+		new (layer: ParticleElementLayer): ParticleElementShape;
+		stage: Record<string, any>;
+	};
 }
 
 export const Particle: ParticleShape = {
@@ -368,11 +433,14 @@ export const Particle: ParticleShape = {
 	listRecord: null,
 	listPopup: null,
 	listChange: null,
-	Emitter: null as unknown as { new (data: any): ParticleEmitterShape },
+	Emitter: null as unknown as { new (data: ParticleEmitterDataShape): ParticleEmitterShape },
 	Layer: null as unknown as {
-		new (emitter: ParticleEmitterShape, data: any): ParticleLayerShape;
+		new (emitter: ParticleEmitterShape, data: ParticleLayerDataShape): ParticleLayerShape;
 	},
-	Element: null as unknown as { new (arg: any): Record<string, any>; stage: Record<string, any> }
+	Element: null as unknown as {
+		new (layer: ParticleElementLayer): ParticleElementShape;
+		stage: Record<string, any>;
+	}
 };
 
 Particle.list.create = null as unknown as (...args: unknown[]) => any;
@@ -553,7 +621,7 @@ Particle.load = function (this: typeof Particle, context: ParticleContextShape) 
 	if (!context.editor) {
 		context.editor = {
 			target: null,
-			emitter: new Particle.Emitter(context.particle!),
+			emitter: new Particle.Emitter(context.particle! as unknown as ParticleEmitterDataShape),
 			history: new History(100),
 			centerX: 0,
 			centerY: 0,
@@ -562,7 +630,7 @@ Particle.load = function (this: typeof Particle, context: ParticleContextShape) 
 	}
 	const { particle, editor } = context;
 
-	this.layers = particle!.layers;
+	this.layers = (particle! as { layers: ParticleLayerShape[] }).layers;
 
 	this.emitter = editor.emitter;
 	this.history = editor.history;
@@ -619,7 +687,11 @@ Particle.destroy = function (this: typeof Particle, context: ParticleContextShap
 		this.close!();
 	}
 	context.editor.emitter.destroy();
-	TreeList.deleteCaches(context.particle!.layers);
+	TreeList.deleteCaches(
+		(context.particle! as { layers: unknown }).layers as Parameters<
+			typeof TreeList.deleteCaches
+		>[0]
+	);
 };
 
 Particle.restart = function () {
@@ -789,7 +861,7 @@ Particle.resize = function () {
 
 Particle.getPointerCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: ParticleShape, event) {
+	return function (this: ParticleShape, event: PointerEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - (this.outerWidth! >> 1)) / this.scaleX!;
@@ -798,7 +870,11 @@ Particle.getPointerCoords = (function IIFE() {
 	};
 })();
 
-Particle.updateCamera = function (this: ParticleShape, x = this.centerX, y = this.centerY) {
+Particle.updateCamera = function (
+	this: ParticleShape,
+	x: number = this.centerX!,
+	y: number = this.centerY!
+) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
 	const scrollX = x * this.scaleX! + this.outerWidth! / 2;
@@ -1256,7 +1332,7 @@ Particle.stopRendering = function () {
 };
 
 Particle.switchWireframe = (function IIFE() {
-	return function (this: ParticleShape, enabled = !this.showWireframe) {
+	return function (this: ParticleShape, enabled: boolean = !this.showWireframe) {
 		const item = $('#particle-view-wireframe');
 		if (enabled) {
 			addClass(item, 'selected');
@@ -1269,7 +1345,7 @@ Particle.switchWireframe = (function IIFE() {
 })();
 
 Particle.switchAnchor = (function IIFE() {
-	return function (this: ParticleShape, enabled = !this.showAnchor) {
+	return function (this: ParticleShape, enabled: boolean = !this.showAnchor) {
 		const item = $('#particle-view-anchor');
 		if (enabled) {
 			addClass(item, 'selected');
@@ -1282,7 +1358,7 @@ Particle.switchAnchor = (function IIFE() {
 })();
 
 Particle.switchPause = (function IIFE() {
-	return function (this: ParticleShape, enabled = !this.paused) {
+	return function (this: ParticleShape, enabled: boolean = !this.paused) {
 		const item = $('#particle-control-pause');
 		this.paused = enabled;
 		if (enabled) {
@@ -1304,7 +1380,7 @@ Particle.saveToConfig = function (config: ParticleConfigShape) {
 };
 
 Particle.loadFromConfig = function (config: ParticleConfigShape) {
-	this.background = new StageColor(config.colors.particleBackground, () =>
+	this.background = new StageColor(config.colors.particleBackground!, () =>
 		this.requestRendering!()
 	);
 };
@@ -1600,8 +1676,8 @@ Particle.pointermove = function (event: PointerEvent) {
 				const dpr = window.devicePixelRatio;
 				const distX = ((event.clientX - dragging.clientX) * dpr) / Particle.scaleX!;
 				const distY = ((event.clientY - dragging.clientY) * dpr) / Particle.scaleY!;
-				const x = Math.round(dragging.startX + distX);
-				const y = Math.round(dragging.startY + distY);
+				const x = Math.round(dragging.startX! + distX);
+				const y = Math.round(dragging.startY! + distY);
 				if (emitter.startX !== x || emitter.startY !== y) {
 					emitter.startX = x;
 					emitter.startY = y;
@@ -1656,7 +1732,7 @@ Particle.listPointerdown = function (this: ParticleShape['list'], event: Pointer
 			switch (element.tagName) {
 				case 'VISIBILITY-ICON': {
 					const { item } = element.parentNode as unknown as {
-						item: { hidden: boolean } & Record<string, any>;
+						item: { hidden: boolean } & Record<string, unknown>;
 					};
 					const { hidden } = item;
 					item.hidden = !hidden;
@@ -1836,12 +1912,13 @@ Particle.list.delete = function (item) {
 };
 
 // 列表 - 重写创建图标方法
-Particle.list.createIcon = function (item) {
+Particle.list.createIcon = function (item: unknown) {
 	const icon = document.createElement('node-icon');
-	const path = File.getPath!(item.image);
+	const { image, sprite } = item as ParticleListItem;
+	const path = File.getPath!(image);
 	if (path) {
 		addClass(icon, 'icon-particle-image');
-		setIconClip(icon, path, 0, 0, -item.sprite.hframes, -item.sprite.vframes);
+		setIconClip(icon, path, 0, 0, -sprite.hframes, -sprite.vframes);
 	} else {
 		icon.textContent = '\uf2dc';
 	}
@@ -1849,8 +1926,8 @@ Particle.list.createIcon = function (item) {
 };
 
 // 列表 - 创建可见性图标
-Particle.list.createVisibilityIcon = function (item) {
-	const { element } = item;
+Particle.list.createVisibilityIcon = function (item: unknown) {
+	const { element } = item as ParticleListItem;
 	const hiddenIcon = document.createElement('visibility-icon');
 	hiddenIcon.style.right = '0';
 	element.appendChild(hiddenIcon);

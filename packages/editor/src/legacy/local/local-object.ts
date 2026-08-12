@@ -14,7 +14,10 @@ export const GameLocal: {
 	get: (id: string) => string;
 	replace: (text: string) => string;
 	reloadLanguages: () => void;
-	datachange: (event: any) => void;
+	datachange: (event: {
+		key?: string;
+		last?: { localization: typeof Data.config.localization };
+	}) => void;
 } = {
 	active: '',
 	language: '',
@@ -32,6 +35,14 @@ export const GameLocal: {
 	datachange: () => {}
 };
 
+interface LanguageSettings {
+	name: string;
+	font: string;
+	scale: number;
+	languages?: LanguageSettings[];
+	default?: string;
+}
+
 GameLocal.initialize = function () {
 	this.setLanguage(Data.config.localization.default);
 
@@ -45,7 +56,7 @@ GameLocal.setLanguage = async function (language: string) {
 		if (active === 'auto') {
 			active = this.getLanguage();
 		}
-		let settings = languages.find((lang: any) => lang.name === active);
+		let settings = languages.find((lang: LanguageSettings) => lang.name === active);
 		if (!settings) settings = languages[0] ?? { name: active, font: '', scale: 1 };
 		try {
 			this.active = settings.name;
@@ -54,14 +65,14 @@ GameLocal.setLanguage = async function (language: string) {
 			Printer.setLanguageFont(settings.font);
 			Printer.setSizeScale(settings.scale);
 			Printer.setWordWrap(['zh-CN', 'zh-TW', 'ja', 'ko'].includes(active) ? 'break' : 'keep');
-		} catch (error: any) {
-			(Log.throw as ((error: any) => void) | null)?.(error);
+		} catch (error: unknown) {
+			Log.throw?.(error);
 		}
 	}
 };
 
 GameLocal.getLanguage = function () {
-	const languages = Data.config.localization.languages.map((lang: any) => lang.name);
+	const languages = Data.config.localization.languages.map((lang: LanguageSettings) => lang.name);
 	let nLanguage = navigator.language;
 	if (this.langRemap[nLanguage]) {
 		nLanguage = this.langRemap[nLanguage];
@@ -100,15 +111,21 @@ GameLocal.replace = function (text: string) {
 };
 
 GameLocal.reloadLanguages = function () {
-	const languages = Data.config.localization.languages.map((lang: any) => lang.name);
-	const reload = (items: any[]) => {
+	const languages = Data.config.localization.languages.map((lang: LanguageSettings) => lang.name);
+	interface LocalizationNode {
+		class?: string;
+		children?: LocalizationNode[];
+		contents?: Record<string, string>;
+		[k: string]: unknown;
+	}
+	const reload = (items: LocalizationNode[]) => {
 		for (const item of items) {
 			if (item.class === 'folder') {
-				reload(item.children);
+				reload(item.children!);
 			} else {
 				const contents: Record<string, string> = {};
 				for (const language of languages) {
-					contents[language] = item.contents[language] ?? '';
+					contents[language] = item.contents![language] ?? '';
 				}
 				item.contents = contents;
 			}
@@ -118,12 +135,15 @@ GameLocal.reloadLanguages = function () {
 	File.planToSave?.(Data.manifest.project.localization);
 };
 
-GameLocal.datachange = function (event: any) {
+GameLocal.datachange = function (event: {
+	key?: string;
+	last?: { localization: typeof Data.config.localization };
+}) {
 	if (event.key === 'config') {
-		const last = event.last.localization;
+		const last = event.last!.localization;
 		const now = Data.config.localization;
-		const lastLanguages = last.languages.map((lang: any) => lang.name);
-		const nowLanguages = now.languages.map((lang: any) => lang.name);
+		const lastLanguages = last.languages!.map((lang: LanguageSettings) => lang.name);
+		const nowLanguages = now.languages!.map((lang: LanguageSettings) => lang.name);
 		if (JSON.stringify(lastLanguages) !== JSON.stringify(nowLanguages)) {
 			GameLocal.reloadLanguages();
 			// 如果是自动语言，随着语言列表的变化重新加载
@@ -137,7 +157,7 @@ GameLocal.datachange = function (event: any) {
 			GameLocal.setLanguage(now.default);
 			return;
 		}
-		const selector = (lang: any) => lang.name === GameLocal.active;
+		const selector = (lang: LanguageSettings) => lang.name === GameLocal.active;
 		const lastSettings = last.languages.find(selector);
 		const nowSettings = now.languages.find(selector);
 		if (JSON.stringify(lastSettings ?? '') !== JSON.stringify(nowSettings ?? '')) {

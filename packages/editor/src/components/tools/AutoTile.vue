@@ -99,13 +99,13 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onTemplatesSelect = (event: any) => {
+const onTemplatesSelect = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesSelect?.(event);
 };
-const onTemplatesPopup = (event: any) => {
+const onTemplatesPopup = (event: PointerEvent & { value?: unknown }) => {
 	AutoTile?.templatesPopup?.(event);
 };
-const onTemplatesChange = (event: any) => {
+const onTemplatesChange = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesChange?.(event);
 };
 

@@ -2,8 +2,10 @@ import { defineStore } from 'pinia';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { shallowRef } from 'vue';
 
+type PluginItemShape = { id: string; enabled: boolean; [k: string]: any };
+
 export const usePluginStore = defineStore('plugin', () => {
-	const plugins = shallowRef<Record<string, any>>([]);
+	const plugins = shallowRef<PluginItemShape[] | Record<string, PluginItemShape>>([]);
 
 	function syncState() {
 		plugins.value = PluginManager?.plugins ?? [];
@@ -33,15 +35,15 @@ export const usePluginStore = defineStore('plugin', () => {
 		PluginManager?.loadOverview?.();
 	}
 
-	function createOverview(...args: any[]) {
+	function createOverview(...args: unknown[]) {
 		return PluginManager?.createOverview?.(...args);
 	}
 
-	function createData(...args: any[]) {
+	function createData(...args: unknown[]) {
 		return PluginManager?.createData?.(...args);
 	}
 
-	function getItemById(...args: any[]) {
+	function getItemById(...args: unknown[]) {
 		return PluginManager?.getItemById?.(...args);
 	}
 
@@ -49,83 +51,83 @@ export const usePluginStore = defineStore('plugin', () => {
 		PluginManager?.switchOverviewMode?.();
 	}
 
-	function parseMeta(...args: any[]) {
+	function parseMeta(...args: unknown[]) {
 		return PluginManager?.parseMeta?.(...args);
 	}
 
-	function reconstruct(...args: any[]) {
+	function reconstruct(...args: unknown[]) {
 		return PluginManager?.reconstruct?.(...args);
 	}
 
-	function saveToProject(...args: any[]) {
+	function saveToProject(...args: unknown[]) {
 		PluginManager?.saveToProject?.(...args);
 	}
 
-	function loadFromProject(...args: any[]) {
+	function loadFromProject(...args: unknown[]) {
 		PluginManager?.loadFromProject?.(...args);
 	}
 
-	function windowClose(...args: any[]) {
+	function windowClose(...args: unknown[]) {
 		PluginManager?.windowClose?.(...args);
 	}
 
-	function windowClosed(...args: any[]) {
+	function windowClosed(...args: unknown[]) {
 		PluginManager?.windowClosed?.(...args);
 	}
 
-	function keydown(...args: any[]) {
+	function keydown(...args: unknown[]) {
 		PluginManager?.keydown?.(...args);
 	}
 
-	function pointerdown(...args: any[]) {
+	function pointerdown(...args: unknown[]) {
 		PluginManager?.pointerdown?.(...args);
 	}
 
-	function scriptChange(...args: any[]) {
+	function scriptChange(...args: unknown[]) {
 		PluginManager?.scriptChange?.(...args);
 	}
 
-	function listKeydown(...args: any[]) {
+	function listKeydown(...args: unknown[]) {
 		PluginManager?.listKeydown?.(...args);
 	}
 
-	function listSelect(...args: any[]) {
+	function listSelect(...args: unknown[]) {
 		PluginManager?.listSelect?.(...args);
 	}
 
-	function listUnselect(...args: any[]) {
+	function listUnselect(...args: unknown[]) {
 		PluginManager?.listUnselect?.(...args);
 	}
 
-	function listChange(...args: any[]) {
+	function listChange(...args: unknown[]) {
 		PluginManager?.listChange?.(...args);
 	}
 
-	function listPopup(...args: any[]) {
+	function listPopup(...args: unknown[]) {
 		PluginManager?.listPopup?.(...args);
 	}
 
-	function listOpen(...args: any[]) {
+	function listOpen(...args: unknown[]) {
 		PluginManager?.listOpen?.(...args);
 	}
 
-	function overviewPointerdown(...args: any[]) {
+	function overviewPointerdown(...args: unknown[]) {
 		PluginManager?.overviewPointerdown?.(...args);
 	}
 
-	function parameterPaneUpdate(...args: any[]) {
+	function parameterPaneUpdate(...args: unknown[]) {
 		PluginManager?.parameterPaneUpdate?.(...args);
 	}
 
-	function confirm(...args: any[]) {
+	function confirm(...args: unknown[]) {
 		PluginManager?.confirm?.(...args);
 	}
 
-	function apply(...args: any[]) {
+	function apply(...args: unknown[]) {
 		PluginManager?.apply?.(...args);
 	}
 
-	function checkValidate(...args: any[]) {
+	function checkValidate(...args: unknown[]) {
 		return PluginManager?.checkValidate?.(...args);
 	}
 

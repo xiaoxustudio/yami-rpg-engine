@@ -29,28 +29,44 @@ Command.cases.addAnimationComponent = new CommandSchema({
 		]);
 		// addAnimationComponent-animationId write 经 Vue 模板转发（addAnimationComponent.vue @write → Command.cases.addAnimationComponent.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		const elMotion = $('#addAnimationComponent-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	},
-	parseRotatable(rotatable: any) {
+	parseRotatable(rotatable: boolean) {
 		return rotatable ? Local.get!('command.addAnimationComponent.rotatable') : '';
 	},
-	parseSyncAngle(syncAngle: any) {
+	parseSyncAngle(syncAngle: boolean) {
 		return syncAngle ? Local.get!('command.addAnimationComponent.syncAngle') : '';
 	},
-	parsePriority(priority: any) {
+	parsePriority(priority: number) {
 		if (priority === 0) return '';
 		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority > 0 ? Token('+') + abs : Token('-') + abs;
 	},
-	parseOffsetY(offsetY: any) {
+	parseOffsetY(offsetY: number) {
 		if (offsetY === 0) return '';
 		const abs = Command.setNumberColor!(Math.abs(offsetY)) + 'px';
 		return offsetY > 0 ? abs : Token('-') + abs;
 	},
-	customParse({ actor, animationId, motion, rotatable, syncAngle, priority, offsetY }: any) {
+	customParse({
+		actor,
+		animationId,
+		motion,
+		rotatable,
+		syncAngle,
+		priority,
+		offsetY
+	}: {
+		actor: unknown;
+		animationId: unknown;
+		motion: unknown;
+		rotatable: boolean;
+		syncAngle: boolean;
+		priority: number;
+		offsetY: number;
+	}) {
 		syncAngle = syncAngle ?? false;
 		offsetY = offsetY ?? 0;
 		const words = Command.words

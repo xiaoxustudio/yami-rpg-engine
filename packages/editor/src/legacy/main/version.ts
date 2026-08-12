@@ -3,7 +3,7 @@ import { Directory } from '@/file/directory-object.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@/update/updater.ts';
 
-Editor.checkForEditorUpdates = function (this: any) {
+Editor.checkForEditorUpdates = function (this: typeof Editor) {
 	if (!Editor.config) return;
 	const ver1 = Editor.config!.version;
 	const ver2 = Updater.latestEditorVersion;
@@ -15,7 +15,7 @@ Editor.checkForEditorUpdates = function (this: any) {
 	}
 };
 
-Editor.checkForProjectUpdates = async function (this: any) {
+Editor.checkForProjectUpdates = async function (this: typeof Editor) {
 	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = Updater.getVersionNumber!(ver1!);
@@ -48,7 +48,7 @@ Editor.checkForProjectUpdates = async function (this: any) {
 	}
 };
 
-Editor.isProjectVersionSupported = function (this: any) {
+Editor.isProjectVersionSupported = function (this: typeof Editor) {
 	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = Updater.getVersionNumber!(ver1!);

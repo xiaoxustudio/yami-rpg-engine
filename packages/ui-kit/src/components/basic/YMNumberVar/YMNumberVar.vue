@@ -9,7 +9,7 @@ interface Props {
 	step?: number | string;
 	decimals?: number | string;
 	unit?: string;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
@@ -19,25 +19,36 @@ const props = withDefaults(defineProps<Props>(), {
 	step: '1',
 	decimals: 0,
 	unit: '',
-	modelValue: null,
+	modelValue: null as never,
 	disabled: false
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 const numBoxRef = ref<InstanceType<typeof YMNumberBox> | null>(null);
+
+interface NumberVarApi extends HTMLElement {
+	mode?: 'constant' | 'variable';
+	read: () => unknown;
+	write: (value: unknown) => void;
+	switch: (target?: 'constant' | 'variable') => void;
+	enable: () => void;
+	disable: () => void;
+	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
+	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+}
 
 const mode = ref<'constant' | 'variable'>('constant');
 const numValue = ref(0);
 const varValue = ref<any>(null);
 const pluginInput = ref(false);
 
-const read = (): any => {
+const read = (): unknown => {
 	switch (mode.value) {
 		case 'constant':
 			return numBoxRef.value ? numBoxRef.value.read() : numValue.value;
@@ -46,7 +57,7 @@ const read = (): any => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	switch (typeof value) {
 		case 'number': {
 			switchMode('constant');
@@ -82,12 +93,12 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as any).mode = target;
+			(el as NumberVarApi).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
 			nextTick(() => {
-				const input = (numBoxRef.value as any)?.input;
+				const input = numBoxRef.value?.input;
 				if (focus && input) {
 					input.focus();
 					input.select();
@@ -116,10 +127,10 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg: any): any => {
+const getFocus = (modeArg?: string): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant': {
-			const el = (numBoxRef.value as any)?.input;
+			const el = numBoxRef.value?.input;
 			if (!el) return;
 			setTimeout(() => {
 				el.focus();
@@ -145,7 +156,7 @@ const getFocus = (modeArg: any): any => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -200,14 +211,14 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).switch = switchMode;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
-	(el as any).mode = mode.value;
+	(el as NumberVarApi).read = read;
+	(el as NumberVarApi).write = write;
+	(el as NumberVarApi).switch = switchMode;
+	(el as NumberVarApi).enable = enable;
+	(el as NumberVarApi).disable = disable;
+	(el as NumberVarApi).getFocus = getFocus;
+	(el as NumberVarApi).on = on;
+	(el as NumberVarApi).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

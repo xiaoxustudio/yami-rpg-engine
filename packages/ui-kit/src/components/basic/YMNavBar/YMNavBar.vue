@@ -14,8 +14,8 @@ let selectEventEnabled = false;
 
 const numberPattern = /^-?\d+(?:\.\d+)?$/;
 
-const parseValue = (el: HTMLElement): any => {
-	const node = el as HTMLElement & { dataValue?: any };
+const parseValue = (el: HTMLElement): unknown => {
+	const node = el as HTMLElement & { dataValue?: unknown };
 	if (node.dataValue === undefined) {
 		const string = el.getAttribute('value') ?? '';
 		node.dataValue = numberPattern.test(string) ? parseFloat(string) : string;
@@ -23,7 +23,7 @@ const parseValue = (el: HTMLElement): any => {
 	return node.dataValue;
 };
 
-const read = (): any => {
+const read = (): unknown => {
 	const element = root.value;
 	if (!element) return undefined;
 	const item = element.querySelector('.selected') as HTMLElement | null;
@@ -37,7 +37,7 @@ const unselect = (): void => {
 	if (item) item.classList.remove('selected');
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	const element = root.value;
 	if (!element) return;
 	const items = Array.from(element.children);
@@ -55,7 +55,7 @@ const write = (value: any): void => {
 			target.classList.add('selected');
 		}
 		if (writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: any };
+			const writeEvent = new Event('write') as Event & { value: unknown };
 			writeEvent.value = target ? value : undefined;
 			element.dispatchEvent(writeEvent);
 		}
@@ -64,7 +64,7 @@ const write = (value: any): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const element = root.value;
@@ -80,6 +80,13 @@ const on = (
 	}
 };
 
+type NavBarHost = HTMLElement & {
+	read: typeof read;
+	write: typeof write;
+	unselect: typeof unselect;
+	on: typeof on;
+};
+
 const pointerdown = (event: PointerEvent): void => {
 	const element = root.value;
 	if (!element) return;
@@ -89,7 +96,7 @@ const pointerdown = (event: PointerEvent): void => {
 		const value = parseValue(target);
 		write(value);
 		if (selectEventEnabled) {
-			const select = new Event('select') as Event & { value: any };
+			const select = new Event('select') as Event & { value: unknown };
 			select.value = value;
 			element.dispatchEvent(select);
 		}
@@ -104,10 +111,10 @@ onMounted(() => {
 			element.removeChild(child);
 		}
 	}
-	(element as any).read = read;
-	(element as any).write = write;
-	(element as any).unselect = unselect;
-	(element as any).on = on;
+	(element as NavBarHost).read = read;
+	(element as NavBarHost).write = write;
+	(element as NavBarHost).unselect = unselect;
+	(element as NavBarHost).on = on;
 	element.addEventListener('pointerdown', pointerdown);
 });
 

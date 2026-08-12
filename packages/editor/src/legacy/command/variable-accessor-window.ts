@@ -12,14 +12,14 @@ interface VariableGetterTarget {
 	dataValue: {
 		type: string;
 		key: string;
-		actor?: { type: string; [k: string]: any };
-		skill?: { type: string; [k: string]: any };
-		state?: { type: string; [k: string]: any };
-		equipment?: { type: string; [k: string]: any };
-		item?: { type: string; [k: string]: any };
-		element?: { type: string; [k: string]: any };
+		actor?: { type: string };
+		skill?: { type: string };
+		state?: { type: string };
+		equipment?: { type: string };
+		item?: { type: string };
+		element?: { type: string };
 	};
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -32,6 +32,12 @@ type VarTypeSet = {
 	deletable: VarTypeItem[];
 };
 
+interface VarListEntry {
+	name: string;
+	type: string;
+	command?: { id: string } | null;
+}
+
 interface VarGetterState {
 	target: VariableGetterTarget;
 	filter: string;
@@ -39,13 +45,13 @@ interface VarGetterState {
 
 interface VariableGetterShape {
 	keyBox: HTMLElement & {
-		loadItems(items: any[]): void;
+		loadItems(items: VarTypeItem[]): void;
 		selectBox: HTMLElement & {
 			textContent: string;
 			write(v: unknown): void;
-			read(): any;
+			read(): unknown;
 			invalid: boolean;
-			dataItems: any[];
+			dataItems: VarTypeItem[];
 		};
 	};
 	target: VariableGetterTarget | null;
@@ -59,7 +65,7 @@ interface VariableGetterShape {
 	loadPresetKeys: (group: string) => void;
 	checkDataForPlugin: (data: { getter?: string }) => boolean;
 	createDefaultForPlugin: () => { getter: string; type: string; key: string };
-	createVarListGenerator: (filterObject: VariableGetterShape) => () => any[];
+	createVarListGenerator: (filterObject: VariableGetterShape) => () => VarListEntry[];
 	typeWrite: (event: Event & { value: string }) => void;
 	typeInput: (event: Event & { value: string }) => void;
 	confirm: (event: Event) => void;
@@ -69,13 +75,13 @@ interface VariableGetterShape {
 
 export const VariableGetter: VariableGetterShape = {
 	keyBox: $('#variableGetter-preset-key') as unknown as HTMLElement & {
-		loadItems: (items: any[]) => void;
+		loadItems: (items: VarTypeItem[]) => void;
 		selectBox: HTMLElement & {
 			textContent: string;
 			write: (v: unknown) => void;
-			read: () => any;
+			read: () => unknown;
 			invalid: boolean;
-			dataItems: any[];
+			dataItems: VarTypeItem[];
 		};
 	},
 	target: null,
@@ -99,13 +105,13 @@ export const VariableGetter: VariableGetterShape = {
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
 	this.keyBox = $('#variableGetter-preset-key') as unknown as HTMLElement & {
-		loadItems: (items: any[]) => void;
+		loadItems: (items: VarTypeItem[]) => void;
 		selectBox: HTMLElement & {
 			textContent: string;
 			write: (v: unknown) => void;
-			read: () => any;
+			read: () => unknown;
 			invalid: boolean;
-			dataItems: any[];
+			dataItems: VarTypeItem[];
 		};
 	};
 	if (!this.keyBox) return;
@@ -159,7 +165,7 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 
 	$('#variableGetter-type').setItemNames = function (
 		this: HTMLElement & { dataItems: VarTypeItem[] },
-		options: any
+		options: Record<string, string | { name?: string; tip?: string }>
 	) {
 		const backup = this.dataItems;
 		this.dataItems = allTypes;
@@ -197,8 +203,11 @@ VariableGetter.initialize = function (this: VariableGetterShape): void {
 };
 
 VariableGetter.open = function (this: VariableGetterShape, target: VariableGetterTarget): void {
-	const filter = target.filter;
-	// 若主窗口已打开，则叠加打开窗口2（避免递归冲突）
+	if (!this.types || !this._state) {
+		this.initialize!();
+	}
+	const filter = target.filter ?? 'all';
+	// 若主窗口已打开，则叠加打开窗口2（避免递归冲突�?
 	if (Window.isWindowOpen!('variableGetter')) {
 		this._openCore!(target, filter, 'variableGetter2');
 	} else {
@@ -375,8 +384,8 @@ VariableGetter.createDefaultForPlugin = function (this: typeof VariableGetter): 
 VariableGetter.createVarListGenerator = function (
 	this: typeof VariableGetter,
 	filterObject: VariableGetterShape
-): () => any[] {
-	return function (): any[] {
+): () => VarListEntry[] {
+	return function (): VarListEntry[] {
 		if (!EventEditor.commandList.read()) return [];
 
 		const filter = (filterObject.filter as string).includes('boolean')
@@ -390,9 +399,9 @@ VariableGetter.createVarListGenerator = function (
 						: 'any';
 
 		const list = EventEditor.commandList as unknown as {
-			elements: any[] & { count?: number };
+			elements: HTMLElement[] & { count?: number };
 			active: number | null | undefined;
-			varList?: any[];
+			varList?: VarListEntry[];
 		};
 		const elements = list.elements;
 		const count = elements.count ?? 0;

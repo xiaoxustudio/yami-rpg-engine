@@ -14,7 +14,7 @@ import { Inspector } from './inspector.ts';
 		sprites: unknown;
 		initialize: ((this: typeof FileAnimation) => void) | null;
 		create: ((this: typeof FileAnimation) => unknown) | null;
-		open: ((this: typeof FileAnimation, animation: any) => void) | null;
+		open: ((this: typeof FileAnimation, animation: { sprites: unknown }) => void) | null;
 		close: ((this: typeof FileAnimation) => void) | null;
 		[k: string]: unknown;
 	}
@@ -57,7 +57,7 @@ import { Inspector } from './inspector.ts';
 		};
 	};
 
-	FileAnimation.open = function (this: typeof FileAnimation, animation: any) {
+	FileAnimation.open = function (this: typeof FileAnimation, animation: { sprites: unknown }) {
 		if (this.target !== animation) {
 			this.target = animation;
 
@@ -111,7 +111,7 @@ import { Inspector } from './inspector.ts';
 			return [name, `${fileName} [${hframes}x${vframes}]`];
 		},
 		createExclusionMap: function (this: { list: { data: { id: string }[] } }) {
-			const exclusions = {} as Record<string, any>;
+			const exclusions = {} as Record<string, boolean>;
 			for (const sprite of this.list.data) {
 				exclusions[sprite.id] = true;
 			}

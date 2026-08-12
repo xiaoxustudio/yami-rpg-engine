@@ -4,23 +4,24 @@ import { on } from '@/util/element-utils.ts';
 import { Editor } from '@/main/editor.ts';
 
 export const ObjectFolder: {
-	initialize: ((...args: any[]) => any) | null;
-	open: ((...args: any[]) => any) | null;
-	confirm: ((...args: any[]) => any) | null;
+	initialize: (() => void) | null;
+	open: (() => void) | null;
+	confirm: ((event: Event) => void) | null;
 } = {
 	initialize: null,
 	open: null,
 	confirm: null
 };
 
-ObjectFolder.initialize = function (this: any) {
+ObjectFolder.initialize = function (this: typeof ObjectFolder) {
 	const el = $('#object-folder-confirm');
 	if (el) on(el, 'click', this.confirm!);
 };
 
-ObjectFolder.open = function (this: any) {
+ObjectFolder.open = function (this: typeof ObjectFolder) {
 	Window.open!('object-folder');
-	const data = Editor.project!.scene.defaultFolders;
+	const data = (Editor.project!.scene as { defaultFolders: Record<string, unknown> })
+		.defaultFolders;
 	const write = getElementWriter('object-folder', data);
 	write('tilemap');
 	write('actor');
@@ -31,9 +32,9 @@ ObjectFolder.open = function (this: any) {
 	write('parallax');
 };
 
-ObjectFolder.confirm = function (this: any, event: any) {
+ObjectFolder.confirm = function (this: typeof ObjectFolder, event: Event) {
 	const read = getElementReader('object-folder');
-	Editor.project!.scene.defaultFolders = {
+	(Editor.project!.scene as { defaultFolders: Record<string, unknown> }).defaultFolders = {
 		tilemap: read('tilemap'),
 		actor: read('actor'),
 		region: read('region'),

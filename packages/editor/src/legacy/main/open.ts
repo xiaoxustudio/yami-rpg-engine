@@ -19,8 +19,8 @@ import { Local } from '@/tools/localization.ts';
 
 import { Updater } from '@/update/updater.ts';
 
-Editor.open = async function (this: any, path, agreed = false) {
-	path = Path.slash!(path ?? this.config.project);
+Editor.open = async function (this: typeof Editor, path, agreed = false) {
+	path = Path.slash!(path ?? this.config!.project);
 
 	if (!path) {
 		Layout.manager.switch('home');
@@ -31,12 +31,12 @@ Editor.open = async function (this: any, path, agreed = false) {
 		if (!FS.statSync!(path).isFile()) {
 			throw new Error('Invalid project path');
 		}
-	} catch (error: any) {
+	} catch (error: unknown) {
 		Layout.manager.switch('home');
 		return;
 	}
 
-	await this.close();
+	await this.close!();
 
 	File.updateRoot!(path);
 
@@ -45,8 +45,8 @@ Editor.open = async function (this: any, path, agreed = false) {
 	try {
 		const json = FS.readFileSync!(path, 'utf8');
 		this.project = JSON.parse(json);
-		Object.defineProperty(this.project, 'code', { value: json });
-		const verNum = Updater.getVersionNumber!(this.project.version);
+		Object.defineProperty(this.project!, 'code', { value: json });
+		const verNum = Updater.getVersionNumber!(this.project!.version!);
 		if (!Editor.isProjectVersionSupported!()) {
 			return Window.confirm!(
 				{
@@ -89,11 +89,11 @@ Editor.open = async function (this: any, path, agreed = false) {
 				Updater.backupProject!();
 			}
 		}
-	} catch (error: any) {
+	} catch (error: unknown) {
 		Log.throw!(error);
 		return Window.confirm!(
 			{
-				message: error.message,
+				message: (error as Error).message,
 				close: () => {
 					Layout.manager.switch('home');
 				}
@@ -107,15 +107,15 @@ Editor.open = async function (this: any, path, agreed = false) {
 	}
 
 	try {
-		const ver = this.project.version;
-		const verNum = Updater.getVersionNumber!(ver);
+		const ver = this.project!.version;
+		const verNum = Updater.getVersionNumber!(ver!);
 		await Updater.createLocalization!(verNum);
 		const loadData = Data.loadAll!();
 		const loadDir = Directory.read!();
 		await loadData;
 		await loadDir;
 		Data.inheritMetaData!();
-	} catch (error: any) {
+	} catch (error: unknown) {
 		Log.throw!(error);
 		const type =
 			error instanceof URIError
@@ -127,7 +127,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 		Data.close!();
 		return Window.confirm!(
 			{
-				message: `${type}: ${error.message}`,
+				message: `${type}: ${(error as Error).message}`,
 				close: () => {
 					Layout.manager.switch('home');
 				}
@@ -141,15 +141,15 @@ Editor.open = async function (this: any, path, agreed = false) {
 	}
 
 	try {
-		this.updatePath(path);
+		this.updatePath!(path);
 
-		await this.checkForProjectUpdates();
+		await this.checkForProjectUpdates!();
 
 		Printer.loadDefault();
 		Command.custom.loadCommandList();
 		Animation.Player.updateStep();
-		this.loadProject();
-	} catch (error: any) {
+		this.loadProject!();
+	} catch (error: unknown) {
 		Log.throw!(error);
 		const index = path.lastIndexOf('/') + 1;
 		const message = path.slice(index);
@@ -175,7 +175,7 @@ Editor.open = async function (this: any, path, agreed = false) {
 
 	Layout.manager.switch('directory');
 
-	this.switchHotkey(true);
+	this.switchHotkey!(true);
 
 	// 启动TS编译
 	if (Data.config.script.autoCompile) {

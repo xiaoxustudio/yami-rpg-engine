@@ -8,7 +8,7 @@ import { Inspector } from './inspector.ts';
 		create: null
 	};
 
-	FileParticle.create = function (this: any) {
+	FileParticle.create = function (this: typeof FileParticle) {
 		return {
 			layers: []
 		};

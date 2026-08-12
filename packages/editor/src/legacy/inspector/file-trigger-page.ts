@@ -12,7 +12,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		target: FileTriggerData | null;
 		meta: { file: unknown } | null;
 		motions: unknown;
-		[k: string]: any;
+		update: ((trigger: FileTriggerData, key: string, value: unknown) => void) | null;
+		paramInput: ((event: Event) => void) | null;
+		listChange: ((event: Event) => void) | null;
+		[k: string]: unknown;
 	}
 	interface FileTriggerData {
 		selector: string;
@@ -297,14 +300,14 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		write(elMotion, read(elMotion));
 	};
 
-	FileTrigger.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
+	FileTrigger.paramInput = function (this: typeof FileTrigger, event: Event) {
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
 			if (new RegExp('^fileTrigger-').test(element.id)) break;
 			element = element.parentElement;
 		}
-		FileTrigger.update(FileTrigger.target!, Inspector.getKey!(element), read(element));
+		FileTrigger.update!(FileTrigger.target!, Inspector.getKey!(element), read(element));
 	};
 
 	FileTrigger.listChange = function (this: typeof FileTrigger, event: Event) {

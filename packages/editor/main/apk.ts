@@ -3,13 +3,13 @@ import { promises as fsp } from 'fs';
 import path from 'path';
 import { parseString, Builder } from 'xml2js';
 import util from 'util';
-import { exec } from 'child_process';
+import { exec, type ChildProcess } from 'child_process';
 const execPromise = util.promisify(exec);
 import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
 
 let isBuilding = false;
-let currentChildProcess: any = null;
+let currentChildProcess: ChildProcess | null = null;
 let abortController: AbortController | null = null;
 
 const defaultConfig = {
@@ -360,7 +360,7 @@ async function updateStringsFile(stringsPath: string, config: ApkConfig): Promis
 		let found = false;
 
 		if (resources.string) {
-			resources.string.forEach((item: any) => {
+			resources.string.forEach((item: { $: { name?: string }; _?: string }) => {
 				if (item.$.name === 'app_name') {
 					item._ = config.appName;
 					found = true;
@@ -535,18 +535,22 @@ async function cleanStylesXml(stylesPath: string): Promise<void> {
 	const result = await parseXml(xml);
 
 	if (result.resources && result.resources.style) {
-		result.resources.style.forEach((style: any) => {
-			if (style.$ && style.$.name === 'AppTheme') {
-				if (style.item) {
-					style.item = style.item.filter((item: any) => {
-						return !(
-							item.$.name === 'android:roundIcon' &&
-							item._ === '@mipmap/ic_launcher_round'
+		result.resources.style.forEach(
+			(style: { $?: { name?: string }; item?: { $: { name?: string }; _?: string }[] }) => {
+				if (style.$ && style.$.name === 'AppTheme') {
+					if (style.item) {
+						style.item = style.item.filter(
+							(item: { $: { name?: string }; _?: string }) => {
+								return !(
+									item.$.name === 'android:roundIcon' &&
+									item._ === '@mipmap/ic_launcher_round'
+								);
+							}
 						);
-					});
+					}
 				}
 			}
-		});
+		);
 	}
 
 	const builder = new Builder();
@@ -559,16 +563,21 @@ async function cleanPublicXml(publicXmlPath: string): Promise<void> {
 	const result = await parseXml(xml);
 
 	if (result.resources && result.resources.public) {
-		result.resources.public = result.resources.public.filter((item: any) => {
-			const name = item.$.name;
-			const type = item.$.type;
+		result.resources.public = result.resources.public.filter(
+			(item: { $: { name: string; type?: string } }) => {
+				const name = item.$.name;
+				const type = item.$.type;
 
-			// 只保留ic_launcher的资源映射，删除其他 launcher 相关资源
-			if (name === 'ic_launcher' && (type === 'mipmap' || type === 'drawable')) {
-				return true;
+				// 只保留ic_launcher的资源映射，删除其他 launcher 相关资源
+				if (name === 'ic_launcher' && (type === 'mipmap' || type === 'drawable')) {
+					return true;
+				}
+				return !(
+					name.includes('ic_launcher') &&
+					(type === 'mipmap' || type === 'drawable')
+				);
 			}
-			return !(name.includes('ic_launcher') && (type === 'mipmap' || type === 'drawable'));
-		});
+		);
 	}
 
 	const builder = new Builder();
@@ -695,7 +704,7 @@ async function verifySignature(config: ApkConfig): Promise<void> {
 
 function parseXml(xml: string): Promise<any> {
 	return new Promise((resolve, reject) => {
-		parseString(xml, (err: any, result: any) => {
+		parseString(xml, (err: Error | null, result: unknown) => {
 			if (err) reject(err);
 			else resolve(result);
 		});

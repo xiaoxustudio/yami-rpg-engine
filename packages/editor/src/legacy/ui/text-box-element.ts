@@ -1,12 +1,29 @@
 import { INTRGBA } from '@/util/color-utils.ts';
 import { Printer } from '@/printer/printer.ts';
 import { UI } from './ui-window.ts';
-import { Texture } from '@/webgl/texture.ts';
+import { Texture } from '../webgl/texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
+
+interface TextBoxElementData {
+	align?: string;
+	text?: string;
+	maxLength?: number;
+	number?: number;
+	min?: number;
+	max?: number;
+	decimals?: number;
+	type?: string;
+	padding?: number;
+	size?: number;
+	font?: string;
+	color?: string;
+	selectionColor?: string;
+	selectionBgColor?: string;
+}
 
 UI.TextBox = class TextBoxElement extends UI.Element {
 	focusing: boolean;
-	texture: any;
+	texture: Texture | null;
 	_type!: string;
 	_align!: string;
 	content!: string;
@@ -36,22 +53,22 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 	_selectionBgColorInt!: number;
 	printer: Printer | null;
 
-	constructor(data: any) {
+	constructor(data: TextBoxElementData = {}) {
 		super(data);
 		this.focusing = false;
 		this.texture = null;
-		this.align = data.align;
-		this.text = data.text;
-		this.maxLength = data.maxLength;
-		this.number = data.number;
-		this.min = data.min;
-		this.max = data.max;
-		this.decimals = data.decimals;
-		this.type = data.type;
-		this.padding = data.padding;
-		this.size = data.size;
-		this.font = data.font;
-		this.color = data.color;
+		this.align = data.align!;
+		this.text = data.text!;
+		this.maxLength = data.maxLength!;
+		this.number = data.number!;
+		this.min = data.min!;
+		this.max = data.max!;
+		this.decimals = data.decimals!;
+		this.type = data.type!;
+		this.padding = data.padding!;
+		this.size = data.size!;
+		this.font = data.font!;
+		this.color = data.color!;
 		this.textX = null;
 		this.textY = null;
 		this.textWidth = null;
@@ -61,8 +78,8 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 		this.selectionY = null;
 		this.selectionWidth = null;
 		this.selectionHeight = null;
-		this.selectionColor = data.selectionColor;
-		this.selectionBgColor = data.selectionBgColor;
+		this.selectionColor = data.selectionColor!;
+		this.selectionBgColor = data.selectionBgColor!;
 		this.printer = null;
 	}
 
@@ -269,8 +286,8 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 			const size = printer.sizes[0];
 			const vpadding = (this.height - size) / 2;
 			const paddingTop = printer.paddingTop / scale;
-			const textWidth = this.texture.base.width / scale;
-			const textHeight = this.texture.base.height / scale;
+			const textWidth = this.texture.base!.width / scale;
+			const textHeight = this.texture.base!.height / scale;
 			this.textX = this.x + this.padding;
 			this.textY = this.y + Math.max(vpadding - paddingTop, 0);
 			this.textWidth = textWidth;

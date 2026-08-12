@@ -16,7 +16,7 @@ interface KeyboardBoxElement extends HTMLElement {
 	getFocus(mode: string): HTMLInputElement | null;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -44,7 +44,7 @@ const ym = ref<{
 	getFocus(mode: string): HTMLInputElement | null;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -58,7 +58,7 @@ const disable = (): void => ym.value?.disable();
 const getFocus = (mode: string): HTMLInputElement | null => ym.value?.getFocus(mode) ?? null;
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -75,7 +75,7 @@ onMounted(() => {
 	el.getFocus = getFocus;
 	el.on = on;
 	el.input = ym.value?.input as HTMLInputElement;
-	on('input', (event: any) => emit('input', event.value));
+	on('input', (event: Event) => emit('input', event.value));
 	on('focus', () => emit('focus'));
 	on('blur', () => emit('blur'));
 });

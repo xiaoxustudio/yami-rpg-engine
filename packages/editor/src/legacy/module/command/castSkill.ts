@@ -29,7 +29,23 @@ Command.cases.castSkill = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 	},
-	customParse({ actor, mode, key, skillId, skill, keyVar, wait }: any) {
+	customParse({
+		actor,
+		mode,
+		key,
+		skillId,
+		skill,
+		keyVar,
+		wait
+	}: {
+		actor: unknown;
+		mode: string;
+		key: unknown;
+		skillId: unknown;
+		skill: unknown;
+		keyVar: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words.push(Command.parseActor!(actor));
 		switch (mode) {
 			case 'by-key':

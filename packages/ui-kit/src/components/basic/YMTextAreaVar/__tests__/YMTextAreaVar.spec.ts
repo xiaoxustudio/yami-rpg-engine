@@ -1,11 +1,12 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMTextAreaVar from '../YMTextAreaVar.vue';
+import type { TextAreaVarApi } from '../textarea-var-api';
 
 describe('YMTextAreaVar', () => {
 	it('write string stays constant and stores value', () => {
 		const wrapper = mount(YMTextAreaVar, { props: { modelValue: 'line1' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as TextAreaVarApi;
 		expect(vm.read()).toBe('line1');
 		expect(wrapper.classes()).toContain('constant');
 		expect(wrapper.find('textarea').exists()).toBe(true);
@@ -13,7 +14,7 @@ describe('YMTextAreaVar', () => {
 
 	it('write object switches to variable mode', async () => {
 		const wrapper = mount(YMTextAreaVar);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as TextAreaVarApi;
 		vm.write({ type: 'local', key: 'text' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -23,7 +24,7 @@ describe('YMTextAreaVar', () => {
 
 	it('switch toggles modes', async () => {
 		const wrapper = mount(YMTextAreaVar, { props: { modelValue: 'a' } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as TextAreaVarApi;
 		vm.switch();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -40,7 +41,7 @@ describe('YMTextAreaVar', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMTextAreaVar, { props: { modelValue: 'a' } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TextAreaVarApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');

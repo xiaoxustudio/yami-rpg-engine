@@ -3,12 +3,47 @@ import { getVariable } from '@/util/safe.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { Printer } from '@/printer/printer.ts';
 import { UI } from './ui-window.ts';
-import { Texture } from '@/webgl/texture.ts';
+import { Texture } from '../webgl/texture.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
+interface TextEffectShape {
+	type: string;
+	shadowOffsetX?: number;
+	shadowOffsetY?: number;
+	strokeWidth?: number;
+	color?: string | number;
+}
+
+interface TextDataShape {
+	direction?: string;
+	horizontalAlign?: string;
+	verticalAlign?: string;
+	content?: string;
+	size?: number;
+	lineSpacing?: number;
+	letterSpacing?: number;
+	color?: string;
+	font?: string;
+	typeface?: string;
+	effect?: TextEffectShape;
+	overflow?: string;
+	blend?: string;
+}
+
+interface EmbeddedImageShape {
+	startX: number;
+	startY: number;
+	transform: { x: number; y: number; width: number; height: number };
+	parent: unknown;
+	connected: boolean;
+	draw(): void;
+	resize(): void;
+}
+
 UI.Text = class TextElement extends UI.Element {
-	texture: any;
-	printer: any;
+	texture: ImageTexture | null;
+	printer: Printer | null;
 	_direction!: string;
 	_horizontalAlign!: string;
 	_verticalAlign!: string;
@@ -22,7 +57,7 @@ UI.Text = class TextElement extends UI.Element {
 	style: string | null;
 	weight: string | null;
 	_typeface!: string;
-	_effect!: object;
+	_effect!: TextEffectShape;
 	wordWrap: boolean;
 	truncate: boolean;
 	_overflow!: string;
@@ -45,7 +80,7 @@ UI.Text = class TextElement extends UI.Element {
 		);
 	}
 
-	constructor(data: any) {
+	constructor(data: TextDataShape) {
 		super(data);
 		this.texture = null;
 		this.printer = null;
@@ -205,7 +240,7 @@ UI.Text = class TextElement extends UI.Element {
 			this._font = value;
 			if (this.printer) {
 				this.printer.reset();
-				this.printer.fonts[0] = value || Printer.font;
+				this.printer.fonts[0] = (value || Printer.font) as string;
 			}
 		}
 	}
@@ -239,8 +274,8 @@ UI.Text = class TextElement extends UI.Element {
 			this._typeface = value;
 			if (this.printer) {
 				this.printer.reset();
-				this.printer.styles[0] = this.style;
-				this.printer.weights[0] = this.weight;
+				this.printer.styles[0] = this.style as string;
+				this.printer.weights[0] = this.weight as string;
 			}
 		}
 	}
@@ -249,7 +284,7 @@ UI.Text = class TextElement extends UI.Element {
 		return this._effect;
 	}
 
-	set effect(value: any) {
+	set effect(value: TextEffectShape) {
 		this._effect = value;
 		if (this.printer) {
 			this.printer.reset();
@@ -293,7 +328,7 @@ UI.Text = class TextElement extends UI.Element {
 	update() {
 		let printer = this.printer;
 		if (printer === null) {
-			const texture = new Texture();
+			const texture = new Texture() as ImageTexture;
 			printer = new Printer(texture);
 			printer.direction = this.direction;
 			printer.horizontalAlign = this.horizontalAlign;
@@ -302,9 +337,9 @@ UI.Text = class TextElement extends UI.Element {
 			printer.lineSpacing = this.lineSpacing;
 			printer.letterSpacing = this.letterSpacing;
 			printer.colors[0] = CSSRGBA(this.color);
-			printer.fonts[0] = this.font || Printer.font;
-			printer.styles[0] = this.style;
-			printer.weights[0] = this.weight;
+			printer.fonts[0] = (this.font || Printer.font) as string;
+			printer.styles[0] = this.style as string;
+			printer.weights[0] = this.weight as string;
 			printer.effects[0] = Printer.parseEffect(this.effect);
 			printer.wordWrap = this.wordWrap;
 			printer.truncate = this.truncate;
@@ -356,14 +391,14 @@ UI.Text = class TextElement extends UI.Element {
 			GL.blend = this.blend;
 			GL.matrix.set(UI.matrix).multiply(this.matrix);
 			GL.drawImage(
-				this.texture,
+				this.texture!,
 				this.textOuterX,
 				this.textOuterY,
 				this.textOuterWidth,
 				this.textOuterHeight
 			);
 
-			for (const image of this.printer.images) {
+			for (const image of this.printer!.images as unknown as EmbeddedImageShape[]) {
 				image.draw();
 			}
 		}
@@ -393,8 +428,8 @@ UI.Text = class TextElement extends UI.Element {
 			const pb = printer.paddingBottom / scale;
 			const outerX = this.x - pl;
 			const outerY = this.y - pt;
-			const outerWidth = this.texture.width / scale;
-			const outerHeight = this.texture.height / scale;
+			const outerWidth = this.texture!.width / scale;
+			const outerHeight = this.texture!.height / scale;
 			const innerWidth = outerWidth - pl - pr;
 			const innerHeight = outerHeight - pt - pb;
 			const marginWidth = this.width - innerWidth;
@@ -413,7 +448,9 @@ UI.Text = class TextElement extends UI.Element {
 	}
 
 	resizeEmbeddedImages(offsetX: number, offsetY: number) {
-		const images = this.printer.images;
+		const images = this.printer!.images as unknown as EmbeddedImageShape[] & {
+			changed: boolean;
+		};
 		if (images.changed) {
 			images.changed = false;
 			for (const image of images) {

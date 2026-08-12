@@ -38,7 +38,7 @@ Command.cases.createElement = new CommandSchema({
 				}
 			]);
 	},
-	parseUIAndNodeNames(uiId: any) {
+	parseUIAndNodeNames(uiId: string) {
 		const uiName = Command.parseFileName!(uiId);
 		const data = Data.ui[uiId];
 		if (data !== undefined) {
@@ -59,7 +59,17 @@ Command.cases.createElement = new CommandSchema({
 		}
 		return uiName;
 	},
-	customParse({ operation, parent, uiId, presetId }: any) {
+	customParse({
+		operation,
+		parent,
+		uiId,
+		presetId
+	}: {
+		operation: string;
+		parent: unknown;
+		uiId: string;
+		presetId: unknown;
+	}) {
 		let info;
 		switch (operation) {
 			case 'append-all-to-root':

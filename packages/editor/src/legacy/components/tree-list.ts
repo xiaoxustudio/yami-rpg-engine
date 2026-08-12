@@ -9,10 +9,10 @@ import { Menu } from './menu-list.ts';
 const getMenuState = (): string => Menu.state;
 
 interface TreeListStaticsType {
-	padding: any;
-	createParents: (items: any[], parent: any) => void;
-	deleteCaches: (data: any) => void;
-	textBox: any;
+	padding: HTMLElement;
+	createParents: typeof treeListStatics.createParents;
+	deleteCaches: typeof treeListStatics.deleteCaches;
+	textBox: HTMLElement & { input: HTMLInputElement };
 	prototype: Record<string, (...args: any[]) => any>;
 }
 

@@ -10,17 +10,34 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.transition = new CommandSchema({
 	name: 'transition',
 	commands: null,
-	onInitialize(this: any) {
+	onInitialize(this: CommandSchema) {
 		$('#transition-confirm').on('click', () => this.save!());
-		$('#transition').on('open', function (event: any) {
+		$('#transition').on('open', function (event: Event) {
 			$('#transition-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#transition').on('closed', function (this: any, event: any) {
-			clear($('#transition-easingId'));
-			this.commands = null;
-		});
+		$('#transition').on(
+			'closed',
+			function (this: HTMLElement & { commands: unknown | null }, event: Event) {
+				clear($('#transition-easingId'));
+				this.commands = null;
+			}
+		);
 	},
-	customParse({ variable, start, end, easingId, duration, commands }: any) {
+	customParse({
+		variable,
+		start,
+		end,
+		easingId,
+		duration,
+		commands
+	}: {
+		variable: unknown;
+		start: unknown;
+		end: unknown;
+		easingId: unknown;
+		duration: unknown;
+		commands: unknown;
+	}) {
 		const varName = Command.parseVariable!(variable, 'number', true);
 		const from = Command.parseVariableNumber!(start);
 		const to = Command.parseVariableNumber!(end);
@@ -55,7 +72,7 @@ Command.cases.transition = new CommandSchema({
 		this.commands = commands;
 		getFocus($('#transition-variable'));
 	},
-	customSave(this: any) {
+	customSave(this: CommandSchema) {
 		const read = getElementReader('transition');
 		const variable = read('variable');
 		if (VariableGetter.isNone!(variable)) {

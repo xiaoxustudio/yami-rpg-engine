@@ -34,7 +34,7 @@ import { AttributeListInterface } from '@/tools/property-list';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onKeyWrite = (value: any) => {
+const onKeyWrite = (value: unknown) => {
 	AttributeListInterface?.keyWrite?.({ value });
 };
 

@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.waitForVideo = new CommandSchema({
 	name: 'waitForVideo',
 	fields: [{ key: 'element', domId: 'element', default: { type: 'trigger' } }],
-	customParse({ element }: any) {
+	customParse({ element }: { element: unknown }) {
 		return [
 			{ color: 'element' },
 			{ text: Local.get!('command.waitForVideo') + Token(': ') },

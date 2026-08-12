@@ -12,7 +12,7 @@ describe('repro variableGetter relate', () => {
 	it('relate hides preset-key when type is local', async () => {
 		const presetKey = mount(YMSelectVar, { props: { items } });
 		const type = mount(YMSelectBox, { props: {} });
-		const vmType = type.vm as any;
+		const vmType = type.vm as unknown as Record<string, any>;
 		vmType.enableHiddenMode();
 		vmType.relate([
 			{ case: 'local', targets: [document.createElement('div')] },
@@ -35,7 +35,7 @@ describe('repro variableGetter relate', () => {
 	it('relate shows preset-key when type is actor', async () => {
 		const presetKey = mount(YMSelectVar, { props: { items } });
 		const type = mount(YMSelectBox, { props: {} });
-		const vmType = type.vm as any;
+		const vmType = type.vm as unknown as Record<string, any>;
 		vmType.enableHiddenMode();
 		vmType.relate([
 			{ case: 'local', targets: [document.createElement('div')] },

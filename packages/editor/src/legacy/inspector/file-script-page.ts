@@ -3,6 +3,8 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
+import { FileItem } from '@/file/file-item.ts';
+import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 
@@ -21,14 +23,14 @@ import { PluginManager } from '@/plugin/plugin.ts';
 		windowLocalize: null
 	};
 
-	FileScript.initialize = function (this: any) {
+	FileScript.initialize = function (this: typeof FileScript) {
 		if (!$('#fileScript-overview')) return;
 		this.overview = $('#fileScript-overview');
 
 		window.addEventListener('localize', this.windowLocalize);
 	};
 
-	FileScript.create = function (this: any) {
+	FileScript.create = function (this: typeof FileScript) {
 		return `/* @plugin @version @author @link @desc */
 
 export default class Plugin {
@@ -36,18 +38,22 @@ export default class Plugin {
 }`;
 	};
 
-	FileScript.open = async function (this: any, file: any, meta: any) {
+	FileScript.open = async function (
+		this: typeof FileScript,
+		file: FileItem,
+		meta: FileMeta | null
+	) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
 
 			const elName = $('#fileScript-name');
 			const elSize = $('#fileScript-size');
-			const size = Number(file.stats.size);
+			const size = Number((file.stats as unknown as { size: number }).size);
 			elName.textContent = file.basename + file.extname;
 			elSize.textContent = File.parseFileSize!(size);
 
-			await Data.scripts[meta.guid];
+			await Data.scripts[meta!.guid];
 			const elements = PluginManager.createOverview!(meta, true);
 			const overview = clear(this.overview);
 			for (const element of elements) {
@@ -56,7 +62,7 @@ export default class Plugin {
 		}
 	};
 
-	FileScript.close = function (this: any) {
+	FileScript.close = function (this: typeof FileScript) {
 		if (this.target) {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
@@ -65,7 +71,7 @@ export default class Plugin {
 		}
 	};
 
-	FileScript.windowLocalize = function (this, event: any) {
+	FileScript.windowLocalize = function (this, event: Event) {
 		if (FileScript.target) {
 			const { target, meta } = FileScript;
 			FileScript.target = null;

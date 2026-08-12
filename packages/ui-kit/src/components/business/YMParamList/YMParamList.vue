@@ -13,19 +13,19 @@ import {
 	getRelativeCoords,
 	relate
 } from '../../../utils/dom';
-import { ParamListHistory, type HistoryData } from './param-history';
-import { attachScrollListener } from './scroll-listener';
+import { ParamListHistory } from './param-history';
+import { attachScrollListener, type ScrollListenerApi } from './scroll-listener';
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
-const cmdOrCtrlKey = (event: any): boolean => (isMac ? event.metaKey : event.ctrlKey);
+const cmdOrCtrlKey = (event: KeyboardEvent): boolean => (isMac ? event.metaKey : event.ctrlKey);
 
-const macRedoKey = (event: any): boolean =>
+const macRedoKey = (event: KeyboardEvent): boolean =>
 	isMac ? event.metaKey && event.shiftKey && event.code === 'KeyZ' : false;
 
 interface ClipboardAdapter {
-	write(type: string, data: any): void;
-	read(type: string): any;
+	write(type: string, data: unknown): void;
+	read(type: string): unknown[] | null;
 	has(type: string): boolean;
 }
 
@@ -47,17 +47,142 @@ interface MenuItem {
 
 interface Props {
 	id?: string;
+	filter?: string;
 	flexible?: boolean;
-	historyFactory?: (list: any) => any;
+	historyFactory?: (list: ParamListElement) => ParamHistory;
 	menuPopup?: (options: MenuOptions, items: MenuItem[]) => void;
 	localize?: (key: string) => string;
 	clipboard?: ClipboardAdapter | null;
 	ctrl?: (keyName: string) => string;
 }
 
+type ParamDataItem = { enabled?: boolean };
+
+type ParamParseItem = { content?: string; class?: string };
+
+type ParamParseResult =
+	| string
+	| ParamParseItem
+	| [string | ParamParseItem, string | ParamParseItem];
+
+interface ParamHistory {
+	reset(): void;
+	save(data?: unknown): void;
+	restore(operation: 'undo' | 'redo'): void;
+	canUndo(): boolean;
+	canRedo(): boolean;
+}
+
+interface ParamObject {
+	initialize(list: ParamListElement): void;
+	parse(item: unknown, data: unknown[], index: number): ParamParseResult;
+	type?: string;
+	history?: ParamHistory;
+	update?(list: ParamListElement): void;
+	target?: ParamListElement;
+	open(data?: unknown): void;
+	save(): unknown;
+	onPaste?(list: ParamListElement, items: unknown[]): void;
+}
+
+interface ParamItemElement extends HTMLElement {
+	dataValue?: number;
+	dataItem?: unknown;
+	versionId?: number;
+}
+
+interface ParamElements extends Array<ParamItemElement> {
+	versionId: number;
+	count: number;
+	start: number;
+	end: number;
+	head: HTMLElement | null;
+	foot: HTMLElement | null;
+}
+
+interface ParamSelections extends Array<ParamItemElement | undefined> {
+	count: number;
+}
+
+interface ParamListElement extends HTMLElement {
+	flexible: boolean;
+	height?: number;
+	_paddingTop?: number;
+	padded?: boolean;
+	object: ParamObject;
+	type: string | null;
+	history: ParamHistory | null;
+	data: (ParamDataItem | null)[] | null;
+	autoSwitch?: boolean;
+	elements: ParamElements;
+	selections: ParamSelections;
+	start: number | null;
+	end: number | null;
+	origin: number | null;
+	active: number | null;
+	inserting: boolean;
+	focusing: boolean;
+	dragging: DragEventState | null;
+	togglable: boolean;
+	scrollListener: ScrollListenerApi;
+	innerHeight: number;
+	paddingTop: number;
+	bind(object: ParamObject): HTMLElement;
+	read(): (ParamDataItem | null)[] | null;
+	write(data: (ParamDataItem | null)[]): void;
+	update(): void;
+	resize(): void;
+	updateFlexibleHeight(): void;
+	updateHeadAndFoot(): void;
+	updateOnResize(element?: ParamItemElement): void;
+	select(start: number, end?: number): void;
+	selectMultiple(active: number): void;
+	selectAll(): void;
+	unselect(): void;
+	reselect(): void;
+	selectUp(): void;
+	selectDown(): void;
+	selectMultipleUp(): void;
+	selectMultipleDown(): void;
+	scrollToSelection(): void;
+	insert(): void;
+	edit(): void;
+	toggle(): void;
+	enableItems(items: ParamDataItem[]): void;
+	disableItems(items: ParamDataItem[]): void;
+	copy(): void;
+	paste(): void;
+	delete(): void;
+	undo(): void;
+	redo(): void;
+	save(): void;
+	clearElements(start: number): void;
+	clear(): HTMLElement;
+	listFocus(event: Event): void;
+	listBlur(event: Event): void;
+	keydown(event: KeyboardEvent): void;
+	pointerdown(event: PointerEvent): void;
+	pointerup(event: PointerEvent): void;
+	doubleclick(event: Event): void;
+	windowPointerup(event: PointerEvent): void;
+	windowPointermove(event: PointerEvent): void;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
+
+interface DragEventState extends PointerEvent {
+	mode?: string;
+	itemIndex?: number;
+	itemHeight?: number;
+	latest?: PointerEvent;
+}
+
 const props = withDefaults(defineProps<Props>(), {
 	flexible: false,
-	historyFactory: null as unknown as (list: any) => any,
+	historyFactory: null as unknown as (list: ParamListElement) => ParamHistory,
 	menuPopup: null as unknown as (options: MenuOptions, items: MenuItem[]) => void,
 	localize: null as unknown as (key: string) => string,
 	clipboard: null,
@@ -65,14 +190,14 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	change: [value: any[] | null];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 
-let el: HTMLElement & { [k: string]: any } | null = null;
+let el: ParamListElement | null = null;
 
-const createHistory = (list: any): any =>
+const createHistory = (list: ParamListElement): ParamHistory =>
 	props.historyFactory ? props.historyFactory(list) : new ParamListHistory(list);
 
 const getMenuPopup = (): ((options: MenuOptions, items: MenuItem[]) => void) | null =>
@@ -87,7 +212,7 @@ const getCtrl = (keyName: string): string => (props.ctrl ? props.ctrl(keyName) :
 const getInnerHeight = (): number => {
 	const self = el!;
 	if (self.flexible) {
-		return self.height;
+		return self.height!;
 	}
 	let padding = self._paddingTop;
 	if (padding === undefined) {
@@ -110,26 +235,26 @@ const getPaddingTop = (): number => {
 	return pt;
 };
 
-const bind = (object: any): HTMLElement => {
+const bind = (object: ParamObject): HTMLElement => {
 	const self = el!;
 	object.initialize(self);
-	object.initialize = (() => {}) as any;
+	object.initialize = () => {};
 	self.object = object;
 	self.type = `yami.${object.type ?? self.id}`;
 	self.history = object.history ?? createHistory(self);
 	return self;
 };
 
-const read = (): any[] | null => el!.data;
+const read = (): (ParamDataItem | null)[] | null => el!.data;
 
-const write = (data: any[]): void => {
+const write = (data: (ParamDataItem | null)[]): void => {
 	const self = el!;
 	if (self.flexible) {
 		self.autoSwitch = true;
 	}
 	self.data = data;
 	update();
-	self.history.reset();
+	self.history!.reset();
 };
 
 const update = (): void => {
@@ -147,7 +272,7 @@ const update = (): void => {
 		const result = object.parse(item, data, i);
 		switch (typeof result) {
 			case 'string': {
-				const li = document.createElement('div') as any;
+				const li = document.createElement('div') as ParamItemElement;
 				addClass(li, 'param-item');
 				addClass(li, 'one-column');
 				li.dataValue = i;
@@ -157,14 +282,14 @@ const update = (): void => {
 				continue;
 			}
 			case 'object': {
-				const li = document.createElement('div') as any;
+				const li = document.createElement('div') as ParamItemElement;
 				addClass(li, 'param-item');
 				li.dataValue = i;
 				li.dataItem = item;
 				elements[elements.count++] = li;
 				if (!Array.isArray(result)) {
 					addClass(li, 'one-column');
-					li.textContent = result.content;
+					li.textContent = result.content!;
 					if (result.class) {
 						addClass(li, result.class);
 					}
@@ -177,7 +302,7 @@ const update = (): void => {
 				} else if (result0 instanceof Object) {
 					const text0 = document.createElement('div');
 					addClass(text0, 'text-0-of-2');
-					text0.textContent = result0.content;
+					text0.textContent = result0.content!;
 					if (result0.class) {
 						addClass(text0, result0.class);
 					}
@@ -194,7 +319,7 @@ const update = (): void => {
 				} else if (result1 instanceof Object) {
 					const text1 = document.createElement('div');
 					addClass(text1, 'text-1-of-2');
-					text1.textContent = result1.content;
+					text1.textContent = result1.content!;
 					if (result1.class) {
 						addClass(text1, result1.class);
 					}
@@ -210,7 +335,7 @@ const update = (): void => {
 		}
 	}
 
-	const li = document.createElement('div') as any;
+	const li = document.createElement('div') as ParamItemElement;
 	const unit = length === 1 ? 'item' : 'items';
 	addClass(li, 'param-item');
 	addClass(li, 'weak');
@@ -250,13 +375,13 @@ const resize = (): void => {
 		for (let i = start; i < end; i++) {
 			const element = elements[i];
 			element.versionId = versionId;
-			updateOnResize(element as any);
+			updateOnResize(element);
 		}
 		const nodes = self.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
 			const element = nodes[i];
-			if ((element as any).versionId !== versionId) {
+			if ((element as ParamItemElement).versionId !== versionId) {
 				element.remove();
 			}
 		}
@@ -323,7 +448,7 @@ const updateHeadAndFoot = (): void => {
 	}
 };
 
-const updateOnResize = (_element?: any): void => {};
+const updateOnResize = (_element?: ParamItemElement): void => {};
 
 const select = (start: number, end: number = start): void => {
 	const self = el!;
@@ -336,10 +461,7 @@ const select = (start: number, end: number = start): void => {
 	start = clamp(start, 0, count - 1);
 	end = clamp(end, 0, count - 1);
 	if (start !== end) {
-		const element = elements[end] as HTMLElement & {
-			read(): number;
-			dataItem?: any;
-		};
+		const element = elements[end];
 		if (!element.dataItem) {
 			end--;
 		}
@@ -478,9 +600,7 @@ const edit = (): void => {
 	const self = el!;
 	if (self.start !== null) {
 		const elements = self.elements;
-		const element = elements[self.start] as HTMLElement & {
-			dataItem: any;
-		};
+		const element = elements[self.start];
 		self.inserting = element.dataItem === null;
 		switch (self.inserting) {
 			case true:
@@ -499,7 +619,7 @@ const toggle = (): void => {
 	const self = el!;
 	if (self.togglable && self.start !== null) {
 		let method = 'disable';
-		const items: any[] = [];
+		const items: ParamDataItem[] = [];
 		const { data, start, end } = self;
 		for (let i = start; i <= end!; i++) {
 			const item = data![i];
@@ -521,7 +641,7 @@ const toggle = (): void => {
 			}
 		}
 		if (items.length !== 0) {
-			self.history.save({
+			self.history!.save({
 				type: 'toggle',
 				array: data,
 				method: method,
@@ -542,13 +662,13 @@ const toggle = (): void => {
 	}
 };
 
-const enableItems = (items: any[]): void => {
+const enableItems = (items: ParamDataItem[]): void => {
 	for (const item of items) {
 		item.enabled = true;
 	}
 };
 
-const disableItems = (items: any[]): void => {
+const disableItems = (items: ParamDataItem[]): void => {
 	for (const item of items) {
 		item.enabled = false;
 	}
@@ -564,7 +684,7 @@ const copy = (): void => {
 		const end = self.end! + 1;
 		const copies = data.slice(start, end);
 		if (copies.length > 0) {
-			clipboard.write(self.type, copies);
+			clipboard.write(self.type!, copies);
 		}
 	}
 };
@@ -574,18 +694,18 @@ const paste = (): void => {
 	const clipboard = getClipboard();
 	if (!clipboard) return;
 	if (self.start !== null) {
-		const copies = clipboard.read(self.type);
+		const copies = clipboard.read(self.type!);
 		if (copies) {
 			const data = self.data!;
 			const start = self.start;
-			self.history.save({
+			self.history!.save({
 				type: 'insert',
 				array: data,
 				index: start,
 				items: copies
 			});
 			self.object.onPaste?.(self, copies);
-			data.splice(start, 0, ...copies);
+			data.splice(start, 0, ...(copies as ParamDataItem[]));
 			update();
 			select(start + copies.length);
 			scrollToSelection();
@@ -602,7 +722,7 @@ const delete_ = (): void => {
 		const end = self.end! + 1;
 		const items = data.slice(start, end);
 		if (items.length > 0) {
-			self.history.save({
+			self.history!.save({
 				type: 'delete',
 				array: data,
 				index: start,
@@ -619,15 +739,15 @@ const delete_ = (): void => {
 
 const undo = (): void => {
 	const self = el!;
-	if (!self.dragging && self.history.canUndo()) {
-		self.history.restore('undo');
+	if (!self.dragging && self.history!.canUndo()) {
+		self.history!.restore('undo');
 	}
 };
 
 const redo = (): void => {
 	const self = el!;
-	if (!self.dragging && self.history.canRedo()) {
-		self.history.restore('redo');
+	if (!self.dragging && self.history!.canRedo()) {
+		self.history!.restore('redo');
 	}
 };
 
@@ -643,24 +763,24 @@ const save = (): void => {
 		const length = data.length;
 		switch (self.inserting) {
 			case true:
-				self.history.save({
+				self.history!.save({
 					type: 'insert',
 					array: data,
 					index: start,
 					items: [item]
 				});
-				data.splice(start, 0, item);
+				data.splice(start, 0, item as ParamDataItem);
 				update();
 				select(start + data.length - length);
 				break;
 			case false:
-				self.history.save({
+				self.history!.save({
 					type: 'replace',
 					array: data,
 					index: start,
 					swap: data[start]
 				});
-				data[start] = item;
+				data[start] = item as ParamDataItem;
 				update();
 				select(start);
 				break;
@@ -674,7 +794,7 @@ const clearElements = (start: number): void => {
 	const self = el!;
 	let i = start;
 	while (self.elements[i] !== undefined) {
-		self.elements[i++] = undefined;
+		self.elements[i++] = undefined as never;
 	}
 };
 
@@ -685,7 +805,7 @@ const clear = (): HTMLElement => {
 	self.data = null;
 	self.start = null;
 	self.end = null;
-	self.history.reset();
+	self.history!.reset();
 	clearElements(0);
 	self.elements.count = 0;
 	self.elements.start = -1;
@@ -708,13 +828,13 @@ const listBlur = (event: Event): void => {
 		windowPointerup(self.dragging);
 	}
 	if (self.focusing) {
-		let element: any = self;
+		let element: Node | null = self;
 		while ((element = element.parentNode)) {
 			if (element.nodeType !== Node.ELEMENT_NODE) {
 				continue;
 			}
 			if ((element as HTMLElement).classList.contains('window-frame')) {
-				if (hasClass(element, 'blur')) {
+				if (hasClass(element as HTMLElement, 'blur')) {
 					return;
 				} else {
 					break;
@@ -815,7 +935,7 @@ const pointerdown = (event: PointerEvent): void => {
 			} else {
 				element = element.closest('.param-item') as HTMLElement;
 				if (element?.classList.contains('param-item')) {
-					index = readElement(element);
+					index = readElement(element) as number;
 				}
 			}
 			if (index !== undefined && index >= 0) {
@@ -826,13 +946,13 @@ const pointerdown = (event: PointerEvent): void => {
 					select(index);
 				}
 				self.dragging = event;
-				(event as any).mode = 'select';
-				(event as any).itemIndex = index;
-				(event as any).itemHeight = element.clientHeight;
+				(event as DragEventState).mode = 'select';
+				(event as DragEventState).itemIndex = index;
+				(event as DragEventState).itemHeight = element.clientHeight;
 				window.addEventListener('pointerup', self.windowPointerup);
 				window.addEventListener('pointermove', self.windowPointermove);
 				self.scrollListener.addScrollListener('vertical', 2, true, () => {
-					windowPointermove((event as any).latest);
+					windowPointermove((event as DragEventState).latest!);
 				});
 			}
 			break;
@@ -847,7 +967,7 @@ const pointerdown = (event: PointerEvent): void => {
 			} else {
 				element = element.closest('.param-item') as HTMLElement;
 				if (element?.classList.contains('param-item')) {
-					index = readElement(element);
+					index = readElement(element) as number;
 				}
 			}
 			if (index !== undefined && index >= 0) {
@@ -870,15 +990,13 @@ const pointerup = (event: PointerEvent): void => {
 		case 2:
 			if (self.start !== null && document.activeElement === self) {
 				const elements = self.elements;
-				const element = elements[self.start] as HTMLElement & {
-					dataItem: any;
-				};
+				const element = elements[self.start];
 				const valid = !!element.dataItem;
 				const editable = self.start === self.end;
-				const pastable = !!getClipboard()?.has(self.type);
+				const pastable = !!getClipboard()?.has(self.type!);
 				const allSelectable = self.data!.length > 0;
-				const undoable = self.history.canUndo();
-				const redoable = self.history.canRedo();
+				const undoable = self.history!.canUndo();
+				const redoable = self.history!.canRedo();
 				const get = getLocalize() ?? ((key: string) => key);
 				const menuItems: MenuItem[] = [
 					{
@@ -1011,7 +1129,7 @@ const windowPointermove = (event: PointerEvent): void => {
 				const pt = self.paddingTop;
 				const { itemHeight } = dragging;
 				const { y } = getRelativeCoords(event, self);
-				const line = Math.floor((y - pt) / itemHeight);
+				const line = Math.floor((y - pt) / itemHeight!);
 				const index = clamp(line, 0, count - 1);
 				if (dragging.itemIndex !== index) {
 					dragging.itemIndex = index;
@@ -1024,7 +1142,7 @@ const windowPointermove = (event: PointerEvent): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	el!.addEventListener(type, listener as EventListener, options);
@@ -1067,20 +1185,20 @@ defineExpose({
 });
 
 onMounted(() => {
-	el = root.value;
+	el = root.value as ParamListElement | null;
 	if (!el) return;
 	const self = el;
-	self.object = null;
+	self.object = null as unknown as ParamObject;
 	self.type = null;
 	self.data = null;
-	self.elements = [] as any;
+	self.elements = [] as unknown as ParamElements;
 	self.elements.versionId = 0;
 	self.elements.count = 0;
 	self.elements.start = -1;
 	self.elements.end = -1;
 	self.elements.head = null;
 	self.elements.foot = null;
-	self.selections = [] as any;
+	self.selections = [] as unknown as ParamSelections;
 	self.selections.count = 0;
 	self.start = null;
 	self.end = null;
@@ -1095,11 +1213,11 @@ onMounted(() => {
 	self.height = undefined;
 	self._paddingTop = undefined;
 	self.tabIndex = 0;
-	Object.defineProperty(self as any, 'innerHeight', {
+	Object.defineProperty(self, 'innerHeight', {
 		configurable: true,
 		get: getInnerHeight
 	});
-	Object.defineProperty(self as any, 'paddingTop', {
+	Object.defineProperty(self, 'paddingTop', {
 		configurable: true,
 		get: getPaddingTop
 	});
@@ -1156,7 +1274,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="param-list" :id="props.id" />
+	<div ref="root" class="param-list" :id="props.id" :filter="props.filter || undefined" />
 </template>
 
 <style module>

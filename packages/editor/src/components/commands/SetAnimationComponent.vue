@@ -57,7 +57,7 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
-const onWrite = (value: any) => {
+const onWrite = (value: unknown) => {
 	Command?.cases?.setAnimationComponent?.writeHandler?.({ value });
 };
 

@@ -18,7 +18,7 @@ import { ctrl } from '@/util/event-accessors.ts';
 
 const Clipboard = getGlobalClipboard();
 
-interface CustomCommandData {
+export interface CustomCommandData {
 	id: string;
 	enabled: boolean;
 	alias: string;
@@ -176,37 +176,25 @@ function ensureDomBound() {
 	CustomCommand.overview = $('#command-overview') as unknown as CustomCommandShape['overview'];
 	CustomCommand.settingsPane = $('#command-settings-detail');
 	hide(CustomCommand.settingsPane);
-	list.insert = null as unknown as (...args: unknown[]) => any;
-	list.toggle = null as unknown as (...args: unknown[]) => any;
-	list.copy = null as unknown as (...args: unknown[]) => any;
-	list.paste = null as unknown as (...args: unknown[]) => any;
+	list.insert = null as unknown as (...args: unknown[]) => void;
+	list.toggle = null as unknown as (...args: unknown[]) => void;
+	list.copy = null as unknown as (...args: unknown[]) => void;
+	list.paste = null as unknown as (...args: unknown[]) => void;
 	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
-	list.saveSelection = null as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
-	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
-		...args: unknown[]
-	) => any;
-	list.addElementClass = PluginManager.list_addElementClass as unknown as (
-		...args: unknown[]
-	) => any;
-	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
-		...args: unknown[]
-	) => any;
-	list.updateToggleStyle = PluginManager.list_updateToggleStyle as unknown as (
-		...args: unknown[]
-	) => any;
-	list.createEditIcon = PluginManager.list_createEditIcon as unknown as (
-		...args: unknown[]
-	) => any;
-	list.edit = CustomCommand.list_edit as unknown as (item?: unknown) => unknown;
-	list.insert = CustomCommand.list_insert as unknown as (...args: unknown[]) => any;
-	list.toggle = CustomCommand.list_toggle as unknown as (...args: unknown[]) => any;
-	list.copy = CustomCommand.list_copy as unknown as (...args: unknown[]) => any;
-	list.paste = CustomCommand.list_paste as unknown as (...args: unknown[]) => any;
-	list.saveSelection = CustomCommand.list_saveSelection as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = CustomCommand.list_restoreSelection as unknown as (
-		...args: unknown[]
-	) => any;
+	list.saveSelection = null as unknown as (...args: unknown[]) => void;
+	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
+	list.updateNodeElement = Easing.list_updateNodeElement;
+	list.addElementClass = PluginManager.list_addElementClass as (...args: unknown[]) => void;
+	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
+	list.updateToggleStyle = PluginManager.list_updateToggleStyle as (...args: unknown[]) => void;
+	list.createEditIcon = PluginManager.list_createEditIcon as (...args: unknown[]) => void;
+	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
+	list.insert = CustomCommand.list_insert as (...args: unknown[]) => void;
+	list.toggle = CustomCommand.list_toggle as (...args: unknown[]) => void;
+	list.copy = CustomCommand.list_copy as (...args: unknown[]) => void;
+	list.paste = CustomCommand.list_paste as (...args: unknown[]) => void;
+	list.saveSelection = CustomCommand.list_saveSelection as (...args: unknown[]) => void;
+	list.restoreSelection = CustomCommand.list_restoreSelection as (...args: unknown[]) => void;
 }
 
 CustomCommand.initialize = function (this: CustomCommandShape): void {
@@ -258,7 +246,7 @@ CustomCommand.load = async function (
 		this.loadOverview!();
 		const data = this.list.read();
 		if (data) {
-			const write = getElementWriter('command', data);
+			const write = getElementWriter('command', data as unknown as Record<string, unknown>);
 			write('alias');
 			write('keywords');
 			show(this.settingsPane);
@@ -294,7 +282,9 @@ CustomCommand.createData = function (this: CustomCommandShape, id: string): Cust
 	};
 };
 
-CustomCommand.getItemById = Easing.getItemById;
+CustomCommand.getItemById = Easing.getItemById as unknown as (
+	id: string
+) => CustomCommandData | null;
 
 CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
@@ -489,7 +479,9 @@ CustomCommand.apply = function (this: CustomCommandShape, event: Event): void {
 		if (event instanceof Event) {
 			commands = Object.clone(commands);
 		} else {
-			TreeList.deleteCaches(commands);
+			TreeList.deleteCaches(
+				commands as unknown as Parameters<typeof TreeList.deleteCaches>[0]
+			);
 		}
 		Data.commands = commands;
 		File.planToSave!(Data.manifest.project.commands);

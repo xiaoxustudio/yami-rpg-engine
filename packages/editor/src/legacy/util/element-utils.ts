@@ -203,17 +203,17 @@ export function clear(el: Node | null | undefined): HTMLElement {
 }
 
 export function read(el: unknown): any {
-	if (typeof (el as unknown as Record<string, unknown>).read === 'function') {
-		return (el as unknown as Record<string, any>).read();
+	if (typeof (el as unknown as { read: () => unknown }).read === 'function') {
+		return (el as unknown as { read: () => unknown }).read();
 	}
-	return (el as unknown as Record<string, any>).dataValue;
+	return (el as unknown as { dataValue: unknown }).dataValue;
 }
 
 export function write(el: unknown, value: unknown): void {
-	if (typeof (el as unknown as Record<string, unknown>).write === 'function') {
-		(el as unknown as Record<string, any>).write(value);
+	if (typeof (el as unknown as { write: (value: unknown) => void }).write === 'function') {
+		(el as unknown as { write: (value: unknown) => void }).write(value);
 	} else {
-		(el as unknown as Record<string, any>).dataValue = value;
+		(el as unknown as { dataValue: unknown }).dataValue = value;
 	}
 }
 
@@ -622,8 +622,8 @@ export function drawAndFitImage(
 }
 
 export function relate(
-	a: { type: string; pointerId?: number } | Record<string, any>,
-	b?: { type: string; pointerId?: number } | Record<string, any> | null
+	a: { type: string; pointerId?: number } | Record<string, unknown>,
+	b?: { type: string; pointerId?: number } | Record<string, unknown> | null
 ): boolean {
 	return !!a && a.pointerId === b?.pointerId;
 }

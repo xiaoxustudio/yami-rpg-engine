@@ -2,10 +2,22 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMCommonList from '../YMCommonList.vue';
 
-const createItem = (value: any): HTMLElement => {
+interface CommonListElement extends HTMLElement {
+	[k: string]: unknown;
+	read: () => unknown;
+	write: (v: unknown) => void;
+	unselect: () => void;
+	selectRelative: (dir: string) => void;
+	clear: () => void;
+	appendElement: (el: HTMLElement) => void;
+	resize: () => void;
+	on: (name: string, cb: (e: Event & { value: unknown }) => void) => void;
+}
+
+const createItem = (value: unknown): HTMLElement => {
 	const el = document.createElement('common-item');
 	el.className = 'common-item';
-	(el as any).dataValue = value;
+	(el as HTMLElement & { dataValue?: unknown }).dataValue = value;
 	el.textContent = String(value);
 	return el;
 };
@@ -19,7 +31,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('appends elements and reads selection', () => {
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as CommonListElement;
 		vm.appendElement(createItem('a'));
 		vm.appendElement(createItem('b'));
 		vm.resize();
@@ -29,10 +41,10 @@ describe('YMCommonList', () => {
 	});
 
 	it('write emits write event with value', () => {
-		const vm = wrapper.vm as any;
-		const el = wrapper.element as any;
-		const events: any[] = [];
-		el.on('write', (e: any) => events.push(e.value));
+		const vm = wrapper.vm as unknown as CommonListElement;
+		const el = wrapper.element as unknown as CommonListElement;
+		const events: unknown[] = [];
+		el.on('write', (e: Event & { value: unknown }) => events.push(e.value));
 		vm.appendElement(createItem('x'));
 		vm.resize();
 		vm.write('x');
@@ -40,7 +52,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('unselect clears selection', () => {
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as CommonListElement;
 		vm.appendElement(createItem('a'));
 		vm.resize();
 		vm.write('a');
@@ -49,7 +61,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('selectRelative moves selection', () => {
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as CommonListElement;
 		vm.appendElement(createItem('a'));
 		vm.appendElement(createItem('b'));
 		vm.appendElement(createItem('c'));
@@ -64,7 +76,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('clear empties the list', () => {
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as CommonListElement;
 		vm.appendElement(createItem('a'));
 		vm.resize();
 		vm.clear();
@@ -73,7 +85,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('exposes bridge functions on root element', () => {
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as CommonListElement;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.appendElement).toBe('function');
@@ -82,7 +94,7 @@ describe('YMCommonList', () => {
 	});
 
 	it('keyboard selectRelative via ArrowDown', async () => {
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as CommonListElement;
 		vm.appendElement(createItem('a'));
 		vm.appendElement(createItem('b'));
 		vm.resize();

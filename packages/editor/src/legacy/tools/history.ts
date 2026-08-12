@@ -1,10 +1,12 @@
-import { IArrayHistory } from '@/types/history.ts';
+import { HistoryData, IArrayHistory } from '@/types/history.ts';
+
+export type HistoryRecord = HistoryData;
 
 export class History extends Array implements IArrayHistory {
 	index: number;
 	capacity: number;
-	onSave: ((data: any) => void) | null;
-	onRestore: ((data: any) => void) | null;
+	onSave: ((data: Record<string, unknown>) => void) | null;
+	onRestore: ((data: Record<string, unknown>) => void) | null;
 
 	constructor(capacity: number) {
 		super();
@@ -21,7 +23,7 @@ export class History extends Array implements IArrayHistory {
 		}
 	}
 
-	save(data: any): void {
+	save(data: HistoryRecord): void {
 		const length = this.index + 1;
 		if (length < this.length) {
 			this.length = length;
@@ -38,7 +40,7 @@ export class History extends Array implements IArrayHistory {
 		this.onSave?.(data);
 	}
 
-	restore(operation: any) {
+	restore(operation: string) {
 		const index =
 			operation === 'undo' ? this.index : operation === 'redo' ? this.index + 1 : null;
 

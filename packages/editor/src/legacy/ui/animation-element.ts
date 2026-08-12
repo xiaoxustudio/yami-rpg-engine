@@ -3,8 +3,35 @@ import { Animation } from '@/animation/animation-window.ts';
 import { UI } from './ui-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
+type PlayerContextShape = Array<Record<string, unknown>> & { count?: number };
+
+interface AnimationPlayerShape {
+	destroy(): void;
+	setAsUIComponent(): void;
+	setMotion(motion: string): boolean;
+	rotatable: boolean;
+	rotation: number;
+	setAngle(angle: number): boolean;
+	goto(index: number): void;
+	contexts: PlayerContextShape;
+	index: number;
+	updateFrameParameters(contexts: PlayerContextShape, index: number): void;
+	draw(opacity: number, light: string | undefined): void;
+	setPosition(x: number, y: number): void;
+}
+
+interface AnimationElementDataShape {
+	animation: string;
+	motion: string;
+	rotatable: boolean;
+	angle: number;
+	frame: number;
+	offsetX: number;
+	offsetY: number;
+}
+
 UI.Animation = class AnimationElement extends UI.Element {
-	player: any;
+	player: AnimationPlayerShape | null;
 	_animation!: string;
 	_motion!: string;
 	_rotatable!: boolean;
@@ -15,7 +42,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 	animationX!: number;
 	animationY!: number;
 
-	constructor(data: any) {
+	constructor(data: AnimationElementDataShape) {
 		super(data);
 		this.player = null;
 		this.motion = data.motion;
@@ -31,7 +58,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._animation;
 	}
 
-	set animation(value: any) {
+	set animation(value: string) {
 		if (this._animation !== value) {
 			this._animation = value;
 			if (this.player !== null) {
@@ -40,12 +67,13 @@ UI.Animation = class AnimationElement extends UI.Element {
 			}
 			const animation = Data.animations[value];
 			if (animation !== undefined) {
-				this.player = new Animation.Player(animation);
-				this.player.setAsUIComponent();
-				this.player.setMotion(this.motion);
-				this.player.rotatable = this.rotatable;
-				this.player.setAngle(Math.radians(this.angle));
-				this.player.goto(this.frame);
+				const player = new Animation.Player(animation);
+				this.player = player;
+				player.setAsUIComponent();
+				player.setMotion(this.motion);
+				player.rotatable = this.rotatable;
+				player.setAngle(Math.radians(this.angle));
+				player.goto(this.frame);
 			}
 		}
 	}
@@ -54,7 +82,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._motion;
 	}
 
-	set motion(value: any) {
+	set motion(value: string) {
 		if (this._motion !== value) {
 			this._motion = value;
 			this.player?.setMotion(value);
@@ -65,7 +93,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._rotatable;
 	}
 
-	set rotatable(value: any) {
+	set rotatable(value: boolean) {
 		if (this._rotatable !== value) {
 			this._rotatable = value;
 			if (this.player) {
@@ -82,7 +110,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._angle;
 	}
 
-	set angle(value: any) {
+	set angle(value: number) {
 		if (this._angle !== value) {
 			this._angle = value;
 			this.player?.setAngle(Math.radians(value));
@@ -93,7 +121,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._frame;
 	}
 
-	set frame(value: any) {
+	set frame(value: number) {
 		if (this._frame !== value) {
 			this._frame = value;
 			this.player?.goto(value);
@@ -104,7 +132,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._offsetX;
 	}
 
-	set offsetX(value: any) {
+	set offsetX(value: number) {
 		if (this._offsetX !== value) {
 			this._offsetX = value;
 			if (this.connected) {
@@ -117,7 +145,7 @@ UI.Animation = class AnimationElement extends UI.Element {
 		return this._offsetY;
 	}
 
-	set offsetY(value: any) {
+	set offsetY(value: number) {
 		if (this._offsetY !== value) {
 			this._offsetY = value;
 			if (this.connected) {

@@ -47,7 +47,7 @@ export class Light {
 		}
 	}
 
-	drawPointLight(projMatrix: any, opacity: any) {
+	drawPointLight(projMatrix: number[], opacity: number) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const light = this.data;
@@ -88,7 +88,7 @@ export class Light {
 		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 	}
 
-	drawAreaLight(projMatrix: any, opacity: any) {
+	drawAreaLight(projMatrix: number[], opacity: number) {
 		const light = this.data;
 		const textures = Scene.textures;
 		const texture = textures[light.mask];

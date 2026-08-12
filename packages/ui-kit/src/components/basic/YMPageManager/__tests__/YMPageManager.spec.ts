@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMPageManager from '../YMPageManager.vue';
+import type { PageManagerApi } from '../page-manager-api';
 
 describe('YMPageManager', () => {
 	const mountWithPages = () =>
@@ -22,7 +23,7 @@ describe('YMPageManager', () => {
 
 	it('switches visible page by value', async () => {
 		const wrapper = mountWithPages();
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as PageManagerApi;
 		const frames = wrapper.findAll('.page-frame');
 		expect(frames[0].classes()).not.toContain('visible');
 		vm.switch('scene');
@@ -34,7 +35,7 @@ describe('YMPageManager', () => {
 
 	it('emits switch event with last and value', async () => {
 		const wrapper = mountWithPages();
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as PageManagerApi;
 		vm.switch('scene');
 		await wrapper.vm.$nextTick();
 		vm.switch('home');
@@ -47,7 +48,7 @@ describe('YMPageManager', () => {
 
 	it('exposes switch/on and state on the root element', () => {
 		const wrapper = mountWithPages();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as PageManagerApi;
 		expect(typeof el.switch).toBe('function');
 		expect(typeof el.on).toBe('function');
 		expect(el.index).toBeNull();

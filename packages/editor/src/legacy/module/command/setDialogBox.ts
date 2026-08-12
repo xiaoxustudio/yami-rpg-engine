@@ -11,11 +11,17 @@ Command.cases.setDialogBox = new CommandSchema({
 	onInitialize() {
 		$('#setDialogBox-confirm').on('click', () => this.save!());
 		$('#setDialogBox-properties').bind(DialogBoxProperty);
-		$('#setDialogBox').on('closed', (event: any) => {
+		$('#setDialogBox').on('closed', (event: Event) => {
 			clear($('#setDialogBox-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(DialogBoxProperty.parse!(property));
@@ -26,7 +32,13 @@ Command.cases.setDialogBox = new CommandSchema({
 			{ text: words.join() }
 		];
 	},
-	customLoad({ element = { type: 'trigger' }, properties = [] }) {
+	customLoad({
+		element = { type: 'trigger' },
+		properties = []
+	}: {
+		element: unknown;
+		properties: unknown[];
+	}) {
 		const write = getElementWriter('setDialogBox');
 		write('element', element);
 		write('properties', properties.slice());

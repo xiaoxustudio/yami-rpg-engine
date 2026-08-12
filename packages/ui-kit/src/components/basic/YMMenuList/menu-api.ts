@@ -1,4 +1,4 @@
-import { getWindowFramesLength } from '../../../utils/dom';
+﻿import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
 export interface MenuItem {
 	type?: string;
@@ -33,12 +33,12 @@ export interface MenuApi {
 	buttonPressed: boolean;
 	minWidth: number;
 	parentMenuItem: HTMLElement | null;
-	windowBlur: (event: any) => void;
-	windowKeydown: (event: any) => void;
-	windowPointerdown: (event: any) => void;
-	windowPointerup: (event: any) => void;
-	windowPointerover: (event: any) => void;
-	windowPointerout: (event: any) => void;
+	windowBlur: () => void;
+	windowKeydown: (event: KeyboardEvent) => void;
+	windowPointerdown: (event: PointerEvent) => void;
+	windowPointerup: (event: PointerEvent) => void;
+	windowPointerover: (event: PointerEvent) => void;
+	windowPointerout: (event: PointerEvent) => void;
 	popup(options: MenuOptions, items: MenuItem[]): void;
 	computeMenuWidth(): void;
 	close(): void;
@@ -51,6 +51,12 @@ export interface MenuApi {
 	closeSubmenu(delay: number): void;
 	pointerenter(event: PointerEvent): void;
 }
+
+type MenuItemElement = HTMLElement & {
+	dataValue?: MenuItem;
+	label?: HTMLElement;
+	accelerator?: HTMLElement;
+};
 
 export function createMenuApi(el: HTMLElement): MenuApi {
 	const menu: MenuApi = {
@@ -66,28 +72,28 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		buttonPressed: false,
 		minWidth: 0,
 		parentMenuItem: null,
-		windowBlur: null as any,
-		windowKeydown: null as any,
-		windowPointerdown: null as any,
-		windowPointerup: null as any,
-		windowPointerover: null as any,
-		windowPointerout: null as any,
-		popup: null as any,
-		computeMenuWidth: null as any,
-		close: null as any,
-		clear: null as any,
-		createItem: null as any,
-		select: null as any,
-		unselect: null as any,
-		reselect: null as any,
-		popupSubmenu: null as any,
-		closeSubmenu: null as any,
-		pointerenter: null as any
+		windowBlur: null as unknown as () => void,
+		windowKeydown: null as unknown as (event: KeyboardEvent) => void,
+		windowPointerdown: null as unknown as (event: PointerEvent) => void,
+		windowPointerup: null as unknown as (event: PointerEvent) => void,
+		windowPointerover: null as unknown as (event: PointerEvent) => void,
+		windowPointerout: null as unknown as (event: PointerEvent) => void,
+		popup: null as unknown as (options: MenuOptions, items: MenuItem[]) => void,
+		computeMenuWidth: null as unknown as () => void,
+		close: null as unknown as () => void,
+		clear: null as unknown as () => HTMLElement,
+		createItem: null as unknown as (item: MenuItem) => HTMLElement,
+		select: null as unknown as (element: HTMLElement) => void,
+		unselect: null as unknown as () => void,
+		reselect: null as unknown as (offset: number) => void,
+		popupSubmenu: null as unknown as (delay: number) => void,
+		closeSubmenu: null as unknown as (delay: number) => void,
+		pointerenter: null as unknown as (event: PointerEvent) => void
 	};
 
 	const onWindow = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: never) => void,
 		options?: boolean | AddEventListenerOptions
 	): void => {
 		window.addEventListener(type, listener as EventListener, options);
@@ -95,7 +101,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 
 	const offWindow = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: never) => void,
 		options?: boolean | AddEventListenerOptions
 	): void => {
 		window.removeEventListener(type, listener as EventListener, options);
@@ -138,7 +144,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		let labelWidth = 0;
 		let acceleratorWidth = 0;
 		for (const li of el.childNodes) {
-			const { label, accelerator } = li as any;
+			const { label, accelerator } = li as MenuItemElement;
 			if (label !== undefined) {
 				labelWidth = Math.max(labelWidth, label.offsetWidth);
 			}
@@ -190,7 +196,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 			default: {
 				const li = document.createElement('div');
 				li.classList.add('menu-item');
-				(li as any).dataValue = item;
+				(li as MenuItemElement).dataValue = item;
 				if (item.enabled === false) {
 					li.classList.add('disabled');
 				}
@@ -207,14 +213,14 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 					const label = document.createElement('div');
 					label.classList.add('menu-label');
 					label.textContent = item.label;
-					(li as any).label = label;
+					(li as MenuItemElement).label = label;
 					li.appendChild(label);
 				}
 				if (item.accelerator !== undefined) {
 					const accelerator = document.createElement('div');
 					accelerator.classList.add('menu-accelerator');
 					accelerator.textContent = item.accelerator;
-					(li as any).accelerator = accelerator;
+					(li as MenuItemElement).accelerator = accelerator;
 					li.appendChild(accelerator);
 				}
 				if (item.style !== undefined) {
@@ -284,7 +290,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 	function popupSubmenu(delay: number): void {
 		const element = menu.selection;
 		if (element instanceof HTMLElement && element !== menu.submenu?.parentMenuItem) {
-			const node = (element as any).dataValue as MenuItem;
+			const node = (element as MenuItemElement).dataValue as MenuItem;
 			if (node.submenu) {
 				if (!menu.popupTimer) {
 					menu.popupTimer = new MenuTimer({
@@ -362,7 +368,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 				case 'Enter':
 				case 'NumpadEnter':
 					if (menu.selection) {
-						const node = (menu.selection as any).dataValue as MenuItem;
+						const node = (menu.selection as MenuItemElement).dataValue as MenuItem;
 						if (node.submenu) {
 							popupSubmenu(0);
 							(menu.submenu as MenuApi | null)?.reselect(1);
@@ -433,7 +439,7 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 					if (menu.buttonPressed) {
 						menu.buttonPressed = false;
 						if (!element.classList.contains('disabled')) {
-							const node = (element as any).dataValue as MenuItem;
+							const node = (element as MenuItemElement).dataValue as MenuItem;
 							if (node.submenu) {
 								popupSubmenu(0);
 							} else if (node.click) {

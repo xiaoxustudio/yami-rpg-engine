@@ -5,7 +5,7 @@ import YMToastManager from '../YMToastManager.vue';
 describe('YMToastManager', () => {
 	it('shows a toast with message and type class', async () => {
 		const wrapper = mount(YMToastManager);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		const el = vm.show('Hello', 'error', 0);
 		await wrapper.vm.$nextTick();
 		expect(wrapper.find('.toast').exists()).toBe(true);
@@ -18,7 +18,7 @@ describe('YMToastManager', () => {
 
 	it('dismisses via close button', async () => {
 		const wrapper = mount(YMToastManager);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		vm.show('Msg', 'info', 0);
 		await wrapper.vm.$nextTick();
 		const close = wrapper.find('.toast-close');
@@ -30,7 +30,7 @@ describe('YMToastManager', () => {
 	it('auto-dismisses after duration', async () => {
 		vi.useFakeTimers();
 		const wrapper = mount(YMToastManager);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		vm.show('Auto', 'info', 50);
 		vi.advanceTimersByTime(300);
 		await wrapper.vm.$nextTick();
@@ -40,7 +40,7 @@ describe('YMToastManager', () => {
 
 	it('does not dismiss elements outside the manager', async () => {
 		const wrapper = mount(YMToastManager);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		const foreign = document.createElement('div');
 		document.body.appendChild(foreign);
 		vm.dismiss(foreign);

@@ -23,38 +23,47 @@ import { GL } from '@/webgl/webgl-init.ts';
 
 type SceneState = 'closed' | 'open' | 'loading';
 
-// 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
-type SceneMethod = ((...args: any[]) => any) | null;
-
 // 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
+interface SceneListItem {
+	class: string;
+	element: HTMLElement & { [k: string]: unknown };
+}
+
 interface SceneListExtensions {
 	// 列表基础方法（Scene.list.* 运行时挂载）
-	create: ((...args: any[]) => any) | null;
-	copy: ((...args: any[]) => any) | null;
-	paste: ((...args: any[]) => any) | null;
-	delete: ((...args: any[]) => any) | null;
-	toggle: ((...args: any[]) => any) | null;
-	cancelSearch: ((...args: any[]) => any) | null;
-	createIcon: ((...args: any[]) => any) | null;
-	updateIcon: ((...args: any[]) => any) | null;
-	updateHead: ((...args: any[]) => any) | null;
-	createConditionIcon: ((...args: any[]) => any) | null;
-	updateConditionIcon: ((...args: any[]) => any) | null;
-	createEventIcon: ((...args: any[]) => any) | null;
-	updateEventIcon: ((...args: any[]) => any) | null;
-	createScriptIcon: ((...args: any[]) => any) | null;
-	updateScriptIcon: ((...args: any[]) => any) | null;
-	createVisibilityIcon: ((...args: any[]) => any) | null;
-	updateVisibilityIcon: ((...args: any[]) => any) | null;
-	createLockIcon: ((...args: any[]) => any) | null;
-	updateLockIcon: ((...args: any[]) => any) | null;
-	restoreRecursiveStates: ((...args: any[]) => any) | null;
-	setRecursiveStates: ((...args: any[]) => any) | null;
-	updateItemClass: ((...args: any[]) => any) | null;
-	onCreate: ((...args: any[]) => any) | null;
-	onRemove: ((...args: any[]) => any) | null;
-	onDelete: ((...args: any[]) => any) | null;
-	onResume: ((...args: any[]) => any) | null;
+	create: ((dItem?: unknown) => unknown) | null;
+	copy: ((item: SceneListItem) => unknown) | null;
+	paste:
+		| ((
+				dItem: SceneListItem | 'auto' | null,
+				callback: ((item: any) => void) | undefined
+		  ) => void)
+		| null;
+	delete: ((item: SceneListItem) => unknown) | null;
+	toggle: ((item: SceneListItem) => unknown) | null;
+	cancelSearch: (() => unknown) | null;
+	createIcon: ((item: unknown) => unknown) | null;
+	updateIcon: ((item?: unknown) => unknown) | null;
+	updateHead: (() => unknown) | null;
+	createConditionIcon: ((item: SceneListItem) => unknown) | null;
+	updateConditionIcon: ((item: SceneListItem) => unknown) | null;
+	createEventIcon: ((item: SceneListItem) => unknown) | null;
+	updateEventIcon: ((item: SceneListItem) => unknown) | null;
+	createScriptIcon: ((item: SceneListItem) => unknown) | null;
+	updateScriptIcon: ((item: SceneListItem) => unknown) | null;
+	createVisibilityIcon: ((item: SceneListItem) => unknown) | null;
+	updateVisibilityIcon: ((item: SceneListItem) => unknown) | null;
+	createLockIcon: ((item: SceneListItem) => unknown) | null;
+	updateLockIcon: ((item: SceneListItem) => unknown) | null;
+	restoreRecursiveStates:
+		| ((item: SceneListItem, key: string, states: SceneListItem[]) => unknown)
+		| null;
+	setRecursiveStates: ((item: SceneListItem, key: string, state: boolean) => unknown) | null;
+	updateItemClass: ((item: SceneListItem) => unknown) | null;
+	onCreate: ((item: SceneListItem) => unknown) | null;
+	onRemove: ((item?: unknown) => unknown) | null;
+	onDelete: ((item: SceneListItem) => unknown) | null;
+	onResume: ((item: SceneListItem) => unknown) | null;
 	// creators/updaters 数组（运行时挂载，供 push 挂载方法）
 	creators: unknown[];
 	updaters: unknown[];
@@ -66,7 +75,7 @@ interface SceneShape {
 	head: HTMLElement & { width?: number; left?: number };
 	body: HTMLElement & { hide(): HTMLElement; show(): HTMLElement };
 	info: HTMLElement;
-	screen: HTMLElement;
+	screen: HTMLElement & { updateScrollbars: () => void };
 	// marquee 运行时挂载 .resize()/.terrain/.previewTiles/.pointerevent/.save/.switch/.select/.getTiles 等大量扩展 用 [ k: string ]: any 索引签名兜底所有运行时挂载字段，避免穷举
 	marquee: HTMLElement & { [k: string]: any };
 	// searcher 运行时挂载 .deleteInputContent/.input 等扩展（scene-list.ts:97 调用）
@@ -76,7 +85,7 @@ interface SceneShape {
 	[k: string]: any;
 }
 
-interface TilemapsShape extends Array<any> {
+interface TilemapsShape extends Array<unknown> {
 	shortcuts: TilemapShortcuts;
 }
 
@@ -84,14 +93,49 @@ interface RegionsShape extends Array<unknown> {
 	visibleList: unknown[] & { count: number };
 }
 
+interface SceneDataShape {
+	width: number;
+	height: number;
+	tileWidth: number;
+	tileHeight: number;
+	ambient: unknown;
+	terrainArray?: Uint8Array;
+	terrainChanged?: boolean;
+	events: unknown[];
+	scripts: unknown[];
+	objects: Array<{ class: string; children?: unknown[] }>;
+	[k: string]: unknown;
+}
+
+interface SceneEditorShape {
+	target: unknown;
+	tilemap: unknown;
+	history: History;
+	textures?: { destroy: () => void };
+	tilemaps: TilemapsShape;
+	actors: { player?: { destroy: () => void }; [k: string]: unknown }[];
+	regions: unknown[];
+	lights: { [k: string]: unknown }[];
+	animations: { player?: { destroy: () => void }; [k: string]: unknown }[];
+	particles: { emitter?: { destroy: () => void }; [k: string]: unknown }[];
+	parallaxes: { player?: { destroy: () => void }; [k: string]: unknown }[];
+	backgrounds: unknown[];
+	foregrounds: unknown[];
+	doodads: unknown[];
+	animationFrame: number;
+	animationElapsed: number;
+	animationInterval: number;
+	[k: string]: unknown;
+}
+
 interface SceneContextShape {
-	meta: Record<string, any> & { guid: string; path: string };
-	scene?: any;
-	editor?: any;
+	meta: Record<string, unknown> & { guid: string; path: string };
+	scene?: SceneDataShape;
+	editor?: SceneEditorShape;
 	changed?: boolean;
 }
 
-type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, any>;
+type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
 export const Scene: SceneShape = {
 	state: 'closed',
@@ -99,7 +143,7 @@ export const Scene: SceneShape = {
 	head: $('#scene-head'),
 	body: hide($('#scene-body')),
 	info: $('#scene-info'),
-	screen: $('#scene-screen'),
+	screen: $('#scene-screen') as HTMLElement & { updateScrollbars: () => void },
 	marquee: $('#scene-marquee') || ({} as unknown as HTMLElement & { [k: string]: any }),
 	searcher: $('#scene-searcher'),
 	list: ($('#scene-list') as unknown as never) || ({} as never),
@@ -419,12 +463,12 @@ Scene.list.onRemove = null;
 Scene.list.onDelete = null;
 Scene.list.onResume = null;
 
-Scene.initialize = function (this: any) {
+Scene.initialize = function (this: SceneShape) {
 	this.page = $('#scene');
 	this.head = $('#scene-head');
 	this.body = hide($('#scene-body'));
 	this.info = $('#scene-info');
-	this.screen = $('#scene-screen');
+	this.screen = $('#scene-screen') as HTMLElement & { updateScrollbars: () => void };
 	const oldMarquee = this.marquee;
 	this.marquee = $('#scene-marquee');
 	if (oldMarquee && this.marquee && oldMarquee !== this.marquee) {
@@ -432,7 +476,8 @@ Scene.initialize = function (this: any) {
 	}
 	this.searcher = $('#scene-searcher');
 	const oldList = this.list;
-	this.list = $('#scene-list');
+	this.list = $('#scene-list') as unknown as HTMLElement &
+		SceneListExtensions & { [k: string]: any };
 	if (oldList && this.list && oldList !== this.list) {
 		Object.assign(this.list, oldList);
 	}
@@ -574,24 +619,36 @@ Scene.initialize = function (this: any) {
 	list.creators?.push(list.createLockIcon);
 	list.updaters?.push(list.updateLockIcon);
 
-	History.processors['scene-folder-rename'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-folder-rename'] = (
+		operation: string,
+		data: { response: unknown }
+	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
-	History.processors['scene-object-create'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-create'] = (
+		operation: string,
+		data: { response: unknown; parent: unknown }
+	) => {
 		const { response, parent } = data;
 		list.restore(operation, response);
 		list.updateFolderState(parent, 'hidden');
 		list.updateFolderState(parent, 'locked');
 	};
-	History.processors['scene-object-delete'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-delete'] = (
+		operation: string,
+		data: { response: { item: { parent: unknown } } }
+	) => {
 		const { response } = data;
 		const parent = response.item.parent;
 		list.restore(operation, response);
 		list.updateFolderState(parent, 'hidden');
 		list.updateFolderState(parent, 'locked');
 	};
-	History.processors['scene-object-remove'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-remove'] = (
+		operation: string,
+		data: { response: { source: { parent: unknown }; destination: { parent: unknown } } }
+	) => {
 		const { response } = data;
 		const sParent = response.source.parent;
 		const dParent = response.destination.parent;
@@ -603,7 +660,10 @@ Scene.initialize = function (this: any) {
 			list.updateFolderState(dParent, 'locked');
 		}
 	};
-	History.processors['scene-object-toggle'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-toggle'] = (
+		operation: string,
+		data: { item: { enabled: boolean }; oldValue: boolean; newValue: boolean }
+	) => {
 		const { item, oldValue, newValue } = data;
 		if (operation === 'undo') {
 			item.enabled = oldValue;
@@ -614,7 +674,10 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-object-hidden'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-hidden'] = (
+		operation: string,
+		data: { item: { parent: unknown }; oldValues: unknown; newValue: unknown }
+	) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(item, 'hidden', oldValues);
@@ -626,7 +689,10 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-object-locked'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-object-locked'] = (
+		operation: string,
+		data: { item: { parent: unknown }; oldValues: unknown; newValue: unknown }
+	) => {
 		const { item, oldValues, newValue } = data;
 		if (operation === 'undo') {
 			list.restoreRecursiveStates!(item, 'locked', oldValues);
@@ -637,7 +703,15 @@ Scene.initialize = function (this: any) {
 		list.update();
 		Scene.planToSave!();
 	};
-	History.processors['scene-resize'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-resize'] = (
+		operation: string,
+		data: {
+			editor: { target: unknown };
+			width: number;
+			height: number;
+			terrains: unknown;
+		}
+	) => {
 		const { editor, width, height, terrains } = data;
 		const { scene } = Scene.context;
 		data.width = Scene.width;
@@ -656,7 +730,23 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-resize'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-tilemap-resize'] = (
+		operation: string,
+		data: {
+			editor: { target: unknown };
+			tilemap: {
+				width: number;
+				height: number;
+				tiles: unknown;
+				tilesetMap: unknown;
+				changed?: boolean;
+			};
+			width: number;
+			height: number;
+			tiles: unknown;
+			tilesetMap: unknown;
+		}
+	) => {
 		const { editor, tilemap, width, height, tiles, tilesetMap } = data;
 		data.width = tilemap.width;
 		data.height = tilemap.height;
@@ -676,7 +766,7 @@ Scene.initialize = function (this: any) {
 	};
 	History.processors['scene-tilemap-shortcut'] = (
 		operation: string,
-		data: Record<string, any>
+		data: { tilemap: { shortcut: unknown }; shortcut: unknown }
 	) => {
 		const { tilemap, shortcut } = data;
 		data.shortcut = tilemap.shortcut;
@@ -685,7 +775,19 @@ Scene.initialize = function (this: any) {
 		Scene.tilemaps.shortcuts.update();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-shift'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-tilemap-shift'] = (
+		operation: string,
+		data: {
+			tilemap: {
+				width: number;
+				height: number;
+				tiles: { rowOffset: number; [index: number]: number };
+				changed?: boolean;
+			};
+			shiftX: number;
+			shiftY: number;
+		}
+	) => {
 		const { tilemap, shiftX, shiftY } = data;
 		if (operation === 'undo') {
 			Scene.shiftTilemap!(tilemap, -shiftX, -shiftY);
@@ -696,7 +798,10 @@ Scene.initialize = function (this: any) {
 		Scene.setTarget!(tilemap);
 		Scene.planToSave!();
 	};
-	History.processors['scene-shift'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-shift'] = (
+		operation: string,
+		data: { shiftX: number; shiftY: number; changes: unknown }
+	) => {
 		const { shiftX, shiftY, changes } = data;
 		if (operation === 'undo') {
 			Scene.shiftTerrains!(-shiftX, -shiftY);
@@ -707,7 +812,14 @@ Scene.initialize = function (this: any) {
 		Scene.planToSaveTerrains!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-tilemap-change'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-tilemap-change'] = (
+		operation: string,
+		data: {
+			tilemap: { tiles: unknown; tilesetMap: unknown; changed?: boolean };
+			changes: unknown;
+			tilesetMap: unknown;
+		}
+	) => {
 		const { tilemap, changes, tilesetMap } = data;
 		switch (operation) {
 			case 'undo':
@@ -722,7 +834,10 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-terrain-change'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-terrain-change'] = (
+		operation: string,
+		data: { terrains: unknown; changes: unknown }
+	) => {
 		const { terrains, changes } = data;
 		switch (operation) {
 			case 'undo':
@@ -736,7 +851,15 @@ Scene.initialize = function (this: any) {
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
-	History.processors['scene-target-shift'] = (operation: string, data: Record<string, any>) => {
+	History.processors['scene-target-shift'] = (
+		operation: string,
+		data: {
+			editor: { target: unknown };
+			target: { x: number; y: number };
+			x: number;
+			y: number;
+		}
+	) => {
 		const { editor, target, x, y } = data;
 		data.x = target.x;
 		data.y = target.y;
@@ -752,7 +875,11 @@ Scene.initialize = function (this: any) {
 	};
 	History.processors['scene-target-redirect'] = (
 		operation: string,
-		data: Record<string, any>
+		data: {
+			editor: { target: unknown };
+			target: { angle: number; player: { setAngle(angle: number): void } };
+			angle: number;
+		}
 	) => {
 		const { editor, target, angle } = data;
 		data.angle = target.angle;
@@ -823,7 +950,7 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 
 	const scene = Data.scenes[meta.guid];
 	if (scene) {
-		context.scene = Codec.decodeScene!(scene);
+		context.scene = Codec.decodeScene!(scene) as unknown as SceneDataShape;
 		this.state = 'loading';
 		this.load!(context);
 	} else {
@@ -845,7 +972,7 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	const firstLoad = !context.editor;
 	if (firstLoad) {
 		const tilemaps = [] as unknown as TilemapsShape;
-		tilemaps.shortcuts = new TilemapShortcuts(tilemaps);
+		tilemaps.shortcuts = new TilemapShortcuts(tilemaps as TilemapShortcuts['tilemaps']);
 
 		const regions = [] as unknown as RegionsShape;
 		regions.visibleList = [] as unknown as unknown[] & { count: number };
@@ -873,7 +1000,8 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 			// listScrollTop: 0,
 		};
 	}
-	const { scene, editor } = context;
+	const scene = context.scene!;
+	const editor = context.editor!;
 
 	this.width = scene.width;
 	this.height = scene.height;
@@ -1026,10 +1154,10 @@ Scene.destroy = function (this: SceneShape, context: SceneContextShape) {
 		this.save!();
 		this.close!();
 	}
-	editor.textures.destroy();
+	editor.textures!.destroy();
 	delete editor.textures;
 	for (const actor of editor.actors) {
-		actor.player.destroy();
+		actor.player!.destroy();
 		delete actor.player;
 		delete actor.data;
 	}
@@ -1037,7 +1165,7 @@ Scene.destroy = function (this: SceneShape, context: SceneContextShape) {
 		delete light.instance;
 	}
 	for (const animation of editor.animations) {
-		animation.player.destroy();
+		animation.player!.destroy();
 		delete animation.player;
 		delete animation.data;
 	}
@@ -1046,7 +1174,7 @@ Scene.destroy = function (this: SceneShape, context: SceneContextShape) {
 		delete particle.emitter;
 	}
 	for (const parallax of editor.parallaxes) {
-		parallax.player.destroy();
+		parallax.player!.destroy();
 		delete parallax.player;
 	}
 };
@@ -1162,7 +1290,8 @@ Scene.computeObjectShifting = function (this: SceneShape, ox: number, oy: number
 };
 
 Scene.getDefaultObjectFolder = function (this: SceneShape, kind: string) {
-	const name = Editor.project!.scene.defaultFolders[kind];
+	const name = (Editor.project!.scene as { defaultFolders: Record<string, unknown> })
+		.defaultFolders[kind];
 	return !name
 		? null
 		: this.list.getItemByProperties({
@@ -1183,7 +1312,7 @@ Scene.paste = function (this: SceneShape, x?: number, y?: number) {
 			x = this.meta.x;
 			y = this.meta.y;
 		}
-		this.list.paste!('auto', (data: Record<string, any>) => {
+		this.list.paste!('auto', (data: { class: string; x: number; y: number }) => {
 			switch (data.class) {
 				case 'tilemap':
 				case 'actor':

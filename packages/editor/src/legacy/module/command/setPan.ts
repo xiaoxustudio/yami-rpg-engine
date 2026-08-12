@@ -27,14 +27,26 @@ Command.cases.setPan = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setPan').on('open', function (event: any) {
+		$('#setPan').on('open', function (event: Event) {
 			$('#setPan-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setPan').on('closed', function (event: any) {
+		$('#setPan').on('closed', function (event: Event) {
 			clear($('#setPan-easingId'));
 		});
 	},
-	customParse({ type, pan, easingId, duration, wait }: any) {
+	customParse({
+		type,
+		pan,
+		easingId,
+		duration,
+		wait
+	}: {
+		type: unknown;
+		pan: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseAudioType!(type))
 			.push(Command.parseVariableNumber!(pan))

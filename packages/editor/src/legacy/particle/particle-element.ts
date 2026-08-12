@@ -1,4 +1,5 @@
 import { GL } from '@/webgl/webgl-init.ts';
+import type { Matrix } from '../webgl/matrix2.ts';
 import { Particle } from './particle-window.ts';
 
 // 粒子元素层数据对象（layer.data，与 particle-layer.ts 的 ParticleLayerData 共享） 注：随机参数字段运行时是 [standard, deviation] 元组；纯值字段是 number
@@ -52,14 +53,23 @@ interface ParticleElementLayerData {
 	[k: string]: any;
 }
 
-interface ParticleElementLayer {
-	emitter: any;
+interface ParticleEmitterRef {
+	scale: number;
+	angle: number;
+	startX: number;
+	startY: number;
+	matrix: Matrix | null;
+	[k: string]: any;
+}
+
+export interface ParticleElementLayer {
+	emitter: ParticleEmitterRef;
 	data: ParticleElementLayerData;
 	[k: string]: any;
 }
 
 Particle.Element = class ParticleElement {
-	emitter!: any;
+	emitter!: ParticleEmitterRef;
 	layer!: ParticleElementLayer;
 	data!: ParticleElementLayerData;
 	elapsed!: number;
@@ -109,9 +119,9 @@ Particle.Element = class ParticleElement {
 		changed?: boolean;
 	};
 	// 运行时挂载的方法（updateMethods 内赋值）
-	setStartPosition!: ((...args: any[]) => any) | null;
+	setStartPosition!: ((movementAngle: number) => void) | null;
 	postProcessing!: (() => void) | null;
-	setStartColor!: ((...args: any[]) => any) | null;
+	setStartColor!: (() => void) | null;
 	updateColor!: (() => void) | null;
 
 	constructor(layer: ParticleElementLayer) {
@@ -242,7 +252,7 @@ Particle.Element = class ParticleElement {
 		this.setStartColor!();
 	}
 
-	update(deltaTime: any) {
+	update(deltaTime: number) {
 		this.elapsed += deltaTime;
 		this.scaleSpeed += this.scaleAccel * deltaTime;
 		this.scaleFactor += this.scaleSpeed * deltaTime;
@@ -294,7 +304,7 @@ Particle.Element = class ParticleElement {
 		return this.postProcessing!();
 	}
 
-	draw(vi: any) {
+	draw(vi: number) {
 		const layer = this.layer;
 		const sw = layer.unitWidth;
 		const sh = layer.unitHeight;
@@ -432,8 +442,8 @@ Particle.Element = class ParticleElement {
 		const area = this.data.area;
 		const cos = Math.cos(emitter.angle);
 		const sin = Math.sin(emitter.angle);
-		const x = area.x * emitter.scale;
-		const y = area.y * emitter.scale;
+		const x = area.x! * emitter.scale;
+		const y = area.y! * emitter.scale;
 		array[0] = x * cos - y * sin;
 		array[1] = x * sin + y * cos;
 		return array;
@@ -453,8 +463,8 @@ Particle.Element = class ParticleElement {
 		const pos = this.getAreaPosition!();
 		const x = emitter.startX + pos[0];
 		const y = emitter.startY + pos[1];
-		const wh = (area.width * emitter.scale) / 2;
-		const hh = (area.height * emitter.scale) / 2;
+		const wh = (area.width! * emitter.scale) / 2;
+		const hh = (area.height! * emitter.scale) / 2;
 		this.x = Math.randomBetween(x - wh, x + wh);
 		this.y = Math.randomBetween(y - hh, y + hh);
 		this.transformStartPosition!();
@@ -467,13 +477,13 @@ Particle.Element = class ParticleElement {
 		const x = emitter.startX + pos[0];
 		const y = emitter.startY + pos[1];
 		const angle = Math.random() * Math.PI * 2;
-		const distance = Math.random() * area.radius * emitter.scale;
+		const distance = Math.random() * area.radius! * emitter.scale;
 		this.x = x + distance * Math.cos(angle);
 		this.y = y + distance * Math.sin(angle);
 		this.transformStartPosition!();
 	}
 
-	setStartPositionEdge(movementAngle: any) {
+	setStartPositionEdge(movementAngle: number) {
 		const stage = ParticleElement.stage;
 		const scrollLeft = stage.scrollLeft;
 		const scrollTop = stage.scrollTop;
@@ -638,12 +648,12 @@ Particle.Element = class ParticleElement {
 		color[3] = 255;
 	}
 
-	static stage: any;
+	static stage: { matrix: Matrix; requestRendering: () => void; [k: string]: any };
 
 	static sharedFloat64Array = new Float64Array(4);
 	static sharedClampedArray = new Uint8ClampedArray(4);
 
-	static getRandomParameter([standard, deviation]: any[]) {
+	static getRandomParameter([standard, deviation]: [number, number]) {
 		return standard + deviation * (Math.random() * 2 - 1);
 	}
 };

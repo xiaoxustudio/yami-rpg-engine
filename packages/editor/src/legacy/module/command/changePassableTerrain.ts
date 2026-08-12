@@ -19,7 +19,7 @@ Command.cases.changePassableTerrain = new CommandSchema({
 			{ name: 'Unrestricted', value: 'unrestricted' }
 		]);
 	},
-	customParse({ actor, passage }: any) {
+	customParse({ actor, passage }: { actor: unknown; passage: string }) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Local.get!('command.changePassableTerrain.' + passage));

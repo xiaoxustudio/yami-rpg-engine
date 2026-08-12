@@ -36,7 +36,17 @@ Command.cases.setFocus = new CommandSchema({
 				{ case: 'remove', targets: [$('#setFocus-element')] }
 			]);
 	},
-	customParse({ operation, element, mode, cancelable }: any) {
+	customParse({
+		operation,
+		element,
+		mode,
+		cancelable
+	}: {
+		operation: string;
+		element: unknown;
+		mode: string;
+		cancelable: unknown;
+	}) {
 		const words = Command.words.push(Local.get!('command.setFocus.' + operation));
 		switch (operation) {
 			case 'add':

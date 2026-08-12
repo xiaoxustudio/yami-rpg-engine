@@ -1,11 +1,14 @@
-import { Particle } from './particle-window.ts';
+import { Particle, type ParticleLayerShape } from './particle-window.ts';
+import { Matrix } from '../webgl/matrix2.ts';
 
 interface ParticleEmitterData {
 	layers: ParticleLayerData[];
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 interface ParticleLayerData {
+	interval: number;
+	delay: number;
 	area: {
 		type: 'edge' | 'point' | 'rectangle' | 'circle';
 		x?: number;
@@ -14,7 +17,7 @@ interface ParticleLayerData {
 		height?: number;
 		radius?: number;
 	};
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 interface OuterRect {
@@ -38,8 +41,8 @@ Particle.Emitter = class ParticleEmitter {
 	scale: number;
 	speed: number;
 	opacity: number;
-	matrix: any | null;
-	layers: any[];
+	matrix: Matrix | null;
+	layers: ParticleLayerShape[];
 
 	constructor(data: ParticleEmitterData) {
 		let alwaysEmit = false;
@@ -124,7 +127,7 @@ Particle.Emitter = class ParticleEmitter {
 		};
 	}
 
-	getLayer(layerData: ParticleLayerData): any | undefined {
+	getLayer(layerData: ParticleLayerData): ParticleLayerShape | undefined {
 		for (const layer of this.layers) {
 			if (layer.data === layerData) {
 				return layer;

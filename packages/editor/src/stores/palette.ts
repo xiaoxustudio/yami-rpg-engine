@@ -6,6 +6,12 @@ import { pinia } from './pinia';
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';
 export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
 
+export interface PaletteTilesetShape {
+	type?: string;
+	width: number;
+	tags: (string | number)[];
+}
+
 export interface PaletteShape {
 	state: PaletteState;
 	mode: PaletteMode;
@@ -13,7 +19,7 @@ export interface PaletteShape {
 	showGrid: boolean;
 	scrollable: boolean;
 	activeIndex: number | null;
-	tileset: any | null;
+	tileset: PaletteTilesetShape | null;
 }
 
 export const paletteStateKeys: (keyof PaletteShape)[] = [
@@ -33,7 +39,7 @@ export const usePaletteStore = defineStore('palette', () => {
 	const showGrid = shallowRef<boolean>(true);
 	const scrollable = shallowRef<boolean>(false);
 	const activeIndex = shallowRef<number | null>(null);
-	const tileset = shallowRef<any | null>(null);
+	const tileset = shallowRef<PaletteTilesetShape | null>(null);
 	let listening = false;
 
 	function syncState() {

@@ -35,7 +35,7 @@ const write = (value: string): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	el.value = value;
-	(el as any).history?.reset();
+	(el as HTMLTextAreaElement & { history?: { reset(): void } }).history?.reset();
 };
 const insert = (value: string): void => {
 	const el = inputEl.value;
@@ -65,7 +65,7 @@ const disable = (): void => {
 		(child as HTMLElement).style.display = 'none';
 	}
 };
-const getFocus = (mode: any): void => {
+const getFocus = (mode: string): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	setTimeout(() => {
@@ -86,7 +86,7 @@ const getFocus = (mode: any): void => {
 };
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -149,20 +149,31 @@ defineExpose({ read, write, insert, enable, disable, getFocus, on, input: inputE
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
+type TextAreaHost = HTMLElement & {
+	input: HTMLTextAreaElement | null;
+	read: typeof read;
+	write: typeof write;
+	insert: typeof insert;
+	enable: typeof enable;
+	disable: typeof disable;
+	getFocus: typeof getFocus;
+	on: typeof on;
+};
+
 onMounted(() => {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input) return;
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('input', inputInput);
-	(el as any).input = input;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).insert = insert;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
+	(el as TextAreaHost).input = input;
+	(el as TextAreaHost).read = read;
+	(el as TextAreaHost).write = write;
+	(el as TextAreaHost).insert = insert;
+	(el as TextAreaHost).enable = enable;
+	(el as TextAreaHost).disable = disable;
+	(el as TextAreaHost).getFocus = getFocus;
+	(el as TextAreaHost).on = on;
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

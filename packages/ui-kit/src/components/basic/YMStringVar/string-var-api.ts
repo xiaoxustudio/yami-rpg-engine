@@ -6,24 +6,24 @@ import { defVar } from '../YMNumberVar/number-var-api';
 export interface StringVarApiOptions {
 	customBoxFactory?: () => CustomBoxApi;
 	textBoxFactory?: () => TextBoxApi;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
 export interface StringVarApi extends HTMLElement {
-	mode: string;
+	mode: string | null;
 	strBox?: TextBoxApi | null;
 	varBox?: CustomBoxApi | null;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	switch(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	getFocus(mode: any): any;
-	keydown(event: any): void;
-	pointerdown(event: any): void;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	switch(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	getFocus(mode?: string): unknown;
+	keydown(event: KeyboardEvent): void;
+	pointerdown(event: PointerEvent): void;
+	on(...args: unknown[]): void;
 }
 
 export function attachStringVarApi(
@@ -33,7 +33,7 @@ export function attachStringVarApi(
 	const box = el as StringVarApi;
 	if (box._initialized) return box;
 
-	let currentMode: string = null as any;
+	let currentMode: string | null = null;
 
 	const strBox = (options.textBoxFactory ?? (() => null))() as TextBoxApi;
 	const varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
@@ -44,7 +44,7 @@ export function attachStringVarApi(
 	box.strBox = strBox;
 	box.varBox = varBox;
 
-	box.read = function (): any {
+	box.read = function (): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return read(strBox);
@@ -53,7 +53,7 @@ export function attachStringVarApi(
 		}
 	};
 
-	box.write = function (value: any): void {
+	box.write = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
 				box.switch('constant');
@@ -81,7 +81,7 @@ export function attachStringVarApi(
 			}
 		}
 		if (currentMode !== target) {
-			removeClass(box, currentMode);
+			removeClass(box, currentMode as string);
 			addClass(box, target as string);
 			currentMode = target as string;
 			box.mode = currentMode;
@@ -119,7 +119,7 @@ export function attachStringVarApi(
 		}
 	};
 
-	box.getFocus = function (mode: any): any {
+	box.getFocus = function (mode?: string): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return strBox.getFocus(mode);
@@ -128,7 +128,7 @@ export function attachStringVarApi(
 		}
 	};
 
-	box.keydown = function (event: any): void {
+	box.keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
@@ -137,7 +137,7 @@ export function attachStringVarApi(
 		}
 	};
 
-	box.pointerdown = function (event: any): void {
+	box.pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
@@ -156,7 +156,7 @@ export function attachStringVarApi(
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

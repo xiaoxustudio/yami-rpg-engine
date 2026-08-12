@@ -10,19 +10,19 @@ export interface CheckBoxApi extends HTMLElement {
 	dataValue: boolean | null;
 	relations: HTMLElement[];
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	input(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	relate(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): boolean;
+	write(...args: unknown[]): void;
+	input(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	relate(...args: unknown[]): void;
+	on(...args: unknown[]): void;
 	keydown: (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }) => void;
 	pointerdown: (event: PointerEvent) => void;
 	mouseclick: (event: Event) => void;
 }
 
-const enableElement = (element: any): void => {
+const enableElement = (element: HTMLElement & { enable?: () => void }): void => {
 	if (typeof element.enable === 'function') {
 		element.enable();
 	} else {
@@ -30,7 +30,7 @@ const enableElement = (element: any): void => {
 	}
 };
 
-const disableElement = (element: any): void => {
+const disableElement = (element: HTMLElement & { disable?: () => void }): void => {
 	if (typeof element.disable === 'function') {
 		element.disable();
 	} else {
@@ -114,7 +114,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

@@ -1,17 +1,44 @@
 import { defineStore } from 'pinia';
-import { Particle } from '@/particle/particle-window.ts';
+import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.ts';
 import { shallowRef } from 'vue';
+import type { EditorProjectShape } from './editor';
+import type { History } from '@/tools/history.ts';
+
+type ParticleTargetShape = {
+	area: {
+		type: 'rectangle' | 'circle';
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+		radius: number;
+	} & Record<string, unknown>;
+} | null;
+
+type ParticleContextShape = {
+	meta: { guid: string; path: string } & Record<string, unknown>;
+	particle?: Record<string, unknown>;
+	editor: {
+		target: unknown;
+		emitter: ParticleEmitterShape;
+		history: History;
+		centerX: number;
+		centerY: number;
+		paused: boolean;
+	} & Record<string, unknown>;
+	[key: string]: unknown;
+};
 
 export const useParticleStore = defineStore('particle', () => {
 	const state = shallowRef<string>('closed');
-	const target = shallowRef<any>(null);
+	const target = shallowRef<ParticleTargetShape>(null);
 
 	function syncState() {
 		state.value = Particle?.state ?? 'closed';
 		target.value = Particle?.target ?? null;
 	}
 
-	function open(context: any) {
+	function open(context: ParticleContextShape) {
 		Particle?.open?.(context);
 	}
 
@@ -27,7 +54,7 @@ export const useParticleStore = defineStore('particle', () => {
 		Particle?.requestRendering?.();
 	}
 
-	function load(context: any) {
+	function load(context: ParticleContextShape) {
 		Particle?.load?.(context);
 	}
 
@@ -35,7 +62,7 @@ export const useParticleStore = defineStore('particle', () => {
 		Particle?.save?.();
 	}
 
-	function destroy(context: any) {
+	function destroy(context: ParticleContextShape) {
 		Particle?.destroy?.(context);
 	}
 
@@ -51,7 +78,7 @@ export const useParticleStore = defineStore('particle', () => {
 		Particle?.redo?.();
 	}
 
-	function setTarget(targetValue: any) {
+	function setTarget(targetValue: ParticleTargetShape) {
 		Particle?.setTarget?.(targetValue);
 	}
 
@@ -75,19 +102,19 @@ export const useParticleStore = defineStore('particle', () => {
 		Particle?.stopAnimation?.();
 	}
 
-	function saveToConfig(config: any) {
+	function saveToConfig(config: { colors: Record<string, unknown> }) {
 		Particle?.saveToConfig?.(config);
 	}
 
-	function loadFromConfig(config: any) {
+	function loadFromConfig(config: { colors: Record<string, unknown> }) {
 		Particle?.loadFromConfig?.(config);
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: EditorProjectShape) {
 		Particle?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: EditorProjectShape) {
 		Particle?.loadFromProject?.(project);
 	}
 

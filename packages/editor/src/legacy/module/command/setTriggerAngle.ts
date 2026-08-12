@@ -11,7 +11,7 @@ Command.cases.setTriggerAngle = new CommandSchema({
 		{ key: 'trigger', default: { type: 'trigger' } },
 		{ key: 'angle', default: { type: 'absolute', degrees: 0 } }
 	],
-	customParse({ trigger, angle }: any) {
+	customParse({ trigger, angle }: { trigger: unknown; angle: unknown }) {
 		const words = Command.words
 			.push(Command.parseTrigger(trigger))
 			.push(Command.parseAngle(angle));

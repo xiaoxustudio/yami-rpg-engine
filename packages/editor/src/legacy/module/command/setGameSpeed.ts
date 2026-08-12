@@ -20,14 +20,24 @@ Command.cases.setGameSpeed = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setGameSpeed').on('open', function (event: any) {
+		$('#setGameSpeed').on('open', function (event: Event) {
 			$('#setGameSpeed-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setGameSpeed').on('closed', function (event: any) {
+		$('#setGameSpeed').on('closed', function (event: Event) {
 			clear($('#setGameSpeed-easingId'));
 		});
 	},
-	customParse({ speed, easingId, duration, wait }: any) {
+	customParse({
+		speed,
+		easingId,
+		duration,
+		wait
+	}: {
+		speed: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseVariableNumber!(speed))
 			.push(Command.parseEasing!(easingId, duration, wait));

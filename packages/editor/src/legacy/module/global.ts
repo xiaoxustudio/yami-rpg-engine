@@ -17,7 +17,7 @@ import { Data } from '@/data/data-object.ts';
 import { Project } from '@/data/project-settings-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Localization } from '@/local/local-window.ts';
-import { UpdateLog } from '@/log/update-log-window.ts';
+import { UpdateLog, type UpdateLogItem } from '@/log/update-log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { EditDataInstance } from './editdata.ts';
 import { EventBus } from './eventbus.ts';
@@ -486,7 +486,7 @@ UpdateLog.open = function (this: typeof UpdateLog, ...args: unknown[]) {
 	const items = args[0] as unknown[] | null;
 	if (items instanceof Array) {
 		Window.open!('update-log');
-		this.internalItems = items;
+		this.internalItems = items as UpdateLogItem[];
 		this.currentMode = 'internal';
 		this.update?.(items);
 		this.loadCommunityReleases?.();
@@ -538,7 +538,10 @@ UpdateLog.update = function (this: typeof UpdateLog, ...args: unknown[]) {
 	}
 };
 
-UpdateLog.switchMode = function (this: typeof UpdateLog, mode: any) {
+UpdateLog.switchMode = function (
+	this: typeof UpdateLog,
+	mode: 'internal' | 'community' | 'donation'
+) {
 	if (mode === this.currentMode) return;
 	this.currentMode = mode;
 
@@ -567,7 +570,7 @@ UpdateLog.switchMode = function (this: typeof UpdateLog, mode: any) {
 		if (tabCommunity) removeClass(tabCommunity, 'active');
 		if (tabDonation) addClass(tabDonation, 'active');
 	}
-};
+} as (...args: unknown[]) => unknown;
 
 UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
 	try {
@@ -576,7 +579,7 @@ UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
 		);
 		if (!response.ok) throw new Error('Failed to fetch releases');
 		const releases = await response.json();
-		this.communityItems = this.parseCommunityReleases?.(releases) as any[];
+		this.communityItems = this.parseCommunityReleases?.(releases) as UpdateLogItem[];
 	} catch (error) {
 		console.error('Failed to load community releases:', error);
 		this.communityItems = [

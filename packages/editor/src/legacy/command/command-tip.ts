@@ -39,11 +39,11 @@ interface CommandSuggestionList {
 	createCommandTip: ListMethod;
 	selectDefaultCommand: ListMethod;
 	creators: ListMethod[];
-	elements: any[] & { count: number };
+	elements: Array<{ item?: CommandSuggestionItem }> & { count: number };
 	initialized: boolean;
 	selection: CommandSuggestionItem | null;
 	pressing: ((event: PointerEvent) => void) | null;
-	bind(getter: () => any): void;
+	bind(getter: () => CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null): void;
 	scrollAndResize(): void;
 	getSelectionPosition(): { x: number; y: number } | null;
 	update(): void;
@@ -52,7 +52,9 @@ interface CommandSuggestionList {
 	hide(): HTMLElement | void;
 	show(): HTMLElement | void;
 	scrollToSelection(mode?: string): void;
-	deleteNodeElements(data: any): void;
+	deleteNodeElements(
+		data: CommandSuggestionItem[] | Promise<CommandSuggestionItem[]> | null
+	): void;
 	searchNodes(text: string): void;
 	selectRelative(direction: string): void;
 	pageUp(select: boolean): void;
@@ -235,7 +237,7 @@ function bindListMethods() {
 		const separator = /\s*,\s*/;
 		return function (item: CommandSuggestionItem): void {
 			const element = item.element!;
-			const words = Command.words as {
+			const words = Command.words as unknown as {
 				push(s: string): number;
 				join(j?: string): string;
 			} & Array<string>;

@@ -7,9 +7,9 @@ export class StageColor {
 	green!: number;
 	blue!: number;
 	alpha!: number;
-	onchange: (...args: any[]) => void;
+	onchange: () => void;
 
-	constructor(hex: any, onchange: any) {
+	constructor(hex: string, onchange: () => void) {
 		this.input(hex);
 		this.onchange = onchange;
 	}
@@ -18,7 +18,7 @@ export class StageColor {
 		return this.hex;
 	}
 
-	input(hex: any) {
+	input(hex: string) {
 		if (this.hex !== hex) {
 			this.hex = hex;
 			this.red = parseInt(hex.slice(0, 2), 16) / 255;

@@ -20,6 +20,20 @@ const emit = defineEmits<{
 	open: [];
 }>();
 
+interface ColorBoxApi extends HTMLElement {
+	dataValue?: string;
+	foreground?: HTMLElement | null;
+	inputEventEnabled?: boolean;
+	read(): string;
+	write(color: string): void;
+	input(color: string): void;
+	enable(): void;
+	disable(): void;
+	on(type: string, 	listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void;
+	keydown(event: KeyboardEvent): void;
+	mouseclick(event: Event): void;
+}
+
 const root = ref<HTMLElement | null>(null);
 const foreground = ref<HTMLElement | null>(null);
 const colorInput = ref<HTMLInputElement | null>(null);
@@ -90,7 +104,7 @@ const disable = (): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -166,17 +180,17 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).dataValue = dataValue;
-	(el as any).foreground = foreground.value;
-	(el as any).inputEventEnabled = false;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).input = input;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).on = on;
-	(el as any).keydown = keydown;
-	(el as any).mouseclick = mouseclick;
+	(el as ColorBoxApi).dataValue = dataValue;
+	(el as ColorBoxApi).foreground = foreground.value;
+	(el as ColorBoxApi).inputEventEnabled = false;
+	(el as ColorBoxApi).read = read;
+	(el as ColorBoxApi).write = write;
+	(el as ColorBoxApi).input = input;
+	(el as ColorBoxApi).enable = enable;
+	(el as ColorBoxApi).disable = disable;
+	(el as ColorBoxApi).on = on;
+	(el as ColorBoxApi).keydown = keydown;
+	(el as ColorBoxApi).mouseclick = mouseclick;
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('click', mouseclick as EventListener);
 	write(props.modelValue);

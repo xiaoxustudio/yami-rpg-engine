@@ -4,16 +4,71 @@ import { CommandSchema } from '@/module/command/schema.ts';
 
 type CommandMethod = (...args: any[]) => any;
 
+interface WordListShape {
+	count: number;
+	push(string: string): this;
+	join(joint?: string): string;
+	readonly length: number;
+	[Symbol.iterator](): IterableIterator<string>;
+}
+
+interface CommandCustomShape {
+	customFolder: {
+		class: string;
+		value: string;
+		expanded?: boolean;
+		children: unknown[] | null;
+	} | null;
+	commandNameMap: Record<string, string> | null;
+	initialize: () => void;
+	parse: (id: string, parameters: Record<string, unknown>) => Record<string, unknown>[];
+	load: (id: string, parameters: Record<string, unknown>) => void;
+	save: () => void;
+	loadCommandList: () => void;
+	windowLocalize: (event: Event) => void;
+	windowX: number | null;
+	windowY: number | null;
+	parsingScript: { id: string; parameters: Record<string, unknown> | null };
+	loadedScript: { id: string; parameters: Record<string, unknown> | null };
+	windowFrame: HTMLElement & {
+		style: CSSStyleDeclaration;
+		absolute(x: number | null, y: number | null): void;
+		setTitle(title: string): void;
+	};
+	parameterPane: HTMLElement & {
+		getData?: () => Array<{ id: string; parameters: Record<string, unknown> | null }>;
+		onResize?: () => void;
+		createDetailBox?: () => unknown;
+		clear?: () => void;
+	};
+	parameterGrid: HTMLElement;
+	[k: string]: unknown;
+}
+
+interface CommandTargetShape {
+	scrollAndResize?: () => void;
+	getSelectionPosition?: () => { x: number; y: number } | null;
+	save?: (data: { id: string; params: Record<string, unknown> }) => unknown;
+}
+
 export const Command: {
-	target: any;
+	target: CommandTargetShape | null;
 	id: string;
-	words: any;
+	words: WordListShape;
 	invalid: boolean;
 	saveVars: boolean;
 	returnType: string;
 	eventName: string;
 	eventIndex: number;
-	variables: unknown[];
+	variables: Array<{
+		name: string;
+		type: string;
+		comment: string;
+		evIndex: number;
+		isLeftValue: boolean;
+		refCount: number;
+		command?: unknown;
+	}>;
 	varMap: Record<string, unknown>;
 	dependsOn: string[];
 	currentCommand: Record<string, unknown> | null;
@@ -91,13 +146,13 @@ export const Command: {
 	setTooltip: CommandMethod;
 	setInvalid: CommandMethod;
 	forEachCommand: CommandMethod;
-	WordList: any;
+	WordList: { new (): WordListShape };
 	cases: Record<string, CommandSchema>;
-	custom: any;
+	custom: CommandCustomShape;
 } = {
 	target: null,
 	id: null as unknown as string,
-	words: null,
+	words: null as unknown as WordListShape,
 	invalid: false,
 	saveVars: false,
 	returnType: '',
@@ -183,9 +238,9 @@ export const Command: {
 	setTooltip: null as unknown as CommandMethod,
 	setInvalid: null as unknown as CommandMethod,
 	forEachCommand: null as unknown as CommandMethod,
-	WordList: null,
+	WordList: null as unknown as { new (): WordListShape },
 	cases: {} as Record<string, CommandSchema>,
-	custom: null
+	custom: null as unknown as CommandCustomShape
 };
 
 // 注：此前为避免循环依赖被注释，但这是运行时绑定的关键链路 —— CommandSchema.parse / .initAll 等通过此绑定挂载到 Command.parse / Command.words 等，注释掉会导致运行时 Command.parse is not a function / Command.words 为 null。循环依赖问题应通过 module-init.js 的加载顺序（head.html SOT）保证 schema.ts 先于此文件加载。

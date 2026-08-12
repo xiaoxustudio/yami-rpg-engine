@@ -15,11 +15,17 @@ Command.cases.setAnimation = new CommandSchema({
 	onInitialize() {
 		$('#setAnimation-confirm').on('click', () => this.save!());
 		$('#setAnimation-properties').bind(AnimationProperty);
-		$('#setAnimation').on('closed', (event: any) => {
+		$('#setAnimation').on('closed', (event: Event) => {
 			clear($('#setAnimation-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(AnimationProperty.parse!(property));

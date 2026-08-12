@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import type { MenuItem } from '@ui-kit';
 import { Menubar } from '@/title/menu-bar.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
@@ -10,7 +11,7 @@ export const useMenubarStore = defineStore('menubar', () => {
 		state.value = Menubar?.state ?? 'closed';
 	}
 
-	function popup(rect: any, menus: any[]) {
+	function popup(rect: unknown, menus: MenuItem[]) {
 		Menubar?.popup?.(rect, menus);
 	}
 
@@ -66,23 +67,23 @@ export const useMenubarStore = defineStore('menubar', () => {
 		return Menubar?.sanitizeFolderName?.(name);
 	}
 
-	function keydown(event: any) {
+	function keydown(event: KeyboardEvent) {
 		Menubar?.keydown?.(event);
 	}
 
-	function pointerdown(event: any) {
+	function pointerdown(event: PointerEvent) {
 		Menubar?.pointerdown?.(event);
 	}
 
-	function pointerup(event: any) {
+	function pointerup(event: PointerEvent) {
 		Menubar?.pointerup?.(event);
 	}
 
-	function pointerover(event: any) {
+	function pointerover(event: PointerEvent) {
 		Menubar?.pointerover?.(event);
 	}
 
-	function hrefClick(event: any) {
+	function hrefClick(event: MouseEvent) {
 		Menubar?.hrefClick?.(event);
 	}
 

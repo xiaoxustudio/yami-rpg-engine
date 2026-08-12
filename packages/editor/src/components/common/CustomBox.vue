@@ -26,7 +26,7 @@ interface Props {
 	type?: string;
 	filter?: string;
 	disabled?: boolean;
-	modelValue?: any;
+	modelValue?: unknown;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -37,14 +37,14 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	write: [value: any];
-	input: [value: any];
+	write: [value: unknown];
+	input: [value: unknown];
 }>();
 
-const onWrite = (value: any) => {
+const onWrite = (value: unknown) => {
 	emit('write', value);
 };
-const onInput = (value: any) => {
+const onInput = (value: unknown) => {
 	emit('input', value);
 };
 
@@ -56,9 +56,9 @@ const localize = customBoxOptions.localize ?? null;
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
-	input(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
+	input(value: unknown): void;
 	enable(): void;
 	disable(): void;
 	focus(): void;
@@ -71,9 +71,9 @@ const ym = ref<{
 
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
-const input = (value: any): void => ym.value?.input(value);
+const read = (): unknown => ym.value?.read();
+const write = (value: unknown): void => ym.value?.write(value);
+const input = (value: unknown): void => ym.value?.input(value);
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const focus = (): void => ym.value?.focus();
@@ -86,7 +86,18 @@ const on = (
 defineExpose({ read, write, input, enable, disable, focus, on, root });
 
 onMounted(() => {
-const el = root.value as HTMLElement & Record<'read' | 'write' | 'input' | 'enable' | 'disable' | 'on', any>;
+const el = root.value as HTMLElement & {
+	read(): unknown;
+	write(value: unknown): void;
+	input(value: unknown): void;
+	enable(): void;
+	disable(): void;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+};
 	if (!el) return;
 	el.read = read;
 	el.write = write;

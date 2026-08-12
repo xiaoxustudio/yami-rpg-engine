@@ -11,7 +11,7 @@ Command.cases.removeTarget = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'target', default: { type: 'trigger' } }
 	],
-	customParse({ actor, target }: any) {
+	customParse({ actor, target }: { actor: unknown; target: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor(actor))
 			.push(Command.parseActor(target));

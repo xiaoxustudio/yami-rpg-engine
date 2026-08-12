@@ -5,7 +5,7 @@ import { Reference } from '@/log/related-references.ts';
 import { shallowRef } from 'vue';
 
 export const useLogStore = defineStore('log', () => {
-	const logs = shallowRef<{ [k: string]: any }[]>([]);
+	const logs = shallowRef<{ type: string; message: string; duration: number }[]>([]);
 
 	function syncState() {
 		logs.value = Log?.logs ?? [];
@@ -27,11 +27,11 @@ export const useLogStore = defineStore('log', () => {
 		Log?.initialize?.();
 	}
 
-	function logThrow(...args: any[]) {
+	function logThrow(...args: unknown[]) {
 		Log?.throw?.(...args);
 	}
 
-	function logPrint(...args: any[]) {
+	function logPrint(...args: unknown[]) {
 		Log?.print?.(...args);
 	}
 
@@ -47,15 +47,15 @@ export const useLogStore = defineStore('log', () => {
 		Log?.tick?.();
 	}
 
-	function logCatchError(...args: any[]) {
+	function logCatchError(...args: unknown[]) {
 		Log?.catchError?.(...args);
 	}
 
-	function logCatchRejection(...args: any[]) {
+	function logCatchRejection(...args: unknown[]) {
 		Log?.catchRejection?.(...args);
 	}
 
-	function logTscLog(...args: any[]) {
+	function logTscLog(...args: unknown[]) {
 		Log?.tscLog?.(...args);
 	}
 
@@ -63,31 +63,31 @@ export const useLogStore = defineStore('log', () => {
 		UpdateLog?.initialize?.();
 	}
 
-	function updateLogOpen(...args: any[]) {
+	function updateLogOpen(...args: unknown[]) {
 		UpdateLog?.open?.(...args);
 	}
 
-	function updateLogUpdate(...args: any[]) {
+	function updateLogUpdate(...args: unknown[]) {
 		UpdateLog?.update?.(...args);
 	}
 
-	function updateLogSwitchMode(...args: any[]) {
+	function updateLogSwitchMode(...args: unknown[]) {
 		UpdateLog?.switchMode?.(...args);
 	}
 
-	function updateLogLoadCommunityReleases(...args: any[]) {
+	function updateLogLoadCommunityReleases(...args: unknown[]) {
 		UpdateLog?.loadCommunityReleases?.(...args);
 	}
 
-	function updateLogDisplayDonationList(...args: any[]) {
+	function updateLogDisplayDonationList(...args: unknown[]) {
 		UpdateLog?.displayDonationList?.(...args);
 	}
 
-	function updateLogParseCommunityReleases(...args: any[]) {
+	function updateLogParseCommunityReleases(...args: unknown[]) {
 		UpdateLog?.parseCommunityReleases?.(...args);
 	}
 
-	function updateLogWindowClosed(...args: any[]) {
+	function updateLogWindowClosed(...args: unknown[]) {
 		UpdateLog?.windowClosed?.(...args);
 	}
 
@@ -95,19 +95,19 @@ export const useLogStore = defineStore('log', () => {
 		Reference?.initialize?.();
 	}
 
-	function referenceFindAllGuids(...args: any[]) {
-		return Reference?.findAllGuids?.(...args);
+	function referenceFindAllGuids(targetGuid?: string) {
+		return Reference?.findAllGuids?.(targetGuid);
 	}
 
-	function referenceFilterUselessComments(...args: any[]) {
+	function referenceFilterUselessComments(...args: unknown[]) {
 		return Reference?.filterUselessComments?.(...args);
 	}
 
-	function referenceFindRelated(...args: any[]) {
+	function referenceFindRelated(...args: unknown[]) {
 		return Reference?.findRelated?.(...args);
 	}
 
-	function referenceOpenRelated(...args: any[]) {
+	function referenceOpenRelated(...args: unknown[]) {
 		Reference?.openRelated?.(...args);
 	}
 
@@ -115,7 +115,7 @@ export const useLogStore = defineStore('log', () => {
 		return Reference?.findInvalid?.();
 	}
 
-	function referenceOpenInvalid(...args: any[]) {
+	function referenceOpenInvalid(...args: unknown[]) {
 		Reference?.openInvalid?.(...args);
 	}
 
@@ -123,43 +123,43 @@ export const useLogStore = defineStore('log', () => {
 		return Reference?.findUnused?.();
 	}
 
-	function referenceOpenUnused(...args: any[]) {
+	function referenceOpenUnused(...args: unknown[]) {
 		Reference?.openUnused?.(...args);
 	}
 
-	function referenceOpenList(...args: any[]) {
+	function referenceOpenList(...args: unknown[]) {
 		Reference?.openList?.(...args);
 	}
 
-	function referenceUpdate(...args: any[]) {
+	function referenceUpdate(...args: unknown[]) {
 		Reference?.update?.(...args);
 	}
 
-	function referenceWindowClosed(...args: any[]) {
+	function referenceWindowClosed(...args: unknown[]) {
 		Reference?.windowClosed?.(...args);
 	}
 
-	function referenceListSelect(...args: any[]) {
+	function referenceListSelect(...args: unknown[]) {
 		Reference?.listSelect?.(...args);
 	}
 
-	function referenceListPopup(...args: any[]) {
+	function referenceListPopup(...args: unknown[]) {
 		Reference?.listPopup?.(...args);
 	}
 
-	function referenceGetKeydownListener(...args: any[]) {
+	function referenceGetKeydownListener(...args: unknown[]) {
 		return Reference?.getKeydownListener?.(...args);
 	}
 
-	function referenceGetKeyupListener(...args: any[]) {
+	function referenceGetKeyupListener(...args: unknown[]) {
 		return Reference?.getKeyupListener?.(...args);
 	}
 
-	function referenceGetPointerdownListener(...args: any[]) {
+	function referenceGetPointerdownListener(...args: unknown[]) {
 		return Reference?.getPointerdownListener?.(...args);
 	}
 
-	function referenceGetPointermoveListener(...args: any[]) {
+	function referenceGetPointermoveListener(...args: unknown[]) {
 		return Reference?.getPointermoveListener?.(...args);
 	}
 

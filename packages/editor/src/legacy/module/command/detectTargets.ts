@@ -28,7 +28,7 @@ Command.cases.detectTargets = new CommandSchema({
 			{ name: 'Disabled', value: false }
 		]);
 	},
-	parseInSight(inSight: any) {
+	parseInSight(inSight: boolean) {
 		switch (inSight) {
 			case true:
 				return Local.get!('command.detectTargets.inSight');
@@ -36,7 +36,17 @@ Command.cases.detectTargets = new CommandSchema({
 				return '';
 		}
 	},
-	customParse({ actor, distance, selector, inSight }: any) {
+	customParse({
+		actor,
+		distance,
+		selector,
+		inSight
+	}: {
+		actor: unknown;
+		distance: unknown;
+		selector: unknown;
+		inSight: boolean;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Token('≤') + Command.parseVariableNumber!(distance, 't'))

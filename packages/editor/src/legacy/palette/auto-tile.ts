@@ -129,16 +129,16 @@ function ensureDomBound() {
 	AutoTile.frameList = $('#autoTile-frames');
 	templateList.updateNodeElement = Easing.list_updateNodeElement as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 	templateList.updateItemName = Team.list_updateItemName as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 	templateList.addElementClass = Easing.list_addElementClass as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 	templateList.updateTextNode = Easing.list_updateTextNode as unknown as (
 		...args: unknown[]
-	) => any;
+	) => unknown;
 }
 
 AutoTile.initialize = function (this: typeof AutoTile) {

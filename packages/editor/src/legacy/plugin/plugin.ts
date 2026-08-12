@@ -36,7 +36,8 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 interface PluginItemShape {
 	id: string;
 	enabled: boolean;
-	[k: string]: any;
+	parameters?: Record<string, unknown>;
+	element?: HTMLElement & { textNode: Text };
 }
 
 type ParameterShape = {
@@ -46,7 +47,19 @@ type ParameterShape = {
 	group: string | null;
 	options?: (string | number | boolean)[];
 	dataItems?: { name: string; value: unknown }[];
-	[k: string]: any;
+	min?: number;
+	max?: number;
+	decimals?: number;
+	filter?: string;
+	alias?: string;
+	desc?: string;
+	validate?: {
+		pattern: RegExp | null;
+		notEmpty: boolean | null;
+		minLength?: number;
+		maxLength?: number;
+	};
+	[k: string]: unknown;
 };
 
 type OverviewShape = {
@@ -58,15 +71,18 @@ type OverviewShape = {
 	deprecated?: string | boolean;
 	desc?: string;
 	code?: string;
-	[k: string]: any;
 };
 
 type PluginMetaShape = {
-	overview: Record<string, any>;
-	parameters: Record<string, any>[];
-	manager: Record<string, any>;
-	langMap: { update(): { get(key: string): string } };
-	[k: string]: any;
+	overview: OverviewShape;
+	parameters: ParameterShape[];
+	manager: {
+		states: Record<string, boolean>;
+		update: (parameters: Record<string, unknown>) => void;
+		[k: string]: unknown;
+	};
+	langMap: { update(): { get(key: string | undefined): string } };
+	[k: string]: unknown;
 };
 
 type OptionParameterShape = {
@@ -75,7 +91,8 @@ type OptionParameterShape = {
 	value?: unknown;
 	options?: (string | number | boolean)[];
 	parent?: OptionParameterShape | null;
-	[k: string]: any;
+	wrap?: { priority: number };
+	[k: string]: unknown;
 };
 
 type LanguagePackShape = {
@@ -83,13 +100,13 @@ type LanguagePackShape = {
 	code?: string;
 	base?: string;
 	map?: Record<string, string>;
-	[k: string]: any;
+	[k: string]: unknown;
 };
 
 type PluginScriptShape = {
 	id: string;
 	parameters: Record<string, unknown> | null;
-} & Record<string, any>;
+} & Record<string, unknown>;
 
 interface ClipboardShape {
 	has(format: string): boolean;
@@ -112,30 +129,30 @@ interface PluginManagerShape {
 	load: ((item?: PluginItemShape) => Promise<void>) | null;
 	unload: (() => void) | null;
 	loadOverview: (() => void) | null;
-	createOverview: (...args: any[]) => any;
-	createData: (...args: any[]) => any;
-	getItemById: ((...args: any[]) => any) | null;
+	createOverview: (...args: unknown[]) => Node[];
+	createData: (...args: unknown[]) => PluginItemShape;
+	getItemById: ((...args: unknown[]) => ReturnType<typeof Easing.getItemById>) | null;
 	switchOverviewMode: (() => void) | null;
-	parseMeta: ((...args: any[]) => any) | null;
-	reconstruct: (...args: any[]) => any;
-	saveToProject: ((...args: any[]) => any) | null;
-	loadFromProject: ((...args: any[]) => any) | null;
-	windowClose: ((...args: any[]) => any) | null;
-	windowClosed: ((...args: any[]) => any) | null;
-	keydown: ((...args: any[]) => any) | null;
-	pointerdown: ((...args: any[]) => any) | null;
-	scriptChange: ((...args: any[]) => any) | null;
-	listKeydown: ((...args: any[]) => any) | null;
-	listSelect: ((...args: any[]) => any) | null;
-	listUnselect: ((...args: any[]) => any) | null;
-	listChange: ((...args: any[]) => any) | null;
-	listPopup: ((...args: any[]) => any) | null;
-	listOpen: ((...args: any[]) => any) | null;
-	overviewPointerdown: ((...args: any[]) => any) | null;
-	parameterPaneUpdate: ((...args: any[]) => any) | null;
-	confirm: ((...args: any[]) => any) | null;
-	apply: ((...args: any[]) => any) | null;
-	checkValidate: ((...args: any[]) => any) | null;
+	parseMeta: ((...args: unknown[]) => void) | null;
+	reconstruct: (...args: unknown[]) => boolean;
+	saveToProject: ((...args: unknown[]) => void) | null;
+	loadFromProject: ((...args: unknown[]) => void) | null;
+	windowClose: ((...args: unknown[]) => void) | null;
+	windowClosed: ((...args: unknown[]) => void) | null;
+	keydown: ((...args: unknown[]) => void) | null;
+	pointerdown: ((...args: unknown[]) => void) | null;
+	scriptChange: ((...args: unknown[]) => void) | null;
+	listKeydown: ((...args: unknown[]) => void) | null;
+	listSelect: ((...args: unknown[]) => void) | null;
+	listUnselect: ((...args: unknown[]) => void) | null;
+	listChange: ((...args: unknown[]) => void) | null;
+	listPopup: ((...args: unknown[]) => void) | null;
+	listOpen: ((...args: unknown[]) => void) | null;
+	overviewPointerdown: ((...args: unknown[]) => void) | null;
+	parameterPaneUpdate: ((...args: unknown[]) => void) | null;
+	confirm: ((...args: unknown[]) => void) | null;
+	apply: ((...args: unknown[]) => void) | null;
+	checkValidate: ((...args: unknown[]) => boolean) | null;
 	list_edit: ((item: PluginItemShape) => void) | null;
 	list_insert: ((dItem: PluginItemShape) => void) | null;
 	list_toggle: ((item: PluginItemShape) => void) | null;
@@ -148,7 +165,7 @@ interface PluginManagerShape {
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
 	list_updateToggleStyle: ((item: PluginItemShape) => void) | null;
 	list_createEditIcon: ((item: PluginItemShape) => void) | null;
-	plugins: Record<string, any> | null;
+	plugins: (PluginItemShape[] | Record<string, PluginItemShape>) | null;
 	reload: (() => void) | null;
 }
 
@@ -167,12 +184,12 @@ export const PluginManager: PluginManagerShape = {
 	load: null,
 	unload: null,
 	loadOverview: null,
-	createOverview: null as unknown as (...args: any[]) => any,
-	createData: null as unknown as (...args: any[]) => any,
+	createOverview: null as unknown as (...args: unknown[]) => Node[],
+	createData: null as unknown as (...args: unknown[]) => PluginItemShape,
 	getItemById: null,
 	switchOverviewMode: null,
 	parseMeta: null,
-	reconstruct: null as unknown as (...args: any[]) => any,
+	reconstruct: null as unknown as (...args: unknown[]) => boolean,
 	saveToProject: null,
 	loadFromProject: null,
 	windowClose: null,
@@ -540,7 +557,7 @@ PluginManager.createOverview = function (
 		elements.push(document.createTextNode('No Description'));
 	}
 	return elements;
-};
+} as unknown as (...args: unknown[]) => Node[];
 
 PluginManager.createData = function (this: typeof PluginManager, id?: string) {
 	return {
@@ -548,9 +565,11 @@ PluginManager.createData = function (this: typeof PluginManager, id?: string) {
 		enabled: true,
 		parameters: {}
 	};
-};
+} as unknown as (...args: unknown[]) => PluginItemShape;
 
-PluginManager.getItemById = Easing.getItemById;
+PluginManager.getItemById = Easing.getItemById as unknown as (
+	...args: unknown[]
+) => ReturnType<typeof Easing.getItemById>;
 
 PluginManager.switchOverviewMode = function (this: typeof PluginManager) {
 	if (this.meta) {
@@ -1175,13 +1194,13 @@ PluginManager.parseMeta = (function IIFE() {
 				let priority = 0;
 				while ((owner = owner.parent)) {
 					const { wrap } = owner;
-					wrap.priority = Math.max(wrap.priority, ++priority);
+					wrap!.priority = Math.max(wrap!.priority, ++priority);
 				}
 			}
 			return super.sort(OptionManager.sorter);
 		}
 
-		update(parameters: Record<string, any>) {
+		update(parameters: Record<string, unknown>) {
 			const { states } = this;
 			for (const wrap of this) {
 				wrap.switch(states, parameters);
@@ -1193,7 +1212,7 @@ PluginManager.parseMeta = (function IIFE() {
 
 	class ConditionWrap {
 		owner: OptionParameterShape;
-		map: Record<string, any>;
+		map: Record<string, string[]>;
 		priority: number;
 		constructor(owner: OptionParameterShape) {
 			this.owner = owner;
@@ -1225,17 +1244,17 @@ PluginManager.parseMeta = (function IIFE() {
 			}
 		}
 
-		switch(states: Record<string, boolean>, parameters: Record<string, any>) {
+		switch(states: Record<string, boolean>, parameters: Record<string, unknown>) {
 			let active;
 			const { owner, map } = this;
 			const { key, options } = owner;
 			if (states[key] !== false) {
 				active = parameters[key];
-				if (!options!.includes(active)) {
+				if (!options!.includes(active as string | number | boolean)) {
 					active = owner.value;
 				}
 			}
-			const actives = map[active] ?? Array.empty;
+			const actives = map[active as string] ?? Array.empty;
 			for (const option of options!) {
 				const keys = map[option as string];
 				if (keys === undefined) continue;
@@ -1456,7 +1475,7 @@ PluginManager.parseMeta = (function IIFE() {
 			window.dispatchEvent(event);
 		}
 	};
-})();
+})() as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.reconstruct = (function IIFE() {
 	const guidRegExp = /^[0-9a-f]{16}$/;
@@ -1473,26 +1492,28 @@ PluginManager.reconstruct = (function IIFE() {
 			case 'number':
 				if (typeof value === type) {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value as number, decimals), min, max) === value;
+					return (
+						Math.clamp(Math.roundTo(value as number, decimals!), min!, max!) === value
+					);
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals), min, max) === n;
+						return Math.clamp(Math.roundTo(n, decimals!), min!, max!) === n;
 					}
 				}
 				return false;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals), min, max) === value;
+					return Math.clamp(Math.roundTo(value, decimals!), min!, max!) === value;
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals), min, max) === n;
+						return Math.clamp(Math.roundTo(n, decimals!), min!, max!) === n;
 					}
 				}
 				return VariableGetter.checkDataForPlugin!(value as { getter?: string });
@@ -1508,14 +1529,14 @@ PluginManager.reconstruct = (function IIFE() {
 			case 'attribute-key':
 				if (value === '') return true;
 				if (parameter.filter === 'any') return !!Attribute.getAttribute(value as string);
-				return !!Attribute.getGroupAttribute(parameter.filter, value as string);
+				return !!Attribute.getGroupAttribute(parameter.filter as string, value as string);
 			case 'attribute-group':
 				return value === '' || !!Attribute.getGroup(value as string);
 			case 'enum':
 			case 'enum-value':
 				if (value === '') return true;
 				if (parameter.filter === 'any') return !!Enum.getString(value as string);
-				return !!Enum.getGroupString(parameter.filter, value as string);
+				return !!Enum.getGroupString(parameter.filter as string, value as string);
 			case 'enum-group':
 				return value === '' || !!Enum.getGroup(value as string);
 			case 'actor':
@@ -1586,25 +1607,25 @@ PluginManager.reconstruct = (function IIFE() {
 			case 'number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals), min, max);
+					return Math.clamp(Math.roundTo(value, decimals!), min!, max!);
 				}
 				if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals), min, max);
+						return Math.clamp(Math.roundTo(n, decimals!), min!, max!);
 					}
 				}
 				return parameter.value;
 			case 'variable-number':
 				if (typeof value === 'number') {
 					const { min, max, decimals } = parameter;
-					return Math.clamp(Math.roundTo(value, decimals), min, max);
+					return Math.clamp(Math.roundTo(value, decimals!), min!, max!);
 				} else if (typeof value === 'string') {
 					const n = Number(value);
 					if (!Number.isNaN(n)) {
 						const { min, max, decimals } = parameter;
-						return Math.clamp(Math.roundTo(n, decimals), min, max);
+						return Math.clamp(Math.roundTo(n, decimals!), min!, max!);
 					}
 				} else if (VariableGetter.checkDataForPlugin!(value as { getter?: string })) {
 					return value;
@@ -1640,7 +1661,7 @@ PluginManager.reconstruct = (function IIFE() {
 				if (parameter.filter === 'any') {
 					if (Attribute.getAttribute(value as string)) return value;
 				} else {
-					if (Attribute.getGroupAttribute(parameter.filter, value as string))
+					if (Attribute.getGroupAttribute(parameter.filter as string, value as string))
 						return value;
 				}
 				return '';
@@ -1652,7 +1673,8 @@ PluginManager.reconstruct = (function IIFE() {
 				if (parameter.filter === 'any') {
 					if (Enum.getString(value as string)) return value;
 				} else {
-					if (Enum.getGroupString(parameter.filter, value as string)) return value;
+					if (Enum.getGroupString(parameter.filter as string, value as string))
+						return value;
 				}
 				return '';
 			case 'enum-group':
@@ -1747,7 +1769,7 @@ PluginManager.reconstruct = (function IIFE() {
 		if (length !== oEntries.length) {
 			reconstruct = true;
 		} else {
-			const oMap = {} as Record<string, any>;
+			const oMap = {} as Record<string, unknown>;
 			for (const [k, v] of oEntries) {
 				oMap[k] = v;
 			}
@@ -1759,7 +1781,7 @@ PluginManager.reconstruct = (function IIFE() {
 			}
 		}
 		if (reconstruct) {
-			const newParameters = {} as Record<string, any>;
+			const newParameters = {} as Record<string, unknown>;
 			for (const mParam of mParameters) {
 				const key = mParam.key;
 				const arg = parameters?.[key];
@@ -1771,7 +1793,7 @@ PluginManager.reconstruct = (function IIFE() {
 		}
 		return false;
 	};
-})();
+})() as unknown as (...args: unknown[]) => boolean;
 
 PluginManager.checkValidate = function (
 	this: typeof PluginManager,
@@ -1787,17 +1809,17 @@ PluginManager.checkValidate = function (
 		return false;
 	if (v.pattern && typeof value === 'string' && !v.pattern.test(value)) return false;
 	return true;
-};
+} as unknown as ((...args: unknown[]) => boolean) | null;
 
 PluginManager.saveToProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
 	plugin.detailed = this.detailed;
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.loadFromProject = function (this: typeof PluginManager, project: EditorProjectShape) {
 	const { plugin } = project;
 	this.detailed = plugin.detailed;
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.windowClose = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
@@ -1821,7 +1843,7 @@ PluginManager.windowClose = function (this: typeof PluginManager, event: Event) 
 			]
 		);
 	}
-}.bind(PluginManager);
+}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.windowClosed = function (this: typeof PluginManager, event: Event) {
 	(this.list as TreeListElement).saveSelection();
@@ -1830,7 +1852,7 @@ PluginManager.windowClosed = function (this: typeof PluginManager, event: Event)
 	window.removeEventListener('keydown', this.keydown!);
 	window.removeEventListener('pointerdown', this.pointerdown!);
 	window.removeEventListener('script-change', this.scriptChange!);
-}.bind(PluginManager);
+}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.keydown = function (this: typeof PluginManager, event: KeyboardEvent) {
 	if (event.ctrlKey || event.metaKey) {
@@ -1840,7 +1862,7 @@ PluginManager.keydown = function (this: typeof PluginManager, event: KeyboardEve
 				break;
 		}
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.pointerdown = function (this: typeof PluginManager, event: PointerEvent) {
 	// 阻止鼠标在窗口外部双击会选中概述内容的行为 并且调用失去焦点方法避免阻止后失效
@@ -1848,7 +1870,7 @@ PluginManager.pointerdown = function (this: typeof PluginManager, event: Pointer
 		event.preventDefault();
 		document.activeElement!.blur();
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.scriptChange = function (
 	this: typeof PluginManager,
@@ -1857,7 +1879,7 @@ PluginManager.scriptChange = function (
 	if (PluginManager.meta === event.changedMeta) {
 		PluginManager.loadOverview!();
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.listKeydown = function (this: TreeListElement, event: KeyboardEvent) {
 	const item = read(this);
@@ -1885,23 +1907,23 @@ PluginManager.listKeydown = function (this: TreeListElement, event: KeyboardEven
 				break;
 		}
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.listSelect = function (
 	this: typeof PluginManager,
 	event: Event & { value?: PluginItemShape }
 ) {
 	PluginManager.load!(event.value!);
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 // 列表 - 取消选择事件
 PluginManager.listUnselect = function (this: typeof PluginManager, event: Event) {
 	PluginManager.unload!();
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.listChange = function (this: typeof PluginManager, event: Event) {
 	PluginManager.changed = true;
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.listPopup = function (
 	this: typeof PluginManager,
@@ -1968,14 +1990,14 @@ PluginManager.listPopup = function (
 			}
 		]
 	);
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.listOpen = function (
 	this: typeof PluginManager,
 	event: Event & { value?: PluginItemShape }
 ) {
 	(PluginManager.list as TreeListElement).edit(event.value);
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.overviewPointerdown = (function IIFE() {
 	const once = { once: true };
@@ -2006,7 +2028,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 				break;
 		}
 	};
-})();
+})() as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.parameterPaneUpdate = function (this: TreeListElement, event: Event) {
 	if (this.wraps.length !== 0) {
@@ -2014,12 +2036,12 @@ PluginManager.parameterPaneUpdate = function (this: TreeListElement, event: Even
 	} else {
 		hide(this);
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.confirm = function (this: typeof PluginManager, event: Event) {
 	this.apply!();
 	Window.close!('plugin');
-}.bind(PluginManager);
+}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
 
 PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
@@ -2029,12 +2051,14 @@ PluginManager.apply = function (this: typeof PluginManager, event: Event) {
 		if (event instanceof Event) {
 			plugins = Object.clone(plugins);
 		} else {
-			TreeList.deleteCaches(plugins);
+			TreeList.deleteCaches(
+				plugins as unknown as Parameters<typeof TreeList.deleteCaches>[0]
+			);
 		}
 		Data.plugins = plugins;
 		File.planToSave!(Data.manifest.project.plugins);
 	}
-}.bind(PluginManager);
+}.bind(PluginManager) as unknown as ((...args: unknown[]) => void) | null;
 
 // 列表 - 编辑
 PluginManager.list_edit = function (this: TreeListElement, item: PluginItemShape) {
@@ -2147,12 +2171,12 @@ PluginManager.list_restoreSelection = function (this: TreeListElement) {
 
 // 列表 - 添加元素类名
 PluginManager.list_addElementClass = function (this: TreeListElement, item: PluginItemShape) {
-	addClass(item.element, 'plugin-item');
+	addClass(item.element!, 'plugin-item');
 };
 
 // 列表 - 更新文本节点
 PluginManager.list_updateTextNode = function (this: TreeListElement, item: PluginItemShape) {
-	const textNode = item.element.textNode;
+	const textNode = item.element!.textNode;
 	const text = Command.removeTextTags(Command.parseFileName(item.id));
 	if (textNode.nodeValue !== text) {
 		textNode.nodeValue = text;
@@ -2161,7 +2185,7 @@ PluginManager.list_updateTextNode = function (this: TreeListElement, item: Plugi
 
 // 列表 - 更新开关样式
 PluginManager.list_updateToggleStyle = function (this: TreeListElement, item: PluginItemShape) {
-	return item.enabled ? removeClass(item.element, 'weak') : addClass(item.element, 'weak');
+	return item.enabled ? removeClass(item.element!, 'weak') : addClass(item.element!, 'weak');
 };
 
 // 列表 - 创建编辑图标
@@ -2171,7 +2195,7 @@ PluginManager.list_createEditIcon = function (this: TreeListElement, item: Plugi
 	box.textContent = '\uf044';
 	addClass(box, 'script-edit-button');
 	addClass(box, 'plugin-item-button');
-	item.element.appendChild(box);
+	item.element!.appendChild(box);
 };
 
 // 注意：不再重写 ParameterPane.createDetailBox / clear，以保留参数面板按 @group 分组的多 detail-box 渲染能力 （原生 ParameterPane 已支持，见 components/parameter-pane.js）

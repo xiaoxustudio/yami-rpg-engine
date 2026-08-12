@@ -9,12 +9,31 @@ const props = defineProps<Props>();
 
 const root = ref<HTMLElement | null>(null);
 
+interface ThumbElement extends HTMLElement {
+	left?: number;
+	width?: number;
+	top?: number;
+	height?: number;
+}
+
+interface ScrollBarRootElement extends HTMLElement {
+	bind: (target: HTMLElement, type: string) => void;
+	updateHorizontalBar: () => void;
+	updateVerticalBar: () => void;
+	updateDisplay: (value: boolean) => void;
+}
+
+interface HotImportMeta extends ImportMeta {
+	hot?: { dispose: (callback: () => void) => void };
+}
+
 interface DragState extends PointerEvent {
 	mode: 'scroll' | 'repeat';
 	scrollLeft: number;
 	scrollTop: number;
 	clientX: number;
 	clientY: number;
+	relate?: (event: PointerEvent) => boolean;
 }
 
 const state = {
@@ -33,6 +52,7 @@ const state = {
 		elapsed: number;
 		duration: number;
 		phase: 'first' | 'repeat' | 'delay' | 'wait';
+		_last: number;
 	} | null
 };
 
@@ -46,12 +66,12 @@ const rectOf = (el: HTMLElement): DOMRect => el.getBoundingClientRect();
 const updateHorizontalThumb = (left: number, width: number): void => {
 	const thumb = state.thumb;
 	if (!thumb) return;
-	if ((thumb as any).left !== left) {
-		(thumb as any).left = left;
+	if ((thumb as ThumbElement).left !== left) {
+		(thumb as ThumbElement).left = left;
 		thumb.style.left = `${left}%`;
 	}
-	if ((thumb as any).width !== width) {
-		(thumb as any).width = width;
+	if ((thumb as ThumbElement).width !== width) {
+		(thumb as ThumbElement).width = width;
 		thumb.style.width = `${width}%`;
 	}
 };
@@ -59,12 +79,12 @@ const updateHorizontalThumb = (left: number, width: number): void => {
 const updateVerticalThumb = (top: number, height: number): void => {
 	const thumb = state.thumb;
 	if (!thumb) return;
-	if ((thumb as any).top !== top) {
-		(thumb as any).top = top;
+	if ((thumb as ThumbElement).top !== top) {
+		(thumb as ThumbElement).top = top;
 		thumb.style.top = `${top}%`;
 	}
-	if ((thumb as any).height !== height) {
-		(thumb as any).height = height;
+	if ((thumb as ThumbElement).height !== height) {
+		(thumb as ThumbElement).height = height;
 		thumb.style.height = `${height}%`;
 	}
 };
@@ -166,12 +186,13 @@ const scrollRelative = (sign: number): void => {
 		offset,
 		elapsed: 0,
 		duration: Math.abs(offset) / 10,
-		phase: 'first' as 'first' | 'repeat' | 'delay' | 'wait'
+		phase: 'first' as 'first' | 'repeat' | 'delay' | 'wait',
+		_last: 0
 	});
 	const step = (now: number): void => {
 		if (state.animState !== anim) return;
-		const dt = anim.elapsed === 0 ? 0 : now - (anim as any)._last;
-		(anim as any)._last = now;
+		const dt = anim.elapsed === 0 ? 0 : now - anim._last;
+		anim._last = now;
 		anim.elapsed += dt;
 		const time = Math.min(anim.elapsed / anim.duration, 1);
 		const value = anim.start * (1 - time) + anim.end * time;
@@ -212,13 +233,13 @@ const scrollRelative = (sign: number): void => {
 			stopAnimation();
 		}
 	};
-	(anim as any)._last = performance.now();
+	anim._last = performance.now();
 	state.animFrame = requestAnimationFrame(step);
 };
 
 const windowPointerup = (event: PointerEvent): void => {
 	const { dragging } = state;
-	if (dragging && (dragging as any).relate?.(event)) {
+	if (dragging && dragging.relate?.(event)) {
 		state.dragging = null;
 		window.removeEventListener('pointerup', windowPointerup);
 		window.removeEventListener('pointermove', windowPointermove);
@@ -227,7 +248,7 @@ const windowPointerup = (event: PointerEvent): void => {
 
 const windowPointermove = (event: PointerEvent): void => {
 	const { dragging } = state;
-	if (!dragging || !(dragging as any).relate?.(event)) return;
+	if (!dragging || !dragging.relate?.(event)) return;
 	switch (dragging.mode) {
 		case 'scroll': {
 			const target = state.target;
@@ -295,7 +316,7 @@ const pointerdown = (event: PointerEvent): void => {
 };
 
 onMounted(() => {
-	const element = root.value as any;
+	const element = root.value as ScrollBarRootElement | null;
 	if (!element) return;
 	injectStyles();
 	element.bind = bind;
@@ -321,8 +342,9 @@ const injectStyles = (): void => {
 	document.head.appendChild(style);
 };
 
-if ((import.meta as any).hot) {
-	(import.meta as any).hot.dispose(() => {
+const hot = (import.meta as HotImportMeta).hot;
+if (hot) {
+	hot.dispose(() => {
 		const el = document.getElementById(STYLE_ID);
 		if (el) el.remove();
 	});

@@ -103,7 +103,7 @@ export const ButtonProperty = createPropertyWindow({
 				break;
 		}
 	},
-	saveData(key: string, read: (k: string) => any) {
+	saveData(key: string, read: (k: string) => unknown): unknown {
 		switch (key) {
 			case 'normalImage':
 			case 'hoverImage':

@@ -25,7 +25,7 @@ Command.cases.controlButton = new CommandSchema({
 				}
 			]);
 	},
-	customParse({ operation, element }: any) {
+	customParse({ operation, element }: { operation: string; element: unknown }) {
 		const words = Command.words.push(Local.get!('command.controlButton.' + operation));
 		switch (operation) {
 			case 'select':

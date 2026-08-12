@@ -3,42 +3,52 @@ export interface CustomBoxParseResult {
 	invalid?: boolean;
 }
 
+export interface CustomBoxBrowserState {
+	dragging?: boolean;
+	body?: {
+		activeFile?: {
+			type?: string;
+			meta?: { guid: string };
+		};
+	};
+}
+
 export interface CustomBoxApiOptions {
 	id?: string;
 	type?: string;
 	filter?: string;
 	disabled?: boolean;
-	modelValue?: any;
-	getters?: Record<string, (el: any) => void> | null;
-	parsers?: Record<string, (value: any) => CustomBoxParseResult> | null;
-	fileDialog?: ((defaultPath: any) => Promise<{ filePaths: string[] }>) | null;
-	browser?: (() => any) | null;
+	modelValue?: unknown;
+	getters?: Record<string, (el: CustomBoxApi) => void> | null;
+	parsers?: Record<string, (value: unknown) => CustomBoxParseResult> | null;
+	fileDialog?: ((defaultPath: unknown) => Promise<{ filePaths: string[] }>) | null;
+	browser?: (() => CustomBoxBrowserState) | null;
 	localize?: ((key: string) => string) | null;
 }
 
-export interface CustomBoxApi extends HTMLElement {
+export type CustomBoxApi = HTMLElement & {
 	info: HTMLElement;
-	dataValue: any;
+	dataValue: unknown;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
 	isPluginInput?: boolean;
 	type: string | null;
 	filter: string | null;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	input(...args: unknown[]): any;
-	update(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	input(...args: unknown[]): void;
+	update(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	on(...args: unknown[]): void;
 	keydown(event: KeyboardEvent): void;
 	click(event?: Event): void;
 	dragenter(event: DragEvent): void;
 	dragleave(event: DragEvent): void;
 	dragover(event: DragEvent): void;
 	drop(event: DragEvent): void;
-}
+};
 
 export function attachCustomBoxApi(
 	el: HTMLElement,
@@ -55,8 +65,12 @@ export function attachCustomBoxApi(
 		localize: options.localize ?? null
 	};
 
-	const state = {
-		dataValue: null as any,
+	const state: {
+		dataValue: unknown;
+		writeEventEnabled: boolean;
+		inputEventEnabled: boolean;
+	} = {
+		dataValue: null,
 		writeEventEnabled: false,
 		inputEventEnabled: false
 	};
@@ -87,7 +101,7 @@ export function attachCustomBoxApi(
 	const getType = (): string | null => box.getAttribute('type');
 	const getFilter = (): string | null => box.getAttribute('filter');
 
-	const applyParse = (value: any): void => {
+	const applyParse = (value: unknown): void => {
 		const type = getType();
 		if (!type) {
 			text.textContent = value == null ? '' : String(value);
@@ -110,24 +124,24 @@ export function attachCustomBoxApi(
 		applyParse(state.dataValue);
 	};
 
-	const write = (value: any): void => {
+	const write = (value: unknown): void => {
 		state.dataValue = value;
 		if (value !== null && value !== undefined) {
 			update();
 		}
-		box.dataValue = value;
+		box.dataValue = value as string | number | boolean | Record<string, any> | null;
 		if (state.writeEventEnabled) {
-			const writeEvent: any = new Event('write');
+			const writeEvent = new Event('write') as Event & { value: unknown };
 			writeEvent.value = state.dataValue;
 			box.dispatchEvent(writeEvent);
 		}
 	};
 
-	const input = (value: any): void => {
+	const input = (value: unknown): void => {
 		if (state.dataValue !== value) {
 			write(value);
 			if (state.inputEventEnabled) {
-				const inputEvent: any = new Event('input');
+				const inputEvent = new Event('input') as Event & { value: unknown };
 				inputEvent.value = state.dataValue;
 				box.dispatchEvent(inputEvent);
 			}
@@ -157,7 +171,7 @@ export function attachCustomBoxApi(
 
 	const on = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void => {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
@@ -184,7 +198,7 @@ export function attachCustomBoxApi(
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!(event as any).cmdOrCtrlKey) {
+				if (!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 					event.stopPropagation();
 					click(event);
 				}
@@ -192,7 +206,7 @@ export function attachCustomBoxApi(
 		}
 	};
 
-	const getBrowser = (): any => (props.browser ? props.browser() : null);
+	const getBrowser = (): CustomBoxBrowserState | null => (props.browser ? props.browser() : null);
 
 	const dragenter = (event: DragEvent): void => {
 		dragover(event);
@@ -208,8 +222,9 @@ export function attachCustomBoxApi(
 		const browser = getBrowser();
 		if (getType() === 'file' && browser?.dragging) {
 			const file = browser.body?.activeFile;
-			if (file && (!getFilter() || getFilter()!.indexOf(file.type) !== -1)) {
-				(event as any).dataTransfer.dropEffect = 'move';
+			if (file && (!getFilter() || getFilter()!.indexOf(file.type!) !== -1)) {
+				(event as DragEvent & { dataTransfer: DataTransfer }).dataTransfer.dropEffect =
+					'move';
 				event.preventDefault();
 				box.classList.add('dragover');
 			}
@@ -222,7 +237,7 @@ export function attachCustomBoxApi(
 		const file = browser?.body?.activeFile;
 		if (file) {
 			box.focus();
-			input((file.meta as any).guid);
+			input(file.meta!.guid);
 			box.classList.remove('dragover');
 		}
 	};
@@ -232,7 +247,7 @@ export function attachCustomBoxApi(
 	box.inputEventEnabled = false;
 	box._initialized = true;
 
-	box.read = (): any => state.dataValue;
+	box.read = (): unknown => state.dataValue;
 	box.write = write;
 	box.input = input;
 	box.update = update;

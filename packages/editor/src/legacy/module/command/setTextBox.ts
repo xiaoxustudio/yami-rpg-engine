@@ -15,11 +15,17 @@ Command.cases.setTextBox = new CommandSchema({
 	onInitialize() {
 		$('#setTextBox-confirm').on('click', () => this.save!());
 		$('#setTextBox-properties').bind(TextBoxProperty);
-		$('#setTextBox').on('closed', (event: any) => {
+		$('#setTextBox').on('closed', (event: Event) => {
 			clear($('#setTextBox-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(TextBoxProperty.parse!(property));

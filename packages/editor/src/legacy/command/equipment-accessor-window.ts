@@ -3,10 +3,10 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface EquipmentGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -19,7 +19,7 @@ export const EquipmentGetter: EquipmentGetterShape = {
 	confirm: null
 };
 
-EquipmentGetter.initialize = function (this: any) {
+EquipmentGetter.initialize = function (this: EquipmentGetterShape) {
 	if (!$('#equipmentGetter-type')) return;
 	$('#equipmentGetter-type').loadItems([
 		{ name: 'Event Trigger Equipment', value: 'trigger' },
@@ -47,7 +47,7 @@ EquipmentGetter.initialize = function (this: any) {
 	$('#equipmentGetter-confirm').on('click', this.confirm);
 };
 
-EquipmentGetter.open = function (this: any, target: any) {
+EquipmentGetter.open = function (this: EquipmentGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('equipmentGetter');
 	$('#equipmentGetter-slot').loadItems(Enum.getStringItems('equipment-slot'));
@@ -82,18 +82,18 @@ EquipmentGetter.open = function (this: any, target: any) {
 	getFocus($('#equipmentGetter-type'));
 };
 
-EquipmentGetter.checkDataForPlugin = function (this: any, data: any) {
+EquipmentGetter.checkDataForPlugin = function (this: EquipmentGetterShape, data: unknown) {
 	if (data instanceof Object) {
-		return data.getter === 'equipment';
+		return (data as { getter?: string }).getter === 'equipment';
 	}
 	return false;
 };
 
-EquipmentGetter.createDefaultForPlugin = function (this: any) {
+EquipmentGetter.createDefaultForPlugin = function (this: EquipmentGetterShape) {
 	return { getter: 'equipment', type: 'trigger' };
 };
 
-EquipmentGetter.confirm = function (this: any, event: any) {
+EquipmentGetter.confirm = function (this: EquipmentGetterShape, event: Event) {
 	const read = getElementReader('equipmentGetter');
 	const type = read('type');
 	let getter;
@@ -130,9 +130,9 @@ EquipmentGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	if (this.target.isPluginInput) {
+	if (this.target!.isPluginInput) {
 		getter = { getter: 'equipment', ...getter };
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('equipmentGetter');
 }.bind(EquipmentGetter);

@@ -9,16 +9,22 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { GameLocal } from '@/local/local-object.ts';
 
 import { IListInterface } from '@/types/list-interface.ts';
+import { IEditableHistory } from '@/types/history.ts';
+
+interface AttributeItemShape {
+	key: string;
+	value: string | number | boolean;
+}
 
 export class AttributeListInterface implements IListInterface {
 	target!: HTMLElement | null;
 	type!: string;
 	group!: string;
-	history: any | null;
-	editor: any | null;
-	owner: any | null;
+	history!: IEditableHistory | null;
+	editor!: { target?: unknown } | null;
+	owner!: { history?: unknown } | null;
 
-	constructor(editor?: any, owner?: any) {
+	constructor(editor?: { target?: unknown }, owner?: { history?: unknown }) {
 		this.editor = editor ?? null;
 		this.owner = owner ?? null;
 	}
@@ -34,7 +40,9 @@ export class AttributeListInterface implements IListInterface {
 		}
 	}
 
-	parse(item: any): any {
+	parse(
+		item: AttributeItemShape
+	): AttributeItemShape | Array<{ content: unknown; class: string }> {
 		if (item instanceof Object) {
 			let { key, value } = item;
 			if (typeof value === 'string') {
@@ -58,7 +66,7 @@ export class AttributeListInterface implements IListInterface {
 					break;
 				case 'enum': {
 					attrName = attr.name;
-					const item = Enum.getGroupString(attr.enum, value);
+					const item = Enum.getGroupString(attr.enum, value as string);
 					if (item) {
 						value = item.name;
 					} else {
@@ -81,7 +89,7 @@ export class AttributeListInterface implements IListInterface {
 		return item;
 	}
 
-	open(item: any = { key: '', value: 0 }) {
+	open(item: AttributeItemShape = { key: '', value: 0 }) {
 		Window.open!('object-attribute');
 		const isNew = item.key === '';
 		if (isNew) {
@@ -197,12 +205,12 @@ export class AttributeListInterface implements IListInterface {
 		]);
 
 		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
-		$('#object-attribute-confirm')?.on('click', (event: any) => {
+		$('#object-attribute-confirm')?.on('click', (event: Event) => {
 			this.target!.save();
 		});
 	}
 
-	static keyWrite(event: any) {
+	static keyWrite(event: { value: string }) {
 		const group = this.target?.getAttribute?.('group') as unknown as string;
 		const attr = Attribute.getGroupAttribute(group, event.value);
 		if (attr) {

@@ -28,10 +28,10 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onSceneIdWrite = (value: any) => {
+const onSceneIdWrite = (value: unknown) => {
 	PresetObject?.sceneIdWrite?.({ value });
 };
-const onListOpen = (event: any) => {
+const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetObject?.listOpen?.(event);
 };
 

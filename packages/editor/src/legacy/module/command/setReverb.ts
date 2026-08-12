@@ -28,14 +28,28 @@ Command.cases.setReverb = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setReverb').on('open', function (event: any) {
+		$('#setReverb').on('open', function (event: Event) {
 			$('#setReverb-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setReverb').on('closed', function (event: any) {
+		$('#setReverb').on('closed', function (event: Event) {
 			clear($('#setReverb-easingId'));
 		});
 	},
-	customParse({ type, dry, wet, easingId, duration, wait }: any) {
+	customParse({
+		type,
+		dry,
+		wet,
+		easingId,
+		duration,
+		wait
+	}: {
+		type: unknown;
+		dry: unknown;
+		wet: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseAudioType!(type))
 			.push(Command.parseVariableNumber!(dry))

@@ -28,8 +28,16 @@ Command.cases.uploadFile = new CommandSchema({
 		headers = [],
 		callback = '',
 		rateCallback = ''
-	}: any) {
-		const head = [
+	}: {
+		url: unknown;
+		method: string;
+		path: unknown;
+		field: string;
+		headers: Array<{ key: unknown; value: unknown }>;
+		callback: string;
+		rateCallback: string;
+	}) {
+		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
 			{ text: Local.get!('command.uploadFile') },
 			{ text: ' , ' },
@@ -48,7 +56,7 @@ Command.cases.uploadFile = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents: any[] = [];
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },

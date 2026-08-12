@@ -1,21 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { createCustomBoxElement } from '../custom-box-api';
+import type { CustomBoxApi } from '../custom-box-api';
 
 describe('createCustomBoxElement', () => {
 	it('creates a custom-box element with api attached', () => {
 		const el = createCustomBoxElement();
 		expect(el.classList.contains('custom-box')).toBe(true);
-		expect(typeof (el as any).read).toBe('function');
-		expect(typeof (el as any).write).toBe('function');
-		expect(typeof (el as any).input).toBe('function');
-		expect(typeof (el as any).update).toBe('function');
-		expect(typeof (el as any).enable).toBe('function');
-		expect(typeof (el as any).disable).toBe('function');
-		expect(typeof (el as any).on).toBe('function');
+		expect(typeof el.read).toBe('function');
+		expect(typeof el.write).toBe('function');
+		expect(typeof el.input).toBe('function');
+		expect(typeof el.update).toBe('function');
+		expect(typeof el.enable).toBe('function');
+		expect(typeof el.disable).toBe('function');
+		expect(typeof el.on).toBe('function');
 	});
 
 	it('supports type/filter property proxy', () => {
-		const el = createCustomBoxElement() as any;
+		const el = createCustomBoxElement() as unknown as CustomBoxApi;
 		el.type = 'actor';
 		el.filter = 'object';
 		expect(el.type).toBe('actor');
@@ -25,7 +26,7 @@ describe('createCustomBoxElement', () => {
 	});
 
 	it('write/read roundtrip', () => {
-		const el = createCustomBoxElement() as any;
+		const el = createCustomBoxElement() as unknown as CustomBoxApi;
 		el.write({ id: 1, name: 'Hero' });
 		expect(el.read()).toEqual({ id: 1, name: 'Hero' });
 		expect(el.info).toBeTruthy();
@@ -34,8 +35,10 @@ describe('createCustomBoxElement', () => {
 	it('renders parser text when parser injected', () => {
 		const el = createCustomBoxElement({
 			type: 'actor',
-			parsers: { actor: (actor: any) => ({ text: 'Actor:' + actor.name }) }
-		}) as any;
+			parsers: {
+				actor: (actor: unknown) => ({ text: 'Actor:' + (actor as { name: string }).name })
+			}
+		}) as unknown as CustomBoxApi;
 		el.write({ id: 1, name: 'Hero' });
 		expect(el.info.textContent).toBe('Actor:Hero');
 	});

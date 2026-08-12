@@ -3,12 +3,20 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { addClass, hasClass, hide, removeClass, show, write } from '@/util/element-utils';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { File } from '@/file/file-system-core.ts';
+import { FileItem } from '@/file/file-item.ts';
+import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
 import { Timer } from '@/util/timer.ts';
 
 {
 	interface FileAudioShape {
 		[k: string]: any;
+	}
+	interface AudioParams {
+		volume: number;
+		pan: number;
+		dry: number;
+		wet: number;
 	}
 	const FileAudio: FileAudioShape = {
 		target: null,
@@ -80,7 +88,7 @@ import { Timer } from '@/util/timer.ts';
 		this.progress.addEventListener('pointerleave', this.progressPointerleave);
 	};
 
-	FileAudio.open = function (this: typeof FileAudio, file: any, meta: any) {
+	FileAudio.open = function (this: typeof FileAudio, file: FileItem, meta: FileMeta | null) {
 		if (this.target !== file) {
 			this.target = file;
 			this.meta = meta;
@@ -89,7 +97,7 @@ import { Timer } from '@/util/timer.ts';
 			const elSize = $('#fileAudio-size');
 			const elDuration = $('#fileAudio-duration');
 			const elBitrate = $('#fileAudio-bitrate');
-			const size = Number(file.stats.size);
+			const size = Number((file.stats as unknown as { size: number }).size);
 			elName.textContent = file.basename + file.extname;
 			elSize.textContent = File.parseFileSize!(size);
 			elDuration.textContent = '';
@@ -105,8 +113,8 @@ import { Timer } from '@/util/timer.ts';
 
 				removeClass(this.progress, 'visible');
 				// 婵烇絽娲︾换鍕汲閳ь剟鎮楅悽娈挎敯缂佺粯鍨垮畷鍫曟倷閸偆鏆犻梺鍛婎焽閸犲酣锝為幁娓瀘mise闂佹眹鍔岀€氼剛妲愰埡鍛仺?婵炲濮伴崕鎵矚閸洖鐭楁い鏍ㄧ懁缁ㄤ即鏌涘▎鎰缂佸顥撻幉鎾晲閸モ晛鐏ｉ梻鍌氾攻婵炲﹪銆傞崼鏇炴瀬闁绘鐗嗙粊锕傛煟閵娿儱顏柟濂告敱閹?
-				const promise = (this.promise = AudioManager.getWaveform!(meta.guid));
-				promise.then((url: string) => {
+				const promise = (this.promise = AudioManager.getWaveform!(meta!.guid));
+				promise.then((url) => {
 					if (this.promise === promise) {
 						this.promise = null;
 						this.progress.style.webkitMaskImage = url;
@@ -168,7 +176,7 @@ import { Timer } from '@/util/timer.ts';
 		}
 	};
 
-	FileAudio.writeParams = function (this: typeof FileAudio, params: any) {
+	FileAudio.writeParams = function (this: typeof FileAudio, params: AudioParams) {
 		write($('#fileAudio-volume'), params.volume);
 		write($('#fileAudio-pan'), params.pan);
 		write($('#fileAudio-dry'), params.dry);
@@ -176,13 +184,13 @@ import { Timer } from '@/util/timer.ts';
 		this.updateParamInfos!(params);
 	};
 
-	FileAudio.updateParams = function (this: typeof FileAudio, params: any) {
+	FileAudio.updateParams = function (this: typeof FileAudio, params: AudioParams) {
 		AudioManager.player!.setVolume(params.volume);
 		AudioManager.player!.setPan(params.pan);
 		AudioManager.player!.setReverb(params.dry, params.wet);
 	};
 
-	FileAudio.updateParamInfos = function (this: typeof FileAudio, params: any) {
+	FileAudio.updateParamInfos = function (this: typeof FileAudio, params: AudioParams) {
 		$('#fileAudio-volume-info').textContent = `${params.volume * 100}%`;
 		$('#fileAudio-pan-info').textContent = `${params.pan * 100}%`;
 		$('#fileAudio-dry-info').textContent = `${params.dry * 100}%`;

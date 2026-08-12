@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMTextArea from '../YMTextArea.vue';
+import type { TextAreaApi } from '../text-area-api';
 
 describe('YMTextArea', () => {
 	it('read/write roundtrip', () => {
 		const wrapper = mount(YMTextArea);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as TextAreaApi;
 		vm.write('line1\nline2');
 		expect(vm.read()).toBe('line1\nline2');
 	});
@@ -27,7 +28,7 @@ describe('YMTextArea', () => {
 
 	it('disable hides textarea', () => {
 		const wrapper = mount(YMTextArea);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as TextAreaApi;
 		vm.disable();
 		expect(wrapper.classes()).toContain('disabled');
 		vm.enable();
@@ -36,10 +37,10 @@ describe('YMTextArea', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMTextArea);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TextAreaApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
-		expect(el.input.tagName).toBe('TEXTAREA');
+		expect(el.input!.tagName).toBe('TEXTAREA');
 	});
 
 	it('syncs with external modelValue', async () => {

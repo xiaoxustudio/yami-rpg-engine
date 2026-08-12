@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMNumberBox from '../YMNumberBox.vue';
+import type { NumberBoxApi } from '../number-box-api';
 
 describe('YMNumberBox', () => {
 	it('read/write roundtrip with clamp', () => {
 		const wrapper = mount(YMNumberBox, { props: { min: 0, max: 10, modelValue: 3 } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberBoxApi;
 		expect(vm.read()).toBe(3);
 		vm.write(8);
 		expect(vm.read()).toBe(8);
@@ -26,7 +27,7 @@ describe('YMNumberBox', () => {
 		const wrapper = mount(YMNumberBox, {
 			props: { min: 0, max: 10, decimals: 2, modelValue: 1.234 }
 		});
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberBoxApi;
 		expect(vm.read()).toBe(1.23);
 	});
 
@@ -34,23 +35,23 @@ describe('YMNumberBox', () => {
 		const wrapper = mount(YMNumberBox);
 		const input = wrapper.find('input');
 		await input.trigger('keydown', { code: 'KeyA' });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberBoxApi;
 		expect(vm.read()).toBe(0);
 	});
 
 	it('exposes bridge functions and decimals property', () => {
 		const wrapper = mount(YMNumberBox);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as NumberBoxApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
-		expect(el.input.tagName).toBe('INPUT');
+		expect(el.input!.tagName).toBe('INPUT');
 		el.decimals = 3;
 		expect(el.decimals).toBe(3);
 	});
 
 	it('disable adds disabled class', () => {
 		const wrapper = mount(YMNumberBox);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberBoxApi;
 		vm.disable();
 		expect(wrapper.classes()).toContain('disabled');
 	});

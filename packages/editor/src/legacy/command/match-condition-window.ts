@@ -20,7 +20,7 @@ export interface SwitchConditionData {
 		| 'gamepad'
 		| 'mouse'
 		| 'variable';
-	value?: any;
+	value?: boolean | number | string;
 	attributeId?: string;
 	stringId?: string;
 	keycode?: string;
@@ -50,7 +50,7 @@ export const SwitchCondition: SwitchConditionShape = {
 	confirm: null
 };
 
-SwitchCondition.initialize = function (this: any): void {
+SwitchCondition.initialize = function (this: typeof SwitchCondition): void {
 	if (!$('#switch-condition-type')) return;
 	$('#switch-condition-type').loadItems([
 		{ name: 'None', value: 'none' },
@@ -111,7 +111,7 @@ SwitchCondition.initialize = function (this: any): void {
 };
 
 SwitchCondition.parse = function (
-	this: any,
+	this: typeof SwitchCondition,
 	condition: SwitchConditionData,
 	listData?: boolean
 ): string {
@@ -164,7 +164,7 @@ SwitchCondition.parse = function (
 };
 
 SwitchCondition.open = function (
-	this: any,
+	this: typeof SwitchCondition,
 	condition: SwitchConditionData = { type: 'number', value: 0 }
 ): void {
 	Window.open!('switch-condition');
@@ -182,13 +182,13 @@ SwitchCondition.open = function (
 		case 'none':
 			break;
 		case 'boolean':
-			booleanValue = condition.value!;
+			booleanValue = condition.value! as boolean;
 			break;
 		case 'number':
-			numberValue = condition.value!;
+			numberValue = condition.value! as number;
 			break;
 		case 'string':
-			stringValue = condition.value!;
+			stringValue = condition.value! as string;
 			break;
 		case 'attribute':
 			attributeId = condition.attributeId!;
@@ -222,7 +222,7 @@ SwitchCondition.open = function (
 	getFocus($('#switch-condition-type'));
 };
 
-SwitchCondition.save = function (this: any): SwitchConditionData {
+SwitchCondition.save = function (this: typeof SwitchCondition): SwitchConditionData {
 	const read = getElementReader('switch-condition');
 	const type = read('type') as SwitchConditionData['type'];
 	let condition: SwitchConditionData | undefined;
@@ -308,6 +308,9 @@ SwitchCondition.save = function (this: any): SwitchConditionData {
 	return condition!;
 };
 
-SwitchCondition.confirm = function (this: any, event: Event): SwitchConditionData {
+SwitchCondition.confirm = function (
+	this: typeof SwitchCondition,
+	event: Event
+): SwitchConditionData {
 	return SwitchCondition.target!.save();
 };

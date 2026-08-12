@@ -9,9 +9,9 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 
 const emit = defineEmits<{
-	write: [value: any];
-	select: [value: any];
-	popup: [value: any, clientX: number, clientY: number];
+	write: [value: unknown];
+	select: [value: unknown];
+	popup: [value: unknown, clientX: number, clientY: number];
 }>();
 
 const root = ref<HTMLElement | null>(null);
@@ -25,7 +25,34 @@ interface ListData {
 	foot: HTMLElement | null;
 }
 
-let elements = ([] as any[]) as any[] & ListData;
+interface ListItem extends HTMLElement {
+	dataValue?: unknown;
+	versionId?: number;
+}
+
+interface CommonListApi extends HTMLElement {
+	read(): unknown;
+	write(value: unknown): void;
+	reload(): HTMLElement;
+	appendElement(element: HTMLElement): void;
+	update(): void;
+	resize(): void;
+	updateHeadAndFoot(): void;
+	updateOnResize(_element?: HTMLElement): void;
+	select(element: HTMLElement): void;
+	unselect(): void;
+	scrollToItem(index: number): void;
+	selectRelative(direction: 'up' | 'down'): void;
+	clearElements(start: number): void;
+	clear(): HTMLElement;
+	on(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
+
+let elements = [] as unknown as ListItem[] & ListData;
 elements.versionId = 0;
 elements.count = 0;
 elements.start = -1;
@@ -37,9 +64,9 @@ let writeEventEnabled = false;
 let selectEventEnabled = false;
 let popupEventEnabled = false;
 
-const read = (): any => (selection as any)?.dataValue;
+const read = (): unknown => (selection as HTMLElement & { dataValue: unknown })?.dataValue;
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	const el = root.value;
 	if (!el || elements.count === 0) return;
 	unselect();
@@ -55,7 +82,7 @@ const write = (value: any): void => {
 	selection = target;
 	scrollToItem(index);
 	if (writeEventEnabled) {
-		const writeEvent = new Event('write') as Event & { value: any };
+		const writeEvent = new Event('write') as Event & { value: unknown };
 		writeEvent.value = target.dataValue;
 		el.dispatchEvent(writeEvent);
 	}
@@ -121,13 +148,13 @@ const resize = (): void => {
 		const versionId = elements.versionId++;
 		for (let i = start; i < end; i++) {
 			const element = elements[i];
-			(element as HTMLElement & { versionId?: number }).versionId = versionId;
+			element.versionId = versionId;
 			updateOnResize(element);
 		}
 		const nodes = el.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
-			const element = nodes[i] as HTMLElement & { versionId?: number };
+			const element = nodes[i] as ListItem;
 			if (element.versionId !== versionId) {
 				element.remove();
 			}
@@ -149,13 +176,13 @@ const updateOnResize = (_element?: HTMLElement): void => {};
 
 const select = (element: HTMLElement): void => {
 	if (element instanceof HTMLElement && selection !== element) {
-		write((element as HTMLElement & { dataValue: any }).dataValue);
+		write((element as HTMLElement & { dataValue: unknown }).dataValue);
 		if (selectEventEnabled) {
-			const selectEvent = new Event('select') as Event & { value: any };
-			selectEvent.value = (element as HTMLElement & { dataValue: any }).dataValue;
+			const selectEvent = new Event('select') as Event & { value: unknown };
+			selectEvent.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 			root.value!.dispatchEvent(selectEvent);
 		}
-		emit('select', (element as HTMLElement & { dataValue: any }).dataValue);
+		emit('select', (element as HTMLElement & { dataValue: unknown }).dataValue);
 	}
 };
 
@@ -206,7 +233,7 @@ const selectRelative = (direction: 'up' | 'down'): void => {
 const clearElements = (start: number): void => {
 	let i = start;
 	while (elements[i] !== undefined) {
-		elements[i++] = undefined;
+		elements[i++] = undefined as never;
 	}
 };
 
@@ -224,7 +251,7 @@ const clear = (): HTMLElement => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -301,18 +328,18 @@ const pointerup = (event: PointerEvent): void => {
 				const element = seek(event.target as HTMLElement, 'common-item');
 				if (element && element.tagName === 'COMMON-ITEM' && hasClass(element, 'selected')) {
 					const popup = new Event('popup') as Event & {
-						value: any;
+						value: unknown;
 						clientX: number;
 						clientY: number;
 					};
-					popup.value = (element as HTMLElement & { dataValue: any }).dataValue;
+					popup.value = (element as HTMLElement & { dataValue: unknown }).dataValue;
 					popup.clientX = event.clientX;
 					popup.clientY = event.clientY;
 					el.dispatchEvent(popup);
 					emit('popup', popup.value, popup.clientX, popup.clientY);
 				} else {
 					const popup = new Event('popup') as Event & {
-						value: any;
+						value: unknown;
 						clientX: number;
 						clientY: number;
 					};
@@ -354,21 +381,21 @@ onMounted(() => {
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	el.addEventListener('pointerup', pointerup);
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).reload = reload;
-	(el as any).appendElement = appendElement;
-	(el as any).update = update;
-	(el as any).resize = resize;
-	(el as any).updateHeadAndFoot = updateHeadAndFoot;
-	(el as any).updateOnResize = updateOnResize;
-	(el as any).select = select;
-	(el as any).unselect = unselect;
-	(el as any).scrollToItem = scrollToItem;
-	(el as any).selectRelative = selectRelative;
-	(el as any).clearElements = clearElements;
-	(el as any).clear = clear;
-	(el as any).on = on;
+	(el as CommonListApi).read = read;
+	(el as CommonListApi).write = write;
+	(el as CommonListApi).reload = reload;
+	(el as CommonListApi).appendElement = appendElement;
+	(el as CommonListApi).update = update;
+	(el as CommonListApi).resize = resize;
+	(el as CommonListApi).updateHeadAndFoot = updateHeadAndFoot;
+	(el as CommonListApi).updateOnResize = updateOnResize;
+	(el as CommonListApi).select = select;
+	(el as CommonListApi).unselect = unselect;
+	(el as CommonListApi).scrollToItem = scrollToItem;
+	(el as CommonListApi).selectRelative = selectRelative;
+	(el as CommonListApi).clearElements = clearElements;
+	(el as CommonListApi).clear = clear;
+	(el as CommonListApi).on = on;
 });
 </script>
 

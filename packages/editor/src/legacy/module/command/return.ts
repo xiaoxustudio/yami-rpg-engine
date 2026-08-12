@@ -46,7 +46,7 @@ Command.cases.return = new CommandSchema({
 				{ case: 'element', targets: [$('#return-element')] }
 			]);
 	},
-	loadTypeItems(type: any) {
+	loadTypeItems(type: string) {
 		let items;
 		switch (type) {
 			case 'none':
@@ -93,7 +93,7 @@ Command.cases.return = new CommandSchema({
 		}
 		$('#return-type').loadItems(items);
 	},
-	customParse({ type, value }: any) {
+	customParse({ type, value }: { type: string; value: number | string | boolean }) {
 		const words = Command.words;
 		switch (type) {
 			case 'none':

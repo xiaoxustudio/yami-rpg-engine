@@ -1,11 +1,30 @@
-export const commonListClearElements = (list: any, start: number): void => {
+export interface CommonListLike {
+	padded?: boolean;
+	scrollTop: number;
+	clientHeight: number;
+	textContent: string;
+	childNodes: NodeListOf<ChildNode>;
+	updateOnResize(element: HTMLElement): void;
+	appendChild(node: Node): Node;
+	insertBefore(node: Node, child: Node | null): Node;
+	elements: (HTMLElement & { versionId?: number })[] & {
+		versionId: number;
+		count: number;
+		start: number;
+		end: number;
+		head: HTMLElement | null;
+		foot: HTMLElement | null;
+	};
+}
+
+export const commonListClearElements = (list: CommonListLike, start: number): void => {
 	let i = start;
 	while (list.elements[i] !== undefined) {
-		list.elements[i++] = undefined;
+		list.elements[i++] = undefined as never;
 	}
 };
 
-export const commonListUpdateHeadAndFoot = (list: any): void => {
+export const commonListUpdateHeadAndFoot = (list: CommonListLike): void => {
 	const el = list;
 	if (list.elements.head) {
 		list.elements.head.style.marginTop = '';
@@ -27,7 +46,7 @@ export const commonListUpdateHeadAndFoot = (list: any): void => {
 	}
 };
 
-export const commonListResize = (list: any): void => {
+export const commonListResize = (list: CommonListLike): void => {
 	const el = list;
 	const st = el.scrollTop;
 	const ch = el.clientHeight;
@@ -53,7 +72,7 @@ export const commonListResize = (list: any): void => {
 		const nodes = el.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
-			const element = nodes[i];
+			const element = nodes[i] as HTMLElement & { versionId?: number };
 			if (element.versionId !== versionId) {
 				element.remove();
 			}

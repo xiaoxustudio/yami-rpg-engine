@@ -58,9 +58,9 @@ interface EnumHistoryData {
 }
 
 interface EnumModule {
-	list: TreeListElement | null;
-	panel: (HTMLElement & { enumString?: EnumItem | null }) | null;
-	searcher: HTMLElement | null;
+	list: TreeListElement;
+	panel: HTMLElement & { enumString?: EnumItem | null };
+	searcher: HTMLElement;
 	inputs: {
 		name: HTMLElement | null;
 		value: HTMLElement | null;
@@ -72,51 +72,65 @@ interface EnumModule {
 	idMap: Record<string, boolean>;
 	settings: Record<string, string>;
 	settingKeys: string[];
-	history: History | null;
+	history: History;
 	changed: boolean;
-	initialize: any;
-	open: any;
-	undo: any;
-	redo: any;
-	createId: any;
-	register: any;
-	unregister: any;
-	getItemById: any;
-	setFolderGroup: any;
-	getGroup: any;
-	getString: any;
-	getGroupString: any;
-	getDefStringId: any;
-	getStringItems: any;
-	getMergedItems: any;
-	openPropertyPanel: any;
-	closePropertyPanel: any;
-	unpackEnumeration: any;
-	packEnumeration: any;
-	saveHistory: any;
-	windowClose: any;
-	windowClosed: any;
-	keydown: any;
-	listKeydown: any;
-	listPointerdown: any;
-	listDoubleclick: any;
-	listSelect: any;
-	listRecord: any;
-	listOpen: any;
-	listPopup: any;
-	nameInput: any;
-	valueInput: any;
-	noteInput: any;
-	panelKeydown: any;
-	searcherInput: any;
-	confirm: any;
-	apply: any;
+	_previousActive: ReturnType<typeof UndoManager.getActive>;
+	initialize: (this: typeof Enum) => void;
+	open: (this: typeof Enum, target?: EnumTarget, mode?: string) => void;
+	undo: (this: typeof Enum) => void;
+	redo: (this: typeof Enum) => void;
+	createId: (this: typeof Enum) => string;
+	register: (this: typeof Enum, item: EnumItem) => void;
+	unregister: (this: typeof Enum, item: EnumItem) => void;
+	getItemById: (this: typeof Enum, id: string) => EnumItem | undefined;
+	setFolderGroup: (this: typeof Enum, folder: EnumItem, newGroup: string) => void;
+	getGroup: (this: typeof Enum, groupKey: string) => unknown;
+	getString: (this: typeof Enum, stringId: string) => EnumItem | undefined;
+	getGroupString: (
+		this: typeof Enum,
+		groupKey: string | undefined,
+		stringId: string
+	) => EnumItem | undefined;
+	getDefStringId: (this: typeof Enum, groupKey: string | undefined) => string;
+	getStringItems: (
+		this: typeof Enum,
+		groupKey: string | undefined,
+		allowNone?: boolean
+	) => unknown[];
+	getMergedItems: (
+		this: typeof Enum,
+		headItems: unknown,
+		groupKey: string,
+		mergedKey?: string
+	) => Array<{ value: string }>;
+	openPropertyPanel: (this: typeof Enum, enumString: EnumItem) => void;
+	closePropertyPanel: (this: typeof Enum) => void;
+	unpackEnumeration: (this: typeof Enum) => void;
+	packEnumeration: (this: typeof Enum) => void;
+	saveHistory: (this: typeof Enum, item: EnumItem, key: string, value?: string) => void;
+	windowClose: (this: typeof Enum, event: Event) => void;
+	windowClosed: (this: typeof Enum, event: Event) => void;
+	keydown: (event: KeyboardEvent) => void;
+	listKeydown: (this: TreeListElement, event: KeyboardEvent) => void;
+	listPointerdown: (this: TreeListElement, event: PointerEvent) => void;
+	listDoubleclick: (event: MouseEvent) => void;
+	listSelect: (event: Event) => void;
+	listRecord: (event: Event) => void;
+	listOpen: (event: MouseEvent) => void;
+	listPopup: (event: Event & { clientX: number; clientY: number }) => void;
+	nameInput: (event: InputEvent & { target: HTMLInputElement }) => void;
+	valueInput: (event: InputEvent & { target: HTMLInputElement }) => void;
+	noteInput: (this: HTMLElement, event: InputEvent) => void;
+	panelKeydown: (event: KeyboardEvent) => void;
+	searcherInput: (this: TextBox, event: InputEvent) => void;
+	confirm: (this: typeof Enum, event?: Event) => void;
+	apply: (this: typeof Enum, event?: Event) => void;
 }
 
 export const Enum: EnumModule = {
-	list: null,
-	panel: null,
-	searcher: null,
+	list: null as unknown as EnumModule['list'],
+	panel: null as unknown as EnumModule['panel'],
+	searcher: null as unknown as EnumModule['searcher'],
 	inputs: {
 		name: null,
 		value: null,
@@ -128,45 +142,46 @@ export const Enum: EnumModule = {
 	idMap: null as unknown as Record<string, boolean>,
 	settings: null as unknown as Record<string, string>,
 	settingKeys: null as unknown as string[],
-	history: null,
+	history: null as unknown as EnumModule['history'],
 	changed: false,
-	initialize: null,
-	open: null,
-	undo: null,
-	redo: null,
-	createId: null,
-	register: null,
-	unregister: null,
-	getItemById: null,
-	setFolderGroup: null,
-	getGroup: null,
-	getString: null,
-	getGroupString: null,
-	getDefStringId: null,
-	getStringItems: null,
-	getMergedItems: null,
-	openPropertyPanel: null,
-	closePropertyPanel: null,
-	unpackEnumeration: null,
-	packEnumeration: null,
-	saveHistory: null,
-	windowClose: null,
-	windowClosed: null,
-	keydown: null,
-	listKeydown: null,
-	listPointerdown: null,
-	listDoubleclick: null,
-	listSelect: null,
-	listRecord: null,
-	listOpen: null,
-	listPopup: null,
-	nameInput: null,
-	valueInput: null,
-	noteInput: null,
-	panelKeydown: null,
-	searcherInput: null,
-	confirm: null,
-	apply: null
+	_previousActive: null,
+	initialize: null as unknown as EnumModule['initialize'],
+	open: null as unknown as EnumModule['open'],
+	undo: null as unknown as EnumModule['undo'],
+	redo: null as unknown as EnumModule['redo'],
+	createId: null as unknown as EnumModule['createId'],
+	register: null as unknown as EnumModule['register'],
+	unregister: null as unknown as EnumModule['unregister'],
+	getItemById: null as unknown as EnumModule['getItemById'],
+	setFolderGroup: null as unknown as EnumModule['setFolderGroup'],
+	getGroup: null as unknown as EnumModule['getGroup'],
+	getString: null as unknown as EnumModule['getString'],
+	getGroupString: null as unknown as EnumModule['getGroupString'],
+	getDefStringId: null as unknown as EnumModule['getDefStringId'],
+	getStringItems: null as unknown as EnumModule['getStringItems'],
+	getMergedItems: null as unknown as EnumModule['getMergedItems'],
+	openPropertyPanel: null as unknown as EnumModule['openPropertyPanel'],
+	closePropertyPanel: null as unknown as EnumModule['closePropertyPanel'],
+	unpackEnumeration: null as unknown as EnumModule['unpackEnumeration'],
+	packEnumeration: null as unknown as EnumModule['packEnumeration'],
+	saveHistory: null as unknown as EnumModule['saveHistory'],
+	windowClose: null as unknown as EnumModule['windowClose'],
+	windowClosed: null as unknown as EnumModule['windowClosed'],
+	keydown: null as unknown as EnumModule['keydown'],
+	listKeydown: null as unknown as EnumModule['listKeydown'],
+	listPointerdown: null as unknown as EnumModule['listPointerdown'],
+	listDoubleclick: null as unknown as EnumModule['listDoubleclick'],
+	listSelect: null as unknown as EnumModule['listSelect'],
+	listRecord: null as unknown as EnumModule['listRecord'],
+	listOpen: null as unknown as EnumModule['listOpen'],
+	listPopup: null as unknown as EnumModule['listPopup'],
+	nameInput: null as unknown as EnumModule['nameInput'],
+	valueInput: null as unknown as EnumModule['valueInput'],
+	noteInput: null as unknown as EnumModule['noteInput'],
+	panelKeydown: null as unknown as EnumModule['panelKeydown'],
+	searcherInput: null as unknown as EnumModule['searcherInput'],
+	confirm: null as unknown as EnumModule['confirm'],
+	apply: null as unknown as EnumModule['apply']
 };
 
 function ensureDomBound() {
@@ -180,22 +195,22 @@ function ensureDomBound() {
 	Enum.inputs.name = $('#enum-name');
 	Enum.inputs.value = $('#enum-value');
 	Enum.inputs.note = $('#enum-note');
-	Enum.list.copy = null as unknown as (...args: unknown[]) => any;
-	Enum.list.paste = null as unknown as (...args: unknown[]) => any;
-	Enum.list.delete = null as unknown as (...args: unknown[]) => any;
-	Enum.list.saveScroll = null as unknown as (...args: unknown[]) => any;
-	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => any;
-	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+	Enum.list.copy = null as unknown as (...args: unknown[]) => void;
+	Enum.list.paste = null as unknown as (...args: unknown[]) => void;
+	Enum.list.delete = null as unknown as (...args: unknown[]) => void;
+	Enum.list.saveScroll = null as unknown as (...args: unknown[]) => void;
+	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
+	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => void;
 	Enum.list.createString = null;
-	Enum.list.createIcon = null as unknown as (...args: unknown[]) => any;
-	Enum.list.parseName = null as unknown as (...args: unknown[]) => any;
-	Enum.list.addElementClass = null as unknown as (...args: unknown[]) => any;
-	Enum.list.createGroupText = null as unknown as (...args: unknown[]) => any;
-	Enum.list.updateGroupText = null as unknown as (...args: unknown[]) => any;
-	Enum.list.createInitText = null as unknown as (...args: unknown[]) => any;
-	Enum.list.updateInitText = null as unknown as (...args: unknown[]) => any;
-	Enum.list.createNoteIcon = null as unknown as (...args: unknown[]) => any;
-	Enum.list.updateNoteIcon = null as unknown as (...args: unknown[]) => any;
+	Enum.list.createIcon = null as unknown as (...args: unknown[]) => void;
+	Enum.list.parseName = null as unknown as (...args: unknown[]) => void;
+	Enum.list.addElementClass = null as unknown as (...args: unknown[]) => void;
+	Enum.list.createGroupText = null as unknown as (...args: unknown[]) => void;
+	Enum.list.updateGroupText = null as unknown as (...args: unknown[]) => void;
+	Enum.list.createInitText = null as unknown as (...args: unknown[]) => void;
+	Enum.list.updateInitText = null as unknown as (...args: unknown[]) => void;
+	Enum.list.createNoteIcon = null as unknown as (...args: unknown[]) => void;
+	Enum.list.updateNoteIcon = null as unknown as (...args: unknown[]) => void;
 	Enum.list.onDelete = null;
 	Enum.list.onResume = null;
 	bindListClipboardMethods({
@@ -250,7 +265,7 @@ function ensureDomBound() {
 			addClass(icon, 'icon-folder');
 		}
 		return icon;
-	} as unknown as (...args: unknown[]) => any;
+	} as (item: unknown) => unknown;
 	Enum.list.parseName = function (item: EnumItem) {
 		return GameLocal.replace(item.name);
 	};
@@ -337,7 +352,7 @@ function ensureDomBound() {
 	};
 }
 
-Enum.initialize = function (this: any) {
+Enum.initialize = function (this: typeof Enum) {
 	ensureDomBound();
 	if (!this.list) return;
 	const { list } = this;
@@ -434,7 +449,7 @@ Enum.initialize = function (this: any) {
 };
 
 Enum.open = function (
-	this: any,
+	this: typeof Enum,
 	target: EnumTarget | null | undefined = null,
 	mode: string | null | undefined = 'normal'
 ) {
@@ -469,19 +484,19 @@ Enum.open = function (
 	window.addEventListener('keydown', Reference.getKeydownListener!(list, 'enum'));
 };
 
-Enum.undo = function (this: any) {
+Enum.undo = function (this: typeof Enum) {
 	if (this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
-Enum.redo = function (this: any) {
+Enum.redo = function (this: typeof Enum) {
 	if (this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
 
-Enum.createId = function (this: any) {
+Enum.createId = function (this: typeof Enum) {
 	let id;
 	do {
 		id = GUID.generate64bit();
@@ -489,7 +504,7 @@ Enum.createId = function (this: any) {
 	return id;
 };
 
-Enum.register = function (this: any, item: EnumItem) {
+Enum.register = function (this: typeof Enum, item: EnumItem) {
 	Enum.idMap[item.id] = true;
 	if (item.class === 'folder') {
 		for (const child of item.children!) {
@@ -498,7 +513,7 @@ Enum.register = function (this: any, item: EnumItem) {
 	}
 };
 
-Enum.unregister = function (this: any, item: EnumItem) {
+Enum.unregister = function (this: typeof Enum, item: EnumItem) {
 	delete Enum.idMap[item.id];
 	if (item.class === 'folder') {
 		for (const child of item.children!) {
@@ -524,12 +539,12 @@ Enum.getItemById = (function IIFE() {
 		}
 		return undefined;
 	};
-	return function (this: any, id: string) {
+	return function (this: typeof Enum, id: string) {
 		return find(this.data, id);
 	};
 })();
 
-Enum.setFolderGroup = function (this: any, folder: EnumItem, newGroup: string) {
+Enum.setFolderGroup = function (this: typeof Enum, folder: EnumItem, newGroup: string) {
 	const oldGroup = folder.element!.group;
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
@@ -544,28 +559,32 @@ Enum.setFolderGroup = function (this: any, folder: EnumItem, newGroup: string) {
 	}
 };
 
-Enum.getGroup = function (this: any, groupKey: string) {
+Enum.getGroup = function (this: typeof Enum, groupKey: string) {
 	return Data.enumeration.context.getGroup(groupKey);
 };
 
-Enum.getString = function (this: any, stringId: string) {
+Enum.getString = function (this: typeof Enum, stringId: string) {
 	return Data.enumeration.context.getString(stringId);
 };
 
-Enum.getGroupString = function (this: any, groupKey: string, stringId: string) {
+Enum.getGroupString = function (this: typeof Enum, groupKey: string | undefined, stringId: string) {
 	return Data.enumeration.context.getGroupString(groupKey, stringId);
 };
 
-Enum.getDefStringId = function (this: any, groupKey: string) {
+Enum.getDefStringId = function (this: typeof Enum, groupKey: string | undefined) {
 	return Data.enumeration.context.getDefStringId(groupKey);
 };
 
-Enum.getStringItems = function (this: any, groupKey: string, allowNone: boolean = false) {
+Enum.getStringItems = function (
+	this: typeof Enum,
+	groupKey: string | undefined,
+	allowNone: boolean = false
+) {
 	return Data.enumeration.context.getStringItems(groupKey, allowNone);
 };
 
 Enum.getMergedItems = function (
-	this: any,
+	this: typeof Enum,
 	headItems: unknown,
 	groupKey: string,
 	mergedKey: string = 'merged'
@@ -573,7 +592,7 @@ Enum.getMergedItems = function (
 	return Data.enumeration.context.getMergedItems(headItems, groupKey, mergedKey);
 };
 
-Enum.openPropertyPanel = function (this: any, enumString: EnumItem) {
+Enum.openPropertyPanel = function (this: typeof Enum, enumString: EnumItem) {
 	const panel = this.panel;
 	if (panel.enumString !== enumString) {
 		panel.enumString = enumString;
@@ -585,7 +604,7 @@ Enum.openPropertyPanel = function (this: any, enumString: EnumItem) {
 	}
 };
 
-Enum.closePropertyPanel = function (this: any) {
+Enum.closePropertyPanel = function (this: typeof Enum) {
 	const panel = this.panel;
 	if (panel.enumString) {
 		panel.enumString = null;
@@ -631,8 +650,8 @@ Enum.unpackEnumeration = (function IIFE() {
 		}
 		return copies;
 	};
-	return function (this: any) {
-		this.idMap = {} as Record<string, any>;
+	return function (this: typeof Enum) {
+		this.idMap = {} as Record<string, boolean>;
 		this.data = clone(Data.enumeration.strings);
 		this.settings = Object.clone(Data.enumeration.settings);
 		if (!this.settingKeys) {
@@ -661,14 +680,14 @@ Enum.packEnumeration = (function IIFE() {
 		}
 		return copies;
 	};
-	return function (this: any) {
+	return function (this: typeof Enum) {
 		Data.enumeration.strings = clone(this.data);
 		Data.enumeration.settings = Object.clone(this.settings);
 		Data.createEnumerationContext();
 	};
 })();
 
-Enum.saveHistory = function (this: any, item: EnumItem, key: string, value?: string) {
+Enum.saveHistory = function (this: typeof Enum, item: EnumItem, key: string, value?: string) {
 	const type = `enum-${key}-change`;
 	const history = this.history;
 	const index = history.index;
@@ -688,7 +707,7 @@ Enum.saveHistory = function (this: any, item: EnumItem, key: string, value?: str
 	}
 };
 
-Enum.windowClose = function (this: any, event: Event) {
+Enum.windowClose = function (this: typeof Enum, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
@@ -713,13 +732,13 @@ Enum.windowClose = function (this: any, event: Event) {
 	}
 }.bind(Enum);
 
-Enum.windowClosed = function (this: any, event: Event) {
+Enum.windowClosed = function (this: typeof Enum, event: Event) {
 	this.data = null;
-	this.idMap = null;
-	this.settings = null;
+	this.idMap = null as unknown as Record<string, boolean>;
+	this.settings = null as unknown as Record<string, string>;
 	UndoManager.setActive(this._previousActive);
 	this._previousActive = null;
-	this.history = null;
+	this.history = null as unknown as History;
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
@@ -817,7 +836,7 @@ Enum.listRecord = function (event: Event) {
 	}
 };
 
-Enum.listOpen = function (event: any) {
+Enum.listOpen = function (event: MouseEvent) {
 	Enum.listDoubleclick(event);
 };
 
@@ -950,7 +969,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 	);
 };
 
-Enum.nameInput = function (event: any) {
+Enum.nameInput = function (event: InputEvent & { target: HTMLInputElement }) {
 	const item = Enum.panel!.enumString!;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'name', item.name);
@@ -960,7 +979,7 @@ Enum.nameInput = function (event: any) {
 	}
 };
 
-Enum.valueInput = function (event: any) {
+Enum.valueInput = function (event: InputEvent & { target: HTMLInputElement }) {
 	const item = Enum.panel!.enumString!;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'value', item.value);
@@ -1006,7 +1025,7 @@ Enum.searcherInput = function (this: TextBox, event: InputEvent) {
 	Enum.list!.searchNodesDebounced(text);
 };
 
-Enum.confirm = function (this: any, event?: Event) {
+Enum.confirm = function (this: typeof Enum, event?: Event) {
 	switch (this.mode) {
 		case 'normal':
 			this.apply();
@@ -1033,7 +1052,7 @@ Enum.confirm = function (this: any, event?: Event) {
 	Window.close!('enum');
 }.bind(Enum);
 
-Enum.apply = function (this: any, event?: Event) {
+Enum.apply = function (this: typeof Enum, event?: Event) {
 	if (this.changed) {
 		this.changed = false;
 

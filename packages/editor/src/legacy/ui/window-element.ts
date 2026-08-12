@@ -1,6 +1,31 @@
 import { Timer } from '@/util/timer.ts';
 import { UI } from './ui-window.ts';
 import { GL } from '@/webgl/webgl-init.ts';
+import { Matrix } from '../webgl/matrix2.ts';
+
+interface WindowProxyShape {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	matrix: Matrix;
+	opacity: number;
+	children: never[];
+	[k: string]: any;
+}
+
+interface WindowElementData {
+	layout?: string;
+	scrollX?: number;
+	scrollY?: number;
+	gridWidth?: number;
+	gridHeight?: number;
+	gridGapX?: number;
+	gridGapY?: number;
+	paddingX?: number;
+	paddingY?: number;
+	overflow?: string;
+}
 
 UI.Window = class WindowElement extends UI.Element {
 	_layout!: string;
@@ -17,25 +42,25 @@ UI.Window = class WindowElement extends UI.Element {
 	overflow: string;
 	columns: number;
 	rows: number;
-	proxy: any;
+	proxy: WindowProxyShape;
 	opacity!: number;
 	x!: number;
 	y!: number;
 
-	constructor(data: any) {
+	constructor(data: WindowElementData = {}) {
 		super(data);
-		this.layout = data.layout;
+		this.layout = data.layout!;
 		this.scrollWidth = 0;
 		this.scrollHeight = 0;
-		this.scrollX = data.scrollX;
-		this.scrollY = data.scrollY;
-		this.gridWidth = data.gridWidth;
-		this.gridHeight = data.gridHeight;
-		this.gridGapX = data.gridGapX;
-		this.gridGapY = data.gridGapY;
-		this.paddingX = data.paddingX;
-		this.paddingY = data.paddingY;
-		this.overflow = data.overflow;
+		this.scrollX = data.scrollX!;
+		this.scrollY = data.scrollY!;
+		this.gridWidth = data.gridWidth!;
+		this.gridHeight = data.gridHeight!;
+		this.gridGapX = data.gridGapX!;
+		this.gridGapY = data.gridGapY!;
+		this.paddingX = data.paddingX!;
+		this.paddingY = data.paddingY!;
+		this.overflow = data.overflow!;
 		this.columns = 0;
 		this.rows = 0;
 		this.proxy = {
@@ -43,8 +68,9 @@ UI.Window = class WindowElement extends UI.Element {
 			y: 0,
 			width: 0,
 			height: 0,
-			matrix: null,
-			opacity: 0
+			matrix: null as unknown as Matrix,
+			opacity: 0,
+			children: []
 		};
 	}
 
@@ -52,7 +78,7 @@ UI.Window = class WindowElement extends UI.Element {
 		return this._layout;
 	}
 
-	set layout(value: any) {
+	set layout(value: string) {
 		if (this._layout !== value) {
 			this._layout = value;
 			switch (value) {
@@ -76,7 +102,7 @@ UI.Window = class WindowElement extends UI.Element {
 		return this._scrollX;
 	}
 
-	set scrollX(value: any) {
+	set scrollX(value: number) {
 		const max = this.scrollWidth - this.width;
 		const scrollX = Math.clamp(value, 0, max);
 		if (this._scrollX !== scrollX) {
@@ -92,7 +118,7 @@ UI.Window = class WindowElement extends UI.Element {
 		return this._scrollY;
 	}
 
-	set scrollY(value: any) {
+	set scrollY(value: number) {
 		const max = this.scrollHeight - this.height;
 		const scrollY = Math.clamp(value, 0, max);
 		if (this._scrollY !== scrollY) {

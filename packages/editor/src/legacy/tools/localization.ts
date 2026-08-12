@@ -40,7 +40,7 @@ interface LocalShape {
 		| ((this: typeof Local, element: HTMLElement, item: LocalComponentItem) => void)
 		| null;
 	parseTip: ((this: typeof Local, tip: string, title: string) => string) | null;
-	createGetter: ((this: typeof Local, path: string) => (key: string) => any) | null;
+	createGetter: ((this: typeof Local, path: string) => (key: string) => string) | null;
 	get: ((this: typeof Local, key: string) => string) | null;
 	showInExplorer: (() => string | undefined) | null;
 	localize: ((id?: string, key?: string) => void) | null;

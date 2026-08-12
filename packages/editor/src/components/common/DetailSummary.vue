@@ -12,7 +12,7 @@ interface DetailSummaryElement extends HTMLElement {
 	toggle(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -23,13 +23,13 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const ym = ref<{ root: HTMLElement | null; toggle(): void; on(type: string, listener: (event: any) => void, options?: boolean | AddEventListenerOptions): void } | null>(null);
+const ym = ref<{ root: HTMLElement | null; toggle(): void; on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
 const toggle = (): void => ym.value?.toggle();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

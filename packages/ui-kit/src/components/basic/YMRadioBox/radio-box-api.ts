@@ -9,24 +9,24 @@ export interface RadioBoxApiOptions {
 	name?: string;
 	value?: string;
 	standard?: boolean;
-	modelValue?: any;
+	modelValue?: number | string | boolean;
 	disabled?: boolean;
 	cancelable?: boolean;
 }
 
-export interface RadioBoxApi extends HTMLElement {
+export type RadioBoxApi = HTMLElement & {
 	name: string;
 	proxy: RadioProxyElement;
 	dataValue: number | string | boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	input(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	relate(...args: unknown[]): any;
-	on(...args: unknown[]): any;
-}
+	read(...args: unknown[]): number | string | boolean;
+	write(...args: unknown[]): void;
+	input(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	relate(...args: unknown[]): void;
+	on(...args: unknown[]): void;
+};
 
 export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions = {}): RadioBoxApi {
 	const box = el as unknown as RadioBoxApi;
@@ -111,7 +111,10 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!(event as any).cmdOrCtrlKey && !hasClass(box, 'disabled')) {
+				if (
+					!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey &&
+					!hasClass(box, 'disabled')
+				) {
 					event.stopPropagation();
 					mouseclick(event);
 				}
@@ -142,10 +145,10 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 	box._initialized = true;
 
 	box.read = () => box.dataValue;
-	box.write = (v: any) => {
+	box.write = (v: number | string | boolean) => {
 		box.dataValue = v;
 	};
-	box.input = (v: any) => {
+	box.input = (v: unknown) => {
 		box.proxy?.input(v);
 	};
 	box.enable = () => {
@@ -154,12 +157,12 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 	box.disable = () => {
 		box.classList.add('disabled');
 	};
-	box.relate = (entries: any[]) => {
+	box.relate = (entries: unknown[]) => {
 		box.proxy?.relate(entries);
 	};
 	box.on = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void => {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

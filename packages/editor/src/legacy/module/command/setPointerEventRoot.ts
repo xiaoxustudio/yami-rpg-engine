@@ -24,7 +24,7 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 				}
 			]);
 	},
-	customParse({ operation, element }: any) {
+	customParse({ operation, element }: { operation: string; element: unknown }) {
 		if (operation === 'set') {
 			operation = 'add';
 		}

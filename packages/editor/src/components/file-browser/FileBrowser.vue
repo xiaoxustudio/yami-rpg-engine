@@ -23,8 +23,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
-import { YMFileBrowser } from '@ui-kit';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { YMFileBrowser, type MenuItem, type MenuOptions } from '@ui-kit';
 import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Window } from '@/tools/window-object.ts';
@@ -40,8 +40,8 @@ import { Local } from '@/tools/localization.ts';
 import { Path } from '@/util/config.ts';
 import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { setIconClip } from '@/util/icon-clip.ts';
-import { useBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
-import { useSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
+import { getBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
+import { getSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
 
 interface Props {
 	id?: string;
@@ -52,20 +52,29 @@ const props = defineProps<Props>();
 
 const Clipboard = (globalThis as unknown as { Clipboard?: unknown }).Clipboard as { write(type: string, data: unknown): void; read(type: string): unknown; has(type: string): boolean };
 
-const menuPopup = (options: any, items: any[]) => Menu.popup(options, items);
+const menuPopup = (options: MenuOptions, items: MenuItem[]) => Menu.popup(options, items);
 const directoryApi = {
-	sortFiles: (dir: any) => Directory.sortFiles?.(dir),
+	sortFiles: (dir: Array<FileItem | FolderItem>) => Directory.sortFiles?.(dir),
 	getFolder: (path: string) => Directory.getFolder?.(path),
 	update: () => Directory.update?.(),
-	deleteFiles: (files: any[]) => Directory.deleteFiles?.(files),
-	moveFiles: (path: string, dir: any[]) => Directory.moveFiles?.(path, dir),
-	copyFiles: (path: string, dir: any[], prefix?: string) =>
-		Directory.copyFiles?.(path, dir, prefix),
-	saveFiles: (files: any[]) => Directory.saveFiles?.(files),
+	deleteFiles: (files: Array<FileItem | FolderItem>) => Directory.deleteFiles?.(files),
+	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) =>
+		Directory.moveFiles?.(path, dir),
+	copyFiles: (
+		path: string,
+		dir: Array<{ name: string; path: string; children?: unknown[] }>,
+		prefix?: string
+	) => Directory.copyFiles?.(path, dir, prefix),
+	saveFiles: (files: Array<FileItem | FolderItem>) => Directory.saveFiles?.(files),
 	readdir: (paths: string[]) => Directory.readdir?.(paths),
-	searchFiles: (filters: any[], kw: RegExp, directory: string, results: any[]) =>
-		Directory.searchFiles?.(filters, kw, directory, results),
-	existFiles: (path: string, dir: any[]) => Directory.existFiles?.(path, dir),
+	searchFiles: (
+		filters: string[] | null,
+		kw: RegExp,
+		directory: string,
+		results: Array<FileItem | FolderItem>
+	) => Directory.searchFiles?.(filters, kw, directory, results),
+	existFiles: (path: string, dir: Array<{ name: string; children?: unknown[] }>) =>
+		Directory.existFiles?.(path, dir),
 	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
 	existsSync: (p: string) => FSP.existsSync(p),
 	get assets() {
@@ -83,9 +92,9 @@ const fileSystemApi = {
 		File.getFileName?.(dir, name, ext),
 	getImageResolution: (p: string) => File.getImageResolution?.(p),
 	showInExplorer: (p: string) => File.showInExplorer?.(p),
-	showOpenDialog: (options: any) => File.showOpenDialog?.(options),
-	showSaveDialog: (options: any) => File.showSaveDialog?.(options),
-	mkdir: (p: string, options?: any) => FSP.mkdir(p, options),
+	showOpenDialog: (options: unknown) => File.showOpenDialog?.(options),
+	showSaveDialog: (options: unknown) => File.showSaveDialog?.(options),
+	mkdir: (p: string, options?: { recursive?: boolean; mode?: number }) => FSP.mkdir(p, options),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
 	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)
@@ -107,25 +116,29 @@ const dataApi = {
 	}
 };
 const windowApi = {
-	confirm: (options: any, items: any[]) => Window.confirm(options, items),
+	confirm: (
+		options: { message?: string; close?: () => void },
+		items: Array<{ label?: string; click?: () => void }>
+	) => Window.confirm(options, items),
 	getTopWindow: () => Window.getTopWindow()
 };
 const glApi = { maxTexSize: GL.maxTexSize };
 const clipboardApi = {
-	write: (type: string, data: any) => Clipboard?.write?.(type, data),
+	write: (type: string, data: unknown) => Clipboard?.write?.(type, data),
 	read: (type: string) => Clipboard?.read?.(type)
 };
 const referenceApi = {
 	findRelated: (guid: string) => Reference.findRelated?.(guid),
-	openList: (list: any) => Reference.openList?.(list),
+	openList: (list: Array<{ type: string; text: string; id?: string; order?: number; count?: number }>) =>
+		Reference.openList?.(list),
 	openRelated: (guid: string) => Reference.openRelated?.(guid)
 };
 const editorApi = { config: Editor.config };
 const setIconClipAdapter = (icon: HTMLElement, path: string, cx: number, cy: number, cw: number, ch: number) =>
 	setIconClip(icon, path, cx, cy, cw, ch);
 
-const onBrowserMount = (): void => useBrowserStore().initialize();
-const onSelectorMount = (): void => useSelectorStore().initialize();
+const onBrowserMount = (): void => getBrowserStore().initialize();
+const onSelectorMount = (): void => getSelectorStore().initialize();
 
 const ym = ref<{
 	el: HTMLElement | null;
@@ -141,23 +154,51 @@ const backToParentFolder = (): boolean => ym.value?.backToParentFolder() ?? fals
 
 defineExpose({ update, searchFiles, backToParentFolder, el });
 
+const registerNode = (node: HTMLElement | null): void => {
+	const selector = getSelectorStore();
+	if (!node) {
+		if (props.bridge === 'selector') selector.setComponent(null);
+		else getBrowserStore().setComponent(null);
+		return;
+	}
+	if (props.bridge === 'selector') {
+		selector.setComponent(node as unknown as SelectorInstance);
+		const selectorNode = node as unknown as SelectorInstance;
+		selectorNode.open = (target: unknown, allowNone = true) =>
+			selector.open(
+				target as { read(): string; filter?: string; input?(value?: unknown): void },
+				allowNone
+			);
+		selectorNode.close = () => selector.close();
+		return;
+	}
+	const browserNode = node as unknown as FileBrowserInstance;
+	getBrowserStore().setComponent(browserNode);
+	browserNode.open = (target: unknown, allowNone = true) =>
+		selector.open(
+			target as { read(): string; filter?: string; input?(value?: unknown): void },
+			allowNone
+		);
+	browserNode.close = () => selector.close();
+};
+
 watch(
-	() => ym.value?.el,
+	() => {
+		const exposed = ym.value?.el;
+		return exposed instanceof HTMLElement
+			? exposed
+			: ((exposed as { value?: HTMLElement } | null | undefined)?.value ?? null);
+	},
 	(node) => {
-		const selector = useSelectorStore();
-		if (!node) {
-			if (props.bridge === 'selector') selector.setComponent(null);
-			else useBrowserStore().setComponent(null);
-			return;
-		}
-		if (props.bridge === 'selector') {
-			selector.setComponent(node as unknown as SelectorInstance);
-			return;
-		}
-		const browserNode = node as unknown as FileBrowserInstance;
-		useBrowserStore().setComponent(browserNode);
-		browserNode.open = (target: unknown, allowNone = true) => selector.open(target, allowNone);
-		browserNode.close = () => selector.close();
+		registerNode(node as HTMLElement | null);
 	}
 );
+
+onMounted(() => {
+	void nextTick(() => {
+		void nextTick(() => {
+			registerNode(ym.value?.el ?? null);
+		});
+	});
+});
 </script>

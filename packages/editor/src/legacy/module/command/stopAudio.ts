@@ -18,7 +18,7 @@ Command.cases.stopAudio = new CommandSchema({
 			{ name: 'ALL', value: 'all' }
 		]);
 	},
-	customParse({ type }: any) {
+	customParse({ type }: { type: unknown }) {
 		const words = Command.words.push(Command.parseAudioType!(type));
 		return [
 			{ color: 'audio' },

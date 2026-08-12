@@ -17,7 +17,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		height: number;
 		tileWidth: number;
 		tileHeight: number;
-		[k: string]: any;
+		[k: string]: unknown;
 	}
 	const FileScene: FileSceneShape = {
 		button: null,
@@ -98,7 +98,8 @@ import { GL } from '@/webgl/webgl-init.ts';
 			children: unknown[];
 		}[] = [];
 		const filters = {} as Record<string, unknown>;
-		const folders = Editor.project!.scene.defaultFolders;
+		const folders = (Editor.project!.scene as { defaultFolders: Record<string, unknown> })
+			.defaultFolders;
 		for (const name of Object.values(folders)) {
 			if (name && filters[name as string] === undefined) {
 				filters[name as string] = true;
@@ -228,7 +229,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		}
 	};
 
-	FileScene.paramInput = function (this: HTMLElement & { [k: string]: any }, event: Event) {
+	FileScene.paramInput = function (this: typeof FileScene, event: Event) {
 		FileScene.update!(FileScene.target, Inspector.getKey!(this), read(this));
 	};
 

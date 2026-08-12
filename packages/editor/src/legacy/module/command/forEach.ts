@@ -68,7 +68,17 @@ Command.cases.forEach = new CommandSchema({
 		saveIndex,
 		touchId,
 		commands
-	}: any) {
+	}: {
+		data: string;
+		list: unknown;
+		actor: unknown;
+		element: unknown;
+		groupId: unknown;
+		variable: unknown;
+		saveIndex: unknown;
+		touchId: unknown;
+		commands: unknown;
+	}) {
 		const dataInfo = Local.get!('command.forEach.' + data);
 		const words = Command.words;
 		switch (data) {
@@ -149,6 +159,16 @@ Command.cases.forEach = new CommandSchema({
 		saveIndex = { type: 'local', key: '' },
 		touchId = { type: 'local', key: '' },
 		commands = []
+	}: {
+		data: string;
+		groupId: string;
+		list: unknown;
+		actor: unknown;
+		element: unknown;
+		variable: unknown;
+		saveIndex: unknown;
+		touchId: unknown;
+		commands: unknown;
 	}) {
 		let attrGroupId = '';
 		let enumGroupId = '';

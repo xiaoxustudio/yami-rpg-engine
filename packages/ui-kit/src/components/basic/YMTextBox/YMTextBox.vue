@@ -23,6 +23,32 @@ const emit = defineEmits<{
 const root = ref<HTMLElement | null>(null);
 const inputEl = ref<HTMLInputElement | null>(null);
 
+interface TextBoxApi extends HTMLElement {
+	_initialized?: boolean;
+	lastText?: string;
+	hiddenNodes?: HTMLElement[];
+	closeButton?: HTMLElement | null;
+	input?: HTMLInputElement;
+	history?: { reset(): void };
+	read?(): string;
+	write?(value: string): void;
+	insert?(value: string): void;
+	enable?(): void;
+	disable?(): void;
+	getFocus?(mode: string | null): HTMLInputElement | undefined;
+	setPlaceholder?(placeholder: string): void;
+	setMaxLength?(length: number): void;
+	fitContent?(): void;
+	deleteInputContent?(): void;
+	addCloseButton?(): void;
+	addKeydownFilter?(): void;
+	on?(
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	): void;
+}
+
 const state = {
 	focusEventEnabled: false,
 	blurEventEnabled: false
@@ -38,7 +64,7 @@ const write = (value: string): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	el.value = value;
-	(el as any).history?.reset();
+	(el as TextBoxApi).history?.reset();
 };
 const insert = (value: string): void => {
 	const el = inputEl.value;
@@ -126,11 +152,11 @@ const addCloseButton = (): void => {
 	if (!el) return;
 	const baseWrite = write;
 	const updateCloseButton = (): void => {
-		const closeButton = (el as any).closeButton as HTMLElement | null;
+		const closeButton = (el as TextBoxApi).closeButton;
 		if (!closeButton) return;
 		closeButton.style.display = read() !== '' ? '' : 'none';
 	};
-	(el as any).write = (value: string): void => {
+	(el as TextBoxApi).write = (value: string): void => {
 		baseWrite(value);
 		updateCloseButton();
 	};
@@ -161,7 +187,7 @@ const addCloseButton = (): void => {
 	closeButton.textContent = '\u2716';
 	closeButton.addEventListener('pointerdown', closeButtonPointerdown);
 	closeButton.addEventListener('click', closeButtonClick);
-	(el as any).closeButton = closeButton;
+	(el as TextBoxApi).closeButton = closeButton;
 	closeButton.style.display = 'none';
 	el.appendChild(closeButton);
 };
@@ -188,7 +214,7 @@ const addKeydownFilter = (): void => {
 };
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -240,7 +266,7 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
-	if (!el || !input || (el as any)._initialized) return;
+	if (!el || !input || (el as TextBoxApi)._initialized) return;
 	input.addEventListener('compositionstart', () => {
 		isEditing = true;
 	});
@@ -260,23 +286,23 @@ function initializeApi(): void {
 		},
 		{ capture: true }
 	);
-	(el as any).lastText = '';
-	(el as any).hiddenNodes = [];
-	(el as any).input = input;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).insert = insert;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).focus = focus;
-	(el as any).getFocus = getFocus;
-	(el as any).setPlaceholder = setPlaceholder;
-	(el as any).setMaxLength = setMaxLength;
-	(el as any).fitContent = fitContent;
-	(el as any).deleteInputContent = deleteInputContent;
-	(el as any).addCloseButton = addCloseButton;
-	(el as any).addKeydownFilter = addKeydownFilter;
-	(el as any).on = on;
+	(el as TextBoxApi).lastText = '';
+	(el as TextBoxApi).hiddenNodes = [];
+	(el as TextBoxApi).input = input;
+	(el as TextBoxApi).read = read;
+	(el as TextBoxApi).write = write;
+	(el as TextBoxApi).insert = insert;
+	(el as TextBoxApi).enable = enable;
+	(el as TextBoxApi).disable = disable;
+	(el as TextBoxApi).focus = focus;
+	(el as TextBoxApi).getFocus = getFocus;
+	(el as TextBoxApi).setPlaceholder = setPlaceholder;
+	(el as TextBoxApi).setMaxLength = setMaxLength;
+	(el as TextBoxApi).fitContent = fitContent;
+	(el as TextBoxApi).deleteInputContent = deleteInputContent;
+	(el as TextBoxApi).addCloseButton = addCloseButton;
+	(el as TextBoxApi).addKeydownFilter = addKeydownFilter;
+	(el as TextBoxApi).on = on;
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);
@@ -287,7 +313,7 @@ function initializeApi(): void {
 	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	write(props.modelValue);
 	if (props.disabled) disable();
-	(el as any)._initialized = true;
+	(el as TextBoxApi)._initialized = true;
 };
 
 onMounted(initializeApi);

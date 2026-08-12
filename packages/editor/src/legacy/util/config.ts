@@ -27,25 +27,34 @@ if (typeof (window as unknown as Record<string, unknown>).__nodeRequire === 'fun
 					return File.get!({
 						local: 'default.json',
 						type: 'json'
-					}).then((config: any) => {
-						config.theme = 'dark';
-						config.language = '';
-						config.project = '';
-						config.recent = [];
-						config.scriptEditor = {
-							mode: 'by-file-extension',
-							path: ''
-						};
-						return ipcRenderer
-							.invoke('get-dir-path', 'documents')
-							.catch((error) => 'C:')
-							.then((docPath) => {
-								for (const key of Object.keys(config.dialogs)) {
-									config.dialogs[key] = Path.slash(docPath);
-								}
-								return config;
-							});
-					});
+					}).then(
+						(config: {
+							theme: string;
+							language: string;
+							project: string;
+							recent: unknown[];
+							scriptEditor: { mode: string; path: string };
+							dialogs: Record<string, string>;
+						}) => {
+							config.theme = 'dark';
+							config.language = '';
+							config.project = '';
+							config.recent = [];
+							config.scriptEditor = {
+								mode: 'by-file-extension',
+								path: ''
+							};
+							return ipcRenderer
+								.invoke('get-dir-path', 'documents')
+								.catch((error) => 'C:')
+								.then((docPath) => {
+									for (const key of Object.keys(config.dialogs)) {
+										config.dialogs[key] = Path.slash(docPath);
+									}
+									return config;
+								});
+						}
+					);
 				});
 			});
 	}

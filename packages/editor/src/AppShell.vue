@@ -85,13 +85,13 @@ const onCloseClick = () => {
 const onTitlePointerenter = () => {
 	title.pointerenter();
 };
-const onTabBarSelect = (event: any) => {
+const onTabBarSelect = (event: Event) => {
 	title.tabBarSelect(event);
 };
-const onTabBarClosed = (event: any) => {
+const onTabBarClosed = (event: Event) => {
 	title.tabBarClosed(event);
 };
-const onTabBarPopup = (event: any) => {
+const onTabBarPopup = (event: Event) => {
 	title.tabBarPopup(event);
 };
 const onMenuPointerdown = (event: PointerEvent) => {
@@ -123,7 +123,7 @@ const onComponentMounted = () => {
 		resolveLazyReady?.();
 	}
 };
-const onAsyncError = (error: any, retry: any, fail: any, attempts: number) => {
+const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempts: number) => {
 	if (attempts < 3) {
 		retry();
 		return;
@@ -131,7 +131,7 @@ const onAsyncError = (error: any, retry: any, fail: any, attempts: number) => {
 	onComponentMounted();
 	fail();
 };
-const asyncComp = (loader: any) => defineAsyncComponent({ loader, onError: onAsyncError });
+const asyncComp = (loader: () => Promise<Component>) => defineAsyncComponent({ loader, onError: onAsyncError });
 const toolComponents = Object.fromEntries(
 	Object.entries(toolModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
 );

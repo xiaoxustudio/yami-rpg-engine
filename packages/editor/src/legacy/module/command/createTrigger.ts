@@ -10,7 +10,23 @@ Command.cases.createTrigger = new CommandSchema({
 	onInitialize() {
 		$('#createTrigger-confirm').on('click', () => this.save!());
 	},
-	customParse({ triggerId, caster, origin, angle, distance, scale, timeScale }: any) {
+	customParse({
+		triggerId,
+		caster,
+		origin,
+		angle,
+		distance,
+		scale,
+		timeScale
+	}: {
+		triggerId: unknown;
+		caster: unknown;
+		origin: unknown;
+		angle: unknown;
+		distance: unknown;
+		scale: unknown;
+		timeScale: unknown;
+	}) {
 		const casterName = Command.parseActor!(caster);
 		const originName = Command.parsePosition!(origin);
 		const words = Command.words

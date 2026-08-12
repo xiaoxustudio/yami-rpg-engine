@@ -12,7 +12,7 @@ export const useInspectorStore = defineStore('inspector', () => {
 		return Inspector;
 	}
 
-	function openFileActor(target: any, meta: any) {
+	function openFileActor(target: unknown, meta: unknown) {
 		fileActorTarget.value = target;
 		fileActorMeta.value = meta;
 		Inspector?.fileActor?.open(target, meta);

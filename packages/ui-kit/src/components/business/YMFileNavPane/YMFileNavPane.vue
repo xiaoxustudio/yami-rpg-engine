@@ -5,32 +5,119 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { addClass, hasClass, hasScrollBar, rect, removeClass, attachDoubleclick } from '../../../utils/dom';
-import { commonListResize, commonListUpdateHeadAndFoot } from '../../../utils/common-list';
+import {
+	commonListResize,
+	commonListUpdateHeadAndFoot,
+	type CommonListLike
+} from '../../../utils/common-list';
+
+interface FileItem {
+	name: string;
+	path: string;
+	stats: { ino: unknown };
+	parent?: FileItem;
+	subfolders: FileItem[];
+	getContext(element: HTMLElement): FileItemContext;
+}
+
+interface FileItemContext {
+	element?: FolderElement;
+	expanded: boolean;
+}
+
+interface FolderElement extends HTMLElement {
+	file: FileItem;
+	context: FileItemContext;
+	indent: number;
+	changed?: boolean;
+	fileIcon?: HTMLElement;
+	folderMark?: HTMLElement;
+	textNode?: Text;
+	markVisible?: boolean;
+	textIndent?: number;
+	expanded?: boolean;
+}
+
+interface FolderItemList extends Array<FileItem> {
+	sorted?: boolean;
+}
+
+interface TextBoxElement extends HTMLElement {
+	input: HTMLInputElement;
+	setMaxLength(maxLength: number): void;
+	write(text: string): void;
+	read(): string;
+	fitContent(): void;
+	getFocus(mode: 'all'): void;
+}
+
+interface RenameTimer {
+	target: EventTarget | null;
+	running: boolean;
+	elapsed: number;
+	timeoutId: ReturnType<typeof setTimeout> | null;
+	add(): void;
+	remove(): void;
+}
 
 interface FileBrowserLinks {
-	browser?: any;
-	nav?: any;
-	body?: any;
-	[key: string]: any;
+	browser?: {
+		display?: string;
+		backupFolders?: unknown[];
+		update?(): void;
+		restoreDisplay?(): void;
+	};
+	nav?: unknown;
+	body?: unknown;
+	[key: string]: unknown;
+}
+
+interface FolderElements extends Array<FolderElement | undefined> {
+	versionId: number;
+	count: number;
+	start: number;
+	end: number;
+	head: HTMLElement | null;
+	foot: HTMLElement | null;
+}
+
+interface FileNavPaneElement extends HTMLElement {
+	textBox?: TextBoxElement;
+	load?: (...folders: FileItem[]) => void;
+	update?: () => void;
+	resize?: () => void;
+	updateHeadAndFoot?: () => void;
+	updateOnResize?: (element: FolderElement) => void;
+	select?: (...files: FileItem[]) => void;
+	unselect?: () => void;
+	selectRelative?: (direction: 'up' | 'down') => void;
+	scrollToSelection?: (mode?: string) => void;
+	getSelections?: () => unknown[];
+	rename?: (file: FileItem) => void;
+	cancelRenaming?: () => void;
+	clearElements?: (start: number) => void;
+	clear?: () => HTMLElement;
+	elements?: FolderElements;
+	links?: FileBrowserLinks;
 }
 
 interface Props {
 	links: FileBrowserLinks;
 	directoryApi?: {
-		sortFiles(dir: any): void;
-		getFolder(path: string): any;
+		sortFiles(dir: FolderItemList): void;
+		getFolder(path: string): unknown;
 		update(): void | Promise<boolean>;
-		assets: any;
-		inoMap: Record<string, any>;
+		assets: unknown;
+		inoMap: Record<string, unknown>;
 	};
 	fileSystem?: {
 		path(p: string): string;
-		rename(oldPath: string, newPath: string): Promise<any>;
+		rename(oldPath: string, newPath: string): Promise<unknown>;
 		existsSync(p: string): boolean;
 	};
 	pathUtil?: { dirname(p: string): string };
 	menuState?: () => string;
-	createTextBox?: () => any;
+	createTextBox?: () => TextBoxElement | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -46,7 +133,7 @@ const el = ref<HTMLElement>();
 const clamp = (value: number, min: number, max: number): number =>
 	Math.min(Math.max(value, min), max);
 
-const timer: any = {
+const timer: RenameTimer = {
 	target: null,
 	running: false,
 	elapsed: 0,
@@ -68,18 +155,11 @@ const timer: any = {
 
 let timerCallback: () => void = () => {};
 
-let elements: any[] & {
-	versionId: number;
-	count: number;
-	start: number;
-	end: number;
-	head: HTMLElement | null;
-	foot: HTMLElement | null;
-};
-let selections: any[] = [];
+let elements: FolderElements;
+let selections: FileItem[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
 let selectEventEnabled = false;
-let textBox: any;
+let textBox: TextBoxElement | undefined;
 let dirchangeHandler: (event: Event) => void;
 let resizeObserver: ResizeObserver | null = null;
 
@@ -95,16 +175,16 @@ function listenDraggingScrollbarEvent() {
 	});
 }
 
-function load(...folders: any[]): void {
+function load(...folders: FileItem[]): void {
 	select(...folders);
 	for (let folder of folders) {
-		while ((folder = folder.parent)) {
+		while ((folder = folder.parent as FileItem)) {
 			folder.getContext(el.value!).expanded = true;
 		}
 	}
 	update();
 	const { browser } = props.links;
-	(browser as any)?.update?.();
+	browser?.update?.();
 }
 
 function update(): void {
@@ -112,7 +192,9 @@ function update(): void {
 	els.start = -1;
 	els.count = 0;
 
-	const parentNode = el.value!.parentNode as HTMLElement & { directory: any };
+	const parentNode = el.value!.parentNode as HTMLElement & {
+		directory?: FolderItemList & { subfolders?: FolderItemList };
+	};
 	const { directory } = parentNode;
 	if (directory) {
 		createItems(directory.subfolders ?? directory, 0);
@@ -123,21 +205,21 @@ function update(): void {
 }
 
 function resize(): void {
-	commonListResize(el.value as any);
+	commonListResize(el.value! as unknown as CommonListLike);
 }
 
 function updateHeadAndFoot(): void {
-	commonListUpdateHeadAndFoot(el.value as any);
+	commonListUpdateHeadAndFoot(el.value! as unknown as CommonListLike);
 }
 
-function updateOnResize(element: any): void {
+function updateOnResize(element: FolderElement): void {
 	if (element.changed) {
 		element.changed = false;
 		updateFolderElement(element);
 	}
 }
 
-function createItems(dir: any, indent: number): void {
+function createItems(dir: FolderItemList, indent: number): void {
 	if (dir.sorted === undefined) {
 		dir.sorted = true;
 		props.directoryApi?.sortFiles(dir);
@@ -154,32 +236,26 @@ function createItems(dir: any, indent: number): void {
 	}
 }
 
-function createFolderElement(file: any, indent: number): HTMLElement {
+function createFolderElement(file: FileItem, indent: number): FolderElement {
 	const context = file.getContext(el.value!);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-nav-item') as unknown as HTMLElement & {
-			file: any;
-			context: any;
-			indent: number;
-			changed?: boolean;
-			fileIcon?: HTMLElement;
-		};
-		(element as HTMLElement & { file: any; context: any }).file = file;
-		(element as HTMLElement & { context: any }).context = context;
+		element = document.createElement('file-nav-item') as unknown as FolderElement;
+		element.file = file;
+		element.context = context;
 		context.element = element;
 
 		const { selections: sels } = { selections };
 		if (sels.length !== 0 && sels.includes(file)) {
-			addClass(element as HTMLElement, 'selected');
+			addClass(element, 'selected');
 		}
 	}
-	(element as HTMLElement & { indent: number; changed?: boolean }).indent = indent;
-	(element as HTMLElement & { indent: number; changed?: boolean }).changed = true;
+	element.indent = indent;
+	element.changed = true;
 	return element;
 }
 
-function updateFolderElement(element: any): void {
+function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
 	if (!element.textNode) {
 		const folderMark = document.createElement('folder-mark');
@@ -204,7 +280,7 @@ function updateFolderElement(element: any): void {
 	const markVisible = file.subfolders.length !== 0;
 	if (element.markVisible !== markVisible) {
 		element.markVisible = markVisible;
-		element.folderMark.style.visibility = markVisible ? 'inherit' : 'hidden';
+		element.folderMark!.style.visibility = markVisible ? 'inherit' : 'hidden';
 	}
 
 	const expanded = markVisible && context.expanded;
@@ -212,12 +288,12 @@ function updateFolderElement(element: any): void {
 		element.expanded = expanded;
 		switch (expanded) {
 			case true:
-				addClass(element.folderMark, 'expanded');
-				addClass(element.fileIcon, 'expanded');
+				addClass(element.folderMark!, 'expanded');
+				addClass(element.fileIcon!, 'expanded');
 				break;
 			case false:
-				removeClass(element.folderMark, 'expanded');
-				removeClass(element.fileIcon, 'expanded');
+				removeClass(element.folderMark!, 'expanded');
+				removeClass(element.fileIcon!, 'expanded');
 				break;
 		}
 	}
@@ -229,7 +305,7 @@ function updateFolderElement(element: any): void {
 	}
 }
 
-function select(...files: any[]): void {
+function select(...files: FileItem[]): void {
 	unselect();
 	selections = files;
 	for (const file of files) {
@@ -240,7 +316,7 @@ function select(...files: any[]): void {
 		}
 	}
 	if (selectEventEnabled) {
-		const select: any = new Event('select');
+		const select = new Event('select') as Event & { value: FileItem[] };
 		select.value = files;
 		el.value!.dispatchEvent(select);
 	}
@@ -249,7 +325,7 @@ function select(...files: any[]): void {
 function unselect(): void {
 	const files = selections;
 	if (files.length !== 0) {
-		(textBox as any)?.input?.blur?.();
+		textBox?.input?.blur?.();
 		for (const file of files) {
 			const context = file.getContext(el.value!);
 			const element = context.element;
@@ -288,7 +364,7 @@ function selectRelative(direction: 'up' | 'down'): void {
 		}
 		const file = els[index]?.file;
 		if (!(sels.length === 1 && sels[0] === file)) {
-			select(file);
+			select(file!);
 		}
 		scrollToSelection();
 	}
@@ -296,13 +372,13 @@ function selectRelative(direction: 'up' | 'down'): void {
 
 function scrollToSelection(mode: string = 'active'): void {
 	const { selections: sels } = { selections };
-	const node = el.value as any;
+	const node = el.value as HTMLElement & { innerHeight: number };
 	if (sels.length === 1 && hasScrollBar(node)) {
 		const selection = sels[0];
 		const els = elements;
 		const count = els.count;
 		for (let i = 0; i < count; i++) {
-			if (els[i].file === selection) {
+			if (els[i]!.file === selection) {
 				let scrollTop: number;
 				switch (mode) {
 					case 'active':
@@ -323,32 +399,32 @@ function scrollToSelection(mode: string = 'active'): void {
 	}
 }
 
-function getSelections(): any[] {
+function getSelections(): unknown[] {
 	const { browser } = props.links;
-	switch (browser.display) {
+	switch (browser!.display) {
 		case 'normal':
 			return selections;
 		case 'search':
-			return browser.backupFolders;
+			return browser!.backupFolders!;
 	}
 	return [];
 }
 
-function rename(file: any): void {
-	const node = el.value as any;
+function rename(file: FileItem): void {
+	const node = el.value!;
 	if (
 		document.activeElement === node &&
 		file !== props.directoryApi?.assets &&
-		!(textBox as any)?.parentNode
+		!textBox?.parentNode
 	) {
 		const context = file.getContext(node);
 		const element = context.element;
 		if (element && element.parentNode) {
-			element.textNode.nodeValue = '';
-			element.appendChild(textBox as any);
-			(textBox as any).write(file.name);
-			(textBox as any).getFocus('all');
-			(textBox as any).fitContent();
+			element.textNode!.nodeValue = '';
+			element.appendChild(textBox!);
+			textBox!.write(file.name);
+			textBox!.getFocus('all');
+			textBox!.fitContent();
 		}
 	}
 }
@@ -376,7 +452,7 @@ function clearElements(start: number): void {
 
 function clear(): HTMLElement {
 	unselect();
-	const node = el.value as any;
+	const node = el.value!;
 	node.textContent = '';
 	clearElements(0);
 	elements.count = 0;
@@ -387,8 +463,8 @@ function clear(): HTMLElement {
 }
 
 function keydown(event: KeyboardEvent): void {
-	const node = el.value as any;
-	if ((event as any).cmdOrCtrlKey) {
+	const node = el.value!;
+	if ((event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 		switch (event.code) {
 			case 'ArrowUp':
 				node.scrollTop -= 20;
@@ -444,7 +520,7 @@ function keydown(event: KeyboardEvent): void {
 }
 
 function pointerdown(event: PointerEvent): void {
-	const node = el.value as any;
+	const node = el.value!;
 	cancelRenaming();
 	switch (event.button) {
 		case 0:
@@ -453,7 +529,7 @@ function pointerdown(event: PointerEvent): void {
 			if (element.tagName === 'FOLDER-MARK') {
 				event.preventDefault();
 				if (event.button === 0) {
-					const file = (element.parentNode as HTMLElement & { file: any }).file;
+					const file = (element.parentNode as FolderElement).file;
 					const context = file.getContext(node);
 					context.expanded = !context.expanded;
 					update();
@@ -465,13 +541,13 @@ function pointerdown(event: PointerEvent): void {
 				if (element.tagName === 'FILE-NAV-ITEM') {
 					const sels = selections;
 					const length = sels.length;
-					if ((event as any).cmdOrCtrlKey && length !== 0) {
+					if ((event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey && length !== 0) {
 						const files = Array.from(sels);
-						if (!sels.includes((element as HTMLElement & { file: any }).file)) {
-							files.push((element as HTMLElement & { file: any }).file);
+						if (!sels.includes((element as FolderElement).file)) {
+							files.push((element as FolderElement).file);
 							select(...files);
 						} else if (length > 1) {
-							const file = (element as HTMLElement & { file: any }).file;
+							const file = (element as FolderElement).file;
 							const index = files.indexOf(file);
 							if (index !== -1) files.splice(index, 1);
 							const pointerup = (event: PointerEvent) => {
@@ -489,7 +565,7 @@ function pointerdown(event: PointerEvent): void {
 					}
 					if (event.shiftKey && length !== 0) {
 						const els = elements;
-						let start = els.indexOf(element);
+						let start = els.indexOf(element as FolderElement);
 						let end = start;
 						for (const file of sels) {
 							const { element } = file.getContext(node);
@@ -501,19 +577,19 @@ function pointerdown(event: PointerEvent): void {
 						}
 						if (start !== -1) {
 							const slice = els.slice(start, end + 1);
-							select(...slice.map((element: any) => element.file));
+							select(...slice.map((element) => element!.file));
 							return;
 						}
 					}
 					if (!hasClass(element, 'selected')) {
-						select((element as HTMLElement & { file: any }).file);
+						select((element as FolderElement).file);
 					} else if (event.button === 0) {
 						if (length > 1) {
 							const pointerup = (event: PointerEvent) => {
 								if (pressing === pointerup) {
 									pressing = null;
 									if (element.contains(event.target as Node)) {
-										select((element as HTMLElement & { file: any }).file);
+										select((element as FolderElement).file);
 									}
 								}
 							};
@@ -522,7 +598,7 @@ function pointerdown(event: PointerEvent): void {
 						} else if (
 							props.menuState?.() === 'closed' &&
 							document.activeElement === node &&
-							event.clientX > rect((element as any).fileIcon as HTMLElement).right
+							event.clientX > rect((element as HTMLElement & { fileIcon: HTMLElement }).fileIcon).right
 						) {
 							timer.target = event.target;
 						}
@@ -535,7 +611,7 @@ function pointerdown(event: PointerEvent): void {
 }
 
 function pointerup(event: PointerEvent): void {
-	const node = el.value as any;
+	const node = el.value!;
 	switch (event.button) {
 		case 0:
 			if (document.activeElement === node && timer.target === event.target) {
@@ -548,14 +624,14 @@ function pointerup(event: PointerEvent): void {
 }
 
 function doubleclick(event: Event): void {
-	const node = el.value as any;
+	const node = el.value!;
 	let element = event.target as HTMLElement;
 	if (element.tagName === 'FILE-NAV-ICON') {
 		element = element.parentNode as HTMLElement;
 	}
 	if (element.tagName === 'FILE-NAV-ITEM') {
 		cancelRenaming();
-		const folder = (element as HTMLElement & { file: any }).file;
+		const folder = (element as FolderElement).file;
 		if (folder.subfolders.length !== 0) {
 			const context = folder.getContext(node);
 			context.expanded = !context.expanded;
@@ -571,19 +647,19 @@ function listSelect(event: Event): void {
 }
 
 function dirchange(event: Event): void {
-	const node = el.value as any;
-	const folders: any[] = [];
-	const { inoMap } = props.directoryApi as any;
+	const node = el.value!;
+	const folders: unknown[] = [];
+	const { inoMap } = props.directoryApi!;
 	for (const folder of getSelections()) {
-		const { ino } = folder.stats;
-		const { path } = inoMap[ino] || folder;
+		const { ino } = (folder as FileItem).stats;
+		const { path } = (inoMap[ino as string] || folder) as FileItem;
 		folders.push(props.directoryApi?.getFolder(path));
 	}
 	const { browser } = props.links;
-	switch (browser.display) {
+	switch (browser!.display) {
 		case 'normal':
 			unselect();
-			load(...folders);
+			load(...(folders as FileItem[]));
 			break;
 		case 'search':
 			update();
@@ -591,9 +667,9 @@ function dirchange(event: Event): void {
 	}
 }
 
-function createTextBox(): HTMLElement {
+function createTextBox(): TextBoxElement {
 	const tb = props.createTextBox?.();
-	if (!tb) return tb;
+	if (!tb) return tb!;
 	tb.setMaxLength(64);
 	addClass(tb, 'file-nav-text-box');
 	addClass(tb.input, 'file-nav-text-box-input');
@@ -604,16 +680,16 @@ function createTextBox(): HTMLElement {
 			case 'Enter':
 			case 'NumpadEnter':
 			case 'Escape': {
-				const item = this.parentNode as any;
-				const nav = item.parentNode as HTMLElement;
-				(tb as any).input.blur();
+				const item = this.parentNode as HTMLElement & { parentNode: HTMLElement };
+				const nav = item.parentNode;
+				tb.input.blur();
 				nav.focus();
 				break;
 			}
 		}
 	});
 
-	tb.addEventListener('beforeinput', function (event: any) {
+	tb.addEventListener('beforeinput', function (event: InputEvent) {
 		if (event.inputType === 'insertText' && typeof event.data === 'string') {
 			const regexp = /[\\/:*?"<>|]/;
 			if (regexp.test(event.data)) {
@@ -623,7 +699,7 @@ function createTextBox(): HTMLElement {
 		}
 	});
 
-	tb.addEventListener('input', function (this: any) {
+	tb.addEventListener('input', function (this: TextBoxElement) {
 		this.fitContent();
 	});
 
@@ -632,7 +708,7 @@ function createTextBox(): HTMLElement {
 	});
 
 	tb.input.addEventListener('blur', function () {
-		const item = tb.parentNode as any;
+		const item = tb.parentNode as HTMLElement & { file: FileItem; textNode: Text };
 		const file = item.file;
 		const name = tb.read().trim();
 		tb.remove();
@@ -641,13 +717,13 @@ function createTextBox(): HTMLElement {
 			const path = props.fileSystem!.path(`${dir}/${name}`);
 			if (!props.fileSystem!.existsSync(path)) {
 				return props.fileSystem!.rename(props.fileSystem!.path(file.path), path)
-					.then(() => props.directoryApi?.update() as any)
+					.then(() => props.directoryApi?.update() as Promise<boolean>)
 					.then((changed: boolean) => {
 						if (!changed) {
 							throw new Error();
 						}
 					})
-					.catch((error: any) => {
+					.catch((error: unknown) => {
 						item.textNode.nodeValue = file.name;
 					});
 			}
@@ -659,7 +735,7 @@ function createTextBox(): HTMLElement {
 }
 
 onMounted(() => {
-	const node = el.value!;
+	const node = el.value as FileNavPaneElement;
 	timerCallback = () => {
 		const files = selections;
 		if (files.length === 1) {
@@ -667,7 +743,7 @@ onMounted(() => {
 			const target = timer.target;
 			const context = file.getContext(node);
 			const element = context.element;
-			if (element && element.contains(target)) {
+			if (element && element.contains(target as Node)) {
 				rename(file);
 			}
 		}
@@ -675,7 +751,7 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	elements = [] as any;
+	elements = [] as unknown as FolderElements;
 	elements.versionId = 0;
 	elements.count = 0;
 	elements.start = -1;
@@ -684,15 +760,15 @@ onMounted(() => {
 	elements.foot = null;
 
 	textBox = createTextBox();
-	(node as any).textBox = textBox;
+	node.textBox = textBox;
 	listenDraggingScrollbarEvent();
 
-	node.addEventListener('scroll', resize as any);
-	node.addEventListener('keydown', keydown as any);
-	node.addEventListener('pointerdown', pointerdown as any);
-	node.addEventListener('pointerup', pointerup as any);
-	attachDoubleclick(node, doubleclick as any);
-	node.addEventListener('select', listSelect as any);
+	node.addEventListener('scroll', resize);
+	node.addEventListener('keydown', keydown as EventListener);
+	node.addEventListener('pointerdown', pointerdown as EventListener);
+	node.addEventListener('pointerup', pointerup as EventListener);
+	attachDoubleclick(node, doubleclick);
+	node.addEventListener('select', listSelect);
 	selectEventEnabled = true;
 
 	if (typeof ResizeObserver !== 'undefined') {
@@ -704,33 +780,33 @@ onMounted(() => {
 		resizeObserver.observe(node);
 	}
 
-	dirchangeHandler = dirchange.bind({} as any);
-	window.addEventListener('dirchange', dirchangeHandler as any);
+	dirchangeHandler = dirchange.bind(undefined);
+	window.addEventListener('dirchange', dirchangeHandler);
 
-	(node as any).load = load;
-	(node as any).update = update;
-	(node as any).resize = resize;
-	(node as any).updateHeadAndFoot = updateHeadAndFoot;
-	(node as any).updateOnResize = updateOnResize;
-	(node as any).select = select;
-	(node as any).unselect = unselect;
-	(node as any).selectRelative = selectRelative;
-	(node as any).scrollToSelection = scrollToSelection;
-	(node as any).getSelections = getSelections;
-	(node as any).rename = rename;
-	(node as any).cancelRenaming = cancelRenaming;
-	(node as any).clearElements = clearElements;
-	(node as any).clear = clear;
+	node.load = load;
+	node.update = update;
+	node.resize = resize;
+	node.updateHeadAndFoot = updateHeadAndFoot;
+	node.updateOnResize = updateOnResize;
+	node.select = select;
+	node.unselect = unselect;
+	node.selectRelative = selectRelative;
+	node.scrollToSelection = scrollToSelection;
+	node.getSelections = getSelections;
+	node.rename = rename;
+	node.cancelRenaming = cancelRenaming;
+	node.clearElements = clearElements;
+	node.clear = clear;
 	Object.defineProperty(node, 'selections', {
 		get: () => selections,
 		configurable: true
 	});
-	(node as any).elements = elements;
-	(node as any).links = props.links;
+	node.elements = elements;
+	node.links = props.links;
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('dirchange', dirchangeHandler as any);
+	window.removeEventListener('dirchange', dirchangeHandler);
 	resizeObserver?.disconnect?.();
 });
 

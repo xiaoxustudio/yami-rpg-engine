@@ -6,7 +6,7 @@ Updater.updateConfig = function (verNum: number) {
 	// 修改font属性为text属性
 	if (verNum < Updater.getVersionNumber!('1.0.54')) {
 		const sConfig = Data.config;
-		const dConfig: Record<string, any> = {};
+		const dConfig: Record<string, unknown> = {};
 		for (const key of Object.keys(sConfig)) {
 			if (key === 'font') {
 				dConfig.text = {

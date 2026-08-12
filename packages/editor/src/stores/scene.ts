@@ -11,7 +11,7 @@ export const useSceneStore = defineStore('scene', () => {
 		target.value = Scene?.target ?? null;
 	}
 
-	function open(target: any) {
+	function open(target: unknown) {
 		Scene?.open?.(target);
 	}
 
@@ -27,7 +27,7 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.requestRendering?.();
 	}
 
-	function load(context: any) {
+	function load(context: unknown) {
 		Scene?.load?.(context);
 	}
 
@@ -35,7 +35,7 @@ export const useSceneStore = defineStore('scene', () => {
 		Scene?.save?.();
 	}
 
-	function destroy(context: any) {
+	function destroy(context: unknown) {
 		Scene?.destroy?.(context);
 	}
 

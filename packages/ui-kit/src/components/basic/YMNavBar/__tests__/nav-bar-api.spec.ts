@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createNavBarElement } from '../nav-bar-api';
+import type { NavBarApi } from '../nav-bar-api';
 
 describe('createNavBarElement', () => {
 	it('creates nav-bar', () => {
-		const el = createNavBarElement() as any;
+		const el = createNavBarElement() as unknown as NavBarApi;
 		expect(el.classList.contains('nav-bar')).toBe(true);
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
@@ -12,7 +13,7 @@ describe('createNavBarElement', () => {
 	});
 
 	it('write selects matching nav-item', () => {
-		const el = createNavBarElement() as any;
+		const el = createNavBarElement() as unknown as NavBarApi;
 		const a = document.createElement('div');
 		a.className = 'nav-item';
 		a.setAttribute('value', 'a');
@@ -28,7 +29,7 @@ describe('createNavBarElement', () => {
 	});
 
 	it('pointerdown selects item', () => {
-		const el = createNavBarElement() as any;
+		const el = createNavBarElement() as unknown as NavBarApi;
 		const a = document.createElement('div');
 		a.className = 'nav-item';
 		a.setAttribute('value', 'a');

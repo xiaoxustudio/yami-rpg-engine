@@ -459,7 +459,7 @@ import { UI } from '@/ui/ui-window.ts';
 		const target = event?.target ?? document.activeElement;
 		let element = target;
 		while (element instanceof Element) {
-			if (element.id.startsWith('uiElement-')) break;
+			if (element.id) break;
 			element = element.parentElement;
 		}
 		UIElement.update(

@@ -5,7 +5,7 @@ import { Texture } from './texture.ts';
 export class ImageTexture extends Texture {
 	declare reply: (type: string) => void;
 	// 运行时从 this.base 挂载到自身（texture-manager.ts 直接 texture.image/texture.glTexture 访问）
-	declare image: any;
+	declare image: HTMLImageElement | HTMLCanvasElement | null;
 	declare glTexture: WebGLTexture | null;
 	sliceClip!: Uint32Array;
 	sliceVertices!: Float32Array;

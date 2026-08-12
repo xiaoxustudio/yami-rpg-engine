@@ -23,7 +23,7 @@ Command.cases.setLoop = new CommandSchema({
 			{ name: 'Loop', value: true }
 		]);
 	},
-	parseLoop(loop: any) {
+	parseLoop(loop: boolean) {
 		switch (loop) {
 			case false:
 				return Local.get!('command.setLoop.once');
@@ -31,7 +31,7 @@ Command.cases.setLoop = new CommandSchema({
 				return Local.get!('command.setLoop.loop');
 		}
 	},
-	customParse({ type, loop }: any) {
+	customParse({ type, loop }: { type: unknown; loop: boolean }) {
 		const words = Command.words.push(Command.parseAudioType!(type)).push(this.parseLoop!(loop));
 		return [
 			{ color: 'audio' },

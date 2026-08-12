@@ -47,18 +47,18 @@ type DeploymentFileItem = {
 type DeploymentMethod = ((...args: any[]) => any) | null;
 
 interface DeploymentManifest {
-	ui: Record<string, any>;
-	scenes: Record<string, any>;
-	actors: Record<string, any>;
-	skills: Record<string, any>;
-	items: Record<string, any>;
-	equipments: Record<string, any>;
-	triggers: Record<string, any>;
-	states: Record<string, any>;
-	events: Record<string, any>;
-	tilesets: Record<string, any>;
-	animations: Record<string, any>;
-	particles: Record<string, any>;
+	ui: Record<string, unknown>;
+	scenes: Record<string, unknown>;
+	actors: Record<string, unknown>;
+	skills: Record<string, unknown>;
+	items: Record<string, unknown>;
+	equipments: Record<string, unknown>;
+	triggers: Record<string, unknown>;
+	states: Record<string, unknown>;
+	events: Record<string, unknown>;
+	tilesets: Record<string, unknown>;
+	animations: Record<string, unknown>;
+	particles: Record<string, unknown>;
 	images: unknown[];
 	audio: unknown[];
 	videos: unknown[];

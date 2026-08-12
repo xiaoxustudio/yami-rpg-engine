@@ -41,7 +41,7 @@ Command.cases.getTarget = new CommandSchema({
 				}
 			]);
 	},
-	parseCondition(condition: any, attribute: any, divisor: any) {
+	parseCondition(condition: string, attribute: unknown, divisor: unknown) {
 		const label = Local.get!('command.getTarget.condition.' + condition);
 		switch (condition) {
 			case 'max-threat':
@@ -66,7 +66,19 @@ Command.cases.getTarget = new CommandSchema({
 				);
 		}
 	},
-	customParse({ actor, selector, condition, attribute, divisor }: any) {
+	customParse({
+		actor,
+		selector,
+		condition,
+		attribute,
+		divisor
+	}: {
+		actor: unknown;
+		selector: unknown;
+		condition: string;
+		attribute: unknown;
+		divisor: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseActorSelector!(selector))

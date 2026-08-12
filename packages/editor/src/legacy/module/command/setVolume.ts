@@ -27,14 +27,26 @@ Command.cases.setVolume = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setVolume').on('open', function (event: any) {
+		$('#setVolume').on('open', function (event: Event) {
 			$('#setVolume-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setVolume').on('closed', function (event: any) {
+		$('#setVolume').on('closed', function (event: Event) {
 			clear($('#setVolume-easingId'));
 		});
 	},
-	customParse({ type, volume, easingId, duration, wait }: any) {
+	customParse({
+		type,
+		volume,
+		easingId,
+		duration,
+		wait
+	}: {
+		type: unknown;
+		volume: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseAudioType!(type))
 			.push(Command.parseVariableNumber!(volume))

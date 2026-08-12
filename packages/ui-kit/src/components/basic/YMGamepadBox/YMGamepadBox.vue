@@ -101,9 +101,11 @@ const inputKeydown = (event: KeyboardEvent): void => {
 const clonePad = (pad: Gamepad): Gamepad => {
 	const clone = {} as Gamepad;
 	for (const key of Object.keys(pad)) {
-		(clone as any)[key] = (pad as any)[key];
+		(clone as unknown as Record<string, unknown>)[key] = (
+			pad as unknown as Record<string, unknown>
+		)[key];
 	}
-	(clone as any).buttons = Array.from(pad.buttons, (button) => ({
+	(clone as unknown as Record<string, unknown>).buttons = Array.from(pad.buttons, (button) => ({
 		...button
 	})) as typeof pad.buttons;
 	return clone;
@@ -118,14 +120,17 @@ const inputFocus = (): void => {
 		if (pad !== null) {
 			if (lastPad === null) {
 				lastPad = clonePad(pad);
-				for (const button of lastPad.buttons as any) {
+				for (const button of lastPad.buttons as unknown as {
+					pressed: boolean;
+					value: number;
+				}[]) {
 					button.pressed = false;
 					button.value = 0;
 				}
 			}
 			if (lastPad.id === pad.id) {
-				const lastButtons = lastPad.buttons as any;
-				const buttons = pad.buttons as any;
+				const lastButtons = lastPad.buttons;
+				const buttons = pad.buttons;
 				const length = buttons.length;
 				for (let code = 0; code < length; code++) {
 					if (buttons[code].pressed && !lastButtons[code].pressed) {
@@ -156,7 +161,7 @@ onMounted(() => {
 		inputEl.addEventListener('focus', inputFocus);
 		inputEl.addEventListener('blur', inputBlur);
 	}
-	const el = root.value as any;
+	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
 	el.read = read;
 	el.write = write;

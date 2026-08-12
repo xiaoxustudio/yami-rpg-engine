@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.unloadSubscene = new CommandSchema({
 	name: 'unloadSubscene',
 	fields: [{ key: 'sceneId', default: '', required: true }],
-	customParse({ sceneId }: any) {
+	customParse({ sceneId }: { sceneId: unknown }) {
 		return [
 			{ color: 'scene' },
 			{ text: Local.get!('command.unloadSubscene') + Token(': ') },

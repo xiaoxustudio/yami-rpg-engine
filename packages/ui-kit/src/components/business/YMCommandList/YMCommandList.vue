@@ -7,6 +7,16 @@ interface Props {
 	options?: CommandListApiOptions | null;
 }
 
+interface CommandListRootElement extends HTMLElement {
+	resize: EventListener;
+	listFocus: EventListener;
+	listBlur: EventListener;
+	keydown: EventListener;
+	pointerdown: EventListener;
+	pointerup: EventListener;
+	windowVariableChange: EventListener;
+}
+
 const props = withDefaults(defineProps<Props>(), {
 	options: null
 });
@@ -24,7 +34,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	const el = root.value as any;
+	const el = root.value as CommandListRootElement | null;
 	if (!el) return;
 	el.removeEventListener('scroll', el.resize);
 	el.removeEventListener('focus', el.listFocus);

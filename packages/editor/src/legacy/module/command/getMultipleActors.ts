@@ -43,11 +43,11 @@ Command.cases.getMultipleActors = new CommandSchema({
 			{ name: 'Inactive', value: 'inactive' },
 			{ name: 'Either', value: 'either' }
 		]);
-		$('#getMultipleActors').on('open', function (event: any) {
+		$('#getMultipleActors').on('open', function (event: Event) {
 			const items = Data.createTeamItems!();
 			$('#getMultipleActors-teamId').loadItems(items);
 		});
-		$('#getMultipleActors').on('closed', function (event: any) {
+		$('#getMultipleActors').on('closed', function (event: Event) {
 			clear($('#getMultipleActors-teamId'));
 		});
 	},
@@ -61,7 +61,17 @@ Command.cases.getMultipleActors = new CommandSchema({
 		selector,
 		teamId,
 		activation
-	}: any) {
+	}: {
+		variable: unknown;
+		position: unknown;
+		area: string;
+		width: unknown;
+		height: unknown;
+		radius: unknown;
+		selector: string;
+		teamId: unknown;
+		activation: string;
+	}) {
 		const actors = Command.parseVariable!(variable, 'object', true);
 		const words = Command.words
 			.push(Command.parsePosition!(position))

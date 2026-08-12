@@ -8,7 +8,7 @@ import { Inspector } from './inspector.ts';
 		create: null
 	};
 
-	AnimJointLayer.create = function (this: any) {
+	AnimJointLayer.create = function (this: typeof AnimJointLayer) {
 		return {
 			class: 'joint',
 			name: 'Joint',

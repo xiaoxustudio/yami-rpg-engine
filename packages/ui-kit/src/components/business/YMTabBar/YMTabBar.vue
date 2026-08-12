@@ -10,7 +10,7 @@ import {
 } from '../../../utils/dom';
 import { createDragAndDropHintElement } from '../YMDragAndDropHint/drag-and-drop-hint-api';
 
-const arrayRemove = (arr: any[], item: any): boolean => {
+const arrayRemove = (arr: TabItem[], item: TabItem): boolean => {
 	const index = arr.indexOf(item);
 	if (index !== -1) {
 		arr.splice(index, 1);
@@ -34,20 +34,59 @@ interface TabDraggingEvent {
 	relate?(event: PointerEvent): boolean;
 }
 
+interface TabItemMeta {
+	guid?: string;
+	path?: string;
+	[k: string]: unknown;
+}
+
 interface TabItem {
-	item: string;
-	type?: 'directory' | 'file';
+	item?: string;
+	icon: string;
+	name: string;
+	type?: string;
+	meta?: TabItemMeta;
 	tab?: HTMLElement;
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 interface TabElement extends HTMLElement {
-	item: string;
+	item: TabItem;
 	text: HTMLElement;
 }
 
 interface TabDragTarget extends HTMLElement {
-	item: string;
+	item: TabItem;
+}
+
+interface TabBarElement extends HTMLElement {
+	data?: TabItem[] | null;
+	dirItem?: TabItem | null;
+	selectionIndex?: number;
+	writeEventEnabled?: boolean;
+	selectEventEnabled?: boolean;
+	closedEventEnabled?: boolean;
+	popupEventEnabled?: boolean;
+	dragging?: TabDraggingEvent | null;
+	windowPointerup?: (event: PointerEvent) => void;
+	read?: () => TabItem | undefined;
+	write?: (value: TabItem | undefined) => void;
+	update?: () => void;
+	parseTabName?: (item: TabItem) => string;
+	select?: (item: TabItem) => void;
+	unselect?: () => void;
+	insert?: (item: TabItem) => void;
+	close?: (item: TabItem) => void;
+	closeByProperty?: (key: string, value: unknown) => void;
+	closeOtherTabs?: (item: TabItem) => void;
+	closeTabsToTheRight?: (item: TabItem) => void;
+	find?: (meta: TabItemMeta) => TabItem | undefined;
+	clear?: () => void;
+	on?: (
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	) => void;
 }
 
 interface Props {
@@ -60,23 +99,23 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	write: [value: any];
-	select: [value: any];
-	closed: [closedItems: any[], lastValue: any];
-	popup: [value: any, clientX: number, clientY: number];
+	write: [value: TabItem | undefined];
+	select: [value: TabItem | undefined];
+	closed: [closedItems: TabItem[], lastValue: TabItem | undefined];
+	popup: [value: TabItem | null, clientX: number, clientY: number];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 
-const read = (): any => {
-	const el = root.value;
+const read = (): TabItem | undefined => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
 	const item = el.querySelector('.selected') as HTMLElement | null;
 	return item ? (item as TabElement).item : undefined;
 };
 
-const write = (value: any): void => {
-	const el = root.value;
+const write = (value: TabItem | undefined): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	const items = el.childNodes;
 	const length = items.length;
@@ -85,7 +124,7 @@ const write = (value: any): void => {
 		let target: HTMLElement | undefined;
 		for (let i = 0; i < length; i++) {
 			if ((items[i] as TabElement).item === value) {
-				(el as any).selectionIndex = i;
+				el.selectionIndex = i;
 				target = items[i] as HTMLElement;
 				break;
 			}
@@ -93,8 +132,8 @@ const write = (value: any): void => {
 		if (target !== undefined) {
 			addClass(target, 'selected');
 		}
-		if ((el as any).writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: any };
+		if (el.writeEventEnabled) {
+			const writeEvent = new Event('write') as Event & { value?: TabItem | undefined };
 			writeEvent.value = target ? value : undefined;
 			el.dispatchEvent(writeEvent);
 			emit('write', writeEvent.value);
@@ -103,10 +142,10 @@ const write = (value: any): void => {
 };
 
 const update = (): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	clear();
-	for (const item of (el as any).data as TabItem[]) {
+	for (const item of el.data!) {
 		let tab = item.tab;
 		if (tab === undefined) {
 			tab = item.tab = document.createElement('div');
@@ -115,7 +154,7 @@ const update = (): void => {
 			addClass(text, 'tab-text');
 			text.textContent = parseTabName(item);
 			(tab as HTMLElement & { draggable: boolean }).draggable = true;
-			(tab as TabElement).item = item as any;
+			(tab as TabElement).item = item;
 			(tab as TabElement & { text: HTMLElement }).text = text;
 			tab.appendChild(text);
 			if (item.type !== 'directory') {
@@ -129,15 +168,15 @@ const update = (): void => {
 	}
 };
 
-const parseTabName = (item: any): string => `${item.icon} ${item.name}`;
+const parseTabName = (item: TabItem): string => `${item.icon} ${item.name}`;
 
-const select = (item: any): void => {
-	const el = root.value;
+const select = (item: TabItem): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	if (read() !== item) {
 		write(item);
-		if ((el as any).selectEventEnabled) {
-			const selectEvent = new Event('select') as Event & { value: any };
+		if (el.selectEventEnabled) {
+			const selectEvent = new Event('select') as Event & { value?: TabItem };
 			selectEvent.value = item;
 			el.dispatchEvent(selectEvent);
 			emit('select', selectEvent.value);
@@ -146,7 +185,7 @@ const select = (item: any): void => {
 };
 
 const unselect = (): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	const item = el.querySelector('.selected') as HTMLElement | null;
 	if (item) {
@@ -154,36 +193,36 @@ const unselect = (): void => {
 	}
 };
 
-const insert = (item: any): void => {
-	const el = root.value;
+const insert = (item: TabItem): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	const data = (el as any).data;
+	const data = el.data!;
 	if (!data.includes(item)) {
-		data.splice((el as any).selectionIndex + 1, 0, item);
+		data.splice(el.selectionIndex! + 1, 0, item);
 		update();
 	}
 };
 
-const close = (item: any): void => {
-	const el = root.value;
+const close = (item: TabItem): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	if (item === (el as any).dirItem) return;
+	if (item === el.dirItem) return;
 	const value = read();
-	const data = (el as any).data;
+	const data = el.data!;
 	if (arrayRemove(data, item)) {
 		update();
 		if (data.length > 0) {
 			if (value === item || value === undefined || !data.includes(value)) {
-				const index = Math.min((el as any).selectionIndex, data.length - 1);
+				const index = Math.min(el.selectionIndex!, data.length - 1);
 				select(data[index]);
 			} else {
 				write(value);
 			}
 		}
-		if ((el as any).closedEventEnabled) {
+		if (el.closedEventEnabled) {
 			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
+				closedItems: TabItem[];
+				lastValue: TabItem | undefined;
 			};
 			closedEvent.closedItems = [item];
 			closedEvent.lastValue = value;
@@ -193,10 +232,10 @@ const close = (item: any): void => {
 	}
 };
 
-const closeByProperty = (key: string, value: any): void => {
-	const el = root.value;
+const closeByProperty = (key: string, value: unknown): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	for (const context of (el as any).data) {
+	for (const context of el.data!) {
 		if (context[key] === value) {
 			close(context);
 			return;
@@ -204,27 +243,27 @@ const closeByProperty = (key: string, value: any): void => {
 	}
 };
 
-const closeOtherTabs = (item: any): void => {
-	const el = root.value;
+const closeOtherTabs = (item: TabItem): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	const value = read();
-	const items = (el as any).data;
+	const items = el.data!;
 	let i = items.length;
 	if (i <= 1) return;
-	const closedItems: any[] = [];
+	const closedItems: TabItem[] = [];
 	while (--i >= 0) {
 		const tab = items[i];
 		if (tab === item) continue;
-		if (tab === (el as any).dirItem) continue;
+		if (tab === el.dirItem) continue;
 		items.splice(i, 1);
 		closedItems.push(tab);
 	}
 	if (closedItems.length !== 0) {
 		update();
-		if ((el as any).closedEventEnabled) {
+		if (el.closedEventEnabled) {
 			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
+				closedItems: TabItem[];
+				lastValue: TabItem | undefined;
 			};
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
@@ -234,27 +273,27 @@ const closeOtherTabs = (item: any): void => {
 	}
 };
 
-const closeTabsToTheRight = (item: any): void => {
-	const el = root.value;
+const closeTabsToTheRight = (item: TabItem): void => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	const value = read();
-	const items = (el as any).data;
+	const items = el.data!;
 	const index = items.indexOf(item);
 	if (index === -1) return;
-	const closedItems: any[] = [];
+	const closedItems: TabItem[] = [];
 	let i = items.length;
 	while (--i > index) {
 		const tab = items[i];
-		if (tab === (el as any).dirItem) continue;
+		if (tab === el.dirItem) continue;
 		items.splice(i, 1);
 		closedItems.push(tab);
 	}
 	if (closedItems.length !== 0) {
 		update();
-		if ((el as any).closedEventEnabled) {
+		if (el.closedEventEnabled) {
 			const closedEvent = new Event('closed') as Event & {
-				closedItems: any[];
-				lastValue: any;
+				closedItems: TabItem[];
+				lastValue: TabItem | undefined;
 			};
 			closedEvent.closedItems = closedItems;
 			closedEvent.lastValue = value;
@@ -264,8 +303,8 @@ const closeTabsToTheRight = (item: any): void => {
 	}
 };
 
-const find = (meta: any): any => {
-	const el = root.value;
+const find = (meta: TabItemMeta): TabItem | undefined => {
+	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
 	for (const node of el.childNodes as unknown as NodeListOf<any>) {
 		if (node.item && node.item.meta === meta) {
@@ -276,7 +315,7 @@ const find = (meta: any): any => {
 };
 
 const clear = (): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	unselect();
 	el.textContent = '';
@@ -284,35 +323,35 @@ const clear = (): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	el.addEventListener(type, listener as EventListener, options);
 	switch (type) {
 		case 'write':
-			(el as any).writeEventEnabled = true;
+			el.writeEventEnabled = true;
 			break;
 		case 'select':
-			(el as any).selectEventEnabled = true;
+			el.selectEventEnabled = true;
 			break;
 		case 'closed':
-			(el as any).closedEventEnabled = true;
+			el.closedEventEnabled = true;
 			break;
 		case 'popup':
-			(el as any).popupEventEnabled = true;
+			el.popupEventEnabled = true;
 			break;
 	}
 };
 
 const dragend = (): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el || !el.parentNode) return;
-	if ((el as any).dragging) {
+	if (el.dragging) {
 		removeClass(el, 'dragging');
-		el.parentNode.removeChild((el as any).dragging.hint);
-		(el as any).dragging = null;
+		el.parentNode.removeChild(el.dragging.hint);
+		el.dragging = null;
 		el.removeEventListener('dragenter', dragenter);
 		el.removeEventListener('dragleave', dragleave);
 		el.removeEventListener('dragover', dragover);
@@ -321,7 +360,7 @@ const dragend = (): void => {
 };
 
 const pointerdown = (event: PointerEvent): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	dragend();
 	switch (event.button) {
@@ -339,7 +378,7 @@ const pointerdown = (event: PointerEvent): void => {
 						return (event.target as HTMLElement).closest('.tab-item') === parent;
 					}
 				};
-				(el as any).dragging = dragging;
+				el.dragging = dragging;
 				window.addEventListener('pointerup', windowPointerup);
 				return;
 			}
@@ -349,7 +388,7 @@ const pointerdown = (event: PointerEvent): void => {
 			break;
 		}
 		case 2:
-			if ((el as any).popupEventEnabled) {
+			if (el.popupEventEnabled) {
 				const target = event.target as HTMLElement;
 				if (hasClass(target, 'tab-item') || hasClass(target, 'tab-bar')) {
 					const dragging: TabDraggingEvent = {
@@ -358,7 +397,7 @@ const pointerdown = (event: PointerEvent): void => {
 						offsetX: event.offsetX,
 						mode: 'popup'
 					};
-					(el as any).dragging = dragging;
+					el.dragging = dragging;
 					window.addEventListener('pointerup', windowPointerup);
 				}
 			}
@@ -367,16 +406,16 @@ const pointerdown = (event: PointerEvent): void => {
 };
 
 const dragstart = (event: DragEvent): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el || !el.parentNode) return;
-	if (!(el as any).dragging) {
+	if (!el.dragging) {
 		const hint = createDragAndDropHintElement() as unknown as TabHint;
 		const dragging: TabDraggingEvent = {
 			hint,
 			target: event.target as HTMLElement,
 			offsetX: event.offsetX
 		};
-		(el as any).dragging = dragging;
+		el.dragging = dragging;
 		Object.defineProperty(event, 'offsetX', { writable: true });
 		event.preventDefault = (() => {}) as unknown as () => void;
 		(event.dataTransfer as unknown as { hideDragImage(): void }).hideDragImage();
@@ -392,35 +431,35 @@ const dragstart = (event: DragEvent): void => {
 };
 
 const dragenter = (event: DragEvent): void => {
-	if ((root.value as any)?.dragging) {
+	if ((root.value as TabBarElement | null)?.dragging) {
 		event.preventDefault();
 		(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
 	}
 };
 
 const dragleave = (event: DragEvent): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	if ((el as any).dragging && !el.contains(event.relatedTarget as Node)) {
-		(el as any).dragging.offsetX = -1;
-		hide((el as any).dragging.hint);
+	if (el.dragging && !el.contains(event.relatedTarget as Node)) {
+		el.dragging.offsetX = -1;
+		hide(el.dragging.hint);
 	}
 };
 
 const dragover = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el || !(el as any).dragging) return;
+	const el = root.value as TabBarElement | null;
+	if (!el || !el.dragging) return;
 	event.preventDefault();
 	(event.dataTransfer as unknown as { dropEffect: string }).dropEffect = 'move';
-	if ((el as any).dragging.offsetX === event.offsetX) {
+	if (el.dragging.offsetX === event.offsetX) {
 		return;
 	}
-	(el as any).dragging.offsetX = event.offsetX;
+	el.dragging.offsetX = event.offsetX;
 	const element = (event.target as HTMLElement).closest('.tab-item') as HTMLElement | null;
-	const hint = (el as any).dragging.hint;
+	const hint = el.dragging.hint;
 	show(hint);
 	if (element && hasClass(element, 'tab-item')) {
-		const sItem = ((el as any).dragging.target as TabDragTarget).item;
+		const sItem = (el.dragging.target as TabDragTarget).item;
 		const dItem = (element as TabElement).item;
 		if (sItem === dItem) {
 			hide(hint);
@@ -433,7 +472,7 @@ const dragover = (event: DragEvent): void => {
 		switch (position) {
 			case 'before':
 				if (hint.target !== element || hint.position !== position) {
-					if (element.previousSibling === (el as any).dragging.target) {
+					if (element.previousSibling === el.dragging.target) {
 						hide(hint);
 						return;
 					}
@@ -447,7 +486,7 @@ const dragover = (event: DragEvent): void => {
 				break;
 			case 'after':
 				if (hint.target !== element || hint.position !== position) {
-					if (element.nextSibling === (el as any).dragging.target) {
+					if (element.nextSibling === el.dragging.target) {
 						hide(hint);
 						return;
 					}
@@ -464,7 +503,7 @@ const dragover = (event: DragEvent): void => {
 		const elements = el.childNodes;
 		const index = elements.length - 1;
 		const last = elements[index] as HTMLElement;
-		if (last === (el as any).dragging.target) {
+		if (last === el.dragging.target) {
 			hide(hint);
 			return;
 		}
@@ -480,13 +519,13 @@ const dragover = (event: DragEvent): void => {
 };
 
 const drop = (event: DragEvent): void => {
-	const el = root.value;
-	if (!el || !(el as any).dragging) return;
+	const el = root.value as TabBarElement | null;
+	if (!el || !el.dragging) return;
 	event.stopPropagation();
-	const hint = (el as any).dragging.hint;
+	const hint = el.dragging.hint;
 	if (!hasClass(hint, 'hidden')) {
-		const items = (el as any).data;
-		const sItem = ((el as any).dragging.target as TabDragTarget).item;
+		const items = el.data!;
+		const sItem = (el.dragging.target as TabDragTarget).item;
 		const dItem = (hint.target as TabDragTarget).item;
 		if (arrayRemove(items, sItem)) {
 			let dIndex = items.indexOf(dItem);
@@ -494,7 +533,7 @@ const drop = (event: DragEvent): void => {
 				dIndex++;
 			}
 			items.splice(dIndex, 0, sItem);
-			(el as any).selectionIndex = dIndex;
+			el.selectionIndex = dIndex;
 			update();
 		}
 	}
@@ -502,21 +541,21 @@ const drop = (event: DragEvent): void => {
 };
 
 const windowPointerup = (event: PointerEvent): void => {
-	const el = root.value;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
-	if ((el as any).dragging && (el as any).dragging.relate!(event)) {
-		switch ((el as any).dragging.mode) {
+	if (el.dragging && el.dragging.relate!(event)) {
+		switch (el.dragging.mode) {
 			case 'close': {
 				const target = (event.target as HTMLElement).closest('.tab-item') as TabDragTarget | null;
-				if (target && (el as any).dragging.target === target) {
+				if (target && el.dragging.target === target) {
 					close(target.item);
 				}
 				break;
 			}
 			case 'popup':
-				if ((el as any).dragging.target === event.target) {
+				if (el.dragging.target === event.target) {
 					const popupEvent = new Event('popup') as Event & {
-						value: any;
+						value?: TabItem | null;
 						clientX: number;
 						clientY: number;
 					};
@@ -529,7 +568,7 @@ const windowPointerup = (event: PointerEvent): void => {
 				}
 				break;
 		}
-		(el as any).dragging = null;
+		el.dragging = null;
 		window.removeEventListener('pointerup', windowPointerup);
 	}
 };
@@ -553,7 +592,7 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value as any;
+	const el = root.value as TabBarElement | null;
 	if (!el) return;
 	el.data = null;
 	el.dragging = null;

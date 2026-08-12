@@ -1,15 +1,24 @@
 import { defineStore } from 'pinia';
+import type { DataEntryShape } from './data';
+import type { History } from '@/tools/history.ts';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 
+export interface AttributeItemShape {
+	id: string;
+	name?: string;
+	children?: AttributeItemShape[];
+	[k: string]: unknown;
+}
+
 export interface AttributeWindowState {
 	mode: string | null;
-	target: any | null;
-	data: any | null;
-	idMap: Record<string, any> | null;
-	settings: any | null;
-	settingKeys: any | null;
-	history: any | null;
+	target: { input?: (id: string) => void; [k: string]: unknown } | null;
+	data: AttributeItemShape[] | null;
+	idMap: Record<string, DataEntryShape> | null;
+	settings: Record<string, string> | null;
+	settingKeys: string[] | null;
+	history: History | null;
 	changed: boolean;
 }
 

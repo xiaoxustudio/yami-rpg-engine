@@ -9,12 +9,12 @@ import { computed, onMounted, ref } from 'vue';
 import { YMNavBar } from '@ui-kit';
 
 interface NavBarElement extends HTMLElement {
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	unselect(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -27,23 +27,23 @@ const props = defineProps<Props>();
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	unselect(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
+const read = (): unknown => ym.value?.read();
+const write = (value: unknown): void => ym.value?.write(value);
 const unselect = (): void => ym.value?.unselect();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

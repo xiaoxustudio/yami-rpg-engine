@@ -2,9 +2,15 @@
 import { mount } from '@vue/test-utils';
 import YMFileHeadPane from '../YMFileHeadPane/YMFileHeadPane.vue';
 
+interface TestFileItem {
+	name: string;
+	parent?: TestFileItem;
+	subfolders: TestFileItem[];
+}
+
 function makeLinks() {
 	const browser = { display: 'normal', searchFiles: vi.fn(), backToParentFolder: vi.fn() };
-	const nav = { selections: [] as any[], load: vi.fn(), scrollToSelection: vi.fn() };
+	const nav = { selections: [] as TestFileItem[], load: vi.fn(), scrollToSelection: vi.fn() };
 	const body = {
 		content: document.createElement('div'),
 		setViewIndex: vi.fn(),
@@ -13,8 +19,14 @@ function makeLinks() {
 	return { browser, nav, body };
 }
 
-function mountPane(props: any) {
+function mountPane(props: InstanceType<typeof YMFileHeadPane>['$props']) {
 	return mount(YMFileHeadPane, { props, attachTo: document.body });
+}
+
+interface FileHeadPaneElement extends HTMLElement {
+	[k: string]: unknown;
+	links?: { browser?: unknown; nav?: unknown; body?: unknown };
+	updateAddress: () => void;
 }
 
 describe('YMFileHeadPane', () => {
@@ -23,24 +35,29 @@ describe('YMFileHeadPane', () => {
 		const wrapper = mountPane({ links });
 		expect(wrapper.classes()).toContain('file-head-pane');
 		expect(typeof wrapper.vm.updateAddress).toBe('function');
-		expect((wrapper.element as any).links?.browser).toBeTruthy();
-		expect((wrapper.element as any).updateAddress).toBeTypeOf('function');
+		expect((wrapper.element as unknown as FileHeadPaneElement).links?.browser).toBeTruthy();
+		expect((wrapper.element as unknown as FileHeadPaneElement).updateAddress).toBeTypeOf(
+			'function'
+		);
 		wrapper.unmount();
 	});
 
 	it('updateAddress renders folder breadcrumb', async () => {
 		const links = makeLinks();
-		const folder = { name: 'Root', parent: null };
-		const sub = { name: 'Sub', parent: folder };
+		const folder: TestFileItem = { name: 'Root', subfolders: [] };
+		const sub: TestFileItem = { name: 'Sub', parent: folder, subfolders: [] };
 		links.nav.selections = [sub];
-		const wrapper = mountPane({ links, isFolderItem: (obj: any) => !!obj?.name });
+		const wrapper = mountPane({
+			links,
+			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
+		});
 		wrapper.vm.updateAddress();
 		await wrapper.vm.$nextTick();
 		const folders = wrapper.element.querySelectorAll('file-head-address-folder');
 		expect(folders.length).toBe(2);
 		expect(folders[0].textContent).toBe('Root');
 		expect(folders[1].textContent).toBe('Sub');
-		expect((folders[1] as any).disabled).toBe(true);
+		expect((folders[1] as HTMLElement & { disabled?: boolean }).disabled).toBe(true);
 		wrapper.unmount();
 	});
 
@@ -78,10 +95,13 @@ describe('YMFileHeadPane', () => {
 
 	it('clicking address folder navigates', async () => {
 		const links = makeLinks();
-		const parent = { name: 'Parent', parent: null };
-		const sub = { name: 'Sub', parent };
+		const parent: TestFileItem = { name: 'Parent', subfolders: [] };
+		const sub: TestFileItem = { name: 'Sub', parent, subfolders: [] };
 		links.nav.selections = [sub];
-		const wrapper = mountPane({ links, isFolderItem: (obj: any) => !!obj?.name });
+		const wrapper = mountPane({
+			links,
+			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
+		});
 		wrapper.vm.updateAddress();
 		await wrapper.vm.$nextTick();
 		const nodes = wrapper.element.querySelectorAll('file-head-address-folder');
@@ -98,14 +118,17 @@ describe('YMFileHeadPane', () => {
 	it('clicking address arrow opens menu popup', async () => {
 		const links = makeLinks();
 		const menuPopup = vi.fn();
-		const folder = {
+		const folder: TestFileItem = {
 			name: 'Parent',
-			parent: null,
-			subfolders: [{ name: 'Child', parent: null }]
+			subfolders: [{ name: 'Child', subfolders: [] }]
 		};
-		const sub = { name: 'Sub', parent: folder };
+		const sub: TestFileItem = { name: 'Sub', parent: folder, subfolders: [] };
 		links.nav.selections = [sub];
-		const wrapper = mountPane({ links, menuPopup, isFolderItem: (obj: any) => !!obj?.name });
+		const wrapper = mountPane({
+			links,
+			menuPopup,
+			isFolderItem: (obj: unknown) => !!obj && typeof obj === 'object' && 'name' in obj
+		});
 		wrapper.vm.updateAddress();
 		await wrapper.vm.$nextTick();
 		const arrow = wrapper.element.querySelector('file-head-address-arrow') as HTMLElement;

@@ -15,11 +15,17 @@ Command.cases.setImage = new CommandSchema({
 	onInitialize() {
 		$('#setImage-confirm').on('click', () => this.save!());
 		$('#setImage-properties').bind(ImageProperty);
-		$('#setImage').on('closed', (event: any) => {
+		$('#setImage').on('closed', (event: Event) => {
 			clear($('#setImage-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(ImageProperty.parse!(property));

@@ -19,7 +19,10 @@ export const Window = {
 	get ambient() {
 		return $('#window-ambient');
 	},
-	frames: [] as HTMLElement[],
+	frames: [] as HTMLElement[] & {
+		append(element: HTMLElement): boolean;
+		remove(element: HTMLElement): boolean;
+	},
 	afterChange: null as (() => void) | null,
 	positionMode: 'center',
 	absolutePos: { x: 0, y: 0 },
@@ -338,8 +341,8 @@ Window.cancel = function (this: typeof Window, event: Event) {
 };
 
 Window.ambient.update = function (this: typeof Window) {
-	const { frames } = this;
-	const { ambient } = this;
+	const { frames } = Window;
+	const { ambient } = Window;
 	let i = frames.length;
 	while (--i >= 0) {
 		const frame = frames[i];
@@ -351,3 +354,5 @@ Window.ambient.update = function (this: typeof Window) {
 	}
 	removeClass(ambient, 'open');
 };
+
+(window as unknown as { Window: typeof Window }).Window = Window;

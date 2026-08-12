@@ -9,7 +9,7 @@ interface AccessorConfig {
 	domKey: string;
 	presetCategory: string;
 	items: { name: string; value: string }[];
-	relate: { case: string | string[]; targets: any[] }[];
+	relate: { case: string | string[]; targets: HTMLElement[] }[];
 }
 
 function createPresetAccessor(config: AccessorConfig) {

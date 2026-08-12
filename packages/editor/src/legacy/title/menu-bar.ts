@@ -852,7 +852,7 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 	if (Editor.state === 'closed') {
 		return [];
 	}
-	const { recentTabs } = Editor.project!;
+	const recentTabs = Editor.project!.recentTabs!;
 	const items: (MenuItem & { meta?: RecentTabMeta })[] = [];
 	const get = Local.createGetter!('menuFile');
 	items.push({
@@ -1001,7 +1001,7 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 				break;
 			case 'KeyS':
 				File.save!();
-				WebServer.update!(Editor.config!.project);
+				WebServer.update!(Editor.config!.project!);
 				break;
 			case 'KeyT':
 				if (event.shiftKey) {

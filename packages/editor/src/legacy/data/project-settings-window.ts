@@ -26,7 +26,7 @@ type ImportedFonts = {
 	save(): string | null;
 	read(): string | null;
 	input(fontId: string): void;
-	[k: string]: any;
+	target?: { save: () => void };
 };
 type LanguagesInterface = {
 	initialize(list: { inserting?: boolean }): void;
@@ -36,7 +36,7 @@ type LanguagesInterface = {
 	update(): void;
 	createAllItems(): Array<{ name: string; value: string }>;
 	createValidItems(): Array<{ name: string; value: string }>;
-	[k: string]: any;
+	target?: { save: () => void };
 };
 
 export const Project = {
@@ -45,18 +45,20 @@ export const Project = {
 	importedFonts: null as ImportedFonts | null,
 	languages: null as LanguagesInterface | null,
 	tscStarted: false,
-	initialize: null as unknown as (...args: any[]) => any,
-	open: null as unknown as (...args: any[]) => any,
-	startTSC: null as unknown as (...args: any[]) => any,
-	stopTSC: null as unknown as (...args: any[]) => any,
-	windowClose: null as unknown as (...args: any[]) => any,
-	windowClosed: null as unknown as (...args: any[]) => any,
-	projectChange: null as unknown as (...args: any[]) => any,
-	dataChange: null as unknown as (...args: any[]) => any,
-	paramInput: null as unknown as (...args: any[]) => any,
-	confirm: null as unknown as (...args: any[]) => any,
+	initialize: null as unknown as () => void,
+	open: null as unknown as () => void,
+	startTSC: null as unknown as () => void,
+	stopTSC: null as unknown as () => void,
+	windowClose: null as unknown as (event: Event) => void,
+	windowClosed: null as unknown as (event: Event) => void,
+	projectChange: null as unknown as (
+		event: Event & { key?: string; last: { script: { autoCompile?: boolean } } }
+	) => void,
+	dataChange: null as unknown as (event: Event) => void,
+	paramInput: null as unknown as (event: Event) => void,
+	confirm: null as unknown as (event: Event) => void,
 	state: null as string | null,
-	target: null as Record<string, any> | null,
+	target: null as { save?: () => void } | null,
 	close: null as (() => void) | null
 };
 
@@ -139,7 +141,7 @@ Project.initialize = function (this: typeof Project) {
 		{ name: 'Only on Deployment', value: 'deployed' }
 	]);
 
-	window.addEventListener('datachange', this.projectChange);
+	window.addEventListener('datachange', this.projectChange as EventListener);
 	on($('#project-settings'), 'close', this.windowClose);
 	on($('#project-settings'), 'closed', this.windowClosed);
 	on($('#project-settings'), 'change', this.dataChange);

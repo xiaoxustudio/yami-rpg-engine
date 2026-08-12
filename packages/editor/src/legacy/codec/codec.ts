@@ -6,11 +6,12 @@ import { GL } from '@/webgl/webgl-init.ts';
 interface TilemapData {
 	changed?: boolean;
 	code?: string;
-	tiles: Uint32Array;
-	tilesetMap: Record<string, string>;
+	tiles?: Uint32Array;
+	tilesetMap?: Record<string, string>;
 	reverseMap?: Record<string, number>;
-	width: number;
-	height: number;
+	width?: number;
+	height?: number;
+	[k: string]: unknown;
 }
 interface SceneData {
 	terrainChanged?: boolean;
@@ -18,6 +19,11 @@ interface SceneData {
 	terrains?: string;
 	width: number;
 	height: number;
+	tileWidth: number;
+	tileHeight: number;
+	ambient: unknown;
+	events: unknown[];
+	scripts: unknown[];
 	objects: Array<{ class: string; children?: unknown[] }>;
 }
 
@@ -25,23 +31,23 @@ export const Codec = {
 	textEncoder: new TextEncoder(),
 	textDecoder: new TextDecoder(),
 	encodeFile: null as ((buffer: Uint8Array | string) => Uint8Array) | null,
-	encodeScene: null as ((scene: any) => any) | null,
-	decodeScene: null as ((scene: any) => any) | null,
-	encodeTilemap: null as ((tilemap: any) => void) | null,
-	decodeTilemap: null as ((tilemap: any) => any) | null,
+	encodeScene: null as ((scene: SceneData) => SceneData) | null,
+	decodeScene: null as ((scene: SceneData) => SceneData) | null,
+	encodeTilemap: null as ((tilemap: TilemapData) => void) | null,
+	decodeTilemap: null as ((tilemap: TilemapData) => TilemapData) | null,
 	encodeTiles: null as ((tiles: Uint32Array) => string) | null,
 	decodeTiles: null as ((code: Uint8Array, width: number, height: number) => Uint32Array) | null,
 	encodeTerrains: null as ((terrains: Uint8Array) => string) | null,
 	decodeTerrains: null as
 		| ((code: Uint8Array, width: number, height: number) => Uint8Array)
 		| null,
-	encodeTeamData: null as ((data: any) => string) | null,
+	encodeTeamData: null as ((data: Uint8Array) => string) | null,
 	decodeTeamData: null as ((code: Uint8Array, length: number) => Uint8Array) | null,
 	encodeClone: null as ((array: Uint8Array, index: number, count: number) => number) | null,
 	decodeClone: null as
 		| ((array: Uint8Array, index: number) => { index: number; count: number })
 		| null,
-	getTilemaps: null as ((scene: any) => any[]) | null
+	getTilemaps: null as ((scene: SceneData) => TilemapData[]) | null
 };
 
 Codec.encodeFile = function (buffer: Uint8Array | string) {
@@ -58,7 +64,7 @@ Codec.encodeFile = function (buffer: Uint8Array | string) {
 Codec.encodeScene = function (scene: SceneData) {
 	const tilemaps = this.getTilemaps!(scene);
 	for (const tilemap of tilemaps) {
-		Codec.encodeTilemap!(tilemap as any);
+		Codec.encodeTilemap!(tilemap);
 	}
 	if (scene.terrainChanged) {
 		scene.terrainChanged = false;
@@ -93,14 +99,14 @@ Codec.decodeScene = function (scene: SceneData) {
 Codec.encodeTilemap = function (tilemap: TilemapData) {
 	if (tilemap.changed) {
 		tilemap.changed = false;
-		tilemap.code = Codec.encodeTiles!(tilemap.tiles);
+		tilemap.code = Codec.encodeTiles!(tilemap.tiles!);
 		const flags = {} as Record<string, boolean>;
-		const tilesetMap = tilemap.tilesetMap;
+		const tilesetMap = tilemap.tilesetMap!;
 		const indices = Object.keys(tilesetMap);
 		for (const index of indices) {
 			flags[index] = false;
 		}
-		const tiles = tilemap.tiles;
+		const tiles = tilemap.tiles!;
 		const length = tiles.length;
 		for (let i = 0; i < length; i++) {
 			const index = tiles[i] >> 24;
@@ -124,14 +130,14 @@ Codec.encodeTilemap = function (tilemap: TilemapData) {
 Codec.decodeTilemap = function (tilemap: TilemapData) {
 	const tiles = Codec.decodeTiles!(
 		tilemap.code! as unknown as Uint8Array,
-		tilemap.width,
-		tilemap.height
+		tilemap.width!,
+		tilemap.height!
 	);
 	Object.defineProperty(tilemap, 'tiles', { writable: true, value: tiles });
 	Object.defineProperty(tilemap, 'changed', { writable: true, value: false });
 	Object.defineProperty(tilemap, 'reverseMap', { writable: true, value: {} });
 	const { tilesetMap, reverseMap } = tilemap;
-	const entries = Object.entries(tilesetMap);
+	const entries = Object.entries(tilesetMap!);
 	for (const [index, guid] of entries) {
 		reverseMap![guid as string] = parseInt(index);
 	}
@@ -186,9 +192,9 @@ Codec.encodeTiles = function (tiles: Uint32Array) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTiles = function (code: Uint8Array, width: number, height: number) {
+Codec.decodeTiles = function (code: Uint8Array | string, width: number, height: number) {
 	const { decodeClone } = this;
-	const BYTES = code;
+	const BYTES = typeof code === 'string' ? this.textEncoder.encode(code) : code;
 	const BYTES_LENGTH = BYTES.length;
 	const TILES = Scene.createTiles(width, height);
 	const TILES_LENGTH = TILES.length;
@@ -290,9 +296,9 @@ Codec.encodeTerrains = function (terrains: Uint8Array) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTerrains = function (code: Uint8Array, width: number, height: number) {
+Codec.decodeTerrains = function (code: Uint8Array | string, width: number, height: number) {
 	const { decodeClone } = this;
-	const BYTES = code;
+	const BYTES = typeof code === 'string' ? this.textEncoder.encode(code) : code;
 	const BYTES_LENGTH = BYTES.length;
 	const TERRAINS = Scene.createTerrains(width, height);
 	const TERRAINS_LENGTH = TERRAINS.length;
@@ -362,8 +368,8 @@ Codec.encodeTeamData = function (data: Uint8Array) {
 	return this.textDecoder.decode(new Uint8Array(BYTES.buffer, 0, Bi));
 };
 
-Codec.decodeTeamData = function (code: Uint8Array, length: number) {
-	const BYTES = code;
+Codec.decodeTeamData = function (code: Uint8Array | string, length: number) {
+	const BYTES = typeof code === 'string' ? this.textEncoder.encode(code) : code;
 	const BYTES_LENGTH = BYTES.length;
 	const DATA_LENGTH = ((length + 1) / 2) * length;
 	const DATA = new Uint8Array(DATA_LENGTH);
@@ -438,7 +444,7 @@ Codec.getTilemaps = (function IIFE() {
 		return list;
 	};
 	return function (scene: SceneData) {
-		return getTilemaps(scene.objects, []);
+		return getTilemaps(scene.objects, []) as TilemapData[];
 	};
 })();
 

@@ -14,10 +14,10 @@ Command.cases.tintScreen = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#tintScreen').on('open', function (event: any) {
+		$('#tintScreen').on('open', function (event: Event) {
 			$('#tintScreen-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#tintScreen').on('closed', function (event: any) {
+		$('#tintScreen').on('closed', function (event: Event) {
 			clear($('#tintScreen-easingId'));
 			clear($('#tintScreen-filter'));
 		});
@@ -26,7 +26,7 @@ Command.cases.tintScreen = new CommandSchema({
 				'#tintScreen-tint-0, #tintScreen-tint-1, #tintScreen-tint-2, #tintScreen-tint-3'
 			)
 			.forEach((el) =>
-				(el as HTMLElement).on('input', function (event: any) {
+				(el as HTMLElement).on('input', function (event: InputEvent) {
 					write($('#tintScreen-filter'), [
 						read($('#tintScreen-tint-0')),
 						read($('#tintScreen-tint-1')),
@@ -36,7 +36,7 @@ Command.cases.tintScreen = new CommandSchema({
 				})
 			);
 	},
-	parseTint([red, green, blue, gray]: any[]) {
+	parseTint([red, green, blue, gray]: [any, any, any, any]) {
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
 		const _blue = Command.setNumberColor!(blue);
@@ -53,7 +53,17 @@ Command.cases.tintScreen = new CommandSchema({
 			Token(')')
 		);
 	},
-	customParse({ tint, easingId, duration, wait }: any) {
+	customParse({
+		tint,
+		easingId,
+		duration,
+		wait
+	}: {
+		tint: [unknown, unknown, unknown, unknown];
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(this.parseTint!(tint))
 			.push(Command.parseEasing!(easingId, duration, wait));
@@ -63,7 +73,17 @@ Command.cases.tintScreen = new CommandSchema({
 			{ text: words.join() }
 		];
 	},
-	customLoad({ tint = [0, 0, 0, 0], easingId = Data.easings[0].id, duration = 0, wait = false }) {
+	customLoad({
+		tint = [0, 0, 0, 0],
+		easingId = Data.easings[0].id,
+		duration = 0,
+		wait = false
+	}: {
+		tint: number[];
+		easingId: string;
+		duration: number;
+		wait: boolean;
+	}) {
 		const write = getElementWriter('tintScreen');
 		write('tint-0', tint[0]);
 		write('tint-1', tint[1]);

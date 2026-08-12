@@ -5,6 +5,12 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type FixAngleData = {
+	actor: unknown;
+	fixed: unknown;
+	[k: string]: unknown;
+};
+
 Command.cases.fixAngle = new CommandSchema({
 	name: 'fixAngle',
 	fields: [
@@ -18,7 +24,7 @@ Command.cases.fixAngle = new CommandSchema({
 			{ name: 'Unfixed', value: false }
 		]);
 	},
-	customParse({ actor, fixed }: any) {
+	customParse({ actor, fixed }: FixAngleData) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Local.get!('command.fixAngle.fixed.' + fixed));

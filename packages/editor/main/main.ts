@@ -8,8 +8,9 @@ import ExcelJS from 'exceljs';
 import * as apkProcessor from './apk.ts';
 import type { IpcMainInvokeEvent, IpcMainEvent, BrowserWindowExtension } from './types/main.ts';
 import { app, Menu, BrowserWindow, ipcMain, dialog, shell, session, clipboard } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 import fs from 'fs';
-import { spawn } from 'child_process';
+import { spawn, type ChildProcess } from 'child_process';
 import path from 'path';
 import os from 'os';
 
@@ -71,22 +72,28 @@ ipcMain.on('get-server-state', (event) => {
 ipcMain.handle('start-server', (event, config) => {
 	const basePath = path.dirname(config.path);
 	const instanceServer = new Koa();
-	instanceServer.use(async (ctx: any) => {
-		try {
-			const filePath = path.join(basePath, '.preview', ctx.path);
-			const ext = path.extname(filePath);
-			const type = Mime.lookup(ext) || 'text/plain';
-			if (ctx.path === '/') {
-				ctx.set('Content-Type', Mime.lookup('html'));
-				ctx.body = fs.readFileSync(path.join(filePath, 'index.html'));
-			} else {
-				ctx.set('Content-Type', type);
-				ctx.body = fs.readFileSync(filePath);
+	instanceServer.use(
+		async (ctx: {
+			path: string;
+			set: (key: string, value: string | false) => void;
+			body: unknown;
+		}) => {
+			try {
+				const filePath = path.join(basePath, '.preview', ctx.path);
+				const ext = path.extname(filePath);
+				const type = Mime.lookup(ext) || 'text/plain';
+				if (ctx.path === '/') {
+					ctx.set('Content-Type', Mime.lookup('html'));
+					ctx.body = fs.readFileSync(path.join(filePath, 'index.html'));
+				} else {
+					ctx.set('Content-Type', type);
+					ctx.body = fs.readFileSync(filePath);
+				}
+			} catch {
+				ctx.body = '404 Not Found';
 			}
-		} catch {
-			ctx.body = '404 Not Found';
 		}
-	});
+	);
 
 	const server = instanceServer.listen(config.port, () => {
 		isServerState = true;
@@ -105,7 +112,7 @@ ipcMain.handle('to-qrcode', (event, url) => {
 		.then((url: string) => {
 			return url;
 		})
-		.catch((err: any) => {
+		.catch((err: unknown) => {
 			console.error(err);
 		});
 });
@@ -124,11 +131,18 @@ ipcMain.handle('to-excel', async (event, { langs, list }) => {
 		{ header: 'parentID', key: 'parentID', width: 20 },
 		{ header: 'isDir', key: 'isDir', width: 10 }
 	];
-	const transformList = (DataList: any[], parentID?: string, isDir?: boolean) => {
+	type TranslationItem = {
+		class?: unknown;
+		children?: TranslationItem[];
+		name?: unknown;
+		id?: unknown;
+		contents?: Record<string, unknown>;
+	};
+	const transformList = (DataList: TranslationItem[], parentID?: string, isDir?: boolean) => {
 		for (let item of DataList) {
 			if (item?.class) {
 				const id = generate64bit();
-				transformList(item.children, id, true);
+				transformList(item.children!, id, true);
 				worksheet.addRow({
 					id: id,
 					name: item.name || '',
@@ -136,13 +150,13 @@ ipcMain.handle('to-excel', async (event, { langs, list }) => {
 					isDir: 1
 				});
 			} else {
-				const data: Record<string, any> = {
+				const data: Record<string, unknown> = {
 					id: item.id,
 					name: item.name || '',
 					parentID
 				};
 				langs.forEach((v: string) => {
-					data[v] = item.contents[v];
+					data[v] = item.contents![v];
 				});
 				worksheet.addRow(data);
 			}
@@ -190,13 +204,22 @@ ipcMain.handle('from-excel', async (event) => {
 
 		const dataMap = new Map();
 		const rootNodes = [];
+		type RowData = {
+			class?: unknown;
+			children?: RowData[];
+			name?: unknown;
+			id?: unknown;
+			parentID?: unknown;
+			contents?: Record<string, unknown>;
+			expanded?: boolean;
+		};
 
 		for (let rowIndex = 2; rowIndex <= worksheet.rowCount; rowIndex++) {
 			const row = worksheet.getRow(rowIndex);
 			const isDirCell = row.getCell(colMap['isDir']);
 			const isDir = isDirCell && isDirCell.value === 1;
 
-			const rowData: Record<string, any> = isDir
+			const rowData: RowData = isDir
 				? {
 						class: 'folder',
 						id: row.getCell(colMap['ID']).value,
@@ -217,7 +240,7 @@ ipcMain.handle('from-excel', async (event) => {
 				Object.keys(colMap).forEach((key) => {
 					if (!['ID', 'Name', 'parentID', 'isDir'].includes(key)) {
 						const cellValue = row.getCell(colMap[key]).value;
-						rowData.contents[key] = cellValue !== null ? cellValue : '';
+						rowData.contents![key] = cellValue !== null ? cellValue : '';
 					}
 				});
 			}
@@ -302,7 +325,7 @@ ipcMain.on('clipboard-read', (event, format: string) => {
 	const string = buffer.toString();
 	event.returnValue = string ? JSON.parse(string) : null;
 });
-ipcMain.on('clipboard-write', (event, format: string, object: any) => {
+ipcMain.on('clipboard-write', (event, format: string, object: unknown) => {
 	const string = JSON.stringify(object);
 	const buffer = Buffer.from(string);
 	clipboard.writeBuffer(format, buffer);
@@ -363,11 +386,11 @@ const createMenuTemplate = function () {
 	const template = [];
 	const file = {
 		label: 'File',
-		submenu: [] as any[]
+		submenu: [] as MenuItemConstructorOptions[]
 	};
 	const edit = {
 		label: 'Edit',
-		submenu: [] as any[]
+		submenu: [] as MenuItemConstructorOptions[]
 	};
 	// 开发模式：开启F5刷新
 	if (debug) {
@@ -381,7 +404,7 @@ const createMenuTemplate = function () {
 		file.submenu.push({
 			label: 'FullScreen',
 			accelerator: 'F11',
-			role: 'toggleFullScreen'
+			role: 'toggleFullScreen' as any
 		});
 	}
 	file.submenu.push({
@@ -515,7 +538,7 @@ const createEditorWindow = function () {
 	(globalThis as any).editor = editor;
 
 	ipcMain.handle('build-apk', (event, config) => {
-		const send = (data: any) => {
+		const send = (data: { done: boolean; msg: string }) => {
 			if (!editor.isDestroyed()) editor.send('apk-log', data);
 		};
 		if (apkProcessor.isBuilding()) {
@@ -642,7 +665,7 @@ const createEditorWindow = function () {
 		return { res, error };
 	});
 
-	let tscProcess: any = null;
+	let tscProcess: ChildProcess | null = null;
 
 	// 启动TSC
 	function startTSC(projectDir: string) {
@@ -651,14 +674,15 @@ const createEditorWindow = function () {
 			return;
 		}
 		const tsgoExe = getTsgoExePath();
-		tscProcess = spawn(tsgoExe, ['--watch'], {
+		const process = spawn(tsgoExe, ['--watch'], {
 			stdio: ['ignore', 'pipe', 'pipe'],
 			cwd: projectDir
 		});
-		tscProcess.stdout.on('data', (data: any) => {
+		tscProcess = process;
+		process.stdout.on('data', (data: Buffer | string) => {
 			if (!editor.isDestroyed()) editor.send('tsc-log', data.toString());
 		});
-		tscProcess.stderr.on('data', (data: any) => {
+		process.stderr.on('data', (data: Buffer | string) => {
 			if (!editor.isDestroyed()) editor.send('tsc-log', data.toString());
 		});
 	}
@@ -820,7 +844,7 @@ ipcMain.on('show-item-in-folder', (event, filePath) => {
 });
 
 let currentprojectPath = '';
-let currentPlayerWindow: any = null;
+let currentPlayerWindow: (BrowserWindow & BrowserWindowExtension) | null = null;
 ipcMain.on('create-player-window', (event, projectPath) => {
 	const window = getWindowFromEvent(event);
 	currentprojectPath = projectPath;
@@ -930,12 +954,13 @@ ipcMain.handle('relaunch-app', async (event) => {
 		const window = getWindowFromEvent(event);
 		// 如果有窗口，等待它真正关闭
 		if (currentPlayerWindow) {
+			const playerWindow = currentPlayerWindow;
 			return await new Promise((resolve) => {
-				currentPlayerWindow.once('closed', () => {
+				playerWindow.once('closed', () => {
 					currentPlayerWindow = createPlayerWindow(window, currentprojectPath);
 					resolve({ success: true });
 				});
-				currentPlayerWindow.destroy();
+				playerWindow.destroy();
 			});
 		}
 		currentPlayerWindow = createPlayerWindow(window, currentprojectPath);

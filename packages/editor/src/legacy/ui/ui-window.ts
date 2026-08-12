@@ -100,14 +100,14 @@ type UINodeShape = { class: string; children: UINodeShape[]; [k: string]: any };
 
 interface UIContextShape {
 	meta: { guid: string; path: string };
-	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, any>;
+	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, unknown>;
 	editor?: {
 		target: UINodeShape | null;
 		root: UINodeShape | null;
 		history: History;
 		centerX: number;
 		centerY: number;
-	} & Record<string, any>;
+	} & Record<string, unknown>;
 	fontChanged?: boolean;
 	languageChanged?: boolean;
 	scalingChanged?: boolean;
@@ -293,15 +293,15 @@ export const UI: UIShape = {
 	createShortcut: null
 };
 
-UI.marquee.resize = null as unknown as (...args: unknown[]) => any;
+UI.marquee.resize = null;
 
 UI.list.page = $('#ui-element');
 UI.list.head = $('#ui-list-head');
-UI.list.copy = null as unknown as (...args: unknown[]) => any;
-UI.list.paste = null as unknown as (...args: unknown[]) => any;
-UI.list.delete = null as unknown as (...args: unknown[]) => any;
-UI.list.toggle = null as unknown as (...args: unknown[]) => any;
-UI.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
+UI.list.copy = null;
+UI.list.paste = null;
+UI.list.delete = null;
+UI.list.toggle = null;
+UI.list.cancelSearch = null;
 EventBus.once('editor_loaded', () => {
 	UI.list.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
@@ -309,11 +309,11 @@ EventBus.once('editor_loaded', () => {
 	// 否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
 	UI.list.updaters?.push(UI.list.updateItemClass);
 });
-UI.list.createIcon = null as unknown as (...args: unknown[]) => any;
-UI.list.updateIcon = null as unknown as (...args: unknown[]) => any;
-UI.list.updateHead = null as unknown as (...args: unknown[]) => any;
-UI.list.createConditionIcon = null as unknown as (...args: unknown[]) => any;
-UI.list.updateConditionIcon = null as unknown as (...args: unknown[]) => any;
+UI.list.createIcon = null;
+UI.list.updateIcon = null;
+UI.list.updateHead = null;
+UI.list.createConditionIcon = null;
+UI.list.updateConditionIcon = null;
 EventBus.once('editor_loaded', () => {
 	UI.list.createEventIcon = Scene.list.createEventIcon;
 	UI.list.updateEventIcon = Scene.list.updateEventIcon;
@@ -398,7 +398,7 @@ UI.initialize = function (this: UIShape) {
 	File.get!({
 		local: 'Images/ui_control_point.png',
 		type: 'image'
-	}).then((image: { guid?: string; [k: string]: any }) => {
+	}).then((image: { guid?: string; [k: string]: unknown }) => {
 		if (!image) return;
 		image.guid = 'ui:control-point';
 		this.controlPointTexture = new ImageTexture(image);
@@ -491,21 +491,21 @@ UI.initialize = function (this: UIShape) {
 
 	History.processors['ui-object-create'] = (
 		operation: string,
-		data: { response: { item: UINodeShape } & Record<string, any> }
+		data: { response: { item: UINodeShape } & Record<string, unknown> }
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
 	History.processors['ui-object-delete'] = (
 		operation: string,
-		data: { response: { item: UINodeShape } & Record<string, any> }
+		data: { response: { item: UINodeShape } & Record<string, unknown> }
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
 	};
 	History.processors['ui-object-remove'] = (
 		operation: string,
-		data: { response: { item: UINodeShape } & Record<string, any> }
+		data: { response: { item: UINodeShape } & Record<string, unknown> }
 	) => {
 		const { response } = data;
 		const { item } = response;
@@ -793,7 +793,9 @@ UI.destroy = function (this: UIShape, context: UIContextShape) {
 	}
 	// 销毁UI组件实例
 	context.editor.root!.destroy();
-	TreeList.deleteCaches!(context.ui!.nodes);
+	TreeList.deleteCaches!(
+		context.ui!.nodes as unknown as Parameters<typeof TreeList.deleteCaches>[0]
+	);
 };
 
 UI.copy = function (this: UIShape) {
@@ -839,8 +841,8 @@ UI.createPrefab = function (
 	prefab: {
 		name: string;
 		presetId: string;
-		transform: { x: number; y: number; [k: string]: any };
-		[k: string]: any;
+		transform: { x: number; y: number; [k: string]: unknown };
+		[k: string]: unknown;
 	},
 	parent: UINodeShape | null,
 	x?: number,
@@ -1669,7 +1671,7 @@ UI.createPrefabItem = function (
 	x?: number,
 	y?: number
 ) {
-	const { uiPrefabs } = Editor.project!;
+	const uiPrefabs = Editor.project!.uiPrefabs!;
 	const items: Array<{ label: string; data: UINodeShape; click: () => void }> = [];
 	if (uiPrefabs.length !== 0) {
 		const click = function (this: { data: UINodeShape }) {
@@ -1695,17 +1697,17 @@ UI.createPrefabItem = function (
 };
 
 UI.hasPrefab = function (this: UIShape, node: UINodeShape) {
-	return Editor.project!.uiPrefabs.includes(node.presetId);
+	return Editor.project!.uiPrefabs!.includes(node.presetId);
 };
 
 UI.setAsPrefab = function (this: UIShape, node: UINodeShape) {
-	if (Editor.project!.uiPrefabs.push(node.presetId)) {
+	if (Editor.project!.uiPrefabs!.push(node.presetId)) {
 		UI.list.updateIcon(node);
 	}
 };
 
 UI.unsetAsPrefab = function (this: UIShape, node: UINodeShape) {
-	if (Editor.project!.uiPrefabs.splice(Editor.project!.uiPrefabs.indexOf(node.presetId), 1)) {
+	if (Editor.project!.uiPrefabs!.splice(Editor.project!.uiPrefabs!.indexOf(node.presetId), 1)) {
 		UI.list.updateIcon(node);
 	}
 };
@@ -2043,12 +2045,12 @@ UI.planToSave = function (this: UIShape) {
 	File.planToSave!(this.meta);
 };
 
-UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, any> }) {
+UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	config.colors.uiBackground = this.background.hex;
 	config.colors.uiForeground = this.foreground.hex;
 };
 
-UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, any> }) {
+UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
 		if (this.state === 'open') {
@@ -2060,7 +2062,7 @@ UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, an
 
 UI.saveToProject = function (
 	this: UIShape,
-	project: { ui: { zoom?: number } & Record<string, any>; uiPrefabs?: string[] }
+	project: { ui: { zoom?: number } & Record<string, unknown>; uiPrefabs?: string[] }
 ) {
 	const { ui, uiPrefabs } = project;
 	ui.zoom = this.zoom ?? ui.zoom;
@@ -3255,7 +3257,7 @@ UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEven
 };
 
 // 列表 - 复制
-UI.list.copy = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.copy = function (this: UIShape, item: UINodeShape) {
 	if (item) {
 		(Clipboard as unknown as GlobalClipboardHost).write('yami.ui.object', item);
 	}
@@ -3263,7 +3265,7 @@ UI.list.copy = function (this: HTMLElement & { [k: string]: any }, item: UINodeS
 
 // 列表 - 粘贴
 UI.list.paste = function (
-	this: HTMLElement & { [k: string]: any },
+	this: UIShape,
 	dItem: UINodeShape | null,
 	callback?: (data: unknown) => void
 ) {
@@ -3276,7 +3278,7 @@ UI.list.paste = function (
 };
 
 // 列表 - 删除
-UI.list.delete = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.delete = function (this: UIShape, item: UINodeShape) {
 	if (item) {
 		this.deleteNode!(item);
 		UI.requestRendering!();
@@ -3284,7 +3286,7 @@ UI.list.delete = function (this: HTMLElement & { [k: string]: any }, item: UINod
 };
 
 // 列表 - 开关
-UI.list.toggle = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.toggle = function (this: UIShape, item: UINodeShape) {
 	if (item) {
 		UI.history.save({
 			type: 'ui-object-toggle',
@@ -3299,7 +3301,7 @@ UI.list.toggle = function (this: HTMLElement & { [k: string]: any }, item: UINod
 };
 
 // 列表 - 取消搜索
-UI.list.cancelSearch = function (this: HTMLElement & { [k: string]: any }) {
+UI.list.cancelSearch = function (this: UIShape) {
 	if (this.display === 'search') {
 		const active = document.activeElement;
 		UI.searcher.deleteInputContent();
@@ -3406,7 +3408,7 @@ UI.list.createIcon = (function IIFE() {
 			return icon;
 		}
 	};
-	return function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+	return function (this: UIShape, item: UINodeShape) {
 		const icon = (iconCreators as Record<string, (item?: UINodeShape) => HTMLElement>)[
 			item.class
 		](item);
@@ -3418,7 +3420,7 @@ UI.list.createIcon = (function IIFE() {
 })();
 
 // 列表 - 更新图标
-UI.list.updateIcon = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.updateIcon = function (this: UIShape, item: UINodeShape) {
 	const { element } = item;
 	if (element?.nodeIcon) {
 		const icon = this.createIcon!(item);
@@ -3428,11 +3430,7 @@ UI.list.updateIcon = function (this: HTMLElement & { [k: string]: any }, item: U
 };
 
 // 列表 - 更新头部位置
-UI.list.updateHead = function (
-	this: HTMLElement & { page: HTMLElement; head: HTMLElement & { left?: number } } & {
-		[k: string]: any;
-	}
-) {
+UI.list.updateHead = function (this: UIShape) {
 	const { page, head } = this;
 	if (page.clientWidth !== 0) {
 		const { nav } = Layout.getGroupOfElement!(head)!;
@@ -3447,10 +3445,7 @@ UI.list.updateHead = function (
 };
 
 // 列表 - 创建条件图标
-UI.list.createConditionIcon = function (
-	this: HTMLElement & { [k: string]: any },
-	item: UINodeShape
-) {
+UI.list.createConditionIcon = function (this: UIShape, item: UINodeShape) {
 	const { element } = item;
 	const conditionIcon = document.createElement('node-icon');
 	addClass(conditionIcon, 'icon-conditional');
@@ -3460,10 +3455,7 @@ UI.list.createConditionIcon = function (
 };
 
 // 列表 - 更新条件图标
-UI.list.updateConditionIcon = function (
-	this: HTMLElement & { [k: string]: any },
-	item: UINodeShape
-) {
+UI.list.updateConditionIcon = function (this: UIShape, item: UINodeShape) {
 	const { element, enabled } = item;
 	const condition = enabled ? 'none' : 'absent';
 	if (element.condition !== condition) {
@@ -3484,19 +3476,19 @@ UI.list.updateConditionIcon = function (
 };
 
 // 列表 - 在创建数据时回调
-UI.list.onCreate = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.onCreate = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 };
 
 // 列表 - 在迁移数据时回调
-UI.list.onRemove = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.onRemove = function (this: UIShape, item: UINodeShape) {
 	UI.updateElement!(item);
 };
 
 // 列表 - 在删除数据时回调
-UI.list.onDelete = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.onDelete = function (this: UIShape, item: UINodeShape) {
 	UI.unregisterPreset!(item);
 	UI.deleteElement!(item);
 	UI.updateHover!();
@@ -3505,7 +3497,7 @@ UI.list.onDelete = function (this: HTMLElement & { [k: string]: any }, item: UIN
 };
 
 // 列表 - 在恢复数据时回调
-UI.list.onResume = function (this: HTMLElement & { [k: string]: any }, item: UINodeShape) {
+UI.list.onResume = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);

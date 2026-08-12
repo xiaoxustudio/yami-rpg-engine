@@ -27,7 +27,21 @@ Command.cases.useItem = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 	},
-	customParse({ actor, mode, key, itemId, item, wait }: any) {
+	customParse({
+		actor,
+		mode,
+		key,
+		itemId,
+		item,
+		wait
+	}: {
+		actor: unknown;
+		mode: string;
+		key: unknown;
+		itemId: unknown;
+		item: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words.push(Command.parseActor!(actor));
 		switch (mode) {
 			case 'by-key':

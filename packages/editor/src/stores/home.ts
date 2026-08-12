@@ -41,23 +41,23 @@ export const useHomeStore = defineStore('home', () => {
 		return Home?.countFileList?.(path);
 	}
 
-	function windowResize(event: any) {
+	function windowResize(event: Event) {
 		Home?.windowResize?.(event);
 	}
 
-	function windowLocalize(event: any) {
+	function windowLocalize(event: Event) {
 		Home?.windowLocalize?.(event);
 	}
 
-	function startClick(event: any) {
+	function startClick(event: Event) {
 		Home?.startClick?.(event);
 	}
 
-	function recentClick(event: any) {
+	function recentClick(event: Event) {
 		Home?.recentClick?.(event);
 	}
 
-	function recentPointerup(event: any) {
+	function recentPointerup(event: Event) {
 		Home?.recentPointerup?.(event);
 	}
 

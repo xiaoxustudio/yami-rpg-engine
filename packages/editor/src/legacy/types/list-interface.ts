@@ -23,5 +23,5 @@ export interface IFilteredListInterface extends IListInterface {
 
 // 带 script 字段的列表接口契约（script-list 专用）
 export interface IScriptListInterface extends IFilteredListInterface {
-	script: { id: string; [k: string]: any } | null;
+	script: { id: string; enabled?: boolean; parameters?: Record<string, unknown> } | null;
 }

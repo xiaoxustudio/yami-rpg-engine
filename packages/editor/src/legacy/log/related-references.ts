@@ -15,20 +15,46 @@ interface ReferenceItem {
 
 type ReferenceContent = ReferenceItem | ReferenceItem[];
 
+type ReferenceListShape = ReferenceItem[] & { isEmpty?: boolean };
+
 type LocalEventShape = { type: string };
 type LocalScriptShape = { id: string };
 type SearchNodeShape = {
 	name: string;
 	class: string;
 	children: SearchNodeShape[];
-	[k: string]: any;
+	events: LocalEventShape[];
+	scripts: LocalScriptShape[];
+	conditions: unknown[];
+	presetId?: string;
+	image?: string;
+	content?: string;
+	normalImage?: string;
+	hoverImage?: string;
+	activeImage?: string;
+	hoverSound?: string;
+	clickSound?: string;
+	animation?: string;
+	motion?: string;
+	video?: string;
+	prefabId?: string;
+	actorId?: string;
+	teamId?: string;
+	mask?: string;
+	animationId?: string;
+	particleId?: string;
+	tilesetMap?: unknown;
 };
 type TreeItemShape = {
 	name: string;
 	class: string;
 	id?: string;
 	children: TreeItemShape[];
-	[k: string]: any;
+	value?: string | number;
+	note?: string | number;
+	key?: string | number;
+	enum?: string;
+	contents?: unknown;
 };
 
 export const Reference = {
@@ -36,7 +62,7 @@ export const Reference = {
 	keyupMap: new Map<HTMLElement, (event: KeyboardEvent) => void>(),
 	pointerdownMap: new Map<HTMLElement, (event: PointerEvent) => void>(),
 	pointermoveMap: new Map<HTMLElement, (event: PointerEvent) => void>(),
-	initialize: null as ((...args: unknown[]) => unknown) | null,
+	initialize: null as (() => void) | null,
 	findAllGuids: null as
 		| ((targetGuid?: string) => {
 				usedMap: Record<string, ReferenceContent>;
@@ -44,22 +70,22 @@ export const Reference = {
 				outerMap: Record<string, ReferenceItem>;
 		  })
 		| null,
-	filterUselessComments: null as ((...args: any[]) => any[] & { isEmpty?: boolean }) | null,
-	findRelated: null as ((...args: any[]) => any) | null,
-	openRelated: null as ((...args: any[]) => any) | null,
-	findInvalid: null as ((...args: any[]) => any) | null,
-	openInvalid: null as ((...args: any[]) => any) | null,
-	findUnused: null as ((...args: any[]) => any) | null,
-	openUnused: null as ((...args: any[]) => any) | null,
-	openList: null as ((...args: any[]) => any) | null,
-	update: null as ((...args: any[]) => any) | null,
-	windowClosed: null as ((...args: any[]) => any) | null,
-	listSelect: null as ((...args: any[]) => any) | null,
-	listPopup: null as ((...args: any[]) => any) | null,
-	getKeydownListener: null as ((...args: any[]) => (event: KeyboardEvent) => void) | null,
-	getKeyupListener: null as ((...args: any[]) => (event: KeyboardEvent) => void) | null,
-	getPointerdownListener: null as ((...args: any[]) => (event: PointerEvent) => void) | null,
-	getPointermoveListener: null as ((...args: any[]) => (event: PointerEvent) => void) | null
+	filterUselessComments: null as ((...args: unknown[]) => ReferenceListShape) | null,
+	findRelated: null as ((...args: unknown[]) => ReferenceItem[]) | null,
+	openRelated: null as ((...args: unknown[]) => void) | null,
+	findInvalid: null as (() => ReferenceListShape) | null,
+	openInvalid: null as ((...args: unknown[]) => void) | null,
+	findUnused: null as (() => ReferenceListShape) | null,
+	openUnused: null as ((...args: unknown[]) => void) | null,
+	openList: null as ((...args: unknown[]) => void) | null,
+	update: null as ((...args: unknown[]) => void) | null,
+	windowClosed: null as ((...args: unknown[]) => void) | null,
+	listSelect: null as ((...args: unknown[]) => void) | null,
+	listPopup: null as ((...args: unknown[]) => void) | null,
+	getKeydownListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
+	getKeyupListener: null as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null,
+	getPointerdownListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null,
+	getPointermoveListener: null as ((...args: unknown[]) => (event: PointerEvent) => void) | null
 };
 
 Reference.initialize = function () {
@@ -133,10 +159,10 @@ Reference.findAllGuids = function (targetGuid = '') {
 			}
 		}
 	};
-	const pushToUsedMap2 = (path: string, name: string, guid: string) => {
+	const pushToUsedMap2 = (path: string, name: string, guid: string | undefined) => {
 		if (guid) pushToUsedMap(`${path}/${name}`, guid);
 	};
-	let pushToInnerMap = (path: string, guid: string) => {
+	let pushToInnerMap = (path: string, guid: string | undefined) => {
 		if (guid) innerMap[guid] = true;
 	};
 	let pushToOuterMap = (path: string, guid: string, fileGuid?: string) => {
@@ -149,7 +175,7 @@ Reference.findAllGuids = function (targetGuid = '') {
 	};
 	if (targetGuid) {
 		const _pushToUsedMap = pushToUsedMap;
-		pushToUsedMap = (path: string, guid: string) => {
+		pushToUsedMap = (path: string, guid: string | undefined) => {
 			if (guid === targetGuid) {
 				_pushToUsedMap(path, guid);
 			}
@@ -181,9 +207,9 @@ Reference.findAllGuids = function (targetGuid = '') {
 			}
 		}
 	};
-	const searchText = (text: string, dir: string, name: string) => {
+	const searchText = (text: string | undefined, dir: string, name: string) => {
 		let match;
-		while ((match = guidInText.exec(text))) {
+		while ((match = guidInText.exec(text!))) {
 			pushToUsedMap2(dir, name, match[1]);
 		}
 	};
@@ -672,9 +698,9 @@ Reference.filterUselessComments = function (items: ReferenceItem[]) {
 		}
 	}
 	return list;
-};
+} as unknown as ((...args: unknown[]) => ReferenceListShape) | null;
 
-Reference.findRelated = function (guid: string) {
+Reference.findRelated = function (this: typeof Reference, guid: string) {
 	const items = [];
 	const { usedMap } = this.findAllGuids!(guid);
 	for (const key of Object.keys(usedMap)) {
@@ -695,12 +721,12 @@ Reference.findRelated = function (guid: string) {
 		});
 	}
 	return filtered;
-};
+} as unknown as ((...args: unknown[]) => ReferenceItem[]) | null;
 
-Reference.openRelated = function (guid: string) {
+Reference.openRelated = function (this: typeof Reference, guid: string) {
 	Window.open!('reference');
 	this.openList!(this.findRelated!(guid));
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.findInvalid = function () {
 	const items = [];
@@ -728,10 +754,10 @@ Reference.findInvalid = function () {
 	return filtered;
 };
 
-Reference.openInvalid = function (guid: string) {
+Reference.openInvalid = function (this: typeof Reference, guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findInvalid!());
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.findUnused = function () {
 	const items = [];
@@ -752,15 +778,15 @@ Reference.findUnused = function () {
 	return filtered;
 };
 
-Reference.openUnused = function (guid: string) {
+Reference.openUnused = function (this: typeof Reference, guid?: string) {
 	Window.open!('reference');
 	this.openList!(this.findUnused!());
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.openList = function (items: ReferenceItem[]) {
 	Window.open!('reference');
 	Reference.update!(items);
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.update = function (items: ReferenceItem[]) {
 	const list = $('#reference-list').reload();
@@ -783,11 +809,11 @@ Reference.update = function (items: ReferenceItem[]) {
 		list.appendElement(li);
 	}
 	list.update();
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (event: Event) {
 	clear($('#reference-list'));
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | null }) {
 	const item = event.value;
@@ -808,9 +834,9 @@ Reference.listPopup = function (event: PointerEvent & { value?: ReferenceItem | 
 			]
 		);
 	}
-};
+} as unknown as ((...args: unknown[]) => void) | null;
 
-Reference.getKeydownListener = function (list: HTMLElement, winId = '') {
+Reference.getKeydownListener = function (this: typeof Reference, list: HTMLElement, winId = '') {
 	let listener = this.keydownMap.get(list);
 	if (listener === undefined) {
 		listener = (event: KeyboardEvent) => {
@@ -833,9 +859,9 @@ Reference.getKeydownListener = function (list: HTMLElement, winId = '') {
 		};
 	}
 	return listener;
-};
+} as unknown as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
 
-Reference.getKeyupListener = function (list: HTMLElement) {
+Reference.getKeyupListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.keyupMap.get(list);
 	if (listener === undefined) {
 		listener = (event: KeyboardEvent) => {
@@ -854,9 +880,9 @@ Reference.getKeyupListener = function (list: HTMLElement) {
 		};
 	}
 	return listener;
-};
+} as unknown as ((...args: unknown[]) => (event: KeyboardEvent) => void) | null;
 
-Reference.getPointerdownListener = function (list: HTMLElement) {
+Reference.getPointerdownListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.pointerdownMap.get(list);
 	if (listener === undefined) {
 		listener = (event: PointerEvent) => {
@@ -878,9 +904,9 @@ Reference.getPointerdownListener = function (list: HTMLElement) {
 		};
 	}
 	return listener;
-};
+} as unknown as ((...args: unknown[]) => (event: PointerEvent) => void) | null;
 
-Reference.getPointermoveListener = function (list: HTMLElement) {
+Reference.getPointermoveListener = function (this: typeof Reference, list: HTMLElement) {
 	let listener = this.pointermoveMap.get(list);
 	if (listener === undefined) {
 		listener = (event: PointerEvent) => {
@@ -892,4 +918,4 @@ Reference.getPointermoveListener = function (list: HTMLElement) {
 		};
 	}
 	return listener;
-};
+} as unknown as ((...args: unknown[]) => (event: PointerEvent) => void) | null;

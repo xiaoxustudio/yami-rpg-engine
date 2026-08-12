@@ -20,11 +20,21 @@ Command.cases.playActorAnimation = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 	},
-	parseSpeed(speed: any) {
+	parseSpeed(speed: number) {
 		if (speed === 1) return '';
 		return Command.parseVariableNumber!(speed);
 	},
-	customParse({ actor, motion, speed, wait }: any) {
+	customParse({
+		actor,
+		motion,
+		speed,
+		wait
+	}: {
+		actor: unknown;
+		motion: unknown;
+		speed: number;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseEnumString!(motion))

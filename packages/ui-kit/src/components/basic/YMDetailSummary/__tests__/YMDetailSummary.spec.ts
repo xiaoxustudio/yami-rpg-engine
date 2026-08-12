@@ -12,7 +12,7 @@ const slotsWithSummary = () =>
 			template: '<YMDetailSummary>Title</YMDetailSummary><div class="content">Body</div>',
 			components: { YMDetailSummary }
 		}
-	}) as any;
+	}) as unknown as NonNullable<Parameters<typeof mount>[1]>['slots'];
 
 describe('YMDetailSummary', () => {
 	it('toggles parent detail box on click', async () => {
@@ -41,7 +41,7 @@ describe('YMDetailSummary', () => {
 		let toggled = false;
 		const host = document.createElement('div');
 		host.className = 'detail-box';
-		(host as any).toggle = () => {
+		(host as HTMLElement & { toggle?: () => void }).toggle = () => {
 			toggled = true;
 		};
 		document.body.appendChild(host);

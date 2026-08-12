@@ -12,7 +12,15 @@ Command.cases.loadSubscene = new CommandSchema({
 		{ key: 'shiftX', default: 0 },
 		{ key: 'shiftY', default: 0 }
 	],
-	customParse({ sceneId, shiftX, shiftY }: any) {
+	customParse({
+		sceneId,
+		shiftX,
+		shiftY
+	}: {
+		sceneId: unknown;
+		shiftX: unknown;
+		shiftY: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseVariableFile(sceneId))
 			.push(Command.parseVariableNumber(shiftX))

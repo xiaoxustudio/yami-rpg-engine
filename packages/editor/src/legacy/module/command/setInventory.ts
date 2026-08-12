@@ -62,7 +62,18 @@ Command.cases.setInventory = new CommandSchema({
 		order1,
 		order2,
 		refActor
-	}: any) {
+	}: {
+		actor: unknown;
+		operation: string;
+		money: unknown;
+		itemId: unknown;
+		quantity: unknown;
+		equipmentId: unknown;
+		equipment: unknown;
+		order1: unknown;
+		order2: unknown;
+		refActor: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Local.get!('command.setInventory.' + operation));

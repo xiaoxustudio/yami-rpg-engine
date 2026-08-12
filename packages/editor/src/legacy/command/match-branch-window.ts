@@ -5,7 +5,7 @@ import { Command } from './command-object.ts';
 import { SwitchCondition, type SwitchConditionData } from './match-condition-window.ts';
 
 interface SwitchBranchTarget {
-	save: () => any;
+	save: () => SwitchConditionData;
 	inserting?: boolean;
 	[k: string]: unknown;
 }
@@ -97,5 +97,5 @@ SwitchBranch.windowClosed = function (this: typeof SwitchBranch, event: Event): 
 };
 
 SwitchBranch.confirm = function (this: typeof SwitchBranch, event: Event): void {
-	return SwitchBranch.target?.save?.();
+	SwitchBranch.target?.save?.();
 };

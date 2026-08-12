@@ -6,6 +6,38 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface SetStringOperand {
+	type: string;
+	value: string;
+	variable: { type: string; key: string };
+	method: string;
+	index: number;
+	begin: number;
+	end: number;
+	length: number;
+	pad: string;
+	pattern: string;
+	replacement: string;
+	attributeId: string;
+	stringId: string;
+	property: string;
+	actor: { type: string };
+	skill: { type: string };
+	trigger: { type: string };
+	state: { type: string };
+	equipment: { type: string };
+	item: { type: string };
+	fileId: string;
+	element: { type: string };
+	key: string;
+	script: string;
+	data: string;
+	choiceIndex: number;
+	format: string;
+	width: number;
+	height: number;
+}
+
 Command.cases.setString = new CommandSchema({
 	name: 'setString',
 	onInitialize() {
@@ -231,7 +263,7 @@ Command.cases.setString = new CommandSchema({
 				return ' += ';
 		}
 	},
-	parseStringMethod(operand: any) {
+	parseStringMethod(operand: SetStringOperand) {
 		const method = operand.method;
 		const variable = operand.variable;
 		const methodName = Local.get!('command.setString.string.' + method);
@@ -286,7 +318,7 @@ Command.cases.setString = new CommandSchema({
 			}
 		}
 	},
-	parseObjectProperty(operand: any) {
+	parseObjectProperty(operand: SetStringOperand) {
 		const property = Local.get!('command.setString.object.' + operand.property);
 		switch (operand.property) {
 			case 'actor-team-id':
@@ -312,12 +344,12 @@ Command.cases.setString = new CommandSchema({
 				return Command.parseFileName!(operand.fileId) + Token(' -> ') + property;
 		}
 	},
-	parseElementProperty(operand: any) {
+	parseElementProperty(operand: SetStringOperand) {
 		const element = Command.parseElement!(operand.element);
 		const property = Local.get!('command.setString.element.' + operand.property);
 		return element + Token(' -> ') + property.replace('.', Token('.'));
 	},
-	parseOther(operand: any) {
+	parseOther(operand: SetStringOperand) {
 		const label = Local.get!('command.setString.other.' + operand.data).replace(
 			'.',
 			Token('.')
@@ -359,7 +391,7 @@ Command.cases.setString = new CommandSchema({
 			}
 		}
 	},
-	parseOperand(operand: any) {
+	parseOperand(operand: SetStringOperand) {
 		switch (operand.type) {
 			case 'constant':
 				return Command.setStringColor!(`"${Command.parseMultiLineString!(operand.value)}"`);
@@ -394,7 +426,7 @@ Command.cases.setString = new CommandSchema({
 	}: {
 		variable: unknown;
 		operation: string;
-		operand: unknown;
+		operand: SetStringOperand;
 	}) {
 		const varDesc = Command.parseVariable!(variable, 'string', operation === 'set');
 		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
@@ -409,7 +441,11 @@ Command.cases.setString = new CommandSchema({
 	customLoad({
 		variable = { type: 'local', key: '' },
 		operation = 'set',
-		operand = { type: 'constant', value: '' } as Record<string, any>
+		operand = { type: 'constant', value: '' } as SetStringOperand
+	}: {
+		variable?: unknown;
+		operation?: string;
+		operand?: SetStringOperand;
 	}) {
 		let commonValue = '';
 		let stringMethod = 'char';

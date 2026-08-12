@@ -4,7 +4,7 @@ export interface DynamicShape {
 
 export interface AccessorTarget {
 	dataValue: any;
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -13,6 +13,6 @@ export interface AccessorBaseShape {
 	initialize: (() => void) | null;
 	open: ((target: AccessorTarget) => void) | null;
 	confirm: ((event: Event) => void) | null;
-	checkDataForPlugin?: ((data: any) => boolean) | null;
+	checkDataForPlugin?: ((data: Record<string, unknown>) => boolean) | null;
 	createDefaultForPlugin?: (() => { getter: string; type: string }) | null;
 }

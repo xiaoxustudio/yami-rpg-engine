@@ -27,10 +27,20 @@ Command.cases.changeActorState = new CommandSchema({
 				}
 			]);
 	},
-	parseOperation(operation: any) {
+	parseOperation(operation: string) {
 		return Local.get!('command.changeActorState.' + operation);
 	},
-	customParse({ actor, operation, stateId, state }: any) {
+	customParse({
+		actor,
+		operation,
+		stateId,
+		state
+	}: {
+		actor: unknown;
+		operation: string;
+		stateId: unknown;
+		state: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(this.parseOperation!(operation));

@@ -15,7 +15,15 @@ Command.cases.setSkill = new CommandSchema({
 			{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }
 		]);
 	},
-	customParse({ skill, operation, cooldown }: any) {
+	customParse({
+		skill,
+		operation,
+		cooldown
+	}: {
+		skill: unknown;
+		operation: string;
+		cooldown: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseSkill!(skill))
 			.push(Local.get!('command.setSkill.' + operation));

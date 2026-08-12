@@ -16,7 +16,7 @@ Command.cases.restoreAudio = new CommandSchema({
 			{ name: 'CV', value: 'cv' }
 		]);
 	},
-	customParse({ type }: any) {
+	customParse({ type }: { type: unknown }) {
 		return [
 			{ color: 'audio' },
 			{ text: Local.get!('command.restoreAudio') + Token(': ') },

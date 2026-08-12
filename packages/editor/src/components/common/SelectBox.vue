@@ -22,27 +22,27 @@ import { Local } from '@/tools/localization.ts';
 
 interface SelectBoxElement extends HTMLElement {
 	info: HTMLElement & { [k: string]: unknown };
-	read(): any;
-	write(value: any): void;
-	write2(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
+	write2(value: unknown): void;
 	writeDefault(): void;
-	input(value: any): void;
+	input(value: unknown): void;
 	update(): void;
 	reselect(offset: number): void;
 	save(): void;
 	restore(): void;
 	enable(): void;
 	disable(): void;
-	loadItems(items: any): void;
-	setItemNames(options: any): void;
+	loadItems(items: unknown[]): void;
+	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
 	setTooltip(tip: string | (() => string)): void;
 	createTooltip(): void;
 	clear(): HTMLElement;
 	enableHiddenMode(): HTMLElement;
-	relate(entries: any): void;
+	relate(entries: unknown): void;
 	toggleRelatedElements(): void;
-	enableElement(element: any): void;
-	disableElement(element: any): void;
+	enableElement(element: unknown): void;
+	disableElement(element: unknown): void;
 	on(
 		type: string,
 		listener: (event: Event) => void,
@@ -64,10 +64,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	write: [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	write: [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const isDisabled = ref(props.disabled);
@@ -75,25 +75,25 @@ let originalTip = '';
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
-	write2(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
+	write2(value: unknown): void;
 	writeDefault(): void;
-	input(value: any): void;
+	input(value: unknown): void;
 	update(): void;
 	reselect(offset: number): void;
 	save(): void;
 	restore(): void;
 	enable(): void;
 	disable(): void;
-	loadItems(items: any): void;
-	setItemNames(options: any): void;
+	loadItems(items: unknown[]): void;
+	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
 	clear(): HTMLElement;
 	enableHiddenMode(): HTMLElement;
-	relate(entries: any): void;
+	relate(entries: unknown): void;
 	toggleRelatedElements(): void;
-	enableElement(element: any): void;
-	disableElement(element: any): void;
+	enableElement(element: unknown): void;
+	disableElement(element: unknown): void;
 	on(
 		type: string,
 		listener: (event: Event) => void,
@@ -102,18 +102,18 @@ const ym = ref<{
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
-const write2 = (value: any): void => ym.value?.write2(value);
+const read = (): unknown => ym.value?.read();
+const write = (value: unknown): void => ym.value?.write(value);
+const write2 = (value: unknown): void => ym.value?.write2(value);
 const writeDefault = (): void => ym.value?.writeDefault();
-const input = (value: any): void => ym.value?.input(value);
+const input = (value: unknown): void => ym.value?.input(value);
 const update = (): void => ym.value?.update();
 const reselect = (offset: number): void => ym.value?.reselect(offset);
 const save = (): void => ym.value?.save();
 const restore = (): void => ym.value?.restore();
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const loadItems = (items: any): void => ym.value?.loadItems(items);
+const loadItems = (items: unknown[]): void => ym.value?.loadItems(items);
 const setItemNames = (
 	options: Record<string, string | { name?: string; tip?: string }>
 ): void => {
@@ -135,10 +135,10 @@ const setItemNames = (
 };
 const clear = (): HTMLElement => ym.value?.clear() as HTMLElement;
 const enableHiddenMode = (): HTMLElement => ym.value?.enableHiddenMode() as HTMLElement;
-const relate = (entries: any): void => ym.value?.relate(entries);
+const relate = (entries: unknown): void => ym.value?.relate(entries);
 const toggleRelatedElements = (): void => ym.value?.toggleRelatedElements();
-const enableElement = (element: any): void => ym.value?.enableElement(element);
-const disableElement = (element: any): void => ym.value?.disableElement(element);
+const enableElement = (element: unknown): void => ym.value?.enableElement(element);
+const disableElement = (element: unknown): void => ym.value?.disableElement(element);
 const on = (
 	type: string,
 	listener: (event: Event) => void,
@@ -157,7 +157,7 @@ const createTooltip = (): void => {
 	if (!el) return;
 	let tip = originalTip ?? '';
 	let options = '';
-	const items = el.dataItems as Array<{ tip?: string }> | null ?? [];
+	const items = (el as HTMLElement & { dataItems?: Array<{ tip?: string }> | null }).dataItems ?? [];
 	for (const item of items) {
 		if (item.tip) {
 			options += item.tip + '\n';
@@ -259,11 +259,11 @@ onMounted(() => {
 				break;
 		}
 	});
-	on('input', (e: Event & { value?: any }) => {
+	on('input', (e: Event & { value?: unknown }) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
 	});
-	on('write', (e: Event & { value?: any }) => emit('write', e.value));
+	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
 	el.addEventListener('change', () => emit('change', read()));
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();

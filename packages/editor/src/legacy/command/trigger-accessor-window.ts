@@ -9,7 +9,7 @@ interface TriggerTarget {
 		type: string;
 		variable: { type: string; key: string };
 	};
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -57,7 +57,7 @@ TriggerGetter.open = function (this: typeof TriggerGetter, target: TriggerTarget
 TriggerGetter.confirm = function (this: typeof TriggerGetter, event: Event) {
 	const read = getElementReader('triggerGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'trigger':
 		case 'latest':

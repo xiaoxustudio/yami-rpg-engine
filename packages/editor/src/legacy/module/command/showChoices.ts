@@ -28,8 +28,20 @@ Command.cases.showChoices = new CommandSchema({
 			}
 		];
 	},
-	customParse({ choices, parameters }: any) {
-		const contents: any[] = [
+	customParse({
+		choices,
+		parameters
+	}: {
+		choices: Array<{ content: string; commands: unknown }>;
+		parameters: unknown;
+	}) {
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [
 			{ fold: true },
 			{ color: 'flow' },
 			{ text: Local.get!('command.showChoices') + Token(': ') },
@@ -63,7 +75,13 @@ Command.cases.showChoices = new CommandSchema({
 		contents.push({ color: 'flow' }, { text: Local.get!('command.showChoices.end') });
 		return contents;
 	},
-	customLoad(this: any, { choices = this.createDefaultChoices!(), parameters = '' }: any) {
+	customLoad(
+		this: CommandSchema,
+		{
+			choices = this.createDefaultChoices!(),
+			parameters = ''
+		}: { choices: unknown[]; parameters: string }
+	) {
 		const write = getElementWriter('showChoices');
 		write('choices', choices.slice());
 		write('parameters', parameters);

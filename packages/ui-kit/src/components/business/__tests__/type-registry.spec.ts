@@ -11,7 +11,7 @@ function makeDataSource() {
 }
 
 function makePane() {
-	const withInput = (extra: any = {}) => ({
+	const withInput = (extra: Record<string, unknown> = {}) => ({
 		input: { loadItems: vi.fn(), setPlaceholder: vi.fn(), ...extra }
 	});
 	return {

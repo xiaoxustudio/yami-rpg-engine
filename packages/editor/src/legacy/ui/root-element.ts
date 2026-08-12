@@ -1,9 +1,15 @@
 import { GL } from '@/webgl/webgl-init.ts';
 import { UI } from './ui-window.ts';
 
+interface PrefabElementShape {
+	node: { presetId: unknown; [k: string]: unknown } | null;
+	parent: unknown;
+	[k: string]: any;
+}
+
 UI.Root = class RootElement extends UI.Element {
 	background: number | null;
-	references: any = {};
+	references: Record<string, Array<PrefabElementShape>> = {};
 
 	constructor() {
 		super({
@@ -31,33 +37,33 @@ UI.Root = class RootElement extends UI.Element {
 		this.resizeChildren();
 	}
 
-	addReference(prefabElement: any) {
+	addReference(prefabElement: PrefabElementShape | null) {
 		const map = this.references;
-		const id = prefabElement.node.presetId;
+		const id = prefabElement!.node!.presetId as string;
 		if (map[id] === undefined) {
 			map[id] = [];
 		}
-		map[id].append(prefabElement);
+		map[id].append(prefabElement!);
 	}
 
-	removeReference(prefabElement: any) {
+	removeReference(prefabElement: PrefabElementShape | null) {
 		const map = this.references;
-		const id = prefabElement.node.presetId;
+		const id = prefabElement!.node!.presetId as string;
 		if (map[id] !== undefined) {
-			map[id].remove(prefabElement);
+			map[id].remove(prefabElement!);
 		}
 	}
 
-	tryUpdateReferenceElements(element: any) {
+	tryUpdateReferenceElements(element: PrefabElementShape | this | null) {
 		const map = this.references;
 		while (element !== this) {
-			const id = element.node.presetId;
+			const id = element!.node!.presetId as string;
 			if (id in map) {
 				for (const prefab of map[id]) {
-					prefab.parent.update();
+					(prefab.parent as { update(): void }).update();
 				}
 			}
-			element = element.parent;
+			element = element!.parent as PrefabElementShape | null;
 		}
 	}
 

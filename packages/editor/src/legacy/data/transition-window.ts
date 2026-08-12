@@ -24,7 +24,7 @@ type EasingData = {
 	key: string;
 	name: string;
 	points: Array<EasingPoint>;
-	[k: string]: any;
+	[k: string]: unknown;
 };
 type EasingDrag = {
 	clientX: number;
@@ -47,11 +47,43 @@ type EasingListNodeElementShape = {
 	draggable: boolean;
 	appendChild(node: Node): void;
 };
+type EasingListItem = EasingData & {
+	element: HTMLElement & {
+		textNode: Text;
+		keyTextNode: HTMLElement & { key?: string };
+	} & Record<string, unknown>;
+	parent: { children: EasingListItem[] };
+};
+
+type EasingCanvasShape = HTMLCanvasElement & {
+	context: CanvasRenderingContext2D;
+	spacing: number;
+	centerX: number;
+	centerY: number;
+	gridColor: string;
+	axisColor: string;
+	textColor: string;
+	curveColor: string;
+	curveColorActive: string;
+	linkColorActive: string;
+};
 
 export const Easing = {
-	list: null as (HTMLElement & Record<string, any>) | null,
-	curve: null as (HTMLElement & Record<string, any>) | null,
-	preview: null as (HTMLElement & Record<string, any>) | null,
+	list: null as
+		| (HTMLElement & {
+				read: () => Record<string, any>;
+				rename: (item: EasingData | null) => void;
+				restoreSelection: () => void;
+				addNodeTo: (data: EasingData, dItem?: unknown) => void;
+				deleteNode: (item: EasingData) => void;
+				select: (item: EasingData) => void;
+				updateKeyTextNode: (item: unknown) => void;
+				saveSelection: () => void;
+				clear: () => void;
+		  })
+		| null,
+	curve: null as EasingCanvasShape | null,
+	preview: null as EasingCanvasShape | null,
 	data: null as Array<EasingData> | null,
 	points: null as Array<EasingPoint> | null,
 	dragging: null as EasingDrag | null,
@@ -72,7 +104,7 @@ export const Easing = {
 	endPoint: null as { x: number; y: number } | null,
 	changed: false,
 	initialize: null as unknown as () => void,
-	get: null as unknown as (id: string) => any,
+	get: null as unknown as (id: string) => EasingMapInstance,
 	clear: null as unknown as () => void,
 	open: null as unknown as (target?: unknown) => void,
 	load: null as unknown as (easing: EasingData) => void,
@@ -83,7 +115,7 @@ export const Easing = {
 	createId: null as unknown as () => string,
 	createData: null as unknown as () => EasingData,
 	setEasingKey: null as unknown as (item: EasingData) => void,
-	getItemById: null as unknown as (id: string) => any,
+	getItemById: null as unknown as (id: string) => EasingData | null,
 	updateMaps: null as unknown as () => void,
 	updateCanvases: null as unknown as () => void,
 	drawCurve: null as unknown as () => void,
@@ -124,13 +156,13 @@ export const Easing = {
 	list_saveSelection: null as unknown as () => void,
 	list_restoreSelection: null as unknown as () => void,
 	list_updateNodeElement: null as unknown as (element: EasingListNodeElementShape) => void,
-	list_updateItemName: null as unknown as (item: EasingData) => void,
-	list_addElementClass: null as unknown as (item: EasingData) => void,
-	list_updateTextNode: null as unknown as (item: EasingData) => void,
-	list_createKeyTextNode: null as unknown as (item: EasingData) => void,
-	list_updateKeyTextNode: null as unknown as (item: EasingData) => void,
+	list_updateItemName: null as unknown as (item: EasingListItem) => void,
+	list_addElementClass: null as unknown as (item: EasingListItem) => void,
+	list_updateTextNode: null as unknown as (item: EasingListItem) => void,
+	list_createKeyTextNode: null as unknown as (item: EasingListItem) => void,
+	list_updateKeyTextNode: null as unknown as (item: EasingListItem) => void,
 	state: null as string | null,
-	target: null as Record<string, any> | null,
+	target: null as Record<string, unknown> | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
 	loadFromProject: null as ((project: EditorProjectShape) => void) | null,
 	close: null as (() => void) | null
@@ -140,23 +172,17 @@ function ensureDomBound() {
 	if (Easing.list) return;
 	const list = $('#easing-list');
 	if (!list) return;
-	Easing.list = list;
-	Easing.curve = $('#easing-curve-canvas');
-	Easing.preview = $('#easing-preview-canvas');
-	list.saveSelection = Easing.list_saveSelection as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = Easing.list_restoreSelection as unknown as (...args: unknown[]) => any;
-	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
-		...args: unknown[]
-	) => any;
-	list.updateItemName = Easing.list_updateItemName as unknown as (...args: unknown[]) => any;
-	list.addElementClass = Easing.list_addElementClass as unknown as (...args: unknown[]) => any;
-	list.updateTextNode = Easing.list_updateTextNode as unknown as (...args: unknown[]) => any;
-	list.createKeyTextNode = Easing.list_createKeyTextNode as unknown as (
-		...args: unknown[]
-	) => any;
-	list.updateKeyTextNode = Easing.list_updateKeyTextNode as unknown as (
-		...args: unknown[]
-	) => any;
+	Easing.list = list as unknown as typeof Easing.list;
+	Easing.curve = $('#easing-curve-canvas') as unknown as EasingCanvasShape;
+	Easing.preview = $('#easing-preview-canvas') as unknown as EasingCanvasShape;
+	list.saveSelection = Easing.list_saveSelection;
+	list.restoreSelection = Easing.list_restoreSelection;
+	list.updateNodeElement = Easing.list_updateNodeElement;
+	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
+	list.addElementClass = Easing.list_addElementClass;
+	list.updateTextNode = Easing.list_updateTextNode;
+	list.createKeyTextNode = Easing.list_createKeyTextNode;
+	list.updateKeyTextNode = Easing.list_updateKeyTextNode;
 }
 
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
@@ -305,7 +331,7 @@ Easing.initialize = () => {
 			return (maps[id] = map);
 		}
 
-		return linear;
+		return linear as unknown as EasingMapInstance;
 	};
 	const clear = () => {
 		for (const key of Object.keys(maps)) {
@@ -491,7 +517,7 @@ Easing.drawCurve = function (this: typeof Easing) {
 	if (!context) {
 		context = canvas.context = canvas.getContext('2d', {
 			desynchronized: true
-		});
+		})!;
 	}
 	context.clearRect(0, 0, width, height);
 
@@ -628,7 +654,7 @@ Easing.drawPreview = function (this: typeof Easing) {
 	if (!context) {
 		context = canvas.context = canvas.getContext('2d', {
 			desynchronized: true
-		});
+		})!;
 	}
 	context.clearRect(0, 0, width, height);
 
@@ -1126,20 +1152,29 @@ Easing.curveBlur = function (this: typeof Easing, event: Event) {
 	}
 }.bind(Easing);
 
-Easing.pointerup = function (this: any, event?: PointerEvent) {
+Easing.pointerup = function (
+	this: typeof Easing & {
+		relate: (start: EasingDrag, end: PointerEvent) => boolean;
+	},
+	event?: PointerEvent
+) {
 	const { dragging } = this;
 	if (dragging === null) {
 		return;
 	}
 	if (event === undefined) {
-		event = dragging;
+		event = dragging as unknown as PointerEvent;
 	}
 	if (this.relate(dragging, event)) {
 		this.dragging = null;
 		window.removeEventListener('pointerup', this.pointerup);
 		window.removeEventListener('pointermove', this.pointermove);
 	}
-}.bind(Easing);
+}.bind(
+	Easing as unknown as typeof Easing & {
+		relate: (start: EasingDrag, end: PointerEvent) => boolean;
+	}
+);
 
 Easing.pointermove = function (this: typeof Easing, event: PointerEvent) {
 	if (this.activePoint !== null) {
@@ -1317,7 +1352,13 @@ Easing.list_restoreSelection = function (this: HTMLElement) {
 	this.scrollToSelection();
 };
 
-Easing.list_updateNodeElement = function (this: any, element: EasingListNodeElementShape) {
+Easing.list_updateNodeElement = function (
+	this: HTMLElement & {
+		creators: Array<(item: unknown) => unknown>;
+		updaters: Array<(item: unknown) => unknown>;
+	},
+	element: EasingListNodeElementShape
+) {
 	const { item } = element;
 	if (!element.textNode) {
 		const textNode = document.createTextNode('');
@@ -1336,16 +1377,16 @@ Easing.list_updateNodeElement = function (this: any, element: EasingListNodeElem
 	}
 };
 
-Easing.list_updateItemName = function (this: HTMLElement, item: EasingData) {
+Easing.list_updateItemName = function (this: HTMLElement, item: EasingListItem) {
 	this.updateTextNode(item);
 	this.updateKeyTextNode(item);
 };
 
-Easing.list_addElementClass = function (this: HTMLElement, item: EasingData) {
+Easing.list_addElementClass = function (this: HTMLElement, item: EasingListItem) {
 	addClass(item.element, 'plain');
 };
 
-Easing.list_updateTextNode = function (this: HTMLElement, item: EasingData) {
+Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) {
 	const textNode = item.element.textNode;
 	const items = item.parent.children;
 	const index = items.indexOf(item);
@@ -1358,8 +1399,8 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingData) {
 	}
 };
 
-Easing.list_createKeyTextNode = function (this: HTMLElement, item: EasingData) {
-	const keyTextNode = document.createElement('div');
+Easing.list_createKeyTextNode = function (this: HTMLElement, item: EasingListItem) {
+	const keyTextNode = document.createElement('div') as HTMLElement & { key?: string };
 	keyTextNode.key = '';
 	addClass(keyTextNode, 'variable-init-text');
 	addClass(keyTextNode, 'text');
@@ -1367,7 +1408,7 @@ Easing.list_createKeyTextNode = function (this: HTMLElement, item: EasingData) {
 	item.element.keyTextNode = keyTextNode;
 };
 
-Easing.list_updateKeyTextNode = function (this: HTMLElement, item: EasingData) {
+Easing.list_updateKeyTextNode = function (this: HTMLElement, item: EasingListItem) {
 	const keyTextNode = item.element.keyTextNode;
 	const key = item.key;
 	if (keyTextNode.key !== key) {

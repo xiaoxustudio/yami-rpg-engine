@@ -38,13 +38,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onTypeWrite = (value: any) => {
+const onTypeWrite = (value: string) => {
 	Command?.cases?.callEvent?.typeWrite?.({ value });
 };
-const onEventIdWrite = (value: any) => {
+const onEventIdWrite = (value: string) => {
 	Command?.cases?.callEvent?.eventIdWrite?.({ value });
 };
-const onEventIdInput = (value: any) => {
+const onEventIdInput = (value: string) => {
 	Command?.cases?.callEvent?.eventIdInput?.({ value });
 };
 

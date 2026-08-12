@@ -11,25 +11,25 @@ import type { NumberBoxApi } from '../YMNumberBox/number-box-api';
 
 export interface NumberVarApiOptions {
 	customBoxFactory?: () => CustomBoxApi;
-	numberBoxFactory?: (dom?: any) => NumberBoxApi;
-	modelValue?: any;
+	numberBoxFactory?: (dom?: HTMLElement | null) => NumberBoxApi;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
 export interface NumberVarApi extends HTMLElement {
-	mode: string;
+	mode: string | null;
 	numBox: NumberBoxApi;
 	varBox?: CustomBoxApi | null;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	switch(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	getFocus(mode: any): any;
-	on(...args: unknown[]): any;
-	keydown(event: any): void;
-	pointerdown(event: any): void;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	switch(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	getFocus(mode?: string): unknown;
+	on(...args: unknown[]): void;
+	keydown(event: KeyboardEvent): void;
+	pointerdown(event: PointerEvent): void;
 }
 
 export const defVar = { type: 'local', key: 'key' };
@@ -42,7 +42,7 @@ export function attachNumberVarApi(
 	const box = el as NumberVarApi;
 	if (box._initialized) return box;
 
-	let currentMode: string = null as any;
+	let currentMode: string | null = null;
 
 	const numBox = (options.numberBoxFactory ?? (() => null))(el) as NumberBoxApi;
 	const varBox = (options.customBoxFactory ?? (() => null))() as CustomBoxApi;
@@ -53,7 +53,7 @@ export function attachNumberVarApi(
 	box.numBox = numBox;
 	box.varBox = varBox;
 
-	box.read = function (): any {
+	box.read = function (): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return read(numBox);
@@ -62,7 +62,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.write = function (value: any): void {
+	box.write = function (value: unknown): void {
 		switch (typeof value) {
 			case 'number':
 				box.switch('constant');
@@ -99,7 +99,7 @@ export function attachNumberVarApi(
 			}
 		}
 		if (currentMode !== target) {
-			removeClass(box, currentMode);
+			removeClass(box, currentMode as string);
 			addClass(box, target as string);
 			currentMode = target as string;
 			box.mode = currentMode;
@@ -138,7 +138,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.getFocus = function (mode: any): any {
+	box.getFocus = function (mode?: string): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return numBox.getFocus(mode);
@@ -147,7 +147,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.keydown = function (event: any): void {
+	box.keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
@@ -156,7 +156,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.pointerdown = function (event: any): void {
+	box.pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
@@ -175,7 +175,7 @@ export function attachNumberVarApi(
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);

@@ -11,7 +11,7 @@ Command.cases.setWeight = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'weight', default: 0 }
 	],
-	customParse({ actor, weight }: any) {
+	customParse({ actor, weight }: { actor: unknown; weight: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor(actor))
 			.push(Command.parseVariableNumber(weight));

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createRadioBoxElement } from '../radio-box-api';
+import type { RadioBoxApi } from '../radio-box-api';
 
 describe('createRadioBoxElement', () => {
 	it('creates radio-box with proxy', () => {
-		const el = createRadioBoxElement({ name: 'grp', value: 'a' }) as any;
+		const el = createRadioBoxElement({ name: 'grp', value: 'a' }) as unknown as RadioBoxApi;
 		document.body.appendChild(el);
 		expect(el.classList.contains('radio-box')).toBe(true);
 		expect(el.getAttribute('name')).toBe('grp');
@@ -14,8 +15,8 @@ describe('createRadioBoxElement', () => {
 	});
 
 	it('shares proxy across same group', () => {
-		const a = createRadioBoxElement({ name: 'g2', value: 'a' }) as any;
-		const b = createRadioBoxElement({ name: 'g2', value: 'b' }) as any;
+		const a = createRadioBoxElement({ name: 'g2', value: 'a' }) as unknown as RadioBoxApi;
+		const b = createRadioBoxElement({ name: 'g2', value: 'b' }) as unknown as RadioBoxApi;
 		document.body.appendChild(a);
 		document.body.appendChild(b);
 		expect(a.proxy).toBe(b.proxy);
@@ -24,8 +25,8 @@ describe('createRadioBoxElement', () => {
 	});
 
 	it('input selects value and updates proxy', () => {
-		const a = createRadioBoxElement({ name: 'g3', value: 'a' }) as any;
-		const b = createRadioBoxElement({ name: 'g3', value: 'b' }) as any;
+		const a = createRadioBoxElement({ name: 'g3', value: 'a' }) as unknown as RadioBoxApi;
+		const b = createRadioBoxElement({ name: 'g3', value: 'b' }) as unknown as RadioBoxApi;
 		document.body.appendChild(a);
 		document.body.appendChild(b);
 		b.input('b');
@@ -37,7 +38,11 @@ describe('createRadioBoxElement', () => {
 	});
 
 	it('standard mode adds radio-mark', () => {
-		const el = createRadioBoxElement({ standard: true, name: 'g4', value: 'x' }) as any;
+		const el = createRadioBoxElement({
+			standard: true,
+			name: 'g4',
+			value: 'x'
+		}) as unknown as RadioBoxApi;
 		expect(el.querySelector('.radio-mark')).toBeTruthy();
 		expect(el.tabIndex).toBe(0);
 	});

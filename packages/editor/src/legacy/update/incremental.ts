@@ -28,7 +28,7 @@ Updater.updateIncrementalChanges = function (version: string) {
 	const dstScriptDir = Path.resolve!(dstProjectDir, 'Script');
 	const bakFolderDir = Path.resolve!(dstProjectDir, `${version}.bak`);
 	const messages: unknown[] = [];
-	const copyedFiles = {} as Record<string, any>;
+	const copyedFiles = {} as Record<string, boolean>;
 	let isBackupFolderCreated = false;
 
 	const updater = new (class VersionUpdater {

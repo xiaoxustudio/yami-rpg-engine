@@ -114,16 +114,16 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
-const onListSelect = (event: any) => {
+const onListSelect = (event: Event & { value?: unknown }) => {
 	Easing?.listSelect?.(event);
 };
-const onListOpen = (event: any) => {
+const onListOpen = (event: Event & { value?: unknown }) => {
 	Easing?.listOpen?.(event);
 };
-const onListPopup = (event: any) => {
+const onListPopup = (event: PointerEvent & { value?: unknown }) => {
 	Easing?.listPopup?.(event);
 };
-const onListChange = (event: any) => {
+const onListChange = (event: Event & { value?: unknown }) => {
 	Easing?.dataChange?.(event);
 };
 

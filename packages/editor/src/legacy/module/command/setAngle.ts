@@ -21,14 +21,26 @@ Command.cases.setAngle = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setAngle').on('open', function (event: any) {
+		$('#setAngle').on('open', function (event: Event) {
 			$('#setAngle-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#setAngle').on('closed', function (event: any) {
+		$('#setAngle').on('closed', function (event: Event) {
 			clear($('#setAngle-easingId'));
 		});
 	},
-	customParse({ actor, angle, easingId, duration, wait }: any) {
+	customParse({
+		actor,
+		angle,
+		easingId,
+		duration,
+		wait
+	}: {
+		actor: unknown;
+		angle: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseAngle!(angle))

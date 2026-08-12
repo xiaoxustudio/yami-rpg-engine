@@ -9,7 +9,17 @@ interface ParseResult {
 
 interface BrowserAdapter {
 	dragging: boolean;
-	body?: { activeFile: any };
+	body?: {
+		activeFile?: {
+			type?: string;
+			meta?: { guid: string };
+		};
+	};
+}
+
+interface CustomBoxRootElement extends HTMLElement {
+	type: string | null;
+	filter: string | null;
 }
 
 interface Props {
@@ -17,10 +27,10 @@ interface Props {
 	type?: string;
 	filter?: string;
 	disabled?: boolean;
-	modelValue?: any;
-	getters?: Record<string, (el: any) => void> | null;
-	parsers?: Record<string, (value: any) => ParseResult> | null;
-	fileDialog?: ((defaultPath: any) => Promise<{ filePaths: string[] }>) | null;
+	modelValue?: unknown;
+	getters?: Record<string, (el: HTMLElement) => void> | null;
+	parsers?: Record<string, (value: unknown) => ParseResult> | null;
+	fileDialog?: ((defaultPath: unknown) => Promise<{ filePaths: string[] }>) | null;
 	browser?: (() => BrowserAdapter) | null;
 	localize?: ((key: string) => string) | null;
 }
@@ -29,7 +39,7 @@ const props = withDefaults(defineProps<Props>(), {
 	type: '',
 	filter: '',
 	disabled: false,
-	modelValue: null,
+	modelValue: null as never,
 	getters: null,
 	parsers: null,
 	fileDialog: null,
@@ -38,29 +48,34 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	write: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	write: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 
-const state = reactive({
-	dataValue: null as any,
+const state = reactive<{
+	dataValue: unknown;
+	writeEventEnabled: boolean;
+	inputEventEnabled: boolean;
+}>({
+	dataValue: null,
 	writeEventEnabled: false,
 	inputEventEnabled: false
 });
 
 let info: HTMLElement | null = null;
 
-const getType = (): string | null => (root.value ? (root.value as any).type : null);
-const getFilter = (): string | null => (root.value ? (root.value as any).filter : null);
+const getType = (): string | null => (root.value ? (root.value as CustomBoxRootElement).type : null);
+const getFilter = (): string | null =>
+	root.value ? (root.value as CustomBoxRootElement).filter : null;
 
 const getLocal = (key: string): string => (props.localize ? props.localize(key) : key);
 
-const read = (): any => state.dataValue;
+const read = (): unknown => state.dataValue;
 
-const applyParse = (value: any): void => {
+const applyParse = (value: unknown): void => {
 	if (!info) return;
 	const type = getType();
 	if (!type) return;
@@ -82,16 +97,16 @@ const update = (): void => {
 	applyParse(state.dataValue);
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	state.dataValue = value;
 	if (value !== null && value !== undefined) {
 		update();
 	}
-	const el = root.value as (HTMLElement & { [k: string]: any }) | null;
+	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	if (el) {
 		el.dataValue = value;
 		if (state.writeEventEnabled) {
-			const writeEvent: any = new Event('write');
+			const writeEvent = new Event('write') as Event & { value: unknown };
 			writeEvent.value = state.dataValue;
 			el.dispatchEvent(writeEvent);
 		}
@@ -99,13 +114,13 @@ const write = (value: any): void => {
 	emit('write', state.dataValue);
 };
 
-const input = (value: any): void => {
+const input = (value: unknown): void => {
 	if (state.dataValue !== value) {
 		write(value);
 		const el = root.value;
 		if (el) {
 			if (state.inputEventEnabled) {
-				const inputEvent: any = new Event('input');
+				const inputEvent = new Event('input') as Event & { value: unknown };
 				inputEvent.value = state.dataValue;
 				el.dispatchEvent(inputEvent);
 			}
@@ -120,7 +135,7 @@ const input = (value: any): void => {
 	}
 };
 
-const openDialogDir = (inputEl: { read(): any; write(v: any): void }): void => {
+const openDialogDir = (inputEl: { read(): unknown; write(v: unknown): void }): void => {
 	if (!props.fileDialog) return;
 	props
 		.fileDialog(inputEl.read())
@@ -153,7 +168,7 @@ const disable = (): void => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -172,6 +187,8 @@ const on = (
 const click = (event?: Event): void => {
 	const el = root.value;
 	if (!el) return;
+	el.setAttribute('type', props.type || '');
+	el.setAttribute('filter', props.filter || '');
 	const type = getType();
 	if (!type) return;
 	const getter = props.getters?.[type];
@@ -185,7 +202,7 @@ const keydown = (event: KeyboardEvent): void => {
 	switch (event.code) {
 		case 'Enter':
 		case 'NumpadEnter':
-			if (!(event as any).cmdOrCtrlKey) {
+			if (!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 				event.stopPropagation();
 				click(event);
 			}
@@ -212,8 +229,8 @@ const dragover = (event: DragEvent): void => {
 	const browser = getBrowser();
 	if (getType() === 'file' && browser?.dragging) {
 		const file = browser.body?.activeFile;
-		if (file && (!getFilter() || getFilter()!.indexOf(file.type) !== -1)) {
-			(event as any).dataTransfer.dropEffect = 'move';
+		if (file && (!getFilter() || getFilter()!.indexOf(file.type!) !== -1)) {
+			(event as DragEvent & { dataTransfer: DataTransfer }).dataTransfer.dropEffect = 'move';
 			event.preventDefault();
 			addClass(el, 'dragover');
 		}
@@ -227,7 +244,7 @@ const drop = (event: DragEvent): void => {
 	const file = browser?.body?.activeFile;
 	if (file) {
 		el.focus();
-		input((file.meta as any).guid);
+		input(file.meta!.guid);
 		removeClass(el, 'dragover');
 	}
 };
@@ -237,14 +254,14 @@ defineExpose({ read, write, input, enable, disable, focus, on, root, initializeA
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 watch(() => props.type, (val) => {
-	if (root.value) (root.value as any).type = val;
+	if (root.value) (root.value as CustomBoxRootElement).type = val;
 });
 watch(() => props.filter, (val) => {
-	if (root.value) (root.value as any).filter = val;
+	if (root.value) (root.value as CustomBoxRootElement).filter = val;
 });
 
 function initializeApi(): void {
-	const el = root.value as (HTMLElement & { [k: string]: any }) | null;
+	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	if (!el || el._initialized) return;
 
 	const text = document.createElement('div');
@@ -282,10 +299,10 @@ function initializeApi(): void {
 	el.on = on;
 	el.keydown = keydown;
 	el.click = click;
-	(el as any).dragenter = dragenter;
-	(el as any).dragleave = dragleave;
-	(el as any).dragover = dragover;
-	(el as any).drop = drop;
+	el.dragenter = dragenter;
+	el.dragleave = dragleave;
+	el.dragover = dragover;
+	el.drop = drop;
 
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('click', click as EventListener);

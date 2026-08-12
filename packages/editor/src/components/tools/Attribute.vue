@@ -97,16 +97,16 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onListSelect = (event: any) => {
+const onListSelect = (event: Event) => {
 	Attribute?.listSelect?.(event);
 };
-const onListRecord = (event: any) => {
+const onListRecord = (event: Event) => {
 	Attribute?.listRecord?.(event);
 };
-const onListOpen = (event: any) => {
-	Attribute?.listOpen?.(event);
+const onListOpen = (event: Event) => {
+	Attribute?.listOpen?.(event as MouseEvent);
 };
-const onListPopup = (event: any) => {
+const onListPopup = (event: Event & { clientX: number; clientY: number }) => {
 	Attribute?.listPopup?.(event);
 };
 const onNameInput = (value: string) => {
@@ -115,15 +115,15 @@ const onNameInput = (value: string) => {
 const onKeyInput = (value: string) => {
 	Attribute?.keyInput?.({ target: { value } });
 };
-let lastTypeValue: any;
-let lastTypeWriteValue: any;
-const onTypeInput = (value: any) => {
+let lastTypeValue: number | string | boolean | undefined;
+let lastTypeWriteValue: number | string | boolean | undefined;
+const onTypeInput = (value: number | string | boolean) => {
 	if (lastTypeValue !== value) {
 		lastTypeValue = value;
 		Attribute?.typeInput?.({ value });
 	}
 };
-const onTypeWrite = (value: any) => {
+const onTypeWrite = (value: number | string | boolean) => {
 	if (lastTypeWriteValue !== value) {
 		lastTypeWriteValue = value;
 		Attribute?.typeWrite?.({ value });

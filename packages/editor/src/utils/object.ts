@@ -6,7 +6,7 @@ export function clone<T>(obj: T): T {
 		return (obj as unknown as Array<unknown>).map((item: unknown) => clone(item)) as T;
 	}
 	if (obj instanceof Object) {
-		const copy: Record<string, any> = {};
+		const copy: Record<string, unknown> = {};
 		for (const key in obj) {
 			copy[key] = clone((obj as Record<string, unknown>)[key]);
 		}

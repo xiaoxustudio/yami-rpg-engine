@@ -11,7 +11,7 @@ Command.cases.transferGlobalActor = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'position', default: { type: 'absolute', x: 0, y: 0 } }
 	],
-	customParse({ actor, position }: any) {
+	customParse({ actor, position }: { actor: unknown; position: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor(actor))
 			.push(Command.parsePosition(position));

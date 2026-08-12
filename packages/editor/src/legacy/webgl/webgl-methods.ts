@@ -2,6 +2,7 @@ import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { BaseTexture } from './base-texture.ts';
 import { BatchRenderer } from './batch-renderer.ts';
+import { ImageTexture } from './image-texture.ts';
 import { Matrix } from './matrix2.ts';
 import { TextureManager } from './texture-manager.ts';
 import { Texture } from './texture.ts';
@@ -1284,7 +1285,7 @@ GL.drawImage = (function drawImage() {
 	const defTint = new Uint8Array(4);
 	return function (
 		this: typeof GL,
-		texture: any,
+		texture: ImageTexture,
 		dx: number,
 		dy: number,
 		dw: number,
@@ -1295,7 +1296,7 @@ GL.drawImage = (function drawImage() {
 
 		const program = this.imageProgram.use();
 		const vertices = this.arrays[0].float32;
-		const base = texture.base;
+		const base = texture.base!;
 		const sx = texture.x;
 		const sy = texture.y;
 		const sw = texture.width;
@@ -1349,7 +1350,7 @@ GL.drawImage = (function drawImage() {
 })();
 
 GL.drawImageWithColor = function (
-	texture: any,
+	texture: ImageTexture,
 	dx: number,
 	dy: number,
 	dw: number,
@@ -1360,7 +1361,7 @@ GL.drawImageWithColor = function (
 
 	const program = this.imageProgram.use();
 	const vertices = this.arrays[0].float32;
-	const base = texture.base;
+	const base = texture.base!;
 	const sx = texture.x;
 	const sy = texture.y;
 	const sw = texture.width;
@@ -1413,13 +1414,13 @@ GL.drawImageWithColor = function (
 };
 
 GL.drawSliceImage = function (
-	texture: any,
+	texture: ImageTexture,
 	dx: number,
 	dy: number,
 	dw: number,
 	dh: number,
 	clip: Array<number>,
-	border: Array<number>,
+	border: number,
 	tint: Array<number>
 ) {
 	if (!texture.complete) return;
@@ -1457,7 +1458,7 @@ GL.drawSliceImage = function (
 	this.uniform1i(program.u_ColorMode, 2);
 	this.uniform4f(program.u_Tint, red, green, blue, gray);
 	this.bufferData(this.ARRAY_BUFFER, vertices, this.STREAM_DRAW, 0, count * 16);
-	this.bindTexture(this.TEXTURE_2D, texture.base.glTexture);
+	this.bindTexture(this.TEXTURE_2D, texture.base!.glTexture);
 
 	for (let i = 0; i < count; i++) {
 		const ti = i * 4;
@@ -1687,7 +1688,11 @@ GL.createImageTexture = function (
 	return texture;
 };
 
-GL.createTextureFBO = function (texture: any) {
+interface TextureFBOShape extends Texture {
+	depthStencilBuffer?: WebGLRenderbuffer | null;
+}
+
+GL.createTextureFBO = function (texture: TextureFBOShape) {
 	const { gl } = GL;
 	const fbo = this.createFramebuffer();
 	this.bindFramebuffer(this.FRAMEBUFFER, fbo);
@@ -1696,7 +1701,7 @@ GL.createTextureFBO = function (texture: any) {
 		this.FRAMEBUFFER,
 		this.COLOR_ATTACHMENT0,
 		this.TEXTURE_2D,
-		texture.base.glTexture,
+		texture.base!.glTexture,
 		0
 	);
 
@@ -1711,20 +1716,20 @@ GL.createTextureFBO = function (texture: any) {
 	this.renderbufferStorage(
 		this.RENDERBUFFER,
 		this.DEPTH_STENCIL,
-		texture.base.width,
-		texture.base.height
+		texture.base!.width,
+		texture.base!.height
 	);
 	this.bindRenderbuffer(this.RENDERBUFFER, null);
 	this.bindFramebuffer(this.FRAMEBUFFER, null);
 	texture.depthStencilBuffer = depthStencilBuffer;
 
-	texture.resize = (width: number, height: number) => {
+	texture.resize = ((width: number, height: number) => {
 		Texture.prototype.resize.call(texture, width, height);
 
 		this.bindRenderbuffer(this.RENDERBUFFER, depthStencilBuffer);
 		this.renderbufferStorage(this.RENDERBUFFER, this.DEPTH_STENCIL, width, height);
 		this.bindRenderbuffer(this.RENDERBUFFER, null);
-	};
+	}) as Texture['resize'];
 	// 还需要一个方法来恢复
 	return fbo;
 };

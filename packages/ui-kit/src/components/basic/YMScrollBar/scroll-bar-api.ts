@@ -19,14 +19,27 @@ interface ScrollDragging extends PointerEvent {
 	scrollTop: number;
 	clientX: number;
 	clientY: number;
-	relate(...args: unknown[]): any;
+	relate(...args: unknown[]): boolean;
+}
+
+interface ScrollTimer {
+	state: {
+		name: string;
+		elapsed: number;
+		duration: number;
+		start: number;
+		end: number;
+		offset: number;
+	};
+	add(): void;
+	remove(): void;
 }
 
 export interface ScrollBarApi extends HTMLElement {
 	target: HTMLElement | null;
 	type: string | null;
 	thumb: ScrollThumb | null;
-	timer: any;
+	timer: ScrollTimer | null;
 	dragging: ScrollDragging | null;
 	visible: boolean;
 	_initialized: boolean;

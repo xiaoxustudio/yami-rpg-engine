@@ -15,11 +15,17 @@ Command.cases.setWindow = new CommandSchema({
 	onInitialize() {
 		$('#setWindow-confirm').on('click', () => this.save!());
 		$('#setWindow-properties').bind(WindowProperty);
-		$('#setWindow').on('closed', (event: any) => {
+		$('#setWindow').on('closed', (event: Event) => {
 			clear($('#setWindow-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(WindowProperty.parse!(property));

@@ -13,7 +13,7 @@ import { UI } from '@/ui/ui-window.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
 
-Editor.saveProject = function (this: any) {
+Editor.saveProject = function (this: typeof Editor) {
 	const { project } = this;
 	if (!project) {
 		return;
@@ -25,7 +25,9 @@ Editor.saveProject = function (this: any) {
 		Particle.saveToProject!(project);
 		Palette.saveToProject(project);
 		Sprite.saveToProject(project);
-		useBrowserStore().saveToProject(project);
+		useBrowserStore().saveToProject(
+			project as { browser: { view?: number; folders?: string[] } }
+		);
 		useSelectorStore().saveToProject(project);
 		PluginManager.saveToProject!(project);
 		Title.saveToProject!(project);
@@ -33,31 +35,31 @@ Editor.saveProject = function (this: any) {
 		const json = JSON.stringify(project, null, 2);
 		const last = project.code;
 		if (json && json !== last) {
-			const path = this.config.project;
-			FSP.writeFile!(path, json).catch((error: any) => {
+			const path = this.config!.project;
+			FSP.writeFile!(path, json).catch((error: unknown) => {
 				Log.throw!(error);
 			});
 		}
-	} catch (error: any) {
+	} catch (error: unknown) {
 		Log.throw!(error);
 		return console.error(error);
 	}
 };
 
-Editor.loadProject = function (this: any) {
-	const { project } = this;
+Editor.loadProject = function (this: typeof Editor) {
+	const project = this.project!;
 	Scene.loadFromProject!(project);
 	UI.loadFromProject(project);
 	Animation.loadFromProject!(project);
 	Particle.loadFromProject!(project);
 	Palette.loadFromProject(project);
 	Sprite.loadFromProject(project);
-	useBrowserStore().loadFromProject(project);
+	useBrowserStore().loadFromProject(project as { browser: { view: number; folders: string[] } });
 	useSelectorStore().loadFromProject(project);
 	PluginManager.loadFromProject!(project);
 	Title.loadFromProject!(project);
 };
 
-Editor.saveManifest = function (this: any) {
+Editor.saveManifest = function (this: typeof Editor) {
 	return Data.saveManifest!();
 };

@@ -4,29 +4,40 @@ import YMTextBox from '../YMTextBox/YMTextBox.vue';
 
 interface Props {
 	id?: string;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	disabled: false
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 const strBoxRef = ref<InstanceType<typeof YMTextBox> | null>(null);
 
+interface StringVarApi extends HTMLElement {
+	mode?: 'constant' | 'variable';
+	read: () => unknown;
+	write: (value: unknown) => void;
+	switch: (target?: 'constant' | 'variable') => void;
+	enable: () => void;
+	disable: () => void;
+	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
+	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+}
+
 const mode = ref<'constant' | 'variable'>('constant');
 const strValue = ref('');
 const varValue = ref<any>(null);
 
-const read = (): any => {
+const read = (): unknown => {
 	switch (mode.value) {
 		case 'constant':
 			return strBoxRef.value ? strBoxRef.value.read() : strValue.value;
@@ -35,7 +46,7 @@ const read = (): any => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	switch (typeof value) {
 		case 'string':
 			switchMode('constant');
@@ -61,12 +72,12 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as any).mode = target;
+			(el as StringVarApi).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
 			nextTick(() => {
-				const input = (strBoxRef.value as any)?.input;
+				const input = strBoxRef.value?.input;
 				if (focus && input) {
 					input.focus();
 					input.select();
@@ -95,10 +106,10 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg: any): any => {
+const getFocus = (modeArg?: string): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant': {
-			const el = (strBoxRef.value as any)?.input;
+			const el = strBoxRef.value?.input;
 			if (!el) return;
 			setTimeout(() => {
 				el.focus();
@@ -124,7 +135,7 @@ const getFocus = (modeArg: any): any => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -179,14 +190,14 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).switch = switchMode;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
-	(el as any).mode = mode.value;
+	(el as StringVarApi).read = read;
+	(el as StringVarApi).write = write;
+	(el as StringVarApi).switch = switchMode;
+	(el as StringVarApi).enable = enable;
+	(el as StringVarApi).disable = disable;
+	(el as StringVarApi).getFocus = getFocus;
+	(el as StringVarApi).on = on;
+	(el as StringVarApi).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

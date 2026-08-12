@@ -1,9 +1,10 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import { createScrollBarElement } from '../scroll-bar-api';
+import type { ScrollBarApi } from '../scroll-bar-api';
 
 describe('createScrollBarElement', () => {
 	it('creates scroll-bar and binds', () => {
-		const el = createScrollBarElement() as any;
+		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		expect(el.classList.contains('scroll-bar')).toBe(true);
 		const target = document.createElement('div');
 		el.bind(target, 'vertical');
@@ -14,8 +15,8 @@ describe('createScrollBarElement', () => {
 		expect(typeof el.updateHorizontalBar).toBe('function');
 	});
 
-	it('drag dispatches userscroll on target（9.48 回归——marquee 同步链）', () => {
-		const el = createScrollBarElement() as any;
+	it('drag dispatches userscroll on target锛?.48 鍥炲綊鈥斺€攎arquee 鍚屾閾撅級', () => {
+		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -30,7 +31,7 @@ describe('createScrollBarElement', () => {
 		let userscrollCount = 0;
 		target.addEventListener('userscroll', () => userscrollCount++);
 
-		const fire = (el2: any, type: string, props: any) => {
+		const fire = (el2: EventTarget, type: string, props: object) => {
 			const ev = new PointerEvent(type, {
 				bubbles: true,
 				cancelable: true,
@@ -41,7 +42,7 @@ describe('createScrollBarElement', () => {
 			el2.dispatchEvent(ev);
 			return ev;
 		};
-		fire(el.thumb, 'pointerdown', { clientX: 5, clientY: 10 });
+		fire(el.thumb!, 'pointerdown', { clientX: 5, clientY: 10 });
 		fire(window, 'pointermove', { clientX: 5, clientY: 50, pointerId: 3 });
 		expect(target.scrollTop).toBeGreaterThan(0);
 		expect(userscrollCount).toBeGreaterThan(0);
@@ -51,8 +52,8 @@ describe('createScrollBarElement', () => {
 		target.remove();
 	});
 
-	it('drag works when bar size is 0 (denom fallback——9.46 回归)', () => {
-		const el = createScrollBarElement() as any;
+	it('drag works when bar size is 0 (denom fallback鈥斺€?.46 鍥炲綊)', () => {
+		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -65,7 +66,7 @@ describe('createScrollBarElement', () => {
 		el.bind(target, 'vertical');
 		el.updateVerticalBar();
 
-		const fire = (el2: any, type: string, props: any) => {
+		const fire = (el2: EventTarget, type: string, props: object) => {
 			const ev = new PointerEvent(type, {
 				bubbles: true,
 				cancelable: true,
@@ -76,7 +77,7 @@ describe('createScrollBarElement', () => {
 			el2.dispatchEvent(ev);
 			return ev;
 		};
-		fire(el.thumb, 'pointerdown', { clientX: 5, clientY: 10 });
+		fire(el.thumb!, 'pointerdown', { clientX: 5, clientY: 10 });
 		fire(window, 'pointermove', { clientX: 5, clientY: 50, pointerId: 4 });
 		expect(target.scrollTop).toBeGreaterThan(0);
 		fire(window, 'pointerup', { clientX: 5, clientY: 50, pointerId: 4 });
@@ -86,7 +87,7 @@ describe('createScrollBarElement', () => {
 	});
 
 	it('updateDisplay toggles visible class', () => {
-		const el = createScrollBarElement() as any;
+		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		el.updateDisplay(true);
 		expect(el.classList.contains('visible')).toBe(true);
 		el.updateDisplay(false);
@@ -94,7 +95,7 @@ describe('createScrollBarElement', () => {
 	});
 
 	it('updateVerticalBar shows/hides based on scroll', () => {
-		const el = createScrollBarElement() as any;
+		const el = createScrollBarElement() as unknown as ScrollBarApi;
 		const target = document.createElement('div');
 		target.style.cssText = 'width:100px;height:100px;overflow-y:auto;';
 		const content = document.createElement('div');
@@ -106,7 +107,7 @@ describe('createScrollBarElement', () => {
 		el.bind(target, 'vertical');
 		el.updateVerticalBar();
 		expect(el.classList.contains('visible')).toBe(true);
-		expect(parseFloat(el.thumb.style.height)).toBeGreaterThan(0);
+		expect(parseFloat(el.thumb!.style.height)).toBeGreaterThan(0);
 		el.remove();
 		target.remove();
 	});

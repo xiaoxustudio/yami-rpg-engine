@@ -18,37 +18,176 @@ import {
 	attachDoubleclick
 } from '../../../utils/dom';
 
+interface FileBodyContext {
+	element?: FileBodyItemApi;
+}
+
+interface FileBodyData {
+	portrait?: string;
+	icon?: string;
+	clip?: number[];
+	enabled?: boolean;
+}
+
+interface FileBodyMeta {
+	guid: string;
+	mtimeMs?: number;
+	file?: FileBodyFile;
+}
+
+interface FileBodyStats {
+	mtimeMs?: number;
+	ino?: number;
+}
+
+interface FileBodyFile {
+	path: string;
+	name: string;
+	basename: string;
+	extname: string;
+	type: string;
+	alias?: string;
+	children: FileBodyFile[];
+	parent?: FileBodyFile;
+	data?: FileBodyData;
+	meta?: FileBodyMeta;
+	stats?: FileBodyStats;
+	getContext(node: HTMLElement): FileBodyContext;
+	[k: string]: unknown;
+}
+
+interface FileBodyRelatedList {
+	isEmpty: boolean;
+}
+
+interface FileBodyEvent extends Event {
+	value?: unknown;
+	raw?: PointerEvent;
+	clientX?: number;
+	clientY?: number;
+}
+
+interface FileBodyTextBox extends HTMLElement {
+	input: HTMLElement & { blur(): void };
+	write(value: string): void;
+	read(): string;
+	getFocus(mode: string): void;
+	fitContent(): void;
+	setMaxLength(length: number): void;
+}
+
 interface FileBrowserLinks {
-	browser?: any;
-	nav?: any;
-	body?: any;
+	browser: {
+		filters?: string[];
+		display?: string;
+		searchResults?: FileBodyFile[];
+		backToParentFolder?(): boolean;
+		getFilePaths?(files: FileBodyFile[]): { absolutePaths: string[] };
+	};
+	nav: {
+		selections: FileBodyFile[];
+		load(folder: FileBodyFile): void;
+		scrollToSelection(mode: string): void;
+	};
+	body?: HTMLElement | null;
 	[key: string]: any;
+}
+
+interface FileBodyIconApi extends HTMLElement {
+	isImageChanged?: () => boolean;
+}
+
+interface FileBodyItemApi extends HTMLElement {
+	file: FileBodyFile;
+	context?: FileBodyContext;
+	changed?: boolean;
+	versionId?: number;
+	nameBox?: HTMLElement;
+	fileIcon?: FileBodyIconApi;
+}
+
+interface FileBodyContentApi extends HTMLElement {
+	range?: Uint32Array;
+	count?: number;
+	countPerLine?: number;
+	normalCountPerLine?: number;
+	scrollCountPerLine?: number;
+	scrollCount?: number;
+	itemSize?: number;
+	visibleLines?: number;
+}
+
+interface FileBodyPaneApi extends HTMLElement {
+	textBox?: FileBodyTextBox;
+	content?: FileBodyContentApi;
+	elements?: (FileBodyItemApi | undefined)[];
+	links?: FileBrowserLinks;
+	setViewIndex?: (idx: number) => void;
+	updateViewMode?: () => void;
+	updateFiles?: () => void;
+	resize?: () => void;
+	computeGridProperties?: () => void;
+	updateContentSize?: () => void;
+	updateContentOffset?: () => void;
+	resetContentStyle?: () => void;
+	createFlatItems?: (dir: FileBodyFile[]) => void;
+	select?: (...files: FileBodyFile[]) => void;
+	selectAll?: () => void;
+	unselect?: () => void;
+	selectByPath?: (path: string) => void;
+	selectDefault?: () => void;
+	selectRelativeInGridMode?: (direction: 'prev' | 'next' | 'prev-line' | 'next-line') => void;
+	getDirName?: () => string;
+	createFolder?: () => void;
+	showInExplorer?: () => void;
+	openFileLocation?: (file: FileBodyFile) => void;
+	openFile?: (file: FileBodyFile) => void;
+	copyFiles?: (cut?: boolean) => void;
+	pasteFiles?: (targetPath?: string) => void;
+	deleteFiles?: () => void;
+	rename?: (file: FileBodyFile) => void;
+	cancelRenaming?: () => void;
+	importFiles?: () => void;
+	exportFile?: () => void;
+	clearElements?: (start: number) => void;
+	clear?: () => HTMLElement;
+	on?: (
+		type: string,
+		listener: (event: Event) => void,
+		options?: boolean | AddEventListenerOptions
+	) => void;
 }
 
 interface Props {
 	links: FileBrowserLinks;
-	dataApi?: { manifest: any };
-	windowApi?: { confirm(options: any, items: any[]): void; getTopWindow(): any };
+	dataApi?: { manifest: { guidMap: Record<string, FileBodyMeta> } };
+	windowApi?: {
+		confirm(options: { message: string }, items: { label: string; click?: () => void }[]): void;
+		getTopWindow(): { id?: string } | null;
+	};
 	glApi?: { maxTexSize: number };
 	menuState?: () => string;
-	clipboardApi?: { write(type: string, data: any): void; read(type: string): any };
+	clipboardApi?: {
+		write(type: string, data: unknown): void;
+		read(type: string): { cut?: boolean; guids?: string[] } | null;
+	};
 	referenceApi?: {
-		findRelated(guid: string): any;
-		openList(list: any): void;
+		findRelated(guid: string): FileBodyRelatedList | null;
+		openList(list: FileBodyRelatedList | null): void;
 		openRelated(guid: string): void;
 	};
 	localize?: { createGetter(key: string): (key: string) => string };
-	editorApi?: { config: { dialogs: any } };
+	editorApi?: { config: { dialogs: { import?: string; export?: string } } };
 	directoryApi?: {
-		sortFiles(dir: any): void;
-		getFolder(path: string): any;
-		update(): any;
-		deleteFiles(files: any[]): Promise<any>;
-		moveFiles(path: string, dir: any[]): Promise<any>;
-		copyFiles(path: string, dir: any[], prefix?: string): Promise<any>;
-		saveFiles(files: any[]): Promise<any>;
-		readdir(paths: string[]): Promise<any[]>;
-		assets: any;
+		sortFiles(dir: FileBodyFile[]): void;
+		getFolder(path: string): FileBodyFile | null;
+		update(): Promise<boolean>;
+		deleteFiles(files: FileBodyFile[]): Promise<void>;
+		moveFiles(path: string, dir: FileBodyFile[]): Promise<void>;
+		copyFiles(path: string, dir: FileBodyFile[], prefix?: string): Promise<void>;
+		saveFiles(files: FileBodyFile[]): Promise<void>;
+		readdir(paths: string[]): Promise<FileBodyFile[]>;
+		assets: FileBodyFile | null;
 		inoMap: Record<string, any>;
 	};
 	fileSystemApi?: {
@@ -58,9 +197,13 @@ interface Props {
 		getFileName(dir: string, name: string, ext?: string): { path: string; route: string };
 		getImageResolution(p: string): Promise<{ width: number; height: number }>;
 		showInExplorer(p: string): void;
-		showOpenDialog(options: any): Promise<{ filePaths: string[] }>;
-		showSaveDialog(options: any): Promise<{ filePath?: string }>;
-		mkdir(p: string, options?: any): Promise<any>;
+		showOpenDialog(options: {
+			defaultPath?: string;
+			filters?: { name: string; extensions: string[] }[];
+			properties?: string[];
+		}): Promise<{ filePaths: string[] }>;
+		showSaveDialog(options: { defaultPath?: string }): Promise<{ filePath?: string }>;
+		mkdir(p: string, options?: { recursive?: boolean }): Promise<void>;
 		copyFile(src: string, dst: string): Promise<any>;
 		stat(p: string, bigint?: boolean): Promise<any>;
 		rename(oldPath: string, newPath: string): Promise<any>;
@@ -103,7 +246,7 @@ const props = withDefaults(defineProps<Props>(), {
 	directoryApi: () => ({
 		sortFiles: () => {},
 		getFolder: () => null,
-		update: () => {},
+		update: () => Promise.resolve(false),
 		deleteFiles: () => Promise.resolve(),
 		moveFiles: () => Promise.resolve(),
 		copyFiles: () => Promise.resolve(),
@@ -170,7 +313,14 @@ const contentEl = ref<HTMLElement>();
 let viewIndex: number | null = null;
 let viewMode: string | null = null;
 let timerCallback: () => void = () => {};
-const timer: any = {
+const timer: {
+	target: HTMLElement | null;
+	running: boolean;
+	elapsed: number;
+	timeoutId: ReturnType<typeof setTimeout> | null;
+	add(): void;
+	remove(): void;
+} = {
 	target: null,
 	running: false,
 	elapsed: 0,
@@ -189,20 +339,20 @@ const timer: any = {
 		}
 	}
 };
-let elements: any[] & {
+let elements: (FileBodyItemApi | undefined)[] & {
 	versionId: number;
 	count: number;
 	start: number;
 	end: number;
 };
-let activeFile: any = null;
-let selections: any[] = [];
+let activeFile: FileBodyFile | null = null;
+let selections: FileBodyFile[] = [];
 let pressing: ((event: PointerEvent) => void) | null = null;
 let openEventEnabled = false;
 let selectEventEnabled = false;
 let unselectEventEnabled = false;
 let popupEventEnabled = false;
-let textBox: any;
+let textBox: FileBodyTextBox;
 let windowKeydownHandler: (event: KeyboardEvent) => void;
 let resizeObserver: ResizeObserver | null = null;
 
@@ -211,7 +361,7 @@ function setViewIndex(idx: number): void {
 	if (viewIndex !== idx) {
 		const { head } = props.links;
 		viewIndex = idx;
-		(head as any).view.write(idx);
+		head.view.write(idx);
 		updateViewMode();
 	}
 }
@@ -236,9 +386,9 @@ function updateViewMode(): void {
 			break;
 	}
 	if (viewMode !== mode) {
-		const node = el.value as any;
+		const node = el.value as FileBodyPaneApi;
 		mode === 'list' ? addClass(node, 'horizontal') : removeClass(node, 'horizontal');
-		const content = contentEl.value as any;
+		const content = contentEl.value as FileBodyContentApi;
 		removeClass(content, viewMode!);
 		addClass(content, mode!);
 		resetContentStyle();
@@ -249,7 +399,7 @@ function updateViewMode(): void {
 	}
 }
 
-function getFiles(): any[] {
+function getFiles(): FileBodyFile[] {
 	const { browser, nav } = props.links;
 	const folders = nav.selections;
 	const filters = browser.filters;
@@ -267,7 +417,7 @@ function getFiles(): any[] {
 		}
 		return items;
 	}
-	const items: any[] = [];
+	const items: FileBodyFile[] = [];
 	for (const folder of folders) {
 		for (const item of folder.children) {
 			if (item instanceof FolderItem || filters.includes(item.type)) {
@@ -289,7 +439,7 @@ function updateFiles(): void {
 			createFlatItems(getFiles());
 			break;
 		case 'search':
-			createFlatItems(browser.searchResults);
+			createFlatItems(browser.searchResults!);
 			break;
 	}
 
@@ -298,7 +448,7 @@ function updateFiles(): void {
 }
 
 function resize(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const ch = node.clientHeight;
 	const els = elements;
 	if (ch === 0) return;
@@ -310,15 +460,15 @@ function resize(): void {
 		updateContentOffset();
 		const versionId = els.versionId++;
 		for (let i = start; i < end; i++) {
-			const element = els[i];
+			const element = els[i]!;
 			element.versionId = versionId;
 			updateOnResize(element);
 		}
-		const content = contentEl.value as any;
+		const content = contentEl.value as FileBodyContentApi;
 		const nodes = content.childNodes;
 		const last = nodes.length - 1;
 		for (let i = last; i >= 0; i--) {
-			const element = nodes[i] as any;
+			const element = nodes[i] as FileBodyItemApi;
 			if (element.versionId !== versionId) {
 				element.remove();
 			}
@@ -328,9 +478,9 @@ function resize(): void {
 			content.appendChild(foot);
 		}
 		for (let i = end - 2; i >= start; i--) {
-			const element = els[i];
+			const element = els[i]!;
 			if (element.parentNode === null) {
-				const next = els[i + 1];
+				const next = els[i + 1]!;
 				content.insertBefore(element, next);
 			}
 		}
@@ -338,7 +488,7 @@ function resize(): void {
 }
 
 function computeGridProperties(): void {
-	const content = contentEl.value as any;
+	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
 	switch (viewMode) {
 		case 'list':
@@ -355,8 +505,8 @@ function computeGridProperties(): void {
 }
 
 function computeListGridProperties(): void {
-	const node = el.value as any;
-	const content = contentEl.value as any;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
 	const WIDTH = 240;
 	const HEIGHT = 20;
 	const PADDING = 4;
@@ -381,8 +531,8 @@ function computeListGridProperties(): void {
 }
 
 function computeTileGridProperties(width: number, height: number): void {
-	const node = el.value as any;
-	const content = contentEl.value as any;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
 	const PADDING = 4;
 	const GAP = 2;
 	const SCROLLBAR_WIDTH = 12;
@@ -405,19 +555,19 @@ function computeTileGridProperties(width: number, height: number): void {
 }
 
 function computeStartAndEnd(): Uint32Array {
-	const node = el.value as any;
-	const content = contentEl.value as any;
-	const range = content.range;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
+	const range = content.range!;
 	const count = elements.count;
 	const scroll =
 		viewMode === 'list'
 			? Math.max(node.scrollLeft - 4, 0)
 			: Math.max(node.scrollTop - 4, 0);
 	const { countPerLine, itemSize, visibleLines } = content;
-	const lines = Math.ceil(count / countPerLine);
-	const sLine = clamp(Math.floor(scroll / itemSize), 0, lines - 1);
-	const start = countPerLine * sLine;
-	const length = countPerLine * visibleLines;
+	const lines = Math.ceil(count / countPerLine!);
+	const sLine = clamp(Math.floor(scroll / itemSize!), 0, lines - 1);
+	const start = countPerLine! * sLine;
+	const length = countPerLine! * visibleLines!;
 	const end = Math.min(start + length, count);
 	range[0] = start;
 	range[1] = end;
@@ -425,16 +575,16 @@ function computeStartAndEnd(): Uint32Array {
 }
 
 function updateContentSize(): void {
-	const node = el.value as any;
-	const content = contentEl.value as any;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
 	const count = elements.count;
 	if (node.clientHeight !== 0 && content.count !== count) {
 		content.count = count;
 		const PADDING = 4;
 		const GAP = 2;
 		const { style, countPerLine, itemSize } = content;
-		const lines = Math.ceil(count / countPerLine);
-		const length = Math.max(lines * itemSize - GAP, 0) + PADDING * 2;
+		const lines = Math.ceil(count / countPerLine!);
+		const length = Math.max(lines * itemSize! - GAP, 0) + PADDING * 2;
 		if (viewMode === 'list') {
 			style.width = `${length}px`;
 		} else {
@@ -444,11 +594,11 @@ function updateContentSize(): void {
 }
 
 function updateContentOffset(): void {
-	const content = contentEl.value as any;
+	const content = contentEl.value as FileBodyContentApi;
 	const PADDING = 4;
 	const start = elements.start;
 	const { style, countPerLine, itemSize } = content;
-	const padding = (start / countPerLine) * itemSize + PADDING;
+	const padding = (start / countPerLine!) * itemSize! + PADDING;
 	if (viewMode === 'list') {
 		style.paddingLeft = `${padding}px`;
 	} else {
@@ -457,7 +607,7 @@ function updateContentOffset(): void {
 }
 
 function resetContentStyle(): void {
-	const content = contentEl.value as any;
+	const content = contentEl.value as FileBodyContentApi;
 	content.count = -1;
 	const { style } = content;
 	switch (viewMode) {
@@ -472,7 +622,7 @@ function resetContentStyle(): void {
 	}
 }
 
-function updateOnResize(element: any): void {
+function updateOnResize(element: FileBodyItemApi): void {
 	if (element.changed) {
 		element.changed = false;
 		const { file } = element;
@@ -487,7 +637,7 @@ function updateOnResize(element: any): void {
 	}
 }
 
-function createFlatItems(dir: any[]): void {
+function createFlatItems(dir: FileBodyFile[]): void {
 	Directory?.sortFiles(dir);
 	const els = elements;
 	const length = dir.length;
@@ -504,29 +654,25 @@ function createFlatItems(dir: any[]): void {
 	}
 }
 
-function createFolderElement(file: any): HTMLElement {
-	const node = el.value as any;
+function createFolderElement(file: FileBodyFile): FileBodyItemApi {
+	const node = el.value as FileBodyPaneApi;
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-body-item') as unknown as HTMLElement & {
-			file: any;
-			context: any;
-			changed?: boolean;
-		};
-		(element as HTMLElement & { file: any; context: any }).file = file;
-		(element as HTMLElement & { file: any; context: any }).context = context;
+		element = document.createElement('file-body-item') as FileBodyItemApi;
+		element.file = file;
+		element.context = context;
 		context.element = element;
 		const { selections: sels } = { selections };
 		if (sels.length !== 0 && sels.includes(file)) {
-			addClass(element as HTMLElement, 'selected');
+			addClass(element, 'selected');
 		}
 	}
-	(element as HTMLElement & { changed?: boolean }).changed = true;
+	element.changed = true;
 	return element;
 }
 
-function updateFolderElement(element: any): void {
+function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
 		const fileIcon = document.createElement('file-body-icon');
 		addClass(fileIcon, 'icon-folder');
@@ -542,28 +688,24 @@ function updateFolderElement(element: any): void {
 	}
 }
 
-function createFileElement(file: any): HTMLElement {
-	const node = el.value as any;
+function createFileElement(file: FileBodyFile): FileBodyItemApi {
+	const node = el.value as FileBodyPaneApi;
 	const context = file.getContext(node);
 	let element = context.element;
 	if (element === undefined) {
-		element = document.createElement('file-body-item') as unknown as HTMLElement & {
-			file: any;
-			context: any;
-			changed?: boolean;
-		};
-		addClass(element as HTMLElement, 'file-item');
-		(element as HTMLElement & { file: any; context: any }).file = file;
-		(element as HTMLElement & { file: any; context: any }).context = context;
+		element = document.createElement('file-body-item') as FileBodyItemApi;
+		addClass(element, 'file-item');
+		element.file = file;
+		element.context = context;
 		context.element = element;
 	}
-	(element as HTMLElement & { changed?: boolean }).changed = true;
+	element.changed = true;
 	return element;
 }
 
-function updateFileElement(element: any): void {
+function updateFileElement(element: FileBodyItemApi): void {
 	const { file } = element;
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	if (!element.nameBox) {
 		const fileIcon = createIcon(file);
 		element.appendChild(fileIcon);
@@ -581,13 +723,13 @@ function updateFileElement(element: any): void {
 			addClass(element, 'selected');
 		}
 	}
-	if (element.fileIcon.isImageChanged?.()) {
+	if (element.fileIcon!.isImageChanged?.()) {
 		updateIcon(file);
 	}
 }
 
-function createIcon(file: any): HTMLElement {
-	const node = el.value as any;
+function createIcon(file: FileBodyFile): HTMLElement {
+	const node = el.value as FileBodyPaneApi;
 	const icon = document.createElement('file-body-icon');
 	switch (file.type) {
 		case 'actor': {
@@ -596,12 +738,12 @@ function createIcon(file: any): HTMLElement {
 				addClass(icon, 'icon-file-actor');
 				break;
 			}
-			const meta = (Data as any).manifest.guidMap[data.portrait];
-			const [cx, cy, cw, ch] = data.clip;
+			const meta = Data.manifest.guidMap[data.portrait];
+			const [cx, cy, cw, ch] = data.clip!;
 			if (!meta || cw * ch === 0) break;
 			const version = meta.mtimeMs;
 			const path = `${File?.getPath(data.portrait)}?ver=${version}`;
-			(icon as any).isImageChanged = () => version !== meta.mtimeMs;
+			(icon as FileBodyIconApi).isImageChanged = () => version !== meta.mtimeMs;
 			props.setIconClip?.(icon, path, cx, cy, cw, ch);
 			break;
 		}
@@ -614,12 +756,12 @@ function createIcon(file: any): HTMLElement {
 				addClass(icon, 'icon-file-cube');
 				break;
 			}
-			const meta = (Data as any).manifest.guidMap[data.icon];
-			const [cx, cy, cw, ch] = data.clip;
+			const meta = Data.manifest.guidMap[data.icon];
+			const [cx, cy, cw, ch] = data.clip!;
 			if (!meta || cw * ch === 0) break;
 			const version = meta.mtimeMs;
 			const path = `${File?.getPath(data.icon)}?ver=${version}`;
-			(icon as any).isImageChanged = () => version !== meta.mtimeMs;
+			(icon as FileBodyIconApi).isImageChanged = () => version !== meta.mtimeMs;
 			props.setIconClip?.(icon, path, cx, cy, cw, ch);
 			break;
 		}
@@ -649,17 +791,16 @@ function createIcon(file: any): HTMLElement {
 			addClass(icon, 'icon-file-particle');
 			break;
 		case 'image': {
-			const version = file.stats.mtimeMs;
+			const version = file.stats!.mtimeMs;
 			const path = `${file.path}?ver=${version}`;
-			(icon as HTMLElement).style.backgroundImage = encodeURL(File?.route(path) ?? path);
-			(File as any)
-				?.getImageResolution(path)
+			icon.style.backgroundImage = encodeURL(File?.route(path) ?? path);
+			File?.getImageResolution(path)
 				.then(({ width, height }: { width: number; height: number }) => {
 					if (width <= 128 && height <= 128) {
-						(icon as HTMLElement).style.imageRendering = 'pixelated';
+						icon.style.imageRendering = 'pixelated';
 					}
-					if (Math.max(width, height) > (GL as any).maxTexSize) {
-						(FileItem as any)?.addOversizeImagePaths(file.path);
+					if (Math.max(width, height) > GL.maxTexSize) {
+						FileItem?.addOversizeImagePaths(file.path);
 					}
 				});
 			break;
@@ -697,8 +838,8 @@ function createIcon(file: any): HTMLElement {
 	return icon;
 }
 
-function updateIcon(file: any): void {
-	const node = el.value as any;
+function updateIcon(file: FileBodyFile): void {
+	const node = el.value as FileBodyPaneApi;
 	const { element } = file.getContext(node);
 	if (element?.fileIcon) {
 		const icon = createIcon(file);
@@ -707,15 +848,15 @@ function updateIcon(file: any): void {
 	}
 }
 
-function activateFile(file: any): void {
-	const node = el.value as any;
+function activateFile(file: FileBodyFile): void {
+	const node = el.value as FileBodyPaneApi;
 	if (file instanceof FolderItem) {
 		return select(file);
 	}
 	activeFile = file;
 	if (!selections.includes(file)) {
 		const context = file.getContext(node);
-		addClass(context.element, 'selected');
+		addClass(context.element!, 'selected');
 		for (const f of selections) {
 			const c = f.getContext(node);
 			c.element && removeClass(c.element, 'selected');
@@ -732,11 +873,11 @@ function activateFile(file: any): void {
 }
 
 function deactivateFile(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	if (activeFile instanceof FileItem) {
-		if (!selections.includes(activeFile)) {
-			const context = activeFile.getContext(node);
-			removeClass(context.element, 'selected');
+		if (!selections.includes(activeFile!)) {
+			const context = activeFile!.getContext(node);
+			removeClass(context.element!, 'selected');
 			for (const f of selections) {
 				const c = f.getContext(node);
 				c.element && addClass(c.element, 'selected');
@@ -748,15 +889,15 @@ function deactivateFile(): void {
 
 function selectActiveFile(): void {
 	if (activeFile instanceof FileItem) {
-		if (!selections.includes(activeFile)) {
-			select(activeFile);
+		if (!selections.includes(activeFile!)) {
+			select(activeFile!);
 		}
 		activeFile = null;
 	}
 }
 
-function select(...files: any[]): void {
-	const node = el.value as any;
+function select(...files: FileBodyFile[]): void {
+	const node = el.value as FileBodyPaneApi;
 	unselect();
 	selections = files;
 	for (const file of files) {
@@ -764,25 +905,25 @@ function select(...files: any[]): void {
 		context.element && addClass(context.element, 'selected');
 	}
 	if (selectEventEnabled) {
-		const select: any = new Event('select');
+		const select = new Event('select') as FileBodyEvent;
 		select.value = files;
 		node.dispatchEvent(select);
 	}
 }
 
 function selectAll(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
 	const files = new Array(count);
 	for (let i = 0; i < count; i++) {
-		files[i] = els[i].file;
+		files[i] = els[i]!.file;
 	}
 	select(...files);
 }
 
 function unselect(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const files = selections;
 	if (files.length !== 0) {
 		textBox?.input?.blur?.();
@@ -795,7 +936,7 @@ function unselect(): void {
 		}
 		selections = [];
 		if (unselectEventEnabled) {
-			const unselect: any = new Event('unselect');
+			const unselect = new Event('unselect') as FileBodyEvent;
 			unselect.value = files;
 			node.dispatchEvent(unselect);
 		}
@@ -803,11 +944,11 @@ function unselect(): void {
 }
 
 function selectByPath(path: string): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
 	for (let i = 0; i < count; i++) {
-		const { file } = els[i];
+		const { file } = els[i]!;
 		if (file.path === path) {
 			return select(file);
 		}
@@ -819,15 +960,15 @@ function selectDefault(): void {
 	const els = elements;
 	const count = els.count;
 	for (let i = 0; i < count; i++) {
-		if (hasClass(els[i], 'selected')) return;
+		if (hasClass(els[i]!, 'selected')) return;
 	}
 	if (count !== 0) {
-		select(els[0].file);
+		select(els[0]!.file);
 	}
 }
 
 function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'next-line'): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const els = elements;
 	const count = els.count;
 	if (count > 0) {
@@ -837,7 +978,7 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 		const { selections: sels } = { selections };
 		for (const file of sels) {
 			const { element } = file.getContext(node);
-			const idx = els.indexOf(element);
+			const idx = els.indexOf(element!);
 			if (idx !== -1) {
 				start = Math.min(start, idx);
 				end = Math.max(end, idx);
@@ -855,7 +996,7 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 					break;
 			}
 		} else {
-			const { countPerLine } = contentEl.value as any;
+			const { countPerLine } = contentEl.value as FileBodyContentApi;
 			switch (direction) {
 				case 'prev':
 					index = start - 1;
@@ -864,13 +1005,13 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 					index = end + 1;
 					break;
 				case 'prev-line':
-					index = start - countPerLine;
+					index = start - countPerLine!;
 					break;
 				case 'next-line':
-					index = end + countPerLine;
+					index = end + countPerLine!;
 					if (index >= count) {
-						const line = Math.floor(index / countPerLine);
-						const head = line * countPerLine;
+						const line = Math.floor(index / countPerLine!);
+						const head = line * countPerLine!;
 						if (count > head) {
 							index = count - 1;
 						}
@@ -888,16 +1029,16 @@ function selectRelativeInGridMode(direction: 'prev' | 'next' | 'prev-line' | 'ne
 }
 
 function scrollToSelectionInGridMode(mode: string = 'active'): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const { selections: sels } = { selections };
 	if (sels.length === 1 && hasScrollBar(node)) {
 		const selection = sels[0];
 		const els = elements;
 		const count = els.count;
 		for (let i = 0; i < count; i++) {
-			if (els[i].file === selection) {
-				const size = (contentEl.value as any).itemSize;
-				const apl = (contentEl.value as any).countPerLine;
+			if (els[i]!.file === selection) {
+				const size = (contentEl.value as FileBodyContentApi).itemSize!;
+				const apl = (contentEl.value as FileBodyContentApi).countPerLine!;
 				const pos = Math.floor(i / apl) * size;
 				const PADDING = 4;
 				const GAP = 2;
@@ -964,7 +1105,7 @@ function createFolder(): void {
 				if (changed) {
 					const folder = Directory?.getFolder(path);
 					if (folder?.path === path) {
-						props.links.nav.load(folder.parent);
+						props.links.nav.load(folder.parent!);
 						select(folder);
 						rename(folder);
 					}
@@ -974,38 +1115,38 @@ function createFolder(): void {
 }
 
 function showInExplorer(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	let length = 0;
 	const els = elements;
 	for (const file of selections) {
 		const { element } = file.getContext(node);
-		if (els.includes(element)) {
-			(File as any)?.showInExplorer(File?.path(file.path) ?? file.path);
+		if (els.includes(element!)) {
+			File?.showInExplorer(File?.path(file.path) ?? file.path);
 			if (++length === 10) break;
 		}
 	}
 }
 
-function openFileLocation(file: any): void {
+function openFileLocation(file: FileBodyFile): void {
 	if (file) {
 		const folder = Directory?.getFolder(file.path);
 		if (folder instanceof FolderItem) {
 			const { nav } = props.links;
-			nav.load(folder);
+			nav.load(folder!);
 			nav.scrollToSelection('middle');
 		}
 	}
 }
 
-function openFile(file: any): void {
-	const node = el.value as any;
+function openFile(file: FileBodyFile): void {
+	const node = el.value as FileBodyPaneApi;
 	if (file instanceof FolderItem) {
 		const { nav } = props.links;
 		nav.load(file);
 		nav.scrollToSelection('middle');
 	}
 	if ((file instanceof FileItem || file?.meta?.guid) && openEventEnabled) {
-		const open: any = new Event('open');
+		const open = new Event('open') as FileBodyEvent;
 		open.value = file;
 		node.dispatchEvent(open);
 	}
@@ -1016,11 +1157,11 @@ function copyFiles(cut: boolean = false): void {
 	for (const file of selections) {
 		if (file instanceof FolderItem) return;
 		if (file instanceof FileItem) {
-			guids.push(file.meta.guid);
+			guids.push(file.meta!.guid);
 		}
 	}
 	if (guids.length !== 0) {
-		(Clipboard as any)?.write('yami.files', { cut, guids });
+		Clipboard?.write('yami.files', { cut, guids });
 	}
 }
 
@@ -1030,56 +1171,55 @@ function pasteFiles(targetPath?: string): void {
 		targetPath = nav.selections[0].path;
 	}
 	if (!targetPath) return;
-	const copy = (Clipboard as any)?.read('yami.files');
+	const copy = Clipboard?.read('yami.files');
 	if (copy) {
-		const files: any[] = [];
-		for (const guid of copy.guids) {
-			const meta = (Data as any).manifest.guidMap[guid];
-			if (meta) files.push(meta.file);
+		const files: FileBodyFile[] = [];
+		for (const guid of copy.guids!) {
+			const meta = Data.manifest.guidMap[guid];
+			if (meta) files.push(meta.file!);
 		}
 		if (files.length !== 0) {
-			const { absolutePaths } = browser.getFilePaths(files);
-			(Directory as any)
-				?.readdir(absolutePaths)
-				.then((dir: any[]) => {
+			const { absolutePaths } = browser.getFilePaths!(files);
+			Directory?.readdir(absolutePaths)
+				.then((dir: FileBodyFile[]) => {
 					const path = File?.path(targetPath) ?? targetPath;
 					return copy.cut
-						? (Directory as any).moveFiles(path, dir)
-						: (Directory as any)
+						? Directory!.moveFiles(path, dir)
+						: Directory!
 								.saveFiles(files)
-								.then(() => (Directory as any).copyFiles(path, dir));
+								.then(() => Directory!.copyFiles(path, dir));
 				})
 				.finally(() => {
-					(Directory as any)?.update();
+					Directory?.update();
 				});
 		}
 		if (copy.cut) {
-			(Clipboard as any)?.write('yami.no-files', null);
+			Clipboard?.write('yami.no-files', null);
 		}
 	}
 }
 
 function deleteFiles(): void {
-	const node = el.value as any;
-	const files: any[] = [];
+	const node = el.value as FileBodyPaneApi;
+	const files: FileBodyFile[] = [];
 	const { selections: sels } = { selections };
-	if (!sels.includes((Directory as any)?.assets)) {
+	if (!sels.includes(Directory?.assets!)) {
 		const els = elements;
 		for (const file of sels) {
 			const { element } = file.getContext(node);
-			if (els.includes(element)) {
+			if (els.includes(element!)) {
 				files.push(file);
 			}
 		}
 	}
 	const { length } = files;
 	if (length === 0) return;
-	const get = (Local as any)?.createGetter('confirmation') ?? (() => '');
+	const get = Local?.createGetter('confirmation') ?? (() => '');
 	if (length === 1 && files[0] instanceof FileItem) {
-		const list = (Reference as any)?.findRelated(files[0].meta.guid);
+		const list = Reference?.findRelated(files[0].meta!.guid);
 		if (!list?.isEmpty) {
-			(Reference as any)?.openList(list);
-			return (Window as any)?.confirm(
+			Reference?.openList(list);
+			return Window?.confirm(
 				{
 					message: get('deleteReferencedFile').replace(
 						'<filename>',
@@ -1090,8 +1230,8 @@ function deleteFiles(): void {
 					{
 						label: get('yes'),
 						click: () => {
-							(Directory as any)?.deleteFiles(files).then(() => {
-								return (Directory as any)?.update();
+							Directory?.deleteFiles(files).then(() => {
+								return Directory?.update();
 							});
 						}
 					},
@@ -1102,19 +1242,19 @@ function deleteFiles(): void {
 			);
 		}
 	}
-	return (Window as any)?.confirm(
+	return Window?.confirm(
 		{
 			message:
 				length === 1
 					? get('deleteSingleFile').replace('<filename>', files[0].alias ?? files[0].name)
-					: get('deleteMultipleFiles').replace('<number>', length)
+					: get('deleteMultipleFiles').replace('<number>', String(length))
 		},
 		[
 			{
 				label: get('yes'),
 				click: () => {
-					(Directory as any)?.deleteFiles(files).then(() => {
-						return (Directory as any)?.update();
+					Directory?.deleteFiles(files).then(() => {
+						return Directory?.update();
 					});
 				}
 			},
@@ -1125,18 +1265,18 @@ function deleteFiles(): void {
 	);
 }
 
-function rename(file: any): void {
-	const node = el.value as any;
+function rename(file: FileBodyFile): void {
+	const node = el.value as FileBodyPaneApi;
 	if (
 		document.activeElement === contentEl.value &&
-		file !== (Directory as any)?.assets &&
+		file !== Directory?.assets &&
 		!textBox?.parentNode
 	) {
 		const context = file.getContext(node);
 		const element = context.element;
 		if (element && element.parentNode) {
 			hide(element.nameBox);
-			element.appendChild(textBox as any);
+			element.appendChild(textBox);
 			textBox.write(file.basename ?? file.name);
 			textBox.getFocus('all');
 			switch (viewMode) {
@@ -1166,14 +1306,13 @@ function importFiles(): void {
 	const folders = nav.selections;
 	if (folders.length !== 1) return;
 	const folder = folders[0];
-	const dialogs = (Editor as any)?.config.dialogs ?? {};
-	const location = Path?.normalize(dialogs.import) ?? '';
+	const dialogs: { import?: string; export?: string } = Editor?.config.dialogs ?? {};
+	const location = Path?.normalize(dialogs.import!) ?? '';
 	const images = ['png', 'jpg', 'jpeg', 'cur', 'webp'];
 	const audio = ['mp3', 'm4a', 'ogg', 'wav', 'flac'];
 	const videos = ['mp4', 'mkv', 'webm'];
 	const fonts = ['ttf', 'otf', 'woff', 'woff2'];
-	(File as any)
-		?.showOpenDialog({
+	File?.showOpenDialog({
 			defaultPath: location,
 			filters: [
 				{
@@ -1197,10 +1336,10 @@ function importFiles(): void {
 					const ext = Path?.extname(src) ?? '';
 					const base = Path?.basename(src, ext) ?? src;
 					const dst = File?.getFileName(dir, base, ext)?.route ?? '';
-					promises.push(FSP?.copyFile(src, dst) ?? Promise.resolve());
+				promises.push(FSP?.copyFile(src, dst) ?? Promise.resolve());
 				}
 				Promise.all(promises).then(() => {
-					return (Directory as any)?.update();
+					return Directory?.update();
 				});
 				if (dialogs && filePaths.length > 0) {
 					dialogs.import = Path?.slash(Path?.dirname(filePaths[0]) ?? '') ?? '';
@@ -1210,16 +1349,15 @@ function importFiles(): void {
 }
 
 function exportFile(): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const files = selections;
-	const dialogs = (Editor as any)?.config.dialogs ?? {};
+	const dialogs: { import?: string; export?: string } = Editor?.config.dialogs ?? {};
 	if (files.length === 1 && files[0] instanceof FileItem) {
 		const file = files[0];
 		const name = file.basename + file.extname;
-		(File as any)
-			?.showSaveDialog({
-				defaultPath: Path?.resolve(dialogs.export, name) ?? name
-			})
+		File?.showSaveDialog({
+			defaultPath: Path?.resolve(dialogs.export!, name) ?? name
+		})
 			.then(({ filePath }: { filePath?: string }) => {
 				if (filePath) {
 					dialogs.export = Path?.slash(Path?.dirname(filePath) ?? '') ?? '';
@@ -1227,27 +1365,26 @@ function exportFile(): void {
 				}
 			})
 			.finally(() => {
-				(Directory as any)?.update();
+				Directory?.update();
 			});
 	} else {
-		(File as any)
-			?.showOpenDialog({
-				defaultPath: Path?.normalize(dialogs.export) ?? '',
-				properties: ['openDirectory']
-			})
+		File?.showOpenDialog({
+			defaultPath: Path?.normalize(dialogs.export!) ?? '',
+			properties: ['openDirectory']
+		})
 			.then(({ filePaths }: { filePaths: string[] }) => {
 				if (filePaths.length === 1) {
 					const dirPath = filePaths[0];
 					dialogs.export = Path?.slash(dirPath) ?? '';
-					return (Directory as any)
-						?.readdir(files.map((file: any) => File?.path(file.path) ?? file.path))
-						.then((dir: any[]) => {
-							return (Directory as any)?.copyFiles(dirPath, dir, '');
-						});
+					return Directory?.readdir(
+						files.map((file) => File?.path(file.path) ?? file.path)
+					).then((dir: FileBodyFile[]) => {
+						return Directory?.copyFiles(dirPath, dir, '');
+					});
 				}
 			})
 			.finally(() => {
-				(Directory as any)?.update();
+				Directory?.update();
 			});
 	}
 }
@@ -1264,9 +1401,9 @@ function clearElements(start: number): void {
 }
 
 function clear(): HTMLElement {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	unselect();
-	const content = contentEl.value as any;
+	const content = contentEl.value as FileBodyContentApi;
 	content.textContent = '';
 	clearElements(0);
 	elements.count = 0;
@@ -1277,8 +1414,8 @@ function clear(): HTMLElement {
 }
 
 function keydown(event: KeyboardEvent): void {
-	const node = el.value as any;
-	if ((event as any).cmdOrCtrlKey) {
+	const node = el.value as FileBodyPaneApi;
+	if ((event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 		switch (event.code) {
 			case 'ArrowUp':
 				node.scrollTop -= 20;
@@ -1306,7 +1443,7 @@ function keydown(event: KeyboardEvent): void {
 				if (files.length === 1) {
 					const file = files[0];
 					const { element } = file.getContext(node);
-					if (elements.includes(element)) {
+					if (elements.includes(element!)) {
 						openFile(file);
 					}
 				}
@@ -1318,7 +1455,7 @@ function keydown(event: KeyboardEvent): void {
 			case 'Escape':
 			case 'Backspace': {
 				const { browser } = props.links;
-				if (!browser.backToParentFolder()) return;
+				if (!browser.backToParentFolder!()) return;
 				break;
 			}
 			case 'ArrowLeft':
@@ -1381,13 +1518,13 @@ function keydown(event: KeyboardEvent): void {
 }
 
 function pointerdown(event: PointerEvent): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	cancelRenaming();
 	switch (event.button) {
 		case 0:
 		case 2: {
 			let element = event.target as HTMLElement;
-			const content = contentEl.value as any;
+			const content = contentEl.value as FileBodyContentApi;
 			if (element === content) {
 				element = node;
 			}
@@ -1402,29 +1539,29 @@ function pointerdown(event: PointerEvent): void {
 				if (element.tagName === 'FILE-BODY-ICON' || element.tagName === 'FILE-BODY-NAME') {
 					element = element.parentNode as HTMLElement;
 				}
-				if (element.tagName === 'FILE-BODY-ITEM') {
-					if (event.altKey && (element as any).file instanceof FileItem) {
-						(Reference as any)?.openRelated((element as any).file.meta.guid);
-						event.preventDefault();
-						event.stopImmediatePropagation();
-						return;
-					}
-					const sels = selections;
-					const length = sels.length;
-					if ((event as any).cmdOrCtrlKey && length !== 0) {
-						const els = elements;
-						const files = Array.from(sels);
-						for (let i = length - 1; i >= 0; i--) {
-							const { element } = (files[i] as any).getContext(node);
-							if (!els.includes(element)) {
-								files.splice(i, 1);
-							}
+			if (element.tagName === 'FILE-BODY-ITEM') {
+				if (event.altKey && (element as FileBodyItemApi).file instanceof FileItem) {
+					Reference?.openRelated((element as FileBodyItemApi).file.meta!.guid);
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					return;
+				}
+				const sels = selections;
+				const length = sels.length;
+				if ((event as PointerEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey && length !== 0) {
+					const els = elements;
+					const files = Array.from(sels);
+					for (let i = length - 1; i >= 0; i--) {
+						const { element } = files[i].getContext(node);
+						if (!els.includes(element!)) {
+							files.splice(i, 1);
 						}
-						if (!sels.includes((element as any).file)) {
-							files.push((element as any).file);
-							select(...files);
-						} else if (event.button === 0) {
-							const file = (element as any).file;
+					}
+					if (!sels.includes((element as FileBodyItemApi).file)) {
+						files.push((element as FileBodyItemApi).file);
+						select(...files);
+					} else if (event.button === 0) {
+						const file = (element as FileBodyItemApi).file;
 							const index = files.indexOf(file);
 							if (index !== -1) files.splice(index, 1);
 							const pointerup = (event: PointerEvent) => {
@@ -1442,11 +1579,11 @@ function pointerdown(event: PointerEvent): void {
 					}
 					if (event.shiftKey && length !== 0) {
 						const els = elements;
-						let start = els.indexOf(element);
+						let start = els.indexOf(element as FileBodyItemApi);
 						let end = start;
 						for (let i = 0; i < length; i++) {
 							const { element } = sels[i].getContext(node);
-							const index = els.indexOf(element);
+							const index = els.indexOf(element!);
 							if (index !== -1) {
 								start = Math.min(start, index);
 								end = Math.max(end, index);
@@ -1454,39 +1591,39 @@ function pointerdown(event: PointerEvent): void {
 						}
 						if (start !== -1) {
 							const slice = els.slice(start, end + 1);
-							select(...slice.map((element: any) => element.file));
+							select(...slice.map((element) => element!.file));
 							return;
 						}
 					}
-					if (!hasClass(element, 'selected')) {
-						switch (event.button) {
-							case 0:
-								activateFile((element as any).file);
-								break;
-							case 2:
-								select((element as any).file);
-								break;
-						}
-					} else if (event.button === 0) {
-						if (length > 1) {
-							const pointerup = (event: PointerEvent) => {
-								if (pressing === pointerup) {
-									pressing = null;
-									if (element.contains(event.target as Node)) {
-										select((element as any).file);
-									}
+				if (!hasClass(element, 'selected')) {
+					switch (event.button) {
+						case 0:
+							activateFile((element as FileBodyItemApi).file);
+							break;
+						case 2:
+							select((element as FileBodyItemApi).file);
+							break;
+					}
+				} else if (event.button === 0) {
+					if (length > 1) {
+						const pointerup = (event: PointerEvent) => {
+							if (pressing === pointerup) {
+								pressing = null;
+								if (element.contains(event.target as Node)) {
+									select((element as FileBodyItemApi).file);
 								}
-							};
-							pressing = pointerup;
-							window.addEventListener('pointerup', pointerup, { once: true });
-						} else {
-							activateFile((element as any).file);
+							}
+						};
+						pressing = pointerup;
+						window.addEventListener('pointerup', pointerup, { once: true });
+					} else {
+						activateFile((element as FileBodyItemApi).file);
 							if (
 								Menu?.() === 'closed' &&
 								document.activeElement === content &&
 								(event.target as HTMLElement).tagName === 'FILE-BODY-NAME'
 							) {
-								timer.target = event.target;
+								timer.target = event.target as HTMLElement;
 							}
 						}
 					}
@@ -1500,15 +1637,15 @@ function pointerdown(event: PointerEvent): void {
 		}
 		case 3: {
 			const { browser } = props.links;
-			browser.backToParentFolder();
+			browser.backToParentFolder!();
 			break;
 		}
 	}
 }
 
 function pointerup(event: PointerEvent): void {
-	const node = el.value as any;
-	const content = contentEl.value as any;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
 	switch (event.button) {
 		case 0:
 			if (document.activeElement === content && timer.target === event.target) {
@@ -1519,7 +1656,7 @@ function pointerup(event: PointerEvent): void {
 			break;
 		case 2:
 			if (document.activeElement === content && popupEventEnabled) {
-				const popup: any = new Event('popup');
+				const popup = new Event('popup') as FileBodyEvent;
 				popup.raw = event;
 				popup.clientX = event.clientX;
 				popup.clientY = event.clientY;
@@ -1530,7 +1667,7 @@ function pointerup(event: PointerEvent): void {
 }
 
 function doubleclick(event: Event): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	let element = event.target as HTMLElement;
 	if (element.tagName === 'FILE-BODY-ICON' || element.tagName === 'FILE-BODY-NAME') {
 		element = element.parentNode as HTMLElement;
@@ -1538,15 +1675,15 @@ function doubleclick(event: Event): void {
 	if (element.tagName === 'FILE-BODY-ITEM') {
 		event.preventDefault();
 		cancelRenaming();
-		openFile((element as any).file);
+		openFile((element as FileBodyItemApi).file);
 	}
 }
 
 function wheel(event: WheelEvent): void {
-	const node = el.value as any;
+	const node = el.value as FileBodyPaneApi;
 	const { deltaY } = event;
 	if (deltaY !== 0) {
-		if ((event as any).cmdOrCtrlKey) {
+		if ((event as WheelEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey) {
 			event.preventDefault();
 			const idx = viewIndex!;
 			const delta = Math.sign(-deltaY);
@@ -1562,11 +1699,8 @@ function windowKeydown(event: KeyboardEvent): void {
 	if (event.altKey) {
 		switch (event.code) {
 			case 'AltLeft':
-				if (
-					!(Window as any)?.getTopWindow() ||
-					(Window as any)?.getTopWindow()?.id === 'selector'
-				) {
-					addClass(contentEl.value as any, 'alt');
+				if (!Window?.getTopWindow() || Window?.getTopWindow()?.id === 'selector') {
+					addClass(contentEl.value, 'alt');
 					window.addEventListener('keyup', windowKeyup);
 					window.addEventListener('pointermove', windowPointermove);
 				}
@@ -1579,7 +1713,7 @@ function windowKeyup(event: KeyboardEvent): void {
 	if (!event.altKey) {
 		switch (event.code) {
 			case 'AltLeft':
-				removeClass(contentEl.value as any, 'alt');
+				removeClass(contentEl.value, 'alt');
 				window.removeEventListener('keyup', windowKeyup);
 				window.removeEventListener('pointermove', windowPointermove);
 				break;
@@ -1589,13 +1723,13 @@ function windowKeyup(event: KeyboardEvent): void {
 
 function windowPointermove(event: PointerEvent): void {
 	if (!event.altKey) {
-		removeClass(contentEl.value as any, 'alt');
+		removeClass(contentEl.value, 'alt');
 		window.removeEventListener('keyup', windowKeyup);
 		window.removeEventListener('pointermove', windowPointermove);
 	}
 }
 
-function createTextBox(): HTMLElement {
+function createTextBox(): FileBodyTextBox {
 	const tb = props.createTextBox?.();
 	if (!tb) return tb;
 	tb.setMaxLength(64);
@@ -1608,7 +1742,7 @@ function createTextBox(): HTMLElement {
 			case 'Enter':
 			case 'NumpadEnter':
 			case 'Escape': {
-				const item = this.parentNode as any;
+				const item = this.parentNode;
 				const content = item.parentNode as HTMLElement;
 				this.input.blur();
 				content.focus();
@@ -1617,7 +1751,7 @@ function createTextBox(): HTMLElement {
 		}
 	});
 
-	tb.addEventListener('beforeinput', function (event: any) {
+	tb.addEventListener('beforeinput', function (event: InputEvent) {
 		if (event.inputType === 'insertText' && typeof event.data === 'string') {
 			const regexp = /[\\/:*?"<>|]/;
 			if (regexp.test(event.data)) {
@@ -1638,7 +1772,7 @@ function createTextBox(): HTMLElement {
 	});
 
 	tb.input.addEventListener('blur', function () {
-		const item = tb.parentNode as any;
+		const item = tb.parentNode;
 		const file = item.file;
 		const name = tb.read().trim();
 		let filename = name;
@@ -1655,17 +1789,16 @@ function createTextBox(): HTMLElement {
 		if (filename !== file.name) {
 			const dir = Path?.dirname(file.path) ?? '';
 			const path = File?.path(`${dir}/${filename}`) ?? `${dir}/${filename}`;
-			(FSP as any)
-				?.stat(path, (FolderItem as any)?.bigint)
-				.then((stats: any) => {
-					if (stats.ino === file.stats.ino) {
+			FSP?.stat(path, FolderItem?.bigint)
+				.then((stats: FileBodyStats) => {
+					if (stats.ino === file.stats!.ino) {
 						throw new Error('same file');
 					}
 				})
-				.catch((error: any) => {
-					return (FSP as any)?.rename(File?.path(file.path) ?? file.path, path).then(() => {
+				.catch((error: unknown) => {
+					return FSP?.rename(File?.path(file.path) ?? file.path, path).then(() => {
 						item.nameBox.textContent = name;
-						return (Directory as any)?.update();
+						return Directory?.update();
 					});
 				});
 		}
@@ -1674,8 +1807,8 @@ function createTextBox(): HTMLElement {
 	return tb;
 }
 
-function on(type: string, listener: (event: any) => void, options?: boolean | AddEventListenerOptions): void {
-	const node = el.value as any;
+function on(type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions): void {
+	const node = el.value as FileBodyPaneApi;
 	node.addEventListener(type, listener, options);
 	switch (type) {
 		case 'open':
@@ -1694,8 +1827,8 @@ function on(type: string, listener: (event: any) => void, options?: boolean | Ad
 }
 
 onMounted(() => {
-	const node = el.value!;
-	const content = contentEl.value as any;
+	const node = el.value as FileBodyPaneApi;
+	const content = contentEl.value as FileBodyContentApi;
 
 	timerCallback = () => {
 		const files = selections;
@@ -1704,7 +1837,7 @@ onMounted(() => {
 			const target = timer.target;
 			const context = file.getContext(node);
 			const element = context.element;
-			if (element.contains(target)) {
+			if (element!.contains(target)) {
 				rename(file);
 			}
 		}
@@ -1712,7 +1845,7 @@ onMounted(() => {
 		timer.running = false;
 	};
 
-	elements = [] as any;
+	elements = [] as unknown as typeof elements;
 	elements.versionId = 0;
 	elements.count = 0;
 	elements.start = -1;
@@ -1728,14 +1861,14 @@ onMounted(() => {
 	});
 
 	textBox = createTextBox();
-	(node as any).textBox = textBox;
+	node.textBox = textBox;
 
-	node.addEventListener('scroll', resize as any);
-	node.addEventListener('keydown', keydown as any);
-	node.addEventListener('pointerdown', pointerdown as any);
-	node.addEventListener('pointerup', pointerup as any);
-	attachDoubleclick(node, doubleclick as any);
-	node.addEventListener('wheel', wheel as any);
+	node.addEventListener('scroll', resize);
+	node.addEventListener('keydown', keydown);
+	node.addEventListener('pointerdown', pointerdown);
+	node.addEventListener('pointerup', pointerup);
+	attachDoubleclick(node, doubleclick);
+	node.addEventListener('wheel', wheel);
 
 	if (typeof ResizeObserver !== 'undefined') {
 		resizeObserver = new ResizeObserver(() => {
@@ -1747,45 +1880,45 @@ onMounted(() => {
 	}
 
 	windowKeydownHandler = windowKeydown;
-	window.addEventListener('keydown', windowKeydownHandler as any);
+	window.addEventListener('keydown', windowKeydownHandler);
 
-	(node as any).setViewIndex = setViewIndex;
-	(node as any).updateViewMode = updateViewMode;
-	(node as any).updateFiles = updateFiles;
-	(node as any).resize = resize;
-	(node as any).computeGridProperties = computeGridProperties;
-	(node as any).updateContentSize = updateContentSize;
-	(node as any).updateContentOffset = updateContentOffset;
-	(node as any).resetContentStyle = resetContentStyle;
-	(node as any).createFlatItems = createFlatItems;
-	(node as any).select = select;
-	(node as any).selectAll = selectAll;
-	(node as any).unselect = unselect;
-	(node as any).selectByPath = selectByPath;
-	(node as any).selectDefault = selectDefault;
-	(node as any).selectRelativeInGridMode = selectRelativeInGridMode;
-	(node as any).getDirName = getDirName;
-	(node as any).createFolder = createFolder;
-	(node as any).showInExplorer = showInExplorer;
-	(node as any).openFileLocation = openFileLocation;
-	(node as any).openFile = openFile;
-	(node as any).copyFiles = copyFiles;
-	(node as any).pasteFiles = pasteFiles;
-	(node as any).deleteFiles = deleteFiles;
-	(node as any).rename = rename;
-	(node as any).cancelRenaming = cancelRenaming;
-	(node as any).importFiles = importFiles;
-	(node as any).exportFile = exportFile;
-	(node as any).clearElements = clearElements;
-	(node as any).clear = clear;
-	(node as any).on = on;
-	(node as any).content = content;
+	node.setViewIndex = setViewIndex;
+	node.updateViewMode = updateViewMode;
+	node.updateFiles = updateFiles;
+	node.resize = resize;
+	node.computeGridProperties = computeGridProperties;
+	node.updateContentSize = updateContentSize;
+	node.updateContentOffset = updateContentOffset;
+	node.resetContentStyle = resetContentStyle;
+	node.createFlatItems = createFlatItems;
+	node.select = select;
+	node.selectAll = selectAll;
+	node.unselect = unselect;
+	node.selectByPath = selectByPath;
+	node.selectDefault = selectDefault;
+	node.selectRelativeInGridMode = selectRelativeInGridMode;
+	node.getDirName = getDirName;
+	node.createFolder = createFolder;
+	node.showInExplorer = showInExplorer;
+	node.openFileLocation = openFileLocation;
+	node.openFile = openFile;
+	node.copyFiles = copyFiles;
+	node.pasteFiles = pasteFiles;
+	node.deleteFiles = deleteFiles;
+	node.rename = rename;
+	node.cancelRenaming = cancelRenaming;
+	node.importFiles = importFiles;
+	node.exportFile = exportFile;
+	node.clearElements = clearElements;
+	node.clear = clear;
+	node.on = on;
+	node.content = content;
 	Object.defineProperty(node, 'selections', {
 		get: () => selections,
 		configurable: true
 	});
-	(node as any).elements = elements;
-	(node as any).links = props.links;
+	node.elements = elements;
+	node.links = props.links;
 	Object.defineProperty(node, 'viewIndex', {
 		get: () => viewIndex,
 		configurable: true
@@ -1793,7 +1926,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener('keydown', windowKeydownHandler as any);
+	window.removeEventListener('keydown', windowKeydownHandler);
 	resizeObserver?.disconnect?.();
 });
 

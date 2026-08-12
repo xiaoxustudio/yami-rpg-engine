@@ -27,7 +27,7 @@ interface PropertyWindowConfig {
 	>;
 	init?: (this: PropertyWindow) => void;
 	openData?: (defaults: Record<string, unknown>, key: string, value: unknown) => void;
-	saveData?: (key: string, read: (k: string) => any) => any;
+	saveData?: (key: string, read: (k: string) => unknown) => unknown;
 	subRelates?: Array<{
 		selector: string;
 		cases: Array<{ case: string; targets: string[] }>;

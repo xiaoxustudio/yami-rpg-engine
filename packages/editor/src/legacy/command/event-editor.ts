@@ -146,6 +146,13 @@ interface EventEditorList {
 	commandList?: unknown;
 }
 
+type EventCommandListShape = HTMLElement & {
+	innerHeight?: number;
+	resize(): void;
+	elements: unknown[] & { count: number };
+	deleteCommandBuffers(commands: EventCommands): void;
+};
+
 type EventEditorMethod = ((...args: any[]) => any) | null;
 
 interface EventEditorShape {
@@ -156,13 +163,13 @@ interface EventEditorShape {
 	close: ((id?: string) => void) | null;
 
 	list: HTMLElement & EventEditorList;
-	commandList: HTMLElement & { [k: string]: any; innerHeight?: number };
+	commandList: EventCommandListShape;
 	outerGutter: HTMLElement;
 	innerGutter: HTMLElement;
 	closing: boolean;
 	data: EventListItem[] | null;
 	caches: EventCommands[];
-	types: Record<string, any>;
+	types: Record<string, any[]>;
 	_initialized?: boolean;
 	initialize: (() => void) | null;
 	openLocalEvent: EventEditorMethod;
@@ -206,13 +213,13 @@ interface EventEditorShape {
 
 export const EventEditor: EventEditorShape = {
 	list: null as unknown as HTMLElement & EventEditorList,
-	commandList: null as unknown as HTMLElement & { [k: string]: any; innerHeight?: number },
+	commandList: null as unknown as EventCommandListShape,
 	outerGutter: null as unknown as HTMLElement,
 	innerGutter: null as unknown as HTMLElement,
 	closing: false,
 	data: null,
 	caches: [],
-	types: null as unknown as Record<string, any>,
+	types: null as unknown as Record<string, any[]>,
 	initialize: null,
 	openLocalEvent: null,
 	openGlobalEvent: null,
@@ -263,27 +270,29 @@ function ensureDomBound() {
 	const list = $('#event-open-list');
 	if (!list) return;
 	EventEditor.list = list as unknown as HTMLElement & EventEditorList;
-	EventEditor.commandList = $('#event-commands');
+	EventEditor.commandList = $('#event-commands') as unknown as EventCommandListShape;
 	EventEditor.outerGutter = $('#event-commands-gutter-outer');
 	EventEditor.innerGutter = $('#event-commands-gutter-inner');
 	EventEditor.list.lastScrollTop = 0;
-	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.selectIndex = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.close = null;
 	EventEditor.list.closeMultiple = null;
 	EventEditor.list.closeBelow = null;
 	EventEditor.list.closeOthers = null;
 	EventEditor.list.closeAll = null;
-	EventEditor.list.saveScroll = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.restoreScroll = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.saveScroll = null as unknown as (...args: unknown[]) => void;
+	EventEditor.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.defineProperties = null;
 	EventEditor.list.createLocalEventItem = null;
 	EventEditor.list.createGlobalEventItem = null;
-	EventEditor.list.createIcon = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.updateItemClass = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.createIcon = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.createInitText = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.updateInitText = null as unknown as (...args: unknown[]) => any;
-	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => any;
+	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
+		((item: EventListItem) => HTMLElement);
+	EventEditor.list.updateItemClass = null as unknown as (...args: unknown[]) => void;
+	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
+		((item: EventListItem) => HTMLElement);
+	EventEditor.list.createInitText = null as unknown as (...args: unknown[]) => void;
+	EventEditor.list.updateInitText = null as unknown as (...args: unknown[]) => void;
+	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.closeButtonClick = null;
 	bindListMethods();
 }
@@ -490,10 +499,10 @@ function bindListMethods() {
 		}
 	};
 
-	list.updateItemName = function (this: HTMLElement & EventEditorList, item: any) {
+	list.updateItemName = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		TreeList.prototype.updateItemName.call(this, item);
 		this.updateInitText!(item);
-	};
+	} as ((item: unknown) => unknown) & ((item: EventListItem) => void);
 
 	list.closeButtonClick = function (this: HTMLElement & EventEditorList, event: MouseEvent) {
 		EventEditor.list.close!(
@@ -863,7 +872,10 @@ EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: Even
 			item = this.getItemById!(id);
 			if (!item) {
 				item = list.createGlobalEventItem!(id!);
-				TreeList.createParents!([item], null);
+				TreeList.createParents!(
+					[item] as unknown as Parameters<typeof TreeList.createParents>[0],
+					null
+				);
 				this.data!.push(item);
 			}
 		} else {
@@ -871,7 +883,10 @@ EventEditor.openRelatedEvents = function (this: EventEditorShape, contexts: Even
 			item = this.getItemByEvent!(event);
 			if (!item) {
 				item = list.createLocalEventItem!(false, filter, name!, event!, null);
-				TreeList.createParents!([item], null);
+				TreeList.createParents!(
+					[item] as unknown as Parameters<typeof TreeList.createParents>[0],
+					null
+				);
 				this.data!.push(item);
 			}
 		}
@@ -1130,7 +1145,9 @@ EventEditor.openCommandList = function (this: EventEditorShape, item: EventListI
 
 	const { commands, filter } = item;
 
-	$('#event-type').loadItems(Enum.getMergedItems!(this.types[filter], filter + '-event'));
+	$('#event-type').loadItems(
+		Enum.getMergedItems!(this.types?.[filter] ?? this.types?.all, filter + '-event')
+	);
 
 	$('#event-type').createTooltip();
 
@@ -1155,7 +1172,7 @@ EventEditor.closeCommandList = function (this: EventEditorShape) {
 
 EventEditor.unpackOpenEvents = function (this: EventEditorShape) {
 	const copies: EventListItem[] = [];
-	const events = Editor.project!.openEvents;
+	const events = Editor.project!.openEvents!;
 	let i = events.length;
 	while (--i >= 0) {
 		if (Data.events[events[i].id] === undefined) {
@@ -1166,7 +1183,7 @@ EventEditor.unpackOpenEvents = function (this: EventEditorShape) {
 		if ('name' in item) {
 			item.name = EventEditor.getGlobalEventName!(item.id);
 			EventEditor.list.updateItemName!(item);
-			copies.push(item);
+			copies.push(item as EventListItem);
 		} else {
 			copies.push(EventEditor.list.createGlobalEventItem!(item.id));
 		}
@@ -1217,7 +1234,7 @@ EventEditor.updateGutter = function (this: EventEditorShape, force: boolean) {
 	const { scrollTop } = commandList;
 	const { outerGutter, innerGutter } = EventEditor;
 	const start = Math.floor(scrollTop / 20) + 1;
-	const end = (commandList.elements as any[] & { count: number }).count + 1;
+	const end = commandList.elements.count + 1;
 	if (innerGutter.start !== start || force) {
 		innerGutter.start = start;
 		const nodes = innerGutter.childNodes;

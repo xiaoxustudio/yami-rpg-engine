@@ -18,13 +18,23 @@ Command.cases.changeActorSprite = new CommandSchema({
 		$('#changeActorSprite-confirm').on('click', () => this.save!());
 		// changeActorSprite-animationId write 经 Vue 模板转发（changeActorSprite.vue @write → Command.cases.changeActorSprite.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		const items = Animation.getSpriteListItems!(event.value);
 		const elSpriteId = $('#changeActorSprite-spriteId');
 		elSpriteId.loadItems(items);
 		write(elSpriteId, read(elSpriteId));
 	},
-	customParse({ actor, animationId, spriteId, image }: any) {
+	customParse({
+		actor,
+		animationId,
+		spriteId,
+		image
+	}: {
+		actor: unknown;
+		animationId: unknown;
+		spriteId: unknown;
+		image: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseFileName!(animationId))

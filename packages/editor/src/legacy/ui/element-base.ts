@@ -1,29 +1,72 @@
 import { UI } from './ui-window.ts';
-import { Matrix } from '@/webgl/matrix2.ts';
+import { Matrix } from '../webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
-UI.Element = class UIElement {
-	node: any;
+interface UIElementShape {
+	[k: string]: any;
+}
+
+interface UINodeShape {
+	class: string;
+	children: UINodeShape[];
+	instances: { remove: (element: unknown) => void };
+	[k: string]: unknown;
+}
+
+interface UIParentShape {
 	x: number;
 	y: number;
 	width: number;
 	height: number;
-	matrix: any;
 	opacity: number;
-	transform: any;
-	parent: any;
-	children: any[];
+	matrix: Matrix;
+	children: UIElementShape[];
+	[k: string]: any;
+}
+
+interface TransformShape {
+	x: number;
+	y: number;
+	x2: number;
+	y2: number;
+	width: number;
+	width2: number;
+	height: number;
+	height2: number;
+	anchorX: number;
+	anchorY: number;
+	rotation: number;
+	scaleX: number;
+	scaleY: number;
+	skewX: number;
+	skewY: number;
+	opacity: number;
+	[k: string]: unknown;
+}
+
+UI.Element = class UIElement {
+	declare node: UINodeShape | null;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+	matrix: Matrix;
+	opacity: number;
+	transform: TransformShape;
+	parent: UIParentShape | null;
+	children: UIElementShape[];
 	visible: boolean;
 	connected: boolean;
+	declare resize: () => void;
 
-	constructor(data: any = {}) {
+	constructor(data: { transform?: TransformShape | null; hidden?: boolean } = {}) {
 		this.x = 0;
 		this.y = 0;
 		this.width = 0;
 		this.height = 0;
 		this.matrix = new Matrix();
 		this.opacity = 1;
-		this.transform = data.transform;
+		this.transform = data.transform as TransformShape;
 		this.parent = null;
 		this.children = [];
 		this.visible = !data.hidden;
@@ -161,9 +204,9 @@ UI.Element = class UIElement {
 		node.instances.remove(this);
 	}
 
-	appendChild(element: any) {
+	appendChild(element: UIElementShape) {
 		if (element && this.children.append(element)) {
-			element.parent instanceof UI.Element && element.parent.children.remove(element);
+			element.parent instanceof UI.Element && element.parent!.children.remove(element);
 			element.parent = this;
 			if (this.connected) {
 				!element.connected && element.connect();
@@ -172,14 +215,14 @@ UI.Element = class UIElement {
 		}
 	}
 
-	appendChildTo(element: any, index: number) {
+	appendChildTo(element: UIElementShape, index: number) {
 		if (element instanceof UI.Element) {
 			if (element.parent instanceof UI.Element) {
 				UI.root.tryUpdateReferenceElements(element.parent);
-				element.parent.children.remove(element);
+				element.parent!.children.remove(element);
 			}
 			if (element.parent instanceof UI.Window) {
-				element.parent.requestResizing();
+				element.parent!.requestResizing();
 			}
 			element.parent = this;
 			this.children.splice(index, 0, element);
@@ -192,10 +235,10 @@ UI.Element = class UIElement {
 	}
 
 	remove() {
-		if (this.parent instanceof UI.Element && this.parent.children.remove(this)) {
+		if (this.parent instanceof UI.Element && this.parent!.children.remove(this)) {
 			UI.root.tryUpdateReferenceElements(this.parent);
 			if (this.parent instanceof UI.Window) {
-				this.parent.requestResizing();
+				this.parent!.requestResizing();
 			}
 			this.parent = null;
 			if (this.connected) {
@@ -209,7 +252,7 @@ UI.Element = class UIElement {
 			return;
 		}
 
-		const parent = this.parent;
+		const parent = this.parent!;
 		const matrix = this.matrix.set(parent.matrix);
 		const transform = this.transform;
 		const parentWidth = parent.width;
@@ -244,7 +287,7 @@ UI.Element = class UIElement {
 		}
 	}
 
-	contains(element: any) {
+	contains(element: UIParentShape | null) {
 		while (element) {
 			if (element === this) {
 				return true;

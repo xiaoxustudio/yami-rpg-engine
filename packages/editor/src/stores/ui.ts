@@ -2,9 +2,44 @@ import { defineStore } from 'pinia';
 import { UI } from '@/ui/ui-window.ts';
 import { shallowRef } from 'vue';
 
+interface UINodeShape {
+	class: string;
+	children: UINodeShape[];
+	[key: string]: unknown;
+}
+
+interface UIContextShape {
+	meta: { guid: string; path: string };
+	ui?: { width: number; height: number; nodes: UINodeShape[] } & Record<string, unknown>;
+	editor?: {
+		target: UINodeShape | null;
+		root: UINodeShape | null;
+		history: History;
+		centerX: number;
+		centerY: number;
+	} & Record<string, unknown>;
+	fontChanged?: boolean;
+	languageChanged?: boolean;
+	scalingChanged?: boolean;
+	[key: string]: unknown;
+}
+
+interface UIPrefabShape {
+	name: string;
+	presetId: string;
+	transform: { x: number; y: number; [key: string]: unknown };
+	[key: string]: unknown;
+}
+
+interface UIControlPoint {
+	x: number;
+	y: number;
+	angle: number;
+}
+
 export const useUIStore = defineStore('ui', () => {
 	const state = shallowRef<string>('closed');
-	const target = shallowRef<any>(null);
+	const target = shallowRef<UINodeShape | null>(null);
 	const zoom = shallowRef<number | null>(null);
 	const width = shallowRef<number | null>(null);
 	const height = shallowRef<number | null>(null);
@@ -17,7 +52,7 @@ export const useUIStore = defineStore('ui', () => {
 		height.value = UI?.height ?? null;
 	}
 
-	function open(context: any) {
+	function open(context: UIContextShape) {
 		UI?.open?.(context);
 	}
 
@@ -33,7 +68,7 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.requestRendering?.();
 	}
 
-	function load(context: any) {
+	function load(context: UIContextShape) {
 		UI?.load?.(context);
 	}
 
@@ -41,7 +76,7 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.save?.();
 	}
 
-	function destroy(context: any) {
+	function destroy(context: UIContextShape) {
 		UI?.destroy?.(context);
 	}
 
@@ -61,11 +96,16 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.create?.(kind, x, y);
 	}
 
-	function createPrefab(prefab: any, parent: any, x?: number, y?: number) {
+	function createPrefab(
+		prefab: UIPrefabShape,
+		parent: UINodeShape | null,
+		x?: number,
+		y?: number
+	) {
 		UI?.createPrefab?.(prefab, parent, x, y);
 	}
 
-	function createShortcut(item: any) {
+	function createShortcut(item: UINodeShape) {
 		UI?.createShortcut?.(item);
 	}
 
@@ -93,11 +133,11 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.setSize?.(w, h);
 	}
 
-	function setHover(hover: any) {
+	function setHover(hover: UINodeShape | null) {
 		UI?.setHover?.(hover);
 	}
 
-	function setTarget(targetValue: any) {
+	function setTarget(targetValue: UINodeShape | null) {
 		UI?.setTarget?.(targetValue);
 	}
 
@@ -121,7 +161,7 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.rotateTarget?.(rotation);
 	}
 
-	function setControlPoint(point: any) {
+	function setControlPoint(point: UIControlPoint | null) {
 		UI?.setControlPoint?.(point);
 	}
 
@@ -157,11 +197,11 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.updateAllPrinters?.();
 	}
 
-	function updateElement(targetValue: any) {
+	function updateElement(targetValue: UINodeShape) {
 		UI?.updateElement?.(targetValue);
 	}
 
-	function deleteElement(targetValue: any) {
+	function deleteElement(targetValue: UINodeShape) {
 		UI?.deleteElement?.(targetValue);
 	}
 
@@ -169,43 +209,43 @@ export const useUIStore = defineStore('ui', () => {
 		UI?.switchSettings?.();
 	}
 
-	function registerPreset(node: any) {
+	function registerPreset(node: UINodeShape) {
 		UI?.registerPreset?.(node);
 	}
 
-	function unregisterPreset(node: any) {
+	function unregisterPreset(node: UINodeShape) {
 		UI?.unregisterPreset?.(node);
 	}
 
-	function hasPrefab(node: any) {
+	function hasPrefab(node: UINodeShape) {
 		return UI?.hasPrefab?.(node);
 	}
 
-	function setAsPrefab(node: any) {
+	function setAsPrefab(node: UINodeShape) {
 		UI?.setAsPrefab?.(node);
 	}
 
-	function unsetAsPrefab(node: any) {
+	function unsetAsPrefab(node: UINodeShape) {
 		UI?.unsetAsPrefab?.(node);
 	}
 
-	function clearInvalidPrefabs(uiPrefabs: any[]) {
+	function clearInvalidPrefabs(uiPrefabs: string[]) {
 		UI?.clearInvalidPrefabs?.(uiPrefabs);
 	}
 
-	function saveToConfig(config: any) {
+	function saveToConfig(config: { colors: Record<string, unknown> }) {
 		UI?.saveToConfig?.(config);
 	}
 
-	function loadFromConfig(config: any) {
+	function loadFromConfig(config: { colors: Record<string, unknown> }) {
 		UI?.loadFromConfig?.(config);
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: { ui: { zoom?: number }; uiPrefabs?: string[] }) {
 		UI?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: { ui: { zoom: number } }) {
 		UI?.loadFromProject?.(project);
 	}
 

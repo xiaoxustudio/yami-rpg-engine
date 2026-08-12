@@ -7,16 +7,24 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface SetNumberOperand {
+	operation: string;
+	type: string;
+	value?: number;
+	property: string;
+	data: string;
+}
+
 Command.cases.setNumber = new CommandSchema({
 	name: 'setNumber',
 	onInitialize() {
 		$('#setNumber-confirm').on('click', () => this.save!());
 		$('#setNumber-operands').bind(NumberOperand);
-		$('#setNumber').on('closed', (event: any) => {
+		$('#setNumber').on('closed', (event: Event) => {
 			clear($('#setNumber-operands'));
 		});
 	},
-	parseOperation(operation: any) {
+	parseOperation(operation: string) {
 		switch (operation) {
 			case 'set':
 				return ' = ';
@@ -32,7 +40,7 @@ Command.cases.setNumber = new CommandSchema({
 				return ' %= ';
 		}
 	},
-	parseOperands(operands: any) {
+	parseOperands(operands: SetNumberOperand[]) {
 		let expression = '';
 		let currentPriority;
 		let nextPriority = false;
@@ -70,7 +78,15 @@ Command.cases.setNumber = new CommandSchema({
 		}
 		return expression;
 	},
-	customParse({ variable, operation, operands }: any) {
+	customParse({
+		variable,
+		operation,
+		operands
+	}: {
+		variable: unknown;
+		operation: string;
+		operands: SetNumberOperand[];
+	}) {
 		const varDesc = Command.parseVariable!(variable, 'number', operation === 'set');
 		const operator = Command.setOperatorColor!(this.parseOperation!(operation));
 		const expression = this.parseOperands!(operands);
@@ -84,7 +100,11 @@ Command.cases.setNumber = new CommandSchema({
 	customLoad({
 		variable = { type: 'local', key: '' },
 		operation = 'set',
-		operands = [{ operation: 'add', type: 'constant', value: 0 }]
+		operands = [{ operation: 'add', type: 'constant', value: 0 } as unknown as SetNumberOperand]
+	}: {
+		variable?: unknown;
+		operation?: string;
+		operands?: SetNumberOperand[];
 	}) {
 		const write = getElementWriter('setNumber');
 		write('variable', variable);

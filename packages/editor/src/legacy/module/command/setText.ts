@@ -15,11 +15,17 @@ Command.cases.setText = new CommandSchema({
 	onInitialize() {
 		$('#setText-confirm').on('click', () => this.save!());
 		$('#setText-properties').bind(TextProperty);
-		$('#setText').on('closed', (event: any) => {
+		$('#setText').on('closed', (event: Event) => {
 			clear($('#setText-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(TextProperty.parse!(property));

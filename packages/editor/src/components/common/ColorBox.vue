@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMColorBox } from '@ui-kit';
-import { dispatchChangeEvent } from '@/util/element-utils';
 import { Color } from '@/tools/color-picker-window';
 
 interface ColorBoxElement extends HTMLElement {
@@ -26,7 +25,7 @@ interface ColorBoxElement extends HTMLElement {
 	disable(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -58,7 +57,7 @@ const ym = ref<{
 	disable(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -81,7 +80,7 @@ const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -108,7 +107,7 @@ onMounted(() => {
 	el.enable = enable;
 	el.disable = disable;
 	el.on = on;
-	el.addEventListener('keydown', (event: any) => {
+	el.addEventListener('keydown', (event: KeyboardEvent) => {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -119,12 +118,9 @@ onMounted(() => {
 				break;
 		}
 	});
-	on('input', (e: any) => {
+	on('input', (e: Event & { value?: unknown }) => {
 		emit('input', e.value);
 		emit('update:modelValue', e.value);
-	});
-	el.addEventListener('change', () => {
-		dispatchChangeEvent(el);
 	});
 	write(props.modelValue);
 	if (props.disabled) disable();

@@ -83,7 +83,18 @@ Scene.setTileSize = function (this: typeof Scene, tileWidth: number, tileHeight:
 	this.requestRendering();
 };
 
-Scene.setTilemapSize = function (this: typeof Scene, tilemap: any, width: number, height: number) {
+Scene.setTilemapSize = function (
+	this: typeof Scene,
+	tilemap: {
+		width: number;
+		height: number;
+		changed?: boolean;
+		tiles: Uint32Array & { rowOffset?: number };
+		tilesetMap: Record<string, string>;
+	},
+	width: number,
+	height: number
+) {
 	if (tilemap.width === width && tilemap.height === height) {
 		return;
 	}
@@ -99,7 +110,7 @@ Scene.setTilemapSize = function (this: typeof Scene, tilemap: any, width: number
 	const dTiles = this.createTiles(width, height);
 	const dro = dTiles.rowOffset;
 	const sTiles = tilemap.tiles;
-	const sro = sTiles.rowOffset;
+	const sro = sTiles.rowOffset!;
 	const ex = Math.min(width, tilemap.width);
 	const ey = Math.min(height, tilemap.height);
 	for (let y = 0; y < ey; y++) {
@@ -187,7 +198,7 @@ Scene.getTileCoords = (function IIFE() {
 
 Scene.getConvertedCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return (tile: any) => {
+	return (tile: { x: number; y: number }) => {
 		point.x = tile.x * Scene.tileWidth;
 		point.y = tile.y * Scene.tileHeight;
 		return point;
@@ -196,7 +207,11 @@ Scene.getConvertedCoords = (function IIFE() {
 
 Scene.getParallaxAnchor = (function IIFE() {
 	const point = { x: 0, y: 0 };
-	return function (this: typeof Scene, parallax: any, tiled = false) {
+	return function (
+		this: typeof Scene,
+		parallax: { x: number; y: number; parallaxFactorX: number; parallaxFactorY: number },
+		tiled = false
+	) {
 		const tw = this.tileWidth;
 		const th = this.tileHeight;
 		const cx = this.scrollCenterX;

@@ -5,7 +5,7 @@ import { Command } from './command-object.ts';
 import { IfCondition, type IfConditionData } from './conditional-condition-window.ts';
 
 interface IfBranchTarget {
-	save: () => any;
+	save: () => unknown;
 	inserting?: boolean;
 	[k: string]: unknown;
 }
@@ -116,5 +116,5 @@ IfBranch.windowClosed = function (this: typeof IfBranch, event: Event): void {
 };
 
 IfBranch.confirm = function (this: typeof IfBranch, event: Event): void {
-	return IfBranch.target?.save?.();
+	IfBranch.target?.save?.();
 };

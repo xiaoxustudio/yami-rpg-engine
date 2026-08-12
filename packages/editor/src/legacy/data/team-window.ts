@@ -14,6 +14,7 @@ const Clipboard = getGlobalClipboard();
 import { GUID } from '@/file/guid.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
+import type { EditorProjectShape } from '@app/stores/editor';
 
 type TeamData = {
 	id: string;
@@ -22,6 +23,11 @@ type TeamData = {
 	relations: Record<string, number>;
 	collisions: Record<string, number>;
 	[k: string]: any;
+};
+
+type TeamListElement = HTMLElement & {
+	data: TeamData[];
+	deleteNode(item: TeamData): void;
 };
 
 export const Team = {
@@ -33,7 +39,7 @@ export const Team = {
 	open: null as unknown as (data?: unknown) => void,
 	createId: null as unknown as () => string,
 	createData: null as unknown as () => TeamData,
-	getItemById: null as unknown as (id: string) => any,
+	getItemById: null as unknown as (id: string) => ReturnType<typeof Easing.getItemById>,
 	unpackTeams: null as unknown as () => void,
 	packTeams: null as unknown as () => void,
 	windowClose: null as unknown as (event: Event) => void,
@@ -56,9 +62,9 @@ export const Team = {
 	list_createMarks: null as unknown as (item: TeamData) => void,
 	list_updateMarks: null as unknown as (item: TeamData) => void,
 	state: null as string | null,
-	teams: null as Record<string, any> | null,
-	saveToProject: null as ((project: any) => void) | null,
-	loadFromProject: null as ((project: any) => void) | null,
+	teams: null as Record<string, TeamData> | null,
+	saveToProject: null as ((project: EditorProjectShape) => void) | null,
+	loadFromProject: null as ((project: EditorProjectShape) => void) | null,
 	close: null as (() => void) | null
 };
 
@@ -67,28 +73,26 @@ function ensureDomBound() {
 	const list = $('#team-list');
 	if (!list) return;
 	Team.list = list;
-	list.insert = null as unknown as (...args: unknown[]) => any;
-	list.copy = null as unknown as (...args: unknown[]) => any;
-	list.paste = null as unknown as (...args: unknown[]) => any;
-	list.delete = null as unknown as (...args: unknown[]) => any;
-	list.saveSelection = null as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
-	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
-		...args: unknown[]
-	) => any;
-	list.createIcon = Team.list_createIcon as unknown as (...args: unknown[]) => any;
-	list.updateIcon = Team.list_updateIcon as unknown as (...args: unknown[]) => any;
-	list.updateItemName = Team.list_updateItemName as unknown as (...args: unknown[]) => any;
-	list.addElementClass = Easing.list_addElementClass as unknown as (...args: unknown[]) => any;
-	list.updateTextNode = Easing.list_updateTextNode as unknown as (...args: unknown[]) => any;
+	list.insert = null as unknown as (...args: unknown[]) => void;
+	list.copy = null as unknown as (...args: unknown[]) => void;
+	list.paste = null as unknown as (...args: unknown[]) => void;
+	list.delete = null as unknown as (...args: unknown[]) => void;
+	list.saveSelection = null as unknown as (...args: unknown[]) => void;
+	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
+	list.updateNodeElement = Easing.list_updateNodeElement;
+	list.createIcon = Team.list_createIcon as (item: unknown) => unknown;
+	list.updateIcon = Team.list_updateIcon as (item: unknown) => unknown;
+	list.updateItemName = Team.list_updateItemName as (item: unknown) => unknown;
+	list.addElementClass = Easing.list_addElementClass;
+	list.updateTextNode = Easing.list_updateTextNode;
 	list.createMarks = Team.list_createMarks;
 	list.updateMarks = Team.list_updateMarks;
 	list.insert = Team.list_insert;
 	list.copy = Team.list_copy;
 	list.paste = Team.list_paste;
 	list.delete = Team.list_delete;
-	list.saveSelection = Team.list_saveSelection as unknown as (...args: unknown[]) => any;
-	list.restoreSelection = Team.list_restoreSelection as unknown as (...args: unknown[]) => any;
+	list.saveSelection = Team.list_saveSelection;
+	list.restoreSelection = Team.list_restoreSelection;
 }
 
 Team.initialize = function (this: typeof Team) {
@@ -247,7 +251,7 @@ Team.windowClosed = function (this: typeof Team, event: Event) {
 	this.list!.clear();
 }.bind(Team);
 
-Team.listKeydown = function (this: any, event: KeyboardEvent) {
+Team.listKeydown = function (this: TeamListElement, event: KeyboardEvent) {
 	const item = this.read();
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -272,7 +276,7 @@ Team.listKeydown = function (this: any, event: KeyboardEvent) {
 	}
 };
 
-Team.listPointerdown = function (this: any, event: PointerEvent) {
+Team.listPointerdown = function (this: TeamListElement, event: PointerEvent) {
 	switch (event.button) {
 		case 0:
 			if (hasClass(event.target, 'team-icon')) {
@@ -403,7 +407,7 @@ Team.confirm = function (this: typeof Team, event: Event) {
 	Window.close!('team');
 }.bind(Team);
 
-Team.list_insert = function (this: any, dItem: TeamData | null) {
+Team.list_insert = function (this: TeamListElement, dItem: TeamData | null) {
 	if (this.data.length < Team.maximum!) {
 		const team = Team.createData();
 		const id = team.id;
@@ -421,7 +425,7 @@ Team.list_copy = function (item: TeamData | null) {
 	}
 };
 
-Team.list_paste = function (this: any, dItem: TeamData | null) {
+Team.list_paste = function (this: TeamListElement, dItem: TeamData | null) {
 	const copy = Clipboard.read('yami.data.team');
 	if (copy) {
 		const dId = Team.createId();
@@ -450,7 +454,7 @@ Team.list_paste = function (this: any, dItem: TeamData | null) {
 	}
 };
 
-Team.list_delete = function (this: any, item: TeamData) {
+Team.list_delete = function (this: TeamListElement, item: TeamData) {
 	const items = this.data;
 	if (items.length > 1) {
 		const get = Local.createGetter!('confirmation');
@@ -480,7 +484,7 @@ Team.list_delete = function (this: any, item: TeamData) {
 	}
 };
 
-Team.list_saveSelection = function (this: any) {
+Team.list_saveSelection = function (this: TeamListElement) {
 	const { teams } = Data;
 	if (teams.selection === undefined) {
 		Object.defineProperty(teams, 'selection', {
@@ -494,7 +498,7 @@ Team.list_saveSelection = function (this: any) {
 	}
 };
 
-Team.list_restoreSelection = function (this: any) {
+Team.list_restoreSelection = function (this: TeamListElement) {
 	const id = Data.teams.selection;
 	const item = Team.getItemById(id) ?? this.data[0];
 	this.select(item);
@@ -524,7 +528,7 @@ Team.list_updateIcon = function (item: TeamData) {
 	}
 };
 
-Team.list_updateItemName = function (this: any, item: TeamData) {
+Team.list_updateItemName = function (this: TeamListElement, item: TeamData) {
 	this.updateTextNode(item);
 };
 

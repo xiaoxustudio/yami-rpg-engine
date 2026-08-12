@@ -1,47 +1,61 @@
 ﻿export interface SelectBoxApiOptions {
 	id?: string;
-	modelValue?: any;
-	items?: any[];
+	modelValue?: unknown;
+	items?: unknown[];
 	disabled?: boolean;
 	popup?: boolean | ((box: SelectBoxApi) => void);
 }
 
-export interface SelectBoxApi extends HTMLElement {
-	info: HTMLElement & { [k: string]: any };
-	dataItems: any[];
-	dataValue: any;
-	relations: any[];
+export interface SelectItem {
+	value: unknown;
+	name?: string;
+	tip?: string;
+	[k: string]: unknown;
+}
+
+export interface RelationEntry {
+	case: unknown | unknown[];
+	targets: HTMLElement[];
+}
+
+type ToggleableElement = HTMLElement & { enable?: () => void; disable?: () => void };
+
+export type SelectBoxApi = HTMLElement & {
+	info: HTMLElement;
+	dataItems: SelectItem[];
+	dataValue: unknown;
+	relations: RelationEntry[];
 	invalid: boolean;
 	hideUnrelated: boolean;
-	savedValue: any;
+	savedValue: unknown;
 	originalTip: string;
 	writeEventEnabled: boolean;
 	inputEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	write2(value: any): void;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): unknown;
+	write2(value: unknown): void;
 	writeDefault(): void;
-	input(...args: unknown[]): any;
-	update(...args: unknown[]): any;
-	reselect(...args: unknown[]): any;
+	input(...args: unknown[]): unknown;
+	update(...args: unknown[]): unknown;
+	reselect(...args: unknown[]): unknown;
 	save(): void;
 	restore(): void;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	loadItems(...args: unknown[]): any;
-	setItemNames(options: any): void;
-	clear(...args: unknown[]): any;
+	enable(...args: unknown[]): unknown;
+	disable(...args: unknown[]): unknown;
+	loadItems(...args: unknown[]): unknown;
+	setItemNames(options: Record<string, string | { name?: string; tip?: string }>): void;
+	clear(...args: unknown[]): unknown;
 	enableHiddenMode(): SelectBoxApi;
-	relate(...args: unknown[]): any;
+	relate(...args: unknown[]): unknown;
 	toggleRelatedElements(): void;
-	enableElement(element: any): void;
-	disableElement(element: any): void;
-	on(...args: unknown[]): any;
-	keydown(event: any): void;
-	pointerdown(event: any): void;
+	enableElement(element: ToggleableElement): void;
+	disableElement(element: ToggleableElement): void;
+	on(...args: unknown[]): unknown;
+	keydown(event: KeyboardEvent): void;
+	pointerdown(event: PointerEvent): void;
 	closePopup(): void;
-}
+};
 
 const subtract = <T>(a: T[], b: T[]): T[] => a.filter((x) => !b.includes(x));
 
@@ -61,12 +75,12 @@ export function attachSelectBoxApi(
 	box.info = text;
 	box.tabIndex = 0;
 
-	const dataItems: any[] = options.items ?? [];
-	let dataValue: any = options.modelValue ?? null;
-	let relations: any[] = [];
+	const dataItems: SelectItem[] = (options.items ?? []) as SelectItem[];
+	let dataValue: unknown = options.modelValue ?? null;
+	let relations: RelationEntry[] = [];
 	let invalid = false;
 	let hideUnrelated = false;
-	let savedValue: any = undefined;
+	let savedValue: unknown = undefined;
 	let writeEventEnabled = false;
 	let inputEventEnabled = false;
 
@@ -78,7 +92,7 @@ export function attachSelectBoxApi(
 				const selection = entries.find((entry) =>
 					entry.case instanceof Array ? entry.case.includes(value) : entry.case === value
 				);
-				const deferredList: any[] = [];
+				const deferredList: RelationEntry[] = [];
 				for (const entry of entries) {
 					if (
 						entry.case instanceof Array
@@ -109,7 +123,7 @@ export function attachSelectBoxApi(
 		}
 	};
 
-	const enableElement = (element: any): void => {
+	const enableElement = (element: ToggleableElement): void => {
 		if (typeof element.enable === 'function') {
 			element.enable();
 		} else {
@@ -120,14 +134,14 @@ export function attachSelectBoxApi(
 			while (node instanceof Text) {
 				node = node.previousSibling;
 			}
-			if (node && node.classList?.contains('text')) {
+			if (node && (node as HTMLElement).classList?.contains('text')) {
 				(node as HTMLElement).style.display = '';
 			}
 			element.style.display = '';
 		}
 	};
 
-	const disableElement = (element: any): void => {
+	const disableElement = (element: ToggleableElement): void => {
 		if (typeof element.disable === 'function') {
 			element.disable();
 		} else {
@@ -138,7 +152,7 @@ export function attachSelectBoxApi(
 			while (node instanceof Text) {
 				node = node.previousSibling;
 			}
-			if (node && node.classList?.contains('text')) {
+			if (node && (node as HTMLElement).classList?.contains('text')) {
 				(node as HTMLElement).style.display = 'none';
 			}
 			element.style.display = 'none';
@@ -169,21 +183,21 @@ export function attachSelectBoxApi(
 		box.invalid = invalid;
 	};
 
-	const write = (value: any): void => {
+	const write = (value: unknown): void => {
 		dataValue = value;
-		box.dataValue = value;
+		box.dataValue = value as string | number | boolean | Record<string, any> | null;
 		update();
 		if (!box.classList.contains('disabled')) {
 			toggleRelatedElements();
 		}
 		if (writeEventEnabled) {
-			const writeEvent = new Event('write') as Event & { value: any };
+			const writeEvent = new Event('write') as Event & { value?: unknown };
 			writeEvent.value = dataValue;
 			box.dispatchEvent(writeEvent);
 		}
 	};
 
-	const write2 = (value: any): void => {
+	const write2 = (value: unknown): void => {
 		for (const item of dataItems) {
 			if (item.value === value) {
 				write(value);
@@ -197,14 +211,14 @@ export function attachSelectBoxApi(
 		write(dataItems[0]?.value);
 	};
 
-	const input = (value: any): void => {
+	const input = (value: unknown): void => {
 		const last = dataValue;
 		if (last !== value) {
 			write(value);
 			if (inputEventEnabled) {
 				const inputEvent = new Event('input', { bubbles: true }) as Event & {
-					last: any;
-					value: any;
+					last?: unknown;
+					value?: unknown;
 				};
 				inputEvent.last = last;
 				inputEvent.value = dataValue;
@@ -275,18 +289,20 @@ export function attachSelectBoxApi(
 		}
 	};
 
-	const loadItems = (items: any): void => {
-		dataItems.splice(0, dataItems.length, ...items);
+	const loadItems = (items: unknown[]): void => {
+		dataItems.splice(0, dataItems.length, ...(items as SelectItem[]));
 		if (dataValue !== null && dataValue !== undefined) {
 			update();
 		}
 		renderPopup();
 	};
 
-	const setItemNames = (itemNames: any): void => {
+	const setItemNames = (
+		itemNames: Record<string, string | { name?: string; tip?: string }>
+	): void => {
 		for (const item of dataItems) {
 			const key = item.value;
-			const option = itemNames[key];
+			const option = itemNames[key as string];
 			switch (typeof option) {
 				case 'string':
 					item.name = option;
@@ -319,13 +335,13 @@ export function attachSelectBoxApi(
 		return box;
 	};
 
-	const relate = (entries: any): void => {
-		relations = entries;
+	const relate = (entries: unknown): void => {
+		relations = entries as RelationEntry[];
 	};
 
 	const on = (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void => {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
@@ -339,7 +355,7 @@ export function attachSelectBoxApi(
 		}
 	};
 
-	const read = (): any => dataValue;
+	const read = (): unknown => dataValue;
 
 	let popupEl: HTMLElement | null = null;
 	let documentPointerdown: ((event: PointerEvent) => void) | null = null;
@@ -353,7 +369,7 @@ export function attachSelectBoxApi(
 			if (item.value === dataValue) {
 				row.classList.add('selected');
 			}
-			row.textContent = item.name;
+			row.textContent = item.name as string;
 			row.addEventListener('pointerdown', (event: PointerEvent) => {
 				event.stopPropagation();
 				input(item.value);
@@ -429,7 +445,7 @@ export function attachSelectBoxApi(
 	};
 
 	box.dataItems = dataItems;
-	box.dataValue = dataValue;
+	box.dataValue = dataValue as string | number | boolean | Record<string, any> | null;
 	box.relations = relations;
 	box.invalid = invalid;
 	box.hideUnrelated = hideUnrelated;

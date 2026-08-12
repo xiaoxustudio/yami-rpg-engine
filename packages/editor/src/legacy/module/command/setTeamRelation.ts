@@ -19,20 +19,28 @@ Command.cases.setTeamRelation = new CommandSchema({
 			{ name: 'Enemy', value: 0 },
 			{ name: 'Friend', value: 1 }
 		]);
-		$('#setTeamRelation').on('open', function (event: any) {
+		$('#setTeamRelation').on('open', function (event: Event) {
 			const items = Data.createTeamItems!();
 			$('#setTeamRelation-teamId1').loadItems(items);
 			$('#setTeamRelation-teamId2').loadItems(items);
 		});
-		$('#setTeamRelation').on('closed', function (event: any) {
+		$('#setTeamRelation').on('closed', function (event: Event) {
 			clear($('#setTeamRelation-teamId1'));
 			clear($('#setTeamRelation-teamId2'));
 		});
 	},
-	parseRelation(relation: any) {
+	parseRelation(relation: number) {
 		return Local.get!('command.setTeamRelation.relation.' + relation);
 	},
-	customParse({ teamId1, teamId2, relation }: any) {
+	customParse({
+		teamId1,
+		teamId2,
+		relation
+	}: {
+		teamId1: unknown;
+		teamId2: unknown;
+		relation: number;
+	}) {
 		const words = Command.words
 			.push(Command.parseTeam!(teamId1))
 			.push(Command.parseTeam!(teamId2))

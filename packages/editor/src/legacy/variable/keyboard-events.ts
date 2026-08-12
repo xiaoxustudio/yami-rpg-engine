@@ -4,7 +4,10 @@ import { Shortcuts } from '@/tools/shortcut-registry.ts';
 
 Variable.keydown = Shortcuts.createUndoRedo(Variable);
 
-Variable.listKeydown = function (this: any, event: any) {
+Variable.listKeydown = function (
+	this: HTMLElement & { createVariable: () => unknown },
+	event: KeyboardEvent
+) {
 	const item = read(this);
 	if (event.ctrlKey || event.metaKey) {
 		switch (event.code) {
@@ -32,7 +35,7 @@ Variable.listKeydown = function (this: any, event: any) {
 	}
 };
 
-Variable.listPointerdown = function (this: any, event: any) {
+Variable.listPointerdown = function (this: HTMLElement, event: PointerEvent) {
 	switch (event.button) {
 		case 3:
 			this.cancelSearch();
@@ -40,8 +43,8 @@ Variable.listPointerdown = function (this: any, event: any) {
 	}
 };
 
-Variable.panelKeydown = function (event: any) {
-	switch (event.target.tagName) {
+Variable.panelKeydown = function (event: KeyboardEvent) {
+	switch ((event.target as HTMLElement).tagName) {
 		case 'INPUT':
 		case 'TEXTAREA':
 			if (event.ctrlKey || event.metaKey) {
@@ -58,7 +61,7 @@ Variable.panelKeydown = function (event: any) {
 	}
 };
 
-Variable.searcherInput = function (this: any, event: any) {
+Variable.searcherInput = function (this: HTMLElement, event: InputEvent) {
 	if (event.inputType === 'insertCompositionText') {
 		return;
 	}

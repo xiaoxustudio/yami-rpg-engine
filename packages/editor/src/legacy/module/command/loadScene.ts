@@ -17,7 +17,17 @@ Command.cases.loadScene = new CommandSchema({
 			.enableHiddenMode()
 			.relate([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
 	},
-	customParse({ sceneId, transfer, x, y }: any) {
+	customParse({
+		sceneId,
+		transfer,
+		x,
+		y
+	}: {
+		sceneId: unknown;
+		transfer: unknown;
+		x: unknown;
+		y: unknown;
+	}) {
 		const words = Command.words.push(Command.parseVariableFile!(sceneId));
 		if (transfer) {
 			words.push(Command.parseVariableNumber!(x)).push(Command.parseVariableNumber!(y));

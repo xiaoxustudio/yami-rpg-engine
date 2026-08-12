@@ -23,7 +23,7 @@ Command.cases.deleteElement = new CommandSchema({
 				}
 			]);
 	},
-	customParse({ operation, element }: any) {
+	customParse({ operation, element }: { operation: string; element: unknown }) {
 		let info;
 		switch (operation) {
 			case 'delete-element':

@@ -4,10 +4,37 @@ import { pinia } from './pinia';
 import type { EditorEvent } from '@/types/editor-event.ts';
 import { shallowRef } from 'vue';
 
+type LayoutSchemeShape = {
+	end: number;
+	split?: string;
+	children?: LayoutSchemeShape[];
+	tabs?: string[];
+	[key: string]: unknown;
+};
+
+type LayoutItemShape = HTMLElement & { page?: HTMLElement };
+
+type LayoutItemsShape = Record<string, LayoutItemShape> & { list: LayoutItemShape[] };
+
+type LayoutGroupShape = HTMLElement & {
+	end: number;
+	split?: string;
+	tabs?: string[];
+	nav: HTMLElement;
+	border?: HTMLElement;
+	[key: string]: unknown;
+};
+
+type LayoutDragLocationShape = {
+	trigger: HTMLElement;
+	target: HTMLElement;
+	direction: string;
+};
+
 export const useLayoutStore = defineStore('layout', () => {
 	const currentPage = shallowRef<string>('home');
-	const layouts = shallowRef<any>(null);
-	const items = shallowRef<any>(null);
+	const layouts = shallowRef<Record<string, LayoutSchemeShape> | null>(null);
+	const items = shallowRef<LayoutItemsShape | null>(null);
 
 	function syncState() {
 		currentPage.value = Layout?.manager?.index ?? 'home';
@@ -39,11 +66,11 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.initialize?.();
 	}
 
-	function createGroups(item: any, parent: HTMLElement) {
+	function createGroups(item: LayoutSchemeShape, parent: HTMLElement) {
 		Layout?.createGroups?.(item, parent);
 	}
 
-	function updateGroupTabs(group: any) {
+	function updateGroupTabs(group: LayoutGroupShape) {
 		Layout?.updateGroupTabs?.(group);
 	}
 
@@ -55,19 +82,23 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.mergeGroups?.();
 	}
 
-	function setGroupSize(group: any, hint: any, direction: string) {
+	function setGroupSize(
+		group: LayoutGroupShape,
+		hint: { width: number; height: number },
+		direction: 'forward' | 'backward'
+	) {
 		Layout?.setGroupSize?.(group, hint, direction);
 	}
 
-	function computeSizesBefore(group: any) {
+	function computeSizesBefore(group: LayoutGroupShape) {
 		Layout?.computeSizesBefore?.(group);
 	}
 
-	function computeSizesAfter(group: any) {
+	function computeSizesAfter(group: LayoutGroupShape) {
 		Layout?.computeSizesAfter?.(group);
 	}
 
-	function updateHint(location: any) {
+	function updateHint(location: LayoutDragLocationShape | null) {
 		Layout?.updateHint?.(location);
 	}
 
@@ -83,11 +114,11 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.readyToFocus?.(element);
 	}
 
-	function createGroupContent(group: any) {
+	function createGroupContent(group: LayoutGroupShape) {
 		Layout?.createGroupContent?.(group);
 	}
 
-	function createGroupBorder(group: any) {
+	function createGroupBorder(group: LayoutGroupShape) {
 		Layout?.createGroupBorder?.(group);
 	}
 
@@ -103,11 +134,11 @@ export const useLayoutStore = defineStore('layout', () => {
 		Layout?.saveNavStates?.();
 	}
 
-	function saveToConfig(config: any) {
+	function saveToConfig(config: { layout?: Record<string, LayoutSchemeShape> | null }) {
 		Layout?.saveToConfig?.(config);
 	}
 
-	function loadFromConfig(config: any) {
+	function loadFromConfig(config: { layout?: Record<string, LayoutSchemeShape> | null }) {
 		Layout?.loadFromConfig?.(config);
 	}
 

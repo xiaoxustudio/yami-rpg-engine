@@ -1,16 +1,17 @@
 import { TreeDataContext } from '@/components/tree-data-context.ts';
 import { GameLocal } from '@/local/local-object.ts';
+import type { TreeDataItem } from '@ui-kit';
 
 export class AttributeContext extends TreeDataContext {
-	constructor(attribute: any) {
+	constructor(attribute: Record<string, unknown>) {
 		super(attribute, 'keys');
 	}
 
-	getAttribute(attrId: string): any {
+	getAttribute(attrId: string): TreeDataItem {
 		return this.itemMap[attrId];
 	}
 
-	getGroupAttribute(groupKey: string, attrId: string): any {
+	getGroupAttribute(groupKey: string, attrId: string): TreeDataItem | undefined {
 		return this.groupMap[groupKey]?.itemMap[attrId];
 	}
 
@@ -26,7 +27,11 @@ export class AttributeContext extends TreeDataContext {
 		return '';
 	}
 
-	getAttributeItems(groupKey: string, attrType: string = '', allowNone: boolean = false): any[] {
+	getAttributeItems(
+		groupKey: string,
+		attrType: string = '',
+		allowNone: boolean = false
+	): Array<{ name: string; value: string }> {
 		let key = groupKey + attrType;
 		if (allowNone) {
 			key += '-allowNone';
@@ -41,7 +46,7 @@ export class AttributeContext extends TreeDataContext {
 				}
 				const itemCache = this.itemCache;
 				for (const attr of group.itemList) {
-					if (!attrType || attrTypes.includes(attr.type)) {
+					if (!attrType || attrTypes.includes(attr.type as string)) {
 						let item = itemCache[attr.id];
 						if (item === undefined) {
 							item = itemCache[attr.id] = {
@@ -60,6 +65,6 @@ export class AttributeContext extends TreeDataContext {
 				items.push(this.createNoneItem());
 			}
 			return items;
-		});
+		}) as Array<{ name: string; value: string }>;
 	}
 }

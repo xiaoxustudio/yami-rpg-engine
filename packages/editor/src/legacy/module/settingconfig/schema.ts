@@ -136,13 +136,15 @@ export const settingSchema: SettingSection[] = [
 ];
 
 /** 由 schema 派生默认 config（含 hidden 隐藏项，递归处理 subgroups） */
-export function buildDefaultConfig(schema: SettingSection[] = settingSchema): any {
-	const cfg: any = {};
-	const build = (sections: SettingSection[], target: Record<string, any>) => {
+export function buildDefaultConfig(
+	schema: SettingSection[] = settingSchema
+): Record<string, unknown> {
+	const cfg: Record<string, unknown> = {};
+	const build = (sections: SettingSection[], target: Record<string, unknown>) => {
 		for (const s of sections) {
-			target[s.id] = {};
-			for (const o of s.options) target[s.id][o.key] = o.default;
-			if (s.subgroups) build(s.subgroups, target[s.id]);
+			const section = (target[s.id] = {}) as Record<string, unknown>;
+			for (const o of s.options) section[o.key] = o.default;
+			if (s.subgroups) build(s.subgroups, section);
 		}
 	};
 	build(schema, cfg);

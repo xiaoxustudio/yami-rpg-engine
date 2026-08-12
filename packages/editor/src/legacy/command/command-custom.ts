@@ -14,7 +14,7 @@ import { Local } from '@/tools/localization.ts';
 interface CustomParameter {
 	type: string;
 	key: string;
-	options?: any[];
+	options?: unknown[];
 	dataItems?: Array<{ name: string }>;
 }
 
@@ -44,21 +44,29 @@ type WordListInstance = Array<string> & {
 	join(j?: string): string;
 };
 
+interface ParameterWrapBox extends HTMLElement {
+	wrap: ParameterWrap;
+	meta: unknown;
+	data: unknown;
+}
+
+interface ParameterWrap {
+	box: ParameterWrapBox;
+	grid: HTMLElement;
+	children: unknown[];
+}
+
 interface ParameterPane extends HTMLElement {
 	getData: () => ScriptObject[];
 	onResize: () => void;
-	createDetailBox: () => {
-		box: HTMLElement;
-		grid: HTMLElement;
-		children: any[];
-	};
+	createDetailBox: () => ParameterWrap;
 	clear: () => void;
-	metas: any[];
-	wraps: any[];
-	recycle(node: any): void;
+	metas: unknown[];
+	wraps: ParameterWrap[];
+	recycle(node: unknown): void;
 	update(): void;
 	querySelector(selector: string): HTMLElement | null;
-	scriptChange: (event: any) => void;
+	scriptChange: (event: Event) => void;
 }
 
 Command.custom = {
@@ -72,7 +80,7 @@ Command.custom = {
 		style: CSSStyleDeclaration;
 		absolute(x: number | null, y: number | null): void;
 		setTitle(title: string): void;
-		addEventListener(type: string, listener: (event: any) => void): void;
+		addEventListener(type: string, listener: (event: Event) => void): void;
 	},
 	parameterPane: $('#scriptCommand-parameter-pane') as ParameterPane,
 	parameterGrid: $('#scriptCommand-parameter-grid') as HTMLElement,
@@ -85,7 +93,7 @@ Command.custom = {
 			style: CSSStyleDeclaration;
 			absolute(x: number | null, y: number | null): void;
 			setTitle(title: string): void;
-			addEventListener(type: string, listener: (event: any) => void): void;
+			addEventListener(type: string, listener: (event: Event) => void): void;
 		};
 		this.parameterPane = $('#scriptCommand-parameter-pane') as ParameterPane;
 		this.parameterGrid = $('#scriptCommand-parameter-grid') as HTMLElement;
@@ -102,18 +110,10 @@ Command.custom = {
 			this.windowFrame.absolute(this.windowX, this.windowY);
 		};
 
-		const box = $('#scriptCommand-parameter-detail') as HTMLElement & {
-			wrap: { box: HTMLElement; grid: HTMLElement; children: any[] };
-			meta: any;
-			data: any;
-		};
-		const wrap = { box, grid, children: [] };
+		const box = $('#scriptCommand-parameter-detail') as ParameterWrapBox;
+		const wrap = { box, grid, children: [] } as ParameterWrap;
 		box.wrap = wrap;
-		this.parameterPane.createDetailBox = function (): {
-			box: HTMLElement;
-			grid: HTMLElement;
-			children: any[];
-		} {
+		this.parameterPane.createDetailBox = function (): ParameterWrap {
 			return wrap;
 		};
 
@@ -141,7 +141,7 @@ Command.custom = {
 		});
 	},
 
-	parse: function (id: string, parameters: Record<string, unknown>): any[] {
+	parse: function (id: string, parameters: Record<string, unknown>): Record<string, unknown>[] {
 		const meta = Data.scripts[id];
 		const name = this.commandNameMap![id];
 		if (meta === undefined || name === undefined) {
@@ -159,7 +159,7 @@ Command.custom = {
 		if (mParameters.length === 0) {
 			return [{ color: 'custom' }, { text: name }];
 		}
-		const words = Command.words as WordListInstance;
+		const words = Command.words as unknown as WordListInstance;
 		const states = meta.manager.states;
 		for (const parameter of mParameters) {
 			const { type, key } = parameter;
@@ -349,7 +349,10 @@ Command.custom = {
 		this.customFolder.children = commands;
 		this.commandNameMap = commandNameMap;
 		CommandSuggestion.windowLocalize!(new Event('localize'));
-		TreeList.createParents(commands, this.customFolder);
+		TreeList.createParents(
+			commands as unknown as Parameters<typeof TreeList.createParents>[0],
+			this.customFolder as unknown as Parameters<typeof TreeList.createParents>[1]
+		);
 	},
 
 	windowLocalize: function (event: Event): void {

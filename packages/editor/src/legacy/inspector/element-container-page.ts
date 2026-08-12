@@ -5,6 +5,21 @@ import { UI } from '@/ui/ui-window.ts';
 	interface UIContainerShape {
 		[k: string]: any;
 	}
+	interface UIContainerData {
+		class: string;
+		name: string;
+		enabled: boolean;
+		expanded: boolean;
+		hidden: boolean;
+		locked: boolean;
+		presetId: string;
+		pointerEvents: string;
+		transform: unknown;
+		events: unknown[];
+		scripts: unknown[];
+		children: unknown[];
+		[k: string]: unknown;
+	}
 	const UIContainer: UIContainerShape = {
 		owner: UI,
 		target: null,
@@ -14,9 +29,9 @@ import { UI } from '@/ui/ui-window.ts';
 		close: null
 	};
 
-	UIContainer.initialize = function (this: any) {};
+	UIContainer.initialize = function (this: typeof UIContainer) {};
 
-	UIContainer.create = function (this: any) {
+	UIContainer.create = function (this: typeof UIContainer): UIContainerData {
 		const transform = Inspector.uiElement.createTransform();
 		transform.width = 100;
 		transform.height = 100;
@@ -36,14 +51,14 @@ import { UI } from '@/ui/ui-window.ts';
 		};
 	};
 
-	UIContainer.open = function (this: any, node: any) {
+	UIContainer.open = function (this: typeof UIContainer, node: UIContainerData) {
 		if (this.target !== node) {
 			this.target = node;
 			Inspector.uiElement.open(node);
 		}
 	};
 
-	UIContainer.close = function (this: any) {
+	UIContainer.close = function (this: typeof UIContainer) {
 		if (this.target) {
 			UI.list.unselect(this.target);
 			UI.updateTarget!();

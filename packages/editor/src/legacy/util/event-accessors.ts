@@ -6,7 +6,7 @@ Object.defineProperties(Event.prototype, {
 	}
 });
 
-export function macRedoKey(e: any): boolean {
+export function macRedoKey(e: KeyboardEvent): boolean {
 	return process.platform === 'darwin' ? e.metaKey && e.shiftKey && e.code === 'KeyZ' : false;
 }
 

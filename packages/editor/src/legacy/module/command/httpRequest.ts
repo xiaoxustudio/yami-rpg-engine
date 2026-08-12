@@ -46,8 +46,19 @@ Command.cases.httpRequest = new CommandSchema({
 		withCredentials = false,
 		authUser = '',
 		authPass = ''
-	}: any) {
-		const head = [
+	}: {
+		url: unknown;
+		method: string;
+		headers: Array<{ key: unknown; value: unknown }>;
+		data: Array<{ key: unknown; value: unknown }>;
+		callback: string;
+		timeout: string;
+		responseType: string;
+		withCredentials: unknown;
+		authUser: string;
+		authPass: unknown;
+	}) {
+		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
 			{ text: Local.get!('command.httpRequest') },
 			{ text: ' , ' },
@@ -61,7 +72,7 @@ Command.cases.httpRequest = new CommandSchema({
 			{ text: callback },
 			{ text: ' -> ' }
 		];
-		const contents: any[] = [];
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -71,7 +82,7 @@ Command.cases.httpRequest = new CommandSchema({
 				}
 			);
 		}
-		const datas: any[] = [];
+		const datas: Array<{ text?: string; color?: string }> = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },
@@ -81,7 +92,7 @@ Command.cases.httpRequest = new CommandSchema({
 				}
 			);
 		}
-		const extra: any[] = [];
+		const extra: Array<{ text?: string; color?: string }> = [];
 		if (timeout !== '' && timeout !== null && timeout !== undefined) {
 			extra.push(
 				{ text: ' , ' },

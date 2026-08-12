@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.wait = new CommandSchema({
 	name: 'wait',
 	fields: [{ key: 'duration', domId: 'duration', default: 1 }],
-	customParse({ duration }: any) {
+	customParse({ duration }: { duration: unknown }) {
 		return [
 			{ color: 'wait' },
 			{ text: Local.get!('command.wait') + Token(': ') },

@@ -996,7 +996,7 @@ Layout.navDrop = function (event: EditorEvent) {
 		const { target } = location;
 		const { direction } = location;
 		let parent = target.parentNode;
-		let dGroup: any;
+		let dGroup: LayoutGroupElement = target as LayoutGroupElement;
 		let split;
 		switch (direction) {
 			case 'left':
@@ -1029,14 +1029,14 @@ Layout.navDrop = function (event: EditorEvent) {
 				break;
 			case 'left':
 			case 'top':
-				dGroup = document.createElement('group');
+				dGroup = document.createElement('group') as LayoutGroupElement;
 				parent.insertBefore(dGroup, target);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
 				break;
 			case 'right':
 			case 'bottom':
-				dGroup = document.createElement('group');
+				dGroup = document.createElement('group') as LayoutGroupElement;
 				dGroup.end = target.end;
 				parent.insertBefore(dGroup, target.nextSibling);
 				Layout.createGroupContent!(dGroup);
@@ -1127,8 +1127,8 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 		dragging.clientX = event.clientX;
 		dragging.clientY = event.clientY;
 		const root = Layout.manager.active.childNodes[0];
-		let target: any = (this as HTMLElement & typeof Layout).parentNode;
-		let parent: any = target.parentNode;
+		let target: HTMLElement = (this as HTMLElement & typeof Layout).parentNode as HTMLElement;
+		let parent: HTMLElement = target.parentNode as HTMLElement;
 		let siblings = parent.childNodes;
 		let direction;
 		if (root.split) {
@@ -1192,12 +1192,15 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 			if (tan1 < Math.PI * 0.25 && tan2 > Math.PI * 0.75) {
 				direction = 'top';
 				if (y < padding) {
-					if (parent.split === 'horizontal') {
+					if ((parent as LayoutGroupElement).split === 'horizontal') {
 						target = parent;
 					}
-					if (parent.split === 'vertical' && target === siblings[0]) {
-						const outer = parent.parentNode;
-						if (outer.tagName === 'GROUP') {
+					if (
+						(parent as LayoutGroupElement).split === 'vertical' &&
+						target === siblings[0]
+					) {
+						const outer = parent.parentNode as HTMLElement | null;
+						if (outer !== null && outer.tagName === 'GROUP') {
 							target = outer;
 						}
 					}
@@ -1210,12 +1213,15 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 			if (tan1 > -Math.PI * 0.25 && tan2 < -Math.PI * 0.75) {
 				direction = 'bottom';
 				if (y >= h - padding) {
-					if (parent.split === 'horizontal') {
+					if ((parent as LayoutGroupElement).split === 'horizontal') {
 						target = parent;
 					}
-					if (parent.split === 'vertical' && target === siblings[siblings.length - 2]) {
-						const outer = parent.parentNode;
-						if (outer.tagName === 'GROUP') {
+					if (
+						(parent as LayoutGroupElement).split === 'vertical' &&
+						target === siblings[siblings.length - 2]
+					) {
+						const outer = parent.parentNode as HTMLElement | null;
+						if (outer !== null && outer.tagName === 'GROUP') {
 							target = outer;
 						}
 					}
@@ -1225,13 +1231,16 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 		if (!direction && x < l) {
 			direction = 'left';
 			if (x < padding) {
-				if (parent.split === 'horizontal' && target === siblings[0]) {
-					const outer = parent.parentNode;
-					if (outer.tagName === 'GROUP') {
+				if (
+					(parent as LayoutGroupElement).split === 'horizontal' &&
+					target === siblings[0]
+				) {
+					const outer = parent.parentNode as HTMLElement | null;
+					if (outer !== null && outer.tagName === 'GROUP') {
 						target = outer;
 					}
 				}
-				if (parent.split === 'vertical') {
+				if ((parent as LayoutGroupElement).split === 'vertical') {
 					target = parent;
 				}
 			}
@@ -1239,13 +1248,16 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 		if (!direction && x >= r) {
 			direction = 'right';
 			if (x >= w - padding) {
-				if (parent.split === 'horizontal' && target === siblings[siblings.length - 2]) {
-					const outer = parent.parentNode;
-					if (outer.tagName === 'GROUP') {
+				if (
+					(parent as LayoutGroupElement).split === 'horizontal' &&
+					target === siblings[siblings.length - 2]
+				) {
+					const outer = parent.parentNode as HTMLElement | null;
+					if (outer !== null && outer.tagName === 'GROUP') {
 						target = outer;
 					}
 				}
-				if (parent.split === 'vertical') {
+				if ((parent as LayoutGroupElement).split === 'vertical') {
 					target = parent;
 				}
 			}
@@ -1257,7 +1269,7 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 			case 'bottom': {
 				const sGroup = dragging.group;
 				const sItems = sGroup.nav.childNodes;
-				const split = target.parentNode.split;
+				const split = (target.parentNode as LayoutGroupElement).split;
 				const prev = target.previousSibling;
 				const next = target.nextSibling;
 				if (

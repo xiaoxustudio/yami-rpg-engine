@@ -11,7 +11,7 @@ Command.cases.changeActorAnimation = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'animationId', default: '', required: true }
 	],
-	customParse({ actor, animationId }: any) {
+	customParse({ actor, animationId }: { actor: unknown; animationId: unknown }) {
 		const words = Command.words
 			.push(Command.parseActor(actor))
 			.push(Command.parseFileName(animationId));

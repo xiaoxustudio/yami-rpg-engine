@@ -6,8 +6,8 @@ export const SetKey = {
 	callback: null as ((key: string) => void) | null,
 	initialize: null as (() => void) | null,
 	open: null as ((key: string, callback: (key: string) => void) => void) | null,
-	windowClosed: null as ((event: any) => void) | null,
-	confirm: null as ((event: any) => void) | null
+	windowClosed: null as ((event: Event) => void) | null,
+	confirm: null as ((event: Event) => void) | null
 };
 
 SetKey.initialize = function () {
@@ -23,11 +23,11 @@ SetKey.open = function (key, callback) {
 	getFocus($('#setKey-key'), 'all');
 };
 
-SetKey.windowClosed = function (this: any, event: any) {
+SetKey.windowClosed = function (this: typeof SetKey, event: Event) {
 	this.callback = null;
 }.bind(SetKey);
 
-SetKey.confirm = function (this: any, event: any) {
-	this.callback(read($('#setKey-key')));
+SetKey.confirm = function (this: typeof SetKey, event: Event) {
+	this.callback!(read($('#setKey-key')));
 	Window.close!('setKey');
 }.bind(SetKey);

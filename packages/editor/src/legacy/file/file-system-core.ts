@@ -72,7 +72,7 @@ function getFallbackRoot(): string {
 }
 
 File.get = function (descriptor) {
-	let path: any;
+	let path: string | undefined;
 	if (descriptor.path) {
 		path = File.path?.(descriptor.path);
 	} else if (descriptor.guid) {
@@ -96,18 +96,18 @@ File.get = function (descriptor) {
 			}
 			const promises = this.promises;
 			return (
-				promises[path] ||
-				(promises[path] = new Promise((resolve) => {
+				promises[path!] ||
+				(promises[path!] = new Promise((resolve) => {
 					const image = new Image();
 					(image as HTMLImageElement & { guid?: string }).guid = descriptor.guid ?? '';
 					image.onload = () => {
-						delete promises[path];
+						delete promises[path!];
 						image.onload = null;
 						image.onerror = null;
 						resolve(image);
 					};
 					image.onerror = () => {
-						delete promises[path];
+						delete promises[path!];
 						image.onload = null;
 						image.onerror = null;
 						image.src = '';
@@ -126,7 +126,7 @@ File.get = function (descriptor) {
 						resolve(type === 'json' ? {} : '');
 						return;
 					}
-					const cleanPath = path.replace(/\?ver=\d+$/, '');
+					const cleanPath = path!.replace(/\?ver=\d+$/, '');
 					const absPath = /^[A-Za-z]:[\\/]|^[/\\]/.test(cleanPath)
 						? cleanPath
 						: typeof Path.resolve === 'function'
@@ -153,7 +153,7 @@ File.get = function (descriptor) {
 							resolve(content);
 						}
 					}
-				} catch (error: any) {
+				} catch (error: unknown) {
 					reject(new URIError(path));
 				}
 			});
@@ -222,7 +222,7 @@ File.saveFile = function (meta) {
 		.then(() => {
 			console.log(`write: ${path}`);
 		})
-		.catch((error: any) => {
+		.catch((error: unknown) => {
 			console.warn(error);
 		});
 };
@@ -347,7 +347,7 @@ File.showSaveDialog = function (options) {
 	return ipcRenderer.invoke('show-save-dialog', options);
 };
 
-File.parseMetaName = function (meta: any) {
+File.parseMetaName = function (meta: { path: string }) {
 	const alias = File.filterGUID!(meta.path);
 	const extname = Path.extname(alias);
 	return Path.basename(alias, extname);

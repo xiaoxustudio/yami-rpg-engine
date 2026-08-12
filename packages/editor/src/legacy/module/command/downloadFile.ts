@@ -17,7 +17,7 @@ Command.cases.downloadFile = new CommandSchema({
 		]);
 		$('#downloadFile-isBackground').relate([$('#downloadFile-isBackground-path')]);
 		disable($('#downloadFile-isBackground-path'));
-		$('#downloadFile-isBackground')?.on('input', (e: any) => {
+		$('#downloadFile-isBackground')?.on('input', (e: Event & { value?: string }) => {
 			if (e.value) enable($('#downloadFile-isBackground-path'));
 			else disable($('#downloadFile-isBackground-path'));
 		});
@@ -37,8 +37,17 @@ Command.cases.downloadFile = new CommandSchema({
 		rateCallback = '',
 		isBackground = false,
 		isBackgroundPath = ''
-	}: any) {
-		const head = [
+	}: {
+		url: unknown;
+		method: string;
+		headers: Array<{ key: unknown; value: unknown }>;
+		data: Array<{ key: unknown; value: unknown }>;
+		callback: string;
+		rateCallback: string;
+		isBackground: unknown;
+		isBackgroundPath: string;
+	}) {
+		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
 			{ text: Local.get!('command.downloadFile') },
 			{ text: ' , ' },
@@ -59,7 +68,7 @@ Command.cases.downloadFile = new CommandSchema({
 			{ text: rateCallback },
 			{ text: ' -> ' }
 		];
-		const contents: any[] = [];
+		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of headers) {
 			contents.push(
 				{ text: ' , ' },
@@ -69,7 +78,7 @@ Command.cases.downloadFile = new CommandSchema({
 				}
 			);
 		}
-		const datas: any[] = [];
+		const datas: Array<{ text?: string; color?: string }> = [];
 		for (const i of data) {
 			datas.push(
 				{ text: ' , ' },
@@ -88,7 +97,7 @@ Command.cases.downloadFile = new CommandSchema({
 			...(isBackground
 				? [
 						{
-							text: isBackground
+							text: isBackground as string
 						},
 						{ text: ' , ' },
 						{ text: isBackgroundPath }

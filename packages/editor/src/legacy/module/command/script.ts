@@ -56,7 +56,7 @@ Command.cases.script = new CommandSchema({
 	onInitialize() {
 		$('#script-confirm')?.on('click', () => this.save!());
 
-		$('#script')?.on('close', (event: any) => {
+		$('#script')?.on('close', (event: Event) => {
 			if (this.changed) {
 				event.preventDefault();
 				const get = Local.createGetter!('confirmation');
@@ -91,7 +91,7 @@ Command.cases.script = new CommandSchema({
 			this.model.setValue('');
 		});
 
-		$('#script')?.on('keydown', (event: any) => {
+		$('#script')?.on('keydown', (event: KeyboardEvent) => {
 			if (hasClass(event.target, 'inputarea')) {
 				switch (event.code) {
 					case 'Enter':
@@ -101,8 +101,8 @@ Command.cases.script = new CommandSchema({
 			}
 		});
 	},
-	customParse({ script }: any) {
-		const contents: any[] = [{ script: script }];
+	customParse({ script }: { script: string }) {
+		const contents: Record<string, unknown>[] = [{ script: script }];
 		if (script.includes('\n')) {
 			contents.unshift({ fold: true });
 		}
@@ -118,7 +118,7 @@ Command.cases.script = new CommandSchema({
 		this.editor.revealLine(9999);
 		getFocus(this.editor);
 		if (!this.typesDispose) {
-			this.typesDispose.forEach((item: any) => item());
+			this.typesDispose.forEach((item: () => void) => item());
 		}
 		const projectDir = Path.dirname(Editor.config!.project!);
 		this.typesDispose = loadDtsFolder(Path.join(projectDir, 'Script'), monaco, true);
@@ -139,12 +139,12 @@ Command.cases.script = new CommandSchema({
 				}
 				script = script.res;
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			const get = Local.createGetter!('confirmation');
 			let continued = false;
 			return Window.confirm!(
 				{
-					message: `${error.message}\n${get('compileError')}`,
+					message: `${(error as Error).message}\n${get('compileError')}`,
 					close: () => {
 						if (!continued) {
 							getFocus(this.editor);
@@ -169,7 +169,7 @@ Command.cases.script = new CommandSchema({
 		this.setChangeState!(false);
 		Command.save({ script });
 	},
-	setChangeState(changed: any) {
+	setChangeState(changed: boolean) {
 		if (this.changed !== changed) {
 			this.changed = changed;
 			if (changed) {
@@ -231,39 +231,41 @@ Command.cases.script = new CommandSchema({
 			monaco.editor.setModelLanguage(this.model, languageId);
 		});
 
-		this.editor.getFocus = function (this: any) {
+		this.editor.getFocus = function (this: { focus: () => void }) {
 			setTimeout(() => this.focus!());
 		};
 
-		this.editor.onKeyDown((event: any) => {
-			event = event.browserEvent;
-			if (event.ctrlKey) {
-				switch (event.code) {
+		this.editor.onKeyDown((event: { browserEvent: KeyboardEvent }) => {
+			const browserEvent = event.browserEvent;
+			if (browserEvent.ctrlKey) {
+				switch (browserEvent.code) {
 					case 'Enter':
-						event.preventDefault();
-						event.stopPropagation();
+						browserEvent.preventDefault();
+						browserEvent.stopPropagation();
 						this.save!();
 						break;
 				}
 			}
 		});
 
-		this.editor.onDidChangeModelContent((event: any) => {
-			if (event.isFlush) return;
-			if (event.isUndoing || event.isRedoing) {
-				const versionId = this.model.getAlternativeVersionId();
-				const changed = this.versionId !== versionId;
-				if (this.changed !== changed) {
-					this.setChangeState!(changed);
+		this.editor.onDidChangeModelContent(
+			(event: { isFlush: boolean; isUndoing: boolean; isRedoing: boolean }) => {
+				if (event.isFlush) return;
+				if (event.isUndoing || event.isRedoing) {
+					const versionId = this.model.getAlternativeVersionId();
+					const changed = this.versionId !== versionId;
+					if (this.changed !== changed) {
+						this.setChangeState!(changed);
+					}
+				} else if (!this.changed) {
+					this.setChangeState!(true);
 				}
-			} else if (!this.changed) {
-				this.setChangeState!(true);
 			}
-		});
+		);
 
 		this.createEditor = Function.empty;
 	},
-	async colorizeCodeLines(items: any, code: any) {
+	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
 		const text = document.createElement('div');
 		addClass(text, 'text');
@@ -442,7 +444,7 @@ Command.cases.script = new CommandSchema({
 				}
 			}
 		};
-		return async function (theme: any) {
+		return async function (theme: string) {
 			const monaco = await getMonaco();
 			const options = themeData[theme];
 			if (options instanceof Object && monaco instanceof Object) {

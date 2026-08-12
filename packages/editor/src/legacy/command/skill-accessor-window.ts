@@ -3,10 +3,10 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface SkillGetterShape extends AccessorBaseShape {
-	checkDataForPlugin: ((data: any) => boolean) | null;
+	checkDataForPlugin: ((data: unknown) => boolean) | null;
 	createDefaultForPlugin: (() => { getter: string; type: string }) | null;
 }
 
@@ -19,7 +19,7 @@ export const SkillGetter: SkillGetterShape = {
 	confirm: null
 };
 
-SkillGetter.initialize = function (this: any) {
+SkillGetter.initialize = function (this: SkillGetterShape) {
 	if (!$('#skillGetter-type')) return;
 	$('#skillGetter-type').loadItems([
 		{ name: 'Event Trigger Skill', value: 'trigger' },
@@ -43,10 +43,10 @@ SkillGetter.initialize = function (this: any) {
 			{ case: 'variable', targets: [$('#skillGetter-variable')] }
 		]);
 
-	on($('#skillGetter-confirm'), 'click', this.confirm);
+	on($('#skillGetter-confirm'), 'click', this.confirm!);
 };
 
-SkillGetter.open = function (this: any, target: any) {
+SkillGetter.open = function (this: SkillGetterShape, target: AccessorTarget) {
 	this.target = target;
 	Window.open!('skillGetter');
 
@@ -81,18 +81,18 @@ SkillGetter.open = function (this: any, target: any) {
 	getFocus($('#skillGetter-type'));
 };
 
-SkillGetter.checkDataForPlugin = function (this: any, data: any) {
+SkillGetter.checkDataForPlugin = function (this: SkillGetterShape, data: unknown) {
 	if (data instanceof Object) {
-		return data.getter === 'skill';
+		return (data as { getter?: string }).getter === 'skill';
 	}
 	return false;
 };
 
-SkillGetter.createDefaultForPlugin = function (this: any) {
+SkillGetter.createDefaultForPlugin = function (this: SkillGetterShape) {
 	return { getter: 'skill', type: 'trigger' };
 };
 
-SkillGetter.confirm = function (this: any, event: any) {
+SkillGetter.confirm = function (this: SkillGetterShape, event: Event) {
 	const read = getElementReader('skillGetter');
 	const type = read('type');
 	let getter;
@@ -128,9 +128,9 @@ SkillGetter.confirm = function (this: any, event: any) {
 			break;
 		}
 	}
-	if (this.target.isPluginInput) {
+	if (this.target!.isPluginInput) {
 		getter = { getter: 'skill', ...getter };
 	}
-	this.target?.input?.(getter);
+	this.target?.input?.(getter!);
 	Window.close!('skillGetter');
 }.bind(SkillGetter);

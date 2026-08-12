@@ -4,33 +4,44 @@ import YMSelectBox from '../YMSelectBox/YMSelectBox.vue';
 
 interface Props {
 	id?: string;
-	modelValue?: any;
-	items?: any[];
+	modelValue?: unknown;
+	items?: unknown[];
 	disabled?: boolean;
 	popup?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	items: () => [],
 	disabled: false,
 	popup: true
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 const selectRef = ref<InstanceType<typeof YMSelectBox> | null>(null);
 
+interface SelectVarApi extends HTMLElement {
+	mode?: 'constant' | 'variable';
+	read: () => unknown;
+	write: (value: unknown) => void;
+	switch: (target?: 'constant' | 'variable') => void;
+	enable: () => void;
+	disable: () => void;
+	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
+	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+}
+
 const mode = ref<'constant' | 'variable'>('constant');
 const selectValue = ref<any>(null);
 const varValue = ref<any>(null);
 
-const read = (): any => {
+const read = (): unknown => {
 	switch (mode.value) {
 		case 'constant':
 			return selectRef.value ? selectRef.value.read() : selectValue.value;
@@ -39,7 +50,7 @@ const read = (): any => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	if (typeof value === 'object' && value !== null) {
 		switchMode('variable');
 		varValue.value = value;
@@ -60,12 +71,12 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as any).mode = target;
+			(el as SelectVarApi).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
 			nextTick(() => {
-				const boxRoot = (selectRef.value as any)?.root as HTMLElement | null;
+				const boxRoot = selectRef.value?.root;
 				if (focus && boxRoot) {
 					boxRoot.focus();
 				}
@@ -93,7 +104,7 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg: any): any => {
+const getFocus = (modeArg?: string): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant':
 			return selectRef.value ? selectRef.value.root : root.value;
@@ -104,7 +115,7 @@ const getFocus = (modeArg: any): any => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -138,13 +149,13 @@ const pointerdown = (event: PointerEvent): void => {
 	}
 };
 
-const onSelectInput = (value: any): void => {
+const onSelectInput = (value: unknown): void => {
 	selectValue.value = value;
 	emit('input', value);
 	emit('update:modelValue', value);
 };
 
-const loadItems = (items: any[]): void => {
+const loadItems = (items: unknown[]): void => {
 	selectRef.value?.loadItems(items);
 };
 
@@ -163,14 +174,14 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).switch = switchMode;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
-	(el as any).mode = mode.value;
+	(el as SelectVarApi).read = read;
+	(el as SelectVarApi).write = write;
+	(el as SelectVarApi).switch = switchMode;
+	(el as SelectVarApi).enable = enable;
+	(el as SelectVarApi).disable = disable;
+	(el as SelectVarApi).getFocus = getFocus;
+	(el as SelectVarApi).on = on;
+	(el as SelectVarApi).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

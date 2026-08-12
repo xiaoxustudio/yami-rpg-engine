@@ -17,7 +17,7 @@ export const AudioManager = {
 	analyser: null as AnalyserNode | null,
 	waveforms: {} as Record<string, string | WaveformPromise>,
 	initialize: null as (() => void) | null,
-	getWaveform: null as ((guid: string) => any) | null,
+	getWaveform: null as ((guid: string) => Promise<string | undefined>) | null,
 	close: null as (() => void) | null,
 	state: null as string | null,
 	music: null as Record<string, unknown> | null,

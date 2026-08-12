@@ -8,7 +8,7 @@ export interface NumberBoxApiOptions {
 	step?: string;
 	unit?: string | null;
 	decimals?: number;
-	modelValue?: any;
+	modelValue?: string | number;
 	disabled?: boolean;
 	measureText?: ((text: string, font?: string) => { width: number }) | null;
 }
@@ -20,12 +20,16 @@ export interface NumberBoxApi extends HTMLElement {
 	blurEventEnabled: boolean;
 	_unit: string | null;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	getFocus(mode: any): void;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): number;
+	write(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	getFocus(mode?: string): void;
+	on(...args: unknown[]): void;
+}
+
+interface HistoryInputElement extends HTMLInputElement {
+	history: { reset(): void };
 }
 
 const whiteList = new Set([
@@ -66,7 +70,7 @@ const whiteList = new Set([
 	'NumpadEnter'
 ]);
 
-const inputKeydown = function (event: any): void {
+const inputKeydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 	!whiteList.has(event.code) && !event.cmdOrCtrlKey && event.preventDefault();
 };
 
@@ -90,7 +94,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 	}
 };
 
-const getFocus = (input: HTMLInputElement, mode: any): void => {
+const getFocus = (input: HTMLInputElement, mode?: string): void => {
 	setTimeout(() => {
 		input.focus();
 		switch (mode) {
@@ -120,7 +124,7 @@ export function attachNumberBoxApi(
 	input.max = '0';
 	input.step = '1';
 	input.title = '';
-	(input as any).history = new NumberHistory(input);
+	(input as HistoryInputElement).history = new NumberHistory(input);
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('change', () => {
 		input.value = String(read(box));
@@ -148,14 +152,14 @@ export function attachNumberBoxApi(
 	const measure = options.measureText ?? null;
 	if (el.childNodes.length > 1) {
 		const label = el.childNodes[0]?.textContent ?? '';
-		const font = 'var(--font-family-mono)';
+		const font = 'var(--ym-font-mono)';
 		const padding = (measure ? measure(label, font).width : label.length * 8) + 8;
 		input.style.paddingLeft = `${padding}px`;
 	}
 
 	if (unit !== null) {
 		const unitText = document.createElement('div');
-		const font = 'var(--font-family-mono)';
+		const font = 'var(--ym-font-mono)';
 		const padding = (measure ? measure(unit, font).width : unit.length * 8) + 8;
 		addClass(unitText, 'unit');
 		addClass(unitText, 'text');
@@ -173,10 +177,10 @@ export function attachNumberBoxApi(
 		return value;
 	};
 
-	box.write = function (value: any): void {
+	box.write = function (value: string | number): void {
 		input.value = String(value);
 		input.value = String(read(box));
-		(input as any).history.reset();
+		(input as HistoryInputElement).history.reset();
 	};
 
 	box.enable = function (): void {
@@ -191,13 +195,13 @@ export function attachNumberBoxApi(
 		}
 	};
 
-	box.getFocus = function (mode: any): void {
+	box.getFocus = function (mode?: string): void {
 		getFocus(input, mode);
 	};
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		el.addEventListener(type, listener as EventListener, listenerOptions);

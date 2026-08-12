@@ -15,11 +15,17 @@ Command.cases.setButton = new CommandSchema({
 	onInitialize() {
 		$('#setButton-confirm').on('click', () => this.save!());
 		$('#setButton-properties').bind(ButtonProperty);
-		$('#setButton').on('closed', (event: any) => {
+		$('#setButton').on('closed', (event: Event) => {
 			clear($('#setButton-properties'));
 		});
 	},
-	customParse({ element, properties }: any) {
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(ButtonProperty.parse!(property));

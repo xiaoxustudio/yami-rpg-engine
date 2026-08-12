@@ -8,8 +8,8 @@ import { YMCommonList } from '@ui-kit';
 import { listenDraggingScrollbarEvent } from '@/util/element-utils';
 
 interface CommonListElement extends HTMLElement {
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	reload(): HTMLElement;
 	appendElement(element: HTMLElement): void;
 	update(): void;
@@ -36,15 +36,15 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-	write: [value: any];
-	select: [value: any];
-	popup: [value: any, clientX: number, clientY: number];
+	write: [value: unknown];
+	select: [value: unknown];
+	popup: [value: unknown, clientX: number, clientY: number];
 }>();
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	reload(): HTMLElement;
 	appendElement(element: HTMLElement): void;
 	update(): void;
@@ -65,8 +65,8 @@ const ym = ref<{
 } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
+const read = (): unknown => ym.value?.read();
+const write = (value: unknown): void => ym.value?.write(value);
 const reload = (): HTMLElement => ym.value?.reload() as HTMLElement;
 const appendElement = (element: HTMLElement): void => ym.value?.appendElement(element);
 const update = (): void => ym.value?.update();
@@ -124,9 +124,9 @@ onMounted(() => {
 	el.clearElements = clearElements;
 	el.clear = clear;
 	el.on = on;
-	on('write', (e: Event & { value?: any }) => emit('write', e.value));
-	on('select', (e: Event & { value?: any }) => emit('select', e.value));
-	on('popup', (e: Event & { value?: any; clientX: number; clientY: number }) =>
+	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
+	on('select', (e: Event & { value?: unknown }) => emit('select', e.value));
+	on('popup', (e: Event & { value?: unknown; clientX: number; clientY: number }) =>
 		emit('popup', e.value, e.clientX, e.clientY)
 	);
 });

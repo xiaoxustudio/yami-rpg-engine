@@ -24,7 +24,7 @@ interface TextBoxElement extends HTMLElement {
 	addKeydownFilter(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 }
@@ -68,7 +68,7 @@ const ym = ref<{
 	addKeydownFilter(): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
@@ -89,7 +89,7 @@ const addCloseButton = (): void => ym.value?.addCloseButton();
 const addKeydownFilter = (): void => ym.value?.addKeydownFilter();
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 

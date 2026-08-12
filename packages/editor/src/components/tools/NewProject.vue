@@ -34,7 +34,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onFolderBeforeinput = (event: any) => {
+const onFolderBeforeinput = (event: InputEvent) => {
 	NewProject?.folderBeforeinput?.(event);
 };
 const onFolderInput = () => {

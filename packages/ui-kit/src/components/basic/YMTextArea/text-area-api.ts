@@ -5,7 +5,7 @@ import { Timer } from '../../../utils/timer';
 export interface TextAreaApiOptions {
 	disabled?: boolean;
 	modelValue?: string;
-	listenDraggingScrollbarEvent?: ((el: any) => void) | null;
+	listenDraggingScrollbarEvent?: ((el: HTMLTextAreaElement) => void) | null;
 }
 
 export interface TextAreaApi extends HTMLElement {
@@ -14,13 +14,17 @@ export interface TextAreaApi extends HTMLElement {
 	focusEventEnabled: boolean;
 	blurEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	insert(...args: unknown[]): any;
-	enable(...args: unknown[]): any;
-	disable(...args: unknown[]): any;
-	getFocus(...args: unknown[]): any;
-	on(...args: unknown[]): any;
+	read(...args: unknown[]): string;
+	write(...args: unknown[]): void;
+	insert(...args: unknown[]): void;
+	enable(...args: unknown[]): void;
+	disable(...args: unknown[]): void;
+	getFocus(...args: unknown[]): void;
+	on(...args: unknown[]): void;
+}
+
+interface HistoryTextAreaElement extends HTMLTextAreaElement {
+	history: { reset(): void };
 }
 
 let target: HTMLElement | null = null;
@@ -61,7 +65,7 @@ const hideChildNodes = (el: HTMLElement): void => {
 	}
 };
 
-const getFocus = (input: HTMLTextAreaElement, mode: any): void => {
+const getFocus = (input: HTMLTextAreaElement, mode?: string): void => {
 	setTimeout(() => {
 		input.focus();
 		switch (mode) {
@@ -82,7 +86,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 	if (box._initialized) return box;
 
 	const input = document.createElement('textarea');
-	(input as any).history = new TextHistory(input);
+	(input as HistoryTextAreaElement).history = new TextHistory(input);
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('input', inputInput);
 	options.listenDraggingScrollbarEvent?.(input);
@@ -103,7 +107,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 
 	box.write = function (value: string): void {
 		input.value = value;
-		(input as any).history.reset();
+		(input as HistoryTextAreaElement).history.reset();
 	};
 
 	box.insert = function (value: string): void {
@@ -129,13 +133,13 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	};
 
-	box.getFocus = function (mode: any): void {
+	box.getFocus = function (mode?: string): void {
 		getFocus(input, mode);
 	};
 
 	box.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		el.addEventListener(type, listener as EventListener, listenerOptions);
@@ -159,7 +163,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	};
 
-	function inputKeydown(event: any): void {
+	function inputKeydown(event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -175,7 +179,7 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		}
 	}
 
-	function inputInput(event: any): void {
+	function inputInput(event: Event): void {
 		if (!target) {
 			target = el;
 			timer.add();

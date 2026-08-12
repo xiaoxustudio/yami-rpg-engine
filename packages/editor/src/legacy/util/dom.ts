@@ -74,25 +74,25 @@ export { $ };
 
 export const getElementReader = function (prefix: string) {
 	return function (suffix: string): any {
-		const element: any = $(`#${prefix}-${suffix}`);
+		const element = $(`#${prefix}-${suffix}`) as HTMLElement & { read?: () => unknown };
 		return typeof element.read === 'function' ? element.read() : element.dataValue;
 	};
 };
 
-export const getElementWriter = function (prefix: string, bindingObject?: Record<string, any>) {
-	return function (suffix: string | number, value?: any): void {
+export const getElementWriter = function (prefix: string, bindingObject?: Record<string, unknown>) {
+	return function (suffix: string | number, value?: unknown): void {
 		if (value === undefined) {
 			const nodes = typeof suffix === 'string' ? suffix.split('-') : [suffix];
 			value = bindingObject;
 			for (const node of nodes) {
-				value = value[node];
+				value = (value as Record<string, unknown>)[node];
 			}
 		}
-		const element: any = $(`#${prefix}-${suffix}`);
+		const element: HTMLElement = $(`#${prefix}-${suffix}`);
 		if (typeof element.write === 'function') {
 			element.write(value);
 		} else {
-			element.dataValue = value;
+			element.dataValue = value as any;
 		}
 	};
 };

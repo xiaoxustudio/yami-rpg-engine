@@ -12,6 +12,7 @@ import { Data } from '@/data/data-object.ts';
 import { Path } from '@/util/config.ts';
 import { TemplatesPath } from '@/module/global.ts';
 import { Menu } from '@/components/menu-list.ts';
+import type { MenuItem } from '@ui-kit';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Title } from '@/title/title-bar.ts';
 import { EventEditor } from '@/command/event-editor.ts';
@@ -227,7 +228,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	) {
 		const Browser = getBrowser();
 		if (!Browser) return;
-		const items: any[] = [];
+		const items: MenuItem[] = [];
 		const { target } = event.raw;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
 		const get = Local.createGetter!('menuFileBrowser');
@@ -389,7 +390,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		syncState();
 	}
 
-	function unselect(meta: any) {
+	function unselect(meta: unknown) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const body = Browser.body;
@@ -423,7 +424,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 	}
 
-	function openScript(filePath: any) {
+	function openScript(filePath: string) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 
@@ -441,7 +442,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 	}
 
-	function createFile(filename: any, data: any) {
+	function createFile(filename: string, data: unknown) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		let guid: string;
@@ -471,12 +472,12 @@ export const useBrowserStore = defineStore('browser', () => {
 				}
 				console.log(`write: ${path}`);
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				console.warn(error);
 			});
 	}
 
-	function createScript(filename: any) {
+	function createScript(filename: string) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		let guid: string;
@@ -506,7 +507,7 @@ export const useBrowserStore = defineStore('browser', () => {
 				}
 				console.log(`write: ${path}`);
 			})
-			.catch((error: any) => {
+			.catch((error: unknown) => {
 				console.warn(error);
 			});
 	}
@@ -525,24 +526,24 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: { browser: { view?: number; folders?: string[] } }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const { browser } = project;
 		const { viewIndex } = Browser.body ?? {};
 		const selections = Browser.nav?.getSelections?.() ?? [];
-		const folders = selections.map((folder: any) => folder.path);
+		const folders = selections.map((folder) => (folder as FolderItem).path);
 		browser.view = viewIndex ?? browser.view;
 		if (folders.length !== 0) {
 			browser.folders = folders;
 		}
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: { browser: { view: number; folders: string[] } }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
 		const { view, folders } = project.browser;
-		const selections: any[] = [];
+		const selections: (FolderItem | null)[] = [];
 		for (const path of folders) {
 			selections.push(Directory.getFolder?.(path));
 		}

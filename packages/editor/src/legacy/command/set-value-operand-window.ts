@@ -8,31 +8,36 @@ import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Local } from '@/tools/localization.ts';
 
+interface OperandRefShape {
+	type: string;
+	[key: string]: unknown;
+}
+
 interface NumberOperandData {
 	operation: string;
 	type: string;
-	value?: any;
+	value?: number;
 	variable?: { type: string; key: string };
 	method?: string;
 	decimals?: number;
 	min?: number;
 	max?: number;
-	start?: { type: string; [k: string]: any };
-	end?: { type: string; [k: string]: any };
+	start?: OperandRefShape;
+	end?: OperandRefShape;
 	search?: string;
 	property: string;
 	itemId?: string;
 	equipmentId?: string;
-	actor?: { type: string; [k: string]: any };
-	skill?: { type: string; [k: string]: any };
-	state?: { type: string; [k: string]: any };
-	equipment?: { type: string; [k: string]: any };
-	item?: { type: string; [k: string]: any };
-	trigger?: { type: string; [k: string]: any };
-	tilemap?: { type: string; [k: string]: any };
-	tilemapPosition?: { type: string; [k: string]: any };
+	actor?: OperandRefShape;
+	skill?: OperandRefShape;
+	state?: OperandRefShape;
+	equipment?: OperandRefShape;
+	item?: OperandRefShape;
+	trigger?: OperandRefShape;
+	tilemap?: OperandRefShape;
+	tilemapPosition?: OperandRefShape;
 	key?: string;
-	element?: { type: string; [k: string]: any };
+	element?: OperandRefShape;
 	index?: number;
 	script?: string;
 	data: string;
@@ -42,7 +47,7 @@ interface NumberOperandData {
 
 interface NumberOperandTarget {
 	start: number;
-	save: () => any;
+	save: () => unknown;
 	dataValue?: NumberOperandData;
 	isPluginInput?: boolean;
 }
@@ -60,8 +65,8 @@ interface NumberOperandShape {
 		| ((operand: NumberOperandData, data?: NumberOperandData[], index?: number) => string)
 		| null;
 	open: ((operand?: NumberOperandData) => void) | null;
-	save: (() => any) | null;
-	confirm: ((event: Event) => NumberOperandData) | null;
+	save: (() => unknown) | null;
+	confirm: ((event: Event) => unknown) | null;
 }
 
 export const NumberOperand: NumberOperandShape = {
@@ -721,7 +726,7 @@ NumberOperand.parseOther = function (this: typeof NumberOperand, operand: Number
 NumberOperand.parseOperand = function (this: typeof NumberOperand, operand: NumberOperandData) {
 	switch (operand.type) {
 		case 'constant':
-			return Command.setNumberColor!(operand.value.toString());
+			return Command.setNumberColor!(operand.value!.toString());
 		case 'variable':
 			return Command.parseVariable!(operand.variable, 'number');
 		case 'math':
@@ -834,11 +839,11 @@ NumberOperand.open = function (
 	let mathDecimals = 0;
 	let mathMin = 0;
 	let mathMax = 1;
-	let mathStartPosition: { type: string; [k: string]: any } = {
+	let mathStartPosition: OperandRefShape = {
 		type: 'actor',
 		actor: { type: 'trigger' }
 	};
-	let mathEndPosition: { type: string; [k: string]: any } = {
+	let mathEndPosition: OperandRefShape = {
 		type: 'actor',
 		actor: { type: 'trigger' }
 	};
@@ -857,7 +862,7 @@ NumberOperand.open = function (
 	let commonItem = { type: 'trigger' };
 	let commonTrigger = { type: 'trigger' };
 	let commonTilemap = { type: 'trigger' };
-	let tilemapPosition: { type: string; [k: string]: any } = {
+	let tilemapPosition: OperandRefShape = {
 		type: 'absolute',
 		x: 0,
 		y: 0
@@ -871,7 +876,7 @@ NumberOperand.open = function (
 	let otherTeamId = Data.teams.list[0].id;
 	switch (operand.type) {
 		case 'constant':
-			constantValue = operand.value;
+			constantValue = operand.value!;
 			break;
 		case 'variable':
 			commonVariable = operand.variable;

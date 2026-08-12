@@ -1,9 +1,21 @@
 import { UI } from './ui-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import { ImageTexture } from '../webgl/image-texture.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
+interface ImageElementData {
+	display?: string;
+	image?: string;
+	flip?: string;
+	shiftX?: number;
+	shiftY?: number;
+	border?: number;
+	clip?: number[];
+	tint?: number[];
+	blend?: string;
+}
+
 UI.Image = class ImageElement extends UI.Element {
-	texture: any;
+	texture: ImageTexture | null;
 	_display!: string;
 	_image!: string;
 	flip: string;
@@ -14,7 +26,7 @@ UI.Image = class ImageElement extends UI.Element {
 	tint: number[];
 	blend: string;
 
-	constructor(data: any) {
+	constructor(data: ImageElementData = {}) {
 		super(data);
 		this.texture = null;
 		this.display = data.display ?? 'stretch';
@@ -32,7 +44,7 @@ UI.Image = class ImageElement extends UI.Element {
 		return this._image;
 	}
 
-	set image(value: any) {
+	set image(value: string) {
 		if (this._image !== value) {
 			this._image = value;
 			if (this.texture) {
@@ -52,7 +64,7 @@ UI.Image = class ImageElement extends UI.Element {
 		return this._display;
 	}
 
-	set display(value: any) {
+	set display(value: string) {
 		this._display = value;
 	}
 
@@ -89,8 +101,8 @@ UI.Image = class ImageElement extends UI.Element {
 						texture.clip(
 							this.shiftX,
 							this.shiftY,
-							texture.base.width,
-							texture.base.height
+							texture.base!.width,
+							texture.base!.height
 						);
 						break;
 					case 'tile':

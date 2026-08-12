@@ -11,47 +11,50 @@ import { DynamicShape } from '@/types/legacy-shapes.ts';
 
 interface InspectorChange {
 	input: HTMLElement;
-	oldValue: any;
-	newValue: any;
+	oldValue: unknown;
+	newValue: unknown;
 }
 
 interface InspectorEditorShape {
-	target: any;
-	update?: (target: any, key: string, value: any) => void;
-	owner?: { setTarget: (target: any, meta?: any) => void };
+	target: unknown;
+	update?: (target: unknown, key: string, value: unknown) => void;
+	owner?: { setTarget: (target: unknown, meta?: unknown) => void };
 }
 
 interface InspectorChangeData {
 	editor: InspectorEditorShape;
-	target: any;
+	target: unknown;
 	changes: InspectorChange[];
-	[k: string]: any;
+	[k: string]: unknown;
 }
 
 interface InspectorLayerChangeData extends InspectorChangeData {
-	motion: any;
-	direction: any;
+	motion: unknown;
+	direction: unknown;
 }
 
 interface InspectorParamData {
 	type: string;
-	array: any[];
-	history: Record<string, any>;
-	target: any;
-	[k: string]: any;
+	array: unknown[];
+	history: {
+		owner: { setTarget(target: unknown): void; planToSave(): void };
+		list: unknown;
+	};
+	target: unknown;
+	[k: string]: unknown;
 }
 
 interface InspectorScriptParameterData {
 	editor: {
-		target: any;
-		owner: { setTarget: (target: any, meta?: any) => void };
+		target: unknown;
+		owner: { setTarget: (target: unknown, meta?: unknown) => void };
 	};
-	target: any;
-	meta: any;
-	list: { rewrite: (parameters: Record<string, any>, key: string) => void };
-	parameters: Record<string, any>;
+	target: unknown;
+	meta: unknown;
+	list: { rewrite: (parameters: Record<string, unknown>, key: string) => void };
+	parameters: Record<string, unknown>;
 	key: string;
-	value: any;
+	value: unknown;
 }
 
 export const Inspector: DynamicShape = {
@@ -161,28 +164,48 @@ Inspector.initialize = function (this: typeof Inspector) {
 	processors['inspector-param-insert'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
-		ParamListHistory.restore(list, data, 'insert', operation);
+		ParamListHistory.restore(
+			list as Parameters<typeof ParamListHistory.restore>[0],
+			data,
+			'insert',
+			operation as 'undo' | 'redo'
+		);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
 	processors['inspector-param-replace'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
-		ParamListHistory.restore(list, data, 'replace', operation);
+		ParamListHistory.restore(
+			list as Parameters<typeof ParamListHistory.restore>[0],
+			data,
+			'replace',
+			operation as 'undo' | 'redo'
+		);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
 	processors['inspector-param-delete'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
-		ParamListHistory.restore(list, data, 'delete', operation);
+		ParamListHistory.restore(
+			list as Parameters<typeof ParamListHistory.restore>[0],
+			data,
+			'delete',
+			operation as 'undo' | 'redo'
+		);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
 	processors['inspector-param-toggle'] = (operation: string, data: InspectorParamData) => {
 		const { history, target } = data;
 		const { owner, list } = history;
-		ParamListHistory.restore(list, data, 'toggle', operation);
+		ParamListHistory.restore(
+			list as Parameters<typeof ParamListHistory.restore>[0],
+			data,
+			'toggle',
+			operation as 'undo' | 'redo'
+		);
 		owner.setTarget(target);
 		owner.planToSave();
 	};
@@ -273,7 +296,7 @@ Inspector.initialize = function (this: typeof Inspector) {
 	}
 };
 
-Inspector.open = function (this: typeof Inspector, type: string, target: any, meta?: any) {
+Inspector.open = function (this: typeof Inspector, type: string, target: unknown, meta?: unknown) {
 	if (this.manager.contains(document.activeElement)) {
 		(document.activeElement as HTMLElement).blur();
 	}
@@ -383,10 +406,7 @@ Inspector.managerKeydown = function (this: typeof Inspector, event: KeyboardEven
 	}
 };
 
-Inspector.scrollPointerdown = function (
-	this: HTMLElement,
-	event: PointerEvent & { [k: string]: any }
-) {
+Inspector.scrollPointerdown = function (this: HTMLElement, event: PointerEvent) {
 	if (this.dragging) {
 		return;
 	}
@@ -428,7 +448,7 @@ Inspector.inputFocus = function (this: HTMLElement, event: Event) {
 };
 
 Inspector.inputBlur = function (
-	editor: { target: any },
+	editor: { target: unknown },
 	owner: { history: History | null },
 	callback: ((data: InspectorChangeData) => void) | null = null
 ) {
@@ -489,11 +509,23 @@ Inspector.sliderBlur = (function IIFE() {
 })();
 
 Inspector.ParamHistory = class ParamHistory {
-	editor: { target: any };
-	owner: { history: History };
-	list: any;
+	editor: { target: unknown };
+	owner: {
+		history: History;
+		setTarget(target: unknown): void;
+		planToSave(): void;
+	};
+	list: unknown;
 
-	constructor(editor: { target: any }, owner: { history: History }, list: any) {
+	constructor(
+		editor: { target: unknown },
+		owner: {
+			history: History;
+			setTarget(target: unknown): void;
+			planToSave(): void;
+		},
+		list: unknown
+	) {
 		this.editor = editor;
 		this.owner = owner;
 		this.list = list;

@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia';
+import type { DataEntryShape } from './data';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 
+export interface VariableItemShape {
+	id: string;
+	[k: string]: unknown;
+}
+
 export interface VariableWindowState {
-	target: any | null;
-	data: any | null;
-	idMap: Record<string, any> | null;
-	history: any | null;
+	target: { [k: string]: unknown } | null;
+	data: VariableItemShape[] | null;
+	idMap: Record<string, DataEntryShape> | null;
+	history: { save: (data: unknown) => void } | null;
 	changed: boolean;
 }
 

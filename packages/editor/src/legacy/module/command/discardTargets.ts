@@ -23,7 +23,15 @@ Command.cases.discardTargets = new CommandSchema({
 			{ name: 'Any', value: 'any' }
 		]);
 	},
-	customParse({ actor, selector, distance }: any) {
+	customParse({
+		actor,
+		selector,
+		distance
+	}: {
+		actor: unknown;
+		selector: unknown;
+		distance: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseActorSelector!(selector));

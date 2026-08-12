@@ -16,15 +16,27 @@ Command.cases.moveElement = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#moveElement').on('open', function (event: any) {
+		$('#moveElement').on('open', function (event: Event) {
 			$('#moveElement-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#moveElement').on('closed', function (event: any) {
+		$('#moveElement').on('closed', function (event: Event) {
 			clear($('#moveElement-properties'));
 			clear($('#moveElement-easingId'));
 		});
 	},
-	customParse({ element, properties, easingId, duration, wait }: any) {
+	customParse({
+		element,
+		properties,
+		easingId,
+		duration,
+		wait
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		for (const property of properties) {
 			words.push(TransformProperty.parse!(property));
@@ -42,6 +54,12 @@ Command.cases.moveElement = new CommandSchema({
 		easingId = Data.easings[0].id,
 		duration = 0,
 		wait = false
+	}: {
+		element: unknown;
+		properties: unknown[];
+		easingId: string;
+		duration: number;
+		wait: boolean;
 	}) {
 		const write = getElementWriter('moveElement');
 		write('element', element);

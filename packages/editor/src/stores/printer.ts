@@ -9,7 +9,7 @@ export const usePrinterStore = defineStore('printer', () => {
 		state.value = Printer?.state ?? 'closed';
 	}
 
-	function print(content: any) {
+	function print(content: unknown) {
 		Printer?.print?.(content);
 	}
 

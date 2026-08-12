@@ -14,7 +14,7 @@ Command.cases.createObject = new CommandSchema({
 			default: { type: 'actor', actor: { type: 'trigger' } }
 		}
 	],
-	customParse({ presetId, position }: any) {
+	customParse({ presetId, position }: { presetId: unknown; position: unknown }) {
 		const words = Command.words
 			.push(Command.parsePresetObject(presetId))
 			.push(Command.parsePosition(position));

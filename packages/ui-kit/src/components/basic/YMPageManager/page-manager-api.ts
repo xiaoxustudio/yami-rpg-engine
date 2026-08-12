@@ -1,13 +1,17 @@
 import { addClass, hasClass, removeClass } from '../../../utils/dom';
 
 export interface PageManagerApi extends HTMLElement {
-	index: any;
+	index: string | null;
 	active: HTMLElement | null;
 	switchEventEnabled: boolean;
 	_initialized: boolean;
-	switch(value: any): void;
-	on(...args: unknown[]): any;
+	switch(value: string | null): void;
+	on(...args: unknown[]): void;
 }
+
+type PageFrameElement = HTMLElement & {
+	dataValue?: string | null;
+};
 
 const dispatchResizeEvent = (el: HTMLElement): void => {
 	el.dispatchEvent(new Event('resize'));
@@ -21,12 +25,12 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	manager.active = null;
 	manager.switchEventEnabled = false;
 
-	manager.switch = function (value: any): void {
+	manager.switch = function (value: string | null): void {
 		const last = manager.index;
 		if (last !== value) {
 			let target: HTMLElement | null = null;
 			if (value !== null) {
-				for (const child of el.childNodes as any) {
+				for (const child of el.childNodes as unknown as PageFrameElement[]) {
 					if (hasClass(child, 'page-frame')) {
 						if (child.dataValue === undefined) {
 							child.dataValue = child.getAttribute('value');
@@ -45,7 +49,10 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 				active && removeClass(active, 'visible');
 				target && addClass(target, 'visible');
 				if (manager.switchEventEnabled) {
-					const event: any = new Event('switch');
+					const event = new Event('switch') as Event & {
+						last: string | null;
+						value: string | null;
+					};
 					event.last = last;
 					event.value = value;
 					el.dispatchEvent(event);
@@ -58,7 +65,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 
 	manager.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		el.addEventListener(type, listener, listenerOptions);
@@ -71,7 +78,7 @@ export function attachPageManagerApi(el: HTMLElement): PageManagerApi {
 	if (nodes.length > 0) {
 		let i = nodes.length;
 		while (--i >= 0) {
-			const child: any = nodes[i];
+			const child = nodes[i] as PageFrameElement;
 			if (hasClass(child, 'page-frame')) {
 				child.dataValue = child.getAttribute('value');
 			} else {

@@ -419,37 +419,37 @@ const onSceneMarqueePointerdown = (event: PointerEvent) => {
 const onSceneMarqueeDoubleclick = (event: PointerEvent) => {
 	Scene?.marqueeDoubleclick?.(event);
 };
-const onEasingIdWrite = (value: any) => {
+const onEasingIdWrite = (value: string) => {
 	Curve?.easingIdWrite?.({ value });
 };
-const onEasingIdInput = (value: any) => {
+const onEasingIdInput = (value: unknown) => {
 	Curve?.easingIdInput?.({ value });
 };
 const onUiListChange = (event: Event) => {
 	UI?.listChange?.(event);
 };
-const onAnimationListSelect = (event: Event & { value?: any }) => {
+const onAnimationListSelect = (event: Event & { value?: unknown }) => {
 	Animation?.listSelect?.(event);
 };
-const onAnimationListRecord = (event: Event & { value?: any }) => {
+const onAnimationListRecord = (event: Event & { value?: unknown }) => {
 	Animation?.listRecord?.(event);
 };
-const onAnimationListOpen = (event: Event & { value?: any }) => {
+const onAnimationListOpen = (event: Event & { value?: unknown }) => {
 	Animation?.listOpen?.(event);
 };
-const onAnimationListPopup = (event: Event & { value?: any }) => {
+const onAnimationListPopup = (event: Event & { value?: unknown }) => {
 	Animation?.listPopup?.(event);
 };
 const onAnimationListChange = (event: Event) => {
 	Animation?.listChange?.(event);
 };
-const onLayerListSelect = (event: Event & { value?: any }) => {
+const onLayerListSelect = (event: Event & { value?: unknown }) => {
 	Animation?.layerListSelect?.(event);
 };
-const onLayerListRecord = (event: Event & { value?: any }) => {
+const onLayerListRecord = (event: Event & { value?: unknown }) => {
 	Animation?.layerListRecord?.(event);
 };
-const onLayerListPopup = (event: Event & { value?: any }) => {
+const onLayerListPopup = (event: Event & { value?: unknown }) => {
 	Animation?.layerListPopup?.(event);
 };
 const onLayerListChange = (event: Event) => {
@@ -533,16 +533,16 @@ const onParticleScreenWheel = (event: WheelEvent) => {
 const onParticleMarqueePointerdown = (event: PointerEvent) => {
 	Particle?.marqueePointerdown?.(event);
 };
-const onSceneListSelect = (event: Event & { value?: any }) => {
+const onSceneListSelect = (event: Event & { value?: unknown }) => {
 	Scene?.listSelect?.(event);
 };
-const onSceneListRecord = (event: Event & { value?: any }) => {
+const onSceneListRecord = (event: Event & { value?: unknown }) => {
 	Scene?.listRecord?.(event);
 };
-const onSceneListPopup = (event: Event & { value?: any }) => {
+const onSceneListPopup = (event: Event & { value?: unknown }) => {
 	Scene?.listPopup?.(event);
 };
-const onSceneListOpen = (event: Event & { value?: any }) => {
+const onSceneListOpen = (event: Event & { value?: unknown }) => {
 	Scene?.listOpen?.(event);
 };
 const onSceneListChange = (event: Event) => {

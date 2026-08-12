@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { YMSelectList } from '@ui-kit';
+import { YMSelectList, type SelectItem } from '@ui-kit';
 
 interface Props {
 	id?: string;
@@ -14,15 +14,15 @@ const props = defineProps<Props>();
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	select(element: HTMLElement): void;
 	unselect(): void;
 	reselect(offset: number): void;
-	open(target: HTMLElement & { dataItems: any[]; dataValue: any }): void;
+	open(target: HTMLElement & { dataItems: SelectItem[]; dataValue: unknown }): void;
 	close(): void;
 	resize(): void;
-	createItems(items: any[]): void;
+	createItems(items: SelectItem[]): void;
 	pageUp(select: boolean): void;
 	pageDown(select: boolean): void;
 	getElementIndexOfSelection(defIndex: number): number;
@@ -33,15 +33,16 @@ const ym = ref<{
 
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
+const read = (): unknown => ym.value?.read();
+const write = (value: unknown): void => ym.value?.write(value);
 const select = (element: HTMLElement): void => ym.value?.select(element);
 const unselect = (): void => ym.value?.unselect();
 const reselect = (offset: number): void => ym.value?.reselect(offset);
-const open = (target: HTMLElement & { dataItems: any[]; dataValue: any }): void => ym.value?.open(target);
+const open = (target: HTMLElement & { dataItems: SelectItem[]; dataValue: unknown }): void =>
+	ym.value?.open(target);
 const close = (): void => ym.value?.close();
 const resize = (): void => ym.value?.resize();
-const createItems = (items: any[]): void => ym.value?.createItems(items);
+const createItems = (items: SelectItem[]): void => ym.value?.createItems(items);
 const pageUp = (selectFlag: boolean): void => ym.value?.pageUp(selectFlag);
 const pageDown = (selectFlag: boolean): void => ym.value?.pageDown(selectFlag);
 const getElementIndexOfSelection = (defIndex: number): number =>

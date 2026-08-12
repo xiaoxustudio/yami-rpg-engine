@@ -4,29 +4,40 @@ import YMTextArea from '../YMTextArea/YMTextArea.vue';
 
 interface Props {
 	id?: string;
-	modelValue?: any;
+	modelValue?: unknown;
 	disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	modelValue: null,
+	modelValue: null as never,
 	disabled: false
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
-	input: [value: any];
-	change: [value: any];
+	'update:modelValue': [value: unknown];
+	input: [value: unknown];
+	change: [value: unknown];
 }>();
 
 const root = ref<HTMLElement | null>(null);
 const areaRef = ref<InstanceType<typeof YMTextArea> | null>(null);
 
+interface TextAreaVarApi extends HTMLElement {
+	mode?: 'constant' | 'variable';
+	read: () => unknown;
+	write: (value: unknown) => void;
+	switch: (target?: 'constant' | 'variable') => void;
+	enable: () => void;
+	disable: () => void;
+	getFocus: (modeArg?: string) => HTMLElement | null | undefined;
+	on: (type: string, listener: (event: Event) => void, options?: boolean | AddEventListenerOptions) => void;
+}
+
 const mode = ref<'constant' | 'variable'>('constant');
 const textValue = ref('');
 const varValue = ref<any>(null);
 
-const read = (): any => {
+const read = (): unknown => {
 	switch (mode.value) {
 		case 'constant':
 			return areaRef.value ? areaRef.value.read() : textValue.value;
@@ -35,7 +46,7 @@ const read = (): any => {
 	}
 };
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	switch (typeof value) {
 		case 'string':
 			switchMode('constant');
@@ -61,12 +72,12 @@ const switchMode = (target?: 'constant' | 'variable'): void => {
 		if (el) {
 			el.classList.remove(mode.value);
 			el.classList.add(target);
-			(el as any).mode = target;
+			(el as TextAreaVarApi).mode = target;
 		}
 		mode.value = target;
 		if (target === 'constant') {
 			nextTick(() => {
-				const input = (areaRef.value as any)?.input;
+				const input = areaRef.value?.input;
 				if (focus && input) {
 					input.focus();
 					input.select();
@@ -95,10 +106,10 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (modeArg: any): any => {
+const getFocus = (modeArg?: string): HTMLElement | null | undefined => {
 	switch (mode.value) {
 		case 'constant': {
-			const el = (areaRef.value as any)?.input;
+			const el = areaRef.value?.input;
 			if (!el) return;
 			setTimeout(() => {
 				el.focus();
@@ -124,7 +135,7 @@ const getFocus = (modeArg: any): any => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -179,14 +190,14 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).switch = switchMode;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
-	(el as any).mode = mode.value;
+	(el as TextAreaVarApi).read = read;
+	(el as TextAreaVarApi).write = write;
+	(el as TextAreaVarApi).switch = switchMode;
+	(el as TextAreaVarApi).enable = enable;
+	(el as TextAreaVarApi).disable = disable;
+	(el as TextAreaVarApi).getFocus = getFocus;
+	(el as TextAreaVarApi).on = on;
+	(el as TextAreaVarApi).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	if (props.modelValue !== null && props.modelValue !== undefined) {

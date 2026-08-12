@@ -13,7 +13,17 @@ Command.cases.clampCamera = new CommandSchema({
 		{ key: 'right', default: 0 },
 		{ key: 'bottom', default: 0 }
 	],
-	customParse({ left, top, right, bottom }: any) {
+	customParse({
+		left,
+		top,
+		right,
+		bottom
+	}: {
+		left: unknown;
+		top: unknown;
+		right: unknown;
+		bottom: unknown;
+	}) {
 		const words = Command.words
 			.push(
 				Local.get!('command.clampCamera.left') +

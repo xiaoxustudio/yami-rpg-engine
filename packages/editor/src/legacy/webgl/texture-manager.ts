@@ -1,11 +1,12 @@
 import { File } from '@/file/file-system-core.ts';
+import { BaseTexture } from './base-texture.ts';
 import { ImageTexture } from './image-texture.ts';
 import { GL } from './webgl-init.ts';
 
 export class TextureManager {
 	gl: typeof GL;
-	map: Record<string, ImageTexture>;
-	images: Record<string, ImageTexture>;
+	map: Record<string, BaseTexture>;
+	images: Record<string, BaseTexture>;
 	pointer: number;
 	count: number;
 
@@ -23,7 +24,7 @@ export class TextureManager {
 		File.get!({
 			guid: guid,
 			type: 'image'
-		}).then((image: any) => {
+		}).then((image: HTMLImageElement) => {
 			if (this.images[guid] === texture && image) {
 				const { gl } = this;
 				texture.image = image;
@@ -45,7 +46,7 @@ export class TextureManager {
 		});
 	}
 
-	append(texture: any) {
+	append(texture: BaseTexture) {
 		if (texture.index === undefined) {
 			let i = this.pointer;
 			const map = this.map;
@@ -59,13 +60,13 @@ export class TextureManager {
 		}
 	}
 
-	delete(texture: any) {
-		const i = texture.index;
+	delete(texture: BaseTexture) {
+		const i = texture.index as number;
 		const { gl, map } = this;
 		gl.deleteTexture(texture.glTexture);
 		// 通过ID删除图像映射表中的纹理
 		if (texture.refCount === 0) {
-			delete this.images[texture.guid];
+			delete this.images[texture.guid as string];
 		}
 		// 通过索引删除映射表中的纹理
 		if (map[i] === texture) {
@@ -96,10 +97,10 @@ export class TextureManager {
 		}
 	}
 
-	replace(oldTex: any, newTex: any) {
+	replace(oldTex: BaseTexture, newTex: BaseTexture) {
 		newTex.index = oldTex.index;
-		if (this.map[oldTex.index]) {
-			this.map[oldTex.index] = newTex;
+		if (this.map[oldTex.index as number]) {
+			this.map[oldTex.index as number] = newTex;
 		}
 		if (oldTex instanceof ImageTexture && oldTex.guid === newTex.guid) {
 			if (this.images[oldTex.guid] === oldTex) {

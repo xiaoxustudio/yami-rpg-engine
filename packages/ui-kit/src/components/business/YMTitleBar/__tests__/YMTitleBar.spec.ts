@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMTitleBar from '../YMTitleBar.vue';
 
-const makeFrame = (): HTMLElement & { [k: string]: any } => {
-	const frame: any = document.createElement('div');
+type FrameElement = HTMLElement & { maximize: () => void; unmaximize: () => void };
+
+const makeFrame = (): FrameElement => {
+	const frame = document.createElement('div') as unknown as FrameElement;
 	frame.maximize = () => {};
 	frame.unmaximize = () => {};
 	frame.id = 'test-window';
@@ -32,6 +34,15 @@ const makePointerEvent = (
 	return event;
 };
 
+interface TitleBarElement extends HTMLElement {
+	[k: string]: unknown;
+	pointerdown: () => void;
+	mouseclick: () => void;
+	doubleclick: () => void;
+	on: (name: string, cb: (e: unknown) => void) => void;
+	dragging: unknown;
+}
+
 describe('YMTitleBar', () => {
 	it('mounts with slot content and exposes api', () => {
 		const wrapper = mount(YMTitleBar, {
@@ -40,7 +51,7 @@ describe('YMTitleBar', () => {
 		expect(wrapper.element.classList.contains('title-bar')).toBe(true);
 		expect(wrapper.element.querySelector('.close')).toBeTruthy();
 		expect(wrapper.text()).toContain('Title');
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		expect(typeof el.pointerdown).toBe('function');
 		expect(typeof el.mouseclick).toBe('function');
 		expect(typeof el.doubleclick).toBe('function');
@@ -50,7 +61,7 @@ describe('YMTitleBar', () => {
 
 	it('pointerdown on empty area starts dragging and moves frame', async () => {
 		const wrapper = mount(YMTitleBar, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		const frame = makeFrame();
 		frame.appendChild(el);
 		document.body.appendChild(frame);
@@ -66,7 +77,7 @@ describe('YMTitleBar', () => {
 
 	it('pointerdown ignores non-left button', () => {
 		const wrapper = mount(YMTitleBar, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		const frame = makeFrame();
 		frame.appendChild(el);
 		document.body.appendChild(frame);
@@ -78,7 +89,7 @@ describe('YMTitleBar', () => {
 
 	it('click on close calls Window.close', () => {
 		const wrapper = mount(YMTitleBar, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		const frame = makeFrame();
 		frame.appendChild(el);
 		document.body.appendChild(frame);
@@ -86,17 +97,19 @@ describe('YMTitleBar', () => {
 		closeBtn.classList.add('close');
 		el.appendChild(closeBtn);
 		let closed = null;
-		(window as any).Window = { close: (id: string) => (closed = id) };
+		(window as unknown as Window & { Window?: { close(id?: string): void } }).Window = {
+			close: (id: string) => (closed = id)
+		};
 		closeBtn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 		expect(closed).toBe('test-window');
 		closeBtn.remove();
 		frame.remove();
-		delete (window as any).Window;
+		delete (window as unknown as Window & { Window?: { close(id?: string): void } }).Window;
 	});
 
 	it('click on maximize toggles frame maximized', () => {
 		const wrapper = mount(YMTitleBar, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		const frame = makeFrame();
 		frame.appendChild(el);
 		document.body.appendChild(frame);
@@ -117,7 +130,7 @@ describe('YMTitleBar', () => {
 
 	it('doubleclick on empty area toggles maximize', () => {
 		const wrapper = mount(YMTitleBar, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as TitleBarElement;
 		const frame = makeFrame();
 		frame.appendChild(el);
 		document.body.appendChild(frame);

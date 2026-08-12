@@ -38,7 +38,27 @@ Command.cases.loadImage = new CommandSchema({
 				{ case: 'base64', targets: [$('#loadImage-variable')] }
 			]);
 	},
-	customParse({ element, type, actor, skill, state, equipment, item, key, variable }: any) {
+	customParse({
+		element,
+		type,
+		actor,
+		skill,
+		state,
+		equipment,
+		item,
+		key,
+		variable
+	}: {
+		element: unknown;
+		type: string;
+		actor: unknown;
+		skill: unknown;
+		state: unknown;
+		equipment: unknown;
+		item: unknown;
+		key: unknown;
+		variable: unknown;
+	}) {
 		const words = Command.words.push(Command.parseElement!(element));
 		const label = Local.get!('command.loadImage.' + type);
 		let content;

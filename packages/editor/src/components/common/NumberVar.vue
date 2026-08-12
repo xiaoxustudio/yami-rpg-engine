@@ -15,7 +15,7 @@
 				type="variable"
 				filter="number"
 				:model-value="state.varValue ?? defVar"
-				@update:model-value="(v: any) => (state.varValue = v)"
+				@update:model-value="(v: unknown) => (state.varValue = v)"
 			/>
 		</template>
 	</YMNumberVar>
@@ -34,7 +34,7 @@ interface Props {
 	step?: number | string;
 	decimals?: number | string;
 	unit?: string;
-	modelValue?: any;
+	modelValue?: unknown;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,40 +47,40 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-	'update:modelValue': [value: any];
+	'update:modelValue': [value: unknown];
 }>();
 
-const state = reactive<{ varValue: any }>({
+const state = reactive<{ varValue: unknown }>({
 	varValue: null
 });
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): unknown;
+	write(value: unknown): void;
 	switch(mode?: string): void;
 	enable(): void;
 	disable(): void;
-	getFocus(mode: any): any;
+	getFocus(mode?: string): void;
 	on(
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		options?: boolean | AddEventListenerOptions
 	): void;
 } | null>(null);
 const varBoxRef = ref<InstanceType<typeof CustomBox> | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const getChildRoot = (instance: any): HTMLElement | null => {
+const getChildRoot = (instance: { $el?: unknown; root?: unknown } | null): HTMLElement | null => {
 	if (!instance) return null;
 	if (instance.$el instanceof HTMLElement) return instance.$el;
 	if (instance.root instanceof HTMLElement) return instance.root;
 	return null;
 };
 
-const read = (): any => ym.value?.read();
+const read = (): unknown => ym.value?.read();
 
-const write = (value: any): void => {
+const write = (value: unknown): void => {
 	ym.value?.write(value);
 	if (typeof value === 'object' && value !== null) {
 		state.varValue = value;
@@ -93,10 +93,10 @@ const switchMode = (target?: string): void => ym.value?.switch(target);
 
 const enable = (): void => ym.value?.enable();
 const disable = (): void => ym.value?.disable();
-const getFocus = (mode: any): any => ym.value?.getFocus(mode);
+const getFocus = (mode?: string): void => ym.value?.getFocus(mode);
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
@@ -108,11 +108,22 @@ watch(
 );
 
 onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<
-			'read' | 'write' | 'switch' | 'enable' | 'disable' | 'getFocus' | 'on' | 'mode' | 'numBox' | 'varBox',
-			any
-		>;
+	const el = root.value as HTMLElement & {
+		read(): unknown;
+		write(value: unknown): void;
+		switch(mode?: string): void;
+		enable(): void;
+		disable(): void;
+		getFocus(mode?: string): void;
+		on(
+			type: string,
+			listener: (event: Event) => void,
+			options?: boolean | AddEventListenerOptions
+		): void;
+		mode: string;
+		numBox: HTMLElement | null;
+		varBox: (HTMLElement & { isPluginInput?: boolean }) | null;
+	};
 	if (!el) return;
 	el.read = read;
 	el.write = write;

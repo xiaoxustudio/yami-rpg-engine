@@ -25,7 +25,7 @@ describe('useLocalStore（Local 全局状态桥接）', () => {
 		expect(store.language).toBe('zh-CN');
 		store.setActive('zh-CN.json');
 		expect(store.active).toBe('zh-CN.json');
-		store.setLanguages([{ key: 'zh-CN', filename: 'zh-CN.json' }]);
+		store.setLanguages([{ key: 'zh-CN', alias: '简体中文', filename: 'zh-CN.json' }]);
 		expect(store.languages[0].key).toBe('zh-CN');
 		store.setLanguage('en');
 		store.setActive(null);

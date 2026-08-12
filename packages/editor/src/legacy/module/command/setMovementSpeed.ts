@@ -24,7 +24,17 @@ Command.cases.setMovementSpeed = new CommandSchema({
 				}
 			]);
 	},
-	customParse({ actor, property, base, factor }: any) {
+	customParse({
+		actor,
+		property,
+		base,
+		factor
+	}: {
+		actor: unknown;
+		property: string;
+		base: unknown;
+		factor: unknown;
+	}) {
 		const label = Local.get!('command.setMovementSpeed.' + property);
 		const words = Command.words
 			.push(Command.parseActor!(actor))

@@ -4,7 +4,7 @@ import { createSelectBox, selectBoxSetItemNames } from '@/components/select-box'
 
 describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）', () => {
 	it('createSelectBox returns select-box with api', () => {
-		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
+		const el = createSelectBox() as unknown as SelectBoxApi;
 		expect(el.classList.contains('select-box')).toBe(true);
 		expect(typeof el.loadItems).toBe('function');
 		expect(typeof el.write).toBe('function');
@@ -13,7 +13,9 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 	});
 
 	it('selectBoxSetItemNames rewrite mode does not recurse（9.32 回归）', () => {
-		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
+		const el = createSelectBox() as unknown as SelectBoxApi & {
+			lightItems: { all: Array<{ name: string; value: string }> };
+		};
 		el.loadItems([
 			{ name: 'A', value: 'a' },
 			{ name: 'B', value: 'b' }
@@ -25,10 +27,16 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 				{ name: 'Global', value: 'global' }
 			]
 		};
-		el.setItemNames = function (this: any, options: any) {
+		el.setItemNames = function (
+			this: typeof el,
+			options: Record<string, string | { name?: string; tip?: string }>
+		) {
 			const backup = this.dataItems;
 			this.dataItems = this.lightItems.all;
-			selectBoxSetItemNames(this, options);
+			selectBoxSetItemNames(
+				this as unknown as Parameters<typeof selectBoxSetItemNames>[0],
+				options
+			);
 			this.dataItems = backup;
 		};
 		el.setItemNames({ raw: 'RAW-OK', global: 'GLOBAL-OK' });
@@ -37,7 +45,7 @@ describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）'
 	});
 
 	it('write/read roundtrip with loadItems', () => {
-		const el = createSelectBox() as unknown as SelectBoxApi & Record<string, any>;
+		const el = createSelectBox() as unknown as SelectBoxApi;
 		el.loadItems([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }

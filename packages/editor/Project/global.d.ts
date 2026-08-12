@@ -1,8 +1,8 @@
-/// <reference types="vite/client" />
+﻿/// <reference types="vite/client" />
 
-// 全局类型扩展声明 本文件集中声明 src/legacy/util/ 各模块对内置对象 / window 的新增成员类型, 避免 TS2339 / TS2551 报错。所有扩展均来自 util/*.ts 的实际运行时挂载。
+// 鍏ㄥ眬绫诲瀷鎵╁睍澹版槑 鏈枃浠堕泦涓０鏄?src/legacy/util/ 鍚勬ā鍧楀鍐呯疆瀵硅薄 / window 鐨勬柊澧炴垚鍛樼被鍨? 閬垮厤 TS2339 / TS2551 鎶ラ敊銆傛墍鏈夋墿灞曞潎鏉ヨ嚜 util/*.ts 鐨勫疄闄呰繍琛屾椂鎸傝浇銆?
 
-// 注：本文件保持 ambient script（无顶层 import/export），interface 声明才能自动合并到全局。故 EditorEvent 别名在此内联，不 import types/editor-event.ts（顶层 import 会破坏 ambient 语义）。
+// 娉細鏈枃浠朵繚鎸?ambient script锛堟棤椤跺眰 import/export锛夛紝interface 澹版槑鎵嶈兘鑷姩鍚堝苟鍒板叏灞€銆傛晠 EditorEvent 鍒悕鍦ㄦ鍐呰仈锛屼笉 import types/editor-event.ts锛堥《灞?import 浼氱牬鍧?ambient 璇箟锛夈€?
 type EditorEvent =
 	| KeyboardEvent
 	| MouseEvent
@@ -107,10 +107,10 @@ interface HTMLElement {
 	count: number;
 	test(name: string): RegExp;
 	direction: number;
-	// ScrollBar / CommandList 共用的滚动监听方法（scroll-listener.ts 中挂载到 HTMLElement.prototype）
+	// ScrollBar / CommandList 鍏辩敤鐨勬粴鍔ㄧ洃鍚柟娉曪紙scroll-listener.ts 涓寕杞藉埌 HTMLElement.prototype锛?
 	addScrollListener: (...args: any[]) => any;
 	removeScrollListener: (...args: any[]) => any;
-	// element-utils.ts 中 read/write 访问 dataValue；addScrollbars / listenDraggingScrollbarEvent 运行时赋值下列实例成员
+	// element-utils.ts 涓?read/write 璁块棶 dataValue锛沘ddScrollbars / listenDraggingScrollbarEvent 杩愯鏃惰祴鍊间笅鍒楀疄渚嬫垚鍛?
 	dataValue: boolean | string | number | Record<string, any> | null;
 	seekUp(tagName: string, count?: number): HTMLElement | null;
 	beginScrolling(): void;
@@ -123,33 +123,33 @@ interface HTMLElement {
 	scrollPointermove: (event: EditorEvent) => void;
 	scrollPointerdown?: (event: EditorEvent) => void;
 	dragging: Record<string, any> | null;
-	// scroll-bar.ts 中 ScrollBar 类方法（addScrollbars 内 hBar/vBar 调用）
+	// scroll-bar.ts 涓?ScrollBar 绫绘柟娉曪紙addScrollbars 鍐?hBar/vBar 璋冪敤锛?
 	bind(...args: unknown[]): unknown;
 	updateHorizontalBar(): void;
 	updateVerticalBar(): void;
-	// file-body-pane.ts 中局使用
+	// file-body-pane.ts 涓眬浣跨敤
 	isImageChanged: () => boolean;
 	content: HTMLElement;
-	// parameter-pane.ts 中局使用（container/row 元素属性）
+	// parameter-pane.ts 涓眬浣跨敤锛坈ontainer/row 鍏冪礌灞炴€э級
 	parameters: any;
 	key: any;
 	wraps: any[];
-	// tab-bar.ts 中局使用（items[i].item / popup menu 元素属性）
+	// tab-bar.ts 涓眬浣跨敤锛坕tems[i].item / popup menu 鍏冪礌灞炴€э級
 	item: Record<string, any> | null;
 	value: any;
 	clientX: number;
 	clientY: number;
-	// file-head-pane.ts 中局使用（elFolder/elArrow/head 元素属性）
+	// file-head-pane.ts 涓眬浣跨敤锛坋lFolder/elArrow/head 鍏冪礌灞炴€э級
 	file: any;
 	folders: any[];
 	target: any;
 	links: any;
-	// toast.ts 中局使用（el._timer 挂载 setTimeout 句柄）
+	// toast.ts 涓眬浣跨敤锛坋l._timer 鎸傝浇 setTimeout 鍙ユ焺锛?
 	_timer: any;
-	// file-browser.ts 中局使用（sFile.stats.ino 取文件 inode）
+	// file-browser.ts 涓眬浣跨敤锛坰File.stats.ino 鍙栨枃浠?inode锛?
 	stats: { ino: number };
-	// ---- legacy 命令式组件扩展（types/element-extensions.ts 合并）----
-	// ---- 数据挂载（可选——运行时动态）----
+	// ---- legacy 鍛戒护寮忕粍浠舵墿灞曪紙types/element-extensions.ts 鍚堝苟锛?---
+	// ---- 鏁版嵁鎸傝浇锛堝彲閫夆€斺€旇繍琛屾椂鍔ㄦ€侊級----
 	start?: number;
 	selection?: HTMLElement | Record<string, any> | null;
 	activeFile?: Record<string, any> | null;
@@ -270,7 +270,7 @@ interface HTMLElement {
 interface TextBox extends HTMLElement {
 	lastText: string;
 	hiddenNodes: any[];
-	// module/resource.ts 中局使用（textbox.input.readOnly 访问内部 input 元素）
+	// module/resource.ts 涓眬浣跨敤锛坱extbox.input.readOnly 璁块棶鍐呴儴 input 鍏冪礌锛?
 	input: HTMLInputElement;
 }
 
@@ -297,12 +297,12 @@ interface Event {
 	spaceKey: boolean;
 	cmdOrCtrlKey: boolean;
 	doubleclickProcessed: boolean;
-	// file-body-pane.ts 中局使用（popup menu 的原始事件）
+	// file-body-pane.ts 涓眬浣跨敤锛坧opup menu 鐨勫師濮嬩簨浠讹級
 	raw: any;
-	// param-list.ts 中局使用（event.latest）
+	// param-list.ts 涓眬浣跨敤锛坋vent.latest锛?
 	latest: any;
 	value: any;
-	// select-box.ts 中局使用（input 事件挂载 .last）
+	// select-box.ts 涓眬浣跨敤锛坕nput 浜嬩欢鎸傝浇 .last锛?
 	last: any;
 }
 
@@ -316,7 +316,7 @@ interface HTMLElement {
 	dataList: any;
 	dataItem: any;
 	dataIndent: any;
-	contents: any[];
+	contents: { text?: string; color?: string; fold?: boolean }[];
 	varSpace: any;
 	varType: any;
 	varKey: any;
@@ -346,7 +346,14 @@ interface HTMLElement {
 	start: number;
 	back: any;
 	item: any;
-	elements: any[];
+	elements: any[] & {
+		versionId?: number;
+		count?: number;
+		start?: number;
+		end?: number;
+		head?: unknown;
+		foot?: unknown;
+	};
 }
 
 interface Element {
@@ -362,9 +369,9 @@ interface Element {
 	blur(): void;
 	show(...args: any[]): any;
 	hide(...args: any[]): any;
-	// parameter-pane.ts 中局使用（rowsEl.children 迭代为 Element，需访问 .wraps）
+	// parameter-pane.ts 涓眬浣跨敤锛坮owsEl.children 杩唬涓?Element锛岄渶璁块棶 .wraps锛?
 	wraps: any[];
-	// transition-window.ts 中局使用（keyTextNode = createElement('text') 为 Element，需访问 .key）
+	// transition-window.ts 涓眬浣跨敤锛坘eyTextNode = createElement('text') 涓?Element锛岄渶璁块棶 .key锛?
 	key: any;
 }
 
@@ -374,7 +381,7 @@ interface ParentNode {
 	directory: any;
 	activeWheel: any;
 	inputCode(code: any): void;
-	// file-head-pane.ts 中局使用（head = this.parentNode 为 ParentNode，需访问 .links）
+	// file-head-pane.ts 涓眬浣跨敤锛坔ead = this.parentNode 涓?ParentNode锛岄渶璁块棶 .links锛?
 	links: any;
 	textNode: any;
 }
@@ -384,9 +391,9 @@ interface ChildNode {
 	tagName: string;
 	getAttribute(name: string): string | null;
 	dataValue: any;
-	// tab-bar.ts 中局使用（items[i] 为 ChildNode，需访问 .item）
+	// tab-bar.ts 涓眬浣跨敤锛坕tems[i] 涓?ChildNode锛岄渶璁块棶 .item锛?
 	item: any;
-	// menu-list.ts 中局使用（li 为 ChildNode，需访问 .label/.accelerator）
+	// menu-list.ts 涓眬浣跨敤锛坙i 涓?ChildNode锛岄渶璁块棶 .label/.accelerator锛?
 	label: any;
 	accelerator: any;
 }
@@ -413,7 +420,7 @@ interface KeyboardEvent {
 }
 
 interface NodeList {
-	// tab-bar.ts 中局使用（this.childNodes 解构 { item }）
+	// tab-bar.ts 涓眬浣跨敤锛坱his.childNodes 瑙ｆ瀯 { item }锛?
 	item: any;
 }
 
@@ -457,7 +464,7 @@ interface HTMLInputElement {
 }
 
 interface TimerStatic {
-	timers: any[];
+	timers: unknown[];
 	updaters: {
 		stageAnimation: ((deltaTime: number) => void) | null;
 		stageRendering: ((deltaTime: number) => void) | null;

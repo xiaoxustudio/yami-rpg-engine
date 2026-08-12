@@ -6,6 +6,20 @@ import { GameLocal } from '@/local/local-object.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type ShowTextLine = { fold?: boolean; color?: string; text?: string; break?: boolean };
+
+type ShowTextCommandData = {
+	target: unknown;
+	parameters: unknown;
+	content: string;
+};
+
+type ShowTextCharMetrics = {
+	updateCharWidth: () => void;
+	latinCharWidth: number;
+	otherCharWidth: number;
+};
+
 Command.cases.showText = new CommandSchema({
 	name: 'showText',
 	latinCharWidth: 0,
@@ -13,7 +27,7 @@ Command.cases.showText = new CommandSchema({
 	onInitialize() {
 		$('#showText-confirm').on('click', () => this.save!());
 	},
-	customParse({ target, parameters, content }: any) {
+	customParse({ target, parameters, content }: ShowTextCommandData) {
 		const alias = Local.get!('command.showText.alias');
 		const words = Command.words
 			.push(Command.parseActor!(target))
@@ -54,13 +68,13 @@ Command.cases.showText = new CommandSchema({
 		if (this.latinCharWidth === 0) {
 			const latinChars = '          ';
 			const otherChars = '　　　　　　　　　　';
-			const font = 'var(--font-family-mono)';
+			const font = 'var(--ym-font-mono)';
 			this.latinCharWidth = measureText(latinChars, font).width / 10;
 			this.otherCharWidth = measureText(otherChars, font).width / 10;
 		}
 	},
 	appendTextLines: (function IIFE() {
-		const append = (contents: any, tag: any, text: any) => {
+		const append = (contents: ShowTextLine[], tag: string, text: string) => {
 			if (contents.length === 0) {
 				contents.push(
 					{ color: 'element' },
@@ -84,7 +98,12 @@ Command.cases.showText = new CommandSchema({
 		const tooltipTag = /^\$_tooltip_\$(?:\S+?)_\/_\$/;
 		const classTag = /^\$_class_\$(?:\S+?)_\/_\$/;
 		const colorTag = /^\$_\S+?_\$([\s\S]*?)\$_\/_\$/;
-		return function (this: any, contents: any, tag: any, text: any) {
+		return function (
+			this: ShowTextCharMetrics,
+			contents: ShowTextLine[],
+			tag: string,
+			text: string
+		) {
 			if (!text) return;
 			this.updateCharWidth!();
 			const MAX_LINES = 10;

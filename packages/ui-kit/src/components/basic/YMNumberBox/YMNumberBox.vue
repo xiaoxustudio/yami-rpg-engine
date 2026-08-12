@@ -103,12 +103,12 @@ const read = (): number => {
 	return value;
 };
 
-const write = (value: any): void => {
+const write = (value: string | number): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	el.value = String(value);
 	el.value = String(read());
-	(el as any).history?.reset();
+	(el as HTMLInputElement & { history?: { reset(): void } }).history?.reset();
 };
 
 const enable = (): void => {
@@ -129,7 +129,7 @@ const disable = (): void => {
 	}
 };
 
-const getFocus = (mode: any): void => {
+const getFocus = (mode?: string): void => {
 	const el = inputEl.value;
 	if (!el) return;
 	setTimeout(() => {
@@ -159,7 +159,7 @@ const measureText = (text: string, font: string): { width: number } => {
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	const el = root.value;
@@ -183,6 +183,16 @@ const on = (
 			}
 			break;
 	}
+};
+
+type NumberBoxHost = HTMLElement & {
+	input: HTMLInputElement | null;
+	read: typeof read;
+	write: typeof write;
+	enable: typeof enable;
+	disable: typeof disable;
+	getFocus: typeof getFocus;
+	on: typeof on;
 };
 
 defineExpose({ read, write, enable, disable, getFocus, on, input: inputEl, root });
@@ -209,31 +219,32 @@ onMounted(() => {
 	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	if (el.childNodes.length > 1) {
 		const labelNode = Array.from(el.childNodes).find(
-			(n: any) => n.nodeType === Node.ELEMENT_NODE || (n.textContent ?? '').trim() !== ''
+			(n: ChildNode) => n.nodeType === Node.ELEMENT_NODE || (n.textContent ?? '').trim() !== ''
 		);
 		const label = labelNode ? String(labelNode.textContent ?? '').trim() : '';
 		if (label) {
-			const font = 'var(--font-family-mono)';
+			const font =
+				labelNode instanceof HTMLElement
+					? getComputedStyle(labelNode).font
+					: 'var(--ym-font-mono)';
 			const padding = measureText(label, font).width + 8;
 			input.style.paddingLeft = `${padding}px`;
 		}
 	}
 	if (props.unit !== null && props.unit !== undefined && props.unit !== '') {
 		const unitText = document.createElement('div');
-		const font = 'var(--font-family-mono)';
-		const padding = measureText(props.unit, font).width + 8;
 		unitText.className = 'unit text';
 		unitText.textContent = props.unit;
 		el.insertBefore(unitText, input);
-		input.style.paddingRight = `${padding}px`;
+		input.style.paddingRight = `${unitText.offsetWidth}px`;
 	}
-	(el as any).input = input;
-	(el as any).read = read;
-	(el as any).write = write;
-	(el as any).enable = enable;
-	(el as any).disable = disable;
-	(el as any).getFocus = getFocus;
-	(el as any).on = on;
+	(el as NumberBoxHost).input = input;
+	(el as NumberBoxHost).read = read;
+	(el as NumberBoxHost).write = write;
+	(el as NumberBoxHost).enable = enable;
+	(el as NumberBoxHost).disable = disable;
+	(el as NumberBoxHost).getFocus = getFocus;
+	(el as NumberBoxHost).on = on;
 	Object.defineProperty(el, 'decimals', {
 		get: (): number => decimalPlaces,
 		set: (value: number): void => {

@@ -5,13 +5,19 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type AppendTargetData = {
+	actor: unknown;
+	target: unknown;
+	[k: string]: unknown;
+};
+
 Command.cases.appendTarget = new CommandSchema({
 	name: 'appendTarget',
 	fields: [
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'target', default: { type: 'trigger' } }
 	],
-	customParse({ actor, target }: any) {
+	customParse({ actor, target }: AppendTargetData) {
 		const words = Command.words
 			.push(Command.parseActor(actor))
 			.push(Command.parseActor(target));

@@ -26,7 +26,7 @@ describe('YMLoadingOverlay', () => {
 
 	it('exposes show/hide counting api', async () => {
 		const wrapper = mount(YMLoadingOverlay);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as Record<string, any>;
 		vm.show();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('visible');

@@ -15,7 +15,7 @@ Command.cases.setTerrain = new CommandSchema({
 			{ name: 'Wall', value: 'wall' }
 		]);
 	},
-	customParse({ position, terrain }: any) {
+	customParse({ position, terrain }: { position: unknown; terrain: string }) {
 		const words = Command.words
 			.push(Command.parsePosition!(position))
 			.push(Local.get!('command.setTerrain.' + terrain));

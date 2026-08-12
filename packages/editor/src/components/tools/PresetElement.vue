@@ -26,10 +26,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
-const onUiIdWrite = (value: any) => {
+const onUiIdWrite = (value: unknown) => {
 	PresetElement?.uiIdWrite?.({ value });
 };
-const onListOpen = (event: any) => {
+const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetElement?.listOpen?.(event);
 };
 

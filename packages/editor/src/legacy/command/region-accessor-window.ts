@@ -9,7 +9,7 @@ interface RegionTarget {
 		type: string;
 		presetId: string;
 	};
-	input: (getter: Record<string, any>) => void;
+	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
 
@@ -55,7 +55,7 @@ RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
 RegionGetter.confirm = function (this: typeof RegionGetter, event: Event) {
 	const read = getElementReader('regionGetter');
 	const type = read('type');
-	let getter: Record<string, any> | undefined;
+	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'trigger':
 			getter = { type };

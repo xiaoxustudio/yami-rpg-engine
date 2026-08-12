@@ -95,7 +95,18 @@ Command.cases.setList = new CommandSchema({
 		groupId,
 		actor,
 		skipCheck = true
-	}: any) {
+	}: {
+		variable: unknown;
+		operation: string;
+		list: unknown[];
+		index: unknown;
+		constant: unknown;
+		operand: unknown;
+		separator: unknown;
+		groupId: unknown;
+		actor: unknown;
+		skipCheck: unknown;
+	}) {
 		let info;
 		let isLeftValue = true;
 		switch (operation) {
@@ -230,15 +241,26 @@ Command.cases.setList = new CommandSchema({
 		operation = 'set-empty',
 		list = [],
 		index = 0,
-		constant = 0 as unknown as any,
+		constant = 0 as number | string | boolean,
 		operand = { type: 'local', key: '' },
 		separator = '',
 		groupId = '',
 		actor = { type: 'trigger' },
 		skipCheck = true
+	}: {
+		variable: unknown;
+		operation: string;
+		list: number[] | string[];
+		index: unknown;
+		constant: number | string | boolean;
+		operand: unknown;
+		separator: unknown;
+		groupId: string;
+		actor: unknown;
+		skipCheck: unknown;
 	}) {
-		let numbers: any[] = [];
-		let strings: any[] = [];
+		let numbers: number[] = [];
+		let strings: string[] = [];
 		let boolVal = false;
 		let numVal = 0;
 		let strVal = '';
@@ -246,19 +268,19 @@ Command.cases.setList = new CommandSchema({
 		let enumGroupId = '';
 		switch (operation) {
 			case 'set-numbers':
-				numbers = list;
+				numbers = list as number[];
 				break;
 			case 'set-strings':
-				strings = list;
+				strings = list as string[];
 				break;
 			case 'set-boolean':
-				boolVal = constant;
+				boolVal = constant as boolean;
 				break;
 			case 'set-number':
-				numVal = constant;
+				numVal = constant as number;
 				break;
 			case 'set-string':
-				strVal = constant;
+				strVal = constant as string;
 				break;
 			case 'get-attribute-names':
 			case 'get-attribute-keys':

@@ -2,11 +2,29 @@ import { defineStore } from 'pinia';
 import { Animation } from '@/animation/animation-window.ts';
 import { shallowRef } from 'vue';
 
+type AnimationFrameShape = {
+	start: number;
+	end: number;
+	[key: string]: unknown;
+};
+
+type AnimationMotionShape = {
+	id: string;
+	mode: string;
+	[key: string]: unknown;
+};
+
+type AnimationContextShape = {
+	meta: { guid: string; path: string } & Record<string, unknown>;
+	animation: { mode: string; motions: AnimationMotionShape[] } & Record<string, unknown>;
+	[key: string]: unknown;
+};
+
 export const useAnimationStore = defineStore('animation', () => {
 	const state = shallowRef<string>('closed');
-	const target = shallowRef<any>(null);
-	const motion = shallowRef<any>(null);
-	const direction = shallowRef<any>(null);
+	const target = shallowRef<AnimationFrameShape | null>(null);
+	const motion = shallowRef<AnimationMotionShape | null>(null);
+	const direction = shallowRef<number | null>(null);
 
 	function syncState() {
 		state.value = Animation?.state ?? 'closed';
@@ -15,11 +33,11 @@ export const useAnimationStore = defineStore('animation', () => {
 		direction.value = Animation?.direction ?? null;
 	}
 
-	function open(context: any) {
+	function open(context: AnimationContextShape) {
 		Animation?.open?.(context);
 	}
 
-	function load(context: any) {
+	function load(context: AnimationContextShape) {
 		Animation?.load?.(context);
 	}
 
@@ -31,7 +49,7 @@ export const useAnimationStore = defineStore('animation', () => {
 		Animation?.close?.();
 	}
 
-	function destroy(context: any) {
+	function destroy(context: AnimationContextShape) {
 		Animation?.destroy?.(context);
 	}
 
@@ -79,19 +97,19 @@ export const useAnimationStore = defineStore('animation', () => {
 		Animation?.nextKeyFrame?.();
 	}
 
-	function setSpeed(speed: any) {
+	function setSpeed(speed: number) {
 		Animation?.setSpeed?.(speed);
 	}
 
-	function setZoom(zoom: any) {
+	function setZoom(zoom: number) {
 		Animation?.setZoom?.(zoom);
 	}
 
-	function setMotion(motion: any) {
+	function setMotion(motion: AnimationMotionShape | null) {
 		Animation?.setMotion?.(motion);
 	}
 
-	function setDirection(direction: any) {
+	function setDirection(direction: number) {
 		Animation?.setDirection?.(direction);
 	}
 

@@ -49,7 +49,8 @@ Scene.list.paste = function (
 				break;
 		}
 		if (dItem === 'auto') {
-			const folders = Editor.project!.scene.defaultFolders;
+			const folders = (Editor.project!.scene as { defaultFolders: Record<string, unknown> })
+				.defaultFolders;
 			const name = folders[copy.class];
 			dItem = !name
 				? null

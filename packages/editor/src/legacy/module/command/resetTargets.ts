@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.resetTargets = new CommandSchema({
 	name: 'resetTargets',
 	fields: [{ key: 'actor', domId: 'actor', default: { type: 'trigger' } }],
-	customParse({ actor }: any) {
+	customParse({ actor }: { actor: unknown }) {
 		return [
 			{ color: 'actor' },
 			{ text: Local.get!('command.resetTargets') + Token(': ') },

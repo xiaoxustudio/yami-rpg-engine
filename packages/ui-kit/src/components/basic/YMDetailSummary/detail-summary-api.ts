@@ -1,7 +1,7 @@
 export interface DetailSummaryApi extends HTMLElement {
 	_initialized: boolean;
 	toggle(): void;
-	on(...args: unknown[]): any;
+	on(...args: unknown[]): void;
 }
 
 export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
@@ -33,7 +33,10 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
-				if (!(event as any).cmdOrCtrlKey && !event.altKey) {
+				if (
+					!(event as KeyboardEvent & { cmdOrCtrlKey?: boolean }).cmdOrCtrlKey &&
+					!event.altKey
+				) {
 					toggle();
 				}
 				break;
@@ -49,7 +52,7 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 	summary.toggle = toggle;
 	summary.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		summary.addEventListener(type, listener as EventListener, listenerOptions);

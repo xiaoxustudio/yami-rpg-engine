@@ -34,8 +34,8 @@ describe('TreeDataContext', () => {
 		expect(ctx.itemMap['a'].name).toBe('A');
 		expect(ctx.itemMap['b'].name).toBe('B');
 		expect(ctx.getGroup('group1').groupName).toBe('G1');
-		expect(ctx.getGroup('group1').itemList.map((i: any) => i.id)).toEqual(['a']);
-		expect(ctx.getGroup('key1').itemList.map((i: any) => i.id)).toEqual(['a']);
+		expect(ctx.getGroup('group1').itemList.map((i: { id: string }) => i.id)).toEqual(['a']);
+		expect(ctx.getGroup('key1').itemList.map((i: { id: string }) => i.id)).toEqual(['a']);
 		expect(ctx.getGroup('key2').groupName).toBe('');
 	});
 

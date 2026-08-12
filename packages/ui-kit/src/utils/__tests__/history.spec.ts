@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { HistoryTimer, NumberHistory, TextHistory, CommandHistory } from '../history';
 
 beforeEach(() => {
-	document.execCommand = vi.fn() as any;
+	document.execCommand = vi.fn() as unknown as typeof document.execCommand;
 });
 
 function makeInput(value = '') {
@@ -38,7 +38,7 @@ describe('NumberHistory', () => {
 		const input = makeInput('1');
 		const history = new NumberHistory(input);
 		history.history = history;
-		(input as any).history = history;
+		(input as HTMLInputElement & { history?: unknown }).history = history;
 		history.lastValue = '1';
 		history.save();
 		history.save();
@@ -56,7 +56,7 @@ describe('NumberHistory', () => {
 		const input = makeInput('5');
 		const history = new NumberHistory(input);
 		history.history = history;
-		(input as any).history = history;
+		(input as HTMLInputElement & { history?: unknown }).history = history;
 		history.lastValue = '5';
 		history.save();
 		history.lastValue = '6';
@@ -74,7 +74,7 @@ describe('TextHistory', () => {
 		const input = makeInput('hello');
 		const history = new TextHistory(input);
 		history.history = history;
-		(input as any).history = history;
+		(input as HTMLInputElement & { history?: unknown }).history = history;
 		history.updateStates({ inputType: 'insertText', data: 'x' });
 		history.updateSelection({ data: 'x' });
 		history.inputType = 'insertText';
@@ -101,7 +101,7 @@ describe('CommandHistory', () => {
 			disableItems: vi.fn(),
 			dispatchEvent: vi.fn()
 		};
-		const history = new CommandHistory(list as any);
+		const history = new CommandHistory(list as unknown as CommandHistory['list']);
 		history.save({ type: 'insert', parent: null, array: [], index: 0, commands: [{}] });
 		expect(history.stack.length).toBe(1);
 		expect(history.canUndo()).toBe(true);
@@ -123,7 +123,7 @@ describe('CommandHistory', () => {
 			disableItems: vi.fn(),
 			dispatchEvent: vi.fn()
 		};
-		const history = new CommandHistory(list as any);
+		const history = new CommandHistory(list as unknown as CommandHistory['list']);
 		history.save({ type: 'toggle', parent: null, method: 'enable', commands: [{}] });
 		history.saveState();
 		history.save({ type: 'toggle', parent: null, method: 'enable', commands: [{}] });

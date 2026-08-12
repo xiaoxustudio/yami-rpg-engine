@@ -5,6 +5,17 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type MoveActorMode = 'stop' | 'keep' | 'straight' | 'navigate' | 'navigate-bypass' | 'teleport';
+
+type MoveActorData = {
+	actor: unknown;
+	mode: MoveActorMode;
+	angle: unknown;
+	destination: unknown;
+	wait: unknown;
+	[k: string]: unknown;
+};
+
 Command.cases.moveActor = new CommandSchema({
 	name: 'moveActor',
 	onInitialize() {
@@ -32,14 +43,14 @@ Command.cases.moveActor = new CommandSchema({
 			{ name: 'No', value: false }
 		]);
 	},
-	parseMode(mode: any) {
+	parseMode(mode: MoveActorMode) {
 		let string = Local.get!('command.moveActor.mode.' + mode);
 		if (mode === 'navigate-bypass') {
 			string = string.replace('(', Token('(')).replace(')', Token(')'));
 		}
 		return string;
 	},
-	customParse({ actor, mode, angle, destination, wait }: any) {
+	customParse({ actor, mode, angle, destination, wait }: MoveActorData) {
 		const words = Command.words.push(Command.parseActor!(actor)).push(this.parseMode!(mode));
 		switch (mode) {
 			case 'stop':

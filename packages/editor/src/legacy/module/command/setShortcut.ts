@@ -30,7 +30,21 @@ Command.cases.setShortcut = new CommandSchema({
 				{ case: 'swap-shortcuts', targets: [$('#setShortcut-key2')] }
 			]);
 	},
-	customParse({ actor, operation, itemId, skillId, key, key2 }: any) {
+	customParse({
+		actor,
+		operation,
+		itemId,
+		skillId,
+		key,
+		key2
+	}: {
+		actor: unknown;
+		operation: string;
+		itemId: unknown;
+		skillId: unknown;
+		key: unknown;
+		key2: unknown;
+	}) {
 		const shortcutKey = Command.parseVariableEnum!('shortcut-key', key);
 		const words = Command.words
 			.push(Command.parseActor!(actor))

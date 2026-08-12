@@ -9,19 +9,53 @@ const mockHeight = (el: HTMLElement): void => {
 	Object.defineProperty(el, 'innerHeight', { value: 400, configurable: true });
 };
 
-const makeObject = (): any => ({
+const makeObject = (): {
+	type: string;
+	initialize: () => void;
+	parse: (item: { name: string }) => string;
+	save: () => unknown;
+	onPaste: undefined;
+} => ({
 	type: 'test',
 	initialize: () => {},
-	parse: (item: any) => item.name,
+	parse: (item: { name: string }) => item.name,
 	save: () => undefined,
 	onPaste: undefined
 });
+
+interface ParamListElement extends HTMLElement {
+	[k: string]: unknown;
+	bind: (object: unknown) => void;
+	read: () => unknown;
+	write: (data: unknown) => void;
+	update: () => void;
+	select: (...indexes: number[]) => void;
+	unselect: () => void;
+	insert: () => void;
+	edit: () => void;
+	copy: () => void;
+	paste: () => void;
+	delete: () => void;
+	undo: () => void;
+	redo: () => void;
+	save: () => void;
+	clear: () => void;
+	on: (name: string, cb: (e: Event) => void) => void;
+	toggle: () => void;
+	data: unknown;
+	start: number;
+	togglable: boolean;
+	inserting: boolean;
+	history: { canUndo: () => boolean };
+}
+
+const testWindow = window as unknown as { __menuItems?: unknown };
 
 describe('YMParamList', () => {
 	it('mounts and exposes api', () => {
 		const wrapper = mount(YMParamList);
 		expect(wrapper.element.classList.contains('param-list')).toBe(true);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		for (const name of [
 			'bind',
 			'read',
@@ -46,7 +80,7 @@ describe('YMParamList', () => {
 
 	it('bind and write render items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		const object = makeObject();
 		el.bind(object);
@@ -54,13 +88,15 @@ describe('YMParamList', () => {
 		const data = [{ name: 'One' }, { name: 'Two' }, { name: 'Three' }];
 		el.write(data);
 		expect(el.data).toBe(data);
-		const texts = Array.from(el.querySelectorAll('.param-item')).map((n: any) => n.textContent);
+		const texts = Array.from(el.querySelectorAll('.param-item') as NodeListOf<Element>).map(
+			(n: Element) => n.textContent
+		);
 		expect(texts).toEqual(['One', 'Two', 'Three', '3 items']);
 	});
 
 	it('select highlights and read returns data', () => {
 		const wrapper = mount(YMParamList, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -72,7 +108,7 @@ describe('YMParamList', () => {
 
 	it('delete removes items and saves history', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -86,7 +122,7 @@ describe('YMParamList', () => {
 
 	it('undo restores deleted items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -100,7 +136,7 @@ describe('YMParamList', () => {
 
 	it('toggle disables items', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -118,10 +154,10 @@ describe('YMParamList', () => {
 
 	it('save dispatches change and replaces item', () => {
 		const wrapper = mount(YMParamList);
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
-		let changed = null;
-		el.on('change', (e: any) => (changed = e.target));
+		let changed: EventTarget | null = null;
+		el.on('change', (e: Event) => (changed = e.target));
 		const object = makeObject();
 		object.save = () => ({ name: 'Replaced' });
 		el.bind(object);
@@ -146,7 +182,7 @@ describe('YMParamList', () => {
 				}
 			}
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -160,10 +196,10 @@ describe('YMParamList', () => {
 	it('custom history factory is used', () => {
 		const wrapper = mount(YMParamList, {
 			props: {
-				historyFactory: (list: any) => new ParamListHistory(list)
+				historyFactory: (list: unknown) => new ParamListHistory(list as never)
 			}
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -176,12 +212,12 @@ describe('YMParamList', () => {
 			attachTo: document.body,
 			props: {
 				localize: (key: string) => key,
-				menuPopup: (options: any, items: any[]) => {
-					(window as any).__menuItems = items;
+				menuPopup: (options: unknown, items: unknown[]) => {
+					testWindow.__menuItems = items;
 				}
 			}
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as ParamListElement;
 		mockHeight(el);
 		el.bind(makeObject());
 		el.focus();
@@ -190,10 +226,10 @@ describe('YMParamList', () => {
 		el.dispatchEvent(
 			new PointerEvent('pointerup', { bubbles: true, button: 2, clientX: 10, clientY: 10 })
 		);
-		const items = (window as any).__menuItems;
+		const items = testWindow.__menuItems;
 		expect(items).toBeTruthy();
-		expect(items[0].label).toBe('edit');
-		expect(items[1].label).toBe('insert');
-		delete (window as any).__menuItems;
+		expect((items as { label: string }[])[0].label).toBe('edit');
+		expect((items as { label: string }[])[1].label).toBe('insert');
+		delete testWindow.__menuItems;
 	});
 });

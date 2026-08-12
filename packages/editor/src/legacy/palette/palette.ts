@@ -166,8 +166,8 @@ interface MarkCanvasShape extends HTMLCanvasElement {
 
 interface ClipboardShape {
 	has(format: string): boolean;
-	read(format: string): any;
-	write(format: string, object: any): void;
+	read(format: string): { tile: unknown; priority: unknown; terrain: unknown } | undefined;
+	write(format: string, object: { tile: unknown; priority: unknown; terrain: unknown }): void;
 }
 
 Palette.initialize = function (this: typeof Palette) {
@@ -1367,7 +1367,7 @@ Palette.editTagAt = function (this: typeof Palette, x: number, y: number) {
 	if (!tags) return;
 	const i = x + y * tileset.width;
 	if (i < 0 || i >= tags.length) return;
-	SetTileTag.open!(tags[i], (tag: any) => {
+	SetTileTag.open!(tags[i], (tag: unknown) => {
 		if (tags[i] === tag) return;
 		tags[i] = tag;
 		this.updateInfo();
@@ -1766,7 +1766,19 @@ Palette.screenBlur = function (this: typeof Palette, event: Event) {
 
 Palette.marqueePointerdown = function (
 	this: typeof Palette,
-	event: PointerEvent & Record<string, any>
+	event: PointerEvent & {
+		dragKey?: boolean;
+		mode?: string;
+		scrollLeft?: number;
+		scrollTop?: number;
+		active?: boolean;
+		startX?: number;
+		startY?: number;
+		startIndex?: number;
+		priorities?: number[];
+		tags?: number[];
+		tiles?: number[];
+	}
 ) {
 	if (this.dragging) {
 		return;

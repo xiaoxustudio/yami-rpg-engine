@@ -1,11 +1,12 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMNumberVar from '../YMNumberVar.vue';
+import type { NumberVarApi } from '../number-var-api';
 
 describe('YMNumberVar', () => {
 	it('write number switches to constant and stores value', () => {
 		const wrapper = mount(YMNumberVar, { props: { min: 0, max: 10, modelValue: 5 } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberVarApi;
 		expect(vm.read()).toBe(5);
 		expect(wrapper.classes()).toContain('constant');
 		expect(wrapper.find('.number-box').exists()).toBe(true);
@@ -13,7 +14,7 @@ describe('YMNumberVar', () => {
 
 	it('write object switches to variable mode', async () => {
 		const wrapper = mount(YMNumberVar);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberVarApi;
 		vm.write({ type: 'local', key: 'hp' });
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -23,7 +24,7 @@ describe('YMNumberVar', () => {
 
 	it('write string number converts to constant', () => {
 		const wrapper = mount(YMNumberVar, { props: { min: 0, max: 100 } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberVarApi;
 		vm.write('42');
 		expect(vm.read()).toBe(42);
 		expect(wrapper.classes()).toContain('constant');
@@ -31,7 +32,7 @@ describe('YMNumberVar', () => {
 
 	it('switch toggles modes', async () => {
 		const wrapper = mount(YMNumberVar, { props: { modelValue: 3 } });
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberVarApi;
 		vm.switch();
 		await wrapper.vm.$nextTick();
 		expect(wrapper.classes()).toContain('variable');
@@ -60,7 +61,7 @@ describe('YMNumberVar', () => {
 
 	it('exposes bridge functions on root element', () => {
 		const wrapper = mount(YMNumberVar, { props: { modelValue: 3 } });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as NumberVarApi;
 		expect(typeof el.read).toBe('function');
 		expect(typeof el.write).toBe('function');
 		expect(typeof el.switch).toBe('function');
@@ -69,7 +70,7 @@ describe('YMNumberVar', () => {
 
 	it('disable adds disabled class', () => {
 		const wrapper = mount(YMNumberVar);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as NumberVarApi;
 		vm.disable();
 		expect(wrapper.classes()).toContain('disabled');
 	});

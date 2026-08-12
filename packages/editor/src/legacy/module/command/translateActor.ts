@@ -14,14 +14,28 @@ Command.cases.translateActor = new CommandSchema({
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#translateActor').on('open', function (event: any) {
+		$('#translateActor').on('open', function (event: Event) {
 			$('#translateActor-easingId').loadItems(Data.createEasingItems!());
 		});
-		$('#translateActor').on('closed', function (event: any) {
+		$('#translateActor').on('closed', function (event: Event) {
 			clear($('#translateActor-easingId'));
 		});
 	},
-	customParse({ actor, angle, distance, easingId, duration, wait }: any) {
+	customParse({
+		actor,
+		angle,
+		distance,
+		easingId,
+		duration,
+		wait
+	}: {
+		actor: unknown;
+		angle: unknown;
+		distance: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(Command.parseAngle!(angle))

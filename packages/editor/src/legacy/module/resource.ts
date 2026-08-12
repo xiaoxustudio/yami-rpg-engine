@@ -20,7 +20,7 @@ import {
 import { Local } from '@/tools/localization.ts';
 
 interface TextBoxElement extends HTMLElement {
-	input?: HTMLInputElement | Record<string, any> | null;
+	input?: HTMLInputElement | null;
 	write?: (value: unknown) => unknown;
 }
 export const Resources = new (class {
@@ -147,7 +147,7 @@ export const Resources = new (class {
 			if (!response.ok) throw new Error('Failed to fetch announcement');
 			const jj = await response.json();
 			return jj[jj.length - 1].body;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.warn('Failed to load community announcement:', error);
 			return '';
 		}
@@ -197,7 +197,7 @@ export const Resources = new (class {
 				return Date.now() - startTime;
 			}
 			return -1;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.warn('Ping failed:', error);
 			return -1;
 		}
@@ -317,7 +317,7 @@ export const Resources = new (class {
 				return contentLength ? parseInt(contentLength) : 0;
 			}
 			return 0;
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.warn('Failed to get file size:', error);
 			return 0;
 		}

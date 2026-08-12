@@ -11,30 +11,45 @@ interface Props {
 	id?: string;
 }
 
+interface TabItemMeta {
+	guid?: string;
+	path?: string;
+	[k: string]: unknown;
+}
+
+interface TabItemData {
+	icon: string;
+	name: string;
+	meta?: TabItemMeta;
+	type?: string;
+	tab?: HTMLElement;
+	[k: string]: unknown;
+}
+
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-	select: [event: Event & { value?: any }];
-	closed: [event: Event & { value?: any }];
-	popup: [event: Event & { value?: any }];
+	select: [event: Event & { value?: TabItemData }];
+	closed: [event: Event & { value?: TabItemData }];
+	popup: [event: Event & { value?: TabItemData }];
 }>();
 
 const updateAppRegion = (): void => Title.updateAppRegion();
 
 const ym = ref<{
 	root: HTMLElement | null;
-	read(): any;
-	write(value: any): void;
+	read(): TabItemData | undefined;
+	write(value: TabItemData | undefined): void;
 	update(): void;
-	parseTabName(item: any): string;
-	select(item: any): void;
+	parseTabName(item: TabItemData): string;
+	select(item: TabItemData): void;
 	unselect(): void;
-	insert(item: any): void;
-	close(item: any): void;
-	closeByProperty(key: string, value: any): void;
-	closeOtherTabs(item: any): void;
-	closeTabsToTheRight(item: any): void;
-	find(meta: any): any;
+	insert(item: TabItemData): void;
+	close(item: TabItemData): void;
+	closeByProperty(key: string, value: unknown): void;
+	closeOtherTabs(item: TabItemData): void;
+	closeTabsToTheRight(item: TabItemData): void;
+	find(meta: TabItemMeta): TabItemData | undefined;
 	clear(): void;
 	on(
 		type: string,
@@ -45,18 +60,19 @@ const ym = ref<{
 
 const root = computed<HTMLElement | null>(() => ym.value?.root ?? null);
 
-const read = (): any => ym.value?.read();
-const write = (value: any): void => ym.value?.write(value);
+const read = (): TabItemData | undefined => ym.value?.read();
+const write = (value: TabItemData | undefined): void => ym.value?.write(value);
 const update = (): void => ym.value?.update();
-const parseTabName = (item: any): string => ym.value?.parseTabName(item) ?? '';
-const select = (item: any): void => ym.value?.select(item);
+const parseTabName = (item: TabItemData): string => ym.value?.parseTabName(item) ?? '';
+const select = (item: TabItemData): void => ym.value?.select(item);
 const unselect = (): void => ym.value?.unselect();
-const insert = (item: any): void => ym.value?.insert(item);
-const close = (item: any): void => ym.value?.close(item);
-const closeByProperty = (key: string, value: any): void => ym.value?.closeByProperty(key, value);
-const closeOtherTabs = (item: any): void => ym.value?.closeOtherTabs(item);
-const closeTabsToTheRight = (item: any): void => ym.value?.closeTabsToTheRight(item);
-const find = (meta: any): any => ym.value?.find(meta);
+const insert = (item: TabItemData): void => ym.value?.insert(item);
+const close = (item: TabItemData): void => ym.value?.close(item);
+const closeByProperty = (key: string, value: unknown): void =>
+	ym.value?.closeByProperty(key, value);
+const closeOtherTabs = (item: TabItemData): void => ym.value?.closeOtherTabs(item);
+const closeTabsToTheRight = (item: TabItemData): void => ym.value?.closeTabsToTheRight(item);
+const find = (meta: TabItemMeta): TabItemData | undefined => ym.value?.find(meta);
 const clear = (): void => ym.value?.clear();
 const on = (
 	type: string,
@@ -83,8 +99,26 @@ defineExpose({
 });
 
 onMounted(() => {
-	const el = root.value as HTMLElement &
-		Record<'read' | 'write' | 'update' | 'parseTabName' | 'select' | 'unselect' | 'insert' | 'close' | 'closeByProperty' | 'closeOtherTabs' | 'closeTabsToTheRight' | 'find' | 'clear' | 'on', any>;
+	const el = root.value as HTMLElement & {
+		read: () => TabItemData | undefined;
+		write: (value: TabItemData | undefined) => void;
+		update: () => void;
+		parseTabName: (item: TabItemData) => string;
+		select: (item: TabItemData) => void;
+		unselect: () => void;
+		insert: (item: TabItemData) => void;
+		close: (item: TabItemData) => void;
+		closeByProperty: (key: string, value: unknown) => void;
+		closeOtherTabs: (item: TabItemData) => void;
+		closeTabsToTheRight: (item: TabItemData) => void;
+		find: (meta: TabItemMeta) => TabItemData | undefined;
+		clear: () => void;
+		on: (
+			type: string,
+			listener: (event: Event) => void,
+			options?: boolean | AddEventListenerOptions
+		) => void;
+	};
 	if (!el) return;
 	el.read = read;
 	el.write = write;
@@ -102,8 +136,8 @@ onMounted(() => {
 	el.on = on;
 
 	// 经 el.on 注册（YMTabBar 的 on() 会启用 selectEventEnabled/closedEventEnabled/popupEventEnabled 派发开关）
-	el.on('select', (event: Event & { value?: any }) => emit('select', event));
-	el.on('closed', (event: Event & { value?: any }) => emit('closed', event));
-	el.on('popup', (event: Event & { value?: any }) => emit('popup', event));
+	el.on('select', (event: Event & { value?: TabItemData }) => emit('select', event));
+	el.on('closed', (event: Event & { value?: TabItemData }) => emit('closed', event));
+	el.on('popup', (event: Event & { value?: TabItemData }) => emit('popup', event));
 });
 </script>

@@ -20,6 +20,8 @@ import { FS, FSP } from '@/file/file-system.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { FileBrowserLinks } from '@/types/file-browser-links.ts';
+import { FileItem } from '@/file/file-item.ts';
+import { FolderItem } from '@/file/folder-item.ts';
 
 interface Props {
 	links: FileBrowserLinks;
@@ -28,7 +30,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const directoryApi = {
-	sortFiles: (dir: any) => Directory.sortFiles?.(dir),
+	sortFiles: (dir: unknown) => Directory.sortFiles?.(dir),
 	getFolder: (path: string) => Directory.getFolder?.(path),
 	update: () => Directory.update?.(),
 	get assets() {
@@ -50,21 +52,21 @@ const menuState = () => Menu.state;
 
 const ym = ref<{
 	el: HTMLElement | null;
-	load(...folders: any[]): void;
+	load(...folders: unknown[]): void;
 	update(): void;
-	select(...files: any[]): void;
+	select(...files: FileItem[]): void;
 	unselect(): void;
 	clear(): HTMLElement;
-	getSelections(): any[];
+	getSelections(): FolderItem[];
 } | null>(null);
 
 const el = computed<HTMLElement | null>(() => ym.value?.el ?? null);
-const load = (...folders: any[]): void => ym.value?.load(...folders);
+const load = (...folders: unknown[]): void => ym.value?.load(...folders);
 const update = (): void => ym.value?.update();
-const select = (...files: any[]): void => ym.value?.select(...files);
+const select = (...files: FileItem[]): void => ym.value?.select(...files);
 const unselect = (): void => ym.value?.unselect();
 const clear = (): HTMLElement => ym.value?.clear() ?? document.createElement('div');
-const getSelections = (): any[] => ym.value?.getSelections() ?? [];
+const getSelections = (): FolderItem[] => ym.value?.getSelections() ?? [];
 
 defineExpose({ load, update, select, unselect, clear, getSelections, el });
 </script>

@@ -70,7 +70,7 @@ Command.cases.tintImage = new CommandSchema({
 		}
 		write($('#tintImage-filter'), tint);
 	},
-	parseTint(mode: any, [red, green, blue, gray]: any[]) {
+	parseTint(mode: 'full' | 'rgb' | 'gray', [red, green, blue, gray]: [any, any, any, any]) {
 		const label = Local.get!('command.tintImage.' + mode);
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
@@ -105,7 +105,21 @@ Command.cases.tintImage = new CommandSchema({
 				return label + Token('(') + _gray + Token(')');
 		}
 	},
-	customParse({ element, mode, tint, easingId, duration, wait }: any) {
+	customParse({
+		element,
+		mode,
+		tint,
+		easingId,
+		duration,
+		wait
+	}: {
+		element: unknown;
+		mode: 'full' | 'rgb' | 'gray';
+		tint: [unknown, unknown, unknown, unknown];
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
 			.push(this.parseTint!(mode, tint))
@@ -123,6 +137,13 @@ Command.cases.tintImage = new CommandSchema({
 		easingId = Data.easings[0].id,
 		duration = 0,
 		wait = false
+	}: {
+		element: unknown;
+		mode: string;
+		tint: number[];
+		easingId: string;
+		duration: number;
+		wait: boolean;
 	}) {
 		const write = getElementWriter('tintImage');
 		write('element', element);

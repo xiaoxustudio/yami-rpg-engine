@@ -4,16 +4,16 @@ export interface NavBarApi extends HTMLElement {
 	writeEventEnabled: boolean;
 	selectEventEnabled: boolean;
 	_initialized: boolean;
-	read(...args: unknown[]): any;
-	write(...args: unknown[]): any;
-	unselect(...args: unknown[]): any;
+	read(...args: unknown[]): unknown;
+	write(...args: unknown[]): void;
+	unselect(...args: unknown[]): void;
 	pointerdown(event: PointerEvent): void;
-	on(...args: unknown[]): any;
+	on(...args: unknown[]): void;
 }
 
 const numberRegex = /^-?\d+(?:\.\d+)?$/;
 
-const parseValue = (element: any): any => {
+const parseValue = (element: HTMLElement & { dataValue?: unknown }): unknown => {
 	if (element.dataValue === undefined) {
 		const string = element.getAttribute('value') ?? '';
 		const isNumber = numberRegex.test(string);
@@ -31,7 +31,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 
 	nav.on = function (
 		type: string,
-		listener: (event: any) => void,
+		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		el.addEventListener(type, listener, listenerOptions);
@@ -45,22 +45,22 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 		}
 	};
 
-	nav.read = function (): any {
-		const item = el.querySelector('.selected') as (HTMLElement & { dataValue: any }) | null;
+	nav.read = function (): unknown {
+		const item = el.querySelector('.selected') as (HTMLElement & { dataValue: unknown }) | null;
 		if (item && item.dataValue === undefined && hasClass(item, 'nav-item')) {
 			parseValue(item);
 		}
 		return item ? item.dataValue : undefined;
 	};
 
-	nav.write = function (value: any): void {
+	nav.write = function (value: unknown): void {
 		const items = el.childNodes;
 		const length = items.length;
 		if (length !== 0) {
 			nav.unselect();
 			let target: HTMLElement | undefined;
 			for (let i = 0; i < length; i++) {
-				const item = items[i] as HTMLElement & { dataValue: any };
+				const item = items[i] as HTMLElement & { dataValue: unknown };
 				if (hasClass(item, 'nav-item') && item.dataValue === undefined) {
 					parseValue(item);
 				}
@@ -73,7 +73,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 				addClass(target, 'selected');
 			}
 			if (nav.writeEventEnabled) {
-				const write: any = new Event('write');
+				const write = new Event('write') as Event & { value: unknown };
 				write.value = target ? value : undefined;
 				el.dispatchEvent(write);
 			}
@@ -90,11 +90,11 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	nav.pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0: {
-				const element = event.target as HTMLElement & { dataValue: any };
+				const element = event.target as HTMLElement & { dataValue: unknown };
 				if (hasClass(element, 'nav-item') && !hasClass(element, 'selected')) {
 					nav.write(parseValue(element));
 					if (nav.selectEventEnabled) {
-						const select = new Event('select') as Event & { value: any };
+						const select = new Event('select') as Event & { value: unknown };
 						select.value = element.dataValue;
 						el.dispatchEvent(select);
 					}
@@ -110,7 +110,7 @@ export function attachNavBarApi(el: HTMLElement): NavBarApi {
 	if (elements.length > 0) {
 		let i = elements.length;
 		while (--i >= 0) {
-			const element = elements[i] as HTMLElement & { dataValue: any };
+			const element = elements[i] as HTMLElement & { dataValue: unknown };
 			if (hasClass(element, 'nav-item')) {
 				parseValue(element);
 			} else {

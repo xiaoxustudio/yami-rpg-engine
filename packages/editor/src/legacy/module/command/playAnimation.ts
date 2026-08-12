@@ -6,6 +6,20 @@ import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
+type PlayAnimationCommandData = {
+	mode: string;
+	position: unknown;
+	actor: unknown;
+	animationId: string;
+	motion: string;
+	rotatable: boolean;
+	priority: number;
+	offsetY: number | string;
+	angle: unknown;
+	speed: unknown;
+	wait: unknown;
+};
+
 Command.cases.playAnimation = new CommandSchema({
 	name: 'playAnimation',
 	onInitialize() {
@@ -30,20 +44,20 @@ Command.cases.playAnimation = new CommandSchema({
 		]);
 		// playAnimation-animationId write 经 Vue 模板转发（playAnimation.vue @write → Command.cases.playAnimation.writeHandler）
 	},
-	writeHandler(event: any) {
+	writeHandler(event: { value: string }) {
 		const elMotion = $('#playAnimation-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	},
-	parseRotatable(rotatable: any) {
+	parseRotatable(rotatable: boolean) {
 		return rotatable ? Local.get!('command.playAnimation.rotatable') : '';
 	},
-	parsePriority(priority: any) {
+	parsePriority(priority: number) {
 		if (priority === 0) return '';
 		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority > 0 ? Token('+') + abs : Token('-') + abs;
 	},
-	parseOffsetY(offsetY: any) {
+	parseOffsetY(offsetY: number | string) {
 		let num;
 		if (typeof offsetY === 'number') num = Command.setNumberColor!(Math.abs(offsetY)) + 'px';
 		return typeof offsetY === 'number'
@@ -64,7 +78,7 @@ Command.cases.playAnimation = new CommandSchema({
 		angle,
 		speed,
 		wait
-	}: any) {
+	}: PlayAnimationCommandData) {
 		const words = Command.words;
 		switch (mode) {
 			case 'position':

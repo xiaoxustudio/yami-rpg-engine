@@ -12,7 +12,15 @@ Command.cases.deleteTile = new CommandSchema({
 		{ key: 'tilemapX', default: 0 },
 		{ key: 'tilemapY', default: 0 }
 	],
-	customParse({ tilemap, tilemapX, tilemapY }: any) {
+	customParse({
+		tilemap,
+		tilemapX,
+		tilemapY
+	}: {
+		tilemap: unknown;
+		tilemapX: unknown;
+		tilemapY: unknown;
+	}) {
 		const words = Command.words
 			.push(Command.parseTilemap(tilemap))
 			.push(Command.parseVariableNumber(tilemapX))

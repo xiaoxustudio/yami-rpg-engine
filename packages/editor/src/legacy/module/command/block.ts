@@ -10,7 +10,15 @@ Command.cases.block = new CommandSchema({
 	onInitialize() {
 		on($('#block-confirm'), 'click', () => this.save!());
 	},
-	customParse({ note, asynchronous, commands }: any) {
+	customParse({
+		note,
+		asynchronous,
+		commands
+	}: {
+		note: string;
+		asynchronous: unknown;
+		commands: unknown;
+	}) {
 		if (asynchronous === undefined) {
 			asynchronous = false;
 		}

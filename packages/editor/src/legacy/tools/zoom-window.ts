@@ -5,10 +5,10 @@ import { Editor } from '@/main/editor.ts';
 import { webFrame } from 'electron';
 
 export const Zoom = {
-	initialize: null as unknown as (...args: unknown[]) => any,
-	getFactor: null as unknown as (...args: unknown[]) => any,
-	open: null as unknown as (...args: unknown[]) => any,
-	confirm: null as unknown as (...args: unknown[]) => any
+	initialize: null as unknown as () => void,
+	getFactor: null as unknown as () => number,
+	open: null as unknown as () => void,
+	confirm: null as unknown as () => void
 };
 
 Zoom.initialize = function (this: typeof Zoom) {

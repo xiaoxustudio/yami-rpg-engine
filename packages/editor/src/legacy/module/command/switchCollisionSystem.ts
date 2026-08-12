@@ -23,7 +23,7 @@ Command.cases.switchCollisionSystem = new CommandSchema({
 			}
 		]);
 	},
-	customParse({ operation }: any) {
+	customParse({ operation }: { operation: string }) {
 		return [
 			{ color: 'system' },
 			{ text: Local.get!('command.switchCollisionSystem') + Token(': ') },

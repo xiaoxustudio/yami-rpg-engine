@@ -31,7 +31,6 @@ type TitleMethod = ((...args: any[]) => any) | null;
 interface TitleMeta {
 	guid?: string;
 	path?: string;
-	[k: string]: unknown;
 }
 
 interface TitleTab {
@@ -40,9 +39,38 @@ interface TitleTab {
 	[k: string]: unknown;
 }
 
+interface TitleTabItem extends TitleTab {
+	icon?: string;
+	name?: string;
+	tab?: { text: HTMLElement };
+	item?: TitleTabItem;
+}
+
+interface TitleTargetShape extends HTMLElement {
+	element?: HTMLElement;
+	active?: boolean;
+}
+
+interface TitleTabBarShape extends HTMLElement {
+	data: TitleTabItem[];
+	dirItem?: TitleTabItem;
+	childNodes: NodeListOf<ChildNode & { item?: unknown }>;
+	find(meta: TitleMeta): TitleTabItem | undefined;
+	insert(item: TitleTabItem): void;
+	select(item: unknown): void;
+	update(): void;
+	read(): TitleTabItem | null;
+	close(item: TitleTabItem | null): void;
+	closeByProperty(property: string, value: unknown): void;
+	parseIcon(type: string): string | undefined;
+	parseName(meta: TitleMeta): string;
+	parseTabName(item: TitleTabItem): string;
+	on(event: string, callback: TitleMethod): void;
+}
+
 interface TitleShape extends DynamicShape {
-	target: HTMLElement & { [k: string]: any };
-	tabBar: HTMLElement & { [k: string]: any };
+	target: TitleTargetShape;
+	tabBar: TitleTabBarShape;
 	theme: string;
 	maximized: boolean;
 	fullscreen: boolean;
@@ -87,8 +115,8 @@ interface TitleShape extends DynamicShape {
 }
 
 export const Title: TitleShape = {
-	target: null as unknown as HTMLElement & { [k: string]: any },
-	tabBar: null as unknown as HTMLElement & { [k: string]: any },
+	target: null as unknown as TitleTargetShape,
+	tabBar: null as unknown as TitleTabBarShape,
 	theme: null as unknown as string,
 	maximized: false,
 	fullscreen: false,
@@ -134,7 +162,7 @@ export const Title: TitleShape = {
 
 Title.initialize = function (this: TitleShape) {
 	this.target = $('#title');
-	this.tabBar = $('#title-tabBar');
+	this.tabBar = $('#title-tabBar') as unknown as TitleTabBarShape;
 	ipcRenderer?.invoke?.('update-max-min-icon').then((mode: string) => {
 		switch (mode) {
 			case 'maximize':
@@ -149,7 +177,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = this.target?.appendChild?.(document.createElement('div'));
+	this.target.element = this.target?.appendChild?.(document.createElement('div')) as HTMLElement;
 
 	this.pointerenter!();
 
@@ -230,7 +258,7 @@ Title.deployment = function (this: TitleShape) {
 };
 
 Title.addRecentTab = function (this: TitleShape, guid: string) {
-	const tabs = Editor.project!.recentTabs;
+	const tabs = Editor.project!.recentTabs!;
 	if (tabs.remove(guid)) {
 		tabs.unshift(guid);
 	} else {
@@ -242,7 +270,7 @@ Title.addRecentTab = function (this: TitleShape, guid: string) {
 };
 
 Title.getClosedTabMeta = function (this: TitleShape) {
-	const { recentTabs } = Editor.project!;
+	const recentTabs = Editor.project!.recentTabs!;
 	outer: for (const guid of recentTabs) {
 		for (const item of this.tabBar?.data ?? []) {
 			if (item.meta.guid === guid) {
@@ -256,14 +284,15 @@ Title.getClosedTabMeta = function (this: TitleShape) {
 
 Title.openTab = function (this: TitleShape, file: FileItem) {
 	const { tabBar } = this;
-	const { meta, type } = file;
+	const { meta: rawMeta, type } = file;
+	const meta = rawMeta as TitleMeta;
 	let context = tabBar.find(meta);
 	if (context === undefined) {
 		const icon = tabBar.parseIcon(type);
 		const name = tabBar.parseName(meta);
 		tabBar.insert((context = { icon, name, meta, type }));
 	}
-	tabBar.select(context);
+	tabBar.select(context!);
 };
 
 Title.reopenClosedTab = function (this: TitleShape, meta: TitleMeta) {
@@ -418,7 +447,8 @@ Title.saveToProject = function (this: TitleShape, project: EditorProjectShape) {
 };
 
 Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape) {
-	const { openTabs, activeTab } = project;
+	const openTabs = project.openTabs!;
+	const { activeTab } = project;
 
 	const dirItem = {
 		icon: '\uf07c',
@@ -426,7 +456,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 		meta: { guid: '' },
 		type: 'directory'
 	};
-	const items = [dirItem];
+	const items: TitleTabItem[] = [dirItem];
 	const tabBar = this.tabBar;
 	tabBar.dirItem = dirItem;
 	const map = Data.manifest.guidMap;
@@ -458,16 +488,16 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 	tabBar.update();
 
 	if (activeTab) {
-		const elements = tabBar.childNodes;
+		const elements = tabBar.childNodes as NodeListOf<ChildNode & { item?: TitleTabItem }>;
 		for (const element of elements) {
 			const context = element.item;
-			if (context.meta.guid === activeTab) {
-				return tabBar.select(context);
+			if (context?.meta.guid === activeTab) {
+				return tabBar.select(context!);
 			}
 		}
 		if (elements.length !== 0) {
 			const context = elements[0].item;
-			return tabBar.select(context);
+			return tabBar.select(context!);
 		}
 	}
 	Layout.manager.switch('directory');
@@ -539,6 +569,7 @@ Title.windowLocalize = function (this: TitleShape, event: Event) {
 
 Title.pointerenter = function (this: TitleShape, event: Event) {
 	const { target } = this;
+	if (!target) return;
 	if (!target.active) {
 		target.active = true;
 		(target.style as CSSStyleDeclaration & { WebkitAppRegion: string }).WebkitAppRegion =
@@ -550,6 +581,7 @@ Title.pointerenter = function (this: TitleShape, event: Event) {
 
 Title.pointermove = function (this: TitleShape, event: PointerEvent) {
 	const { target } = this;
+	if (!target) return;
 	if (target.active) {
 		let element: Node | null = event.target as Node | null;
 		while (element) {

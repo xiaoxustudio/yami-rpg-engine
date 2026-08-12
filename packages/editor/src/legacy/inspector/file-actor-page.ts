@@ -31,7 +31,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		scale: number;
 		priority: number;
 		inherit: string;
-		[k: string]: any;
+		[k: string]: unknown;
 	};
 	type ListShape = {
 		save(): unknown;

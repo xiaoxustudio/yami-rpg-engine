@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
-import { CustomCommand } from '@/command/custom-command-window.ts';
+import { CustomCommand, type CustomCommandData } from '@/command/custom-command-window.ts';
+import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 
 export const useCustomCommandStore = defineStore('customCommand', () => {
 	const state = shallowRef<string>('closed');
-	const commands = shallowRef<any[] | Record<string, any>>([]);
+	const commands = shallowRef<CustomCommandData[]>([]);
 
 	function syncState() {
 		state.value = CustomCommand?.state ?? 'closed';
@@ -35,19 +36,19 @@ export const useCustomCommandStore = defineStore('customCommand', () => {
 		return CustomCommand?.createData?.(id);
 	}
 
-	function confirm(event?: any) {
-		CustomCommand?.confirm?.(event);
+	function confirm(event?: Event) {
+		CustomCommand?.confirm?.(event!);
 	}
 
-	function apply(event?: any) {
-		CustomCommand?.apply?.(event);
+	function apply(event?: Event) {
+		CustomCommand?.apply?.(event!);
 	}
 
-	function saveToProject(project: any) {
+	function saveToProject(project: EditorProjectShape) {
 		CustomCommand?.saveToProject?.(project);
 	}
 
-	function loadFromProject(project: any) {
+	function loadFromProject(project: EditorProjectShape) {
 		CustomCommand?.loadFromProject?.(project);
 	}
 

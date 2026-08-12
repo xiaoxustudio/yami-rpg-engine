@@ -13,8 +13,8 @@ import { Local } from './localization.ts';
 import { Variable } from '@/variable/variable.ts';
 
 interface TagController {
-	open: (...args: any[]) => any;
-	confirm?: (...args: any[]) => any;
+	open: (params?: any) => void;
+	confirm?: (event: Event) => void;
 	initialize?: () => void;
 	filter?: string;
 	proxy?: unknown;
@@ -65,7 +65,44 @@ interface VariableController {
 	open(params?: { key?: string }): void;
 }
 
-export const Selection = {
+interface SelectionShape {
+	target: EventTargetElement;
+	inserting: boolean;
+	context: { target: EventTargetElement; inserting: boolean } | null;
+	regexps: {
+		local: RegExp;
+		global: RegExp;
+		dynamicGlobal: RegExp;
+		ref: RegExp;
+	};
+	initialize: (this: SelectionShape) => void;
+	saveContext: (this: SelectionShape) => void;
+	restoreContext: (this: SelectionShape) => void;
+	addEventListeners: (this: SelectionShape, element: EventListenerElement) => void;
+	match: (this: SelectionShape) => { tag: TagName; params: Record<string, unknown> } | undefined;
+	insert: (this: SelectionShape, tag: TagName) => void;
+	edit: (this: SelectionShape) => void;
+	wrap: (this: SelectionShape, params: { prefix: string; suffix?: string }) => void;
+	inputKeydown: (this: SelectionShape, event: KeyboardEvent) => void;
+	inputKeyup: (this: SelectionShape, event: KeyboardEvent) => void;
+	inputPointerdown: (this: SelectionShape, event: PointerEvent) => void;
+	inputPointerup: (this: SelectionShape, event: PointerEvent) => void;
+	color: TagController;
+	font: TagController;
+	italic: TagController;
+	bold: TagController;
+	fontSize: TagController;
+	textPosition: TagController;
+	textEffect: TagController;
+	image: TagController;
+	localVariable: TagController;
+	globalVariable: TagController;
+	dynamicGlobalVariable: TagController;
+	localization: TagController;
+	sizes?: string[];
+}
+
+export const Selection: SelectionShape = {
 	target: null as unknown as EventTargetElement,
 	inserting: false,
 	context: null as unknown as {
@@ -78,18 +115,18 @@ export const Selection = {
 		dynamicGlobal: /<global::([0-9a-f]{16})?>/,
 		ref: /<ref:([0-9a-f]{16})?>/
 	},
-	initialize: null as unknown as (...args: any[]) => any,
-	saveContext: null as unknown as (...args: any[]) => any,
-	restoreContext: null as unknown as (...args: any[]) => any,
-	addEventListeners: null as unknown as (...args: any[]) => any,
-	match: null as unknown as (...args: any[]) => any,
-	insert: null as unknown as (...args: any[]) => any,
-	edit: null as unknown as (...args: any[]) => any,
-	wrap: null as unknown as (...args: any[]) => any,
-	inputKeydown: null as unknown as (...args: any[]) => any,
-	inputKeyup: null as unknown as (...args: any[]) => any,
-	inputPointerdown: null as unknown as (...args: any[]) => any,
-	inputPointerup: null as unknown as (...args: any[]) => any,
+	initialize: null as unknown as SelectionShape['initialize'],
+	saveContext: null as unknown as SelectionShape['saveContext'],
+	restoreContext: null as unknown as SelectionShape['restoreContext'],
+	addEventListeners: null as unknown as SelectionShape['addEventListeners'],
+	match: null as unknown as SelectionShape['match'],
+	insert: null as unknown as SelectionShape['insert'],
+	edit: null as unknown as SelectionShape['edit'],
+	wrap: null as unknown as SelectionShape['wrap'],
+	inputKeydown: null as unknown as SelectionShape['inputKeydown'],
+	inputKeyup: null as unknown as SelectionShape['inputKeyup'],
+	inputPointerdown: null as unknown as SelectionShape['inputPointerdown'],
+	inputPointerup: null as unknown as SelectionShape['inputPointerup'],
 	color: null as unknown as TagController,
 	font: null as unknown as TagController,
 	italic: null as unknown as TagController,
@@ -103,8 +140,6 @@ export const Selection = {
 	dynamicGlobalVariable: null as unknown as TagController,
 	localization: null as unknown as TagController
 };
-
-type SelectionShape = typeof Selection & { sizes?: string[] };
 
 Selection.initialize = function (this: SelectionShape) {
 	if (!$('#font-confirm')) return;
@@ -122,7 +157,7 @@ Selection.initialize = function (this: SelectionShape) {
 
 	for (const textbox of $('text-box')) {
 		if (!exclusions[textbox.id]) {
-			this.addEventListeners!(textbox.input!);
+			this.addEventListeners!(textbox.input! as unknown as EventListenerElement);
 		}
 	}
 
@@ -155,11 +190,11 @@ Selection.restoreContext = function (this: SelectionShape) {
 };
 
 Selection.addEventListeners = function (this: SelectionShape, element: EventListenerElement) {
-	element.addEventListener('keydown', this.inputKeydown);
-	element.addEventListener('keyup', this.inputKeyup);
-	element.addEventListener('pointerdown', this.inputPointerdown);
-	element.addEventListener('pointerup', this.inputPointerup);
-} as unknown as (...args: any[]) => any;
+	element.addEventListener('keydown', this.inputKeydown as EventListener);
+	element.addEventListener('keyup', this.inputKeyup as EventListener);
+	element.addEventListener('pointerdown', this.inputPointerdown as EventListener);
+	element.addEventListener('pointerup', this.inputPointerup as EventListener);
+};
 
 Selection.match = function (this: SelectionShape) {
 	const target = document.activeElement as EventTargetElement;
@@ -324,7 +359,7 @@ Selection.insert = function (this: SelectionShape, tag: TagName) {
 		this.inserting = true;
 		this[tag].open!();
 	}
-} as unknown as (...args: any[]) => any;
+};
 
 Selection.edit = function (this: SelectionShape) {
 	const match = this.match!();
@@ -358,7 +393,7 @@ Selection.wrap = function (
 		(input.parentNode as HTMLElement).insert(prefix);
 		input.selectionStart = start;
 	}
-} as unknown as (...args: any[]) => any;
+};
 
 Selection.inputKeydown = function (this: SelectionShape, event: KeyboardEvent) {
 	if (event.altKey) {
@@ -368,7 +403,7 @@ Selection.inputKeydown = function (this: SelectionShape, event: KeyboardEvent) {
 				break;
 		}
 	}
-}.bind(Selection) as unknown as (...args: any[]) => any;
+}.bind(Selection);
 
 Selection.inputKeyup = function (this: SelectionShape, event: KeyboardEvent) {
 	if (event.altKey) {
@@ -378,7 +413,7 @@ Selection.inputKeyup = function (this: SelectionShape, event: KeyboardEvent) {
 				break;
 		}
 	}
-}.bind(Selection) as unknown as (...args: any[]) => any;
+}.bind(Selection);
 
 Selection.inputPointerdown = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
@@ -386,7 +421,7 @@ Selection.inputPointerdown = function (this: SelectionShape, event: PointerEvent
 			setTimeout(() => this.match!());
 			break;
 	}
-}.bind(Selection) as unknown as (...args: any[]) => any;
+}.bind(Selection);
 
 Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) {
 	switch (event.button) {
@@ -587,7 +622,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 			});
 			break;
 	}
-}.bind(Selection) as unknown as (...args: any[]) => any;
+}.bind(Selection);
 
 Selection.color = {
 	open: function (this: ColorController, { color = '000000ff' } = {}) {

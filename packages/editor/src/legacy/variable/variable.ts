@@ -48,8 +48,8 @@ interface VariableModule {
 	windowClose: ((event: Event) => void) | null;
 	windowClosed: ((event: Event) => void) | null;
 	keydown: ((event: Event) => void) | null;
-	listKeydown: ((event: Event) => void) | null;
-	listPointerdown: ((event: Event) => void) | null;
+	listKeydown: ((event: KeyboardEvent) => void) | null;
+	listPointerdown: ((event: PointerEvent) => void) | null;
 	listSelect: ((event: Event) => void) | null;
 	listRecord: ((event: Event) => void) | null;
 	listPopup: ((event: Event) => void) | null;
@@ -61,8 +61,8 @@ interface VariableModule {
 	typeInput: ((event: Event) => void) | null;
 	valueInput: ((event: Event) => void) | null;
 	noteInput: ((event: Event) => void) | null;
-	panelKeydown: ((event: Event) => void) | null;
-	searcherInput: ((event: Event) => void) | null;
+	panelKeydown: ((event: KeyboardEvent) => void) | null;
+	searcherInput: ((event: InputEvent) => void) | null;
 	confirm: (event?: Event) => void;
 	apply: ((event: Event) => void) | null;
 	list_saveScroll: () => void;
@@ -172,9 +172,9 @@ function ensureDomBound() {
 	Variable.inputs.number = $('#variable-value-number');
 	Variable.inputs.string = $('#variable-value-string');
 	Variable.inputs.note = $('#variable-note');
-	Variable.list.copy = null as unknown as (...args: unknown[]) => any;
-	Variable.list.paste = null as unknown as (...args: unknown[]) => any;
-	Variable.list.delete = null as unknown as (...args: unknown[]) => any;
+	Variable.list.copy = null as unknown as (...args: unknown[]) => void;
+	Variable.list.paste = null as unknown as (...args: unknown[]) => void;
+	Variable.list.delete = null as unknown as (...args: unknown[]) => void;
 	if (!Variable._listMethodsLoaded) {
 		Variable._listMethodsLoaded = true;
 		import('./list-methods.ts');
@@ -185,11 +185,9 @@ function ensureDomBound() {
 	Variable.list.createFolder = Variable.list_createFolder;
 	(Variable.list as unknown as { createVariable: () => unknown }).createVariable =
 		Variable.list_createVariable;
-	Variable.list.createIcon = Variable.list_createIcon as unknown as (...args: unknown[]) => any;
-	Variable.list.updateIcon = Variable.list_updateIcon as unknown as (...args: unknown[]) => any;
-	Variable.list.addElementClass = Variable.list_addElementClass as unknown as (
-		...args: unknown[]
-	) => any;
+	Variable.list.createIcon = Variable.list_createIcon;
+	Variable.list.updateIcon = Variable.list_updateIcon;
+	Variable.list.addElementClass = Variable.list_addElementClass;
 	Variable.list.updateItemClass = Variable.list_updateItemClass;
 	Variable.list.createInitText = Variable.list_createInitText;
 	Variable.list.updateInitText = Variable.list_updateInitText;
@@ -387,7 +385,7 @@ for (const key of variableStateKeys) {
 	Object.defineProperty(Variable, key, {
 		get: () => getVariableStore().state[key],
 		set: (value: unknown) => {
-			getVariableStore().state[key] = value;
+			(getVariableStore().state as unknown as Record<string, unknown>)[key] = value;
 		},
 		configurable: true
 	});

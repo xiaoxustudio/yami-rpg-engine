@@ -2,8 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMWindowFrame from '../YMWindowFrame.vue';
 
-const mockWindow = (): any => {
-	const frames: any[] = [];
+const mockWindow = (): {
+	frames: {
+		append(el: HTMLElement): boolean;
+		remove(el: HTMLElement): boolean;
+		length: number;
+		includes(el: HTMLElement): boolean;
+	};
+	ambient: { update(): void };
+	positionMode: string;
+} => {
+	const frames: HTMLElement[] = [];
 	const W = {
 		frames: {
 			append: (el: HTMLElement) => {
@@ -28,9 +37,22 @@ const mockWindow = (): any => {
 		positionMode: 'center'
 	};
 	Object.defineProperty(W.frames, 'length', { get: () => frames.length });
-	(window as any).Window = W;
+	(window as unknown as { Window?: unknown }).Window = W;
 	return W;
 };
+
+interface WindowFrameElement extends HTMLElement {
+	[k: string]: unknown;
+	open: () => void;
+	close: () => boolean;
+	maximize: () => void;
+	unmaximize: () => void;
+	focus: () => void;
+	blur: () => void;
+	setTitle: (title: string) => void;
+	setPosition: () => void;
+	on: (name: string, cb: (e: unknown) => void) => void;
+}
 
 describe('YMWindowFrame', () => {
 	it('mounts with slot and exposes api', () => {
@@ -39,7 +61,7 @@ describe('YMWindowFrame', () => {
 		});
 		expect(wrapper.element.classList.contains('window-frame')).toBe(true);
 		expect(wrapper.element.querySelector('.content')).toBeTruthy();
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		for (const name of [
 			'open',
 			'close',
@@ -94,7 +116,7 @@ describe('YMWindowFrame', () => {
 	it('open adds open class and dispatches open event', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		let opened = false;
 		el.addEventListener('open', () => (opened = true));
 		el.open();
@@ -109,7 +131,7 @@ describe('YMWindowFrame', () => {
 	it('close removes open class and dispatches closed when enabled', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
 		let closed = false;
 		el.on('closed', () => (closed = true));
@@ -123,7 +145,7 @@ describe('YMWindowFrame', () => {
 	it('close can be cancelled by close event', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
 		el.addEventListener('close', (e: Event) => e.preventDefault());
 		const result = el.close();
@@ -135,7 +157,7 @@ describe('YMWindowFrame', () => {
 	it('maximize and unmaximize toggle class and events', () => {
 		const W = mockWindow();
 		const wrapper = mount(YMWindowFrame, { attachTo: document.body });
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		el.open();
 		let maximized = 0;
 		let unmaximized = 0;
@@ -159,7 +181,7 @@ describe('YMWindowFrame', () => {
 				default: '<div class="content"><input class="f1" type="text"></div>'
 			}
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		const input = el.querySelector('input') as HTMLInputElement;
 		const original = input.tabIndex;
 		el.blur();
@@ -179,7 +201,7 @@ describe('YMWindowFrame', () => {
 				title: '<div class="title-bar">Original<div class="close" /></div>'
 			}
 		});
-		const el = wrapper.element as any;
+		const el = wrapper.element as unknown as WindowFrameElement;
 		el.setTitle('New Title');
 		expect(wrapper.element.querySelector('.title-bar').textContent).toContain('New Title');
 		W;
@@ -187,10 +209,10 @@ describe('YMWindowFrame', () => {
 
 	it('applies localization via localize adapter', () => {
 		const W = mockWindow();
-		const applied: any[] = [];
+		const applied: [string, unknown][] = [];
 		const localize = {
 			components: { testWindow: { text: 'Localized' } },
-			setElement: (el: any, item: any) => applied.push([el.id, item])
+			setElement: (el: Element, item: unknown) => applied.push([el.id, item])
 		};
 		mount(YMWindowFrame, {
 			attachTo: document.body,

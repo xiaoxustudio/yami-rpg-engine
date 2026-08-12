@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMFileBrowser from '../YMFileBrowser/YMFileBrowser.vue';
 
-function makeProps(extra: any = {}) {
+function makeProps(extra: Record<string, unknown> = {}) {
 	return {
 		menuPopup: vi.fn(),
 		directoryApi: {

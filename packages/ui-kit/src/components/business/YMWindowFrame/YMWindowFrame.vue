@@ -3,13 +3,24 @@ import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { clamp, addClass, removeClass, hasClass, rect, rasterize } from '../../../utils/dom';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
-function getWindow(): any {
-	return (window as any).Window;
+interface WindowFrameHost {
+	positionMode?: string;
+	absolutePos?: { x: number; y: number };
+	frames?: HTMLElement[] & {
+		append(element: HTMLElement): boolean;
+		remove(element: HTMLElement): boolean;
+	};
+	ambient?: { update(): void };
+	close?(id?: string): void;
+}
+
+function getWindow(): WindowFrameHost | undefined {
+	return (window as Window & { Window?: WindowFrameHost }).Window;
 }
 
 interface LocalizeAdapter {
-	components?: Record<string, any>;
-	setElement(el: any, item: any): void;
+	components?: Record<string, unknown>;
+	setElement(el: Element, item: unknown): void;
 }
 
 interface Props {
@@ -55,7 +66,7 @@ const state = reactive({
 
 const on = (
 	type: string,
-	listener: (event: any) => void,
+	listener: (event: Event) => void,
 	options?: boolean | AddEventListenerOptions
 ): void => {
 	root.value?.addEventListener(type, listener, options);
@@ -164,7 +175,7 @@ const open = (): void => {
 		return;
 	}
 	const W = getWindow();
-	if (W?.frames.append(element)) {
+	if (W?.frames!.append(element)) {
 		W.ambient?.update();
 		addClass(element, 'open');
 		computePosition();
@@ -196,7 +207,7 @@ const close = (): boolean => {
 		}
 	}
 	const W = getWindow();
-	if (W?.frames.remove(element)) {
+	if (W?.frames!.remove(element)) {
 		W.ambient?.update();
 		removeClass(element, 'open');
 		if (state.closedEventEnabled) {
@@ -317,7 +328,7 @@ const setTitle = (text: string): void => {
 defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
 
 const applyLocalization = (): void => {
-	const element = root.value as any;
+	const element = root.value;
 	if (!element) {
 		return;
 	}
@@ -325,7 +336,7 @@ const applyLocalization = (): void => {
 	if (!local) {
 		return;
 	}
-	const apply = (el: any): void => {
+	const apply = (el: Element): void => {
 		const item = local.components?.[el?.id];
 		if (item) {
 			local.setElement(el, item);
@@ -338,7 +349,7 @@ const applyLocalization = (): void => {
 };
 
 onMounted(() => {
-	const element = root.value as any;
+	const element = root.value as HTMLElement & { [k: string]: unknown };
 	if (!element) {
 		return;
 	}

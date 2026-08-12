@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import YMMenuList from '../YMMenuList.vue';
+import type { MenuApi } from '../menu-api';
 
 const items = [
 	{ label: 'Open', accelerator: 'Ctrl+O', click: () => {} },
@@ -16,7 +17,7 @@ const selectedItem = (wrapper: ReturnType<typeof mount>): HTMLElement | null =>
 describe('YMMenuList', () => {
 	it('popup renders items', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({ x: 10, y: 20 }, items);
 		const el = wrapper.element;
 		expect(el.classList.contains('menu-list')).toBe(true);
@@ -34,7 +35,7 @@ describe('YMMenuList', () => {
 
 	it('close removes items and detaches from body', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({}, items);
 		expect(document.body.contains(wrapper.element)).toBe(true);
 		vm.close();
@@ -44,7 +45,7 @@ describe('YMMenuList', () => {
 
 	it('close invokes callback', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		let called = false;
 		vm.popup({ close: () => (called = true) }, items);
 		vm.close();
@@ -53,7 +54,7 @@ describe('YMMenuList', () => {
 
 	it('select and unselect toggle class', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({}, items);
 		const first = wrapper.element.querySelector('.menu-item') as HTMLElement;
 		vm.select(first);
@@ -64,7 +65,7 @@ describe('YMMenuList', () => {
 
 	it('reselect skips disabled and separators', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({}, items);
 		const enabled = Array.from(wrapper.element.querySelectorAll('.menu-item')).filter(
 			(n) => !(n as HTMLElement).classList.contains('disabled')
@@ -80,7 +81,7 @@ describe('YMMenuList', () => {
 
 	it('keydown Enter clicks selected item and closes', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		let clicked = false;
 		vm.popup({}, [{ label: 'Open', click: () => (clicked = true) }]);
 		const first = wrapper.element.querySelector('.menu-item') as HTMLElement;
@@ -92,7 +93,7 @@ describe('YMMenuList', () => {
 
 	it('keydown Escape closes', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({}, items);
 		window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', bubbles: true }));
 		expect(document.body.contains(wrapper.element)).toBe(false);
@@ -100,7 +101,7 @@ describe('YMMenuList', () => {
 
 	it('external pointerdown closes menu', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		vm.popup({}, items);
 		const outside = document.createElement('div');
 		document.body.appendChild(outside);
@@ -111,7 +112,7 @@ describe('YMMenuList', () => {
 
 	it('pointerup on menu item triggers click and closes', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		let clicked = false;
 		vm.popup({}, [{ label: 'Open', click: () => (clicked = true) }]);
 		const item = wrapper.element.querySelector('.menu-item') as HTMLElement;
@@ -123,7 +124,7 @@ describe('YMMenuList', () => {
 
 	it('exposes api through component instance', () => {
 		const wrapper = mount(YMMenuList);
-		const vm = wrapper.vm as any;
+		const vm = wrapper.vm as unknown as MenuApi;
 		expect(typeof vm.popup).toBe('function');
 		expect(typeof vm.close).toBe('function');
 		expect(typeof vm.clear).toBe('function');
