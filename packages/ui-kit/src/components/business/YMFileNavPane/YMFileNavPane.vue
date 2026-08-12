@@ -10,6 +10,7 @@ import {
 	commonListUpdateHeadAndFoot,
 	type CommonListLike
 } from '../../../utils/common-list';
+import { attachApi } from '../../../utils/attach-api';
 
 interface FileItem {
 	name: string;
@@ -783,20 +784,22 @@ onMounted(() => {
 	dirchangeHandler = dirchange.bind(undefined);
 	window.addEventListener('dirchange', dirchangeHandler);
 
-	node.load = load;
-	node.update = update;
-	node.resize = resize;
-	node.updateHeadAndFoot = updateHeadAndFoot;
-	node.updateOnResize = updateOnResize;
-	node.select = select;
-	node.unselect = unselect;
-	node.selectRelative = selectRelative;
-	node.scrollToSelection = scrollToSelection;
-	node.getSelections = getSelections;
-	node.rename = rename;
-	node.cancelRenaming = cancelRenaming;
-	node.clearElements = clearElements;
-	node.clear = clear;
+	attachApi(node, {
+		load,
+		update,
+		resize,
+		updateHeadAndFoot,
+		updateOnResize,
+		select,
+		unselect,
+		selectRelative,
+		scrollToSelection,
+		getSelections,
+		rename,
+		cancelRenaming,
+		clearElements,
+		clear
+	});
 	Object.defineProperty(node, 'selections', {
 		get: () => selections,
 		configurable: true

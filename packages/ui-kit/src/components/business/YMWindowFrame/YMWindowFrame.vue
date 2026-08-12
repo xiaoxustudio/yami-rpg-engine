@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { clamp, addClass, removeClass, hasClass, rect, rasterize } from '../../../utils/dom';
+import { attachApi } from '../../../utils/attach-api';
 import YMFormButtons from '../../basic/YMFormButtons/YMFormButtons.vue';
 
 interface WindowFrameHost {
@@ -355,16 +356,18 @@ onMounted(() => {
 	}
 	applyLocalization();
 	window.addEventListener('localize', applyLocalization);
-	element.open = open;
-	element.close = close;
-	element.maximize = maximize;
-	element.unmaximize = unmaximize;
-	element.focus = focus;
-	element.blur = blur;
-	element.setPosition = setPosition;
-	element.setTitle = setTitle;
-	element.absolute = absolute;
-	element.on = on;
+	attachApi(element, {
+		open,
+		close,
+		maximize,
+		unmaximize,
+		focus,
+		blur,
+		setPosition,
+		setTitle,
+		absolute,
+		on
+	});
 	Object.defineProperty(element, 'closeEventEnabled', {
 		get: () => state.closeEventEnabled,
 		set: (value: boolean) => {

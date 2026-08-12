@@ -89,6 +89,7 @@ interface OsDragEvent {
 }
 
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 import { hideDragImage,  addClass, hasClass, removeClass } from '../../../utils/dom';
 import type { MenuItem, MenuOptions } from '../../basic/YMMenuList/menu-api';
 import YMFileNavPane from '../YMFileNavPane/YMFileNavPane.vue';
@@ -671,23 +672,25 @@ onMounted(() => {
 
 		(node as FileBrowserApi).display = 'normal';
 		(node as FileBrowserApi).searchResults = [];
-		(node as FileBrowserApi).update = update;
-		(node as FileBrowserApi).searchFiles = searchFiles;
-		(node as FileBrowserApi).restoreDisplay = restoreDisplay;
-		(node as FileBrowserApi).backToParentFolder = backToParentFolder;
-		(node as FileBrowserApi).close = close;
-		(node as FileBrowserApi).getActivePage = getActivePage;
-		(node as FileBrowserApi).getFilePaths = getFilePaths;
-		(node as FileBrowserApi).dragstart = dragstart;
-		(node as FileBrowserApi).dragend = dragend;
-		(node as FileBrowserApi).dragleave = dragleave;
-		(node as FileBrowserApi).dragover = dragover;
-		(node as FileBrowserApi).drop = drop;
-		(node as FileBrowserApi).osDragstart = osDragstart;
-		(node as FileBrowserApi).osDragend = osDragend;
-		(node as FileBrowserApi).osDragleave = osDragleave;
-		(node as FileBrowserApi).osDragover = osDragover;
-		(node as FileBrowserApi).osDrop = osDrop;
+		attachApi(node, {
+			update,
+			searchFiles,
+			restoreDisplay,
+			backToParentFolder,
+			close,
+			getActivePage,
+			getFilePaths,
+			dragstart,
+			dragend,
+			dragleave,
+			dragover,
+			drop,
+			osDragstart,
+			osDragend,
+			osDragleave,
+			osDragover,
+			osDrop
+		});
 		Object.defineProperty(node, 'links', {
 			configurable: true,
 			get: () => links,

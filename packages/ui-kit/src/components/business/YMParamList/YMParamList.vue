@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 import {
 	addClass,
 	attachDoubleclick,
@@ -48,6 +49,7 @@ interface MenuItem {
 interface Props {
 	id?: string;
 	filter?: string;
+	group?: string;
 	flexible?: boolean;
 	historyFactory?: (list: ParamListElement) => ParamHistory;
 	menuPopup?: (options: MenuOptions, items: MenuItem[]) => void;
@@ -1296,52 +1298,54 @@ onMounted(() => {
 	self.addEventListener('pointerdown', pointerdown as EventListener);
 	self.addEventListener('pointerup', pointerup as EventListener);
 	attachDoubleclick(self, doubleclick);
-	self.bind = bind;
-	self.read = read;
-	self.write = write;
-	self.update = update;
-	self.resize = resize;
-	self.updateFlexibleHeight = updateFlexibleHeight;
-	self.updateHeadAndFoot = updateHeadAndFoot;
-	self.updateOnResize = updateOnResize;
-	self.select = select;
-	self.selectMultiple = selectMultiple;
-	self.selectAll = selectAll;
-	self.unselect = unselect;
-	self.reselect = reselect;
-	self.selectUp = selectUp;
-	self.selectDown = selectDown;
-	self.selectMultipleUp = selectMultipleUp;
-	self.selectMultipleDown = selectMultipleDown;
-	self.scrollToSelection = scrollToSelection;
-	self.insert = insert;
-	self.edit = edit;
-	self.toggle = toggle;
-	self.enableItems = enableItems;
-	self.disableItems = disableItems;
-	self.copy = copy;
-	self.paste = paste;
-	self.delete = delete_;
-	self.undo = undo;
-	self.redo = redo;
-	self.save = save;
-	self.clearElements = clearElements;
-	self.clear = clear;
-	self.listFocus = listFocus;
-	self.listBlur = listBlur;
-	self.keydown = keydown;
-	self.pointerdown = pointerdown;
-	self.pointerup = pointerup;
-	self.doubleclick = doubleclick;
-	self.windowPointerup = windowPointerup;
-	self.windowPointermove = windowPointermove;
-	self.on = on;
+	attachApi(self, {
+		bind,
+		read,
+		write,
+		update,
+		resize,
+		updateFlexibleHeight,
+		updateHeadAndFoot,
+		updateOnResize,
+		select,
+		selectMultiple,
+		selectAll,
+		unselect,
+		reselect,
+		selectUp,
+		selectDown,
+		selectMultipleUp,
+		selectMultipleDown,
+		scrollToSelection,
+		insert,
+		edit,
+		toggle,
+		enableItems,
+		disableItems,
+		copy,
+		paste,
+		delete: delete_,
+		undo,
+		redo,
+		save,
+		clearElements,
+		clear,
+		listFocus,
+		listBlur,
+		keydown,
+		pointerdown,
+		pointerup,
+		doubleclick,
+		windowPointerup,
+		windowPointermove,
+		on
+	});
 	self.addEventListener('change', () => emit('change', readElement(self)));
 });
 </script>
 
 <template>
-	<div ref="root" class="param-list" :id="props.id" :filter="props.filter || undefined" />
+	<div ref="root" class="param-list" :id="props.id" :filter="props.filter || undefined" :group="props.group || undefined" />
 </template>
 
 <style module>

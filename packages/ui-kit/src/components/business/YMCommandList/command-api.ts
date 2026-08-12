@@ -351,13 +351,38 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			let mainColor = 'normal';
 			li = document.createElement('div') as unknown as CommandItemElement;
 			addClass(li, 'command-item');
-			li.contents = [];
-			li.dataKey = true;
-			li.dataParent = parent;
-			li.dataList = commands;
-			li.dataItem = command;
-			li.dataIndex = index;
-			li.dataIndent = indent;
+			let liContents: CommandContent[] | null = [];
+			Object.defineProperty(li, 'contents', {
+				configurable: true,
+				get: () => liContents,
+				set: (value) => {
+					liContents = value;
+				}
+			});
+			Object.defineProperty(li, 'dataKey', {
+				configurable: true,
+				get: () => true
+			});
+			Object.defineProperty(li, 'dataParent', {
+				configurable: true,
+				get: () => parent
+			});
+			Object.defineProperty(li, 'dataList', {
+				configurable: true,
+				get: () => commands
+			});
+			Object.defineProperty(li, 'dataItem', {
+				configurable: true,
+				get: () => command
+			});
+			Object.defineProperty(li, 'dataIndex', {
+				configurable: true,
+				get: () => index
+			});
+			Object.defineProperty(li, 'dataIndent', {
+				configurable: true,
+				get: () => indent
+			});
 			buffer.push(li);
 
 			const contents = options.command
@@ -372,7 +397,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					content.textId = textId;
 					content.tooltip = tooltip;
 					content.class = className;
-					li.contents.push(content);
+					li.contents!.push(content);
 					if (textId) textId = '';
 					if (tooltip) tooltip = '';
 					if (className) className = '';
@@ -407,12 +432,34 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				if (content.break !== undefined) {
 					li = document.createElement('div') as unknown as CommandItemElement;
 					addClass(li, 'command-item');
-					li.contents = [];
-					li.dataKey = false;
-					li.dataList = commands;
-					li.dataItem = command;
-					li.dataIndex = index;
-					li.dataIndent = indent;
+					let breakContents: CommandContent[] | null = [];
+					Object.defineProperty(li, 'contents', {
+						configurable: true,
+						get: () => breakContents,
+						set: (value) => {
+							breakContents = value;
+						}
+					});
+					Object.defineProperty(li, 'dataKey', {
+						configurable: true,
+						get: () => false
+					});
+					Object.defineProperty(li, 'dataList', {
+						configurable: true,
+						get: () => commands
+					});
+					Object.defineProperty(li, 'dataItem', {
+						configurable: true,
+						get: () => command
+					});
+					Object.defineProperty(li, 'dataIndex', {
+						configurable: true,
+						get: () => index
+					});
+					Object.defineProperty(li, 'dataIndent', {
+						configurable: true,
+						get: () => indent
+					});
 					buffer.push(li);
 					continue;
 				}
@@ -429,12 +476,34 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					if (i < length) {
 						li = document.createElement('div') as unknown as CommandItemElement;
 						addClass(li, 'command-item');
-						li.contents = [];
-						li.dataKey = false;
-						li.dataList = commands;
-						li.dataItem = command;
-						li.dataIndex = index;
-						li.dataIndent = indent;
+						let childContents: CommandContent[] | null = [];
+						Object.defineProperty(li, 'contents', {
+							configurable: true,
+							get: () => childContents,
+							set: (value) => {
+								childContents = value;
+							}
+						});
+						Object.defineProperty(li, 'dataKey', {
+							configurable: true,
+							get: () => false
+						});
+						Object.defineProperty(li, 'dataList', {
+							configurable: true,
+							get: () => commands
+						});
+						Object.defineProperty(li, 'dataItem', {
+							configurable: true,
+							get: () => command
+						});
+						Object.defineProperty(li, 'dataIndex', {
+							configurable: true,
+							get: () => index
+						});
+						Object.defineProperty(li, 'dataIndent', {
+							configurable: true,
+							get: () => indent
+						});
 						buffer.push(li);
 						continue;
 					}
@@ -462,12 +531,34 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					for (let i = 1; i < slength; i++) {
 						li = document.createElement('div') as unknown as CommandItemElement;
 						addClass(li, 'command-item');
-						li.contents = [];
-						li.dataKey = false;
-						li.dataList = commands;
-						li.dataItem = command;
-						li.dataIndex = index;
-						li.dataIndent = indent;
+						let scriptContents: CommandContent[] | null = [];
+						Object.defineProperty(li, 'contents', {
+							configurable: true,
+							get: () => scriptContents,
+							set: (value) => {
+								scriptContents = value;
+							}
+						});
+						Object.defineProperty(li, 'dataKey', {
+							configurable: true,
+							get: () => false
+						});
+						Object.defineProperty(li, 'dataList', {
+							configurable: true,
+							get: () => commands
+						});
+						Object.defineProperty(li, 'dataItem', {
+							configurable: true,
+							get: () => command
+						});
+						Object.defineProperty(li, 'dataIndex', {
+							configurable: true,
+							get: () => index
+						});
+						Object.defineProperty(li, 'dataIndent', {
+							configurable: true,
+							get: () => indent
+						});
 						buffer.push(li);
 						items[i] = li;
 					}
@@ -486,7 +577,10 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		if ((buffer[0] as CommandItemElement).dataIndex !== index) {
 			for (const target of buffer) {
 				if (target instanceof HTMLElement) {
-					(target as CommandItemElement).dataIndex = index;
+					Object.defineProperty(target, 'dataIndex', {
+						configurable: true,
+						get: () => index
+					});
 				}
 			}
 		}
@@ -540,12 +634,32 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 					let id = content.textId;
 					const i = id.indexOf('-');
 					const j = id.indexOf('-', i + 1);
-					text.varSpace = id.slice(0, i);
-					text.varType = id.slice(i + 1, j);
-					text.varKey = id.slice(j + 1);
-					switch (text.varSpace) {
+					let varSpace = id.slice(0, i);
+					let varType = id.slice(i + 1, j);
+					let varKey = id.slice(j + 1);
+					Object.defineProperty(text, 'varSpace', {
+						configurable: true,
+						get: () => varSpace
+					});
+					Object.defineProperty(text, 'varType', {
+						configurable: true,
+						get: () => varType
+					});
+					Object.defineProperty(text, 'varKey', {
+						configurable: true,
+						get: () => varKey
+					});
+					let currentType = '';
+					Object.defineProperty(text, 'currentType', {
+						configurable: true,
+						get: () => currentType,
+						set: (value) => {
+							currentType = value;
+						}
+					});
+					switch (varSpace) {
 						case 'local':
-							text.currentType = text.varType;
+							currentType = varType;
 							addClass(text, 'local-variable-identifier');
 							break;
 						case 'global':
@@ -553,11 +667,15 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							break;
 						case 'attribute':
 						case 'enum': {
-							const string = text.varKey as string;
+							const string = varKey;
 							const i = string.lastIndexOf('-');
-							text.varKey = string.slice(0, i);
-							text.varId = string.slice(i + 1);
-							addClass(text, `${text.varSpace}-identifier`);
+							varKey = string.slice(0, i);
+							let varId = string.slice(i + 1);
+							Object.defineProperty(text, 'varId', {
+								configurable: true,
+								get: () => varId
+							});
+							addClass(text, `${varSpace}-identifier`);
 							id = id.slice(0, id.lastIndexOf('-'));
 							break;
 						}
@@ -572,7 +690,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 							break;
 					}
 					text.name = id;
-					addClass(text, (text.varType as string) + '-type');
+					addClass(text, varType + '-type');
 					addClass(text, 'command-text-identifier');
 					text.onpointerenter = commandListStatics.textPointerenter as unknown as (
 						this: GlobalEventHandlers,
@@ -654,21 +772,49 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 			blank = document.createElement('div') as unknown as CommandItemElement;
 			addClass(blank, 'command-item');
 
-			blank.contents = [];
+			let blankContents: CommandContent[] | null = [];
+			Object.defineProperty(blank, 'contents', {
+				configurable: true,
+				get: () => blankContents,
+				set: (value) => {
+					blankContents = value;
+				}
+			});
 			blank.enabled = true;
-			blank.dataKey = true;
-			blank.dataParent = parent;
-			blank.dataList = commands;
-			blank.dataItem = null;
-			blank.dataIndex = index;
-			blank.dataIndent = indent;
+			Object.defineProperty(blank, 'dataKey', {
+				configurable: true,
+				get: () => true
+			});
+			Object.defineProperty(blank, 'dataParent', {
+				configurable: true,
+				get: () => parent
+			});
+			Object.defineProperty(blank, 'dataList', {
+				configurable: true,
+				get: () => commands
+			});
+			Object.defineProperty(blank, 'dataItem', {
+				configurable: true,
+				get: () => null
+			});
+			Object.defineProperty(blank, 'dataIndex', {
+				configurable: true,
+				get: () => index
+			});
+			Object.defineProperty(blank, 'dataIndent', {
+				configurable: true,
+				get: () => indent
+			});
 			Object.defineProperty(commands, 'blank', {
 				value: blank
 			});
 		}
 
 		if (blank.dataIndex !== index) {
-			blank.dataIndex = index;
+			Object.defineProperty(blank, 'dataIndex', {
+				configurable: true,
+				get: () => index
+			});
 		}
 
 		if (parent) {

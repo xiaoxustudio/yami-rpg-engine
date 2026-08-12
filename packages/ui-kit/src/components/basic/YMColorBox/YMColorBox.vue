@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -189,14 +190,7 @@ onMounted(() => {
 	});
 	(el as ColorBoxApi).foreground = foreground.value;
 	(el as ColorBoxApi).inputEventEnabled = false;
-	(el as ColorBoxApi).read = read;
-	(el as ColorBoxApi).write = write;
-	(el as ColorBoxApi).input = input;
-	(el as ColorBoxApi).enable = enable;
-	(el as ColorBoxApi).disable = disable;
-	(el as ColorBoxApi).on = on;
-	(el as ColorBoxApi).keydown = keydown;
-	(el as ColorBoxApi).mouseclick = mouseclick;
+	attachApi(el, { read, write, input, enable, disable, on, keydown, mouseclick });
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('click', mouseclick as EventListener);
 	write(props.modelValue);

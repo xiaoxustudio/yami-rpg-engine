@@ -10,6 +10,7 @@ import {
 	show,
 	write
 } from '../../../utils/dom';
+import { attachApi } from '../../../utils/attach-api';
 
 interface PaneControlFactory {
 	checkBox(): HTMLElement;
@@ -999,31 +1000,33 @@ onMounted(() => {
 	self.colorBoxes = [];
 	self.customBoxes = [];
 	self.updateEventEnabled = false;
-	self.getData = () => [];
-	self.windowLocalize = windowLocalize;
-	self.scriptChange = scriptChange;
-	self.bind = bind;
-	self.rewrite = rewrite;
-	self.update = update;
-	self.appendHeadPad = appendHeadPad;
-	self.createDetailBox = createDetailBox;
-	self.createParamInput = createParamInput;
-	self.updateParamInput = updateParamInput;
-	self.updateParamDisplay = updateParamDisplay;
-	self.createCheckBox = createCheckBox;
-	self.createNumberBox = createNumberBox;
-	self.createNumberVar = createNumberVar;
-	self.createTextBox = createTextBox;
-	self.createSelectBox = createSelectBox;
-	self.createKeyboardBox = createKeyboardBox;
-	self.createColorBox = createColorBox;
-	self.createCustomBox = createCustomBox;
-	self.createRepeatableGroup = createRepeatableGroup;
-	self.recycle = recycle;
-	self.clear = clear;
-	self.on = on;
-	self.componentChange = componentChange;
-	self.applyAffix = applyAffix;
+	attachApi(self, {
+		getData: () => [],
+		windowLocalize,
+		scriptChange,
+		bind,
+		rewrite,
+		update,
+		appendHeadPad,
+		createDetailBox,
+		createParamInput,
+		updateParamInput,
+		updateParamDisplay,
+		createCheckBox,
+		createNumberBox,
+		createNumberVar,
+		createTextBox,
+		createSelectBox,
+		createKeyboardBox,
+		createColorBox,
+		createCustomBox,
+		createRepeatableGroup,
+		recycle,
+		clear,
+		on,
+		componentChange,
+		applyAffix
+	});
 	window.addEventListener('localize', windowLocalize);
 	self.addEventListener('change', componentChange);
 	self.addEventListener('update', (e: Event) => emit('update', e));

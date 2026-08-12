@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -487,26 +488,28 @@ function initializeApi(): void {
 	(el as SelectBoxApi).invalid = invalid;
 	(el as SelectBoxApi).hideUnrelated = hideUnrelated;
 	(el as SelectBoxApi).savedValue = savedValue;
-	(el as SelectBoxApi).read = read;
-	(el as SelectBoxApi).write = write;
-	(el as SelectBoxApi).write2 = write2;
-	(el as SelectBoxApi).writeDefault = writeDefault;
-	(el as SelectBoxApi).input = input;
-	(el as SelectBoxApi).update = update;
-	(el as SelectBoxApi).reselect = reselect;
-	(el as SelectBoxApi).save = save;
-	(el as SelectBoxApi).restore = restore;
-	(el as SelectBoxApi).enable = enable;
-	(el as SelectBoxApi).disable = disable;
-	(el as SelectBoxApi).loadItems = loadItems;
-	(el as SelectBoxApi).setItemNames = setItemNames;
-	(el as SelectBoxApi).clear = clear;
-	(el as SelectBoxApi).enableHiddenMode = enableHiddenMode;
-	(el as SelectBoxApi).relate = relate;
-	(el as SelectBoxApi).toggleRelatedElements = toggleRelatedElements;
-	(el as SelectBoxApi).enableElement = enableElement;
-	(el as SelectBoxApi).disableElement = disableElement;
-	(el as SelectBoxApi).on = on;
+	attachApi(el, {
+		read,
+		write,
+		write2,
+		writeDefault,
+		input,
+		update,
+		reselect,
+		save,
+		restore,
+		enable,
+		disable,
+		loadItems,
+		setItemNames,
+		clear,
+		enableHiddenMode,
+		relate,
+		toggleRelatedElements,
+		enableElement,
+		disableElement,
+		on
+	});
 	loadItems(props.items);
 	on('input', (e: Event & { value?: unknown }) => {
 		emit('input', e.value);

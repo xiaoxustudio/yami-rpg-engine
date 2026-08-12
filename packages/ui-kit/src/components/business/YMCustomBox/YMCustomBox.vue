@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, dispatchChangeEvent, removeClass } from '../../../utils/dom';
 
 interface ParseResult {
@@ -276,19 +277,21 @@ function initializeApi(): void {
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;
 	el._initialized = true;
-	el.read = read;
-	el.write = write;
-	el.input = input;
-	el.update = update;
-	el.enable = enable;
-	el.disable = disable;
-	el.on = on;
-	el.keydown = keydown;
-	el.click = click;
-	el.dragenter = dragenter;
-	el.dragleave = dragleave;
-	el.dragover = dragover;
-	el.drop = drop;
+	attachApi(el, {
+		read,
+		write,
+		input,
+		update,
+		enable,
+		disable,
+		on,
+		keydown,
+		click,
+		dragenter,
+		dragleave,
+		dragover,
+		drop
+	});
 
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('click', click as EventListener);

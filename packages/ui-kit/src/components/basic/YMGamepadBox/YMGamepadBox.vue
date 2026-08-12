@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -163,11 +164,7 @@ onMounted(() => {
 	}
 	const el = root.value as HTMLElement & { [k: string]: unknown };
 	if (!el) return;
-	el.read = read;
-	el.write = write;
-	el.enable = enable;
-	el.disable = disable;
-	el.getFocus = getFocus;
+	attachApi(el, { read, write, enable, disable, getFocus });
 });
 
 onUnmounted(() => {

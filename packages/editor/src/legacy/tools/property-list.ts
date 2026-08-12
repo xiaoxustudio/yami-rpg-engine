@@ -32,7 +32,11 @@ export class AttributeListInterface implements IListInterface {
 	initialize(list: HTMLElement): void {
 		this.target = null;
 		this.type = 'object-attribute';
-		this.group = list.getAttribute('group') ?? '';
+		let match = list.id.match(/^config-(.+)-tempAttributes$/);
+		if (!match) {
+			match = list.id.match(/^file([A-Z][a-zA-Z]*)/);
+		}
+		this.group = list.getAttribute('group') ?? (match ? match[1].toLowerCase() : '');
 
 		const { editor, owner } = this;
 		if (editor && owner) {
@@ -90,6 +94,7 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	open(item: AttributeItemShape = { key: '', value: 0 }) {
+		AttributeListInterface.target = this.target;
 		Window.open!('object-attribute');
 		const isNew = item.key === '';
 		if (isNew) {
@@ -211,7 +216,14 @@ export class AttributeListInterface implements IListInterface {
 	}
 
 	static keyWrite(event: { value: string }) {
-		const group = this.target?.getAttribute?.('group') as unknown as string;
+		let group = this.target?.getAttribute?.('group') as unknown as string;
+		if (!group && this.target) {
+			let match = this.target.id.match(/^config-(.+)-tempAttributes$/);
+			if (!match) {
+				match = this.target.id.match(/^file([A-Z][a-zA-Z]*)/);
+			}
+			group = match ? match[1].toLowerCase() : '';
+		}
 		const attr = Attribute.getGroupAttribute(group, event.value);
 		if (attr) {
 			AttributeListInterface.typeBox.write(attr.type);

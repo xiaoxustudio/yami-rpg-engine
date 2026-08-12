@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -289,20 +290,22 @@ function initializeApi(): void {
 	(el as TextBoxApi).lastText = '';
 	(el as TextBoxApi).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
-	(el as TextBoxApi).read = read;
-	(el as TextBoxApi).write = write;
-	(el as TextBoxApi).insert = insert;
-	(el as TextBoxApi).enable = enable;
-	(el as TextBoxApi).disable = disable;
-	(el as TextBoxApi).focus = focus;
-	(el as TextBoxApi).getFocus = getFocus;
-	(el as TextBoxApi).setPlaceholder = setPlaceholder;
-	(el as TextBoxApi).setMaxLength = setMaxLength;
-	(el as TextBoxApi).fitContent = fitContent;
-	(el as TextBoxApi).deleteInputContent = deleteInputContent;
-	(el as TextBoxApi).addCloseButton = addCloseButton;
-	(el as TextBoxApi).addKeydownFilter = addKeydownFilter;
-	(el as TextBoxApi).on = on;
+	attachApi(el, {
+		read,
+		write,
+		insert,
+		enable,
+		disable,
+		focus,
+		getFocus,
+		setPlaceholder,
+		setMaxLength,
+		fitContent,
+		deleteInputContent,
+		addCloseButton,
+		addKeydownFilter,
+		on
+	});
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -167,13 +168,7 @@ onMounted(() => {
 	input.addEventListener('keydown', inputKeydown);
 	input.addEventListener('input', inputInput);
 	(el as TextAreaHost).input = input;
-	(el as TextAreaHost).read = read;
-	(el as TextAreaHost).write = write;
-	(el as TextAreaHost).insert = insert;
-	(el as TextAreaHost).enable = enable;
-	(el as TextAreaHost).disable = disable;
-	(el as TextAreaHost).getFocus = getFocus;
-	(el as TextAreaHost).on = on;
+	attachApi(el, { read, write, insert, enable, disable, getFocus, on });
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

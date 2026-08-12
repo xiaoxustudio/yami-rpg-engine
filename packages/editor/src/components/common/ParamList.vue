@@ -3,6 +3,7 @@
 		ref="ym"
 		:id="props.id"
 		:filter="props.filter"
+		:group="props.group"
 		:flexible="props.flexible"
 		:history-factory="historyFactory"
 		:menu-popup="menuPopup"
@@ -24,6 +25,7 @@ import { attachElementApi } from '@/utils/attach-element-api';
 interface Props {
 	id?: string;
 	filter?: string;
+	group?: string;
 	flexible?: boolean;
 }
 

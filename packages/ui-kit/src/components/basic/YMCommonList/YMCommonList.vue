@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, seek } from '../../../utils/dom';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -381,21 +382,23 @@ onMounted(() => {
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);
 	el.addEventListener('pointerup', pointerup);
-	(el as CommonListApi).read = read;
-	(el as CommonListApi).write = write;
-	(el as CommonListApi).reload = reload;
-	(el as CommonListApi).appendElement = appendElement;
-	(el as CommonListApi).update = update;
-	(el as CommonListApi).resize = resize;
-	(el as CommonListApi).updateHeadAndFoot = updateHeadAndFoot;
-	(el as CommonListApi).updateOnResize = updateOnResize;
-	(el as CommonListApi).select = select;
-	(el as CommonListApi).unselect = unselect;
-	(el as CommonListApi).scrollToItem = scrollToItem;
-	(el as CommonListApi).selectRelative = selectRelative;
-	(el as CommonListApi).clearElements = clearElements;
-	(el as CommonListApi).clear = clear;
-	(el as CommonListApi).on = on;
+	attachApi(el, {
+		read,
+		write,
+		reload,
+		appendElement,
+		update,
+		resize,
+		updateHeadAndFoot,
+		updateOnResize,
+		select,
+		unselect,
+		scrollToItem,
+		selectRelative,
+		clearElements,
+		clear,
+		on
+	});
 });
 </script>
 

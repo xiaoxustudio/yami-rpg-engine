@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue';
 import YMNumberBox from '../YMNumberBox/YMNumberBox.vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -211,13 +212,7 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as NumberVarApi).read = read;
-	(el as NumberVarApi).write = write;
-	(el as NumberVarApi).switch = switchMode;
-	(el as NumberVarApi).enable = enable;
-	(el as NumberVarApi).disable = disable;
-	(el as NumberVarApi).getFocus = getFocus;
-	(el as NumberVarApi).on = on;
+	attachApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
 	(el as NumberVarApi).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);

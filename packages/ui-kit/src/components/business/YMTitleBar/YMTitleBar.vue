@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { clamp, hasClass, rect, rasterize, relate } from '../../../utils/dom';
+import { attachApi } from '../../../utils/attach-api';
 
 function getWindow(): { close(id?: string): void } | undefined {
 	return (window as unknown as Window & { Window?: { close(id?: string): void } }).Window;
@@ -141,10 +142,12 @@ onMounted(() => {
 		},
 		configurable: true
 	});
-	el.pointerdown = pointerdown;
-	el.mouseclick = mouseclick;
-	el.doubleclick = doubleclick;
-	el.on = on;
+	attachApi(el, {
+		pointerdown,
+		mouseclick,
+		doubleclick,
+		on
+	});
 });
 </script>
 

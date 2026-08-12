@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -239,12 +240,7 @@ onMounted(() => {
 		input.style.paddingRight = `${unitText.offsetWidth}px`;
 	}
 	(el as NumberBoxHost).input = input;
-	(el as NumberBoxHost).read = read;
-	(el as NumberBoxHost).write = write;
-	(el as NumberBoxHost).enable = enable;
-	(el as NumberBoxHost).disable = disable;
-	(el as NumberBoxHost).getFocus = getFocus;
-	(el as NumberBoxHost).on = on;
+	attachApi(el, { read, write, enable, disable, getFocus, on });
 	Object.defineProperty(el, 'decimals', {
 		get: (): number => decimalPlaces,
 		set: (value: number): void => {

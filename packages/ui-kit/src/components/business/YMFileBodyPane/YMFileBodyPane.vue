@@ -17,6 +17,7 @@ import {
 	show,
 	attachDoubleclick
 } from '../../../utils/dom';
+import { attachApi } from '../../../utils/attach-api';
 
 interface FileBodyContext {
 	element?: FileBodyItemApi;
@@ -1882,36 +1883,38 @@ onMounted(() => {
 	windowKeydownHandler = windowKeydown;
 	window.addEventListener('keydown', windowKeydownHandler);
 
-	node.setViewIndex = setViewIndex;
-	node.updateViewMode = updateViewMode;
-	node.updateFiles = updateFiles;
-	node.resize = resize;
-	node.computeGridProperties = computeGridProperties;
-	node.updateContentSize = updateContentSize;
-	node.updateContentOffset = updateContentOffset;
-	node.resetContentStyle = resetContentStyle;
-	node.createFlatItems = createFlatItems;
-	node.select = select;
-	node.selectAll = selectAll;
-	node.unselect = unselect;
-	node.selectByPath = selectByPath;
-	node.selectDefault = selectDefault;
-	node.selectRelativeInGridMode = selectRelativeInGridMode;
-	node.getDirName = getDirName;
-	node.createFolder = createFolder;
-	node.showInExplorer = showInExplorer;
-	node.openFileLocation = openFileLocation;
-	node.openFile = openFile;
-	node.copyFiles = copyFiles;
-	node.pasteFiles = pasteFiles;
-	node.deleteFiles = deleteFiles;
-	node.rename = rename;
-	node.cancelRenaming = cancelRenaming;
-	node.importFiles = importFiles;
-	node.exportFile = exportFile;
-	node.clearElements = clearElements;
-	node.clear = clear;
-	node.on = on;
+	attachApi(node, {
+		setViewIndex,
+		updateViewMode,
+		updateFiles,
+		resize,
+		computeGridProperties,
+		updateContentSize,
+		updateContentOffset,
+		resetContentStyle,
+		createFlatItems,
+		select,
+		selectAll,
+		unselect,
+		selectByPath,
+		selectDefault,
+		selectRelativeInGridMode,
+		getDirName,
+		createFolder,
+		showInExplorer,
+		openFileLocation,
+		openFile,
+		copyFiles,
+		pasteFiles,
+		deleteFiles,
+		rename,
+		cancelRenaming,
+		importFiles,
+		exportFile,
+		clearElements,
+		clear,
+		on
+	});
 	node.content = content;
 	Object.defineProperty(node, 'selections', {
 		get: () => selections,
