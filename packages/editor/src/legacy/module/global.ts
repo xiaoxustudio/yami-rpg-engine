@@ -496,8 +496,9 @@ UpdateLog.open = function (this: typeof UpdateLog, ...args: unknown[]) {
 };
 
 export function markndownToHtml(markdown: string) {
-	var md = new MarkdownIt();
-	return md.render(markdown);
+	const clean = markdown.replace(/<!--[\s\S]*?-->/g, '');
+	var md = new MarkdownIt({ html: false, linkify: true, breaks: true });
+	return md.render(clean);
 }
 
 export const UpdateLogUpdateOrigin = UpdateLog.update;
@@ -575,7 +576,7 @@ UpdateLog.switchMode = function (
 UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
 	try {
 		const response = await fetch(
-			'https://api.github.com/repos/Open-Yami-Community/yami-rpg-editor/releases'
+			'https://api.github.com/repos/Open-Yami-Community/yami-rpg-editor/releases/latest'
 		);
 		if (!response.ok) throw new Error('Failed to fetch releases');
 		const releases = await response.json();
@@ -635,16 +636,11 @@ UpdateLog.displayDonationList = function (this: typeof UpdateLog) {
 	this.content.appendChild(donationList);
 };
 
-UpdateLog.parseCommunityReleases = function (this: typeof UpdateLog, ...args: unknown[]) {
-	const releases = args[0] as Array<{ name?: string; body?: string }>;
-	const items = [];
-	for (const release of releases) {
-		items.push({
-			title: release.name,
-			major: release.body || 'No description provided'
-		});
-	}
-	return items;
+UpdateLog.parseCommunityReleases = function (this: typeof UpdateLog, _r: unknown) {
+	const release = _r as { name?: string; body?: string; draft?: boolean; prerelease?: boolean };
+	return release
+		? [{ title: release.name, major: release.body || 'No description provided' }]
+		: [];
 };
 
 export const UpdateLogWindowClosedOrigin = UpdateLog.windowClosed;

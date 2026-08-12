@@ -2,6 +2,13 @@ import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { on, addClass, clear } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
+import MarkdownIt from 'markdown-it';
+
+const md = new MarkdownIt({ html: false, linkify: true, breaks: true });
+
+function renderMarkdown(markdown: string): string {
+	return md.render(markdown.replace(/<!--[\s\S]*?-->/g, ''));
+}
 
 export interface UpdateLogItem {
 	title?: string;
@@ -47,21 +54,21 @@ UpdateLog.update = function (this: typeof UpdateLog, items: UpdateLogItem[]) {
 	for (const item of items) {
 		if (item.title) {
 			const title = document.createElement('div');
-			title.textContent = item.title;
+			title.innerHTML = renderMarkdown(item.title);
 			addClass(title, 'update-log-title');
 			addClass(title, 'text');
 			this.content.appendChild(title);
 		}
 		if (item.major) {
 			const major = document.createElement('div');
-			major.textContent = item.major;
+			major.innerHTML = renderMarkdown(item.major);
 			addClass(major, 'update-log-major');
 			addClass(major, 'text');
 			this.content.appendChild(major);
 		}
 		if (item.minor) {
 			const minor = document.createElement('div');
-			minor.textContent = item.minor;
+			minor.innerHTML = renderMarkdown(item.minor);
 			addClass(minor, 'update-log-minor');
 			addClass(minor, 'text');
 			this.content.appendChild(minor);

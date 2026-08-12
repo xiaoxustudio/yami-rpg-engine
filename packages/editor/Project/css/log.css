@@ -112,29 +112,61 @@ log-strong {
 
 #update-log-content {
 	display: block;
-	white-space: pre-wrap;
 	user-select: text;
 }
 
-text.update-log-title {
+.update-log-title {
 	display: block;
 	color: var(--plugin-name-color);
 	font-size: 1.5em;
 }
 
-text.update-log-title p {
+.update-log-title p {
 	margin: 0 auto;
 }
 
-text.update-log-major {
+.update-log-major {
 	display: block;
 	font-size: 1.1em;
 	margin-bottom: 10px;
 }
 
-text.update-log-minor {
+.update-log-minor {
 	display: block;
 	opacity: 0.5;
+}
+
+#update-log-content h1,
+#update-log-content h2,
+#update-log-content h3,
+#update-log-content h4 {
+	margin: 0.5em 0 0.25em;
+	color: var(--plugin-name-color);
+}
+
+#update-log-content ul,
+#update-log-content ol {
+	margin: 0.25em 0;
+	padding-left: 1.5em;
+}
+
+#update-log-content li {
+	margin: 0.15em 0;
+}
+
+#update-log-content p {
+	margin: 0.25em 0;
+}
+
+#update-log-content pre {
+	background-color: #818b981f;
+	border-radius: 6px;
+	padding: 8px;
+	overflow-x: auto;
+}
+
+#update-log-content a {
+	color: var(--plugin-name-color);
 }
 
 /* 捐赠名单样式 */
