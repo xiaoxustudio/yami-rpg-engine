@@ -152,6 +152,7 @@ export function createSelectListApi(
 		scrollToSelection();
 
 		box.addEventListener('pointermove', pointermove);
+		box.addEventListener('scroll', resize);
 		window.addEventListener('keydown', windowKeydown, { capture: true });
 		window.addEventListener('pointerdown', windowPointerdown, { capture: true });
 		window.addEventListener('resize', windowResize);
@@ -169,6 +170,7 @@ export function createSelectListApi(
 		document.body.removeChild(box);
 
 		box.removeEventListener('pointermove', pointermove);
+		box.removeEventListener('scroll', resize);
 		window.removeEventListener('keydown', windowKeydown, { capture: true });
 		window.removeEventListener('pointerdown', windowPointerdown, { capture: true });
 		window.removeEventListener('resize', windowResize);
