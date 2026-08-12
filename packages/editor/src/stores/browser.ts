@@ -1,6 +1,5 @@
 ﻿import { defineStore } from 'pinia';
 import { Editor } from '@/main/editor.ts';
-import { Layout } from '@/layout/layout.ts';
 import { shallowRef } from 'vue';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
@@ -20,7 +19,7 @@ import { Inspector } from '@/inspector/inspector.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { $ } from '@/util/dom.ts';
-import { addClass, hasClass, rect, removeClass, seek } from '@/util/element-utils';
+import { addClass, hasClass, removeClass, seek } from '@/util/element-utils';
 import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@/types/file-browser-links.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
@@ -97,7 +96,6 @@ export const useBrowserStore = defineStore('browser', () => {
 		const Browser = getBrowser();
 		if (!Browser?.body) return;
 		updateNavVisibility();
-		updateHead();
 		Browser.nav?.resize?.();
 		Browser.body?.computeGridProperties?.();
 		Browser.body?.resize?.();
@@ -364,9 +362,19 @@ export const useBrowserStore = defineStore('browser', () => {
 		}
 	}
 
+	let initRetryCount = 0;
+
 	function initialize() {
 		const Browser = getBrowser();
-		if (!Browser) return;
+		if (!Browser) {
+			// setComponent 由 FileBrowser.vue 的双 nextTick 完成，可能晚于本初始化调用，延迟重试
+			if (initRetryCount < 20) {
+				initRetryCount++;
+				setTimeout(() => initialize(), 50);
+			}
+			return;
+		}
+		initRetryCount = 0;
 		Browser.page = $('#project');
 		Browser.searcher = (
 			Browser.links?.head as (HTMLElement & { searcher?: HTMLElement }) | undefined
@@ -397,30 +405,6 @@ export const useBrowserStore = defineStore('browser', () => {
 		const files = body?.selections ?? [];
 		if (files.length === 1 && (files as { meta?: unknown }[])[0].meta === meta) {
 			body?.unselect?.();
-		}
-	}
-
-	function updateHead() {
-		const Browser = getBrowser();
-		if (!Browser) return;
-
-		const { page, head } = Browser ?? {};
-		if (!page || !head) return;
-		if (hasClass(page, 'visible')) {
-			const { nav } = Layout.getGroupOfElement(head);
-			const nRect = rect(nav);
-			const iRect = rect(nav.lastChild);
-			const left = iRect.right - nRect.left;
-			if (head.left !== left) {
-				head.left = left;
-				head.style.left = `${left}px`;
-			}
-			const bRect = rect(Browser.body);
-			const padding = Math.max(bRect.left - iRect.right, 0);
-			if (head.padding !== padding) {
-				head.padding = padding;
-				head.style.paddingLeft = `${padding}px`;
-			}
 		}
 	}
 
@@ -566,7 +550,6 @@ export const useBrowserStore = defineStore('browser', () => {
 		open,
 		close,
 		unselect,
-		updateHead,
 		openScript,
 		createFile,
 		createScript,

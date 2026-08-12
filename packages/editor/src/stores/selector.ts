@@ -102,9 +102,19 @@ export const useSelectorStore = defineStore('selector', () => {
 		confirmBound = true;
 	}
 
+	let initRetryCount = 0;
+
 	function initialize() {
 		const Selector = getSelector();
-		if (!Selector) return;
+		if (!Selector) {
+			// setComponent 由 FileBrowser.vue 的双 nextTick 完成，可能晚于本初始化调用，延迟重试
+			if (initRetryCount < 20) {
+				initRetryCount++;
+				setTimeout(() => initialize(), 50);
+			}
+			return;
+		}
+		initRetryCount = 0;
 		if (Selector.body) {
 			Selector.body.activateFile = Selector.body.select;
 		}

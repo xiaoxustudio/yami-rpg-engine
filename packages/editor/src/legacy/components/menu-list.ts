@@ -28,6 +28,10 @@ interface MenuListElement extends HTMLElement {
 export function attachMenuListApi(el: HTMLElement): void {
 	const menu = createMenuApi(el);
 	const box = el as unknown as MenuListElement;
+	Object.defineProperty(box, 'state', {
+		get: () => menu.state,
+		configurable: true
+	});
 	box.popup = menu.popup;
 	box.computeMenuWidth = menu.computeMenuWidth;
 	box.close = menu.close;

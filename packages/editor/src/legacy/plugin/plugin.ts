@@ -33,6 +33,7 @@ import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from '@/tools/localization.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 
 interface PluginItemShape {
 	id: string;
@@ -1935,7 +1936,7 @@ PluginManager.listPopup = function (
 	const list = PluginManager.list as TreeListElement;
 	const item = event.value;
 	const selected = !!item;
-	const pastable = (Clipboard as unknown as ClipboardShape).has('yami.data.plugin');
+	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.data.plugin');
 	const deletable = selected;
 	const get = Local.createGetter!('menuPluginList');
 	Menu.popup(
@@ -2109,13 +2110,13 @@ PluginManager.list_toggle = function (this: TreeListElement, item: PluginItemSha
 // 列表 - 复制
 PluginManager.list_copy = function (this: TreeListElement, item: PluginItemShape) {
 	if (item) {
-		(Clipboard as unknown as ClipboardShape).write('yami.data.plugin', item);
+		(GlobalClipboard as unknown as ClipboardShape).write('yami.data.plugin', item);
 	}
 };
 
 // 列表 - 粘贴
 PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemShape) {
-	const copy = (Clipboard as unknown as ClipboardShape).read('yami.data.plugin');
+	const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.data.plugin');
 	if (copy) {
 		this.addNodeTo(copy, dItem);
 	}

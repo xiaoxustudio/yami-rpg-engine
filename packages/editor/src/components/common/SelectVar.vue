@@ -90,6 +90,20 @@ const loadItems = (items: unknown[]): void => ym.value?.loadItems(items);
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, loadItems, root });
 
+const api = {
+	selectBox: null as HTMLElement | null,
+	varBox: null as HTMLElement | null,
+	mode: 'constant',
+	read,
+	write,
+	switch: switchMode,
+	enable,
+	disable,
+	getFocus,
+	on,
+	loadItems
+};
+
 watch(
 	() => props.modelValue,
 	(val) => write(val)
@@ -114,24 +128,24 @@ onMounted(() => {
 		mode: string;
 	};
 	if (!el) return;
-	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on, loadItems });
-	el.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-	el.varBox = getChildRoot(varBoxRef.value);
-	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+	api.varBox = getChildRoot(varBoxRef.value);
+	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	attachElementApi(el, api);
 	watch(
 		() => root.value?.className,
 		() => {
 			const cls = root.value?.className ?? '';
-			el.mode = cls.includes('variable') ? 'variable' : 'constant';
-			el.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-			el.varBox = getChildRoot(varBoxRef.value);
+			api.mode = cls.includes('variable') ? 'variable' : 'constant';
+			api.selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+			api.varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		el.varBox = getChildRoot(val);
+		api.varBox = getChildRoot(val);
 	});
 	el.addEventListener('pointerdown', (event: PointerEvent) => {
 		if (event.button !== 0 || event.target === el) return;

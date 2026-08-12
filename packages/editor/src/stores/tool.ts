@@ -4,37 +4,30 @@ import { PresetElement } from '@/tools/preset-element-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Selection } from '@/tools/text-capture.ts';
+import { getToolInstance } from '@/tools/tool-registry';
 import { shallowRef } from 'vue';
-
-interface ToolInstance {
-	open?: (...args: unknown[]) => void;
-	close?: () => void;
-	initialize?: () => void;
-}
 
 export const useToolStore = defineStore('tool', () => {
 	const activeTool = shallowRef<string | null>(null);
 
 	function getTool(name: string) {
-		return (window as unknown as Record<string, ToolInstance | undefined>)[name];
+		return getToolInstance(name);
 	}
 
 	function openTool(name: string, ...args: unknown[]) {
-		const tool = (window as unknown as Record<string, ToolInstance | undefined>)[name];
-		tool?.open?.(...args);
+		getToolInstance(name)?.open?.(...args);
 		activeTool.value = name;
 	}
 
 	function closeTool(name: string) {
-		const tool = (window as unknown as Record<string, ToolInstance | undefined>)[name];
-		tool?.close?.();
+		getToolInstance(name)?.close?.();
 		if (activeTool.value === name) {
 			activeTool.value = null;
 		}
 	}
 
 	function initializeTool(name: string) {
-		(window as unknown as Record<string, ToolInstance | undefined>)[name]?.initialize?.();
+		getToolInstance(name)?.initialize?.();
 	}
 
 	function openColor(...args: unknown[]) {

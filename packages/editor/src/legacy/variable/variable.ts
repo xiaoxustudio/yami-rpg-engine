@@ -8,12 +8,12 @@ import { Reference } from '@/log/related-references.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import type { IArrayHistory } from '@/types/history.ts';
 import type { PageManagerApi } from '@ui-kit';
-const variableStateKeys = ['target', 'data', 'idMap', 'history', 'changed'] as const;
-import { getVariableStore } from '@app/stores/variable';
+import { getVariableStore, variableStateKeys } from '@app/stores/variable';
+import type { VariableItemShape } from '@app/stores/variable';
 
 interface VariableModule {
 	list: HTMLElement;
-	panel: HTMLElement & { variable: Record<string, unknown> | null };
+	panel: HTMLElement;
 	manager: PageManagerApi;
 	searcher: HTMLElement;
 	inputs: {
@@ -87,7 +87,7 @@ interface VariableModule {
 
 export const Variable: VariableModule = {
 	list: null as unknown as HTMLElement,
-	panel: null as unknown as HTMLElement & { variable: Record<string, unknown> | null },
+	panel: null as unknown as HTMLElement,
 	manager: null as unknown as PageManagerApi,
 	searcher: null as unknown as HTMLElement,
 	inputs: {
@@ -162,9 +162,7 @@ function ensureDomBound() {
 	const list = $('#variable-list');
 	if (!list) return;
 	Variable.list = list;
-	Variable.panel = $('#variable-properties-flex') as HTMLElement & {
-		variable: Record<string, unknown>;
-	};
+	Variable.panel = $('#variable-properties-flex') as HTMLElement;
 	hide(Variable.panel);
 	Variable.manager = $('#variable-value-manager') as PageManagerApi;
 	Variable.searcher = $('#variable-searcher');
@@ -243,7 +241,7 @@ Variable.initialize = function () {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	if (this.panel) this.panel.variable = null as unknown as Record<string, unknown>;
+	if (this.panel) getVariableStore().state.selected = null;
 	this.searcher?.addCloseButton?.();
 
 	History.processors['variable-list-operation'] = (
@@ -252,7 +250,7 @@ Variable.initialize = function () {
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
-		if (read(list) === null && this.panel.variable !== null) {
+		if (read(list) === null && getVariableStore().state.selected !== null) {
 			this.closePropertyPanel();
 		}
 		this.changed = true;
@@ -265,7 +263,7 @@ Variable.initialize = function () {
 		data.value = item.name;
 		item.name = value;
 		list.updateItemName(item);
-		if (this.panel.variable === item) {
+		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			write(this.inputs.name, value);
 		} else {
 			list.select(item);
@@ -292,7 +290,7 @@ Variable.initialize = function () {
 		list.updateIcon(item);
 		list.updateInitText(item);
 		list.updateItemClass(item);
-		if (this.panel.variable === item) {
+		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.sort, sort);
 			write(this.inputs.type, type);
@@ -313,7 +311,7 @@ Variable.initialize = function () {
 		item.value = value;
 		list.updateIcon(item);
 		list.updateInitText(item);
-		if (this.panel.variable === item) {
+		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.type, type);
 			if (this.inputs[type]) write(this.inputs[type], value);
@@ -332,7 +330,7 @@ Variable.initialize = function () {
 		data.value = item.value;
 		item.value = value;
 		list.updateInitText(item);
-		if (this.panel.variable === item) {
+		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			write(this.inputs[typeof value], value);
 		} else {
 			list.select(item);
@@ -349,7 +347,7 @@ Variable.initialize = function () {
 		data.value = item.note;
 		item.note = value;
 		list.updateNoteIcon(item);
-		if (this.panel.variable === item) {
+		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			write(this.inputs.note, value);
 		} else {
 			list.select(item);

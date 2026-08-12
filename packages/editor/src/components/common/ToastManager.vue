@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMToastManager } from '@ui-kit';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 interface ToastManagerElement extends HTMLElement {
 	show(message: string, type?: string, duration?: number): HTMLDivElement;
@@ -31,7 +32,6 @@ defineExpose({ show, dismiss, root });
 onMounted(() => {
 	const el = root.value as ToastManagerElement | null;
 	if (!el) return;
-	el.show = show;
-	el.dismiss = dismiss;
+	attachElementApi(el, { show, dismiss });
 });
 </script>

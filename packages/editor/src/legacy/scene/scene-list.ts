@@ -15,6 +15,7 @@ import { Editor } from '@/main/editor.ts';
 import { Scene } from './scene-window.ts';
 import { Local } from '@/tools/localization.ts';
 import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {
@@ -31,7 +32,7 @@ Scene.list.copy = function (this: typeof Scene, item: SceneItem) {
 				Codec.encodeTilemap!(item);
 				break;
 		}
-		(Clipboard as unknown as GlobalClipboardHost).write('yami.scene.object', item);
+		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.scene.object', item);
 	}
 };
 
@@ -41,7 +42,7 @@ Scene.list.paste = function (
 	dItem: SceneItem | 'auto' | null,
 	callback: ((item: SceneItem) => void) | undefined
 ) {
-	const copy = (Clipboard as unknown as GlobalClipboardHost).read('yami.scene.object');
+	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.scene.object');
 	if (copy && this.data) {
 		switch (copy.class) {
 			case 'tilemap':

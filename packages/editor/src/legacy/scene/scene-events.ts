@@ -17,6 +17,7 @@ import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {
@@ -1061,7 +1062,9 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 		this.translationKeyup();
 		const target = this.target;
 		const selected = !!target;
-		const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
+		const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has(
+			'yami.scene.object'
+		);
 		const get = Local.createGetter!('menuScene');
 		const menuItems: MenuItem[] = [
 			{
@@ -1520,12 +1523,12 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 				});
 				break;
 		}
-		pastable = (Clipboard as any).has('yami.scene.object');
+		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
 		deletable = true;
 		renamable = true;
 	} else {
 		copyable = false;
-		pastable = (Clipboard as any).has('yami.scene.object');
+		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.scene.object');
 		deletable = false;
 		renamable = false;
 	}

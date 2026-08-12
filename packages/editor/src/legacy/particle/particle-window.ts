@@ -31,6 +31,7 @@ import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
 import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
 import { StageColor } from '@/util/stage-color.ts';
@@ -1812,12 +1813,12 @@ Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent)
 	let renamable;
 	if (item) {
 		copyable = true;
-		pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
+		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = true;
 		renamable = true;
 	} else {
 		copyable = false;
-		pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
+		pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.particle.layer');
 		deletable = false;
 		renamable = false;
 	}
@@ -1893,13 +1894,13 @@ Particle.list.create = function (dItem) {
 // 列表 - 复制
 Particle.list.copy = function (item) {
 	if (item) {
-		(Clipboard as unknown as GlobalClipboardHost).write('yami.particle.layer', item);
+		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.particle.layer', item);
 	}
 };
 
 // 列表 - 粘贴
 Particle.list.paste = function (dItem) {
-	const copy = (Clipboard as unknown as GlobalClipboardHost).read('yami.particle.layer');
+	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.particle.layer');
 	if (copy && this.data) {
 		this.addNodeTo(copy, dItem);
 	}

@@ -44,6 +44,7 @@ import { Matrix } from '../webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 import type { DynamicShape } from '@/types/legacy-shapes.ts';
 
 interface ControlPoint {
@@ -2701,7 +2702,7 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	const { x, y } = this.getPointerCoords!(event);
 	const target = this.target;
 	const selected = !!target;
-	const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
+	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
 	const get = Local.createGetter!('menuUIList');
 	const items = [
 		{
@@ -3015,7 +3016,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 	const get = Local.createGetter!('menuUIList');
 	const selected = !!item;
 	const copyable = selected;
-	const pastable = (Clipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
+	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
 	const deletable = selected;
 	const renamable = selected;
 	menuItems.push({
@@ -3260,7 +3261,7 @@ UI.marquee.resize = function (this: HTMLElement & { pointerevent?: UIPointerEven
 // 列表 - 复制
 UI.list.copy = function (this: UIShape, item: UINodeShape) {
 	if (item) {
-		(Clipboard as unknown as GlobalClipboardHost).write('yami.ui.object', item);
+		(GlobalClipboard as unknown as GlobalClipboardHost).write('yami.ui.object', item);
 	}
 };
 
@@ -3270,7 +3271,7 @@ UI.list.paste = function (
 	dItem: UINodeShape | null,
 	callback?: (data: unknown) => void
 ) {
-	const copy = (Clipboard as unknown as GlobalClipboardHost).read('yami.ui.object');
+	const copy = (GlobalClipboard as unknown as GlobalClipboardHost).read('yami.ui.object');
 	if (copy && this.data) {
 		callback?.(copy);
 		this.addNodeTo!(copy, dItem);

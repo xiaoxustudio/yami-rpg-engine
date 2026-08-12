@@ -1,3 +1,5 @@
+import { GlobalClipboard } from '../util/clipboard';
+
 export interface GlobalClipboardHost {
 	has(type: string): boolean;
 	read(type: string): any;
@@ -5,5 +7,5 @@ export interface GlobalClipboardHost {
 }
 
 export function getGlobalClipboard(): GlobalClipboardHost {
-	return (globalThis as unknown as Record<string, unknown>).Clipboard as GlobalClipboardHost;
+	return GlobalClipboard;
 }

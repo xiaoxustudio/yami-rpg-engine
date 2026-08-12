@@ -5,6 +5,7 @@ import { Menu } from '@/components/menu-list.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { getVariableStore } from '@app/stores/variable';
 import { Variable } from './variable.ts';
 
 const Clipboard = getGlobalClipboard();
@@ -23,7 +24,7 @@ Variable.listRecord = function (event: Event) {
 		case 'rename': {
 			// 如果是变量则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
-			if (Variable.panel.variable === item) {
+			if (getVariableStore().state.selected === item) {
 				write(Variable.inputs.name, newValue);
 				Variable.saveHistory(item, 'name', oldValue);
 				break;

@@ -9,11 +9,12 @@ describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 		expect(store.state.mode).toBe(null);
 		expect(store.state.target).toBe(null);
 		expect(store.state.changed).toBe(false);
+		expect(store.state.selected).toBe(null);
 	});
 
-	it('状态键完整（8 项）', () => {
+	it('状态键完整（9 项）', () => {
 		const store = getAttributeStore();
-		expect(attributeStateKeys).toHaveLength(8);
+		expect(attributeStateKeys).toHaveLength(9);
 		for (const key of attributeStateKeys) {
 			expect(key in store.state, String(key)).toBe(true);
 		}
@@ -35,6 +36,7 @@ describe('useEnumStore（Enum 窗口状态桥接）', () => {
 		const store = getEnumStore();
 		expect(store.state.mode).toBe(null);
 		expect(store.state.changed).toBe(false);
+		expect(store.state.selected).toBe(null);
 	});
 
 	it('赋值可读回（模式/数据/idMap）', () => {
@@ -46,9 +48,9 @@ describe('useEnumStore（Enum 窗口状态桥接）', () => {
 		expect(store.state.idMap.e1.id).toBe('e1');
 	});
 
-	it('状态键完整（8 项）', () => {
+	it('状态键完整（9 项）', () => {
 		const store = getEnumStore();
-		expect(enumStateKeys).toHaveLength(8);
+		expect(enumStateKeys).toHaveLength(9);
 		for (const key of enumStateKeys) {
 			expect(key in store.state, String(key)).toBe(true);
 		}
@@ -61,11 +63,12 @@ describe('useVariableStore（Variable 窗口状态桥接）', () => {
 		expect(store.state.target).toBe(null);
 		expect(store.state.data).toBe(null);
 		expect(store.state.changed).toBe(false);
+		expect(store.state.selected).toBe(null);
 	});
 
-	it('状态键完整（5 项）', () => {
+	it('状态键完整（6 项）', () => {
 		const store = getVariableStore();
-		expect(variableStateKeys).toHaveLength(5);
+		expect(variableStateKeys).toHaveLength(6);
 		for (const key of variableStateKeys) {
 			expect(key in store.state, String(key)).toBe(true);
 		}

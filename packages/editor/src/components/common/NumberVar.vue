@@ -103,6 +103,19 @@ const on = (
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 
+const api = {
+	mode: 'constant',
+	numBox: null as HTMLElement | null,
+	varBox: null as (HTMLElement & { isPluginInput?: boolean }) | null,
+	read,
+	write,
+	switch: switchMode,
+	enable,
+	disable,
+	getFocus,
+	on
+};
+
 watch(
 	() => props.modelValue,
 	(val) => write(val)
@@ -126,24 +139,24 @@ onMounted(() => {
 		varBox: (HTMLElement & { isPluginInput?: boolean }) | null;
 	};
 	if (!el) return;
-	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
-	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	attachElementApi(el, api);
 	watch(
 		() => root.value?.className,
 		() => {
 			const cls = root.value?.className ?? '';
-			el.mode = cls.includes('variable') ? 'variable' : 'constant';
-			el.numBox = (ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
-			el.varBox = getChildRoot(varBoxRef.value);
-			if (el.varBox) el.varBox.isPluginInput = false;
+			api.mode = cls.includes('variable') ? 'variable' : 'constant';
+			api.numBox = (ym.value?.root?.querySelector('.number-box') as HTMLElement) ?? null;
+			api.varBox = getChildRoot(varBoxRef.value);
+			if (api.varBox) api.varBox.isPluginInput = false;
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		el.varBox = getChildRoot(val);
-		if (el.varBox) el.varBox.isPluginInput = false;
+		api.varBox = getChildRoot(val);
+		if (api.varBox) api.varBox.isPluginInput = false;
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

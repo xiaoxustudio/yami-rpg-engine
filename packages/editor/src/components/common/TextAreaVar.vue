@@ -83,6 +83,19 @@ const on = (
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 
+const api = {
+	mode: 'constant',
+	areaBox: null as HTMLElement | null,
+	varBox: null as HTMLElement | null,
+	read,
+	write,
+	switch: switchMode,
+	enable,
+	disable,
+	getFocus,
+	on
+};
+
 watch(
 	() => props.modelValue,
 	(val) => write(val)
@@ -106,22 +119,22 @@ onMounted(() => {
 		varBox: HTMLElement | null;
 	};
 	if (!el) return;
-	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
-	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	attachElementApi(el, api);
 	watch(
 		() => root.value?.className,
 		() => {
 			const cls = root.value?.className ?? '';
-			el.mode = cls.includes('variable') ? 'variable' : 'constant';
-			el.areaBox = (ym.value?.root?.querySelector('.text-area') as HTMLElement) ?? null;
-			el.varBox = getChildRoot(varBoxRef.value);
+			api.mode = cls.includes('variable') ? 'variable' : 'constant';
+			api.areaBox = (ym.value?.root?.querySelector('.text-area') as HTMLElement) ?? null;
+			api.varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
 		}
 	);
 	watch(varBoxRef, (val) => {
-		el.varBox = getChildRoot(val);
+		api.varBox = getChildRoot(val);
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

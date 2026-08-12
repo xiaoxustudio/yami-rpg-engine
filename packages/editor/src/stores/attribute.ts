@@ -20,6 +20,7 @@ export interface AttributeWindowState {
 	settingKeys: string[] | null;
 	history: History | null;
 	changed: boolean;
+	selected: AttributeItemShape | null;
 }
 
 export const attributeStateKeys: (keyof AttributeWindowState)[] = [
@@ -30,7 +31,8 @@ export const attributeStateKeys: (keyof AttributeWindowState)[] = [
 	'settings',
 	'settingKeys',
 	'history',
-	'changed'
+	'changed',
+	'selected'
 ];
 
 export const useAttributeStore = defineStore('attribute', () => {
@@ -42,7 +44,8 @@ export const useAttributeStore = defineStore('attribute', () => {
 		settings: null,
 		settingKeys: null,
 		history: null,
-		changed: false
+		changed: false,
+		selected: null
 	});
 
 	return { state };

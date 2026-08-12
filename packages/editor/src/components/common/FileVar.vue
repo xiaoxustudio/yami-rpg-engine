@@ -103,6 +103,19 @@ const on = (
 
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, root });
 
+const api = {
+	mode: 'constant',
+	fileBox: null as HTMLElement | null,
+	varBox: null as HTMLElement | null,
+	read,
+	write,
+	switch: switchMode,
+	enable,
+	disable,
+	getFocus,
+	on
+};
+
 watch(
 	() => props.modelValue,
 	(val) => write(val)
@@ -126,17 +139,17 @@ onMounted(() => {
 		varBox: HTMLElement | null;
 	};
 	if (!el) return;
-	el.mode = el.classList.contains('variable') ? 'variable' : 'constant';
-	el.fileBox = getChildRoot(fileBoxRef.value);
-	el.varBox = getChildRoot(varBoxRef.value);
-	attachElementApi(el, { read, write, switch: switchMode, enable, disable, getFocus, on });
+	api.mode = el.classList.contains('variable') ? 'variable' : 'constant';
+	api.fileBox = getChildRoot(fileBoxRef.value);
+	api.varBox = getChildRoot(varBoxRef.value);
+	attachElementApi(el, api);
 	watch(
 		() => root.value?.className,
 		() => {
 			const cls = root.value?.className ?? '';
-			el.mode = cls.includes('variable') ? 'variable' : 'constant';
-			el.fileBox = getChildRoot(fileBoxRef.value);
-			el.varBox = getChildRoot(varBoxRef.value);
+			api.mode = cls.includes('variable') ? 'variable' : 'constant';
+			api.fileBox = getChildRoot(fileBoxRef.value);
+			api.varBox = getChildRoot(varBoxRef.value);
 			nextTick(() => {
 				emit('update:modelValue', read());
 			});
@@ -144,10 +157,10 @@ onMounted(() => {
 		{ immediate: true }
 	);
 	watch(fileBoxRef, (val) => {
-		el.fileBox = getChildRoot(val);
+		api.fileBox = getChildRoot(val);
 	});
 	watch(varBoxRef, (val) => {
-		el.varBox = getChildRoot(val);
+		api.varBox = getChildRoot(val);
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

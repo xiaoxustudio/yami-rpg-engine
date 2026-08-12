@@ -18,17 +18,9 @@ import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
-const attributeStateKeys = [
-	'mode',
-	'target',
-	'data',
-	'idMap',
-	'settings',
-	'settingKeys',
-	'history',
-	'changed'
-] as const;
-import { getAttributeStore } from '@app/stores/attribute';
+import { GlobalClipboard } from '@/util/clipboard.ts';
+import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
+import type { AttributeItemShape } from '@app/stores/attribute';
 
 interface AttributeItem {
 	id: string;
@@ -64,7 +56,7 @@ interface AttributeHistoryData {
 
 interface AttributeWindowShape {
 	list: TreeListElement;
-	panel: HTMLElement & { attribute?: AttributeItem | null };
+	panel: HTMLElement;
 	searcher: HTMLElement;
 	inputs: {
 		name: HTMLElement | null;
@@ -299,7 +291,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	if (this.panel) this.panel.attribute = null;
+	if (this.panel) getAttributeStore().state.selected = null;
 
 	this.searcher?.addCloseButton?.();
 
@@ -309,7 +301,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 	) => {
 		const { response } = data;
 		list.restore(operation, response);
-		if (read(list) === null && this.panel.attribute !== null) {
+		if (read(list) === null && getAttributeStore().state.selected !== null) {
 			this.closePropertyPanel();
 		}
 		this.changed = true;
@@ -332,7 +324,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		data.value = item.name;
 		item.name = value;
 		list.updateItemName(item);
-		if (this.panel.attribute === item) {
+		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.name, value);
 		} else {
 			list.select(item);
@@ -349,7 +341,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		data.value = item.key!;
 		item.key = value;
 		list.updateInitText(item);
-		if (this.panel.attribute === item) {
+		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.key, value);
 		} else {
 			list.select(item);
@@ -366,7 +358,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		data.value = item.type!;
 		item.type = value;
 		list.updateIcon(item);
-		if (this.panel.attribute === item) {
+		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.type, value);
 		} else {
 			list.select(item);
@@ -382,7 +374,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		const { item, value } = data;
 		data.value = item.enum!;
 		item.enum = value;
-		if (this.panel.attribute === item) {
+		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.enum, value);
 		} else {
 			list.select(item);
@@ -399,7 +391,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		data.value = item.note!;
 		item.note = value;
 		list.updateNoteIcon(item);
-		if (this.panel.attribute === item) {
+		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.note, value);
 		} else {
 			list.select(item);
@@ -575,8 +567,8 @@ Attribute.getAttributeItems = function (
 
 Attribute.openPropertyPanel = function (this: typeof Attribute, attribute: AttributeItem) {
 	const panel = this.panel;
-	if (panel.attribute !== attribute) {
-		panel.attribute = attribute;
+	if (getAttributeStore().state.selected !== attribute) {
+		getAttributeStore().state.selected = attribute as AttributeItemShape;
 		show(panel);
 		const { inputs } = this;
 		write(inputs.name, attribute.name);
@@ -589,8 +581,8 @@ Attribute.openPropertyPanel = function (this: typeof Attribute, attribute: Attri
 
 Attribute.closePropertyPanel = function (this: typeof Attribute) {
 	const panel = this.panel;
-	if (panel.attribute) {
-		panel.attribute = null;
+	if (getAttributeStore().state.selected) {
+		getAttributeStore().state.selected = null;
 		hide(panel);
 	}
 };
@@ -814,7 +806,7 @@ Attribute.listRecord = function (event: Event) {
 		case 'rename': {
 			// 如果是属性则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
-			if (Attribute.panel!.attribute === item) {
+			if (getAttributeStore().state.selected === item) {
 				write(Attribute.inputs.name, newValue);
 				Attribute.saveHistory(item, 'name', oldValue);
 				break;
@@ -838,7 +830,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.attribute');
+	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.attribute');
 	const undoable = Attribute.history!.canUndo();
 	const redoable = Attribute.history!.canRedo();
 	const get = Local.createGetter!('menuAttributeList');
@@ -963,7 +955,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 };
 
 Attribute.nameInput = function (event: InputEvent & { target: HTMLInputElement }) {
-	const item = Attribute.panel!.attribute!;
+	const item = getAttributeStore().state.selected as AttributeItem;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'name', item.name);
 		item.name = event.target.value;
@@ -973,7 +965,7 @@ Attribute.nameInput = function (event: InputEvent & { target: HTMLInputElement }
 };
 
 Attribute.keyInput = function (event: InputEvent & { target: HTMLInputElement }) {
-	const item = Attribute.panel!.attribute!;
+	const item = getAttributeStore().state.selected as AttributeItem;
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'key', item.key);
 		item.key = event.target.value;
@@ -998,7 +990,7 @@ Attribute.typeWrite = function (event: Event) {
 };
 
 Attribute.typeInput = function (event: Event) {
-	const item = Attribute.panel!.attribute!;
+	const item = getAttributeStore().state.selected as AttributeItem;
 	if (item === null) return;
 	Attribute.saveHistory(item, 'type', item.type);
 	item.type = event.value;
@@ -1007,7 +999,7 @@ Attribute.typeInput = function (event: Event) {
 };
 
 Attribute.enumInput = function (event: Event) {
-	const item = Attribute.panel!.attribute!;
+	const item = getAttributeStore().state.selected as AttributeItem;
 	Attribute.saveHistory(item, 'enum', item.enum);
 	item.enum = event.value;
 	Attribute.changed = true;
@@ -1015,7 +1007,7 @@ Attribute.enumInput = function (event: Event) {
 
 Attribute.noteInput = function (this: HTMLElement, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
-		const item = Attribute.panel!.attribute!;
+		const item = getAttributeStore().state.selected as AttributeItem;
 		Attribute.saveHistory(item, 'note', item.note);
 		item.note = read(this);
 		Attribute.list!.updateNoteIcon(item);

@@ -14,6 +14,7 @@ export interface VariableWindowState {
 	idMap: Record<string, DataEntryShape> | null;
 	history: { save: (data: unknown) => void } | null;
 	changed: boolean;
+	selected: VariableItemShape | null;
 }
 
 export const variableStateKeys: (keyof VariableWindowState)[] = [
@@ -21,7 +22,8 @@ export const variableStateKeys: (keyof VariableWindowState)[] = [
 	'data',
 	'idMap',
 	'history',
-	'changed'
+	'changed',
+	'selected'
 ];
 
 export const useVariableStore = defineStore('variable', () => {
@@ -30,7 +32,8 @@ export const useVariableStore = defineStore('variable', () => {
 		data: null,
 		idMap: null,
 		history: null,
-		changed: false
+		changed: false,
+		selected: null
 	});
 
 	return { state };

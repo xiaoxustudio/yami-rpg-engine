@@ -66,6 +66,11 @@ import { defineAsyncComponent } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
 import { useMenubarStore } from '@app/stores/menubar';
+import { resolveLazyComponentsReady } from '@app/bootstrap';
+import { provideMenuService } from '@app/composables/useMenuService';
+import { Menu } from '@/components/menu-list';
+
+provideMenuService({ getState: () => Menu.state });
 
 const title = useTitleStore();
 const menubar = useMenubarStore();
@@ -113,14 +118,10 @@ const inspectorModules = import.meta.glob('./components/inspector/*.vue');
 const lazyTotal =
 	Object.keys(toolModules).length + Object.keys(commandModules).length + Object.keys(inspectorModules).length;
 let lazyMounted = 0;
-let resolveLazyReady: (() => void) | undefined;
-const lazyComponentsReady = new Promise<void>((resolve) => {
-	resolveLazyReady = resolve;
-});
 const onComponentMounted = () => {
 	lazyMounted++;
 	if (lazyMounted >= lazyTotal) {
-		resolveLazyReady?.();
+		resolveLazyComponentsReady();
 	}
 };
 const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempts: number) => {
@@ -150,5 +151,4 @@ const inspectorPages = Object.entries(inspectorModules).map(([path, loader]) => 
 		comp: asyncComp(loader as unknown as () => Promise<Component>)
 	};
 });
-(window as unknown as { __lazyComponentsReady__?: boolean }).__lazyComponentsReady__ = lazyComponentsReady;
 </script>

@@ -35,6 +35,7 @@ import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { ipcRenderer } from 'electron';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 
 interface LocalizationItem {
 	id?: string;
@@ -637,7 +638,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.localization');
+	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.localization');
 	const undoable = Localization.history!.canUndo();
 	const redoable = Localization.history!.canRedo();
 	const get = Local.createGetter!('menuLocalList');

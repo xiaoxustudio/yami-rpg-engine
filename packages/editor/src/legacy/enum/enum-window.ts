@@ -17,17 +17,9 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
-const enumStateKeys = [
-	'mode',
-	'target',
-	'data',
-	'idMap',
-	'settings',
-	'settingKeys',
-	'history',
-	'changed'
-] as const;
-import { getEnumStore } from '@app/stores/enum';
+import { GlobalClipboard } from '@/util/clipboard.ts';
+import { getEnumStore, enumStateKeys } from '@app/stores/enum';
+import type { EnumItemShape } from '@app/stores/enum';
 
 interface EnumItem {
 	id: string;
@@ -60,7 +52,7 @@ interface EnumHistoryData {
 
 interface EnumModule {
 	list: TreeListElement;
-	panel: HTMLElement & { enumString?: EnumItem | null };
+	panel: HTMLElement;
 	searcher: HTMLElement;
 	inputs: {
 		name: HTMLElement | null;
@@ -368,14 +360,14 @@ Enum.initialize = function (this: typeof Enum) {
 	getListConfig(list).creators.push(list.createNoteIcon);
 	getListConfig(list).creators.push(list.updateNoteIcon);
 
-	if (this.panel) this.panel.enumString = null;
+	if (this.panel) getEnumStore().state.selected = null;
 
 	this.searcher?.addCloseButton?.();
 
 	History.processors['enum-list-operation'] = (operation: string, data: EnumHistoryData) => {
 		const { response } = data;
 		list.restore(operation, response);
-		if (read(list) === null && this.panel.enumString !== null) {
+		if (read(list) === null && getEnumStore().state.selected !== null) {
 			this.closePropertyPanel();
 		}
 		this.changed = true;
@@ -392,7 +384,7 @@ Enum.initialize = function (this: typeof Enum) {
 		data.value = item.name;
 		item.name = value;
 		list.updateItemName(item);
-		if (this.panel.enumString === item) {
+		if (getEnumStore().state.selected === item) {
 			write(this.inputs.name, value);
 		} else {
 			list.select(item);
@@ -406,7 +398,7 @@ Enum.initialize = function (this: typeof Enum) {
 		data.value = item.value!;
 		item.value = value;
 		list.updateInitText(item);
-		if (this.panel.enumString === item) {
+		if (getEnumStore().state.selected === item) {
 			write(this.inputs.value, value);
 		} else {
 			list.select(item);
@@ -420,7 +412,7 @@ Enum.initialize = function (this: typeof Enum) {
 		data.value = item.note!;
 		item.note = value;
 		list.updateNoteIcon(item);
-		if (this.panel.enumString === item) {
+		if (getEnumStore().state.selected === item) {
 			write(this.inputs.note, value);
 		} else {
 			list.select(item);
@@ -595,8 +587,8 @@ Enum.getMergedItems = function (
 
 Enum.openPropertyPanel = function (this: typeof Enum, enumString: EnumItem) {
 	const panel = this.panel;
-	if (panel.enumString !== enumString) {
-		panel.enumString = enumString;
+	if (getEnumStore().state.selected !== enumString) {
+		getEnumStore().state.selected = enumString as EnumItemShape;
 		show(panel);
 		const { inputs } = this;
 		write(inputs.name, enumString.name);
@@ -607,8 +599,8 @@ Enum.openPropertyPanel = function (this: typeof Enum, enumString: EnumItem) {
 
 Enum.closePropertyPanel = function (this: typeof Enum) {
 	const panel = this.panel;
-	if (panel.enumString) {
-		panel.enumString = null;
+	if (getEnumStore().state.selected) {
+		getEnumStore().state.selected = null;
 		hide(panel);
 	}
 };
@@ -822,7 +814,7 @@ Enum.listRecord = function (event: Event) {
 		case 'rename': {
 			// 如果是字符串则执行操作否则进入默认分支
 			const { item, oldValue, newValue } = response;
-			if (Enum.panel!.enumString === item) {
+			if (getEnumStore().state.selected === item) {
 				write(Enum.inputs.name, newValue);
 				Enum.saveHistory(item, 'name', oldValue);
 				break;
@@ -846,7 +838,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 	const item = event.value;
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
-	const pastable = (Clipboard as unknown as Clipboard).has('yami.data.enumeration');
+	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.enumeration');
 	const undoable = Enum.history!.canUndo();
 	const redoable = Enum.history!.canRedo();
 	const get = Local.createGetter!('menuEnumList');
@@ -971,7 +963,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 };
 
 Enum.nameInput = function (event: InputEvent & { target: HTMLInputElement }) {
-	const item = Enum.panel!.enumString!;
+	const item = getEnumStore().state.selected as EnumItem;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'name', item.name);
 		item.name = event.target.value;
@@ -981,7 +973,7 @@ Enum.nameInput = function (event: InputEvent & { target: HTMLInputElement }) {
 };
 
 Enum.valueInput = function (event: InputEvent & { target: HTMLInputElement }) {
-	const item = Enum.panel!.enumString!;
+	const item = getEnumStore().state.selected as EnumItem;
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'value', item.value);
 		item.value = event.target.value;
@@ -992,7 +984,7 @@ Enum.valueInput = function (event: InputEvent & { target: HTMLInputElement }) {
 
 Enum.noteInput = function (this: HTMLElement, event: InputEvent) {
 	if (event.inputType !== 'insertCompositionText') {
-		const item = Enum.panel!.enumString!;
+		const item = getEnumStore().state.selected as EnumItem;
 		Enum.saveHistory(item, 'note', item.note);
 		item.note = read(this);
 		Enum.list!.updateNoteIcon(item);

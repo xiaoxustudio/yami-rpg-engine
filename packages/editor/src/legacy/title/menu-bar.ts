@@ -49,6 +49,7 @@ import { Zoom } from '@/tools/zoom-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Variable } from '@/variable/variable.ts';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 
 // ******************************** 菜单栏对象 ********************************
 
@@ -272,7 +273,9 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 			case 'scene':
 				if (Scene.state === 'open') {
 					const selected = Scene.target instanceof Object;
-					const pastable = (Clipboard as unknown as Clipboard).has('yami.scene.object');
+					const pastable = (GlobalClipboard as unknown as Clipboard).has(
+						'yami.scene.object'
+					);
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
@@ -295,7 +298,9 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 			case 'ui':
 				if (UI.state === 'open') {
 					const selected = UI.target instanceof Object;
-					const pastable = (Clipboard as unknown as Clipboard).has('yami.ui.object');
+					const pastable = (GlobalClipboard as unknown as Clipboard).has(
+						'yami.ui.object'
+					);
 					items.cut.enabled = selected;
 					items.copy.enabled = selected;
 					items.paste.enabled = pastable;
@@ -318,7 +323,7 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 			case 'animation':
 				if (Animation.state === 'open') {
 					const selected = Animation.motion instanceof Object;
-					const pastable = (Clipboard as unknown as Clipboard).has(
+					const pastable = (GlobalClipboard as unknown as Clipboard).has(
 						'yami.animation.object'
 					);
 					items.cut.enabled = selected;

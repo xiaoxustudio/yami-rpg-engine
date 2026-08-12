@@ -23,6 +23,8 @@ const EXCLUDE = [
 	'util/doubleclick.ts',
 	'util/monaco.ts',
 	'util/icon-clip.ts',
+	// utils/：attachElementApi 桥接工具，被 Vue 组件直接 import
+	'utils/attach-element-api.ts',
 	// components/：Wave2 迁移工厂（attachXxxApi），被对应 Vue SFC import
 	'components/check-box.ts',
 	'components/color-box.ts',
@@ -54,6 +56,8 @@ const EXCLUDE = [
 	'command/preset-accessor-factory.ts',
 	// tools/：被 local-window/variable/enum-window/attribute-window import
 	'tools/list-clipboard-methods.ts',
+	// tools/：工具实例注册表，被 initialize.ts 与 stores/tool.ts 直接 import
+	'tools/tool-registry.ts',
 	// module/settingconfig/：barrel + 内部实现，被 global/resource/open/home-page 等 import
 	'module/settingconfig/index.ts',
 	'module/settingconfig/renderer.ts',

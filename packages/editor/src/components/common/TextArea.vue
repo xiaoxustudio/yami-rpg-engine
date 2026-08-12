@@ -83,8 +83,7 @@ onMounted(() => {
 	if (!el || !input) return;
 	input.history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
-	el.input = input;
-	attachElementApi(el, { read, write, insert, enable, disable, getFocus, on });
+	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });
 	input.addEventListener('input', () => {
 		const val = read();
 		emit('update:modelValue', val);

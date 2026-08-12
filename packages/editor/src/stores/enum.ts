@@ -20,6 +20,7 @@ export interface EnumWindowState {
 	settingKeys: string[] | null;
 	history: History | null;
 	changed: boolean;
+	selected: EnumItemShape | null;
 }
 
 export const enumStateKeys: (keyof EnumWindowState)[] = [
@@ -30,7 +31,8 @@ export const enumStateKeys: (keyof EnumWindowState)[] = [
 	'settings',
 	'settingKeys',
 	'history',
-	'changed'
+	'changed',
+	'selected'
 ];
 
 export const useEnumStore = defineStore('enum', () => {
@@ -42,7 +44,8 @@ export const useEnumStore = defineStore('enum', () => {
 		settings: null,
 		settingKeys: null,
 		history: null,
-		changed: false
+		changed: false,
+		selected: null
 	});
 
 	return { state };

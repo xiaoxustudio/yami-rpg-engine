@@ -161,7 +161,7 @@ function pointerdown(event: PointerEvent) {
 		event.preventDefault();
 		const { content } = props.links.body;
 		if (document.activeElement !== content) {
-			content.focus();
+			content.focus({ preventScroll: true });
 		}
 	}
 }
@@ -258,7 +258,7 @@ function searcherInput(event: Event) {
 }
 
 function viewFocus(event: Event) {
-	props.links.body.content.focus();
+	props.links.body.content.focus({ preventScroll: true });
 }
 
 function viewInput(event: Event) {

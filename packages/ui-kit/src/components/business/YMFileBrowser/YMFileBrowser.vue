@@ -651,11 +651,11 @@ function setupLinks() {
 
 let dirchangeHandler: (event: Event) => void;
 
-onMounted(() => {
-	nextTick(() => {
-		setupLinks();
-		const node = el.value as unknown as FileBrowserApi;
-		if (!node) return;
+	onMounted(() => {
+		nextTick(() => {
+			setupLinks();
+			const node = el.value as unknown as FileBrowserApi;
+			if (!node) return;
 		node.addEventListener('pointerdown', pointerdown as unknown as EventListener);
 		node.addEventListener('dragstart', dragstart as unknown as EventListener);
 		node.addEventListener('dragend', dragend as unknown as EventListener);

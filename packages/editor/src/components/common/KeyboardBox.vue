@@ -68,8 +68,16 @@ defineExpose({ read, write, inputCode, enable, disable, getFocus, on, root });
 onMounted(() => {
 	const el = root.value as KeyboardBoxElement | null;
 	if (!el) return;
-	attachElementApi(el, { read, write, inputCode, enable, disable, getFocus, on });
-	el.input = ym.value?.input as HTMLInputElement;
+	attachElementApi(el, {
+		input: ym.value?.input as HTMLInputElement,
+		read,
+		write,
+		inputCode,
+		enable,
+		disable,
+		getFocus,
+		on
+	});
 	on('input', (event: Event) => emit('input', event.value));
 	on('focus', () => emit('focus'));
 	on('blur', () => emit('blur'));

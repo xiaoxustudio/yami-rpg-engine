@@ -3,7 +3,9 @@ import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { getWindowStore } from '@app/stores/window.ts';
 import { getLayoutStore } from '@app/stores/layout.ts';
-import type { EditorConfigShape } from '@app/stores/editor';
+import { lazyComponentsReady } from '@app/bootstrap';
+import { loadConfigPromise } from '@/util/config.ts';
+import { registerTool } from '@/tools/tool-registry';
 import { Window } from '@/tools/window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 import '../variable/initialize.js';
@@ -26,14 +28,10 @@ import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';
 import { UpdateLog } from '@/log/update-log-window.ts';
 import { Editor } from './editor.ts';
-import { Data } from '@/data/data-object.ts';
 import { EventBus } from '@/module/eventbus.ts';
 import { SetTileTag } from '@/module/global.ts';
-import { Palette } from '@/palette/palette.ts';
 import { AutoTile } from '@/palette/auto-tile.ts';
-import { Sprite } from '@/sprite/sprite.ts';
 import { Curve } from '@/animation/curve-window.ts';
-import { NewProject } from '@/title/new-project-window.ts';
 import { Deployment } from '@/title/deploy-project-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
@@ -71,114 +69,22 @@ import { Selection } from '@/tools/text-capture.ts';
 import { Zoom } from '@/tools/zoom-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 
-interface EditorGlobals {
-	Timer: typeof Timer;
-	Data: typeof Data;
-	Variable: typeof Variable;
-	Animation: typeof Animation;
-	Attribute: typeof Attribute;
-	AudioManager: typeof AudioManager;
-	Command: typeof Command;
-	CustomCommand: typeof CustomCommand;
-	EventEditor: typeof EventEditor;
-	Project: typeof Project;
-	Team: typeof Team;
-	Easing: typeof Easing;
-	Enum: typeof Enum;
-	Directory: typeof Directory;
-	Localization: typeof Localization;
-	Log: typeof Log;
-	Reference: typeof Reference;
-	UpdateLog: typeof UpdateLog;
-	SetTileTag: typeof SetTileTag;
-	Palette: typeof Palette;
-	AutoTile: typeof AutoTile;
-	Sprite: typeof Sprite;
-	Curve: typeof Curve;
-	NewProject: typeof NewProject;
-	Deployment: typeof Deployment;
-	Particle: typeof Particle;
-	PluginManager: typeof PluginManager;
-	Printer: typeof Printer;
-	Scene: typeof Scene;
-	Home: typeof Home;
-	Menubar: typeof Menubar;
-	Title: typeof Title;
-	ArrayList: typeof ArrayList;
-	Color: typeof Color;
-	ConditionListInterface: typeof ConditionListInterface;
-	ImageClip: typeof ImageClip;
-	Local: typeof Local;
-	PresetElement: typeof PresetElement;
-	AttributeListInterface: typeof AttributeListInterface;
-	Rename: typeof Rename;
-	PresetObject: typeof PresetObject;
-	SetKey: typeof SetKey;
-	SetQuantity: typeof SetQuantity;
-	Selection: typeof Selection;
-	Window: typeof Window;
-	Zoom: typeof Zoom;
-	UI: typeof UI;
-}
-
 interface SingletonShape {
 	initialize?: (() => void) | null;
 	dependsOn?: string[];
 	[k: string]: unknown;
 }
 
-Object.assign(
-	window as unknown as EditorGlobals,
-	{
-		Timer,
-		Data,
-		Variable,
-		Animation,
-		Attribute,
-		AudioManager,
-		Command,
-		CustomCommand,
-		EventEditor,
-		Project,
-		Team,
-		Easing,
-		Enum,
-		Directory,
-		Localization,
-		Log,
-		Reference,
-		UpdateLog,
-		SetTileTag,
-		Palette,
-		AutoTile,
-		Sprite,
-		Curve,
-		NewProject,
-		Deployment,
-		Particle,
-		PluginManager,
-		Printer,
-		Scene,
-		Home,
-		Menubar,
-		Title,
-		ArrayList,
-		Color,
-		ConditionListInterface,
-		ImageClip,
-		Local,
-		PresetElement,
-		AttributeListInterface,
-		Rename,
-		PresetObject,
-		SetKey,
-		SetQuantity,
-		Selection,
-		Window,
-		Zoom,
-		UI
-	} as EditorGlobals
-);
+registerTool('ArrayList', ArrayList);
+registerTool('Color', Color);
+registerTool('ImageClip', ImageClip);
+registerTool('Rename', Rename);
+registerTool('SetKey', SetKey);
+registerTool('SetQuantity', SetQuantity);
+registerTool('Zoom', Zoom);
+registerTool('PresetObject', PresetObject);
+registerTool('PresetElement', PresetElement);
+registerTool('Selection', Selection);
 
 Editor.initialize = async function (this: typeof Editor) {
 	this.switchHotkey!(false);
@@ -186,8 +92,7 @@ Editor.initialize = async function (this: typeof Editor) {
 	// 等待 AppShell 懒加载的命令/工具弹窗组件挂载完成，保证 initAll 能拿到 DOM
 	// 首次冷启动时 145+ 个异步组件编译较慢，8s 超时太短会提前 initAll 导致元素缺失，放宽到 60s
 	await Promise.race([
-		(window as unknown as { __lazyComponentsReady__?: Promise<void> })
-			.__lazyComponentsReady__ ?? Promise.resolve(),
+		lazyComponentsReady,
 		new Promise((resolve: (val: unknown) => void) => setTimeout(resolve, 60000))
 	]);
 
@@ -199,12 +104,11 @@ Editor.initialize = async function (this: typeof Editor) {
 		// Selector 为懒加载 Vue 组件（#selector-browser），须等 __lazyComponentsReady__ 挂载完成后再解析
 		const Selector = getSelectorInstance();
 		Title.initialize!();
-		const data = await (window as unknown as { config?: EditorConfigShape }).config;
+		const data = await loadConfigPromise;
 		const code = JSON.stringify(data);
 		this.config = data ?? {};
 		if (this.config) this.checkForEditorUpdates!();
 		Object.defineProperty(this.config, 'code', { value: code });
-		delete (window as unknown as { config?: EditorConfigShape }).config;
 
 		const initializedSet = new Set();
 		const singletonMap = {

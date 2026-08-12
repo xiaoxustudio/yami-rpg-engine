@@ -1545,6 +1545,9 @@ function pointerdown(event: PointerEvent): void {
 		case 2: {
 			let element = event.target as HTMLElement;
 			const content = contentEl.value as FileBodyContentApi;
+			if (event.button === 2) {
+				content.focus({ preventScroll: true });
+			}
 			if (element === content) {
 				element = node;
 			}
@@ -1651,7 +1654,7 @@ function pointerdown(event: PointerEvent): void {
 			}
 			if (event.target === node) {
 				event.preventDefault();
-				content.focus();
+				content.focus({ preventScroll: true });
 			}
 			break;
 		}
@@ -1765,7 +1768,7 @@ function createTextBox(): FileBodyTextBox {
 				const item = this.parentNode;
 				const content = item.parentNode as HTMLElement;
 				this.input.blur();
-				content.focus();
+				content.focus({ preventScroll: true });
 				break;
 			}
 		}

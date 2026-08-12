@@ -42,6 +42,7 @@ import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts'
 import { setIconClip } from '@/util/icon-clip.ts';
 import { getBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
 import { getSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
+import { getGlobalClipboard } from '@/types/global-clipboard';
 
 interface Props {
 	id?: string;
@@ -50,7 +51,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const Clipboard = (globalThis as unknown as { Clipboard?: unknown }).Clipboard as { write(type: string, data: unknown): void; read(type: string): unknown; has(type: string): boolean };
+const Clipboard = getGlobalClipboard();
 
 const menuPopup = (options: MenuOptions, items: MenuItem[]) => Menu.popup(options, items);
 const directoryApi = {
@@ -95,6 +96,7 @@ const fileSystemApi = {
 	showOpenDialog: (options: unknown) => File.showOpenDialog?.(options),
 	showSaveDialog: (options: unknown) => File.showSaveDialog?.(options),
 	mkdir: (p: string, options?: { recursive?: boolean; mode?: number }) => FSP.mkdir(p, options),
+	rename: (src: string, dst: string) => FSP.rename(src, dst),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
 	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)

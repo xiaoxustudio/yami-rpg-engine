@@ -27,6 +27,7 @@ import { TileFrame } from './tile-frame-index.ts';
 import { TileNode } from './tile-node-window.ts';
 import { Local } from '@/tools/localization.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
+import { GlobalClipboard } from '@/util/clipboard.ts';
 
 import { Timer } from '@/util/timer.ts';
 
@@ -1154,7 +1155,7 @@ Palette.copyAutoTile = function (this: typeof Palette, index: number) {
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
 		if (tiles[index]) {
-			(Clipboard as unknown as ClipboardShape).write('yami.tile', {
+			(GlobalClipboard as unknown as ClipboardShape).write('yami.tile', {
 				tile: tiles[index],
 				priority: priorities[index],
 				terrain: terrains[index]
@@ -1169,7 +1170,7 @@ Palette.pasteAutoTile = function (this: typeof Palette, index: number) {
 		const tiles = tileset.tiles;
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
-		const copy = (Clipboard as unknown as ClipboardShape).read('yami.tile');
+		const copy = (GlobalClipboard as unknown as ClipboardShape).read('yami.tile');
 		if (copy && index < tiles.length) {
 			tiles[index] = copy.tile;
 			priorities[index] = copy.priority;
@@ -2020,7 +2021,7 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 		const existing = !!tiles[index];
 		const editable = true;
 		const copyable = existing;
-		const pastable = (Clipboard as unknown as ClipboardShape).has('yami.tile');
+		const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.tile');
 		const deletable = existing;
 		const get = Local.createGetter!('menuTileset');
 		Menu.popup(

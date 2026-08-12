@@ -6,6 +6,7 @@ import { File } from '@/file/file-system-core.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
+import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from './variable.ts';
 
@@ -57,7 +58,7 @@ Variable.redo = function (this: typeof Variable) {
 Variable.confirm = function (this: typeof Variable, event?: Event) {
 	const target = this.target;
 	if (target instanceof Object) {
-		const variable = this.panel.variable;
+		const variable = getVariableStore().state.selected;
 		if (variable === null) {
 			return getFocus(this.list);
 		}

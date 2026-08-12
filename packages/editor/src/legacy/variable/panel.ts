@@ -1,11 +1,13 @@
 import { $ } from '@/util/dom.ts';
 import { disable, enable, hide, read, show, write } from '@/util/element-utils.ts';
+import { getVariableStore } from '@app/stores/variable';
+import type { VariableItemShape } from '@app/stores/variable';
 import { Variable } from './variable.ts';
 
 Variable.openPropertyPanel = function (this: typeof Variable, variable: unknown) {
 	const panel = this.panel;
-	if (panel.variable !== variable) {
-		panel.variable = variable as Record<string, unknown>;
+	if (getVariableStore().state.selected !== variable) {
+		getVariableStore().state.selected = variable as VariableItemShape;
 		show(panel);
 		const { inputs } = this;
 		const { name, sort, value, note } = variable as {
@@ -27,14 +29,14 @@ Variable.openPropertyPanel = function (this: typeof Variable, variable: unknown)
 
 Variable.closePropertyPanel = function () {
 	const panel = this.panel;
-	if (panel.variable) {
-		panel.variable = null;
+	if (getVariableStore().state.selected) {
+		getVariableStore().state.selected = null;
 		hide(panel);
 	}
 };
 
 Variable.nameInput = function (event: Event) {
-	const item = Variable.panel.variable!;
+	const item = getVariableStore().state.selected!;
 	if (item.class !== 'folder') {
 		Variable.saveHistory(item, 'name', item.name);
 		item.name = (event.target as HTMLInputElement).value;
@@ -56,7 +58,7 @@ Variable.sortWrite = function (event: Event & { value?: number }) {
 };
 
 Variable.sortInput = function (event: Event & { value?: number }) {
-	const item = Variable.panel.variable!;
+	const item = getVariableStore().state.selected!;
 	const sort = event.value;
 	Variable.saveHistory(item, 'sort', {
 		sort: item.sort,
@@ -90,7 +92,7 @@ Variable.typeWrite = function (event: Event & { value?: string }) {
 };
 
 Variable.typeInput = function (event: Event & { value?: string }) {
-	const item = Variable.panel.variable!;
+	const item = getVariableStore().state.selected!;
 	const type = event.value;
 	Variable.saveHistory(item, 'type', item.value);
 	switch (type) {
@@ -110,7 +112,7 @@ Variable.typeInput = function (event: Event & { value?: string }) {
 
 Variable.valueInput = function (this: HTMLElement, event: Event) {
 	if ((event as InputEvent).inputType !== 'insertCompositionText') {
-		const item = Variable.panel.variable!;
+		const item = getVariableStore().state.selected!;
 		Variable.saveHistory(item, 'value', item.value);
 		item.value = read(this);
 		Variable.list.updateInitText(item);
@@ -120,7 +122,7 @@ Variable.valueInput = function (this: HTMLElement, event: Event) {
 
 Variable.noteInput = function (this: HTMLElement, event: Event) {
 	if ((event as InputEvent).inputType !== 'insertCompositionText') {
-		const item = Variable.panel.variable!;
+		const item = getVariableStore().state.selected!;
 		Variable.saveHistory(item, 'note', item.note);
 		item.note = read(this);
 		Variable.list.updateNoteIcon(item);

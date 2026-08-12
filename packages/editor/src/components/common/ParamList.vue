@@ -21,6 +21,7 @@ import { ctrl as ctrlText } from '@/util/event-accessors';
 import { Menu } from '@/components/menu-list';
 import { Local } from '@/tools/localization';
 import { attachElementApi } from '@/utils/attach-element-api';
+import { getGlobalClipboard } from '@/types/global-clipboard';
 
 interface Props {
 	id?: string;
@@ -42,11 +43,7 @@ interface ClipboardAdapter {
 	has(type: string): boolean;
 }
 const clipboard = ((): ClipboardAdapter | null => {
-	const C = (
-		window as unknown as {
-			Clipboard?: ClipboardAdapter;
-		}
-	).Clipboard;
+	const C = getGlobalClipboard();
 	if (!C) return null;
 	return {
 		write: (type: string, data: unknown): void => C.write(type, data),

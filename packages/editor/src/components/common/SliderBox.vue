@@ -190,10 +190,26 @@ const on = (
 
 defineExpose({ read, write, enable, disable, synchronize, on, root });
 
+const api = {
+	bar: null as HTMLElement | null,
+	filler: null as HTMLElement | null,
+	input: null as HTMLInputElement | null,
+	synchronizer: null,
+	focusEventEnabled: false,
+	blurEventEnabled: false,
+	activeWheel: props.activeWheel,
+	read,
+	write,
+	enable,
+	disable,
+	updateFiller,
+	synchronize,
+	on
+};
+
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 watch(() => props.activeWheel, (val) => {
-	const el = root.value as SliderBoxElement | null;
-	if (el) el.activeWheel = val;
+	api.activeWheel = val;
 });
 
 onMounted(() => {
@@ -203,14 +219,11 @@ onMounted(() => {
 	const fillerEl = ym.value?.filler ?? null;
 	const barEl = ym.value?.bar ?? null;
 
-	el.bar = barEl as HTMLElement;
-	el.filler = fillerEl as HTMLElement;
-	el.input = inputEl as HTMLInputElement;
-	el.synchronizer = null;
-	el.focusEventEnabled = false;
-	el.blurEventEnabled = false;
-	el.activeWheel = props.activeWheel;
-	attachElementApi(el, { read, write, enable, disable, updateFiller, synchronize, on });
+	api.bar = barEl as HTMLElement;
+	api.filler = fillerEl as HTMLElement;
+	api.input = inputEl as HTMLInputElement;
+	api.activeWheel = props.activeWheel;
+	attachElementApi(el, api);
 
 	el.addEventListener('input', () => {
 		const value = read();
