@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="file-body-pane" ref="el">
 		<div class="file-body-content" ref="contentEl" tabindex="0"></div>
 	</div>
@@ -1917,8 +1917,15 @@ onMounted(() => {
 		get: () => selections,
 		configurable: true
 	});
-	node.elements = elements;
-	node.links = props.links;
+	Object.defineProperty(node, 'elements', {
+		get: () => elements,
+		configurable: true
+	});
+	Object.defineProperty(node, 'links', {
+		configurable: true,
+		get: () => props.links,
+		set: () => {}
+	});
 	Object.defineProperty(node, 'viewIndex', {
 		get: () => viewIndex,
 		configurable: true

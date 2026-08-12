@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -56,7 +56,7 @@ ItemGetter.open = function (this: ItemGetterShape, target: AccessorTarget) {
 	let key = Enum.getDefStringId('shortcut-key');
 	let itemId = '';
 	let variable = { type: 'local', key: '' };
-	const item = target.dataValue;
+	const item = target.read?.();
 	switch (item.type) {
 		case 'trigger':
 		case 'latest':

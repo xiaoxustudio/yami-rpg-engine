@@ -70,7 +70,14 @@ export function attachKeyboardBoxApi(
 	});
 
 	box.input = input;
-	box.dataValue = 0;
+	let dataValue = 0;
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => dataValue,
+		set: (value: number) => {
+			dataValue = value;
+		}
+	});
 	box.inputEventEnabled = false;
 	box.focusEventEnabled = false;
 	box.blurEventEnabled = false;

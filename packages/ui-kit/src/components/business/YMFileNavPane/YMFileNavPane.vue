@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="file-nav-pane" ref="el" tabindex="-1"></div>
 </template>
 
@@ -801,8 +801,15 @@ onMounted(() => {
 		get: () => selections,
 		configurable: true
 	});
-	node.elements = elements;
-	node.links = props.links;
+	Object.defineProperty(node, 'elements', {
+		get: () => elements,
+		configurable: true
+	});
+	Object.defineProperty(node, 'links', {
+		configurable: true,
+		get: () => props.links,
+		set: () => {}
+	});
 });
 
 onBeforeUnmount(() => {

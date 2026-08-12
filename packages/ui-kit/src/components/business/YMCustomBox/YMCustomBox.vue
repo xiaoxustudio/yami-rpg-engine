@@ -67,9 +67,8 @@ const state = reactive<{
 
 let info: HTMLElement | null = null;
 
-const getType = (): string | null => (root.value ? (root.value as CustomBoxRootElement).type : null);
-const getFilter = (): string | null =>
-	root.value ? (root.value as CustomBoxRootElement).filter : null;
+const getType = (): string | null => root.value?.getAttribute('type') ?? null;
+const getFilter = (): string | null => root.value?.getAttribute('filter') ?? null;
 
 const getLocal = (key: string): string => (props.localize ? props.localize(key) : key);
 
@@ -104,7 +103,6 @@ const write = (value: unknown): void => {
 	}
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	if (el) {
-		el.dataValue = value;
 		if (state.writeEventEnabled) {
 			const writeEvent = new Event('write') as Event & { value: unknown };
 			writeEvent.value = state.dataValue;
@@ -253,12 +251,6 @@ defineExpose({ read, write, input, enable, disable, focus, on, root, initializeA
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
-watch(() => props.type, (val) => {
-	if (root.value) (root.value as CustomBoxRootElement).type = val;
-});
-watch(() => props.filter, (val) => {
-	if (root.value) (root.value as CustomBoxRootElement).filter = val;
-});
 
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
@@ -272,21 +264,15 @@ function initializeApi(): void {
 	el.appendChild(text);
 	el.tabIndex = 0;
 
-	Object.defineProperty(el, 'type', {
-		get: (): string | null => el.getAttribute('type'),
-		set: (value: string): void => {
-			el.setAttribute('type', value);
-		}
-	});
-	Object.defineProperty(el, 'filter', {
-		get: (): string | null => el.getAttribute('filter'),
-		set: (value: string): void => {
-			el.setAttribute('filter', value);
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => state.dataValue,
+		set: (value: unknown) => {
+			state.dataValue = value;
 		}
 	});
 
 	el.info = text;
-	el.dataValue = state.dataValue;
 	el.writeEventEnabled = false;
 	el.inputEventEnabled = false;
 	el._initialized = true;

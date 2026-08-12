@@ -46,7 +46,14 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 		isNewProxy = true;
 	}
 	box.proxy = proxy;
-	box.dataValue = '';
+	let dataValue: unknown = '';
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => dataValue,
+		set: (value: unknown) => {
+			dataValue = value;
+		}
+	});
 
 	const string = box.getAttribute('value') ?? '';
 	const isNumber = /^-?\d+(?:\.\d+)?$/.test(string);
@@ -57,7 +64,7 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 			: string === 'true'
 				? true
 				: string;
-	box.dataValue = value;
+	dataValue = value;
 
 	if (boxName && box.proxy?.id !== boxName) {
 		const existing = radioProxyMap[boxName] as RadioProxyElement;

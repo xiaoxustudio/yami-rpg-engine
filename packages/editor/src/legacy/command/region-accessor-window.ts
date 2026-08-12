@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
@@ -9,6 +9,7 @@ interface RegionTarget {
 		type: string;
 		presetId: string;
 	};
+	read?: () => { type: string; presetId: string };
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -39,7 +40,7 @@ RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
 	Window.open!('regionGetter');
 
 	let presetId = PresetObject.getDefaultPresetId('region');
-	const region = target.dataValue;
+	const region = target.read?.();
 	switch (region.type) {
 		case 'trigger':
 			break;

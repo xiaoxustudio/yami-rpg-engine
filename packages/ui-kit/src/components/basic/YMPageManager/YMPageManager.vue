@@ -39,11 +39,7 @@ const switchover = (value: unknown): void => {
 		if (value !== null) {
 			for (const child of Array.from(element.children)) {
 				if (hasClass(child, 'page-frame')) {
-					const node = child as HTMLElement & { dataValue?: string | null };
-					if (node.dataValue === undefined) {
-						node.dataValue = node.getAttribute('value');
-					}
-					if (node.dataValue === value) {
+					if (child.getAttribute('value') === value) {
 						target = child as HTMLElement;
 						break;
 					}
@@ -91,10 +87,7 @@ onMounted(() => {
 	if (!element) return;
 	const nodes = Array.from(element.childNodes);
 	for (const child of nodes) {
-		if (hasClass(child, 'page-frame')) {
-			const node = child as HTMLElement & { dataValue?: string | null };
-			node.dataValue = node.getAttribute('value');
-		} else {
+		if (!hasClass(child, 'page-frame')) {
 			element.removeChild(child);
 		}
 	}

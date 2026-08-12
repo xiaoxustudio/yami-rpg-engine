@@ -1,4 +1,4 @@
-import { relate, hideDragImage, getRelativeCoords } from '@/util/element-utils';
+﻿import { relate, hideDragImage, getRelativeCoords } from '@/util/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { $ } from '@/util/dom.ts';
 import {
@@ -149,15 +149,11 @@ Layout.initialize = function () {
 		if (item.nodeType !== 1) continue;
 		const key = item.getAttribute('value');
 		(item as HTMLElement).draggable = true;
-		const string = key ?? '';
-		const isNumber = RegExp.number.test(string);
-		(item as HTMLElement).dataValue = isNumber ? parseFloat(string) : string;
 		items[key!] = item as LayoutItemElement;
 	}
 	for (const page of manager.childNodes) {
 		if (page.nodeType !== 1) continue;
 		const key = page.getAttribute('value');
-		(page as HTMLElement).dataValue = key;
 		items[key!].page = page as HTMLElement;
 	}
 
@@ -645,7 +641,7 @@ Layout.saveNavStates = function () {
 	for (const item of this.items!.list) {
 		if (hasClass(item, 'selected')) {
 			const nav = item.parentNode;
-			nav.lastValue = item.dataValue;
+			nav.lastValue = item.getAttribute('value');
 			write(nav, null);
 		}
 	}
@@ -856,7 +852,7 @@ Layout.navPointerdown = function (event: { button: number; target: LayoutItemEle
 		case 0: {
 			const element = event.target;
 			if (hasClass(element, 'nav-item') && hasClass(element, 'selected')) {
-				switch (element.dataValue) {
+				switch (element.getAttribute('value')) {
 					case 'inspector':
 						Layout.readyToFocus!(Inspector.manager);
 						break;

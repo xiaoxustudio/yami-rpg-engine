@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -56,7 +56,7 @@ EquipmentGetter.open = function (this: EquipmentGetterShape, target: AccessorTar
 	let slot = Enum.getDefStringId('equipment-slot');
 	let equipmentId = '';
 	let variable = { type: 'local', key: '' };
-	const equipment = target.dataValue;
+	const equipment = target.read?.();
 	switch (equipment.type) {
 		case 'trigger':
 		case 'latest':

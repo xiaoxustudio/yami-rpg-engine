@@ -45,7 +45,14 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 	addClass(foreground, 'color-box-foreground');
 
 	box.foreground = foreground;
-	box.dataValue = '';
+	let dataValue = '';
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => dataValue,
+		set: (value: string) => {
+			dataValue = value;
+		}
+	});
 	box.inputEventEnabled = false;
 	box._initialized = true;
 

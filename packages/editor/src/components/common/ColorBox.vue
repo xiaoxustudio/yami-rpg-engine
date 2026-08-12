@@ -98,7 +98,11 @@ onMounted(() => {
 	const el = root.value as ColorBoxElement | null;
 	if (!el) return;
 	el.tabIndex = 0;
-	el.dataValue = read();
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => ym.value?.read?.() ?? '',
+		set: (value: string) => ym.value?.write?.(value)
+	});
 	el.foreground = el.querySelector('.color-box-foreground') as HTMLElement;
 	el.inputEventEnabled = false;
 	el.read = read;

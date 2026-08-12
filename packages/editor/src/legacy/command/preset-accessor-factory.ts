@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -39,7 +39,7 @@ function createPresetAccessor(config: AccessorConfig) {
 
 		let presetId = PresetObject.getDefaultPresetId(presetCategory);
 		let variable = { type: 'local', key: '' };
-		const data = target.dataValue;
+		const data = target.read?.();
 		switch (data.type) {
 			case 'trigger':
 			case 'latest':

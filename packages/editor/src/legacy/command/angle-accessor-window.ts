@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
@@ -9,6 +9,7 @@ interface AngleTarget {
 		position: { type: string; actor: { type: string } };
 		degrees: number;
 	};
+	read?: () => any;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -52,7 +53,7 @@ AngleGetter.open = function (this: typeof AngleGetter, target: AngleTarget) {
 
 	let positionPosition = { type: 'actor', actor: { type: 'trigger' } };
 	let commonDegrees = 0;
-	const angle = target.dataValue;
+	const angle = target.read?.();
 	switch (angle.type) {
 		case 'position':
 			positionPosition = angle.position;

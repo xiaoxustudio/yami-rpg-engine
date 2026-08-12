@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -47,7 +47,7 @@ StateGetter.open = function (this: StateGetterShape, target: AccessorTarget) {
 	let actor = { type: 'trigger' };
 	let stateId = '';
 	let variable = { type: 'local', key: '' };
-	const state = target.dataValue;
+	const state = target.read?.();
 	switch (state.type) {
 		case 'trigger':
 		case 'latest':

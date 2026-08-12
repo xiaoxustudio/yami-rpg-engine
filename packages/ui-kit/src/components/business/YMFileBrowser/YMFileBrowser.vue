@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMFileNavPane ref="navEl" :links="links" :directory-api="childDirectoryApi" :file-system="childFileSystem" :path-util="childPathUtil" :menu-state="childMenuState" :create-text-box="childCreateTextBox" />
 	<YMFileHeadPane ref="headEl" :links="links" :menu-popup="props.menuPopup" :is-folder-item="isFolderItem" />
 	<YMFileBodyPane ref="bodyEl" :links="links" :data-api="props.dataApi" :window-api="props.windowApi" :gl-api="props.glApi" :menu-state="props.menuState" :clipboard-api="props.clipboardApi" :reference-api="props.referenceApi" :localize="props.localize" :editor-api="props.editorApi" :directory-api="props.directoryApi" :file-system-api="props.fileSystemApi" :path-util="props.pathUtil" :file-classes="props.fileClasses" :set-icon-clip="props.setIconClip" :create-text-box="props.createTextBox" />
@@ -621,11 +621,18 @@ function setupLinks() {
 	links.nav = nav;
 	links.head = head;
 	links.body = body;
-	if (nav) nav.links = links;
-	if (head) head.links = links;
-	if (body) body.links = links;
+	const attachLinks = (target: HTMLElement | null): void => {
+		if (!target) return;
+		Object.defineProperty(target, 'links', {
+			configurable: true,
+			get: () => links
+		});
+	};
+	attachLinks(nav);
+	attachLinks(head);
+	attachLinks(body);
 	if (node) {
-		node.links = links;
+		attachLinks(node);
 		Object.defineProperty(node, 'nav', {
 			get: () => node.querySelector('.file-nav-pane'),
 			configurable: true
@@ -681,7 +688,11 @@ onMounted(() => {
 		(node as FileBrowserApi).osDragleave = osDragleave;
 		(node as FileBrowserApi).osDragover = osDragover;
 		(node as FileBrowserApi).osDrop = osDrop;
-		(node as FileBrowserApi).links = links;
+		Object.defineProperty(node, 'links', {
+			configurable: true,
+			get: () => links,
+			set: () => {}
+		});
 	});
 });
 

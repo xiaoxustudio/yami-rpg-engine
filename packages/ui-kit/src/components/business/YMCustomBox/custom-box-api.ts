@@ -1,4 +1,4 @@
-export interface CustomBoxParseResult {
+﻿export interface CustomBoxParseResult {
 	text: string;
 	invalid?: boolean;
 }
@@ -129,7 +129,6 @@ export function attachCustomBoxApi(
 		if (value !== null && value !== undefined) {
 			update();
 		}
-		box.dataValue = value as string | number | boolean | Record<string, any> | null;
 		if (state.writeEventEnabled) {
 			const writeEvent = new Event('write') as Event & { value: unknown };
 			writeEvent.value = state.dataValue;
@@ -242,7 +241,13 @@ export function attachCustomBoxApi(
 		}
 	};
 
-	box.dataValue = null;
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => state.dataValue,
+		set: (value: unknown) => {
+			state.dataValue = value;
+		}
+	});
 	box.writeEventEnabled = false;
 	box.inputEventEnabled = false;
 	box._initialized = true;

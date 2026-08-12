@@ -8,6 +8,8 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 	const manager = el as ToastManagerApi;
 	if (manager._initialized) return manager;
 
+	const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
+
 	manager.show = function (
 		message: string,
 		type: string = 'info',
@@ -27,15 +29,18 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 		manager.appendChild(toast);
 		requestAnimationFrame(() => toast.classList.add('toast-show'));
 		if (duration > 0) {
-			(toast as HTMLDivElement & { _timer: ReturnType<typeof setTimeout> })._timer =
-				setTimeout(() => manager.dismiss(toast), duration);
+			timerMap.set(
+				toast,
+				setTimeout(() => manager.dismiss(toast), duration)
+			);
 		}
 		return toast;
 	};
 
 	manager.dismiss = function (toast: HTMLElement | null): void {
 		if (!toast || toast.parentNode !== manager) return;
-		clearTimeout((toast as HTMLElement & { _timer: ReturnType<typeof setTimeout> })._timer);
+		const timer = timerMap.get(toast);
+		if (timer !== undefined) clearTimeout(timer);
 		toast.classList.remove('toast-show');
 		toast.classList.add('toast-hide');
 		setTimeout(() => toast.remove(), 200);

@@ -180,7 +180,13 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as ColorBoxApi).dataValue = dataValue;
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => dataValue,
+		set: (value: string) => {
+			dataValue = value;
+		}
+	});
 	(el as ColorBoxApi).foreground = foreground.value;
 	(el as ColorBoxApi).inputEventEnabled = false;
 	(el as ColorBoxApi).read = read;

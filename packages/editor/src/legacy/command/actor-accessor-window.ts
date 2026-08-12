@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -53,7 +53,7 @@ ActorGetter.open = function (this: ActorGetterShape, target: AccessorTarget) {
 	let actorId = '';
 	let presetId = PresetObject.getDefaultPresetId('actor');
 	let variable = { type: 'local', key: '' };
-	const actor = target.dataValue;
+	const actor = target.read?.();
 	switch (actor.type) {
 		case 'trigger':
 		case 'caster':

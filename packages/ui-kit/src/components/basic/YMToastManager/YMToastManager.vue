@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-interface ToastElement extends HTMLDivElement {
-	_timer?: ReturnType<typeof setTimeout>;
-}
+const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -21,14 +19,15 @@ const show = (message: string, type: string = 'info', duration: number = 4000): 
 	root.value?.appendChild(el);
 	requestAnimationFrame(() => el.classList.add('toast-show'));
 	if (duration > 0) {
-		(el as ToastElement)._timer = setTimeout(() => dismiss(el), duration);
+		timerMap.set(el, setTimeout(() => dismiss(el), duration));
 	}
 	return el;
 };
 
 const dismiss = (el: HTMLElement | null): void => {
 	if (!el || el.parentNode !== root.value) return;
-	clearTimeout((el as ToastElement)._timer);
+	const timer = timerMap.get(el);
+	if (timer !== undefined) clearTimeout(timer);
 	el.classList.remove('toast-show');
 	el.classList.add('toast-hide');
 	setTimeout(() => el.remove(), 200);

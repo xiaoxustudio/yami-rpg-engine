@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -11,6 +11,7 @@ interface TilemapTarget {
 		presetId: string;
 		variable: { type: string; key: string };
 	};
+	read?: () => { type: string; presetId: string; variable: { type: string; key: string } };
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -46,7 +47,7 @@ TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget
 
 	let presetId = PresetObject.getDefaultPresetId('tilemap');
 	let variable = { type: 'local', key: '' };
-	const tilemap = target.dataValue;
+	const tilemap = target.read?.();
 	switch (tilemap.type) {
 		case 'trigger':
 			break;

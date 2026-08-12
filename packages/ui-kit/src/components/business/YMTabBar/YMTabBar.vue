@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import {
 	addClass,
@@ -107,6 +107,8 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement | null>(null);
 
+let selectionIndex = 0;
+
 const read = (): TabItem | undefined => {
 	const el = root.value as TabBarElement | null;
 	if (!el) return undefined;
@@ -124,7 +126,7 @@ const write = (value: TabItem | undefined): void => {
 		let target: HTMLElement | undefined;
 		for (let i = 0; i < length; i++) {
 			if ((items[i] as TabElement).item === value) {
-				el.selectionIndex = i;
+				selectionIndex = i;
 				target = items[i] as HTMLElement;
 				break;
 			}
@@ -198,7 +200,7 @@ const insert = (item: TabItem): void => {
 	if (!el) return;
 	const data = el.data!;
 	if (!data.includes(item)) {
-		data.splice(el.selectionIndex! + 1, 0, item);
+		data.splice(selectionIndex + 1, 0, item);
 		update();
 	}
 };
@@ -213,7 +215,7 @@ const close = (item: TabItem): void => {
 		update();
 		if (data.length > 0) {
 			if (value === item || value === undefined || !data.includes(value)) {
-				const index = Math.min(el.selectionIndex!, data.length - 1);
+				const index = Math.min(selectionIndex, data.length - 1);
 				select(data[index]);
 			} else {
 				write(value);
@@ -533,7 +535,7 @@ const drop = (event: DragEvent): void => {
 				dIndex++;
 			}
 			items.splice(dIndex, 0, sItem);
-			el.selectionIndex = dIndex;
+			selectionIndex = dIndex;
 			update();
 		}
 	}
@@ -596,7 +598,7 @@ onMounted(() => {
 	if (!el) return;
 	el.data = null;
 	el.dragging = null;
-	el.selectionIndex = 0;
+	selectionIndex = 0;
 	el.writeEventEnabled = false;
 	el.selectEventEnabled = false;
 	el.closedEventEnabled = false;

@@ -60,12 +60,14 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.dataValue = dataValue;
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => dataValue
+	});
 	box.relations = relations;
 
 	box.write = function (value: boolean): void {
 		dataValue = !!value;
-		box.dataValue = dataValue;
 		dataValue ? addClass(box, 'selected') : removeClass(box, 'selected');
 		if (!hasClass(box, 'disabled')) {
 			toggleRelatedElements();

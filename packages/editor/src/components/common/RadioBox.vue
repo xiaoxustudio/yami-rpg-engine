@@ -146,7 +146,13 @@ onMounted(() => {
 	}
 	state.proxy = proxy;
 	el.proxy = proxy;
-	el.dataValue = state.dataValue;
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => state.dataValue,
+		set: (value: unknown) => {
+			state.dataValue = value;
+		}
+	});
 
 	if (isNewProxy) {
 		el.appendChild(proxy);

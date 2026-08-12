@@ -160,6 +160,52 @@ const root = ref<HTMLElement | null>(null);
 
 let el: HTMLElement & { [k: string]: any } | null = null;
 
+const paneState = {
+	scriptList: null as unknown,
+	headPad: null as unknown,
+	metas: [] as unknown[],
+	wraps: [] as unknown[],
+	detailBoxes: [] as unknown[],
+	checkBoxes: [] as unknown[],
+	numberBoxes: [] as unknown[],
+	numberVars: [] as unknown[],
+	textBoxes: [] as unknown[],
+	selectBoxes: [] as unknown[],
+	keyboardBoxes: [] as unknown[],
+	colorBoxes: [] as unknown[],
+	customBoxes: [] as unknown[],
+	updateEventEnabled: false
+};
+
+const paneStateFields = [
+	'scriptList',
+	'headPad',
+	'metas',
+	'wraps',
+	'detailBoxes',
+	'checkBoxes',
+	'numberBoxes',
+	'numberVars',
+	'textBoxes',
+	'selectBoxes',
+	'keyboardBoxes',
+	'colorBoxes',
+	'customBoxes',
+	'updateEventEnabled'
+] as const;
+
+const attachStateAccessors = (self: HTMLElement & { [k: string]: any }): void => {
+	for (const key of paneStateFields) {
+		Object.defineProperty(self, key, {
+			configurable: true,
+			get: () => paneState[key],
+			set: (value: unknown) => {
+				paneState[key] = value as never;
+			}
+		});
+	}
+};
+
 const createControl = (kind: keyof PaneControlFactory): HTMLElement | null => {
 	const factory = props.controls as PaneControlFactory | null;
 	if (!factory) return null;
@@ -938,6 +984,7 @@ onMounted(() => {
 	const self = root.value as HTMLElement & { [k: string]: any };
 	if (!self) return;
 	el = self;
+	attachStateAccessors(self);
 	self.scriptList = null;
 	self.headPad = null;
 	self.metas = [];

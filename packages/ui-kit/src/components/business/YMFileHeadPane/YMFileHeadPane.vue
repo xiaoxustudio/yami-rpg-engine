@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="file-head-pane" ref="el">
 		<div class="file-head-address" ref="addressEl"></div>
 		<div ref="backEl" class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</div>
@@ -101,14 +101,23 @@ function updateAddress() {
 				const nodes: HTMLElement[] = [];
 				while (true) {
 					const elFolder = document.createElement('file-head-address-folder') as HTMLElement & { file: FileItem; textContent: string };
-					elFolder.file = folder;
+					Object.defineProperty(elFolder, 'file', {
+						configurable: true,
+						get: () => folder
+					});
 					elFolder.textContent = folder.name;
 					nodes.push(elFolder);
 					const { parent } = folder;
 					if (props.isFolderItem(parent)) {
 						const elArrow = document.createElement('file-head-address-arrow') as HTMLElement & { folders: FileItem[]; target: FileItem };
-						elArrow.folders = parent!.subfolders;
-						elArrow.target = folder;
+						Object.defineProperty(elArrow, 'folders', {
+							configurable: true,
+							get: () => parent!.subfolders
+						});
+						Object.defineProperty(elArrow, 'target', {
+							configurable: true,
+							get: () => folder
+						});
 						nodes.push(elArrow);
 						folder = parent!;
 					} else {
@@ -124,7 +133,10 @@ function updateAddress() {
 				for (let i = 0; i < length; i++) {
 					const folder = folders[i];
 					const elFolder = document.createElement('file-head-address-folder') as HTMLElement & { file: FileItem; textContent: string };
-					elFolder.file = folder;
+					Object.defineProperty(elFolder, 'file', {
+						configurable: true,
+						get: () => folder
+					});
 					elFolder.textContent = folder.name;
 					address.appendChild(elFolder);
 					if (folders[i + 1]) {
@@ -258,7 +270,11 @@ function viewInput(event: Event) {
 
 onMounted(() => {
 	const root = el.value as FileHeadElement;
-	root.links = props.links;
+	Object.defineProperty(root, 'links', {
+		configurable: true,
+		get: () => props.links,
+		set: () => {}
+	});
 	root.updateAddress = updateAddress;
 	root.view = viewEl.value!.root;
 	root.searcher = searcherEl.value!.root;

@@ -1,4 +1,4 @@
-import { drawAndFitImage } from '@/util/element-utils';
+﻿import { drawAndFitImage } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
@@ -509,7 +509,10 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = this.frameInde
 		const element = document.createElement('common-item');
 		const index = i.toString().padStart(digits, '0');
 		element.textContent = `#${index}: ${x},${y}`;
-		element.dataValue = i;
+		Object.defineProperty(element, 'dataValue', {
+			configurable: true,
+			get: () => i
+		});
 		list.appendElement(element);
 	}
 	list.update();

@@ -15,12 +15,8 @@ let selectEventEnabled = false;
 const numberPattern = /^-?\d+(?:\.\d+)?$/;
 
 const parseValue = (el: HTMLElement): unknown => {
-	const node = el as HTMLElement & { dataValue?: unknown };
-	if (node.dataValue === undefined) {
-		const string = el.getAttribute('value') ?? '';
-		node.dataValue = numberPattern.test(string) ? parseFloat(string) : string;
-	}
-	return node.dataValue;
+	const string = el.getAttribute('value') ?? '';
+	return numberPattern.test(string) ? parseFloat(string) : string;
 };
 
 const read = (): unknown => {

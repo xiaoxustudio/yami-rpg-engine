@@ -42,7 +42,7 @@ AncestorGetter.open = function (this: AncestorGetterShape, target: AccessorTarge
 
 	let presetId = PresetElement.getDefaultPresetId!();
 	let variable = { type: 'local', key: '' };
-	const element = target.dataValue;
+	const element = target.read?.();
 	switch (element.type) {
 		case 'trigger':
 		case 'latest':

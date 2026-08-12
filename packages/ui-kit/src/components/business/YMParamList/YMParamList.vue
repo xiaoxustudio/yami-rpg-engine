@@ -197,6 +197,54 @@ const root = ref<HTMLElement | null>(null);
 
 let el: ParamListElement | null = null;
 
+const state = {
+	object: null as unknown,
+	type: null as string | null,
+	data: null as (ParamDataItem | null)[] | null,
+	elements: [] as unknown as ParamElements,
+	selections: [] as unknown as ParamSelections,
+	start: null as number | null,
+	end: null as number | null,
+	origin: null as unknown,
+	active: null as number | null,
+	flexible: false,
+	inserting: false,
+	focusing: false,
+	dragging: null as unknown,
+	history: null as unknown,
+	togglable: false
+};
+
+const exposedStateFields = [
+	'object',
+	'type',
+	'data',
+	'elements',
+	'selections',
+	'start',
+	'end',
+	'origin',
+	'active',
+	'flexible',
+	'inserting',
+	'focusing',
+	'dragging',
+	'history',
+	'togglable'
+] as const;
+
+const attachStateAccessors = (self: ParamListElement): void => {
+	for (const key of exposedStateFields) {
+		Object.defineProperty(self, key, {
+			configurable: true,
+			get: () => state[key],
+			set: (value: unknown) => {
+				state[key] = value as never;
+			}
+		});
+	}
+};
+
 const createHistory = (list: ParamListElement): ParamHistory =>
 	props.historyFactory ? props.historyFactory(list) : new ParamListHistory(list);
 
@@ -275,8 +323,14 @@ const update = (): void => {
 				const li = document.createElement('div') as ParamItemElement;
 				addClass(li, 'param-item');
 				addClass(li, 'one-column');
-				li.dataValue = i;
-				li.dataItem = item;
+				Object.defineProperty(li, 'dataValue', {
+					configurable: true,
+					get: () => i
+				});
+				Object.defineProperty(li, 'dataItem', {
+					configurable: true,
+					get: () => item
+				});
 				li.textContent = result;
 				elements[elements.count++] = li;
 				continue;
@@ -284,8 +338,14 @@ const update = (): void => {
 			case 'object': {
 				const li = document.createElement('div') as ParamItemElement;
 				addClass(li, 'param-item');
-				li.dataValue = i;
-				li.dataItem = item;
+				Object.defineProperty(li, 'dataValue', {
+					configurable: true,
+					get: () => i
+				});
+				Object.defineProperty(li, 'dataItem', {
+					configurable: true,
+					get: () => item
+				});
 				elements[elements.count++] = li;
 				if (!Array.isArray(result)) {
 					addClass(li, 'one-column');
@@ -339,8 +399,14 @@ const update = (): void => {
 	const unit = length === 1 ? 'item' : 'items';
 	addClass(li, 'param-item');
 	addClass(li, 'weak');
-	li.dataValue = length;
-	li.dataItem = null;
+	Object.defineProperty(li, 'dataValue', {
+		configurable: true,
+		get: () => length
+	});
+	Object.defineProperty(li, 'dataItem', {
+		configurable: true,
+		get: () => null
+	});
 	li.textContent = `${length} ${unit}`;
 	elements[elements.count++] = li;
 
@@ -1188,6 +1254,7 @@ onMounted(() => {
 	el = root.value as ParamListElement | null;
 	if (!el) return;
 	const self = el;
+	attachStateAccessors(self);
 	self.object = null as unknown as ParamObject;
 	self.type = null;
 	self.data = null;

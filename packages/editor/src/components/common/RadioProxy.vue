@@ -225,7 +225,13 @@ onMounted(() => {
 	el.disable = disable;
 	el.relate = relate;
 	el.on = on;
-	el.dataValue = null;
+	Object.defineProperty(el, 'dataValue', {
+		configurable: true,
+		get: () => dataValue.value,
+		set: (value: unknown) => {
+			dataValue.value = value as never;
+		}
+	});
 	el.relations = [];
 	el.cancelable = false;
 });

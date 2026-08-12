@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
@@ -6,6 +6,7 @@ import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface PositionGetterTarget {
 	dataValue: PositionData;
+	read?: () => PositionData;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -95,7 +96,7 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	let region = { type: 'trigger' };
 	let regionMode = 'center';
 	let objectId = PresetObject.getDefaultPresetId!('any');
-	const position = target.dataValue;
+	const position = target.read?.();
 	switch (position.type) {
 		case 'absolute':
 			commonX = position.x!;

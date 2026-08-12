@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -9,6 +9,7 @@ interface TriggerTarget {
 		type: string;
 		variable: { type: string; key: string };
 	};
+	read?: () => { type: string; variable: { type: string; key: string } };
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -40,7 +41,7 @@ TriggerGetter.open = function (this: typeof TriggerGetter, target: TriggerTarget
 	Window.open!('triggerGetter');
 
 	let variable = { type: 'local', key: '' };
-	const trigger = target.dataValue;
+	const trigger = target.read?.();
 	switch (trigger.type) {
 		case 'trigger':
 		case 'latest':

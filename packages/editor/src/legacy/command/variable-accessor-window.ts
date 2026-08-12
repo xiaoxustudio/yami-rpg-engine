@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+﻿import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, on } from '@/util/element-utils';
 import { getVariable } from '@/util/safe.ts';
@@ -19,6 +19,7 @@ interface VariableGetterTarget {
 		item?: { type: string };
 		element?: { type: string };
 	};
+	read?: () => any;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -247,7 +248,7 @@ VariableGetter._openCore = function (
 	$(`#${prefix}-type`).loadItems(items);
 	$(`#${prefix}-global-key`).filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
 
-	const variable = target.dataValue ?? { type: '', key: '' };
+	const variable = target.read?.() ?? { type: '', key: '' };
 	const type = variable.type;
 	const key = variable.key;
 	const write = getElementWriter(prefix);

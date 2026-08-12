@@ -185,7 +185,6 @@ export function attachSelectBoxApi(
 
 	const write = (value: unknown): void => {
 		dataValue = value;
-		box.dataValue = value as string | number | boolean | Record<string, any> | null;
 		update();
 		if (!box.classList.contains('disabled')) {
 			toggleRelatedElements();
@@ -325,7 +324,6 @@ export function attachSelectBoxApi(
 	const clear = (): HTMLElement => {
 		dataItems.splice(0, dataItems.length);
 		dataValue = null;
-		box.dataValue = null;
 		text.textContent = '';
 		return box;
 	};
@@ -445,7 +443,13 @@ export function attachSelectBoxApi(
 	};
 
 	box.dataItems = dataItems;
-	box.dataValue = dataValue as string | number | boolean | Record<string, any> | null;
+	Object.defineProperty(box, 'dataValue', {
+		configurable: true,
+		get: () => dataValue,
+		set: (value: unknown) => {
+			dataValue = value;
+		}
+	});
 	box.relations = relations;
 	box.invalid = invalid;
 	box.hideUnrelated = hideUnrelated;

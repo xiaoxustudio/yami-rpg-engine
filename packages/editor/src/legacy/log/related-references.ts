@@ -792,9 +792,12 @@ Reference.update = function (items: ReferenceItem[]) {
 	const list = $('#reference-list').reload();
 	for (const item of items) {
 		const li = document.createElement('common-item') as HTMLElement & {
-			dataValue: ReferenceItem;
+			dataValue?: ReferenceItem;
 		};
-		li.dataValue = item;
+		Object.defineProperty(li, 'dataValue', {
+			configurable: true,
+			get: () => item
+		});
 		li.textContent = item.text;
 		if (item.type === 'comment') {
 			addClass(li, 'reference-comment');

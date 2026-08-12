@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@/util/dom.ts';
+﻿import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -7,6 +7,7 @@ import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
 interface ElementGetterTarget {
 	dataValue: ElementData;
+	read?: () => ElementData;
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
 }
@@ -95,7 +96,7 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	let presetId = PresetElement.getDefaultPresetId!();
 	let ancestor = { type: 'trigger' };
 	let variable = { type: 'local', key: '' };
-	const element = target.dataValue;
+	const element = target.read?.();
 	switch (element.type) {
 		case 'trigger':
 		case 'latest':
