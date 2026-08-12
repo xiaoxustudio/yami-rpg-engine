@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -171,13 +172,15 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	el.tabIndex = 0;
-	(el as HTMLElement & { [k: string]: unknown }).read = read;
-	(el as HTMLElement & { [k: string]: unknown }).write = write;
-	(el as HTMLElement & { [k: string]: unknown }).switch = switchMode;
-	(el as HTMLElement & { [k: string]: unknown }).enable = enable;
-	(el as HTMLElement & { [k: string]: unknown }).disable = disable;
-	(el as HTMLElement & { [k: string]: unknown }).getFocus = getFocus;
-	(el as HTMLElement & { [k: string]: unknown }).on = on;
+	attachApi(el as HTMLElement & Record<string, unknown>, {
+		read,
+		write,
+		switch: switchMode,
+		enable,
+		disable,
+		getFocus,
+		on
+	});
 	(el as HTMLElement & { [k: string]: unknown }).mode = mode.value;
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('pointerdown', pointerdown);

@@ -1,3 +1,5 @@
+import { attachApi } from '../../../utils/attach-api';
+
 export interface DetailSummaryApi extends HTMLElement {
 	_initialized: boolean;
 	toggle(): void;
@@ -49,14 +51,16 @@ export function attachDetailSummaryApi(el: HTMLElement): DetailSummaryApi {
 		}
 	};
 
-	summary.toggle = toggle;
-	summary.on = function (
-		type: string,
-		listener: (event: Event) => void,
-		listenerOptions?: boolean | AddEventListenerOptions
-	): void {
-		summary.addEventListener(type, listener as EventListener, listenerOptions);
-	};
+	attachApi(summary, {
+		toggle,
+		on: (
+			type: string,
+			listener: (event: Event) => void,
+			listenerOptions?: boolean | AddEventListenerOptions
+		): void => {
+			summary.addEventListener(type, listener as EventListener, listenerOptions);
+		}
+	});
 
 	summary._initialized = true;
 	summary.addEventListener('keydown', keydown);

@@ -1,4 +1,5 @@
-﻿import { $ } from '@/util/dom.ts';
+﻿import { getListConfig } from '@ui-kit';
+import { $ } from '@/util/dom.ts';
 import { on, hide, read, write } from '@/util/element-utils.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
 import { History } from '@/tools/history.ts';
@@ -193,9 +194,9 @@ function ensureDomBound() {
 	Variable.list.updateInitText = Variable.list_updateInitText;
 	Variable.list.createNoteIcon = Variable.list_createNoteIcon;
 	Variable.list.updateNoteIcon = Variable.list_updateNoteIcon;
-	Variable.list.onCreate = Variable.list_onCreate;
-	Variable.list.onDelete = Variable.list_onDelete;
-	Variable.list.onResume = Variable.list_onResume;
+	getListConfig(Variable.list).onCreate = Variable.list_onCreate;
+	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
+	getListConfig(Variable.list).onResume = Variable.list_onResume;
 	bindListClipboardMethods({
 		module: Variable,
 		list,
@@ -232,15 +233,15 @@ Variable.initialize = function () {
 	ensureDomBound();
 	if (!this.list) return;
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.updateItemClass);
-	list.creators?.push(list.createInitText);
-	list.creators?.push(list.updateInitText);
-	list.creators?.push(list.createNoteIcon);
-	list.creators?.push(list.updateNoteIcon);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.updateItemClass);
+	getListConfig(list).creators.push(list.createInitText);
+	getListConfig(list).creators.push(list.updateInitText);
+	getListConfig(list).creators.push(list.createNoteIcon);
+	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	this.panel.variable = null as unknown as Record<string, unknown>;
 	this.searcher.addCloseButton();

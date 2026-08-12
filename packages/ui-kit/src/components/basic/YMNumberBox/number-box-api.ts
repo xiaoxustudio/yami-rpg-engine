@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass, read } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, removeClass, read } from '../../../utils/dom';
 import { NumberHistory } from '../../../utils/history';
 
 export interface NumberBoxApiOptions {
@@ -168,7 +169,7 @@ export function attachNumberBoxApi(
 		input.style.paddingRight = `${padding}px`;
 	}
 
-	box.read = function (): number {
+	const readValue = function (): number {
 		const minValue = parseFloat(input.min);
 		const maxValue = parseFloat(input.max);
 		let value = parseFloat(input.value) || 0;
@@ -177,29 +178,29 @@ export function attachNumberBoxApi(
 		return value;
 	};
 
-	box.write = function (value: string | number): void {
+	const write = function (value: string | number): void {
 		input.value = String(value);
 		input.value = String(read(box));
 		(input as HistoryInputElement).history.reset();
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(el, 'disabled')) {
 			showChildNodes(el);
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(el, 'disabled')) {
 			hideChildNodes(el);
 		}
 	};
 
-	box.getFocus = function (mode?: string): void {
+	const focusBox = function (mode?: string): void {
 		getFocus(input, mode);
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -224,6 +225,8 @@ export function attachNumberBoxApi(
 				break;
 		}
 	};
+
+	attachApi(box, { read: readValue, write, enable, disable, getFocus: focusBox, on });
 
 	box._initialized = true;
 

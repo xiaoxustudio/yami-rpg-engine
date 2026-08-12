@@ -1,4 +1,6 @@
-﻿export interface CustomBoxParseResult {
+﻿import { attachApi } from '../../../utils/attach-api';
+
+export interface CustomBoxParseResult {
 	text: string;
 	invalid?: boolean;
 }
@@ -252,19 +254,23 @@ export function attachCustomBoxApi(
 	box.inputEventEnabled = false;
 	box._initialized = true;
 
-	box.read = (): unknown => state.dataValue;
-	box.write = write;
-	box.input = input;
-	box.update = update;
-	box.enable = enable;
-	box.disable = disable;
-	box.on = on;
-	box.keydown = keydown;
-	box.click = click;
-	box.dragenter = dragenter;
-	box.dragleave = dragleave;
-	box.dragover = dragover;
-	box.drop = drop;
+	const read = (): unknown => state.dataValue;
+
+	attachApi(box, {
+		read,
+		write,
+		input,
+		update,
+		enable,
+		disable,
+		on,
+		keydown,
+		click,
+		dragenter,
+		dragleave,
+		dragover,
+		drop
+	});
 
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('click', click as EventListener);

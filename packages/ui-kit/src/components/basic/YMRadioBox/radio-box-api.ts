@@ -1,4 +1,5 @@
-﻿import { addClass, hasClass } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, hasClass } from '../../../utils/dom';
 import {
 	radioProxyMap,
 	createRadioProxy,
@@ -151,29 +152,31 @@ export function attachRadioBoxApi(el: HTMLElement, options: RadioBoxApiOptions =
 
 	box._initialized = true;
 
-	box.read = () => box.dataValue;
-	box.write = (v: number | string | boolean) => {
+	const read = (): number | string | boolean => box.dataValue;
+	const write = (v: number | string | boolean): void => {
 		box.dataValue = v;
 	};
-	box.input = (v: unknown) => {
+	const input = (v: unknown): void => {
 		box.proxy?.input(v);
 	};
-	box.enable = () => {
+	const enable = (): void => {
 		box.classList.remove('disabled');
 	};
-	box.disable = () => {
+	const disable = (): void => {
 		box.classList.add('disabled');
 	};
-	box.relate = (entries: unknown[]) => {
+	const relate = (entries: unknown[]): void => {
 		box.proxy?.relate(entries);
 	};
-	box.on = (
+	const on = (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void => {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
+
+	attachApi(box, { read, write, input, enable, disable, relate, on });
 
 	if (options.disabled) {
 		box.disable();

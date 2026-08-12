@@ -1,4 +1,5 @@
-﻿import { getWindowFramesLength } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { getWindowFramesLength } from '../../../utils/dom';
 import { Timer as MenuTimer } from '../../../utils/timer';
 export interface MenuItem {
 	type?: string;
@@ -490,23 +491,25 @@ export function createMenuApi(el: HTMLElement): MenuApi {
 		}
 	}
 
-	menu.windowBlur = windowBlur;
-	menu.windowKeydown = windowKeydown;
-	menu.windowPointerdown = windowPointerdown;
-	menu.windowPointerup = windowPointerup;
-	menu.windowPointerover = windowPointerover;
-	menu.windowPointerout = windowPointerout;
-	menu.popup = popup;
-	menu.computeMenuWidth = computeMenuWidth;
-	menu.close = close;
-	menu.clear = clear;
-	menu.createItem = createItem;
-	menu.select = select;
-	menu.unselect = unselect;
-	menu.reselect = reselect;
-	menu.popupSubmenu = popupSubmenu;
-	menu.closeSubmenu = closeSubmenu;
-	menu.pointerenter = pointerenter;
+	attachApi(menu as unknown as HTMLElement, {
+		windowBlur,
+		windowKeydown,
+		windowPointerdown,
+		windowPointerup,
+		windowPointerover,
+		windowPointerout,
+		popup,
+		computeMenuWidth,
+		close,
+		clear,
+		createItem,
+		select,
+		unselect,
+		reselect,
+		popupSubmenu,
+		closeSubmenu,
+		pointerenter
+	});
 	return menu;
 }
 

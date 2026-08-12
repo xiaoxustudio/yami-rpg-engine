@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass } from '../../../utils/dom';
 import { TextHistory } from '../../../utils/history';
 import { Timer } from '../../../utils/timer';
@@ -101,16 +102,16 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 
 	el.appendChild(input);
 
-	box.read = function (): string {
+	const read = function (): string {
 		return input.value;
 	};
 
-	box.write = function (value: string): void {
+	const write = function (value: string): void {
 		input.value = value;
 		(input as HistoryTextAreaElement).history.reset();
 	};
 
-	box.insert = function (value: string): void {
+	const insert = function (value: string): void {
 		input.dispatchEvent(
 			new InputEvent('beforeinput', {
 				inputType: 'insertFromPaste',
@@ -121,23 +122,23 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 		document.execCommand('insertText', false, value);
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(el, 'disabled')) {
 			showChildNodes(el);
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(el, 'disabled')) {
 			hideChildNodes(el);
 		}
 	};
 
-	box.getFocus = function (mode?: string): void {
+	const focusBox = function (mode?: string): void {
 		getFocus(input, mode);
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -162,6 +163,8 @@ export function attachTextAreaApi(el: HTMLElement, options: TextAreaApiOptions =
 				break;
 		}
 	};
+
+	attachApi(box, { read, write, insert, enable, disable, getFocus: focusBox, on });
 
 	function inputKeydown(event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {

@@ -1,3 +1,5 @@
+﻿import { attachApi } from '../../../utils/attach-api';
+import { getListConfig } from '../../../utils/list-config';
 import {
 	hideDragImage,
 	clamp,
@@ -443,7 +445,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		if (!element.textNode) {
 			let folderMark = null;
 			let markVisible = false;
-			let markIndent = this.foldable ? 16 : 0;
+			let markIndent = getListConfig(this).foldable ? 16 : 0;
 			if (item!.children instanceof Array) {
 				folderMark = document.createElement('folder-mark');
 				markVisible = true;
@@ -466,7 +468,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			element.nodeIcon = nodeIcon;
 			element.textNode = textNode;
 
-			for (const creator of this.creators) {
+			for (const creator of getListConfig(this).creators) {
 				creator(item!);
 			}
 		}
@@ -514,7 +516,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			element.style.textIndent = `${textIndent}px`;
 		}
 
-		for (const updater of this.updaters) {
+		for (const updater of getListConfig(this).updaters) {
 			updater(item);
 		}
 	},
@@ -720,7 +722,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.dispatchEvent(record);
 			}
 
-			!sItem.parent && this.onCreate?.(sItem);
+			!sItem.parent && getListConfig(this).onCreate?.(sItem);
 			this.update();
 			this.select(sItem);
 			this.scrollToSelection();
@@ -747,14 +749,14 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			}
 
 			this.unselectIn(item);
-			this.onDelete?.(item);
+			getListConfig(this).onDelete?.(item);
 			this.update();
 			dispatchChangeEvent(this);
 		}
 	},
 
 	removeItemTo: function (this: any, sItem: TreeItem, dItem: TreeItem | null | undefined): void {
-		if (sItem === dItem || (this.lockDirectory && dItem === this.root)) {
+		if (sItem === dItem || (getListConfig(this).lockDirectory && dItem === this.root)) {
 			return;
 		}
 		const sParent = sItem.parent;
@@ -792,7 +794,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 			this.insertPaddingAndClear();
 			this.update();
-			this.onRemove?.(sItem);
+			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
 			dispatchChangeEvent(this);
 		}
@@ -803,7 +805,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		sItem: TreeItem,
 		dItem: TreeItem | null | undefined
 	): void {
-		if (sItem === dItem || (this.lockDirectory && dItem!.parent === this.root)) {
+		if (sItem === dItem || (getListConfig(this).lockDirectory && dItem!.parent === this.root)) {
 			return;
 		}
 		const sParent = sItem.parent;
@@ -839,7 +841,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 			this.insertPaddingAndClear();
 			this.update();
-			this.onRemove?.(sItem);
+			getListConfig(this).onRemove?.(sItem);
 			this.scrollToSelection();
 			dispatchChangeEvent(this);
 		}
@@ -891,7 +893,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 					this.recordEventEnabled = false;
 					this.addNodeTo(sItem, dItem, insertBefore);
 					this.recordEventEnabled = enabled;
-					this.onResume?.(sItem);
+					getListConfig(this).onResume?.(sItem);
 				}
 				break;
 			}
@@ -906,13 +908,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						items.splice(index, 0, item);
 						this.unselect();
 						this.expandToItem(item, false);
-						this.onResume?.(item);
+						getListConfig(this).onResume?.(item);
 					}
 				} else {
 					if (index < items.length) {
 						items.splice(index, 1);
 						this.unselectIn(item);
-						this.onDelete?.(item);
+						getListConfig(this).onDelete?.(item);
 					}
 				}
 
@@ -955,7 +957,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				this.insertPaddingAndClear();
 				this.update();
 				this.select(item);
-				this.onRemove?.(item);
+				getListConfig(this).onRemove?.(item);
 				this.scrollToSelection();
 				dispatchChangeEvent(this);
 				break;
@@ -1184,7 +1186,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	},
 
 	rename: function (this: HTMLElement & { [k: string]: unknown }, item: TreeItem): void {
-		if (this.renamable) {
+		if (getListConfig(this).renamable) {
 			const { element } = item;
 			const { textBox } = treeListStatics;
 			if (document.activeElement === this && !textBox.parentNode && element!.parentNode) {
@@ -1225,7 +1227,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	insertPaddingAndClear: function (this: HTMLElement & { [k: string]: unknown }): void {
 		const padding = treeListStatics.padding;
 		let count = (this.elements as CommonListLike['elements']).count;
-		if (this.padded) count++;
+		if (getListConfig(this).padded) count++;
 		if (padding.count !== count) {
 			padding.count = count;
 			padding.style.height = `${count * 20}px`;
@@ -1365,7 +1367,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 						if (!hasClass(element, 'selected')) {
 							this.select(element.item);
 						} else if (
-							this.renamable &&
+							getListConfig(this).renamable &&
 							this.getMenuState() === 'closed' &&
 							document.activeElement === this &&
 							event.clientX > (rect(element.nodeIcon)?.right ?? 0)
@@ -1436,12 +1438,12 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	dragstart: function (this: any, event: TreeListDragEvent): void {
 		if (
-			this.removable &&
+			getListConfig(this).removable &&
 			!this.dragging &&
 			this.display === 'normal' &&
 			this.read() !== null &&
 			!treeListStatics.textBox.parentNode &&
-			(this.lockDirectory === false || this.read()!.class !== 'folder')
+			(getListConfig(this).lockDirectory === false || this.read()!.class !== 'folder')
 		) {
 			this.dragging = event;
 			Object.defineProperty(event, 'offsetY', { writable: true });
@@ -1618,7 +1620,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions): HTMLElement {
 	const list = el as HTMLElement & { [k: string]: any };
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
-	list.getMenuState = getMenuState;
+	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {
 		list[name] = treeListPrototype[name];
@@ -1628,8 +1630,9 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	list.display = 'normal';
 	list.keyword = null;
 	list.searchResults = [];
-	list.creators = [];
-	list.updaters = [];
+	const listConfig = getListConfig(list);
+	list.creators = listConfig.creators = [];
+	list.updaters = listConfig.updaters = [];
 	const elements = [] as unknown as (NodeElement | undefined)[] & {
 		versionId: number;
 		count: number;

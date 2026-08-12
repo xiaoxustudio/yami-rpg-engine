@@ -1,6 +1,7 @@
-import { $ } from '@/util/dom.ts';
+﻿import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@/util/element-utils.ts';
+import { getListConfig } from '@ui-kit';
 import { Timer } from '@/util/timer.ts';
 import { File } from '@/file/file-system-core.ts';
 
@@ -458,10 +459,10 @@ Scene.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any
 Scene.list.updateVisibilityIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.createLockIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateLockIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.onCreate = null;
-Scene.list.onRemove = null;
-Scene.list.onDelete = null;
-Scene.list.onResume = null;
+getListConfig(Scene.list).onCreate = null;
+getListConfig(Scene.list).onRemove = null;
+getListConfig(Scene.list).onDelete = null;
+getListConfig(Scene.list).onResume = null;
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = $('#scene');
@@ -603,21 +604,23 @@ Scene.initialize = function (this: SceneShape) {
 	this.searcher.addKeydownFilter();
 
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.objects);
-	list.updaters?.push(list.updateItemClass);
-	list.creators?.push(list.updateTilemapClass);
-	list.creators?.push(list.createConditionIcon);
-	list.creators?.push(list.updateConditionIcon);
-	list.creators?.push(list.createEventIcon);
-	list.creators?.push(list.updateEventIcon);
-	list.creators?.push(list.createScriptIcon);
-	list.creators?.push(list.updateScriptIcon);
-	list.creators?.push(list.createVisibilityIcon);
-	list.updaters?.push(list.updateVisibilityIcon);
-	list.creators?.push(list.createLockIcon);
-	list.updaters?.push(list.updateLockIcon);
+	getListConfig(list).updaters.push(list.updateItemClass);
+	getListConfig(list).creators.push(
+		list.updateTilemapClass,
+		list.createConditionIcon,
+		list.updateConditionIcon,
+		list.createEventIcon
+	);
+	getListConfig(list).creators.push(list.updateEventIcon);
+	getListConfig(list).creators.push(list.createScriptIcon);
+	getListConfig(list).creators.push(list.updateScriptIcon);
+	getListConfig(list).creators.push(list.createVisibilityIcon);
+	getListConfig(list).updaters.push(list.updateVisibilityIcon);
+	getListConfig(list).creators.push(list.createLockIcon);
+	getListConfig(list).updaters.push(list.updateLockIcon);
 
 	History.processors['scene-folder-rename'] = (
 		operation: string,

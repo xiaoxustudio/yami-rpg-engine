@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import {
 	addClass,
 	dispatchChangeEvent,
@@ -535,7 +536,7 @@ Scene.list.updateLockIcon = function (this: typeof Scene, item: SceneItem) {
 };
 
 // 列表 - 在创建数据时回调
-Scene.list.onCreate = function (this: typeof Scene, item: SceneItem) {
+getListConfig(Scene.list).onCreate = function (this: typeof Scene, item: SceneItem) {
 	if (item.class === 'folder') return;
 	Scene.registerPreset!(item);
 	Scene.loadObjects!();
@@ -544,13 +545,13 @@ Scene.list.onCreate = function (this: typeof Scene, item: SceneItem) {
 };
 
 // 列表 - 在迁移数据时回调
-Scene.list.onRemove = function (this: typeof Scene) {
+getListConfig(Scene.list).onRemove = function (this: typeof Scene) {
 	Scene.loadObjects!();
 	Scene.requestRendering!();
 };
 
 // 列表 - 在删除数据时回调
-Scene.list.onDelete = function (this: typeof Scene, item: SceneItem) {
+getListConfig(Scene.list).onDelete = function (this: typeof Scene, item: SceneItem) {
 	Scene.unregisterPreset!(item);
 	Scene.updateTarget!();
 	Scene.loadObjects!();
@@ -559,7 +560,7 @@ Scene.list.onDelete = function (this: typeof Scene, item: SceneItem) {
 };
 
 // 列表 - 在恢复数据时回调
-Scene.list.onResume = function (this: typeof Scene, item: SceneItem) {
+getListConfig(Scene.list).onResume = function (this: typeof Scene, item: SceneItem) {
 	Scene.registerPreset!(item);
 	Scene.loadObjects!();
 	Scene.reloadObjectContext!(item);

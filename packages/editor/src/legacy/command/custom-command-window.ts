@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $, getElementWriter } from '@/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@/tools/window-object.ts';
@@ -201,12 +202,12 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	ensureDomBound();
 	if (!CustomCommand.list) return;
 	const { list } = this;
-	list.removable = true;
+	getListConfig(list).removable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.updateToggleStyle);
-	list.updaters?.push(list.updateTextNode);
-	list.creators?.push(list.createEditIcon);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.updateToggleStyle);
+	getListConfig(list).updaters.push(list.updateTextNode);
+	getListConfig(list).creators.push(list.createEditIcon);
 
 	$('#command').addEventListener('close', this.windowClose!);
 	$('#command').addEventListener('closed', this.windowClosed!);

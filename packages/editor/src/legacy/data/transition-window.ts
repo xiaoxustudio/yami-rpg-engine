@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
@@ -193,13 +194,13 @@ Easing.initialize = () => {
 	Easing.endPoint = { x: 1, y: 1 };
 
 	const { list } = Easing;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => Easing.data);
-	list.creators?.push(list.addElementClass);
-	list.updaters?.push(list.updateTextNode);
-	list.creators?.push(list.createKeyTextNode);
-	list.updaters?.push(list.updateKeyTextNode);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).updaters.push(list.updateTextNode);
+	getListConfig(list).creators.push(list.createKeyTextNode);
+	getListConfig(list).updaters.push(list.updateKeyTextNode);
 
 	$('#easing-mode').loadItems([
 		{ name: 'Use 2 Points', value: 2 },

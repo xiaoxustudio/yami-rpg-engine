@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
@@ -211,8 +212,8 @@ function ensureDomBound() {
 	Enum.list.updateInitText = null as unknown as (...args: unknown[]) => void;
 	Enum.list.createNoteIcon = null as unknown as (...args: unknown[]) => void;
 	Enum.list.updateNoteIcon = null as unknown as (...args: unknown[]) => void;
-	Enum.list.onDelete = null;
-	Enum.list.onResume = null;
+	getListConfig(Enum.list).onDelete = null;
+	getListConfig(Enum.list).onResume = null;
 	bindListClipboardMethods({
 		module: Enum,
 		list: Enum.list,
@@ -341,13 +342,13 @@ function ensureDomBound() {
 			}
 		}
 	};
-	Enum.list.onCreate = function (item: EnumItem) {
+	getListConfig(Enum.list).onCreate = function (item: EnumItem) {
 		Enum.register(item);
 	};
-	Enum.list.onDelete = function (item: EnumItem) {
+	getListConfig(Enum.list).onDelete = function (item: EnumItem) {
 		Enum.unregister(item);
 	};
-	Enum.list.onResume = function (item: EnumItem) {
+	getListConfig(Enum.list).onResume = function (item: EnumItem) {
 		Enum.register(item);
 	};
 }
@@ -356,16 +357,16 @@ Enum.initialize = function (this: typeof Enum) {
 	ensureDomBound();
 	if (!this.list) return;
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.createGroupText);
-	list.updaters?.push(list.updateGroupText);
-	list.creators?.push(list.createInitText);
-	list.creators?.push(list.updateInitText);
-	list.creators?.push(list.createNoteIcon);
-	list.creators?.push(list.updateNoteIcon);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.createGroupText);
+	getListConfig(list).updaters.push(list.updateGroupText);
+	getListConfig(list).creators.push(list.createInitText);
+	getListConfig(list).creators.push(list.updateInitText);
+	getListConfig(list).creators.push(list.createNoteIcon);
+	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	this.panel.enumString = null;
 

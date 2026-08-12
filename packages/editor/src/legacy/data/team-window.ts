@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, hasClass, on, removeClass } from '@/util/element-utils.ts';
@@ -101,14 +102,14 @@ Team.initialize = function (this: typeof Team) {
 	this.maximum = 256;
 
 	const list = this.list!;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.createIcon);
-	list.updaters?.push(list.updateTextNode);
-	list.creators?.push(list.createMarks);
-	list.updaters?.push(list.updateMarks);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.createIcon);
+	getListConfig(list).updaters.push(list.updateTextNode);
+	getListConfig(list).creators.push(list.createMarks);
+	getListConfig(list).updaters.push(list.updateMarks);
 
 	on($('#team'), 'close', this.windowClose);
 	on($('#team'), 'closed', this.windowClosed);

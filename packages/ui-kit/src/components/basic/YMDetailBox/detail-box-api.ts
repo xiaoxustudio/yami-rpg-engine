@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import { show, hide } from '../../../utils/dom';
 
 export interface DetailBoxApi extends HTMLElement {
@@ -29,7 +30,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	box.open = function (): void {
+	const open = function (): void {
 		if (!box.hasAttribute('open')) {
 			box.setAttribute('open', '');
 			apply(true);
@@ -41,7 +42,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	box.close = function (): void {
+	const close = function (): void {
 		if (box.hasAttribute('open')) {
 			box.removeAttribute('open');
 			apply(false);
@@ -53,7 +54,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	box.toggle = function (): void {
+	const toggle = function (): void {
 		if (box.hasAttribute('open')) {
 			box.close();
 		} else {
@@ -61,7 +62,7 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -71,6 +72,8 @@ export function attachDetailBoxApi(el: HTMLElement): DetailBoxApi {
 			toggleEventEnabled = true;
 		}
 	};
+
+	attachApi(box, { open, close, toggle, on });
 
 	box._initialized = true;
 

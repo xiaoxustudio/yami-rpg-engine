@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass, read } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, removeClass, read } from '../../../utils/dom';
 import type { NumberBoxApi } from '../YMNumberBox/number-box-api';
 
 export interface SliderBoxApiOptions {
@@ -81,7 +82,7 @@ export function attachSliderBoxApi(
 	el.appendChild(bar);
 	el.appendChild(input);
 
-	box.updateFiller = function (): void {
+	const updateFiller = function (): void {
 		const value = read(box) as number;
 		if ((filler as HTMLElement & { value?: number }).value !== value) {
 			(filler as HTMLElement & { value?: number }).value = value;
@@ -94,28 +95,28 @@ export function attachSliderBoxApi(
 		}
 	};
 
-	box.read = function (): number {
+	const readValue = function (): number {
 		return parseFloat(input.value);
 	};
 
-	box.write = function (value: unknown): void {
+	const write = function (value: unknown): void {
 		input.value = value as string;
 		box.updateFiller();
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			showChildNodes(box);
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			hideChildNodes(box);
 		}
 	};
 
-	box.synchronize = function (target: NumberBoxApi): void {
+	const synchronize = function (target: NumberBoxApi): void {
 		const slider = box;
 		const number = target;
 		if (slider.synchronizer) {
@@ -162,11 +163,11 @@ export function attachSliderBoxApi(
 		}
 	};
 
-	box.sliderInput = function (): void {
+	const sliderInput = function (): void {
 		box.updateFiller();
 	};
 
-	box.inputWheel = function (event: WheelEvent): void {
+	const inputWheel = function (this: SliderBoxApi, event: WheelEvent): void {
 		if (event.deltaY === 0) return;
 		const parent = this.parentNode as (HTMLElement & { activeWheel?: boolean }) | null;
 		if (parent?.activeWheel) {
@@ -190,7 +191,7 @@ export function attachSliderBoxApi(
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -215,6 +216,18 @@ export function attachSliderBoxApi(
 				break;
 		}
 	};
+
+	attachApi(box, {
+		updateFiller,
+		read: readValue,
+		write,
+		enable,
+		disable,
+		synchronize,
+		sliderInput,
+		inputWheel,
+		on
+	});
 
 	box._initialized = true;
 	input.addEventListener('wheel', box.inputWheel);

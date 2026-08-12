@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import {
@@ -228,9 +229,9 @@ function ensureDomBound() {
 	) => unknown;
 	list.createInitText = Localization.list_createInitText;
 	list.updateInitText = Localization.list_updateInitText;
-	list.onCreate = Localization.list_onCreate;
-	list.onDelete = Localization.list_onDelete;
-	list.onResume = Localization.list_onResume;
+	getListConfig(list).onCreate = Localization.list_onCreate;
+	getListConfig(list).onDelete = Localization.list_onDelete;
+	getListConfig(list).onResume = Localization.list_onResume;
 	bindListClipboardMethods({
 		module: { ...Localization, idMap: Localization.idMap! },
 		list,
@@ -242,13 +243,13 @@ Localization.initialize = function () {
 	ensureDomBound();
 	if (!Localization.list) return;
 	const list = this.list!;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.updaters?.push(list.updateItemClass);
-	list.creators?.push(list.createInitText);
-	list.creators?.push(list.updateInitText);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).updaters.push(list.updateItemClass);
+	getListConfig(list).creators.push(list.createInitText);
+	getListConfig(list).creators.push(list.updateInitText);
 
 	this.panel!.item = null;
 

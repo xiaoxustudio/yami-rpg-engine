@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
@@ -485,7 +486,7 @@ Animation.list.createText = null as unknown as (...args: unknown[]) => any;
 Animation.list.updateText = null;
 Animation.list.createLoopIcon = null;
 Animation.list.updateLoopIcon = null;
-Animation.list.onDelete = null;
+getListConfig(Animation.list).onDelete = null;
 
 Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
@@ -495,7 +496,7 @@ Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 // ESM 求值顺序错：scene-window.js:338-339 占位赋 null 早跑，scene-list.js:156/177 真定义晚跑 （仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
 Animation.layerList.createIcon = null as unknown as (...args: unknown[]) => any;
 // ESM 求值顺序错：scene-window.js:353 占位赋 null 早跑，scene-list.js:477 真定义晚跑（仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。删此 4 赋值，改在 Animation.initialize 钩子内（503 段）直接用 Scene.list.* （真定义已跑后）
-Animation.layerList.onDelete = null;
+getListConfig(Animation.layerList).onDelete = null;
 
 Animation.timeline.head = $('#animation-timeline-head');
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
@@ -712,21 +713,21 @@ Animation.initialize = function (this: typeof Animation) {
 	this.searcher.addKeydownFilter();
 
 	const { list } = this;
-	list.removable = true;
+	getListConfig(list).removable = true;
 	list.bind(() => this.motions);
-	list.updaters?.push(list.updateText);
-	list.creators?.push(list.createLoopIcon);
-	list.creators?.push(list.updateLoopIcon);
+	getListConfig(list).updaters.push(list.updateText);
+	getListConfig(list).creators.push(list.createLoopIcon);
+	getListConfig(list).creators.push(list.updateLoopIcon);
 
 	const { layerList } = this;
-	layerList.removable = true;
-	layerList.renamable = true;
+	getListConfig(layerList).removable = true;
+	getListConfig(layerList).renamable = true;
 	layerList.bind(() => this.layers);
 	// 直接用 Scene.list.* 真定义（Animation.initialize 跑时 scene-list.js 已求值），不用 layerList.* ——后者在模块顶层被 scene-window.js:353 占位赋 null 固化，拿到 null
-	layerList.creators?.push(Scene.list.createVisibilityIcon);
-	layerList.updaters?.push(Scene.list.updateVisibilityIcon);
-	layerList.creators?.push(Scene.list.createLockIcon);
-	layerList.updaters?.push(Scene.list.updateLockIcon);
+	getListConfig(layerList).creators.push(Scene.list.createVisibilityIcon);
+	getListConfig(layerList).updaters.push(Scene.list.updateVisibilityIcon);
+	getListConfig(layerList).creators.push(Scene.list.createLockIcon);
+	getListConfig(layerList).updaters.push(Scene.list.updateLockIcon);
 	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 5282/5303 段 this.setRecursiveStates + 567/569/580/582 段 layerList.* 调用姿势不变
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
@@ -6033,7 +6034,7 @@ Animation.list.updateLoopIcon = function (this: typeof Animation, item: Animatio
 };
 
 // 列表 - 在删除数据时回调
-Animation.list.onDelete = function (this: typeof Animation) {
+getListConfig(Animation.list).onDelete = function (this: typeof Animation) {
 	Animation.updateMotion!();
 };
 
@@ -6134,7 +6135,10 @@ Animation.layerList.createIcon = (function IIFE() {
 })();
 
 // 图层列表 - 在删除数据时回调
-Animation.layerList.onDelete = function (this: typeof Animation, item: AnimationLayer) {
+getListConfig(Animation.layerList).onDelete = function (
+	this: typeof Animation,
+	item: AnimationLayer
+) {
 	const editor = Inspector[Inspector.type];
 	if (editor?.target === item) {
 		Inspector.close!();

@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass, rect } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, removeClass, rect } from '../../../utils/dom';
 
 export interface ScrollBarApiOptions {
 	target?: HTMLElement | null;
@@ -94,7 +95,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	bar.updateDisplay = function (state: boolean): void {
+	const updateDisplay = function (state: boolean): void {
 		if (bar.visible !== state) {
 			bar.visible = state;
 			switch (state) {
@@ -108,7 +109,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	bar.updateHorizontalBar = function (): void {
+	const updateHorizontalBar = function (): void {
 		const target = bar.target!;
 		const cw = target.clientWidth;
 		const sw = target.scrollWidth;
@@ -123,7 +124,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	bar.updateVerticalBar = function (): void {
+	const updateVerticalBar = function (): void {
 		const target = bar.target!;
 		const ch = target.clientHeight;
 		const sh = target.scrollHeight;
@@ -138,7 +139,7 @@ export function attachScrollBarApi(
 		}
 	};
 
-	bar.bind = function (target: HTMLElement, type: string): void {
+	const bind = function (target: HTMLElement, type: string): void {
 		const thumb = document.createElement('div');
 		addClass(thumb, 'scroll-thumb');
 		const inner = document.createElement('div');
@@ -157,6 +158,8 @@ export function attachScrollBarApi(
 				break;
 		}
 	};
+
+	attachApi(bar, { updateDisplay, updateHorizontalBar, updateVerticalBar, bind });
 
 	const scrollRelative = (sign: number): void => {
 		const { target } = bar;

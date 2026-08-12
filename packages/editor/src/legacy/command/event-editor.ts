@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $, getElementWriter } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write } from '@/util/element-utils';
@@ -516,12 +517,12 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	const { list } = this;
 	if (!list || this._initialized) return;
 	this._initialized = true;
-	list.removable = true;
-	list.foldable = false;
+	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	list.bind!(() => this.data);
-	list.updaters?.push(list.updateItemClass);
-	list.creators?.push(list.createInitText);
-	list.creators?.push(list.updateInitText);
+	getListConfig(list).updaters.push(list.updateItemClass);
+	getListConfig(list).creators.push(list.createInitText);
+	getListConfig(list).creators.push(list.updateInitText);
 
 	const types = {
 		common: { name: 'Common', value: 'common', tip: '' },

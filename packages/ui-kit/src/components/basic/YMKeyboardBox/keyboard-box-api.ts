@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 
 export interface KeyboardBoxApiOptions {
@@ -83,16 +84,16 @@ export function attachKeyboardBoxApi(
 	box.blurEventEnabled = false;
 	el.appendChild(input);
 
-	box.read = function (): number {
+	const read = function (): number {
 		return box.dataValue ?? 0;
 	};
 
-	box.write = function (code: number): void {
+	const write = function (code: number): void {
 		box.dataValue = code;
 		box.input!.value = String(code);
 	};
 
-	box.inputCode = function (code: number): void {
+	const inputCode = function (code: number): void {
 		if (box.dataValue !== code) {
 			box.write(code);
 			if (box.inputEventEnabled) {
@@ -106,19 +107,19 @@ export function attachKeyboardBoxApi(
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			showChildNodes(box);
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			hideChildNodes(box);
 		}
 	};
 
-	box.getFocus = function (mode: string): HTMLInputElement {
+	const getFocus = function (mode: string): HTMLInputElement {
 		setTimeout(() => {
 			input.focus();
 			switch (mode) {
@@ -135,7 +136,7 @@ export function attachKeyboardBoxApi(
 		return input;
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -163,6 +164,8 @@ export function attachKeyboardBoxApi(
 				break;
 		}
 	};
+
+	attachApi(box, { read, write, inputCode, enable, disable, getFocus, on });
 
 	box._initialized = true;
 

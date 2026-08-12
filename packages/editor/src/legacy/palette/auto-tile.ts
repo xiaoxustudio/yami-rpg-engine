@@ -1,4 +1,5 @@
-﻿import { drawAndFitImage } from '@/util/element-utils';
+﻿import { getListConfig } from '@ui-kit';
+import { drawAndFitImage } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
@@ -148,11 +149,11 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 	this.frameMaximum = 256;
 
 	const list = this.templateList;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.templates);
-	list.creators?.push(list.addElementClass);
-	list.updaters?.push(list.updateTextNode);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).updaters.push(list.updateTextNode);
 
 	window.addEventListener('dprchange', this.dprchange);
 	on($('#autoTile'), 'close', this.windowClose);

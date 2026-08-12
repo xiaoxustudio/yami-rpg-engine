@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { File } from '@/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
@@ -58,7 +59,7 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	initialize(list: ScriptListElement & HTMLElement): void {
-		list.togglable = true;
+		getListConfig(list).togglable = true;
 		this.target = null;
 		this.script = null;
 		this.filter = 'script';

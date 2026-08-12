@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
@@ -264,9 +265,9 @@ function ensureDomBound() {
 	list.updateInitText = Attribute.list_updateInitText;
 	list.createNoteIcon = Attribute.list_createNoteIcon;
 	list.updateNoteIcon = Attribute.list_updateNoteIcon;
-	list.onCreate = Attribute.list_onCreate;
-	list.onDelete = Attribute.list_onDelete;
-	list.onResume = Attribute.list_onResume;
+	getListConfig(list).onCreate = Attribute.list_onCreate;
+	getListConfig(list).onDelete = Attribute.list_onDelete;
+	getListConfig(list).onResume = Attribute.list_onResume;
 	bindListClipboardMethods({
 		module: Attribute,
 		list,
@@ -287,16 +288,16 @@ Attribute.initialize = function (this: typeof Attribute) {
 	ensureDomBound();
 	if (!Attribute.list) return;
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.createGroupText);
-	list.updaters?.push(list.updateGroupText);
-	list.creators?.push(list.createInitText);
-	list.creators?.push(list.updateInitText);
-	list.creators?.push(list.createNoteIcon);
-	list.creators?.push(list.updateNoteIcon);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.createGroupText);
+	getListConfig(list).updaters.push(list.updateGroupText);
+	getListConfig(list).creators.push(list.createInitText);
+	getListConfig(list).creators.push(list.updateInitText);
+	getListConfig(list).creators.push(list.createNoteIcon);
+	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	this.panel.attribute = null;
 

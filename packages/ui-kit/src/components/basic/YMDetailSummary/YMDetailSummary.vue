@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from 'vue';
 import { DetailBoxKey, type DetailBoxContext } from '../YMDetailBox/context';
+import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
@@ -59,8 +60,7 @@ const pointerdown = (event: PointerEvent): void => {
 onMounted(() => {
 	const el = root.value;
 	if (!el) return;
-	el.toggle = toggle;
-	el.on = on;
+	attachApi(el, { toggle, on });
 	el.addEventListener('keydown', keydown as EventListener);
 	el.addEventListener('pointerdown', pointerdown);
 });

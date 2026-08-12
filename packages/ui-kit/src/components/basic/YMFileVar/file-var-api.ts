@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import { defVar } from '../YMNumberVar/number-var-api';
 
@@ -38,7 +39,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 	box.varBox!.type = 'variable';
 	box.varBox!.filter = 'string';
 
-	box.read = function (): unknown {
+	const readValue = function (): unknown {
 		switch (box.mode) {
 			case 'constant':
 				return read(box.fileBox);
@@ -47,7 +48,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.write = function (value: unknown): void {
+	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
 				box.switch('constant');
@@ -62,7 +63,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.switch = function (mode?: string): void {
+	const switchMode = function (mode?: string): void {
 		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
 			switch (box.mode) {
@@ -97,21 +98,21 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			box.fileBox.enable();
 			box.varBox?.enable();
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			box.fileBox.disable();
 			box.varBox?.disable();
 		}
 	};
 
-	box.getFocus = function (mode?: string): void {
+	const getFocus = function (mode?: string): void {
 		switch (box.mode) {
 			case 'constant':
 				return box.fileBox.focus();
@@ -120,7 +121,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.keydown = function (event: KeyboardEvent): void {
+	const keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
@@ -129,7 +130,7 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.pointerdown = function (event: PointerEvent): void {
+	const pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
@@ -146,13 +147,25 @@ export function attachFileVarApi(el: HTMLElement, options: FileVarApiOptions = {
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
+
+	attachApi(box, {
+		read: readValue,
+		write: writeValue,
+		switch: switchMode,
+		enable,
+		disable,
+		getFocus,
+		keydown,
+		pointerdown,
+		on
+	});
 
 	box._initialized = true;
 	box.addEventListener('keydown', box.keydown as EventListener);

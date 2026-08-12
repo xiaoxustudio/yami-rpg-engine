@@ -1,4 +1,5 @@
-﻿import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
+﻿import { attachApi } from '../../../utils/attach-api';
+import { addClass, removeClass, hasClass, read, write } from '../../../utils/dom';
 import type { CustomBoxApi } from '../../business/YMCustomBox/custom-box-api';
 import type { SelectBoxApi } from '../YMSelectBox/select-box-api';
 import { defVar } from '../YMNumberVar/number-var-api';
@@ -41,7 +42,7 @@ export function attachSelectVarApi(
 	box.varBox!.type = 'variable';
 	box.varBox!.filter = 'all';
 
-	box.read = function (): unknown {
+	const readValue = function (): unknown {
 		switch (box.mode) {
 			case 'constant':
 				return read(box.selectBox);
@@ -50,7 +51,7 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.write = function (value: unknown): void {
+	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'string':
 				box.switch('constant');
@@ -65,7 +66,7 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.switch = function (mode?: string): void {
+	const switchMode = function (mode?: string): void {
 		const focus = !mode && !hasClass(box, 'disabled');
 		if (mode === undefined) {
 			switch (box.mode) {
@@ -100,25 +101,25 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			box.selectBox.enable();
 			box.varBox?.enable();
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			box.selectBox.disable();
 			box.varBox?.disable();
 		}
 	};
 
-	box.loadItems = function (items: unknown): void {
+	const loadItems = function (items: unknown): void {
 		box.selectBox.loadItems(items);
 	};
 
-	box.getFocus = function (mode: unknown): void {
+	const getFocus = function (mode: unknown): void {
 		switch (box.mode) {
 			case 'constant':
 				return box.selectBox.focus();
@@ -127,11 +128,11 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.clear = function (): void {
+	const clear = function (): void {
 		box.selectBox.clear();
 	};
 
-	box.keydown = function (event: KeyboardEvent): void {
+	const keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
@@ -140,7 +141,7 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.pointerdown = function (event: PointerEvent): void {
+	const pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
@@ -157,13 +158,27 @@ export function attachSelectVarApi(
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
+
+	attachApi(box, {
+		read: readValue,
+		write: writeValue,
+		switch: switchMode,
+		enable,
+		disable,
+		loadItems,
+		getFocus,
+		clear,
+		keydown,
+		pointerdown,
+		on
+	});
 
 	box._initialized = true;
 	box.addEventListener('keydown', box.keydown as EventListener);

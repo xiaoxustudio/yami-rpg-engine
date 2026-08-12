@@ -191,6 +191,7 @@ export {
 } from './utils/tree-data-context';
 export { createScrollListener, type ScrollListenerApi } from './utils/scroll-listener';
 export { attachApi } from './utils/attach-api';
+export { getListConfig, type ListConfig } from './utils/list-config';
 export {
 	createTypeRegistry,
 	type TypeRegistryApi,

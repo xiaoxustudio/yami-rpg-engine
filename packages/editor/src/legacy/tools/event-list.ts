@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { Command } from '@/command/command-object.ts';
 import { addClass } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
@@ -60,7 +61,7 @@ export class EventListInterface implements IListInterface {
 	}
 
 	initialize(list: EventListDom): void {
-		list.togglable = true;
+		getListConfig(list).togglable = true;
 		this.filter = list.getAttribute('filter') ?? FILTER_BY_LIST_ID[list.id] ?? 'global';
 		this.type = `${this.filter}.event`;
 		this.editCallback = () => list.save();

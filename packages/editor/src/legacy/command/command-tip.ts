@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import {
@@ -290,9 +291,9 @@ CommandSuggestion.initialize = function (): void {
 
 	// 挂载列表项创建器/更新器 ——
 	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 comment 元素。
-	list.creators?.push(list.createIcon!);
-	list.creators?.push(list.createComment!);
-	list.creators?.push(list.createCommandTip!);
+	getListConfig(list).creators.push(list.createIcon!);
+	getListConfig(list).creators.push(list.createComment!);
+	getListConfig(list).creators.push(list.createCommandTip!);
 
 	this.data = File.get!({
 		local: 'commands.json',

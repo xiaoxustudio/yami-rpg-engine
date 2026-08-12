@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
@@ -307,7 +308,7 @@ EventBus.once('editor_loaded', () => {
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
 	UI.list.updateItemClass = Scene.list.updateItemClass;
 	// 否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
-	UI.list.updaters?.push(UI.list.updateItemClass);
+	getListConfig(UI.list).updaters.push(UI.list.updateItemClass);
 });
 UI.list.createIcon = null;
 UI.list.updateIcon = null;
@@ -325,19 +326,19 @@ EventBus.once('editor_loaded', () => {
 	UI.list.updateLockIcon = Scene.list.updateLockIcon;
 	// 上面 8 个方法是从 Scene.list 复制而来，赋值完成后才能往 creators/updaters 推；否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
 	const { list } = UI;
-	list.creators?.push(list.createEventIcon);
-	list.creators?.push(list.updateEventIcon);
-	list.creators?.push(list.createScriptIcon);
-	list.creators?.push(list.updateScriptIcon);
-	list.creators?.push(list.createVisibilityIcon);
-	list.updaters?.push(list.updateVisibilityIcon);
-	list.creators?.push(list.createLockIcon);
-	list.updaters?.push(list.updateLockIcon);
+	getListConfig(list).creators.push(list.createEventIcon);
+	getListConfig(list).creators.push(list.updateEventIcon);
+	getListConfig(list).creators.push(list.createScriptIcon);
+	getListConfig(list).creators.push(list.updateScriptIcon);
+	getListConfig(list).creators.push(list.createVisibilityIcon);
+	getListConfig(list).updaters.push(list.updateVisibilityIcon);
+	getListConfig(list).creators.push(list.createLockIcon);
+	getListConfig(list).updaters.push(list.updateLockIcon);
 });
-UI.list.onCreate = null;
-UI.list.onRemove = null;
-UI.list.onDelete = null;
-UI.list.onResume = null;
+getListConfig(UI.list).onCreate = null;
+getListConfig(UI.list).onRemove = null;
+getListConfig(UI.list).onDelete = null;
+getListConfig(UI.list).onResume = null;
 
 UI.initialize = function (this: UIShape) {
 	this.page = $('#ui');
@@ -481,12 +482,12 @@ UI.initialize = function (this: UIShape) {
 	this.searcher.addKeydownFilter();
 
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.nodes);
 	// 其 updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
-	list.creators?.push(list.createConditionIcon);
-	list.creators?.push(list.updateConditionIcon);
+	getListConfig(list).creators.push(list.createConditionIcon);
+	getListConfig(list).creators.push(list.updateConditionIcon);
 	// 其 creators/updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
 
 	History.processors['ui-object-create'] = (
@@ -3476,19 +3477,19 @@ UI.list.updateConditionIcon = function (this: UIShape, item: UINodeShape) {
 };
 
 // 列表 - 在创建数据时回调
-UI.list.onCreate = function (this: UIShape, item: UINodeShape) {
+getListConfig(UI.list).onCreate = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 };
 
 // 列表 - 在迁移数据时回调
-UI.list.onRemove = function (this: UIShape, item: UINodeShape) {
+getListConfig(UI.list).onRemove = function (this: UIShape, item: UINodeShape) {
 	UI.updateElement!(item);
 };
 
 // 列表 - 在删除数据时回调
-UI.list.onDelete = function (this: UIShape, item: UINodeShape) {
+getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
 	UI.unregisterPreset!(item);
 	UI.deleteElement!(item);
 	UI.updateHover!();
@@ -3497,7 +3498,7 @@ UI.list.onDelete = function (this: UIShape, item: UINodeShape) {
 };
 
 // 列表 - 在恢复数据时回调
-UI.list.onResume = function (this: UIShape, item: UINodeShape) {
+getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);

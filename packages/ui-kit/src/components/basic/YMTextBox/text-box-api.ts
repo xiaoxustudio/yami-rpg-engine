@@ -1,3 +1,5 @@
+import { attachApi } from '../../../utils/attach-api';
+
 export interface TextBoxApiOptions {
 	id?: string;
 	modelValue?: string;
@@ -175,20 +177,22 @@ export function attachTextBoxApi(el: HTMLElement, options: TextBoxApiOptions = {
 
 	box._initialized = true;
 
-	box.read = read;
-	box.write = write;
-	box.insert = insert;
-	box.enable = enable;
-	box.disable = disable;
-	box.focus = focus;
-	box.getFocus = getFocus;
-	box.setPlaceholder = setPlaceholder;
-	box.setMaxLength = setMaxLength;
-	box.fitContent = fitContent;
-	box.deleteInputContent = deleteInputContent;
-	box.addCloseButton = addCloseButton;
-	box.addKeydownFilter = addKeydownFilter;
-	box.on = on;
+	attachApi(box, {
+		read,
+		write,
+		insert,
+		enable,
+		disable,
+		focus,
+		getFocus,
+		setPlaceholder,
+		setMaxLength,
+		fitContent,
+		deleteInputContent,
+		addCloseButton,
+		addKeydownFilter,
+		on
+	});
 
 	if (options.modelValue !== undefined) {
 		write(options.modelValue);

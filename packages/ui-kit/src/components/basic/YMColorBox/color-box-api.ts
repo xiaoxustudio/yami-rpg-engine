@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, dispatchChangeEvent } from '../../../utils/dom';
 
 export interface ColorBoxApiOptions {
@@ -60,11 +61,11 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 	box.appendChild(foreground);
 	box.tabIndex = 0;
 
-	box.read = function (): string {
+	const read = function (): string {
 		return box.dataValue ?? '';
 	};
 
-	box.write = function (color: string): void {
+	const write = function (color: string): void {
 		box.dataValue = color;
 		const r = parseInt(color.slice(0, 2), 16);
 		const g = parseInt(color.slice(2, 4), 16);
@@ -73,7 +74,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		foreground.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
 	};
 
-	box.input = function (color: string): void {
+	const input = function (color: string): void {
 		if (box.dataValue !== color) {
 			box.write(color);
 			if (box.inputEventEnabled) {
@@ -87,19 +88,19 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			showChildNodes(box);
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			hideChildNodes(box);
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -112,7 +113,7 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		}
 	};
 
-	box.keydown = function (event: KeyboardEvent): void {
+	const keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -124,10 +125,12 @@ export function attachColorBoxApi(el: HTMLElement, options: ColorBoxApiOptions =
 		}
 	};
 
-	box.mouseclick = function (event: Event): void {
+	const mouseclick = function (event: Event): void {
 		options.colorPicker?.(box);
 		event;
 	};
+
+	attachApi(box, { read, write, input, enable, disable, on, keydown, mouseclick });
 
 	box.addEventListener('keydown', box.keydown as EventListener);
 	box.addEventListener('click', box.mouseclick);

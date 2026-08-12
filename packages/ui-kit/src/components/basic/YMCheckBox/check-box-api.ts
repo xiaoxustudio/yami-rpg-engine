@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import { addClass, removeClass, hasClass, dispatchChangeEvent } from '../../../utils/dom';
 
 export interface CheckBoxApiOptions {
@@ -66,7 +67,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 	});
 	box.relations = relations;
 
-	box.write = function (value: boolean): void {
+	const write = function (value: boolean): void {
 		dataValue = !!value;
 		dataValue ? addClass(box, 'selected') : removeClass(box, 'selected');
 		if (!hasClass(box, 'disabled')) {
@@ -79,11 +80,11 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.read = function (): boolean {
+	const read = function (): boolean {
 		return dataValue;
 	};
 
-	box.input = function (value: boolean): void {
+	const input = function (value: boolean): void {
 		if (dataValue !== value) {
 			box.write(value);
 			if (inputEventEnabled) {
@@ -97,24 +98,24 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			toggleRelatedElements();
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			toggleRelatedElements();
 		}
 	};
 
-	box.relate = function (elements: HTMLElement[]): void {
+	const relate = function (elements: HTMLElement[]): void {
 		relations = elements;
 		box.relations = relations;
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
@@ -130,7 +131,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.keydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
+	const keydown = function (event: KeyboardEvent & { cmdOrCtrlKey?: boolean }): void {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter':
@@ -142,7 +143,7 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.pointerdown = function (event: PointerEvent): void {
+	const pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (document.activeElement !== document.body) {
@@ -153,9 +154,22 @@ export function attachCheckBoxApi(el: HTMLElement, options: CheckBoxApiOptions =
 		}
 	};
 
-	box.mouseclick = function (event: Event): void {
+	const mouseclick = function (event: Event): void {
 		box.input(!box.read());
 	};
+
+	attachApi(box, {
+		write,
+		read,
+		input,
+		enable,
+		disable,
+		relate,
+		on,
+		keydown,
+		pointerdown,
+		mouseclick
+	});
 
 	box.addEventListener('keydown', box.keydown as EventListener);
 	if (standard) {

@@ -1,3 +1,4 @@
+﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
@@ -274,12 +275,12 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	ensureDomBound();
 	const list = this.list as TreeListElement | null;
 	if (!list) return;
-	list.removable = true;
+	getListConfig(list).removable = true;
 	list.bind(() => this.data);
-	list.creators?.push(list.addElementClass);
-	list.creators?.push(list.updateToggleStyle);
-	list.updaters?.push(list.updateTextNode);
-	list.creators?.push(list.createEditIcon);
+	getListConfig(list).creators.push(list.addElementClass);
+	getListConfig(list).creators.push(list.updateToggleStyle);
+	getListConfig(list).updaters.push(list.updateTextNode);
+	getListConfig(list).creators.push(list.createEditIcon);
 
 	(this.parameterPane as TreeListElement).bind(list);
 

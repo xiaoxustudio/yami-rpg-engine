@@ -1,4 +1,6 @@
-﻿export interface SelectBoxApiOptions {
+﻿import { attachApi } from '../../../utils/attach-api';
+
+export interface SelectBoxApiOptions {
 	id?: string;
 	modelValue?: unknown;
 	items?: unknown[];
@@ -458,29 +460,31 @@ export function attachSelectBoxApi(
 	box.inputEventEnabled = inputEventEnabled;
 	box._initialized = true;
 
-	box.read = read;
-	box.write = write;
-	box.write2 = write2;
-	box.writeDefault = writeDefault;
-	box.input = input;
-	box.update = update;
-	box.reselect = reselect;
-	box.save = save;
-	box.restore = restore;
-	box.enable = enable;
-	box.disable = disable;
-	box.loadItems = loadItems;
-	box.setItemNames = setItemNames;
-	box.clear = clear;
-	box.enableHiddenMode = enableHiddenMode;
-	box.relate = relate;
-	box.toggleRelatedElements = toggleRelatedElements;
-	box.enableElement = enableElement;
-	box.disableElement = disableElement;
-	box.on = on;
-	box.keydown = keydown;
-	box.pointerdown = pointerdown;
-	box.closePopup = closePopup;
+	attachApi(box, {
+		read,
+		write,
+		write2,
+		writeDefault,
+		input,
+		update,
+		reselect,
+		save,
+		restore,
+		enable,
+		disable,
+		loadItems,
+		setItemNames,
+		clear,
+		enableHiddenMode,
+		relate,
+		toggleRelatedElements,
+		enableElement,
+		disableElement,
+		on,
+		keydown,
+		pointerdown,
+		closePopup
+	});
 
 	box.addEventListener('keydown', keydown as EventListener);
 	box.addEventListener('pointerdown', pointerdown as EventListener);

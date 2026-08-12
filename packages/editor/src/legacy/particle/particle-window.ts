@@ -1,4 +1,5 @@
-﻿import { relate, getRelativeCoords } from '@/util/element-utils';
+﻿import { getListConfig } from '@ui-kit';
+import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
@@ -455,10 +456,10 @@ Particle.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => 
 Particle.list.updateVisibilityIcon = function (...args) {
 	return Scene.list.updateVisibilityIcon!(...args);
 };
-Particle.list.onCreate = null;
-Particle.list.onRemove = null;
-Particle.list.onDelete = null;
-Particle.list.onResume = null;
+getListConfig(Particle.list).onCreate = null;
+getListConfig(Particle.list).onRemove = null;
+getListConfig(Particle.list).onDelete = null;
+getListConfig(Particle.list).onResume = null;
 
 Particle.initialize = function () {
 	this.page = $('#particle');
@@ -538,11 +539,11 @@ Particle.initialize = function () {
 	this.matrix = new Matrix();
 
 	const { list } = this;
-	list.removable = true;
-	list.renamable = true;
+	getListConfig(list).removable = true;
+	getListConfig(list).renamable = true;
 	list.bind(() => this.layers);
-	list.creators?.push(list.createVisibilityIcon);
-	list.updaters?.push(list.updateVisibilityIcon);
+	getListConfig(list).creators.push(list.createVisibilityIcon);
+	getListConfig(list).updaters.push(list.updateVisibilityIcon);
 
 	History.processors['particle-layer-create'] =
 		History.processors['particle-layer-delete'] =
@@ -1936,20 +1937,20 @@ Particle.list.createVisibilityIcon = function (item: unknown) {
 };
 
 // 列表 - 在创建数据时回调
-Particle.list.onCreate = function () {
+getListConfig(Particle.list).onCreate = function () {
 	Particle.emitter.updateLayers();
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };
 
 // 列表 - 在迁移数据时回调
-Particle.list.onRemove = function () {
+getListConfig(Particle.list).onRemove = function () {
 	Particle.emitter.updateLayers();
 	Particle.requestRendering!();
 };
 
 // 列表 - 在删除数据时回调
-Particle.list.onDelete = function () {
+getListConfig(Particle.list).onDelete = function () {
 	Particle.updateTarget!();
 	Particle.emitter.updateLayers();
 	Particle.emitter.active = false;
@@ -1959,7 +1960,7 @@ Particle.list.onDelete = function () {
 };
 
 // 列表 - 在恢复数据时回调
-Particle.list.onResume = function () {
+getListConfig(Particle.list).onResume = function () {
 	Particle.emitter.updateLayers();
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();

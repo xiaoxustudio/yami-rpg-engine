@@ -1,3 +1,5 @@
+import { attachApi } from '../../../utils/attach-api';
+
 export interface ToastManagerApi extends HTMLElement {
 	_initialized: boolean;
 	show(...args: unknown[]): HTMLDivElement;
@@ -10,7 +12,7 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 
 	const timerMap = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
 
-	manager.show = function (
+	const show = function (
 		message: string,
 		type: string = 'info',
 		duration: number = 4000
@@ -37,7 +39,7 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 		return toast;
 	};
 
-	manager.dismiss = function (toast: HTMLElement | null): void {
+	const dismiss = function (toast: HTMLElement | null): void {
 		if (!toast || toast.parentNode !== manager) return;
 		const timer = timerMap.get(toast);
 		if (timer !== undefined) clearTimeout(timer);
@@ -45,6 +47,8 @@ export function attachToastManagerApi(el: HTMLElement): ToastManagerApi {
 		toast.classList.add('toast-hide');
 		setTimeout(() => toast.remove(), 200);
 	};
+
+	attachApi(manager, { show, dismiss });
 
 	manager._initialized = true;
 	return manager;

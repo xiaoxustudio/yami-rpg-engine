@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import {
 	clamp,
 	addClass,
@@ -378,28 +379,30 @@ export function createSelectListApi(
 		close();
 	};
 
-	box.read = read;
-	box.write = write;
-	box.select = select;
-	box.unselect = unselect;
-	box.reselect = reselect;
-	box.open = open;
-	box.close = close;
-	box.resize = resize;
-	box.updateHeadAndFoot = updateHeadAndFoot;
-	box.updateOnResize = updateOnResize;
-	box.createItems = createItems;
-	box.pageUp = pageUp;
-	box.pageDown = pageDown;
-	box.getElementIndexOfSelection = getElementIndexOfSelection;
-	box.scrollToSelection = scrollToSelection;
-	box.clearElements = clearElements;
-	box.clear = clear;
-	box.pointermove = pointermove;
-	box.windowKeydown = windowKeydown;
-	box.windowPointerdown = windowPointerdown;
-	box.windowResize = windowResize;
-	box.windowBlur = windowBlur;
+	attachApi(box, {
+		read,
+		write,
+		select,
+		unselect,
+		reselect,
+		open,
+		close,
+		resize,
+		updateHeadAndFoot,
+		updateOnResize,
+		createItems,
+		pageUp,
+		pageDown,
+		getElementIndexOfSelection,
+		scrollToSelection,
+		clearElements,
+		clear,
+		pointermove,
+		windowKeydown,
+		windowPointerdown,
+		windowResize,
+		windowBlur
+	});
 
 	return box;
 }

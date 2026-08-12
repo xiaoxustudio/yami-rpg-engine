@@ -1,3 +1,4 @@
+import { attachApi } from '../../../utils/attach-api';
 import {
 	addClass,
 	removeClass,
@@ -53,7 +54,7 @@ export function attachNumberVarApi(
 	box.numBox = numBox;
 	box.varBox = varBox;
 
-	box.read = function (): unknown {
+	const readValue = function (): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return read(numBox);
@@ -62,7 +63,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.write = function (value: unknown): void {
+	const writeValue = function (value: unknown): void {
 		switch (typeof value) {
 			case 'number':
 				box.switch('constant');
@@ -86,7 +87,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.switch = function (target?: string): void {
+	const switchMode = function (target?: string): void {
 		const focus = !target && !hasClass(box, 'disabled');
 		if (target === undefined) {
 			switch (currentMode) {
@@ -124,21 +125,21 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.enable = function (): void {
+	const enable = function (): void {
 		if (removeClass(box, 'disabled')) {
 			numBox.enable();
 			varBox.enable();
 		}
 	};
 
-	box.disable = function (): void {
+	const disable = function (): void {
 		if (addClass(box, 'disabled')) {
 			numBox.disable();
 			varBox.disable();
 		}
 	};
 
-	box.getFocus = function (mode?: string): unknown {
+	const getFocus = function (mode?: string): unknown {
 		switch (currentMode) {
 			case 'constant':
 				return numBox.getFocus(mode);
@@ -147,7 +148,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.keydown = function (event: KeyboardEvent): void {
+	const keydown = function (event: KeyboardEvent): void {
 		switch (event.code) {
 			case 'Slash':
 				event.preventDefault();
@@ -156,7 +157,7 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.pointerdown = function (event: PointerEvent): void {
+	const pointerdown = function (event: PointerEvent): void {
 		switch (event.button) {
 			case 0:
 				if (!hasClass(box, 'disabled') && event.target === box) {
@@ -173,13 +174,25 @@ export function attachNumberVarApi(
 		}
 	};
 
-	box.on = function (
+	const on = function (
 		type: string,
 		listener: (event: Event) => void,
 		listenerOptions?: boolean | AddEventListenerOptions
 	): void {
 		box.addEventListener(type, listener as EventListener, listenerOptions);
 	};
+
+	attachApi(box, {
+		read: readValue,
+		write: writeValue,
+		switch: switchMode,
+		enable,
+		disable,
+		getFocus,
+		keydown,
+		pointerdown,
+		on
+	});
 
 	box._initialized = true;
 	box.addEventListener('keydown', box.keydown as EventListener);
