@@ -241,28 +241,18 @@ UI.TextBox = class TextBoxElement extends UI.Element {
 				const sw = Math.min(this.textWidth!, this.innerWidth!);
 				const sh = this.innerHeight!;
 				texture.clip(0, sy * scale, sw * scale, sh * scale);
-				GL.drawImageWithColor!(
-					texture,
-					this.textX,
-					this.textY,
-					sw,
-					sh,
+				GL.drawImageWithColor!(texture, this.textX, this.textY, sw, sh, [
 					this._selectionColorInt
-				);
+				]);
 			} else {
 				if (this.content) {
 					const sy = this.textShiftY!;
 					const sw = Math.min(this.textWidth!, this.innerWidth!);
 					const sh = this.innerHeight!;
 					texture.clip(0, sy * scale, sw * scale, sh * scale);
-					GL.drawImageWithColor!(
-						texture,
-						this.textX!,
-						this.textY!,
-						sw,
-						sh,
+					GL.drawImageWithColor!(texture, this.textX!, this.textY!, sw, sh, [
 						this._colorInt
-					);
+					]);
 				}
 			}
 		}

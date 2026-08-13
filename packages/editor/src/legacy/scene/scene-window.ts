@@ -1020,7 +1020,9 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 		this.switchLayer!('object');
 	}
 
-	GL.setAmbientLight!(this.ambient);
+	if (this.ambient) {
+		GL.setAmbientLight!(this.ambient);
+	}
 	UndoManager.setActive!(Scene);
 };
 

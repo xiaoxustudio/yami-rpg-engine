@@ -68,10 +68,10 @@ Window.open = function (this: typeof Window, id: string) {
 		if (frames.length > 0) {
 			frames[frames.length - 1].blur();
 		} else {
+			document.body.style.pointerEvents = 'none';
 			Title.pointermove!({ target: null });
 			Window.saveActiveElement!();
 			Layout.disableFocusableElements();
-			document.body.style.pointerEvents = 'none';
 			document.activeElement!.blur();
 			window.removeEventListener('keydown', Menubar.keydown!);
 			window.removeEventListener('keydown', Scene.keydown);
@@ -116,13 +116,13 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 	}
 
 	if ((element as WindowFrame).close()) {
-		document.body.style.pointerEvents = 'inherit';
 		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
 		try {
 			if (frames.length > 0) {
 				frames[frames.length - 1].focus();
 			} else {
+				document.body.style.pointerEvents = 'inherit';
 				Title.pointerenter!();
 				Window.restoreActiveElement!();
 				Layout.enableFocusableElements();

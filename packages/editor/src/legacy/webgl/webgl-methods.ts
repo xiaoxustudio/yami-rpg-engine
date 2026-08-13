@@ -1471,7 +1471,7 @@ GL.drawSliceImage = function (
 	}
 };
 
-GL.fillRect = function (dx: number, dy: number, dw: number, dh: number, color: Array<number>) {
+GL.fillRect = function (dx: number, dy: number, dw: number, dh: number, color: number) {
 	const program = this.graphicProgram.use();
 	const vertices = this.arrays[0].float32;
 	const colors = this.arrays[0].uint32;
