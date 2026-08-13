@@ -1,6 +1,17 @@
 import { defineStore } from 'pinia';
 import { Animation } from '@/animation/animation-window.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
+
+export const animationStateKeys = [
+	'state',
+	'target',
+	'motion',
+	'direction',
+	'mode',
+	'speed',
+	'zoom'
+] as const;
 
 type AnimationFrameShape = {
 	start: number;
@@ -25,12 +36,18 @@ export const useAnimationStore = defineStore('animation', () => {
 	const target = shallowRef<AnimationFrameShape | null>(null);
 	const motion = shallowRef<AnimationMotionShape | null>(null);
 	const direction = shallowRef<number | null>(null);
+	const mode = shallowRef<string | null>(null);
+	const speed = shallowRef<number | null>(null);
+	const zoom = shallowRef<number | null>(null);
 
 	function syncState() {
 		state.value = Animation?.state ?? 'closed';
 		target.value = Animation?.target ?? null;
 		motion.value = Animation?.motion ?? null;
 		direction.value = Animation?.direction ?? null;
+		mode.value = Animation?.mode ?? null;
+		speed.value = Animation?.speed ?? null;
+		zoom.value = Animation?.zoom ?? null;
 	}
 
 	function open(context: AnimationContextShape) {
@@ -126,6 +143,9 @@ export const useAnimationStore = defineStore('animation', () => {
 		target,
 		motion,
 		direction,
+		mode,
+		speed,
+		zoom,
 		syncState,
 		open,
 		load,
@@ -151,3 +171,7 @@ export const useAnimationStore = defineStore('animation', () => {
 		requestRendering
 	};
 });
+
+export function getAnimationStore() {
+	return useAnimationStore(pinia);
+}

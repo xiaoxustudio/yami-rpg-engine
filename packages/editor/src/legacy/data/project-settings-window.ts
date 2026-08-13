@@ -58,11 +58,12 @@ export const Project = {
 	paramInput: null as unknown as (event: Event) => void,
 	confirm: null as unknown as (event: Event) => void,
 	state: null as string | null,
-	target: null as { save?: () => void } | null,
+	target: null as ProjectData | null,
 	close: null as (() => void) | null
 };
 
 Project.initialize = function (this: typeof Project) {
+	getProjectStore().syncState();
 	if (!$('#config-window-display')) return;
 	$('#config-window-display').loadItems([
 		{ name: 'Windowed', value: 'windowed' },
@@ -170,8 +171,10 @@ Project.initialize = function (this: typeof Project) {
 
 Project.open = function (this: typeof Project) {
 	Window.open!('project-settings');
+	this.state = 'open';
 
 	this.data = Object.clone(Data.config);
+	this.target = this.data;
 
 	$('#config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
 
@@ -265,6 +268,8 @@ Project.windowClose = function (this: typeof Project, event: Event) {
 };
 
 Project.windowClosed = function (this: typeof Project, event: Event) {
+	Project.state = 'closed';
+	Project.target = null;
 	Project.data = null;
 };
 
@@ -433,3 +438,5 @@ Project.languages = {
 		return items;
 	}
 };
+
+import { getProjectStore } from '@app/stores/project';

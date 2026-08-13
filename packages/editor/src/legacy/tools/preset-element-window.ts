@@ -19,7 +19,6 @@ interface PresetElementListItem {
 
 interface PresetElementList extends HTMLElement {
 	elements: Array<{ item: PresetElementListItem }>;
-	createIcon: (...args: unknown[]) => unknown;
 	bind(getter: () => PresetElementNode[] | null): void;
 	clear(): void;
 	update(): void;
@@ -88,16 +87,12 @@ function ensureDomBound() {
 	PresetElement.ui = $('#presetElement-uiId');
 	PresetElement.list = list as PresetElementList;
 	PresetElement.searcher = $('#presetElement-searcher');
-	PresetElement.list.createIcon = null as unknown as (...args: unknown[]) => unknown;
 }
 
 PresetElement.initialize = function (this: typeof PresetElement) {
 	ensureDomBound();
 	if (!this.list) return;
 	this.list.bind(() => this.nodes);
-
-	// 列表 - 重写创建图标方法
-	this.list.createIcon = UI.list.createIcon;
 
 	// ui write/list open 经 Vue 模板转发（PresetElement.vue @write/@open → PresetElement.*）
 	this.searcher.on('keydown', this.searcherKeydown);

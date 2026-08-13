@@ -35,10 +35,6 @@ export const usePluginStore = defineStore('plugin', () => {
 		PluginManager?.loadOverview?.();
 	}
 
-	function createOverview(...args: unknown[]) {
-		return PluginManager?.createOverview?.(...args);
-	}
-
 	function createData(...args: unknown[]) {
 		return PluginManager?.createData?.(...args);
 	}
@@ -140,7 +136,6 @@ export const usePluginStore = defineStore('plugin', () => {
 		open,
 		unload,
 		loadOverview,
-		createOverview,
 		createData,
 		getItemById,
 		switchOverviewMode,

@@ -1,5 +1,5 @@
 <template>
-	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" :render-node-extras="renderNodeExtras" />
+	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" :render-node-extras="renderNodeExtras" :render-node-icon="props.nodeIconRenderer ? renderNodeIcon : undefined" />
 </template>
 
 <script setup lang="ts">
@@ -13,6 +13,7 @@ interface Props {
 	id?: string;
 	padded?: boolean;
 	nodeExtras?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
+	nodeIconRenderer?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -35,6 +36,15 @@ const renderNodeExtras = (item: unknown, container: HTMLElement): void => {
 		render(vnodes ? h(Fragment, vnodes) : null, container);
 	} catch (error) {
 		console.error('[tree-extras] renderNodeExtras failed:', error);
+	}
+};
+
+const renderNodeIcon = (item: unknown, container: HTMLElement): void => {
+	try {
+		const vnodes = props.nodeIconRenderer?.(item, container);
+		render(vnodes ? h(Fragment, vnodes) : null, container);
+	} catch (error) {
+		console.error('[tree-icon] renderNodeIcon failed:', error);
 	}
 };
 

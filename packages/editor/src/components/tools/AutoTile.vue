@@ -91,6 +91,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { useAutoTileStore } from '@app/stores/autoTile';
 import SwitchItem from '@app/components/common/SwitchItem.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -99,10 +100,22 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+const autoTileStore = useAutoTileStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	container.parentNode?.classList.add('plain');
-	return [];
+	const node = item as { id?: string };
+	const count = AutoTile.templateCounts?.[node.id ?? ''];
+	return [
+		h(
+			'span',
+			{
+				class: 'autoTile-count',
+				style: 'color: var(--team-relation-mark-color-friend);padding:4px 2px;margin-left: 4px;'
+			},
+			String(count ?? 0)
+		)
+	];
 };
 
 const onTemplatesSelect = (event: Event & { value?: unknown }) => {
@@ -143,6 +156,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	autoTileStore.syncState();
 	inspector.syncState();
 	local.syncState();
 });

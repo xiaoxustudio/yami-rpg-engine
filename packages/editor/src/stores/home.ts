@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Home } from '@/title/home-page.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 export const useHomeStore = defineStore('home', () => {
 	const state = shallowRef<string>('closed');
@@ -79,3 +80,7 @@ export const useHomeStore = defineStore('home', () => {
 		recentPointerup
 	};
 });
+
+export function getHomeStore() {
+	return useHomeStore(pinia);
+}

@@ -8,6 +8,9 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 import type { Connect, ViteDevServer, IndexHtmlTransformContext } from 'vite';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
+const isCustomElement = (tag: string) =>
+	tag === 'log-item' || tag === 'anim-dir' || tag === 'tooltip-line';
+
 type BundleEntry = {
 	type: string;
 	fileName?: string;
@@ -57,7 +60,7 @@ export default defineConfig({
 	base: './',
 
 	plugins: [
-		vue(),
+		vue({ template: { compilerOptions: { isCustomElement } } }),
 		vueDevTools(),
 		{
 			name: 'electron-renderer-resolve',

@@ -30,7 +30,9 @@
 					>
 				</div>
 				<div class="box" id="export-apk-container">
-					<div class="box" id="export-apk-content"> </div>
+					<div class="box" id="export-apk-content">
+						<div v-for="(log, index) in items" :key="index" class="export-apk-major text">{{ log.msg }}</div>
+					</div>
 				</div>
 			</div>
 			<button id="export-apk-button" name="export-to-apk" />
@@ -39,17 +41,37 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
+import { ApkBuilder } from '@/module/apkbuilder.ts';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const items = ref<{ done: boolean; msg: string }[]>([]);
+
+const update = (): void => {
+	items.value = ApkBuilder.logs.slice();
+	void nextTick(() => {
+		const el = document.getElementById('export-apk-container');
+		if (el) {
+			el.scrollTo({
+				top: el.scrollHeight
+			});
+		}
+	});
+};
+
 onMounted(() => {
+	const el = document.getElementById('export-apk-content');
+	if (!el) return;
+	attachElementApi(el, { update });
+	update();
 	inspector.syncState();
 	local.syncState();
 });

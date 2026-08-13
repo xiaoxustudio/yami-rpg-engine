@@ -135,7 +135,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'color':
 				if (region.color !== value) {
 					region.color = value;
-					Scene.list.updateIcon!(region);
+					Scene.list.update();
 				}
 				break;
 		}

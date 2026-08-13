@@ -1,7 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, getFocus, hasClass, on } from '@/util/element-utils.ts';
+import { getFocus, hasClass, on } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { File } from '@/file/file-system-core.ts';
 import { GL } from '@/webgl/webgl-init.ts';
@@ -58,8 +58,6 @@ export const Team = {
 	list_delete: null as unknown as (item: TeamData) => void,
 	list_saveSelection: null as unknown as () => void,
 	list_restoreSelection: null as unknown as () => void,
-	list_createIcon: null as unknown as (item: TeamData) => void,
-	list_updateIcon: null as unknown as (item: TeamData) => void,
 	list_updateItemName: null as unknown as (item: TeamData) => void,
 	state: null as string | null,
 	teams: null as Record<string, TeamData> | null,
@@ -79,9 +77,6 @@ function ensureDomBound() {
 	list.delete = null as unknown as (...args: unknown[]) => void;
 	list.saveSelection = null as unknown as (...args: unknown[]) => void;
 	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
-	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.createIcon = Team.list_createIcon as (item: unknown) => unknown;
-	list.updateIcon = Team.list_updateIcon as (item: unknown) => unknown;
 	list.updateItemName = Team.list_updateItemName as (item: unknown) => unknown;
 	list.updateTextNode = Easing.list_updateTextNode;
 	list.insert = Team.list_insert;
@@ -93,6 +88,7 @@ function ensureDomBound() {
 }
 
 Team.initialize = function (this: typeof Team) {
+	getTeamStore().syncState();
 	ensureDomBound();
 	if (!Team.list) return;
 	this.maximum = 256;
@@ -102,7 +98,6 @@ Team.initialize = function (this: typeof Team) {
 	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.createIcon);
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	on($('#team'), 'close', this.windowClose);
@@ -116,8 +111,10 @@ Team.initialize = function (this: typeof Team) {
 
 Team.open = function (this: typeof Team, data: unknown) {
 	Window.open!('team');
+	this.state = 'open';
 
 	this.unpackTeams();
+	this.teams = Data.teams.map as unknown as Record<string, TeamData>;
 
 	this.list!.restoreSelection();
 
@@ -242,6 +239,8 @@ Team.windowClose = function (event: Event) {
 };
 
 Team.windowClosed = function (this: typeof Team, event: Event) {
+	this.state = 'closed';
+	this.teams = null;
 	this.data = null;
 	this.list!.clear();
 }.bind(Team);
@@ -283,7 +282,7 @@ Team.listPointerdown = function (this: TeamListElement, event: PointerEvent) {
 					},
 					input: (color: string) => {
 						team.color = color;
-						this.updateIcon(team);
+						this.update();
 						Team.changed = true;
 					}
 				});
@@ -505,28 +504,8 @@ Team.list_restoreSelection = function (this: TeamListElement) {
 	this.scrollToSelection();
 };
 
-Team.list_createIcon = function (item: TeamData) {
-	const { element } = item;
-	const icon = document.createElement('node-icon');
-	addClass(icon, 'team-icon');
-	element.nodeIcon = icon;
-	element.insertBefore(icon, element.textNode);
-	Team.list_updateIcon(item);
-};
-
-Team.list_updateIcon = function (item: TeamData) {
-	const icon = item.element.nodeIcon;
-	const color = item.color;
-	if (icon.color !== color) {
-		icon.color = color;
-		const r = parseInt(color.slice(0, 2), 16);
-		const g = parseInt(color.slice(2, 4), 16);
-		const b = parseInt(color.slice(4, 6), 16);
-		const a = parseInt(color.slice(6, 8), 16) / 255;
-		icon.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-	}
-};
-
 Team.list_updateItemName = function (this: TeamListElement, item: TeamData) {
 	this.updateTextNode(item);
 };
+
+import { getTeamStore } from '@app/stores/team';

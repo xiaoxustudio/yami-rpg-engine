@@ -1,14 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { on, addClass, clear } from '@/util/element-utils.ts';
+import { on } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
-import MarkdownIt from 'markdown-it';
-
-const md = new MarkdownIt({ html: false, linkify: true, breaks: true });
-
-function renderMarkdown(markdown: string): string {
-	return md.render(markdown.replace(/<!--[\s\S]*?-->/g, ''));
-}
 
 export interface UpdateLogItem {
 	title?: string;
@@ -17,7 +10,6 @@ export interface UpdateLogItem {
 }
 
 export const UpdateLog = {
-	content: $('#update-log-content'),
 	currentMode: null as string | null,
 	internalItems: null as unknown as UpdateLogItem[] | null,
 	communityItems: null as unknown as UpdateLogItem[] | null,
@@ -29,11 +21,11 @@ export const UpdateLog = {
 	loadCommunityReleases: null as ((...args: unknown[]) => unknown) | null,
 	displayDonationList: null as ((...args: unknown[]) => unknown) | null,
 	parseCommunityReleases: null as ((...args: unknown[]) => unknown) | null,
-	windowClosed: null as ((...args: unknown[]) => unknown) | null
+	windowClosed: null as ((...args: unknown[]) => unknown) | null,
+	publish: null as (() => void) | null
 };
 
 UpdateLog.initialize = function () {
-	this.content = $('#update-log-content');
 	const el = $('#update-log');
 	if (el) on(el, 'closed', this.windowClosed!);
 };
@@ -48,35 +40,17 @@ UpdateLog.open = function (this: typeof UpdateLog, items: UpdateLogItem[] | null
 } as (...args: unknown[]) => unknown;
 
 UpdateLog.update = function (this: typeof UpdateLog, items: UpdateLogItem[]) {
-	if (!this.content) {
-		this.content = $('#update-log-content');
-	}
-	clear(this.content);
-	for (const item of items) {
-		if (item.title) {
-			const title = document.createElement('div');
-			title.innerHTML = renderMarkdown(item.title);
-			addClass(title, 'update-log-title');
-			addClass(title, 'text');
-			this.content.appendChild(title);
-		}
-		if (item.major) {
-			const major = document.createElement('div');
-			major.innerHTML = renderMarkdown(item.major);
-			addClass(major, 'update-log-major');
-			addClass(major, 'text');
-			this.content.appendChild(major);
-		}
-		if (item.minor) {
-			const minor = document.createElement('div');
-			minor.innerHTML = renderMarkdown(item.minor);
-			addClass(minor, 'update-log-minor');
-			addClass(minor, 'text');
-			this.content.appendChild(minor);
-		}
-	}
+	this.internalItems = items;
+	UpdateLog.publish!();
 } as (...args: unknown[]) => unknown;
 
+UpdateLog.publish = function () {
+	window.dispatchEvent(new CustomEvent('update-log-update'));
+};
+
 UpdateLog.windowClosed = function () {
-	clear(UpdateLog.content);
+	UpdateLog.internalItems = null;
+	UpdateLog.communityItems = null;
+	UpdateLog.currentMode = 'internal';
+	UpdateLog.publish?.();
 };

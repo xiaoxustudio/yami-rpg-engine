@@ -1,6 +1,6 @@
 import { SettingConfig } from '@/module/settingconfig';
 import { $ } from '@/util/dom.ts';
-import { addClass, clear, hasClass, hide, rect, removeClass, show } from '@/util/element-utils';
+import { addClass, hasClass, rect, removeClass } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -36,15 +36,27 @@ interface RecentProject {
 	[k: string]: any;
 }
 
+export interface HomeRecentCard {
+	title: string;
+	dateText: string;
+	pathText: string;
+	stats: string[];
+	disabled: boolean;
+	hidden: boolean;
+}
+
 interface HomeShape {
+	dependsOn?: string[];
 	state: string | null;
 	openProject: ((path?: string) => void) | null;
 	createProject: ((path?: string) => void) | null;
+	recentCards: HomeRecentCard[] | null;
 
 	initialize: ((this: typeof Home) => void) | null;
 	updateCenterPosition: ((this: typeof Home) => void) | null;
 	parseRecentProjects: ((this: typeof Home) => void) | null;
 	removeRecentProject: ((this: typeof Home, index: number) => void) | null;
+	publishRecent: ((this: typeof Home) => void) | null;
 	readFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
 	countFileList: ((this: typeof Home, path: string) => Promise<FileStatItem[]>) | null;
 	windowResize: ((this: typeof Home, event: Event) => void) | null;
@@ -55,10 +67,12 @@ interface HomeShape {
 }
 
 export const Home: HomeShape = {
+	dependsOn: ['Layout'],
 	initialize: null,
 	updateCenterPosition: null,
 	parseRecentProjects: null,
 	removeRecentProject: null,
+	publishRecent: null,
 	readFileList: null,
 	countFileList: null,
 	windowResize: null,
@@ -67,11 +81,17 @@ export const Home: HomeShape = {
 	recentClick: null,
 	recentPointerup: null,
 	state: null as string | null,
+	recentCards: null as HomeRecentCard[] | null,
 	openProject: null as ((path?: string) => void) | null,
 	createProject: null as (() => void) | null
 };
 
 Home.initialize = function (this: typeof Home) {
+	getHomeStore().syncState();
+	Home.state = Layout.manager?.index === 'home' ? 'open' : 'closed';
+	Layout.manager?.on('switch', (event: Event & { value: string | null }) => {
+		Home.state = event.value === 'home' ? 'open' : 'closed';
+	});
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
 	// start/recent 事件经 Vue 模板转发（LayoutPanel @click/@pointerup → Home.startClick/recentClick/recentPointerup）
@@ -96,35 +116,27 @@ Home.windowResize = function (this: typeof Home, event: Event) {
 };
 
 Home.parseRecentProjects = function (this: typeof Home) {
-	const nodes = $('.home-recent-item');
 	const items = Editor.config!.recent! as RecentProject[];
 	const statsMode =
 		typeof SettingConfig !== 'undefined' && SettingConfig.config.recent
 			? SettingConfig.config.recent.statsMode
 			: 'count';
+	const cards: HomeRecentCard[] = [];
 
-	for (let i = 0; i < nodes.length; i++) {
-		const node = clear(nodes[i]);
+	for (let i = 0; i < 3; i++) {
 		const item = items[i];
-		removeClass(node, 'disabled');
 		if (!item) {
-			hide(node);
+			cards.push({
+				title: '',
+				dateText: '',
+				pathText: '',
+				stats: [],
+				disabled: false,
+				hidden: true
+			});
 			continue;
-		} else {
-			show(node);
 		}
 
-		const eBar = document.createElement('div');
-		addClass(eBar, 'box');
-		addClass(eBar, 'home-recent-bar');
-		node.appendChild(eBar);
-
-		const eTitle = document.createElement('div');
-		addClass(eTitle, 'home-recent-title');
-		addClass(eTitle, 'text');
-		eBar.appendChild(eTitle);
-
-		const eDate = document.createElement('div');
 		const date = new Date(item.date);
 		const Y = date.getFullYear();
 		const M = date.getMonth() + 1;
@@ -132,23 +144,17 @@ Home.parseRecentProjects = function (this: typeof Home) {
 		const h = date.getHours();
 		const m = date.getMinutes();
 		const m2 = m.toString().padStart(2, '0');
-		addClass(eDate, 'home-recent-date');
-		addClass(eDate, 'text');
-		eDate.textContent = `${Y}/${M}/${D} ${h}:${m2}`;
-		eBar.appendChild(eDate);
+		const card: HomeRecentCard = {
+			title: '',
+			dateText: `${Y}/${M}/${D} ${h}:${m2}`,
+			pathText: Path.normalize!(item.path),
+			stats: [],
+			disabled: false,
+			hidden: false
+		};
+		cards.push(card);
 
-		const ePath = document.createElement('div');
 		const path = item.path;
-		addClass(ePath, 'home-recent-path');
-		addClass(ePath, 'text');
-		ePath.textContent = Path.normalize!(path);
-		node.appendChild(ePath);
-
-		const eStat = document.createElement('div');
-		addClass(eStat, 'box');
-		addClass(eStat, 'home-recent-stat');
-		node.appendChild(eStat);
-
 		const dirname = Path.dirname!(path);
 		new Promise<string>((resolve: (val: string) => void, reject: (err: unknown) => void) => {
 			if (FS.existsSync!(path)) {
@@ -160,7 +166,7 @@ Home.parseRecentProjects = function (this: typeof Home) {
 		})
 			.then((data: string) => {
 				const { window } = JSON.parse(data);
-				eTitle.textContent = window.title;
+				card.title = window.title;
 
 				// 根据配置选择使用readFileList或countFileList
 				if (statsMode === 'size') {
@@ -198,6 +204,7 @@ Home.parseRecentProjects = function (this: typeof Home) {
 					counts.data + counts.script + counts.image + counts.media + counts.other;
 				sizes.total = sizes.data + sizes.script + sizes.image + sizes.media + sizes.other;
 				const get = Local.createGetter!('stats');
+				const texts: string[] = [];
 				for (const { type, name } of [
 					{ type: 'data', name: get('data') },
 					{ type: 'script', name: get('script') },
@@ -209,52 +216,40 @@ Home.parseRecentProjects = function (this: typeof Home) {
 					const count = counts[type];
 					const size = File.parseFileSize!(sizes[type]);
 
-					const eText = document.createElement('div');
-					addClass(eText, 'home-recent-data');
-					addClass(eText, 'text');
-
 					// 根据统计模式显示不同的信息
 					if (statsMode === 'size') {
-						eText.textContent = `${name}: ${size}`;
+						texts.push(`${name}: ${size}`);
 					} else {
-						eText.textContent = `${name}: ${count}`;
+						texts.push(`${name}: ${count}`);
 					}
-					eStat.appendChild(eText);
 				}
-				show(node);
+				card.stats = texts;
+				Home.publishRecent!();
 			})
 			.catch((error: unknown) => {
-				addClass(node, 'disabled');
+				card.disabled = true;
 				if (error instanceof URIError) {
-					eTitle.textContent = 'Project does not exist';
+					card.title = 'Project does not exist';
 				} else {
-					eTitle.textContent = 'Failed to load data';
+					card.title = 'Failed to load data';
 				}
+				Home.publishRecent!();
 			});
 	}
+	this.recentCards = cards;
+	Home.publishRecent!();
+};
+
+Home.publishRecent = function (this: typeof Home) {
+	window.dispatchEvent(new CustomEvent('home-recent-update'));
 };
 
 Home.removeRecentProject = function (this: typeof Home, index: number) {
-	const nodes = $('.home-recent-item');
 	const items = Editor.config!.recent! as RecentProject[];
 	const item = items[index];
-	const node = nodes[index];
-	if (item && node) {
+	if (item) {
 		items.remove(item);
-		clear(node);
-		const end = nodes.length - 1;
-		for (let i = index; i < end; i++) {
-			const sNode = nodes[i + 1];
-			const dNode = nodes[i];
-			const array = Array.from(sNode.childNodes);
-			for (const node of array) {
-				dNode.appendChild(node);
-			}
-			hasClass(sNode, 'disabled')
-				? addClass(dNode, 'disabled')
-				: removeClass(dNode, 'disabled');
-		}
-		hide(nodes[items.length]);
+		Home.parseRecentProjects!();
 	}
 };
 
@@ -425,6 +420,8 @@ Home.startClick = function (this: typeof Home, event: Event) {
 		}
 	}
 };
+
+import { getHomeStore } from '@app/stores/home';
 
 Home.recentClick = function (this: typeof Home, event: Event) {
 	const element = event.target as HTMLElement;

@@ -8,6 +8,7 @@
 					id="attribute-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@record="onListRecord"
 					@open="onListOpen"
@@ -122,6 +123,21 @@ const nodeExtras = (item: unknown): VNode[] => {
 		}
 	}
 	return nodes;
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string; type?: string };
+	const classes = {
+		boolean: 'icon-boolean',
+		number: 'icon-number',
+		string: 'icon-string',
+		enum: 'icon-string',
+		object: 'icon-object'
+	};
+	if (node.class === 'folder') {
+		return [h('node-icon', { class: 'icon-folder' })];
+	}
+	return [h('node-icon', { class: (classes as Record<string, string>)[node.type ?? ''] })];
 };
 
 const onListSelect = (event: Event) => {

@@ -1,8 +1,9 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, getFocus, on, read, write } from '@/util/element-utils';
+import { getFocus, on, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Local } from './localization.ts';
+import { h, render } from 'vue';
 
 interface ArrayListTarget {
 	previousSibling: Node;
@@ -135,17 +136,23 @@ ArrayList.interface = {
 	parse: function (this: typeof ArrayList, value: unknown, data: unknown, index: number) {
 		const { filter } = ArrayList.target!;
 		const indexText = document.createElement('div');
-		addClass(indexText, 'array-index');
-		addClass(indexText, 'text');
-		indexText.textContent =
-			Number.padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':';
-
+		render(
+			h(
+				'div',
+				{ class: 'array-index text' },
+				Number.padZero(index, (data as ArrayLike<unknown>).length, ' ') + ':'
+			),
+			indexText
+		);
 		const valueText = document.createElement('div');
-		addClass(valueText, 'array-value');
-		addClass(valueText, 'text');
-		valueText.textContent = ArrayList.interface.parsers[filter](value);
-
-		return [indexText, valueText];
+		render(
+			h('div', { class: 'array-value text' }, ArrayList.interface.parsers[filter](value)),
+			valueText
+		);
+		return [
+			indexText.firstElementChild as HTMLElement,
+			valueText.firstElementChild as HTMLElement
+		];
 	},
 	open: function (this: typeof ArrayList, value: unknown) {
 		const { filter } = ArrayList.target!;

@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
-import { addClass, getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
+import { getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Editor } from '@/main/editor.ts';
 import { CommandSchema } from './schema.ts';
@@ -11,6 +11,7 @@ import { Local } from '@/tools/localization.ts';
 
 import { Path } from '@/util/config.ts';
 import { getMonaco } from '@/util/monaco.ts';
+import { h, render } from 'vue';
 
 Command.cases.script = new CommandSchema({
 	name: 'script',
@@ -265,10 +266,11 @@ Command.cases.script = new CommandSchema({
 	},
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const text = document.createElement('div');
-		addClass(text, 'text');
+		const holder = document.createElement('div');
+		holder.style.display = 'none';
+		render(h('div', { class: 'text' }, code), holder);
+		const text = holder.firstElementChild as HTMLElement;
 		const options = this.colorOptions;
-		text.textContent = code;
 		options.theme = Title.theme;
 		await this.createTheme!(Title.theme);
 		monaco.editor.colorizeElement(text, options);

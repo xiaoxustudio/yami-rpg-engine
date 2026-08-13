@@ -186,7 +186,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'teamId':
 				if (actor.teamId !== value) {
 					actor.teamId = value;
-					Scene.list.updateIcon!(actor);
+					Scene.list.update();
 				}
 				break;
 			case 'angle':

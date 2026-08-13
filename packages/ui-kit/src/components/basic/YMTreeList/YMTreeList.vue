@@ -6,6 +6,7 @@ interface Props {
 	id?: string;
 	padded?: boolean;
 	renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
+	renderNodeIcon?: (item: unknown, container: HTMLElement) => void;
 }
 
 interface TreeListRootElement extends HTMLElement {
@@ -29,7 +30,8 @@ onMounted(() => {
 	if (!el) return;
 	if (props.padded) el.setAttribute('padded', '');
 	createTreeListApi(el, {
-		renderNodeExtras: props.renderNodeExtras
+		renderNodeExtras: props.renderNodeExtras,
+		renderNodeIcon: props.renderNodeIcon
 	});
 });
 
@@ -90,6 +92,16 @@ onBeforeUnmount(() => {
 	font-size: 14px;
 	text-indent: 0;
 	text-align: center;
+	pointer-events: none;
+}
+
+:global(:where(.tree-node-icon)) {
+	display: inline-block;
+	vertical-align: top;
+	width: 16px;
+	height: 20px;
+	margin: 0 2px 0 0;
+	text-indent: 0;
 	pointer-events: none;
 }
 

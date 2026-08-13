@@ -8,6 +8,7 @@
 					id="localization-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@record="onListRecord"
 					@open="onListOpen"
@@ -60,6 +61,13 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	}
 	nodes.push(h('div', { class: 'localization-init-text text' }, value));
 	return nodes;
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	return [
+		h('node-icon', { class: node.class === 'folder' ? 'icon-folder' : 'icon-string' })
+	];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {

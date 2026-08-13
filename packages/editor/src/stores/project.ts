@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Project } from '@/data/project-settings-window.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 export const useProjectStore = defineStore('project', () => {
 	const state = shallowRef<string>('closed');
@@ -47,3 +48,7 @@ export const useProjectStore = defineStore('project', () => {
 		confirm
 	};
 });
+
+export function getProjectStore() {
+	return useProjectStore(pinia);
+}

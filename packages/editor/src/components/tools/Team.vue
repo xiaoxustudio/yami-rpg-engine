@@ -7,6 +7,7 @@
 				<TreeList
 					id="team-list"
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@change="onListChange"
@@ -55,6 +56,21 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 		h('div', { class: `team-collision-mark text${collision === 1 ? ' on' : ''}` }, '\uf066')
 	);
 	return nodes;
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { color?: string };
+	const color = node.color ?? '';
+	const r = parseInt(color.slice(0, 2), 16);
+	const g = parseInt(color.slice(2, 4), 16);
+	const b = parseInt(color.slice(4, 6), 16);
+	const a = parseInt(color.slice(6, 8), 16) / 255;
+	return [
+		h('node-icon', {
+			class: 'team-icon',
+			style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})`, pointerEvents: 'auto' }
+		})
+	];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {

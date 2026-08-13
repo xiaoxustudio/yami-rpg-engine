@@ -8,22 +8,35 @@
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScript-overview') || 'Overview' }}</DetailSummary>
-		<div class="box" id="fileScript-overview"></div>
+		<div class="box" id="fileScript-overview" ref="overviewEl">
+			<PluginOverview :meta="overviewMeta" detailed />
+		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
+import { Inspector } from '@/inspector/inspector.ts';
+import type { PluginMetaShape } from '@/plugin/plugin.ts';
+import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const overviewEl = ref<HTMLElement | null>(null);
+const overviewMeta = ref<PluginMetaShape | null>(null);
+
+const syncOverview = (): void => {
+	overviewMeta.value = Inspector.fileScript?.meta ?? null;
+};
+
 onMounted(() => {
 	inspector.syncState();
 	local.syncState();
+	overviewEl.value?.addEventListener('update', syncOverview);
 });
 </script>

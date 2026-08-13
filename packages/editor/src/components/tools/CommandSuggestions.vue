@@ -1,5 +1,5 @@
 <template>
-	<TreeList id="command-suggestions" class="hidden" :node-extras="nodeExtras" />
+	<TreeList id="command-suggestions" class="hidden" :node-extras="nodeExtras" :node-icon-renderer="nodeIconRenderer" />
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,15 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	return [
+		h('node-icon', {
+			class: node.class === 'folder' ? 'icon-folder' : `icon-command ${node.class ?? ''}`
+		})
+	];
+};
 
 const nodeExtras = (item: unknown): VNode[] => {
 	const node = item as { class?: string; value?: string; keywords?: string };

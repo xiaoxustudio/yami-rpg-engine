@@ -218,7 +218,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 					parallax.image = value;
 					parallax.player.destroy();
 					parallax.player.loadTexture();
-					Scene.list.updateIcon!(parallax);
+					Scene.list.update();
 				}
 				break;
 			case 'layer':

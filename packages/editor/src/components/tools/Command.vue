@@ -8,6 +8,7 @@
 					id="command-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@open="onListOpen"
@@ -17,8 +18,10 @@
 			<div class="box" id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-					<div class="box" id="command-overview" />
-				</DetailBox>
+				<div class="box" id="command-overview" ref="overviewEl">
+					<PluginOverview :meta="overviewMeta" detailed />
+				</div>
+			</DetailBox>
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<div class="detail-grid" id="command-settings-grid">
@@ -32,10 +35,12 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, ref, type VNode } from 'vue';
 import { File } from '@/file/file-system-core.ts';
 import { getBrowserInstance } from '@app/stores/browser';
 import { CustomCommand } from '@/command/custom-command-window.ts';
+import type { PluginMetaShape } from '@/plugin/plugin.ts';
+import PluginOverview from '@app/components/tools/PluginOverview.vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -47,6 +52,13 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const overviewEl = ref<HTMLElement | null>(null);
+const overviewMeta = ref<PluginMetaShape | null>(null);
+
+const syncOverview = (): void => {
+	overviewMeta.value = CustomCommand?.meta ?? null;
+};
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { enabled?: boolean; id?: string };
@@ -73,6 +85,14 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	if (node.class === 'folder') {
+		return [h('node-icon', { class: 'icon-folder' })];
+	}
+	return [h('node-icon', { class: ['icon-command', 'custom'] })];
+};
+
 const onListSelect = (event: Event & { value?: unknown }) => {
 	CustomCommand?.listSelect?.(event);
 };
@@ -97,5 +117,6 @@ const onApply = () => {
 onMounted(() => {
 	inspector.syncState();
 	local.syncState();
+	overviewEl.value?.addEventListener('update', syncOverview);
 });
 </script>

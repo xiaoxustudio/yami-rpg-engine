@@ -14,6 +14,7 @@ import {
 	setTooltip,
 	write
 } from '@/util/element-utils';
+import { h, render } from 'vue';
 import { Path } from '@/util/config.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
@@ -949,17 +950,19 @@ Menubar.createLanguageItems = function (this: typeof Menubar) {
 
 // 创建颜色图标
 Menubar.createColorIcon = function (this: typeof Menubar, color: string) {
-	const icon = document.createElement('menu-icon');
 	const r = parseInt(color.slice(0, 2), 16);
 	const g = parseInt(color.slice(2, 4), 16);
 	const b = parseInt(color.slice(4, 6), 16);
 	const a = parseInt(color.slice(6, 8), 16) / 255;
-	icon.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-	addClass(icon, 'color-icon');
-	if (a === 0) {
-		addClass(icon, 'transparent');
-	}
-	return icon;
+	const holder = document.createElement('div');
+	render(
+		h('menu-icon', {
+			class: a === 0 ? 'color-icon transparent' : 'color-icon',
+			style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})` }
+		}),
+		holder
+	);
+	return holder.firstElementChild as HTMLElement;
 };
 
 // 显示存档目录

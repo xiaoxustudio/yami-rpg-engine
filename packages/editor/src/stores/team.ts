@@ -3,6 +3,7 @@ import { Team } from '@/data/team-window.ts';
 import type { TeamShape } from './data';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 export const useTeamStore = defineStore('team', () => {
 	const state = shallowRef<string>('closed');
@@ -74,3 +75,7 @@ export const useTeamStore = defineStore('team', () => {
 		loadFromProject
 	};
 });
+
+export function getTeamStore() {
+	return useTeamStore(pinia);
+}

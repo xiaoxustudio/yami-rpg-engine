@@ -14,7 +14,6 @@ import {
 	show,
 	write
 } from '@/util/element-utils.ts';
-import { setIconClip } from '@/util/icon-clip.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
@@ -25,7 +24,6 @@ import { Data } from '@/data/data-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Layout } from '@/layout/layout.ts';
 
-import { Scene } from '@/scene/scene-window.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
@@ -130,12 +128,6 @@ interface ParticleHistoryData {
 // config 中 colors 运行时必有（save/load 访问 colors.particleBackground）
 type ParticleConfigShape = EditorConfigShape & { colors: NonNullable<EditorConfigShape['colors']> };
 
-type ParticleListItem = {
-	image?: string;
-	sprite: { hframes: number; vframes: number };
-	element: HTMLElement;
-};
-
 interface ParticleShape {
 	state: ParticleState;
 	page: HTMLElement;
@@ -150,8 +142,6 @@ interface ParticleShape {
 		copy: ((item?: unknown) => unknown) | null;
 		paste: ((dItem?: unknown) => unknown) | null;
 		delete: ((item?: unknown) => unknown) | null;
-		createIcon: ((item?: ParticleListItem) => unknown) | null;
-		updateIcon: ((item?: ParticleListItem) => unknown) | null;
 		onCreate: ((item?: unknown) => unknown) | null;
 		onRemove: ((item?: unknown) => unknown) | null;
 		onDelete: ((item?: unknown) => unknown) | null;
@@ -444,16 +434,13 @@ Particle.list.create = null as unknown as (...args: unknown[]) => any;
 Particle.list.copy = null as unknown as (...args: unknown[]) => any;
 Particle.list.paste = null as unknown as (...args: unknown[]) => any;
 Particle.list.delete = null as unknown as (...args: unknown[]) => any;
-Particle.list.createIcon = null as unknown as (...args: unknown[]) => any;
-Particle.list.updateIcon = function (...args) {
-	return Scene.list.updateIcon!(...args);
-};
 getListConfig(Particle.list).onCreate = null as unknown as (item: unknown) => void;
 getListConfig(Particle.list).onRemove = null as unknown as (item: unknown) => void;
 getListConfig(Particle.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(Particle.list).onResume = null as unknown as (item: unknown) => void;
 
 Particle.initialize = function () {
+	getParticleStore().syncState();
 	this.page = $('#particle');
 	this.head = $('#particle-head') as unknown as HTMLElement & { width: number };
 	this.body = hide($('#particle-body'));
@@ -1871,20 +1858,6 @@ Particle.list.delete = function (item) {
 	}
 };
 
-// 列表 - 重写创建图标方法
-Particle.list.createIcon = function (item: unknown) {
-	const icon = document.createElement('node-icon');
-	const { image, sprite } = item as ParticleListItem;
-	const path = File.getPath!(image);
-	if (path) {
-		addClass(icon, 'icon-particle-image');
-		setIconClip(icon, path, 0, 0, -sprite.hframes, -sprite.vframes);
-	} else {
-		icon.textContent = '\uf2dc';
-	}
-	return icon;
-};
-
 // 列表 - 在创建数据时回调
 getListConfig(Particle.list).onCreate = function () {
 	Particle.emitter.updateLayers();
@@ -1914,3 +1887,24 @@ getListConfig(Particle.list).onResume = function () {
 	Particle.computeOuterRect!();
 	Particle.requestRendering!();
 };
+
+const particleBridgeKeys = [
+	'paused',
+	'showWireframe',
+	'showAnchor',
+	'speed',
+	'zoom',
+	'scaleX',
+	'scaleY'
+] as const;
+import { getParticleStore } from '@app/stores/particle';
+
+for (const key of particleBridgeKeys) {
+	Object.defineProperty(Particle, key, {
+		get: () => getParticleStore()[key],
+		set: (value: any) => {
+			(getParticleStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

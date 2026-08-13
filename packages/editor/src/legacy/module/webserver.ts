@@ -57,19 +57,19 @@ export const WebServer = new (class {
 		const ips = await WebServer.getIp();
 		let index = 0;
 		let url = `http://${ips[index]}:${WebServer.port}`;
-		$('#qr-code-content').innerHTML =
-			`<div>IP：${url}</div><div>扫描二维码打开网页</div><div style='color:red'>PS：注意需在同一局域网下扫描二维码</div>
-		<div style='color:red'>如果内容没刷新，请Ctrl+S保存场景</div>`;
-		$('#qr-code-img').src = await WebServer.toDataUrl(url);
+		this.setContent!(url, await WebServer.toDataUrl(url));
 		on($('#qr-update-button'), 'click', async () => {
 			index = index >= ips.length - 1 ? 0 : ++index;
 			url = `http://${ips[index]}:${WebServer.port}`;
-			$('#qr-code-img').src = await WebServer.toDataUrl(url);
-			$('#qr-code-content').innerHTML =
-				`<div>IP：${url}</div><div>扫描二维码打开网页</div><div style='color:red'>PS：注意需在同一局域网下扫描二维码</div>
-		<div style='color:red'>如果内容没刷新，请Ctrl+S保存场景</div>`;
+			this.setContent!(url, await WebServer.toDataUrl(url));
 		});
 		this.load!();
+	}
+	setContent(url: string, img: string) {
+		const content = $('#qr-code-content') as HTMLElement & {
+			update?: (value: { url: string; img: string }) => void;
+		};
+		content?.update?.({ url, img });
 	}
 	update(projectPath: string) {
 		if (!this.enable) return;

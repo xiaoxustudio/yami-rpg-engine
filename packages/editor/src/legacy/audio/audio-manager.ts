@@ -27,6 +27,9 @@ export const AudioManager = {
 };
 
 AudioManager.initialize = function () {
+	getAudioStore().syncState();
+	this.state = 'open';
+
 	this.context = new AudioContext();
 
 	this.analyser = this.context.createAnalyser();
@@ -93,6 +96,18 @@ AudioManager.getWaveform = function (guid: string) {
 };
 
 AudioManager.close = function () {
+	this.state = 'closed';
+	this.music = null;
 	this.player?.stop();
 	this.waveforms = {};
 };
+
+AudioManager.playMusic = function (name: string) {
+	this.music = { name };
+};
+
+AudioManager.stopMusic = function () {
+	this.music = null;
+};
+
+import { getAudioStore } from '@app/stores/audio';

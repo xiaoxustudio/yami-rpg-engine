@@ -1,9 +1,10 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
+import { getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Title } from '@/title/title-bar.ts';
 import { Local } from '@/tools/localization.ts';
+import { h, render } from 'vue';
 
 import { getMonaco } from '@/util/monaco';
 import type * as monacoNs from 'monaco-editor';
@@ -207,10 +208,11 @@ export const EditDataInstance = new (class {
 	}
 	async colorizeCodeLines(items: HTMLElement[], code: string) {
 		const monaco = await getMonaco();
-		const text = document.createElement('div');
-		addClass(text, 'text');
+		const holder = document.createElement('div');
+		holder.style.display = 'none';
+		render(h('div', { class: 'text' }, code), holder);
+		const text = holder.firstElementChild as HTMLElement;
 		const options = this.colorOptions;
-		text.textContent = code;
 		options.theme = Title.theme;
 		(this.createTheme as (theme: string) => void)(Title.theme);
 		monaco.editor.colorizeElement(text, options);

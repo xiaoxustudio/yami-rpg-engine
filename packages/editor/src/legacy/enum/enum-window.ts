@@ -1,7 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
+import { clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -187,7 +187,6 @@ function ensureDomBound() {
 	Enum.list.restoreScroll = null as unknown as (...args: unknown[]) => void;
 	Enum.list.cancelSearch = null as unknown as (...args: unknown[]) => void;
 	Enum.list.createString = null;
-	Enum.list.createIcon = null as unknown as (...args: unknown[]) => void;
 	Enum.list.parseName = null as unknown as (...args: unknown[]) => void;
 	getListConfig(Enum.list).onDelete = null as unknown as (item: unknown) => void;
 	getListConfig(Enum.list).onResume = null as unknown as (item: unknown) => void;
@@ -235,15 +234,6 @@ function ensureDomBound() {
 			note: ''
 		};
 	};
-	Enum.list.createIcon = function (item: EnumItem) {
-		const icon = document.createElement('node-icon');
-		if (item.class !== 'folder') {
-			addClass(icon, 'icon-string');
-		} else {
-			addClass(icon, 'icon-folder');
-		}
-		return icon;
-	} as (item: unknown) => unknown;
 	Enum.list.parseName = function (item: EnumItem) {
 		return GameLocal.replace(item.name);
 	};

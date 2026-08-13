@@ -13,6 +13,7 @@ import { Enum } from '@/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 import { Selection } from '@/tools/text-capture.ts';
+import { h, render } from 'vue';
 
 interface CallEventArg {
 	type: string;
@@ -189,10 +190,10 @@ Command.cases.callEvent = new CommandSchema({
 	},
 	createParameterElements(parameter: CallEventArg) {
 		const { type, key, note } = parameter;
-		const label = document.createElement('div');
-		addClass(label, 'text');
 		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		label.textContent = name;
+		const label = document.createElement('div');
+		render(h('div', { class: 'text call-event-component' }, name), label);
+		const labelEl = label.firstElementChild as HTMLElement;
 		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
 			CallEventInputApi;
 		switch (type) {
@@ -260,11 +261,10 @@ Command.cases.callEvent = new CommandSchema({
 		if (note) {
 			setTooltip(input, `<b>${name}</b>\n${note}`);
 		}
-		addClass(label, 'call-event-component');
 		addClass(input, 'call-event-component');
-		this.gridBox.appendChild(label);
+		this.gridBox.appendChild(labelEl);
 		this.gridBox.appendChild(input);
-		this.parameters.push({ key, type, label, input });
+		this.parameters.push({ key, type, label: labelEl, input });
 	},
 	createEventResultElements(type: string) {
 		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
@@ -309,14 +309,13 @@ Command.cases.callEvent = new CommandSchema({
 		const label = document.createElement('div');
 		const text = Local.get!('command.callEvent.return');
 		const tip = Local.get!('command.callEvent.return.tip');
-		label.textContent = text;
+		render(h('div', { class: 'text call-event-component' }, text), label);
+		const labelEl = label.firstElementChild as HTMLElement;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
-		addClass(label, 'call-event-component');
-		addClass(label, 'text');
 		addClass(input, 'call-event-component');
-		this.gridBox.appendChild(label);
+		this.gridBox.appendChild(labelEl);
 		this.gridBox.appendChild(input);
-		this.eventResult = { type, label, input };
+		this.eventResult = { type, label: labelEl, input };
 	},
 	parseEventArgs(event: CallEventMeta, args: CallEventArg[]) {
 		const words = Command.words;

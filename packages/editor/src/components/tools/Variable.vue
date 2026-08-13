@@ -9,6 +9,7 @@
 					id="variable-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@record="onListRecord"
 					@popup="onListPopup"
@@ -182,6 +183,20 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 		nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
 	}
 	return nodes;
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string; value?: unknown };
+	const classes = {
+		boolean: 'icon-boolean',
+		number: 'icon-number',
+		string: 'icon-string',
+		object: 'icon-object'
+	};
+	if (node.class === 'folder') {
+		return [h('node-icon', { class: 'icon-folder' })];
+	}
+	return [h('node-icon', { class: (classes as Record<string, string>)[typeof node.value] })];
 };
 
 const onListSelect = (event: Event) => {

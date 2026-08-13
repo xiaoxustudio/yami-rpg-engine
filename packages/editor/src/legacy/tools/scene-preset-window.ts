@@ -26,7 +26,6 @@ interface PresetListItem {
 
 interface PresetListElement extends HTMLElement {
 	elements: Array<{ item: PresetListItem }>;
-	createIcon: (...args: unknown[]) => unknown;
 	bind(getter: () => PresetNode[] | null): void;
 	clear(): void;
 	update(): void;
@@ -72,16 +71,12 @@ function ensureDomBound() {
 	PresetObject.scene = $('#presetObject-sceneId');
 	PresetObject.list = list as PresetListElement;
 	PresetObject.searcher = $('#presetObject-searcher');
-	PresetObject.list.createIcon = null as unknown as (...args: unknown[]) => unknown;
 }
 
 PresetObject.initialize = function (this: typeof PresetObject) {
 	ensureDomBound();
 	if (!this.list) return;
 	this.list.bind(() => this.nodes);
-
-	// 列表 - 重写创建图标方法
-	this.list.createIcon = Scene.list.createIcon;
 
 	this.searcher.addCloseButton();
 

@@ -177,7 +177,7 @@ Title.initialize = function (this: TitleShape) {
 		}
 	});
 
-	this.target.element = this.target?.appendChild?.(document.createElement('div')) as HTMLElement;
+	this.target.element = $('#title-app-region') as HTMLElement;
 
 	this.pointerenter!();
 

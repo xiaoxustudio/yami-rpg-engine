@@ -1126,7 +1126,7 @@
 	padding-right: 4px;
 }
 
-.event-open-item:not(:hover) > .event-close-button {
+.event-open-item:not(:hover) .event-close-button {
 	visibility: hidden;
 }
 

@@ -3,7 +3,6 @@ import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import {
-	addClass,
 	addScrollbars,
 	dispatchChangeEvent,
 	hasClass,
@@ -308,8 +307,6 @@ EventBus.once('editor_loaded', () => {
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
 	// Scene.list.* 真定义（scene-list.ts）在 editor_loaded 时才确定，提前赋值会固化拿 null
 });
-UI.list.createIcon = null;
-UI.list.updateIcon = null;
 UI.list.updateHead = null;
 getListConfig(UI.list).onCreate = null as unknown as (item: unknown) => void;
 getListConfig(UI.list).onRemove = null as unknown as (item: unknown) => void;
@@ -317,6 +314,7 @@ getListConfig(UI.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(UI.list).onResume = null as unknown as (item: unknown) => void;
 
 UI.initialize = function (this: UIShape) {
+	getUIStore().syncState();
 	this.page = $('#ui');
 	this.head = $('#ui-head');
 	this.body = hide($('#ui-body'));
@@ -1672,13 +1670,13 @@ UI.hasPrefab = function (this: UIShape, node: UINodeShape) {
 
 UI.setAsPrefab = function (this: UIShape, node: UINodeShape) {
 	if (Editor.project!.uiPrefabs!.push(node.presetId)) {
-		UI.list.updateIcon(node);
+		UI.list.update();
 	}
 };
 
 UI.unsetAsPrefab = function (this: UIShape, node: UINodeShape) {
 	if (Editor.project!.uiPrefabs!.splice(Editor.project!.uiPrefabs!.indexOf(node.presetId), 1)) {
-		UI.list.updateIcon(node);
+		UI.list.update();
 	}
 };
 
@@ -3238,124 +3236,6 @@ UI.list.cancelSearch = function (this: UIShape) {
 	}
 };
 
-// 列表 - 重写创建图标方法
-UI.list.createIcon = (function IIFE() {
-	const iconCreators = {
-		image: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-image');
-			return icon;
-		},
-		text: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-text');
-			return icon;
-		},
-		textbox: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-textbox');
-			return icon;
-		},
-		dialogbox: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-dialogbox');
-			return icon;
-		},
-		progressbar: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-progressbar');
-			return icon;
-		},
-		button: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-button');
-			return icon;
-		},
-		animation: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-animation');
-			return icon;
-		},
-		video: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-video');
-			return icon;
-		},
-		window: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-window');
-			return icon;
-		},
-		container: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-ui-container');
-			return icon;
-		},
-		reference: (item: UINodeShape) => {
-			const icon = document.createElement('node-icon');
-			const preset = Data.uiPresets[item.prefabId];
-			switch (preset?.data.class ?? 'reference') {
-				case 'image':
-					addClass(icon, 'icon-ui-image');
-					break;
-				case 'text':
-					addClass(icon, 'icon-ui-text');
-					break;
-				case 'textbox':
-					addClass(icon, 'icon-ui-textbox');
-					break;
-				case 'dialogbox':
-					addClass(icon, 'icon-ui-dialogbox');
-					break;
-				case 'progressbar':
-					addClass(icon, 'icon-ui-progressbar');
-					break;
-				case 'button':
-					addClass(icon, 'icon-ui-button');
-					break;
-				case 'animation':
-					addClass(icon, 'icon-ui-animation');
-					break;
-				case 'video':
-					addClass(icon, 'icon-ui-video');
-					break;
-				case 'window':
-					addClass(icon, 'icon-ui-window');
-					break;
-				case 'container':
-					addClass(icon, 'icon-ui-container');
-					break;
-				case 'reference':
-					addClass(icon, 'icon-ui-reference');
-					break;
-			}
-			if (!hasClass(icon, 'icon-ui-reference')) {
-				addClass(icon, 'icon-ui-reference-active');
-			}
-			return icon;
-		}
-	};
-	return function (this: UIShape, item: UINodeShape) {
-		const icon = (iconCreators as Record<string, (item?: UINodeShape) => HTMLElement>)[
-			item.class
-		](item);
-		if (UI.hasPrefab!(item)) {
-			addClass(icon, 'icon-ui-set-as-prefab');
-		}
-		return icon;
-	};
-})();
-
-// 列表 - 更新图标
-UI.list.updateIcon = function (this: UIShape, item: UINodeShape) {
-	const { element } = item;
-	if (element?.nodeIcon) {
-		const icon = this.createIcon!(item);
-		element.replaceChild(icon, element.nodeIcon);
-		element.nodeIcon = icon;
-	}
-};
-
 // 列表 - 更新头部位置
 UI.list.updateHead = function (this: UIShape) {
 	const { page, head } = this;
@@ -3395,3 +3275,16 @@ getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.loadElement!(item);
 	UI.updateElement!(item);
 } as (item: unknown) => void;
+
+const uiBridgeKeys = ['zoom', 'mode'] as const;
+import { getUIStore } from '@app/stores/ui';
+
+for (const key of uiBridgeKeys) {
+	Object.defineProperty(UI, key, {
+		get: () => getUIStore()[key],
+		set: (value: any) => {
+			(getUIStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

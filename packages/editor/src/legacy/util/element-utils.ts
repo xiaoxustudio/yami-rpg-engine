@@ -264,6 +264,29 @@ export const setTooltip = (function IIFE() {
 	let timeStamp: number = 0;
 	let clientX: number = 0;
 	let clientY: number = 0;
+	const parseTip = function (tip: string): DocumentFragment {
+		const fragment = document.createDocumentFragment();
+		const pattern = /<b>([\s\S]*?)<\/b>|<tooltip-line><\/tooltip-line>/g;
+		let index = 0;
+		let match: RegExpExecArray | null;
+		while ((match = pattern.exec(tip)) !== null) {
+			if (match.index > index) {
+				fragment.appendChild(document.createTextNode(tip.slice(index, match.index)));
+			}
+			if (match[0].startsWith('<b>')) {
+				const bold = document.createElement('b');
+				bold.textContent = match[0].slice(3, -4);
+				fragment.appendChild(bold);
+			} else {
+				fragment.appendChild(document.createElement('tooltip-line'));
+			}
+			index = pattern.lastIndex;
+		}
+		if (index < tip.length) {
+			fragment.appendChild(document.createTextNode(tip.slice(index)));
+		}
+		return fragment;
+	};
 	const timer = new Timer({
 		duration: 0,
 		callback: () => {
@@ -285,7 +308,7 @@ export const setTooltip = (function IIFE() {
 				}
 				state = 'open';
 				addClass(tooltip, 'open');
-				tooltip.innerHTML = tip;
+				tooltip.replaceChildren(parseTip(tip));
 				const { width, height } = tooltip.getBoundingClientRect();
 				const right = window.innerWidth - width;
 				const bottom = window.innerHeight - height;

@@ -42,13 +42,6 @@ type EasingMapInstance = Float32Array & {
 	update(...points: EasingPoint[]): EasingMapInstance;
 	ease(time: number): number;
 };
-type EasingListNodeElementShape = {
-	item: EasingData;
-	textNode?: Text;
-	extras?: HTMLElement | null;
-	draggable: boolean;
-	appendChild(node: Node): void;
-};
 type EasingListItem = EasingData & {
 	element: HTMLElement & {
 		textNode: Text;
@@ -156,7 +149,6 @@ export const Easing = {
 	},
 	list_saveSelection: null as unknown as () => void,
 	list_restoreSelection: null as unknown as () => void,
-	list_updateNodeElement: null as unknown as (element: EasingListNodeElementShape) => void,
 	list_updateItemName: null as unknown as (item: EasingListItem) => void,
 	list_updateTextNode: null as unknown as (item: EasingListItem) => void,
 	state: null as string | null,
@@ -175,13 +167,13 @@ function ensureDomBound() {
 	Easing.preview = $('#easing-preview-canvas') as unknown as EasingCanvasShape;
 	list.saveSelection = Easing.list_saveSelection;
 	list.restoreSelection = Easing.list_restoreSelection;
-	list.updateNodeElement = Easing.list_updateNodeElement;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
 	list.updateTextNode = Easing.list_updateTextNode;
 }
 
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
 Easing.initialize = () => {
+	getEasingStore().syncState();
 	ensureDomBound();
 	if (!Easing.list) return;
 	Easing.startPoint = { x: 0, y: 0 };
@@ -337,8 +329,10 @@ Easing.initialize = () => {
 	Easing.clear = clear;
 })();
 
-Easing.open = function (this: typeof Easing) {
+Easing.open = function (this: typeof Easing, target?: unknown) {
 	Window.open!('easing');
+	this.state = 'open';
+	this.target = (target as Record<string, unknown> | undefined) ?? null;
 
 	this.data = Object.clone(Data.easings);
 
@@ -816,6 +810,8 @@ Easing.windowClose = function (this: typeof Easing, event: Event) {
 };
 
 Easing.windowClosed = function (this: typeof Easing, event: Event) {
+	this.state = 'closed';
+	this.target = null;
 	this.list!.saveSelection();
 	this.curve!.blur();
 	this.timer.remove();
@@ -1345,43 +1341,6 @@ Easing.list_restoreSelection = function (this: HTMLElement) {
 	this.scrollToSelection();
 };
 
-Easing.list_updateNodeElement = function (
-	this: HTMLElement & {
-		creators: Array<(item: unknown) => unknown>;
-		updaters: Array<(item: unknown) => unknown>;
-		renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
-	},
-	element: EasingListNodeElementShape
-) {
-	const { item } = element;
-	if (!element.textNode) {
-		const textNode = document.createTextNode('');
-		element.appendChild(textNode);
-
-		element.draggable = true;
-		element.textNode = textNode;
-
-		for (const creator of this.creators) {
-			creator(item);
-		}
-
-		if (typeof this.renderNodeExtras === 'function') {
-			const extras = document.createElement('div');
-			extras.classList.add('tree-node-extras');
-			element.appendChild(extras);
-			element.extras = extras;
-		}
-	}
-
-	for (const updater of this.updaters) {
-		updater(item);
-	}
-
-	if (element.extras && typeof this.renderNodeExtras === 'function') {
-		this.renderNodeExtras(item, element.extras);
-	}
-};
-
 Easing.list_updateItemName = function (this: HTMLElement, item: EasingListItem) {
 	this.updateTextNode(item);
 	this.update();
@@ -1399,3 +1358,5 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) 
 		textNode.nodeValue = text;
 	}
 };
+
+import { getEasingStore } from '@app/stores/easing';

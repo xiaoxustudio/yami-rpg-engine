@@ -7,7 +7,7 @@
 		
 			<div class="field-set input pad" id="event-open-fieldset">
 				<div class="legend">Event</div>
-				<TreeList id="event-open-list" :node-extras="nodeExtras" />
+				<TreeList id="event-open-list" :node-extras="nodeExtras" :node-icon-renderer="nodeIconRenderer" />
 			</div>
 			<div class="field-set input pad" id="event-commands-fieldset">
 				<div class="legend">Content</div>
@@ -53,6 +53,22 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 			Command.removeTextTags!(Command.parseEventType!(node.filter + '-event', node.type!));
 	}
 	return [h('div', { class: 'event-init-text text' }, typeName)];
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	return [
+		h(
+			'div',
+			{
+				class: 'event-close-button text',
+				style: { pointerEvents: 'auto' },
+				onClick: () => {
+					EventEditor?.list?.close?.(item as Parameters<typeof EventEditor.list.close>[0]);
+				}
+			},
+			'×'
+		)
+	];
 };
 
 const onApply = () => {

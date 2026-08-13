@@ -3,6 +3,19 @@ import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.
 import { shallowRef } from 'vue';
 import type { EditorProjectShape } from './editor';
 import type { History } from '@/tools/history.ts';
+import { pinia } from './pinia';
+
+export const particleStateKeys = [
+	'state',
+	'target',
+	'paused',
+	'showWireframe',
+	'showAnchor',
+	'speed',
+	'zoom',
+	'scaleX',
+	'scaleY'
+] as const;
 
 type ParticleTargetShape = {
 	area: {
@@ -32,10 +45,24 @@ type ParticleContextShape = {
 export const useParticleStore = defineStore('particle', () => {
 	const state = shallowRef<string>('closed');
 	const target = shallowRef<ParticleTargetShape>(null);
+	const paused = shallowRef<boolean>(false);
+	const showWireframe = shallowRef<boolean>(false);
+	const showAnchor = shallowRef<boolean>(false);
+	const speed = shallowRef<number | null>(null);
+	const zoom = shallowRef<number | null>(null);
+	const scaleX = shallowRef<number | null>(null);
+	const scaleY = shallowRef<number | null>(null);
 
 	function syncState() {
 		state.value = Particle?.state ?? 'closed';
 		target.value = Particle?.target ?? null;
+		paused.value = Particle?.paused ?? false;
+		showWireframe.value = Particle?.showWireframe ?? false;
+		showAnchor.value = Particle?.showAnchor ?? false;
+		speed.value = Particle?.speed ?? null;
+		zoom.value = Particle?.zoom ?? null;
+		scaleX.value = Particle?.scaleX ?? null;
+		scaleY.value = Particle?.scaleY ?? null;
 	}
 
 	function open(context: ParticleContextShape) {
@@ -121,6 +148,13 @@ export const useParticleStore = defineStore('particle', () => {
 	return {
 		state,
 		target,
+		paused,
+		showWireframe,
+		showAnchor,
+		speed,
+		zoom,
+		scaleX,
+		scaleY,
 		syncState,
 		open,
 		close,
@@ -144,3 +178,7 @@ export const useParticleStore = defineStore('particle', () => {
 		loadFromProject
 	};
 });
+
+export function getParticleStore() {
+	return useParticleStore(pinia);
+}

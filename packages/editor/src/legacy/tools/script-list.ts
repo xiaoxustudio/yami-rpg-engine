@@ -7,6 +7,7 @@ import { Command } from '@/command/command-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
+import { h, render } from 'vue';
 
 import { IEditableHistory } from '@/types/history.ts';
 import { IScriptListInterface } from '@/types/list-interface.ts';
@@ -78,14 +79,15 @@ export class ScriptListInterface implements IScriptListInterface {
 	}
 
 	parse(script: ScriptData): unknown[] {
-		const box = document.createElement('div');
-		addClass(box, 'box');
-		box.textContent = '\uf044';
-		addClass(box, 'script-edit-button');
 		Command.invalid = false;
 		const scriptName = Command.parseFileName(script.id);
 		const scriptClass = Command.invalid ? 'invalid' : script.enabled ? '' : 'weak';
-		return [{ content: Command.removeTextTags(scriptName), class: scriptClass }, box];
+		const box = document.createElement('div');
+		render(h('div', { class: 'box script-edit-button' }, '\uf044'), box);
+		return [
+			{ content: Command.removeTextTags(scriptName), class: scriptClass },
+			box.firstElementChild as HTMLElement
+		];
 	}
 
 	update(list: ScriptListElement) {

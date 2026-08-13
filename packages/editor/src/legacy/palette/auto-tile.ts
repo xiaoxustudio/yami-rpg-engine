@@ -129,9 +129,6 @@ function ensureDomBound() {
 	AutoTile.templateList = templateList;
 	AutoTile.nodeList = $('#autoTile-nodes');
 	AutoTile.frameList = $('#autoTile-frames');
-	templateList.updateNodeElement = Easing.list_updateNodeElement as unknown as (
-		...args: unknown[]
-	) => unknown;
 	templateList.updateItemName = Team.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
@@ -141,6 +138,7 @@ function ensureDomBound() {
 }
 
 AutoTile.initialize = function (this: typeof AutoTile) {
+	getAutoTileStore().syncState();
 	ensureDomBound();
 	if (!AutoTile.templateList) return;
 	this.nodeMaximum = 64;
@@ -1071,3 +1069,25 @@ AutoTile.confirm = function (this: typeof AutoTile, event: Event) {
 	Window.close!('autoTile');
 	// console.log(JSON.stringify(tiles[index], null, 2))
 }.bind(AutoTile);
+
+const autoTileBridgeKeys = [
+	'templates',
+	'template',
+	'nodeIndex',
+	'frameIndex',
+	'offsetX',
+	'offsetY',
+	'imageId',
+	'changed'
+] as const;
+import { getAutoTileStore } from '@app/stores/autoTile';
+
+for (const key of autoTileBridgeKeys) {
+	Object.defineProperty(AutoTile, key, {
+		get: () => getAutoTileStore()[key],
+		set: (value: any) => {
+			(getAutoTileStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

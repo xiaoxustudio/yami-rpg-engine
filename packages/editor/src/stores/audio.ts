@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 export const useAudioStore = defineStore('audio', () => {
 	const state = shallowRef<string>('closed');
@@ -47,3 +48,7 @@ export const useAudioStore = defineStore('audio', () => {
 		playSound
 	};
 });
+
+export function getAudioStore() {
+	return useAudioStore(pinia);
+}

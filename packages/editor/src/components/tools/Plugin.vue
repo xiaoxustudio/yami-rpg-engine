@@ -8,6 +8,7 @@
 					id="plugin-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@open="onListOpen"
@@ -17,7 +18,9 @@
 			<div class="box" id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-					<div class="box" id="plugin-overview" />
+					<div class="box" id="plugin-overview" ref="overviewEl">
+						<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
+					</div>
 				</DetailBox>
 				<ParameterPane id="plugin-parameter-pane">
 				<DetailBox id="plugin-parameter-detail" open>
@@ -31,10 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, type VNode } from 'vue';
+import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
 import { File } from '@/file/file-system-core.ts';
 import { getBrowserInstance } from '@app/stores/browser';
 import { PluginManager } from '@/plugin/plugin.ts';
+import type { PluginMetaShape } from '@/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -43,9 +47,19 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const overviewEl = ref<HTMLElement | null>(null);
+const overviewMeta = shallowRef<PluginMetaShape | null>(PluginManager.meta);
+const overviewDetailed = ref(PluginManager.detailed);
+
+const syncOverview = () => {
+	overviewMeta.value = PluginManager.meta;
+	overviewDetailed.value = PluginManager.detailed;
+};
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { enabled?: boolean; id?: string };
@@ -72,6 +86,14 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	if (node.class === 'folder') {
+		return [h('node-icon', { class: 'icon-folder' })];
+	}
+	return [h('node-icon', { class: ['icon-command', 'custom'] })];
+};
+
 const onListSelect = (event: Event & { value?: unknown }) => {
 	PluginManager?.listSelect?.(event);
 };
@@ -91,6 +113,7 @@ const onApply = () => {
 };
 
 onMounted(() => {
+	overviewEl.value?.addEventListener('update', syncOverview);
 	inspector.syncState();
 	local.syncState();
 });

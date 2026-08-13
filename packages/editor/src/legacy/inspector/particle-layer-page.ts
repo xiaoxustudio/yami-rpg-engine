@@ -512,7 +512,7 @@ import { Particle } from '@/particle/particle-window.ts';
 				if (layer.image !== value) {
 					layer.image = value;
 					layerInstance.loadTexture();
-					Particle.list.updateIcon!(layer);
+					Particle.list.update();
 				}
 				break;
 			case 'blend':
@@ -530,7 +530,7 @@ import { Particle } from '@/particle/particle-window.ts';
 					sprite[property] = value;
 					layerInstance.calculateElementSize();
 					layerInstance.resizeElementIndices();
-					Particle.list.updateIcon!(layer);
+					Particle.list.update();
 				}
 				break;
 			}

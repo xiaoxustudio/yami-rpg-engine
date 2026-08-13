@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { UI } from '@/ui/ui-window.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
+
+export const uiStateKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'] as const;
 
 interface UINodeShape {
 	class: string;
@@ -43,6 +46,7 @@ export const useUIStore = defineStore('ui', () => {
 	const zoom = shallowRef<number | null>(null);
 	const width = shallowRef<number | null>(null);
 	const height = shallowRef<number | null>(null);
+	const mode = shallowRef<string | null>(null);
 
 	function syncState() {
 		state.value = UI?.state ?? 'closed';
@@ -50,6 +54,7 @@ export const useUIStore = defineStore('ui', () => {
 		zoom.value = UI?.zoom ?? null;
 		width.value = UI?.width ?? null;
 		height.value = UI?.height ?? null;
+		mode.value = UI?.mode ?? null;
 	}
 
 	function open(context: UIContextShape) {
@@ -255,6 +260,7 @@ export const useUIStore = defineStore('ui', () => {
 		zoom,
 		width,
 		height,
+		mode,
 		syncState,
 		open,
 		close,
@@ -306,3 +312,7 @@ export const useUIStore = defineStore('ui', () => {
 		loadFromProject
 	};
 });
+
+export function getUIStore() {
+	return useUIStore(pinia);
+}

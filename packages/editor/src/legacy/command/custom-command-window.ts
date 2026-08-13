@@ -2,7 +2,7 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, hide, on, show } from '@/util/element-utils.ts';
+import { getFocus, hide, on, show } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { TreeList } from '@/components/tree-list.ts';
@@ -182,7 +182,6 @@ function ensureDomBound() {
 	list.delete = PluginManager.list_delete as (item: CustomCommandData | null) => void;
 	list.saveSelection = null as unknown as (...args: unknown[]) => void;
 	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
-	list.updateNodeElement = Easing.list_updateNodeElement;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
 	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
 	list.insert = CustomCommand.list_insert as (...args: unknown[]) => void;
@@ -246,20 +245,15 @@ CustomCommand.load = async function (
 CustomCommand.unload = function (this: CustomCommandShape): void {
 	this.meta = null;
 	this.symbol = null;
-	clear(this.overview);
+	this.overview?.dispatchEvent(new Event('update'));
 	hide(this.overviewPane);
 	hide(this.settingsPane);
 };
 
 CustomCommand.loadOverview = function (this: CustomCommandShape): void {
-	const { meta } = this;
-	if (!meta) return;
-	const elements = PluginManager.createOverview(meta, true);
-	const overview = clear(this.overview);
-	for (const element of elements) {
-		overview.appendChild(element);
-	}
+	if (!this.meta) return;
 	show(this.overviewPane);
+	this.overview?.dispatchEvent(new Event('update'));
 };
 
 CustomCommand.createData = function (this: CustomCommandShape, id: string): CustomCommandData {

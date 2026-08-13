@@ -95,9 +95,7 @@ interface EventEditorList {
 		  ) => EventListItem)
 		| null;
 	createGlobalEventItem: ((guid: string) => EventListItem) | null;
-	createIcon: ((item: EventListItem) => HTMLElement) | null;
 	updateItemName: ((item: EventListItem) => void) | null;
-	closeButtonClick: ((event: MouseEvent) => void) | null;
 	removable: boolean;
 	foldable: boolean;
 	creators: unknown[];
@@ -280,12 +278,7 @@ function ensureDomBound() {
 	EventEditor.list.defineProperties = null;
 	EventEditor.list.createLocalEventItem = null;
 	EventEditor.list.createGlobalEventItem = null;
-	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
-		((item: EventListItem) => HTMLElement);
-	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
-		((item: EventListItem) => HTMLElement);
 	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => void;
-	EventEditor.list.closeButtonClick = null;
 	bindListMethods();
 }
 
@@ -444,25 +437,10 @@ function bindListMethods() {
 		return item;
 	};
 
-	list.createIcon = function (this: HTMLElement & EventEditorList) {
-		const closeButton = document.createElement('div');
-		closeButton.textContent = '×';
-		addClass(closeButton, 'event-close-button');
-		addClass(closeButton, 'text');
-		on(closeButton, 'click', EventEditor.list.closeButtonClick!);
-		return closeButton;
-	};
-
 	list.updateItemName = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		TreeList.prototype.updateItemName.call(this, item);
 		this.update();
 	} as ((item: unknown) => unknown) & ((item: EventListItem) => void);
-
-	list.closeButtonClick = function (this: HTMLElement & EventEditorList, event: MouseEvent) {
-		EventEditor.list.close!(
-			(event.target as HTMLElement & { parentNode: { item: EventListItem } }).parentNode.item
-		);
-	};
 }
 
 EventEditor.initialize = function (this: EventEditorShape) {

@@ -161,7 +161,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				if (particle.particleId !== value) {
 					particle.particleId = value;
 					Scene.loadParticleContext!(particle);
-					Scene.list.updateIcon!(particle);
+					Scene.list.update();
 				}
 				break;
 			case 'x':

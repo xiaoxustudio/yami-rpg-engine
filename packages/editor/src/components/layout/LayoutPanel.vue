@@ -9,12 +9,7 @@
 					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
 					<div class="item home-start-item" id="home-start-open" value="open">Open Project</div>
 				</div>
-				<div class="box" id="home-recent-list" tabindex="-1" @click="onHomeRecentClick" @pointerup="onHomeRecentPointerup">
-					<div class="item home-list-label" id="home-recent-label">Recent</div>
-					<div class="item home-recent-item" value="0"></div>
-					<div class="item home-recent-item" value="1"></div>
-					<div class="item home-recent-item" value="2"></div>
-				</div>
+				<HomeRecentList />
 			</div>
 		</div>
 		<div class="page-frame" value="directory">
@@ -102,6 +97,7 @@
 					id="scene-list"
 					padded
 					:node-extras="sceneNodeExtras"
+					:node-icon-renderer="sceneNodeIcon"
 					@select="onSceneListSelect"
 					@record="onSceneListRecord"
 					@popup="onSceneListPopup"
@@ -164,6 +160,7 @@
 					id="ui-list"
 					padded
 					:node-extras="uiNodeExtras"
+					:node-icon-renderer="uiNodeIcon"
 					@select="onUiListSelect"
 					@record="onUiListRecord"
 					@popup="onUiListPopup"
@@ -209,7 +206,14 @@
 							@doubleclick="onAnimationMarqueeDoubleclick"
 						></MarqueeArea>
 					</div>
-					<div class="box" id="animation-dirList"></div>
+					<div ref="dirListEl" class="box" id="animation-dirList" v-show="dirs.length > 1">
+						<anim-dir
+							v-for="(dir, index) in dirs"
+							:key="index"
+							:class="{ selected: index === direction }"
+							@pointerdown="onDirPointerdown(index)"
+						>{{ dir }}</anim-dir>
+					</div>
 				</div>
 			</div>
 			<div class="page-frame" id="animation-motion" value="animation-motion">
@@ -220,6 +224,7 @@
 					id="animation-list"
 					padded
 					:node-extras="animationNodeExtras"
+					:node-icon-renderer="animationNodeIcon"
 					@select="onAnimationListSelect"
 					@record="onAnimationListRecord"
 					@open="onAnimationListOpen"
@@ -248,6 +253,7 @@
 				<TreeList
 					id="animation-layer-list"
 					:node-extras="layerNodeExtras"
+					:node-icon-renderer="layerNodeIcon"
 					@select="onLayerListSelect"
 					@record="onLayerListRecord"
 					@popup="onLayerListPopup"
@@ -319,7 +325,7 @@
 				</div>
 			</div>
 			<div class="page-frame" id="particle-layer" value="particle-layer">
-				<TreeList id="particle-list" padded :node-extras="particleNodeExtras"></TreeList>
+				<TreeList id="particle-list" padded :node-extras="particleNodeExtras" :node-icon-renderer="particleNodeIcon"></TreeList>
 			</div>
 			<div class="page-frame" id="inspector" value="inspector">
 				<PageManager id="inspector-page-manager" tabindex="-1">
@@ -379,7 +385,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, type VNode } from 'vue';
+import { h, onMounted, ref, type VNode } from 'vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
@@ -388,12 +394,18 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
+import { attachElementApi } from '@/utils/attach-element-api';
 import { Scene } from '@/scene/scene-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Home } from '@/title/home-page.ts';
+import { Data } from '@/data/data-object.ts';
+import { File } from '@/file/file-system-core.ts';
+import { setIconClip } from '@/util/icon-clip.ts';
+import { Inspector } from '@/inspector/inspector.ts';
 
 interface SceneExtrasNode {
 	class?: string;
@@ -404,6 +416,12 @@ interface SceneExtrasNode {
 	hidden?: boolean;
 	locked?: boolean;
 	parent?: SceneExtrasNode;
+	teamId?: string;
+	color?: string;
+	red?: number;
+	green?: number;
+	blue?: number;
+	image?: string;
 }
 
 interface UiExtrasNode {
@@ -415,6 +433,8 @@ interface UiExtrasNode {
 	events?: unknown[];
 	scripts?: unknown[];
 	conditions?: unknown[];
+	prefabId?: string;
+	presetId?: string;
 }
 
 interface LayerExtrasNode {
@@ -521,6 +541,64 @@ const sceneNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	return nodes;
 };
 
+const sceneNodeIcon = (item: unknown): VNode[] => {
+	const node = item as SceneExtrasNode;
+	switch (node.class) {
+		case 'folder':
+			return [h('node-icon', { class: 'icon-folder' })];
+		case 'actor': {
+			const team = Data.teams?.map?.[node.teamId ?? ''];
+			const hex = team ? team.color : 'ffffffff';
+			const r = parseInt(hex.slice(0, 2), 16);
+			const g = parseInt(hex.slice(2, 4), 16);
+			const b = parseInt(hex.slice(4, 6), 16);
+			const a = parseInt(hex.slice(6, 8), 16) / 255;
+			return [h('node-icon', { style: { color: `rgba(${r}, ${g}, ${b}, ${a})` } }, '\uf2c0')];
+		}
+		case 'region': {
+			const hex = node.color ?? '';
+			const r = parseInt(hex.slice(0, 2), 16);
+			const g = parseInt(hex.slice(2, 4), 16);
+			const b = parseInt(hex.slice(4, 6), 16);
+			const a = parseInt(hex.slice(6, 8), 16) / 255;
+			return [
+				h('node-icon', {
+					class: 'icon-scene-region',
+					style: { backgroundColor: `rgba(${r}, ${g}, ${b}, ${a})` }
+				})
+			];
+		}
+		case 'light':
+			return [
+				h(
+					'node-icon',
+					{ style: { color: `rgba(${node.red}, ${node.green}, ${node.blue})` } },
+					'\uf006'
+				)
+			];
+		case 'animation':
+			return [h('node-icon', {}, '\uf110')];
+		case 'particle':
+			return [h('node-icon', {}, '\uf2dc')];
+		case 'parallax': {
+			const path = File.getPath?.(node.image);
+			if (path) {
+				return [
+					h('node-icon', {
+						class: 'icon-scene-parallax',
+						style: { backgroundImage: CSS.encodeURL(File.route!(path)) }
+					})
+				];
+			}
+			return [h('node-icon', {}, '\uf1c5')];
+		}
+		case 'tilemap':
+			return [h('node-icon', {}, '\uf00a')];
+		default:
+			return [h('node-icon', { class: 'icon-file' })];
+	}
+};
+
 const onUiVisibilityPointerdown =
 	(item: UiExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
 		if (event.button !== 0) return;
@@ -608,12 +686,52 @@ const uiNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	return nodes;
 };
 
+const uiNodeIcon = (item: unknown): VNode[] => {
+	const node = item as UiExtrasNode;
+	const classes = {
+		image: 'icon-ui-image',
+		text: 'icon-ui-text',
+		textbox: 'icon-ui-textbox',
+		dialogbox: 'icon-ui-dialogbox',
+		progressbar: 'icon-ui-progressbar',
+		button: 'icon-ui-button',
+		animation: 'icon-ui-animation',
+		video: 'icon-ui-video',
+		window: 'icon-ui-window',
+		container: 'icon-ui-container',
+		reference: 'icon-ui-reference'
+	} as Record<string, string>;
+	let iconClass: string;
+	if (node.class === 'reference') {
+		const preset = Data.uiPresets?.[node.prefabId ?? ''];
+		const presetClass = classes[preset?.data?.class ?? ''];
+		iconClass =
+			presetClass && presetClass !== 'icon-ui-reference'
+				? presetClass
+				: 'icon-ui-reference';
+	} else {
+		iconClass = classes[node.class ?? ''] ?? 'icon-ui-reference';
+	}
+	const iconClasses = [iconClass];
+	if (node.class === 'reference' && iconClass !== 'icon-ui-reference') {
+		iconClasses.push('icon-ui-reference-active');
+	}
+	if (UI.hasPrefab?.(node)) {
+		iconClasses.push('icon-ui-set-as-prefab');
+	}
+	return [h('node-icon', { class: iconClasses })];
+};
+
 const animationNodeExtras = (item: unknown): VNode[] => {
 	const node = item as { loop?: boolean };
 	if (node.loop) {
 		return [h('node-icon', { class: 'icon-loop' }, '\uf112')];
 	}
 	return [];
+};
+
+const animationNodeIcon = (item: unknown): VNode[] => {
+	return [h('node-icon', { class: 'icon-string' })];
 };
 
 const onLayerVisibilityPointerdown =
@@ -677,6 +795,17 @@ const layerNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
+const layerNodeIcon = (item: unknown): VNode[] => {
+	const node = item as LayerExtrasNode & { class?: string };
+	const classes = {
+		joint: 'anim-layer-joint',
+		sprite: 'anim-layer-sprite',
+		particle: 'anim-layer-particle',
+		sound: 'anim-layer-sound'
+	} as Record<string, string>;
+	return [h('node-icon', { class: classes[node.class ?? ''] })];
+};
+
 const onParticleVisibilityPointerdown =
 	(item: LayerExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
 		if (event.button !== 0) return;
@@ -710,17 +839,51 @@ const particleNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	];
 };
 
+const particleNodeIcon = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { image?: string; sprite?: { hframes: number; vframes: number } };
+	const path = File.getPath?.(node.image);
+	if (path) {
+		queueMicrotask(() => {
+			const icon = container.querySelector('node-icon') as HTMLElement | null;
+			if (icon) {
+				setIconClip(icon, path, 0, 0, -(node.sprite?.hframes ?? 1), -(node.sprite?.vframes ?? 1));
+			}
+		});
+		return [h('node-icon', { class: 'icon-particle-image' })];
+	}
+	return [h('node-icon', {}, '\uf2dc')];
+};
+
+const dirs = ref<string[]>([]);
+const direction = ref(-1);
+const dirListEl = ref<HTMLElement | null>(null);
+
+const setDirItems = (items: string[], selected: number): void => {
+	dirs.value = items;
+	direction.value = selected;
+};
+
+const setDirDirection = (selected: number): void => {
+	direction.value = selected;
+};
+
+const onDirPointerdown = (index: number): void => {
+	if (index === direction.value) return;
+	Animation?.setDirection?.(index);
+	Inspector?.close?.();
+};
+
+onMounted(() => {
+	const el = dirListEl.value;
+	if (!el) return;
+	attachElementApi(el, { setDirItems, setDirDirection });
+});
+
 const onSceneHeadPointerdown = (event: PointerEvent) => {
 	Scene?.headPointerdown?.(event);
 };
 const onHomeStartClick = (event: PointerEvent) => {
 	Home?.startClick?.(event);
-};
-const onHomeRecentClick = (event: PointerEvent) => {
-	Home?.recentClick?.(event);
-};
-const onHomeRecentPointerup = (event: PointerEvent) => {
-	Home?.recentPointerup?.(event);
 };
 const onSceneSwitchPointerdown = (event: PointerEvent) => {
 	Scene?.switchPointerdown?.(event);

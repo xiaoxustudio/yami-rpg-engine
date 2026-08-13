@@ -68,7 +68,6 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 	if (item.value === null) {
 		item.value = read(Variable.inputs.boolean);
 		write(Variable.inputs.type, 'boolean');
-		Variable.list.updateIcon(item);
 	}
 	item.sort = sort;
 	Variable.list.update();
@@ -104,7 +103,6 @@ Variable.typeInput = function (event: Event & { value?: string }) {
 			item.value = null;
 			break;
 	}
-	Variable.list.updateIcon(item);
 	Variable.list.update();
 	Variable.changed = true;
 };

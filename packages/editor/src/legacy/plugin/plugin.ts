@@ -3,7 +3,7 @@ import { $ } from '@/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, clear, getFocus, hide, on, read, show } from '@/util/element-utils.ts';
+import { clear, getFocus, hide, on, read, show } from '@/util/element-utils.ts';
 import { getVariable } from '@/util/safe.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Command } from '@/command/command-object.ts';
@@ -32,7 +32,7 @@ interface PluginItemShape {
 	element?: HTMLElement & { textNode: Text };
 }
 
-type ParameterShape = {
+export type ParameterShape = {
 	key: string;
 	type: string;
 	value: unknown;
@@ -54,7 +54,7 @@ type ParameterShape = {
 	[k: string]: unknown;
 };
 
-type OverviewShape = {
+export type OverviewShape = {
 	requires: { plugin: string; version: string }[];
 	plugin?: string;
 	author?: string;
@@ -65,7 +65,7 @@ type OverviewShape = {
 	code?: string;
 };
 
-type PluginMetaShape = {
+export type PluginMetaShape = {
 	overview: OverviewShape;
 	parameters: ParameterShape[];
 	manager: {
@@ -121,7 +121,6 @@ interface PluginManagerShape {
 	load: ((item?: PluginItemShape) => Promise<void>) | null;
 	unload: (() => void) | null;
 	loadOverview: (() => void) | null;
-	createOverview: (...args: unknown[]) => Node[];
 	createData: (...args: unknown[]) => PluginItemShape;
 	getItemById: ((...args: unknown[]) => ReturnType<typeof Easing.getItemById>) | null;
 	switchOverviewMode: (() => void) | null;
@@ -173,7 +172,6 @@ export const PluginManager: PluginManagerShape = {
 	load: null,
 	unload: null,
 	loadOverview: null,
-	createOverview: null as unknown as (...args: unknown[]) => Node[],
 	createData: null as unknown as (...args: unknown[]) => PluginItemShape,
 	getItemById: null,
 	switchOverviewMode: null,
@@ -227,9 +225,6 @@ function ensureDomBound() {
 	list.delete = null as unknown as (...args: unknown[]) => any;
 	list.saveSelection = null as unknown as (...args: unknown[]) => any;
 	list.restoreSelection = null as unknown as (...args: unknown[]) => any;
-	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
-		...args: unknown[]
-	) => any;
 	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
 		...args: unknown[]
 	) => any;
@@ -299,240 +294,17 @@ PluginManager.load = async function (this: typeof PluginManager, item?: PluginIt
 PluginManager.unload = function (this: typeof PluginManager) {
 	this.meta = null;
 	this.symbol = null;
-	clear(this.overview);
 	hide(this.overviewPane);
 	hide(this.parameterPane);
 	clear(this.parameterPane);
+	this.overview?.dispatchEvent(new Event('update'));
 };
 
 PluginManager.loadOverview = function (this: typeof PluginManager) {
-	const { meta, detailed } = this;
-	if (!meta) return;
-	const elements = this.createOverview(meta, detailed);
-	const overview = clear(this.overview);
-	for (const element of elements) {
-		overview.appendChild(element);
-	}
+	if (!this.meta) return;
 	show(this.overviewPane);
+	this.overview?.dispatchEvent(new Event('update'));
 };
-
-PluginManager.createOverview = function (
-	this: typeof PluginManager,
-	meta: PluginMetaShape,
-	detailed: boolean
-) {
-	const elements: Node[] = [];
-	const get = Local.createGetter!('plugin');
-	const langMap = meta.langMap.update();
-	const { plugin, author, link, version, desc } = meta.overview;
-	if (plugin) {
-		const title = document.createElement('div');
-		addClass(title, 'plugin-title');
-		addClass(title, 'text');
-		elements.push(title);
-		const text = document.createElement('div');
-		text.textContent = langMap.get(plugin);
-		addClass(text, 'plugin-name');
-		addClass(text, 'text');
-		title.appendChild(text);
-		if (version) {
-			const text = document.createElement('div');
-			text.textContent = ' ver' + version;
-			addClass(text, 'plugin-version');
-			addClass(text, 'text');
-			title.appendChild(text);
-		}
-		if (meta.overview.deprecated) {
-			const text = document.createElement('div');
-			text.textContent =
-				typeof meta.overview.deprecated === 'string'
-					? get('deprecated') + ': ' + meta.overview.deprecated
-					: get('deprecated');
-			addClass(text, 'plugin-deprecated');
-			addClass(text, 'text');
-			title.appendChild(text);
-		}
-	}
-	if (author) {
-		if (elements.length) {
-			elements.push(document.createTextNode('\n'));
-		}
-		const label = document.createElement('div');
-		label.textContent = `${get('author')}: `;
-		addClass(label, 'plugin-label');
-		addClass(label, 'text');
-		elements.push(label);
-		const text = document.createElement('div');
-		text.textContent = author;
-		addClass(text, 'plugin-type');
-		addClass(text, 'text');
-		if (link) {
-			addClass(text, 'plugin-link');
-			text.onclick = () => File.openURL!(link);
-		}
-		elements.push(text);
-	}
-	if (desc) {
-		if (elements.length) {
-			elements.push(document.createTextNode('\n\n'));
-		}
-		elements.push(document.createTextNode(langMap.get(desc)));
-	}
-	// 依赖校验：缺失的依赖在概览区显示告警
-	if (meta.overview.requires?.length) {
-		const guidMap = Data.manifest.guidMap;
-		const loaded = new Set();
-		for (const id in guidMap) {
-			const p = guidMap[id]?.overview?.plugin;
-			if (p) loaded.add(p);
-		}
-		const missing = meta.overview.requires.filter(
-			(req: { plugin: string }) => !loaded.has(req.plugin)
-		);
-		if (missing.length) {
-			if (elements.length) {
-				elements.push(document.createTextNode('\n\n'));
-			}
-			const warn = document.createElement('div');
-			addClass(warn, 'plugin-require-warn');
-			addClass(warn, 'text');
-			warn.textContent =
-				get('requireMissing') +
-				missing.map((req: { plugin: string }) => req.plugin).join(', ');
-			elements.push(warn);
-		}
-	}
-	if (detailed) {
-		const { parameters } = meta;
-		const { states } = meta.manager;
-		if (elements.length && parameters.length) {
-			elements.push(document.createTextNode('\n\n'));
-		}
-		for (const parameter of parameters) {
-			const { key, type, alias, desc } = parameter;
-			const elWrap = document.createElement('div');
-			addClass(elWrap, 'plugin-wrap');
-			addClass(elWrap, 'text');
-			elements.push(elWrap);
-			const elKey = document.createElement('div');
-			elKey.textContent = langMap.get(alias) ?? key;
-			addClass(elKey, 'plugin-key');
-			addClass(elKey, 'text');
-			elWrap.appendChild(elKey);
-			const delimiter = document.createElement('div');
-			delimiter.textContent = ': ';
-			addClass(delimiter, 'plugin-label');
-			addClass(delimiter, 'text');
-			elWrap.appendChild(delimiter);
-			switch (type) {
-				case 'attribute':
-				case 'attribute-key': {
-					const elType = document.createElement('div');
-					let attrType = 'attribute';
-					if (parameter.filter !== 'any') {
-						attrType += '.' + parameter.filter;
-					}
-					let text = get(attrType);
-					if (type === 'attribute-key') {
-						text += `(${get('key')})`;
-					}
-					elType.textContent = text;
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-				}
-				case 'attribute-group': {
-					const elType = document.createElement('div');
-					elType.textContent = get('attribute.group');
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-				}
-				case 'enum':
-				case 'enum-value': {
-					const elType = document.createElement('div');
-					let enumType = 'enum';
-					if (parameter.filter !== 'any') {
-						enumType += '.' + parameter.filter;
-					}
-					let text = get(enumType);
-					if (type === 'enum-value') {
-						text += `(${get('value')})`;
-					}
-					elType.textContent = text;
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-				}
-				case 'enum-group': {
-					const elType = document.createElement('div');
-					elType.textContent = get('enum.group');
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-				}
-				case 'element-id': {
-					const elType = document.createElement('div');
-					elType.textContent = `${get('element')}(${get('id')})`;
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-				}
-				case 'file':
-					// 如果设置了类型过滤
-					if (parameter.filter) {
-						const types = parameter.filter.split(' ');
-						for (let i = 0; i < types.length; i++) {
-							if (i !== 0) {
-								const elSeparator = document.createElement('div');
-								elSeparator.textContent = '|';
-								addClass(elSeparator, 'plugin-label');
-								addClass(elSeparator, 'text');
-								elWrap.appendChild(elSeparator);
-							}
-							const elType = document.createElement('div');
-							elType.textContent = get(`file.${types[i]}`);
-							addClass(elType, 'plugin-type');
-							addClass(elType, 'text');
-							elWrap.appendChild(elType);
-						}
-						break;
-					}
-				// 否则跳转到默认分支
-				default:
-					const elType = document.createElement('div');
-					elType.textContent = get(type);
-					addClass(elType, 'plugin-type');
-					addClass(elType, 'text');
-					elWrap.appendChild(elType);
-					break;
-			}
-			if (key in states) {
-				const elCond = document.createElement('div');
-				elCond.textContent = '?';
-				addClass(elCond, 'plugin-label');
-				addClass(elCond, 'text');
-				elWrap.appendChild(elCond);
-			}
-			if (desc) {
-				const elDesc = document.createElement('div');
-				elDesc.textContent = langMap.get(desc);
-				addClass(elDesc, 'plugin-param-desc');
-				addClass(elDesc, 'text');
-				elWrap.appendChild(elDesc);
-			}
-		}
-	}
-	if (!elements.length) {
-		elements.push(document.createTextNode('No Description'));
-	}
-	return elements;
-} as unknown as (...args: unknown[]) => Node[];
 
 PluginManager.createData = function (this: typeof PluginManager, id?: string) {
 	return {

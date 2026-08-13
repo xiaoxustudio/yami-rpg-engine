@@ -43,8 +43,6 @@ interface SceneListExtensions {
 	delete: ((item: SceneListItem) => unknown) | null;
 	toggle: ((item: SceneListItem) => unknown) | null;
 	cancelSearch: (() => unknown) | null;
-	createIcon: ((item: unknown) => unknown) | null;
-	updateIcon: ((item?: unknown) => unknown) | null;
 	updateHead: (() => unknown) | null;
 	restoreRecursiveStates:
 		| ((item: SceneListItem, key: string, states: SceneListItem[]) => unknown)
@@ -433,8 +431,6 @@ Scene.list.restoreRecursiveStates = null as unknown as (...args: unknown[]) => a
 Scene.list.setRecursiveStates = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateFolderState = null;
 Scene.list.canSwitchState = null;
-Scene.list.createIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateHead = null as unknown as (...args: unknown[]) => any;
 getListConfig(Scene.list).onCreate = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onRemove = null as unknown as (item: unknown) => void;
@@ -442,6 +438,7 @@ getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
+	getSceneStore().syncState();
 	this.page = $('#scene');
 	this.head = $('#scene-head');
 	this.body = hide($('#scene-body'));
@@ -1376,10 +1373,7 @@ Scene.updateLightAreaExpansion = function (
 };
 
 Scene.updateActorTeams = function (this: SceneShape) {
-	const list = this.list;
-	for (const actor of this.actors) {
-		list.updateIcon!(actor);
-	}
+	this.list.update();
 };
 
 Scene.updateHead = function (this: SceneShape) {
@@ -1462,3 +1456,24 @@ Scene.planToSave = function (this: SceneShape) {
 Scene.planToSaveTerrains = function (this: SceneShape) {
 	this.context.scene.terrainChanged = true;
 };
+
+const sceneBridgeKeys = [
+	'mode',
+	'tilemap',
+	'layer',
+	'showGrid',
+	'zoom',
+	'scaleX',
+	'scaleY'
+] as const;
+import { getSceneStore } from '@app/stores/scene';
+
+for (const key of sceneBridgeKeys) {
+	Object.defineProperty(Scene, key, {
+		get: () => getSceneStore()[key],
+		set: (value: any) => {
+			(getSceneStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

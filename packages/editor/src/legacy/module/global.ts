@@ -1,15 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import {
-	addClass,
-	clear,
-	getFocus,
-	off,
-	on,
-	read,
-	removeClass,
-	write
-} from '@/util/element-utils.ts';
+import { getFocus, off, on, read, write } from '@/util/element-utils.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { Codec } from '@/codec/codec.ts';
 import { CommandList } from '@/components/command-list.ts';
@@ -33,7 +24,6 @@ import { UI } from '@/ui/ui-window.ts';
 import { Updater } from '@/update/updater.ts';
 import { Variable } from '@/variable/variable.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
-import { shell } from 'electron';
 import Path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -415,7 +405,6 @@ EventBus.once('editor_loaded', () => {
 	if (!AutoTile.templateList) return;
 	const originAutoTileTemplateUpdate = AutoTile.templateList.update;
 	AutoTile.templateList.update = function (this: HTMLElement) {
-		originAutoTileTemplateUpdate.call(this);
 		const autoList = Object.keys(Data.tilesets)
 			.map((v) => Data.tilesets[v])
 			.filter((v) => v.type === 'auto');
@@ -433,17 +422,8 @@ EventBus.once('editor_loaded', () => {
 				break;
 			}
 		}
-		for (let i = 0; i < data.length; i++) {
-			const item = data[i];
-			const count = countMap[item.id] || 0;
-			item.element.querySelector('.autoTile-count')?.remove();
-			const countElem = document.createElement('span');
-			countElem.className = 'autoTile-count';
-			countElem.style.cssText =
-				'color: var(--team-relation-mark-color-friend);padding:4px 2px;margin-left: 4px;';
-			countElem.textContent = count as unknown as string;
-			item.element.append(countElem);
-		}
+		AutoTile.templateCounts = countMap;
+		originAutoTileTemplateUpdate.call(this);
 	};
 });
 
@@ -451,15 +431,6 @@ UpdateLog.currentMode = 'internal';
 UpdateLog.internalItems = [];
 UpdateLog.communityItems = [];
 
-window.addEventListener('localize', () => {
-	const tabInternal = $('#update-log-tab-internal');
-	const tabCommunity = $('#update-log-tab-community');
-	const tabDonation = $('#update-log-tab-donation');
-	if (tabInternal) tabInternal.innerHTML = Local.get!('menuOpenYami.update-log-tab-internal');
-	if (tabCommunity)
-		tabCommunity.textContent = Local.get!('menuOpenYami.update-log-tab-community');
-	if (tabDonation) tabDonation.textContent = Local.get!('menuOpenYami.update-log-tab-donation');
-});
 UpdateLog.tabsClick = function (this: typeof UpdateLog, event: MouseEvent) {
 	const btn = (event.target as HTMLElement).closest?.('.update-log-tab');
 	if (btn) {
@@ -493,76 +464,13 @@ export function markndownToHtml(markdown: string) {
 	return md.render(clean);
 }
 
-export const UpdateLogUpdateOrigin = UpdateLog.update;
-UpdateLog.update = function (this: typeof UpdateLog, ...args: unknown[]) {
-	const items = args[0] as unknown[];
-	if (this.currentMode === 'internal') {
-		UpdateLogUpdateOrigin!.call(this, items);
-	} else {
-		if (!this.content) {
-			this.content = $('#update-log-content');
-		}
-		clear(this.content);
-		const communityItems = this.communityItems!;
-
-		for (const item of communityItems) {
-			if (item.title) {
-				const title = document.createElement('div');
-				title.innerHTML = markndownToHtml(item.title);
-				addClass(title, 'update-log-title');
-				addClass(title, 'text');
-				this.content.appendChild(title);
-			}
-			if (item.major) {
-				const major = document.createElement('div');
-				major.innerHTML = markndownToHtml(item.major);
-				addClass(major, 'update-log-major');
-				addClass(major, 'text');
-				this.content.appendChild(major);
-			}
-			if (item.minor) {
-				const minor = document.createElement('div');
-				minor.innerHTML = markndownToHtml(item.minor);
-				addClass(minor, 'update-log-minor');
-				addClass(minor, 'text');
-				this.content.appendChild(minor);
-			}
-		}
-	}
-};
-
 UpdateLog.switchMode = function (
 	this: typeof UpdateLog,
 	mode: 'internal' | 'community' | 'donation'
 ) {
 	if (mode === this.currentMode) return;
 	this.currentMode = mode;
-
-	if (mode === 'internal') {
-		this.update?.(this.internalItems);
-	} else if (mode === 'community') {
-		this.update?.(undefined);
-	} else if (mode === 'donation') {
-		this.displayDonationList?.();
-	}
-
-	const tabInternal = $('#update-log-tab-internal');
-	const tabCommunity = $('#update-log-tab-community');
-	const tabDonation = $('#update-log-tab-donation');
-
-	if (mode === 'internal') {
-		if (tabInternal) addClass(tabInternal, 'active');
-		if (tabCommunity) removeClass(tabCommunity, 'active');
-		if (tabDonation) removeClass(tabDonation, 'active');
-	} else if (mode === 'community') {
-		if (tabInternal) removeClass(tabInternal, 'active');
-		if (tabCommunity) addClass(tabCommunity, 'active');
-		if (tabDonation) removeClass(tabDonation, 'active');
-	} else if (mode === 'donation') {
-		if (tabInternal) removeClass(tabInternal, 'active');
-		if (tabCommunity) removeClass(tabCommunity, 'active');
-		if (tabDonation) addClass(tabDonation, 'active');
-	}
+	UpdateLog.publish?.();
 } as (...args: unknown[]) => unknown;
 
 UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
@@ -582,50 +490,11 @@ UpdateLog.loadCommunityReleases = async function (this: typeof UpdateLog) {
 			}
 		];
 	}
+	UpdateLog.publish?.();
 };
 
 UpdateLog.displayDonationList = function (this: typeof UpdateLog) {
-	clear(this.content);
-	const donationData = [
-		{
-			name: '刀里个刀(420488038)',
-			amount: 200,
-			link: 'tencent://message/?uin=420488038&Site=qq&Menu=yes'
-		},
-		{
-			name: 'ya(332685057)',
-			amount: 100,
-			link: 'tencent://message/?uin=332685057&Site=qq&Menu=yes'
-		}
-	];
-
-	const donationTitle = document.createElement('div');
-	donationTitle.innerHTML = '<b>感谢以下捐赠者对项目的支持！</b>';
-	addClass(donationTitle, 'update-log-title');
-	addClass(donationTitle, 'text');
-	this.content.appendChild(donationTitle);
-
-	const donationList = document.createElement('div');
-	addClass(donationList, 'box');
-	addClass(donationList, 'donation-list');
-
-	for (const donor of donationData) {
-		const donorItem = document.createElement('div');
-		addClass(donorItem, 'text');
-		const link = document.createElement('a');
-		link.href = '#';
-		link.textContent = donor.name;
-		link.addEventListener('click', (e) => {
-			e.preventDefault();
-			shell.openExternal(donor.link);
-		});
-		donorItem.appendChild(link);
-		donorItem.append(`: ￥${donor.amount.toFixed(2)}`);
-		addClass(donorItem, 'donation-item');
-		donationList.appendChild(donorItem);
-	}
-
-	this.content.appendChild(donationList);
+	UpdateLog.publish?.();
 };
 
 UpdateLog.parseCommunityReleases = function (this: typeof UpdateLog, _r: unknown) {
@@ -633,15 +502,6 @@ UpdateLog.parseCommunityReleases = function (this: typeof UpdateLog, _r: unknown
 	return release
 		? [{ title: release.name, major: release.body || 'No description provided' }]
 		: [];
-};
-
-export const UpdateLogWindowClosedOrigin = UpdateLog.windowClosed;
-
-UpdateLog.windowClosed = function (this: typeof UpdateLog) {
-	UpdateLogWindowClosedOrigin!.call(this);
-	UpdateLog.internalItems = [];
-	UpdateLog.communityItems = [];
-	UpdateLog.currentMode = 'internal';
 };
 
 /* 设置图块标签 */

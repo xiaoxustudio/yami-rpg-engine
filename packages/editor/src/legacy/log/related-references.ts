@@ -5,12 +5,20 @@ import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Local } from '@/tools/localization.ts';
 
-interface ReferenceItem {
+export interface ReferenceItem {
 	type: 'comment' | 'path';
 	text: string;
 	id?: string;
 	order?: number;
 	count?: number;
+}
+
+type ReferenceUpdateHandler = (items: ReferenceItem[]) => void;
+
+let referenceUpdateHandler: ReferenceUpdateHandler | null = null;
+
+export function registerReferenceUpdate(handler: ReferenceUpdateHandler): void {
+	referenceUpdateHandler = handler;
 }
 
 type ReferenceContent = ReferenceItem | ReferenceItem[];
@@ -789,29 +797,7 @@ Reference.openList = function (items: ReferenceItem[]) {
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.update = function (items: ReferenceItem[]) {
-	const list = $('#reference-list').reload();
-	for (const item of items) {
-		const li = document.createElement('common-item') as HTMLElement & {
-			dataValue?: ReferenceItem;
-		};
-		Object.defineProperty(li, 'dataValue', {
-			configurable: true,
-			get: () => item
-		});
-		li.textContent = item.text;
-		if (item.type === 'comment') {
-			addClass(li, 'reference-comment');
-		}
-		if ('count' in item && item.count! > 1) {
-			const counter = document.createElement('div');
-			addClass(counter, 'reference-count');
-			addClass(counter, 'text');
-			counter.textContent = item.count!.toString();
-			li.appendChild(counter);
-		}
-		list.appendElement(li);
-	}
-	list.update();
+	referenceUpdateHandler?.(items);
 } as unknown as ((...args: unknown[]) => void) | null;
 
 Reference.windowClosed = function (event: Event) {

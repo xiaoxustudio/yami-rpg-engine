@@ -446,7 +446,6 @@ export const Animation: AnimationShape = {
 	listPopup: null,
 	listChange: null,
 	listPageResize: null,
-	dirListPointerdown: null,
 	timelinePageResize: null,
 	timelineToolbarPointerdown: null,
 	layerListWheel: null,
@@ -479,9 +478,7 @@ Animation.list.paste = null as unknown as (...args: unknown[]) => any;
 Animation.list.delete = null as unknown as (...args: unknown[]) => any;
 Animation.list.cancelSearch = null as unknown as (...args: unknown[]) => any;
 Animation.list.updateHead = null as unknown as (...args: unknown[]) => any;
-Animation.list.createIcon = null as unknown as (...args: unknown[]) => any;
-Animation.list.createText = null as unknown as (...args: unknown[]) => any;
-Animation.list.updateText = null;
+Animation.list.parseName = null as unknown as (...args: unknown[]) => any;
 getListConfig(Animation.list).onDelete = null as unknown as (item: unknown) => void;
 
 Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
@@ -489,9 +486,6 @@ Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.copy = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
-// ESM 求值顺序错：scene-window.js:338-339 占位赋 null 早跑，scene-list.js:156/177 真定义晚跑 （仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
-Animation.layerList.createIcon = null as unknown as (...args: unknown[]) => any;
-// ESM 求值顺序错：scene-window.js:353 占位赋 null 早跑，scene-list.js:477 真定义晚跑（仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
 getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
 Animation.timeline.head = $('#animation-timeline-head');
@@ -521,6 +515,7 @@ Animation.timelineMarquee.isExtendable = null;
 Animation.timelineMarquee.isShrinkable = null;
 
 Animation.initialize = function (this: typeof Animation) {
+	getAnimationStore().syncState();
 	this.page = $('#animation');
 	this.head = $('#animation-head');
 	this.screen = $('#animation-screen');
@@ -711,7 +706,9 @@ Animation.initialize = function (this: typeof Animation) {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	list.bind(() => this.motions);
-	getListConfig(list).updaters.push(list.updateText);
+	getListConfig(list).updaters.push((item: unknown) =>
+		list.updateItemName(item as AnimationMotion)
+	);
 
 	const { layerList } = this;
 	getListConfig(layerList).removable = true;
@@ -972,7 +969,6 @@ Animation.initialize = function (this: typeof Animation) {
 	// list select/record/open/popup 经 Vue 模板转发（LayoutPanel @select/@record/@open/@popup → Animation.list*）
 	// list change 经 Vue 模板转发（LayoutPanel @change → Animation.listChange）
 	on(list.page, 'resize', this.listPageResize);
-	on(this.dirList, 'pointerdown', this.dirListPointerdown);
 	on(this.timeline, 'resize', this.timelinePageResize);
 	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
 	this.layerList.on('wheel', this.layerListWheel);
@@ -1457,9 +1453,7 @@ Animation.setDirection = function (this: typeof Animation, direction: number) {
 	this.updatePlayerMotion!();
 	this.contextLoaded = false;
 	this.layerList.update();
-	const selected = this.dirList.querySelector('.selected');
-	if (selected) removeClass(selected as HTMLElement, 'selected');
-	addClass(this.dirList.childNodes[dirIndex] as HTMLElement, 'selected');
+	this.dirList.setDirDirection?.(dirIndex);
 	// 标记动作对象为已加载状态 - 以便销毁元素
 	if (dirCase.loaded === undefined) {
 		Object.defineProperty(dirCase, 'loaded', {
@@ -1476,23 +1470,8 @@ Animation.createDirItems = function (this: typeof Animation) {
 	// 当动作模式发生变化时，更新方向选项
 	if (dirList.mode !== mode) {
 		dirList.mode = mode;
-		clear(dirList);
-		if (mode === 'none') return;
-		const dirs = this.dirTags[mode];
-		for (let i = 0; i < dirs.length; i++) {
-			const element = document.createElement('anim-dir');
-			if (i === Animation.direction) {
-				addClass(element, 'selected');
-			}
-			element.direction = i;
-			element.textContent = dirs[i];
-			dirList.appendChild(element);
-		}
-		if (dirs.length > 1) {
-			show(dirList);
-		} else {
-			hide(dirList);
-		}
+		const dirs = this.dirTags[mode] ?? [];
+		dirList.setDirItems?.(dirs, this.direction);
 	}
 };
 
@@ -5161,14 +5140,6 @@ Animation.listPageResize = function (this: typeof Animation, event: Event) {
 	Animation.list.resize();
 };
 
-Animation.dirListPointerdown = function (this: typeof Animation, event: PointerEvent) {
-	const element = event.target as HTMLElement & { direction?: number };
-	if (element.tagName === 'ANIM-DIR' && !hasClass(element, 'selected')) {
-		Animation.setDirection!(element.direction);
-		Inspector.close!();
-	}
-};
-
 Animation.timelinePageResize = function (this: typeof Animation, event: Event) {
 	Animation.updatePointerArea!();
 	Animation.timeline.updateHead();
@@ -5923,28 +5894,13 @@ Animation.list.updateHead = function (this: typeof Animation) {
 	}
 };
 
-// 列表 - 重写创建图标方法
-Animation.list.createIcon = function (this: typeof Animation) {
-	const icon = document.createElement('node-icon');
-	addClass(icon, 'icon-string');
-	return icon;
-};
-
-// 列表 - 重写创建文本方法
-Animation.list.createText = function (this: typeof Animation, item: unknown) {
-	const textNode = document.createElement('div');
-	addClass(textNode, 'text');
-	textNode.style.pointerEvents = 'none';
-	return textNode;
-};
-
-// 列表 - 更新文本
-Animation.list.updateText = function (this: typeof Animation, item: AnimationMotion) {
-	const { element } = item;
-	const enumString = Enum.getString!(item.id);
-	element.textNode.textContent = enumString
+// 列表 - 重写解析名称方法
+Animation.list.parseName = function (this: typeof Animation, item: unknown) {
+	const animationItem = item as AnimationMotion;
+	const enumString = Enum.getString!(animationItem.id);
+	return enumString
 		? GameLocal.replace!(enumString.name)
-		: Command.parseUnlinkedId!(item.id);
+		: Command.parseUnlinkedId!(animationItem.id);
 };
 
 // 列表 - 在删除数据时回调
@@ -6016,37 +5972,6 @@ Animation.layerList.delete = function (this: typeof Animation, item: AnimationLa
 		this.deleteNode!(item);
 	}
 };
-
-// 图层列表 - 重写创建图标方法
-Animation.layerList.createIcon = (function IIFE() {
-	const iconCreators = {
-		joint: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'anim-layer-joint');
-			return icon;
-		},
-		sprite: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'anim-layer-sprite');
-			return icon;
-		},
-		particle: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'anim-layer-particle');
-			return icon;
-		},
-		sound: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'anim-layer-sound');
-			return icon;
-		}
-	};
-	return function (this: typeof Animation, item: unknown) {
-		return (iconCreators as Record<string, () => HTMLElement>)[
-			(item as { class: string }).class
-		]();
-	};
-})();
 
 // 图层列表 - 在删除数据时回调
 getListConfig(Animation.layerList).onDelete = function (
@@ -6129,3 +6054,16 @@ Animation.timelineMarquee.isShrinkable = function (this: typeof Animation) {
 	const frame = frames[frames.length - 1];
 	return frame ? this.x < frame.end : false;
 };
+
+const animationBridgeKeys = ['mode', 'speed', 'zoom'] as const;
+import { getAnimationStore } from '@app/stores/animation';
+
+for (const key of animationBridgeKeys) {
+	Object.defineProperty(Animation, key, {
+		get: () => getAnimationStore()[key],
+		set: (value: any) => {
+			(getAnimationStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

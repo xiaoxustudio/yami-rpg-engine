@@ -241,7 +241,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			case 'blue':
 				if (light[key] !== value) {
 					light[key] = value;
-					Scene.list.updateIcon!(light);
+					Scene.list.update();
 				}
 				break;
 			case 'direct':

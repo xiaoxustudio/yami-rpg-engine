@@ -206,6 +206,7 @@ export const treeListStatics = {
 export interface TreeListApiOptions {
 	getMenuState?: () => string;
 	renderNodeExtras?: (item: TreeItem, container: HTMLElement) => void;
+	renderNodeIcon?: (item: TreeItem, container: HTMLElement) => void;
 }
 
 type NodeElement = HTMLElement & {
@@ -455,7 +456,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 				element.appendChild(folderMark);
 			}
 
-			const nodeIcon = this.createIcon(item!);
+			let nodeIcon: HTMLElement;
+			if (typeof this.renderNodeIcon === 'function') {
+				nodeIcon = document.createElement('div');
+				addClass(nodeIcon, 'tree-node-icon');
+			} else {
+				nodeIcon = this.createIcon(item!);
+			}
 			element.appendChild(nodeIcon);
 
 			const textNode = this.createText(item!);
@@ -531,6 +538,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 		if (element.extras && typeof this.renderNodeExtras === 'function') {
 			this.renderNodeExtras(item!, element.extras);
+		}
+
+		if (typeof this.renderNodeIcon === 'function') {
+			this.renderNodeIcon(item!, element.nodeIcon);
 		}
 	},
 
@@ -1634,6 +1645,7 @@ export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions)
 	const list = el as HTMLElement & { [k: string]: any };
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
 	list.renderNodeExtras = options?.renderNodeExtras;
+	list.renderNodeIcon = options?.renderNodeIcon;
 	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {

@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { $ } from '@/util/dom.ts';
-import { addClass, clear, enable } from '@/util/element-utils.ts';
+import { enable } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from './global.ts';
@@ -23,25 +23,23 @@ export const ApkBuilder = new (class {
 		});
 	}
 	build(cfg: ApkConfig) {
-		clear($('#export-apk-content'));
+		this.logs.length = 0;
+		this.notifyLogContent();
 		const config = this.process!(cfg);
 		ipcRenderer.invoke('build-apk', config);
 	}
+	notifyLogContent() {
+		($('#export-apk-content') as HTMLElement & { update?: () => void }).update?.();
+	}
 	apkLog(log: ApkLogEntry) {
-		const text = document.createElement('div');
-		text.textContent = log.msg;
-		addClass(text, 'export-apk-major');
-		addClass(text, 'text');
-		$('#export-apk-content').appendChild(text);
+		this.notifyLogContent();
 		if (log.done) {
 			enable($('#export-apk-button'));
 		}
-		$('#export-apk-container').scrollTo({
-			top: $('#export-apk-container').scrollHeight
-		});
 	}
 	reset() {
-		clear($('#export-apk-content'));
+		this.logs.length = 0;
+		this.notifyLogContent();
 		enable($('#export-apk-button'));
 	}
 	clearLog() {

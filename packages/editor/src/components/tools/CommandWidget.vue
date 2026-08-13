@@ -1,5 +1,6 @@
 <template>
 	<WindowFrame id="command-widget" no-buttons>
+		<div class="text" id="command-searcher-mark">&gt;</div>
 		<TextBox id="command-searcher" />
 	</WindowFrame>
 </template>

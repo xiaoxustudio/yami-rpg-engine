@@ -1,5 +1,5 @@
-import { $, measureText } from '@/util/dom.ts';
-import { addClass, getFocus, hide, removeClass, show } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
+import { addClass, removeClass } from '@/util/element-utils';
 import { Scene } from '@/scene/scene-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Animation } from '@/animation/animation-window.ts';
@@ -7,6 +7,7 @@ import { Layout } from '@/layout/layout.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';
+import { getConfirmationStore } from '@app/stores/confirmation';
 
 type WindowFrame = HTMLElement & {
 	open(): unknown;
@@ -116,6 +117,9 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 	}
 
 	if ((element as WindowFrame).close()) {
+		if (element.id === 'confirmation') {
+			getConfirmationStore().clear();
+		}
 		// 窗口关闭可能触发 focus 滚动/布局变化导致页面 scrollY 偏移（顶栏滚出视口），强制归零
 		window.scrollTo(0, 0);
 		try {
@@ -217,62 +221,13 @@ Window.refocus = function (this: typeof Window) {
 	}
 };
 
-Window.confirm = (function IIFE() {
-	return function (
-		options: { message?: string; close?: () => void },
-		items: Array<{ label?: string; click?: () => void }>
-	) {
-		const elWindow = $('#confirmation');
-		const elMessage = $('#confirmation-message');
-		const buttons = [
-			$('#confirmation-button-0'),
-			$('#confirmation-button-1'),
-			$('#confirmation-button-2')
-		];
-		const message = options.message ?? '';
-		const click = function (this: HTMLElement, event: Event) {
-			Window.close!('confirmation');
-			const index = buttons.indexOf(this);
-			const item = items[index];
-			item.click?.();
-		};
-		for (let i = 0; i < buttons.length; i++) {
-			const button = buttons[i];
-			const item = items[i];
-			if (item) {
-				button.textContent = item.label ?? '';
-				button.addEventListener('click', click);
-				show(button);
-			} else {
-				hide(button);
-			}
-		}
-		if (items.length > 0) {
-			getFocus(buttons[0]);
-		}
-		elMessage.textContent = message;
-		elWindow.addEventListener(
-			'closed',
-			(event: Event) => {
-				for (const button of buttons) {
-					button.removeEventListener('click', click);
-				}
-				options.close?.();
-			},
-			{ once: true }
-		);
-
-		const measure = measureText(message);
-		const textWidth = measure.width;
-		const textHeight = measure.lines * 20;
-		const buttonWidth = items.length * 98 - 10;
-		const contentWidth = Math.max(textWidth, buttonWidth) + 20;
-		const contentHeight = textHeight + 50;
-		elWindow.style.width = `${contentWidth}px`;
-		elWindow.style.height = `${contentHeight + 24}px`;
-		Window.open!('confirmation');
-	};
-})();
+Window.confirm = function (
+	this: typeof Window,
+	options: { message?: string; close?: () => void },
+	items: Array<{ label?: string; click?: () => void }>
+) {
+	getConfirmationStore().confirm(options, items);
+};
 
 Window.keydown = function (this: typeof Window, event: KeyboardEvent) {
 	if (event.altKey) {

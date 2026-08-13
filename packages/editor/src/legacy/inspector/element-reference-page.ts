@@ -100,7 +100,7 @@ import { UI } from '@/ui/ui-window.ts';
 					node.instance.historyEnabled = true;
 					node.instances.setProperty(key, value);
 					node.instance.historyEnabled = false;
-					UI.list.updateIcon(node);
+					UI.list.update();
 				}
 				break;
 			case 'synchronous':

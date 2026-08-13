@@ -33,7 +33,6 @@ export interface CommandSuggestionItem {
 type ListMethod = ((...args: any[]) => any) | null;
 
 interface CommandSuggestionList {
-	createIcon: (item: unknown) => unknown;
 	searchNodesAlgorithm: ListMethod;
 	updateCommandNames: ListMethod;
 	createCommandTip: ListMethod;
@@ -145,22 +144,6 @@ function ensureDomBound() {
 
 function bindListMethods() {
 	const list = CommandSuggestion.list!;
-	list.createIcon = (function IIFE() {
-		return function (item: CommandSuggestionItem): HTMLElement {
-			const icon = document.createElement('node-icon') as HTMLElement;
-			switch (item.class) {
-				case 'folder':
-					addClass(icon, 'icon-folder');
-					break;
-				default:
-					addClass(icon, 'icon-command');
-					addClass(icon, item.class);
-					break;
-			}
-			return icon;
-		};
-	})() as unknown as (item: unknown) => unknown;
-
 	list.searchNodesAlgorithm = function (
 		data: CommandSuggestionItem[],
 		keyword: RegExp,
@@ -264,20 +247,14 @@ CommandSuggestion.initialize = function (): void {
 	this.widget.enableAmbient = false;
 
 	this.searcher.addCloseButton();
-	const mark = document.createElement('div');
-	addClass(mark, 'text');
 	const input = this.searcher.input;
 	input.id = 'command-searcher-input';
-	mark.id = 'command-searcher-mark';
-	mark.textContent = '>';
-	this.searcher.insertBefore(mark, input);
 
 	const { list } = this;
 	list.bind(() => this.data);
 
 	// 挂载列表项创建器/更新器 ——
 	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 tooltip 元素。
-	getListConfig(list).creators.push(list.createIcon!);
 	getListConfig(list).creators.push(list.createCommandTip!);
 
 	this.data = File.get!({

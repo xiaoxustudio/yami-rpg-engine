@@ -1,6 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addClass, hasClass, hide, rect, show } from '@/util/element-utils';
+import { Fragment, h, render, type VNode } from 'vue';
 
 interface TextSuggestionItem {
 	name: string;
@@ -15,10 +16,6 @@ interface TextSuggestionItem {
 type ListMethod = ((...args: any[]) => any) | null;
 
 interface TextSuggestionList {
-	createIcon: ListMethod;
-	createText: ListMethod;
-	createRefCount: ListMethod;
-	createComment: ListMethod;
 	selectDefaultCommand: ListMethod;
 	updateNodeElement: ListMethod;
 	elements: Array<{ item: TextSuggestionItem }> & { count: number };
@@ -99,10 +96,6 @@ interface TextSuggestionShape {
 function createEmptyList(): TextSuggestionList {
 	const noop = () => {};
 	return {
-		createIcon: null,
-		createText: null,
-		createRefCount: null,
-		createComment: null,
 		selectDefaultCommand: null,
 		updateNodeElement: null,
 		elements: Object.assign([], { count: 0 }),
@@ -151,10 +144,6 @@ export const TextSuggestion: TextSuggestionShape = {
 };
 
 TextSuggestion.list.updateNodeElement = null;
-TextSuggestion.list.createIcon = null;
-TextSuggestion.list.createText = null;
-TextSuggestion.list.createRefCount = null;
-TextSuggestion.list.createComment = null;
 TextSuggestion.list.selectDefaultCommand = null;
 
 TextSuggestion.initialize = function (this: TextSuggestionShape): void {
@@ -163,10 +152,6 @@ TextSuggestion.initialize = function (this: TextSuggestionShape): void {
 		element.updateNodeElement = this.list.updateNodeElement as unknown as (
 			item: unknown
 		) => unknown;
-		element.createIcon = this.list.createIcon as unknown as (item: unknown) => unknown;
-		element.createText = this.list.createText as unknown as (item: unknown) => unknown;
-		element.createRefCount = this.list.createRefCount as unknown as (item: unknown) => unknown;
-		element.createComment = this.list.createComment as unknown as (item: unknown) => unknown;
 		element.selectDefaultCommand = this.list.selectDefaultCommand as unknown as (
 			item: unknown
 		) => unknown;
@@ -347,61 +332,21 @@ TextSuggestion.list.updateNodeElement = function (
 ): void {
 	if (!element.initialized) {
 		element.initialized = true;
-		this.createIcon!(element);
-		this.createText!(element);
-		this.createRefCount!(element);
-		this.createComment!(element);
+		const item = element.item;
+		const nodes: VNode[] = [];
+		const classList = ['text-suggestion-content', 'text'];
+		if (item.class) classList.push(item.class);
+		nodes.push(h('div', { class: classList }, item.name));
+		if (item.refCount) {
+			nodes.push(
+				h('div', { class: 'text-suggestion-ref-count text' }, String(item.refCount))
+			);
+		}
+		if (item.comment) {
+			nodes.push(h('div', { class: 'text-suggestion-comment text' }, item.comment));
+		}
+		render(h(Fragment, nodes), element);
 		addClass(element, 'text-suggestion-item');
-	}
-};
-
-TextSuggestion.list.createIcon = function (
-	this: TextSuggestionList,
-	element: HTMLElement & { item: TextSuggestionItem }
-): void {
-	if (element.item.icon) {
-		const icon = document.createElement('node-icon') as HTMLElement;
-		addClass(icon, element.item.icon);
-		element.appendChild(icon);
-	}
-};
-
-TextSuggestion.list.createText = function (
-	this: TextSuggestionList,
-	element: HTMLElement & { item: TextSuggestionItem }
-): void {
-	const item = element.item;
-	const text = document.createElement('div');
-	addClass(text, 'text-suggestion-content');
-	addClass(text, 'text');
-	if (item.class) addClass(text, item.class);
-	text.textContent = item.name;
-	element.appendChild(text);
-};
-
-TextSuggestion.list.createRefCount = function (
-	this: TextSuggestionList,
-	element: HTMLElement & { item: TextSuggestionItem }
-): void {
-	if (element.item.refCount) {
-		const comment = document.createElement('div');
-		addClass(comment, 'text-suggestion-ref-count');
-		addClass(comment, 'text');
-		comment.textContent = String(element.item.refCount);
-		element.appendChild(comment);
-	}
-};
-
-TextSuggestion.list.createComment = function (
-	this: TextSuggestionList,
-	element: HTMLElement & { item: TextSuggestionItem }
-): void {
-	if (element.item.comment) {
-		const comment = document.createElement('div');
-		addClass(comment, 'text-suggestion-comment');
-		addClass(comment, 'text');
-		comment.textContent = element.item.comment;
-		element.appendChild(comment);
 	}
 };
 

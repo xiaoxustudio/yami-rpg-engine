@@ -1,16 +1,22 @@
 <template>
 	<!-- 文本建议列表 -->
-	<TreeList id="text-suggestions" class="hidden" />
+	<TreeList id="text-suggestions" class="hidden" :node-icon-renderer="nodeIconRenderer" />
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { icon?: string };
+	if (!node.icon) return [];
+	return [h('node-icon', { class: node.icon })];
+};
 
 onMounted(() => {
 	inspector.syncState();

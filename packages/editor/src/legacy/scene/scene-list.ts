@@ -1,7 +1,5 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { addClass, dispatchChangeEvent, rect } from '@/util/element-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { dispatchChangeEvent, rect } from '@/util/element-utils.ts';
 import { Codec } from '@/codec/codec.ts';
 import { Layout } from '@/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
@@ -263,91 +261,6 @@ Scene.list.canSwitchState = (function IIFE() {
 		return check(item);
 	};
 })();
-
-// 列表 - 重写创建图标方法
-Scene.list.createIcon = (function IIFE() {
-	const iconCreators: Record<string, (item: SceneItem) => HTMLElement> = {
-		folder: () => {
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-folder');
-			return icon;
-		},
-		actor: (actor: SceneItem) => {
-			const teams = Data.teams.map;
-			const team = teams[actor.teamId];
-			const hex = team ? team.color : 'ffffffff';
-			const r = parseInt(hex.slice(0, 2), 16);
-			const g = parseInt(hex.slice(2, 4), 16);
-			const b = parseInt(hex.slice(4, 6), 16);
-			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			const icon = document.createElement('node-icon');
-			icon.textContent = '\uf2c0';
-			icon.style.color = `rgba(${r}, ${g}, ${b}, ${a})`;
-			return icon;
-		},
-		region: (region: SceneItem) => {
-			const hex = region.color;
-			const r = parseInt(hex.slice(0, 2), 16);
-			const g = parseInt(hex.slice(2, 4), 16);
-			const b = parseInt(hex.slice(4, 6), 16);
-			const a = parseInt(hex.slice(6, 8), 16) / 255;
-			const icon = document.createElement('node-icon');
-			addClass(icon, 'icon-scene-region');
-			icon.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${a})`;
-			return icon;
-		},
-		light: (light: SceneItem) => {
-			const icon = document.createElement('node-icon');
-			const r = light.red;
-			const g = light.green;
-			const b = light.blue;
-			icon.textContent = '\uf006';
-			icon.style.color = `rgba(${r}, ${g}, ${b})`;
-			return icon;
-		},
-		animation: () => {
-			const icon = document.createElement('node-icon');
-			icon.textContent = '\uf110';
-			return icon;
-		},
-		particle: () => {
-			const icon = document.createElement('node-icon');
-			icon.textContent = '\uf2dc';
-			return icon;
-		},
-		parallax: (parallax: SceneItem) => {
-			const icon = document.createElement('node-icon');
-			const path = File.getPath!(parallax.image);
-			if (path) {
-				addClass(icon, 'icon-scene-parallax');
-				icon.style.backgroundImage = CSS.encodeURL(File.route!(path));
-			} else {
-				icon.textContent = '\uf1c5';
-			}
-			return icon;
-		},
-		tilemap: () => {
-			const icon = document.createElement('node-icon');
-			icon.textContent = '\uf00a';
-			return icon;
-		}
-	};
-	return function (this: typeof Scene, item: unknown) {
-		const sceneItem = item as SceneItem;
-		return iconCreators[sceneItem.class](sceneItem);
-	};
-})();
-
-// 列表 - 更新图标
-Scene.list.updateIcon = function (this: typeof Scene, item: unknown) {
-	const sceneItem = item as SceneItem;
-	const { element } = sceneItem;
-	if (element?.nodeIcon) {
-		const icon = this.createIcon!(sceneItem);
-		element.replaceChild(icon, element.nodeIcon);
-		element.nodeIcon = icon;
-	}
-};
 
 // 列表 - 更新头部位置
 Scene.list.updateHead = function (this: typeof Scene) {

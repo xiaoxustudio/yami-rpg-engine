@@ -1,14 +1,41 @@
 import { defineStore } from 'pinia';
 import { Scene } from '@/scene/scene-window.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
+
+export const sceneStateKeys = [
+	'state',
+	'target',
+	'mode',
+	'tilemap',
+	'layer',
+	'showGrid',
+	'zoom',
+	'scaleX',
+	'scaleY'
+] as const;
 
 export const useSceneStore = defineStore('scene', () => {
 	const state = shallowRef<string>('closed');
 	const target = shallowRef<any>(null);
+	const mode = shallowRef<string | null>(null);
+	const tilemap = shallowRef<unknown>(null);
+	const layer = shallowRef<string | null>(null);
+	const showGrid = shallowRef<boolean>(false);
+	const zoom = shallowRef<number | null>(null);
+	const scaleX = shallowRef<number | null>(null);
+	const scaleY = shallowRef<number | null>(null);
 
 	function syncState() {
 		state.value = Scene?.state ?? 'closed';
 		target.value = Scene?.target ?? null;
+		mode.value = Scene?.mode ?? null;
+		tilemap.value = Scene?.tilemap ?? null;
+		layer.value = Scene?.layer ?? null;
+		showGrid.value = Scene?.showGrid ?? false;
+		zoom.value = Scene?.zoom ?? null;
+		scaleX.value = Scene?.scaleX ?? null;
+		scaleY.value = Scene?.scaleY ?? null;
 	}
 
 	function open(target: unknown) {
@@ -74,6 +101,13 @@ export const useSceneStore = defineStore('scene', () => {
 	return {
 		state,
 		target,
+		mode,
+		tilemap,
+		layer,
+		showGrid,
+		zoom,
+		scaleX,
+		scaleY,
 		syncState,
 		open,
 		close,
@@ -92,3 +126,7 @@ export const useSceneStore = defineStore('scene', () => {
 		redo
 	};
 });
+
+export function getSceneStore() {
+	return useSceneStore(pinia);
+}

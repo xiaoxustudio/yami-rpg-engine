@@ -8,6 +8,7 @@
 					id="enum-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@record="onListRecord"
 					@open="onListOpen"
@@ -70,6 +71,13 @@ const nodeExtras = (item: unknown): VNode[] => {
 		}
 	}
 	return nodes;
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	return [
+		h('node-icon', { class: node.class === 'folder' ? 'icon-folder' : 'icon-string' })
+	];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {

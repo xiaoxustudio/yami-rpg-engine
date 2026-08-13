@@ -71,8 +71,6 @@ interface VariableModule {
 	list_cancelSearch: () => void;
 	list_createFolder: () => unknown;
 	list_createVariable: () => unknown;
-	list_createIcon: (item: unknown) => unknown;
-	list_updateIcon: (item: unknown) => void;
 	list_onCreate: (item: unknown) => void;
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
@@ -137,8 +135,6 @@ export const Variable: VariableModule = {
 	list_cancelSearch: null as unknown as () => void,
 	list_createFolder: null as unknown as () => unknown,
 	list_createVariable: null as unknown as () => unknown,
-	list_createIcon: null as unknown as (item: unknown) => unknown,
-	list_updateIcon: null as unknown as (item: unknown) => void,
 	list_onCreate: null as unknown as (item: unknown) => void,
 	list_onDelete: null as unknown as (item: unknown) => void,
 	list_onResume: null as unknown as (item: unknown) => void,
@@ -172,8 +168,6 @@ function ensureDomBound() {
 	Variable.list.createFolder = Variable.list_createFolder;
 	(Variable.list as unknown as { createVariable: () => unknown }).createVariable =
 		Variable.list_createVariable;
-	Variable.list.createIcon = Variable.list_createIcon;
-	Variable.list.updateIcon = Variable.list_updateIcon;
 	getListConfig(Variable.list).onCreate = Variable.list_onCreate;
 	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
 	getListConfig(Variable.list).onResume = Variable.list_onResume;
@@ -263,7 +257,6 @@ Variable.initialize = function () {
 		data.value.value = item.value;
 		item.sort = sort;
 		item.value = value;
-		list.updateIcon(item);
 		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;
@@ -284,7 +277,6 @@ Variable.initialize = function () {
 		const { item, value } = data;
 		data.value = item.value;
 		item.value = value;
-		list.updateIcon(item);
 		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;

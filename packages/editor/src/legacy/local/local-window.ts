@@ -102,7 +102,6 @@ interface LocalizationShape {
 	list_cancelSearch: (this: TreeListElement) => void;
 	list_createFolder: (this: TreeListElement) => LocalizationItem;
 	list_createItem: (this: TreeListElement) => LocalizationItem;
-	list_createIcon: (this: TreeListElement, item: LocalizationItem) => HTMLElement;
 	list_updateItemName: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onCreate: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onDelete: (this: TreeListElement, item: LocalizationItem) => void;
@@ -169,7 +168,6 @@ export const Localization: LocalizationShape = {
 	list_cancelSearch: null as unknown as LocalizationShape['list_cancelSearch'],
 	list_createFolder: null as unknown as LocalizationShape['list_createFolder'],
 	list_createItem: null as unknown as LocalizationShape['list_createItem'],
-	list_createIcon: null as unknown as LocalizationShape['list_createIcon'],
 	list_updateItemName: null as unknown as LocalizationShape['list_updateItemName'],
 	list_onCreate: null as unknown as LocalizationShape['list_onCreate'],
 	list_onDelete: null as unknown as LocalizationShape['list_onDelete'],
@@ -202,7 +200,6 @@ function ensureDomBound() {
 	list.cancelSearch = Localization.list_cancelSearch;
 	list.createFolder = Localization.list_createFolder;
 	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => unknown;
-	list.createIcon = Localization.list_createIcon as unknown as (...args: unknown[]) => unknown;
 	list.updateItemName = Localization.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
@@ -217,6 +214,7 @@ function ensureDomBound() {
 }
 
 Localization.initialize = function () {
+	getLocalizationStore().syncState();
 	ensureDomBound();
 	if (!Localization.list) return;
 	const list = this.list!;
@@ -304,6 +302,7 @@ Localization.open = function (target: LocalizationTarget | null | undefined = nu
 	this.unpackLocalization();
 	this.createInputs();
 	Window.open!('localization');
+	this.state = 'open';
 
 	const list = this.list!;
 	const item = !target ? undefined : this.getItemById(read(target));
@@ -517,6 +516,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 }.bind(Localization);
 
 Localization.windowClosed = function (this: LocalizationShape, event: Event) {
+	this.state = 'closed';
 	this.data = null;
 	this.idMap = null;
 	this.inputs = null;
@@ -855,17 +855,6 @@ Localization.list_createItem = function () {
 	};
 };
 
-// 列表 - 重写创建图标方法
-Localization.list_createIcon = function (item: LocalizationItem) {
-	const icon = document.createElement('node-icon');
-	if (item.class !== 'folder') {
-		addClass(icon, 'icon-string');
-	} else {
-		addClass(icon, 'icon-folder');
-	}
-	return icon;
-};
-
 // 列表 - 重写更新项目名称方法
 Localization.list_updateItemName = function (this: TreeListElement, item: LocalizationItem) {
 	TreeList.prototype.updateItemName.call(this, item);
@@ -886,3 +875,5 @@ Localization.list_onDelete = function (item: LocalizationItem) {
 Localization.list_onResume = function (item: LocalizationItem) {
 	Localization.register(item);
 };
+
+import { getLocalizationStore } from '@app/stores/localization';

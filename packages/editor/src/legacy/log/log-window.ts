@@ -1,6 +1,4 @@
 import { $ } from '@/util/dom.ts';
-import { addClass, removeClass, clear } from '@/util/element-utils.ts';
-import { File } from '@/file/file-system-core.ts';
 import { Editor } from '@/main/editor.ts';
 
 import { ipcRenderer } from 'electron';
@@ -29,7 +27,8 @@ export const Log = {
 	switchMode: null as ((...args: unknown[]) => void) | null,
 	loadCommunityReleases: null as ((...args: unknown[]) => void) | null,
 	displayDonationList: null as ((...args: unknown[]) => void) | null,
-	parseCommunityReleases: null as ((...args: unknown[]) => void) | null
+	parseCommunityReleases: null as ((...args: unknown[]) => void) | null,
+	openVSCode: null as ((file: string, line: number, column: number) => void) | null
 };
 
 Log.initialize = function () {
@@ -61,30 +60,9 @@ Log.clear = function () {
 };
 
 Log.update = function () {
-	const { box, list } = this;
+	const { box } = this;
 	if (!box) return;
-	clear(box);
-	if (list.length !== 0) {
-		for (const item of list) {
-			const text = document.createElement('log-item');
-			text.innerHTML = item.message;
-			addClass(text, item.type);
-			box.appendChild(text);
-			for (const path of (box as HTMLElement).querySelectorAll<HTMLElement>('log-path')) {
-				path.onclick = () => {
-					const LINE = path.nextElementSibling!;
-					const COLUMN = LINE.nextElementSibling!;
-					const file = File.route!(path.textContent);
-					const line = parseInt(LINE.textContent ?? '');
-					const column = parseInt(COLUMN.textContent ?? '');
-					ipcRenderer.send('open-vscode', file, line, column);
-				};
-			}
-		}
-		addClass(box, 'open');
-	} else {
-		removeClass(box, 'open');
-	}
+	(box as HTMLElement & { update?: () => void }).update?.();
 };
 
 Log.tick = function () {
@@ -128,6 +106,10 @@ Log.catchRejection = function (event: unknown) {
 			duration: 6
 		});
 	}
+};
+
+Log.openVSCode = function (file: string, line: number, column: number) {
+	ipcRenderer.send('open-vscode', file, line, column);
 };
 
 Log.tscLog = function (event: unknown, tscMessage: unknown) {

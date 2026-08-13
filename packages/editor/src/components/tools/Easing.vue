@@ -8,6 +8,7 @@
 					id="easing-list"
 					padded
 					:node-extras="nodeExtras"
+					:node-icon-renderer="nodeIconRenderer"
 					@select="onListSelect"
 					@open="onListOpen"
 					@popup="onListPopup"
@@ -132,6 +133,14 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	const node = item as { key?: string };
 	container.parentNode?.classList.add('plain');
 	return [h('div', { class: 'variable-init-text text' }, ' = ' + node.key)];
+};
+
+const nodeIconRenderer = (item: unknown): VNode[] => {
+	const node = item as { class?: string };
+	if (node.class === 'folder') {
+		return [h('node-icon', { class: 'icon-folder' })];
+	}
+	return [h('node-icon', { class: ['icon-command', 'flow'] })];
 };
 
 const local = useLocalStore();

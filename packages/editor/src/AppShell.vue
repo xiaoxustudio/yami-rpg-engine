@@ -32,11 +32,13 @@
 			<div class="maximize" id="title-maximize" @click="onMaximizeClick"></div>
 			<div class="close" id="title-close" @click="onCloseClick"></div>
 		</div>
+		<div id="title-app-region" />
 	</div>
 	<LayoutPanel />
 	<Teleport to="#project-browser">
 		<FileBrowser />
 	</Teleport>
+	<SearchHistoryDropdown />
 	<Teleport v-for="p in inspectorPages" :key="p.value" :to="p.target">
 		<component :is="p.comp" @vue:mounted="onComponentMounted" />
 	</Teleport>
@@ -61,6 +63,7 @@
 <script setup lang="ts">
 import TabBar from './components/common/TabBar.vue';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
+import SearchHistoryDropdown from './components/file-browser/SearchHistoryDropdown.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
 import { defineAsyncComponent } from 'vue';
 import type { Component } from 'vue';
@@ -113,10 +116,15 @@ const toolModules = import.meta.glob('./components/tools/*.vue');
 const commandModules = import.meta.glob('./components/commands/*.vue');
 const inspectorModules = import.meta.glob('./components/inspector/*.vue');
 
+// PluginOverview 为窗口内子组件（Plugin/Command/FileScriptPage 使用），不作为独立窗口挂载
+const toolWindowEntries = Object.entries(toolModules).filter(
+	([path]) => !path.endsWith('PluginOverview.vue')
+);
+
 // 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，
 // 懒加载组件就绪前先阻塞 Editor.initialize，避免读取到 null DOM
 const lazyTotal =
-	Object.keys(toolModules).length + Object.keys(commandModules).length + Object.keys(inspectorModules).length;
+	toolWindowEntries.length + Object.keys(commandModules).length + Object.keys(inspectorModules).length;
 let lazyMounted = 0;
 const onComponentMounted = () => {
 	lazyMounted++;
@@ -134,7 +142,7 @@ const onAsyncError = (error: Error, retry: () => void, fail: () => void, attempt
 };
 const asyncComp = (loader: () => Promise<Component>) => defineAsyncComponent({ loader, onError: onAsyncError });
 const toolComponents = Object.fromEntries(
-	Object.entries(toolModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
+	toolWindowEntries.map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])
 );
 const commandComponents = Object.fromEntries(
 	Object.entries(commandModules).map(([path, loader]) => [path, asyncComp(loader as unknown as () => Promise<Component>)])

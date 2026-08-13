@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Easing } from '@/data/transition-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 type EasingDataShape = {
 	id: string;
@@ -101,3 +102,7 @@ export const useEasingStore = defineStore('easing', () => {
 		loadFromProject
 	};
 });
+
+export function getEasingStore() {
+	return useEasingStore(pinia);
+}

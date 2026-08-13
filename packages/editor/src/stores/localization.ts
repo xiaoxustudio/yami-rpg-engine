@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Localization } from '@/local/local-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 type LocalizationItemShape = {
 	id?: string;
@@ -103,3 +104,7 @@ export const useLocalizationStore = defineStore('localization', () => {
 		loadFromProject
 	};
 });
+
+export function getLocalizationStore() {
+	return useLocalizationStore(pinia);
+}

@@ -1,12 +1,10 @@
 import { $ } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FileItem } from '@/file/file-item.ts';
 import type { FileMeta } from '@/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
 
 {
 	interface FileScriptShape {
@@ -54,11 +52,8 @@ export default class Plugin {
 			elSize.textContent = File.parseFileSize!(size);
 
 			await Data.scripts[meta!.guid];
-			const elements = PluginManager.createOverview!(meta, true);
-			const overview = clear(this.overview);
-			for (const element of elements) {
-				overview.appendChild(element);
-			}
+			this.meta = meta;
+			this.overview?.dispatchEvent(new Event('update'));
 		}
 	};
 
@@ -67,7 +62,7 @@ export default class Plugin {
 			getBrowserInstance()?.unselect?.(this.meta);
 			this.target = null;
 			this.meta = null;
-			clear(this.overview);
+			this.overview?.dispatchEvent(new Event('update'));
 		}
 	};
 

@@ -1,7 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
+import { clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -122,8 +122,6 @@ interface AttributeWindowShape {
 	list_cancelSearch: (this: TreeListElement) => void;
 	list_createFolder: (this: typeof Attribute) => AttributeItem;
 	list_createAttribute: (this: typeof Attribute) => AttributeItem;
-	list_createIcon: (this: typeof Attribute, item: AttributeItem) => HTMLElement;
-	list_updateIcon: (this: TreeListElement, item: AttributeItem) => void;
 	list_parseName: (this: typeof Attribute, item: AttributeItem) => string;
 	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
@@ -195,8 +193,6 @@ export const Attribute: AttributeWindowShape = {
 	list_cancelSearch: null as unknown as AttributeWindowShape['list_cancelSearch'],
 	list_createFolder: null as unknown as AttributeWindowShape['list_createFolder'],
 	list_createAttribute: null as unknown as AttributeWindowShape['list_createAttribute'],
-	list_createIcon: null as unknown as AttributeWindowShape['list_createIcon'],
-	list_updateIcon: null as unknown as AttributeWindowShape['list_updateIcon'],
 	list_parseName: null as unknown as AttributeWindowShape['list_parseName'],
 	list_onCreate: null as unknown as AttributeWindowShape['list_onCreate'],
 	list_onDelete: null as unknown as AttributeWindowShape['list_onDelete'],
@@ -224,8 +220,6 @@ function ensureDomBound() {
 	list.cancelSearch = Attribute.list_cancelSearch;
 	list.createFolder = Attribute.list_createFolder;
 	list.createAttribute = Attribute.list_createAttribute;
-	list.createIcon = Attribute.list_createIcon as (item: unknown) => unknown;
-	list.updateIcon = Attribute.list_updateIcon as (item: unknown) => unknown;
 	list.parseName = Attribute.list_parseName;
 	getListConfig(list).onCreate = Attribute.list_onCreate as (item: unknown) => void;
 	getListConfig(list).onDelete = Attribute.list_onDelete as (item: unknown) => void;
@@ -320,7 +314,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		const { item, value } = data;
 		data.value = item.type!;
 		item.type = value;
-		list.updateIcon(item);
+		list.update();
 		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.type, value);
 		} else {
@@ -922,7 +916,7 @@ Attribute.typeInput = function (event: Event) {
 	if (item === null) return;
 	Attribute.saveHistory(item, 'type', item.type);
 	item.type = event.value;
-	Attribute.list!.updateIcon(item);
+	Attribute.list!.update();
 	Attribute.changed = true;
 };
 
@@ -1059,36 +1053,6 @@ Attribute.list_createAttribute = function () {
 		enum: '',
 		note: ''
 	};
-};
-
-// 列表 - 重写创建图标方法
-Attribute.list_createIcon = (function IIFE() {
-	const classes = {
-		boolean: 'icon-boolean',
-		number: 'icon-number',
-		string: 'icon-string',
-		enum: 'icon-string',
-		object: 'icon-object'
-	};
-	return function (item: AttributeItem) {
-		const icon = document.createElement('node-icon');
-		if (item.class !== 'folder') {
-			addClass(icon, (classes as Record<string, string>)[item.type!]);
-		} else {
-			addClass(icon, 'icon-folder');
-		}
-		return icon;
-	};
-})();
-
-// 列表 - 更新图标
-Attribute.list_updateIcon = function (this: TreeListElement, item: AttributeItem) {
-	const element = item.element as (HTMLElement & { nodeIcon?: HTMLElement }) | undefined;
-	if (element?.nodeIcon) {
-		const icon = this.createIcon(item) as HTMLElement;
-		element.replaceChild(icon, element.nodeIcon);
-		element.nodeIcon = icon;
-	}
 };
 
 // 列表 - 重写解析名称方法
