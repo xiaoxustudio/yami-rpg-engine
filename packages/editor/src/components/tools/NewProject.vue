@@ -1,9 +1,9 @@
 <template>
-		<WindowFrame id="newProject">
+		<WindowFrame id="newProject" @confirm="onConfirm">
 		<template #title><TitleBar>New Project<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Template</div><SelectBox id="newProject-template" />
+				<div class="text">Template</div><SelectBox id="newProject-template" @input="onTemplateInput" />
 				<div class="text">Folder</div
 				><TextBox
 					id="newProject-folder"
@@ -13,7 +13,7 @@
 				<div class="text">Location</div>
 				<div class="flex-box" id="newProject-location-box">
 					<TextBox id="newProject-location" @input="onLocationInput" />
-					<button id="newProject-choose">…</button>
+					<button id="newProject-choose" @click="onChooseClick">…</button>
 				</div>
 			</div>
 			<div class="text" id="newProject-warning" />
@@ -42,6 +42,15 @@ const onFolderInput = () => {
 };
 const onLocationInput = () => {
 	NewProject?.locationInput?.();
+};
+const onTemplateInput = () => {
+	NewProject?.templateInput?.();
+};
+const onChooseClick = () => {
+	NewProject?.chooseClick?.();
+};
+const onConfirm = () => {
+	NewProject?.confirm?.();
 };
 
 onMounted(() => {

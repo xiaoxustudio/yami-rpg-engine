@@ -95,13 +95,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#fileActor-scripts')?.bind?.(new ScriptListInterface());
 
 		$('#fileActor-parameter-pane')?.bind?.($('#fileActor-scripts'));
-
-		// animationId write + 15 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eActorPage.vue @write/@input 闂?FileActor.*闂?
-		document
-			.querySelectorAll(`#fileActor-sprites, #fileActor-attributes, #fileActor-skills, #fileActor-equipments,
-    #fileActor-inventory, #fileActor-events, #fileActor-scripts
-  `)
-			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	FileActor.create = function (this: FileActorShape) {
@@ -307,8 +300,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 	FileActor.sprites = {
 		initialize: function (this, list: ListShape) {
-			$('#fileActor-sprite-confirm')?.on('click', () => list.save());
-
 			// 闂備焦褰冪粔宄懊归崶顒€鎹堕柣鎴炆戦悵顖炴偡濞嗘劕绗╅燑帮躬瀹曟繈濡歌閺?- 闂佽　鍋撻柣鐔告緲缂嶄礁霉濠婂喚鍎庢繛?
 			list.on('change', (event: Event) => {
 				const guid = FileActor.meta.guid;
@@ -362,9 +353,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileActor.skills = {
-		initialize: function (this, list: ListShape) {
-			$('#fileActor-skill-confirm')?.on('click', () => list.save());
-		},
+		initialize: function (this, list: ListShape) {},
 		parse: function ({ id, key }: { id: string; key: string }) {
 			Command.invalid = false;
 			const skillName = Command.parseFileName!(id);
@@ -407,9 +396,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	FileActor.equipments = {
-		initialize: function (this, list: ListShape) {
-			$('#fileActor-equipment-confirm')?.on('click', () => list.save());
-		},
+		initialize: function (this, list: ListShape) {},
 		parse: function ({ id, slot }: { id: string; slot: string }) {
 			Command.invalid = false;
 			const equipmentName = Command.parseFileName!(id);
@@ -456,8 +443,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 
 	FileActor.inventory = {
 		initialize: function (this, list: ListShape) {
-			$('#fileActor-inventory-confirm')?.on('click', () => list.save());
-
 			const invTypeEl = $('#fileActor-inventory-type');
 			if (!invTypeEl) return;
 			invTypeEl.loadItems([

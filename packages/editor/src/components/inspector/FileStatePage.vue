@@ -1,19 +1,19 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileState-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileState-general-grid">
 			<div class="text">{{ local.getLabel('fileState-icon') || 'Icon' }}</div
-			><CustomBox id="fileState-icon" type="file" filter="image" />
+			><CustomBox id="fileState-icon" @input="onParamInput" type="file" filter="image" />
 			<div class="text">{{ local.getLabel('fileState-clip') || 'Clip' }}</div
-			><CustomBox id="fileState-clip" type="clip" image="fileState-icon" />
+			><CustomBox id="fileState-clip" @input="onParamInput" type="clip" image="fileState-icon" />
 			<div class="text">{{ local.getLabel('fileState-inherit') || 'Inherit' }}</div
-			><CustomBox id="fileState-inherit" type="file" filter="state" />
+			><CustomBox id="fileState-inherit" @input="onParamInput" type="file" filter="state" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileState-attributes') || 'Attributes' }}</DetailSummary>
 		<ParamList
-			id="fileState-attributes"
+			id="fileState-attributes" @change="onListChange"
 			class="inspector-list"
 			group="state"
 			flexible
@@ -22,7 +22,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileState-events') || 'Events' }}</DetailSummary>
 		<ParamList
-			id="fileState-events"
+			id="fileState-events" @change="onListChange"
 			class="inspector-list"
 			filter="state"
 			flexible
@@ -31,7 +31,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileState-scripts') || 'Scripts' }}</DetailSummary>
 		<ParamList
-			id="fileState-scripts"
+			id="fileState-scripts" @change="onListChange"
 			class="inspector-list"
 			flexible
 		/>
@@ -41,6 +41,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -51,6 +52,14 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.fileState?.paramInput?.({ target });
+};
+const onListChange = () => {
+	Inspector?.fileState?.listChange?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

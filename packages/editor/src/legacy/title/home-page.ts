@@ -74,9 +74,7 @@ export const Home: HomeShape = {
 Home.initialize = function (this: typeof Home) {
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
-	$('#home-start-list').addEventListener('click', this.startClick!);
-	$('#home-recent-list').addEventListener('click', this.recentClick!);
-	$('#home-recent-list').addEventListener('pointerup', this.recentPointerup!);
+	// start/recent 事件经 Vue 模板转发（LayoutPanel @click/@pointerup → Home.startClick/recentClick/recentPointerup）
 };
 
 Home.updateCenterPosition = function (this: typeof Home) {

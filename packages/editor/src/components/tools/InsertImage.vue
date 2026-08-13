@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="insertImage">
+	<WindowFrame id="insertImage" @confirm="onConfirm">
 		<template #title><TitleBar>Insert Image<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Selection } from '@/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -26,6 +27,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Selection?.image?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

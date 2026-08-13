@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="uploadFile">
+	<WindowFrame id="uploadFile" @confirm="onConfirm">
 		<template #title><TitleBar>uploadFile<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -31,6 +31,10 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.uploadFile?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

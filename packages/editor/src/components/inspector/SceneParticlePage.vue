@@ -1,17 +1,17 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
-			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</div
 			><CustomBox
-				id="sceneParticle-particleId"
+				id="sceneParticle-particleId" @input="onParamInput"
 				type="file"
 				filter="particle"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('sceneParticle-x') || 'X' }}</div
 			><NumberBox
-				id="sceneParticle-x"
+				id="sceneParticle-x" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -19,7 +19,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParticle-y') || 'Y' }}</div
 			><NumberBox
-				id="sceneParticle-y"
+				id="sceneParticle-y" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -34,7 +34,7 @@
 					step="45"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-angle"
+					id="sceneParticle-angle" @input="onParamInput"
 					min="-360"
 					max="360"
 					step="45"
@@ -51,7 +51,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-scale"
+					id="sceneParticle-scale" @input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
@@ -67,7 +67,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-speed"
+					id="sceneParticle-speed" @input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
@@ -83,7 +83,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-opacity"
+					id="sceneParticle-opacity" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -99,7 +99,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-priority"
+					id="sceneParticle-priority" @input="onParamInput"
 					min="-512"
 					max="512"
 				></NumberBox>
@@ -136,6 +136,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -149,6 +150,11 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.sceneParticle?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	scene.syncState();

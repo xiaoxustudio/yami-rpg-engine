@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="downloadFile">
+<WindowFrame id="downloadFile" @confirm="onConfirm">
 	<template #title><TitleBar>downloadFile<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -11,7 +11,7 @@
 			<div class="text">RateCallBack</div
 			><CustomBox id="downloadFile-rateCallback" type="file" filter="event" />
 			<div class="text">IsBackground</div
-			><CheckBox class="standard" id="downloadFile-isBackground" />
+			><CheckBox class="standard" id="downloadFile-isBackground" @input="onIsBackgroundInput" />
 			<div class="text">Path</div><StringVar id="downloadFile-isBackground-path" />
 		</div>
 	
@@ -33,6 +33,13 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onIsBackgroundInput = (value: boolean) => {
+	Command?.cases?.downloadFile?.isBackgroundInput?.({ value });
+};
+const onConfirm = () => {
+	Command?.cases?.downloadFile?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="imageClip">
+	<WindowFrame id="imageClip" @confirm="onConfirm">
 		<template #title><TitleBar
 			>Image Clip<div class="maximize"></div>
 			<div class="close"></div>
@@ -10,16 +10,16 @@
 				<MarqueeArea id="imageClip-marquee" />
 			</div>
 			<div class="flex-box" id="imageClip-flex">
-				<NumberBox id="imageClip-x" min="0" max="10000"
+				<NumberBox id="imageClip-x" min="0" max="10000" @input="onParamInput"
 					><div class="text label">X:</div></NumberBox
 				>
-				<NumberBox id="imageClip-y" min="0" max="10000"
+				<NumberBox id="imageClip-y" min="0" max="10000" @input="onParamInput"
 					><div class="text label">Y:</div></NumberBox
 				>
-				<NumberBox id="imageClip-width" min="0" max="10000"
+				<NumberBox id="imageClip-width" min="0" max="10000" @input="onParamInput"
 					><div class="text label">W:</div></NumberBox
 				>
-				<NumberBox id="imageClip-height" min="0" max="10000"
+				<NumberBox id="imageClip-height" min="0" max="10000" @input="onParamInput"
 					><div class="text label">H:</div></NumberBox
 				>
 			</div>
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { ImageClip } from '@/tools/image-crop-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -38,6 +39,13 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onParamInput = () => {
+	ImageClip?.paramInput?.();
+};
+const onConfirm = () => {
+	ImageClip?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

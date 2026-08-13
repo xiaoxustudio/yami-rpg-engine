@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, read, write } from '@/util/element-utils';
+import { getFocus, read, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -55,7 +55,7 @@ type PresetElementShape = {
 	uiIdWrite: (event: Event & { value?: string }) => void;
 	listOpen: (event: Event) => void;
 	searcherKeydown: (event: KeyboardEvent) => void;
-	searcherInput: (event: InputEvent) => void;
+	searcherInput: (event: { value?: string }) => void;
 	confirm: (event?: Event) => void;
 };
 
@@ -77,7 +77,7 @@ export const PresetElement: PresetElementShape = {
 	uiIdWrite: null as unknown as (event: Event & { value?: string }) => void,
 	listOpen: null as unknown as (event: Event) => void,
 	searcherKeydown: null as unknown as (event: KeyboardEvent) => void,
-	searcherInput: null as unknown as (event: InputEvent) => void,
+	searcherInput: null as unknown as (event: { value?: string }) => void,
 	confirm: null as unknown as (event?: Event) => void
 };
 
@@ -101,10 +101,7 @@ PresetElement.initialize = function (this: typeof PresetElement) {
 
 	// ui write/list open 经 Vue 模板转发（PresetElement.vue @write/@open → PresetElement.*）
 	this.searcher.on('keydown', this.searcherKeydown);
-	this.searcher.on('input', this.searcherInput);
-	this.searcher.on('compositionend', this.searcherInput);
 	$('#presetElement').addEventListener('closed', this.windowClosed);
-	on($('#presetElement-confirm'), 'click', this.confirm);
 };
 
 PresetElement.open = function (this: typeof PresetElement, target: PresetElementTarget) {
@@ -191,11 +188,8 @@ PresetElement.searcherKeydown = function (this: typeof PresetElement, event: Key
 	}
 };
 
-PresetElement.searcherInput = function (this: typeof PresetElement, event: InputEvent) {
-	if (event.inputType === 'insertCompositionText') {
-		return;
-	}
-	const text = this.searcher.value;
+PresetElement.searcherInput = function (this: typeof PresetElement, event: { value?: string }) {
+	const text = event.value ?? '';
 	const list = PresetElement.list;
 	list.searchNodes(text);
 	const elements = list.elements as Array<{ item: PresetElementListItem }> & { count: number };

@@ -210,9 +210,6 @@ export class AttributeListInterface implements IListInterface {
 		]);
 
 		// key write 经 Vue 模板转发（ObjectAttribute.vue @write → AttributeListInterface.keyWrite）
-		$('#object-attribute-confirm')?.on('click', (event: Event) => {
-			this.target!.save();
-		});
 	}
 
 	static keyWrite(event: { value: string }) {

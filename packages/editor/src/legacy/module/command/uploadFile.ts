@@ -18,7 +18,6 @@ Command.cases.uploadFile = new CommandSchema({
 		write($('#uploadFile-path'), '');
 		$('#uploadFile-header').bind(RequestkeyValueBind);
 		write($('#uploadFile-field'), 'file');
-		$('#uploadFile-confirm')?.on('click', () => this.save!());
 	},
 	customParse({
 		url = '',

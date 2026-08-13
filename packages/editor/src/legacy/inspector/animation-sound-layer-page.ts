@@ -35,7 +35,6 @@ import { Inspector } from './inspector.ts';
 		]);
 
 		const element = $('#animSoundLayer-playbackRate');
-		element.on('input', this.paramInput);
 		element.on('focus', Inspector.inputFocus);
 		element.on(
 			'blur',
@@ -99,7 +98,17 @@ import { Inspector } from './inspector.ts';
 		this: HTMLElement & { [k: string]: unknown },
 		event: Event
 	) {
-		AnimSoundLayer.update(AnimSoundLayer.target, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animSoundLayer-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		AnimSoundLayer.update(
+			AnimSoundLayer.target,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	Inspector.animSoundLayer = AnimSoundLayer;

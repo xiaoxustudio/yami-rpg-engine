@@ -23,7 +23,6 @@ import { Easing } from '@/data/transition-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Local } from '@/tools/localization.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
 
 interface PluginItemShape {
@@ -155,7 +154,6 @@ interface PluginManagerShape {
 	list_saveSelection: (() => void) | null;
 	list_restoreSelection: (() => void) | null;
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
-	list_createEditIcon: ((item: PluginItemShape) => void) | null;
 	plugins: (PluginItemShape[] | Record<string, PluginItemShape>) | null;
 	reload: (() => void) | null;
 }
@@ -208,7 +206,6 @@ export const PluginManager: PluginManagerShape = {
 	list_saveSelection: null,
 	list_restoreSelection: null,
 	list_updateTextNode: null,
-	list_createEditIcon: null,
 	plugins: null,
 	reload: null
 };
@@ -236,9 +233,6 @@ function ensureDomBound() {
 	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
 		...args: unknown[]
 	) => any;
-	list.createEditIcon = PluginManager.list_createEditIcon as unknown as (
-		...args: unknown[]
-	) => any;
 	list.edit = PluginManager.list_edit as unknown as (...args: unknown[]) => any;
 	list.insert = PluginManager.list_insert as unknown as (...args: unknown[]) => any;
 	list.toggle = PluginManager.list_toggle as unknown as (...args: unknown[]) => any;
@@ -261,7 +255,6 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
 	getListConfig(list).updaters.push(list.updateTextNode);
-	getListConfig(list).creators.push(list.createEditIcon);
 
 	if (this.parameterPane) {
 		(this.parameterPane as TreeListElement).bind(list);
@@ -273,7 +266,6 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	// list select/popup/open 经 Vue 模板转发（Plugin.vue @select/@popup/@open → PluginManager.list*）
 	on(list, 'unselect', this.listUnselect!);
 	// list change 经 Vue 模板转发（Plugin.vue @change → PluginManager.listChange）
-	on(list, 'pointerdown', ScriptListInterface.listPointerdown);
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate!);
 	on($('#plugin-confirm'), 'click', this.confirm!);
@@ -2159,16 +2151,6 @@ PluginManager.list_updateTextNode = function (this: TreeListElement, item: Plugi
 	if (textNode.nodeValue !== text) {
 		textNode.nodeValue = text;
 	}
-};
-
-// 列表 - 创建编辑图标
-PluginManager.list_createEditIcon = function (this: TreeListElement, item: PluginItemShape) {
-	const box = document.createElement('div');
-	addClass(box, 'box');
-	box.textContent = '\uf044';
-	addClass(box, 'script-edit-button');
-	addClass(box, 'plugin-item-button');
-	item.element!.appendChild(box);
 };
 
 // 注意：不再重写 ParameterPane.createDetailBox / clear，以保留参数面板按 @group 分组的多 detail-box 渲染能力 （原生 ParameterPane 已支持，见 components/parameter-pane.js）

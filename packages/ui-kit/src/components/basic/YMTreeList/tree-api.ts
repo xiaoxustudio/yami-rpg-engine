@@ -276,7 +276,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 	initialize: function (this: HTMLElement & { [k: string]: unknown }): void {
 		const data = this.data as TreeItem[] & { initialized?: unknown };
-		if (!data.initialized) {
+		if (data && !data.initialized) {
 			treeListStatics.createParents(data, this.root as TreeItem | null);
 			Object.defineProperty(data, 'initialized', {
 				configurable: true,

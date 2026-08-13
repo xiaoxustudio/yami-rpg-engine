@@ -79,10 +79,6 @@ ImageClip.initialize = function (this: typeof ImageClip) {
 	on(this.screen, 'keydown', this.screenKeydown);
 	this.marquee.addEventListener('pointerdown', this.marqueePointerdown);
 	attachDoubleclick(this.marquee, this.marqueeDoubleclick);
-	document
-		.querySelectorAll('#imageClip-x, #imageClip-y, #imageClip-width, #imageClip-height')
-		.forEach((el) => el.addEventListener('input', this.paramInput!));
-	on($('#imageClip-confirm'), 'click', this.confirm);
 };
 
 ImageClip.open = async function (this: typeof ImageClip, ...args: unknown[]) {

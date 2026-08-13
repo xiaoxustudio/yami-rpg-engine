@@ -61,9 +61,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneParticle-scale-slider, #sceneParticle-speed-slider,
     #sceneParticle-opacity-slider, #sceneParticle-priority-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -213,10 +210,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	SceneParticle.paramInput = function (this: typeof SceneParticle, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneParticle-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneParticle.update!(
 			SceneParticle.target as SceneParticleData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

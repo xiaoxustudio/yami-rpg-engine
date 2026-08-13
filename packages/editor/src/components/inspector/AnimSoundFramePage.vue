@@ -7,6 +7,7 @@
 				id="animSoundFrame-sound"
 				type="file"
 				filter="audio"
+				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('animSoundFrame-volume') || 'Volume' }}</div
 			><NumberBox
@@ -14,7 +15,7 @@
 				min="0"
 				max="1"
 				step="0.1"
-				decimals="4"
+				decimals="4" @input="onParamInput"
 			></NumberBox>
 		</div>
 	</DetailBox>
@@ -22,6 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -31,6 +33,11 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const animation = useAnimationStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.animSoundFrame?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	animation.syncState();

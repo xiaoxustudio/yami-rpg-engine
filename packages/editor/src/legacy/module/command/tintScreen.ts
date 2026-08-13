@@ -1,5 +1,5 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus, read, write } from '@/util/element-utils.ts';
+import { clear, getFocus, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -20,20 +20,15 @@ Command.cases.tintScreen = new CommandSchema({
 			clear($('#tintScreen-easingId'));
 			clear($('#tintScreen-filter'));
 		});
-		document
-			.querySelectorAll(
-				'#tintScreen-tint-0, #tintScreen-tint-1, #tintScreen-tint-2, #tintScreen-tint-3'
-			)
-			.forEach((el) =>
-				(el as HTMLElement).on('input', function (event: InputEvent) {
-					write($('#tintScreen-filter'), [
-						read($('#tintScreen-tint-0')),
-						read($('#tintScreen-tint-1')),
-						read($('#tintScreen-tint-2')),
-						read($('#tintScreen-tint-3'))
-					]);
-				})
-			);
+	},
+	input() {
+		const read = getElementReader('tintScreen');
+		write($('#tintScreen-filter'), [
+			read('tint-0'),
+			read('tint-1'),
+			read('tint-2'),
+			read('tint-3')
+		]);
 	},
 	parseTint([red, green, blue, gray]: [any, any, any, any]) {
 		const _red = Command.setNumberColor!(red);

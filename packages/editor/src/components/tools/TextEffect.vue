@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置文字效果 -->
-	<WindowFrame id="textEffect">
+	<WindowFrame id="textEffect" @confirm="onConfirm">
 		<template #title><TitleBar>Set Text Effect<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Selection } from '@/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -28,6 +29,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Selection?.textEffect?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

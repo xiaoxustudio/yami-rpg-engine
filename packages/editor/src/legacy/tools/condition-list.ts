@@ -188,6 +188,17 @@ export class ConditionListInterface implements IListInterface {
 
 	static target: HTMLElement | null = null;
 
+	static typeWrite(event: Event & { value: string }) {
+		const type = event.value;
+		switch (type) {
+			case 'global-boolean':
+			case 'global-number':
+			case 'global-string':
+				$('#condition-key').filter = type.slice(7);
+				break;
+		}
+	}
+
 	static initialize() {
 		const typeEl = $('#condition-type');
 		if (!typeEl) return;
@@ -262,18 +273,6 @@ export class ConditionListInterface implements IListInterface {
 			{ name: '==', value: 'equal' },
 			{ name: '!=', value: 'unequal' }
 		]);
-
-		// 条件类型写入事件
-		$('#condition-type').on('write', (event: Event & { value: string }) => {
-			const type = event.value;
-			switch (type) {
-				case 'global-boolean':
-				case 'global-number':
-				case 'global-string':
-					$('#condition-key').filter = type.slice(7);
-					break;
-			}
-		});
 
 		// 确定按钮 - 鼠标点击事件
 	}

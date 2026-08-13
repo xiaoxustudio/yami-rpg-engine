@@ -168,9 +168,6 @@ import { UI } from '@/ui/ui-window.ts';
 			document.querySelectorAll(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
     #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -460,7 +457,17 @@ import { UI } from '@/ui/ui-window.ts';
 	};
 
 	UIButton.paramInput = function (this: HTMLElement & { [k: string]: unknown }, event: Event) {
-		UIButton.update(UIButton.target, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^uiButton-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		UIButton.update(
+			UIButton.target,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	Inspector.uiButton = UIButton;

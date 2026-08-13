@@ -2,16 +2,17 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
-			<div class="text">{{ local.getLabel('sceneAnimation-name') || 'Name' }}</div><TextBox id="sceneAnimation-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneAnimation-name') || 'Name' }}</div><TextBox id="sceneAnimation-name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</div
 			><CustomBox
 				id="sceneAnimation-animationId"
 				type="file"
 				filter="animation"
+				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-motion') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneAnimation-motion') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('sceneAnimation-rotatable') || 'Rotatable' }}</div
-			><SelectBox id="sceneAnimation-rotatable"></SelectBox> <div class="text">{{ local.getLabel('sceneAnimation-x') || 'X' }}</div
+			><SelectBox id="sceneAnimation-rotatable" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneAnimation-x') || 'X' }}</div
 			><NumberBox
 				id="sceneAnimation-x"
 				min="-128"
@@ -19,6 +20,7 @@
 				step="0.1"
 				decimals="4"
 				unit="tile"
+				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneAnimation-y') || 'Y' }}</div
 			><NumberBox
@@ -28,6 +30,7 @@
 				step="0.1"
 				decimals="4"
 				unit="tile"
+				@input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneAnimation-angle-box') || 'Angle' }}</div
 			><div class="flex-box" id="sceneAnimation-angle-box">
@@ -44,6 +47,7 @@
 					step="45"
 					decimals="4"
 					unit="deg"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('sceneAnimation-scale-box') || 'Scale' }}</div
@@ -60,6 +64,7 @@
 					max="10"
 					step="0.1"
 					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('sceneAnimation-speed-box') || 'Speed' }}</div
@@ -76,6 +81,7 @@
 					max="10"
 					step="0.1"
 					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('sceneAnimation-opacity-box') || 'Opacity' }}</div
@@ -92,6 +98,7 @@
 					max="1"
 					step="0.05"
 					decimals="4"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 			<div class="text">{{ local.getLabel('sceneAnimation-priority-box') || 'Priority' }}</div
@@ -106,6 +113,7 @@
 					id="sceneAnimation-priority"
 					min="-512"
 					max="512"
+					@input="onParamInput"
 				></NumberBox>
 			</div>
 		</div>
@@ -140,6 +148,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -154,6 +163,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.sceneAnimation?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	scene.syncState();

@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="presetElement" mode="center">
+		<WindowFrame id="presetElement" mode="center" @confirm="onConfirm">
 		<template #title><TitleBar>Element<div class="close"></div></TitleBar></template>
 		
 			<CustomBox
@@ -9,7 +9,7 @@
 				@write="onUiIdWrite"
 			/>
 			<TreeList id="presetElement-list" @open="onListOpen" />
-			<TextBox id="presetElement-searcher" name="search" />
+			<TextBox id="presetElement-searcher" name="search" @input="onSearcherInput" @compositionend="onSearcherInput" />
 		
 	</WindowFrame>
 </template>
@@ -31,6 +31,16 @@ const onUiIdWrite = (value: unknown) => {
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetElement?.listOpen?.(event);
+};
+const onSearcherInput = (value: string | Event) => {
+	const text =
+		typeof value === 'string'
+			? value
+			: ((value.target as HTMLInputElement | null)?.value ?? '');
+	PresetElement?.searcherInput?.({ value: text });
+};
+const onConfirm = () => {
+	PresetElement?.confirm?.();
 };
 
 const local = useLocalStore();

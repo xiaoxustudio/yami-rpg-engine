@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="fontSize">
+	<WindowFrame id="fontSize" @confirm="onConfirm">
 		<template #title><TitleBar>Set Font Size<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Selection } from '@/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -20,6 +21,10 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Selection?.fontSize?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

@@ -1,13 +1,13 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneLight-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneLight-general-grid">
-			<div class="text">{{ local.getLabel('sceneLight-name') || 'Name' }}</div><TextBox id="sceneLight-name"></TextBox>
-			<div class="text">{{ local.getLabel('sceneLight-type') || 'Type' }}</div><SelectBox id="sceneLight-type"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneLight-blend') || 'Blend' }}</div><SelectBox id="sceneLight-blend"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneLight-name') || 'Name' }}</div><TextBox id="sceneLight-name" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('sceneLight-type') || 'Type' }}</div><SelectBox id="sceneLight-type" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneLight-blend') || 'Blend' }}</div><SelectBox id="sceneLight-blend" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('sceneLight-x') || 'X' }}</div
 			><NumberBox
-				id="sceneLight-x"
+				id="sceneLight-x" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -15,7 +15,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneLight-y') || 'Y' }}</div
 			><NumberBox
-				id="sceneLight-y"
+				id="sceneLight-y" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -30,7 +30,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-range"
+					id="sceneLight-range" @input="onParamInput"
 					min="0"
 					max="128"
 					decimals="4"
@@ -45,7 +45,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-intensity"
+					id="sceneLight-intensity" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -54,7 +54,7 @@
 			</div>
 			<div class="text">{{ local.getLabel('sceneLight-mask') || 'Mask' }}</div
 			><CustomBox
-				id="sceneLight-mask"
+				id="sceneLight-mask" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
@@ -67,7 +67,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-anchorX"
+					id="sceneLight-anchorX" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.1"
@@ -83,7 +83,7 @@
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-anchorY"
+					id="sceneLight-anchorY" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.1"
@@ -99,7 +99,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-width"
+					id="sceneLight-width" @input="onParamInput"
 					min="0"
 					max="128"
 					step="1"
@@ -115,7 +115,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-height"
+					id="sceneLight-height" @input="onParamInput"
 					min="0"
 					max="128"
 					step="1"
@@ -131,7 +131,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-angle"
+					id="sceneLight-angle" @input="onParamInput"
 					min="-36000"
 					max="36000"
 					step="5"
@@ -147,7 +147,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-red"
+					id="sceneLight-red" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -162,7 +162,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-green"
+					id="sceneLight-green" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -177,7 +177,7 @@
 					step="5"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-blue"
+					id="sceneLight-blue" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -192,7 +192,7 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="sceneLight-direct"
+					id="sceneLight-direct" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -231,6 +231,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -245,6 +246,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.sceneLight?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	scene.syncState();

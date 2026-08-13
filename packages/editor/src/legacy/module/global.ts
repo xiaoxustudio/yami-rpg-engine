@@ -451,7 +451,6 @@ UpdateLog.currentMode = 'internal';
 UpdateLog.internalItems = [];
 UpdateLog.communityItems = [];
 
-export const UpdateLogInitializeOrigin = UpdateLog.initialize;
 window.addEventListener('localize', () => {
 	const tabInternal = $('#update-log-tab-internal');
 	const tabCommunity = $('#update-log-tab-community');
@@ -461,25 +460,18 @@ window.addEventListener('localize', () => {
 		tabCommunity.textContent = Local.get!('menuOpenYami.update-log-tab-community');
 	if (tabDonation) tabDonation.textContent = Local.get!('menuOpenYami.update-log-tab-donation');
 });
-UpdateLog.initialize = function (this: typeof UpdateLog) {
-	UpdateLogInitializeOrigin!.call(this);
-
-	const tabsContainer = $('#update-log-tabs');
-	if (tabsContainer) {
-		tabsContainer.addEventListener('click', (event: MouseEvent) => {
-			const btn = (event.target as HTMLElement).closest?.('.update-log-tab');
-			if (btn) {
-				if (btn.id === 'update-log-tab-internal') {
-					UpdateLog.switchMode?.('internal');
-				} else if (btn.id === 'update-log-tab-community') {
-					UpdateLog.switchMode?.('community');
-				} else if (btn.id === 'update-log-tab-donation') {
-					UpdateLog.switchMode?.('donation');
-				}
-			}
-		});
+UpdateLog.tabsClick = function (this: typeof UpdateLog, event: MouseEvent) {
+	const btn = (event.target as HTMLElement).closest?.('.update-log-tab');
+	if (btn) {
+		if (btn.id === 'update-log-tab-internal') {
+			UpdateLog.switchMode?.('internal');
+		} else if (btn.id === 'update-log-tab-community') {
+			UpdateLog.switchMode?.('community');
+		} else if (btn.id === 'update-log-tab-donation') {
+			UpdateLog.switchMode?.('donation');
+		}
 	}
-};
+} as (...args: unknown[]) => unknown;
 
 export const UpdateLogOpenOrigin = UpdateLog.open;
 UpdateLog.open = function (this: typeof UpdateLog, ...args: unknown[]) {

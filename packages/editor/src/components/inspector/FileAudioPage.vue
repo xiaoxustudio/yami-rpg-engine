@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
@@ -14,7 +14,7 @@
 			<div class="text">{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</div>
 			<div class="flex-box" id="fileAudio-volume-box">
 				<SliderBox
-					id="fileAudio-volume"
+					id="fileAudio-volume" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.1"
@@ -24,7 +24,7 @@
 			<div class="text">{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</div>
 			<div class="flex-box" id="fileAudio-pan-box">
 				<SliderBox
-					id="fileAudio-pan"
+					id="fileAudio-pan" @input="onParamInput"
 					min="-1"
 					max="1"
 					step="0.1"
@@ -34,7 +34,7 @@
 			<div class="text">{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</div>
 			<div class="flex-box" id="fileAudio-dry-box">
 				<SliderBox
-					id="fileAudio-dry"
+					id="fileAudio-dry" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.1"
@@ -44,7 +44,7 @@
 			<div class="text">{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</div>
 			<div class="flex-box" id="fileAudio-wet-box">
 				<SliderBox
-					id="fileAudio-wet"
+					id="fileAudio-wet" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.1"
@@ -72,6 +72,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useAudioStore } from '@app/stores/audio';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -80,6 +81,10 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 
 const audio = useAudioStore();
 const local = useLocalStore();
+
+const onParamInput = () => {
+	Inspector?.fileAudio?.paramInput?.();
+};
 
 onMounted(() => {
 	audio.syncState();

@@ -25,6 +25,7 @@ export const UpdateLog = {
 	update: null as ((...args: unknown[]) => unknown) | null,
 	initialize: null as ((...args: unknown[]) => unknown) | null,
 	switchMode: null as ((...args: unknown[]) => unknown) | null,
+	tabsClick: null as ((...args: unknown[]) => unknown) | null,
 	loadCommunityReleases: null as ((...args: unknown[]) => unknown) | null,
 	displayDonationList: null as ((...args: unknown[]) => unknown) | null,
 	parseCommunityReleases: null as ((...args: unknown[]) => unknown) | null,

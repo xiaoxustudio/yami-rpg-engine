@@ -50,13 +50,8 @@ import { read, write } from '@/util/element-utils.ts';
 
 		$('#animMotion-loop').relate([$('#animMotion-loopStart')]);
 
-		const elMode = $('#animMotion-mode');
 		const elements = document.querySelectorAll(
 			'#animMotion-skip, #animMotion-loop, #animMotion-loopStart'
-		);
-		elMode.addEventListener('input', this.paramInput!);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
@@ -137,10 +132,16 @@ import { read, write } from '@/util/element-utils.ts';
 	};
 
 	AnimMotion.paramInput = function (this: typeof AnimMotion, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animMotion-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		AnimMotion.update!(
 			AnimMotion.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

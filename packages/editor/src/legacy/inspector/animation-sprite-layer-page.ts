@@ -39,9 +39,6 @@ import { Inspector } from './inspector.ts';
 			'#animSpriteLayer-sprite, #animSpriteLayer-blend, #animSpriteLayer-light'
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('input', this.paramInput)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			(el as HTMLElement).on('focus', Inspector.inputFocus)
 		);
 		elements.on(
@@ -110,10 +107,16 @@ import { Inspector } from './inspector.ts';
 	};
 
 	AnimSpriteLayer.paramInput = function (this: typeof AnimSpriteLayer, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animSpriteLayer-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		AnimSpriteLayer.update!(
 			AnimSpriteLayer.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

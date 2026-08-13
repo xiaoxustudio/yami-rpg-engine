@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="showChoices">
+<WindowFrame id="showChoices" @confirm="onConfirm">
 	<template #title><TitleBar>Show Choices<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -22,6 +22,10 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.showChoices?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

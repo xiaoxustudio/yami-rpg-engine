@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="fileActor-inventory-goods" buttons-id-prefix="fileActor-inventory">
+	<WindowFrame id="fileActor-inventory-goods" buttons-id-prefix="fileActor-inventory" @confirm="onConfirm">
 		<template #title><TitleBar>Inventory<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -33,6 +34,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Inspector?.fileActor?.inventory?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

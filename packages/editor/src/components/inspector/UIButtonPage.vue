@@ -1,48 +1,48 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiButton-image-properties-grid') || 'Image Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiButton-image-properties-grid">
-			<div class="text">{{ local.getLabel('uiButton-display') || 'Display' }}</div><SelectBox id="uiButton-display"></SelectBox>
+			<div class="text">{{ local.getLabel('uiButton-display') || 'Display' }}</div><SelectBox id="uiButton-display" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-normalImage') || 'Normal Image' }}</div
 			><CustomBox
-				id="uiButton-normalImage"
+				id="uiButton-normalImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-normalClip') || 'Normal Clip' }}</div
 			><CustomBox
-				id="uiButton-normalClip"
+				id="uiButton-normalClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-normalImage"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-hoverImage') || 'Hover Image' }}</div
 			><CustomBox
-				id="uiButton-hoverImage"
+				id="uiButton-hoverImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-hoverClip') || 'Hover Clip' }}</div
 			><CustomBox
-				id="uiButton-hoverClip"
+				id="uiButton-hoverClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-hoverImage"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-activeImage') || 'Active Image' }}</div
 			><CustomBox
-				id="uiButton-activeImage"
+				id="uiButton-activeImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-activeClip') || 'Active Clip' }}</div
 			><CustomBox
-				id="uiButton-activeClip"
+				id="uiButton-activeClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-activeImage"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-flip') || 'Flip' }}</div><SelectBox id="uiButton-flip"></SelectBox>
+			<div class="text">{{ local.getLabel('uiButton-flip') || 'Flip' }}</div><SelectBox id="uiButton-flip" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-border') || 'Border' }}</div
 			><NumberBox
-				id="uiButton-border"
+				id="uiButton-border" @input="onParamInput"
 				min="1"
 				max="100"
 				unit="px"
@@ -55,7 +55,7 @@
 					max="20"
 				></SliderBox>
 				<NumberBox
-					id="uiButton-imagePadding"
+					id="uiButton-imagePadding" @input="onParamInput"
 					min="0"
 					max="100"
 					unit="px"
@@ -70,39 +70,39 @@
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="uiButton-imageOpacity"
+					id="uiButton-imageOpacity" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-imageEffect') || 'Effect' }}</div><SelectBox id="uiButton-imageEffect"></SelectBox>
+			<div class="text">{{ local.getLabel('uiButton-imageEffect') || 'Effect' }}</div><SelectBox id="uiButton-imageEffect" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-normalTint-box') || 'Normal Tint' }}</div>
 			<div
 				id="uiButton-normalTint-box"
 				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
-					id="uiButton-normalTint-0"
+					id="uiButton-normalTint-0" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-normalTint-1"
+					id="uiButton-normalTint-1" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-normalTint-2"
+					id="uiButton-normalTint-2" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-normalTint-3"
+					id="uiButton-normalTint-3" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -114,25 +114,25 @@
 				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
-					id="uiButton-hoverTint-0"
+					id="uiButton-hoverTint-0" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-hoverTint-1"
+					id="uiButton-hoverTint-1" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-hoverTint-2"
+					id="uiButton-hoverTint-2" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-hoverTint-3"
+					id="uiButton-hoverTint-3" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -144,25 +144,25 @@
 				class="box uiElement-grid-box with-4-columns"
 			>
 				<NumberBox
-					id="uiButton-activeTint-0"
+					id="uiButton-activeTint-0" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-activeTint-1"
+					id="uiButton-activeTint-1" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-activeTint-2"
+					id="uiButton-activeTint-2" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
 				></NumberBox>
 				<NumberBox
-					id="uiButton-activeTint-3"
+					id="uiButton-activeTint-3" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -173,7 +173,7 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('uiButton-text-properties-grid') || 'Text Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiButton-text-properties-grid">
-			<div class="text">{{ local.getLabel('uiButton-direction') || 'Direction' }}</div><SelectBox id="uiButton-direction"></SelectBox>
+			<div class="text">{{ local.getLabel('uiButton-direction') || 'Direction' }}</div><SelectBox id="uiButton-direction" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-align-box') || 'Align' }}</div>
 			<div class="flex-box" id="uiButton-align-box">
 				<RadioBox
@@ -227,7 +227,7 @@
 			</div>
 			<div class="text">{{ local.getLabel('uiButton-content') || 'Content' }}</div
 			><TextBox
-				id="uiButton-content"
+				id="uiButton-content" @input="onParamInput"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextBox>
 			<div class="text">{{ local.getLabel('uiButton-size-box') || 'Size' }}</div>
@@ -239,7 +239,7 @@
 					step="2"
 				></SliderBox>
 				<NumberBox
-					id="uiButton-size"
+					id="uiButton-size" @input="onParamInput"
 					min="10"
 					max="400"
 					step="1"
@@ -255,7 +255,7 @@
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="uiButton-letterSpacing"
+					id="uiButton-letterSpacing" @input="onParamInput"
 					min="-10"
 					max="100"
 					step="1"
@@ -271,45 +271,45 @@
 					step="2"
 				></SliderBox>
 				<NumberBox
-					id="uiButton-textPadding"
+					id="uiButton-textPadding" @input="onParamInput"
 					min="0"
 					max="100"
 					step="1"
 					unit="px"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-font') || 'Font' }}</div><TextBox id="uiButton-font"></TextBox>
-			<div class="text">{{ local.getLabel('uiButton-typeface') || 'Typeface' }}</div><SelectBox id="uiButton-typeface"></SelectBox>
+			<div class="text">{{ local.getLabel('uiButton-font') || 'Font' }}</div><TextBox id="uiButton-font" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('uiButton-typeface') || 'Typeface' }}</div><SelectBox id="uiButton-typeface" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-textEffect-type') || 'Effect' }}</div
-			><SelectBox id="uiButton-textEffect-type"></SelectBox>
+			><SelectBox id="uiButton-textEffect-type" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiButton-textEffect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
-				id="uiButton-textEffect-shadowOffsetX"
+				id="uiButton-textEffect-shadowOffsetX" @input="onParamInput"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiButton-textEffect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
-				id="uiButton-textEffect-shadowOffsetY"
+				id="uiButton-textEffect-shadowOffsetY" @input="onParamInput"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiButton-textEffect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
-				id="uiButton-textEffect-strokeWidth"
+				id="uiButton-textEffect-strokeWidth" @input="onParamInput"
 				min="1"
 				max="20"
 				unit="px"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiButton-textEffect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiButton-textEffect-color"></ColorBox>
+			><ColorBox id="uiButton-textEffect-color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ local.getLabel('uiButton-normalColor') || 'Normal Color' }}</div
-			><ColorBox id="uiButton-normalColor"></ColorBox>
-			<div class="text">{{ local.getLabel('uiButton-hoverColor') || 'Hover Color' }}</div><ColorBox id="uiButton-hoverColor"></ColorBox>
+			><ColorBox id="uiButton-normalColor" @input="onParamInput"></ColorBox>
+			<div class="text">{{ local.getLabel('uiButton-hoverColor') || 'Hover Color' }}</div><ColorBox id="uiButton-hoverColor" @input="onParamInput"></ColorBox>
 			<div class="text">{{ local.getLabel('uiButton-activeColor') || 'Active Color' }}</div
-			><ColorBox id="uiButton-activeColor"></ColorBox>
+			><ColorBox id="uiButton-activeColor" @input="onParamInput"></ColorBox>
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -317,13 +317,13 @@
 		<div class="detail-grid" id="uiButton-sound-effects-grid">
 			<div class="text">{{ local.getLabel('uiButton-hoverSound') || 'Hover SE' }}</div
 			><CustomBox
-				id="uiButton-hoverSound"
+				id="uiButton-hoverSound" @input="onParamInput"
 				type="file"
 				filter="audio"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiButton-clickSound') || 'Click SE' }}</div
 			><CustomBox
-				id="uiButton-clickSound"
+				id="uiButton-clickSound" @input="onParamInput"
 				type="file"
 				filter="audio"
 			></CustomBox>
@@ -333,6 +333,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -347,6 +348,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const ui = useUIStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.uiButton?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	ui.syncState();

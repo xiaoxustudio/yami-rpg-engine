@@ -49,12 +49,6 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		$(`#${domKey}-events`).bind(new EventListInterface(this));
 		$(`#${domKey}-scripts`).bind(new ScriptListInterface());
 		$(`#${domKey}-parameter-pane`).bind($(`#${domKey}-scripts`));
-		document
-			.querySelectorAll(`#${domKey}-icon, #${domKey}-clip, #${domKey}-inherit`)
-			.forEach((el) => (el as HTMLElement).on('input', this.paramInput));
-		document
-			.querySelectorAll(`#${domKey}-attributes, #${domKey}-events, #${domKey}-scripts`)
-			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	entity.create = function (this: FileEntityPage) {
@@ -118,7 +112,17 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 	};
 
 	entity.paramInput = function (this: HTMLElement, event: Event) {
-		entity.update(entity.target!, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp(`^${domKey}-`).test(element.id)) break;
+			element = element.parentElement;
+		}
+		entity.update(
+			entity.target!,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	entity.listChange = function (this: FileEntityPage, event: Event) {

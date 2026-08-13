@@ -69,10 +69,7 @@ NewProject.initialize = function (this: typeof NewProject) {
 		{ name: 'Minimized Current Project', value: 'minimized-project' }
 	]);
 
-	template.addEventListener('input', this.templateInput as unknown as EventListener);
-	// folder/location input 经 Vue 模板转发（NewProject.vue @input/@beforeinput → NewProject.*）
-	$('#newProject-choose').addEventListener('click', this.chooseClick as unknown as EventListener);
-	$('#newProject-confirm').addEventListener('click', this.confirm as unknown as EventListener);
+	// template/folder/location/choose/confirm 事件经 Vue 模板转发（NewProject.vue @input/@beforeinput/@click/@confirm → NewProject.*）
 };
 
 NewProject.open = function (this: typeof NewProject) {

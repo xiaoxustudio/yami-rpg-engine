@@ -22,8 +22,8 @@
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<div class="detail-grid" id="command-settings-grid">
-						<div class="text">Alias</div><TextBox id="command-alias" /> <div class="text">Keywords</div
-					><TextBox id="command-keywords" />
+						<div class="text">Alias</div><TextBox id="command-alias" @input="onParamInput" /> <div class="text">Keywords</div
+					><TextBox id="command-keywords" @input="onParamInput" />
 					</div>
 				</DetailBox>
 			</div>
@@ -33,6 +33,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { File } from '@/file/file-system-core.ts';
+import { getBrowserInstance } from '@app/stores/browser';
 import { CustomCommand } from '@/command/custom-command-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -47,7 +49,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
-	const node = item as { enabled?: boolean };
+	const node = item as { enabled?: boolean; id?: string };
 	const element = container.parentNode as HTMLElement | null;
 	element?.classList.add('plugin-item');
 	if (node.enabled) {
@@ -55,7 +57,20 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 	} else {
 		element?.classList.add('weak');
 	}
-	return [];
+	return [
+		h(
+			'div',
+			{
+				class: 'box script-edit-button plugin-item-button',
+				onPointerdown: (event: PointerEvent) => {
+					if (event.button !== 0 || !node.id) return;
+					const path = File.getPath?.(node.id);
+					if (path) getBrowserInstance()?.openScript?.(path);
+				}
+			},
+			'\uf044'
+		)
+	];
 };
 
 const onListSelect = (event: Event & { value?: unknown }) => {
@@ -69,6 +84,10 @@ const onListOpen = (event: Event & { value?: unknown }) => {
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	CustomCommand?.listChange?.(event);
+};
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	CustomCommand?.paramInput?.({ target });
 };
 
 const onApply = () => {

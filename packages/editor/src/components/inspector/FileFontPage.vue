@@ -9,7 +9,7 @@
 	<DetailBox id="fileFont-font-detail" open>
 		<DetailSummary>{{ local.getLabel('fileFont-font-grid') || 'Font Preview' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-font-grid">
-			<TextBox id="fileFont-content" />
+			<TextBox id="fileFont-content" @input="onTextInput" />
 			<div class="text fileFont-preview" id="fileFont-12px"></div>
 			<div class="text fileFont-preview" id="fileFont-18px"></div>
 			<div class="text fileFont-preview" id="fileFont-24px"></div>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -32,6 +33,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const onTextInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.fileFont?.textInput?.({ target });
+};
 onMounted(() => {
 	inspector.syncState();
 	local.syncState();

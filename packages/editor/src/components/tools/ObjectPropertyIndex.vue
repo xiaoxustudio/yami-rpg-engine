@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="ObjectProperty-index">
+	<WindowFrame id="ObjectProperty-index" @confirm="onConfirm">
 		<template #title><TitleBar>ObjectProperty-index<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { IndexBind } from '@/module/command/getObjectProperty.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -19,6 +20,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	IndexBind?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

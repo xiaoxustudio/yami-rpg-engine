@@ -50,9 +50,6 @@ import { UI } from '@/ui/ui-window.ts';
 
 		const elements = document.querySelectorAll('#fileUI-width, #fileUI-height');
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -106,7 +103,17 @@ import { UI } from '@/ui/ui-window.ts';
 	};
 
 	FileUI.paramInput = function (this: typeof FileUI, event: Event) {
-		FileUI.update!(FileUI.target as FileUIData, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileUI-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileUI.update!(
+			FileUI.target as FileUIData,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	Inspector.fileUI = FileUI;

@@ -159,21 +159,12 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 	on(list, 'keydown', this.templatesKeydown);
 	// list select/popup 经 Vue 模板转发（AutoTile.vue @select/@popup → AutoTile.templates*）
 	// list change 经 Vue 模板转发（AutoTile.vue @change → AutoTile.templatesChange）
-	on(this.nodeList, 'write', this.nodesWrite);
-	on(this.nodeList, 'popup', this.nodesPopup);
 	on(this.nodeList, 'keydown', this.nodesKeydown);
 	document
 		.querySelectorAll('.autoTile-neighbor')
 		.forEach((el) => el.addEventListener('input', this.ruleNeighborInput!));
-	on(this.frameList, 'write', this.framesWrite);
-	on(this.frameList, 'popup', this.framesPopup);
 	on(this.frameList, 'keydown', this.framesKeydown);
 	on(this.frameList, 'doubleclick', this.framesDoubleclick);
-	on($('#autoTile-canvas'), 'click', this.canvasClick);
-	on($('#autoTile-image'), 'input', this.imageInput);
-	on($('#autoTile-x'), 'input', this.offsetXInput);
-	on($('#autoTile-y'), 'input', this.offsetYInput);
-	on($('#autoTile-confirm'), 'click', this.confirm);
 };
 
 AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: AutoTileOpenParams) {
@@ -1028,13 +1019,13 @@ AutoTile.canvasClick = function (this: typeof AutoTile, event: Event) {
 }.bind(AutoTile);
 
 AutoTile.imageInput = function (this: typeof AutoTile, event: Event) {
-	AutoTile.imageId = read(this);
+	AutoTile.imageId = read($('#autoTile-image'));
 	AutoTile.image = null;
 	AutoTile.drawFrame!();
 };
 
 AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
-	const x = read(this);
+	const x = read($('#autoTile-x'));
 	if (AutoTile.offsetX !== x) {
 		AutoTile.offsetX = x;
 		AutoTile.drawFrame!();
@@ -1042,7 +1033,7 @@ AutoTile.offsetXInput = function (this: typeof AutoTile, event: Event) {
 };
 
 AutoTile.offsetYInput = function (this: typeof AutoTile, event: Event) {
-	const y = read(this);
+	const y = read($('#autoTile-y'));
 	if (AutoTile.offsetY !== y) {
 		AutoTile.offsetY = y;
 		AutoTile.drawFrame!();

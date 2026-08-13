@@ -78,9 +78,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneAnimation-scale-slider, #sceneAnimation-speed-slider,
     #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -258,10 +255,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	SceneAnimation.paramInput = function (this: typeof SceneAnimation, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneAnimation-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneAnimation.update!(
 			SceneAnimation.target as SceneAnimationData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

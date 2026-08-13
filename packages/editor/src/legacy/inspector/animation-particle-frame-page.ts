@@ -30,9 +30,6 @@ import { read, write } from '@/util/element-utils.ts';
     #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity,
     #animParticleFrame-scale, #animParticleFrame-speed`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -144,10 +141,16 @@ import { read, write } from '@/util/element-utils.ts';
 	};
 
 	AnimParticleFrame.paramInput = function (this: typeof AnimParticleFrame, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animParticleFrame-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		AnimParticleFrame.update!(
 			AnimParticleFrame.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

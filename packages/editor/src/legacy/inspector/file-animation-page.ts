@@ -80,8 +80,6 @@ import { Inspector } from './inspector.ts';
 		list: null,
 		spriteId: '',
 		initialize: function (this: typeof FileAnimation, list: HTMLElement) {
-			$('#fileAnimation-sprite-confirm')?.on('click', () => list.save());
-
 			this.list = list;
 
 			this.history = new Inspector.ParamHistory!(FileAnimation, FileAnimation.owner, list);

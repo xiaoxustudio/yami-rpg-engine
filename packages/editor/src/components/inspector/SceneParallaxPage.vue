@@ -1,22 +1,22 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
-			<div class="text">{{ local.getLabel('sceneParallax-name') || 'Name' }}</div><TextBox id="sceneParallax-name"></TextBox>
+			<div class="text">{{ local.getLabel('sceneParallax-name') || 'Name' }}</div><TextBox id="sceneParallax-name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('sceneParallax-image') || 'Image' }}</div
 			><CustomBox
-				id="sceneParallax-image"
+				id="sceneParallax-image" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</div><SelectBox id="sceneParallax-layer"></SelectBox>
+			<div class="text">{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</div><SelectBox id="sceneParallax-layer" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('sceneParallax-order') || 'Order' }}</div
-			><NumberBox id="sceneParallax-order" min="0" max="100"></NumberBox>
+			><NumberBox id="sceneParallax-order" @input="onParamInput" min="0" max="100"></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-light') || 'Light Sampling' }}</div
-			><SelectBox id="sceneParallax-light"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</div
-			><SelectBox id="sceneParallax-blend"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</div
+			><SelectBox id="sceneParallax-light" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</div
+			><SelectBox id="sceneParallax-blend" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</div
 			><NumberBox
-				id="sceneParallax-opacity"
+				id="sceneParallax-opacity" @input="onParamInput"
 				min="0"
 				max="1"
 				step="0.05"
@@ -24,7 +24,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-x') || 'X' }}</div
 			><NumberBox
-				id="sceneParallax-x"
+				id="sceneParallax-x" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -33,7 +33,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-y') || 'Y' }}</div
 			><NumberBox
-				id="sceneParallax-y"
+				id="sceneParallax-y" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -47,7 +47,7 @@
 		<div class="detail-grid" id="sceneParallax-parallax-grid">
 			<div class="text">{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</div
 			><NumberBox
-				id="sceneParallax-scaleX"
+				id="sceneParallax-scaleX" @input="onParamInput"
 				min="0.2"
 				max="32"
 				step="0.1"
@@ -55,19 +55,19 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-scaleY') || 'Scale Y' }}</div
 			><NumberBox
-				id="sceneParallax-scaleY"
+				id="sceneParallax-scaleY" @input="onParamInput"
 				min="0.2"
 				max="32"
 				step="0.1"
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-repeatX') || 'Repeat X' }}</div
-			><NumberBox id="sceneParallax-repeatX" min="1" max="100"></NumberBox>
+			><NumberBox id="sceneParallax-repeatX" @input="onParamInput" min="1" max="100"></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-repeatY') || 'Repeat Y' }}</div
-			><NumberBox id="sceneParallax-repeatY" min="1" max="100"></NumberBox>
+			><NumberBox id="sceneParallax-repeatY" @input="onParamInput" min="1" max="100"></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-anchorX') || 'Anchor X' }}</div
 			><NumberBox
-				id="sceneParallax-anchorX"
+				id="sceneParallax-anchorX" @input="onParamInput"
 				min="0"
 				max="1"
 				step="0.1"
@@ -75,7 +75,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-anchorY') || 'Anchor Y' }}</div
 			><NumberBox
-				id="sceneParallax-anchorY"
+				id="sceneParallax-anchorY" @input="onParamInput"
 				min="0"
 				max="1"
 				step="0.1"
@@ -83,21 +83,21 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-offsetX') || 'Offset X' }}</div
 			><NumberBox
-				id="sceneParallax-offsetX"
+				id="sceneParallax-offsetX" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-offsetY') || 'Offset Y' }}</div
 			><NumberBox
-				id="sceneParallax-offsetY"
+				id="sceneParallax-offsetY" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorX') || 'Parallax Factor X' }}</div
 			><NumberBox
-				id="sceneParallax-parallaxFactorX"
+				id="sceneParallax-parallaxFactorX" @input="onParamInput"
 				min="-4"
 				max="4"
 				step="0.1"
@@ -105,7 +105,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorY') || 'Parallax Factor Y' }}</div
 			><NumberBox
-				id="sceneParallax-parallaxFactorY"
+				id="sceneParallax-parallaxFactorY" @input="onParamInput"
 				min="-4"
 				max="4"
 				step="0.1"
@@ -113,7 +113,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedX') || 'Shift Speed X' }}</div
 			><NumberBox
-				id="sceneParallax-shiftSpeedX"
+				id="sceneParallax-shiftSpeedX" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				step="5"
@@ -122,7 +122,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedY') || 'Shift Speed Y' }}</div
 			><NumberBox
-				id="sceneParallax-shiftSpeedY"
+				id="sceneParallax-shiftSpeedY" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				step="5"
@@ -138,7 +138,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="sceneParallax-tint-0"
+					id="sceneParallax-tint-0" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
@@ -153,7 +153,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="sceneParallax-tint-1"
+					id="sceneParallax-tint-1" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
@@ -168,7 +168,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="sceneParallax-tint-2"
+					id="sceneParallax-tint-2" @input="onParamInput"
 					min="-255"
 					max="255"
 					step="5"
@@ -183,7 +183,7 @@
 					step="15"
 				></SliderBox>
 				<NumberBox
-					id="sceneParallax-tint-3"
+					id="sceneParallax-tint-3" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -221,6 +221,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -235,6 +236,11 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.sceneParallax?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	scene.syncState();

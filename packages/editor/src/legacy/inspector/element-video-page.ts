@@ -130,7 +130,17 @@ import { UI } from '@/ui/ui-window.ts';
 	};
 
 	UIVideo.paramInput = function (this: typeof UIVideo, event: Event) {
-		UIVideo.update!(UIVideo.target as UIVideoData, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^uiVideo-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		UIVideo.update!(
+			UIVideo.target as UIVideoData,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	Inspector.uiVideo = UIVideo;

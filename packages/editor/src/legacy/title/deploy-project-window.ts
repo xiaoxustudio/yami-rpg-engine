@@ -1,6 +1,6 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { disable, enable, getFocus, on, read, write } from '@/util/element-utils';
+import { disable, enable, getFocus, read, write } from '@/util/element-utils';
 import { Timer } from '@/util/timer.ts';
 import { Codec } from '@/codec/codec.ts';
 import { Data } from '@/data/data-object.ts';
@@ -119,13 +119,7 @@ Deployment.initialize = function (this: typeof Deployment) {
 		{ name: 'Web / Android / iOS', value: 'web' }
 	]);
 
-	platform.addEventListener('input', this.platformInput!);
-	// folder/location input 经 Vue 模板转发（Deployment.vue @input/@beforeinput → Deployment.*）
-	on($('#deployment-choose'), 'click', this.chooseClick!);
-	on($('#deployment-confirm'), 'click', this.confirm!);
-	$('#deployment-compress').addEventListener('change', (e: Event) => {
-		Deployment.compress = read(e.target);
-	});
+	// platform/folder/location/choose/compress/confirm 事件经 Vue 模板转发（Deployment.vue @input/@beforeinput/@click/@change/@confirm → Deployment.*）
 };
 
 Deployment.open = function (this: typeof Deployment) {

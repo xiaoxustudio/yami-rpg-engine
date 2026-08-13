@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="httpRequest">
+<WindowFrame id="httpRequest" @confirm="onConfirm">
 	<template #title><TitleBar>httpRequest<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -35,6 +35,10 @@ import ParamList from '@app/components/common/ParamList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.httpRequest?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

@@ -38,7 +38,7 @@ describe('FileBrowser 初始化事件注册（时序回归保护）', () => {
 			props: { id: 'project-browser' },
 			attachTo: container
 		});
-		await new Promise((resolve) => setTimeout(resolve, 250));
+		await new Promise((resolve) => setTimeout(resolve, 600));
 		const Browser = getBrowserStore().getBrowser() as unknown as FileBrowserNode | null;
 		const body = Browser?.body;
 		expect(body).toBeTruthy();

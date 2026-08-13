@@ -4,13 +4,13 @@
 		
 			<div class="grid-box" id="tintScreen-grid-box">
 				<div class="text">Tint - Red</div
-				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" />
+				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Green</div
-				><NumberBox id="tintScreen-tint-1" min="-255" max="255" step="5" />
+				><NumberBox id="tintScreen-tint-1" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Blue</div
-				><NumberBox id="tintScreen-tint-2" min="-255" max="255" step="5" />
+				><NumberBox id="tintScreen-tint-2" min="-255" max="255" step="5" @input="onInput" />
 				<div class="text">Tint - Grayscale</div
-				><NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" />
+				><NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" @input="onInput" />
 				<div class="text">Easing</div><SelectBox id="tintScreen-easingId" name="easing" />
 				<div class="text">Duration</div
 				><NumberBox
@@ -42,6 +42,9 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const onInput = () => {
+	Command?.cases?.tintScreen?.input?.();
+};
 const onConfirm = () => {
 	Command?.cases?.tintScreen?.save?.();
 };

@@ -33,7 +33,6 @@ Command.cases.httpRequest = new CommandSchema({
 		write($('#httpRequest-withCredentials'), false);
 		write($('#httpRequest-authUser'), '');
 		write($('#httpRequest-authPass'), '');
-		$('#httpRequest-confirm')?.on('click', () => this.save!());
 	},
 	customParse({
 		url = '',

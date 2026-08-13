@@ -1,21 +1,21 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-general-grid">
 			<div class="text">{{ local.getLabel('fileScene-width') || 'Width' }}</div
-			><NumberBox id="fileScene-width" min="0" max="512" unit="tile" />
+			><NumberBox id="fileScene-width" min="0" max="512" unit="tile" @change="onParamChange" />
 			<div class="text">{{ local.getLabel('fileScene-height') || 'Height' }}</div
-			><NumberBox id="fileScene-height" min="0" max="512" unit="tile" />
+			><NumberBox id="fileScene-height" min="0" max="512" unit="tile" @change="onParamChange" />
 			<div class="text">{{ local.getLabel('fileScene-tileWidth') || 'Tile Width' }}</div
 			><NumberBox
-				id="fileScene-tileWidth"
+				id="fileScene-tileWidth" @input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
 			/>
 			<div class="text">{{ local.getLabel('fileScene-tileHeight') || 'Tile Height' }}</div
 			><NumberBox
-				id="fileScene-tileHeight"
+				id="fileScene-tileHeight" @input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
@@ -34,7 +34,7 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-red"
+					id="fileScene-ambient-red" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -49,7 +49,7 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-green"
+					id="fileScene-ambient-green" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -64,7 +64,7 @@
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-blue"
+					id="fileScene-ambient-blue" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -79,7 +79,7 @@
 					step="0.05"
 				/>
 				<NumberBox
-					id="fileScene-ambient-direct"
+					id="fileScene-ambient-direct" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -110,6 +110,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -121,6 +122,14 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.fileScene?.paramInput?.({ target });
+};
+const onParamChange = () => {
+	Inspector?.fileScene?.paramInput?.();
+};
 
 onMounted(() => {
 	scene.syncState();

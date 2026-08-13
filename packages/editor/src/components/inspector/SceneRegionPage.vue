@@ -1,12 +1,12 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
-			<div class="text">{{ local.getLabel('sceneRegion-name') || 'Name' }}</div><TextBox id="sceneRegion-name"></TextBox>
-			<div class="text">{{ local.getLabel('sceneRegion-color') || 'Color' }}</div><ColorBox id="sceneRegion-color"></ColorBox>
+			<div class="text">{{ local.getLabel('sceneRegion-name') || 'Name' }}</div><TextBox id="sceneRegion-name" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('sceneRegion-color') || 'Color' }}</div><ColorBox id="sceneRegion-color" @input="onParamInput"></ColorBox>
 			<div class="text">{{ local.getLabel('sceneRegion-x') || 'X' }}</div
 			><NumberBox
-				id="sceneRegion-x"
+				id="sceneRegion-x" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -14,7 +14,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneRegion-y') || 'Y' }}</div
 			><NumberBox
-				id="sceneRegion-y"
+				id="sceneRegion-y" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -22,14 +22,14 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneRegion-width') || 'Width' }}</div
 			><NumberBox
-				id="sceneRegion-width"
+				id="sceneRegion-width" @input="onParamInput"
 				min="0"
 				max="512"
 				decimals="4"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneRegion-height') || 'Height' }}</div
 			><NumberBox
-				id="sceneRegion-height"
+				id="sceneRegion-height" @input="onParamInput"
 				min="0"
 				max="512"
 				decimals="4"
@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -78,6 +79,11 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+
+const onParamInput = (event: Event) => {
+	const target = event?.target ?? document.activeElement;
+	Inspector?.sceneRegion?.paramInput?.({ target });
+};
 
 onMounted(() => {
 	scene.syncState();

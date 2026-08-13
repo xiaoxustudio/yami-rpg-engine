@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="requestURL">
+<WindowFrame id="requestURL" @confirm="onConfirm">
 	<template #title><TitleBar>requestURL<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -27,6 +27,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.requestURL?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

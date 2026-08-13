@@ -26,7 +26,6 @@ export const IndexBind = {
 	initialize() {
 		this.target = null;
 		this.type = 'get-object-index';
-		$('#ObjectProperty-index-confirm')?.on('click', this.confirm);
 	},
 	parse(item: ObjectPropertyItem | null) {
 		return `${item!.text}`;

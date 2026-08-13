@@ -42,9 +42,6 @@ import { Inspector } from './inspector.ts';
 			'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('input', this.paramInput)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			(el as HTMLElement).on('focus', Inspector.inputFocus)
 		);
 		elements.on(
@@ -121,10 +118,16 @@ import { Inspector } from './inspector.ts';
 	};
 
 	AnimParticleLayer.paramInput = function (this: typeof AnimParticleLayer, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animParticleLayer-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		AnimParticleLayer.update!(
 			AnimParticleLayer.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

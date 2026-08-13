@@ -88,9 +88,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider,
     #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -282,10 +279,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	SceneParallax.paramInput = function (this: typeof SceneParallax, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneParallax-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneParallax.update!(
 			SceneParallax.target as SceneParallaxData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

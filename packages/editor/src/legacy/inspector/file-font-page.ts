@@ -37,7 +37,6 @@ import { Inspector } from './inspector.ts';
 		this.textInput({ target: this.input!.input });
 
 		$('#fileFont')?.addEventListener('resize', this.windowResize);
-		this.input!.addEventListener('input', this.textInput);
 	};
 
 	FileFont.open = function (this: FileFontShape, file: FileFontFileShape, meta: unknown) {

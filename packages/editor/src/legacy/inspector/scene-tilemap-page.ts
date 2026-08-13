@@ -116,22 +116,12 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY,
     #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
 		);
-		$('#sceneTilemap-layer')?.addEventListener(
-			'write',
-			this.layerWrite! as unknown as EventListener
-		);
 		$('#sceneTilemap-layer')?.addEventListener('input', this.layerInput!);
-		document
-			.querySelectorAll('#sceneTilemap-width, #sceneTilemap-height')
-			.forEach((el) => el.addEventListener('change', this.paramInput!));
 		document
 			.querySelectorAll(
 				'#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts'

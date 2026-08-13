@@ -121,6 +121,7 @@
 			class="inspector-list"
 			filter="trigger"
 			flexible
+			@change="onListChange"
 		/>
 	</DetailBox>
 	<DetailBox open>
@@ -129,6 +130,7 @@
 			id="fileTrigger-scripts"
 			class="inspector-list"
 			flexible
+			@change="onListChange"
 		/>
 	</DetailBox>
 	<ParameterPane id="fileTrigger-parameter-pane" />
@@ -156,6 +158,9 @@ const onParamInput = (event: Event) => {
 };
 const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.fileTrigger?.animationIdWrite?.({ value });
+};
+const onListChange = () => {
+	Inspector?.fileTrigger?.listChange?.();
 };
 
 onMounted(() => {

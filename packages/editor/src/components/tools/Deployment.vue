@@ -1,9 +1,9 @@
 <template>
-	<WindowFrame id="deployment">
+	<WindowFrame id="deployment" @confirm="onConfirm">
 		<template #title><TitleBar>Deployment<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Platform</div><SelectBox id="deployment-platform" />
+				<div class="text">Platform</div><SelectBox id="deployment-platform" @input="onPlatformInput" />
 				<div class="text">Folder</div
 				><TextBox
 					id="deployment-folder"
@@ -13,10 +13,10 @@
 				<div class="text">Output Location</div>
 				<div class="flex-box" id="deployment-location-box">
 					<TextBox id="deployment-location" @input="onLocationInput" />
-					<button id="deployment-choose">…</button>
+					<button id="deployment-choose" @click="onChooseClick">…</button>
 				</div>
 				<div class="text">Compress Resources</div>
-			<CheckBox id="deployment-compress" standard />
+			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
 			</div>
 			<div class="text" id="deployment-warning" />
 		
@@ -45,6 +45,18 @@ const onFolderInput = () => {
 };
 const onLocationInput = () => {
 	Deployment?.locationInput?.();
+};
+const onPlatformInput = () => {
+	Deployment?.platformInput?.();
+};
+const onChooseClick = () => {
+	Deployment?.chooseClick?.();
+};
+const onCompressChange = (value: boolean) => {
+	Deployment.compress = value;
+};
+const onConfirm = () => {
+	Deployment?.confirm?.();
 };
 
 onMounted(() => {

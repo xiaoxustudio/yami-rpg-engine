@@ -50,8 +50,6 @@ const EXCLUDE = [
 	'components/text-box.ts',
 	'components/textarea-var.ts',
 	'components/tree-list.ts',
-	// browser/：被 src/main.ts side-effect import
-	'browser/browser-bridge.ts',
 	// command/：被 CustomBox.vue import
 	'command/preset-accessor-factory.ts',
 	// tools/：被 local-window/variable/enum-window/attribute-window import

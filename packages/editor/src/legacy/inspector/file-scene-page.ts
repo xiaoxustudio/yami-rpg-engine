@@ -66,9 +66,6 @@ import { GL } from '@/webgl/webgl-init.ts';
 			document.querySelectorAll(`#fileScene-ambient-red-slider, #fileScene-ambient-green-slider,
     #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -80,9 +77,6 @@ import { GL } from '@/webgl/webgl-init.ts';
 		(sliders as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.sliderBlur)
 		);
-		document
-			.querySelectorAll('#fileScene-width, #fileScene-height')
-			.forEach((el) => el.addEventListener('change', this.paramInput!));
 		document
 			.querySelectorAll('#fileScene-events, #fileScene-scripts')
 			.forEach((el) => el.addEventListener('change', Scene.listChange));
@@ -230,7 +224,17 @@ import { GL } from '@/webgl/webgl-init.ts';
 	};
 
 	FileScene.paramInput = function (this: typeof FileScene, event: Event) {
-		FileScene.update!(FileScene.target, Inspector.getKey!(this), read(this));
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^fileScene-').test(element.id)) break;
+			element = element.parentElement;
+		}
+		FileScene.update!(
+			FileScene.target,
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
+		);
 	};
 
 	Inspector.fileScene = FileScene;

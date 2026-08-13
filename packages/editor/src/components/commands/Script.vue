@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="script">
+	<WindowFrame id="script" @confirm="onConfirm">
 		<template #title><TitleBar
 			>Script<div class="text hidden" id="script-mark">✱</div>
 			<button id="script-change" name="script-change-ts">切换为TS</button>
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -21,6 +22,10 @@ import { useLocalStore } from '@app/stores/local';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.script?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

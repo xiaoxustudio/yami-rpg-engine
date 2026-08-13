@@ -11,7 +11,6 @@ import { Easing } from '@/data/transition-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Local } from '@/tools/localization.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 
@@ -41,7 +40,6 @@ interface CustomCommandList {
 	restoreSelection: (() => void) | null;
 	updateNodeElement: CustomCommandMethod;
 	updateTextNode: CustomCommandMethod;
-	createEditIcon: CustomCommandMethod;
 	edit: (item: CustomCommandData) => void;
 	bind(getter: () => CustomCommandData[] | null): void;
 	addEventListener(type: string, listener: (event: Event) => void): void;
@@ -107,7 +105,9 @@ interface CustomCommandShape {
 	listOpen:
 		| ((this: CustomCommandList, event: Event & { value: CustomCommandData }) => void)
 		| null;
-	paramInput: ((this: HTMLElement & { id: string; read(): string }, event: Event) => void) | null;
+	paramInput:
+		| ((this: CustomCommandShape, event: Event & { target?: EventTarget | null }) => void)
+		| null;
 	confirm: ((event: Event) => void) | null;
 	apply: ((event: Event) => void) | null;
 	list_edit: CustomCommandMethod;
@@ -184,7 +184,6 @@ function ensureDomBound() {
 	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
 	list.updateNodeElement = Easing.list_updateNodeElement;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
-	list.createEditIcon = PluginManager.list_createEditIcon as (...args: unknown[]) => void;
 	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
 	list.insert = CustomCommand.list_insert as (...args: unknown[]) => void;
 	list.toggle = CustomCommand.list_toggle as (...args: unknown[]) => void;
@@ -202,17 +201,12 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
 	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
-	getListConfig(list).creators.push(list.createEditIcon as unknown as (item: unknown) => void);
 
 	$('#command')?.addEventListener('close', this.windowClose!);
 	$('#command')?.addEventListener('closed', this.windowClosed!);
 	list.on('keydown', this.listKeydown!);
 	// list select/popup/open/change 经 Vue 模板转发（Command.vue @select/@popup/@open/@change → CustomCommand.list*）
 	list.on('unselect', this.listUnselect!);
-	list.on('pointerdown', ScriptListInterface.listPointerdown);
-	document
-		.querySelectorAll('#command-alias, #command-keywords')
-		.forEach((el) => el.addEventListener('input', this.paramInput!));
 	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
 };
 
@@ -446,17 +440,22 @@ CustomCommand.listOpen = function (
 };
 
 CustomCommand.paramInput = function (
-	this: HTMLElement & { id: string; read(): string },
-	event: Event
+	this: CustomCommandShape,
+	event: Event & { target?: EventTarget | null }
 ): void {
 	CustomCommand.changed = true;
 	const data = CustomCommand.list.read()!;
-	switch (this.id) {
+	let element = (event?.target ?? document.activeElement) as HTMLElement | null;
+	while (element instanceof Element && !/^command-(alias|keywords)$/.test(element.id)) {
+		element = element.parentElement;
+	}
+	const input = element as (HTMLElement & { read(): string }) | null;
+	switch (input?.id) {
 		case 'command-alias':
-			(data as CustomCommandData).alias = this.read();
+			(data as CustomCommandData).alias = input.read();
 			break;
 		case 'command-keywords':
-			(data as CustomCommandData).keywords = this.read();
+			(data as CustomCommandData).keywords = input.read();
 			break;
 	}
 };

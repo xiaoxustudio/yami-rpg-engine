@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="object-attribute">
+		<WindowFrame id="object-attribute" @confirm="onConfirm">
 		<template #title><TitleBar>Attribute<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -36,6 +36,9 @@ const local = useLocalStore();
 
 const onKeyWrite = (value: unknown) => {
 	AttributeListInterface?.keyWrite?.({ value });
+};
+const onConfirm = () => {
+	AttributeListInterface?.target?.save?.();
 };
 
 onMounted(() => {

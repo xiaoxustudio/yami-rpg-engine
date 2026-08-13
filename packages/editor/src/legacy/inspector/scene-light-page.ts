@@ -100,9 +100,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
     #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider,
     #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -257,10 +254,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	SceneLight.paramInput = function (this: typeof SceneLight, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneLight-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneLight.update!(
 			SceneLight.target as SceneLightData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

@@ -42,9 +42,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		const elements = document.querySelectorAll(`#sceneRegion-name, #sceneRegion-color,
     #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height`);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -146,10 +143,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	};
 
 	SceneRegion.paramInput = function (this: typeof SceneRegion, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneRegion-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneRegion.update!(
 			SceneRegion.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

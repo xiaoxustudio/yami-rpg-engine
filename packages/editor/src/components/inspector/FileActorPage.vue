@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</DetailSummary>
 			<div class="detail-grid" id="fileActor-general-grid">
@@ -83,7 +83,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-sprites') || 'Sprites' }}</DetailSummary>
 			<ParamList
-				id="fileActor-sprites"
+				id="fileActor-sprites" @change="onListChange"
 				class="inspector-list"
 				flexible
 			/>
@@ -91,7 +91,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-attributes') || 'Attributes' }}</DetailSummary>
 			<ParamList
-				id="fileActor-attributes"
+				id="fileActor-attributes" @change="onListChange"
 				class="inspector-list"
 				group="actor"
 				flexible
@@ -100,7 +100,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-skills') || 'Skills' }}</DetailSummary>
 			<ParamList
-				id="fileActor-skills"
+				id="fileActor-skills" @change="onListChange"
 				class="inspector-list"
 				flexible
 			/>
@@ -108,7 +108,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-equipments') || 'Equipments' }}</DetailSummary>
 			<ParamList
-				id="fileActor-equipments"
+				id="fileActor-equipments" @change="onListChange"
 				class="inspector-list"
 				flexible
 			/>
@@ -116,7 +116,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-inventory') || 'Inventory' }}</DetailSummary>
 			<ParamList
-				id="fileActor-inventory"
+				id="fileActor-inventory" @change="onListChange"
 				class="inspector-list"
 				flexible
 			/>
@@ -124,7 +124,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-events') || 'Events' }}</DetailSummary>
 			<ParamList
-				id="fileActor-events"
+				id="fileActor-events" @change="onListChange"
 				class="inspector-list"
 				filter="actor"
 				flexible
@@ -133,7 +133,7 @@
 		<DetailBox open>
 			<DetailSummary>{{ local.getLabel('fileActor-scripts') || 'Scripts' }}</DetailSummary>
 			<ParamList
-				id="fileActor-scripts"
+				id="fileActor-scripts" @change="onListChange"
 				class="inspector-list"
 				flexible
 			/>
@@ -163,6 +163,9 @@ const onParamInput = (event: Event) => {
 };
 const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.fileActor?.animationIdWrite?.({ value });
+};
+const onListChange = () => {
+	Inspector?.fileActor?.listChange?.();
 };
 
 onMounted(() => {

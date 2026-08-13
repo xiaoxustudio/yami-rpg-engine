@@ -25,7 +25,6 @@ export const RequestkeyValueBind = {
 	initialize() {
 		this.target = null;
 		this.type = 'request-header';
-		$('#request-keyValue-confirm')?.on('click', this.confirm);
 	},
 	parse(i: RequestKeyValue) {
 		return `${typeof i.key === 'string' ? i.key : i.key.key} = ${typeof i.value === 'string' ? i.value : i.value.key}`;
@@ -78,7 +77,6 @@ Command.cases.requestURL = new CommandSchema({
 		write($('#requestURL-url'), '');
 		$('#requestURL-header').bind(RequestkeyValueBind);
 		$('#requestURL-data').bind(RequestkeyValueBind);
-		$('#requestURL-confirm')?.on('click', () => this.save!());
 	},
 	customParse({
 		url = '',

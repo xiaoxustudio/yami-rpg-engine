@@ -3,7 +3,7 @@
 		<template #title><TitleBar>Condition<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Condition Type</div><SelectBox id="condition-type" />
+				<div class="text">Condition Type</div><SelectBox id="condition-type" @write="onTypeWrite" />
 			<div class="text">Variable</div
 			><CustomBox id="condition-key" type="global-variable" filter="all" />
 			<div class="text">Operation</div><SelectBox id="condition-boolean-operation" />
@@ -38,6 +38,9 @@ import TextArea from '@app/components/common/TextArea.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const onTypeWrite = (value: string) => {
+	ConditionListInterface?.typeWrite?.({ value });
+};
 const onConfirm = () => {
 	ConditionListInterface?.target?.save?.();
 };

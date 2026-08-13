@@ -17,16 +17,15 @@ Command.cases.downloadFile = new CommandSchema({
 		]);
 		$('#downloadFile-isBackground').relate([$('#downloadFile-isBackground-path')]);
 		disable($('#downloadFile-isBackground-path'));
-		$('#downloadFile-isBackground')?.on('input', (e: Event & { value?: string }) => {
-			if (e.value) enable($('#downloadFile-isBackground-path'));
-			else disable($('#downloadFile-isBackground-path'));
-		});
 		write($('#downloadFile-method'), 'GET');
 		write($('#downloadFile-url'), '');
 		write($('#downloadFile-isBackground-path'), '');
 		$('#downloadFile-header').bind(RequestkeyValueBind);
 		$('#downloadFile-data').bind(RequestkeyValueBind);
-		$('#downloadFile-confirm')?.on('click', () => this.save!());
+	},
+	isBackgroundInput(event: Event & { value?: boolean }) {
+		if (event.value) enable($('#downloadFile-isBackground-path'));
+		else disable($('#downloadFile-isBackground-path'));
 	},
 	customParse({
 		url = '',

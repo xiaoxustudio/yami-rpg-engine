@@ -70,16 +70,9 @@ Color.initialize = function (this: typeof Color) {
 	$('#color')?.addEventListener('closed', this.windowClosed);
 	on($('#color-palette-frame'), 'pointerdown', this.palettePointerdown);
 	on($('#color-pillar-frame'), 'pointerdown', this.pillarPointerdown);
-	$('#color-index')?.addEventListener('input', this.indexedColorInput);
 	$('[name="color-index"]').forEach((el) =>
 		el.addEventListener('pointerdown', this.indexedColorPointerdown!)
 	);
-	document
-		.querySelectorAll('#color-r, #color-g, #color-b, #color-a')
-		.forEach((el) => el.addEventListener('input', this.rgbaInput!));
-	$('#color-hex')?.addEventListener('beforeinput', this.hexBeforeinput, { capture: true });
-	$('#color-hex')?.addEventListener('input', this.hexInput);
-	on($('#color-confirm'), 'click', this.confirm);
 };
 
 Color.open = function (this: typeof Color, ...args: unknown[]) {
@@ -341,7 +334,7 @@ Color.indexedColorInput = function (this: typeof Color, event: Event & { value?:
 	this.writeRGBAToInputs(rgba);
 	this.drawViewer(rgba);
 	if (!this.indexEnabled) {
-		(event.target as { reset?: () => void })?.reset?.();
+		$('#color-index').reset();
 	}
 }.bind(Color);
 

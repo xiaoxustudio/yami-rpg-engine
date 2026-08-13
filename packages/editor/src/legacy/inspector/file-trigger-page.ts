@@ -123,11 +123,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		$('#fileTrigger-scripts')?.bind?.(new ScriptListInterface());
 
 		$('#fileTrigger-parameter-pane')?.bind?.($('#fileTrigger-scripts'));
-
-		// animationId write + 22 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eTriggerPage.vue @write/@input 闂?FileTrigger.*闂?
-		document
-			.querySelectorAll('#fileTrigger-events, #fileTrigger-scripts')
-			.forEach((el) => (el as HTMLElement).on('change', this.listChange));
 	};
 
 	FileTrigger.create = function (this: typeof FileTrigger) {

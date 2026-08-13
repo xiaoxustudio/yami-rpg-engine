@@ -3,7 +3,7 @@
 	<WindowFrame id="update-log" no-buttons>
 		<template #title><TitleBar>Update Log<div class="close" /></TitleBar></template>
 		
-			<div class="box" id="update-log-tabs">
+			<div class="box" id="update-log-tabs" @click="onTabsClick">
 				<button id="update-log-tab-internal" class="update-log-tab active">Origin</button>
 				<button id="update-log-tab-community" class="update-log-tab">Community</button>
 				<button id="update-log-tab-donation" class="update-log-tab">捐赠名单</button>
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { UpdateLog } from '@/log/update-log-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -24,6 +25,10 @@ import { useLocalStore } from '@app/stores/local';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onTabsClick = (event: MouseEvent) => {
+	UpdateLog?.tabsClick?.(event);
+};
 
 onMounted(() => {
 	inspector.syncState();

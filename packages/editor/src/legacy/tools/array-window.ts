@@ -54,7 +54,6 @@ ArrayList.initialize = function (this: typeof ArrayList) {
 
 	$('#arrayList').addEventListener('close', this.windowClose!);
 	$('#arrayList').addEventListener('closed', this.windowClosed!);
-	this.list.addEventListener('change', this.listChange!);
 	on($('#arrayList-confirm'), 'click', this.confirm!);
 };
 

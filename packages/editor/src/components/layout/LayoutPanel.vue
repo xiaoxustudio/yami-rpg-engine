@@ -4,12 +4,12 @@
 			<div class="box" id="home-content">
 				<div class="text" id="home-title">YAMI RPG EDITOR (Open Yami)</div>
 				<div class="text" id="home-version"></div>
-				<div class="box" id="home-start-list">
+				<div class="box" id="home-start-list" @click="onHomeStartClick">
 					<div class="item home-list-label" id="home-start-label">Start</div>
 					<div class="item home-start-item" id="home-start-new" value="new">New Project</div>
 					<div class="item home-start-item" id="home-start-open" value="open">Open Project</div>
 				</div>
-				<div class="box" id="home-recent-list" tabindex="-1">
+				<div class="box" id="home-recent-list" tabindex="-1" @click="onHomeRecentClick" @pointerup="onHomeRecentPointerup">
 					<div class="item home-list-label" id="home-recent-label">Recent</div>
 					<div class="item home-recent-item" value="0"></div>
 					<div class="item home-recent-item" value="1"></div>
@@ -393,6 +393,7 @@ import { UI } from '@/ui/ui-window.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
+import { Home } from '@/title/home-page.ts';
 
 interface SceneExtrasNode {
 	class?: string;
@@ -711,6 +712,15 @@ const particleNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 
 const onSceneHeadPointerdown = (event: PointerEvent) => {
 	Scene?.headPointerdown?.(event);
+};
+const onHomeStartClick = (event: PointerEvent) => {
+	Home?.startClick?.(event);
+};
+const onHomeRecentClick = (event: PointerEvent) => {
+	Home?.recentClick?.(event);
+};
+const onHomeRecentPointerup = (event: PointerEvent) => {
+	Home?.recentPointerup?.(event);
 };
 const onSceneSwitchPointerdown = (event: PointerEvent) => {
 	Scene?.switchPointerdown?.(event);

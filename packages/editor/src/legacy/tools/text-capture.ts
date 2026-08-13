@@ -143,12 +143,6 @@ export const Selection: SelectionShape = {
 
 Selection.initialize = function (this: SelectionShape) {
 	if (!$('#font-confirm')) return;
-	$('#font-confirm').addEventListener('click', this.font.confirm!);
-	$('#fontSize-confirm').addEventListener('click', this.fontSize.confirm!);
-	$('#textPosition-confirm').addEventListener('click', this.textPosition.confirm!);
-	$('#textEffect-confirm').addEventListener('click', this.textEffect.confirm!);
-	$('#insertImage-confirm').addEventListener('click', this.image.confirm!);
-	$('#localVariable-confirm').addEventListener('click', this.localVariable.confirm!);
 
 	const exclusions: Record<string, boolean> = {
 		'color-hex': true,

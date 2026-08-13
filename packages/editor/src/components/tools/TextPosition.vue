@@ -1,6 +1,6 @@
 <template>
 	<!-- 设置文字位置 -->
-	<WindowFrame id="textPosition">
+	<WindowFrame id="textPosition" @confirm="onConfirm">
 		<template #title><TitleBar>Set Text Position<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Selection } from '@/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -23,6 +24,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Selection?.textPosition?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

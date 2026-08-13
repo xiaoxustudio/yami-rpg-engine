@@ -61,7 +61,7 @@ export const PresetObject = {
 	sceneIdWrite: null as unknown as (event: Event & { value?: string }) => void,
 	listOpen: null as unknown as (event: Event) => void,
 	searcherKeydown: null as unknown as (event: KeyboardEvent) => void,
-	searcherInput: null as unknown as (event: InputEvent) => void,
+	searcherInput: null as unknown as (event: { value?: string }) => void,
 	confirm: null as unknown as (event?: Event) => void
 };
 
@@ -87,10 +87,7 @@ PresetObject.initialize = function (this: typeof PresetObject) {
 
 	// scene write/list open 经 Vue 模板转发（PresetObject.vue @write/@open → PresetObject.*）
 	this.searcher.on('keydown', this.searcherKeydown);
-	this.searcher.on('input', this.searcherInput);
-	this.searcher.on('compositionend', this.searcherInput);
 	$('#presetObject').addEventListener('closed', this.windowClosed);
-	$('#presetObject-confirm').addEventListener('click', this.confirm);
 };
 
 PresetObject.open = function (this: typeof PresetObject, target: PresetTarget) {
@@ -199,11 +196,8 @@ PresetObject.searcherKeydown = function (this: typeof PresetObject, event: Keybo
 	}
 };
 
-PresetObject.searcherInput = function (this: typeof PresetObject, event: InputEvent) {
-	if (event.inputType === 'insertCompositionText') {
-		return;
-	}
-	const text = this.searcher.value;
+PresetObject.searcherInput = function (this: typeof PresetObject, event: { value?: string }) {
+	const text = event.value ?? '';
 	const list = PresetObject.list;
 	list.searchNodes(text);
 	const elements = list.elements as Array<{ item: PresetListItem }> & { count: number };

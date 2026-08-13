@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="presetObject" mode="center">
+		<WindowFrame id="presetObject" mode="center" @confirm="onConfirm">
 		<template #title><TitleBar>Object<div class="close"></div></TitleBar></template>
 		
 			<CustomBox
@@ -9,7 +9,7 @@
 				@write="onSceneIdWrite"
 			/>
 			<TreeList id="presetObject-list" @open="onListOpen" />
-			<TextBox id="presetObject-searcher" name="search" />
+			<TextBox id="presetObject-searcher" name="search" @input="onSearcherInput" @compositionend="onSearcherInput" />
 		
 	</WindowFrame>
 </template>
@@ -33,6 +33,16 @@ const onSceneIdWrite = (value: unknown) => {
 };
 const onListOpen = (event: Event & { value?: unknown }) => {
 	PresetObject?.listOpen?.(event);
+};
+const onSearcherInput = (value: string | Event) => {
+	const text =
+		typeof value === 'string'
+			? value
+			: ((value.target as HTMLInputElement | null)?.value ?? '');
+	PresetObject?.searcherInput?.({ value: text });
+};
+const onConfirm = () => {
+	PresetObject?.confirm?.();
 };
 
 onMounted(() => {

@@ -54,8 +54,6 @@ Command.cases.script = new CommandSchema({
 		}
 	},
 	onInitialize() {
-		$('#script-confirm')?.on('click', () => this.save!());
-
 		$('#script')?.on('close', (event: Event) => {
 			if (this.changed) {
 				event.preventDefault();

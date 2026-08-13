@@ -26,9 +26,6 @@ import { Inspector } from './inspector.ts';
 		if (!$('#animSoundFrame-sound')) return;
 		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('input', this.paramInput)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			(el as HTMLElement).on('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
@@ -101,10 +98,16 @@ import { Inspector } from './inspector.ts';
 	};
 
 	AnimSoundFrame.paramInput = function (this: typeof AnimSoundFrame, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^animSoundFrame-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		AnimSoundFrame.update!(
 			AnimSoundFrame.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

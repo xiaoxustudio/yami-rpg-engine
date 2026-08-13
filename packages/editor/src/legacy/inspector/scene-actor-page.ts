@@ -69,9 +69,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			'#sceneActor-angle-slider, #sceneActor-scale-slider'
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('input', this.paramInput!)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('focus', Inspector.inputFocus)
 		);
 		(elements as unknown as HTMLElement[]).forEach((el) =>
@@ -82,10 +79,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		);
 		(sliders as unknown as HTMLElement[]).forEach((el) =>
 			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		$('#sceneActor-type')?.addEventListener(
-			'write',
-			this.typeWrite! as unknown as EventListener
 		);
 		document
 			.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
@@ -225,10 +218,16 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	}.bind(SceneActor);
 
 	SceneActor.paramInput = function (this: typeof SceneActor, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^sceneActor-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		SceneActor.update!(
 			SceneActor.target as SceneActorData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

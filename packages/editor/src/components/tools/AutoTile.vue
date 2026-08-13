@@ -1,14 +1,14 @@
 <template>
-	<WindowFrame id="autoTile">
+	<WindowFrame id="autoTile" @confirm="onConfirm">
 		<template #title><TitleBar>Auto Tile<div class="close" /></TitleBar></template>
 		
 			<div class="field-set" id="autoTile-general-fieldset">
 				<div class="legend">General</div>
 				<div class="grid-box" id="autoTile-general-grid">
 					<div class="text">Image</div
-					><CustomBox id="autoTile-image" type="file" filter="image" />
-					<div class="text">Offset X</div><NumberBox id="autoTile-x" min="0" max="255" />
-					<div class="text">Offset Y</div><NumberBox id="autoTile-y" min="0" max="255" />
+					><CustomBox id="autoTile-image" type="file" filter="image" @input="onImageInput" />
+					<div class="text">Offset X</div><NumberBox id="autoTile-x" min="0" max="255" @input="onOffsetXInput" />
+					<div class="text">Offset Y</div><NumberBox id="autoTile-y" min="0" max="255" @input="onOffsetYInput" />
 				</div>
 			</div>
 			<div class="field-set input pad" id="autoTile-templates-fieldset">
@@ -24,11 +24,11 @@
 			</div>
 			<div class="field-set input pad" id="autoTile-nodes-fieldset">
 				<div class="legend">Tiles</div>
-				<CommonList id="autoTile-nodes" />
+				<CommonList id="autoTile-nodes" @write="onNodesWrite" @popup="onNodesPopup" />
 			</div>
 			<div class="field-set" id="autoTile-canvas-fieldset">
 				<div class="legend">View</div>
-				<canvas id="autoTile-canvas" width="128" height="128" />
+				<canvas id="autoTile-canvas" width="128" height="128" @click="onCanvasClick" />
 			</div>
 			<div class="field-set" id="autoTile-rule-fieldset">
 				<div class="legend">Neighbors</div>
@@ -78,7 +78,7 @@
 			</div>
 			<div class="field-set input pad" id="autoTile-frames-fieldset">
 				<div class="legend">Frames</div>
-				<CommonList id="autoTile-frames" />
+				<CommonList id="autoTile-frames" @write="onFramesWrite" @popup="onFramesPopup" />
 			</div>
 		
 	</WindowFrame>
@@ -113,6 +113,33 @@ const onTemplatesPopup = (event: PointerEvent & { value?: unknown }) => {
 };
 const onTemplatesChange = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesChange?.(event);
+};
+const onCanvasClick = () => {
+	AutoTile?.canvasClick?.();
+};
+const onImageInput = (value: unknown) => {
+	AutoTile?.imageInput?.({ value });
+};
+const onOffsetXInput = () => {
+	AutoTile?.offsetXInput?.();
+};
+const onOffsetYInput = () => {
+	AutoTile?.offsetYInput?.();
+};
+const onNodesWrite = (value: unknown) => {
+	AutoTile?.nodesWrite?.({ value });
+};
+const onNodesPopup = (value: unknown, clientX: number, clientY: number) => {
+	AutoTile?.nodesPopup?.({ value, clientX, clientY });
+};
+const onFramesWrite = (value: unknown) => {
+	AutoTile?.framesWrite?.({ value });
+};
+const onFramesPopup = (value: unknown, clientX: number, clientY: number) => {
+	AutoTile?.framesPopup?.({ value, clientX, clientY });
+};
+const onConfirm = () => {
+	AutoTile?.confirm?.();
 };
 
 onMounted(() => {
