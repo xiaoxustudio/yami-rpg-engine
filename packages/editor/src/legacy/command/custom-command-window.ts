@@ -40,9 +40,7 @@ interface CustomCommandList {
 	saveSelection: (() => void) | null;
 	restoreSelection: (() => void) | null;
 	updateNodeElement: CustomCommandMethod;
-	addElementClass: CustomCommandMethod;
 	updateTextNode: CustomCommandMethod;
-	updateToggleStyle: (item: CustomCommandData) => void;
 	createEditIcon: CustomCommandMethod;
 	edit: (item: CustomCommandData) => void;
 	bind(getter: () => CustomCommandData[] | null): void;
@@ -185,9 +183,7 @@ function ensureDomBound() {
 	list.saveSelection = null as unknown as (...args: unknown[]) => void;
 	list.restoreSelection = null as unknown as (...args: unknown[]) => void;
 	list.updateNodeElement = Easing.list_updateNodeElement;
-	list.addElementClass = PluginManager.list_addElementClass as (...args: unknown[]) => void;
 	list.updateTextNode = PluginManager.list_updateTextNode as (...args: unknown[]) => void;
-	list.updateToggleStyle = PluginManager.list_updateToggleStyle as (...args: unknown[]) => void;
 	list.createEditIcon = PluginManager.list_createEditIcon as (...args: unknown[]) => void;
 	list.edit = CustomCommand.list_edit as (...args: unknown[]) => void;
 	list.insert = CustomCommand.list_insert as (...args: unknown[]) => void;
@@ -203,11 +199,10 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 	if (!CustomCommand.list) return;
 	const { list } = this;
 	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).creators.push(list.updateToggleStyle);
-	getListConfig(list).updaters.push(list.updateTextNode);
-	getListConfig(list).creators.push(list.createEditIcon);
+	getListConfig(list).updaters.push(list.updateTextNode as unknown as (item: unknown) => void);
+	getListConfig(list).creators.push(list.createEditIcon as unknown as (item: unknown) => void);
 
 	$('#command')?.addEventListener('close', this.windowClose!);
 	$('#command')?.addEventListener('closed', this.windowClosed!);
@@ -219,7 +214,6 @@ CustomCommand.initialize = function (this: CustomCommandShape): void {
 		.querySelectorAll('#command-alias, #command-keywords')
 		.forEach((el) => el.addEventListener('input', this.paramInput!));
 	on($('#command-confirm') as HTMLElement, 'click', this.confirm!);
-	on($('#command-apply') as HTMLElement, 'click', this.apply!);
 };
 
 CustomCommand.open = function (this: CustomCommandShape): void {
@@ -528,7 +522,7 @@ CustomCommand.list_toggle = function (
 ): void {
 	if (item) {
 		(item as CustomCommandData).enabled = !item.enabled;
-		this.updateToggleStyle(item);
+		this.update();
 		CustomCommand.changed = true;
 	}
 };

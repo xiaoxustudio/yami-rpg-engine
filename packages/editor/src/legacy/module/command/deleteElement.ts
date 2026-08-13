@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.deleteElement = new CommandSchema({
 	name: 'deleteElement',
 	onInitialize() {
-		$('#deleteElement-confirm').on('click', () => this.save!());
 		$('#deleteElement-operation').loadItems([
 			{ name: 'Delete Element', value: 'delete-element' },
 			{ name: 'Delete Children', value: 'delete-children' },

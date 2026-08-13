@@ -36,11 +36,14 @@ describe('getElementReader/getElementWriter 防御（回归保护）', () => {
 		expect(calls).toEqual([42]);
 	});
 
-	it('writer 对无 write 的元素 fallback 到 dataValue', () => {
+	it('writer 对无 write 的元素告警且不写入 dataValue', () => {
 		const el = document.createElement('div') as HTMLElement & { dataValue?: unknown };
 		el.id = 'prefix-suffix';
 		document.body.appendChild(el);
 		getElementWriter('prefix')('suffix', 42);
-		expect(el.dataValue).toBe(42);
+		expect(el.dataValue).toBeUndefined();
+		expect(console.warn).toHaveBeenCalledWith(
+			expect.stringContaining('element has no write()')
+		);
 	});
 });

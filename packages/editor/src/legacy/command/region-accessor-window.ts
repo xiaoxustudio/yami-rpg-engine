@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
@@ -31,8 +31,6 @@ RegionGetter.initialize = function (this: typeof RegionGetter) {
 	$('#regionGetter-type')
 		.enableHiddenMode()
 		.relate([{ case: 'by-id', targets: [$('#regionGetter-presetId')] }]);
-
-	$('#regionGetter-confirm').on('click', this.confirm);
 };
 
 RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
@@ -40,7 +38,7 @@ RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
 	Window.open!('regionGetter');
 
 	let presetId = PresetObject.getDefaultPresetId('region');
-	const region = target.read?.();
+	const region = target.read?.()!;
 	switch (region.type) {
 		case 'trigger':
 			break;

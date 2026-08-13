@@ -205,6 +205,7 @@ export const treeListStatics = {
 
 export interface TreeListApiOptions {
 	getMenuState?: () => string;
+	renderNodeExtras?: (item: TreeItem, container: HTMLElement) => void;
 }
 
 type NodeElement = HTMLElement & {
@@ -218,6 +219,7 @@ type NodeElement = HTMLElement & {
 	markIndent: number;
 	textIndent: number;
 	expanded: boolean;
+	extras?: HTMLElement | null;
 };
 
 type TreeItem = {
@@ -471,6 +473,13 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			for (const creator of getListConfig(this).creators) {
 				creator(item!);
 			}
+
+			if (typeof this.renderNodeExtras === 'function') {
+				const extras = document.createElement('div');
+				addClass(extras, 'tree-node-extras');
+				element.appendChild(extras);
+				element.extras = extras;
+			}
 		}
 
 		if (item!.expanded !== undefined) {
@@ -518,6 +527,10 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 
 		for (const updater of getListConfig(this).updaters) {
 			updater(item);
+		}
+
+		if (element.extras && typeof this.renderNodeExtras === 'function') {
+			this.renderNodeExtras(item!, element.extras);
 		}
 	},
 
@@ -1620,6 +1633,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 export function createTreeListApi(el: HTMLElement, options?: TreeListApiOptions): HTMLElement {
 	const list = el as HTMLElement & { [k: string]: any };
 	const getMenuState = options?.getMenuState ?? (() => 'closed');
+	list.renderNodeExtras = options?.renderNodeExtras;
 	attachApi(list, { getMenuState });
 
 	for (const name of Object.keys(treeListPrototype)) {

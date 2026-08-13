@@ -6,7 +6,6 @@ import {
 	addClass,
 	addSetScrollMethod,
 	clear,
-	dispatchChangeEvent,
 	hasClass,
 	hide,
 	on,
@@ -60,7 +59,7 @@ type AnimationFrame = {
 	easingId?: string;
 	x?: number;
 	y?: number;
-	key?: HTMLElement & { start?: number; length?: number; easing?: boolean };
+	key?: HTMLElement & { easing?: boolean };
 	[k: string]: unknown;
 };
 type AnimationLayer = {
@@ -77,7 +76,6 @@ type AnimationMotion = {
 	dirCases: { layers: AnimationLayer[]; [k: string]: unknown }[];
 	loop?: boolean | null;
 	element: HTMLElement & {
-		enumId?: string;
 		textNode: Text;
 		loopIcon?: HTMLElement;
 		loop?: boolean | null;
@@ -484,9 +482,7 @@ Animation.list.updateHead = null as unknown as (...args: unknown[]) => any;
 Animation.list.createIcon = null as unknown as (...args: unknown[]) => any;
 Animation.list.createText = null as unknown as (...args: unknown[]) => any;
 Animation.list.updateText = null;
-Animation.list.createLoopIcon = null;
-Animation.list.updateLoopIcon = null;
-getListConfig(Animation.list).onDelete = null;
+getListConfig(Animation.list).onDelete = null as unknown as (item: unknown) => void;
 
 Animation.layerList.update = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.create = null as unknown as (...args: unknown[]) => any;
@@ -495,8 +491,8 @@ Animation.layerList.paste = null as unknown as (...args: unknown[]) => any;
 Animation.layerList.delete = null as unknown as (...args: unknown[]) => any;
 // ESM 求值顺序错：scene-window.js:338-339 占位赋 null 早跑，scene-list.js:156/177 真定义晚跑 （仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
 Animation.layerList.createIcon = null as unknown as (...args: unknown[]) => any;
-// ESM 求值顺序错：scene-window.js:353 占位赋 null 早跑，scene-list.js:477 真定义晚跑（仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。删此 4 赋值，改在 Animation.initialize 钩子内（503 段）直接用 Scene.list.* （真定义已跑后）
-getListConfig(Animation.layerList).onDelete = null;
+// ESM 求值顺序错：scene-window.js:353 占位赋 null 早跑，scene-list.js:477 真定义晚跑（仅被 module-init.js:164 求值，不在 scene-window.js 链里）——此处模块顶层赋值会固化拿 null。改在 Animation.initialize 钩子内（initialize 段）补赋真函数，此时 scene-list.js 已求值
+getListConfig(Animation.layerList).onDelete = null as unknown as (item: unknown) => void;
 
 Animation.timeline.head = $('#animation-timeline-head');
 Animation.timeline.updateHead = null as unknown as (...args: unknown[]) => any;
@@ -716,19 +712,12 @@ Animation.initialize = function (this: typeof Animation) {
 	getListConfig(list).removable = true;
 	list.bind(() => this.motions);
 	getListConfig(list).updaters.push(list.updateText);
-	getListConfig(list).creators.push(list.createLoopIcon);
-	getListConfig(list).creators.push(list.updateLoopIcon);
 
 	const { layerList } = this;
 	getListConfig(layerList).removable = true;
 	getListConfig(layerList).renamable = true;
 	layerList.bind(() => this.layers);
-	// 直接用 Scene.list.* 真定义（Animation.initialize 跑时 scene-list.js 已求值），不用 layerList.* ——后者在模块顶层被 scene-window.js:353 占位赋 null 固化，拿到 null
-	getListConfig(layerList).creators.push(Scene.list.createVisibilityIcon);
-	getListConfig(layerList).updaters.push(Scene.list.updateVisibilityIcon);
-	getListConfig(layerList).creators.push(Scene.list.createLockIcon);
-	getListConfig(layerList).updaters.push(Scene.list.updateLockIcon);
-	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 5282/5303 段 this.setRecursiveStates + 567/569/580/582 段 layerList.* 调用姿势不变
+	// 补赋递归状态方法（同根因：模块顶层赋值会固化拿 null，挪到 initialize 内赋真函数） 保留 567/569/580/582 段 layerList.* 调用姿势不变
 	layerList.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	layerList.setRecursiveStates = Scene.list.setRecursiveStates;
 
@@ -1986,10 +1975,7 @@ Animation.updateHead = function (this: typeof Animation) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild as HTMLElement);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 		const width = nRect.right - iRect.right;
 		if (head.width !== width) {
 			head.width = width;
@@ -3385,19 +3371,13 @@ Animation.createTimelines = (function IIFE() {
 						value: key
 					});
 				}
-				if (key.start !== start) {
-					key.start = start;
-					key.style.left = `${start * 16}px`;
-				}
-				if (key.length !== length) {
-					key.length = length;
-					if (length !== 1) {
-						addClass(key, 'long');
-						key.style.width = `${length * 16}px`;
-					} else {
-						removeClass(key, 'long');
-						key.style.width = '16px';
-					}
+				key.style.left = `${start * 16}px`;
+				if (length !== 1) {
+					addClass(key, 'long');
+					key.style.width = `${length * 16}px`;
+				} else {
+					removeClass(key, 'long');
+					key.style.width = '16px';
 				}
 				if (key.easing !== easing) {
 					key.easing = easing;
@@ -5278,43 +5258,6 @@ Animation.layerListPointerdown = function (this: typeof Animation, event: Pointe
 						Animation.openLayer!(element.item);
 					}
 					break;
-				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode as HTMLElement & { item: AnimationLayer };
-					const { hidden } = item;
-					const backups = this.setRecursiveStates!(item, 'hidden', !hidden);
-					this.update!();
-					dispatchChangeEvent(
-						this as unknown as { dispatchEvent(event: Event): boolean }
-					);
-					Animation.requestRendering!();
-					Animation.history.save({
-						type: 'animation-layer-hidden',
-						motion: Animation.motion,
-						direction: Animation.direction,
-						item: item,
-						oldValues: backups,
-						newValue: !hidden
-					});
-					break;
-				}
-				case 'LOCK-ICON': {
-					const { item } = element.parentNode as HTMLElement & { item: AnimationLayer };
-					const { locked } = item;
-					const backups = this.setRecursiveStates!(item, 'locked', !locked);
-					this.update!();
-					dispatchChangeEvent(
-						this as unknown as { dispatchEvent(event: Event): boolean }
-					);
-					Animation.history.save({
-						type: 'animation-layer-locked',
-						motion: Animation.motion,
-						direction: Animation.direction,
-						item: item,
-						oldValues: backups,
-						newValue: !locked
-					});
-					break;
-				}
 			}
 			break;
 		}
@@ -5976,10 +5919,7 @@ Animation.list.updateHead = function (this: typeof Animation) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild as HTMLElement);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 	}
 };
 
@@ -6001,36 +5941,10 @@ Animation.list.createText = function (this: typeof Animation, item: unknown) {
 // 列表 - 更新文本
 Animation.list.updateText = function (this: typeof Animation, item: AnimationMotion) {
 	const { element } = item;
-	if (element.enumId !== item.id) {
-		element.enumId = item.id;
-		const enumString = Enum.getString!(item.id);
-		element.textNode.textContent = enumString
-			? GameLocal.replace!(enumString.name)
-			: Command.parseUnlinkedId!(item.id);
-	}
-};
-
-// 列表 - 创建循环图标
-Animation.list.createLoopIcon = function (this: typeof Animation, item: AnimationMotion) {
-	const { element } = item;
-	const loopIcon = document.createElement('node-icon');
-	addClass(loopIcon, 'icon-loop');
-	loopIcon.textContent = '\uf112';
-	element.appendChild(loopIcon);
-	element.loopIcon = loopIcon;
-	element.loop = null;
-};
-
-// 列表 - 更新循环图标
-Animation.list.updateLoopIcon = function (this: typeof Animation, item: AnimationMotion) {
-	const { element } = item;
-	if (element.loopIcon !== undefined) {
-		const loop = item.loop;
-		if (element.loop !== loop) {
-			element.loop = loop;
-			loop ? show(element.loopIcon!) : hide(element.loopIcon!);
-		}
-	}
+	const enumString = Enum.getString!(item.id);
+	element.textNode.textContent = enumString
+		? GameLocal.replace!(enumString.name)
+		: Command.parseUnlinkedId!(item.id);
 };
 
 // 列表 - 在删除数据时回调
@@ -6143,7 +6057,7 @@ getListConfig(Animation.layerList).onDelete = function (
 	if (editor?.target === item) {
 		Inspector.close!();
 	}
-};
+} as (item: unknown) => void;
 
 // 时间轴 - 更新头部位置
 Animation.timeline.updateHead = function (this: typeof Animation) {
@@ -6153,10 +6067,7 @@ Animation.timeline.updateHead = function (this: typeof Animation) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild as HTMLElement);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 		const bRect = rect(Animation.outerTimelineList);
 		const padding = Math.max(bRect.left - iRect.right, 0);
 		if (head.padding !== padding) {

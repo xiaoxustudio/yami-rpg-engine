@@ -10,7 +10,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.stopEvent = new CommandSchema({
 	name: 'stopEvent',
 	onInitialize() {
-		$('#stopEvent-confirm').on('click', () => this.save!());
 		$('#stopEvent-type').loadItems([
 			{ name: 'Current', value: 'current' },
 			{ name: 'Global', value: 'global' },

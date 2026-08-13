@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
@@ -80,8 +80,6 @@ PositionGetter.initialize = function (this: typeof PositionGetter): void {
 		{ name: 'Random - Water', value: 'random-water' },
 		{ name: 'Random - Wall', value: 'random-wall' }
 	]);
-
-	$('#positionGetter-confirm').addEventListener('click', this.confirm!);
 };
 
 PositionGetter.open = function (this: PositionGetterShape, target: PositionGetterTarget): void {
@@ -96,7 +94,7 @@ PositionGetter.open = function (this: PositionGetterShape, target: PositionGette
 	let region = { type: 'trigger' };
 	let regionMode = 'center';
 	let objectId = PresetObject.getDefaultPresetId!('any');
-	const position = target.read?.();
+	const position = target.read?.()!;
 	switch (position.type) {
 		case 'absolute':
 			commonX = position.x!;

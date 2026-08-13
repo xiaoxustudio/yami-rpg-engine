@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="command" show-apply>
+	<WindowFrame id="command" show-apply @apply="onApply">
 		<template #title><TitleBar>Custom Command<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="command-list-fieldset">
@@ -7,6 +7,7 @@
 				<TreeList
 					id="command-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@open="onListOpen"
@@ -31,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { CustomCommand } from '@/command/custom-command-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -45,6 +46,18 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { enabled?: boolean };
+	const element = container.parentNode as HTMLElement | null;
+	element?.classList.add('plugin-item');
+	if (node.enabled) {
+		element?.classList.remove('weak');
+	} else {
+		element?.classList.add('weak');
+	}
+	return [];
+};
+
 const onListSelect = (event: Event & { value?: unknown }) => {
 	CustomCommand?.listSelect?.(event);
 };
@@ -56,6 +69,10 @@ const onListOpen = (event: Event & { value?: unknown }) => {
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	CustomCommand?.listChange?.(event);
+};
+
+const onApply = () => {
+	CustomCommand?.apply?.();
 };
 
 onMounted(() => {

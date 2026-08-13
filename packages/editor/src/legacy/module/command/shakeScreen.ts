@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.shakeScreen = new CommandSchema({
 	name: 'shakeScreen',
 	onInitialize() {
-		$('#shakeScreen-confirm').on('click', () => this.save!());
 		$('#shakeScreen-mode').loadItems([
 			{ name: 'Random', value: 'random' },
 			{ name: 'Horizontal', value: 'horizontal' },

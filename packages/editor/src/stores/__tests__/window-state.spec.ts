@@ -43,9 +43,9 @@ describe('useEnumStore（Enum 窗口状态桥接）', () => {
 		const store = getEnumStore();
 		store.state.mode = 'normal';
 		store.state.data = [{ id: 'e1' }];
-		store.state.idMap = { e1: { id: 'e1' } };
+		store.state.idMap = { e1: true };
 		expect(store.state.data[0].id).toBe('e1');
-		expect(store.state.idMap.e1.id).toBe('e1');
+		expect(store.state.idMap.e1).toBe(true);
 	});
 
 	it('状态键完整（9 项）', () => {
@@ -78,12 +78,12 @@ describe('useVariableStore（Variable 窗口状态桥接）', () => {
 		const store = getVariableStore();
 		store.state.target = { id: 'v1' };
 		store.state.data = [{ id: 'v1' }];
-		store.state.idMap = { v1: { id: 'v1' } };
+		store.state.idMap = { v1: true };
 		store.state.history = { save: () => undefined };
 		store.state.changed = true;
 		expect(store.state.target.id).toBe('v1');
 		expect(store.state.data[0].id).toBe('v1');
-		expect(store.state.idMap.v1.id).toBe('v1');
+		expect(store.state.idMap.v1).toBe(true);
 		expect(typeof store.state.history.save).toBe('function');
 		expect(store.state.changed).toBe(true);
 	});

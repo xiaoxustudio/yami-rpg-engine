@@ -1,12 +1,5 @@
 ﻿import { getListConfig } from '@ui-kit';
-import {
-	addClass,
-	dispatchChangeEvent,
-	removeClass,
-	show,
-	hide,
-	rect
-} from '@/util/element-utils.ts';
+import { addClass, dispatchChangeEvent, rect } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Codec } from '@/codec/codec.ts';
@@ -108,7 +101,7 @@ Scene.list.toggle = function (this: typeof Scene, item: SceneItem) {
 			newValue: !item.enabled
 		});
 		item.enabled = !item.enabled;
-		this.updateConditionIcon!(item);
+		this.update();
 		dispatchChangeEvent(this as unknown as HTMLElement);
 		Scene.requestRendering!();
 	}
@@ -216,15 +209,6 @@ Scene.list.setRecursiveStates = (function IIFE() {
 	};
 })();
 
-// 列表 - 更新项目类名
-Scene.list.updateItemClass = function (this: typeof Scene, item: SceneItem) {
-	if (item.class !== 'folder') {
-		addClass(item.element, 'reference');
-	} else {
-		removeClass(item.element, 'reference');
-	}
-};
-
 // 列表 - 更新文件夹状态
 Scene.list.updateFolderState = (function IIFE() {
 	let key: string;
@@ -236,14 +220,7 @@ Scene.list.updateFolderState = (function IIFE() {
 	};
 	const toggle = (folder: SceneItem) => {
 		folder[key] = !folder[key];
-		switch (key) {
-			case 'hidden':
-				list.updateVisibilityIcon!(folder);
-				break;
-			case 'locked':
-				list.updateLockIcon!(folder);
-				break;
-		}
+		list.update();
 		check(folder.parent);
 	};
 	const update = (folder: SceneItem) => {
@@ -380,159 +357,7 @@ Scene.list.updateHead = function (this: typeof Scene) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild as HTMLElement);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
-	}
-};
-
-// 列表 - 更新瓦片地图的类名
-Scene.list.updateTilemapClass = function (this: typeof Scene, item: SceneItem) {
-	if (item === Scene.tilemap) {
-		addClass(item.element, 'highlight');
-	}
-};
-
-// 列表 - 创建条件图标
-Scene.list.createConditionIcon = function (this: typeof Scene, item: SceneItem) {
-	if (item.conditions instanceof Array) {
-		const { element } = item;
-		const conditionIcon = document.createElement('node-icon');
-		addClass(conditionIcon, 'icon-conditional');
-		element.appendChild(conditionIcon);
-		element.conditionIcon = conditionIcon;
-		element.condition = '';
-	}
-};
-
-// 列表 - 更新条件图标
-Scene.list.updateConditionIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	if (element.conditionIcon !== undefined) {
-		const condition = item.enabled
-			? item.conditions.length !== 0
-				? 'conditional'
-				: 'none'
-			: 'absent';
-		if (element.condition !== condition) {
-			element.condition = condition;
-			const icon = element.conditionIcon;
-			switch (condition) {
-				case 'none':
-					removeClass(element, 'weak');
-					hide(icon);
-					break;
-				case 'conditional':
-					removeClass(element, 'weak');
-					icon.textContent = '?';
-					show(icon);
-					break;
-				case 'absent':
-					addClass(element, 'weak');
-					icon.textContent = '!';
-					show(icon);
-					break;
-			}
-		}
-	}
-};
-
-// 列表 - 创建事件图标
-Scene.list.createEventIcon = function (this: typeof Scene, item: SceneItem) {
-	if (item.events instanceof Array) {
-		const { element } = item;
-		const eventIcon = document.createElement('node-icon');
-		addClass(eventIcon, 'icon-eventEnabled');
-		eventIcon.textContent = 'E';
-		element.appendChild(eventIcon);
-		element.eventIcon = eventIcon;
-		element.eventEnabled = null;
-	}
-};
-
-// 列表 - 更新事件图标
-Scene.list.updateEventIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	if (element.eventIcon !== undefined) {
-		const eventEnabled = item.events.length !== 0;
-		if (element.eventEnabled !== eventEnabled) {
-			element.eventEnabled = eventEnabled;
-			eventEnabled ? show(element.eventIcon) : hide(element.eventIcon);
-		}
-	}
-};
-
-// 列表 - 创建脚本图标
-Scene.list.createScriptIcon = function (this: typeof Scene, item: SceneItem) {
-	if (item.scripts instanceof Array) {
-		const { element } = item;
-		const scriptIcon = document.createElement('node-icon');
-		addClass(scriptIcon, 'icon-scriptEnabled');
-		scriptIcon.textContent = '\uf121';
-		element.appendChild(scriptIcon);
-		element.scriptIcon = scriptIcon;
-		element.scriptEnabled = null;
-	}
-};
-
-// 列表 - 更新脚本图标
-Scene.list.updateScriptIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	if (element.scriptIcon !== undefined) {
-		const scriptEnabled = item.scripts.length !== 0;
-		if (element.scriptEnabled !== scriptEnabled) {
-			element.scriptEnabled = scriptEnabled;
-			scriptEnabled ? show(element.scriptIcon) : hide(element.scriptIcon);
-		}
-	}
-};
-
-// 列表 - 创建可见性图标
-Scene.list.createVisibilityIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	const hiddenIcon = document.createElement('visibility-icon');
-	element.appendChild(hiddenIcon);
-	element.hiddenIcon = hiddenIcon;
-	element.hiddenState = null;
-};
-
-// 列表 - 更新可见性图标
-Scene.list.updateVisibilityIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	if (element.hiddenState !== item.hidden) {
-		const { hiddenIcon } = element;
-		if ((element.hiddenState = item.hidden)) {
-			hiddenIcon.textContent = '\uf070';
-			addClass(hiddenIcon, 'node-icon-highlight');
-		} else {
-			hiddenIcon.textContent = '\uf06e';
-			removeClass(hiddenIcon, 'node-icon-highlight');
-		}
-	}
-};
-
-// 列表 - 创建锁定图标
-Scene.list.createLockIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	const lockIcon = document.createElement('lock-icon');
-	element.appendChild(lockIcon);
-	element.lockIcon = lockIcon;
-	element.lockState = null;
-};
-
-// 列表 - 更新锁定图标
-Scene.list.updateLockIcon = function (this: typeof Scene, item: SceneItem) {
-	const { element } = item;
-	if (element.lockState !== item.locked) {
-		const { lockIcon } = element;
-		if ((element.lockState = item.locked)) {
-			lockIcon.textContent = '\uf023';
-			addClass(lockIcon, 'node-icon-highlight');
-		} else {
-			lockIcon.textContent = '\uf09c';
-			removeClass(lockIcon, 'node-icon-highlight');
-		}
+		head.style.left = `${left}px`;
 	}
 };
 
@@ -543,7 +368,7 @@ getListConfig(Scene.list).onCreate = function (this: typeof Scene, item: SceneIt
 	Scene.loadObjects!();
 	Scene.loadObjectContext!(item);
 	Scene.requestRendering!();
-};
+} as (item: unknown) => void;
 
 // 列表 - 在迁移数据时回调
 getListConfig(Scene.list).onRemove = function (this: typeof Scene) {
@@ -558,7 +383,7 @@ getListConfig(Scene.list).onDelete = function (this: typeof Scene, item: SceneIt
 	Scene.loadObjects!();
 	Scene.destroyObjectContext!(item);
 	Scene.requestRendering!();
-};
+} as (item: unknown) => void;
 
 // 列表 - 在恢复数据时回调
 getListConfig(Scene.list).onResume = function (this: typeof Scene, item: SceneItem) {
@@ -566,4 +391,4 @@ getListConfig(Scene.list).onResume = function (this: typeof Scene, item: SceneIt
 	Scene.loadObjects!();
 	Scene.reloadObjectContext!(item);
 	Scene.requestRendering!();
-};
+} as (item: unknown) => void;

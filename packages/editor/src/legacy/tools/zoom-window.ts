@@ -13,7 +13,6 @@ export const Zoom = {
 
 Zoom.initialize = function (this: typeof Zoom) {
 	if (!$('#zoom-confirm')) return;
-	$('#zoom-confirm').on('click', this.confirm);
 };
 
 Zoom.open = function (this: typeof Zoom) {

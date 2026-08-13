@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="scriptCommand">
+		<WindowFrame id="scriptCommand" @confirm="onConfirm">
 		<template #title><TitleBar>Custom Command<div class="close"></div></TitleBar></template>
 		
 			<ParameterPane id="scriptCommand-parameter-pane">
@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -22,6 +23,10 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.custom?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

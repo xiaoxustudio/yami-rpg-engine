@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveCamera = new CommandSchema({
 	name: 'moveCamera',
 	onInitialize() {
-		$('#moveCamera-confirm').on('click', () => this.save!());
 		$('#moveCamera-mode').loadItems([
 			{ name: 'Move to Position', value: 'position' },
 			{ name: 'Follow Actor', value: 'actor' }

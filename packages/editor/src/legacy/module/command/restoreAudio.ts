@@ -9,7 +9,6 @@ Command.cases.restoreAudio = new CommandSchema({
 	name: 'restoreAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#restoreAudio-confirm').on('click', () => this.save!());
 		$('#restoreAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

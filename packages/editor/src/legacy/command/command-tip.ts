@@ -34,7 +34,6 @@ type ListMethod = ((...args: any[]) => any) | null;
 
 interface CommandSuggestionList {
 	createIcon: (item: unknown) => unknown;
-	createComment: (item: unknown) => unknown;
 	searchNodesAlgorithm: ListMethod;
 	updateCommandNames: ListMethod;
 	createCommandTip: ListMethod;
@@ -162,19 +161,6 @@ function bindListMethods() {
 		};
 	})() as unknown as (item: unknown) => unknown;
 
-	list.createComment = function (item: CommandSuggestionItem): void {
-		if (item.class !== 'folder' && !Local.language.startsWith('en')) {
-			const string = item.class === 'custom' ? (item.keywords ?? item.value) : item.value;
-			if (string) {
-				const comment = document.createElement('div');
-				addClass(comment, 'command-suggestion-comment');
-				addClass(comment, 'text');
-				comment.textContent = string.charAt(0).toUpperCase() + string.slice(1);
-				item.element!.appendChild(comment);
-			}
-		}
-	} as unknown as (item: unknown) => unknown;
-
 	list.searchNodesAlgorithm = function (
 		data: CommandSuggestionItem[],
 		keyword: RegExp,
@@ -290,9 +276,8 @@ CommandSuggestion.initialize = function (): void {
 	list.bind(() => this.data);
 
 	// 挂载列表项创建器/更新器 ——
-	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 comment 元素。
+	// 此前这些方法定义了却未挂进 creators/updaters，导致新版 DOM 丢失 class 与 tooltip 元素。
 	getListConfig(list).creators.push(list.createIcon!);
-	getListConfig(list).creators.push(list.createComment!);
 	getListConfig(list).creators.push(list.createCommandTip!);
 
 	this.data = File.get!({

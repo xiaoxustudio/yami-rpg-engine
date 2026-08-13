@@ -1,6 +1,6 @@
 <template>
 	<!-- 匹配 - 条件 -->
-	<WindowFrame id="switch-condition">
+	<WindowFrame id="switch-condition" @confirm="onConfirm">
 		<template #title><TitleBar>Condition<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { SwitchCondition } from '@/command/match-condition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import GamepadBox from '@app/components/common/GamepadBox.vue';
@@ -47,6 +48,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	SwitchCondition?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

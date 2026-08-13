@@ -14,7 +14,6 @@ Command.cases.removeAnimationComponent = new CommandSchema({
 		{ key: 'motion', default: '', required: true }
 	],
 	onInitialize() {
-		$('#removeAnimationComponent-confirm').on('click', () => this.save!());
 		// removeAnimationComponent-animationId write 经 Vue 模板转发（removeAnimationComponent.vue @write → Command.cases.removeAnimationComponent.writeHandler）
 	},
 	writeHandler(event: { value: string }) {

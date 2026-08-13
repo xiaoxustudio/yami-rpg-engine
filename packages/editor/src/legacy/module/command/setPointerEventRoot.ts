@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setPointerEventRoot = new CommandSchema({
 	name: 'setPointerEventRoot',
 	onInitialize() {
-		$('#setPointerEventRoot-confirm').on('click', () => this.save!());
 		$('#setPointerEventRoot-operation').loadItems([
 			{ name: 'Add Root Element', value: 'add' },
 			{ name: 'Remove Root Element', value: 'remove' },

@@ -2,7 +2,7 @@
 import { getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { addClass, getFocus, on, read, write } from '@/util/element-utils.ts';
+import { getFocus, on, read, write } from '@/util/element-utils.ts';
 import { Timer } from '@/util/timer.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from './data-object.ts';
@@ -45,13 +45,13 @@ type EasingMapInstance = Float32Array & {
 type EasingListNodeElementShape = {
 	item: EasingData;
 	textNode?: Text;
+	extras?: HTMLElement | null;
 	draggable: boolean;
 	appendChild(node: Node): void;
 };
 type EasingListItem = EasingData & {
 	element: HTMLElement & {
 		textNode: Text;
-		keyTextNode: HTMLElement & { key?: string };
 	} & Record<string, unknown>;
 	parent: { children: EasingListItem[] };
 };
@@ -78,7 +78,7 @@ export const Easing = {
 				addNodeTo: (data: EasingData, dItem?: unknown) => void;
 				deleteNode: (item: EasingData) => void;
 				select: (item: EasingData) => void;
-				updateKeyTextNode: (item: unknown) => void;
+				update: () => void;
 				saveSelection: () => void;
 				clear: () => void;
 		  })
@@ -158,10 +158,7 @@ export const Easing = {
 	list_restoreSelection: null as unknown as () => void,
 	list_updateNodeElement: null as unknown as (element: EasingListNodeElementShape) => void,
 	list_updateItemName: null as unknown as (item: EasingListItem) => void,
-	list_addElementClass: null as unknown as (item: EasingListItem) => void,
 	list_updateTextNode: null as unknown as (item: EasingListItem) => void,
-	list_createKeyTextNode: null as unknown as (item: EasingListItem) => void,
-	list_updateKeyTextNode: null as unknown as (item: EasingListItem) => void,
 	state: null as string | null,
 	target: null as Record<string, unknown> | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
@@ -180,10 +177,7 @@ function ensureDomBound() {
 	list.restoreSelection = Easing.list_restoreSelection;
 	list.updateNodeElement = Easing.list_updateNodeElement;
 	list.updateItemName = Easing.list_updateItemName as (item: unknown) => unknown;
-	list.addElementClass = Easing.list_addElementClass;
 	list.updateTextNode = Easing.list_updateTextNode;
-	list.createKeyTextNode = Easing.list_createKeyTextNode;
-	list.updateKeyTextNode = Easing.list_updateKeyTextNode;
 }
 
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
@@ -195,12 +189,10 @@ Easing.initialize = () => {
 
 	const { list } = Easing;
 	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => Easing.data);
-	getListConfig(list).creators.push(list.addElementClass);
 	getListConfig(list).updaters.push(list.updateTextNode);
-	getListConfig(list).creators.push(list.createKeyTextNode);
-	getListConfig(list).updaters.push(list.updateKeyTextNode);
 
 	$('#easing-mode').loadItems([
 		{ name: 'Use 2 Points', value: 2 },
@@ -458,7 +450,7 @@ Easing.setEasingKey = function (this: typeof Easing, item: EasingData) {
 	SetKey.open!(item.key, (key: string) => {
 		item.key = key;
 		this.changed = true;
-		this.list!.updateKeyTextNode(item);
+		this.list!.update();
 	});
 };
 
@@ -1357,6 +1349,7 @@ Easing.list_updateNodeElement = function (
 	this: HTMLElement & {
 		creators: Array<(item: unknown) => unknown>;
 		updaters: Array<(item: unknown) => unknown>;
+		renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
 	},
 	element: EasingListNodeElementShape
 ) {
@@ -1371,20 +1364,27 @@ Easing.list_updateNodeElement = function (
 		for (const creator of this.creators) {
 			creator(item);
 		}
+
+		if (typeof this.renderNodeExtras === 'function') {
+			const extras = document.createElement('div');
+			extras.classList.add('tree-node-extras');
+			element.appendChild(extras);
+			element.extras = extras;
+		}
 	}
 
 	for (const updater of this.updaters) {
 		updater(item);
 	}
+
+	if (element.extras && typeof this.renderNodeExtras === 'function') {
+		this.renderNodeExtras(item, element.extras);
+	}
 };
 
 Easing.list_updateItemName = function (this: HTMLElement, item: EasingListItem) {
 	this.updateTextNode(item);
-	this.updateKeyTextNode(item);
-};
-
-Easing.list_addElementClass = function (this: HTMLElement, item: EasingListItem) {
-	addClass(item.element, 'plain');
+	this.update();
 };
 
 Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) {
@@ -1397,23 +1397,5 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) 
 	const text = `${sn}:${item.name}`;
 	if (textNode.nodeValue !== text) {
 		textNode.nodeValue = text;
-	}
-};
-
-Easing.list_createKeyTextNode = function (this: HTMLElement, item: EasingListItem) {
-	const keyTextNode = document.createElement('div') as HTMLElement & { key?: string };
-	keyTextNode.key = '';
-	addClass(keyTextNode, 'variable-init-text');
-	addClass(keyTextNode, 'text');
-	item.element.appendChild(keyTextNode);
-	item.element.keyTextNode = keyTextNode;
-};
-
-Easing.list_updateKeyTextNode = function (this: HTMLElement, item: EasingListItem) {
-	const keyTextNode = item.element.keyTextNode;
-	const key = item.key;
-	if (keyTextNode.key !== key) {
-		keyTextNode.key = key;
-		keyTextNode.textContent = ' = ' + key;
 	}
 };

@@ -16,7 +16,6 @@ Command.cases.setPan = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setPan-confirm').on('click', () => this.save!());
 		$('#setPan-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

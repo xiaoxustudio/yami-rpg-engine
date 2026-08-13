@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
 	onInitialize() {
-		$('#tintImage-confirm').on('click', () => this.save!());
 		$('#tintImage-mode').loadItems([
 			{ name: 'Full', value: 'full' },
 			{ name: 'RGB', value: 'rgb' },

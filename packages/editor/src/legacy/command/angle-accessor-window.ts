@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
@@ -43,8 +43,6 @@ AngleGetter.initialize = function (this: typeof AngleGetter) {
 				targets: [$('#angleGetter-common-degrees')]
 			}
 		]);
-
-	$('#angleGetter-confirm').on('click', this.confirm);
 };
 
 AngleGetter.open = function (this: typeof AngleGetter, target: AngleTarget) {

@@ -47,7 +47,7 @@ TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget
 
 	let presetId = PresetObject.getDefaultPresetId('tilemap');
 	let variable = { type: 'local', key: '' };
-	const tilemap = target.read?.();
+	const tilemap = target.read?.()!;
 	switch (tilemap.type) {
 		case 'trigger':
 			break;

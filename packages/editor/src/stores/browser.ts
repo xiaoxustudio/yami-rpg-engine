@@ -49,7 +49,7 @@ export interface FileBrowserInstance {
 	directory?: string | null;
 	page?: HTMLElement;
 	searcher?: HTMLElement & { addKeydownFilter?(): void };
-	head?: HTMLElement & { searcher?: HTMLElement; left?: number; padding?: number };
+	head?: HTMLElement & { searcher?: HTMLElement };
 	nav?: {
 		resize?(): void;
 		load?(...folders: unknown[]): void;

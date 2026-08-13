@@ -23,7 +23,6 @@ type PlayAnimationCommandData = {
 Command.cases.playAnimation = new CommandSchema({
 	name: 'playAnimation',
 	onInitialize() {
-		$('#playAnimation-confirm').on('click', () => this.save!());
 		$('#playAnimation-mode').loadItems([
 			{ name: 'Position', value: 'position' },
 			{ name: 'Actor', value: 'actor' }

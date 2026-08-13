@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setInventory = new CommandSchema({
 	name: 'setInventory',
 	onInitialize() {
-		$('#setInventory-confirm').on('click', () => this.save!());
 		$('#setInventory-operation').loadItems([
 			{ name: 'Increase Money', value: 'increase-money' },
 			{ name: 'Decrease Money', value: 'decrease-money' },

@@ -9,7 +9,6 @@ Command.cases.stopAudio = new CommandSchema({
 	name: 'stopAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#stopAudio-confirm').on('click', () => this.save!());
 		$('#stopAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

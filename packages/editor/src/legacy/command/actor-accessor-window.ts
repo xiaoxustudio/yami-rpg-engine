@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -41,8 +41,6 @@ ActorGetter.initialize = function (this: ActorGetterShape) {
 			{ case: 'by-id', targets: [$('#actorGetter-presetId')] },
 			{ case: 'variable', targets: [$('#actorGetter-variable')] }
 		]);
-
-	$('#actorGetter-confirm').on('click', this.confirm);
 };
 
 ActorGetter.open = function (this: ActorGetterShape, target: AccessorTarget) {

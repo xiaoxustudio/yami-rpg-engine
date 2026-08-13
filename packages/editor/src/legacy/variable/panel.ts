@@ -69,10 +69,9 @@ Variable.sortInput = function (event: Event & { value?: number }) {
 		item.value = read(Variable.inputs.boolean);
 		write(Variable.inputs.type, 'boolean');
 		Variable.list.updateIcon(item);
-		Variable.list.updateInitText(item);
 	}
 	item.sort = sort;
-	Variable.list.updateItemClass(item);
+	Variable.list.update();
 	Variable.changed = true;
 };
 
@@ -106,7 +105,7 @@ Variable.typeInput = function (event: Event & { value?: string }) {
 			break;
 	}
 	Variable.list.updateIcon(item);
-	Variable.list.updateInitText(item);
+	Variable.list.update();
 	Variable.changed = true;
 };
 
@@ -115,7 +114,7 @@ Variable.valueInput = function (this: HTMLElement, event: Event) {
 		const item = getVariableStore().state.selected!;
 		Variable.saveHistory(item, 'value', item.value);
 		item.value = read(this);
-		Variable.list.updateInitText(item);
+		Variable.list.update();
 		Variable.changed = true;
 	}
 };
@@ -125,7 +124,7 @@ Variable.noteInput = function (this: HTMLElement, event: Event) {
 		const item = getVariableStore().state.selected!;
 		Variable.saveHistory(item, 'note', item.note);
 		item.note = read(this);
-		Variable.list.updateNoteIcon(item);
+		Variable.list.update();
 		Variable.changed = true;
 	}
 };

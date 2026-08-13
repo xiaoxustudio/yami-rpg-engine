@@ -5,6 +5,7 @@ import { createTreeListApi } from './tree-api';
 interface Props {
 	id?: string;
 	padded?: boolean;
+	renderNodeExtras?: (item: unknown, container: HTMLElement) => void;
 }
 
 interface TreeListRootElement extends HTMLElement {
@@ -27,7 +28,9 @@ onMounted(() => {
 	const el = root.value;
 	if (!el) return;
 	if (props.padded) el.setAttribute('padded', '');
-	createTreeListApi(el);
+	createTreeListApi(el, {
+		renderNodeExtras: props.renderNodeExtras
+	});
 });
 
 onBeforeUnmount(() => {
@@ -88,6 +91,10 @@ onBeforeUnmount(() => {
 	text-indent: 0;
 	text-align: center;
 	pointer-events: none;
+}
+
+:global(:where(.tree-node-extras)) {
+	display: contents;
 }
 
 :global(:where(.drag-and-drop-hint)) {

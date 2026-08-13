@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.gameData = new CommandSchema({
 	name: 'gameData',
 	onInitialize() {
-		$('#gameData-confirm').on('click', () => this.save!());
 		$('#gameData-operation').loadItems([
 			{ name: 'Save', value: 'save' },
 			{ name: 'Load', value: 'load' },

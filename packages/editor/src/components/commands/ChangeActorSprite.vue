@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="changeActorSprite">
+<WindowFrame id="changeActorSprite" @confirm="onConfirm">
 	<template #title><TitleBar>Change Actor Sprite<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -30,6 +30,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.changeActorSprite?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

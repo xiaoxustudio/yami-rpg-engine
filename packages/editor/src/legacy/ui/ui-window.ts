@@ -6,7 +6,6 @@ import {
 	addClass,
 	addScrollbars,
 	dispatchChangeEvent,
-	removeClass,
 	hasClass,
 	show,
 	hide,
@@ -62,7 +61,7 @@ interface UIControlPoints {
 interface UIShape {
 	state: string;
 	page: HTMLElement;
-	head: HTMLElement & { left?: number };
+	head: HTMLElement;
 	body: HTMLElement;
 	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
 	history: History;
@@ -307,39 +306,15 @@ UI.list.cancelSearch = null;
 EventBus.once('editor_loaded', () => {
 	UI.list.restoreRecursiveStates = Scene.list.restoreRecursiveStates;
 	UI.list.setRecursiveStates = Scene.list.setRecursiveStates;
-	UI.list.updateItemClass = Scene.list.updateItemClass;
-	// 否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
-	getListConfig(UI.list).updaters.push(UI.list.updateItemClass);
+	// Scene.list.* 真定义（scene-list.ts）在 editor_loaded 时才确定，提前赋值会固化拿 null
 });
 UI.list.createIcon = null;
 UI.list.updateIcon = null;
 UI.list.updateHead = null;
-UI.list.createConditionIcon = null;
-UI.list.updateConditionIcon = null;
-EventBus.once('editor_loaded', () => {
-	UI.list.createEventIcon = Scene.list.createEventIcon;
-	UI.list.updateEventIcon = Scene.list.updateEventIcon;
-	UI.list.createScriptIcon = Scene.list.createScriptIcon;
-	UI.list.updateScriptIcon = Scene.list.updateScriptIcon;
-	UI.list.createVisibilityIcon = Scene.list.createVisibilityIcon;
-	UI.list.updateVisibilityIcon = Scene.list.updateVisibilityIcon;
-	UI.list.createLockIcon = Scene.list.createLockIcon;
-	UI.list.updateLockIcon = Scene.list.updateLockIcon;
-	// 上面 8 个方法是从 Scene.list 复制而来，赋值完成后才能往 creators/updaters 推；否则 UI.initialize 早跑时会推入 undefined，updateNodeElement 调 undefined(item) 炸
-	const { list } = UI;
-	getListConfig(list).creators.push(list.createEventIcon);
-	getListConfig(list).creators.push(list.updateEventIcon);
-	getListConfig(list).creators.push(list.createScriptIcon);
-	getListConfig(list).creators.push(list.updateScriptIcon);
-	getListConfig(list).creators.push(list.createVisibilityIcon);
-	getListConfig(list).updaters.push(list.updateVisibilityIcon);
-	getListConfig(list).creators.push(list.createLockIcon);
-	getListConfig(list).updaters.push(list.updateLockIcon);
-});
-getListConfig(UI.list).onCreate = null;
-getListConfig(UI.list).onRemove = null;
-getListConfig(UI.list).onDelete = null;
-getListConfig(UI.list).onResume = null;
+getListConfig(UI.list).onCreate = null as unknown as (item: unknown) => void;
+getListConfig(UI.list).onRemove = null as unknown as (item: unknown) => void;
+getListConfig(UI.list).onDelete = null as unknown as (item: unknown) => void;
+getListConfig(UI.list).onResume = null as unknown as (item: unknown) => void;
 
 UI.initialize = function (this: UIShape) {
 	this.page = $('#ui');
@@ -486,10 +461,6 @@ UI.initialize = function (this: UIShape) {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.nodes);
-	// 其 updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
-	getListConfig(list).creators.push(list.createConditionIcon);
-	getListConfig(list).creators.push(list.updateConditionIcon);
-	// 其 creators/updaters.push 已挪进 EventBus.once('editor_loaded') 回调，此处推入会拿到 undefined，updateNodeElement 调 undefined(item) 会炸
 
 	History.processors['ui-object-create'] = (
 		operation: string,
@@ -524,7 +495,7 @@ UI.initialize = function (this: UIShape) {
 		} else {
 			item.enabled = newValue;
 		}
-		list.updateConditionIcon(item);
+		list.update();
 		UI.planToSave!();
 	};
 	History.processors['ui-object-hidden'] = (
@@ -1541,10 +1512,7 @@ UI.updateHead = function (this: UIShape) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 		// 调整居中组件的位置 const width = nRect.right - iRect.right if (head.width !== width) { head.width = width const [start, center, end] = head.children end.style.marginLeft = '0' const sRect = start.rect() const cRect = center.rect() const eRect = end.rect() const spacing = eRect.left - sRect.right - cRect.width const difference = sRect.right - nRect.left - eRect.width const margin = Math.min(spacing, difference) end.style.marginLeft = `${margin}px` }
 	}
 };
@@ -2929,49 +2897,6 @@ UI.listKeydown = function (this: UIShape, event: KeyboardEvent) {
 
 UI.listPointerdown = function (this: UIShape, event: PointerEvent) {
 	switch (event.button) {
-		case 0: {
-			const element = event.target as HTMLElement;
-			switch (element.tagName) {
-				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode as unknown as { item: UINodeShape };
-					const { instance, hidden } = item;
-					const backups1 = this.setRecursiveStates!(item, 'hidden', !hidden);
-					const backups2 = this.setRecursiveStates!(instance, 'visible', hidden);
-					const length = Math.max(backups1.length, backups2.length);
-					for (let i = 0; i < length; i++) {
-						if (backups1[i] === backups2[i]) {
-							throw new Error('Failed to switch hidden state');
-						}
-					}
-					this.update!();
-					dispatchChangeEvent(this);
-					UI.requestRendering!();
-					UI.history.save({
-						type: 'ui-object-hidden',
-						item: item,
-						oldValues1: backups1,
-						oldValues2: backups2,
-						newValue: !hidden
-					});
-					break;
-				}
-				case 'LOCK-ICON': {
-					const { item } = element.parentNode as unknown as { item: UINodeShape };
-					const { locked } = item;
-					const backups = this.setRecursiveStates!(item, 'locked', !locked);
-					this.update!();
-					dispatchChangeEvent(this);
-					UI.history.save({
-						type: 'ui-object-locked',
-						item: item,
-						oldValues: backups,
-						newValue: !locked
-					});
-					break;
-				}
-			}
-			break;
-		}
 		case 3:
 			this.cancelSearch!();
 			break;
@@ -3297,7 +3222,7 @@ UI.list.toggle = function (this: UIShape, item: UINodeShape) {
 			newValue: !item.enabled
 		});
 		item.enabled = !item.enabled;
-		this.updateConditionIcon!(item);
+		this.update();
 		dispatchChangeEvent(this);
 	}
 };
@@ -3439,41 +3364,7 @@ UI.list.updateHead = function (this: UIShape) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
-	}
-};
-
-// 列表 - 创建条件图标
-UI.list.createConditionIcon = function (this: UIShape, item: UINodeShape) {
-	const { element } = item;
-	const conditionIcon = document.createElement('node-icon');
-	addClass(conditionIcon, 'icon-conditional');
-	element.appendChild(conditionIcon);
-	element.conditionIcon = conditionIcon;
-	element.condition = '';
-};
-
-// 列表 - 更新条件图标
-UI.list.updateConditionIcon = function (this: UIShape, item: UINodeShape) {
-	const { element, enabled } = item;
-	const condition = enabled ? 'none' : 'absent';
-	if (element.condition !== condition) {
-		element.condition = condition;
-		const icon = element.conditionIcon;
-		switch (condition) {
-			case 'none':
-				removeClass(element, 'weak');
-				hide(icon);
-				break;
-			case 'absent':
-				addClass(element, 'weak');
-				icon.textContent = '!';
-				show(icon);
-				break;
-		}
+		head.style.left = `${left}px`;
 	}
 };
 
@@ -3482,12 +3373,12 @@ getListConfig(UI.list).onCreate = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
-};
+} as (item: unknown) => void;
 
 // 列表 - 在迁移数据时回调
 getListConfig(UI.list).onRemove = function (this: UIShape, item: UINodeShape) {
 	UI.updateElement!(item);
-};
+} as (item: unknown) => void;
 
 // 列表 - 在删除数据时回调
 getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
@@ -3496,11 +3387,11 @@ getListConfig(UI.list).onDelete = function (this: UIShape, item: UINodeShape) {
 	UI.updateHover!();
 	UI.updateTarget!();
 	UI.requestRendering!();
-};
+} as (item: unknown) => void;
 
 // 列表 - 在恢复数据时回调
 getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.registerPreset!(item);
 	UI.loadElement!(item);
 	UI.updateElement!(item);
-};
+} as (item: unknown) => void;

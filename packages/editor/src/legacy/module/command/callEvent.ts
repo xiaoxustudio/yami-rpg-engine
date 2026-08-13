@@ -70,7 +70,6 @@ Command.cases.callEvent = new CommandSchema({
 	onInitialize() {
 		this.windowFrame = $('#callEvent');
 		this.gridBox = $('#callEvent').querySelector('.grid-box');
-		$('#callEvent-confirm').on('click', () => this.save!());
 
 		$('#callEvent-type').loadItems([
 			{ name: 'Global', value: 'global' },

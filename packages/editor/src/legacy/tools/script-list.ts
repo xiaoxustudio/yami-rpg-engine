@@ -21,7 +21,7 @@ interface ScriptListItem {
 	id: string;
 	enabled?: boolean;
 	element?: HTMLElement & {
-		parentNode?: HTMLElement & { updateScriptIcon?: (item: ScriptListItem) => void };
+		parentNode?: HTMLElement & { update: () => void };
 	};
 	scripts?: unknown[];
 }
@@ -109,7 +109,7 @@ export class ScriptListInterface implements IScriptListInterface {
 			const element = item.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				list.updateScriptIcon!(item);
+				list.update();
 			}
 		}
 	}

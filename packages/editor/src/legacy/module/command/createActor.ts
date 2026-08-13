@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.createActor = new CommandSchema({
 	name: 'createActor',
 	onInitialize() {
-		$('#createActor-confirm').on('click', () => this.save!());
 		$('#createActor').on('open', function (event: Event) {
 			$('#createActor-teamId').loadItems(Data.createTeamItems!());
 		});

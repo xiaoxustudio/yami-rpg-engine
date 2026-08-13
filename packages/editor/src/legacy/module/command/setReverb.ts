@@ -17,7 +17,6 @@ Command.cases.setReverb = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setReverb-confirm').on('click', () => this.save!());
 		$('#setReverb-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

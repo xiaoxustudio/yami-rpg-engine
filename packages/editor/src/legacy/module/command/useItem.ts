@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.useItem = new CommandSchema({
 	name: 'useItem',
 	onInitialize() {
-		$('#useItem-confirm').on('click', () => this.save!());
 		$('#useItem-mode').loadItems([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Item ID', value: 'by-id' },

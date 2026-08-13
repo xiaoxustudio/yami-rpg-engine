@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setBoolean">
+	<WindowFrame id="setBoolean" @confirm="onConfirm">
 		<template #title><TitleBar>Set Boolean<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -42,6 +42,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.setBoolean?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

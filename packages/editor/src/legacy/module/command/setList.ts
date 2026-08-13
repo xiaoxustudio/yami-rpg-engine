@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setList = new CommandSchema({
 	name: 'setList',
 	onInitialize() {
-		$('#setList-confirm').on('click', () => this.save!());
 		$('#setList-operation').loadItems([
 			{ name: 'Set to Empty', value: 'set-empty' },
 			{ name: 'Set Numbers', value: 'set-numbers' },

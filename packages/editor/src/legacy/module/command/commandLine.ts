@@ -35,7 +35,6 @@ Command.cases.commandLine = new CommandSchema({
 				}
 			]);
 		write($('#commandLine-type'), 'get');
-		$('#commandLine-confirm').on('click', () => this.save!());
 	},
 	customParse({ type = 'get', key = '', value = '', variable = { type: 'local', key: '' } }) {
 		const head = [

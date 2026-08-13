@@ -44,15 +44,11 @@ Variable.open = function (this: typeof Variable, target: unknown = null) {
 };
 
 Variable.undo = function (this: typeof Variable) {
-	if (this.history.canUndo()) {
-		this.history.restore('undo');
-	}
+	getVariableStore().undo();
 };
 
 Variable.redo = function (this: typeof Variable) {
-	if (this.history.canRedo()) {
-		this.history.restore('redo');
-	}
+	getVariableStore().redo();
 };
 
 Variable.confirm = function (this: typeof Variable, event?: Event) {

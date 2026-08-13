@@ -16,7 +16,6 @@ Command.cases.setAngle = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAngle-confirm').on('click', () => this.save!());
 		$('#setAngle-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

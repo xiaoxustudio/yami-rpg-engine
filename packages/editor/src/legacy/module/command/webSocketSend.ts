@@ -10,7 +10,6 @@ Command.cases.webSocketSend = new CommandSchema({
 	onInitialize() {
 		write($('#webSocketSend-id'), '');
 		write($('#webSocketSend-data'), '');
-		$('#webSocketSend-confirm').on('click', () => this.save!());
 	},
 	customParse({ id = '', data = '' }) {
 		return [

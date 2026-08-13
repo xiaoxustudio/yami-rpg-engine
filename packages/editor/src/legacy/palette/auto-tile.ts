@@ -135,9 +135,6 @@ function ensureDomBound() {
 	templateList.updateItemName = Team.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
-	templateList.addElementClass = Easing.list_addElementClass as unknown as (
-		...args: unknown[]
-	) => unknown;
 	templateList.updateTextNode = Easing.list_updateTextNode as unknown as (
 		...args: unknown[]
 	) => unknown;
@@ -151,9 +148,9 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 
 	const list = this.templateList;
 	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.templates);
-	getListConfig(list).creators.push(list.addElementClass);
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	window.addEventListener('dprchange', this.dprchange);

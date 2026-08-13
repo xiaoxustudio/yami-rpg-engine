@@ -9,7 +9,6 @@ Command.cases.saveAudio = new CommandSchema({
 	name: 'saveAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#saveAudio-confirm').on('click', () => this.save!());
 		$('#saveAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

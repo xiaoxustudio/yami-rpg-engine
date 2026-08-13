@@ -6,6 +6,7 @@
 			<div class="field-set input pad" id="team-list-fieldset">
 				<TreeList
 					id="team-list"
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@change="onListChange"
@@ -16,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { Team } from '@/data/team-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -26,6 +27,35 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { id: string };
+	const nodes: VNode[] = [];
+	container.parentNode?.classList.add('plain');
+	const selection = Team.list?.read() as
+		| {
+				relations?: Record<string, number>;
+				collisions?: Record<string, number>;
+		  }
+		| null
+		| undefined;
+	let relationClass = '';
+	let relationText = '';
+	const relation = selection?.relations?.[node.id];
+	if (relation === 0) {
+		relationClass = ' enemy';
+		relationText = '\uf119';
+	} else if (relation === 1) {
+		relationClass = ' friend';
+		relationText = '\uf118';
+	}
+	nodes.push(h('div', { class: `team-relation-mark text${relationClass}` }, relationText));
+	const collision = selection?.collisions?.[node.id];
+	nodes.push(
+		h('div', { class: `team-collision-mark text${collision === 1 ? ' on' : ''}` }, '\uf066')
+	);
+	return nodes;
+};
 
 const onListSelect = (event: Event & { value?: unknown }) => {
 	Team?.listSelect?.(event);

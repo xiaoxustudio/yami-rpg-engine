@@ -19,7 +19,6 @@ type MoveActorData = {
 Command.cases.moveActor = new CommandSchema({
 	name: 'moveActor',
 	onInitialize() {
-		$('#moveActor-confirm').on('click', () => this.save!());
 		$('#moveActor-mode').loadItems([
 			{ name: 'Stop', value: 'stop' },
 			{ name: 'Keep', value: 'keep' },

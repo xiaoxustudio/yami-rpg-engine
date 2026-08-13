@@ -7,9 +7,7 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setTile = new CommandSchema({
 	name: 'setTile',
-	onInitialize() {
-		$('#setTile-confirm').on('click', () => this.save!());
-	},
+	onInitialize() {},
 	customParse({
 		tilemap,
 		tilemapX,

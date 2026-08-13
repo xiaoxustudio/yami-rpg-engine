@@ -1,6 +1,6 @@
 <template>
-	<!-- 变量窗口 -->
-	<WindowFrame id="variable" show-apply mode="center">
+	<!-- 鍙橀噺绐楀彛 -->
+	<WindowFrame id="variable" show-apply mode="center" @apply="onApply">
 		<template #title><TitleBar>Variable<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="variable-list-fieldset">
@@ -8,6 +8,7 @@
 				<TreeList
 					id="variable-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@record="onListRecord"
 					@popup="onListPopup"
@@ -128,8 +129,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { Variable } from '@/variable/variable.ts';
+import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -143,6 +145,44 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { class?: string; value?: unknown; sort?: number; note?: string };
+	const nodes: VNode[] = [];
+	const element = container.parentNode as HTMLElement | null;
+	element?.classList.add('variable-item');
+	if (node.class === 'folder') {
+		return nodes;
+	}
+	element?.classList.add('reference');
+	element?.classList.remove('shared-variable', 'temporary-variable');
+	switch (node.sort) {
+		case 1:
+			element?.classList.add('shared-variable');
+			break;
+		case 2:
+			element?.classList.add('temporary-variable');
+			break;
+	}
+	let initText = '';
+	switch (typeof node.value) {
+		case 'boolean':
+		case 'number':
+			initText = ` = ${node.value}`;
+			break;
+		case 'string':
+			initText = ` = "${Command.parseMultiLineString!(node.value)}"`;
+			break;
+		case 'object':
+			initText = '';
+			break;
+	}
+	nodes.push(h('div', { class: 'variable-init-text text' }, initText));
+	if (node.note) {
+		nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+	}
+	return nodes;
+};
 
 const onListSelect = (event: Event) => {
 	Variable?.listSelect?.(event);
@@ -186,6 +226,10 @@ const onTypeWrite = (value: number | string | boolean) => {
 		lastTypeWriteValue = value;
 		Variable?.typeWrite?.({ value });
 	}
+};
+
+const onApply = () => {
+	Variable?.apply?.();
 };
 
 onMounted(() => {

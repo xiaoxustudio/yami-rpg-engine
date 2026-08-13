@@ -29,7 +29,6 @@ type GetActorCommandData = {
 Command.cases.getActor = new CommandSchema({
 	name: 'getActor',
 	onInitialize() {
-		$('#getActor-confirm').on('click', () => this.save!());
 		$('#getActor-area').loadItems([
 			{ name: 'Square', value: 'square' },
 			{ name: 'Circle', value: 'circle' }

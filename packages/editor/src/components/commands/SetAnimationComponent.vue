@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="setAnimationComponent">
+<WindowFrame id="setAnimationComponent" @confirm="onConfirm">
 	<template #title><TitleBar>Set Animation Component<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -62,6 +62,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.setAnimationComponent?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

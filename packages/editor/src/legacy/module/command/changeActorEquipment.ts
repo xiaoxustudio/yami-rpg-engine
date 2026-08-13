@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorEquipment = new CommandSchema({
 	name: 'changeActorEquipment',
 	onInitialize() {
-		$('#changeActorEquipment-confirm').on('click', () => this.save!());
 		$('#changeActorEquipment-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },

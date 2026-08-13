@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="condition">
+	<WindowFrame id="condition" @confirm="onConfirm">
 		<template #title><TitleBar>Condition<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { ConditionListInterface } from '@/tools/condition-list.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -36,6 +37,10 @@ import TextArea from '@app/components/common/TextArea.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	ConditionListInterface?.target?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

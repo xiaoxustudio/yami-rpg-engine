@@ -12,7 +12,6 @@ Command.cases.controlDialog = new CommandSchema({
 		{ key: 'operation', default: 'pause' }
 	],
 	onInitialize() {
-		$('#controlDialog-confirm').on('click', () => this.save!());
 		$('#controlDialog-operation').loadItems([
 			{ name: 'Pause Printing', value: 'pause' },
 			{ name: 'Continue Printing', value: 'continue' },

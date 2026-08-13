@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorPortrait = new CommandSchema({
 	name: 'changeActorPortrait',
 	onInitialize() {
-		$('#changeActorPortrait-confirm').on('click', () => this.save!());
 		$('#changeActorPortrait-mode').loadItems([
 			{ name: 'Full Mode', value: 'full' },
 			{ name: 'Image Mode', value: 'portrait' },

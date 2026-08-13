@@ -14,10 +14,30 @@ withDefaults(defineProps<Props>(), {
 	applyLabel: 'Apply',
 	showApply: false
 });
+
+const dispatch = (type: string, event: MouseEvent): void => {
+	(event.currentTarget as HTMLElement).dispatchEvent(new Event(type, { bubbles: true }));
+};
 </script>
 
 <template>
-	<button :id="idPrefix + '-confirm'" name="confirm">{{ confirmLabel }}</button>
-	<button v-if="showApply" :id="idPrefix + '-apply'" name="apply">{{ applyLabel }}</button>
-	<button :id="idPrefix + '-cancel'" name="cancel">{{ cancelLabel }}</button>
+	<button
+		:id="idPrefix + '-confirm'"
+		name="confirm"
+		@click="dispatch('confirm', $event)"
+		>{{ confirmLabel }}</button
+	>
+	<button
+		v-if="showApply"
+		:id="idPrefix + '-apply'"
+		name="apply"
+		@click="dispatch('apply', $event)"
+		>{{ applyLabel }}</button
+	>
+	<button
+		:id="idPrefix + '-cancel'"
+		name="cancel"
+		@click="dispatch('cancel', $event)"
+		>{{ cancelLabel }}</button
+	>
 </template>

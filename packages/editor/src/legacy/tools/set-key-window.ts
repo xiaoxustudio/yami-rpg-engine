@@ -13,7 +13,6 @@ export const SetKey = {
 SetKey.initialize = function () {
 	if (!$('#setKey')) return;
 	$('#setKey').on('closed', this.windowClosed);
-	$('#setKey-confirm').on('click', this.confirm);
 };
 
 SetKey.open = function (key, callback) {

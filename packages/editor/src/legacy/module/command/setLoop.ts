@@ -12,7 +12,6 @@ Command.cases.setLoop = new CommandSchema({
 		{ key: 'loop', default: false }
 	],
 	onInitialize() {
-		$('#setLoop-confirm').on('click', () => this.save!());
 		$('#setLoop-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.forEach = new CommandSchema({
 	name: 'forEach',
 	onInitialize() {
-		$('#forEach-confirm').on('click', () => this.save!());
 		$('#forEach-data').loadItems([
 			{ name: 'List', value: 'list' },
 			{ name: 'Skill', value: 'skill' },

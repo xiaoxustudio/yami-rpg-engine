@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setEvent = new CommandSchema({
 	name: 'setEvent',
 	onInitialize() {
-		$('#setEvent-confirm').on('click', () => this.save!());
 		$('#setEvent-operation').loadItems([
 			{ name: 'Stop Propagation', value: 'stop-propagation' },
 			{ name: 'Pause and Save to Variable', value: 'pause' },

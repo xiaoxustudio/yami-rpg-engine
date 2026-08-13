@@ -41,7 +41,7 @@ TriggerGetter.open = function (this: typeof TriggerGetter, target: TriggerTarget
 	Window.open!('triggerGetter');
 
 	let variable = { type: 'local', key: '' };
-	const trigger = target.read?.();
+	const trigger = target.read?.()!;
 	switch (trigger.type) {
 		case 'trigger':
 		case 'latest':

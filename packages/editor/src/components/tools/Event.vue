@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="event" show-apply class="opaque">
+	<WindowFrame id="event" show-apply class="opaque" @apply="onApply">
 		<template #title><TitleBar id="event-title"
 			>Event<div class="maximize"></div>
 			<div class="close"></div>
@@ -7,7 +7,7 @@
 		
 			<div class="field-set input pad" id="event-open-fieldset">
 				<div class="legend">Event</div>
-				<TreeList id="event-open-list" />
+				<TreeList id="event-open-list" :node-extras="nodeExtras" />
 			</div>
 			<div class="field-set input pad" id="event-commands-fieldset">
 				<div class="legend">Content</div>
@@ -23,7 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
+import { Command } from '@/command/command-object.ts';
+import { EventEditor } from '@/command/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -34,6 +36,28 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { filter?: string; type?: string };
+	const element = container.parentNode as HTMLElement | null;
+	element?.classList.add('event-open-item');
+	if (node.filter === 'global') {
+		element?.classList.add('global-event');
+	} else {
+		element?.classList.add('local-event');
+	}
+	let typeName = '';
+	if (node.type !== 'common') {
+		typeName =
+			' : ' +
+			Command.removeTextTags!(Command.parseEventType!(node.filter + '-event', node.type!));
+	}
+	return [h('div', { class: 'event-init-text text' }, typeName)];
+};
+
+const onApply = () => {
+	EventEditor?.apply?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

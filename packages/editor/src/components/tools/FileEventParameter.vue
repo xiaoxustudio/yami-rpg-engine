@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="fileEvent-parameter">
+	<WindowFrame id="fileEvent-parameter" @confirm="onConfirm">
 		<template #title><TitleBar>Parameter<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@/inspector/inspector.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -23,6 +24,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Inspector?.fileEvent?.parameters?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

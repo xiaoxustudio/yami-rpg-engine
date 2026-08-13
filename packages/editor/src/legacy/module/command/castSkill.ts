@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.castSkill = new CommandSchema({
 	name: 'castSkill',
 	onInitialize() {
-		$('#castSkill-confirm').on('click', () => this.save!());
 		$('#castSkill-mode').loadItems([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Skill ID', value: 'by-id' },

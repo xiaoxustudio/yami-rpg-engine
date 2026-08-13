@@ -130,7 +130,7 @@ import { read, write } from '@/util/element-utils.ts';
 			case 'loop':
 				if (motion.loop !== value) {
 					motion.loop = value;
-					Animation.list.updateLoopIcon(motion);
+					Animation.list.update();
 				}
 				break;
 		}

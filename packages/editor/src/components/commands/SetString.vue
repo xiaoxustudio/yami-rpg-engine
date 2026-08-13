@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="setString">
+	<WindowFrame id="setString" @confirm="onConfirm">
 		<template #title><TitleBar>Set String<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -132,6 +132,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.setString?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

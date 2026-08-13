@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.translateActor = new CommandSchema({
 	name: 'translateActor',
 	onInitialize() {
-		$('#translateActor-confirm').on('click', () => this.save!());
 		$('#translateActor-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

@@ -46,21 +46,10 @@ interface SceneListExtensions {
 	createIcon: ((item: unknown) => unknown) | null;
 	updateIcon: ((item?: unknown) => unknown) | null;
 	updateHead: (() => unknown) | null;
-	createConditionIcon: ((item: SceneListItem) => unknown) | null;
-	updateConditionIcon: ((item: SceneListItem) => unknown) | null;
-	createEventIcon: ((item: SceneListItem) => unknown) | null;
-	updateEventIcon: ((item: SceneListItem) => unknown) | null;
-	createScriptIcon: ((item: SceneListItem) => unknown) | null;
-	updateScriptIcon: ((item: SceneListItem) => unknown) | null;
-	createVisibilityIcon: ((item: SceneListItem) => unknown) | null;
-	updateVisibilityIcon: ((item: SceneListItem) => unknown) | null;
-	createLockIcon: ((item: SceneListItem) => unknown) | null;
-	updateLockIcon: ((item: SceneListItem) => unknown) | null;
 	restoreRecursiveStates:
 		| ((item: SceneListItem, key: string, states: SceneListItem[]) => unknown)
 		| null;
 	setRecursiveStates: ((item: SceneListItem, key: string, state: boolean) => unknown) | null;
-	updateItemClass: ((item: SceneListItem) => unknown) | null;
 	onCreate: ((item: SceneListItem) => unknown) | null;
 	onRemove: ((item?: unknown) => unknown) | null;
 	onDelete: ((item: SceneListItem) => unknown) | null;
@@ -73,7 +62,7 @@ interface SceneListExtensions {
 interface SceneShape {
 	state: SceneState;
 	page: HTMLElement;
-	head: HTMLElement & { width?: number; left?: number };
+	head: HTMLElement & { width?: number };
 	body: HTMLElement & { hide(): HTMLElement; show(): HTMLElement };
 	info: HTMLElement;
 	screen: HTMLElement & { updateScrollbars: () => void };
@@ -442,27 +431,15 @@ Scene.list.createFolder = null as unknown as (...args: unknown[]) => any;
 Scene.list.createTilemapShortcutItems = null;
 Scene.list.restoreRecursiveStates = null as unknown as (...args: unknown[]) => any;
 Scene.list.setRecursiveStates = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateItemClass = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateFolderState = null;
 Scene.list.canSwitchState = null;
 Scene.list.createIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateIcon = null as unknown as (...args: unknown[]) => any;
 Scene.list.updateHead = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateTilemapClass = null;
-Scene.list.createConditionIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateConditionIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.createEventIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateEventIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.createScriptIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateScriptIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateVisibilityIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.createLockIcon = null as unknown as (...args: unknown[]) => any;
-Scene.list.updateLockIcon = null as unknown as (...args: unknown[]) => any;
-getListConfig(Scene.list).onCreate = null;
-getListConfig(Scene.list).onRemove = null;
-getListConfig(Scene.list).onDelete = null;
-getListConfig(Scene.list).onResume = null;
+getListConfig(Scene.list).onCreate = null as unknown as (item: unknown) => void;
+getListConfig(Scene.list).onRemove = null as unknown as (item: unknown) => void;
+getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
+getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
 	this.page = $('#scene');
@@ -607,20 +584,6 @@ Scene.initialize = function (this: SceneShape) {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.objects);
-	getListConfig(list).updaters.push(list.updateItemClass);
-	getListConfig(list).creators.push(
-		list.updateTilemapClass,
-		list.createConditionIcon,
-		list.updateConditionIcon,
-		list.createEventIcon
-	);
-	getListConfig(list).creators.push(list.updateEventIcon);
-	getListConfig(list).creators.push(list.createScriptIcon);
-	getListConfig(list).creators.push(list.updateScriptIcon);
-	getListConfig(list).creators.push(list.createVisibilityIcon);
-	getListConfig(list).updaters.push(list.updateVisibilityIcon);
-	getListConfig(list).creators.push(list.createLockIcon);
-	getListConfig(list).updaters.push(list.updateLockIcon);
 
 	History.processors['scene-folder-rename'] = (
 		operation: string,
@@ -673,7 +636,7 @@ Scene.initialize = function (this: SceneShape) {
 		} else {
 			item.enabled = newValue;
 		}
-		list.updateConditionIcon!(item);
+		list.update();
 		Scene.requestRendering!();
 		Scene.planToSave!();
 	};
@@ -1424,10 +1387,7 @@ Scene.updateHead = function (this: SceneShape) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 		const width = nRect.right - iRect.right;
 		if (head.width !== width) {
 			head.width = width;

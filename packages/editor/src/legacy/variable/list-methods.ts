@@ -1,16 +1,11 @@
-import { Command } from '@/command/command-object.ts';
 import { Data } from '@/data/data-object.ts';
-import { addClass, removeClass, show, hide } from '@/util/element-utils.ts';
+import { addClass } from '@/util/element-utils.ts';
+import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from './variable.ts';
 
 interface VariableItemElement {
 	nodeIcon: HTMLElement;
-	initText: HTMLElement;
-	initValue?: unknown;
-	noteIcon: HTMLElement;
-	annotated?: boolean | null;
-	appendChild(node: HTMLElement): unknown;
 	replaceChild(newNode: HTMLElement, oldNode: HTMLElement): unknown;
 }
 
@@ -65,23 +60,12 @@ Variable.list_cancelSearch = function (this: VariableList) {
 
 // 列表 - 创建文件夹
 Variable.list_createFolder = function () {
-	return {
-		class: 'folder',
-		name: 'New Folder',
-		expanded: false,
-		children: []
-	};
+	return getVariableStore().createFolder();
 };
 
 // 列表 - 创建变量
 Variable.list_createVariable = function () {
-	return {
-		id: Variable.createId(),
-		name: 'Variable',
-		value: false,
-		sort: 0,
-		note: ''
-	};
+	return getVariableStore().createVariable();
 };
 
 // 列表 - 重写创建图标方法
@@ -114,104 +98,6 @@ Variable.list_updateIcon = function (this: VariableList, item: unknown) {
 			element as unknown as { replaceChild: (n: HTMLElement, o: HTMLElement) => void }
 		).replaceChild(icon, element.nodeIcon as unknown as HTMLElement);
 		(element as unknown as { nodeIcon: HTMLElement }).nodeIcon = icon;
-	}
-};
-
-// 列表 - 添加元素类名
-Variable.list_addElementClass = function (item: unknown) {
-	const it = item as unknown as VariableItem;
-	addClass(it.element!, 'variable-item');
-};
-
-// 列表 - 更新项目类名
-Variable.list_updateItemClass = function (item: unknown) {
-	const it = item as unknown as VariableItem;
-	const { element } = it;
-	switch (it.sort) {
-		case 0:
-			removeClass(element!, 'shared-variable');
-			removeClass(element!, 'temporary-variable');
-			break;
-		case 1:
-			addClass(element!, 'shared-variable');
-			removeClass(element!, 'temporary-variable');
-			break;
-		case 2:
-			removeClass(element!, 'shared-variable');
-			addClass(element!, 'temporary-variable');
-			break;
-	}
-	if ((item as unknown as VariableItem).class !== 'folder') {
-		addClass(element!, 'reference');
-	} else {
-		removeClass(element!, 'reference');
-	}
-};
-
-// 列表 - 创建初始化文本
-Variable.list_createInitText = function (item: unknown) {
-	const it1 = item as unknown as VariableItem;
-	if (it1.class !== 'folder') {
-		const { element } = it1;
-		const initText = document.createElement('div');
-		addClass(initText, 'variable-init-text');
-		addClass(initText, 'text');
-		element!.appendChild(initText);
-		element!.initText = initText;
-		// 对象变量的初始值是null，避免冲突
-		element!.initValue = undefined;
-	}
-};
-
-// 列表 - 更新初始化文本
-Variable.list_updateInitText = function (item: unknown) {
-	const it2 = item as unknown as VariableItem;
-	const { element } = it2;
-	if (element!.initText !== undefined) {
-		let { value } = it2;
-		if (element!.initValue !== value) {
-			element!.initValue = value;
-			switch (typeof value) {
-				case 'boolean':
-				case 'number':
-					element!.initText!.textContent = ` = ${value}`;
-					break;
-				case 'string':
-					value = `"${Command.parseMultiLineString!(value as string)}"`;
-					element!.initText!.textContent = ` = ${value}`;
-					break;
-				case 'object':
-					element!.initText!.textContent = '';
-					break;
-			}
-		}
-	}
-};
-
-// 列表 - 创建笔记图标
-Variable.list_createNoteIcon = function (item: unknown) {
-	const it3 = item as unknown as VariableItem;
-	if (it3.class !== 'folder') {
-		const { element } = it3;
-		const noteIcon = document.createElement('node-icon');
-		addClass(noteIcon, 'icon-note');
-		noteIcon.textContent = '\uf27b';
-		element!.appendChild(noteIcon);
-		element!.noteIcon = noteIcon;
-		element!.annotated = null;
-	}
-};
-
-// 列表 - 更新笔记图标
-Variable.list_updateNoteIcon = function (item: unknown) {
-	const it4 = item as unknown as VariableItem;
-	const { element } = it4;
-	if (element!.noteIcon !== undefined) {
-		const annotated = it4.note !== '';
-		if (element!.annotated !== annotated) {
-			element!.annotated = annotated;
-			annotated ? show(element!.noteIcon) : hide(element!.noteIcon);
-		}
 	}
 };
 

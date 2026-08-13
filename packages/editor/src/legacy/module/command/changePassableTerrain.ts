@@ -12,7 +12,6 @@ Command.cases.changePassableTerrain = new CommandSchema({
 		{ key: 'passage', default: 'land' }
 	],
 	onInitialize() {
-		$('#changePassableTerrain-confirm').on('click', () => this.save!());
 		$('#changePassableTerrain-passage').loadItems([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },

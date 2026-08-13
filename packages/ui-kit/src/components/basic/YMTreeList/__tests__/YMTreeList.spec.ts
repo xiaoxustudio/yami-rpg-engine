@@ -236,3 +236,48 @@ describe('YMTreeList', () => {
 		expect(found).toBe(data[0].children[1]);
 	});
 });
+
+describe('renderNodeExtras', () => {
+	it('节点创建时渲染 extras 容器与内容', async () => {
+		const wrapper = mount(YMTreeList, {
+			props: {
+				renderNodeExtras: (item: unknown, container: HTMLElement) => {
+					const node = item as { class: string; key?: string };
+					const div = document.createElement('div');
+					div.className = 'extras-test';
+					div.textContent = node.class === 'folder' ? 'star' : 'key=' + (node.key ?? '');
+					container.appendChild(div);
+				}
+			}
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		const data = makeData();
+		el.bind(() => data);
+		el.update();
+		const folders = el.querySelectorAll('.tree-node-extras');
+		expect(folders.length).toBe(4);
+		expect(folders[0].querySelector('.extras-test')!.textContent).toBe('star');
+		wrapper.unmount();
+	});
+
+	it('更新时重新调用 renderNodeExtras', async () => {
+		let renderCount = 0;
+		const wrapper = mount(YMTreeList, {
+			props: {
+				renderNodeExtras: () => {
+					renderCount++;
+				}
+			}
+		});
+		const el = wrapper.element as unknown as TreeListElement;
+		mockHeight(el);
+		const data = makeData();
+		el.bind(() => data);
+		el.update();
+		renderCount = 0;
+		el.update();
+		expect(renderCount).toBeGreaterThan(0);
+		wrapper.unmount();
+	});
+});

@@ -24,9 +24,7 @@ Command.cases.showText = new CommandSchema({
 	name: 'showText',
 	latinCharWidth: 0,
 	otherCharWidth: 0,
-	onInitialize() {
-		$('#showText-confirm').on('click', () => this.save!());
-	},
+	onInitialize() {},
 	customParse({ target, parameters, content }: ShowTextCommandData) {
 		const alias = Local.get!('command.showText.alias');
 		const words = Command.words

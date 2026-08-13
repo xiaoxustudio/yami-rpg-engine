@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.playAudio = new CommandSchema({
 	name: 'playAudio',
 	onInitialize() {
-		$('#playAudio-confirm').on('click', () => this.save!());
 		$('#playAudio-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

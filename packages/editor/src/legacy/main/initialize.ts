@@ -5,7 +5,7 @@ import { getWindowStore } from '@app/stores/window.ts';
 import { getLayoutStore } from '@app/stores/layout.ts';
 import { lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@/util/config.ts';
-import { registerTool } from '@/tools/tool-registry';
+import { registerTool, type ToolInstance } from '@/tools/tool-registry';
 import { Window } from '@/tools/window-object.ts';
 import { Variable } from '@/variable/variable.ts';
 import '../variable/initialize.js';
@@ -30,9 +30,6 @@ import { UpdateLog } from '@/log/update-log-window.ts';
 import { Editor } from './editor.ts';
 import { EventBus } from '@/module/eventbus.ts';
 import { SetTileTag } from '@/module/global.ts';
-import { AutoTile } from '@/palette/auto-tile.ts';
-import { Curve } from '@/animation/curve-window.ts';
-import { Deployment } from '@/title/deploy-project-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Printer } from '@/printer/printer.ts';
@@ -75,16 +72,16 @@ interface SingletonShape {
 	[k: string]: unknown;
 }
 
-registerTool('ArrayList', ArrayList);
-registerTool('Color', Color);
-registerTool('ImageClip', ImageClip);
-registerTool('Rename', Rename);
-registerTool('SetKey', SetKey);
-registerTool('SetQuantity', SetQuantity);
-registerTool('Zoom', Zoom);
-registerTool('PresetObject', PresetObject);
-registerTool('PresetElement', PresetElement);
-registerTool('Selection', Selection);
+registerTool('ArrayList', ArrayList as unknown as ToolInstance);
+registerTool('Color', Color as unknown as ToolInstance);
+registerTool('ImageClip', ImageClip as unknown as ToolInstance);
+registerTool('Rename', Rename as unknown as ToolInstance);
+registerTool('SetKey', SetKey as unknown as ToolInstance);
+registerTool('SetQuantity', SetQuantity as unknown as ToolInstance);
+registerTool('Zoom', Zoom as unknown as ToolInstance);
+registerTool('PresetObject', PresetObject as unknown as ToolInstance);
+registerTool('PresetElement', PresetElement as unknown as ToolInstance);
+registerTool('Selection', Selection as unknown as ToolInstance);
 
 Editor.initialize = async function (this: typeof Editor) {
 	this.switchHotkey!(false);

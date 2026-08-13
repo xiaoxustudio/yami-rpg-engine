@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loop = new CommandSchema({
 	name: 'loop',
 	onInitialize() {
-		$('#loop-confirm').on('click', () => this.save!());
 		$('#loop-conditions').bind(IfCondition);
 		$('#loop-mode').loadItems([
 			{ name: 'Meet All', value: 'all' },

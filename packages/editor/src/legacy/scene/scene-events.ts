@@ -1,7 +1,7 @@
 import { relate } from '@/util/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { ctrl } from '@/util/event-accessors.ts';
-import { dispatchChangeEvent, hasClass, read, write } from '@/util/element-utils.ts';
+import { hasClass, read, write } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
@@ -1323,49 +1323,6 @@ Scene.listKeydown = function (this: typeof Scene, event: KeyboardEvent) {
 
 Scene.listPointerdown = function (this: typeof Scene, event: PointerEvent) {
 	switch (event.button) {
-		case 0: {
-			const element = event.target as Element;
-			switch (element.tagName) {
-				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode as Element & { item: SceneItem };
-					if (!this.canSwitchState(item)) {
-						return;
-					}
-					const { hidden } = item;
-					const backups = this.setRecursiveStates(item, 'hidden', !hidden);
-					this.updateFolderState(item.parent, 'hidden');
-					this.update();
-					dispatchChangeEvent(this as unknown as HTMLElement);
-					Scene.requestRendering!();
-					Scene.history.save({
-						type: 'scene-object-hidden',
-						item: item,
-						oldValues: backups,
-						newValue: !hidden
-					});
-					break;
-				}
-				case 'LOCK-ICON': {
-					const { item } = element.parentNode as Element & { item: SceneItem };
-					if (!this.canSwitchState(item)) {
-						return;
-					}
-					const { locked } = item;
-					const backups = this.setRecursiveStates(item, 'locked', !locked);
-					this.updateFolderState(item.parent, 'hidden');
-					this.update();
-					dispatchChangeEvent(this as unknown as HTMLElement);
-					Scene.history.save({
-						type: 'scene-object-locked',
-						item: item,
-						oldValues: backups,
-						newValue: !locked
-					});
-					break;
-				}
-			}
-			break;
-		}
 		case 3:
 			this.cancelSearch();
 			break;

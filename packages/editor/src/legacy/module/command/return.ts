@@ -23,7 +23,6 @@ Command.cases.return = new CommandSchema({
 		element: { name: 'Element', value: 'element' }
 	},
 	onInitialize() {
-		$('#return-confirm').on('click', () => this.save!());
 		$('#return-type').loadItems(Object.values(this.typeItems));
 		$('#return-boolean').loadItems([
 			{ name: 'False', value: false },

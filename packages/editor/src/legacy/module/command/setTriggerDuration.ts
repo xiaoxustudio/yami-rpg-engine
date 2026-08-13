@@ -13,7 +13,6 @@ Command.cases.setTriggerDuration = new CommandSchema({
 		{ key: 'duration', default: 0 }
 	],
 	onInitialize() {
-		$('#setTriggerDuration-confirm').on('click', () => this.save!());
 		$('#setTriggerDuration-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Increase', value: 'increase' },

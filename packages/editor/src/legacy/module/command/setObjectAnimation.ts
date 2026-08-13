@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setObjectAnimation = new CommandSchema({
 	name: 'setObjectAnimation',
 	onInitialize() {
-		$('#setObjectAnimation-confirm').on('click', () => this.save!());
 		$('#setObjectAnimation-sort').loadItems([
 			{ name: 'Only Actor Animation', value: 'actor' },
 			{ name: 'All Animation Components', value: 'components' },

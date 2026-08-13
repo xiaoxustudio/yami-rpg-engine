@@ -1,9 +1,10 @@
 <template>
-	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" />
+	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" :render-node-extras="renderNodeExtras" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { Fragment, h, render, type VNode } from 'vue';
 import { YMTreeList } from '@ui-kit';
 import { useMenuService } from '@app/composables/useMenuService';
 import { attachElementApi } from '@/utils/attach-element-api';
@@ -11,6 +12,7 @@ import { attachElementApi } from '@/utils/attach-element-api';
 interface Props {
 	id?: string;
 	padded?: boolean;
+	nodeExtras?: (item: unknown, container: HTMLElement) => VNode | VNode[] | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,6 +28,15 @@ const emit = defineEmits<{
 }>();
 
 const menuService = useMenuService();
+
+const renderNodeExtras = (item: unknown, container: HTMLElement): void => {
+	try {
+		const vnodes = props.nodeExtras?.(item, container);
+		render(vnodes ? h(Fragment, vnodes) : null, container);
+	} catch (error) {
+		console.error('[tree-extras] renderNodeExtras failed:', error);
+	}
+};
 
 const ym = ref<{ $el: HTMLElement | null } | null>(null);
 const root = computed<HTMLElement | null>(() => ym.value?.$el ?? null);

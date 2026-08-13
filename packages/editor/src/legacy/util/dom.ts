@@ -79,7 +79,7 @@ export const getElementReader = function (prefix: string) {
 			console.warn(`[reader] element not found: #${prefix}-${suffix}`);
 			return undefined;
 		}
-		return typeof element.read === 'function' ? element.read() : element.dataValue;
+		return typeof element.read === 'function' ? element.read() : undefined;
 	};
 };
 
@@ -100,7 +100,7 @@ export const getElementWriter = function (prefix: string, bindingObject?: Record
 		if (typeof element.write === 'function') {
 			element.write(value);
 		} else {
-			element.dataValue = value as any;
+			console.warn(`[writer] element has no write(): #${prefix}-${suffix}`);
 		}
 	};
 };

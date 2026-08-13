@@ -10,7 +10,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadImage = new CommandSchema({
 	name: 'loadImage',
 	onInitialize() {
-		$('#loadImage-confirm').on('click', () => this.save!());
 		$('#loadImage-type').loadItems([
 			{ name: 'Actor Portrait', value: 'actor-portrait' },
 			{ name: 'Skill Icon', value: 'skill-icon' },

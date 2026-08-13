@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="tintImage">
+	<WindowFrame id="tintImage" @confirm="onConfirm">
 		<template #title><TitleBar>Tint Image<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box" id="tintImage-grid-box">
@@ -46,6 +46,10 @@ const local = useLocalStore();
 
 const onInput = () => {
 	Command?.cases?.tintImage?.input?.();
+};
+
+const onConfirm = () => {
+	Command?.cases?.tintImage?.save?.();
 };
 
 onMounted(() => {

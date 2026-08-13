@@ -12,7 +12,6 @@ Command.cases.simulateKey = new CommandSchema({
 		{ key: 'keycode', default: '' }
 	],
 	onInitialize() {
-		$('#simulateKey-confirm').on('click', () => this.save!());
 		$('#simulateKey-operation').loadItems([
 			{ name: 'Click', value: 'click' },
 			{ name: 'Press', value: 'press' },

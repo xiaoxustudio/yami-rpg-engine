@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="equipmentGetter">
+	<WindowFrame id="equipmentGetter" @confirm="onConfirm">
 		<template #title><TitleBar>Actor<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { EquipmentGetter } from '@/command/equipment-accessor-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -30,6 +31,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	EquipmentGetter?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

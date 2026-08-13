@@ -7,6 +7,7 @@
 				<TreeList
 					id="easing-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@open="onListOpen"
 					@popup="onListPopup"
@@ -102,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { Easing } from '@/data/transition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -125,6 +126,12 @@ const onListPopup = (event: PointerEvent & { value?: unknown }) => {
 };
 const onListChange = (event: Event & { value?: unknown }) => {
 	Easing?.dataChange?.(event);
+};
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { key?: string };
+	container.parentNode?.classList.add('plain');
+	return [h('div', { class: 'variable-init-text text' }, ' = ' + node.key)];
 };
 
 const local = useLocalStore();

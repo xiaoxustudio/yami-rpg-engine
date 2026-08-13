@@ -3,16 +3,7 @@ import { $ } from '@/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { Window } from '@/tools/window-object.ts';
-import {
-	addClass,
-	clear,
-	getFocus,
-	hide,
-	on,
-	read,
-	removeClass,
-	show
-} from '@/util/element-utils.ts';
+import { addClass, clear, getFocus, hide, on, read, show } from '@/util/element-utils.ts';
 import { getVariable } from '@/util/safe.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Command } from '@/command/command-object.ts';
@@ -163,9 +154,7 @@ interface PluginManagerShape {
 	list_delete: (item: PluginItemShape) => void;
 	list_saveSelection: (() => void) | null;
 	list_restoreSelection: (() => void) | null;
-	list_addElementClass: ((item: PluginItemShape) => void) | null;
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
-	list_updateToggleStyle: ((item: PluginItemShape) => void) | null;
 	list_createEditIcon: ((item: PluginItemShape) => void) | null;
 	plugins: (PluginItemShape[] | Record<string, PluginItemShape>) | null;
 	reload: (() => void) | null;
@@ -218,9 +207,7 @@ export const PluginManager: PluginManagerShape = {
 	list_delete: null as unknown as (item: PluginItemShape) => void,
 	list_saveSelection: null,
 	list_restoreSelection: null,
-	list_addElementClass: null,
 	list_updateTextNode: null,
-	list_updateToggleStyle: null,
 	list_createEditIcon: null,
 	plugins: null,
 	reload: null
@@ -246,13 +233,7 @@ function ensureDomBound() {
 	list.updateNodeElement = Easing.list_updateNodeElement as unknown as (
 		...args: unknown[]
 	) => any;
-	list.addElementClass = PluginManager.list_addElementClass as unknown as (
-		...args: unknown[]
-	) => any;
 	list.updateTextNode = PluginManager.list_updateTextNode as unknown as (
-		...args: unknown[]
-	) => any;
-	list.updateToggleStyle = PluginManager.list_updateToggleStyle as unknown as (
 		...args: unknown[]
 	) => any;
 	list.createEditIcon = PluginManager.list_createEditIcon as unknown as (
@@ -277,9 +258,8 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	const list = this.list as TreeListElement | null;
 	if (!list) return;
 	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).creators.push(list.updateToggleStyle);
 	getListConfig(list).updaters.push(list.updateTextNode);
 	getListConfig(list).creators.push(list.createEditIcon);
 
@@ -297,7 +277,6 @@ PluginManager.initialize = function (this: typeof PluginManager) {
 	on(this.overview, 'pointerdown', this.overviewPointerdown!);
 	on(this.parameterPane, 'update', this.parameterPaneUpdate!);
 	on($('#plugin-confirm'), 'click', this.confirm!);
-	on($('#plugin-apply'), 'click', this.apply!);
 };
 
 PluginManager.open = function (this: typeof PluginManager) {
@@ -2102,7 +2081,7 @@ PluginManager.list_insert = function (this: TreeListElement, dItem: PluginItemSh
 PluginManager.list_toggle = function (this: TreeListElement, item: PluginItemShape) {
 	if (item) {
 		item.enabled = !item.enabled;
-		this.updateToggleStyle(item);
+		this.update();
 		PluginManager.changed = true;
 	}
 };
@@ -2173,11 +2152,6 @@ PluginManager.list_restoreSelection = function (this: TreeListElement) {
 	this.scrollToSelection();
 };
 
-// 列表 - 添加元素类名
-PluginManager.list_addElementClass = function (this: TreeListElement, item: PluginItemShape) {
-	addClass(item.element!, 'plugin-item');
-};
-
 // 列表 - 更新文本节点
 PluginManager.list_updateTextNode = function (this: TreeListElement, item: PluginItemShape) {
 	const textNode = item.element!.textNode;
@@ -2185,11 +2159,6 @@ PluginManager.list_updateTextNode = function (this: TreeListElement, item: Plugi
 	if (textNode.nodeValue !== text) {
 		textNode.nodeValue = text;
 	}
-};
-
-// 列表 - 更新开关样式
-PluginManager.list_updateToggleStyle = function (this: TreeListElement, item: PluginItemShape) {
-	return item.enabled ? removeClass(item.element!, 'weak') : addClass(item.element!, 'weak');
 };
 
 // 列表 - 创建编辑图标

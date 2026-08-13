@@ -24,7 +24,6 @@ Command.cases.registerEvent = new CommandSchema({
 	commands: [],
 	priorityEnabled: false,
 	onInitialize() {
-		$('#registerEvent-confirm').on('click', () => this.save!());
 		$('#registerEvent-target').loadItems([
 			{ name: 'Global', value: 'global' },
 			{ name: 'Actor', value: 'actor' },

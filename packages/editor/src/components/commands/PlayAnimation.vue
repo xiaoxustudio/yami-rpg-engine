@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="playAnimation">
+	<WindowFrame id="playAnimation" @confirm="onConfirm">
 		<template #title><TitleBar>Play Animation<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -58,6 +58,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.playAnimation?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

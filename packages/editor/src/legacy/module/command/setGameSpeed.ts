@@ -15,7 +15,6 @@ Command.cases.setGameSpeed = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setGameSpeed-confirm').on('click', () => this.save!());
 		$('#setGameSpeed-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

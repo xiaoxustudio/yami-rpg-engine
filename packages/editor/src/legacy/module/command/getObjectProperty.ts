@@ -55,7 +55,6 @@ export const IndexBind = {
 Command.cases.getObjectProperty = new CommandSchema({
 	name: 'getObjectProperty',
 	onInitialize() {
-		$('#getObjectProperty-confirm').on('click', () => this.save!());
 		$('#getObjectProperty-list').bind(IndexBind);
 		$('#getObjectProperty').on('closed', () => {
 			clear($('#getObjectProperty-list'));
@@ -109,7 +108,6 @@ Command.cases.getObjectProperty = new CommandSchema({
 Command.cases.setObjectProperty = new CommandSchema({
 	name: 'setObjectProperty',
 	onInitialize() {
-		$('#setObjectProperty-confirm').on('click', () => this.save!());
 		$('#setObjectProperty-list').bind(IndexBind);
 		$('#setObjectProperty').on('closed', () => {
 			clear($('#setObjectProperty-list'));

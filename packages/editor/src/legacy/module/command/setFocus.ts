@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setFocus = new CommandSchema({
 	name: 'setFocus',
 	onInitialize() {
-		$('#setFocus-confirm').on('click', () => this.save!());
 		$('#setFocus-operation').loadItems([
 			{ name: 'Add Focus', value: 'add' },
 			{ name: 'Remove Focus', value: 'remove' },

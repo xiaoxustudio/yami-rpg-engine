@@ -1,17 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import {
-	on,
-	show,
-	hide,
-	clear,
-	addClass,
-	removeClass,
-	read,
-	write,
-	getFocus
-} from '@/util/element-utils.ts';
+import { on, show, hide, clear, addClass, read, write, getFocus } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -44,7 +34,7 @@ interface LocalizationItem {
 	expanded?: boolean;
 	children?: LocalizationItem[];
 	contents?: Record<string, string>;
-	element?: HTMLElement & { initText?: HTMLElement; attrValue?: string };
+	element?: HTMLElement;
 }
 
 interface LocalizationTarget {
@@ -113,11 +103,7 @@ interface LocalizationShape {
 	list_createFolder: (this: TreeListElement) => LocalizationItem;
 	list_createItem: (this: TreeListElement) => LocalizationItem;
 	list_createIcon: (this: TreeListElement, item: LocalizationItem) => HTMLElement;
-	list_addElementClass: (this: TreeListElement, item: LocalizationItem) => void;
-	list_updateItemClass: (this: TreeListElement, item: LocalizationItem) => void;
 	list_updateItemName: (this: TreeListElement, item: LocalizationItem) => void;
-	list_createInitText: (this: TreeListElement, item: LocalizationItem) => void;
-	list_updateInitText: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onCreate: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onDelete: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onResume: (this: TreeListElement, item: LocalizationItem) => void;
@@ -184,11 +170,7 @@ export const Localization: LocalizationShape = {
 	list_createFolder: null as unknown as LocalizationShape['list_createFolder'],
 	list_createItem: null as unknown as LocalizationShape['list_createItem'],
 	list_createIcon: null as unknown as LocalizationShape['list_createIcon'],
-	list_addElementClass: null as unknown as LocalizationShape['list_addElementClass'],
-	list_updateItemClass: null as unknown as LocalizationShape['list_updateItemClass'],
 	list_updateItemName: null as unknown as LocalizationShape['list_updateItemName'],
-	list_createInitText: null as unknown as LocalizationShape['list_createInitText'],
-	list_updateInitText: null as unknown as LocalizationShape['list_updateInitText'],
 	list_onCreate: null as unknown as LocalizationShape['list_onCreate'],
 	list_onDelete: null as unknown as LocalizationShape['list_onDelete'],
 	list_onResume: null as unknown as LocalizationShape['list_onResume'],
@@ -221,18 +203,12 @@ function ensureDomBound() {
 	list.createFolder = Localization.list_createFolder;
 	list.createItem = Localization.list_createItem as unknown as (...args: unknown[]) => unknown;
 	list.createIcon = Localization.list_createIcon as unknown as (...args: unknown[]) => unknown;
-	list.addElementClass = Localization.list_addElementClass as unknown as (
-		...args: unknown[]
-	) => unknown;
-	list.updateItemClass = Localization.list_updateItemClass;
 	list.updateItemName = Localization.list_updateItemName as unknown as (
 		...args: unknown[]
 	) => unknown;
-	list.createInitText = Localization.list_createInitText;
-	list.updateInitText = Localization.list_updateInitText;
-	getListConfig(list).onCreate = Localization.list_onCreate;
-	getListConfig(list).onDelete = Localization.list_onDelete;
-	getListConfig(list).onResume = Localization.list_onResume;
+	getListConfig(list).onCreate = Localization.list_onCreate as (item: unknown) => void;
+	getListConfig(list).onDelete = Localization.list_onDelete as (item: unknown) => void;
+	getListConfig(list).onResume = Localization.list_onResume as (item: unknown) => void;
 	bindListClipboardMethods({
 		module: { ...Localization, idMap: Localization.idMap! },
 		list,
@@ -247,10 +223,6 @@ Localization.initialize = function () {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).updaters.push(list.updateItemClass);
-	getListConfig(list).creators.push(list.createInitText);
-	getListConfig(list).creators.push(list.updateInitText);
 
 	if (this.panel) this.panel.item = null;
 
@@ -283,7 +255,7 @@ Localization.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		list.updateInitText(item);
+		list.update();
 		this.changed = true;
 	};
 
@@ -299,7 +271,6 @@ Localization.initialize = function () {
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 	on($('#localization-confirm'), 'click', this.confirm);
-	on($('#localization-apply'), 'click', this.apply);
 	on($('#localization-to-excel'), 'click', this.toExcel);
 	on($('#localization-from-excel'), 'click', this.fromExcel);
 
@@ -760,7 +731,7 @@ Localization.panelInput = function (event: Event) {
 		}
 		item!.contents![language] = read(textarea);
 		Localization.resizeTextArea(textarea);
-		Localization.list!.updateInitText(item);
+		Localization.list!.update();
 		Localization.changed = true;
 	}
 };
@@ -895,64 +866,10 @@ Localization.list_createIcon = function (item: LocalizationItem) {
 	return icon;
 };
 
-// 列表 - 添加元素类名
-Localization.list_addElementClass = function (item: LocalizationItem) {
-	addClass(item.element, 'localization-item');
-};
-
-// 列表 - 更新项目类名
-Localization.list_updateItemClass = function (item: LocalizationItem) {
-	if (item.class !== 'folder') {
-		addClass(item.element, 'reference');
-	} else {
-		removeClass(item.element, 'reference');
-	}
-};
-
 // 列表 - 重写更新项目名称方法
 Localization.list_updateItemName = function (this: TreeListElement, item: LocalizationItem) {
 	TreeList.prototype.updateItemName.call(this, item);
-	this.updateInitText(item);
-};
-
-// 列表 - 创建初始化文本
-Localization.list_createInitText = function (item: LocalizationItem) {
-	if (item.class !== 'folder') {
-		const element = item.element!;
-		const initText = document.createElement('div');
-		addClass(initText, 'localization-init-text');
-		addClass(initText, 'text');
-		element.appendChild(initText);
-		element.initText = initText;
-		element.attrValue = '';
-	}
-};
-
-// 列表 - 更新初始化文本
-Localization.list_updateInitText = function (item: LocalizationItem) {
-	const { element } = item;
-	if (element?.initText !== undefined) {
-		let value = '';
-		for (const language of Localization.languages!) {
-			if (item.contents![language]) {
-				value = item.contents![language];
-				break;
-			}
-		}
-		if (item.name !== '') {
-			if (value !== '') {
-				value = ' = ' + value;
-			}
-		} else {
-			if (value === '') {
-				value = 'Text';
-			}
-		}
-		if (element.attrValue !== value) {
-			element.attrValue = value;
-			element.initText.textContent = value;
-		}
-	}
+	this.update();
 };
 
 // 列表 - 在创建数据时回调

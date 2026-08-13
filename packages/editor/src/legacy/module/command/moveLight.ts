@@ -10,7 +10,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveLight = new CommandSchema({
 	name: 'moveLight',
 	onInitialize() {
-		$('#moveLight-confirm').on('click', () => this.save!());
 		$('#moveLight-properties').bind(LightProperty);
 		$('#moveLight-wait').loadItems([
 			{ name: 'Yes', value: true },

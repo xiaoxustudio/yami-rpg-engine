@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="enum" show-apply mode="center">
+	<WindowFrame id="enum" show-apply mode="center" @apply="onApply">
 		<template #title><TitleBar>Enumeration<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="enum-list-fieldset">
@@ -7,6 +7,7 @@
 				<TreeList
 					id="enum-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@record="onListRecord"
 					@open="onListOpen"
@@ -30,18 +31,46 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { Enum } from '@/enum/enum-window.ts';
+import { GameLocal } from '@/local/local-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { getEnumStore } from '@app/stores/enum';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown): VNode[] => {
+	const node = item as { class?: string; id: string; value?: string; note?: string };
+	const nodes: VNode[] = [];
+	if (node.class === 'folder') {
+		const store = getEnumStore();
+		let group = '';
+		for (const key of store.state.settingKeys ?? []) {
+			if (node.id === store.state.settings?.[key]) {
+				group = key;
+			}
+		}
+		if (group) {
+			nodes.push(h('div', { class: 'enum-init-text text' }, ' ★'));
+		}
+	} else {
+		const value = node.value as string;
+		nodes.push(
+			h('div', { class: 'enum-init-text text' }, value ? ` = ${GameLocal.replace(value)}` : '')
+		);
+		if (node.note) {
+			nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+		}
+	}
+	return nodes;
+};
 
 const onListSelect = (event: Event & { value?: unknown }) => {
 	Enum?.listSelect?.(event);
@@ -60,6 +89,10 @@ const onNameInput = (value: string) => {
 };
 const onValueInput = (value: string) => {
 	Enum?.valueInput?.({ target: { value } });
+};
+
+const onApply = () => {
+	Enum?.apply?.();
 };
 
 onMounted(() => {

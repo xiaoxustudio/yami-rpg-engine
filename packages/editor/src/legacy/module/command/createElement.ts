@@ -10,7 +10,6 @@ import { PresetElement } from '@/tools/preset-element-window.ts';
 Command.cases.createElement = new CommandSchema({
 	name: 'createElement',
 	onInitialize() {
-		$('#createElement-confirm').on('click', () => this.save!());
 		$('#createElement-operation').loadItems([
 			{ name: 'Append All to Root', value: 'append-all-to-root' },
 			{ name: 'Append One to Root', value: 'append-one-to-root' },

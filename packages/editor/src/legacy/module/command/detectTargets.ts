@@ -14,7 +14,6 @@ Command.cases.detectTargets = new CommandSchema({
 		{ key: 'inSight', default: false }
 	],
 	onInitialize() {
-		$('#detectTargets-confirm').on('click', () => this.save!());
 		$('#detectTargets-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },

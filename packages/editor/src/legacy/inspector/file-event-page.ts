@@ -220,8 +220,6 @@ import { Local } from '@/tools/localization.ts';
 
 	FileEvent.parameters = {
 		initialize: function (this: FileEventList, list: FileEventList) {
-			$('#fileEvent-parameter-confirm').on('click', () => list.save());
-
 			$('#fileEvent-parameter-type').loadItems([
 				{ name: 'Boolean', value: 'boolean' },
 				{ name: 'Number', value: 'number' },

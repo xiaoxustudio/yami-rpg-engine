@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setShortcut = new CommandSchema({
 	name: 'setShortcut',
 	onInitialize() {
-		$('#setShortcut-confirm').on('click', () => this.save!());
 		$('#setShortcut-operation').loadItems([
 			{ name: 'Set Item Shortcut', value: 'set-item-shortcut' },
 			{ name: 'Set Skill Shortcut', value: 'set-skill-shortcut' },

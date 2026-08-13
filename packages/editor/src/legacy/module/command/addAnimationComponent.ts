@@ -18,7 +18,6 @@ Command.cases.addAnimationComponent = new CommandSchema({
 		{ key: 'offsetY', default: 0 }
 	],
 	onInitialize() {
-		$('#addAnimationComponent-confirm').on('click', () => this.save!());
 		$('#addAnimationComponent-rotatable').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

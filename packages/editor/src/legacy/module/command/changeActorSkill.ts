@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorSkill = new CommandSchema({
 	name: 'changeActorSkill',
 	onInitialize() {
-		$('#changeActorSkill-confirm').on('click', () => this.save!());
 		$('#changeActorSkill-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },

@@ -10,7 +10,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveElement = new CommandSchema({
 	name: 'moveElement',
 	onInitialize() {
-		$('#moveElement-confirm').on('click', () => this.save!());
 		$('#moveElement-properties').bind(TransformProperty);
 		$('#moveElement-wait').loadItems([
 			{ name: 'Yes', value: true },

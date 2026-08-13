@@ -7,7 +7,6 @@ import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Shortcuts } from '@/tools/shortcut-registry.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { GUID } from '@/file/guid.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
@@ -32,15 +31,7 @@ interface AttributeItem {
 	note?: string;
 	expanded?: boolean;
 	children?: AttributeItem[];
-	element?: HTMLElement & {
-		group?: string;
-		groupText?: HTMLElement;
-		initText?: HTMLElement;
-		attrKey?: string;
-		nodeIcon?: HTMLElement;
-		noteIcon?: HTMLElement;
-		annotated?: boolean | null;
-	};
+	element?: HTMLElement;
 }
 
 interface AttributeTarget {
@@ -134,13 +125,6 @@ interface AttributeWindowShape {
 	list_createIcon: (this: typeof Attribute, item: AttributeItem) => HTMLElement;
 	list_updateIcon: (this: TreeListElement, item: AttributeItem) => void;
 	list_parseName: (this: typeof Attribute, item: AttributeItem) => string;
-	list_addElementClass: (this: typeof Attribute, item: AttributeItem) => void;
-	list_createGroupText: (this: typeof Attribute, item: AttributeItem) => void;
-	list_updateGroupText: (this: typeof Attribute, item: AttributeItem) => void;
-	list_createInitText: (this: typeof Attribute, item: AttributeItem) => void;
-	list_updateInitText: (this: typeof Attribute, item: AttributeItem) => void;
-	list_createNoteIcon: (this: typeof Attribute, item: AttributeItem) => void;
-	list_updateNoteIcon: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onResume: (this: typeof Attribute, item: AttributeItem) => void;
@@ -214,13 +198,6 @@ export const Attribute: AttributeWindowShape = {
 	list_createIcon: null as unknown as AttributeWindowShape['list_createIcon'],
 	list_updateIcon: null as unknown as AttributeWindowShape['list_updateIcon'],
 	list_parseName: null as unknown as AttributeWindowShape['list_parseName'],
-	list_addElementClass: null as unknown as AttributeWindowShape['list_addElementClass'],
-	list_createGroupText: null as unknown as AttributeWindowShape['list_createGroupText'],
-	list_updateGroupText: null as unknown as AttributeWindowShape['list_updateGroupText'],
-	list_createInitText: null as unknown as AttributeWindowShape['list_createInitText'],
-	list_updateInitText: null as unknown as AttributeWindowShape['list_updateInitText'],
-	list_createNoteIcon: null as unknown as AttributeWindowShape['list_createNoteIcon'],
-	list_updateNoteIcon: null as unknown as AttributeWindowShape['list_updateNoteIcon'],
 	list_onCreate: null as unknown as AttributeWindowShape['list_onCreate'],
 	list_onDelete: null as unknown as AttributeWindowShape['list_onDelete'],
 	list_onResume: null as unknown as AttributeWindowShape['list_onResume']
@@ -250,16 +227,9 @@ function ensureDomBound() {
 	list.createIcon = Attribute.list_createIcon as (item: unknown) => unknown;
 	list.updateIcon = Attribute.list_updateIcon as (item: unknown) => unknown;
 	list.parseName = Attribute.list_parseName;
-	list.addElementClass = Attribute.list_addElementClass;
-	list.createGroupText = Attribute.list_createGroupText;
-	list.updateGroupText = Attribute.list_updateGroupText;
-	list.createInitText = Attribute.list_createInitText;
-	list.updateInitText = Attribute.list_updateInitText;
-	list.createNoteIcon = Attribute.list_createNoteIcon;
-	list.updateNoteIcon = Attribute.list_updateNoteIcon;
-	getListConfig(list).onCreate = Attribute.list_onCreate;
-	getListConfig(list).onDelete = Attribute.list_onDelete;
-	getListConfig(list).onResume = Attribute.list_onResume;
+	getListConfig(list).onCreate = Attribute.list_onCreate as (item: unknown) => void;
+	getListConfig(list).onDelete = Attribute.list_onDelete as (item: unknown) => void;
+	getListConfig(list).onResume = Attribute.list_onResume as (item: unknown) => void;
 	bindListClipboardMethods({
 		module: Attribute,
 		list,
@@ -283,13 +253,6 @@ Attribute.initialize = function (this: typeof Attribute) {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).creators.push(list.createGroupText);
-	getListConfig(list).updaters.push(list.updateGroupText);
-	getListConfig(list).creators.push(list.createInitText);
-	getListConfig(list).creators.push(list.updateInitText);
-	getListConfig(list).creators.push(list.createNoteIcon);
-	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	if (this.panel) getAttributeStore().state.selected = null;
 
@@ -340,7 +303,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		const { item, value } = data;
 		data.value = item.key!;
 		item.key = value;
-		list.updateInitText(item);
+		list.update();
 		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.key, value);
 		} else {
@@ -390,7 +353,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 		const { item, value } = data;
 		data.value = item.note!;
 		item.note = value;
-		list.updateNoteIcon(item);
+		list.update();
 		if (getAttributeStore().state.selected === item) {
 			write(this.inputs.note, value);
 		} else {
@@ -419,7 +382,6 @@ Attribute.initialize = function (this: typeof Attribute) {
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 	on($('#attribute-confirm'), 'click', this.confirm);
-	on($('#attribute-apply'), 'click', this.apply);
 };
 
 Attribute.open = function (
@@ -471,62 +433,28 @@ Attribute.redo = function (this: typeof Attribute) {
 };
 
 Attribute.createId = function (this: typeof Attribute) {
-	let id;
-	do {
-		id = GUID.generate64bit();
-	} while (this.idMap[id]);
-	return id;
+	return getAttributeStore().createId();
 };
 
 Attribute.register = function (this: typeof Attribute, item: AttributeItem) {
-	Attribute.idMap[item.id] = true;
-	if (item.class === 'folder') {
-		for (const child of item.children!) {
-			Attribute.register(child);
-		}
-	}
+	getAttributeStore().register(item as AttributeItemShape);
 };
 
 Attribute.unregister = function (this: typeof Attribute, item: AttributeItem) {
-	delete Attribute.idMap[item.id];
-	if (item.class === 'folder') {
-		for (const child of item.children!) {
-			Attribute.unregister(child);
-		}
-	}
+	getAttributeStore().unregister(item as AttributeItemShape);
 };
 
-Attribute.getItemById = (function IIFE() {
-	const find = (
-		items: AttributeItem[] | null | undefined,
-		id: string
-	): AttributeItem | undefined => {
-		const length = items!.length;
-		for (let i = 0; i < length; i++) {
-			const item = items![i];
-			if (item.id === id) {
-				return item;
-			}
-			if (item.class === 'folder') {
-				const result = find(item.children, id);
-				if (result !== undefined) {
-					return result;
-				}
-			}
-		}
-		return undefined;
-	};
-	return function (this: typeof Attribute, id: string) {
-		return find(this.data, id);
-	};
-})();
+Attribute.getItemById = function (this: typeof Attribute, id: string) {
+	return getAttributeStore().getItemById(id) as AttributeItem | undefined;
+};
 
 Attribute.setFolderGroup = function (
 	this: typeof Attribute,
 	folder: AttributeItem,
 	newGroup: string
 ) {
-	const oldGroup = folder.element!.group;
+	const oldGroup =
+		Object.keys(this.settings).find((key) => this.settings[key] === folder.id) ?? '';
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
 		if (oldGroup) this.settings[oldGroup] = '';
@@ -969,7 +897,7 @@ Attribute.keyInput = function (event: InputEvent & { target: HTMLInputElement })
 	if (item.class !== 'folder') {
 		Attribute.saveHistory(item, 'key', item.key);
 		item.key = event.target.value;
-		Attribute.list!.updateInitText(item);
+		Attribute.list!.update();
 		Attribute.changed = true;
 	}
 };
@@ -1010,7 +938,7 @@ Attribute.noteInput = function (this: HTMLElement, event: InputEvent) {
 		const item = getAttributeStore().state.selected as AttributeItem;
 		Attribute.saveHistory(item, 'note', item.note);
 		item.note = read(this);
-		Attribute.list!.updateNoteIcon(item);
+		Attribute.list!.update();
 		Attribute.changed = true;
 	}
 };
@@ -1155,7 +1083,7 @@ Attribute.list_createIcon = (function IIFE() {
 
 // 列表 - 更新图标
 Attribute.list_updateIcon = function (this: TreeListElement, item: AttributeItem) {
-	const { element } = item;
+	const element = item.element as (HTMLElement & { nodeIcon?: HTMLElement }) | undefined;
 	if (element?.nodeIcon) {
 		const icon = this.createIcon(item) as HTMLElement;
 		element.replaceChild(icon, element.nodeIcon);
@@ -1166,92 +1094,6 @@ Attribute.list_updateIcon = function (this: TreeListElement, item: AttributeItem
 // 列表 - 重写解析名称方法
 Attribute.list_parseName = function (item: AttributeItem) {
 	return GameLocal.replace(item.name);
-};
-
-// 列表 - 添加元素类名
-Attribute.list_addElementClass = function (item: AttributeItem) {
-	addClass(item.element, 'attribute-item');
-	addClass(item.element, 'reference');
-};
-
-// 列表 - 创建分组文本
-Attribute.list_createGroupText = function (item: AttributeItem) {
-	if (item.class === 'folder') {
-		const element = item.element!;
-		const groupText = document.createElement('div');
-		addClass(groupText, 'enum-init-text');
-		addClass(groupText, 'text');
-		element.appendChild(groupText);
-		element.groupText = groupText;
-		element.group = '';
-	}
-};
-
-// 列表 - 更新分组文本
-Attribute.list_updateGroupText = function (item: AttributeItem) {
-	const { element } = item;
-	if (element?.groupText !== undefined) {
-		let group = '';
-		for (const key of Attribute.settingKeys) {
-			if (item.id === Attribute.settings[key]) {
-				group = key;
-			}
-		}
-		if (element.group !== group) {
-			element.group = group;
-			element.groupText.textContent = group ? ' ★' : '';
-		}
-	}
-};
-
-// 列表 - 创建初始化文本
-Attribute.list_createInitText = function (item: AttributeItem) {
-	if (item.class !== 'folder') {
-		const element = item.element!;
-		const initText = document.createElement('div');
-		addClass(initText, 'attribute-init-text');
-		addClass(initText, 'text');
-		element.appendChild(initText);
-		element.initText = initText;
-		element.attrKey = '';
-	}
-};
-
-// 列表 - 更新初始化文本
-Attribute.list_updateInitText = function (item: AttributeItem) {
-	const { element } = item;
-	if (element?.initText !== undefined) {
-		const { key } = item;
-		if (element.attrKey !== key) {
-			element.attrKey = key;
-			element.initText.textContent = key ? ` = ${key}` : '';
-		}
-	}
-};
-
-// 列表 - 创建笔记图标
-Attribute.list_createNoteIcon = function (item: AttributeItem) {
-	if (item.class !== 'folder') {
-		const element = item.element!;
-		const noteIcon = document.createElement('node-icon');
-		addClass(noteIcon, 'icon-note');
-		noteIcon.textContent = '\uf27b';
-		element.appendChild(noteIcon);
-		element.noteIcon = noteIcon;
-		element.annotated = null;
-	}
-};
-
-// 列表 - 更新笔记图标
-Attribute.list_updateNoteIcon = function (item: AttributeItem) {
-	const { element } = item;
-	if (element?.noteIcon !== undefined) {
-		const annotated = item.note !== '';
-		if (element.annotated !== annotated) {
-			element.annotated = annotated;
-			annotated ? show(element.noteIcon) : hide(element.noteIcon);
-		}
-	}
 };
 
 // 列表 - 在创建数据时回调

@@ -26,7 +26,6 @@ type SetAnimationComponentData = {
 Command.cases.setAnimationComponent = new CommandSchema({
 	name: 'setAnimationComponent',
 	onInitialize() {
-		$('#setAnimationComponent-confirm').on('click', () => this.save!());
 		$('#setAnimationComponent-operation').loadItems([
 			{ name: 'Set Angle', value: 'set-angle' },
 			{ name: 'Set Scale', value: 'set-scale' },

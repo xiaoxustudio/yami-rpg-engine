@@ -1,7 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { addClass, getFocus, hasClass, on, removeClass } from '@/util/element-utils.ts';
+import { addClass, getFocus, hasClass, on } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { File } from '@/file/file-system-core.ts';
 import { GL } from '@/webgl/webgl-init.ts';
@@ -29,6 +29,7 @@ type TeamData = {
 type TeamListElement = HTMLElement & {
 	data: TeamData[];
 	deleteNode(item: TeamData): void;
+	update(): void;
 };
 
 export const Team = {
@@ -60,8 +61,6 @@ export const Team = {
 	list_createIcon: null as unknown as (item: TeamData) => void,
 	list_updateIcon: null as unknown as (item: TeamData) => void,
 	list_updateItemName: null as unknown as (item: TeamData) => void,
-	list_createMarks: null as unknown as (item: TeamData) => void,
-	list_updateMarks: null as unknown as (item: TeamData) => void,
 	state: null as string | null,
 	teams: null as Record<string, TeamData> | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
@@ -84,10 +83,7 @@ function ensureDomBound() {
 	list.createIcon = Team.list_createIcon as (item: unknown) => unknown;
 	list.updateIcon = Team.list_updateIcon as (item: unknown) => unknown;
 	list.updateItemName = Team.list_updateItemName as (item: unknown) => unknown;
-	list.addElementClass = Easing.list_addElementClass;
 	list.updateTextNode = Easing.list_updateTextNode;
-	list.createMarks = Team.list_createMarks;
-	list.updateMarks = Team.list_updateMarks;
 	list.insert = Team.list_insert;
 	list.copy = Team.list_copy;
 	list.paste = Team.list_paste;
@@ -103,13 +99,11 @@ Team.initialize = function (this: typeof Team) {
 
 	const list = this.list!;
 	getListConfig(list).removable = true;
+	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
 	getListConfig(list).creators.push(list.createIcon);
 	getListConfig(list).updaters.push(list.updateTextNode);
-	getListConfig(list).creators.push(list.createMarks);
-	getListConfig(list).updaters.push(list.updateMarks);
 
 	on($('#team'), 'close', this.windowClose);
 	on($('#team'), 'closed', this.windowClosed);
@@ -295,25 +289,25 @@ Team.listPointerdown = function (this: TeamListElement, event: PointerEvent) {
 				});
 			}
 			if (hasClass(event.target, 'team-relation-mark')) {
-				const element = (event.target as HTMLElement).parentNode as HTMLElement;
+				const element = (event.target as HTMLElement).closest('node-item') as HTMLElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.relations[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.relations[teamA.id] ^= 1;
 				}
-				this.updateMarks(teamB);
+				this.update();
 				Team.changed = true;
 			}
 			if (hasClass(event.target, 'team-collision-mark')) {
-				const element = (event.target as HTMLElement).parentNode as HTMLElement;
+				const element = (event.target as HTMLElement).closest('node-item') as HTMLElement;
 				const teamA = this.read();
 				const teamB = element.item!;
 				teamA.collisions[teamB.id] ^= 1;
 				if (teamA !== teamB) {
 					teamB.collisions[teamA.id] ^= 1;
 				}
-				this.updateMarks(teamB);
+				this.update();
 				Team.changed = true;
 			}
 			break;
@@ -322,14 +316,18 @@ Team.listPointerdown = function (this: TeamListElement, event: PointerEvent) {
 
 Team.listSelect = function (event: Event) {
 	const list = Team.list!;
+	let rendered = false;
 	for (const team of list.data) {
 		const element = team.element;
 		if (element !== undefined) {
 			element.changed = true;
 			if (element.parentNode) {
-				list.updateMarks(team);
+				rendered = true;
 			}
 		}
+	}
+	if (rendered) {
+		list.update();
 	}
 };
 
@@ -531,56 +529,4 @@ Team.list_updateIcon = function (item: TeamData) {
 
 Team.list_updateItemName = function (this: TeamListElement, item: TeamData) {
 	this.updateTextNode(item);
-};
-
-Team.list_createMarks = function (item: TeamData) {
-	const { element } = item;
-	const relationMark = document.createElement('div');
-	addClass(relationMark, 'team-relation-mark');
-	addClass(relationMark, 'text');
-	element.relationMark = relationMark;
-	element.appendChild(relationMark);
-	const collisionMark = document.createElement('div');
-	addClass(collisionMark, 'team-collision-mark');
-	addClass(collisionMark, 'text');
-	collisionMark.textContent = '\uf066';
-	element.collisionMark = collisionMark;
-	element.appendChild(collisionMark);
-};
-
-Team.list_updateMarks = function (item: TeamData) {
-	const selection = Team.list!.read();
-	if (selection === null) return;
-	const relationMark = item.element.relationMark;
-	const relations = selection.relations;
-	const relation = relations[item.id];
-	if (relationMark.relation !== relation) {
-		relationMark.relation = relation;
-		switch (relation) {
-			case 0:
-				removeClass(relationMark, 'friend');
-				addClass(relationMark, 'enemy');
-				relationMark.textContent = '\uf119';
-				break;
-			case 1:
-				removeClass(relationMark, 'enemy');
-				addClass(relationMark, 'friend');
-				relationMark.textContent = '\uf118';
-				break;
-		}
-	}
-	const collisionMark = item.element.collisionMark;
-	const collisions = selection.collisions;
-	const collision = collisions[item.id];
-	if (collisionMark.collision !== collision) {
-		collisionMark.collision = collision;
-		switch (collision) {
-			case 0:
-				removeClass(collisionMark, 'on');
-				break;
-			case 1:
-				addClass(collisionMark, 'on');
-				break;
-		}
-	}
 };

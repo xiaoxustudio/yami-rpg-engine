@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="angleGetter">
+	<WindowFrame id="angleGetter" @confirm="onConfirm">
 		<template #title><TitleBar>Angle<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { AngleGetter } from '@/command/angle-accessor-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -30,6 +31,10 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	AngleGetter?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

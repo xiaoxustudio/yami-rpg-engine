@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, write } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -43,8 +43,6 @@ EquipmentGetter.initialize = function (this: EquipmentGetterShape) {
 			},
 			{ case: 'variable', targets: [$('#equipmentGetter-variable')] }
 		]);
-
-	$('#equipmentGetter-confirm').on('click', this.confirm);
 };
 
 EquipmentGetter.open = function (this: EquipmentGetterShape, target: AccessorTarget) {

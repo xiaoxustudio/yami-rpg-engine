@@ -7,7 +7,6 @@ import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Shortcuts } from '@/tools/shortcut-registry.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { GUID } from '@/file/guid.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
@@ -29,14 +28,7 @@ interface EnumItem {
 	note?: string;
 	expanded?: boolean;
 	children?: EnumItem[];
-	element?: HTMLElement & {
-		group?: string;
-		groupText?: HTMLElement;
-		initText?: HTMLElement;
-		attrValue?: string;
-		noteIcon?: HTMLElement;
-		annotated?: boolean | null;
-	};
+	element?: HTMLElement;
 }
 
 interface EnumTarget {
@@ -197,15 +189,8 @@ function ensureDomBound() {
 	Enum.list.createString = null;
 	Enum.list.createIcon = null as unknown as (...args: unknown[]) => void;
 	Enum.list.parseName = null as unknown as (...args: unknown[]) => void;
-	Enum.list.addElementClass = null as unknown as (...args: unknown[]) => void;
-	Enum.list.createGroupText = null as unknown as (...args: unknown[]) => void;
-	Enum.list.updateGroupText = null as unknown as (...args: unknown[]) => void;
-	Enum.list.createInitText = null as unknown as (...args: unknown[]) => void;
-	Enum.list.updateInitText = null as unknown as (...args: unknown[]) => void;
-	Enum.list.createNoteIcon = null as unknown as (...args: unknown[]) => void;
-	Enum.list.updateNoteIcon = null as unknown as (...args: unknown[]) => void;
-	getListConfig(Enum.list).onDelete = null;
-	getListConfig(Enum.list).onResume = null;
+	getListConfig(Enum.list).onDelete = null as unknown as (item: unknown) => void;
+	getListConfig(Enum.list).onResume = null as unknown as (item: unknown) => void;
 	bindListClipboardMethods({
 		module: Enum,
 		list: Enum.list,
@@ -262,87 +247,15 @@ function ensureDomBound() {
 	Enum.list.parseName = function (item: EnumItem) {
 		return GameLocal.replace(item.name);
 	};
-	Enum.list.addElementClass = function (item: EnumItem) {
-		addClass(item.element, 'enum-item');
-		addClass(item.element, 'reference');
-	};
-	Enum.list.createGroupText = function (item: EnumItem) {
-		if (item.class === 'folder') {
-			const element = item.element!;
-			const groupText = document.createElement('div');
-			addClass(groupText, 'enum-init-text');
-			addClass(groupText, 'text');
-			element.appendChild(groupText);
-			element.groupText = groupText;
-			element.group = '';
-		}
-	};
-	Enum.list.updateGroupText = function (item: EnumItem) {
-		const { element } = item;
-		if (element?.groupText !== undefined) {
-			let group = '';
-			for (const key of Enum.settingKeys) {
-				if (item.id === Enum.settings[key]) {
-					group = key;
-				}
-			}
-			if (element.group !== group) {
-				element.group = group;
-				element.groupText.textContent = group ? ' ★' : '';
-			}
-		}
-	};
-	Enum.list.createInitText = function (item: EnumItem) {
-		if (item.class !== 'folder') {
-			const element = item.element!;
-			const initText = document.createElement('div');
-			addClass(initText, 'enum-init-text');
-			addClass(initText, 'text');
-			element.appendChild(initText);
-			element.initText = initText;
-			element.attrValue = '';
-		}
-	};
-	Enum.list.updateInitText = function (item: EnumItem) {
-		const { element } = item;
-		if (element?.initText !== undefined) {
-			const value = GameLocal.replace(item.value!);
-			if (element.attrValue !== value) {
-				element.attrValue = value;
-				element.initText.textContent = value ? ` = ${value}` : '';
-			}
-		}
-	};
-	Enum.list.createNoteIcon = function (item: EnumItem) {
-		if (item.class !== 'folder') {
-			const element = item.element!;
-			const noteIcon = document.createElement('node-icon');
-			addClass(noteIcon, 'icon-note');
-			noteIcon.textContent = '\uf27b';
-			element.appendChild(noteIcon);
-			element.noteIcon = noteIcon;
-			element.annotated = null;
-		}
-	};
-	Enum.list.updateNoteIcon = function (item: EnumItem) {
-		const { element } = item;
-		if (element?.noteIcon !== undefined) {
-			const annotated = item.note !== '';
-			if (element.annotated !== annotated) {
-				element.annotated = annotated;
-				annotated ? show(element.noteIcon) : hide(element.noteIcon);
-			}
-		}
-	};
 	getListConfig(Enum.list).onCreate = function (item: EnumItem) {
 		Enum.register(item);
-	};
+	} as (item: unknown) => void;
 	getListConfig(Enum.list).onDelete = function (item: EnumItem) {
 		Enum.unregister(item);
-	};
+	} as (item: unknown) => void;
 	getListConfig(Enum.list).onResume = function (item: EnumItem) {
 		Enum.register(item);
-	};
+	} as (item: unknown) => void;
 }
 
 Enum.initialize = function (this: typeof Enum) {
@@ -352,13 +265,6 @@ Enum.initialize = function (this: typeof Enum) {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).creators.push(list.createGroupText);
-	getListConfig(list).updaters.push(list.updateGroupText);
-	getListConfig(list).creators.push(list.createInitText);
-	getListConfig(list).creators.push(list.updateInitText);
-	getListConfig(list).creators.push(list.createNoteIcon);
-	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	if (this.panel) getEnumStore().state.selected = null;
 
@@ -397,7 +303,7 @@ Enum.initialize = function (this: typeof Enum) {
 		const { item, value } = data;
 		data.value = item.value!;
 		item.value = value;
-		list.updateInitText(item);
+		list.update();
 		if (getEnumStore().state.selected === item) {
 			write(this.inputs.value, value);
 		} else {
@@ -411,7 +317,7 @@ Enum.initialize = function (this: typeof Enum) {
 		const { item, value } = data;
 		data.value = item.note!;
 		item.note = value;
-		list.updateNoteIcon(item);
+		list.update();
 		if (getEnumStore().state.selected === item) {
 			write(this.inputs.note, value);
 		} else {
@@ -438,7 +344,6 @@ Enum.initialize = function (this: typeof Enum) {
 	on(this.searcher, 'input', this.searcherInput);
 	on(this.searcher, 'compositionend', this.searcherInput);
 	on($('#enum-confirm'), 'click', this.confirm);
-	on($('#enum-apply'), 'click', this.apply);
 };
 
 Enum.open = function (
@@ -478,67 +383,32 @@ Enum.open = function (
 };
 
 Enum.undo = function (this: typeof Enum) {
-	if (this.history.canUndo()) {
-		this.history.restore('undo');
-	}
+	getEnumStore().undo();
 };
 
 Enum.redo = function (this: typeof Enum) {
-	if (this.history.canRedo()) {
-		this.history.restore('redo');
-	}
+	getEnumStore().redo();
 };
 
 Enum.createId = function (this: typeof Enum) {
-	let id;
-	do {
-		id = GUID.generate64bit();
-	} while (this.idMap[id]);
-	return id;
+	return getEnumStore().createId();
 };
 
 Enum.register = function (this: typeof Enum, item: EnumItem) {
-	Enum.idMap[item.id] = true;
-	if (item.class === 'folder') {
-		for (const child of item.children!) {
-			Enum.register(child);
-		}
-	}
+	getEnumStore().register(item as EnumItemShape);
 };
 
 Enum.unregister = function (this: typeof Enum, item: EnumItem) {
-	delete Enum.idMap[item.id];
-	if (item.class === 'folder') {
-		for (const child of item.children!) {
-			Enum.unregister(child);
-		}
-	}
+	getEnumStore().unregister(item as EnumItemShape);
 };
 
-Enum.getItemById = (function IIFE() {
-	const find = (items: EnumItem[] | null | undefined, id: string): EnumItem | undefined => {
-		const length = items!.length;
-		for (let i = 0; i < length; i++) {
-			const item = items![i];
-			if (item.id === id) {
-				return item;
-			}
-			if (item.class === 'folder') {
-				const result = find(item.children, id);
-				if (result !== undefined) {
-					return result;
-				}
-			}
-		}
-		return undefined;
-	};
-	return function (this: typeof Enum, id: string) {
-		return find(this.data, id);
-	};
-})();
+Enum.getItemById = function (this: typeof Enum, id: string) {
+	return getEnumStore().getItemById(id) as EnumItem | undefined;
+};
 
 Enum.setFolderGroup = function (this: typeof Enum, folder: EnumItem, newGroup: string) {
-	const oldGroup = folder.element!.group;
+	const oldGroup =
+		Object.keys(this.settings).find((key) => this.settings[key] === folder.id) ?? '';
 	if (oldGroup !== newGroup) {
 		const settings = Object.clone(this.settings);
 		if (oldGroup) this.settings[oldGroup] = '';
@@ -681,23 +551,7 @@ Enum.packEnumeration = (function IIFE() {
 })();
 
 Enum.saveHistory = function (this: typeof Enum, item: EnumItem, key: string, value?: string) {
-	const type = `enum-${key}-change`;
-	const history = this.history;
-	const index = history.index;
-	const length = history.length;
-	const record = history[index];
-	if (
-		index !== length - 1 ||
-		record === undefined ||
-		record.type !== type ||
-		record.item !== item
-	) {
-		history.save({
-			type: type,
-			item: item,
-			value: value
-		});
-	}
+	getEnumStore().saveHistory(item as EnumItemShape, key, value);
 };
 
 Enum.windowClose = function (this: typeof Enum, event: Event) {
@@ -977,7 +831,7 @@ Enum.valueInput = function (event: InputEvent & { target: HTMLInputElement }) {
 	if (item.class !== 'folder') {
 		Enum.saveHistory(item, 'value', item.value);
 		item.value = event.target.value;
-		Enum.list!.updateInitText(item);
+		Enum.list!.update();
 		Enum.changed = true;
 	}
 };
@@ -987,7 +841,7 @@ Enum.noteInput = function (this: HTMLElement, event: InputEvent) {
 		const item = getEnumStore().state.selected as EnumItem;
 		Enum.saveHistory(item, 'note', item.note);
 		item.note = read(this);
-		Enum.list!.updateNoteIcon(item);
+		Enum.list!.update();
 		Enum.changed = true;
 	}
 };

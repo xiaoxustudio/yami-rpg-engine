@@ -20,7 +20,6 @@ SceneShift.initialize = function () {
 	const shiftEl = $('#scene-shift');
 	if (!shiftEl) return;
 	shiftEl.addEventListener('closed', this.windowClosed!);
-	$('#scene-shift-confirm')?.addEventListener('click', this.confirm!);
 };
 
 SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {

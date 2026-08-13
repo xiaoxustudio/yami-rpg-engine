@@ -73,6 +73,12 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
+const emit = defineEmits<{
+	confirm: [];
+	apply: [];
+	cancel: [];
+}>();
+
 defineExpose({ open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on, root });
 
 onMounted(() => {
@@ -80,5 +86,8 @@ onMounted(() => {
 		Record<'open' | 'close' | 'maximize' | 'unmaximize' | 'focus' | 'blur' | 'setTitle' | 'absolute' | 'setPosition' | 'on', any>;
 	if (!el) return;
 	attachElementApi(el, { open, close, maximize, unmaximize, focus, blur, setTitle, absolute, setPosition, on });
+	for (const type of ['confirm', 'apply', 'cancel'] as const) {
+		el.addEventListener(type, () => emit(type));
+	}
 });
 </script>

@@ -106,8 +106,6 @@ SwitchCondition.initialize = function (this: typeof SwitchCondition): void {
 		{ name: 'Back Button', value: 3 },
 		{ name: 'Forward Button', value: 4 }
 	]);
-
-	$('#switch-condition-confirm').addEventListener('click', this.confirm!);
 };
 
 SwitchCondition.parse = function (

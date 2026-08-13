@@ -11,7 +11,6 @@ Command.cases.transition = new CommandSchema({
 	name: 'transition',
 	commands: null,
 	onInitialize(this: CommandSchema) {
-		$('#transition-confirm').on('click', () => this.save!());
 		$('#transition').on('open', function (event: Event) {
 			$('#transition-easingId').loadItems(Data.createEasingItems!());
 		});

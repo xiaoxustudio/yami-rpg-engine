@@ -20,7 +20,6 @@ type JumpToData = {
 Command.cases.jumpTo = new CommandSchema({
 	name: 'jumpTo',
 	onInitialize() {
-		$('#jumpTo-confirm').on('click', () => this.save!());
 		TextSuggestion.listen!(
 			$('#jumpTo-label') as unknown as TextSuggestionTarget,
 			this.loadLabels

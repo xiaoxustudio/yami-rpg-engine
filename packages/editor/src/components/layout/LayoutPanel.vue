@@ -101,6 +101,7 @@
 				<TreeList
 					id="scene-list"
 					padded
+					:node-extras="sceneNodeExtras"
 					@select="onSceneListSelect"
 					@record="onSceneListRecord"
 					@popup="onSceneListPopup"
@@ -162,6 +163,7 @@
 				<TreeList
 					id="ui-list"
 					padded
+					:node-extras="uiNodeExtras"
 					@select="onUiListSelect"
 					@record="onUiListRecord"
 					@popup="onUiListPopup"
@@ -217,6 +219,7 @@
 				<TreeList
 					id="animation-list"
 					padded
+					:node-extras="animationNodeExtras"
 					@select="onAnimationListSelect"
 					@record="onAnimationListRecord"
 					@open="onAnimationListOpen"
@@ -244,6 +247,7 @@
 				</div>
 				<TreeList
 					id="animation-layer-list"
+					:node-extras="layerNodeExtras"
 					@select="onLayerListSelect"
 					@record="onLayerListRecord"
 					@popup="onLayerListPopup"
@@ -315,7 +319,7 @@
 				</div>
 			</div>
 			<div class="page-frame" id="particle-layer" value="particle-layer">
-				<TreeList id="particle-list" padded></TreeList>
+				<TreeList id="particle-list" padded :node-extras="particleNodeExtras"></TreeList>
 			</div>
 			<div class="page-frame" id="inspector" value="inspector">
 				<PageManager id="inspector-page-manager" tabindex="-1">
@@ -375,6 +379,7 @@
 </template>
 
 <script setup lang="ts">
+import { h, type VNode } from 'vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
@@ -388,6 +393,321 @@ import { UI } from '@/ui/ui-window.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
+
+interface SceneExtrasNode {
+	class?: string;
+	enabled?: boolean;
+	conditions?: unknown[];
+	events?: unknown[];
+	scripts?: unknown[];
+	hidden?: boolean;
+	locked?: boolean;
+	parent?: SceneExtrasNode;
+}
+
+interface UiExtrasNode {
+	class?: string;
+	enabled?: boolean;
+	hidden?: boolean;
+	locked?: boolean;
+	instance?: UiExtrasNode;
+	events?: unknown[];
+	scripts?: unknown[];
+	conditions?: unknown[];
+}
+
+interface LayerExtrasNode {
+	hidden?: boolean;
+	locked?: boolean;
+}
+
+type ExtrasListElement = HTMLElement & { [k: string]: any };
+
+const onSceneVisibilityPointerdown =
+	(item: SceneExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list || !list.canSwitchState(item)) return;
+		const { hidden } = item;
+		const backups = list.setRecursiveStates(item, 'hidden', !hidden);
+		list.updateFolderState(item.parent, 'hidden');
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		Scene.requestRendering?.();
+		Scene.history.save({
+			type: 'scene-object-hidden',
+			item: item,
+			oldValues: backups,
+			newValue: !hidden
+		});
+	};
+
+const onSceneLockPointerdown =
+	(item: SceneExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list || !list.canSwitchState(item)) return;
+		const { locked } = item;
+		const backups = list.setRecursiveStates(item, 'locked', !locked);
+		list.updateFolderState(item.parent, 'hidden');
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		Scene.history.save({
+			type: 'scene-object-locked',
+			item: item,
+			oldValues: backups,
+			newValue: !locked
+		});
+	};
+
+const sceneNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as SceneExtrasNode;
+	const element = container.parentNode as HTMLElement | null;
+	const nodes: VNode[] = [];
+	if (node.class !== 'folder') {
+		element?.classList.add('reference');
+	} else {
+		element?.classList.remove('reference');
+	}
+	if (node === Scene.tilemap) {
+		element?.classList.add('highlight');
+	}
+	if (node.conditions instanceof Array) {
+		const condition = node.enabled
+			? node.conditions.length !== 0
+				? 'conditional'
+				: 'none'
+			: 'absent';
+		if (condition === 'none') {
+			element?.classList.remove('weak');
+		} else {
+			if (condition === 'conditional') {
+				element?.classList.remove('weak');
+			} else {
+				element?.classList.add('weak');
+			}
+			nodes.push(
+				h('node-icon', { class: 'icon-conditional' }, condition === 'conditional' ? '?' : '!')
+			);
+		}
+	}
+	if (node.events instanceof Array && node.events.length !== 0) {
+		nodes.push(h('node-icon', { class: 'icon-eventEnabled' }, 'E'));
+	}
+	if (node.scripts instanceof Array && node.scripts.length !== 0) {
+		nodes.push(h('node-icon', { class: 'icon-scriptEnabled' }, '\uf121'));
+	}
+	nodes.push(
+		h(
+			'visibility-icon',
+			{
+				class: { 'node-icon-highlight': !!node.hidden },
+				onPointerdown: onSceneVisibilityPointerdown(node, container)
+			},
+			node.hidden ? '\uf070' : '\uf06e'
+		)
+	);
+	nodes.push(
+		h(
+			'lock-icon',
+			{
+				class: { 'node-icon-highlight': !!node.locked },
+				onPointerdown: onSceneLockPointerdown(node, container)
+			},
+			node.locked ? '\uf023' : '\uf09c'
+		)
+	);
+	return nodes;
+};
+
+const onUiVisibilityPointerdown =
+	(item: UiExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list) return;
+		const { instance, hidden } = item;
+		const backups1 = list.setRecursiveStates(item, 'hidden', !hidden);
+		const backups2 = list.setRecursiveStates(instance, 'visible', hidden);
+		const length = Math.max(backups1.length, backups2.length);
+		for (let i = 0; i < length; i++) {
+			if (backups1[i] === backups2[i]) {
+				throw new Error('Failed to switch hidden state');
+			}
+		}
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		UI.requestRendering?.();
+		UI.history.save({
+			type: 'ui-object-hidden',
+			item: item,
+			oldValues1: backups1,
+			oldValues2: backups2,
+			newValue: !hidden
+		});
+	};
+
+const onUiLockPointerdown =
+	(item: UiExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list) return;
+		const { locked } = item;
+		const backups = list.setRecursiveStates(item, 'locked', !locked);
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		UI.history.save({
+			type: 'ui-object-locked',
+			item: item,
+			oldValues: backups,
+			newValue: !locked
+		});
+	};
+
+const uiNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as UiExtrasNode;
+	const element = container.parentNode as HTMLElement | null;
+	const nodes: VNode[] = [];
+	if (node.class !== 'folder') {
+		element?.classList.add('reference');
+	} else {
+		element?.classList.remove('reference');
+	}
+	if (node.enabled) {
+		element?.classList.remove('weak');
+	} else {
+		element?.classList.add('weak');
+		nodes.push(h('node-icon', { class: 'icon-conditional' }, '!'));
+	}
+	if (node.events instanceof Array && node.events.length !== 0) {
+		nodes.push(h('node-icon', { class: 'icon-eventEnabled' }, 'E'));
+	}
+	if (node.scripts instanceof Array && node.scripts.length !== 0) {
+		nodes.push(h('node-icon', { class: 'icon-scriptEnabled' }, '\uf121'));
+	}
+	nodes.push(
+		h(
+			'visibility-icon',
+			{
+				class: { 'node-icon-highlight': !!node.hidden },
+				onPointerdown: onUiVisibilityPointerdown(node, container)
+			},
+			node.hidden ? '\uf070' : '\uf06e'
+		)
+	);
+	nodes.push(
+		h(
+			'lock-icon',
+			{
+				class: { 'node-icon-highlight': !!node.locked },
+				onPointerdown: onUiLockPointerdown(node, container)
+			},
+			node.locked ? '\uf023' : '\uf09c'
+		)
+	);
+	return nodes;
+};
+
+const animationNodeExtras = (item: unknown): VNode[] => {
+	const node = item as { loop?: boolean };
+	if (node.loop) {
+		return [h('node-icon', { class: 'icon-loop' }, '\uf112')];
+	}
+	return [];
+};
+
+const onLayerVisibilityPointerdown =
+	(item: LayerExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list) return;
+		const { hidden } = item;
+		const backups = list.setRecursiveStates(item, 'hidden', !hidden);
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		Animation.requestRendering?.();
+		Animation.history.save({
+			type: 'animation-layer-hidden',
+			motion: Animation.motion,
+			direction: Animation.direction,
+			item: item,
+			oldValues: backups,
+			newValue: !hidden
+		});
+	};
+
+const onLayerLockPointerdown =
+	(item: LayerExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list) return;
+		const { locked } = item;
+		const backups = list.setRecursiveStates(item, 'locked', !locked);
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		Animation.history.save({
+			type: 'animation-layer-locked',
+			motion: Animation.motion,
+			direction: Animation.direction,
+			item: item,
+			oldValues: backups,
+			newValue: !locked
+		});
+	};
+
+const layerNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as LayerExtrasNode;
+	return [
+		h(
+			'visibility-icon',
+			{
+				class: { 'node-icon-highlight': !!node.hidden },
+				onPointerdown: onLayerVisibilityPointerdown(node, container)
+			},
+			node.hidden ? '\uf070' : '\uf06e'
+		),
+		h(
+			'lock-icon',
+			{
+				class: { 'node-icon-highlight': !!node.locked },
+				onPointerdown: onLayerLockPointerdown(node, container)
+			},
+			node.locked ? '\uf023' : '\uf09c'
+		)
+	];
+};
+
+const onParticleVisibilityPointerdown =
+	(item: LayerExtrasNode, container: HTMLElement) => (event: PointerEvent) => {
+		if (event.button !== 0) return;
+		const list = container.closest('.tree-list') as ExtrasListElement | null;
+		if (!list) return;
+		const { hidden } = item;
+		item.hidden = !hidden;
+		list.update();
+		list.dispatchEvent(new Event('change', { bubbles: true }));
+		Particle.requestRendering?.();
+		Particle.history!.save({
+			type: 'particle-layer-hidden',
+			item: item,
+			oldValue: hidden,
+			newValue: !hidden
+		});
+	};
+
+const particleNodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as LayerExtrasNode;
+	return [
+		h(
+			'visibility-icon',
+			{
+				style: { right: '0' },
+				class: { 'node-icon-highlight': !!node.hidden },
+				onPointerdown: onParticleVisibilityPointerdown(node, container)
+			},
+			node.hidden ? '\uf070' : '\uf06e'
+		)
+	];
+};
 
 const onSceneHeadPointerdown = (event: PointerEvent) => {
 	Scene?.headPointerdown?.(event);

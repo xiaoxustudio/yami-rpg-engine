@@ -19,7 +19,6 @@ Command.cases.setCooldown = new CommandSchema({
 		{ key: 'cooldown', default: 0 }
 	],
 	onInitialize() {
-		$('#setCooldown-confirm').on('click', () => this.save!());
 		$('#setCooldown-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Increase', value: 'increase' },

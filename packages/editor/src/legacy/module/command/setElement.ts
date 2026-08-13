@@ -12,7 +12,6 @@ Command.cases.setElement = new CommandSchema({
 		{ key: 'operation', default: 'hide' }
 	],
 	onInitialize() {
-		$('#setElement-confirm').on('click', () => this.save!());
 		$('#setElement-operation').loadItems([
 			{ name: 'Hide', value: 'hide' },
 			{ name: 'Show', value: 'show' },

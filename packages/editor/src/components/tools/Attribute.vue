@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="attribute" show-apply>
+	<WindowFrame id="attribute" show-apply @apply="onApply">
 		<template #title><TitleBar>Attribute<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="attribute-list-fieldset">
@@ -7,6 +7,7 @@
 				<TreeList
 					id="attribute-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@record="onListRecord"
 					@open="onListOpen"
@@ -82,12 +83,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { getAttributeStore } from '@app/stores/attribute';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
@@ -96,6 +98,31 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown): VNode[] => {
+	const node = item as { class?: string; id: string; key?: string; note?: string };
+	const nodes: VNode[] = [];
+	if (node.class === 'folder') {
+		const store = getAttributeStore();
+		let group = '';
+		for (const key of store.state.settingKeys ?? []) {
+			if (node.id === store.state.settings?.[key]) {
+				group = key;
+			}
+		}
+		if (group) {
+			nodes.push(h('div', { class: 'enum-init-text text' }, ' ★'));
+		}
+	} else {
+		if (node.key) {
+			nodes.push(h('div', { class: 'attribute-init-text text' }, ` = ${node.key}`));
+		}
+		if (node.note) {
+			nodes.push(h('node-icon', { class: 'icon-note' }, '\uf27b'));
+		}
+	}
+	return nodes;
+};
 
 const onListSelect = (event: Event) => {
 	Attribute?.listSelect?.(event);
@@ -128,6 +155,10 @@ const onTypeWrite = (value: number | string | boolean) => {
 		lastTypeWriteValue = value;
 		Attribute?.typeWrite?.({ value });
 	}
+};
+
+const onApply = () => {
+	Attribute?.apply?.();
 };
 
 onMounted(() => {

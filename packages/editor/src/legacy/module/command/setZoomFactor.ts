@@ -15,7 +15,6 @@ Command.cases.setZoomFactor = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setZoomFactor-confirm').on('click', () => this.save!());
 		$('#setZoomFactor-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

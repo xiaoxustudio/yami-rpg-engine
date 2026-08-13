@@ -41,7 +41,6 @@ interface SetStringOperand {
 Command.cases.setString = new CommandSchema({
 	name: 'setString',
 	onInitialize() {
-		$('#setString-confirm').on('click', () => this.save!());
 		$('#setString-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Add', value: 'add' }

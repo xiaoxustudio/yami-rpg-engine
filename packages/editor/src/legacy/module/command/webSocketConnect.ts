@@ -11,7 +11,6 @@ Command.cases.webSocketConnect = new CommandSchema({
 		write($('#webSocketConnect-url'), '');
 		write($('#webSocketConnect-id'), '');
 		write($('#webSocketConnect-protocols'), '');
-		$('#webSocketConnect-confirm').on('click', () => this.save!());
 	},
 	customParse({
 		url = '',

@@ -13,7 +13,6 @@ Command.cases.setTextBox = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setTextBox-confirm').on('click', () => this.save!());
 		$('#setTextBox-properties').bind(TextBoxProperty);
 		$('#setTextBox').on('closed', (event: Event) => {
 			clear($('#setTextBox-properties'));

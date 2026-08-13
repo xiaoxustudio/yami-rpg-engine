@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="scene-shift">
+		<WindowFrame id="scene-shift" @confirm="onConfirm">
 		<template #title><TitleBar>Shift<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { SceneShift } from '@/scene/move-scene.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -20,6 +21,10 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const onConfirm = () => {
+	SceneShift?.confirm?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

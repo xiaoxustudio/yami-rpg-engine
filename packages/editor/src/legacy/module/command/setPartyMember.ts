@@ -12,7 +12,6 @@ Command.cases.setPartyMember = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } }
 	],
 	onInitialize() {
-		$('#setPartyMember-confirm').on('click', () => this.save!());
 		$('#setPartyMember-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' }

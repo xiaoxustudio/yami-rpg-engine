@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintScreen = new CommandSchema({
 	name: 'tintScreen',
 	onInitialize() {
-		$('#tintScreen-confirm').on('click', () => this.save!());
 		$('#tintScreen-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

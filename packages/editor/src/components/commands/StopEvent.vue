@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="stopEvent">
+<WindowFrame id="stopEvent" @confirm="onConfirm">
 	<template #title><TitleBar>Stop Event<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -34,6 +34,10 @@ const onWrite = (value: unknown) => {
 };
 
 const local = useLocalStore();
+
+const onConfirm = () => {
+	Command?.cases?.stopEvent?.save?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

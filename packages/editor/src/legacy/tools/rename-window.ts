@@ -23,7 +23,6 @@ export const Rename: {
 Rename.initialize = function (this: typeof Rename) {
 	if (!$('#rename')) return;
 	$('#rename').on('closed', this.windowClosed);
-	$('#rename-confirm').on('click', this.confirm);
 };
 
 Rename.open = function (this: typeof Rename, name: string, callback: (value: string) => void) {

@@ -9,7 +9,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getTarget = new CommandSchema({
 	name: 'getTarget',
 	onInitialize() {
-		$('#getTarget-confirm').on('click', () => this.save!());
 		$('#getTarget-selector').loadItems([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },

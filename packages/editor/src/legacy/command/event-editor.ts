@@ -3,7 +3,6 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write } from '@/util/element-utils';
 import { ctrl } from '@/util/event-accessors.ts';
-import { Command } from './command-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Editor } from '@/main/editor.ts';
 import { Data } from '@/data/data-object.ts';
@@ -59,8 +58,6 @@ interface EventListItem {
 	changed: boolean;
 	inserting: boolean;
 	element: HTMLElement & {
-		initText?: HTMLElement;
-		attrValue?: string;
 		item?: EventListItem;
 	};
 }
@@ -99,9 +96,6 @@ interface EventEditorList {
 		| null;
 	createGlobalEventItem: ((guid: string) => EventListItem) | null;
 	createIcon: ((item: EventListItem) => HTMLElement) | null;
-	updateItemClass: ((item: EventListItem) => void) | null;
-	createInitText: ((item: EventListItem) => void) | null;
-	updateInitText: ((item: EventListItem) => void) | null;
 	updateItemName: ((item: EventListItem) => void) | null;
 	closeButtonClick: ((event: MouseEvent) => void) | null;
 	removable: boolean;
@@ -288,11 +282,8 @@ function ensureDomBound() {
 	EventEditor.list.createGlobalEventItem = null;
 	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
 		((item: EventListItem) => HTMLElement);
-	EventEditor.list.updateItemClass = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.createIcon = null as unknown as ((item: unknown) => unknown) &
 		((item: EventListItem) => HTMLElement);
-	EventEditor.list.createInitText = null as unknown as (...args: unknown[]) => void;
-	EventEditor.list.updateInitText = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.updateItemName = null as unknown as (...args: unknown[]) => void;
 	EventEditor.list.closeButtonClick = null;
 	bindListMethods();
@@ -453,16 +444,6 @@ function bindListMethods() {
 		return item;
 	};
 
-	list.updateItemClass = function (this: HTMLElement & EventEditorList, item: EventListItem) {
-		const { element } = item;
-		addClass(element, 'event-open-item');
-		if (item.filter === 'global') {
-			addClass(element, 'global-event');
-		} else {
-			addClass(element, 'local-event');
-		}
-	};
-
 	list.createIcon = function (this: HTMLElement & EventEditorList) {
 		const closeButton = document.createElement('div');
 		closeButton.textContent = '×';
@@ -472,37 +453,9 @@ function bindListMethods() {
 		return closeButton;
 	};
 
-	list.createInitText = function (this: HTMLElement & EventEditorList, item: EventListItem) {
-		const { element } = item;
-		const initText = document.createElement('div');
-		addClass(initText, 'event-init-text');
-		addClass(initText, 'text');
-		element.appendChild(initText);
-		element.initText = initText;
-		element.attrValue = '';
-	};
-
-	list.updateInitText = function (this: HTMLElement & EventEditorList, item: EventListItem) {
-		const { element } = item;
-		if (element.initText !== undefined) {
-			let typeName = '';
-			if (item.type !== 'common') {
-				typeName =
-					' : ' +
-					Command.removeTextTags!(
-						Command.parseEventType!(item.filter + '-event', item.type)
-					);
-			}
-			if (element.attrValue !== typeName) {
-				element.attrValue = typeName;
-				element.initText.textContent = typeName;
-			}
-		}
-	};
-
 	list.updateItemName = function (this: HTMLElement & EventEditorList, item: EventListItem) {
 		TreeList.prototype.updateItemName.call(this, item);
-		this.updateInitText!(item);
+		this.update();
 	} as ((item: unknown) => unknown) & ((item: EventListItem) => void);
 
 	list.closeButtonClick = function (this: HTMLElement & EventEditorList, event: MouseEvent) {
@@ -520,9 +473,6 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	list.bind!(() => this.data);
-	getListConfig(list).updaters.push(list.updateItemClass);
-	getListConfig(list).creators.push(list.createInitText);
-	getListConfig(list).creators.push(list.updateInitText);
 
 	const types = {
 		common: { name: 'Common', value: 'common', tip: '' },
@@ -802,7 +752,6 @@ EventEditor.initialize = function (this: EventEditorShape) {
 	on(this.commandList, 'update', this.commandListUpdate!);
 	on(this.commandList, 'scroll', this.commandListScroll!);
 	on($('#event-confirm'), 'click', this.confirm!);
-	on($('#event-apply'), 'click', this.apply!);
 };
 
 EventEditor.openLocalEvent = function (
@@ -1213,12 +1162,9 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 		if (i !== length) {
 			if (i < length) {
 				while (i < length) {
-					const node = document.createElement('div') as unknown as HTMLElement & {
-						number: number;
-					};
+					const node = document.createElement('div') as unknown as HTMLElement;
 					addClass(node, 'box');
 					addClass(node, 'event-commands-line-number');
-					node.number = -1;
 					innerGutter.appendChild(node);
 					i++;
 				}
@@ -1231,32 +1177,21 @@ EventEditor.resizeGutter = function (this: EventEditorShape) {
 	}
 };
 
-EventEditor.updateGutter = function (this: EventEditorShape, force: boolean) {
+EventEditor.updateGutter = function (this: EventEditorShape) {
 	const { commandList } = this;
 	const { scrollTop } = commandList;
 	const { outerGutter, innerGutter } = EventEditor;
 	const start = Math.floor(scrollTop / 20) + 1;
 	const end = commandList.elements.count + 1;
-	if (innerGutter.start !== start || force) {
-		innerGutter.start = start;
-		const nodes = innerGutter.childNodes;
-		const length = nodes.length;
-		for (let i = 0; i < length; i++) {
-			const node = nodes[i] as HTMLElement & { number: number };
-			const number = start + i;
-			if (number < end) {
-				if (node.number !== number) {
-					node.number = number;
-					node.textContent = number.toString();
-				}
-			} else {
-				if (node.number !== -1) {
-					node.number = -1;
-					node.textContent = '';
-				} else {
-					break;
-				}
-			}
+	const nodes = innerGutter.childNodes;
+	const length = nodes.length;
+	for (let i = 0; i < length; i++) {
+		const node = nodes[i] as HTMLElement;
+		const number = start + i;
+		if (number < end) {
+			node.textContent = number.toString();
+		} else {
+			node.textContent = '';
 		}
 	}
 	const tolerance = 0.0001;
@@ -1415,7 +1350,7 @@ EventEditor.windowResize = function (this: EventEditorShape, event: Event) {
 	commandList.scrollTop = st;
 
 	EventEditor.resizeGutter!();
-	EventEditor.updateGutter!(true);
+	EventEditor.updateGutter!();
 };
 
 EventEditor.windowKeydown = function (this: EventEditorShape, event: KeyboardEvent) {
@@ -1560,11 +1495,11 @@ EventEditor.commandListChange = function (this: EventEditorShape, event: Event) 
 
 EventEditor.commandListUpdate = function (this: EventEditorShape, event: Event) {
 	EventEditor.resizeGutter!();
-	EventEditor.updateGutter!(true);
+	EventEditor.updateGutter!();
 };
 
 EventEditor.commandListScroll = function (this: EventEditorShape, event: Event) {
-	EventEditor.updateGutter!(false);
+	EventEditor.updateGutter!();
 };
 
 EventEditor.confirm = function (this: EventEditorShape, event: Event) {

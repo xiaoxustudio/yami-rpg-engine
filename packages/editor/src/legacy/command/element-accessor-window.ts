@@ -1,4 +1,4 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { write, getFocus } from '@/util/element-utils.ts';
 import { VariableGetter } from './variable-accessor-window.ts';
@@ -84,8 +84,6 @@ ElementGetter.initialize = function (this: typeof ElementGetter): void {
 				targets: [$('#elementGetter-variable')]
 			}
 		]);
-
-	$('#elementGetter-confirm').addEventListener('click', this.confirm!);
 };
 
 ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTarget): void {
@@ -96,7 +94,7 @@ ElementGetter.open = function (this: ElementGetterShape, target: ElementGetterTa
 	let presetId = PresetElement.getDefaultPresetId!();
 	let ancestor = { type: 'trigger' };
 	let variable = { type: 'local', key: '' };
-	const element = target.read?.();
+	const element = target.read?.()!;
 	switch (element.type) {
 		case 'trigger':
 		case 'latest':

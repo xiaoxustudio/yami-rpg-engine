@@ -11,7 +11,6 @@ Command.cases.webSocketClose = new CommandSchema({
 		write($('#webSocketClose-id'), '');
 		write($('#webSocketClose-code'), '');
 		write($('#webSocketClose-reason'), '');
-		$('#webSocketClose-confirm').on('click', () => this.save!());
 	},
 	customParse({ id = '', code = '', reason = '' }) {
 		const head = [

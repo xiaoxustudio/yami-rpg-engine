@@ -13,7 +13,6 @@ Command.cases.setItem = new CommandSchema({
 		{ key: 'quantity', default: 1 }
 	],
 	onInitialize() {
-		$('#setItem-confirm').on('click', () => this.save!());
 		$('#setItem-operation').loadItems([
 			{ name: 'Increase', value: 'increase' },
 			{ name: 'Decrease', value: 'decrease' }

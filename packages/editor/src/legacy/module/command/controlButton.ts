@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.controlButton = new CommandSchema({
 	name: 'controlButton',
 	onInitialize() {
-		$('#controlButton-confirm').on('click', () => this.save!());
 		$('#controlButton-operation').loadItems([
 			{ name: 'Select Default Button', value: 'select-default' },
 			{ name: 'Select Button', value: 'select' },

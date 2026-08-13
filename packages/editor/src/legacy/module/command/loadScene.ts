@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadScene = new CommandSchema({
 	name: 'loadScene',
 	onInitialize() {
-		$('#loadScene-confirm').on('click', () => this.save!());
 		$('#loadScene-transfer').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

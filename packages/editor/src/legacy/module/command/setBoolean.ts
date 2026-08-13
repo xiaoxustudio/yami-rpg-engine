@@ -17,7 +17,6 @@ interface SetBooleanOperand {
 Command.cases.setBoolean = new CommandSchema({
 	name: 'setBoolean',
 	onInitialize() {
-		$('#setBoolean-confirm').on('click', () => this.save!());
 		$('#setBoolean-operation').loadItems([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Not', value: 'not' },

@@ -34,7 +34,6 @@ type SetObjectData = {
 Command.cases.setObject = new CommandSchema({
 	name: 'setObject',
 	onInitialize() {
-		$('#setObject-confirm').on('click', () => this.save!());
 		$('#setObject-operand-type').loadItems([
 			{ name: 'None', value: 'none' },
 			{ name: 'Actor', value: 'actor' },

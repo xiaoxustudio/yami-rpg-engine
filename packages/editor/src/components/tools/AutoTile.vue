@@ -16,6 +16,7 @@
 				<TreeList
 					id="autoTile-templates"
 					padded
+					:node-extras="nodeExtras"
 					@select="onTemplatesSelect"
 					@popup="onTemplatesPopup"
 					@change="onTemplatesChange"
@@ -84,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { AutoTile } from '@/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -98,6 +99,11 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	container.parentNode?.classList.add('plain');
+	return [];
+};
 
 const onTemplatesSelect = (event: Event & { value?: unknown }) => {
 	AutoTile?.templatesSelect?.(event);

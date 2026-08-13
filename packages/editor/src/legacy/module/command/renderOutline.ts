@@ -18,7 +18,6 @@ type RenderOutlineData = {
 Command.cases.renderOutline = new CommandSchema({
 	name: 'renderOutline',
 	onInitialize() {
-		$('#renderOutline-confirm').on('click', () => this.save!());
 		$('#renderOutline-operation').loadItems([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },

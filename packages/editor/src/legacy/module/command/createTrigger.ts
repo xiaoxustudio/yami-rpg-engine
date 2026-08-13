@@ -7,9 +7,7 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.createTrigger = new CommandSchema({
 	name: 'createTrigger',
-	onInitialize() {
-		$('#createTrigger-confirm').on('click', () => this.save!());
-	},
+	onInitialize() {},
 	customParse({
 		triggerId,
 		caster,

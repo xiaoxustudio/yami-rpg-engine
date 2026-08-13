@@ -18,7 +18,6 @@ interface SetNumberOperand {
 Command.cases.setNumber = new CommandSchema({
 	name: 'setNumber',
 	onInitialize() {
-		$('#setNumber-confirm').on('click', () => this.save!());
 		$('#setNumber-operands').bind(NumberOperand);
 		$('#setNumber').on('closed', (event: Event) => {
 			clear($('#setNumber-operands'));

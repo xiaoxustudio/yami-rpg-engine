@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="registerEvent">
+<WindowFrame id="registerEvent" @confirm="onConfirm">
 	<template #title><TitleBar>Register Event<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -42,6 +42,10 @@ const onOperationWrite = () => {
 };
 const onTypeWrite = () => {
 	Command?.cases?.registerEvent?.typeWrite?.();
+};
+
+const onConfirm = () => {
+	Command?.cases?.registerEvent?.save?.();
 };
 
 onMounted(() => {

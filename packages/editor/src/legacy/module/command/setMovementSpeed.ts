@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
 	onInitialize() {
-		$('#setMovementSpeed-confirm').on('click', () => this.save!());
 		$('#setMovementSpeed-property').loadItems([
 			{ name: 'Base Speed', value: 'base' },
 			{ name: 'Speed Factor', value: 'factor' },

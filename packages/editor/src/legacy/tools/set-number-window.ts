@@ -17,7 +17,6 @@ export const SetQuantity = {
 SetQuantity.initialize = function (this: typeof SetQuantity) {
 	if (!$('#setQuantity')) return;
 	$('#setQuantity').on('closed', this.windowClosed);
-	$('#setQuantity-confirm').on('click', this.confirm);
 };
 
 SetQuantity.open = function (

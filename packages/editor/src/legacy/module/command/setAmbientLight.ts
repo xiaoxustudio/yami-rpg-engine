@@ -26,7 +26,6 @@ Command.cases.setAmbientLight = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAmbientLight-confirm').on('click', () => this.save!());
 		$('#setAmbientLight-wait').loadItems([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }

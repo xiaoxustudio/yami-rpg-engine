@@ -15,7 +15,6 @@ Command.cases.changeActorSprite = new CommandSchema({
 		{ key: 'image', default: '' }
 	],
 	onInitialize() {
-		$('#changeActorSprite-confirm').on('click', () => this.save!());
 		// changeActorSprite-animationId write 经 Vue 模板转发（changeActorSprite.vue @write → Command.cases.changeActorSprite.writeHandler）
 	},
 	writeHandler(event: { value: string }) {

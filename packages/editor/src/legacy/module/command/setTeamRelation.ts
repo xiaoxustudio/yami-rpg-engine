@@ -14,7 +14,6 @@ Command.cases.setTeamRelation = new CommandSchema({
 		{ key: 'relation', default: 0 }
 	],
 	onInitialize() {
-		$('#setTeamRelation-confirm').on('click', () => this.save!());
 		$('#setTeamRelation-relation').loadItems([
 			{ name: 'Enemy', value: 0 },
 			{ name: 'Friend', value: 1 }

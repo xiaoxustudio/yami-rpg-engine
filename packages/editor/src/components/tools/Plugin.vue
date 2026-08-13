@@ -1,5 +1,5 @@
 <template>
-		<WindowFrame id="plugin" show-apply>
+		<WindowFrame id="plugin" show-apply @apply="onApply">
 		<template #title><TitleBar>Plugin<div class="close"></div></TitleBar></template>
 		
 			<div class="field-set input pad" id="plugin-list-fieldset">
@@ -7,6 +7,7 @@
 				<TreeList
 					id="plugin-list"
 					padded
+					:node-extras="nodeExtras"
 					@select="onListSelect"
 					@popup="onListPopup"
 					@open="onListOpen"
@@ -30,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { h, onMounted, type VNode } from 'vue';
 import { PluginManager } from '@/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -43,6 +44,19 @@ import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+
+const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
+	const node = item as { enabled?: boolean };
+	const element = container.parentNode as HTMLElement | null;
+	element?.classList.add('plugin-item');
+	if (node.enabled) {
+		element?.classList.remove('weak');
+	} else {
+		element?.classList.add('weak');
+	}
+	return [];
+};
+
 const onListSelect = (event: Event & { value?: unknown }) => {
 	PluginManager?.listSelect?.(event);
 };
@@ -56,6 +70,10 @@ const onListOpen = (event: Event & { value?: unknown }) => {
 	PluginManager?.listOpen?.(event);
 };
 
+
+const onApply = () => {
+	PluginManager?.apply?.();
+};
 
 onMounted(() => {
 	inspector.syncState();

@@ -571,10 +571,7 @@ Palette.updateHead = function (this: typeof Palette) {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild as HTMLElement);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 	}
 };
 

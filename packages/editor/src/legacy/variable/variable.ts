@@ -73,12 +73,6 @@ interface VariableModule {
 	list_createVariable: () => unknown;
 	list_createIcon: (item: unknown) => unknown;
 	list_updateIcon: (item: unknown) => void;
-	list_addElementClass: (item: unknown) => void;
-	list_updateItemClass: (item: unknown) => void;
-	list_createInitText: (item: unknown) => void;
-	list_updateInitText: (item: unknown) => void;
-	list_createNoteIcon: (item: unknown) => void;
-	list_updateNoteIcon: (item: unknown) => void;
 	list_onCreate: (item: unknown) => void;
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
@@ -145,12 +139,6 @@ export const Variable: VariableModule = {
 	list_createVariable: null as unknown as () => unknown,
 	list_createIcon: null as unknown as (item: unknown) => unknown,
 	list_updateIcon: null as unknown as (item: unknown) => void,
-	list_addElementClass: null as unknown as (item: unknown) => void,
-	list_updateItemClass: null as unknown as (item: unknown) => void,
-	list_createInitText: null as unknown as (item: unknown) => void,
-	list_updateInitText: null as unknown as (item: unknown) => void,
-	list_createNoteIcon: null as unknown as (item: unknown) => void,
-	list_updateNoteIcon: null as unknown as (item: unknown) => void,
 	list_onCreate: null as unknown as (item: unknown) => void,
 	list_onDelete: null as unknown as (item: unknown) => void,
 	list_onResume: null as unknown as (item: unknown) => void,
@@ -186,12 +174,6 @@ function ensureDomBound() {
 		Variable.list_createVariable;
 	Variable.list.createIcon = Variable.list_createIcon;
 	Variable.list.updateIcon = Variable.list_updateIcon;
-	Variable.list.addElementClass = Variable.list_addElementClass;
-	Variable.list.updateItemClass = Variable.list_updateItemClass;
-	Variable.list.createInitText = Variable.list_createInitText;
-	Variable.list.updateInitText = Variable.list_updateInitText;
-	Variable.list.createNoteIcon = Variable.list_createNoteIcon;
-	Variable.list.updateNoteIcon = Variable.list_updateNoteIcon;
 	getListConfig(Variable.list).onCreate = Variable.list_onCreate;
 	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
 	getListConfig(Variable.list).onResume = Variable.list_onResume;
@@ -234,12 +216,6 @@ Variable.initialize = function () {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.data);
-	getListConfig(list).creators.push(list.addElementClass);
-	getListConfig(list).creators.push(list.updateItemClass);
-	getListConfig(list).creators.push(list.createInitText);
-	getListConfig(list).creators.push(list.updateInitText);
-	getListConfig(list).creators.push(list.createNoteIcon);
-	getListConfig(list).creators.push(list.updateNoteIcon);
 
 	if (this.panel) getVariableStore().state.selected = null;
 	this.searcher?.addCloseButton?.();
@@ -288,8 +264,7 @@ Variable.initialize = function () {
 		item.sort = sort;
 		item.value = value;
 		list.updateIcon(item);
-		list.updateInitText(item);
-		list.updateItemClass(item);
+		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.sort, sort);
@@ -310,7 +285,7 @@ Variable.initialize = function () {
 		data.value = item.value;
 		item.value = value;
 		list.updateIcon(item);
-		list.updateInitText(item);
+		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			const type = typeof value;
 			write(this.inputs.type, type);
@@ -329,7 +304,7 @@ Variable.initialize = function () {
 		const { item, value } = data;
 		data.value = item.value;
 		item.value = value;
-		list.updateInitText(item);
+		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			write(this.inputs[typeof value], value);
 		} else {
@@ -346,7 +321,7 @@ Variable.initialize = function () {
 		const { item, value } = data;
 		data.value = item.note;
 		item.note = value;
-		list.updateNoteIcon(item);
+		list.update();
 		if (getVariableStore().state.selected === (item as unknown as VariableItemShape)) {
 			write(this.inputs.note, value);
 		} else {
@@ -377,7 +352,6 @@ Variable.initialize = function () {
 	on(this.searcher, 'input', this.searcherInput!);
 	on(this.searcher, 'compositionend', this.searcherInput!);
 	on($('#variable-confirm'), 'click', this.confirm!);
-	on($('#variable-apply'), 'click', this.apply!);
 };
 
 for (const key of variableStateKeys) {

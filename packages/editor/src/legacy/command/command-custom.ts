@@ -87,7 +87,6 @@ Command.custom = {
 
 	initialize: function (): void {
 		window.addEventListener('localize', this.windowLocalize);
-		$('#scriptCommand-confirm')?.addEventListener('click', this.save);
 
 		this.windowFrame = $('#scriptCommand') as HTMLElement & {
 			style: CSSStyleDeclaration;

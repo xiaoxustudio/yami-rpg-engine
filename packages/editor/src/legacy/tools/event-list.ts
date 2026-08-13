@@ -126,7 +126,7 @@ export class EventListInterface implements IListInterface {
 			const element = item!.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				list.updateEventIcon(item);
+				(list as unknown as { update: () => void }).update();
 			}
 		}
 	}

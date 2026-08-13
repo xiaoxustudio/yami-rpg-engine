@@ -13,7 +13,6 @@ Command.cases.setState = new CommandSchema({
 		{ key: 'time', default: 0 }
 	],
 	onInitialize() {
-		$('#setState-confirm').on('click', () => this.save!());
 		$('#setState-operation').loadItems([
 			{ name: 'Set Time', value: 'set-time' },
 			{ name: 'Increase Time', value: 'increase-time' },

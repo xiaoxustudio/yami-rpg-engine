@@ -13,7 +13,6 @@ Command.cases.createGlobalActor = new CommandSchema({
 		{ key: 'teamId', default: () => Data.teams.list[0].id }
 	],
 	onInitialize() {
-		$('#createGlobalActor-confirm').on('click', () => this.save!());
 		$('#createGlobalActor').on('open', function (event: Event) {
 			$('#createGlobalActor-teamId').loadItems(Data.createTeamItems!());
 		});

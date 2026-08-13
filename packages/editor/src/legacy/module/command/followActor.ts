@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.followActor = new CommandSchema({
 	name: 'followActor',
 	onInitialize() {
-		$('#followActor-confirm').on('click', () => this.save!());
 		$('#followActor-mode').loadItems([
 			{ name: 'Circle', value: 'circle' },
 			{ name: 'Rectangle', value: 'rectangle' }

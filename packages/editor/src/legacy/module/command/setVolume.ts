@@ -16,7 +16,6 @@ Command.cases.setVolume = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setVolume-confirm').on('click', () => this.save!());
 		$('#setVolume-type').loadItems([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },

@@ -8,7 +8,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setTerrain = new CommandSchema({
 	name: 'setTerrain',
 	onInitialize() {
-		$('#setTerrain-confirm').on('click', () => this.save!());
 		$('#setTerrain-terrain').loadItems([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },

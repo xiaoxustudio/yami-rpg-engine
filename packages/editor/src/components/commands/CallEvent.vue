@@ -1,5 +1,5 @@
 <template>
-<WindowFrame id="callEvent">
+<WindowFrame id="callEvent" @confirm="onConfirm">
 	<template #title><TitleBar>Call Event<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -46,6 +46,9 @@ const onEventIdWrite = (value: string) => {
 };
 const onEventIdInput = (value: string) => {
 	Command?.cases?.callEvent?.eventIdInput?.({ value });
+};
+const onConfirm = () => {
+	Command?.cases?.callEvent?.save?.();
 };
 
 onMounted(() => {

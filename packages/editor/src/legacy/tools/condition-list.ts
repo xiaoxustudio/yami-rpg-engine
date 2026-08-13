@@ -94,9 +94,7 @@ export class ConditionListInterface implements IListInterface {
 			const element = item.element;
 			const list = element?.parentNode;
 			if (list instanceof HTMLElement && list.classList.contains('tree-list')) {
-				(
-					list as HTMLElement & { updateConditionIcon: (item: unknown) => void }
-				).updateConditionIcon(item);
+				(list as HTMLElement & { update: () => void }).update();
 			}
 		}
 	}
@@ -278,8 +276,5 @@ export class ConditionListInterface implements IListInterface {
 		});
 
 		// 确定按钮 - 鼠标点击事件
-		$('#condition-confirm').on('click', (event: Event) => {
-			ConditionListInterface.target!.save();
-		});
 	}
 }

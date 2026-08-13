@@ -5,7 +5,6 @@ import { $ } from '@/util/dom.ts';
 import {
 	addClass,
 	addSetScrollMethod,
-	dispatchChangeEvent,
 	hasClass,
 	hide,
 	on,
@@ -134,13 +133,13 @@ type ParticleConfigShape = EditorConfigShape & { colors: NonNullable<EditorConfi
 type ParticleListItem = {
 	image?: string;
 	sprite: { hframes: number; vframes: number };
-	element: HTMLElement & { hiddenIcon?: HTMLElement; hiddenState?: unknown };
+	element: HTMLElement;
 };
 
 interface ParticleShape {
 	state: ParticleState;
 	page: HTMLElement;
-	head: HTMLElement & { left: number; width: number };
+	head: HTMLElement & { width: number };
 	body: HTMLElement;
 	info: HTMLElement;
 	screen: HTMLElement & { rawScrollLeft: number; rawScrollTop: number };
@@ -153,8 +152,6 @@ interface ParticleShape {
 		delete: ((item?: unknown) => unknown) | null;
 		createIcon: ((item?: ParticleListItem) => unknown) | null;
 		updateIcon: ((item?: ParticleListItem) => unknown) | null;
-		createVisibilityIcon: ((item?: ParticleListItem) => unknown) | null;
-		updateVisibilityIcon: ((item?: ParticleListItem) => unknown) | null;
 		onCreate: ((item?: unknown) => unknown) | null;
 		onRemove: ((item?: unknown) => unknown) | null;
 		onDelete: ((item?: unknown) => unknown) | null;
@@ -297,7 +294,6 @@ interface ParticleShape {
 	pointerup: ParticleMethod;
 	pointermove: ParticleMethod;
 	listKeydown: ParticleMethod;
-	listPointerdown: ParticleMethod;
 	listSelect: ParticleMethod;
 	listRecord: ParticleMethod;
 	listPopup: ParticleMethod;
@@ -430,7 +426,6 @@ export const Particle: ParticleShape = {
 	pointerup: null,
 	pointermove: null,
 	listKeydown: null,
-	listPointerdown: null,
 	listSelect: null,
 	listRecord: null,
 	listPopup: null,
@@ -453,18 +448,14 @@ Particle.list.createIcon = null as unknown as (...args: unknown[]) => any;
 Particle.list.updateIcon = function (...args) {
 	return Scene.list.updateIcon!(...args);
 };
-Particle.list.createVisibilityIcon = null as unknown as (...args: unknown[]) => any;
-Particle.list.updateVisibilityIcon = function (...args) {
-	return Scene.list.updateVisibilityIcon!(...args);
-};
-getListConfig(Particle.list).onCreate = null;
-getListConfig(Particle.list).onRemove = null;
-getListConfig(Particle.list).onDelete = null;
-getListConfig(Particle.list).onResume = null;
+getListConfig(Particle.list).onCreate = null as unknown as (item: unknown) => void;
+getListConfig(Particle.list).onRemove = null as unknown as (item: unknown) => void;
+getListConfig(Particle.list).onDelete = null as unknown as (item: unknown) => void;
+getListConfig(Particle.list).onResume = null as unknown as (item: unknown) => void;
 
 Particle.initialize = function () {
 	this.page = $('#particle');
-	this.head = $('#particle-head') as unknown as HTMLElement & { left: number; width: number };
+	this.head = $('#particle-head') as unknown as HTMLElement & { width: number };
 	this.body = hide($('#particle-body'));
 	this.info = $('#particle-info');
 	this.screen = $('#particle-screen') as unknown as HTMLElement & {
@@ -543,8 +534,6 @@ Particle.initialize = function () {
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
 	list.bind(() => this.layers);
-	getListConfig(list).creators.push(list.createVisibilityIcon);
-	getListConfig(list).updaters.push(list.updateVisibilityIcon);
 
 	History.processors['particle-layer-create'] =
 		History.processors['particle-layer-delete'] =
@@ -575,7 +564,7 @@ Particle.initialize = function () {
 	on(this.marquee, 'pointermove', this.marqueePointermove!);
 	on(this.marquee, 'pointerleave', this.marqueePointerleave!);
 	on(this.list, 'keydown', this.listKeydown!);
-	on(this.list, 'pointerdown', this.listPointerdown!);
+	on(this.list, 'keydown', this.listKeydown!);
 	on(this.list, 'select', this.listSelect!);
 	on(this.list, 'record', this.listRecord!);
 	on(this.list, 'popup', this.listPopup!);
@@ -814,10 +803,7 @@ Particle.updateHead = function () {
 		const nRect = rect(nav);
 		const iRect = rect(nav.lastChild);
 		const left = iRect.right - nRect.left;
-		if (head.left !== left) {
-			head.left = left;
-			head.style.left = `${left}px`;
-		}
+		head.style.left = `${left}px`;
 		const width = nRect.right - iRect.right;
 		if (head.width !== width) {
 			head.width = width;
@@ -1727,34 +1713,6 @@ Particle.listKeydown = function (this: ParticleShape['list'], event: KeyboardEve
 	}
 };
 
-Particle.listPointerdown = function (this: ParticleShape['list'], event: PointerEvent) {
-	switch (event.button) {
-		case 0: {
-			const element = event.target as HTMLElement;
-			switch (element.tagName) {
-				case 'VISIBILITY-ICON': {
-					const { item } = element.parentNode as unknown as {
-						item: { hidden: boolean } & Record<string, unknown>;
-					};
-					const { hidden } = item;
-					item.hidden = !hidden;
-					this.update();
-					dispatchChangeEvent(this);
-					Particle.requestRendering!();
-					Particle.history!.save({
-						type: 'particle-layer-hidden',
-						item: item,
-						oldValue: hidden,
-						newValue: !hidden
-					});
-					break;
-				}
-			}
-			break;
-		}
-	}
-};
-
 Particle.listSelect = function (event: Event) {
 	Particle.setTarget!(event.value);
 };
@@ -1925,16 +1883,6 @@ Particle.list.createIcon = function (item: unknown) {
 		icon.textContent = '\uf2dc';
 	}
 	return icon;
-};
-
-// 列表 - 创建可见性图标
-Particle.list.createVisibilityIcon = function (item: unknown) {
-	const { element } = item as ParticleListItem;
-	const hiddenIcon = document.createElement('visibility-icon');
-	hiddenIcon.style.right = '0';
-	element.appendChild(hiddenIcon);
-	element.hiddenIcon = hiddenIcon;
-	element.hiddenState = null;
 };
 
 // 列表 - 在创建数据时回调

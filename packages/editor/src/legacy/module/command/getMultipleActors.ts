@@ -10,7 +10,6 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getMultipleActors = new CommandSchema({
 	name: 'getMultipleActors',
 	onInitialize() {
-		$('#getMultipleActors-confirm').on('click', () => this.save!());
 		$('#getMultipleActors-area').loadItems([
 			{ name: 'Rectangle', value: 'rectangle' },
 			{ name: 'Circle', value: 'circle' }

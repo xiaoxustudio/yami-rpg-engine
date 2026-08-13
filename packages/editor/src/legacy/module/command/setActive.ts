@@ -18,7 +18,6 @@ Command.cases.setActive = new CommandSchema({
 		{ key: 'active', default: false }
 	],
 	onInitialize() {
-		$('#setActive-confirm').on('click', () => this.save!());
 		$('#setActive-active').loadItems([
 			{ name: 'Active', value: true },
 			{ name: 'Inactive', value: false }
