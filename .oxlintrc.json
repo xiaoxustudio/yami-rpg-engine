@@ -51,6 +51,22 @@
 	},
 	"overrides": [
 		{
+			"files": ["packages/editor/src/**/*.vue", "packages/ui-kit/src/**/*.vue"],
+			"rules": {
+				"eslint/no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": ["electron"],
+								"message": "Vue 组件禁止直接 import electron（vite electron-renderer-resolve 插件不覆盖 .vue），请经 legacy 模块（File/Log 等）中转"
+							}
+						]
+					}
+				]
+			}
+		},
+		{
 			"files": ["packages/editor/scripts/**/*.js", "packages/editor/*.config.js"],
 			"env": {
 				"node": true,

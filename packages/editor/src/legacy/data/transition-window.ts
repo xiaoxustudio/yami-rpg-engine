@@ -1360,3 +1360,17 @@ Easing.list_updateTextNode = function (this: HTMLElement, item: EasingListItem) 
 };
 
 import { getEasingStore } from '@app/stores/easing';
+
+const easingStateKeys = ['state', 'target', 'data'] as const;
+
+for (const key of easingStateKeys) {
+	Object.defineProperty(Easing, key, {
+		get: () => getEasingStore()[key],
+		set: (value: unknown) => {
+			(getEasingStore() as unknown as Record<(typeof easingStateKeys)[number], unknown>)[
+				key
+			] = value;
+		},
+		configurable: true
+	});
+}

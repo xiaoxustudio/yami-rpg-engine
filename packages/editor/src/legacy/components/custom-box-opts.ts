@@ -37,11 +37,22 @@ interface GetterElement {
 	[k: string]: any;
 }
 
+const parseText = (
+	value: unknown,
+	parse: ((value: unknown) => string | undefined) | undefined
+): { text: string } => {
+	if (!parse) {
+		return { text: String(value ?? '') };
+	}
+	const parsed = parse(value);
+	return { text: Command.removeTextTags?.(parsed) ?? parsed ?? '' };
+};
+
 const parseWithInvalid = (fn: (value: string) => string) => {
 	return (value: unknown) => {
 		Command.invalid = false;
 		const text = fn(value as string);
-		return { text: Command.removeTextTags!(text), invalid: Command.invalid };
+		return { text: Command.removeTextTags?.(text) ?? text, invalid: Command.invalid };
 	};
 };
 
@@ -91,60 +102,108 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		'enum-string': (el: GetterElement) => Enum.open(el, 'string')
 	},
 	parsers: {
-		file: parseWithInvalid((guid: string) => Command.parseFileName!(guid)),
+		file: parseWithInvalid((guid: string) => Command.parseFileName?.(guid) ?? ''),
 		'dialog-dir': (path: unknown) => ({ text: path as string }),
 		clip: (clip: unknown) => ({ text: (clip as unknown[]).join(', ') }),
 		variable: (variable: unknown) => {
-			const data = variable as { type?: string; key?: unknown };
+			const data = variable as { type?: string; key?: unknown } | null | undefined;
+			if (data == null) {
+				return { text: Local.get!('common.none') };
+			}
 			if (data.type === 'self' || data.key) {
-				return { text: Command.removeTextTags!(Command.parseVariable!(data)) };
+				const parseVariable = Command.parseVariable as
+					| ((variable: unknown) => string | undefined)
+					| undefined;
+				const parsed = parseVariable
+					? Command.removeTextTags!(parseVariable(data))
+					: String(data.key);
+				return { text: parsed ?? '' };
 			}
 			return { text: Local.get!('common.none') };
 		},
-		'global-variable': (id: unknown) => ({
-			text: Command.removeTextTags!(Command.parseGlobalVariable!(id as string))
-		}),
-		actor: (actor: unknown) => ({ text: Command.removeTextTags!(Command.parseActor!(actor)) }),
-		skill: (skill: unknown) => ({ text: Command.removeTextTags!(Command.parseSkill!(skill)) }),
-		state: (stateData: unknown) => ({
-			text: Command.removeTextTags!(Command.parseState!(stateData))
-		}),
-		equipment: (equipment: unknown) => ({
-			text: Command.removeTextTags!(Command.parseEquipment!(equipment))
-		}),
-		item: (item: unknown) => ({ text: Command.removeTextTags!(Command.parseItem!(item)) }),
-		position: (point: unknown) => ({
-			text: Command.removeTextTags!(Command.parsePosition!(point))
-		}),
-		angle: (angle: unknown) => ({ text: Command.removeTextTags!(Command.parseAngle!(angle)) }),
-		trigger: (trigger: unknown) => ({
-			text: Command.removeTextTags!(Command.parseTrigger!(trigger))
-		}),
-		light: (light: unknown) => ({ text: Command.removeTextTags!(Command.parseLight!(light)) }),
-		region: (region: unknown) => ({
-			text: Command.removeTextTags!(Command.parseRegion!(region))
-		}),
-		tilemap: (tilemap: unknown) => ({
-			text: Command.removeTextTags!(Command.parseTilemap!(tilemap))
-		}),
-		object: (object: unknown) => ({
-			text: Command.removeTextTags!(Command.parseObject!(object))
-		}),
-		element: parseWithInvalid((element: unknown) => Command.parseElement!(element)),
-		'preset-object': (preset: unknown) => ({
-			text: Command.removeTextTags!(Command.parsePresetObject!(preset))
-		}),
-		'preset-element': parseWithInvalid((preset: unknown) =>
-			Command.parsePresetElement!(preset)
+		'global-variable': (id: unknown) =>
+			parseText(
+				id,
+				Command.parseGlobalVariable as ((value: unknown) => string | undefined) | undefined
+			),
+		actor: (actor: unknown) =>
+			parseText(
+				actor,
+				Command.parseActor as ((value: unknown) => string | undefined) | undefined
+			),
+		skill: (skill: unknown) =>
+			parseText(
+				skill,
+				Command.parseSkill as ((value: unknown) => string | undefined) | undefined
+			),
+		state: (stateData: unknown) =>
+			parseText(
+				stateData,
+				Command.parseState as ((value: unknown) => string | undefined) | undefined
+			),
+		equipment: (equipment: unknown) =>
+			parseText(
+				equipment,
+				Command.parseEquipment as ((value: unknown) => string | undefined) | undefined
+			),
+		item: (item: unknown) =>
+			parseText(
+				item,
+				Command.parseItem as ((value: unknown) => string | undefined) | undefined
+			),
+		position: (point: unknown) =>
+			parseText(
+				point,
+				Command.parsePosition as ((value: unknown) => string | undefined) | undefined
+			),
+		angle: (angle: unknown) =>
+			parseText(
+				angle,
+				Command.parseAngle as ((value: unknown) => string | undefined) | undefined
+			),
+		trigger: (trigger: unknown) =>
+			parseText(
+				trigger,
+				Command.parseTrigger as ((value: unknown) => string | undefined) | undefined
+			),
+		light: (light: unknown) =>
+			parseText(
+				light,
+				Command.parseLight as ((value: unknown) => string | undefined) | undefined
+			),
+		region: (region: unknown) =>
+			parseText(
+				region,
+				Command.parseRegion as ((value: unknown) => string | undefined) | undefined
+			),
+		tilemap: (tilemap: unknown) =>
+			parseText(
+				tilemap,
+				Command.parseTilemap as ((value: unknown) => string | undefined) | undefined
+			),
+		object: (object: unknown) =>
+			parseText(
+				object,
+				Command.parseObject as ((value: unknown) => string | undefined) | undefined
+			),
+		element: parseWithInvalid((element: unknown) => Command.parseElement?.(element) ?? ''),
+		'preset-object': (preset: unknown) =>
+			parseText(
+				preset,
+				Command.parsePresetObject as ((value: unknown) => string | undefined) | undefined
+			),
+		'preset-element': parseWithInvalid(
+			(preset: unknown) => Command.parsePresetElement?.(preset) ?? ''
 		),
 		array: (array: unknown) => ({
 			text:
 				(array as unknown[]).length !== 0
-					? Command.parseMultiLineString!((array as unknown[]).join(', '))
+					? (Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
+						Local.get!('common.empty'))
 					: Local.get!('common.empty')
 		}),
-		'attribute-group': parseWithInvalid((groupId: string) =>
-			Command.parseAttributeGroup!(groupId)
+		'attribute-group': parseWithInvalid(
+			(groupId: string) => Command.parseAttributeGroup?.(groupId) ?? ''
 		),
 		attribute: (attrId: unknown) => {
 			if (attrId === '') return { text: Local.get!('common.none') };
@@ -152,16 +211,18 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			if (attribute) {
 				return { text: GameLocal.replace(attribute.name) };
 			}
-			return { text: Command.parseUnlinkedId!(attrId as string), invalid: true };
+			return { text: Command.parseUnlinkedId?.(attrId as string) ?? '', invalid: true };
 		},
-		'enum-group': parseWithInvalid((groupId: string) => Command.parseEnumGroup!(groupId)),
+		'enum-group': parseWithInvalid(
+			(groupId: string) => Command.parseEnumGroup?.(groupId) ?? ''
+		),
 		'enum-string': (stringId: unknown) => {
 			if (stringId === '') return { text: Local.get!('common.none') };
 			const string = Enum.getString(stringId as string);
 			if (string) {
 				return { text: GameLocal.replace(string.name) };
 			}
-			return { text: Command.parseUnlinkedId!(stringId as string), invalid: true };
+			return { text: Command.parseUnlinkedId?.(stringId as string) ?? '', invalid: true };
 		}
 	},
 	fileDialog: (defaultPath: unknown): Promise<{ filePaths: string[] }> =>

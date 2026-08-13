@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia';
+import '@/data/data-object.ts';
 import { Easing } from '@/data/transition-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+
+export const easingStateKeys = ['state', 'target', 'data'] as const;
 
 type EasingDataShape = {
 	id: string;
@@ -15,10 +18,12 @@ type EasingDataShape = {
 export const useEasingStore = defineStore('easing', () => {
 	const state = shallowRef<string>('closed');
 	const target = shallowRef<Record<string, unknown> | null>(null);
+	const data = shallowRef<EasingDataShape[] | null>(null);
 
 	function syncState() {
 		state.value = Easing?.state ?? 'closed';
 		target.value = Easing?.target ?? null;
+		data.value = Easing?.data ?? null;
 	}
 
 	function open(target?: unknown) {
@@ -84,6 +89,7 @@ export const useEasingStore = defineStore('easing', () => {
 	return {
 		state,
 		target,
+		data,
 		syncState,
 		open,
 		close,

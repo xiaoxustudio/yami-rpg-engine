@@ -89,6 +89,7 @@ function ensureDomBound() {
 
 Team.initialize = function (this: typeof Team) {
 	getTeamStore().syncState();
+	this.getItemById = Easing.getItemById;
 	ensureDomBound();
 	if (!Team.list) return;
 	this.maximum = 256;
@@ -148,8 +149,6 @@ Team.createData = function (this: typeof Team) {
 		collisions: collisions
 	};
 };
-
-Team.getItemById = Easing.getItemById;
 
 Team.unpackTeams = function (this: typeof Team) {
 	const items = Data.teams.list;
@@ -509,3 +508,16 @@ Team.list_updateItemName = function (this: TeamListElement, item: TeamData) {
 };
 
 import { getTeamStore } from '@app/stores/team';
+
+const teamStateKeys = ['state', 'teams', 'data'] as const;
+
+for (const key of teamStateKeys) {
+	Object.defineProperty(Team, key, {
+		get: () => getTeamStore()[key],
+		set: (value: unknown) => {
+			(getTeamStore() as unknown as Record<(typeof teamStateKeys)[number], unknown>)[key] =
+				value;
+		},
+		configurable: true
+	});
+}

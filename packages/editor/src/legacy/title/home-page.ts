@@ -98,7 +98,7 @@ Home.initialize = function (this: typeof Home) {
 };
 
 Home.updateCenterPosition = function (this: typeof Home) {
-	if (Layout.manager.index === 'home') {
+	if (Layout.manager?.index === 'home') {
 		const elPage = $('#home');
 		const elContent = $('#home-content');
 		const pageRect = rect(elPage);
@@ -402,7 +402,7 @@ Home.readFileList = (function IIFE() {
 })();
 
 Home.windowLocalize = function (this: typeof Home, event: Event) {
-	if (Layout.manager.index === 'home') {
+	if (Layout.manager?.index === 'home') {
 		Home.parseRecentProjects!();
 	}
 };

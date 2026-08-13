@@ -203,6 +203,9 @@ export function clear(el: Node | null | undefined): HTMLElement {
 }
 
 export function read(el: unknown): any {
+	if (el == null) {
+		return undefined;
+	}
 	if (typeof (el as unknown as { read: () => unknown }).read === 'function') {
 		return (el as unknown as { read: () => unknown }).read();
 	}
@@ -210,6 +213,9 @@ export function read(el: unknown): any {
 }
 
 export function write(el: unknown, value: unknown): void {
+	if (el == null) {
+		return;
+	}
 	if (typeof (el as unknown as { write: (value: unknown) => void }).write === 'function') {
 		(el as unknown as { write: (value: unknown) => void }).write(value);
 	} else {

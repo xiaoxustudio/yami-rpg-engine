@@ -49,6 +49,9 @@
 			:key="name"
 			@vue:mounted="onComponentMounted"
 		/>
+		<CommandSuggestions @vue:mounted="onComponentMounted" />
+		<LogMessage @vue:mounted="onComponentMounted" />
+		<TextSuggestions @vue:mounted="onComponentMounted" />
 	</Teleport>
 	<Teleport to="body">
 		<component
@@ -65,6 +68,9 @@ import TabBar from './components/common/TabBar.vue';
 import FileBrowser from './components/file-browser/FileBrowser.vue';
 import SearchHistoryDropdown from './components/file-browser/SearchHistoryDropdown.vue';
 import LayoutPanel from './components/layout/LayoutPanel.vue';
+import CommandSuggestions from './components/tools/CommandSuggestions.vue';
+import LogMessage from './components/tools/LogMessage.vue';
+import TextSuggestions from './components/tools/TextSuggestions.vue';
 import { defineAsyncComponent } from 'vue';
 import type { Component } from 'vue';
 import { useTitleStore } from '@app/stores/title';
@@ -118,7 +124,11 @@ const inspectorModules = import.meta.glob('./components/inspector/*.vue');
 
 // PluginOverview 为窗口内子组件（Plugin/Command/FileScriptPage 使用），不作为独立窗口挂载
 const toolWindowEntries = Object.entries(toolModules).filter(
-	([path]) => !path.endsWith('PluginOverview.vue')
+	([path]) =>
+		!path.endsWith('PluginOverview.vue') &&
+		!path.endsWith('CommandSuggestions.vue') &&
+		!path.endsWith('LogMessage.vue') &&
+		!path.endsWith('TextSuggestions.vue')
 );
 
 // 业务初始化（CommandSchema.initAll 等）需要所有弹窗组件的 DOM 已挂载，

@@ -361,7 +361,7 @@
 					<div class="page-frame" value="uiAnimation" id="uiAnimation-vue-mount"></div>
 					<div class="page-frame" value="uiVideo" id="uiVideo-vue-mount"></div>
 					<div class="page-frame" value="uiWindow" id="uiWindow-vue-mount"></div>
-					<div class="page-frame" value="uiContainer"></div>
+					<div class="page-frame" value="uiContainer" id="uiContainer-vue-mount"></div>
 					<div class="page-frame" value="uiReference" id="uiReference-vue-mount"></div>
 					<div class="page-frame" value="animMotion" id="animMotion-vue-mount"></div>
 					<div class="page-frame" value="animJointFrame" id="animJointFrame-vue-mount"></div>

@@ -440,3 +440,17 @@ Project.languages = {
 };
 
 import { getProjectStore } from '@app/stores/project';
+
+const projectStateKeys = ['state', 'target', 'data'] as const;
+
+for (const key of projectStateKeys) {
+	Object.defineProperty(Project, key, {
+		get: () => getProjectStore()[key],
+		set: (value: unknown) => {
+			(getProjectStore() as unknown as Record<(typeof projectStateKeys)[number], unknown>)[
+				key
+			] = value;
+		},
+		configurable: true
+	});
+}

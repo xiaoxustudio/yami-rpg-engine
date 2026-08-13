@@ -154,7 +154,9 @@ Layout.initialize = function () {
 	for (const page of manager.childNodes) {
 		if (page.nodeType !== 1) continue;
 		const key = page.getAttribute('value');
-		items[key!].page = page as HTMLElement;
+		if (key && items[key]) {
+			items[key].page = page as HTMLElement;
+		}
 	}
 
 	Object.defineProperty(items, 'list', {
@@ -187,7 +189,7 @@ Layout.initialize = function () {
 
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
-	this.manager.on('switch', this.pageSwitch!);
+	this.manager?.on('switch', this.pageSwitch!);
 };
 
 Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {

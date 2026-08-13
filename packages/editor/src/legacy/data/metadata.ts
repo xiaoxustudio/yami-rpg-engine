@@ -4,7 +4,7 @@ import { File } from '@/file/file-system-core.ts';
 import { Updater } from '@/update/updater.ts';
 
 export const Meta = (function IIFE() {
-	const typeMapToGroupName = {
+	const typeMapToGroupName = () => ({
 		...FileItem.dataMapNames,
 		image: 'images',
 		audio: 'audio',
@@ -12,7 +12,7 @@ export const Meta = (function IIFE() {
 		script: 'script',
 		font: 'fonts',
 		other: 'others'
-	};
+	});
 	const loaderDescriptor = { path: null as string | null, type: 'json' };
 	const fileDescriptor = { writable: true, value: null as unknown as FileItem };
 	const guidDescriptor = { writable: true, value: '' };
@@ -94,7 +94,7 @@ export const Meta = (function IIFE() {
 					});
 			}
 
-			const key = (typeMapToGroupName as Record<string, string>)[type];
+			const key = (typeMapToGroupName() as Record<string, string>)[type];
 			if (key === undefined) {
 				throw new Error('Unknown meta type');
 			}

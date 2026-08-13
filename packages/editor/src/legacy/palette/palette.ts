@@ -41,7 +41,6 @@ export const Palette: Record<string, any> = {
 	context: null,
 	screen: null,
 	marquee: null,
-	info: null,
 	itemScroll: null,
 	itemPriority: null,
 	itemTag: null,
@@ -180,7 +179,6 @@ Palette.initialize = function (this: typeof Palette) {
 	this.canvas = $('#palette-canvas');
 	this.screen = $('#palette-screen');
 	this.marquee = $('#palette-marquee');
-	this.info = $('#palette-info');
 	this.itemScroll = $('#palette-scroll');
 	this.itemPriority = $('#palette-priority');
 	this.itemTag = $('#palette-tag');
