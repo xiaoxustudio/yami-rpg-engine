@@ -112,6 +112,22 @@ export default defineConfig({
 		},
 		// dev 模式走 /local-file/?path= 代理绕过 file:// 限制
 		{
+			name: 'sourcemap-stub',
+			configureServer(server: ViteDevServer) {
+				server.middlewares.use(
+					(req: IncomingMessage, res: ServerResponse, next: Connect.NextFunction) => {
+						if (req.url && /^\/[^/]+\.js\.map(?:\?.*)?$/.test(req.url)) {
+							res.statusCode = 200;
+							res.setHeader('Content-Type', 'application/json');
+							res.end('{"version":3,"sources":[],"names":[],"mappings":""}');
+							return;
+						}
+						next();
+					}
+				);
+			}
+		},
+		{
 			name: 'local-file-proxy',
 			configureServer(server: ViteDevServer) {
 				server.middlewares.use(
