@@ -118,7 +118,7 @@ export class CommandSchema {
 		}
 		if (this.noWindow) {
 			this.load = null as unknown as (...args: unknown[]) => unknown;
-			this.initialize = null as unknown as (...args: unknown[]) => unknown;
+			this.initialize = null as unknown as () => boolean;
 		}
 	}
 
@@ -138,11 +138,17 @@ export class CommandSchema {
 		return data;
 	}
 
-	initialize() {
+	initialize(): boolean {
 		if (this.onInitialize) {
-			return this.onInitialize!();
+			this.onInitialize!();
+			return true;
 		}
-		on($(`#${this.confirmId}`), 'click', () => this.save!());
+		const confirm = $(`#${this.confirmId}`);
+		if (!confirm) {
+			return false;
+		}
+		on(confirm, 'click', () => this.save!());
+		return true;
 	}
 
 	parse(data: Record<string, unknown>) {
@@ -230,7 +236,10 @@ export class CommandSchema {
 
 	static initAll() {
 		Command.words = new Command.WordList();
-		const subMap: Record<string, { dependsOn?: string[]; initialize: (() => void) | null }> = {
+		const subMap: Record<
+			string,
+			{ dependsOn?: string[]; initialize: (() => boolean | void) | null }
+		> = {
 			CommandSuggestion,
 			TextSuggestion,
 			VariableGetter,
@@ -253,11 +262,15 @@ export class CommandSchema {
 			Object.keys(subMap),
 			(name: string) => subMap[name].dependsOn ?? []
 		);
+		const retry: (() => void)[] = [];
 		for (const name of sorted) {
 			try {
-				subMap[name].initialize!();
+				if (subMap[name].initialize!() === false) {
+					retry.push(() => subMap[name].initialize!());
+				}
 			} catch (error) {
 				console.error(`[initAll] ${name} initialize failed:`, error);
+				retry.push(() => subMap[name].initialize!());
 			}
 		}
 		try {
@@ -267,11 +280,23 @@ export class CommandSchema {
 		}
 		for (const [caseName, object] of Object.entries(Command.cases)) {
 			try {
-				object.initialize?.();
+				if (object.initialize?.() === false) {
+					retry.push(() => object.initialize?.());
+				}
 			} catch (error) {
 				console.error(`[initAll] command case "${caseName}" initialize failed:`, error);
+				retry.push(() => object.initialize?.());
 			}
 		}
+		setTimeout(() => {
+			for (const fn of retry) {
+				try {
+					fn();
+				} catch (error) {
+					console.error('[initAll] retry failed:', error);
+				}
+			}
+		}, 2000);
 	}
 
 	static insert(target: CommandTarget, id: string) {

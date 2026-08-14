@@ -352,7 +352,7 @@ const dragend = (): void => {
 	if (!el || !el.parentNode) return;
 	if (el.dragging) {
 		removeClass(el, 'dragging');
-		el.parentNode.removeChild(el.dragging.hint);
+		el.dragging.hint.remove();
 		el.dragging = null;
 		el.removeEventListener('dragenter', dragenter);
 		el.removeEventListener('dragleave', dragleave);
@@ -420,7 +420,6 @@ const dragstart = (event: DragEvent): void => {
 		el.dragging = dragging;
 		Object.defineProperty(event, 'offsetX', { writable: true });
 		event.preventDefault = (() => {}) as unknown as () => void;
-		(event.dataTransfer as unknown as { hideDragImage(): void }).hideDragImage();
 		addClass(hint, 'for-tab');
 		el.parentNode.insertBefore(hide(hint), el);
 		addClass(el, 'dragging');
@@ -537,6 +536,10 @@ const drop = (event: DragEvent): void => {
 			items.splice(dIndex, 0, sItem);
 			selectionIndex = dIndex;
 			update();
+			const selectedEl = el.childNodes[selectionIndex] as HTMLElement | undefined;
+			if (selectedEl) {
+				addClass(selectedEl, 'selected');
+			}
 		}
 	}
 	dragend();
