@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setInventory = new CommandSchema({
 	name: 'setInventory',
 	onInitialize() {
-		$('#setInventory-operation').loadItems([
+		$('#setInventory-operation')?.loadItems?.([
 			{ name: 'Increase Money', value: 'increase-money' },
 			{ name: 'Decrease Money', value: 'decrease-money' },
 			{ name: 'Increase Items', value: 'increase-items' },
@@ -25,8 +25,8 @@ Command.cases.setInventory = new CommandSchema({
 			{ name: 'Reset', value: 'reset' }
 		]);
 		$('#setInventory-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['increase-money', 'decrease-money'],
 					targets: [$('#setInventory-money')]

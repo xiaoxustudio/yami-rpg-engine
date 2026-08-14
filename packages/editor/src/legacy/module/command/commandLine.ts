@@ -8,15 +8,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.commandLine = new CommandSchema({
 	name: 'commandLine',
 	onInitialize() {
-		$('#commandLine-type').loadItems([
+		$('#commandLine-type')?.loadItems?.([
 			{ name: 'get', value: 'get' },
 			{ name: 'rm', value: 'rm' },
 			{ name: 'set', value: 'set' },
 			{ name: 'has', value: 'has' }
 		]);
 		$('#commandLine-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'get',
 					targets: [$('#commandLine-key'), $('#commandLine-variable')]

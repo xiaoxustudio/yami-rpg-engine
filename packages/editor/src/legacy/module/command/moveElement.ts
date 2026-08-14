@@ -10,15 +10,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveElement = new CommandSchema({
 	name: 'moveElement',
 	onInitialize() {
-		$('#moveElement-properties').bind(TransformProperty);
-		$('#moveElement-wait').loadItems([
+		$('#moveElement-properties')?.bind?.(TransformProperty);
+		$('#moveElement-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#moveElement').on('open', function (event: Event) {
-			$('#moveElement-easingId').loadItems(Data.createEasingItems!());
+		$('#moveElement')?.on?.('open', function (event: Event) {
+			$('#moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#moveElement').on('closed', function (event: Event) {
+		$('#moveElement')?.on?.('closed', function (event: Event) {
 			clear($('#moveElement-properties'));
 			clear($('#moveElement-easingId'));
 		});

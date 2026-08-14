@@ -19,7 +19,7 @@ Command.cases.setCooldown = new CommandSchema({
 		{ key: 'cooldown', default: 0 }
 	],
 	onInitialize() {
-		$('#setCooldown-operation').loadItems([
+		$('#setCooldown-operation')?.loadItems?.([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Increase', value: 'increase' },
 			{ name: 'Decrease', value: 'decrease' }
@@ -48,7 +48,7 @@ Command.cases.setCooldown = new CommandSchema({
 		];
 	},
 	onLoad() {
-		$('#setCooldown-key').loadItems(Enum.getStringItems!('cooldown-key'));
+		$('#setCooldown-key')?.loadItems?.(Enum.getStringItems!('cooldown-key'));
 		getFocus($('#setCooldown-actor'));
 	}
 });

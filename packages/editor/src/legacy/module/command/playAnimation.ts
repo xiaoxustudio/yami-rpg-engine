@@ -23,21 +23,21 @@ type PlayAnimationCommandData = {
 Command.cases.playAnimation = new CommandSchema({
 	name: 'playAnimation',
 	onInitialize() {
-		$('#playAnimation-mode').loadItems([
+		$('#playAnimation-mode')?.loadItems?.([
 			{ name: 'Position', value: 'position' },
 			{ name: 'Actor', value: 'actor' }
 		]);
 		$('#playAnimation-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'position', targets: [$('#playAnimation-position')] },
 				{ case: 'actor', targets: [$('#playAnimation-actor')] }
 			]);
-		$('#playAnimation-rotatable').loadItems([
+		$('#playAnimation-rotatable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#playAnimation-wait').loadItems([
+		$('#playAnimation-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

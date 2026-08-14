@@ -9,19 +9,19 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.downloadFile = new CommandSchema({
 	name: 'downloadFile',
 	onInitialize() {
-		$('#downloadFile-method').loadItems([
+		$('#downloadFile-method')?.loadItems?.([
 			{ name: 'GET', value: 'GET' },
 			{ name: 'POST', value: 'POST' },
 			{ name: 'PUT', value: 'PUT' },
 			{ name: 'DELETE', value: 'DELETE' }
 		]);
-		$('#downloadFile-isBackground').relate([$('#downloadFile-isBackground-path')]);
+		$('#downloadFile-isBackground')?.relate?.([$('#downloadFile-isBackground-path')]);
 		disable($('#downloadFile-isBackground-path'));
 		write($('#downloadFile-method'), 'GET');
 		write($('#downloadFile-url'), '');
 		write($('#downloadFile-isBackground-path'), '');
-		$('#downloadFile-header').bind(RequestkeyValueBind);
-		$('#downloadFile-data').bind(RequestkeyValueBind);
+		$('#downloadFile-header')?.bind?.(RequestkeyValueBind);
+		$('#downloadFile-data')?.bind?.(RequestkeyValueBind);
 	},
 	isBackgroundInput(event: Event & { value?: boolean }) {
 		if (event.value) enable($('#downloadFile-isBackground-path'));

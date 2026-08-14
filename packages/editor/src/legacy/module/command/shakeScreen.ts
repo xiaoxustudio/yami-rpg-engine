@@ -9,19 +9,19 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.shakeScreen = new CommandSchema({
 	name: 'shakeScreen',
 	onInitialize() {
-		$('#shakeScreen-mode').loadItems([
+		$('#shakeScreen-mode')?.loadItems?.([
 			{ name: 'Random', value: 'random' },
 			{ name: 'Horizontal', value: 'horizontal' },
 			{ name: 'Vertical', value: 'vertical' }
 		]);
-		$('#shakeScreen-wait').loadItems([
+		$('#shakeScreen-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#shakeScreen').on('open', function (event: Event) {
-			$('#shakeScreen-easingId').loadItems(Data.createEasingItems!());
+		$('#shakeScreen')?.on?.('open', function (event: Event) {
+			$('#shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#shakeScreen').on('closed', function (event: Event) {
+		$('#shakeScreen')?.on?.('closed', function (event: Event) {
 			clear($('#shakeScreen-easingId'));
 		});
 	},

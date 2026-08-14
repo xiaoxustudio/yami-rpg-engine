@@ -8,13 +8,13 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setFocus = new CommandSchema({
 	name: 'setFocus',
 	onInitialize() {
-		$('#setFocus-operation').loadItems([
+		$('#setFocus-operation')?.loadItems?.([
 			{ name: 'Add Focus', value: 'add' },
 			{ name: 'Remove Focus', value: 'remove' },
 			{ name: 'Remove The Latest Focus', value: 'remove-latest' },
 			{ name: 'Reset', value: 'reset' }
 		]);
-		$('#setFocus-mode').loadItems([
+		$('#setFocus-mode')?.loadItems?.([
 			{ name: 'Control Child Buttons', value: 'control-child-buttons' },
 			{
 				name: 'Control Descendant Buttons',
@@ -22,8 +22,8 @@ Command.cases.setFocus = new CommandSchema({
 			}
 		]);
 		$('#setFocus-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'add',
 					targets: [

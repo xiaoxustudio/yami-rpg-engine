@@ -24,18 +24,18 @@ Command.cases.registerEvent = new CommandSchema({
 	commands: [],
 	priorityEnabled: false,
 	onInitialize() {
-		$('#registerEvent-target').loadItems([
+		$('#registerEvent-target')?.loadItems?.([
 			{ name: 'Global', value: 'global' },
 			{ name: 'Actor', value: 'actor' },
 			{ name: 'Element', value: 'element' }
 		]);
 		$('#registerEvent-target')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'actor', targets: [$('#registerEvent-actor')] },
 				{ case: 'element', targets: [$('#registerEvent-element')] }
 			]);
-		$('#registerEvent-operation').loadItems([
+		$('#registerEvent-operation')?.loadItems?.([
 			{ name: 'Register', value: 'register' },
 			{ name: 'Unregister', value: 'unregister' },
 			{ name: 'Reset', value: 'reset' }

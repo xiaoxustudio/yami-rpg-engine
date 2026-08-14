@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintScreen = new CommandSchema({
 	name: 'tintScreen',
 	onInitialize() {
-		$('#tintScreen-wait').loadItems([
+		$('#tintScreen-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#tintScreen').on('open', function (event: Event) {
-			$('#tintScreen-easingId').loadItems(Data.createEasingItems!());
+		$('#tintScreen')?.on?.('open', function (event: Event) {
+			$('#tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#tintScreen').on('closed', function (event: Event) {
+		$('#tintScreen')?.on?.('closed', function (event: Event) {
 			clear($('#tintScreen-easingId'));
 			clear($('#tintScreen-filter'));
 		});

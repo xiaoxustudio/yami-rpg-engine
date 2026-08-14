@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.playAudio = new CommandSchema({
 	name: 'playAudio',
 	onInitialize() {
-		$('#playAudio-type').loadItems([
+		$('#playAudio-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' },
@@ -16,8 +16,8 @@ Command.cases.playAudio = new CommandSchema({
 			{ name: 'SE - Attenuated', value: 'se-attenuated' }
 		]);
 		$('#playAudio-type')
-			.enableHiddenMode()
-			.relate([{ case: 'se-attenuated', targets: [$('#playAudio-location')] }]);
+			?.enableHiddenMode?.()
+			?.relate?.([{ case: 'se-attenuated', targets: [$('#playAudio-location')] }]);
 	},
 	customParse({
 		type,

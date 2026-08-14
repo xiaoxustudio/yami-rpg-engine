@@ -15,7 +15,7 @@ Command.cases.changeActorTeam = new CommandSchema({
 	onInitialize() {
 		on($('#changeActorTeam-confirm'), 'click', () => this.save!());
 		on($('#changeActorTeam'), 'open', function (event: Event) {
-			$('#changeActorTeam-teamId').loadItems(Data.createTeamItems!());
+			$('#changeActorTeam-teamId')?.loadItems?.(Data.createTeamItems!());
 		});
 		on($('#changeActorTeam'), 'closed', function (event: Event) {
 			clear($('#changeActorTeam-teamId'));

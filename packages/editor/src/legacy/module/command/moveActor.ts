@@ -19,7 +19,7 @@ type MoveActorData = {
 Command.cases.moveActor = new CommandSchema({
 	name: 'moveActor',
 	onInitialize() {
-		$('#moveActor-mode').loadItems([
+		$('#moveActor-mode')?.loadItems?.([
 			{ name: 'Stop', value: 'stop' },
 			{ name: 'Keep', value: 'keep' },
 			{ name: 'Straight', value: 'straight' },
@@ -28,8 +28,8 @@ Command.cases.moveActor = new CommandSchema({
 			{ name: 'Teleport', value: 'teleport' }
 		]);
 		$('#moveActor-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'keep', targets: [$('#moveActor-angle')] },
 				{
 					case: ['straight', 'navigate', 'navigate-bypass'],
@@ -37,7 +37,7 @@ Command.cases.moveActor = new CommandSchema({
 				},
 				{ case: 'teleport', targets: [$('#moveActor-destination')] }
 			]);
-		$('#moveActor-wait').loadItems([
+		$('#moveActor-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

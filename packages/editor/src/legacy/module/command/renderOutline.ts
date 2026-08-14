@@ -18,14 +18,14 @@ type RenderOutlineData = {
 Command.cases.renderOutline = new CommandSchema({
 	name: 'renderOutline',
 	onInitialize() {
-		$('#renderOutline-operation').loadItems([
+		$('#renderOutline-operation')?.loadItems?.([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
 			{ name: 'Reset', value: 'reset' }
 		]);
 		$('#renderOutline-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'add',
 					targets: [$('#renderOutline-actor'), $('#renderOutline-color')]

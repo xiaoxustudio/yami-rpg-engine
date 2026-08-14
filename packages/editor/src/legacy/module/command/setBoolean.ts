@@ -17,14 +17,14 @@ interface SetBooleanOperand {
 Command.cases.setBoolean = new CommandSchema({
 	name: 'setBoolean',
 	onInitialize() {
-		$('#setBoolean-operation').loadItems([
+		$('#setBoolean-operation')?.loadItems?.([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Not', value: 'not' },
 			{ name: 'And', value: 'and' },
 			{ name: 'Or', value: 'or' },
 			{ name: 'Xor', value: 'xor' }
 		]);
-		$('#setBoolean-operand-type').loadItems([
+		$('#setBoolean-operand-type')?.loadItems?.([
 			{ name: 'Constant', value: 'constant' },
 			{ name: 'Variable', value: 'variable' },
 			{ name: 'List', value: 'list' },
@@ -32,8 +32,8 @@ Command.cases.setBoolean = new CommandSchema({
 			{ name: 'Script', value: 'script' }
 		]);
 		$('#setBoolean-operand-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'constant',
 					targets: [$('#setBoolean-constant-value')]
@@ -52,7 +52,7 @@ Command.cases.setBoolean = new CommandSchema({
 				},
 				{ case: 'script', targets: [$('#setBoolean-script')] }
 			]);
-		$('#setBoolean-constant-value').loadItems([
+		$('#setBoolean-constant-value')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
@@ -68,7 +68,10 @@ Command.cases.setBoolean = new CommandSchema({
 				filter = 'object';
 				break;
 		}
-		$('#setBoolean-common-variable').filter = filter;
+		const element = $('#setBoolean-common-variable');
+		if (element) {
+			element.filter = filter;
+		}
 	},
 	parseOperation(operation: string) {
 		switch (operation) {

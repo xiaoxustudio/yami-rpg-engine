@@ -13,8 +13,8 @@ Command.cases.setAnimation = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setAnimation-properties').bind(AnimationProperty);
-		$('#setAnimation').on('closed', (event: Event) => {
+		$('#setAnimation-properties')?.bind?.(AnimationProperty);
+		$('#setAnimation')?.on?.('closed', (event: Event) => {
 			clear($('#setAnimation-properties'));
 		});
 	},

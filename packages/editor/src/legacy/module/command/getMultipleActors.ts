@@ -10,43 +10,43 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getMultipleActors = new CommandSchema({
 	name: 'getMultipleActors',
 	onInitialize() {
-		$('#getMultipleActors-area').loadItems([
+		$('#getMultipleActors-area')?.loadItems?.([
 			{ name: 'Rectangle', value: 'rectangle' },
 			{ name: 'Circle', value: 'circle' }
 		]);
 		$('#getMultipleActors-area')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'rectangle',
 					targets: [$('#getMultipleActors-width'), $('#getMultipleActors-height')]
 				},
 				{ case: 'circle', targets: [$('#getMultipleActors-radius')] }
 			]);
-		$('#getMultipleActors-selector').loadItems([
+		$('#getMultipleActors-selector')?.loadItems?.([
 			{ name: 'Team Enemy', value: 'enemy' },
 			{ name: 'Team Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },
 			{ name: 'Any', value: 'any' }
 		]);
 		$('#getMultipleActors-selector')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['enemy', 'friend', 'team'],
 					targets: [$('#getMultipleActors-teamId')]
 				}
 			]);
-		$('#getMultipleActors-activation').loadItems([
+		$('#getMultipleActors-activation')?.loadItems?.([
 			{ name: 'Active', value: 'active' },
 			{ name: 'Inactive', value: 'inactive' },
 			{ name: 'Either', value: 'either' }
 		]);
-		$('#getMultipleActors').on('open', function (event: Event) {
+		$('#getMultipleActors')?.on?.('open', function (event: Event) {
 			const items = Data.createTeamItems!();
-			$('#getMultipleActors-teamId').loadItems(items);
+			$('#getMultipleActors-teamId')?.loadItems?.(items);
 		});
-		$('#getMultipleActors').on('closed', function (event: Event) {
+		$('#getMultipleActors')?.on?.('closed', function (event: Event) {
 			clear($('#getMultipleActors-teamId'));
 		});
 	},

@@ -9,7 +9,7 @@ Command.cases.activateScene = new CommandSchema({
 	name: 'activateScene',
 	onInitialize() {
 		on($('#activateScene-confirm'), 'click', () => this.save!());
-		$('#activateScene-pointer').loadItems([
+		$('#activateScene-pointer')?.loadItems?.([
 			{ name: 'Scene A', value: 0 },
 			{ name: 'Scene B', value: 1 }
 		]);

@@ -17,20 +17,20 @@ Command.cases.setReverb = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setReverb-type').loadItems([
+		$('#setReverb-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' },
 			{ name: 'SE', value: 'se' }
 		]);
-		$('#setReverb-wait').loadItems([
+		$('#setReverb-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setReverb').on('open', function (event: Event) {
-			$('#setReverb-easingId').loadItems(Data.createEasingItems!());
+		$('#setReverb')?.on?.('open', function (event: Event) {
+			$('#setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setReverb').on('closed', function (event: Event) {
+		$('#setReverb')?.on?.('closed', function (event: Event) {
 			clear($('#setReverb-easingId'));
 		});
 	},

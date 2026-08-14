@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setEvent = new CommandSchema({
 	name: 'setEvent',
 	onInitialize() {
-		$('#setEvent-operation').loadItems([
+		$('#setEvent-operation')?.loadItems?.([
 			{ name: 'Stop Propagation', value: 'stop-propagation' },
 			{ name: 'Pause and Save to Variable', value: 'pause' },
 			{ name: 'Continue and Reset Variable', value: 'continue' },
@@ -19,8 +19,8 @@ Command.cases.setEvent = new CommandSchema({
 			{ name: 'Go to Choice Branch', value: 'goto-choice-branch' }
 		]);
 		$('#setEvent-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['pause', 'continue'],
 					targets: [$('#setEvent-variable')]

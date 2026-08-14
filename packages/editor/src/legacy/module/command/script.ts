@@ -217,15 +217,18 @@ Command.cases.script = new CommandSchema({
 		});
 		this.model = this.editor.getModel();
 
-		$('#script-change').on('click', async () => {
+		$('#script-change')?.on?.('click', async () => {
 			const currentLanguage = this.editor.getModel().getLanguageId();
 			let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
 			const get = Local.createGetter!('confirmation');
-			$('#script-change').name =
-				currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
-			$('#script-change').textContent = get(
-				currentLanguage === 'javascript' ? 'script-change-js' : 'script-change-ts'
-			);
+			const scriptChange = $('#script-change');
+			if (scriptChange) {
+				scriptChange.name =
+					currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
+				scriptChange.textContent = get(
+					currentLanguage === 'javascript' ? 'script-change-js' : 'script-change-ts'
+				);
+			}
 			const monaco = await getMonaco();
 			monaco.editor.setModelLanguage(this.model, languageId);
 		});

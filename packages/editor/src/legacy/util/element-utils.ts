@@ -293,39 +293,41 @@ export const setTooltip = (function IIFE() {
 		}
 		return fragment;
 	};
-	const timer = new Timer({
-		duration: 0,
-		callback: () => {
-			if (state === 'waiting') {
-				let tip = (target as (HTMLElement & { tip?: string }) | null)?.tip ?? '';
-				if (!tip) {
-					state = 'closed';
-					window.removeEventListener('keydown', close, capture);
-					window.removeEventListener('pointerdown', close, capture);
-					return;
-				}
-				const hotkey = target?.getAttribute?.('hotkey');
-				if (hotkey) {
-					if (tip.includes('\n')) {
-						tip = tip.replace('\n', ` (${hotkey})\n`);
-					} else {
-						tip += ` (${hotkey})`;
+	const createTimer = () =>
+		new Timer({
+			duration: 0,
+			callback: () => {
+				if (state === 'waiting') {
+					let tip = (target as (HTMLElement & { tip?: string }) | null)?.tip ?? '';
+					if (!tip) {
+						state = 'closed';
+						window.removeEventListener('keydown', close, capture);
+						window.removeEventListener('pointerdown', close, capture);
+						return;
 					}
+					const hotkey = target?.getAttribute?.('hotkey');
+					if (hotkey) {
+						if (tip.includes('\n')) {
+							tip = tip.replace('\n', ` (${hotkey})\n`);
+						} else {
+							tip += ` (${hotkey})`;
+						}
+					}
+					state = 'open';
+					addClass(tooltip, 'open');
+					tooltip.replaceChildren(parseTip(tip));
+					const { width, height } = tooltip.getBoundingClientRect();
+					const right = window.innerWidth - width;
+					const bottom = window.innerHeight - height;
+					const x = Math.min(clientX + 10, right);
+					const y = Math.min(clientY + 15, bottom);
+					tooltip.style.left = `${x}px`;
+					tooltip.style.top = `${y}px`;
+					rect = tooltip.getBoundingClientRect();
 				}
-				state = 'open';
-				addClass(tooltip, 'open');
-				tooltip.replaceChildren(parseTip(tip));
-				const { width, height } = tooltip.getBoundingClientRect();
-				const right = window.innerWidth - width;
-				const bottom = window.innerHeight - height;
-				const x = Math.min(clientX + 10, right);
-				const y = Math.min(clientY + 15, bottom);
-				tooltip.style.left = `${x}px`;
-				tooltip.style.top = `${y}px`;
-				rect = tooltip.getBoundingClientRect();
 			}
-		}
-	});
+		});
+	let timer: Timer | null = null;
 
 	const close = function (): void {
 		switch (state) {
@@ -333,7 +335,7 @@ export const setTooltip = (function IIFE() {
 			case 'open':
 				state = 'closed';
 				rect = null;
-				timer.remove();
+				timer?.remove();
 				removeClass(tooltip, 'open');
 				window.removeEventListener('keydown', close, capture);
 				window.removeEventListener('pointerdown', close, capture);
@@ -351,9 +353,10 @@ export const setTooltip = (function IIFE() {
 				if (target !== this) {
 					state = 'waiting';
 					target = this;
-					timer.elapsed = 0;
-					timer.duration = 250;
-					timer.add();
+					const t = (timer ??= createTimer());
+					t.elapsed = 0;
+					t.duration = 250;
+					t.add();
 					clientX = event.clientX;
 					clientY = event.clientY;
 					window.addEventListener('keydown', close, capture);
@@ -362,7 +365,9 @@ export const setTooltip = (function IIFE() {
 				break;
 			case 'waiting':
 				if (target === this) {
-					timer.elapsed = 0;
+					const t = (timer ??= createTimer());
+					t.elapsed = 0;
+					t.add();
 					clientX = event.clientX;
 					clientY = event.clientY;
 				} else {

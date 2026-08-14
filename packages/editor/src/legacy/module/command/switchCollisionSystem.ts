@@ -9,7 +9,7 @@ Command.cases.switchCollisionSystem = new CommandSchema({
 	name: 'switchCollisionSystem',
 	fields: [{ key: 'operation', default: 'enable-actor-collision' }],
 	onInitialize() {
-		$('#switchCollisionSystem-operation').loadItems([
+		$('#switchCollisionSystem-operation')?.loadItems?.([
 			{ name: 'Enable Actor Collision', value: 'enable-actor-collision' },
 			{
 				name: 'Disable Actor Collision',

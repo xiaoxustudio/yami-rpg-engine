@@ -9,24 +9,24 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveCamera = new CommandSchema({
 	name: 'moveCamera',
 	onInitialize() {
-		$('#moveCamera-mode').loadItems([
+		$('#moveCamera-mode')?.loadItems?.([
 			{ name: 'Move to Position', value: 'position' },
 			{ name: 'Follow Actor', value: 'actor' }
 		]);
 		$('#moveCamera-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'position', targets: [$('#moveCamera-position')] },
 				{ case: 'actor', targets: [$('#moveCamera-actor')] }
 			]);
-		$('#moveCamera-wait').loadItems([
+		$('#moveCamera-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#moveCamera').on('open', () => {
-			$('#moveCamera-easingId').loadItems(Data.createEasingItems!());
+		$('#moveCamera')?.on?.('open', () => {
+			$('#moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#moveCamera').on('closed', () => {
+		$('#moveCamera')?.on?.('closed', () => {
 			clear($('#moveCamera-easingId'));
 		});
 	},

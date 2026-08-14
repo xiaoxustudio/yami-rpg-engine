@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.httpRequest = new CommandSchema({
 	name: 'httpRequest',
 	onInitialize() {
-		$('#httpRequest-method').loadItems([
+		$('#httpRequest-method')?.loadItems?.([
 			{ name: 'GET', value: 'GET' },
 			{ name: 'POST', value: 'POST' },
 			{ name: 'PUT', value: 'PUT' },
 			{ name: 'DELETE', value: 'DELETE' },
 			{ name: 'PATCH', value: 'PATCH' }
 		]);
-		$('#httpRequest-responseType').loadItems([
+		$('#httpRequest-responseType')?.loadItems?.([
 			{ name: 'JSON', value: 'json' },
 			{ name: 'Text', value: 'text' },
 			{ name: 'Blob', value: 'blob' },
@@ -26,8 +26,8 @@ Command.cases.httpRequest = new CommandSchema({
 		]);
 		write($('#httpRequest-method'), 'GET');
 		write($('#httpRequest-url'), '');
-		$('#httpRequest-header').bind(RequestkeyValueBind);
-		$('#httpRequest-data').bind(RequestkeyValueBind);
+		$('#httpRequest-header')?.bind?.(RequestkeyValueBind);
+		$('#httpRequest-data')?.bind?.(RequestkeyValueBind);
 		write($('#httpRequest-timeout'), '');
 		write($('#httpRequest-responseType'), 'json');
 		write($('#httpRequest-withCredentials'), false);

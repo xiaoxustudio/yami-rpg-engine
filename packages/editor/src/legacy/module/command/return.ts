@@ -23,14 +23,14 @@ Command.cases.return = new CommandSchema({
 		element: { name: 'Element', value: 'element' }
 	},
 	onInitialize() {
-		$('#return-type').loadItems(Object.values(this.typeItems));
-		$('#return-boolean').loadItems([
+		$('#return-type')?.loadItems?.(Object.values(this.typeItems));
+		$('#return-boolean')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);
 		$('#return-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'boolean', targets: [$('#return-boolean')] },
 				{ case: 'number', targets: [$('#return-number')] },
 				{ case: 'string', targets: [$('#return-string')] },
@@ -90,7 +90,7 @@ Command.cases.return = new CommandSchema({
 			default:
 				throw new Error('Not implemented');
 		}
-		$('#return-type').loadItems(items);
+		$('#return-type')?.loadItems?.(items);
 	},
 	customParse({ type, value }: { type: string; value: number | string | boolean }) {
 		const words = Command.words;

@@ -8,14 +8,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
 	onInitialize() {
-		$('#setMovementSpeed-property').loadItems([
+		$('#setMovementSpeed-property')?.loadItems?.([
 			{ name: 'Base Speed', value: 'base' },
 			{ name: 'Speed Factor', value: 'factor' },
 			{ name: 'Speed Factor (Temp)', value: 'factor-temp' }
 		]);
 		$('#setMovementSpeed-property')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'base', targets: [$('#setMovementSpeed-base')] },
 				{
 					case: ['factor', 'factor-temp'],

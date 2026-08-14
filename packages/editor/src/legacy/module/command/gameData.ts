@@ -8,14 +8,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.gameData = new CommandSchema({
 	name: 'gameData',
 	onInitialize() {
-		$('#gameData-operation').loadItems([
+		$('#gameData-operation')?.loadItems?.([
 			{ name: 'Save', value: 'save' },
 			{ name: 'Load', value: 'load' },
 			{ name: 'Delete', value: 'delete' }
 		]);
 		$('#gameData-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'save',
 					targets: [$('#gameData-index'), $('#gameData-variables')]

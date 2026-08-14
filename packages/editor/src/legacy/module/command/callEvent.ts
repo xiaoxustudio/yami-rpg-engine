@@ -70,9 +70,9 @@ Command.cases.callEvent = new CommandSchema({
 	eventResult: null,
 	onInitialize() {
 		this.windowFrame = $('#callEvent');
-		this.gridBox = $('#callEvent').querySelector('.grid-box');
+		this.gridBox = $('#callEvent')?.querySelector?.('.grid-box');
 
-		$('#callEvent-type').loadItems([
+		$('#callEvent-type')?.loadItems?.([
 			{ name: 'Global', value: 'global' },
 			{ name: 'Inherited', value: 'inherited' },
 			{ name: 'Scene', value: 'scene' },
@@ -86,8 +86,8 @@ Command.cases.callEvent = new CommandSchema({
 		]);
 
 		$('#callEvent-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'global', targets: [$('#callEvent-eventId')] },
 				{ case: 'scene', targets: [$('#callEvent-eventType')] },
 				{

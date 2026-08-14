@@ -8,35 +8,35 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.followActor = new CommandSchema({
 	name: 'followActor',
 	onInitialize() {
-		$('#followActor-mode').loadItems([
+		$('#followActor-mode')?.loadItems?.([
 			{ name: 'Circle', value: 'circle' },
 			{ name: 'Rectangle', value: 'rectangle' }
 		]);
 		$('#followActor-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'circle', targets: [$('#followActor-offset')] },
 				{ case: 'rectangle', targets: [$('#followActor-vertDist')] }
 			]);
-		$('#followActor-navigate').loadItems([
+		$('#followActor-navigate')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#followActor-navigate')
-			.enableHiddenMode()
-			.relate([{ case: true, targets: [$('#followActor-bypass')] }]);
-		$('#followActor-bypass').loadItems([
+			?.enableHiddenMode?.()
+			?.relate?.([{ case: true, targets: [$('#followActor-bypass')] }]);
+		$('#followActor-bypass')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#followActor-once').loadItems([
+		$('#followActor-once')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#followActor-once')
-			.enableHiddenMode()
-			.relate([{ case: true, targets: [$('#followActor-wait')] }]);
-		$('#followActor-wait').loadItems([
+			?.enableHiddenMode?.()
+			?.relate?.([{ case: true, targets: [$('#followActor-wait')] }]);
+		$('#followActor-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

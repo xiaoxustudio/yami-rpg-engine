@@ -9,10 +9,10 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.createActor = new CommandSchema({
 	name: 'createActor',
 	onInitialize() {
-		$('#createActor').on('open', function (event: Event) {
-			$('#createActor-teamId').loadItems(Data.createTeamItems!());
+		$('#createActor')?.on?.('open', function (event: Event) {
+			$('#createActor-teamId')?.loadItems?.(Data.createTeamItems!());
 		});
-		$('#createActor').on('closed', function (event: Event) {
+		$('#createActor')?.on?.('closed', function (event: Event) {
 			clear($('#createActor-teamId'));
 		});
 	},

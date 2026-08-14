@@ -9,21 +9,21 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.castSkill = new CommandSchema({
 	name: 'castSkill',
 	onInitialize() {
-		$('#castSkill-mode').loadItems([
+		$('#castSkill-mode')?.loadItems?.([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Skill ID', value: 'by-id' },
 			{ name: 'By Skill Instance', value: 'by-skill' },
 			{ name: 'By Variable', value: 'by-variable' }
 		]);
 		$('#castSkill-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'by-key', targets: [$('#castSkill-key')] },
 				{ case: 'by-id', targets: [$('#castSkill-skillId')] },
 				{ case: 'by-skill', targets: [$('#castSkill-skill')] },
 				{ case: 'by-variable', targets: [$('#castSkill-keyVar')] }
 			]);
-		$('#castSkill-wait').loadItems([
+		$('#castSkill-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
@@ -76,7 +76,7 @@ Command.cases.castSkill = new CommandSchema({
 		keyVar = '',
 		wait = false
 	}) {
-		$('#castSkill-key').loadItems(Enum.getStringItems!('shortcut-key'));
+		$('#castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('castSkill');
 		write('actor', actor);
 		write('mode', mode);

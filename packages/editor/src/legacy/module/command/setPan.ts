@@ -16,20 +16,20 @@ Command.cases.setPan = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setPan-type').loadItems([
+		$('#setPan-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' },
 			{ name: 'SE', value: 'se' }
 		]);
-		$('#setPan-wait').loadItems([
+		$('#setPan-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setPan').on('open', function (event: Event) {
-			$('#setPan-easingId').loadItems(Data.createEasingItems!());
+		$('#setPan')?.on?.('open', function (event: Event) {
+			$('#setPan-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setPan').on('closed', function (event: Event) {
+		$('#setPan')?.on?.('closed', function (event: Event) {
 			clear($('#setPan-easingId'));
 		});
 	},

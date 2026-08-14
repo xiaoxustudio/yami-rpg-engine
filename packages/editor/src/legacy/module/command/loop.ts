@@ -9,12 +9,12 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loop = new CommandSchema({
 	name: 'loop',
 	onInitialize() {
-		$('#loop-conditions').bind(IfCondition);
-		$('#loop-mode').loadItems([
+		$('#loop-conditions')?.bind?.(IfCondition);
+		$('#loop-mode')?.loadItems?.([
 			{ name: 'Meet All', value: 'all' },
 			{ name: 'Meet Any', value: 'any' }
 		]);
-		$('#loop').on('closed', () => {
+		$('#loop')?.on?.('closed', () => {
 			this.commands = null;
 			clear($('#loop-conditions'));
 		});

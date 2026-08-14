@@ -8,14 +8,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorPortrait = new CommandSchema({
 	name: 'changeActorPortrait',
 	onInitialize() {
-		$('#changeActorPortrait-mode').loadItems([
+		$('#changeActorPortrait-mode')?.loadItems?.([
 			{ name: 'Full Mode', value: 'full' },
 			{ name: 'Image Mode', value: 'portrait' },
 			{ name: 'Clip Mode', value: 'clip' }
 		]);
 		$('#changeActorPortrait-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'full',
 					targets: [$('#changeActorPortrait-portrait'), $('#changeActorPortrait-clip')]

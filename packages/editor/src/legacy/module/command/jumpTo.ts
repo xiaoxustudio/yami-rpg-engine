@@ -24,14 +24,14 @@ Command.cases.jumpTo = new CommandSchema({
 			$('#jumpTo-label') as unknown as TextSuggestionTarget,
 			this.loadLabels
 		);
-		$('#jumpTo-operation').loadItems([
+		$('#jumpTo-operation')?.loadItems?.([
 			{ name: 'Jump to Label', value: 'jump' },
 			{ name: 'Save and Jump to Label', value: 'save-jump' },
 			{ name: 'Jump to the Saved Location', value: 'return' }
 		]);
 		$('#jumpTo-operation')
-			.enableHiddenMode()
-			.relate([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
+			?.enableHiddenMode?.()
+			?.relate?.([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
 	},
 	loadLabels() {
 		const items: Array<{ name: string; icon: string }> = [];

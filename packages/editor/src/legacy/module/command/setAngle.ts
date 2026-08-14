@@ -16,14 +16,14 @@ Command.cases.setAngle = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAngle-wait').loadItems([
+		$('#setAngle-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setAngle').on('open', function (event: Event) {
-			$('#setAngle-easingId').loadItems(Data.createEasingItems!());
+		$('#setAngle')?.on?.('open', function (event: Event) {
+			$('#setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setAngle').on('closed', function (event: Event) {
+		$('#setAngle')?.on?.('closed', function (event: Event) {
 			clear($('#setAngle-easingId'));
 		});
 	},

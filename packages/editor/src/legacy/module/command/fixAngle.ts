@@ -18,7 +18,7 @@ Command.cases.fixAngle = new CommandSchema({
 		{ key: 'fixed', default: true }
 	],
 	onInitialize() {
-		$('#fixAngle-fixed').loadItems([
+		$('#fixAngle-fixed')?.loadItems?.([
 			{ name: 'Fixed', value: true },
 			{ name: 'Unfixed', value: false }
 		]);

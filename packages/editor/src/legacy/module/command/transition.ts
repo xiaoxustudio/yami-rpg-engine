@@ -11,10 +11,10 @@ Command.cases.transition = new CommandSchema({
 	name: 'transition',
 	commands: null,
 	onInitialize(this: CommandSchema) {
-		$('#transition').on('open', function (event: Event) {
-			$('#transition-easingId').loadItems(Data.createEasingItems!());
+		$('#transition')?.on?.('open', function (event: Event) {
+			$('#transition-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#transition').on(
+		$('#transition')?.on?.(
 			'closed',
 			function (this: HTMLElement & { commands: unknown | null }, event: Event) {
 				clear($('#transition-easingId'));

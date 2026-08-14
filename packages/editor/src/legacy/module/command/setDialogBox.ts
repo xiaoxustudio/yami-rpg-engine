@@ -9,8 +9,8 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setDialogBox = new CommandSchema({
 	name: 'setDialogBox',
 	onInitialize() {
-		$('#setDialogBox-properties').bind(DialogBoxProperty);
-		$('#setDialogBox').on('closed', (event: Event) => {
+		$('#setDialogBox-properties')?.bind?.(DialogBoxProperty);
+		$('#setDialogBox')?.on?.('closed', (event: Event) => {
 			clear($('#setDialogBox-properties'));
 		});
 	},

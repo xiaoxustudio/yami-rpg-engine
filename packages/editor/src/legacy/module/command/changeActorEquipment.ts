@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorEquipment = new CommandSchema({
 	name: 'changeActorEquipment',
 	onInitialize() {
-		$('#changeActorEquipment-operation').loadItems([
+		$('#changeActorEquipment-operation')?.loadItems?.([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
 			{ name: 'Add Instance', value: 'add-instance' },
@@ -17,8 +17,8 @@ Command.cases.changeActorEquipment = new CommandSchema({
 			{ name: 'Remove Slot', value: 'remove-slot' }
 		]);
 		$('#changeActorEquipment-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'add',
 					targets: [
@@ -96,7 +96,7 @@ Command.cases.changeActorEquipment = new CommandSchema({
 		equipmentId = '',
 		equipment = { type: 'trigger' }
 	}) {
-		$('#changeActorEquipment-slot').loadItems(Enum.getStringItems!('equipment-slot'));
+		$('#changeActorEquipment-slot')?.loadItems?.(Enum.getStringItems!('equipment-slot'));
 		const write = getElementWriter('changeActorEquipment');
 		write('actor', actor);
 		write('operation', operation);

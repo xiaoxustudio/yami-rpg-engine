@@ -9,7 +9,7 @@ Command.cases.stopAudio = new CommandSchema({
 	name: 'stopAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#stopAudio-type').loadItems([
+		$('#stopAudio-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' },

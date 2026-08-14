@@ -67,7 +67,7 @@ export const RequestkeyValueBind = {
 Command.cases.requestURL = new CommandSchema({
 	name: 'requestURL',
 	onInitialize() {
-		$('#requestURL-method').loadItems([
+		$('#requestURL-method')?.loadItems?.([
 			{ name: 'GET', value: 'GET' },
 			{ name: 'POST', value: 'POST' },
 			{ name: 'PUT', value: 'PUT' },
@@ -75,8 +75,8 @@ Command.cases.requestURL = new CommandSchema({
 		]);
 		write($('#requestURL-method'), 'GET');
 		write($('#requestURL-url'), '');
-		$('#requestURL-header').bind(RequestkeyValueBind);
-		$('#requestURL-data').bind(RequestkeyValueBind);
+		$('#requestURL-header')?.bind?.(RequestkeyValueBind);
+		$('#requestURL-data')?.bind?.(RequestkeyValueBind);
 	},
 	customParse({
 		url = '',

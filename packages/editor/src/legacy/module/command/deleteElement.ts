@@ -8,14 +8,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.deleteElement = new CommandSchema({
 	name: 'deleteElement',
 	onInitialize() {
-		$('#deleteElement-operation').loadItems([
+		$('#deleteElement-operation')?.loadItems?.([
 			{ name: 'Delete Element', value: 'delete-element' },
 			{ name: 'Delete Children', value: 'delete-children' },
 			{ name: 'Delete All', value: 'delete-all' }
 		]);
 		$('#deleteElement-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['delete-element', 'delete-children'],
 					targets: [$('#deleteElement-element')]

@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.translateActor = new CommandSchema({
 	name: 'translateActor',
 	onInitialize() {
-		$('#translateActor-wait').loadItems([
+		$('#translateActor-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#translateActor').on('open', function (event: Event) {
-			$('#translateActor-easingId').loadItems(Data.createEasingItems!());
+		$('#translateActor')?.on?.('open', function (event: Event) {
+			$('#translateActor-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#translateActor').on('closed', function (event: Event) {
+		$('#translateActor')?.on?.('closed', function (event: Event) {
 			clear($('#translateActor-easingId'));
 		});
 	},

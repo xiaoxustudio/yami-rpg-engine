@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.forEach = new CommandSchema({
 	name: 'forEach',
 	onInitialize() {
-		$('#forEach-data').loadItems([
+		$('#forEach-data')?.loadItems?.([
 			{ name: 'List', value: 'list' },
 			{ name: 'Skill', value: 'skill' },
 			{ name: 'State', value: 'state' },
@@ -24,8 +24,8 @@ Command.cases.forEach = new CommandSchema({
 			{ name: 'Changed Touch Point', value: 'changed-touch' }
 		]);
 		$('#forEach-data')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'list',
 					targets: [$('#forEach-list'), $('#forEach-variable')]
@@ -53,7 +53,7 @@ Command.cases.forEach = new CommandSchema({
 					targets: [$('#forEach-touchId')]
 				}
 			]);
-		$('#forEach').on('closed', () => {
+		$('#forEach')?.on?.('closed', () => {
 			this.commands = null;
 		});
 	},

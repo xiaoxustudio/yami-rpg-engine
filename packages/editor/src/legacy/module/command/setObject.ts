@@ -34,7 +34,7 @@ type SetObjectData = {
 Command.cases.setObject = new CommandSchema({
 	name: 'setObject',
 	onInitialize() {
-		$('#setObject-operand-type').loadItems([
+		$('#setObject-operand-type')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Actor', value: 'actor' },
 			{ name: 'Skill', value: 'skill' },
@@ -49,8 +49,8 @@ Command.cases.setObject = new CommandSchema({
 			{ name: 'List', value: 'list' }
 		]);
 		$('#setObject-operand-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'actor', targets: [$('#setObject-operand-actor')] },
 				{ case: 'skill', targets: [$('#setObject-operand-skill')] },
 				{ case: 'state', targets: [$('#setObject-operand-state')] },

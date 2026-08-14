@@ -26,7 +26,7 @@ type SetAnimationComponentData = {
 Command.cases.setAnimationComponent = new CommandSchema({
 	name: 'setAnimationComponent',
 	onInitialize() {
-		$('#setAnimationComponent-operation').loadItems([
+		$('#setAnimationComponent-operation')?.loadItems?.([
 			{ name: 'Set Angle', value: 'set-angle' },
 			{ name: 'Set Scale', value: 'set-scale' },
 			{ name: 'Set Speed', value: 'set-speed' },
@@ -38,8 +38,8 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			{ name: 'Stop Motion', value: 'stop-motion' }
 		]);
 		$('#setAnimationComponent-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'set-angle',
 					targets: [$('#setAnimationComponent-angle')]
@@ -79,7 +79,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 					]
 				}
 			]);
-		$('#setAnimationComponent-wait').loadItems([
+		$('#setAnimationComponent-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadImage = new CommandSchema({
 	name: 'loadImage',
 	onInitialize() {
-		$('#loadImage-type').loadItems([
+		$('#loadImage-type')?.loadItems?.([
 			{ name: 'Actor Portrait', value: 'actor-portrait' },
 			{ name: 'Skill Icon', value: 'skill-icon' },
 			{ name: 'State Icon', value: 'state-icon' },
@@ -20,8 +20,8 @@ Command.cases.loadImage = new CommandSchema({
 			{ name: 'Base64 Image', value: 'base64' }
 		]);
 		$('#loadImage-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'actor-portrait', targets: [$('#loadImage-actor')] },
 				{ case: 'skill-icon', targets: [$('#loadImage-skill')] },
 				{ case: 'state-icon', targets: [$('#loadImage-state')] },
@@ -105,7 +105,7 @@ Command.cases.loadImage = new CommandSchema({
 		key = Enum.getDefStringId!('shortcut-key'),
 		variable = { type: 'local', key: '' }
 	}) {
-		$('#loadImage-key').loadItems(Enum.getStringItems!('shortcut-key'));
+		$('#loadImage-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('loadImage');
 		write('element', element);
 		write('type', type);

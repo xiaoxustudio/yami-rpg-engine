@@ -18,11 +18,11 @@ Command.cases.addAnimationComponent = new CommandSchema({
 		{ key: 'offsetY', default: 0 }
 	],
 	onInitialize() {
-		$('#addAnimationComponent-rotatable').loadItems([
+		$('#addAnimationComponent-rotatable')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#addAnimationComponent-syncAngle').loadItems([
+		$('#addAnimationComponent-syncAngle')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

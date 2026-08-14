@@ -12,12 +12,12 @@ Command.cases.setLoop = new CommandSchema({
 		{ key: 'loop', default: false }
 	],
 	onInitialize() {
-		$('#setLoop-type').loadItems([
+		$('#setLoop-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' }
 		]);
-		$('#setLoop-loop').loadItems([
+		$('#setLoop-loop')?.loadItems?.([
 			{ name: 'Once', value: false },
 			{ name: 'Loop', value: true }
 		]);

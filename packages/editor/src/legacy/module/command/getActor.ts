@@ -29,31 +29,31 @@ type GetActorCommandData = {
 Command.cases.getActor = new CommandSchema({
 	name: 'getActor',
 	onInitialize() {
-		$('#getActor-area').loadItems([
+		$('#getActor-area')?.loadItems?.([
 			{ name: 'Square', value: 'square' },
 			{ name: 'Circle', value: 'circle' }
 		]);
 		$('#getActor-area')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'square', targets: [$('#getActor-size')] },
 				{ case: 'circle', targets: [$('#getActor-radius')] }
 			]);
-		$('#getActor-selector').loadItems([
+		$('#getActor-selector')?.loadItems?.([
 			{ name: 'Team Enemy', value: 'enemy' },
 			{ name: 'Team Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },
 			{ name: 'Any', value: 'any' }
 		]);
 		$('#getActor-selector')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['enemy', 'friend', 'team'],
 					targets: [$('#getActor-teamId')]
 				}
 			]);
-		$('#getActor-condition').loadItems([
+		$('#getActor-condition')?.loadItems?.([
 			{ name: 'Nearest', value: 'nearest' },
 			{ name: 'Farthest', value: 'farthest' },
 			{ name: 'Min Attribute Value', value: 'min-attribute-value' },
@@ -63,8 +63,8 @@ Command.cases.getActor = new CommandSchema({
 			{ name: 'Random', value: 'random' }
 		]);
 		$('#getActor-condition')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['min-attribute-value', 'max-attribute-value'],
 					targets: [$('#getActor-attribute')]
@@ -74,28 +74,28 @@ Command.cases.getActor = new CommandSchema({
 					targets: [$('#getActor-attribute'), $('#getActor-divisor')]
 				}
 			]);
-		$('#getActor-activation').loadItems([
+		$('#getActor-activation')?.loadItems?.([
 			{ name: 'Active', value: 'active' },
 			{ name: 'Inactive', value: 'inactive' },
 			{ name: 'Either', value: 'either' }
 		]);
-		$('#getActor-exclusion').loadItems([
+		$('#getActor-exclusion')?.loadItems?.([
 			{ name: 'None', value: 'none' },
 			{ name: 'Exclude an Actor', value: 'actor' },
 			{ name: 'Exclude a Team', value: 'team' }
 		]);
 		$('#getActor-exclusion')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'actor', targets: [$('#getActor-exclusionActor')] },
 				{ case: 'team', targets: [$('#getActor-exclusionTeamId')] }
 			]);
-		$('#getActor').on('open', function (event: Event) {
+		$('#getActor')?.on?.('open', function (event: Event) {
 			const items = Data.createTeamItems!();
-			$('#getActor-teamId').loadItems(items);
-			$('#getActor-exclusionTeamId').loadItems(items);
+			$('#getActor-teamId')?.loadItems?.(items);
+			$('#getActor-exclusionTeamId')?.loadItems?.(items);
 		});
-		$('#getActor').on('closed', function (event: Event) {
+		$('#getActor')?.on?.('closed', function (event: Event) {
 			clear($('#getActor-teamId'));
 			clear($('#getActor-exclusionTeamId'));
 		});
@@ -227,8 +227,8 @@ Command.cases.getActor = new CommandSchema({
 		selector = this.remapSelectorPatch!(selector);
 		activation = this.remapActivationPatch!(activation, active);
 		const attrItems = Attribute.getAttributeItems!('actor', 'number');
-		$('#getActor-attribute').loadItems(attrItems);
-		$('#getActor-divisor').loadItems(attrItems);
+		$('#getActor-attribute')?.loadItems?.(attrItems);
+		$('#getActor-divisor')?.loadItems?.(attrItems);
 		const write = getElementWriter('getActor');
 		write('variable', variable);
 		write('position', position);

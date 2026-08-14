@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.controlButton = new CommandSchema({
 	name: 'controlButton',
 	onInitialize() {
-		$('#controlButton-operation').loadItems([
+		$('#controlButton-operation')?.loadItems?.([
 			{ name: 'Select Default Button', value: 'select-default' },
 			{ name: 'Select Button', value: 'select' },
 			{ name: 'Display Hover Mode', value: 'hover-mode' },
@@ -16,8 +16,8 @@ Command.cases.controlButton = new CommandSchema({
 			{ name: 'Restore Display Mode', value: 'normal-mode' }
 		]);
 		$('#controlButton-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['select', 'hover-mode', 'active-mode', 'normal-mode'],
 					targets: [$('#controlButton-element')]

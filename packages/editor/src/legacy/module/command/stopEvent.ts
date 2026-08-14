@@ -10,7 +10,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.stopEvent = new CommandSchema({
 	name: 'stopEvent',
 	onInitialize() {
-		$('#stopEvent-type').loadItems([
+		$('#stopEvent-type')?.loadItems?.([
 			{ name: 'Current', value: 'current' },
 			{ name: 'Global', value: 'global' },
 			{ name: 'Scene', value: 'scene' },
@@ -23,8 +23,8 @@ Command.cases.stopEvent = new CommandSchema({
 			{ name: 'Element', value: 'element' }
 		]);
 		$('#stopEvent-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'global', targets: [$('#stopEvent-eventId')] },
 				{ case: 'scene', targets: [$('#stopEvent-eventType')] },
 				{

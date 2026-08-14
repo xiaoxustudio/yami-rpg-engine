@@ -16,20 +16,20 @@ Command.cases.setVolume = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setVolume-type').loadItems([
+		$('#setVolume-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' },
 			{ name: 'SE', value: 'se' }
 		]);
-		$('#setVolume-wait').loadItems([
+		$('#setVolume-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setVolume').on('open', function (event: Event) {
-			$('#setVolume-easingId').loadItems(Data.createEasingItems!());
+		$('#setVolume')?.on?.('open', function (event: Event) {
+			$('#setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setVolume').on('closed', function (event: Event) {
+		$('#setVolume')?.on?.('closed', function (event: Event) {
 			clear($('#setVolume-easingId'));
 		});
 	},

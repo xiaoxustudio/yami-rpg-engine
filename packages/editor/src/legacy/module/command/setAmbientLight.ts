@@ -26,14 +26,14 @@ Command.cases.setAmbientLight = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setAmbientLight-wait').loadItems([
+		$('#setAmbientLight-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setAmbientLight').on('open', function (event: Event) {
-			$('#setAmbientLight-easingId').loadItems(Data.createEasingItems!());
+		$('#setAmbientLight')?.on?.('open', function (event: Event) {
+			$('#setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setAmbientLight').on('closed', function (event: Event) {
+		$('#setAmbientLight')?.on?.('closed', function (event: Event) {
 			clear($('#setAmbientLight-easingId'));
 		});
 	},

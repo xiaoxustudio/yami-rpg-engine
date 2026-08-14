@@ -14,7 +14,7 @@ Command.cases.detectTargets = new CommandSchema({
 		{ key: 'inSight', default: false }
 	],
 	onInitialize() {
-		$('#detectTargets-selector').loadItems([
+		$('#detectTargets-selector')?.loadItems?.([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },
@@ -22,7 +22,7 @@ Command.cases.detectTargets = new CommandSchema({
 			{ name: 'Any Except Self', value: 'any-except-self' },
 			{ name: 'Any', value: 'any' }
 		]);
-		$('#detectTargets-inSight').loadItems([
+		$('#detectTargets-inSight')?.loadItems?.([
 			{ name: 'Enabled', value: true },
 			{ name: 'Disabled', value: false }
 		]);

@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setList = new CommandSchema({
 	name: 'setList',
 	onInitialize() {
-		$('#setList-operation').loadItems([
+		$('#setList-operation')?.loadItems?.([
 			{ name: 'Set to Empty', value: 'set-empty' },
 			{ name: 'Set Numbers', value: 'set-numbers' },
 			{ name: 'Set Strings', value: 'set-strings' },
@@ -27,8 +27,8 @@ Command.cases.setList = new CommandSchema({
 			{ name: 'Get Actor Targets', value: 'get-actor-targets' }
 		]);
 		$('#setList-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'set-numbers', targets: [$('#setList-numbers')] },
 				{ case: 'set-strings', targets: [$('#setList-strings')] },
 				{
@@ -78,7 +78,7 @@ Command.cases.setList = new CommandSchema({
 				},
 				{ case: 'get-actor-targets', targets: [$('#setList-actor')] }
 			]);
-		$('#setList-boolean').loadItems([
+		$('#setList-boolean')?.loadItems?.([
 			{ name: 'False', value: false },
 			{ name: 'True', value: true }
 		]);

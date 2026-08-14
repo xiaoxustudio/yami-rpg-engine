@@ -8,15 +8,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorSkill = new CommandSchema({
 	name: 'changeActorSkill',
 	onInitialize() {
-		$('#changeActorSkill-operation').loadItems([
+		$('#changeActorSkill-operation')?.loadItems?.([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
 			{ name: 'Remove Instance', value: 'remove-instance' },
 			{ name: 'Sort by Filename', value: 'sort-by-order' }
 		]);
 		$('#changeActorSkill-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['add', 'remove'],
 					targets: [$('#changeActorSkill-skillId')]

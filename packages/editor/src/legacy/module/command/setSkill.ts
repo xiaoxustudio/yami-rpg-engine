@@ -8,7 +8,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setSkill = new CommandSchema({
 	name: 'setSkill',
 	onInitialize() {
-		$('#setSkill-operation').loadItems([
+		$('#setSkill-operation')?.loadItems?.([
 			{ name: 'Set Cooldown Time', value: 'set-cooldown' },
 			{ name: 'Increase Cooldown Time', value: 'increase-cooldown' },
 			{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }

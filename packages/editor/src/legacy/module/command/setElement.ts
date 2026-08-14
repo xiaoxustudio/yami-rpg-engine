@@ -12,7 +12,7 @@ Command.cases.setElement = new CommandSchema({
 		{ key: 'operation', default: 'hide' }
 	],
 	onInitialize() {
-		$('#setElement-operation').loadItems([
+		$('#setElement-operation')?.loadItems?.([
 			{ name: 'Hide', value: 'hide' },
 			{ name: 'Show', value: 'show' },
 			{ name: 'Disable Pointer Events', value: 'disable-pointer-events' },

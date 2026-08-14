@@ -18,7 +18,7 @@ Command.cases.setActive = new CommandSchema({
 		{ key: 'active', default: false }
 	],
 	onInitialize() {
-		$('#setActive-active').loadItems([
+		$('#setActive-active')?.loadItems?.([
 			{ name: 'Active', value: true },
 			{ name: 'Inactive', value: false }
 		]);

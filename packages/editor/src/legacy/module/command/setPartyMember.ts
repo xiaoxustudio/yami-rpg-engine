@@ -12,7 +12,7 @@ Command.cases.setPartyMember = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } }
 	],
 	onInitialize() {
-		$('#setPartyMember-operation').loadItems([
+		$('#setPartyMember-operation')?.loadItems?.([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' }
 		]);

@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
 	onInitialize() {
-		$('#tintImage-mode').loadItems([
+		$('#tintImage-mode')?.loadItems?.([
 			{ name: 'Full', value: 'full' },
 			{ name: 'RGB', value: 'rgb' },
 			{ name: 'Gray', value: 'gray' }
 		]);
 		$('#tintImage-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'full',
 					targets: [
@@ -36,14 +36,14 @@ Command.cases.tintImage = new CommandSchema({
 				},
 				{ case: 'gray', targets: [$('#tintImage-tint-3')] }
 			]);
-		$('#tintImage-wait').loadItems([
+		$('#tintImage-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#tintImage').on('open', () => {
-			$('#tintImage-easingId').loadItems(Data.createEasingItems!());
+		$('#tintImage')?.on?.('open', () => {
+			$('#tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#tintImage').on('closed', () => {
+		$('#tintImage')?.on?.('closed', () => {
 			clear($('#tintImage-easingId'));
 			clear($('#tintImage-filter'));
 		});

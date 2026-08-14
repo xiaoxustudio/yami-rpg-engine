@@ -12,7 +12,7 @@ Command.cases.changePassableTerrain = new CommandSchema({
 		{ key: 'passage', default: 'land' }
 	],
 	onInitialize() {
-		$('#changePassableTerrain-passage').loadItems([
+		$('#changePassableTerrain-passage')?.loadItems?.([
 			{ name: 'Land', value: 'land' },
 			{ name: 'Water', value: 'water' },
 			{ name: 'Unrestricted', value: 'unrestricted' }

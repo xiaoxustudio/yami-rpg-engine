@@ -14,16 +14,16 @@ Command.cases.setTeamRelation = new CommandSchema({
 		{ key: 'relation', default: 0 }
 	],
 	onInitialize() {
-		$('#setTeamRelation-relation').loadItems([
+		$('#setTeamRelation-relation')?.loadItems?.([
 			{ name: 'Enemy', value: 0 },
 			{ name: 'Friend', value: 1 }
 		]);
-		$('#setTeamRelation').on('open', function (event: Event) {
+		$('#setTeamRelation')?.on?.('open', function (event: Event) {
 			const items = Data.createTeamItems!();
-			$('#setTeamRelation-teamId1').loadItems(items);
-			$('#setTeamRelation-teamId2').loadItems(items);
+			$('#setTeamRelation-teamId1')?.loadItems?.(items);
+			$('#setTeamRelation-teamId2')?.loadItems?.(items);
 		});
-		$('#setTeamRelation').on('closed', function (event: Event) {
+		$('#setTeamRelation')?.on?.('closed', function (event: Event) {
 			clear($('#setTeamRelation-teamId1'));
 			clear($('#setTeamRelation-teamId2'));
 		});

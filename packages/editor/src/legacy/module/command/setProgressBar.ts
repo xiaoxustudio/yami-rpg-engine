@@ -9,8 +9,8 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setProgressBar = new CommandSchema({
 	name: 'setProgressBar',
 	onInitialize() {
-		$('#setProgressBar-properties').bind(ProgressBarProperty);
-		$('#setProgressBar').on('closed', (event: Event) => {
+		$('#setProgressBar-properties')?.bind?.(ProgressBarProperty);
+		$('#setProgressBar')?.on?.('closed', (event: Event) => {
 			clear($('#setProgressBar-properties'));
 		});
 	},

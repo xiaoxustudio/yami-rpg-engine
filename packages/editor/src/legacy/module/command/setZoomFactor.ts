@@ -15,14 +15,14 @@ Command.cases.setZoomFactor = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setZoomFactor-wait').loadItems([
+		$('#setZoomFactor-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setZoomFactor').on('open', function (event: Event) {
-			$('#setZoomFactor-easingId').loadItems(Data.createEasingItems!());
+		$('#setZoomFactor')?.on?.('open', function (event: Event) {
+			$('#setZoomFactor-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setZoomFactor').on('closed', function (event: Event) {
+		$('#setZoomFactor')?.on?.('closed', function (event: Event) {
 			clear($('#setZoomFactor-easingId'));
 		});
 	},

@@ -9,7 +9,7 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.getTarget = new CommandSchema({
 	name: 'getTarget',
 	onInitialize() {
-		$('#getTarget-selector').loadItems([
+		$('#getTarget-selector')?.loadItems?.([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },
@@ -17,7 +17,7 @@ Command.cases.getTarget = new CommandSchema({
 			{ name: 'Any Except Self', value: 'any-except-self' },
 			{ name: 'Any', value: 'any' }
 		]);
-		$('#getTarget-condition').loadItems([
+		$('#getTarget-condition')?.loadItems?.([
 			{ name: 'Max Threat', value: 'max-threat' },
 			{ name: 'Nearest', value: 'nearest' },
 			{ name: 'Farthest', value: 'farthest' },
@@ -28,8 +28,8 @@ Command.cases.getTarget = new CommandSchema({
 			{ name: 'Random', value: 'random' }
 		]);
 		$('#getTarget-condition')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['min-attribute-value', 'max-attribute-value'],
 					targets: [$('#getTarget-attribute')]
@@ -96,8 +96,8 @@ Command.cases.getTarget = new CommandSchema({
 		divisor = Attribute.getDefAttributeId!('actor', 'number')
 	}) {
 		const attrItems = Attribute.getAttributeItems!('actor', 'number');
-		$('#getTarget-attribute').loadItems(attrItems);
-		$('#getTarget-divisor').loadItems(attrItems);
+		$('#getTarget-attribute')?.loadItems?.(attrItems);
+		$('#getTarget-divisor')?.loadItems?.(attrItems);
 		const write = getElementWriter('getTarget');
 		write('actor', actor);
 		write('selector', selector);

@@ -13,7 +13,7 @@ Command.cases.setTriggerDuration = new CommandSchema({
 		{ key: 'duration', default: 0 }
 	],
 	onInitialize() {
-		$('#setTriggerDuration-operation').loadItems([
+		$('#setTriggerDuration-operation')?.loadItems?.([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Increase', value: 'increase' },
 			{ name: 'Decrease', value: 'decrease' }

@@ -9,14 +9,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.uploadFile = new CommandSchema({
 	name: 'uploadFile',
 	onInitialize() {
-		$('#uploadFile-method').loadItems([
+		$('#uploadFile-method')?.loadItems?.([
 			{ name: 'POST', value: 'POST' },
 			{ name: 'PUT', value: 'PUT' }
 		]);
 		write($('#uploadFile-method'), 'POST');
 		write($('#uploadFile-url'), '');
 		write($('#uploadFile-path'), '');
-		$('#uploadFile-header').bind(RequestkeyValueBind);
+		$('#uploadFile-header')?.bind?.(RequestkeyValueBind);
 		write($('#uploadFile-field'), 'file');
 	},
 	customParse({

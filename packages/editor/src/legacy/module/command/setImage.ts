@@ -13,8 +13,8 @@ Command.cases.setImage = new CommandSchema({
 		{ key: 'properties', default: [] }
 	],
 	onInitialize() {
-		$('#setImage-properties').bind(ImageProperty);
-		$('#setImage').on('closed', (event: Event) => {
+		$('#setImage-properties')?.bind?.(ImageProperty);
+		$('#setImage')?.on?.('closed', (event: Event) => {
 			clear($('#setImage-properties'));
 		});
 	},

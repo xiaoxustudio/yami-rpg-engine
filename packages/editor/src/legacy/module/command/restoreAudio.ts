@@ -9,7 +9,7 @@ Command.cases.restoreAudio = new CommandSchema({
 	name: 'restoreAudio',
 	fields: [{ key: 'type', default: 'bgm' }],
 	onInitialize() {
-		$('#restoreAudio-type').loadItems([
+		$('#restoreAudio-type')?.loadItems?.([
 			{ name: 'BGM', value: 'bgm' },
 			{ name: 'BGS', value: 'bgs' },
 			{ name: 'CV', value: 'cv' }

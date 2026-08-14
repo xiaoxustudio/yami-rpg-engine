@@ -26,7 +26,7 @@ Command.cases.changeThreat = new CommandSchema({
 		{ key: 'threat', default: 0 }
 	],
 	onInitialize() {
-		$('#changeThreat-operation').loadItems([
+		$('#changeThreat-operation')?.loadItems?.([
 			{ name: 'Increase', value: 'increase' },
 			{ name: 'Decrease', value: 'decrease' }
 		]);

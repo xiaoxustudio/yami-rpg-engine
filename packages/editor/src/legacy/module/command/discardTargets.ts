@@ -13,7 +13,7 @@ Command.cases.discardTargets = new CommandSchema({
 		{ key: 'distance', default: 0 }
 	],
 	onInitialize() {
-		$('#discardTargets-selector').loadItems([
+		$('#discardTargets-selector')?.loadItems?.([
 			{ name: 'Enemy', value: 'enemy' },
 			{ name: 'Friend', value: 'friend' },
 			{ name: 'Team Member', value: 'team' },

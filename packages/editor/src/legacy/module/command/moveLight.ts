@@ -10,15 +10,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.moveLight = new CommandSchema({
 	name: 'moveLight',
 	onInitialize() {
-		$('#moveLight-properties').bind(LightProperty);
-		$('#moveLight-wait').loadItems([
+		$('#moveLight-properties')?.bind?.(LightProperty);
+		$('#moveLight-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#moveLight').on('open', function (event: Event) {
-			$('#moveLight-easingId').loadItems(Data.createEasingItems!());
+		$('#moveLight')?.on?.('open', function (event: Event) {
+			$('#moveLight-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#moveLight').on('closed', function (event: Event) {
+		$('#moveLight')?.on?.('closed', function (event: Event) {
 			clear($('#moveLight-properties'));
 			clear($('#moveLight-easingId'));
 		});

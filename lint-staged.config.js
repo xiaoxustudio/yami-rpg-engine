@@ -1,9 +1,8 @@
+const filterTemplates = (files) =>
+	files.filter((f) => !f.replace(/\\/g, '/').includes('Project/Templates/'));
 /**
  * @type {import('lint-staged').Configuration}
  */
-const filterTemplates = (files) =>
-	files.filter((f) => !f.replace(/\\/g, '/').includes('Project/Templates/'));
-
 module.exports = {
 	'*.{js,ts,css}': (files) => {
 		const filtered = filterTemplates(files);

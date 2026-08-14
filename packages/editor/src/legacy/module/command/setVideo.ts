@@ -9,8 +9,8 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setVideo = new CommandSchema({
 	name: 'setVideo',
 	onInitialize() {
-		$('#setVideo-properties').bind(VideoProperty);
-		$('#setVideo').on('closed', (event: Event) => {
+		$('#setVideo-properties')?.bind?.(VideoProperty);
+		$('#setVideo')?.on?.('closed', (event: Event) => {
 			clear($('#setVideo-properties'));
 		});
 	},

@@ -8,13 +8,13 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.loadScene = new CommandSchema({
 	name: 'loadScene',
 	onInitialize() {
-		$('#loadScene-transfer').loadItems([
+		$('#loadScene-transfer')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
 		$('#loadScene-transfer')
-			.enableHiddenMode()
-			.relate([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
+			?.enableHiddenMode?.()
+			?.relate?.([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
 	},
 	customParse({
 		sceneId,

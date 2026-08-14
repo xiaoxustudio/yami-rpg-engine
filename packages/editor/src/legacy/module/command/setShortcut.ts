@@ -9,15 +9,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setShortcut = new CommandSchema({
 	name: 'setShortcut',
 	onInitialize() {
-		$('#setShortcut-operation').loadItems([
+		$('#setShortcut-operation')?.loadItems?.([
 			{ name: 'Set Item Shortcut', value: 'set-item-shortcut' },
 			{ name: 'Set Skill Shortcut', value: 'set-skill-shortcut' },
 			{ name: 'Delete Shortcut', value: 'delete-shortcut' },
 			{ name: 'Swap Shortcuts', value: 'swap-shortcuts' }
 		]);
 		$('#setShortcut-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'set-item-shortcut',
 					targets: [$('#setShortcut-itemId')]
@@ -80,8 +80,8 @@ Command.cases.setShortcut = new CommandSchema({
 		key2 = Enum.getDefStringId!('shortcut-key')
 	}) {
 		const items = Enum.getStringItems!('shortcut-key');
-		$('#setShortcut-key').loadItems(items);
-		$('#setShortcut-key2').loadItems(items);
+		$('#setShortcut-key')?.loadItems?.(items);
+		$('#setShortcut-key2')?.loadItems?.(items);
 		const write = getElementWriter('setShortcut');
 		write('actor', actor);
 		write('operation', operation);

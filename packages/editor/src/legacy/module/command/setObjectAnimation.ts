@@ -9,15 +9,15 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.setObjectAnimation = new CommandSchema({
 	name: 'setObjectAnimation',
 	onInitialize() {
-		$('#setObjectAnimation-sort').loadItems([
+		$('#setObjectAnimation-sort')?.loadItems?.([
 			{ name: 'Only Actor Animation', value: 'actor' },
 			{ name: 'All Animation Components', value: 'components' },
 			{ name: 'Trigger Animation', value: 'trigger' },
 			{ name: 'Scene Animation', value: 'animation' }
 		]);
 		$('#setObjectAnimation-sort')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['actor', 'components'],
 					targets: [$('#setObjectAnimation-actor')]
@@ -31,7 +31,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 					targets: [$('#setObjectAnimation-animation')]
 				}
 			]);
-		$('#setObjectAnimation-operation').loadItems([
+		$('#setObjectAnimation-operation')?.loadItems?.([
 			{ name: 'Set Tint', value: 'set-tint' },
 			{ name: 'Set RGB', value: 'set-rgb' },
 			{ name: 'Set Gray', value: 'set-gray' },
@@ -40,8 +40,8 @@ Command.cases.setObjectAnimation = new CommandSchema({
 			{ name: 'Set Rotation', value: 'set-rotation' }
 		]);
 		$('#setObjectAnimation-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'set-tint',
 					targets: [
@@ -76,14 +76,14 @@ Command.cases.setObjectAnimation = new CommandSchema({
 					targets: [$('#setObjectAnimation-rotation')]
 				}
 			]);
-		$('#setObjectAnimation-wait').loadItems([
+		$('#setObjectAnimation-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setObjectAnimation').on('open', function (event: Event) {
-			$('#setObjectAnimation-easingId').loadItems(Data.createEasingItems!());
+		$('#setObjectAnimation')?.on?.('open', function (event: Event) {
+			$('#setObjectAnimation-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setObjectAnimation').on('closed', function (event: Event) {
+		$('#setObjectAnimation')?.on?.('closed', function (event: Event) {
 			clear($('#setObjectAnimation-easingId'));
 		});
 	},

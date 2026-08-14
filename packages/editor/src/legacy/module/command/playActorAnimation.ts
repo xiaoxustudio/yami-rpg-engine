@@ -14,7 +14,7 @@ Command.cases.playActorAnimation = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#playActorAnimation-wait').loadItems([
+		$('#playActorAnimation-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);

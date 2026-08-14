@@ -13,7 +13,7 @@ Command.cases.changeActorMotion = new CommandSchema({
 		{ key: 'motion', default: '', required: true }
 	],
 	onInitialize() {
-		$('#changeActorMotion-type').loadItems([
+		$('#changeActorMotion-type')?.loadItems?.([
 			{ name: 'Idle', value: 'idle' },
 			{ name: 'Move', value: 'move' }
 		]);

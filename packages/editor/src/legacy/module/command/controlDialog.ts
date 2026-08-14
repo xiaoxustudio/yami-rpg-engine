@@ -12,7 +12,7 @@ Command.cases.controlDialog = new CommandSchema({
 		{ key: 'operation', default: 'pause' }
 	],
 	onInitialize() {
-		$('#controlDialog-operation').loadItems([
+		$('#controlDialog-operation')?.loadItems?.([
 			{ name: 'Pause Printing', value: 'pause' },
 			{ name: 'Continue Printing', value: 'continue' },
 			{ name: 'Print Immediately', value: 'print-immediately' },

@@ -41,11 +41,11 @@ interface SetStringOperand {
 Command.cases.setString = new CommandSchema({
 	name: 'setString',
 	onInitialize() {
-		$('#setString-operation').loadItems([
+		$('#setString-operation')?.loadItems?.([
 			{ name: 'Set', value: 'set' },
 			{ name: 'Add', value: 'add' }
 		]);
-		$('#setString-operand-type').loadItems([
+		$('#setString-operand-type')?.loadItems?.([
 			{ name: 'Constant', value: 'constant' },
 			{ name: 'Variable', value: 'variable' },
 			{ name: 'Template String', value: 'template' },
@@ -60,8 +60,8 @@ Command.cases.setString = new CommandSchema({
 			{ name: 'Other', value: 'other' }
 		]);
 		$('#setString-operand-type')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'constant',
 					targets: [$('#setString-operand-common-value')]
@@ -115,7 +115,7 @@ Command.cases.setString = new CommandSchema({
 				{ case: 'other', targets: [$('#setString-operand-other-data')] }
 			]);
 		// setString-operand-type write 经 Vue 模板转发（setString.vue @write → Command.cases.setString.writeHandler）
-		$('#setString-operand-string-method').loadItems([
+		$('#setString-operand-string-method')?.loadItems?.([
 			{ name: 'Char', value: 'char' },
 			{ name: 'Slice', value: 'slice' },
 			{ name: 'Pad Start', value: 'pad-start' },
@@ -123,8 +123,8 @@ Command.cases.setString = new CommandSchema({
 			{ name: 'Replace All', value: 'replace-all' }
 		]);
 		$('#setString-operand-string-method')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'char',
 					targets: [$('#setString-operand-string-char-index')]
@@ -151,7 +151,7 @@ Command.cases.setString = new CommandSchema({
 					]
 				}
 			]);
-		$('#setString-operand-object-property').loadItems([
+		$('#setString-operand-object-property')?.loadItems?.([
 			{ name: 'Actor - Team ID', value: 'actor-team-id' },
 			{ name: 'Actor - File ID', value: 'actor-file-id' },
 			{
@@ -167,8 +167,8 @@ Command.cases.setString = new CommandSchema({
 			{ name: 'File - ID', value: 'file-id' }
 		]);
 		$('#setString-operand-object-property')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['actor-team-id', 'actor-file-id', 'actor-animation-motion-name'],
 					targets: [$('#setString-operand-common-actor')]
@@ -198,12 +198,12 @@ Command.cases.setString = new CommandSchema({
 					targets: [$('#setString-operand-object-fileId')]
 				}
 			]);
-		$('#setString-operand-element-property').loadItems([
+		$('#setString-operand-element-property')?.loadItems?.([
 			{ name: 'Text - Content', value: 'text-content' },
 			{ name: 'Text Box - Text', value: 'textBox-text' },
 			{ name: 'Dialog Box - Content', value: 'dialogBox-content' }
 		]);
-		$('#setString-operand-other-data').loadItems([
+		$('#setString-operand-other-data')?.loadItems?.([
 			{ name: 'Event Trigger Key', value: 'trigger-key' },
 			{
 				name: 'Start Position - Scene ID',
@@ -216,8 +216,8 @@ Command.cases.setString = new CommandSchema({
 			{ name: 'Game Language', value: 'game-language' }
 		]);
 		$('#setString-operand-other-data')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'showChoices-content',
 					targets: [$('#setString-operand-showChoices-content-choiceIndex')]
@@ -252,7 +252,10 @@ Command.cases.setString = new CommandSchema({
 				filter = 'object';
 				break;
 		}
-		$('#setString-operand-common-variable').filter = filter;
+		const element = $('#setString-operand-common-variable');
+		if (element) {
+			element.filter = filter;
+		}
 	},
 	parseOperation(operation: string) {
 		switch (operation) {

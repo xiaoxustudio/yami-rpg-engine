@@ -10,15 +10,15 @@ import { PresetElement } from '@/tools/preset-element-window.ts';
 Command.cases.createElement = new CommandSchema({
 	name: 'createElement',
 	onInitialize() {
-		$('#createElement-operation').loadItems([
+		$('#createElement-operation')?.loadItems?.([
 			{ name: 'Append All to Root', value: 'append-all-to-root' },
 			{ name: 'Append One to Root', value: 'append-one-to-root' },
 			{ name: 'Append All to Element', value: 'append-all-to-element' },
 			{ name: 'Append One to Element', value: 'append-one-to-element' }
 		]);
 		$('#createElement-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: 'append-all-to-root',
 					targets: [$('#createElement-uiId')]

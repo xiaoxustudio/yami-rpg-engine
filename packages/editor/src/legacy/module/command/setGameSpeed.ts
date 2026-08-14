@@ -15,14 +15,14 @@ Command.cases.setGameSpeed = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	onInitialize() {
-		$('#setGameSpeed-wait').loadItems([
+		$('#setGameSpeed-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
-		$('#setGameSpeed').on('open', function (event: Event) {
-			$('#setGameSpeed-easingId').loadItems(Data.createEasingItems!());
+		$('#setGameSpeed')?.on?.('open', function (event: Event) {
+			$('#setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
 		});
-		$('#setGameSpeed').on('closed', function (event: Event) {
+		$('#setGameSpeed')?.on?.('closed', function (event: Event) {
 			clear($('#setGameSpeed-easingId'));
 		});
 	},

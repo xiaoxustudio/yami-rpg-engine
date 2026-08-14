@@ -9,19 +9,19 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.useItem = new CommandSchema({
 	name: 'useItem',
 	onInitialize() {
-		$('#useItem-mode').loadItems([
+		$('#useItem-mode')?.loadItems?.([
 			{ name: 'By Shortcut Key', value: 'by-key' },
 			{ name: 'By Item ID', value: 'by-id' },
 			{ name: 'By Item Instance', value: 'by-item' }
 		]);
 		$('#useItem-mode')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{ case: 'by-key', targets: [$('#useItem-key')] },
 				{ case: 'by-id', targets: [$('#useItem-itemId')] },
 				{ case: 'by-item', targets: [$('#useItem-item')] }
 			]);
-		$('#useItem-wait').loadItems([
+		$('#useItem-wait')?.loadItems?.([
 			{ name: 'Yes', value: true },
 			{ name: 'No', value: false }
 		]);
@@ -68,7 +68,7 @@ Command.cases.useItem = new CommandSchema({
 		item = { type: 'trigger' },
 		wait = false
 	}) {
-		$('#useItem-key').loadItems(Enum.getStringItems!('shortcut-key'));
+		$('#useItem-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
 		const write = getElementWriter('useItem');
 		write('actor', actor);
 		write('mode', mode);

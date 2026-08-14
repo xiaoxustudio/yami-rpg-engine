@@ -8,14 +8,14 @@ import { Local } from '@/tools/localization.ts';
 Command.cases.changeActorState = new CommandSchema({
 	name: 'changeActorState',
 	onInitialize() {
-		$('#changeActorState-operation').loadItems([
+		$('#changeActorState-operation')?.loadItems?.([
 			{ name: 'Add', value: 'add' },
 			{ name: 'Remove', value: 'remove' },
 			{ name: 'Remove Instance', value: 'remove-instance' }
 		]);
 		$('#changeActorState-operation')
-			.enableHiddenMode()
-			.relate([
+			?.enableHiddenMode?.()
+			?.relate?.([
 				{
 					case: ['add', 'remove'],
 					targets: [$('#changeActorState-stateId')]
