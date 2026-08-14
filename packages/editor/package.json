@@ -48,14 +48,14 @@
 		"steamworks.js": "^0.4.0",
 		"typescript": "7.1.0-dev.20260811.1",
 		"uglify-js": "^3.19.3",
-		"vue": "^3.5.40",
+		"vue": "^3.6.0-rc.3",
 		"xml2js": "^0.6.2",
 		"yauzl": "^3.3.1"
 	},
 	"devDependencies": {
 		"@types/node": "^22.19.19",
-		"@types/uglify-js":"^3.17.5",
-		"@types/fs-extra":"^11.0.4",
+		"@types/uglify-js": "^3.17.5",
+		"@types/fs-extra": "^11.0.4",
 		"@vitejs/plugin-legacy": "^8.2.1",
 		"@vitejs/plugin-vue": "^6.0.8",
 		"@vue/test-utils": "^2.4.11",
@@ -74,7 +74,7 @@
 		"vite-plugin-electron-renderer": "^1.0.0",
 		"vite-plugin-vue-devtools": "^8.2.1",
 		"vitest": "^4.1.10",
-		"vue-tsc": "^3.3.8",
+		"vue-tsc": "^3.3.9",
 		"wait-on": "^9.0.10"
 	},
 	"build": {
