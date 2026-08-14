@@ -52,7 +52,10 @@ import { Timer } from '@/util/timer.ts';
 		paramInput: null,
 		progressPointerdown: null,
 		progressPointermove: null,
-		progressPointerleave: null
+		progressPointerleave: null,
+		info: null,
+		params: null,
+		update: null
 	};
 
 	FileAudio.initialize = function (this: typeof FileAudio) {
@@ -89,15 +92,14 @@ import { Timer } from '@/util/timer.ts';
 			this.target = file;
 			this.meta = meta;
 
-			const elName = $('#fileAudio-name');
-			const elSize = $('#fileAudio-size');
-			const elDuration = $('#fileAudio-duration');
-			const elBitrate = $('#fileAudio-bitrate');
 			const size = Number((file.stats as unknown as { size: number }).size);
-			elName.textContent = file.basename + file.extname;
-			elSize.textContent = File.parseFileSize!(size);
-			elDuration.textContent = '';
-			elBitrate.textContent = '';
+			this.info = {
+				name: file.basename + file.extname,
+				size: File.parseFileSize!(size),
+				duration: '',
+				bitrate: ''
+			};
+			this.update!();
 
 			this.writeParams!(AudioManager.player!.getParams());
 
@@ -140,8 +142,9 @@ import { Timer } from '@/util/timer.ts';
 					this.symbol = null;
 					const duration = audio.duration;
 					const bitrate = Math.round(size / 128 / duration);
-					elDuration.textContent = this.formatTime!(duration);
-					elBitrate.textContent = `${bitrate}Kbps`;
+					this.info!.duration = this.formatTime!(duration);
+					this.info!.bitrate = `${bitrate}Kbps`;
+					this.update!();
 				}
 			});
 		}
@@ -187,10 +190,14 @@ import { Timer } from '@/util/timer.ts';
 	};
 
 	FileAudio.updateParamInfos = function (this: typeof FileAudio, params: AudioParams) {
-		$('#fileAudio-volume-info').textContent = `${params.volume * 100}%`;
-		$('#fileAudio-pan-info').textContent = `${params.pan * 100}%`;
-		$('#fileAudio-dry-info').textContent = `${params.dry * 100}%`;
-		$('#fileAudio-wet-info').textContent = `${params.wet * 100}%`;
+		this.params = params;
+		this.update!();
+	};
+
+	FileAudio.update = function (this: typeof FileAudio) {
+		const el = $('#fileAudio');
+		if (!el) return;
+		(el as HTMLElement & { update?: () => void }).update?.();
 	};
 
 	FileAudio.updateCanvas = function (this: typeof FileAudio) {

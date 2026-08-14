@@ -804,27 +804,27 @@ body.maximized > #title > #title-buttons > #title-maximize::after {
 	height: 100%;
 }
 
-group {
+.group {
 	position: absolute;
 }
 
-.horizontal > group:not(:last-of-type) {
+.horizontal > .group:not(:last-of-type) {
 	border-right: 1px solid transparent;
 }
 
-.horizontal > group:not(:first-of-type) {
+.horizontal > .group:not(:first-of-type) {
 	border-left: 1px solid transparent;
 }
 
-.vertical > group:not(:last-of-type) {
+.vertical > .group:not(:last-of-type) {
 	border-bottom: 1px solid transparent;
 }
 
-.vertical > group:not(:first-of-type) {
+.vertical > .group:not(:first-of-type) {
 	border-top: 1px solid transparent;
 }
 
-.horizontal > group > group-border {
+.horizontal > .group > .group-border {
 	position: absolute;
 	right: -2px;
 	height: 100%;
@@ -833,7 +833,7 @@ group {
 	z-index: 1;
 }
 
-.vertical > group > group-border {
+.vertical > .group > .group-border {
 	position: absolute;
 	bottom: -2px;
 	width: 100%;
@@ -842,13 +842,13 @@ group {
 	z-index: 1;
 }
 
-.horizontal > group:last-of-type > group-border,
-.vertical > group:last-of-type > group-border {
+.horizontal > .group:last-of-type > .group-border,
+.vertical > .group:last-of-type > .group-border {
 	display: none;
 }
 
-group.ready-to-focus > .nav-bar > .nav-item.selected,
-group:focus-within > .nav-bar > .nav-item.selected {
+.group.ready-to-focus > .nav-bar > .nav-item.selected,
+.group:focus-within > .nav-bar > .nav-item.selected {
 	background-image: linear-gradient(
 		to right,
 		rgba(64, 128, 192, 0) 0%,
@@ -868,14 +868,14 @@ group:focus-within > .nav-bar > .nav-item.selected {
 	background-color: var(--group-page-background);
 }
 
-group-region {
+.group-region {
 	position: absolute;
 	top: 25px;
 	bottom: 0;
 	width: 100%;
 }
 
-group-info {
+.group-info {
 	position: absolute;
 	padding: 0 4px;
 	top: 25px;

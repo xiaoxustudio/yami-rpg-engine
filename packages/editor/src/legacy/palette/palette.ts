@@ -30,6 +30,7 @@ import type { EditorProjectShape } from '@app/stores/editor';
 import { GlobalClipboard } from '@/util/clipboard.ts';
 
 import { Timer } from '@/util/timer.ts';
+import { h, render } from 'vue';
 
 export const Palette: Record<string, any> = {
 	state: 'closed',
@@ -208,20 +209,19 @@ Palette.initialize = function (this: typeof Palette) {
 	});
 
 	const marquee = this.marquee;
-	const source = document.createElement('selection') as HTMLElement & {
-		x: number;
-		y: number;
+	const createSelection = (id: string) => {
+		const host = document.createElement('div');
+		render(h('selection', { id }), host);
+		const element = host.firstElementChild as HTMLElement & { x: number; y: number };
+		host.removeChild(element);
+		return element;
 	};
-	const destination = document.createElement('selection') as HTMLElement & {
-		x: number;
-		y: number;
-	};
+	const source = createSelection('source-selection');
+	const destination = createSelection('destination-selection');
 	const selections: Record<'source' | 'destination', HTMLElement & { x: number; y: number }> = {
 		source,
 		destination
 	};
-	source.id = 'source-selection';
-	destination.id = 'destination-selection';
 
 	marquee.customSelect = function (
 		this: HTMLElement & { scaleX: number; scaleY: number },

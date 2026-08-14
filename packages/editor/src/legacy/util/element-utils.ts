@@ -3,6 +3,7 @@ import { Timer } from './timer.ts';
 import { Cursor } from '../tools/pointer-object.ts';
 import { createScrollBar } from '@/components/scroll-bar.ts';
 import { attachDoubleclick, detachDoubleclick } from './doubleclick.ts';
+import { Fragment, h, render, type VNode } from 'vue';
 
 if (typeof (HTMLElement.prototype as unknown as Record<string, unknown>).on !== 'function') {
 	Object.defineProperty(HTMLElement.prototype, 'on', {
@@ -270,28 +271,26 @@ export const setTooltip = (function IIFE() {
 	let timeStamp: number = 0;
 	let clientX: number = 0;
 	let clientY: number = 0;
-	const parseTip = function (tip: string): DocumentFragment {
-		const fragment = document.createDocumentFragment();
+	const parseTip = function (tip: string): Array<string | VNode> {
+		const nodes: Array<string | VNode> = [];
 		const pattern = /<b>([\s\S]*?)<\/b>|<tooltip-line><\/tooltip-line>/g;
 		let index = 0;
 		let match: RegExpExecArray | null;
 		while ((match = pattern.exec(tip)) !== null) {
 			if (match.index > index) {
-				fragment.appendChild(document.createTextNode(tip.slice(index, match.index)));
+				nodes.push(tip.slice(index, match.index));
 			}
 			if (match[0].startsWith('<b>')) {
-				const bold = document.createElement('b');
-				bold.textContent = match[0].slice(3, -4);
-				fragment.appendChild(bold);
+				nodes.push(h('b', {}, match[0].slice(3, -4)));
 			} else {
-				fragment.appendChild(document.createElement('tooltip-line'));
+				nodes.push(h('tooltip-line'));
 			}
 			index = pattern.lastIndex;
 		}
 		if (index < tip.length) {
-			fragment.appendChild(document.createTextNode(tip.slice(index)));
+			nodes.push(tip.slice(index));
 		}
-		return fragment;
+		return nodes;
 	};
 	const createTimer = () =>
 		new Timer({
@@ -315,7 +314,7 @@ export const setTooltip = (function IIFE() {
 					}
 					state = 'open';
 					addClass(tooltip, 'open');
-					tooltip.replaceChildren(parseTip(tip));
+					render(h(Fragment, parseTip(tip)), tooltip);
 					const { width, height } = tooltip.getBoundingClientRect();
 					const right = window.innerWidth - width;
 					const bottom = window.innerHeight - height;
@@ -455,10 +454,16 @@ export function isInContent(el: Record<string, any>, event: MouseEvent): boolean
 	return x >= 0 && x < el.clientWidth && y >= 0 && y < el.clientHeight;
 }
 
+function renderElement(vnode: VNode): HTMLElement {
+	const holder = document.createElement('div');
+	render(vnode, holder);
+	return holder.firstElementChild as HTMLElement;
+}
+
 export function addScrollbars(el: HTMLElement): void {
 	const hBar = createScrollBar();
 	const vBar = createScrollBar();
-	const corner = document.createElement('scroll-corner');
+	const corner = renderElement(h('div', { class: 'scroll-corner' }));
 	const parent = el.parentNode as Node;
 	const next = el.nextSibling;
 	if (next) {
@@ -621,7 +626,7 @@ export function getRelativeCoords(
 }
 
 export function hideDragImage(dt: DataTransfer): void {
-	dt.setDragImage(document.createElement('no-drag-image'), 0, 0);
+	dt.setDragImage(renderElement(h('div', { class: 'no-drag-image' })), 0, 0);
 }
 
 export function drawAndFitImage(

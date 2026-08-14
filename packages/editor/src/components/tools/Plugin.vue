@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
 import { File } from '@/file/file-system-core.ts';
-import { getBrowserInstance } from '@app/stores/browser';
+import { getBrowserStore } from '@app/stores/browser';
 import { PluginManager } from '@/plugin/plugin.ts';
 import type { PluginMetaShape } from '@/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -77,8 +77,8 @@ const nodeExtras = (item: unknown, container: HTMLElement): VNode[] => {
 				class: 'box script-edit-button plugin-item-button',
 				onPointerdown: (event: PointerEvent) => {
 					if (event.button !== 0 || !node.id) return;
-					const path = File.getPath?.(node.id);
-					if (path) getBrowserInstance()?.openScript?.(path);
+					const path = File.getPath?.(node.id) || node.id;
+					if (path) getBrowserStore().openScript?.(path);
 				}
 			},
 			'\uf044'

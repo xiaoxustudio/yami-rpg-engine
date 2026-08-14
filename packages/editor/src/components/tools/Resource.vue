@@ -36,8 +36,8 @@
 				</div>
 				<div class="box" id="resource-content" style="flex: 1; overflow: auto" />
 				<div class="grid-box" style="flex-shrink: 0">
-					<button id="resource-check-version">check version</button>
-					<button id="resource-open-dir">open dir</button>
+					<button id="resource-check-version">{{ checkVersionText }}</button>
+					<button id="resource-open-dir">{{ openDirText }}</button>
 				</div>
 			</div>
 		
@@ -45,16 +45,30 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+import { Resources } from '@/module/resource';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const checkVersionText = ref('check version');
+const openDirText = ref('open dir');
+
+const update = (): void => {
+	checkVersionText.value = Resources?.checkVersionText || checkVersionText.value;
+	openDirText.value = Resources?.openDirText || openDirText.value;
+};
+
 onMounted(() => {
+	const el = document.getElementById('resource');
+	if (!el) return;
+	attachElementApi(el, { update });
+	update();
 	inspector.syncState();
 	local.syncState();
 });

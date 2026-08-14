@@ -1,6 +1,7 @@
 import { EventBus } from './eventbus.ts';
-import { on, addClass } from '@/util/element-utils.ts';
+import { on } from '@/util/element-utils.ts';
 import { CommandList } from '@/components/command-list.ts';
+import { h, render } from 'vue';
 
 let _origUpdateCommandElement:
 	| ((this: typeof CommandList, element: CommandItemElement) => unknown)
@@ -32,16 +33,25 @@ export function updateCommandElement(
 		e.remove();
 	});
 
-	let pre = document.createElement('command-mark-major');
-	addClass(pre, 'command-mark-major');
+	const host = document.createElement('div');
+	render(h('command-mark-major', { class: 'command-mark-major' }), host);
+	const pre = host.firstElementChild as HTMLElement;
+	host.removeChild(pre);
 	element.insertBefore(pre, element.firstElementChild);
 	element.pre = pre;
 
 	element.lines = [];
 	for (let i = element.dataIndent; i >= 0; i--) {
-		let line = document.createElement('command-line');
-		addClass(line, 'command-line');
-		line.style.marginLeft = this.computeTextIndent!(i);
+		const lineHost = document.createElement('div');
+		render(
+			h('command-line', {
+				class: 'command-line',
+				style: { marginLeft: this.computeTextIndent!(i) }
+			}),
+			lineHost
+		);
+		const line = lineHost.firstElementChild as HTMLElement;
+		lineHost.removeChild(line);
 		element.insertBefore(line, element.firstElementChild);
 		element.lines[i] = line;
 	}

@@ -629,7 +629,7 @@
 	background-color: var(--custom-scrollbar-thumb-background-hover);
 }
 
-scroll-corner {
+.scroll-corner {
 	display: none;
 	position: absolute;
 	right: 0;
@@ -638,7 +638,7 @@ scroll-corner {
 	height: 12px;
 }
 
-scroll-corner.visible {
+.scroll-corner.visible {
 	display: block;
 }
 

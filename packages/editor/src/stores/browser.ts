@@ -409,9 +409,6 @@ export const useBrowserStore = defineStore('browser', () => {
 	}
 
 	function openScript(filePath: string) {
-		const Browser = getBrowser();
-		if (!Browser) return;
-
 		const { mode = '', path = '' } = Editor.config?.scriptEditor ?? {};
 		switch (mode) {
 			case 'by-file-extension':
@@ -422,6 +419,9 @@ export const useBrowserStore = defineStore('browser', () => {
 					const args = [File.path?.(filePath)];
 					child_process.spawn(path, args);
 				}
+				break;
+			default:
+				File.openPath?.(File.path?.(filePath));
 				break;
 		}
 	}

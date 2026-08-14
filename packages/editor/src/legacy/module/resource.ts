@@ -66,6 +66,8 @@ export const Resources = new (class {
 	}
 
 	loaded = false;
+	checkVersionText = '';
+	openDirText = '';
 
 	constructor() {
 		void this.updateFastGithubArray().then((data) => {
@@ -94,10 +96,9 @@ export const Resources = new (class {
 
 	async initialize() {
 		if (!$('#resource-check-version')) return;
-		$('#resource-check-version').textContent = Local.get!(
-			'confirmation.resource-check-version'
-		);
-		$('#resource-open-dir').textContent = Local.get!('confirmation.resource-open-dir');
+		this.checkVersionText = Local.get!('confirmation.resource-check-version');
+		this.openDirText = Local.get!('confirmation.resource-open-dir');
+		(this.window as HTMLElement & { update?: () => void }).update?.();
 
 		on($('#resource-check-version'), 'click', () => this.checkVersion());
 		on($('#resource-open-dir'), 'click', () => ipcRenderer.send('open-path', GlobalPath));

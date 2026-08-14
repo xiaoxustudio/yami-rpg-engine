@@ -66,7 +66,7 @@ describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 		const vBar = parent.querySelector('.scroll-bar.vertical')!;
 		expect(hBar.classList.contains('with-corner')).toBe(true);
 		expect(vBar.classList.contains('with-corner')).toBe(true);
-		expect(parent.querySelector('scroll-corner')!.classList.contains('visible')).toBe(true);
+		expect(parent.querySelector('.scroll-corner')!.classList.contains('visible')).toBe(true);
 
 		parent.remove();
 	});

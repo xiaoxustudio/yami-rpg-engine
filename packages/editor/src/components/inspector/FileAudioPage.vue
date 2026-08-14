@@ -2,10 +2,10 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
-			<div class="text">{{ local.getLabel('fileAudio-name') || 'Name' }}</div><div class="text" id="fileAudio-name"></div> <div class="text">{{ local.getLabel('fileAudio-size') || 'Size' }}</div
-			><div class="text" id="fileAudio-size"></div> <div class="text">{{ local.getLabel('fileAudio-duration') || 'Duration' }}</div
-			><div class="text" id="fileAudio-duration"></div> <div class="text">{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</div
-			><div class="text" id="fileAudio-bitrate"></div>
+			<div class="text">{{ local.getLabel('fileAudio-name') || 'Name' }}</div><div class="text" id="fileAudio-name">{{ name }}</div> <div class="text">{{ local.getLabel('fileAudio-size') || 'Size' }}</div
+			><div class="text" id="fileAudio-size">{{ size }}</div> <div class="text">{{ local.getLabel('fileAudio-duration') || 'Duration' }}</div
+			><div class="text" id="fileAudio-duration">{{ duration }}</div> <div class="text">{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</div
+			><div class="text" id="fileAudio-bitrate">{{ bitrate }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
@@ -19,7 +19,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<div class="text" id="fileAudio-volume-info">100%</div>
+				<div class="text" id="fileAudio-volume-info">{{ volume * 100 }}%</div>
 			</div>
 			<div class="text">{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</div>
 			<div class="flex-box" id="fileAudio-pan-box">
@@ -29,7 +29,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<div class="text" id="fileAudio-pan-info">0%</div>
+				<div class="text" id="fileAudio-pan-info">{{ pan * 100 }}%</div>
 			</div>
 			<div class="text">{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</div>
 			<div class="flex-box" id="fileAudio-dry-box">
@@ -39,7 +39,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<div class="text" id="fileAudio-dry-info">100%</div>
+				<div class="text" id="fileAudio-dry-info">{{ dry * 100 }}%</div>
 			</div>
 			<div class="text">{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</div>
 			<div class="flex-box" id="fileAudio-wet-box">
@@ -49,7 +49,7 @@
 					max="1"
 					step="0.1"
 				/>
-				<div class="text" id="fileAudio-wet-info">0%</div>
+				<div class="text" id="fileAudio-wet-info">{{ wet * 100 }}%</div>
 			</div>
 		</div>
 	</DetailBox>
@@ -71,10 +71,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Inspector } from '@/inspector/inspector.ts';
 import { useAudioStore } from '@app/stores/audio';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
@@ -82,11 +83,42 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 const audio = useAudioStore();
 const local = useLocalStore();
 
+const name = ref('');
+const size = ref('');
+const duration = ref('');
+const bitrate = ref('');
+const volume = ref(1);
+const pan = ref(0);
+const dry = ref(1);
+const wet = ref(0);
+
+const update = (): void => {
+	const fileAudio = Inspector?.fileAudio ?? null;
+	const info = fileAudio?.info ?? null;
+	if (info) {
+		name.value = info.name;
+		size.value = info.size;
+		duration.value = info.duration;
+		bitrate.value = info.bitrate;
+	}
+	const params = fileAudio?.params ?? null;
+	if (params) {
+		volume.value = params.volume;
+		pan.value = params.pan;
+		dry.value = params.dry;
+		wet.value = params.wet;
+	}
+};
+
 const onParamInput = () => {
 	Inspector?.fileAudio?.paramInput?.();
 };
 
 onMounted(() => {
+	const el = document.getElementById('fileAudio');
+	if (!el) return;
+	attachElementApi(el, { update });
+	update();
 	audio.syncState();
 	local.syncState();
 });

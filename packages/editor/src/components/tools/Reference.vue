@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { Fragment, h, onMounted, render, type VNode } from 'vue';
+import { h, onMounted, render, type VNode } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -29,20 +29,25 @@ const updateItems = (items: ReferenceItem[]): void => {
 	if (!list) return;
 	list.reload();
 	for (const item of items) {
-		const li = document.createElement('common-item');
-		Object.defineProperty(li, 'dataValue', {
-			configurable: true,
-			get: () => item
-		});
 		const nodes: Array<string | VNode> = [item.text];
 		if ('count' in item && item.count !== undefined && item.count > 1) {
 			nodes.push(h('div', { class: 'reference-count text' }, String(item.count)));
 		}
-		render(h(Fragment, nodes), li);
-		if (item.type === 'comment') {
-			li.classList.add('reference-comment');
-		}
-		list.appendElement(li);
+		const host = document.createElement('div');
+		render(
+			h(
+				'common-item',
+				{
+					'.dataValue': item,
+					class: { 'reference-comment': item.type === 'comment' }
+				},
+				nodes
+			),
+			host
+		);
+		const element = host.firstElementChild as HTMLElement;
+		host.removeChild(element);
+		list.appendElement(element);
 	}
 	list.update();
 };

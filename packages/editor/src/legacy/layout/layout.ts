@@ -28,6 +28,7 @@ import { Home } from '@/title/home-page.ts';
 import { Title } from '@/title/title-bar.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { DynamicShape } from '@/types/legacy-shapes.ts';
+import { h, render, type VNode } from 'vue';
 
 interface LayoutScheme {
 	end: number;
@@ -76,6 +77,14 @@ type LayoutResizeEvent = {
 	end?: number;
 	infos?: HTMLElement[];
 };
+
+function renderElement(vnode: VNode): HTMLElement {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+}
 
 export const Layout: DynamicShape = {
 	manager: null,
@@ -207,7 +216,7 @@ Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
 };
 
 Layout.createGroups = function (item: LayoutScheme, parent: HTMLElement) {
-	const group = document.createElement('group');
+	const group = renderElement(h('group', { class: 'group' }));
 	parent.appendChild(group);
 	if (item.children) {
 		(group as LayoutGroupElement).end = item.end;
@@ -277,7 +286,7 @@ Layout.updateGroups = (function IIFE() {
 			const split = group.split;
 			let start = 0;
 			for (const child of group.childNodes) {
-				if (child.tagName === 'GROUP') {
+				if (hasClass(child, 'group')) {
 					start = update(child as LayoutGroupElement, split, start);
 				}
 			}
@@ -397,7 +406,7 @@ Layout.setGroupSize = function (
 			size = group.clientTop + hint.height;
 			break;
 	}
-	if (next!.tagName === 'GROUP') {
+	if (hasClass(next!, 'group')) {
 		size! += 1;
 	}
 	if (space !== 0) {
@@ -550,11 +559,11 @@ Layout.getKeyGroups = (function IIFE() {
 	const find = (list: LayoutGroupElement[], node: LayoutGroupElement) => {
 		if (node.split !== undefined) {
 			for (const group of node.childNodes as unknown as LayoutGroupElement[]) {
-				if (group.tagName === 'GROUP') {
+				if (hasClass(group, 'group')) {
 					find(list, group);
 				}
 			}
-		} else if (node.tagName === 'GROUP') {
+		} else if (hasClass(node, 'group')) {
 			list.push(node);
 		}
 		return list;
@@ -566,7 +575,7 @@ Layout.getKeyGroups = (function IIFE() {
 
 Layout.getGroupOfElement = function (element: HTMLElement): LayoutGroupElement | null {
 	while ((element = (element ? element.parentNode : null) as HTMLElement)) {
-		if (element.tagName === 'GROUP') {
+		if (hasClass(element, 'group')) {
 			return element as LayoutGroupElement;
 		}
 	}
@@ -602,7 +611,7 @@ Layout.createGroupContent = function (group: LayoutGroupElement) {
 };
 
 Layout.createGroupBorder = function (group: LayoutGroupElement) {
-	const border = document.createElement('group-border');
+	const border = renderElement(h('group-border', { class: 'group-border' }));
 	on(border, 'pointerdown', this.borderPointerdown!);
 	group.appendChild(border);
 
@@ -901,7 +910,7 @@ Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 			on(nav, 'dragleave', Layout.navDragleave!);
 			on(nav, 'drop', Layout.navDrop!);
 			navs.push(nav);
-			const region = document.createElement('group-region');
+			const region = renderElement(h('group-region', { class: 'group-region' }));
 			on(region, 'dragleave', Layout.regionDragleave!);
 			on(region, 'dragover', Layout.regionDragover!);
 			on(region, 'drop', Layout.navDrop!);
@@ -1008,7 +1017,7 @@ Layout.navDrop = function (event: EditorEvent) {
 		}
 
 		if (split !== undefined && parent.split !== split) {
-			parent.replaceChild((parent = document.createElement('group')), target);
+			parent.replaceChild((parent = renderElement(h('group', { class: 'group' }))), target);
 			parent.end = target.end;
 			parent.split = split;
 			addClass(parent, split);
@@ -1027,14 +1036,14 @@ Layout.navDrop = function (event: EditorEvent) {
 				break;
 			case 'left':
 			case 'top':
-				dGroup = document.createElement('group') as LayoutGroupElement;
+				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
 				parent.insertBefore(dGroup, target);
 				Layout.createGroupContent!(dGroup);
 				Layout.createGroupBorder!(dGroup);
 				break;
 			case 'right':
 			case 'bottom':
-				dGroup = document.createElement('group') as LayoutGroupElement;
+				dGroup = renderElement(h('group', { class: 'group' })) as LayoutGroupElement;
 				dGroup.end = target.end;
 				parent.insertBefore(dGroup, target.nextSibling);
 				Layout.createGroupContent!(dGroup);
@@ -1198,7 +1207,7 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 						target === siblings[0]
 					) {
 						const outer = parent.parentNode as HTMLElement | null;
-						if (outer !== null && outer.tagName === 'GROUP') {
+						if (outer !== null && hasClass(outer, 'group')) {
 							target = outer;
 						}
 					}
@@ -1219,7 +1228,7 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 						target === siblings[siblings.length - 2]
 					) {
 						const outer = parent.parentNode as HTMLElement | null;
-						if (outer !== null && outer.tagName === 'GROUP') {
+						if (outer !== null && hasClass(outer, 'group')) {
 							target = outer;
 						}
 					}
@@ -1234,7 +1243,7 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 					target === siblings[0]
 				) {
 					const outer = parent.parentNode as HTMLElement | null;
-					if (outer !== null && outer.tagName === 'GROUP') {
+					if (outer !== null && hasClass(outer, 'group')) {
 						target = outer;
 					}
 				}
@@ -1251,7 +1260,7 @@ Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
 					target === siblings[siblings.length - 2]
 				) {
 					const outer = parent.parentNode as HTMLElement | null;
-					if (outer !== null && outer.tagName === 'GROUP') {
+					if (outer !== null && hasClass(outer, 'group')) {
 						target = outer;
 					}
 				}
@@ -1333,7 +1342,7 @@ Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutR
 				const groups = Layout.getKeyGroups!();
 				const infos: HTMLElement[] = (event.infos = []);
 				for (const group of groups) {
-					const info = document.createElement('group-info');
+					const info = renderElement(h('group-info', { class: 'group-info' }));
 					(info as HTMLElement & { manager: PageManagerApi }).manager = group.manager;
 					group.appendChild(info);
 					infos.push(info);

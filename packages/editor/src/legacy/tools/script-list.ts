@@ -1,7 +1,7 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { File } from '@/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
-import { getBrowserInstance } from '@app/stores/browser.ts';
+import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
 import { addClass, hasClass, removeClass } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { FileItem } from '@/file/file-item.ts';
@@ -145,7 +145,7 @@ export class ScriptListInterface implements IScriptListInterface {
 				};
 				const item = el.dataItem ?? el.item;
 				const path = File.getPath!(item.id);
-				if (path) getBrowserInstance()?.openScript?.(path);
+				if (path) getBrowserStore().openScript?.(path);
 			}
 			element = null;
 		};

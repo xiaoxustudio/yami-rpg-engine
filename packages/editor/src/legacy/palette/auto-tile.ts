@@ -19,6 +19,7 @@ import { SceneShift } from '@/scene/move-scene.ts';
 import { Local } from '@/tools/localization.ts';
 import { SetQuantity } from '@/tools/set-number-window.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
+import { h, render } from 'vue';
 
 type AutoTileClipboardData = AutoTileTemplateData | { frame: unknown };
 
@@ -378,10 +379,11 @@ AutoTile.createNodeItems = function (this: typeof AutoTile, id = this.nodeIndex)
 	const length = nodes.length;
 	const digits = Number.computeIndexDigits(length);
 	for (let i = 0; i < length; i++) {
-		const element = document.createElement('common-item');
 		const index = i.toString().padStart(digits, '0');
-		element.textContent = `#${index}${i === cover ? ' !' : ''}`;
-		element.dataValue = i;
+		const host = document.createElement('div');
+		render(h('common-item', { '.dataValue': i }, `#${index}${i === cover ? ' !' : ''}`), host);
+		const element = host.firstElementChild as HTMLElement;
+		host.removeChild(element);
 		list.appendElement(element);
 	}
 	list.update();
@@ -494,13 +496,11 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = this.frameInde
 		const frame = frames[i];
 		const x = frame & 0xff;
 		const y = frame >> 8;
-		const element = document.createElement('common-item');
 		const index = i.toString().padStart(digits, '0');
-		element.textContent = `#${index}: ${x},${y}`;
-		Object.defineProperty(element, 'dataValue', {
-			configurable: true,
-			get: () => i
-		});
+		const host = document.createElement('div');
+		render(h('common-item', { '.dataValue': i }, `#${index}: ${x},${y}`), host);
+		const element = host.firstElementChild as HTMLElement;
+		host.removeChild(element);
 		list.appendElement(element);
 	}
 	list.update();
