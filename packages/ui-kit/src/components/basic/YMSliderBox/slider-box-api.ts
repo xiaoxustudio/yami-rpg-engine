@@ -230,7 +230,7 @@ export function attachSliderBoxApi(
 	});
 
 	box._initialized = true;
-	input.addEventListener('wheel', box.inputWheel);
+	input.addEventListener('wheel', box.inputWheel, { passive: true });
 	box.addEventListener('input', box.sliderInput);
 
 	if (options.modelValue !== undefined && options.modelValue !== null) {

@@ -192,7 +192,7 @@
 					id="sprite-screen"
 					tabindex="-1"
 					@keydown="onScreenKeydown"
-					@wheel="onScreenWheel"
+					@wheel.passive="onScreenWheel"
 				>
 					<MarqueeArea
 						id="sprite-marquee"

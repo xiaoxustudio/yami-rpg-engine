@@ -111,7 +111,7 @@ defineExpose({ root, bar, filler, input: inputEl, read, write, updateFiller });
 			tabindex="-1"
 			:disabled="disabled"
 			@input="onInput"
-			@wheel="onWheel"
+			@wheel.passive="onWheel"
 		/>
 	</div>
 </template>

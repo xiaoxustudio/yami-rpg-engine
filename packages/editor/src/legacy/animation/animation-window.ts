@@ -448,7 +448,6 @@ export const Animation: AnimationShape = {
 	listPageResize: null,
 	timelinePageResize: null,
 	timelineToolbarPointerdown: null,
-	layerListWheel: null,
 	layerListScroll: null,
 	layerListKeydown: null,
 	layerListPointerdown: null,
@@ -457,7 +456,6 @@ export const Animation: AnimationShape = {
 	layerListPopup: null,
 	layerListChange: null,
 	outerTimelineListKeydown: null,
-	outerTimelineListWheel: null,
 	outerTimelineListScroll: null,
 	outerTimelineListBlur: null,
 	outerTimelineListPointerdown: null,
@@ -971,14 +969,12 @@ Animation.initialize = function (this: typeof Animation) {
 	on(list.page, 'resize', this.listPageResize);
 	on(this.timeline, 'resize', this.timelinePageResize);
 	// toolbar pointerdown 经 Vue 模板转发（LayoutPanel @pointerdown → Animation.timelineToolbarPointerdown）
-	this.layerList.on('wheel', this.layerListWheel);
 	this.layerList.on('scroll', this.layerListScroll);
 	this.layerList.on('keydown', this.layerListKeydown, { capture: true });
 	this.layerList.on('pointerdown', this.layerListPointerdown);
 	// layerList select/record/popup 经 Vue 模板转发（LayoutPanel @select/@record/@popup → Animation.layerList*）
 	// layerList change 经 Vue 模板转发（LayoutPanel @change → Animation.layerListChange）
 	on(this.outerTimelineList, 'keydown', this.outerTimelineListKeydown);
-	on(this.outerTimelineList, 'wheel', this.outerTimelineListWheel);
 	on(this.outerTimelineList, 'scroll', this.outerTimelineListScroll);
 	on(this.outerTimelineList, 'blur', this.outerTimelineListBlur);
 	on(this.outerTimelineList, 'pointerdown', this.outerTimelineListPointerdown);
@@ -5171,13 +5167,6 @@ Animation.timelineToolbarPointerdown = function (this: typeof Animation, event: 
 	}
 };
 
-Animation.layerListWheel = function (this: typeof Animation, event: WheelEvent) {
-	event.preventDefault();
-	if (event.deltaY !== 0) {
-		this.scrollTop += event.deltaY > 0 ? 20 : -20;
-	}
-};
-
 Animation.layerListScroll = function (this: typeof Animation, event: Event) {
 	const { outerTimelineList } = Animation;
 	const { scrollTop } = this;
@@ -5470,13 +5459,6 @@ Animation.outerTimelineListKeydown = function (this: typeof Animation, event: Ke
 				event.preventDefault();
 				break;
 		}
-	}
-};
-
-Animation.outerTimelineListWheel = function (this: typeof Animation, event: WheelEvent) {
-	event.preventDefault();
-	if (event.deltaY !== 0) {
-		this.scrollTop += event.deltaY > 0 ? 20 : -20;
 	}
 };
 

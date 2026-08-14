@@ -481,9 +481,9 @@ export function addScrollbars(el: HTMLElement): void {
 	const wheel = (event: WheelEvent) => {
 		el.dispatchEvent(new WheelEvent('wheel', event));
 	};
-	on(hBar, 'wheel', wheel as (event: EditorEvent) => void);
-	on(vBar, 'wheel', wheel as (event: EditorEvent) => void);
-	on(corner, 'wheel', wheel as (event: EditorEvent) => void);
+	on(hBar, 'wheel', wheel as (event: EditorEvent) => void, { passive: true });
+	on(vBar, 'wheel', wheel as (event: EditorEvent) => void, { passive: true });
+	on(corner, 'wheel', wheel as (event: EditorEvent) => void, { passive: true });
 
 	const userscroll = new Event('userscroll');
 

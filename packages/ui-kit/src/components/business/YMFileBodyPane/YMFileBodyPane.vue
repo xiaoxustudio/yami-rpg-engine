@@ -1908,7 +1908,7 @@ onMounted(() => {
 	node.addEventListener('pointerdown', pointerdown);
 	node.addEventListener('pointerup', pointerup);
 	attachDoubleclick(node, doubleclick);
-	node.addEventListener('wheel', wheel);
+	node.addEventListener('wheel', wheel, { passive: true });
 
 	if (typeof ResizeObserver !== 'undefined') {
 		resizeObserver = new ResizeObserver(() => {

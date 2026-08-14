@@ -285,7 +285,7 @@ Easing.initialize = () => {
 	if (Easing.curve) {
 		on(Easing.curve, 'keydown', Easing.curveKeydown);
 		on(Easing.curve, 'pointerdown', Easing.curvePointerdown);
-		on(Easing.curve, 'wheel', Easing.curveWheel);
+		on(Easing.curve, 'wheel', Easing.curveWheel, { passive: true });
 		on(Easing.curve, 'blur', Easing.curveBlur);
 	}
 	const easingPreviewReverse = $('#easing-preview-reverse');
