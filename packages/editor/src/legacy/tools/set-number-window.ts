@@ -1,6 +1,11 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus } from '@/util/element-utils';
+
+export interface SetQuantityForm {
+	quantity: number;
+	max: number;
+}
 
 export const SetQuantity = {
 	callback: null as unknown as ((value: number) => void) | null,
@@ -27,8 +32,12 @@ SetQuantity.open = function (
 ) {
 	this.callback = callback;
 	Window.open!('setQuantity');
-	($('#setQuantity-quantity').input! as HTMLInputElement).max = maximum as unknown as string;
-	write($('#setQuantity-quantity'), quantity);
+	const setForm = (
+		$('#setQuantity') as
+			| (HTMLElement & { setForm?: (data: Partial<SetQuantityForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({ quantity, max: maximum });
 	getFocus($('#setQuantity-quantity'), 'all');
 };
 
@@ -37,6 +46,9 @@ SetQuantity.windowClosed = function (this: typeof SetQuantity, event: Event) {
 }.bind(SetQuantity);
 
 SetQuantity.confirm = function (this: typeof SetQuantity, event: Event) {
-	this.callback!(read($('#setQuantity-quantity')));
+	const getForm = (
+		$('#setQuantity') as (HTMLElement & { getForm?: () => SetQuantityForm }) | null
+	)?.getForm;
+	this.callback!(getForm?.()?.quantity ?? 0);
 	Window.close!('setQuantity');
 }.bind(SetQuantity);

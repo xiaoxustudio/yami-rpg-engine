@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { clear, getFocus } from '@/util/element-utils.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
 import { Command } from '@/command/command-object.ts';
@@ -7,6 +7,23 @@ import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { Data } from '@/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
+
+export interface GetActorForm {
+	variable: { type: string; key: string };
+	position: unknown;
+	area: string;
+	size: number;
+	radius: number;
+	selector: string;
+	teamId: string;
+	condition: string;
+	attribute: string;
+	divisor: string;
+	activation: string;
+	exclusion: string;
+	exclusionActor: { type: string };
+	exclusionTeamId: string;
+}
 
 type GetActorCommandData = {
 	variable: unknown;
@@ -229,42 +246,50 @@ Command.cases.getActor = new CommandSchema({
 		const attrItems = Attribute.getAttributeItems!('actor', 'number');
 		$('#getActor-attribute')?.loadItems?.(attrItems);
 		$('#getActor-divisor')?.loadItems?.(attrItems);
-		const write = getElementWriter('getActor');
-		write('variable', variable);
-		write('position', position);
-		write('area', area);
-		write('size', size);
-		write('radius', radius);
-		write('selector', selector);
-		write('teamId', teamId);
-		write('condition', condition);
-		write('attribute', attribute);
-		write('divisor', divisor);
-		write('activation', activation);
-		write('exclusion', exclusion);
-		write('exclusionActor', exclusionActor);
-		write('exclusionTeamId', exclusionTeamId);
+		const setForm = (
+			$('#getActor') as
+				| (HTMLElement & { setForm?: (data: Partial<GetActorForm>) => void })
+				| null
+		)?.setForm;
+		setForm?.({
+			variable: variable as { type: string; key: string },
+			position,
+			area,
+			size: size as number,
+			radius: radius as number,
+			selector,
+			teamId,
+			condition,
+			attribute,
+			divisor,
+			activation,
+			exclusion,
+			exclusionActor: exclusionActor as { type: string },
+			exclusionTeamId
+		});
 		getFocus($('#getActor-variable'));
 	},
 	customSave() {
-		const read = getElementReader('getActor');
-		const variable = read('variable');
+		const getForm = ($('#getActor') as (HTMLElement & { getForm?: () => GetActorForm }) | null)
+			?.getForm;
+		const form = getForm?.() ?? ({} as GetActorForm);
+		const variable = form.variable;
 		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#getActor-variable'));
 		}
-		const position = read('position');
-		const area = read('area');
-		const size = read('size');
-		const radius = read('radius');
-		const selector = read('selector');
-		const teamId = read('teamId');
-		const condition = read('condition');
-		const attribute = read('attribute');
-		const divisor = read('divisor');
-		const activation = read('activation');
-		const exclusion = read('exclusion');
-		const exclusionActor = read('exclusionActor');
-		const exclusionTeamId = read('exclusionTeamId');
+		const position = form.position;
+		const area = form.area;
+		const size = form.size;
+		const radius = form.radius;
+		const selector = form.selector;
+		const teamId = form.teamId;
+		const condition = form.condition;
+		const attribute = form.attribute;
+		const divisor = form.divisor;
+		const activation = form.activation;
+		const exclusion = form.exclusion;
+		const exclusionActor = form.exclusionActor;
+		const exclusionTeamId = form.exclusionTeamId;
 		let params1;
 		let params2;
 		let params3;

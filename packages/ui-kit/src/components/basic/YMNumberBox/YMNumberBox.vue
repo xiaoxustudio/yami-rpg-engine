@@ -32,6 +32,7 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement | null>(null);
 const inputEl = ref<HTMLInputElement | null>(null);
+const unitEl = ref<HTMLElement | null>(null);
 
 const state = {
 	focusEventEnabled: false,
@@ -92,6 +93,19 @@ const inputKeydown = (event: KeyboardEvent): void => {
 		event.preventDefault();
 	}
 };
+
+const onInputChange = (): void => {
+	const input = inputEl.value;
+	if (!input) return;
+	input.value = String(read());
+	const val = read();
+	emit('update:modelValue', val);
+	emit('change', val);
+};
+
+const onInputFocus = (event: FocusEvent): void => emit('focus', event);
+
+const onInputBlur = (event: FocusEvent): void => emit('blur', event);
 
 const read = (): number => {
 	const el = inputEl.value;
@@ -204,23 +218,14 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 onMounted(() => {
 	const el = root.value;
 	const input = inputEl.value;
+	const unitElement = unitEl.value;
 	if (!el || !input) return;
-	input.min = String(props.min);
-	input.max = String(props.max);
-	input.step = String(props.step);
-	input.title = '';
-	input.addEventListener('keydown', inputKeydown);
-	input.addEventListener('change', () => {
-		input.value = String(read());
-		const val = read();
-		emit('update:modelValue', val);
-		emit('change', val);
-	});
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	if (el.childNodes.length > 1) {
 		const labelNode = Array.from(el.childNodes).find(
-			(n: ChildNode) => n.nodeType === Node.ELEMENT_NODE || (n.textContent ?? '').trim() !== ''
+			(n: ChildNode) =>
+				n.nodeType !== Node.COMMENT_NODE &&
+				n !== unitElement &&
+				(n.nodeType === Node.ELEMENT_NODE || (n.textContent ?? '').trim() !== '')
 		);
 		const label = labelNode ? String(labelNode.textContent ?? '').trim() : '';
 		if (label) {
@@ -232,12 +237,8 @@ onMounted(() => {
 			input.style.paddingLeft = `${padding}px`;
 		}
 	}
-	if (props.unit !== null && props.unit !== undefined && props.unit !== '') {
-		const unitText = document.createElement('div');
-		unitText.className = 'unit text';
-		unitText.textContent = props.unit;
-		el.insertBefore(unitText, input);
-		input.style.paddingRight = `${unitText.offsetWidth}px`;
+	if (unitElement) {
+		input.style.paddingRight = `${unitElement.offsetWidth}px`;
 	}
 	(el as NumberBoxHost).input = input;
 	attachApi(el, { read, write, enable, disable, getFocus, on });
@@ -255,7 +256,20 @@ onMounted(() => {
 <template>
 	<div ref="root" class="number-box" :id="props.id">
 		<slot />
-		<input ref="inputEl" class="number-box-input" type="number" />
+		<div v-if="props.unit" ref="unitEl" class="unit text">{{ props.unit }}</div>
+		<input
+			ref="inputEl"
+			class="number-box-input"
+			type="number"
+			:min="props.min"
+			:max="props.max"
+			:step="props.step"
+			title=""
+			@keydown="inputKeydown"
+			@change="onInputChange"
+			@focus="onInputFocus"
+			@blur="onInputBlur"
+		/>
 	</div>
 </template>
 

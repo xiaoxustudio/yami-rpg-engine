@@ -9,6 +9,7 @@
 		:active-wheel="props.activeWheel"
 		:disabled="isDisabled"
 		:id="props.id"
+		@input="onInput"
 	/>
 </template>
 
@@ -188,6 +189,11 @@ const on = (
 	}
 };
 
+const onInput = (value: number): void => {
+	emit('input', value);
+	emit('update:modelValue', value);
+};
+
 defineExpose({ read, write, enable, disable, synchronize, on, root });
 
 const api = {
@@ -224,12 +230,6 @@ onMounted(() => {
 	api.input = inputEl as HTMLInputElement;
 	api.activeWheel = props.activeWheel;
 	attachElementApi(el, api);
-
-	el.addEventListener('input', () => {
-		const value = read();
-		emit('input', value);
-		emit('update:modelValue', value);
-	});
 
 	if (props.disabled) disable();
 });

@@ -151,26 +151,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = light;
 
 			const write = getElementWriter('sceneLight', light);
-			write('name');
-			write('type');
-			write('blend');
-			write('x');
-			write('y');
-			write('range');
-			write('intensity');
-			write('mask');
-			write('anchorX');
-			write('anchorY');
-			write('width');
-			write('height');
-			write('angle');
-			write('red');
-			write('green');
-			write('blue');
-			write('direct');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneLight-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

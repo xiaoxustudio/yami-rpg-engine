@@ -50,6 +50,7 @@ export const Window = {
 };
 
 Window.initialize = function (this: typeof Window) {
+	getWindowStore().syncState();
 	const buttons = document.getElementsByName('cancel');
 	const length = buttons.length;
 	for (let i = 0; i < length; i++) {
@@ -309,5 +310,18 @@ Window.ambient.update = function (this: typeof Window) {
 	}
 	removeClass(ambient, 'open');
 };
+
+const windowBridgeKeys = ['positionMode', 'absolutePos', 'overlapRoot', 'activeElement'] as const;
+import { getWindowStore } from '@app/stores/window';
+
+for (const key of windowBridgeKeys) {
+	Object.defineProperty(Window, key, {
+		get: () => getWindowStore()[key],
+		set: (value: any) => {
+			(getWindowStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}
 
 (window as unknown as { Window: typeof Window }).Window = Window;

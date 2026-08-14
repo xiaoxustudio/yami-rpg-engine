@@ -1,10 +1,22 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
+
+export interface ForEachForm {
+	data: string;
+	list: { type: string; key: string };
+	actor: { type: string };
+	element: { type: string };
+	attributeGroupId: string;
+	enumGroupId: string;
+	variable: { type: string; key: string };
+	saveIndex: { type: string; key: string };
+	touchId: { type: string; key: string };
+}
 
 Command.cases.forEach = new CommandSchema({
 	name: 'forEach',
@@ -179,30 +191,38 @@ Command.cases.forEach = new CommandSchema({
 				enumGroupId = groupId;
 				break;
 		}
-		const write = getElementWriter('forEach');
-		write('data', data);
-		write('list', list);
-		write('actor', actor);
-		write('element', element);
-		write('attribute-groupId', attrGroupId);
-		write('enum-groupId', enumGroupId);
-		write('variable', variable);
-		write('saveIndex', saveIndex);
-		write('touchId', touchId);
+		const setForm = (
+			$('#forEach') as
+				| (HTMLElement & { setForm?: (data: Partial<ForEachForm>) => void })
+				| null
+		)?.setForm;
+		setForm?.({
+			data,
+			list: list as { type: string; key: string },
+			actor: actor as { type: string },
+			element: element as { type: string },
+			attributeGroupId: attrGroupId,
+			enumGroupId: enumGroupId,
+			variable: variable as { type: string; key: string },
+			saveIndex: saveIndex as { type: string; key: string },
+			touchId: touchId as { type: string; key: string }
+		});
 		this.commands = commands;
 		getFocus($('#forEach-data'));
 	},
 	customSave() {
-		const read = getElementReader('forEach');
-		const data = read('data');
+		const getForm = ($('#forEach') as (HTMLElement & { getForm?: () => ForEachForm }) | null)
+			?.getForm;
+		const form = getForm?.() ?? ({} as ForEachForm);
+		const data = form.data;
 		const commands = this.commands;
 		switch (data) {
 			case 'list': {
-				const list = read('list');
+				const list = form.list;
 				if (VariableGetter.isNone!(list)) {
 					return getFocus($('#forEach-list'));
 				}
-				const variable = read('variable');
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
@@ -213,8 +233,8 @@ Command.cases.forEach = new CommandSchema({
 			case 'state':
 			case 'equipment':
 			case 'inventory': {
-				const actor = read('actor');
-				const variable = read('variable');
+				const actor = form.actor;
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
@@ -222,8 +242,8 @@ Command.cases.forEach = new CommandSchema({
 				break;
 			}
 			case 'element': {
-				const element = read('element');
-				const variable = read('variable');
+				const element = form.element;
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
@@ -231,18 +251,18 @@ Command.cases.forEach = new CommandSchema({
 				break;
 			}
 			case 'member':
-				const variable = read('variable');
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
 				Command.save!({ data, variable, commands });
 				break;
 			case 'attribute': {
-				const groupId = read('attribute-groupId');
+				const groupId = form.attributeGroupId;
 				if (groupId === '') {
 					return getFocus($('#forEach-attribute-groupId'));
 				}
-				const variable = read('variable');
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
@@ -250,11 +270,11 @@ Command.cases.forEach = new CommandSchema({
 				break;
 			}
 			case 'enum': {
-				const groupId = read('enum-groupId');
+				const groupId = form.enumGroupId;
 				if (groupId === '') {
 					return getFocus($('#forEach-enum-groupId'));
 				}
-				const variable = read('variable');
+				const variable = form.variable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#forEach-variable'));
 				}
@@ -262,7 +282,7 @@ Command.cases.forEach = new CommandSchema({
 				break;
 			}
 			case 'save': {
-				const saveIndex = read('saveIndex');
+				const saveIndex = form.saveIndex;
 				if (VariableGetter.isNone!(saveIndex)) {
 					return getFocus($('#forEach-saveIndex'));
 				}
@@ -271,7 +291,7 @@ Command.cases.forEach = new CommandSchema({
 			}
 			case 'touch':
 			case 'changed-touch': {
-				const touchId = read('touchId');
+				const touchId = form.touchId;
 				if (VariableGetter.isNone!(touchId)) {
 					return getFocus($('#forEach-touchId'));
 				}

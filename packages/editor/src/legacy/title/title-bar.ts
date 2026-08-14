@@ -736,14 +736,19 @@ Title.closeClick = function (this: TitleShape, event: MouseEvent) {
 	Title.windowBeforeClose!();
 };
 
-const titleStateKeys = ['theme', 'playing'] as const;
+const titleStateKeys = ['theme', 'playing', 'maximized', 'fullscreen'] as const;
 import { getTitleStore } from '@app/stores/title';
 
 for (const key of titleStateKeys) {
 	Object.defineProperty(Title, key, {
 		get: () => getTitleStore()[key],
 		set: (value: unknown) => {
-			(getTitleStore() as unknown as Record<'theme' | 'playing', any>)[key] = value;
+			(
+				getTitleStore() as unknown as Record<
+					'theme' | 'playing' | 'maximized' | 'fullscreen',
+					any
+				>
+			)[key] = value;
 		},
 		configurable: true
 	});

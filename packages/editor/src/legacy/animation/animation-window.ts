@@ -423,7 +423,6 @@ export const Animation: AnimationShape = {
 	keydown: null,
 	headPointerdown: null,
 	switchPointerdown: null,
-	speedInput: null,
 	zoomFocus: null,
 	zoomInput: null,
 	screenKeydown: null,
@@ -955,7 +954,6 @@ Animation.initialize = function (this: typeof Animation) {
 	on(this.page, 'resize', this.windowResize);
 	on(GL.canvas, 'webglcontextrestored', this.webglRestored);
 	// head/toolbar/zoom/screen(keydown/wheel)/marquee(pointerdown/doubleclick) 经 Vue 模板转发（LayoutPanel @pointerdown/@input/@focus/@keydown/@wheel）
-	on($('#animation-speed'), 'input', this.speedInput);
 	on(this.screen, 'userscroll', this.screenUserscroll);
 	on(this.screen, 'blur', this.screenBlur);
 	on(this.marquee, 'pointermove', this.marqueePointermove);
@@ -1144,7 +1142,6 @@ Animation.play = function (this: typeof Animation) {
 	this.playing = true;
 	this.requestAnimation!();
 	player.clearParticles();
-	addClass($('#animation-timeline-play'), 'playing');
 };
 
 Animation.stop = function (this: typeof Animation) {
@@ -1152,7 +1149,6 @@ Animation.stop = function (this: typeof Animation) {
 		this.playing = false;
 		this.resetSoundContexts!();
 		this.loadFrames!(Math.floor(this.animIndex));
-		removeClass($('#animation-timeline-play'), 'playing');
 	}
 };
 
@@ -1333,14 +1329,11 @@ Animation.nextKeyFrame = function (this: typeof Animation) {
 Animation.setSpeed = (function IIFE() {
 	return function (this: typeof Animation, speed: number) {
 		this.speed = speed;
-		const numberBox = $('#animation-speed');
-		if (numberBox) write(numberBox, speed);
 	};
 })();
 
 Animation.setZoom = (function IIFE() {
 	return function (this: typeof Animation, zoom: number) {
-		const slider = $('#animation-zoom');
 		if (this.zoom !== zoom) {
 			let scale;
 			switch (zoom) {
@@ -1369,7 +1362,6 @@ Animation.setZoom = (function IIFE() {
 					return;
 			}
 			this.zoom = zoom;
-			if (slider) write(slider, zoom);
 			if (this.state === 'open') {
 				const timer = this.zoomTimer;
 				timer.start = this.scale;
@@ -4177,12 +4169,6 @@ Animation.stopRendering = function (this: typeof Animation) {
 
 Animation.switchMark = (function IIFE() {
 	return function (this: typeof Animation, enabled = !this.showMark) {
-		const item = $('#animation-switch-mark');
-		if (enabled) {
-			addClass(item, 'selected');
-		} else {
-			removeClass(item, 'selected');
-		}
 		this.showMark = enabled;
 		this.requestRendering!();
 	};
@@ -4190,11 +4176,9 @@ Animation.switchMark = (function IIFE() {
 
 Animation.switchOnionskin = (function IIFE() {
 	return function (this: typeof Animation, enabled = !this.showOnionskin) {
-		const item = $('#animation-switch-onionskin');
 		this.showOnionskin = enabled;
 		this.requestRendering!();
 		if (enabled) {
-			addClass(item, 'selected');
 			if (this.motion) {
 				const player = this.player;
 				const { prev, next } = player.onionskin;
@@ -4202,20 +4186,12 @@ Animation.switchOnionskin = (function IIFE() {
 				player.loadContexts(next);
 				this.updateFrameContexts!();
 			}
-		} else {
-			removeClass(item, 'selected');
 		}
 	};
 })();
 
 Animation.switchMirror = (function IIFE() {
 	return function (this: typeof Animation, enabled = !this.mirror) {
-		const item = $('#animation-switch-mirror');
-		if (enabled) {
-			addClass(item, 'selected');
-		} else {
-			removeClass(item, 'selected');
-		}
 		this.mirror = enabled;
 		this.requestRendering!();
 		if (this.state === 'open') {
@@ -4234,12 +4210,6 @@ Animation.switchSettings = function (this: typeof Animation) {
 
 Animation.switchLoop = (function IIFE() {
 	return function (this: typeof Animation, enabled = !this.loop) {
-		const item = $('#animation-timeline-loop');
-		if (enabled) {
-			addClass(item, 'selected');
-		} else {
-			removeClass(item, 'selected');
-		}
 		this.loop = enabled;
 		// 在开启残影的情况下应该刷新
 		if (this.showOnionskin && this.state === 'open') {
@@ -4414,10 +4384,6 @@ Animation.switchPointerdown = function (this: typeof Animation, event: PointerEv
 			break;
 		}
 	}
-};
-
-Animation.speedInput = function (this: typeof Animation, event: Event) {
-	Animation.speed = read(this);
 };
 
 Animation.zoomFocus = function (this: typeof Animation, event: Event) {
@@ -6037,7 +6003,16 @@ Animation.timelineMarquee.isShrinkable = function (this: typeof Animation) {
 	return frame ? this.x < frame.end : false;
 };
 
-const animationBridgeKeys = ['mode', 'speed', 'zoom'] as const;
+const animationBridgeKeys = [
+	'mode',
+	'speed',
+	'zoom',
+	'showMark',
+	'showOnionskin',
+	'mirror',
+	'loop',
+	'playing'
+] as const;
 import { getAnimationStore } from '@app/stores/animation';
 
 for (const key of animationBridgeKeys) {

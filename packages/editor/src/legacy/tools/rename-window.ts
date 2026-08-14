@@ -1,6 +1,10 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus } from '@/util/element-utils';
+
+export interface RenameForm {
+	name: string;
+}
 
 export const Rename: {
 	callback: ((value: string) => void) | null;
@@ -28,7 +32,10 @@ Rename.initialize = function (this: typeof Rename) {
 Rename.open = function (this: typeof Rename, name: string, callback: (value: string) => void) {
 	this.callback = callback;
 	Window.open!('rename');
-	write($('#rename-name'), name);
+	const setForm = (
+		$('#rename') as (HTMLElement & { setForm?: (data: Partial<RenameForm>) => void }) | null
+	)?.setForm;
+	setForm?.({ name });
 	getFocus($('#rename-name'), 'all');
 };
 
@@ -37,11 +44,8 @@ Rename.windowClosed = function (this: typeof Rename, event: Event) {
 }.bind(Rename);
 
 Rename.confirm = function (this: typeof Rename, event: Event) {
-	this.callback!(read($('#rename-name')));
-	Window.close!('rename');
-}.bind(Rename);
-
-Rename.confirm = function (this: typeof Rename, event: Event) {
-	this.callback!(read($('#rename-name')));
+	const getForm = ($('#rename') as (HTMLElement & { getForm?: () => RenameForm }) | null)
+		?.getForm;
+	this.callback!(getForm?.()?.name ?? '');
 	Window.close!('rename');
 }.bind(Rename);

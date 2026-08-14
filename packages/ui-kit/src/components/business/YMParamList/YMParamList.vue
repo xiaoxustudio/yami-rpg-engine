@@ -1281,7 +1281,6 @@ onMounted(() => {
 	self.togglable = false;
 	self.height = undefined;
 	self._paddingTop = undefined;
-	self.tabIndex = 0;
 	Object.defineProperty(self, 'innerHeight', {
 		configurable: true,
 		get: getInnerHeight
@@ -1345,7 +1344,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div ref="root" class="param-list" :id="props.id" :filter="props.filter || undefined" :group="props.group || undefined" />
+	<div ref="root" class="param-list" :id="props.id" tabindex="0" :filter="props.filter || undefined" :group="props.group || undefined" />
 </template>
 
 <style module>

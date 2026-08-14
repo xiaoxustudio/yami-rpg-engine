@@ -39,6 +39,11 @@ export const useAnimationStore = defineStore('animation', () => {
 	const mode = shallowRef<string | null>(null);
 	const speed = shallowRef<number | null>(null);
 	const zoom = shallowRef<number | null>(null);
+	const showMark = shallowRef<boolean>(false);
+	const showOnionskin = shallowRef<boolean>(false);
+	const mirror = shallowRef<boolean>(false);
+	const loop = shallowRef<boolean>(false);
+	const playing = shallowRef<boolean>(false);
 
 	function syncState() {
 		state.value = Animation?.state ?? 'closed';
@@ -48,6 +53,11 @@ export const useAnimationStore = defineStore('animation', () => {
 		mode.value = Animation?.mode ?? null;
 		speed.value = Animation?.speed ?? null;
 		zoom.value = Animation?.zoom ?? null;
+		showMark.value = Animation?.showMark ?? false;
+		showOnionskin.value = Animation?.showOnionskin ?? false;
+		mirror.value = Animation?.mirror ?? false;
+		loop.value = Animation?.loop ?? false;
+		playing.value = Animation?.playing ?? false;
 	}
 
 	function open(context: AnimationContextShape) {
@@ -146,6 +156,11 @@ export const useAnimationStore = defineStore('animation', () => {
 		mode,
 		speed,
 		zoom,
+		showMark,
+		showOnionskin,
+		mirror,
+		loop,
+		playing,
 		syncState,
 		open,
 		load,

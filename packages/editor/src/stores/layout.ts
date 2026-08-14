@@ -31,15 +31,30 @@ type LayoutDragLocationShape = {
 	direction: string;
 };
 
+export const layoutStateKeys = [
+	'dragging',
+	'resizing',
+	'focusableSelector',
+	'focusableElements'
+] as const;
+
 export const useLayoutStore = defineStore('layout', () => {
 	const currentPage = shallowRef<string>('home');
 	const layouts = shallowRef<Record<string, LayoutSchemeShape> | null>(null);
 	const items = shallowRef<LayoutItemsShape | null>(null);
+	const dragging = shallowRef<any>(null);
+	const resizing = shallowRef<any>(null);
+	const focusableSelector = shallowRef<string | null>(null);
+	const focusableElements = shallowRef<HTMLElement[] | null>(null);
 
 	function syncState() {
 		currentPage.value = Layout?.manager?.index ?? 'home';
 		layouts.value = Layout?.layouts ?? null;
 		items.value = Layout?.items ?? null;
+		dragging.value = Layout?.dragging ?? null;
+		resizing.value = Layout?.resizing ?? null;
+		focusableSelector.value = Layout?.focusableSelector ?? null;
+		focusableElements.value = Layout?.focusableElements ?? null;
 	}
 
 	function getCurrentPage() {
@@ -210,6 +225,10 @@ export const useLayoutStore = defineStore('layout', () => {
 		currentPage,
 		layouts,
 		items,
+		dragging,
+		resizing,
+		focusableSelector,
+		focusableElements,
 		syncState,
 		getCurrentPage,
 		switchLayout,

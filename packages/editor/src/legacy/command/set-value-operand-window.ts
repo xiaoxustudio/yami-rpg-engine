@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show } from '@/util/element-utils';
 import { Command } from './command-object.ts';
@@ -8,12 +8,12 @@ import { Data } from '@/data/data-object.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Local } from '@/tools/localization.ts';
 
-interface OperandRefShape {
+export interface OperandRefShape {
 	type: string;
 	[key: string]: unknown;
 }
 
-interface NumberOperandData {
+export interface NumberOperandData {
 	operation: string;
 	type: string;
 	value?: number;
@@ -52,9 +52,45 @@ interface NumberOperandTarget {
 	isPluginInput?: boolean;
 }
 
+export interface NumberOperandForm {
+	operation: string;
+	operandType: string;
+	constantValue: number;
+	mathMethod: string | undefined;
+	mathDecimals: number;
+	mathMin: number;
+	mathMax: number;
+	mathStartPosition: OperandRefShape;
+	mathEndPosition: OperandRefShape;
+	stringMethod: string | undefined;
+	stringSearch: string;
+	commonVariable: { type: string; key: string };
+	objectProperty: string;
+	objectItemId: string;
+	objectEquipmentId: string;
+	elementProperty: string;
+	elementElement: { type: string };
+	commonActor: { type: string };
+	commonSkill: { type: string };
+	commonState: { type: string };
+	commonEquipment: { type: string };
+	commonItem: { type: string };
+	commonTrigger: { type: string };
+	commonTilemap: { type: string };
+	tilemapPosition: OperandRefShape;
+	cooldownKey: string;
+	listIndex: number | undefined;
+	parameterKey: string | undefined;
+	script: string | undefined;
+	otherData: string;
+	otherTouchId: number;
+	otherTeamId: string;
+}
+
 interface NumberOperandShape {
 	target: NumberOperandTarget | null;
 	initialize: (() => void) | null;
+	writeHandler: ((event: { value?: unknown }) => void) | null;
 	parseMathMethod: ((operand: NumberOperandData) => string | undefined) | null;
 	parseStringMethod: ((operand: NumberOperandData) => string | undefined) | null;
 	parseObjectProperty: ((operand: NumberOperandData) => string | undefined) | null;
@@ -72,6 +108,7 @@ interface NumberOperandShape {
 export const NumberOperand: NumberOperandShape = {
 	target: null,
 	initialize: null,
+	writeHandler: null,
 	parseMathMethod: null,
 	parseStringMethod: null,
 	parseObjectProperty: null,
@@ -82,6 +119,24 @@ export const NumberOperand: NumberOperandShape = {
 	open: null,
 	save: null,
 	confirm: null
+};
+
+NumberOperand.writeHandler = function (this: typeof NumberOperand, event) {
+	let filter = 'all';
+	switch (event.value) {
+		case 'variable':
+		case 'math':
+			filter = 'number';
+			break;
+		case 'string':
+			filter = 'string';
+			break;
+		case 'object':
+		case 'list':
+			filter = 'object';
+			break;
+	}
+	$('#setNumber-operand-common-variable').filter = filter;
 };
 
 NumberOperand.initialize = function (this: typeof NumberOperand) {
@@ -166,24 +221,6 @@ NumberOperand.initialize = function (this: typeof NumberOperand) {
 			{ case: 'script', targets: [$('#setNumber-operand-script')] },
 			{ case: 'other', targets: [$('#setNumber-operand-other-data')] }
 		]);
-
-	on($('#setNumber-operand-type'), 'write', (event: Event & { value: string }) => {
-		let filter = 'all';
-		switch (event.value) {
-			case 'variable':
-			case 'math':
-				filter = 'number';
-				break;
-			case 'string':
-				filter = 'string';
-				break;
-			case 'object':
-			case 'list':
-				filter = 'object';
-				break;
-		}
-		$('#setNumber-operand-common-variable').filter = filter;
-	});
 
 	$('#setNumber-operand-math-method').loadItems([
 		{ name: 'Round', value: 'round' },
@@ -522,8 +559,6 @@ NumberOperand.initialize = function (this: typeof NumberOperand) {
 		clear($('#setNumber-operand-other-teamId'));
 		$('#setNumber-operation').restore();
 	});
-
-	on($('#setNumber-operand-confirm'), 'click', this.confirm!);
 };
 
 NumberOperand.parseMathMethod = function (this: typeof NumberOperand, operand: NumberOperandData) {
@@ -833,7 +868,6 @@ NumberOperand.open = function (
 
 	$('#setNumber-operand-cooldown-key').loadItems(Enum.getStringItems!('cooldown-key'));
 
-	const write = getElementWriter('setNumber-operand');
 	let constantValue = 0;
 	let mathMethod: string | undefined = 'round';
 	let mathDecimals = 0;
@@ -930,53 +964,63 @@ NumberOperand.open = function (
 			otherTeamId = operand.teamId ?? otherTeamId;
 			break;
 	}
-	write('operation', operand.operation);
-	write('type', operand.type);
-	write('constant-value', constantValue);
-	write('math-method', mathMethod);
-	write('string-method', stringMethod);
-	write('object-property', objectProperty);
-	write('object-itemId', objectItemId);
-	write('object-equipmentId', objectEquipmentId);
-	write('element-property', elementProperty);
-	write('element-element', elementElement);
-	write('common-variable', commonVariable);
-	write('common-actor', commonActor);
-	write('common-skill', commonSkill);
-	write('common-state', commonState);
-	write('common-equipment', commonEquipment);
-	write('common-item', commonItem);
-	write('common-trigger', commonTrigger);
-	write('common-tilemap', commonTilemap);
-	write('tilemapPosition', tilemapPosition);
-	write('string-search', stringSearch);
-	write('math-decimals', mathDecimals);
-	write('math-min', mathMin);
-	write('math-max', mathMax);
-	write('math-startPosition', mathStartPosition);
-	write('math-endPosition', mathEndPosition);
-	write('cooldown-key', cooldownKey);
-	write('list-index', listIndex);
-	write('parameter-key', parameterKey);
-	write('script', script);
-	write('other-data', otherData);
-	write('other-touchId', otherTouchId);
-	write('other-teamId', otherTeamId);
+	const setForm = (
+		$('#setNumber-operand') as
+			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({
+		operation: operand.operation,
+		operandType: operand.type,
+		constantValue,
+		mathMethod,
+		mathDecimals,
+		mathMin,
+		mathMax,
+		mathStartPosition,
+		mathEndPosition,
+		stringMethod,
+		stringSearch,
+		commonVariable: commonVariable ?? { type: 'local', key: '' },
+		objectProperty,
+		objectItemId,
+		objectEquipmentId,
+		elementProperty,
+		elementElement,
+		commonActor,
+		commonSkill,
+		commonState,
+		commonEquipment,
+		commonItem,
+		commonTrigger,
+		commonTilemap,
+		tilemapPosition,
+		cooldownKey,
+		listIndex,
+		parameterKey,
+		script,
+		otherData,
+		otherTouchId,
+		otherTeamId
+	});
 };
 
 NumberOperand.save = function (this: typeof NumberOperand) {
-	const read = getElementReader('setNumber-operand');
-	const operation = read('operation');
-	const type = read('type');
+	const getForm = (
+		$('#setNumber-operand') as (HTMLElement & { getForm?: () => NumberOperandForm }) | null
+	)?.getForm;
+	const form = getForm?.() ?? ({} as NumberOperandForm);
+	const operation = form.operation;
+	const type = form.operandType;
 	let operand;
 	switch (type) {
 		case 'constant': {
-			const value = read('constant-value');
+			const value = form.constantValue;
 			operand = { operation, type, value };
 			break;
 		}
 		case 'variable': {
-			const variable = read('common-variable');
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
@@ -984,14 +1028,14 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'math': {
-			const method = read('math-method');
+			const method = form.mathMethod;
 			switch (method) {
 				case 'round': {
-					const variable = read('common-variable');
+					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
-					const decimals = read('math-decimals');
+					const decimals = form.mathDecimals;
 					operand = { operation, type, method, variable, decimals };
 					break;
 				}
@@ -1002,7 +1046,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'cos':
 				case 'sin':
 				case 'tan': {
-					const variable = read('common-variable');
+					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
@@ -1013,8 +1057,8 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 					operand = { operation, type, method };
 					break;
 				case 'random-int': {
-					const min = read('math-min');
-					const max = read('math-max');
+					const min = form.mathMin;
+					const max = form.mathMax;
 					operand = { operation, type, method, min, max };
 					break;
 				}
@@ -1022,8 +1066,8 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'distance-x':
 				case 'distance-y':
 				case 'relative-angle': {
-					const start = read('math-startPosition');
-					const end = read('math-endPosition');
+					const start = form.mathStartPosition;
+					const end = form.mathEndPosition;
 					operand = { operation, type, method, start, end };
 					break;
 				}
@@ -1031,8 +1075,8 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'string': {
-			const method = read('string-method');
-			const variable = read('common-variable');
+			const method = form.stringMethod;
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
@@ -1042,7 +1086,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 					operand = { operation, type, method, variable };
 					break;
 				case 'search': {
-					const search = read('string-search');
+					const search = form.stringSearch;
 					if (search === '') {
 						return getFocus($('#setNumber-operand-string-search'));
 					}
@@ -1053,7 +1097,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'object': {
-			const property = read('object-property');
+			const property = form.objectProperty;
 			switch (property) {
 				case 'actor-x':
 				case 'actor-y':
@@ -1077,13 +1121,13 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'actor-animation-current-time':
 				case 'actor-animation-duration':
 				case 'actor-animation-progress': {
-					const actor = read('common-actor');
+					const actor = form.commonActor;
 					operand = { operation, type, property, actor };
 					break;
 				}
 				case 'actor-inventory-item-quantity': {
-					const actor = read('common-actor');
-					const itemId = read('object-itemId');
+					const actor = form.commonActor;
+					const itemId = form.objectItemId;
 					if (itemId === '') {
 						return getFocus($('#setNumber-operand-object-itemId'));
 					}
@@ -1091,8 +1135,8 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 					break;
 				}
 				case 'actor-inventory-equipment-quantity': {
-					const actor = read('common-actor');
-					const equipmentId = read('object-equipmentId');
+					const actor = form.commonActor;
+					const equipmentId = form.objectEquipmentId;
 					if (equipmentId === '') {
 						return getFocus($('#setNumber-operand-object-equipmentId'));
 					}
@@ -1102,8 +1146,8 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'actor-cooldown-time':
 				case 'actor-cooldown-duration':
 				case 'actor-cooldown-progress': {
-					const actor = read('common-actor');
-					const key = read('cooldown-key');
+					const actor = form.commonActor;
+					const key = form.cooldownKey;
 					if (key === '') {
 						return getFocus($('#setNumber-operand-cooldown-key'));
 					}
@@ -1113,43 +1157,43 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'skill-cooldown-time':
 				case 'skill-cooldown-duration':
 				case 'skill-cooldown-progress': {
-					const skill = read('common-skill');
+					const skill = form.commonSkill;
 					operand = { operation, type, property, skill };
 					break;
 				}
 				case 'state-current-time':
 				case 'state-duration':
 				case 'state-progress': {
-					const state = read('common-state');
+					const state = form.commonState;
 					operand = { operation, type, property, state };
 					break;
 				}
 				case 'equipment-order': {
-					const equipment = read('common-equipment');
+					const equipment = form.commonEquipment;
 					operand = { operation, type, property, equipment };
 					break;
 				}
 				case 'item-order':
 				case 'item-quantity': {
-					const item = read('common-item');
+					const item = form.commonItem;
 					operand = { operation, type, property, item };
 					break;
 				}
 				case 'trigger-speed':
 				case 'trigger-angle': {
-					const trigger = read('common-trigger');
+					const trigger = form.commonTrigger;
 					operand = { operation, type, property, trigger };
 					break;
 				}
 				case 'tilemap-width':
 				case 'tilemap-height': {
-					const tilemap = read('common-tilemap');
+					const tilemap = form.commonTilemap;
 					operand = { operation, type, property, tilemap };
 					break;
 				}
 				case 'tilemap-tag': {
-					const tilemap = read('common-tilemap');
-					const tilemapPosition = read('tilemapPosition');
+					const tilemap = form.commonTilemap;
+					const tilemapPosition = form.tilemapPosition;
 					operand = {
 						operation,
 						type,
@@ -1160,7 +1204,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 					break;
 				}
 				case 'list-length': {
-					const variable = read('common-variable');
+					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
 						return getFocus($('#setNumber-operand-common-variable'));
 					}
@@ -1171,14 +1215,14 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'element': {
-			const property = read('element-property');
-			const element = read('element-element');
+			const property = form.elementProperty;
+			const element = form.elementElement;
 			operand = { operation, type, property, element };
 			break;
 		}
 		case 'list': {
-			const variable = read('common-variable');
-			const index = read('list-index');
+			const variable = form.commonVariable;
+			const index = form.listIndex;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#setNumber-operand-common-variable'));
 			}
@@ -1186,7 +1230,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'parameter': {
-			const key = read('parameter-key');
+			const key = form.parameterKey;
 			if (key === '') {
 				return getFocus($('#setNumber-operand-parameter-key'));
 			}
@@ -1194,7 +1238,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'script': {
-			const script = read('script').trim();
+			const script = form.script!.trim();
 			if (script === '') {
 				return getFocus($('#setNumber-operand-script'));
 			}
@@ -1202,7 +1246,7 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 			break;
 		}
 		case 'other': {
-			const data = read('other-data');
+			const data = form.otherData;
 			switch (data) {
 				case 'touch-screen-x':
 				case 'touch-screen-y':
@@ -1210,12 +1254,12 @@ NumberOperand.save = function (this: typeof NumberOperand) {
 				case 'touch-ui-y':
 				case 'touch-scene-x':
 				case 'touch-scene-y': {
-					const touchId = read('other-touchId');
+					const touchId = form.otherTouchId;
 					operand = { operation, type, data, touchId };
 					break;
 				}
 				case 'actor-count': {
-					const teamId = read('other-teamId');
+					const teamId = form.otherTeamId;
 					operand = { operation, type, data, teamId };
 					break;
 				}

@@ -1,5 +1,5 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $, getElementReader } from '@/util/dom.ts';
+import { read, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -236,51 +236,11 @@ import { UI } from '@/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiButton', node);
-			write('display');
-			write('normalImage');
-			write('normalClip');
-			write('hoverImage');
-			write('hoverClip');
-			write('activeImage');
-			write('activeClip');
-			write('flip');
-			write('border');
-			write('imagePadding');
-			write('imageOpacity');
-			write('imageEffect');
-			write('normalTint-0');
-			write('normalTint-1');
-			write('normalTint-2');
-			write('normalTint-3');
-			write('hoverTint-0');
-			write('hoverTint-1');
-			write('hoverTint-2');
-			write('hoverTint-3');
-			write('activeTint-0');
-			write('activeTint-1');
-			write('activeTint-2');
-			write('activeTint-3');
-			write('direction');
-			write('horizontalAlign');
-			write('verticalAlign');
-			write('content');
-			write('size');
-			write('letterSpacing');
-			write('textPadding');
-			write('font');
-			write('typeface');
-			write('textEffect-type');
-			write('textEffect-shadowOffsetX', node.textEffect.shadowOffsetX || 1);
-			write('textEffect-shadowOffsetY', node.textEffect.shadowOffsetY || 1);
-			write('textEffect-strokeWidth', node.textEffect.strokeWidth || 1);
-			write('textEffect-color', node.textEffect.color || '000000ff');
-			write('normalColor');
-			write('hoverColor');
-			write('activeColor');
-			write('hoverSound');
-			write('clickSound');
+			write($('#uiButton-horizontalAlign'), node.horizontalAlign);
+			write($('#uiButton-verticalAlign'), node.verticalAlign);
 			Inspector.uiElement.open(node);
+
+			($('#uiButton-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

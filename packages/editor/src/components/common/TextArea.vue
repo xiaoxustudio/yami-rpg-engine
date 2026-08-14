@@ -1,5 +1,13 @@
 <template>
-	<YMTextArea ref="ym" :model-value="props.modelValue" :disabled="isDisabled" :id="props.id" />
+	<YMTextArea
+		ref="ym"
+		:model-value="props.modelValue"
+		:disabled="isDisabled"
+		:id="props.id"
+		@input="onInput"
+		@focus="onFocus"
+		@blur="onBlur"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -73,6 +81,15 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
+const onInput = (value: string): void => {
+	emit('update:modelValue', value);
+	emit('input', value);
+};
+
+const onFocus = (event: FocusEvent): void => emit('focus', event);
+
+const onBlur = (event: FocusEvent): void => emit('blur', event);
+
 defineExpose({ read, write, insert, enable, disable, getFocus, on, root });
 
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
@@ -84,12 +101,5 @@ onMounted(() => {
 	input.history = new TextHistory(input);
 	listenDraggingScrollbarEvent(input);
 	attachElementApi(el, { input, read, write, insert, enable, disable, getFocus, on });
-	input.addEventListener('input', () => {
-		const val = read();
-		emit('update:modelValue', val);
-		emit('input', val);
-	});
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 });
 </script>

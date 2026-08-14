@@ -1,10 +1,27 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
+
+export interface SetListForm {
+	variable: { type: string; key: string };
+	operation: string;
+	numbers: number[];
+	strings: string[];
+	index: number;
+	boolean: boolean;
+	number: number;
+	string: string;
+	operand: { type: string; key: string };
+	separator: string;
+	attributeGroupId: string;
+	enumGroupId: string;
+	actor: { type: string };
+	indexSkipCheck: boolean;
+}
 
 Command.cases.setList = new CommandSchema({
 	name: 'setList',
@@ -290,36 +307,44 @@ Command.cases.setList = new CommandSchema({
 				enumGroupId = groupId;
 				break;
 		}
-		const write = getElementWriter('setList');
-		write('variable', variable);
-		write('operation', operation);
-		write('numbers', numbers);
-		write('strings', strings);
-		write('index', index);
-		write('boolean', boolVal);
-		write('number', numVal);
-		write('string', strVal);
-		write('operand', operand);
-		write('separator', separator);
-		write('attribute-groupId', attrGroupId);
-		write('enum-groupId', enumGroupId);
-		write('actor', actor);
-		write('index-skip-check', skipCheck);
+		const setForm = (
+			$('#setList') as
+				| (HTMLElement & { setForm?: (data: Partial<SetListForm>) => void })
+				| null
+		)?.setForm;
+		setForm?.({
+			variable: variable as { type: string; key: string },
+			operation,
+			numbers,
+			strings,
+			index: index as number,
+			boolean: boolVal,
+			number: numVal,
+			string: strVal,
+			operand: operand as { type: string; key: string },
+			separator: separator as string,
+			attributeGroupId: attrGroupId,
+			enumGroupId: enumGroupId,
+			actor: actor as { type: string },
+			indexSkipCheck: skipCheck as boolean
+		});
 		getFocus($('#setList-variable'));
 	},
 	customSave() {
-		const read = getElementReader('setList');
-		const variable = read('variable');
+		const getForm = ($('#setList') as (HTMLElement & { getForm?: () => SetListForm }) | null)
+			?.getForm;
+		const form = getForm?.() ?? ({} as SetListForm);
+		const variable = form.variable;
 		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setList-variable'));
 		}
-		const operation = read('operation');
+		const operation = form.operation;
 		switch (operation) {
 			case 'set-empty':
 				Command.save!({ variable, operation });
 				break;
 			case 'set-numbers': {
-				const list = read('numbers');
+				const list = form.numbers;
 				if (list.length === 0) {
 					return getFocus($('#setList-numbers'));
 				}
@@ -327,7 +352,7 @@ Command.cases.setList = new CommandSchema({
 				break;
 			}
 			case 'set-strings': {
-				const list = read('strings');
+				const list = form.strings;
 				if (list.length === 0) {
 					return getFocus($('#setList-strings'));
 				}
@@ -335,72 +360,48 @@ Command.cases.setList = new CommandSchema({
 				break;
 			}
 			case 'set-boolean': {
-				const index = read('index');
-				const skipCheck = read('index-skip-check');
-				const constant = read('boolean');
-				Command.save!({
-					variable,
-					operation,
-					index,
-					constant,
-					skipCheck
-				});
+				const index = form.index;
+				const skipCheck = form.indexSkipCheck;
+				const constant = form.boolean;
+				Command.save!({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-number': {
-				const index = read('index');
-				const skipCheck = read('index-skip-check');
-				const constant = read('number');
-				Command.save!({
-					variable,
-					operation,
-					index,
-					constant,
-					skipCheck
-				});
+				const index = form.index;
+				const skipCheck = form.indexSkipCheck;
+				const constant = form.number;
+				Command.save!({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-string': {
-				const index = read('index');
-				const skipCheck = read('index-skip-check');
-				const constant = read('string');
-				Command.save!({
-					variable,
-					operation,
-					index,
-					constant,
-					skipCheck
-				});
+				const index = form.index;
+				const skipCheck = form.indexSkipCheck;
+				const constant = form.string;
+				Command.save!({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-variable': {
-				const index = read('index');
-				const skipCheck = read('index-skip-check');
-				const operand = read('operand');
+				const index = form.index;
+				const skipCheck = form.indexSkipCheck;
+				const operand = form.operand;
 				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
-				Command.save!({
-					variable,
-					operation,
-					index,
-					operand,
-					skipCheck
-				});
+				Command.save!({ variable, operation, index, operand, skipCheck });
 				break;
 			}
 			case 'split-string': {
-				const operand = read('operand');
+				const operand = form.operand;
 				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
-				const separator = read('separator');
+				const separator = form.separator;
 				Command.save!({ variable, operation, operand, separator });
 				break;
 			}
 			case 'push':
 			case 'remove': {
-				const operand = read('operand');
+				const operand = form.operand;
 				if (VariableGetter.isNone!(operand)) {
 					return getFocus($('#setList-operand'));
 				}
@@ -409,7 +410,7 @@ Command.cases.setList = new CommandSchema({
 			}
 			case 'get-attribute-names':
 			case 'get-attribute-keys': {
-				const groupId = read('attribute-groupId');
+				const groupId = form.attributeGroupId;
 				if (groupId === '') {
 					return getFocus($('#setList-attribute-groupId'));
 				}
@@ -418,7 +419,7 @@ Command.cases.setList = new CommandSchema({
 			}
 			case 'get-enum-names':
 			case 'get-enum-values': {
-				const groupId = read('enum-groupId');
+				const groupId = form.enumGroupId;
 				if (groupId === '') {
 					return getFocus($('#setList-enum-groupId'));
 				}
@@ -426,7 +427,7 @@ Command.cases.setList = new CommandSchema({
 				break;
 			}
 			case 'get-actor-targets': {
-				const actor = read('actor');
+				const actor = form.actor;
 				Command.save!({ variable, operation, actor });
 				break;
 			}

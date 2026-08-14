@@ -1,5 +1,5 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read, write } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
+import { read } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
@@ -53,10 +53,7 @@ import { Inspector } from './inspector.ts';
 		if (this.target !== frame) {
 			this.target = frame;
 			this.motion = Animation.motion;
-
-			const write = getElementWriter('animSoundFrame', frame);
-			write('sound');
-			write('volume');
+			($('#animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -72,12 +69,7 @@ import { Inspector } from './inspector.ts';
 		this: typeof AnimSoundFrame,
 		options: Record<string, unknown>
 	) {
-		if (options.sound !== undefined) {
-			write($('#animSoundFrame-sound'), options.sound);
-		}
-		if (options.volume !== undefined) {
-			write($('#animSoundFrame-volume'), options.volume);
-		}
+		($('#animSoundFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	AnimSoundFrame.update = function (

@@ -1,6 +1,10 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus } from '@/util/element-utils';
+
+export interface SetKeyForm {
+	key: string;
+}
 
 export const SetKey = {
 	callback: null as ((key: string) => void) | null,
@@ -18,7 +22,10 @@ SetKey.initialize = function () {
 SetKey.open = function (key, callback) {
 	this.callback = callback;
 	Window.open!('setKey');
-	write($('#setKey-key'), key);
+	const setForm = (
+		$('#setKey') as (HTMLElement & { setForm?: (data: Partial<SetKeyForm>) => void }) | null
+	)?.setForm;
+	setForm?.({ key });
 	getFocus($('#setKey-key'), 'all');
 };
 
@@ -27,6 +34,8 @@ SetKey.windowClosed = function (this: typeof SetKey, event: Event) {
 }.bind(SetKey);
 
 SetKey.confirm = function (this: typeof SetKey, event: Event) {
-	this.callback!(read($('#setKey-key')));
+	const getForm = ($('#setKey') as (HTMLElement & { getForm?: () => SetKeyForm }) | null)
+		?.getForm;
+	this.callback!(getForm?.()?.key ?? '');
 	Window.close!('setKey');
 }.bind(SetKey);

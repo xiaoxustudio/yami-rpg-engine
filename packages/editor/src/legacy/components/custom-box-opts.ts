@@ -41,18 +41,26 @@ const parseText = (
 	value: unknown,
 	parse: ((value: unknown) => string | undefined) | undefined
 ): { text: string } => {
+	if (value == null || value === '') {
+		return { text: Local.get!('common.none') };
+	}
 	if (!parse) {
-		return { text: String(value ?? '') };
+		return { text: String(value) };
 	}
 	const parsed = parse(value);
-	return { text: Command.removeTextTags?.(parsed) ?? parsed ?? '' };
+	const text = Command.removeTextTags?.(parsed) ?? parsed ?? '';
+	return { text: text || Local.get!('common.none') };
 };
 
 const parseWithInvalid = (fn: (value: string) => string) => {
 	return (value: unknown) => {
 		Command.invalid = false;
+		if (value == null || value === '') {
+			return { text: Local.get!('common.none') };
+		}
 		const text = fn(value as string);
-		return { text: Command.removeTextTags?.(text) ?? text, invalid: Command.invalid };
+		const parsed = Command.removeTextTags?.(text) ?? text;
+		return { text: parsed || Local.get!('common.none'), invalid: Command.invalid };
 	};
 };
 
@@ -103,8 +111,17 @@ export const customBoxOptions: CustomBoxApiOptions = {
 	},
 	parsers: {
 		file: parseWithInvalid((guid: string) => Command.parseFileName?.(guid) ?? ''),
-		'dialog-dir': (path: unknown) => ({ text: path as string }),
-		clip: (clip: unknown) => ({ text: (clip as unknown[]).join(', ') }),
+		'dialog-dir': (path: unknown) => ({
+			text: path == null || path === '' ? Local.get!('common.none') : (path as string)
+		}),
+		clip: (clip: unknown) => ({
+			text:
+				clip == null || clip === '' || (Array.isArray(clip) && clip.length === 0)
+					? Local.get!('common.none')
+					: Array.isArray(clip)
+						? (clip as unknown[]).join(', ')
+						: String(clip)
+		}),
 		variable: (variable: unknown) => {
 			const data = variable as { type?: string; key?: unknown } | null | undefined;
 			if (data == null) {
@@ -206,7 +223,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			(groupId: string) => Command.parseAttributeGroup?.(groupId) ?? ''
 		),
 		attribute: (attrId: unknown) => {
-			if (attrId === '') return { text: Local.get!('common.none') };
+			if (attrId == null || attrId === '') return { text: Local.get!('common.none') };
 			const attribute = Attribute.getAttribute(attrId as string);
 			if (attribute) {
 				return { text: GameLocal.replace(attribute.name) };
@@ -217,7 +234,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			(groupId: string) => Command.parseEnumGroup?.(groupId) ?? ''
 		),
 		'enum-string': (stringId: unknown) => {
-			if (stringId === '') return { text: Local.get!('common.none') };
+			if (stringId == null || stringId === '') return { text: Local.get!('common.none') };
 			const string = Enum.getString(stringId as string);
 			if (string) {
 				return { text: GameLocal.replace(string.name) };

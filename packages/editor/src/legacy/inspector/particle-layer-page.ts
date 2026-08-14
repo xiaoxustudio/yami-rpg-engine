@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $, getElementReader } from '@/util/dom.ts';
 import { on, read } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from './inspector.ts';
@@ -218,7 +218,6 @@ import { Particle } from '@/particle/particle-window.ts';
     #particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider,
     #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider`);
 		const blurHandler = Inspector.inputBlur!(this, Particle);
-		(elements as unknown as HTMLElement[]).forEach((el) => on(el, 'input', this.paramInput!));
 		(elements as unknown as HTMLElement[]).forEach((el) =>
 			on(el, 'focus', Inspector.inputFocus)
 		);
@@ -298,105 +297,9 @@ import { Particle } from '@/particle/particle-window.ts';
 			this.target = layer;
 
 			$('#particleLayer-color-easingId').loadItems(Data.createEasingItems!());
+			this.easingDefaultId = Data.easings[0].id;
 
-			const write = getElementWriter('particleLayer', layer);
-			const { area, color } = layer;
-			const { rgba, min, max, easingId, startMin, startMax, endMin, endMax, tint } = color;
-			write('name');
-			write('area-type');
-			write('area-x', area.x ?? 0);
-			write('area-y', area.y ?? 0);
-			write('area-width', area.width ?? 64);
-			write('area-height', area.height ?? 64);
-			write('area-radius', area.radius ?? 32);
-			write('count');
-			write('delay');
-			write('interval');
-			write('lifetime');
-			write('lifetimeDev');
-			write('fadeout');
-			write('anchor-x-0');
-			write('anchor-x-1');
-			write('anchor-y-0');
-			write('anchor-y-1');
-			write('anchor-speedX-0');
-			write('anchor-speedX-1');
-			write('anchor-speedY-0');
-			write('anchor-speedY-1');
-			write('movement-angle-0');
-			write('movement-angle-1');
-			write('movement-speed-0');
-			write('movement-speed-1');
-			write('movement-accelAngle-0');
-			write('movement-accelAngle-1');
-			write('movement-accel-0');
-			write('movement-accel-1');
-			write('rotation-angle-0');
-			write('rotation-angle-1');
-			write('rotation-speed-0');
-			write('rotation-speed-1');
-			write('rotation-accel-0');
-			write('rotation-accel-1');
-			write('hRotation-radius-0');
-			write('hRotation-radius-1');
-			write('hRotation-expansionSpeed-0');
-			write('hRotation-expansionSpeed-1');
-			write('hRotation-expansionAccel-0');
-			write('hRotation-expansionAccel-1');
-			write('hRotation-angle-0');
-			write('hRotation-angle-1');
-			write('hRotation-angularSpeed-0');
-			write('hRotation-angularSpeed-1');
-			write('hRotation-angularAccel-0');
-			write('hRotation-angularAccel-1');
-			write('scale-factor-0');
-			write('scale-factor-1');
-			write('scale-speed-0');
-			write('scale-speed-1');
-			write('scale-accel-0');
-			write('scale-accel-1');
-			write('image');
-			write('blend');
-			write('light');
-			write('sort');
-			write('sprite-mode');
-			write('sprite-hframes');
-			write('sprite-vframes');
-			write('sprite-interval');
-			write('color-mode');
-			write('color-rgba-0', rgba?.[0] ?? 255);
-			write('color-rgba-1', rgba?.[1] ?? 255);
-			write('color-rgba-2', rgba?.[2] ?? 255);
-			write('color-rgba-3', rgba?.[3] ?? 255);
-			write('color-min-0', min?.[0] ?? 0);
-			write('color-min-1', min?.[1] ?? 0);
-			write('color-min-2', min?.[2] ?? 0);
-			write('color-min-3', min?.[3] ?? 255);
-			write('color-max-0', max?.[0] ?? 255);
-			write('color-max-1', max?.[1] ?? 255);
-			write('color-max-2', max?.[2] ?? 255);
-			write('color-max-3', max?.[3] ?? 255);
-			write('color-easingId', easingId ?? Data.easings[0].id);
-			write('color-startMin-0', startMin?.[0] ?? 0);
-			write('color-startMin-1', startMin?.[1] ?? 0);
-			write('color-startMin-2', startMin?.[2] ?? 0);
-			write('color-startMin-3', startMin?.[3] ?? 255);
-			write('color-startMax-0', startMax?.[0] ?? 255);
-			write('color-startMax-1', startMax?.[1] ?? 255);
-			write('color-startMax-2', startMax?.[2] ?? 255);
-			write('color-startMax-3', startMax?.[3] ?? 255);
-			write('color-endMin-0', endMin?.[0] ?? 0);
-			write('color-endMin-1', endMin?.[1] ?? 0);
-			write('color-endMin-2', endMin?.[2] ?? 0);
-			write('color-endMin-3', endMin?.[3] ?? 255);
-			write('color-endMax-0', endMax?.[0] ?? 255);
-			write('color-endMax-1', endMax?.[1] ?? 255);
-			write('color-endMax-2', endMax?.[2] ?? 255);
-			write('color-endMax-3', endMax?.[3] ?? 255);
-			write('color-tint-0', tint?.[0] ?? 0);
-			write('color-tint-1', tint?.[1] ?? 0);
-			write('color-tint-2', tint?.[2] ?? 0);
-			write('color-tint-3', tint?.[3] ?? 0);
+			($('#particleLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -711,10 +614,16 @@ import { Particle } from '@/particle/particle-window.ts';
 	};
 
 	ParticleLayer.paramInput = function (this: typeof ParticleLayer, event: Event) {
+		const target = event?.target ?? document.activeElement;
+		let element = target;
+		while (element instanceof Element) {
+			if (new RegExp('^particleLayer-').test(element.id)) break;
+			element = element.parentElement;
+		}
 		ParticleLayer.update!(
 			ParticleLayer.target as ParticleLayerData,
-			Inspector.getKey!(this),
-			read(this)
+			Inspector.getKey!(element as HTMLElement),
+			read(element as HTMLElement)
 		);
 	};
 

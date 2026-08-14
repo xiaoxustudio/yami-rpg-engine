@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { on, read } from '@/util/element-utils.ts';
+import { on } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Editor } from '@/main/editor.ts';
@@ -14,6 +14,11 @@ type LocalizationListItem = {
 	id?: string;
 	contents?: Record<string, string>;
 };
+
+export interface ExportLanguageForm {
+	first: string;
+	second: string;
+}
 
 export const ExportLanguage: {
 	initialize: () => void;
@@ -46,9 +51,13 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 		});
 	}
 	$('#exportLanguage-first').loadItems(items);
-	$('#exportLanguage-first').writeDefault();
 	$('#exportLanguage-second').loadItems([none, ...items]);
-	$('#exportLanguage-second').writeDefault();
+	const setForm = (
+		$('#exportLanguage') as
+			| (HTMLElement & { setForm?: (data: Partial<ExportLanguageForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({ first: items[0]?.value ?? '', second: '' });
 };
 
 ExportLanguage.exportLanguagePack = function (
@@ -88,8 +97,10 @@ ExportLanguage.stringifyLanguagePack = function (
 ExportLanguage.confirm = function (this: typeof ExportLanguage, event: Event) {
 	Window.close!('exportLanguage');
 	const dialogs = Editor.config!.dialogs as { import: string; export: string };
-	const first = read($('#exportLanguage-first'));
-	const second = read($('#exportLanguage-second'));
+	const getForm = (
+		$('#exportLanguage') as (HTMLElement & { getForm?: () => ExportLanguageForm }) | null
+	)?.getForm;
+	const { first, second } = getForm?.() ?? ({} as ExportLanguageForm);
 	File.showSaveDialog!({
 		defaultPath: Path.resolve!(dialogs.export, first + '.txt')
 	}).then(({ filePath }: { filePath: string }) => {

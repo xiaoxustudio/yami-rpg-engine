@@ -1,8 +1,12 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, read, write } from '@/util/element-utils.ts';
+import { getFocus, on } from '@/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { GameLocal } from '@/local/local-object.ts';
+
+export interface ChoicesForm {
+	content: string;
+}
 
 interface ChoicesTarget {
 	save: () => unknown;
@@ -53,14 +57,19 @@ Choices.open = function (
 	choice: ChoicesData = { content: '', commands: [] }
 ): void {
 	Window.open!('choice');
-	write($('#choice-content'), choice.content);
+	const setForm = (
+		$('#choice') as (HTMLElement & { setForm?: (data: Partial<ChoicesForm>) => void }) | null
+	)?.setForm;
+	setForm?.({ content: choice.content });
 	getFocus($('#choice-content'), 'all');
 	this.commands = choice.commands;
 };
 
 Choices.save = function (this: typeof Choices): unknown {
 	const commands = this.commands;
-	const content = read($('#choice-content')).trim();
+	const getForm = ($('#choice') as (HTMLElement & { getForm?: () => ChoicesForm }) | null)
+		?.getForm;
+	const content = (getForm?.()?.content ?? '').trim();
 	if (content === '') {
 		return getFocus($('#choice-content'));
 	}

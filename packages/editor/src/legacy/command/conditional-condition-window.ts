@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
 import { Command } from './command-object.ts';
@@ -39,6 +39,50 @@ export interface IfConditionData {
 	[k: string]: any;
 }
 
+export interface IfConditionForm {
+	type: string;
+	commonVariable: { type: string; key: string };
+	booleanOperation: string | undefined;
+	booleanOperandType: string;
+	booleanConstantValue: boolean;
+	numberOperation: string | undefined;
+	numberOperandType: string;
+	numberConstantValue: number;
+	stringOperation: string | undefined;
+	stringOperandType: string;
+	stringConstantValue: string;
+	stringEnumStringId: string;
+	objectOperation: string | undefined;
+	objectOperandType: string;
+	listOperation: string | undefined;
+	operandVariable: { type: string; key: string };
+	actorOperation: string | undefined;
+	commonActor: { type: string };
+	commonSkill: { type: string };
+	commonState: { type: string };
+	commonEquipment: { type: string };
+	commonItem: { type: string };
+	commonTrigger: { type: string };
+	commonLight: { type: string };
+	commonElement: { type: string };
+	actorSkillId: string;
+	actorStateId: string;
+	actorItemId: string;
+	actorEquipmentId: string;
+	actorQuantity: number;
+	actorShortcutKey: string;
+	actorTarget: { type: string };
+	actorTeamId: string;
+	elementOperation: string | undefined;
+	keyboardKeycode: string | undefined;
+	keyboardState: string | undefined;
+	gamepadButton: number | undefined;
+	gamepadState: string | undefined;
+	mouseButton: number | undefined;
+	mouseState: string | undefined;
+	otherKey: string | undefined;
+}
+
 declare global {
 	type SwitchConditionData = {
 		type:
@@ -65,6 +109,7 @@ interface IfConditionShape {
 	type: string;
 	target: IfConditionTarget | null;
 	initialize: (() => void) | null;
+	writeHandler: ((event: { value?: unknown }) => void) | null;
 	parseBooleanOperation: ((condition: IfConditionData) => string) | null;
 	parseBooleanOperand: ((condition: IfConditionData) => string) | null;
 	parseNumberOperation: ((condition: IfConditionData) => string) | null;
@@ -91,6 +136,7 @@ export const IfCondition: IfConditionShape = {
 	type: 'condition',
 	target: null,
 	initialize: null,
+	writeHandler: null,
 	parseBooleanOperation: null,
 	parseBooleanOperand: null,
 	parseNumberOperation: null,
@@ -111,6 +157,31 @@ export const IfCondition: IfConditionShape = {
 	open: null,
 	save: null,
 	confirm: null
+};
+
+IfCondition.writeHandler = function (this: typeof IfCondition, event) {
+	let filter1 = 'all';
+	let filter2 = 'all';
+	switch (event.value) {
+		case 'boolean':
+			filter1 = filter2 = 'boolean';
+			break;
+		case 'number':
+			filter1 = filter2 = 'number';
+			break;
+		case 'string':
+			filter1 = filter2 = 'string';
+			break;
+		case 'object':
+			filter1 = filter2 = 'object';
+			break;
+		case 'list':
+			filter1 = 'object';
+			filter2 = 'all';
+			break;
+	}
+	$('#if-condition-common-variable').filter = filter1;
+	$('#if-condition-operand-variable').filter = filter2;
 };
 
 IfCondition.initialize = function (this: typeof IfCondition) {
@@ -190,31 +261,6 @@ IfCondition.initialize = function (this: typeof IfCondition) {
 			},
 			{ case: 'other', targets: [$('#if-condition-other-key')] }
 		]);
-
-	on($('#if-condition-type'), 'write', (event: Event & { value?: string }) => {
-		let filter1 = 'all';
-		let filter2 = 'all';
-		switch (event.value) {
-			case 'boolean':
-				filter1 = filter2 = 'boolean';
-				break;
-			case 'number':
-				filter1 = filter2 = 'number';
-				break;
-			case 'string':
-				filter1 = filter2 = 'string';
-				break;
-			case 'object':
-				filter1 = filter2 = 'object';
-				break;
-			case 'list':
-				filter1 = 'object';
-				filter2 = 'all';
-				break;
-		}
-		$('#if-condition-common-variable').filter = filter1;
-		$('#if-condition-operand-variable').filter = filter2;
-	});
 
 	$('#if-condition-boolean-operation').loadItems([
 		{ name: '==', value: 'equal' },
@@ -474,8 +520,6 @@ IfCondition.initialize = function (this: typeof IfCondition) {
 	on($('#if-condition'), 'closed', function (event) {
 		clear($('#if-condition-actor-teamId'));
 	});
-
-	on($('#if-condition-confirm'), 'click', this.confirm!);
 };
 
 IfCondition.parseBooleanOperation = function (
@@ -777,7 +821,6 @@ IfCondition.open = function (
 ) {
 	$('#if-condition-actor-shortcutKey').loadItems(Enum.getStringItems!('shortcut-key'));
 	Window.open!('if-condition');
-	const write = getElementWriter('if-condition');
 	const defaultVariable = { type: 'local', key: '' };
 	let commonVariable = defaultVariable;
 	let booleanOperation: string | undefined = 'equal';
@@ -893,63 +936,73 @@ IfCondition.open = function (
 			otherKey = condition.key;
 			break;
 	}
-	write('type', condition.type);
-	write('common-variable', commonVariable);
-	write('boolean-operation', booleanOperation);
-	write('boolean-operand-type', booleanOperandType);
-	write('boolean-constant-value', booleanConstantValue);
-	write('number-operation', numberOperation);
-	write('number-operand-type', numberOperandType);
-	write('number-constant-value', numberConstantValue);
-	write('string-operation', stringOperation);
-	write('string-operand-type', stringOperandType);
-	write('string-constant-value', stringConstantValue);
-	write('string-enum-stringId', stringEnumStringId);
-	write('object-operation', objectOperation);
-	write('object-operand-type', objectOperandType);
-	write('list-operation', listOperation);
-	write('operand-variable', operandVariable);
-	write('actor-operation', actorOperation);
-	write('common-actor', commonActor);
-	write('common-skill', commonSkill);
-	write('common-state', commonState);
-	write('common-equipment', commonEquipment);
-	write('common-item', commonItem);
-	write('common-trigger', commonTrigger);
-	write('common-light', commonLight);
-	write('common-element', commonElement);
-	write('actor-skillId', actorSkillId);
-	write('actor-stateId', actorStateId);
-	write('actor-itemId', actorItemId);
-	write('actor-equipmentId', actorEquipmentId);
-	write('actor-quantity', actorQuantity);
-	write('actor-shortcutKey', actorShortcutKey);
-	write('actor-target', actorTarget);
-	write('actor-teamId', actorTeamId);
-	write('element-operation', elementOperation);
-	write('keyboard-keycode', keyboardKeycode);
-	write('keyboard-state', keyboardState);
-	write('gamepad-button', gamepadButton);
-	write('gamepad-state', gamepadState);
-	write('mouse-button', mouseButton);
-	write('mouse-state', mouseState);
-	write('other-key', otherKey);
+	const setForm = (
+		$('#if-condition') as
+			| (HTMLElement & { setForm?: (data: Partial<IfConditionForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({
+		type: condition.type,
+		commonVariable,
+		booleanOperation,
+		booleanOperandType,
+		booleanConstantValue,
+		numberOperation,
+		numberOperandType,
+		numberConstantValue,
+		stringOperation,
+		stringOperandType,
+		stringConstantValue,
+		stringEnumStringId,
+		objectOperation,
+		objectOperandType,
+		listOperation,
+		operandVariable,
+		actorOperation,
+		commonActor,
+		commonSkill,
+		commonState,
+		commonEquipment,
+		commonItem,
+		commonTrigger,
+		commonLight,
+		commonElement,
+		actorSkillId,
+		actorStateId,
+		actorItemId,
+		actorEquipmentId,
+		actorQuantity,
+		actorShortcutKey,
+		actorTarget,
+		actorTeamId,
+		elementOperation,
+		keyboardKeycode,
+		keyboardState,
+		gamepadButton,
+		gamepadState,
+		mouseButton,
+		mouseState,
+		otherKey
+	});
 	getFocus($('#if-condition-type'));
 };
 
 IfCondition.save = function (this: typeof IfCondition) {
-	const read = getElementReader('if-condition');
-	const type = read('type');
+	const getForm = (
+		$('#if-condition') as (HTMLElement & { getForm?: () => IfConditionForm }) | null
+	)?.getForm;
+	const form = getForm?.() ?? ({} as IfConditionForm);
+	const type = form.type;
 	let condition;
 	switch (type) {
 		case 'boolean': {
-			const variable = read('common-variable');
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#if-condition-common-variable'));
 			}
-			const operation = read('boolean-operation');
+			const operation = form.booleanOperation;
 			let operand;
-			switch (read('boolean-operand-type')) {
+			switch (form.booleanOperandType) {
 				case 'none':
 					operand = {
 						type: 'none'
@@ -958,13 +1011,13 @@ IfCondition.save = function (this: typeof IfCondition) {
 				case 'constant':
 					operand = {
 						type: 'constant',
-						value: read('boolean-constant-value')
+						value: form.booleanConstantValue
 					};
 					break;
 				case 'variable':
 					operand = {
 						type: 'variable',
-						variable: read('operand-variable')
+						variable: form.operandVariable
 					};
 					if (VariableGetter.isNone!(operand.variable)) {
 						return getFocus($('#if-condition-operand-variable'));
@@ -975,13 +1028,13 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'number': {
-			const variable = read('common-variable');
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#if-condition-common-variable'));
 			}
-			const operation = read('number-operation');
+			const operation = form.numberOperation;
 			let operand;
-			switch (read('number-operand-type')) {
+			switch (form.numberOperandType) {
 				case 'none':
 					operand = {
 						type: 'none'
@@ -990,13 +1043,13 @@ IfCondition.save = function (this: typeof IfCondition) {
 				case 'constant':
 					operand = {
 						type: 'constant',
-						value: read('number-constant-value')
+						value: form.numberConstantValue
 					};
 					break;
 				case 'variable':
 					operand = {
 						type: 'variable',
-						variable: read('operand-variable')
+						variable: form.operandVariable
 					};
 					if (VariableGetter.isNone!(operand.variable)) {
 						return getFocus($('#if-condition-operand-variable'));
@@ -1007,13 +1060,13 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'string': {
-			const variable = read('common-variable');
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#if-condition-common-variable'));
 			}
-			const operation = read('string-operation');
+			const operation = form.stringOperation;
 			let operand;
-			switch (read('string-operand-type')) {
+			switch (form.stringOperandType) {
 				case 'none':
 					operand = {
 						type: 'none'
@@ -1022,13 +1075,13 @@ IfCondition.save = function (this: typeof IfCondition) {
 				case 'constant':
 					operand = {
 						type: 'constant',
-						value: read('string-constant-value')
+						value: form.stringConstantValue
 					};
 					break;
 				case 'variable':
 					operand = {
 						type: 'variable',
-						variable: read('operand-variable')
+						variable: form.operandVariable
 					};
 					if (VariableGetter.isNone!(operand.variable)) {
 						return getFocus($('#if-condition-operand-variable'));
@@ -1037,7 +1090,7 @@ IfCondition.save = function (this: typeof IfCondition) {
 				case 'enum':
 					operand = {
 						type: 'enum',
-						stringId: read('string-enum-stringId')
+						stringId: form.stringEnumStringId
 					};
 					if (operand.stringId === '') {
 						return getFocus($('#if-condition-string-enum-stringId'));
@@ -1048,16 +1101,16 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'object': {
-			const variable = read('common-variable');
+			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus($('#if-condition-common-variable'));
 			}
-			const operation = read('object-operation');
+			const operation = form.objectOperation;
 			switch (operation) {
 				case 'equal':
 				case 'unequal': {
 					let operand;
-					switch (read('object-operand-type')) {
+					switch (form.objectOperandType) {
 						case 'none':
 							operand = {
 								type: 'none'
@@ -1066,55 +1119,55 @@ IfCondition.save = function (this: typeof IfCondition) {
 						case 'actor':
 							operand = {
 								type: 'actor',
-								actor: read('common-actor')
+								actor: form.commonActor
 							};
 							break;
 						case 'skill':
 							operand = {
 								type: 'skill',
-								skill: read('common-skill')
+								skill: form.commonSkill
 							};
 							break;
 						case 'state':
 							operand = {
 								type: 'state',
-								state: read('common-state')
+								state: form.commonState
 							};
 							break;
 						case 'equipment':
 							operand = {
 								type: 'equipment',
-								equipment: read('common-equipment')
+								equipment: form.commonEquipment
 							};
 							break;
 						case 'item':
 							operand = {
 								type: 'item',
-								item: read('common-item')
+								item: form.commonItem
 							};
 							break;
 						case 'trigger':
 							operand = {
 								type: 'trigger',
-								trigger: read('common-trigger')
+								trigger: form.commonTrigger
 							};
 							break;
 						case 'light':
 							operand = {
 								type: 'light',
-								light: read('common-light')
+								light: form.commonLight
 							};
 							break;
 						case 'element':
 							operand = {
 								type: 'element',
-								element: read('common-element')
+								element: form.commonElement
 							};
 							break;
 						case 'variable':
 							operand = {
 								type: 'variable',
-								variable: read('operand-variable')
+								variable: form.operandVariable
 							};
 							if (VariableGetter.isNone!(operand.variable)) {
 								return getFocus($('#if-condition-operand-variable'));
@@ -1131,11 +1184,11 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'actor': {
-			const actor = read('common-actor');
-			const operation = read('actor-operation');
+			const actor = form.commonActor;
+			const operation = form.actorOperation;
 			switch (operation) {
 				case 'has-skill': {
-					const skillId = read('actor-skillId');
+					const skillId = form.actorSkillId;
 					if (skillId === '') {
 						return getFocus($('#if-condition-actor-skillId'));
 					}
@@ -1143,7 +1196,7 @@ IfCondition.save = function (this: typeof IfCondition) {
 					break;
 				}
 				case 'has-state': {
-					const stateId = read('actor-stateId');
+					const stateId = form.actorStateId;
 					if (stateId === '') {
 						return getFocus($('#if-condition-actor-stateId'));
 					}
@@ -1151,20 +1204,20 @@ IfCondition.save = function (this: typeof IfCondition) {
 					break;
 				}
 				case 'has-items': {
-					const itemId = read('actor-itemId');
+					const itemId = form.actorItemId;
 					if (itemId === '') {
 						return getFocus($('#if-condition-actor-itemId'));
 					}
-					const quantity = read('actor-quantity');
+					const quantity = form.actorQuantity;
 					condition = { type, actor, operation, itemId, quantity };
 					break;
 				}
 				case 'has-equipments': {
-					const equipmentId = read('actor-equipmentId');
+					const equipmentId = form.actorEquipmentId;
 					if (equipmentId === '') {
 						return getFocus($('#if-condition-actor-equipmentId'));
 					}
-					const quantity = read('actor-quantity');
+					const quantity = form.actorQuantity;
 					condition = {
 						type,
 						actor,
@@ -1176,7 +1229,7 @@ IfCondition.save = function (this: typeof IfCondition) {
 				}
 				case 'has-skill-shortcut':
 				case 'has-item-shortcut': {
-					const shortcutKey = read('actor-shortcutKey');
+					const shortcutKey = form.actorShortcutKey;
 					if (shortcutKey === '') {
 						return getFocus($('#if-condition-actor-shortcutKey'));
 					}
@@ -1184,7 +1237,7 @@ IfCondition.save = function (this: typeof IfCondition) {
 					break;
 				}
 				case 'equipped': {
-					const equipmentId = read('actor-equipmentId');
+					const equipmentId = form.actorEquipmentId;
 					if (equipmentId === '') {
 						return getFocus($('#if-condition-actor-equipmentId'));
 					}
@@ -1194,14 +1247,14 @@ IfCondition.save = function (this: typeof IfCondition) {
 				case 'is-teammate':
 				case 'is-friend':
 				case 'is-enemy': {
-					const target = read('actor-target');
+					const target = form.actorTarget;
 					condition = { type, actor, operation, target };
 					break;
 				}
 				case 'is-team-member':
 				case 'is-team-friend':
 				case 'is-team-enemy': {
-					const teamId = read('actor-teamId');
+					const teamId = form.actorTeamId;
 					condition = { type, actor, operation, teamId };
 					break;
 				}
@@ -1212,14 +1265,14 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'element': {
-			const element = read('common-element');
-			const operation = read('element-operation');
+			const element = form.commonElement;
+			const operation = form.elementOperation;
 			condition = { type, element, operation };
 			break;
 		}
 		case 'keyboard': {
-			const keycode = read('keyboard-keycode');
-			const state = read('keyboard-state');
+			const keycode = form.keyboardKeycode;
+			const state = form.keyboardState;
 			if (keycode === '') {
 				return getFocus($('#if-condition-keyboard-keycode'));
 			}
@@ -1227,8 +1280,8 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'gamepad': {
-			const button = read('gamepad-button');
-			const state = read('gamepad-state');
+			const button = form.gamepadButton;
+			const state = form.gamepadState;
 			if (button === -1) {
 				return getFocus($('#if-condition-gamepad-button'));
 			}
@@ -1236,18 +1289,18 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'mouse': {
-			const button = read('mouse-button');
-			const state = read('mouse-state');
+			const button = form.mouseButton;
+			const state = form.mouseState;
 			condition = { type, button, state };
 			break;
 		}
 		case 'list': {
-			const list = read('common-variable');
+			const list = form.commonVariable;
 			if (VariableGetter.isNone!(list)) {
 				return getFocus($('#if-condition-common-variable'));
 			}
-			const operation = read('list-operation');
-			const target = read('operand-variable');
+			const operation = form.listOperation;
+			const target = form.operandVariable;
 			if (VariableGetter.isNone!(target)) {
 				return getFocus($('#if-condition-operand-variable'));
 			}
@@ -1255,7 +1308,7 @@ IfCondition.save = function (this: typeof IfCondition) {
 			break;
 		}
 		case 'other': {
-			const key = read('other-key');
+			const key = form.otherKey;
 			condition = { type, key };
 			break;
 		}

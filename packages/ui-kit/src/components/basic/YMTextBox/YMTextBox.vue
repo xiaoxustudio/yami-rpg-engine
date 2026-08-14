@@ -23,6 +23,8 @@ const emit = defineEmits<{
 
 const root = ref<HTMLElement | null>(null);
 const inputEl = ref<HTMLInputElement | null>(null);
+const closeButtonEl = ref<HTMLElement | null>(null);
+const closeButtonDisplay = ref('none');
 
 interface TextBoxApi extends HTMLElement {
 	_initialized?: boolean;
@@ -148,15 +150,15 @@ const deleteInputContent = (): void => {
 		document.execCommand('delete');
 	}
 };
+const updateCloseButton = (): void => {
+	closeButtonDisplay.value = read() !== '' ? '' : 'none';
+};
+
 const addCloseButton = (): void => {
 	const el = root.value;
-	if (!el) return;
+	const closeButton = closeButtonEl.value;
+	if (!el || !closeButton) return;
 	const baseWrite = write;
-	const updateCloseButton = (): void => {
-		const closeButton = (el as TextBoxApi).closeButton;
-		if (!closeButton) return;
-		closeButton.style.display = read() !== '' ? '' : 'none';
-	};
 	(el as TextBoxApi).write = (value: string): void => {
 		baseWrite(value);
 		updateCloseButton();
@@ -174,23 +176,19 @@ const addCloseButton = (): void => {
 	const input = (): void => {
 		updateCloseButton();
 	};
-	const closeButtonPointerdown = (event: PointerEvent): void => {
-		event.preventDefault();
-		event.stopPropagation();
-	};
-	const closeButtonClick = (): void => {
-		deleteInputContent();
-	};
 	el.addEventListener('keydown', keydown);
 	el.addEventListener('input', input);
-	const closeButton = document.createElement('div');
-	closeButton.className = 'box close-button';
-	closeButton.textContent = '\u2716';
-	closeButton.addEventListener('pointerdown', closeButtonPointerdown);
-	closeButton.addEventListener('click', closeButtonClick);
 	(el as TextBoxApi).closeButton = closeButton;
-	closeButton.style.display = 'none';
-	el.appendChild(closeButton);
+	closeButtonDisplay.value = 'none';
+};
+
+const onCloseButtonPointerdown = (event: PointerEvent): void => {
+	event.preventDefault();
+	event.stopPropagation();
+};
+
+const onCloseButtonClick = (): void => {
+	deleteInputContent();
 };
 const addKeydownFilter = (): void => {
 	const el = root.value;
@@ -241,6 +239,36 @@ const on = (
 	}
 };
 
+const onCompositionStart = (): void => {
+	isEditing = true;
+};
+
+const onCompositionEnd = (): void => {
+	isEditing = false;
+};
+
+const onInputKeydown = (event: KeyboardEvent): void => {
+	if (!isEditing) return;
+	switch (event.code) {
+		case 'Escape':
+		case 'Enter':
+			event.stopPropagation();
+			return;
+	}
+};
+
+const onInput = (): void => {
+	const val = read();
+	emit('update:modelValue', val);
+	emit('input', val);
+};
+
+const onChange = (): void => emit('change', read());
+
+const onFocus = (event: FocusEvent): void => emit('focus', event);
+
+const onBlur = (event: FocusEvent): void => emit('blur', event);
+
 defineExpose({
 	read,
 	write,
@@ -268,25 +296,6 @@ function initializeApi(): void {
 	const el = root.value;
 	const input = inputEl.value;
 	if (!el || !input || (el as TextBoxApi)._initialized) return;
-	input.addEventListener('compositionstart', () => {
-		isEditing = true;
-	});
-	input.addEventListener('compositionend', () => {
-		isEditing = false;
-	});
-	input.addEventListener(
-		'keydown',
-		(e) => {
-			if (!isEditing) return;
-			switch (e.code) {
-				case 'Escape':
-				case 'Enter':
-					e.stopPropagation();
-					return;
-			}
-		},
-		{ capture: true }
-	);
 	(el as TextBoxApi).lastText = '';
 	(el as TextBoxApi).hiddenNodes = [];
 	(el as TextBoxApi).input = input;
@@ -306,14 +315,6 @@ function initializeApi(): void {
 		addKeydownFilter,
 		on
 	});
-	input.addEventListener('input', () => {
-		const val = read();
-		emit('update:modelValue', val);
-		emit('input', val);
-	});
-	input.addEventListener('change', () => emit('change', read()));
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 	write(props.modelValue);
 	if (props.disabled) disable();
 	(el as TextBoxApi)._initialized = true;
@@ -324,7 +325,28 @@ onMounted(initializeApi);
 
 <template>
 	<div ref="root" class="text-box" :class="$style.box" :id="props.id">
-		<input ref="inputEl" class="text-box-input" :class="$style.input" type="text" />
+		<input
+			ref="inputEl"
+			class="text-box-input"
+			:class="$style.input"
+			type="text"
+			@compositionstart="onCompositionStart"
+			@compositionend="onCompositionEnd"
+			@keydown.capture="onInputKeydown"
+			@input="onInput"
+			@change="onChange"
+			@focus="onFocus"
+			@blur="onBlur"
+		/>
+		<div
+			ref="closeButtonEl"
+			class="box close-button"
+			:style="{ display: closeButtonDisplay }"
+			@pointerdown.prevent.stop="onCloseButtonPointerdown"
+			@click="onCloseButtonClick"
+		>
+			&#x2716;
+		</div>
 	</div>
 </template>
 

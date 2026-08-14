@@ -1,5 +1,5 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, disable, enable, hide, read, show, write } from '@/util/element-utils';
+﻿import { $, getElementWriter } from '@/util/dom.ts';
+import { clear, disable, enable, hide, read, show } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
@@ -54,7 +54,6 @@ import { UI } from '@/ui/ui-window.ts';
 		unlockSizeInputs: null,
 		open: null,
 		close: null,
-		write: null,
 		update: null,
 		pageSwitch: null,
 		alignmentClick: null,
@@ -89,7 +88,7 @@ import { UI } from '@/ui/ui-window.ts';
 		(alignElements as unknown as HTMLElement[]).forEach((el) =>
 			(el as HTMLElement).on('click', this.alignmentClick)
 		);
-		// 18 闂佺鐭囬崒娑卞仺 input 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶閻攢magePage.vue @input 闂?UIElement.paramInput闂?
+		// 18 闂備胶顢婇惌鍥磼濞戝崬浠?input 缂?Vue 婵犵妲呴崹顏堝礈濠靛棭鐔嗘俊顖滅帛婵粍銇勯幒鍡椾壕閻熸粍婢橀崐鍧楀极瀹ュ鎹堕柣顐ゆ敘magePage.vue @input 闂?UIElement.paramInput闂?
 		const otherElements = document.querySelectorAll(`#uiElement-name,
     #uiElement-pointerEvents, #uiElement-transform-anchorX, #uiElement-transform-anchorY,
     #uiElement-transform-x, #uiElement-transform-x2, #uiElement-transform-y, #uiElement-transform-y2,
@@ -157,11 +156,9 @@ import { UI } from '@/ui/ui-window.ts';
 			this.target = node;
 
 			const write = getElementWriter('uiElement', node);
-			write('name');
 			if (node.pointerEvents) {
 				show(this.pointerEvents);
 				show(this.pointerEvents.previousElementSibling);
-				write('pointerEvents');
 			} else {
 				hide(this.pointerEvents);
 				hide(this.pointerEvents.previousElementSibling);
@@ -171,24 +168,9 @@ import { UI } from '@/ui/ui-window.ts';
 			} else {
 				this.unlockSizeInputs();
 			}
-			write('transform-anchorX');
-			write('transform-anchorY');
-			write('transform-x');
-			write('transform-x2');
-			write('transform-y');
-			write('transform-y2');
-			write('transform-width');
-			write('transform-width2');
-			write('transform-height');
-			write('transform-height2');
-			write('transform-rotation');
-			write('transform-scaleX');
-			write('transform-scaleY');
-			write('transform-skewX');
-			write('transform-skewY');
-			write('transform-opacity');
 			write('events');
 			write('scripts');
+			($('#uiImage-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -198,77 +180,6 @@ import { UI } from '@/ui/ui-window.ts';
 			clear($('#uiElement-events'));
 			clear($('#uiElement-scripts'));
 			clear($('#uiElement-parameter-pane'));
-		}
-	};
-
-	UIElement.write = function (
-		this: typeof UIElement,
-		options: {
-			anchorX?: number;
-			anchorY?: number;
-			x?: number;
-			x2?: number;
-			y?: number;
-			y2?: number;
-			width?: number;
-			width2?: number;
-			height?: number;
-			height2?: number;
-			rotation?: number;
-			scaleX?: number;
-			scaleY?: number;
-			skewX?: number;
-			skewY?: number;
-			opacity?: number;
-		}
-	) {
-		if (options.anchorX !== undefined) {
-			write($('#uiElement-transform-anchorX'), options.anchorX);
-		}
-		if (options.anchorY !== undefined) {
-			write($('#uiElement-transform-anchorY'), options.anchorY);
-		}
-		if (options.x !== undefined) {
-			write($('#uiElement-transform-x'), options.x);
-		}
-		if (options.x2 !== undefined) {
-			write($('#uiElement-transform-x2'), options.x2);
-		}
-		if (options.y !== undefined) {
-			write($('#uiElement-transform-y'), options.y);
-		}
-		if (options.y2 !== undefined) {
-			write($('#uiElement-transform-y2'), options.y2);
-		}
-		if (options.width !== undefined) {
-			write($('#uiElement-transform-width'), options.width);
-		}
-		if (options.width2 !== undefined) {
-			write($('#uiElement-transform-width2'), options.width2);
-		}
-		if (options.height !== undefined) {
-			write($('#uiElement-transform-height'), options.height);
-		}
-		if (options.height2 !== undefined) {
-			write($('#uiElement-transform-height2'), options.height2);
-		}
-		if (options.rotation !== undefined) {
-			write($('#uiElement-transform-rotation'), options.rotation);
-		}
-		if (options.scaleX !== undefined) {
-			write($('#uiElement-transform-scaleX'), options.scaleX);
-		}
-		if (options.scaleY !== undefined) {
-			write($('#uiElement-transform-scaleY'), options.scaleY);
-		}
-		if (options.skewX !== undefined) {
-			write($('#uiElement-transform-skewX'), options.skewX);
-		}
-		if (options.skewY !== undefined) {
-			write($('#uiElement-transform-skewY'), options.skewY);
-		}
-		if (options.opacity !== undefined) {
-			write($('#uiElement-transform-opacity'), options.opacity);
 		}
 	};
 
@@ -382,7 +293,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.anchorX = x
 				elements.setProperty('transform-anchorX', x);
-				write(input, x);
 			}
 			if (transform.x !== 0) {
 				const input = $('#uiElement-transform-x');
@@ -393,7 +303,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.x = 0
 				elements.setProperty('transform-x', 0);
-				write(input, 0);
 			}
 			if (transform.x2 !== x) {
 				const input = $('#uiElement-transform-x2');
@@ -404,7 +313,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.x2 = x
 				elements.setProperty('transform-x2', x);
-				write(input, x);
 			}
 		}
 		if (y !== undefined) {
@@ -417,7 +325,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.anchorY = y
 				elements.setProperty('transform-anchorY', y);
-				write(input, y);
 			}
 			if (transform.y !== 0) {
 				const input = $('#uiElement-transform-y');
@@ -428,7 +335,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.y = 0
 				elements.setProperty('transform-y', 0);
-				write(input, 0);
 			}
 			if (transform.y2 !== y) {
 				const input = $('#uiElement-transform-y2');
@@ -439,7 +345,6 @@ import { UI } from '@/ui/ui-window.ts';
 				});
 				// transform.y2 = y
 				elements.setProperty('transform-y2', y);
-				write(input, y);
 			}
 		}
 		if (changes.length !== 0) {
@@ -452,6 +357,7 @@ import { UI } from '@/ui/ui-window.ts';
 				target: UIElement.target,
 				changes: changes
 			});
+			($('#uiImage-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

@@ -111,3 +111,55 @@ describe('YMCustomBox', () => {
 		expect(el.querySelector('.custom-box-text')!.textContent).toBe('g1');
 	});
 });
+
+describe('无数据时显示 None（null/undefined/空串）', () => {
+	const parserProps = {
+		parsers: {
+			file: (value: unknown) => ({
+				text: value == null || value === '' ? 'None' : String(value)
+			}),
+			actor: (value: unknown) => ({
+				text: value == null || value === '' ? 'None' : String(value)
+			})
+		}
+	};
+
+	it('write 空串显示 None', async () => {
+		const wrapper = mount(YMCustomBox, {
+			props: { ...parserProps, type: 'file', modelValue: '' },
+			attachTo: document.body
+		});
+		await wrapper.vm.$nextTick();
+		const info = wrapper.element.querySelector('.custom-box-text') as HTMLElement;
+		expect(info.textContent).toBe('None');
+		wrapper.unmount();
+	});
+
+	it('write null/undefined 显示 None', async () => {
+		const wrapper = mount(YMCustomBox, {
+			props: { ...parserProps, type: 'actor' },
+			attachTo: document.body
+		});
+		await wrapper.vm.$nextTick();
+		const el = wrapper.element as unknown as { write(v: unknown): void };
+		el.write(null);
+		await wrapper.vm.$nextTick();
+		const info = wrapper.element.querySelector('.custom-box-text') as HTMLElement;
+		expect(info.textContent).toBe('None');
+		el.write(undefined);
+		await wrapper.vm.$nextTick();
+		expect(info.textContent).toBe('None');
+		wrapper.unmount();
+	});
+
+	it('有值时正常显示', async () => {
+		const wrapper = mount(YMCustomBox, {
+			props: { ...parserProps, type: 'file', modelValue: 'guid-1' },
+			attachTo: document.body
+		});
+		await wrapper.vm.$nextTick();
+		const info = wrapper.element.querySelector('.custom-box-text') as HTMLElement;
+		expect(info.textContent).toBe('guid-1');
+		wrapper.unmount();
+	});
+});

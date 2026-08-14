@@ -18,7 +18,7 @@
 			<div class="box" id="plugin-inspector">
 				<DetailBox id="plugin-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-					<div class="box" id="plugin-overview" ref="overviewEl">
+					<div class="box" id="plugin-overview" @update="syncOverview">
 						<PluginOverview :meta="overviewMeta" :detailed="overviewDetailed" />
 					</div>
 				</DetailBox>
@@ -52,7 +52,6 @@ import PluginOverview from '@app/components/tools/PluginOverview.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const overviewEl = ref<HTMLElement | null>(null);
 const overviewMeta = shallowRef<PluginMetaShape | null>(PluginManager.meta);
 const overviewDetailed = ref(PluginManager.detailed);
 
@@ -113,7 +112,6 @@ const onApply = () => {
 };
 
 onMounted(() => {
-	overviewEl.value?.addEventListener('update', syncOverview);
 	inspector.syncState();
 	local.syncState();
 });

@@ -1,8 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';
-import { read, write } from '@/util/element-utils.ts';
+import { read } from '@/util/element-utils.ts';
 
 {
 	interface AnimJointFrameShape {
@@ -62,14 +62,7 @@ import { read, write } from '@/util/element-utils.ts';
 			this.target = frame;
 			this.motion = Animation.motion;
 			Curve.load!(frame);
-
-			const write = getElementWriter('animJointFrame', frame);
-			write('x');
-			write('y');
-			write('rotation');
-			write('scaleX');
-			write('scaleY');
-			write('opacity');
+			($('#animJointFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -86,21 +79,7 @@ import { read, write } from '@/util/element-utils.ts';
 		this: typeof AnimJointFrame,
 		options: Record<string, unknown>
 	) {
-		if (options.x !== undefined) {
-			write($('#animJointFrame-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#animJointFrame-y'), options.y);
-		}
-		if (options.rotation !== undefined) {
-			write($('#animJointFrame-rotation'), options.rotation);
-		}
-		if (options.scaleX !== undefined) {
-			write($('#animJointFrame-scaleX'), options.scaleX);
-		}
-		if (options.scaleY !== undefined) {
-			write($('#animJointFrame-scaleY'), options.scaleY);
-		}
+		($('#animJointFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	AnimJointFrame.update = function (

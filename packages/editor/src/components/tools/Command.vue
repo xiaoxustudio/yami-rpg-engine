@@ -18,7 +18,7 @@
 			<div class="box" id="command-inspector">
 				<DetailBox id="command-overview-detail" open>
 					<DetailSummary>Overview</DetailSummary>
-				<div class="box" id="command-overview" ref="overviewEl">
+				<div class="box" id="command-overview" @update="syncOverview">
 					<PluginOverview :meta="overviewMeta" detailed />
 				</div>
 			</DetailBox>
@@ -53,7 +53,6 @@ import TreeList from '@app/components/common/TreeList.vue';
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const overviewEl = ref<HTMLElement | null>(null);
 const overviewMeta = ref<PluginMetaShape | null>(null);
 
 const syncOverview = (): void => {
@@ -117,6 +116,5 @@ const onApply = () => {
 onMounted(() => {
 	inspector.syncState();
 	local.syncState();
-	overviewEl.value?.addEventListener('update', syncOverview);
 });
 </script>

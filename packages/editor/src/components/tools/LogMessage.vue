@@ -1,5 +1,5 @@
 <template>
-	<div class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
+	<div ref="rootEl" class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
 		<log-item v-for="(item, index) in items" :key="index" :class="item.type" v-html="item.message" />
 	</div>
 </template>
@@ -16,6 +16,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
+const rootEl = ref<HTMLElement | null>(null);
 
 const update = (): void => {
 	items.value = Log.list.slice();
@@ -33,7 +34,7 @@ const onMessageClick = (event: MouseEvent): void => {
 };
 
 onMounted(() => {
-	const el = document.getElementById('log-message');
+	const el = rootEl.value;
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();

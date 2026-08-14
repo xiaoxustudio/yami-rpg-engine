@@ -55,6 +55,7 @@ const emit = defineEmits<{
 }>();
 
 const root = ref<HTMLElement | null>(null);
+const infoEl = ref<HTMLElement | null>(null);
 
 const state = reactive<{
 	dataValue: unknown;
@@ -99,9 +100,7 @@ const update = (): void => {
 
 const write = (value: unknown): void => {
 	state.dataValue = value;
-	if (value !== null && value !== undefined) {
-		update();
-	}
+	update();
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
 	if (el) {
 		if (state.writeEventEnabled) {
@@ -248,22 +247,17 @@ const drop = (event: DragEvent): void => {
 	}
 };
 
-defineExpose({ read, write, input, enable, disable, focus, on, root, initializeApi });
+defineExpose({ read, write, input, update, enable, disable, focus, on, root, initializeApi });
 
 watch(() => props.modelValue, (val) => write(val));
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
 
 function initializeApi(): void {
 	const el = root.value as (HTMLElement & { [k: string]: unknown }) | null;
-	if (!el || el._initialized) return;
+	const text = infoEl.value;
+	if (!el || !text || el._initialized) return;
 
-	const text = document.createElement('div');
-	addClass(text, 'custom-box-text');
-	addClass(text, 'text');
 	info = text;
-
-	el.appendChild(text);
-	el.tabIndex = 0;
 
 	Object.defineProperty(el, 'dataValue', {
 		configurable: true,
@@ -293,13 +287,6 @@ function initializeApi(): void {
 		drop
 	});
 
-	el.addEventListener('keydown', keydown as EventListener);
-	el.addEventListener('click', click as EventListener);
-	el.addEventListener('dragenter', dragenter as EventListener);
-	el.addEventListener('dragleave', dragleave as EventListener);
-	el.addEventListener('dragover', dragover as EventListener);
-	el.addEventListener('drop', drop as EventListener);
-
 	write(props.modelValue);
 	if (props.disabled) disable();
 };
@@ -314,7 +301,16 @@ onMounted(initializeApi);
 		:id="props.id"
 		:type="props.type || undefined"
 		:filter="props.filter || undefined"
-	/>
+		tabindex="0"
+		@keydown="keydown"
+		@click="click"
+		@dragenter="dragenter"
+		@dragleave="dragleave"
+		@dragover="dragover"
+		@drop="drop"
+	>
+		<div ref="infoEl" class="custom-box-text text" />
+	</div>
 </template>
 
 <style module>

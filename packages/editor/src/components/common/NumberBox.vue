@@ -9,6 +9,9 @@
 		:unit="props.unit"
 		:disabled="isDisabled"
 		:id="props.id"
+		@change="onChange"
+		@focus="onFocus"
+		@blur="onBlur"
 	>
 		<slot />
 	</YMNumberBox>
@@ -91,6 +94,15 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
+const onChange = (value: number): void => {
+	emit('update:modelValue', value);
+	emit('change', value);
+};
+
+const onFocus = (event: FocusEvent): void => emit('focus', event);
+
+const onBlur = (event: FocusEvent): void => emit('blur', event);
+
 defineExpose({ read, write, enable, disable, getFocus, on, root });
 
 watch(() => props.disabled, (val) => (val ? disable() : enable()));
@@ -101,12 +113,5 @@ onMounted(() => {
 	if (!el || !input) return;
 	input.history = new NumberHistory(input);
 	attachElementApi(el, { input, read, write, enable, disable, getFocus, on });
-	input.addEventListener('change', () => {
-		const val = read();
-		emit('update:modelValue', val);
-		emit('change', val);
-	});
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 });
 </script>

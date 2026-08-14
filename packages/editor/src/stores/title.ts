@@ -6,16 +6,27 @@ import { Title } from '@/title/title-bar.ts';
 export interface TitleShape {
 	theme: string | null;
 	playing: boolean;
+	maximized: boolean;
+	fullscreen: boolean;
 }
 
-export const titleStateKeys: (keyof TitleShape)[] = ['theme', 'playing'];
+export const titleStateKeys: (keyof TitleShape)[] = ['theme', 'playing', 'maximized', 'fullscreen'];
 
 export const useTitleStore = defineStore('title', () => {
 	const theme = shallowRef<string | null>(null);
 	const playing = shallowRef<boolean>(false);
+	const maximized = shallowRef<boolean>(false);
+	const fullscreen = shallowRef<boolean>(false);
 
 	function setPlaying(value: boolean) {
 		playing.value = value;
+	}
+
+	function syncState() {
+		theme.value = Title?.theme ?? null;
+		playing.value = Title?.playing ?? false;
+		maximized.value = Title?.maximized ?? false;
+		fullscreen.value = Title?.fullscreen ?? false;
 	}
 
 	function playGame() {
@@ -53,7 +64,10 @@ export const useTitleStore = defineStore('title', () => {
 	return {
 		theme,
 		playing,
+		maximized,
+		fullscreen,
 		setPlaying,
+		syncState,
 		playGame,
 		minimizeClick,
 		maximizeClick,

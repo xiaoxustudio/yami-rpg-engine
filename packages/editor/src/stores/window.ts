@@ -3,13 +3,28 @@ import { Window } from '@/tools/window-object.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 
+export const windowStateKeys = [
+	'positionMode',
+	'absolutePos',
+	'overlapRoot',
+	'activeElement'
+] as const;
+
 export const useWindowStore = defineStore('window', () => {
 	const topWindow = shallowRef<HTMLElement | null>(null);
 	const windows = shallowRef<HTMLElement[]>([]);
+	const positionMode = shallowRef<string>('center');
+	const absolutePos = shallowRef<{ x: number; y: number }>({ x: 0, y: 0 });
+	const overlapRoot = shallowRef<HTMLElement | null>(null);
+	const activeElement = shallowRef<Element | null>(null);
 
 	function syncState() {
 		topWindow.value = Window?.getTopWindow?.() ?? null;
 		windows.value = [...(Window?.frames ?? [])];
+		positionMode.value = Window?.positionMode ?? 'center';
+		absolutePos.value = Window?.absolutePos ?? { x: 0, y: 0 };
+		overlapRoot.value = Window?.overlapRoot ?? null;
+		activeElement.value = Window?.activeElement ?? null;
 	}
 
 	function getWindows(): HTMLElement[] {
@@ -75,6 +90,10 @@ export const useWindowStore = defineStore('window', () => {
 	return {
 		topWindow,
 		windows,
+		positionMode,
+		absolutePos,
+		overlapRoot,
+		activeElement,
 		syncState,
 		getWindows,
 		getTopWindow,

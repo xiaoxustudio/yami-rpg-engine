@@ -1,6 +1,6 @@
-import { $, getElementReader } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { write, getFocus } from '@/util/element-utils.ts';
+import { getFocus } from '@/util/element-utils.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
@@ -12,6 +12,11 @@ interface RegionTarget {
 	read?: () => { type: string; presetId: string };
 	input: (getter: Record<string, unknown>) => void;
 	isPluginInput?: boolean;
+}
+
+export interface RegionGetterForm {
+	type: string;
+	presetId: string;
 }
 
 export const RegionGetter: AccessorBaseShape = {
@@ -46,21 +51,26 @@ RegionGetter.open = function (this: typeof RegionGetter, target: RegionTarget) {
 			presetId = region.presetId;
 			break;
 	}
-	write($('#regionGetter-type'), region.type);
-	write($('#regionGetter-presetId'), presetId);
+	const setForm = (
+		$('#regionGetter') as
+			| (HTMLElement & { setForm?: (data: Partial<RegionGetterForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({ type: region.type, presetId });
 	getFocus($('#regionGetter-type'));
 };
 
 RegionGetter.confirm = function (this: typeof RegionGetter, event: Event) {
-	const read = getElementReader('regionGetter');
-	const type = read('type');
+	const getForm = (
+		$('#regionGetter') as (HTMLElement & { getForm?: () => RegionGetterForm }) | null
+	)?.getForm;
+	const { type, presetId } = getForm?.() ?? ({} as RegionGetterForm);
 	let getter: Record<string, unknown> | undefined;
 	switch (type) {
 		case 'trigger':
 			getter = { type };
 			break;
 		case 'by-id': {
-			const presetId = read('presetId');
 			if (presetId === '') {
 				return getFocus($('#regionGetter-presetId'));
 			}

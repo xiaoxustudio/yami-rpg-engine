@@ -158,6 +158,7 @@ const emit = defineEmits<{
 }>();
 
 const root = ref<HTMLElement | null>(null);
+const headPadRef = ref<HTMLElement | null>(null);
 
 let el: HTMLElement & { [k: string]: any } | null = null;
 
@@ -433,8 +434,8 @@ const disableInput = (el: ParamInput): void => {
 const appendHeadPad = (): void => {
 	const self = el!;
 	let { headPad } = self;
-	if (headPad === null) {
-		headPad = document.createElement('div');
+	if (headPad === null || !headPad.parentNode) {
+		headPad = headPadRef.value ?? document.createElement('div');
 		headPad.style.display = 'none';
 		self.headPad = headPad;
 	}
@@ -987,7 +988,7 @@ onMounted(() => {
 	el = self;
 	attachStateAccessors(self);
 	self.scriptList = null;
-	self.headPad = null;
+	self.headPad = headPadRef.value;
 	self.metas = [];
 	self.wraps = [];
 	self.detailBoxes = [];
@@ -1043,6 +1044,7 @@ onBeforeUnmount(() => {
 <template>
 	<div class="parameter-pane" ref="root" :id="props.id">
 		<slot />
+		<div ref="headPadRef" style="display: none"></div>
 	</div>
 </template>
 

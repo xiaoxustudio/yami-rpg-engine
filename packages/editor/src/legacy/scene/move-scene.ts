@@ -1,6 +1,11 @@
 import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus } from '@/util/element-utils';
+
+export interface SceneShiftForm {
+	x: number;
+	y: number;
+}
 
 export const SceneShift: {
 	callback: ((x: number, y: number) => void) | null;
@@ -25,8 +30,12 @@ SceneShift.initialize = function () {
 SceneShift.open = function (callback: ((x: number, y: number) => void) | null) {
 	this.callback = callback;
 	Window.open!('scene-shift');
-	write($('#scene-shift-x'), 0);
-	write($('#scene-shift-y'), 0);
+	const setForm = (
+		$('#scene-shift') as
+			| (HTMLElement & { setForm?: (data: Partial<SceneShiftForm>) => void })
+			| null
+	)?.setForm;
+	setForm?.({ x: 0, y: 0 });
 	getFocus($('#scene-shift-x'), 'all');
 };
 
@@ -35,8 +44,9 @@ SceneShift.windowClosed = function (event: Event) {
 };
 
 SceneShift.confirm = function (event: Event) {
-	const x = read($('#scene-shift-x'));
-	const y = read($('#scene-shift-y'));
+	const getForm = ($('#scene-shift') as (HTMLElement & { getForm?: () => SceneShiftForm }) | null)
+		?.getForm;
+	const { x, y } = getForm?.() ?? ({} as SceneShiftForm);
 	if (x === 0 && y === 0) {
 		return getFocus($('#scene-shift-x'));
 	}

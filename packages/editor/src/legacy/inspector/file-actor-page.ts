@@ -130,28 +130,15 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.meta = meta;
 
 			const write = getElementWriter('fileActor', actor);
-			write('portrait');
-			write('clip');
-			write('animationId');
-			write('idleMotion');
-			write('moveMotion');
 			write('sprites');
-			write('rotatable');
-			write('passage');
-			write('speed');
-			write('shape');
-			write('size');
-			write('weight');
-			write('immovable');
-			write('scale');
-			write('priority');
-			write('inherit');
 			write('attributes');
 			write('skills');
 			write('equipments');
 			write('inventory');
 			write('events');
 			write('scripts');
+
+			($('#fileActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

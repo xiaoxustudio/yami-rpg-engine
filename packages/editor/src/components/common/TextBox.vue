@@ -1,5 +1,14 @@
 <template>
-	<YMTextBox ref="ym" :model-value="props.modelValue" :disabled="isDisabled" :id="props.id" />
+	<YMTextBox
+		ref="ym"
+		:model-value="props.modelValue"
+		:disabled="isDisabled"
+		:id="props.id"
+		@input="onInput"
+		@change="onChange"
+		@focus="onFocus"
+		@blur="onBlur"
+	/>
 </template>
 
 <script setup lang="ts">
@@ -94,6 +103,17 @@ const on = (
 	options?: boolean | AddEventListenerOptions
 ): void => ym.value?.on(type, listener, options);
 
+const onInput = (value: string): void => {
+	emit('update:modelValue', value);
+	emit('input', value);
+};
+
+const onChange = (value: string): void => emit('change', value);
+
+const onFocus = (event: FocusEvent): void => emit('focus', event);
+
+const onBlur = (event: FocusEvent): void => emit('blur', event);
+
 defineExpose({
 	read,
 	write,
@@ -136,13 +156,5 @@ onMounted(() => {
 		addKeydownFilter,
 		on
 	});
-	input.addEventListener('input', () => {
-		const val = read();
-		emit('update:modelValue', val);
-		emit('input', val);
-	});
-	input.addEventListener('change', () => emit('change', read()));
-	input.addEventListener('focus', (e: FocusEvent) => emit('focus', e));
-	input.addEventListener('blur', (e: FocusEvent) => emit('blur', e));
 });
 </script>

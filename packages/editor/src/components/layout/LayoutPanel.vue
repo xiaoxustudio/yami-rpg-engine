@@ -171,13 +171,13 @@
 			<div class="page-frame" id="animation" value="animation">
 				<div class="box" id="animation-head" @pointerdown="onAnimationHeadPointerdown">
 					<div class="box" id="animation-head-start" @pointerdown="onAnimationSwitchPointerdown">
-						<div class="item toolbar-item" id="animation-switch-mark" value="mark"></div>
-						<div class="item toolbar-item" id="animation-switch-onionskin" value="onionskin" hotkey="O"></div>
-						<div class="item toolbar-item" id="animation-switch-mirror" value="mirror" hotkey="M"></div>
+						<div class="item toolbar-item" id="animation-switch-mark" value="mark" :class="{ selected: animation.showMark }"></div>
+						<div class="item toolbar-item" id="animation-switch-onionskin" value="onionskin" hotkey="O" :class="{ selected: animation.showOnionskin }"></div>
+						<div class="item toolbar-item" id="animation-switch-mirror" value="mirror" hotkey="M" :class="{ selected: animation.mirror }"></div>
 						<div class="item toolbar-item" id="animation-switch-settings" value="settings"></div>
 					</div>
 					<div class="box" id="animation-head-center">
-						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2"><div class="text label">speed:</div></NumberBox>
+						<NumberBox id="animation-speed" min="0" max="4" step="0.05" decimals="2" v-model="speedModel"><div class="text label">speed:</div></NumberBox>
 					</div>
 					<div class="box" id="animation-head-end">
 						<SliderBox
@@ -187,7 +187,7 @@
 							max="6"
 							hotkey="-/+"
 							active-wheel
-							@input="onAnimationZoomInput"
+							v-model="zoomModel"
 							@focus="onAnimationZoomFocus"
 						></SliderBox>
 					</div>
@@ -241,10 +241,10 @@
 					>
 						<div class="item toolbar-item" id="animation-timeline-previousKey" value="previousKey" hotkey="Z"></div>
 						<div class="item toolbar-item" id="animation-timeline-previous" value="previous" hotkey="Q"></div>
-						<div class="item toolbar-item" id="animation-timeline-play" value="play" hotkey="R"></div>
+						<div class="item toolbar-item" id="animation-timeline-play" value="play" hotkey="R" :class="{ playing: animation.playing }"></div>
 						<div class="item toolbar-item" id="animation-timeline-next" value="next" hotkey="E"></div>
 						<div class="item toolbar-item" id="animation-timeline-nextKey" value="nextKey" hotkey="X"></div>
-						<div class="item toolbar-item" id="animation-timeline-loop" value="loop"></div>
+						<div class="item toolbar-item" id="animation-timeline-loop" value="loop" :class="{ selected: animation.loop }"></div>
 					</div>
 					<div class="box" id="animation-timeline-ruler-outer">
 						<div class="box" id="animation-timeline-ruler-inner"></div>
@@ -385,7 +385,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref, type VNode } from 'vue';
+import { computed, h, onMounted, ref, type VNode } from 'vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
@@ -395,6 +395,7 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
+import { useAnimationStore } from '@app/stores/animation';
 import { attachElementApi } from '@/utils/attach-element-api';
 import { Scene } from '@/scene/scene-window.ts';
 import { UI } from '@/ui/ui-window.ts';
@@ -858,6 +859,22 @@ const dirs = ref<string[]>([]);
 const direction = ref(-1);
 const dirListEl = ref<HTMLElement | null>(null);
 
+const animation = useAnimationStore();
+
+const speedModel = computed<number>({
+	get: () => animation.speed ?? 0,
+	set: (value: number) => {
+		animation.setSpeed(value);
+	}
+});
+
+const zoomModel = computed<number>({
+	get: () => animation.zoom ?? 0,
+	set: (value: number) => {
+		animation.setZoom(value);
+	}
+});
+
 const setDirItems = (items: string[], selected: number): void => {
 	dirs.value = items;
 	direction.value = selected;
@@ -983,9 +1000,6 @@ const onAnimationHeadPointerdown = (event: PointerEvent) => {
 };
 const onAnimationSwitchPointerdown = (event: PointerEvent) => {
 	Animation?.switchPointerdown?.(event);
-};
-const onAnimationZoomInput = (value: number) => {
-	Animation?.setZoom?.(value);
 };
 const onAnimationZoomFocus = () => {
 	Animation?.zoomFocus?.();

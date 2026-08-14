@@ -6,11 +6,13 @@ describe('useTitleStore（Title 状态桥接）', () => {
 		const store = getTitleStore();
 		expect(store.theme).toBe(null);
 		expect(store.playing).toBe(false);
+		expect(store.maximized).toBe(false);
+		expect(store.fullscreen).toBe(false);
 	});
 
-	it('状态键完整（2 项）', () => {
+	it('状态键完整（4 项）', () => {
 		const store = getTitleStore();
-		expect(titleStateKeys).toHaveLength(2);
+		expect(titleStateKeys).toHaveLength(4);
 		for (const key of titleStateKeys) {
 			expect(key in store, String(key)).toBe(true);
 		}
@@ -29,6 +31,25 @@ describe('useTitleStore（Title 状态桥接）', () => {
 		expect(store.playing).toBe(true);
 		store.setPlaying(false);
 		expect(store.playing).toBe(false);
+	});
+
+	it('maximized/fullscreen 直接赋值读回', () => {
+		const store = getTitleStore();
+		store.maximized = true;
+		expect(store.maximized).toBe(true);
+		store.fullscreen = true;
+		expect(store.fullscreen).toBe(true);
+		store.maximized = false;
+		store.fullscreen = false;
+	});
+
+	it('无 Title 时 syncState 兜底默认值', () => {
+		const store = getTitleStore();
+		store.syncState();
+		expect(store.theme).toBe(null);
+		expect(store.playing).toBe(false);
+		expect(store.maximized).toBe(false);
+		expect(store.fullscreen).toBe(false);
 	});
 
 	it('桥方法存在且惰性可调用（jsdom 下 Title 未挂载，可选链安全）', () => {

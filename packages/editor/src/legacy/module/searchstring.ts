@@ -30,6 +30,7 @@ export const SearchString = new (class {
 	searchMode: SearchMode = { caseInsensitive: false, regex: false, matchLine: false };
 	private _bound = false;
 	private bindButtons() {
+		getSearchStringStore().syncState();
 		if (this._bound) return;
 		const win = $('#event-search-string');
 		if (!win) return;
@@ -54,7 +55,7 @@ export const SearchString = new (class {
 		);
 	}
 	change(mode: keyof SearchMode, e: Event) {
-		this.searchMode[mode] = read(e.target as HTMLElement);
+		this.searchMode = { ...this.searchMode, [mode]: read(e.target as HTMLElement) };
 		switch (mode) {
 			case 'caseInsensitive':
 				if (this.searchMode[mode]) {
@@ -169,3 +170,16 @@ export const SearchString = new (class {
 		this.log!.textContent = String(this.lastArr.length);
 	}
 })();
+
+const searchStringBridgeKeys = ['index', 'searchMode'] as const;
+import { getSearchStringStore } from '@app/stores/searchString';
+
+for (const key of searchStringBridgeKeys) {
+	Object.defineProperty(SearchString, key, {
+		get: () => getSearchStringStore()[key],
+		set: (value: any) => {
+			(getSearchStringStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

@@ -1,7 +1,7 @@
 ﻿<template>
-	<div class="file-head-pane" ref="el">
-		<div class="file-head-address" ref="addressEl"></div>
-		<div ref="backEl" class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton">{{ '\uf0a8' }}</div>
+	<div class="file-head-pane" ref="el" @pointerdown="pointerdown">
+		<div class="file-head-address" ref="addressEl" @pointerdown="addressPointerdown"></div>
+		<div class="item upper-level-directory" name="back" hotkey="Escape/MouseBackButton" @click="backButtonClick">{{ '\uf0a8' }}</div>
 		<YMTextBox ref="searcherEl" class="file-head-searcher" name="search"></YMTextBox>
 		<YMSliderBox ref="viewEl" class="file-head-view" name="view" hotkey="Ctrl+Wheel"></YMSliderBox>
 	</div>
@@ -81,7 +81,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const el = ref<HTMLElement>();
 const addressEl = ref<HTMLElement & { clear(): HTMLElement; appendChild(n: Node): Node }>();
-const backEl = ref<HTMLElement & { addClass(c: string): void; name: string }>();
 const searcherEl = ref<{
 	root: HTMLElement & { input: HTMLInputElement; addCloseButton(): void };
 	input: HTMLInputElement;
@@ -287,7 +286,6 @@ onMounted(() => {
 	root.view = viewEl.value!.root;
 	root.searcher = searcherEl.value!.root;
 	root.address = addressEl.value;
-	root.addEventListener('pointerdown', pointerdown);
 	searcherEl.value?.root?.addCloseButton?.();
 	searcherEl.value?.root?.addEventListener?.('input', searcherInput);
 	searcherEl.value?.root?.addEventListener?.('compositionend', searcherInput);
@@ -308,8 +306,6 @@ onMounted(() => {
 		viewRoot.addEventListener('focus', viewFocus);
 		viewRoot.addEventListener('input', viewInput);
 	}
-	addressEl.value?.addEventListener?.('pointerdown', addressPointerdown as EventListener);
-	backEl.value?.addEventListener?.('click', backButtonClick);
 });
 
 defineExpose({ updateAddress, el });

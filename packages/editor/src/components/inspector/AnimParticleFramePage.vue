@@ -9,6 +9,7 @@
 			>
 				<NumberBox
 					id="animParticleFrame-x"
+					v-model="form.x"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -16,6 +17,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-y"
+					v-model="form.y"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -29,6 +31,7 @@
 			>
 				<NumberBox
 					id="animParticleFrame-rotation"
+					v-model="form.rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
@@ -42,6 +45,7 @@
 			>
 				<NumberBox
 					id="animParticleFrame-scaleX"
+					v-model="form.scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -49,6 +53,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animParticleFrame-scaleY"
+					v-model="form.scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -62,6 +67,7 @@
 			>
 				<NumberBox
 					id="animParticleFrame-opacity"
+					v-model="form.opacity"
 					min="0"
 					max="1"
 					step="0.05"
@@ -71,6 +77,7 @@
 			<div class="text">{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</div
 			><NumberBox
 				id="animParticleFrame-scale"
+				v-model="form.scale"
 				min="0.1"
 				max="10"
 				step="0.1"
@@ -79,6 +86,7 @@
 			<div class="text">{{ local.getLabel('animParticleFrame-speed') || 'Speed' }}</div
 			><NumberBox
 				id="animParticleFrame-speed"
+				v-model="form.speed"
 				min="0.1"
 				max="10"
 				step="0.1"
@@ -89,23 +97,65 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { Inspector } from '@/inspector/inspector.ts';
 import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
+interface AnimParticleFrameForm {
+	x: number;
+	y: number;
+	rotation: number;
+	scaleX: number;
+	scaleY: number;
+	opacity: number;
+	scale: number;
+	speed: number;
+}
+
+const FORM_KEYS: (keyof AnimParticleFrameForm)[] = [
+	'x',
+	'y',
+	'rotation',
+	'scaleX',
+	'scaleY',
+	'opacity',
+	'scale',
+	'speed'
+];
+
 const animation = useAnimationStore();
 const local = useLocalStore();
+
+const form = reactive<Partial<AnimParticleFrameForm>>({});
+
+const sync = (): void => {
+	const target = Inspector?.animParticleFrame?.target as
+		| Partial<AnimParticleFrameForm>
+		| null
+		| undefined;
+	if (!target) return;
+	for (const key of FORM_KEYS) {
+		form[key] = target[key];
+	}
+};
 
 const onParamInput = (event: Event) => {
 	const target = event?.target ?? document.activeElement;
 	Inspector?.animParticleFrame?.paramInput?.({ target });
+	sync();
 };
 
 onMounted(() => {
+	const el = document.getElementById('animParticleFrame-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 	animation.syncState();
 	local.syncState();
 });

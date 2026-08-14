@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
@@ -36,6 +36,43 @@ interface SetStringOperand {
 	format: string;
 	width: number;
 	height: number;
+}
+
+export interface SetStringForm {
+	variable: { type: string; key: string };
+	operation: string;
+	operandType: string;
+	commonValue: string;
+	stringMethod: string;
+	commonVariable: { type: string; key: string };
+	stringCharIndex: number;
+	stringSliceBegin: number;
+	stringSliceEnd: number;
+	stringPadStartLength: number;
+	stringPadStartPad: string;
+	stringReplacePattern: string;
+	stringReplaceReplacement: string;
+	attributeId: string;
+	enumStringId: string;
+	objectProperty: string;
+	elementProperty: string;
+	elementElement: { type: string };
+	commonActor: { type: string };
+	commonSkill: { type: string };
+	commonTrigger: { type: string };
+	commonState: { type: string };
+	commonEquipment: { type: string };
+	commonItem: { type: string };
+	objectFileId: string;
+	listIndex: number;
+	parameterKey: string;
+	script: string;
+	otherData: string;
+	showChoicesIndex: number;
+	parseTimestampVariable: { type: string; key: string };
+	parseTimestampFormat: string;
+	screenshotWidth: number;
+	screenshotHeight: number;
 }
 
 Command.cases.setString = new CommandSchema({
@@ -547,61 +584,70 @@ Command.cases.setString = new CommandSchema({
 				screenshotHeight = operand.height ?? screenshotHeight;
 				break;
 		}
-		const write = getElementWriter('setString');
-		write('variable', variable);
-		write('operation', operation);
-		write('operand-type', operand.type);
-		write('operand-common-value', commonValue);
-		write('operand-string-method', stringMethod);
-		write('operand-common-variable', commonVariable);
-		write('operand-string-char-index', stringCharIndex);
-		write('operand-string-slice-begin', stringSliceBegin);
-		write('operand-string-slice-end', stringSliceEnd);
-		write('operand-string-pad-start-length', stringPadStartLength);
-		write('operand-string-pad-start-pad', stringPadStartPad);
-		write('operand-string-replace-pattern', stringReplacePattern);
-		write('operand-string-replace-replacement', stringReplaceReplacement);
-		write('operand-attribute-attributeId', attributeId);
-		write('operand-enum-stringId', enumStringId);
-		write('operand-object-property', objectProperty);
-		write('operand-element-property', elementProperty);
-		write('operand-element-element', elementElement);
-		write('operand-common-actor', commonActor);
-		write('operand-common-skill', commonSkill);
-		write('operand-common-trigger', commonTrigger);
-		write('operand-common-state', commonState);
-		write('operand-common-equipment', commonEquipment);
-		write('operand-common-item', commonItem);
-		write('operand-object-fileId', objectFileId);
-		write('operand-list-index', listIndex);
-		write('operand-parameter-key', parameterKey);
-		write('operand-script', script);
-		write('operand-other-data', otherData);
-		write('operand-showChoices-content-choiceIndex', showChoicesIndex);
-		write('operand-parse-timestamp-variable', parseTimestampVariable);
-		write('operand-parse-timestamp-format', parseTimestampFormat);
-		write('operand-screenshot-width', screenshotWidth);
-		write('operand-screenshot-height', screenshotHeight);
+		const setForm = (
+			$('#setString') as
+				| (HTMLElement & { setForm?: (data: Partial<SetStringForm>) => void })
+				| null
+		)?.setForm;
+		setForm?.({
+			variable: variable as { type: string; key: string },
+			operation,
+			operandType: operand.type,
+			commonValue,
+			stringMethod,
+			commonVariable,
+			stringCharIndex,
+			stringSliceBegin,
+			stringSliceEnd,
+			stringPadStartLength,
+			stringPadStartPad,
+			stringReplacePattern,
+			stringReplaceReplacement,
+			attributeId,
+			enumStringId,
+			objectProperty,
+			elementProperty,
+			elementElement,
+			commonActor,
+			commonSkill,
+			commonTrigger,
+			commonState,
+			commonEquipment,
+			commonItem,
+			objectFileId,
+			listIndex,
+			parameterKey,
+			script,
+			otherData,
+			showChoicesIndex,
+			parseTimestampVariable,
+			parseTimestampFormat,
+			screenshotWidth,
+			screenshotHeight
+		});
 		getFocus($('#setString-variable'));
 	},
 	customSave() {
-		const read = getElementReader('setString');
-		const variable = read('variable');
+		const getForm = (
+			$('#setString') as (HTMLElement & { getForm?: () => SetStringForm }) | null
+		)?.getForm;
+		const form = getForm?.() ?? ({} as SetStringForm);
+		const variable = form.variable;
 		if (VariableGetter.isNone!(variable)) {
 			return getFocus($('#setString-variable'));
 		}
-		const operation = read('operation');
-		const type = read('operand-type');
+		const operation = form.operation;
+		const type = form.operandType;
 		let operand;
 		switch (type) {
 			case 'constant':
 			case 'template': {
-				const value = read('operand-common-value');
+				const value = form.commonValue;
 				operand = { type, value };
 				break;
 			}
 			case 'variable': {
-				const variable = read('operand-common-variable');
+				const variable = form.commonVariable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setString-operand-common-variable'));
 				}
@@ -609,36 +655,36 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'string': {
-				const method = read('operand-string-method');
-				const variable = read('operand-common-variable');
+				const method = form.stringMethod;
+				const variable = form.commonVariable;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setString-operand-common-variable'));
 				}
 				switch (method) {
 					case 'char': {
-						const index = read('operand-string-char-index');
+						const index = form.stringCharIndex;
 						operand = { type, method, variable, index };
 						break;
 					}
 					case 'slice': {
-						const begin = read('operand-string-slice-begin');
-						const end = read('operand-string-slice-end');
+						const begin = form.stringSliceBegin;
+						const end = form.stringSliceEnd;
 						operand = { type, method, variable, begin, end };
 						break;
 					}
 					case 'pad-start': {
-						const length = read('operand-string-pad-start-length');
-						const pad = read('operand-string-pad-start-pad');
+						const length = form.stringPadStartLength;
+						const pad = form.stringPadStartPad;
 						operand = { type, method, variable, length, pad };
 						break;
 					}
 					case 'replace':
 					case 'replace-all': {
-						const pattern = read('operand-string-replace-pattern');
+						const pattern = form.stringReplacePattern;
 						if (pattern === '') {
 							return getFocus($('#setString-operand-string-replace-pattern'));
 						}
-						const replacement = read('operand-string-replace-replacement');
+						const replacement = form.stringReplaceReplacement;
 						operand = {
 							type,
 							method,
@@ -652,7 +698,7 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'attribute': {
-				const attributeId = read('operand-attribute-attributeId');
+				const attributeId = form.attributeId;
 				if (attributeId === '') {
 					return getFocus($('#setString-operand-attribute-attributeId'));
 				}
@@ -660,7 +706,7 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'enum': {
-				const stringId = read('operand-enum-stringId');
+				const stringId = form.enumStringId;
 				if (stringId === '') {
 					return getFocus($('#setString-operand-enum-stringId'));
 				}
@@ -668,43 +714,43 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'object': {
-				const property = read('operand-object-property');
+				const property = form.objectProperty;
 				switch (property) {
 					case 'actor-team-id':
 					case 'actor-file-id':
 					case 'actor-animation-motion-name': {
-						const actor = read('operand-common-actor');
+						const actor = form.commonActor;
 						operand = { type, property, actor };
 						break;
 					}
 					case 'skill-file-id': {
-						const skill = read('operand-common-skill');
+						const skill = form.commonSkill;
 						operand = { type, property, skill };
 						break;
 					}
 					case 'trigger-file-id': {
-						const trigger = read('operand-common-trigger');
+						const trigger = form.commonTrigger;
 						operand = { type, property, trigger };
 						break;
 					}
 					case 'state-file-id': {
-						const state = read('operand-common-state');
+						const state = form.commonState;
 						operand = { type, property, state };
 						break;
 					}
 					case 'equipment-file-id':
 					case 'equipment-slot': {
-						const equipment = read('operand-common-equipment');
+						const equipment = form.commonEquipment;
 						operand = { type, property, equipment };
 						break;
 					}
 					case 'item-file-id': {
-						const item = read('operand-common-item');
+						const item = form.commonItem;
 						operand = { type, property, item };
 						break;
 					}
 					case 'file-id': {
-						const fileId = read('operand-object-fileId');
+						const fileId = form.objectFileId;
 						if (fileId === '') {
 							return getFocus($('#setString-operand-object-fileId'));
 						}
@@ -715,14 +761,14 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'element': {
-				const property = read('operand-element-property');
-				const element = read('operand-element-element');
+				const property = form.elementProperty;
+				const element = form.elementElement;
 				operand = { type, property, element };
 				break;
 			}
 			case 'list': {
-				const variable = read('operand-common-variable');
-				const index = read('operand-list-index');
+				const variable = form.commonVariable;
+				const index = form.listIndex;
 				if (VariableGetter.isNone!(variable)) {
 					return getFocus($('#setString-operand-common-variable'));
 				}
@@ -730,7 +776,7 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'parameter': {
-				const key = read('operand-parameter-key');
+				const key = form.parameterKey;
 				if (key === '') {
 					return getFocus($('#setString-operand-parameter-key'));
 				}
@@ -738,7 +784,7 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'script': {
-				const script = read('operand-script').trim();
+				const script = form.script.trim();
 				if (script === '') {
 					return getFocus($('#setString-operand-script'));
 				}
@@ -746,16 +792,16 @@ Command.cases.setString = new CommandSchema({
 				break;
 			}
 			case 'other': {
-				const data = read('operand-other-data');
+				const data = form.otherData;
 				switch (data) {
 					case 'showChoices-content': {
-						const choiceIndex = read('operand-showChoices-content-choiceIndex');
+						const choiceIndex = form.showChoicesIndex;
 						operand = { type, data, choiceIndex };
 						break;
 					}
 					case 'parse-timestamp': {
-						const variable = read('operand-parse-timestamp-variable');
-						const format = read('operand-parse-timestamp-format');
+						const variable = form.parseTimestampVariable;
+						const format = form.parseTimestampFormat;
 						if (VariableGetter.isNone!(variable)) {
 							return getFocus($('#setString-operand-parse-timestamp-variable'));
 						}
@@ -763,8 +809,8 @@ Command.cases.setString = new CommandSchema({
 						break;
 					}
 					case 'screenshot': {
-						const width = read('operand-screenshot-width');
-						const height = read('operand-screenshot-height');
+						const width = form.screenshotWidth;
+						const height = form.screenshotHeight;
 						operand = { type, data, width, height };
 						break;
 					}

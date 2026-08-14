@@ -1,7 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import type { TextSuggestionTarget } from '@/command/text-tip.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus } from '@/util/element-utils';
 import { ctrl } from '@/util/event-accessors.ts';
 import { TextSuggestion } from '@/command/text-tip.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
@@ -49,6 +49,40 @@ interface ColorProxy {
 interface ColorController {
 	proxy: ColorProxy;
 	open(params?: { color?: string }): void;
+}
+
+export interface FontForm {
+	font: string;
+}
+
+export interface FontSizeForm {
+	size: number;
+}
+
+export interface TextPositionForm {
+	axis: string;
+	operation: string;
+	value: number;
+}
+
+export interface TextEffectForm {
+	type: string;
+	shadowOffsetX: number;
+	shadowOffsetY: number;
+	strokeWidth: number;
+	color: string;
+}
+
+export interface InsertImageForm {
+	mode: string;
+	image: string;
+	clip: number[];
+	width: number;
+	height: number;
+}
+
+export interface LocalVariableForm {
+	key: string;
 }
 
 interface VariableProxy {
@@ -643,11 +677,14 @@ Selection.color = {
 Selection.font = {
 	open: function ({ font = 'sans-serif' } = {}) {
 		Window.open!('font');
-		write($('#font-font'), font);
+		($('#font') as (HTMLElement & { setForm?: (data: Partial<FontForm>) => void }) | null)
+			?.setForm?.({ font });
 		getFocus($('#font-font'), 'all');
 	},
 	confirm: function (event: Event) {
-		const font = read($('#font-font'));
+		const getForm = ($('#font') as (HTMLElement & { getForm?: () => FontForm }) | null)
+			?.getForm;
+		const { font } = getForm?.() ?? ({} as FontForm);
 		if (!font) {
 			return getFocus($('#font-font'), 'all');
 		}
@@ -680,11 +717,17 @@ Selection.bold = {
 Selection.fontSize = {
 	open: function ({ size = 12 } = {}) {
 		Window.open!('fontSize');
-		write($('#fontSize-size'), size);
+		(
+			$('#fontSize') as
+				| (HTMLElement & { setForm?: (data: Partial<FontSizeForm>) => void })
+				| null
+		)?.setForm?.({ size });
 		getFocus($('#fontSize-size'), 'all');
 	},
 	confirm: function (event: Event) {
-		const size = read($('#fontSize-size'));
+		const getForm = ($('#fontSize') as (HTMLElement & { getForm?: () => FontSizeForm }) | null)
+			?.getForm;
+		const { size } = getForm?.() ?? ({} as FontSizeForm);
 		Selection.wrap!({
 			prefix: `<size:${size}>`,
 			suffix: '</size>'
@@ -706,14 +749,17 @@ Selection.textPosition = {
 	},
 	open: function ({ axis = 'x', operation = 'set', value = 0 } = {}) {
 		Window.open!('textPosition');
-		write($('#textPosition-axis'), axis);
-		write($('#textPosition-operation'), operation);
-		write($('#textPosition-value'), value);
+		(
+			$('#textPosition') as
+				| (HTMLElement & { setForm?: (data: Partial<TextPositionForm>) => void })
+				| null
+		)?.setForm?.({ axis, operation, value });
 	},
 	confirm: function (event: Event) {
-		const axis = read($('#textPosition-axis'));
-		const operation = read($('#textPosition-operation'));
-		const value = read($('#textPosition-value'));
+		const getForm = (
+			$('#textPosition') as (HTMLElement & { getForm?: () => TextPositionForm }) | null
+		)?.getForm;
+		const { axis, operation, value } = getForm?.() ?? ({} as TextPositionForm);
 		let string;
 		switch (operation) {
 			case 'set':
@@ -764,30 +810,31 @@ Selection.textEffect = {
 		color = '000000ff'
 	} = {}) {
 		Window.open!('textEffect');
-		write($('#textEffect-type'), type);
-		write($('#textEffect-shadowOffsetX'), shadowOffsetX);
-		write($('#textEffect-shadowOffsetY'), shadowOffsetY);
-		write($('#textEffect-strokeWidth'), strokeWidth);
-		write($('#textEffect-color'), color);
+		(
+			$('#textEffect') as
+				| (HTMLElement & { setForm?: (data: Partial<TextEffectForm>) => void })
+				| null
+		)?.setForm?.({ type, shadowOffsetX, shadowOffsetY, strokeWidth, color });
 	},
 	confirm: function (event: Event) {
-		const type = read($('#textEffect-type'));
-		const color = Color.simplifyHexColor(read($('#textEffect-color')));
+		const getForm = (
+			$('#textEffect') as (HTMLElement & { getForm?: () => TextEffectForm }) | null
+		)?.getForm;
+		const { type, shadowOffsetX, shadowOffsetY, strokeWidth, color } =
+			getForm?.() ?? ({} as TextEffectForm);
+		const hexColor = Color.simplifyHexColor(color);
 		let string;
 		switch (type) {
 			case 'shadow': {
-				const shadowOffsetX = read($('#textEffect-shadowOffsetX'));
-				const shadowOffsetY = read($('#textEffect-shadowOffsetY'));
-				string = `${shadowOffsetX},${shadowOffsetY},${color}`;
+				string = `${shadowOffsetX},${shadowOffsetY},${hexColor}`;
 				break;
 			}
 			case 'stroke': {
-				const strokeWidth = read($('#textEffect-strokeWidth'));
-				string = `${strokeWidth},${color}`;
+				string = `${strokeWidth},${hexColor}`;
 				break;
 			}
 			case 'outline':
-				string = `${color}`;
+				string = `${hexColor}`;
 				break;
 		}
 		Selection.wrap!({
@@ -841,15 +888,19 @@ Selection.image = {
 		height = 64
 	} = {}) {
 		Window.open!('insertImage');
-		write($('#insertImage-mode'), mode);
-		write($('#insertImage-image'), image);
-		write($('#insertImage-clip'), clip);
-		write($('#insertImage-width'), width);
-		write($('#insertImage-height'), height);
+		(
+			$('#insertImage') as
+				| (HTMLElement & { setForm?: (data: Partial<InsertImageForm>) => void })
+				| null
+		)?.setForm?.({ mode, image, clip, width, height });
 	},
 	confirm: function (event: Event) {
-		const mode = read($('#insertImage-mode'));
-		const image = read($('#insertImage-image'));
+		const getForm = (
+			$('#insertImage') as (HTMLElement & { getForm?: () => InsertImageForm }) | null
+		)?.getForm;
+		const form = getForm?.() ?? ({} as InsertImageForm);
+		const { mode, image, width, height } = form;
+		const clip = form.clip ?? [0, 0, 64, 64];
 		if (image === '') return getFocus($('#insertImage-image'));
 		let string;
 		switch (mode) {
@@ -857,20 +908,14 @@ Selection.image = {
 				string = image;
 				break;
 			case 'image-size': {
-				const width = read($('#insertImage-width'));
-				const height = read($('#insertImage-height'));
 				string = `${image},${width},${height}`;
 				break;
 			}
 			case 'image-clip': {
-				const clip = read($('#insertImage-clip'));
 				string = `${image},${clip[0]},${clip[1]},${clip[2]},${clip[3]}`;
 				break;
 			}
 			case 'image-clip-size': {
-				const clip = read($('#insertImage-clip'));
-				const width = read($('#insertImage-width'));
-				const height = read($('#insertImage-height'));
 				string = `${image},${clip[0]},${clip[1]},${clip[2]},${clip[3]},${width},${height}`;
 				break;
 			}
@@ -893,11 +938,18 @@ Selection.localVariable = {
 	},
 	open: function ({ key = '' } = {}) {
 		Window.open!('localVariable');
-		write($('#localVariable-key'), key);
+		(
+			$('#localVariable') as
+				| (HTMLElement & { setForm?: (data: Partial<LocalVariableForm>) => void })
+				| null
+		)?.setForm?.({ key });
 		getFocus($('#localVariable-key'), 'all');
 	},
 	confirm: function (event: Event) {
-		const key = read($('#localVariable-key'));
+		const getForm = (
+			$('#localVariable') as (HTMLElement & { getForm?: () => LocalVariableForm }) | null
+		)?.getForm;
+		const { key } = getForm?.() ?? ({} as LocalVariableForm);
 		if (!key) {
 			return getFocus($('#localVariable-key'), 'all');
 		}

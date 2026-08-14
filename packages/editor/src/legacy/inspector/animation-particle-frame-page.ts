@@ -1,8 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';
-import { read, write } from '@/util/element-utils.ts';
+import { read } from '@/util/element-utils.ts';
 
 {
 	interface AnimParticleFrameShape {
@@ -68,16 +68,7 @@ import { read, write } from '@/util/element-utils.ts';
 			this.target = frame;
 			this.motion = Animation.motion;
 			Curve.load!(frame);
-
-			const write = getElementWriter('animParticleFrame', frame);
-			write('x');
-			write('y');
-			write('rotation');
-			write('scaleX');
-			write('scaleY');
-			write('opacity');
-			write('scale');
-			write('speed');
+			($('#animParticleFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -94,21 +85,7 @@ import { read, write } from '@/util/element-utils.ts';
 		this: typeof AnimParticleFrame,
 		options: Record<string, unknown>
 	) {
-		if (options.x !== undefined) {
-			write($('#animParticleFrame-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#animParticleFrame-y'), options.y);
-		}
-		if (options.rotation !== undefined) {
-			write($('#animParticleFrame-rotation'), options.rotation);
-		}
-		if (options.scaleX !== undefined) {
-			write($('#animParticleFrame-scaleX'), options.scaleX);
-		}
-		if (options.scaleY !== undefined) {
-			write($('#animParticleFrame-scaleY'), options.scaleY);
-		}
+		($('#animParticleFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	AnimParticleFrame.update = function (

@@ -1,5 +1,13 @@
 <template>
-	<YMSelectVar ref="ym" :items="props.items" :model-value="props.modelValue" :popup="false" :id="props.id">
+	<YMSelectVar
+		ref="ym"
+		:items="props.items"
+		:model-value="props.modelValue"
+		:popup="false"
+		:id="props.id"
+		@pointerdown="onPointerdown"
+		@keydown="onKeydown"
+	>
 		<template #variable>
 			<CustomBox
 				ref="varBoxRef"
@@ -88,6 +96,22 @@ const on = (
 ): void => ym.value?.on(type, listener, options);
 const loadItems = (items: unknown[]): void => ym.value?.loadItems(items);
 
+const onPointerdown = (event: PointerEvent): void => {
+	const el = root.value;
+	if (!el) return;
+	if (event.button !== 0 || event.target === el) return;
+	const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+	if (selectBox) Select.open(selectBox);
+};
+
+const onKeydown = (event: KeyboardEvent): void => {
+	if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
+		event.stopPropagation();
+		const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
+		if (selectBox) Select.open(selectBox);
+	}
+};
+
 defineExpose({ read, write, switch: switchMode, enable, disable, getFocus, on, loadItems, root });
 
 const api = {
@@ -146,18 +170,6 @@ onMounted(() => {
 	);
 	watch(varBoxRef, (val) => {
 		api.varBox = getChildRoot(val);
-	});
-	el.addEventListener('pointerdown', (event: PointerEvent) => {
-		if (event.button !== 0 || event.target === el) return;
-		const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-		if (selectBox) Select.open(selectBox);
-	});
-	el.addEventListener('keydown', (event: KeyboardEvent) => {
-		if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
-			event.stopPropagation();
-			const selectBox = (ym.value?.root?.querySelector('.select-box') as HTMLElement) ?? null;
-			if (selectBox) Select.open(selectBox);
-		}
 	});
 	if (props.modelValue !== null && props.modelValue !== undefined) {
 		write(props.modelValue);

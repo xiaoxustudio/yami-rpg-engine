@@ -444,6 +444,7 @@ function bindListMethods() {
 }
 
 EventEditor.initialize = function (this: EventEditorShape) {
+	getEventEditorStore().syncState();
 	ensureDomBound();
 	const { list } = this;
 	if (!list || this._initialized) return;
@@ -1519,3 +1520,16 @@ EventEditor.apply = function (this: EventEditorShape, event: Event) {
 		}
 	}
 }.bind(EventEditor);
+
+const eventEditorBridgeKeys = ['closing'] as const;
+import { getEventEditorStore } from '@app/stores/eventEditor';
+
+for (const key of eventEditorBridgeKeys) {
+	Object.defineProperty(EventEditor, key, {
+		get: () => getEventEditorStore()[key],
+		set: (value: any) => {
+			(getEventEditorStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

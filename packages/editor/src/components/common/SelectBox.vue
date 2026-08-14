@@ -6,6 +6,10 @@
 		:disabled="isDisabled"
 		:popup="false"
 		:id="props.id"
+		@open="onOpen"
+		@input="onInput"
+		@write="onWrite"
+		@change="onChange"
 	/>
 </template>
 
@@ -13,7 +17,6 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMSelectBox } from '@ui-kit';
 import {
-	on as onElement,
 	setTooltip as setTooltipElement,
 	dispatchChangeEvent
 } from '@/util/element-utils';
@@ -185,6 +188,19 @@ const openSelect = (): void => {
 	Select.open(el);
 };
 
+const onOpen = (): void => {
+	openSelect();
+};
+
+const onInput = (value: unknown): void => {
+	emit('input', value);
+	emit('update:modelValue', value);
+};
+
+const onWrite = (value: unknown): void => emit('write', value);
+
+const onChange = (value: unknown): void => emit('change', value);
+
 defineExpose({
 	read,
 	write,
@@ -216,7 +232,6 @@ watch(() => props.disabled, (val) => (val ? disable() : enable()));
 onMounted(() => {
 	const el = root.value as SelectBoxElement | null;
 	if (!el) return;
-	el.tabIndex = 0;
 	attachElementApi(el, {
 		read,
 		write,
@@ -241,44 +256,7 @@ onMounted(() => {
 		disableElement,
 		on
 	});
-	onElement(el, 'keydown', (event: KeyboardEvent) => {
-		switch (event.code) {
-			case 'Enter':
-			case 'NumpadEnter':
-				if (!(event.ctrlKey || event.metaKey)) {
-					event.stopPropagation();
-					Select.open(el);
-				}
-				break;
-			case 'ArrowUp':
-				event.preventDefault();
-				event.stopPropagation();
-				reselect(-1);
-				break;
-			case 'ArrowDown':
-				event.preventDefault();
-				event.stopPropagation();
-				reselect(1);
-				break;
-		}
-	});
-	on('input', (e: Event & { value?: unknown }) => {
-		emit('input', e.value);
-		emit('update:modelValue', e.value);
-	});
-	on('write', (e: Event & { value?: unknown }) => emit('write', e.value));
-	el.addEventListener('change', () => emit('change', read()));
 	dispatchChangeEvent(el);
 	if (props.disabled) disable();
-	el.addEventListener('pointerdown', (event: PointerEvent) => {
-		if (event.button !== 0 || isDisabled.value) return;
-		Select.open(el);
-	});
-	el.addEventListener('keydown', (event: KeyboardEvent) => {
-		if ((event.code === 'Enter' || event.code === 'NumpadEnter') && !(event.ctrlKey || event.metaKey)) {
-			event.stopPropagation();
-			Select.open(el);
-		}
-	});
 });
 </script>

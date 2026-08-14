@@ -1,10 +1,10 @@
-<template>
+﻿<template>
 	<DetailBox id="uiElement-general-group" open>
 		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
-			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</div
-			><SelectBox id="uiElement-pointerEvents" @input="onParamInput"></SelectBox>
+			><SelectBox id="uiElement-pointerEvents" v-model="form.pointerEvents" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-transform-group" open>
@@ -61,14 +61,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-anchorX"
+					id="uiElement-transform-anchorX" v-model="form.anchorX"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-anchorY"
+					id="uiElement-transform-anchorY" v-model="form.anchorY"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -81,14 +81,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-x"
+					id="uiElement-transform-x" v-model="form.x"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-x2"
+					id="uiElement-transform-x2" v-model="form.x2"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -102,14 +102,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-y"
+					id="uiElement-transform-y" v-model="form.y"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-y2"
+					id="uiElement-transform-y2" v-model="form.y2"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -123,14 +123,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-width"
+					id="uiElement-transform-width" v-model="form.width"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-width2"
+					id="uiElement-transform-width2" v-model="form.width2"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -144,14 +144,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-height"
+					id="uiElement-transform-height" v-model="form.height"
 					min="-10000"
 					max="10000"
 					decimals="4"
 					unit="px" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-height2"
+					id="uiElement-transform-height2" v-model="form.height2"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -165,7 +165,7 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-rotation"
+					id="uiElement-transform-rotation" v-model="form.rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
@@ -178,14 +178,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-scaleX"
+					id="uiElement-transform-scaleX" v-model="form.scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-scaleY"
+					id="uiElement-transform-scaleY" v-model="form.scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -198,14 +198,14 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-skewX"
+					id="uiElement-transform-skewX" v-model="form.skewX"
 					min="-100"
 					max="100"
 					step="0.1"
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 				<NumberBox
-					id="uiElement-transform-skewY"
+					id="uiElement-transform-skewY" v-model="form.skewY"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -218,7 +218,7 @@
 				class="box uiElement-grid-box with-2-columns"
 			>
 				<NumberBox
-					id="uiElement-transform-opacity"
+					id="uiElement-transform-opacity" v-model="form.opacity"
 					min="0"
 					max="1"
 					step="0.05"
@@ -346,10 +346,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { Inspector } from '@/inspector/inspector.ts';
 import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -360,15 +361,80 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+interface UIElementForm {
+	name: string;
+	pointerEvents: string;
+	anchorX: number;
+	anchorY: number;
+	x: number;
+	x2: number;
+	y: number;
+	y2: number;
+	width: number;
+	width2: number;
+	height: number;
+	height2: number;
+	rotation: number;
+	scaleX: number;
+	scaleY: number;
+	skewX: number;
+	skewY: number;
+	opacity: number;
+}
+
+const NODE_KEYS: (keyof UIElementForm)[] = ['name', 'pointerEvents'];
+
+const TRANSFORM_KEYS: (keyof UIElementForm)[] = [
+	'anchorX',
+	'anchorY',
+	'x',
+	'x2',
+	'y',
+	'y2',
+	'width',
+	'width2',
+	'height',
+	'height2',
+	'rotation',
+	'scaleX',
+	'scaleY',
+	'skewX',
+	'skewY',
+	'opacity'
+];
+
 const ui = useUIStore();
 const local = useLocalStore();
+
+const form = reactive<Partial<UIElementForm>>({});
+
+const sync = (): void => {
+	const target = Inspector?.uiElement?.target as
+		| (Partial<UIElementForm> & { transform?: Partial<UIElementForm> })
+		| null
+		| undefined;
+	if (!target) return;
+	for (const key of NODE_KEYS) {
+		form[key] = target[key];
+	}
+	const transform = target.transform ?? {};
+	for (const key of TRANSFORM_KEYS) {
+		form[key] = transform[key];
+	}
+};
 
 const onParamInput = (event: Event) => {
 	const target = event?.target ?? document.activeElement;
 	Inspector?.uiElement?.paramInput?.({ target });
+	sync();
 };
 
 onMounted(() => {
+	const el = document.getElementById('uiImage-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 	ui.syncState();
 	local.syncState();
 });

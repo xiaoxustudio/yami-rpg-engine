@@ -199,6 +199,7 @@ Layout.initialize = function () {
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
 	this.manager?.on('switch', this.pageSwitch!);
+	getLayoutStore().syncState();
 };
 
 Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
@@ -1409,3 +1410,21 @@ Layout.pointermove = function (event: EditorEvent) {
 		}
 	}
 };
+
+const layoutBridgeKeys = [
+	'dragging',
+	'resizing',
+	'focusableSelector',
+	'focusableElements'
+] as const;
+import { getLayoutStore } from '@app/stores/layout';
+
+for (const key of layoutBridgeKeys) {
+	Object.defineProperty(Layout, key, {
+		get: () => getLayoutStore()[key],
+		set: (value: any) => {
+			(getLayoutStore() as unknown as Record<string, any>)[key] = value;
+		},
+		configurable: true
+	});
+}

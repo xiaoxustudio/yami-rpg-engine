@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { YMCustomBox } from '@ui-kit';
 import { customBoxOptions } from '../../legacy/components/custom-box-opts';
 import { attachElementApi } from '@/utils/attach-element-api';
@@ -101,6 +101,14 @@ const el = root.value as HTMLElement & {
 };
 	if (!el) return;
 	attachElementApi(el, { read, write, input, enable, disable, on });
+	ym.value?.write(props.modelValue ?? '');
+	const onLocalize = (): void => {
+		ym.value?.update?.();
+	};
+	window.addEventListener('localize', onLocalize);
+	onBeforeUnmount(() => {
+		window.removeEventListener('localize', onLocalize);
+	});
 });
 </script>
 
