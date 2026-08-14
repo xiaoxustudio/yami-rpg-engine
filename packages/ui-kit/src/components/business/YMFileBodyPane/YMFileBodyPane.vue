@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
 import {
 	addClass,
 	hasClass,
@@ -18,6 +18,14 @@ import {
 	attachDoubleclick
 } from '../../../utils/dom';
 import { attachApi } from '../../../utils/attach-api';
+
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+};
 
 interface FileBodyContext {
 	element?: FileBodyItemApi;
@@ -694,11 +702,10 @@ function createFolderElement(file: FileBodyFile): FileBodyItemApi {
 
 function updateFolderElement(element: FileBodyItemApi): void {
 	if (!element.nameBox) {
-		const fileIcon = document.createElement('file-body-icon');
-		addClass(fileIcon, 'icon-folder');
+		const fileIcon = renderElement(h('file-body-icon', { class: 'icon-folder' }));
 		element.appendChild(fileIcon);
 
-		const nameBox = document.createElement('file-body-name');
+		const nameBox = renderElement(h('file-body-name'));
 		nameBox.textContent = element.file.name;
 		element.appendChild(nameBox);
 
@@ -730,7 +737,7 @@ function updateFileElement(element: FileBodyItemApi): void {
 		const fileIcon = createIcon(file);
 		element.appendChild(fileIcon);
 
-		const nameBox = document.createElement('file-body-name');
+		const nameBox = renderElement(h('file-body-name'));
 		nameBox.textContent = file.basename;
 		element.appendChild(nameBox);
 
@@ -750,7 +757,7 @@ function updateFileElement(element: FileBodyItemApi): void {
 
 function createIcon(file: FileBodyFile): HTMLElement {
 	const node = el.value as FileBodyPaneApi;
-	const icon = document.createElement('file-body-icon');
+	const icon = renderElement(h('file-body-icon'));
 	switch (file.type) {
 		case 'actor': {
 			const data = file.data;

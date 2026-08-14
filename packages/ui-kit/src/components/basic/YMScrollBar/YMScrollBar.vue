@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import './scrollbar.css';
 
 interface Props {
 	id?: string;
@@ -21,10 +22,6 @@ interface ScrollBarRootElement extends HTMLElement {
 	updateHorizontalBar: () => void;
 	updateVerticalBar: () => void;
 	updateDisplay: (value: boolean) => void;
-}
-
-interface HotImportMeta extends ImportMeta {
-	hot?: { dispose: (callback: () => void) => void };
 }
 
 interface DragState extends PointerEvent {
@@ -318,102 +315,12 @@ const pointerdown = (event: PointerEvent): void => {
 onMounted(() => {
 	const element = root.value as ScrollBarRootElement | null;
 	if (!element) return;
-	injectStyles();
 	element.bind = bind;
 	element.updateHorizontalBar = updateHorizontalBar;
 	element.updateVerticalBar = updateVerticalBar;
 	element.updateDisplay = updateDisplay;
 	element.addEventListener('pointerdown', pointerdown);
 });
-
-const STYLE_ID = 'ym-scrollbar-styles';
-const injectStyles = (): void => {
-	if (typeof document === 'undefined') return;
-	const existing = document.getElementById(STYLE_ID);
-	if (existing) {
-		if (existing.textContent !== SCROLLBAR_CSS) {
-			existing.textContent = SCROLLBAR_CSS;
-		}
-		return;
-	}
-	const style = document.createElement('style');
-	style.id = STYLE_ID;
-	style.textContent = SCROLLBAR_CSS;
-	document.head.appendChild(style);
-};
-
-const hot = (import.meta as HotImportMeta).hot;
-if (hot) {
-	hot.dispose(() => {
-		const el = document.getElementById(STYLE_ID);
-		if (el) el.remove();
-	});
-}
-
-const SCROLLBAR_CSS = `
-.scroll-bar {
-	display: none;
-}
-
-.scroll-bar.visible {
-	display: block;
-}
-
-.scroll-bar.horizontal {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	height: 12px;
-}
-
-.scroll-bar.horizontal.with-corner {
-	width: calc(100% - 12px);
-}
-
-.scroll-bar.vertical {
-	position: absolute;
-	right: 0;
-	width: 12px;
-	height: 100%;
-}
-
-.scroll-bar.vertical.with-corner {
-	height: calc(100% - 12px);
-}
-
-.scroll-thumb {
-	position: absolute;
-	opacity: 1;
-	visibility: visible;
-	transition-property: opacity, visibility;
-	transition-delay: 0.4s;
-	transition-duration: 0.8s;
-}
-
-.scroll-bar:hover > .scroll-thumb,
-.scroll-bar:active > .scroll-thumb,
-.scroll-bar.dragging > .scroll-thumb {
-	transition-delay: 0s;
-	transition-duration: 0.2s;
-}
-
-.scroll-thumb-inner {
-	position: absolute;
-	left: 1px;
-	top: 1px;
-	right: 1px;
-	bottom: 1px;
-	background-color: var(--custom-scrollbar-thumb-background);
-	border: var(--custom-scrollbar-thumb-border);
-	border-radius: 2px;
-	pointer-events: none;
-}
-
-.scroll-thumb:hover > .scroll-thumb-inner,
-.scroll-thumb:active > .scroll-thumb-inner {
-	background-color: var(--custom-scrollbar-thumb-background-hover);
-}
-`;
 
 defineExpose({ bind, updateHorizontalBar, updateVerticalBar, updateDisplay, root });
 </script>

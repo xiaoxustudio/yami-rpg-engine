@@ -8,10 +8,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { h, render, ref, onMounted } from 'vue';
 import { addClass, hasClass, rect, removeClass } from '../../../utils/dom';
 import YMTextBox from '../../basic/YMTextBox/YMTextBox.vue';
 import YMSliderBox from '../../basic/YMSliderBox/YMSliderBox.vue';
+
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+};
 
 interface FileItem {
 	name: string;
@@ -100,7 +108,7 @@ function updateAddress() {
 				let folder = folders[0];
 				const nodes: HTMLElement[] = [];
 				while (true) {
-					const elFolder = document.createElement('file-head-address-folder') as HTMLElement & { file: FileItem; textContent: string };
+					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & { file: FileItem; textContent: string };
 					Object.defineProperty(elFolder, 'file', {
 						configurable: true,
 						get: () => folder
@@ -109,7 +117,7 @@ function updateAddress() {
 					nodes.push(elFolder);
 					const { parent } = folder;
 					if (props.isFolderItem(parent)) {
-						const elArrow = document.createElement('file-head-address-arrow') as HTMLElement & { folders: FileItem[]; target: FileItem };
+						const elArrow = renderElement(h('file-head-address-arrow')) as HTMLElement & { folders: FileItem[]; target: FileItem };
 						Object.defineProperty(elArrow, 'folders', {
 							configurable: true,
 							get: () => parent!.subfolders
@@ -132,7 +140,7 @@ function updateAddress() {
 				const length = folders.length;
 				for (let i = 0; i < length; i++) {
 					const folder = folders[i];
-					const elFolder = document.createElement('file-head-address-folder') as HTMLElement & { file: FileItem; textContent: string };
+					const elFolder = renderElement(h('file-head-address-folder')) as HTMLElement & { file: FileItem; textContent: string };
 					Object.defineProperty(elFolder, 'file', {
 						configurable: true,
 						get: () => folder
@@ -140,7 +148,7 @@ function updateAddress() {
 					elFolder.textContent = folder.name;
 					address.appendChild(elFolder);
 					if (folders[i + 1]) {
-						const elLink = document.createElement('file-head-address-link') as HTMLElement & { textContent: string };
+						const elLink = renderElement(h('file-head-address-link')) as HTMLElement & { textContent: string };
 						elLink.textContent = '&';
 						address.appendChild(elLink);
 					}
@@ -148,7 +156,7 @@ function updateAddress() {
 			}
 			break;
 		case 'search': {
-			const elText = document.createElement('file-head-address-text') as HTMLElement & { textContent: string };
+			const elText = renderElement(h('file-head-address-text')) as HTMLElement & { textContent: string };
 			elText.textContent = `${body.elements.count} 个文件`;
 			address.appendChild(elText);
 			break;

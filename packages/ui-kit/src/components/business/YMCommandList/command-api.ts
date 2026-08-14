@@ -1,3 +1,4 @@
+import { h, render } from 'vue';
 import {
 	relate,
 	addClass,
@@ -20,6 +21,14 @@ import {
 	commonListUpdateHeadAndFoot
 } from '../../../utils/common-list';
 import { attachScrollListener } from '../YMParamList/scroll-listener';
+
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+};
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
@@ -465,7 +474,7 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 				}
 
 				if (content.fold !== undefined) {
-					(li as CommandItemElement).fold = document.createElement('command-fold');
+					(li as CommandItemElement).fold = renderElement(h('command-fold'));
 					addClass((li as CommandItemElement).fold!, 'command-fold');
 					li.appendChild((li as CommandItemElement).fold!);
 				}
@@ -611,12 +620,12 @@ export const commandListPrototype: Record<string, (...args: any[]) => any> = {
 		element.style.textIndent = this.computeTextIndent(element.dataIndent);
 
 		if (element.dataKey) {
-			const mark = document.createElement('command-mark-major');
+			const mark = renderElement(h('command-mark-major'));
 			addClass(mark, 'command-mark-major');
 			mark.textContent = '>';
 			element.insertBefore(mark, element.firstElementChild);
 		} else {
-			const mark = document.createElement('command-mark-minor');
+			const mark = renderElement(h('command-mark-minor'));
 			addClass(mark, 'command-mark-minor');
 			mark.textContent = ':';
 			element.insertBefore(mark, element.firstElementChild);

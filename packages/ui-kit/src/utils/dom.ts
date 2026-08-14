@@ -191,5 +191,5 @@ export const macRedoKey = (e: KeyboardEvent): boolean =>
 		: false;
 
 export const hideDragImage = (dt: DataTransfer | null): void => {
-	if (dt) dt.setDragImage(document.createElement('no-drag-image'), 0, 0);
+	if (dt) dt.setDragImage(new Image(), 0, 0);
 };

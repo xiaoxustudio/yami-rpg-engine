@@ -1,4 +1,5 @@
-﻿import { attachApi } from '../../../utils/attach-api';
+﻿import { h, render } from 'vue';
+import { attachApi } from '../../../utils/attach-api';
 import { getListConfig } from '../../../utils/list-config';
 import {
 	hideDragImage,
@@ -27,6 +28,15 @@ import {
 	createDragAndDropHintElement,
 	type DragAndDropHintApi
 } from '../../business/YMDragAndDropHint/drag-and-drop-hint-api';
+
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+};
+
 export const treeListStatics = {
 	createParents: (function IIFE() {
 		const descriptor = {
@@ -450,7 +460,7 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 			let markVisible = false;
 			let markIndent = getListConfig(this).foldable ? 16 : 0;
 			if (item!.children instanceof Array) {
-				folderMark = document.createElement('folder-mark');
+				folderMark = renderElement(h('folder-mark'));
 				markVisible = true;
 				markIndent = 0;
 				element.appendChild(folderMark);
@@ -563,15 +573,11 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 		this: HTMLElement & { [k: string]: unknown },
 		item: TreeItem
 	): HTMLElement {
-		const icon = document.createElement('node-icon');
-		switch (item.class) {
-			case 'folder':
-				addClass(icon, 'icon-folder');
-				break;
-			default:
-				addClass(icon, 'icon-file');
-				break;
-		}
+		const icon = renderElement(
+			h('node-icon', {
+				class: item.class === 'folder' ? 'icon-folder' : 'icon-file'
+			})
+		);
 		return icon;
 	},
 

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { h, render, ref, onMounted, onBeforeUnmount } from 'vue';
 import { addClass, hasClass, hasScrollBar, rect, removeClass, attachDoubleclick } from '../../../utils/dom';
 import {
 	commonListResize,
@@ -11,6 +11,14 @@ import {
 	type CommonListLike
 } from '../../../utils/common-list';
 import { attachApi } from '../../../utils/attach-api';
+
+const renderElement = (vnode: ReturnType<typeof h>): HTMLElement => {
+	const host = document.createElement('div');
+	render(vnode, host);
+	const element = host.firstElementChild as HTMLElement;
+	host.removeChild(element);
+	return element;
+};
 
 interface FileItem {
 	name: string;
@@ -259,11 +267,10 @@ function createFolderElement(file: FileItem, indent: number): FolderElement {
 function updateFolderElement(element: FolderElement): void {
 	const { file, context } = element;
 	if (!element.textNode) {
-		const folderMark = document.createElement('folder-mark');
+		const folderMark = renderElement(h('folder-mark'));
 		element.appendChild(folderMark);
 
-		const fileIcon = document.createElement('file-nav-icon');
-		addClass(fileIcon, 'icon-folder');
+		const fileIcon = renderElement(h('file-nav-icon', { class: 'icon-folder' }));
 		element.appendChild(fileIcon);
 
 		const textNode = document.createTextNode(file.name);
