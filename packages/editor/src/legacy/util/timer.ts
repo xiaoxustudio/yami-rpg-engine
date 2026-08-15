@@ -38,7 +38,7 @@ export class Timer {
 	update: (timer: Timer) => boolean | void;
 	callback: (timer: Timer) => boolean | void;
 	// 运行时挂载: tree-list 等用于在 Timer 实例上绑定触发上下文 / 运行状态
-	target!: HTMLElement | null;
+	target!: any;
 	running!: boolean;
 	// scroll-listener.ts 中用于滚动检测计时器的速度挂载
 	speedX!: number;

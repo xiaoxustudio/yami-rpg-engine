@@ -1,25 +1,66 @@
 <template>
-	<WindowFrame id="arrayList-string">
+	<WindowFrame ref="frame" id="arrayList-string">
 		<template #title><TitleBar>String<div class="close" /></TitleBar></template>
 		
-			<TextArea id="arrayList-string-value" />
+			<TextArea id="arrayList-string-value" :model-value="form.value" />
 		
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useArrayWindow, type ArrayStringForm } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import TextArea from '@app/components/common/TextArea.vue';
+
+const arrayWindow = useArrayWindow();
+const form = arrayWindow.stringForm;
+
+const setForm = (data: Partial<ArrayStringForm>): void => {
+	Object.assign(form, data);
+	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
+		if (!(field in data)) continue;
+		const control = document.getElementById(id) as
+			| (HTMLElement & { write?: (value: unknown) => void })
+			| null;
+		if (control && typeof control.write === 'function') {
+			control.write(data[field] as never);
+		}
+	}
+};
+
+const getForm = (): ArrayStringForm => {
+	const data = { ...form } as ArrayStringForm;
+	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
+		const control = document.getElementById(id) as
+			| (HTMLElement & { read?: () => unknown })
+			| null;
+		if (control && typeof control.read === 'function') {
+			data[field] = control.read() as never;
+		}
+	}
+	return data;
+};
+
+const FIELD_BY_ID: Record<string, keyof ArrayStringForm> = {
+	'arrayList-string-value': 'value'
+};
+
+const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+	const el = frame.value?.root;
+	if (el) {
+		attachElementApi(el, { setForm, getForm });
+	}
+
+
 });
 </script>

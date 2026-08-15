@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
@@ -23,8 +22,7 @@ import { Inspector } from './inspector.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimSoundLayer.initialize = function (this: typeof AnimSoundLayer) {
@@ -66,8 +64,7 @@ import { Inspector } from './inspector.ts';
 			this.target = layer;
 			this.motion = Animation.motion;
 
-			const write = getElementWriter('animSoundLayer', layer);
-			write('playbackRate');
+			($('#animSoundLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -92,23 +89,6 @@ import { Inspector } from './inspector.ts';
 				}
 				break;
 		}
-	};
-
-	AnimSoundLayer.paramInput = function (
-		this: HTMLElement & { [k: string]: unknown },
-		event: Event
-	) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animSoundLayer-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimSoundLayer.update(
-			AnimSoundLayer.target,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animSoundLayer = AnimSoundLayer;

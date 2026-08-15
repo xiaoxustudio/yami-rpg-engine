@@ -17,16 +17,16 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useInspectorStore } from '@app/stores/inspector';
+import { useFileVideoPage } from '@app/composables/useFileVideoPage';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
-const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const { windowError } = useFileVideoPage();
+
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+	window.addEventListener('error', windowError);
 });
 </script>

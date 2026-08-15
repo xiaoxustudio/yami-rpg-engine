@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read, write } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';
@@ -15,7 +14,6 @@ import { Sprite } from '@/sprite/sprite.ts';
 	interface AnimSpriteFrameShape {
 		target: AnimSpriteFrameData | null;
 		update: ((frame: AnimSpriteFrameData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimSpriteFrame: AnimSpriteFrameShape = {
@@ -26,8 +24,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimSpriteFrame.initialize = function (this: typeof AnimSpriteFrame) {
@@ -95,22 +92,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 			this.motion = Animation.motion;
 			Sprite.open(frame);
 			Curve.load!(frame);
-
-			const write = getElementWriter('animSpriteFrame', frame);
-			write('anchorX');
-			write('anchorY');
-			write('pivotX');
-			write('pivotY');
-			write('x');
-			write('y');
-			write('rotation');
-			write('scaleX');
-			write('scaleY');
-			write('opacity');
-			write('tint-0');
-			write('tint-1');
-			write('tint-2');
-			write('tint-3');
+			($('#animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -128,33 +110,7 @@ import { Sprite } from '@/sprite/sprite.ts';
 		this: typeof AnimSpriteFrame,
 		options: Record<string, unknown>
 	) {
-		if (options.anchorX !== undefined) {
-			write($('#animSpriteFrame-anchorX'), options.anchorX);
-		}
-		if (options.anchorY !== undefined) {
-			write($('#animSpriteFrame-anchorY'), options.anchorY);
-		}
-		if (options.pivotX !== undefined) {
-			write($('#animSpriteFrame-pivotX'), options.pivotX);
-		}
-		if (options.pivotY !== undefined) {
-			write($('#animSpriteFrame-pivotY'), options.pivotY);
-		}
-		if (options.x !== undefined) {
-			write($('#animSpriteFrame-x'), options.x);
-		}
-		if (options.y !== undefined) {
-			write($('#animSpriteFrame-y'), options.y);
-		}
-		if (options.rotation !== undefined) {
-			write($('#animSpriteFrame-rotation'), options.rotation);
-		}
-		if (options.scaleX !== undefined) {
-			write($('#animSpriteFrame-scaleX'), options.scaleX);
-		}
-		if (options.scaleY !== undefined) {
-			write($('#animSpriteFrame-scaleY'), options.scaleY);
-		}
+		($('#animSpriteFrame-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 	};
 
 	AnimSpriteFrame.update = function (
@@ -193,20 +149,6 @@ import { Sprite } from '@/sprite/sprite.ts';
 			}
 		}
 		Animation.requestRendering!();
-	};
-
-	AnimSpriteFrame.paramInput = function (this: typeof AnimSpriteFrame, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animSpriteFrame-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimSpriteFrame.update!(
-			AnimSpriteFrame.target as AnimSpriteFrameData,
-			Inspector.getKey!(element),
-			read(element)
-		);
 	};
 
 	Inspector.animSpriteFrame = AnimSpriteFrame;

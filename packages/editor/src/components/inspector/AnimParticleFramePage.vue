@@ -97,58 +97,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { useAnimationStore } from '@app/stores/animation';
+import { onMounted } from 'vue';
+import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-interface AnimParticleFrameForm {
-	x: number;
-	y: number;
-	rotation: number;
-	scaleX: number;
-	scaleY: number;
-	opacity: number;
-	scale: number;
-	speed: number;
-}
-
-const FORM_KEYS: (keyof AnimParticleFrameForm)[] = [
-	'x',
-	'y',
-	'rotation',
-	'scaleX',
-	'scaleY',
-	'opacity',
-	'scale',
-	'speed'
-];
-
-const animation = useAnimationStore();
 const local = useLocalStore();
 
-const form = reactive<Partial<AnimParticleFrameForm>>({});
-
-const sync = (): void => {
-	const target = Inspector?.animParticleFrame?.target as
-		| Partial<AnimParticleFrameForm>
-		| null
-		| undefined;
-	if (!target) return;
-	for (const key of FORM_KEYS) {
-		form[key] = target[key];
-	}
-};
-
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.animParticleFrame?.paramInput?.({ target });
-	sync();
-};
+const { form, sync, onParamInput } = useAnimParticleFramePage();
 
 onMounted(() => {
 	const el = document.getElementById('animParticleFrame-vue-mount');
@@ -156,7 +115,5 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 	sync();
-	animation.syncState();
-	local.syncState();
 });
 </script>

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Home } from '@/title/home-page.ts';
 import { Layout } from '@/layout/layout.ts';
+import { getHomeStore, homeStateKeys } from '@app/stores/home';
 
 describe('Home.initialize（Layout 时序判空回归：11.32/11.32b）', () => {
 	const originalWindowResize = Home.windowResize;
@@ -63,5 +64,31 @@ describe('Home.initialize（Layout 时序判空回归：11.32/11.32b）', () => 
 		expect(windowResize).toHaveBeenCalledTimes(1);
 		window.dispatchEvent(new Event('localize'));
 		expect(windowLocalize).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('useHomeStore（Home 状态反转：store 为源）', () => {
+	it('状态键完整（1 项）', () => {
+		const store = getHomeStore();
+		expect(homeStateKeys).toHaveLength(1);
+		for (const key of homeStateKeys) {
+			expect(key in store, String(key)).toBe(true);
+		}
+	});
+
+	it('legacy 写入经 store 生效（store 为源）', () => {
+		const store = getHomeStore();
+		Home.state = 'open';
+		expect(store.state).toBe('open');
+		Home.state = 'closed';
+		expect(store.state).toBe('closed');
+	});
+
+	it('store 写入经桥反向可读（外部 legacy 读取兼容）', () => {
+		const store = getHomeStore();
+		store.state = 'open';
+		expect(Home.state).toBe('open');
+		store.state = 'closed';
+		expect(Home.state).toBe('closed');
 	});
 });

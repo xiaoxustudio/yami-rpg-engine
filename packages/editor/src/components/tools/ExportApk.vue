@@ -72,7 +72,7 @@ onMounted(() => {
 	if (!el) return;
 	attachElementApi(el, { update });
 	update();
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

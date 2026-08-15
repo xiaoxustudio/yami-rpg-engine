@@ -1,14 +1,6 @@
+import { useColorWindow } from '@app/composables/useColorWindow';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import {
-	relate,
-	getRelativeCoords,
-	getFocus,
-	on,
-	read,
-	setTooltip,
-	write
-} from '@/util/element-utils';
+import { relate, getRelativeCoords, on, read, setTooltip } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -80,16 +72,19 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 	const indexEnabled = (args[1] as boolean | undefined) ?? false;
 	this.target = target;
 	this.indexEnabled = indexEnabled;
-	Window.open!('color');
 	let color = read(target);
+	let index: number | null = null;
 	switch (typeof color) {
 		case 'string':
 			break;
 		case 'number':
-			write($('#color-index'), color);
+			index = color;
 			color = Data.config.indexedColors[color].code;
 			break;
 	}
+	useColorWindow().open(color, index, indexEnabled, (value) => {
+		this.target?.input?.(value);
+	});
 	const rgba = this.getRGBAFromHex(color);
 	this.drawPalette();
 	this.drawPillar(rgba);
@@ -97,7 +92,6 @@ Color.open = function (this: typeof Color, ...args: unknown[]) {
 	this.writeRGBAToInputs(rgba);
 	this.drawViewer(rgba);
 	this.loadIndexedColors();
-	getFocus($('#color-hex'), 'all');
 };
 
 Color.drawPalette = function (this: typeof Color) {
@@ -268,6 +262,7 @@ Color.windowClosed = function (this: typeof Color, event: Event) {
 	if (this.dragging) {
 		this.pointerup(this.dragging);
 	}
+	useColorWindow().onWindowClosed();
 }.bind(Color);
 
 Color.palettePointerdown = function (this: typeof Color, event: ColorDrag) {
@@ -448,13 +443,5 @@ Color.rgbaInput = function (this: typeof Color, event: Event) {
 }.bind(Color);
 
 Color.confirm = function (this: typeof Color, event: Event) {
-	const index = read($('#color-index'));
-	if (this.indexEnabled && index !== null) {
-		this.target?.input?.(index);
-	} else {
-		const rgba = this.readRGBAFromInputs();
-		const hex = this.getHexFromRGBA(rgba);
-		this.target?.input?.(hex);
-	}
-	Window.close!('color');
-}.bind(Color);
+	useColorWindow().confirm();
+};

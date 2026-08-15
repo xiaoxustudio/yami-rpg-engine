@@ -1,5 +1,5 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $, getElementReader } from '@/util/dom.ts';
+import { write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -7,7 +7,6 @@ import { UI } from '@/ui/ui-window.ts';
 	interface UITextShape {
 		target: UITextData | null;
 		update: ((node: UITextData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	interface UITextData {
@@ -22,8 +21,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UIText.initialize = function (this: typeof UIText) {
@@ -142,25 +140,11 @@ import { UI } from '@/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiText', node);
-			write('direction');
-			write('horizontalAlign');
-			write('verticalAlign');
-			write('content');
-			write('size');
-			write('lineSpacing');
-			write('letterSpacing');
-			write('color');
-			write('font');
-			write('typeface');
-			write('effect-type');
-			write('effect-shadowOffsetX', node.effect.shadowOffsetX || 1);
-			write('effect-shadowOffsetY', node.effect.shadowOffsetY || 1);
-			write('effect-strokeWidth', node.effect.strokeWidth || 1);
-			write('effect-color', node.effect.color || '000000ff');
-			write('overflow');
-			write('blend');
+			write($('#uiText-horizontalAlign'), node.horizontalAlign);
+			write($('#uiText-verticalAlign'), node.verticalAlign);
 			Inspector.uiElement.open(node);
+
+			($('#uiText-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -294,10 +278,6 @@ import { UI } from '@/ui/ui-window.ts';
 			}
 		}
 		UI.requestRendering!();
-	};
-
-	UIText.paramInput = function (this: typeof UIText, event: Event) {
-		UIText.update!(UIText.target as UITextData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiText = UIText;

@@ -212,8 +212,5 @@ const paletteInfo = computed(() => {
 });
 
 onMounted(() => {
-	scene.syncState();
-	local.syncState();
-	palette.syncState();
 });
 </script>

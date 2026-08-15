@@ -1,8 +1,6 @@
 import { Timer } from '@/util/timer.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { getWindowStore } from '@app/stores/window.ts';
-import { getLayoutStore } from '@app/stores/layout.ts';
 import { lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@/util/config.ts';
 import { registerTool, type ToolInstance } from '@/tools/tool-registry';
@@ -94,10 +92,6 @@ Editor.initialize = async function (this: typeof Editor) {
 	]);
 
 	try {
-		Window.afterChange = () => getWindowStore().syncState();
-		getWindowStore().syncState();
-		Layout.afterChange = () => getLayoutStore().syncState();
-		getLayoutStore().syncState();
 		// Selector 为懒加载 Vue 组件（#selector-browser），须等 __lazyComponentsReady__ 挂载完成后再解析
 		const Selector = getSelectorInstance();
 		Title.initialize!();

@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
@@ -30,6 +30,7 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
+import { getParticleStore, type ParticleTargetShape } from '@app/stores/particle';
 
 import { StageColor } from '@/util/stage-color.ts';
 import { Timer } from '@/util/timer.ts';
@@ -129,7 +130,6 @@ interface ParticleHistoryData {
 type ParticleConfigShape = EditorConfigShape & { colors: NonNullable<EditorConfigShape['colors']> };
 
 interface ParticleShape {
-	state: ParticleState;
 	page: HTMLElement;
 	head: HTMLElement & { width: number };
 	body: HTMLElement;
@@ -176,32 +176,15 @@ interface ParticleShape {
 				scrollTop?: number;
 		  })
 		| null;
-	target: {
-		area: {
-			type: 'rectangle' | 'circle';
-			x: number;
-			y: number;
-			width: number;
-			height: number;
-			radius: number;
-		} & Record<string, unknown>;
-	} | null;
-	paused: boolean;
 	history: History | null;
 	restartKey: boolean;
 	translationKey: number;
 	translationTimer: Timer | null;
 	showAxes: boolean;
-	showWireframe: boolean;
-	showAnchor: boolean;
 	background: StageColor;
 	matrix: Matrix | null;
-	speed: number | null;
-	zoom: number | null;
 	zoomTimer: Timer | null;
 	scale: number | null;
-	scaleX: number | null;
-	scaleY: number | null;
 	outerWidth: number | null;
 	outerHeight: number | null;
 	scrollLeft: number | null;
@@ -300,7 +283,6 @@ interface ParticleShape {
 }
 
 export const Particle: ParticleShape = {
-	state: 'closed',
 	page: $('#particle'),
 	head: $('#particle-head') as unknown as HTMLElement & {
 		left: number;
@@ -317,23 +299,15 @@ export const Particle: ParticleShape = {
 	marquee: $('#particle-marquee') as unknown as HTMLElement & { pointerevent: unknown },
 	list: ($('#particle-list') as unknown as never) || ({} as never),
 	dragging: null,
-	target: null,
-	paused: false,
 	history: null,
 	restartKey: false,
 	translationKey: 0b0000,
 	translationTimer: null,
 	showAxes: true,
-	showWireframe: false,
-	showAnchor: false,
 	background: null as unknown as StageColor,
 	matrix: null,
-	speed: null,
-	zoom: null,
 	zoomTimer: null,
 	scale: null,
-	scaleX: null,
-	scaleY: null,
 	outerWidth: null,
 	outerHeight: null,
 	scrollLeft: null,
@@ -440,7 +414,6 @@ getListConfig(Particle.list).onDelete = null as unknown as (item: unknown) => vo
 getListConfig(Particle.list).onResume = null as unknown as (item: unknown) => void;
 
 Particle.initialize = function () {
-	getParticleStore().syncState();
 	this.page = $('#particle');
 	this.head = $('#particle-head') as unknown as HTMLElement & { width: number };
 	this.body = hide($('#particle-body'));
@@ -464,7 +437,7 @@ Particle.initialize = function () {
 	this.translationTimer = new Timer({
 		duration: Infinity,
 		update: (timer) => {
-			if (this.state === 'open' && this.dragging === null) {
+			if (getParticleStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale!;
 				let x = 0;
@@ -500,7 +473,7 @@ Particle.initialize = function () {
 	this.zoomTimer = new Timer({
 		duration: 80,
 		update: (timer) => {
-			if (this.state === 'open') {
+			if (getParticleStore().state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
@@ -572,7 +545,7 @@ Particle.open = function (this: typeof Particle, context: ParticleContextShape) 
 		context.particle = Data.particles[meta.guid];
 	}
 	if (context.particle) {
-		this.state = 'open';
+		getParticleStore().state = 'open';
 		this.context = context;
 		this.meta = meta;
 		show(this.body);
@@ -629,23 +602,23 @@ Particle.load = function (this: typeof Particle, context: ParticleContextShape) 
 };
 
 Particle.save = function () {
-	if (this.state === 'open') {
+	if (getParticleStore().state === 'open') {
 		const { editor } = this.context!;
 
-		editor.target = this.target;
+		editor.target = getParticleStore().target;
 		editor.emitter = this.emitter;
 		editor.history = this.history!;
 		editor.centerX = this.centerX!;
 		editor.centerY = this.centerY!;
-		editor.paused = this.paused;
+		editor.paused = getParticleStore().paused;
 	}
 };
 
 Particle.close = function () {
-	if (this.state !== 'closed') {
+	if (getParticleStore().state !== 'closed') {
 		this.screen?.blur();
 		this.setTarget!(null);
-		this.state = 'closed';
+		getParticleStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
 		this.layers = null;
@@ -678,20 +651,20 @@ Particle.restart = function () {
 };
 
 Particle.undo = function () {
-	if (this.state === 'open' && !this.dragging && this.history!.canUndo()) {
+	if (getParticleStore().state === 'open' && !this.dragging && this.history!.canUndo()) {
 		this.history!.restore('undo');
 	}
 };
 
 Particle.redo = function () {
-	if (this.state === 'open' && !this.dragging && this.history!.canRedo()) {
+	if (getParticleStore().state === 'open' && !this.dragging && this.history!.canRedo()) {
 		this.history!.restore('redo');
 	}
 };
 
 Particle.setSpeed = (function IIFE() {
 	return function (this: ParticleShape, speed: number) {
-		this.speed = speed;
+		getParticleStore().speed = speed;
 		const numberBox = $('#particle-speed');
 		if (numberBox) write(numberBox, speed);
 	};
@@ -700,7 +673,7 @@ Particle.setSpeed = (function IIFE() {
 Particle.setZoom = (function IIFE() {
 	return function (this: ParticleShape, zoom: number) {
 		const slider = $('#particle-zoom');
-		if (this.zoom !== zoom) {
+		if (getParticleStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
 				case 0:
@@ -721,9 +694,9 @@ Particle.setZoom = (function IIFE() {
 				default:
 					return;
 			}
-			this.zoom = zoom;
+			getParticleStore().zoom = zoom;
 			if (slider) write(slider, zoom);
-			if (this.state === 'open') {
+			if (getParticleStore().state === 'open') {
 				const timer = this.zoomTimer!;
 				timer.start = this.scale!;
 				timer.end = scale;
@@ -736,9 +709,9 @@ Particle.setZoom = (function IIFE() {
 	};
 })();
 
-Particle.setTarget = function (target: ParticleShape['target']) {
-	if (this.target !== target) {
-		this.target = target;
+Particle.setTarget = function (target: ParticleTargetShape) {
+	if (getParticleStore().target !== target) {
+		getParticleStore().target = target;
 		this.updateTargetItem!();
 		this.requestRendering!();
 		if (target) {
@@ -751,13 +724,13 @@ Particle.setTarget = function (target: ParticleShape['target']) {
 
 Particle.updateTarget = function () {
 	const item = read(this.list);
-	if (item !== this.target) {
+	if (item !== getParticleStore().target) {
 		this.setTarget!(item);
 	}
 };
 
 Particle.updateTargetItem = function () {
-	const { target } = this;
+	const { target } = getParticleStore();
 	if (target !== null) {
 		const { list } = this;
 		if (read(list) !== target) {
@@ -808,7 +781,7 @@ Particle.updateHead = function () {
 };
 
 Particle.resize = function () {
-	if (this.state === 'open' && this.screen && this.screen.clientWidth !== 0) {
+	if (getParticleStore().state === 'open' && this.screen && this.screen.clientWidth !== 0) {
 		const scale = this.scale!;
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
@@ -824,8 +797,8 @@ Particle.resize = function () {
 		this.outerHeight = outerHeight;
 		this.centerOffsetX = screenWidth / 2;
 		this.centerOffsetY = screenHeight / 2;
-		this.scaleX = innerWidth / stageWidth;
-		this.scaleY = innerHeight / stageHeight;
+		getParticleStore().scaleX = innerWidth / stageWidth;
+		getParticleStore().scaleY = innerHeight / stageHeight;
 		this.marquee.style.width = `${outerWidth / dpr}px`;
 		this.marquee.style.height = `${outerHeight / dpr}px`;
 		GL.resize(screenWidth, screenHeight);
@@ -839,8 +812,8 @@ Particle.getPointerCoords = (function IIFE() {
 	return function (this: ParticleShape, event: PointerEvent) {
 		const coords = getRelativeCoords(event, this.marquee);
 		const dpr = window.devicePixelRatio;
-		point.x = (coords.x * dpr - (this.outerWidth! >> 1)) / this.scaleX!;
-		point.y = (coords.y * dpr - (this.outerHeight! >> 1)) / this.scaleY!;
+		point.x = (coords.x * dpr - (this.outerWidth! >> 1)) / getParticleStore().scaleX!;
+		point.y = (coords.y * dpr - (this.outerHeight! >> 1)) / getParticleStore().scaleY!;
 		return point;
 	};
 })();
@@ -852,8 +825,8 @@ Particle.updateCamera = function (
 ) {
 	const screen = this.screen;
 	const dpr = window.devicePixelRatio;
-	const scrollX = x * this.scaleX! + this.outerWidth! / 2;
-	const scrollY = y * this.scaleY! + this.outerHeight! / 2;
+	const scrollX = x * getParticleStore().scaleX! + this.outerWidth! / 2;
+	const scrollY = y * getParticleStore().scaleY! + this.outerHeight! / 2;
 	const toleranceForDPR = 0.0001;
 	screen.rawScrollLeft =
 		Math.clamp(scrollX - this.centerOffsetX!, 0, this.outerWidth! - GL.width) / dpr;
@@ -870,21 +843,21 @@ Particle.updateTransform = function () {
 	const top = Math.roundTo(screen.scrollTop * dpr - (this.outerHeight! >> 1), 4);
 	const right = left + GL.width;
 	const bottom = top + GL.height;
-	this.scrollLeft = left / this.scaleX!;
-	this.scrollTop = top / this.scaleY!;
-	this.scrollRight = right / this.scaleX!;
-	this.scrollBottom = bottom / this.scaleY!;
+	this.scrollLeft = left / getParticleStore().scaleX!;
+	this.scrollTop = top / getParticleStore().scaleY!;
+	this.scrollRight = right / getParticleStore().scaleX!;
+	this.scrollBottom = bottom / getParticleStore().scaleY!;
 	this.matrix!.reset()
-		.scale(this.scaleX!, this.scaleY!)
+		.scale(getParticleStore().scaleX!, getParticleStore().scaleY!)
 		.translate(-this.scrollLeft!, -this.scrollTop!);
 	const scrollX = screen.rawScrollLeft * dpr + this.centerOffsetX!;
 	const scrollY = screen.rawScrollTop * dpr + this.centerOffsetY!;
-	this.centerX = Math.roundTo((scrollX - this.outerWidth! / 2) / this.scaleX!, 4);
-	this.centerY = Math.roundTo((scrollY - this.outerHeight! / 2) / this.scaleY!, 4);
+	this.centerX = Math.roundTo((scrollX - this.outerWidth! / 2) / getParticleStore().scaleX!, 4);
+	this.centerY = Math.roundTo((scrollY - this.outerHeight! / 2) / getParticleStore().scaleY!, 4);
 };
 
 Particle.updateElements = function (deltaTime: number) {
-	this.emitter.update(deltaTime * this.speed!);
+	this.emitter.update(deltaTime * getParticleStore().speed!);
 };
 
 Particle.drawElements = function () {
@@ -905,10 +878,10 @@ Particle.drawCoordinateAxes = function () {
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(Particle.matrix);
 		// 避免缩放时虚线抖动
-		const L = -10000 / this.scaleX!;
-		const T = -10000 / this.scaleY!;
-		const R = 10000 / this.scaleX!;
-		const B = 10000 / this.scaleY!;
+		const L = -10000 / getParticleStore().scaleX!;
+		const T = -10000 / getParticleStore().scaleY!;
+		const R = 10000 / getParticleStore().scaleX!;
+		const B = 10000 / getParticleStore().scaleY!;
 		const a = matrix[0];
 		const b = matrix[1];
 		const c = matrix[3];
@@ -964,8 +937,8 @@ Particle.drawEmitterWireframe = function () {
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const colors = gl.arrays[0].uint32;
-	const ox = 0.5 / this.scaleX!;
-	const oy = 0.5 / this.scaleY!;
+	const ox = 0.5 / getParticleStore().scaleX!;
+	const oy = 0.5 / getParticleStore().scaleY!;
 	const L = emitter.outerLeft + ox;
 	const T = emitter.outerTop + oy;
 	const R = emitter.outerRight - ox;
@@ -1030,19 +1003,19 @@ Particle.drawEmitterAnchor = function () {
 };
 
 Particle.drawAreaWireframe = function () {
-	if (!this.showWireframe || !this.target) return;
+	if (!getParticleStore().showWireframe || !getParticleStore().target) return;
 	let vi = 0;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
-	const { area } = this.target;
+	const { area } = getParticleStore().target!;
 	switch (area.type) {
 		case 'rectangle': {
 			const ax = area.x;
 			const ay = area.y;
 			const aw = area.width;
 			const ah = area.height;
-			const ox = 0.5 / this.scaleX!;
-			const oy = 0.5 / this.scaleY!;
+			const ox = 0.5 / getParticleStore().scaleX!;
+			const oy = 0.5 / getParticleStore().scaleY!;
 			const L = ax - aw * 0.5 + ox;
 			const T = ay - ah * 0.5 + oy;
 			const R = Math.max(L, ax + aw * 0.5 - ox);
@@ -1087,7 +1060,7 @@ Particle.drawAreaWireframe = function () {
 };
 
 Particle.drawElementWireframes = function () {
-	if (!this.showWireframe) return;
+	if (!getParticleStore().showWireframe) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix;
@@ -1178,7 +1151,7 @@ Particle.drawElementWireframes = function () {
 };
 
 Particle.drawElementAnchors = function () {
-	if (!this.showAnchor) return;
+	if (!getParticleStore().showAnchor) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const lines = gl.arrays[1].float32;
@@ -1266,7 +1239,7 @@ Particle.selectEmitter = function (x: number, y: number) {
 };
 
 Particle.requestAnimation = function () {
-	if (this.state === 'open' && !this.paused) {
+	if (getParticleStore().state === 'open' && !getParticleStore().paused) {
 		Timer.appendUpdater!('stageAnimation', this.updateAnimation!);
 	}
 };
@@ -1284,7 +1257,7 @@ Particle.stopAnimation = function () {
 };
 
 Particle.requestRendering = function () {
-	if (this.state === 'open') {
+	if (getParticleStore().state === 'open') {
 		Timer.appendUpdater!('stageRendering', this.renderingFunction!);
 	}
 };
@@ -1307,35 +1280,35 @@ Particle.stopRendering = function () {
 };
 
 Particle.switchWireframe = (function IIFE() {
-	return function (this: ParticleShape, enabled: boolean = !this.showWireframe) {
+	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showWireframe) {
 		const item = $('#particle-view-wireframe');
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
 			removeClass(item, 'selected');
 		}
-		this.showWireframe = enabled;
+		getParticleStore().showWireframe = enabled;
 		this.requestRendering!();
 	};
 })();
 
 Particle.switchAnchor = (function IIFE() {
-	return function (this: ParticleShape, enabled: boolean = !this.showAnchor) {
+	return function (this: ParticleShape, enabled: boolean = !getParticleStore().showAnchor) {
 		const item = $('#particle-view-anchor');
 		if (enabled) {
 			addClass(item, 'selected');
 		} else {
 			removeClass(item, 'selected');
 		}
-		this.showAnchor = enabled;
+		getParticleStore().showAnchor = enabled;
 		this.requestRendering!();
 	};
 })();
 
 Particle.switchPause = (function IIFE() {
-	return function (this: ParticleShape, enabled: boolean = !this.paused) {
+	return function (this: ParticleShape, enabled: boolean = !getParticleStore().paused) {
 		const item = $('#particle-control-pause');
-		this.paused = enabled;
+		getParticleStore().paused = enabled;
 		if (enabled) {
 			addClass(item, 'selected');
 			this.stopAnimation!();
@@ -1362,10 +1335,10 @@ Particle.loadFromConfig = function (config: ParticleConfigShape) {
 
 Particle.saveToProject = function (project: EditorProjectShape) {
 	const { particle } = project;
-	particle.wireframe = this.showWireframe ?? particle.wireframe;
-	particle.anchor = this.showAnchor ?? particle.anchor;
-	particle.speed = this.speed ?? particle.speed;
-	particle.zoom = this.zoom ?? particle.zoom;
+	particle.wireframe = getParticleStore().showWireframe ?? particle.wireframe;
+	particle.anchor = getParticleStore().showAnchor ?? particle.anchor;
+	particle.speed = getParticleStore().speed ?? particle.speed;
+	particle.zoom = getParticleStore().zoom ?? particle.zoom;
 };
 
 Particle.loadFromProject = function (project: EditorProjectShape) {
@@ -1377,14 +1350,14 @@ Particle.loadFromProject = function (project: EditorProjectShape) {
 };
 
 Particle.webglRestored = function (event: Event) {
-	if (Particle.state === 'open') {
+	if (getParticleStore().state === 'open') {
 		Particle.requestRendering!();
 	}
 };
 
 Particle.windowResize = function (this: ParticleShape, event: Event) {
 	this.updateHead!();
-	if (this.state === 'open') {
+	if (getParticleStore().state === 'open') {
 		this.resize!();
 		this.updateCamera!();
 		this.requestRendering!();
@@ -1396,13 +1369,13 @@ Particle.themechange = function (this: ParticleShape, event: Event) {
 }.bind(Particle);
 
 Particle.datachange = function (event: Event) {
-	if (Particle.state === 'open' && event.key === 'easings') {
+	if (getParticleStore().state === 'open' && event.key === 'easings') {
 		Particle.emitter.updateEasing();
 	}
 };
 
 Particle.keydown = function (event: KeyboardEvent) {
-	if (Particle.state === 'open' && Particle.dragging === null) {
+	if (getParticleStore().state === 'open' && Particle.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
@@ -1487,7 +1460,7 @@ Particle.controlPointerdown = function (event: PointerEvent) {
 };
 
 Particle.speedInput = function (this: HTMLElement, event: Event) {
-	Particle.speed = read(this);
+	getParticleStore().speed = read(this);
 };
 
 Particle.zoomFocus = function (event: Event) {
@@ -1499,7 +1472,7 @@ Particle.zoomInput = function (this: HTMLElement, event: Event) {
 };
 
 Particle.screenKeydown = function (this: ParticleShape, event: KeyboardEvent) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getParticleStore().state === 'open' && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
 		}
@@ -1509,11 +1482,11 @@ Particle.screenKeydown = function (this: ParticleShape, event: KeyboardEvent) {
 		switch (event.code) {
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom!(this.zoom! - 1);
+				this.setZoom!(getParticleStore().zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom!(this.zoom! + 1);
+				this.setZoom!(getParticleStore().zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -1524,17 +1497,17 @@ Particle.screenKeydown = function (this: ParticleShape, event: KeyboardEvent) {
 }.bind(Particle);
 
 Particle.screenWheel = function (this: ParticleShape, event: WheelEvent) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getParticleStore().state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom!(this.zoom! + step);
+			this.setZoom!(getParticleStore().zoom! + step);
 		}
 	}
 }.bind(Particle);
 
 Particle.screenUserscroll = function (this: ParticleShape, event: Event) {
-	if (this.state === 'open') {
+	if (getParticleStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
@@ -1560,7 +1533,7 @@ Particle.marqueePointerdown = function (
 				const { emitter } = this;
 				if (emitter.active) {
 					emitter.selected = true;
-					if (this.paused) break;
+					if (getParticleStore().paused) break;
 					this.dragging = event;
 					event.mode = 'object-move';
 					event.enabled = false;
@@ -1649,8 +1622,10 @@ Particle.pointermove = function (event: PointerEvent) {
 				}
 				const emitter = Particle.emitter;
 				const dpr = window.devicePixelRatio;
-				const distX = ((event.clientX - dragging.clientX) * dpr) / Particle.scaleX!;
-				const distY = ((event.clientY - dragging.clientY) * dpr) / Particle.scaleY!;
+				const distX =
+					((event.clientX - dragging.clientX) * dpr) / getParticleStore().scaleX!;
+				const distY =
+					((event.clientY - dragging.clientY) * dpr) / getParticleStore().scaleY!;
 				const x = Math.round(dragging.startX! + distX);
 				const y = Math.round(dragging.startY! + distY);
 				if (emitter.startX !== x || emitter.startY !== y) {
@@ -1889,6 +1864,8 @@ getListConfig(Particle.list).onResume = function () {
 };
 
 const particleBridgeKeys = [
+	'state',
+	'target',
 	'paused',
 	'showWireframe',
 	'showAnchor',
@@ -1897,7 +1874,6 @@ const particleBridgeKeys = [
 	'scaleX',
 	'scaleY'
 ] as const;
-import { getParticleStore } from '@app/stores/particle';
 
 for (const key of particleBridgeKeys) {
 	Object.defineProperty(Particle, key, {

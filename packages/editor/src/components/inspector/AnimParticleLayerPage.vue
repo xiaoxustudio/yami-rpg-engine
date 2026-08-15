@@ -7,36 +7,36 @@
 				id="animParticleLayer-particleId"
 				type="file"
 				filter="particle"
+				:model-value="form.particleId"
 				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('animParticleLayer-position') || 'Position' }}</div
-			><SelectBox id="animParticleLayer-position" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animParticleLayer-order') || 'Order' }}</div><SelectBox id="animParticleLayer-order" @input="onParamInput"></SelectBox>
+			><SelectBox id="animParticleLayer-position" v-model="form.position" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle" v-model="form.angle" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('animParticleLayer-order') || 'Order' }}</div><SelectBox id="animParticleLayer-order" v-model="form.order" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { useAnimationStore } from '@app/stores/animation';
+import { useAnimParticleLayerPage } from '@app/composables/useAnimParticleLayerPage';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const animation = useAnimationStore();
 const local = useLocalStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.animParticleLayer?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useAnimParticleLayerPage();
 
 onMounted(() => {
-	animation.syncState();
-	local.syncState();
+	const el = document.getElementById('animParticleLayer-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

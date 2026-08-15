@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeAll, beforeEach } from 'vitest';
+vi.mock('@/module/resource.ts', () => ({}));
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';

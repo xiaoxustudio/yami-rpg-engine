@@ -22,13 +22,16 @@ interface ActorData {
 
 const fileActor = vi.hoisted(() => ({
 	target: null as ActorData | null,
-	paramInput: vi.fn(),
+	update: vi.fn(),
 	animationIdWrite: vi.fn(),
 	listChange: vi.fn()
 }));
 
 vi.mock('@/inspector/inspector.ts', () => ({
-	Inspector: { fileActor }
+	Inspector: {
+		fileActor,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/inspector', () => ({
@@ -45,7 +48,7 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		fileActor.target = null;
-		fileActor.paramInput.mockClear();
+		fileActor.update.mockClear();
 	});
 
 	const mountPage = async () => {
@@ -126,23 +129,21 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 		wrapper.unmount();
 	});
 
-	it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+	it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
 		const el = document.getElementById('fileActor-vue-mount') as SyncEl;
 		fileActor.target = makeActor();
 		el.sync?.();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
-		fileActor.paramInput.mockImplementation(() => {
-			if (fileActor.target) {
-				fileActor.target.speed = 6;
-			}
+		fileActor.update.mockImplementation((actor: ActorData, key: string, value: unknown) => {
+			(actor as unknown as Record<string, unknown>)[key] = value;
 		});
 		const input = document.getElementById('fileActor-speed')?.querySelector('input');
 		expect(input).toBeTruthy();
 		input!.value = '6';
 		input!.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(fileActor.paramInput).toHaveBeenCalled();
+		expect(fileActor.update).toHaveBeenCalled();
 		await wrapper.vm.$nextTick();
 		expect(read('fileActor-speed')).toBe(6);
 		wrapper.unmount();

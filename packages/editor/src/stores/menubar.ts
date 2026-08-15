@@ -4,12 +4,10 @@ import { Menubar } from '@/title/menu-bar.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 
+export const menubarStateKeys = ['state'] as const;
+
 export const useMenubarStore = defineStore('menubar', () => {
 	const state = shallowRef<string>('closed');
-
-	function syncState() {
-		state.value = Menubar?.state ?? 'closed';
-	}
 
 	function popup(rect: unknown, menus: MenuItem[]) {
 		Menubar?.popup?.(rect, menus);
@@ -89,7 +87,6 @@ export const useMenubarStore = defineStore('menubar', () => {
 
 	return {
 		state,
-		syncState,
 		popup,
 		initialize,
 		toggleFullScreen,

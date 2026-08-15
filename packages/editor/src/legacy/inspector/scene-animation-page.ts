@@ -26,7 +26,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		target: SceneAnimationData | null;
 		update: ((animation: SceneAnimationData, key: string, value: unknown) => void) | null;
 		animationIdWrite: ((event: { value: string }) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const SceneAnimation: SceneAnimationShape = {
@@ -40,8 +39,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		close: null,
 		write: null,
 		update: null,
-		animationIdWrite: null,
-		paramInput: null
+		animationIdWrite: null
 	};
 
 	SceneAnimation.initialize = function (this: typeof SceneAnimation) {
@@ -125,20 +123,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = animation;
 
 			const write = getElementWriter('sceneAnimation', animation);
-			write('name');
-			write('animationId');
-			write('motion');
-			write('rotatable');
-			write('x');
-			write('y');
-			write('angle');
-			write('scale');
-			write('speed');
-			write('opacity');
-			write('priority');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneAnimation-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -248,24 +236,14 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		this: typeof SceneAnimation,
 		event: { value: string }
 	) {
-		const elMotion = $('#sceneAnimation-motion');
+		const elMotion = $('#sceneAnimation-motion') as
+			| (HTMLElement & { loadItems?: (items: unknown[]) => void })
+			| null;
 		const items = Animation.getMotionListItems!(event.value);
-		elMotion.loadItems(items);
-		write(elMotion, read(elMotion) ?? items[0].value);
-	};
-
-	SceneAnimation.paramInput = function (this: typeof SceneAnimation, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneAnimation-').test(element.id)) break;
-			element = element.parentElement;
+		elMotion?.loadItems?.(items);
+		if (elMotion) {
+			write(elMotion, read(elMotion) ?? items[0].value);
 		}
-		SceneAnimation.update!(
-			SceneAnimation.target as SceneAnimationData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.sceneAnimation = SceneAnimation;

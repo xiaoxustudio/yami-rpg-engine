@@ -1,9 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Choice from '@app/components/tools/Choice.vue';
 import RegionGetter from '@app/components/tools/RegionGetter.vue';
 import ExportLanguage from '@app/components/tools/ExportLanguage.vue';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 interface FormFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;

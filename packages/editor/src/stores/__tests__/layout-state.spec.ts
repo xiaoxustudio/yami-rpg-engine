@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getLayoutStore, layoutStateKeys } from '@app/stores/layout';
 import { Layout } from '@/layout/layout.ts';
 
-describe('useLayoutStore（Layout 布局状态桥接）', () => {
+describe('useLayoutStore（Layout 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {
 		const store = getLayoutStore();
 		expect(store.dragging).toBe(null);
@@ -37,7 +37,7 @@ describe('useLayoutStore（Layout 布局状态桥接）', () => {
 		store.focusableElements = null;
 	});
 
-	it('桥接：Layout 与 store 双向读写一致', () => {
+	it('桥接：legacy 写入经 store 生效（store 为源）', () => {
 		const store = getLayoutStore();
 		const dragging = { clientX: 20 };
 		Layout.dragging = dragging;
@@ -50,13 +50,14 @@ describe('useLayoutStore（Layout 布局状态桥接）', () => {
 		expect(Layout.resizing).toBe(null);
 	});
 
-	it('syncState 拉取 Layout 状态（currentPage）', () => {
+	it('legacy 焦点元素管理写入经 store 生效', () => {
 		const store = getLayoutStore();
-		Layout.manager = { index: 'scene' } as any;
-		store.syncState();
-		expect(store.currentPage).toBe('scene');
-		Layout.manager = { index: null } as any;
-		store.syncState();
-		expect(store.currentPage).toBe('home');
+		store.focusableSelector = 'input';
+		Layout.manager = { active: { querySelectorAll: () => [] } } as any;
+		Layout.disableFocusableElements();
+		expect(store.focusableElements).toEqual([]);
+		Layout.enableFocusableElements();
+		expect(store.focusableElements).toBe(null);
+		Layout.manager = null;
 	});
 });

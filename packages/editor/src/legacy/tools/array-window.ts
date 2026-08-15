@@ -1,8 +1,7 @@
+import { useArrayWindow } from '@app/composables/useArrayWindow';
 import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, read, write } from '@/util/element-utils';
+import { on, read } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { Local } from './localization.ts';
 import { h, render } from 'vue';
 
 interface ArrayListTarget {
@@ -39,7 +38,9 @@ export const ArrayList: {
 		return $('#arrayList-list');
 	},
 	target: null as unknown as ArrayListTarget | null,
-	changed: false,
+	get changed() {
+		return useArrayWindow().changed;
+	},
 	interface: null as unknown as ArrayListInterface,
 	initialize: null as unknown as (this: typeof ArrayList, list: HTMLElement) => void,
 	open: null as unknown as ((this: typeof ArrayList, target: ArrayListTarget) => void) | null,
@@ -63,50 +64,28 @@ ArrayList.open = function (this: typeof ArrayList, target: ArrayListTarget) {
 	const label = target.previousSibling;
 	const alias = label.textContent;
 	$('#arrayList').setTitle(alias);
-	Window.open!('arrayList');
-
-	(this.list as unknown as { write(value: unknown[]): void }).write(read(target).slice());
-	getFocus(this.list);
+	useArrayWindow().open(read(target).slice(), (value) => {
+		this.target?.input?.(value);
+	});
 };
 
 ArrayList.windowClose = function (this: typeof ArrayList, event: Event) {
-	if (this.changed) {
-		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
-		Window.confirm!(
-			{
-				message: get('closeUnsavedData')
-			},
-			[
-				{
-					label: get('yes'),
-					click: () => {
-						this.changed = false;
-						Window.close!('arrayList');
-					}
-				},
-				{
-					label: get('no')
-				}
-			]
-		);
-	}
-}.bind(ArrayList);
+	useArrayWindow().onWindowClose(event);
+};
 
 ArrayList.windowClosed = function (this: typeof ArrayList, event: Event) {
 	ArrayList.target = null;
 	ArrayList.list.clear();
+	useArrayWindow().onWindowClosed();
 };
 
 ArrayList.listChange = function (this: typeof ArrayList, event: Event) {
-	ArrayList.changed = true;
+	useArrayWindow().markChanged();
 };
 
 ArrayList.confirm = function (this: typeof ArrayList, event: Event) {
-	this.changed = false;
-	this.target?.input?.(this.list.read());
-	Window.close!('arrayList');
-}.bind(ArrayList);
+	useArrayWindow().confirm();
+};
 
 ArrayList.interface = {
 	parsers: {
@@ -158,15 +137,19 @@ ArrayList.interface = {
 		const { filter } = ArrayList.target!;
 		const int = ArrayList.interface;
 		value = value ?? int.defaults[filter];
-		Window.open!(int.windows[filter]);
-		const input = int.inputs[filter];
-		write(input, value);
-		getFocus(input, 'all');
+		const window = useArrayWindow();
+		if (filter === 'number') {
+			window.openNumber(value as number);
+		} else {
+			window.openString(value as string);
+		}
 	},
 	save: function () {
 		const { filter } = ArrayList.target!;
-		const value = read(this.inputs[filter]);
-		Window.close!(this.windows[filter]);
-		return value;
+		const window = useArrayWindow();
+		if (filter === 'number') {
+			return window.confirmNumber();
+		}
+		return window.confirmString();
 	}
 };

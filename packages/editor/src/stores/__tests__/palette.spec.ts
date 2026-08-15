@@ -1,7 +1,8 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { getPaletteStore, paletteStateKeys } from '@app/stores/palette';
+import { Palette } from '@/palette/palette.ts';
 
-describe('usePaletteStore（Palette 工具栏状态桥接）', () => {
+describe('usePaletteStore（Palette 工具栏状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {
 		const store = getPaletteStore();
 		expect(store.state).toBe('closed');
@@ -47,11 +48,50 @@ describe('usePaletteStore（Palette 工具栏状态桥接）', () => {
 		store.tileset = null;
 	});
 
-	it('无 window.Palette 时 syncState 兜底默认值', () => {
+	it('legacy 写入经 store 生效（store 为源）', () => {
 		const store = getPaletteStore();
-		store.syncState();
-		expect(store.state).toBe('closed');
-		expect(store.mode).toBe('normal');
-		expect(store.tileset).toBe(null);
+		Palette.state = 'open';
+		expect(store.state).toBe('open');
+		Palette.mode = 'tag';
+		expect(store.mode).toBe('tag');
+		Palette.zoom = 2;
+		expect(store.zoom).toBe(2);
+		Palette.showGrid = false;
+		expect(store.showGrid).toBe(false);
+		Palette.scrollable = true;
+		expect(store.scrollable).toBe(true);
+		Palette.activeIndex = 7;
+		expect(store.activeIndex).toBe(7);
+		Palette.tileset = { type: 'auto', width: 8, tags: [] };
+		expect(store.tileset?.width).toBe(8);
+		Palette.state = 'closed';
+		Palette.mode = 'normal';
+		Palette.zoom = null;
+		Palette.showGrid = true;
+		Palette.scrollable = false;
+		Palette.activeIndex = null;
+		Palette.tileset = null;
+	});
+
+	it('store 写入经桥反向可读（外部 legacy 读取兼容）', () => {
+		const store = getPaletteStore();
+		store.state = 'loading';
+		expect(Palette.state).toBe('loading');
+		store.mode = 'terrain';
+		expect(Palette.mode).toBe('terrain');
+		store.zoom = 4;
+		expect(Palette.zoom).toBe(4);
+		store.showGrid = false;
+		expect(Palette.showGrid).toBe(false);
+		store.activeIndex = 3;
+		expect(Palette.activeIndex).toBe(3);
+		store.tileset = { width: 16, tags: [0] };
+		expect(Palette.tileset?.width).toBe(16);
+		store.state = 'closed';
+		store.mode = 'normal';
+		store.zoom = null;
+		store.showGrid = true;
+		store.activeIndex = null;
+		store.tileset = null;
 	});
 });

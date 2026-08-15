@@ -17,7 +17,7 @@ export const particleStateKeys = [
 	'scaleY'
 ] as const;
 
-type ParticleTargetShape = {
+export type ParticleTargetShape = {
 	area: {
 		type: 'rectangle' | 'circle';
 		x: number;
@@ -52,18 +52,6 @@ export const useParticleStore = defineStore('particle', () => {
 	const zoom = shallowRef<number | null>(null);
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
-
-	function syncState() {
-		state.value = Particle?.state ?? 'closed';
-		target.value = Particle?.target ?? null;
-		paused.value = Particle?.paused ?? false;
-		showWireframe.value = Particle?.showWireframe ?? false;
-		showAnchor.value = Particle?.showAnchor ?? false;
-		speed.value = Particle?.speed ?? null;
-		zoom.value = Particle?.zoom ?? null;
-		scaleX.value = Particle?.scaleX ?? null;
-		scaleY.value = Particle?.scaleY ?? null;
-	}
 
 	function open(context: ParticleContextShape) {
 		Particle?.open?.(context);
@@ -155,7 +143,6 @@ export const useParticleStore = defineStore('particle', () => {
 		zoom,
 		scaleX,
 		scaleY,
-		syncState,
 		open,
 		close,
 		planToSave,

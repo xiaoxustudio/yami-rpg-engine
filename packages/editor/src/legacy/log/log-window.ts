@@ -3,11 +3,34 @@ import { Editor } from '@/main/editor.ts';
 
 import { ipcRenderer } from 'electron';
 
-export const Log = {
+interface LogShape {
+	readonly box: HTMLElement | null;
+	devmode: boolean;
+	initialize: ((...args: unknown[]) => void) | null;
+	throw: ((...args: unknown[]) => void) | null;
+	print: ((...args: unknown[]) => void) | null;
+	clear: (() => void) | null;
+	update: (() => void) | null;
+	tick: (() => void) | null;
+	warn: ((message: string, ...args: unknown[]) => void) | null;
+	catchError: ((...args: unknown[]) => void) | null;
+	catchRejection: ((...args: unknown[]) => void) | null;
+	tscLog: ((...args: unknown[]) => void) | null;
+	log: ((message: string) => void) | null;
+	error: ((message: string) => void) | null;
+	open: ((...args: unknown[]) => void) | null;
+	switchMode: ((...args: unknown[]) => void) | null;
+	loadCommunityReleases: ((...args: unknown[]) => void) | null;
+	displayDonationList: ((...args: unknown[]) => void) | null;
+	parseCommunityReleases: ((...args: unknown[]) => void) | null;
+	openVSCode: ((file: string, line: number, column: number) => void) | null;
+	[k: string]: any;
+}
+
+export const Log: LogShape = {
 	get box() {
 		return $('#log-message');
 	},
-	list: [] as unknown as { type: string; message: string; duration: number }[],
 	devmode: typeof process !== 'undefined' && process.argv?.includes('--debug-mode'),
 	initialize: null as (() => void) | null,
 	throw: null as ((...args: unknown[]) => void) | null,
@@ -20,7 +43,6 @@ export const Log = {
 	catchError: null as ((...args: unknown[]) => void) | null,
 	catchRejection: null as ((...args: unknown[]) => void) | null,
 	tscLog: null as ((...args: unknown[]) => void) | null,
-	logs: null as { type: string; message: string; duration: number }[] | null,
 	log: null as ((message: string) => void) | null,
 	error: null as ((message: string) => void) | null,
 	open: null as ((...args: unknown[]) => void) | null,
@@ -48,14 +70,15 @@ Log.throw = function (error: unknown) {
 };
 
 Log.print = function (item: unknown) {
-	if (this.list.length < 50) {
-		this.list.push(item as { type: string; message: string; duration: number });
+	const list = getLogStore().logs;
+	if (list.length < 50) {
+		list.push(item as { type: string; message: string; duration: number });
 		this.update!();
 	}
 };
 
 Log.clear = function () {
-	this.list.length = 0;
+	getLogStore().logs.length = 0;
 	this.update!();
 };
 
@@ -67,7 +90,7 @@ Log.update = function () {
 
 Log.tick = function () {
 	let changed = false;
-	const list = Log.list;
+	const list = getLogStore().logs;
 	let i = list.length;
 	while (--i >= 0) {
 		const item = list[i];
@@ -142,3 +165,13 @@ Log.tscLog = function (event: unknown, tscMessage: unknown) {
 		duration: duration
 	});
 };
+
+import { getLogStore } from '@app/stores/log';
+
+Object.defineProperty(Log, 'list', {
+	get: () => getLogStore().logs,
+	set: (value: { type: string; message: string; duration: number }[]) => {
+		getLogStore().logs = value;
+	},
+	configurable: true
+});

@@ -1,7 +1,11 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import UnloadSubscene from '@app/components/commands/UnloadSubscene.vue';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 describe('UnloadSubscene 组件 DOM 完整性', () => {
 	beforeEach(() => {

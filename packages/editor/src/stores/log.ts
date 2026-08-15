@@ -2,14 +2,11 @@ import { defineStore } from 'pinia';
 import { UpdateLog } from '@/log/update-log-window.ts';
 import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';
+import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 
 export const useLogStore = defineStore('log', () => {
 	const logs = shallowRef<{ type: string; message: string; duration: number }[]>([]);
-
-	function syncState() {
-		logs.value = Log?.logs ?? [];
-	}
 
 	function log(message: string) {
 		Log?.log?.(message);
@@ -165,7 +162,6 @@ export const useLogStore = defineStore('log', () => {
 
 	return {
 		logs,
-		syncState,
 		log,
 		warn,
 		error,
@@ -206,3 +202,7 @@ export const useLogStore = defineStore('log', () => {
 		referenceGetPointermoveListener
 	};
 });
+
+export function getLogStore() {
+	return useLogStore(pinia);
+}

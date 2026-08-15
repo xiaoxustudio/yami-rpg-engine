@@ -1,7 +1,7 @@
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, hide, read, show, write } from '@/util/element-utils';
+import { clear, getFocus, hide, show, write } from '@/util/element-utils';
 import { EventEditor } from '@/command/event-editor.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
@@ -46,7 +46,6 @@ import { Local } from '@/tools/localization.ts';
 		close: null,
 		write: null,
 		update: null,
-		paramInput: null,
 		typeWrite: null,
 		listChange: null
 	} as unknown as FileEventPage;
@@ -119,6 +118,8 @@ import { Local } from '@/tools/localization.ts';
 			write('returnType');
 			write('description');
 			write('parameters');
+
+			($('#fileEvent-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -161,16 +162,6 @@ import { Local } from '@/tools/localization.ts';
 				}
 				break;
 		}
-	};
-
-	FileEvent.paramInput = function (this: FileEventPage, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^fileEvent-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		FileEvent.update!(FileEvent.target!, Inspector.getKey!(element), read(element));
 	};
 
 	FileEvent.typeWrite = function (this: FileEventPage, event: Event & { value?: string }) {

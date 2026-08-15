@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
@@ -7,7 +6,6 @@ import { Inspector } from './inspector.ts';
 	interface AnimParticleLayerShape {
 		target: Record<string, unknown> | null;
 		update: ((layer: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimParticleLayer: AnimParticleLayerShape = {
@@ -17,8 +15,7 @@ import { Inspector } from './inspector.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimParticleLayer.initialize = function (this: typeof AnimParticleLayer) {
@@ -76,11 +73,7 @@ import { Inspector } from './inspector.ts';
 			this.target = layer;
 			this.motion = Animation.motion;
 
-			const write = getElementWriter('animParticleLayer', layer);
-			write('particleId');
-			write('position');
-			write('angle');
-			write('order');
+			($('#animParticleLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -115,20 +108,6 @@ import { Inspector } from './inspector.ts';
 				break;
 		}
 		Animation.requestRendering!();
-	};
-
-	AnimParticleLayer.paramInput = function (this: typeof AnimParticleLayer, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animParticleLayer-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimParticleLayer.update!(
-			AnimParticleLayer.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animParticleLayer = AnimParticleLayer;

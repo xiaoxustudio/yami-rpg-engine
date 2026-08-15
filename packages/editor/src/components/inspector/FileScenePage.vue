@@ -3,19 +3,19 @@
 		<DetailSummary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-general-grid">
 			<div class="text">{{ local.getLabel('fileScene-width') || 'Width' }}</div
-			><NumberBox id="fileScene-width" min="0" max="512" unit="tile" @change="onParamChange" />
+			><NumberBox id="fileScene-width" v-model="form.width" min="0" max="512" unit="tile" @change="onParamInput" />
 			<div class="text">{{ local.getLabel('fileScene-height') || 'Height' }}</div
-			><NumberBox id="fileScene-height" min="0" max="512" unit="tile" @change="onParamChange" />
+			><NumberBox id="fileScene-height" v-model="form.height" min="0" max="512" unit="tile" @change="onParamInput" />
 			<div class="text">{{ local.getLabel('fileScene-tileWidth') || 'Tile Width' }}</div
 			><NumberBox
-				id="fileScene-tileWidth" @input="onParamInput"
+				id="fileScene-tileWidth" v-model="form.tileWidth" @input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
 			/>
 			<div class="text">{{ local.getLabel('fileScene-tileHeight') || 'Tile Height' }}</div
 			><NumberBox
-				id="fileScene-tileHeight" @input="onParamInput"
+				id="fileScene-tileHeight" v-model="form.tileHeight" @input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
@@ -29,12 +29,13 @@
 			<div class="flex-box" id="fileScene-ambient-red-box">
 				<SliderBox
 					id="fileScene-ambient-red-slider"
+					v-model="form.ambientRed"
 					min="0"
 					max="255"
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-red" @input="onParamInput"
+					id="fileScene-ambient-red" v-model="form.ambientRed" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -44,12 +45,13 @@
 			<div class="flex-box" id="fileScene-ambient-green-box">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
+					v-model="form.ambientGreen"
 					min="0"
 					max="255"
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-green" @input="onParamInput"
+					id="fileScene-ambient-green" v-model="form.ambientGreen" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -59,12 +61,13 @@
 			<div class="flex-box" id="fileScene-ambient-blue-box">
 				<SliderBox
 					id="fileScene-ambient-blue-slider"
+					v-model="form.ambientBlue"
 					min="0"
 					max="255"
 					step="5"
 				/>
 				<NumberBox
-					id="fileScene-ambient-blue" @input="onParamInput"
+					id="fileScene-ambient-blue" v-model="form.ambientBlue" @input="onParamInput"
 					min="0"
 					max="255"
 					step="5"
@@ -74,12 +77,13 @@
 			<div class="flex-box" id="fileScene-ambient-direct-box">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"
+					v-model="form.ambientDirect"
 					min="0"
 					max="1"
 					step="0.05"
 				/>
 				<NumberBox
-					id="fileScene-ambient-direct" @input="onParamInput"
+					id="fileScene-ambient-direct" v-model="form.ambientDirect" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -110,9 +114,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { useFileScenePage } from '@app/composables/useFileScenePage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
@@ -123,16 +128,13 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 const scene = useSceneStore();
 const local = useLocalStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.fileScene?.paramInput?.({ target });
-};
-const onParamChange = () => {
-	Inspector?.fileScene?.paramInput?.();
-};
+const { form, sync, onParamInput } = useFileScenePage();
 
 onMounted(() => {
-	scene.syncState();
-	local.syncState();
+	const el = document.getElementById('fileScene-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

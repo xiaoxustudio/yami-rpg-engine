@@ -43,11 +43,14 @@ interface ButtonData {
 
 const uiButton = vi.hoisted(() => ({
 	target: null as ButtonData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 vi.mock('@/inspector/inspector.ts', () => ({
-	Inspector: { uiButton }
+	Inspector: {
+		uiButton,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/ui', () => ({
@@ -64,7 +67,7 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		uiButton.target = null;
-		uiButton.paramInput.mockClear();
+		uiButton.update.mockClear();
 	});
 
 	const mountPage = async () => {
@@ -188,23 +191,22 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 		wrapper.unmount();
 	});
 
-	it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+	it('控件 input 经 composable onParamInput 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
 		const el = document.getElementById('uiButton-vue-mount') as SyncEl;
 		uiButton.target = makeButton();
 		el.sync?.();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
-		uiButton.paramInput.mockImplementation(() => {
-			if (uiButton.target) {
-				uiButton.target.size = 24;
-			}
+		uiButton.update.mockImplementation((target: ButtonData, key: string, value: unknown) => {
+			(target as unknown as Record<string, unknown>)[key] = value;
 		});
 		const input = document.getElementById('uiButton-size')?.querySelector('input');
 		expect(input).toBeTruthy();
 		input!.value = '24';
+		input!.focus();
 		input!.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(uiButton.paramInput).toHaveBeenCalled();
+		expect(uiButton.update).toHaveBeenCalled();
 		await wrapper.vm.$nextTick();
 		expect(read('uiButton-size')).toBe(24);
 		wrapper.unmount();

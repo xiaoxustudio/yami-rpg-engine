@@ -6,6 +6,10 @@ import { Command } from '@/command/command-object.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import '@/module/command/setList.ts';
 
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
 interface SetListFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;
 	getForm(): Record<string, unknown>;

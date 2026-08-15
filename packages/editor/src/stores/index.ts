@@ -25,4 +25,5 @@ export { useAttributeStore } from './attribute';
 export { useEnumStore } from './enum';
 export { useLocalizationStore } from './localization';
 export { useToolStore } from './tool';
+export { useHistoryStore } from './history';
 export { usePrinterStore } from './printer';

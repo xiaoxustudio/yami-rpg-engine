@@ -4,8 +4,33 @@ import { PresetElement } from '@/tools/preset-element-window.ts';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Selection } from '@/tools/text-capture.ts';
-import { getToolInstance } from '@/tools/tool-registry';
+import type { ToolInstance } from '@/tools/tool-registry';
+import { bindToolRegistry } from '@/tools/tool-registry';
+import { bindShortcutStore } from '@/tools/shortcut-registry';
+import { pinia } from './pinia';
 import { shallowRef } from 'vue';
+
+const toolRegistry = new Map<string, ToolInstance>();
+const shortcuts: Record<string, (...args: unknown[]) => boolean> = {};
+
+function registerTool(name: string, instance: ToolInstance): void {
+	toolRegistry.set(name, instance);
+}
+
+function getToolInstance(name: string): ToolInstance | undefined {
+	return toolRegistry.get(name);
+}
+
+function registerShortcut(id: string, handler: (...args: unknown[]) => boolean): void {
+	shortcuts[id] = handler;
+}
+
+function getShortcut(id: string): ((...args: unknown[]) => boolean) | undefined {
+	return shortcuts[id];
+}
+
+bindToolRegistry({ registerTool, getToolInstance });
+bindShortcutStore({ registerShortcut, getShortcut });
 
 export const useToolStore = defineStore('tool', () => {
 	const activeTool = shallowRef<string | null>(null);
@@ -177,6 +202,10 @@ export const useToolStore = defineStore('tool', () => {
 
 	return {
 		activeTool,
+		registerTool,
+		getToolInstance,
+		registerShortcut,
+		getShortcut,
 		getTool,
 		openTool,
 		closeTool,
@@ -218,3 +247,7 @@ export const useToolStore = defineStore('tool', () => {
 		selectionWrap
 	};
 });
+
+export function getToolStore() {
+	return useToolStore(pinia);
+}

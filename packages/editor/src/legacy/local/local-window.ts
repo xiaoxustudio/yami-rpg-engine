@@ -106,11 +106,10 @@ interface LocalizationShape {
 	list_onCreate: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onDelete: (this: TreeListElement, item: LocalizationItem) => void;
 	list_onResume: (this: TreeListElement, item: LocalizationItem) => void;
-	state: string;
-	strings: Record<string, string> | null;
 	close: (() => void) | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
+	[k: string]: any;
 }
 
 export const Localization: LocalizationShape = {
@@ -172,8 +171,6 @@ export const Localization: LocalizationShape = {
 	list_onCreate: null as unknown as LocalizationShape['list_onCreate'],
 	list_onDelete: null as unknown as LocalizationShape['list_onDelete'],
 	list_onResume: null as unknown as LocalizationShape['list_onResume'],
-	state: null as unknown as string,
-	strings: null as Record<string, string> | null,
 	close: null as (() => void) | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
 	loadFromProject: null as ((project: EditorProjectShape) => void) | null
@@ -214,7 +211,6 @@ function ensureDomBound() {
 }
 
 Localization.initialize = function () {
-	getLocalizationStore().syncState();
 	ensureDomBound();
 	if (!Localization.list) return;
 	const list = this.list!;
@@ -302,7 +298,7 @@ Localization.open = function (target: LocalizationTarget | null | undefined = nu
 	this.unpackLocalization();
 	this.createInputs();
 	Window.open!('localization');
-	this.state = 'open';
+	getLocalizationStore().state = 'open';
 
 	const list = this.list!;
 	const item = !target ? undefined : this.getItemById(read(target));
@@ -372,9 +368,10 @@ Localization.getItemById = (function IIFE() {
 		items: LocalizationItem[] | null | undefined,
 		id: string
 	): LocalizationItem | undefined => {
-		const length = items!.length;
+		if (!items) return undefined;
+		const length = items.length;
 		for (let i = 0; i < length; i++) {
-			const item = items![i];
+			const item = items[i];
 			if (item.id === id) {
 				return item;
 			}
@@ -437,7 +434,7 @@ Localization.unpackLocalization = (function IIFE() {
 		}
 	}
 	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
-		const length = items!.length;
+		const length = items?.length ?? 0;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
@@ -461,7 +458,7 @@ Localization.unpackLocalization = (function IIFE() {
 
 Localization.packLocalization = (function IIFE() {
 	const clone = (items: LocalizationItem[] | null | undefined): LocalizationItem[] => {
-		const length = items!.length;
+		const length = items?.length ?? 0;
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
@@ -516,7 +513,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 }.bind(Localization);
 
 Localization.windowClosed = function (this: LocalizationShape, event: Event) {
-	this.state = 'closed';
+	getLocalizationStore().state = 'closed';
 	this.data = null;
 	this.idMap = null;
 	this.inputs = null;
@@ -877,3 +874,15 @@ Localization.list_onResume = function (item: LocalizationItem) {
 };
 
 import { getLocalizationStore } from '@app/stores/localization';
+
+const localizationBridgeKeys = ['state', 'strings'] as const;
+
+for (const key of localizationBridgeKeys) {
+	Object.defineProperty(Localization, key, {
+		get: () => getLocalizationStore()[key],
+		set: (value: unknown) => {
+			(getLocalizationStore() as unknown as Record<string, unknown>)[key] = value;
+		},
+		configurable: true
+	});
+}

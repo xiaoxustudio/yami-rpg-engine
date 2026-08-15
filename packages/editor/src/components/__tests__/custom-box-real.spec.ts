@@ -7,7 +7,9 @@ import { Local } from '@/tools/localization.ts';
 describe('editor CustomBox 空值显示 None（真实链路）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
-		vi.spyOn(Local, 'get').mockReturnValue('None');
+		vi.spyOn(Local as unknown as { get: (key: string) => string }, 'get').mockReturnValue(
+			'None'
+		);
 	});
 
 	it('type=file 空串 modelValue → None', async () => {

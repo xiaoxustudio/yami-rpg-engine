@@ -73,7 +73,7 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
 	}
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

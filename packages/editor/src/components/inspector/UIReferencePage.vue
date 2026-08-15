@@ -21,14 +21,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@/inspector/inspector.ts';
-import { useUIStore } from '@app/stores/ui';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 
-const ui = useUIStore();
 const local = useLocalStore();
 
 const onParamInput = (event: Event) => {
@@ -37,7 +35,5 @@ const onParamInput = (event: Event) => {
 };
 
 onMounted(() => {
-	ui.syncState();
-	local.syncState();
 });
 </script>

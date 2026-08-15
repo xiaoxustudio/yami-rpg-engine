@@ -271,16 +271,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		elMoveMotion.write2(read(elMoveMotion));
 	};
 
-	FileActor.paramInput = function (this: FileActorShape, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^fileActor-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		FileActor.update(FileActor.target, Inspector.getKey!(element), read(element));
-	};
-
 	FileActor.listChange = function (this: FileActorShape, event: Event) {
 		File.planToSave!(FileActor.meta);
 	};

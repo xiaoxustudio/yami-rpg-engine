@@ -39,7 +39,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		update: ((tilemap: Record<string, unknown>, key: string, value: unknown) => void) | null;
 		layerWrite: ((event: Event & { value: unknown }) => void) | null;
 		layerInput: ((event: Event) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const SceneTilemap: SceneTilemapShape = {
@@ -54,8 +53,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		write: null,
 		update: null,
 		layerWrite: null,
-		layerInput: null,
-		paramInput: null
+		layerInput: null
 	};
 
 	SceneTilemap.initialize = function (this: typeof SceneTilemap) {
@@ -167,25 +165,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = tilemap;
 
 			const write = getElementWriter('sceneTilemap', tilemap);
-			write('name');
-			write('layer');
-			write('order');
-			write('light');
-			write('blend');
-			write('x');
-			write('y');
-			write('width');
-			write('height');
-			write('anchorX');
-			write('anchorY');
-			write('offsetX');
-			write('offsetY');
-			write('parallaxFactorX');
-			write('parallaxFactorY');
-			write('opacity');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneTilemap-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -297,14 +280,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 			];
 		}
-	};
-
-	SceneTilemap.paramInput = function (this: typeof SceneTilemap, event: Event) {
-		SceneTilemap.update!(
-			SceneTilemap.target as Record<string, unknown>,
-			Inspector.getKey!(this),
-			read(this)
-		);
 	};
 
 	Inspector.sceneTilemap = SceneTilemap;

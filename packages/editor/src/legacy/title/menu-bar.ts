@@ -58,7 +58,6 @@ import { GlobalClipboard } from '@/util/clipboard.ts';
 type MenubarMethod = ((...args: any[]) => any) | null;
 
 interface MenubarShape {
-	state: string | null;
 	popup: ((...args: unknown[]) => void) | null;
 
 	// methods
@@ -81,6 +80,7 @@ interface MenubarShape {
 	pointerup: MenubarMethod;
 	pointerover: MenubarMethod;
 	hrefClick: MenubarMethod;
+	[k: string]: any;
 }
 
 type RecentTabMeta = { guid?: string; path: string; [k: string]: unknown };
@@ -106,7 +106,6 @@ export const Menubar: MenubarShape = {
 	pointerup: null,
 	pointerover: null,
 	hrefClick: null,
-	state: null as string | null,
 	popup: null as ((...args: unknown[]) => void) | null
 };
 
@@ -1145,3 +1144,17 @@ Menubar.pointerover = function (this: typeof Menubar, event: PointerEvent) {
 Menubar.hrefClick = function (this: typeof Menubar, event: MouseEvent) {
 	File.openURL!((event.target as HTMLElement | null)?.getAttribute?.('href'));
 };
+
+import { getMenubarStore } from '@app/stores/menubar';
+
+const menubarBridgeKeys = ['state'] as const;
+
+for (const key of menubarBridgeKeys) {
+	Object.defineProperty(Menubar, key, {
+		get: () => getMenubarStore()[key],
+		set: (value: unknown) => {
+			(getMenubarStore() as unknown as Record<string, unknown>)[key] = value;
+		},
+		configurable: true
+	});
+}

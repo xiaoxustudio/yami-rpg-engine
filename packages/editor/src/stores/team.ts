@@ -18,14 +18,8 @@ type TeamDataShape = {
 
 export const useTeamStore = defineStore('team', () => {
 	const state = shallowRef<string>('closed');
-	const teams = shallowRef<TeamShape[] | Record<string, TeamShape>>([]);
+	const teams = shallowRef<TeamShape[] | Record<string, TeamShape> | null>([]);
 	const data = shallowRef<TeamDataShape[] | null>(null);
-
-	function syncState() {
-		state.value = Team?.state ?? 'closed';
-		teams.value = Team?.teams ?? [];
-		data.value = Team?.data ?? null;
-	}
 
 	function initialize() {
 		Team?.initialize?.();
@@ -75,7 +69,6 @@ export const useTeamStore = defineStore('team', () => {
 		state,
 		teams,
 		data,
-		syncState,
 		initialize,
 		open,
 		close,

@@ -241,21 +241,109 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
+import { getElementWriter } from '@/util/dom.ts';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const settings = useProjectSettingsWindow();
+const form = settings.form;
+
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const CONFIG_FIELDS = [
+	'window-title',
+	'window-width',
+	'window-height',
+	'window-display',
+	'resolution-width',
+	'resolution-height',
+	'resolution-sceneScale',
+	'resolution-uiScale',
+	'scene-padding',
+	'scene-animationInterval',
+	'tileArea-expansionTop',
+	'tileArea-expansionLeft',
+	'tileArea-expansionRight',
+	'tileArea-expansionBottom',
+	'animationArea-expansionTop',
+	'animationArea-expansionLeft',
+	'animationArea-expansionRight',
+	'animationArea-expansionBottom',
+	'lightArea-expansionTop',
+	'lightArea-expansionLeft',
+	'lightArea-expansionRight',
+	'lightArea-expansionBottom',
+	'virtualAxis-up',
+	'virtualAxis-down',
+	'virtualAxis-left',
+	'virtualAxis-right',
+	'collision-actor-enabled',
+	'collision-scene-enabled',
+	'collision-scene-actorSize',
+	'collision-trigger-collideWithActorShape',
+	'text-importedFonts',
+	'text-fontFamily',
+	'text-highDefinition',
+	'actor-tempAttributes',
+	'animation-frameRate',
+	'soundAttenuation-distance',
+	'soundAttenuation-easingId',
+	'webgl-desynchronized',
+	'webgl-textureMagFilter',
+	'webgl-textureMinFilter',
+	'script-autoCompile',
+	'save-location',
+	'save-subdir',
+	'localization-languages',
+	'localization-default',
+	'preload',
+	'deadzone'
+] as const;
+
+const setForm = (data: Record<string, unknown>): void => {
+	Object.assign(form, data);
+	const write = getElementWriter('config', data);
+	for (const field of CONFIG_FIELDS) {
+		write(field);
+	}
+};
+
+const getForm = (): Record<string, unknown> => {
+	const data: Record<string, unknown> = {};
+	for (const field of CONFIG_FIELDS) {
+		const element = document.getElementById(`config-${field}`) as
+			| (HTMLElement & { read?: () => unknown })
+			| null;
+		if (!element || typeof element.read !== 'function') continue;
+		const keys = field.split('-');
+		let node = data;
+		for (let i = 0; i < keys.length - 1; i++) {
+			const next = node[keys[i]] as Record<string, unknown> | undefined;
+			if (next === undefined) {
+				node = node[keys[i]] = {};
+			} else {
+				node = next;
+			}
+		}
+		node[keys[keys.length - 1]] = element.read();
+	}
+	return data;
+};
+
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+	const el = document.getElementById('project-settings');
+	if (el) {
+		attachElementApi(el, { setForm, getForm });
+	}
 });
 </script>

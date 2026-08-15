@@ -241,8 +241,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { onMounted } from 'vue';
+import { useSceneLightPage } from '@app/composables/useSceneLightPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
@@ -256,64 +256,10 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-interface LightForm {
-	name: string;
-	type: string;
-	blend: string;
-	x: number;
-	y: number;
-	range: number;
-	intensity: number;
-	mask: string;
-	anchorX: number;
-	anchorY: number;
-	width: number;
-	height: number;
-	angle: number;
-	red: number;
-	green: number;
-	blue: number;
-	direct: number;
-}
-
-const LIGHT_KEYS: (keyof LightForm)[] = [
-	'name',
-	'type',
-	'blend',
-	'x',
-	'y',
-	'range',
-	'intensity',
-	'mask',
-	'anchorX',
-	'anchorY',
-	'width',
-	'height',
-	'angle',
-	'red',
-	'green',
-	'blue',
-	'direct'
-];
-
 const scene = useSceneStore();
 const local = useLocalStore();
 
-const form = reactive<Partial<LightForm>>({});
-
-const sync = (): void => {
-	const target = Inspector?.sceneLight?.target as Partial<LightForm> | null | undefined;
-	if (!target) return;
-	for (const key of LIGHT_KEYS) {
-		form[key] = target[key];
-	}
-};
-
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.sceneLight?.paramInput?.({ target });
-	sync();
-};
+const { form, sync, onParamInput } = useSceneLightPage();
 
 onMounted(() => {
 	const el = document.getElementById('sceneLight-vue-mount');
@@ -321,7 +267,5 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 	sync();
-	scene.syncState();
-	local.syncState();
 });
 </script>

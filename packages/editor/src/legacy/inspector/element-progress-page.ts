@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -21,8 +20,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UIProgressBar.initialize = function (this: typeof UIProgressBar) {
@@ -149,24 +147,9 @@ import { UI } from '@/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiProgressBar', node);
-			write('image');
-			write('display');
-			write('clip');
-			write('type');
-			write('centerX');
-			write('centerY');
-			write('startAngle');
-			write('centralAngle');
-			write('step');
-			write('progress');
-			write('blend');
-			write('colorMode');
-			write('color-0');
-			write('color-1');
-			write('color-2');
-			write('color-3');
 			Inspector.uiElement.open(node);
+
+			($('#uiProgressBar-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -221,17 +204,6 @@ import { UI } from '@/ui/ui-window.ts';
 			}
 		}
 		UI.requestRendering!();
-	};
-
-	UIProgressBar.paramInput = function (
-		this: HTMLElement & { [k: string]: unknown },
-		event: Event
-	) {
-		UIProgressBar.update!(
-			UIProgressBar.target as UIProgressBarData,
-			Inspector.getKey!(this),
-			read(this)
-		);
 	};
 
 	Inspector.uiProgressBar = UIProgressBar;

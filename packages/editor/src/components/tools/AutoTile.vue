@@ -156,8 +156,5 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	autoTileStore.syncState();
-	inspector.syncState();
-	local.syncState();
 });
 </script>

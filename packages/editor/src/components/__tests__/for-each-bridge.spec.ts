@@ -6,6 +6,10 @@ import { Command } from '@/command/command-object.ts';
 import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import '@/module/command/forEach.ts';
 
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
 interface ForEachFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;
 	getForm(): Record<string, unknown>;

@@ -1,15 +1,13 @@
 import { defineStore } from 'pinia';
 import { EventEditor } from '@/command/event-editor.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
+
+export const commandStateKeys = ['state', 'target'] as const;
 
 export const useCommandStore = defineStore('command', () => {
 	const state = shallowRef<string>('closed');
 	const target = shallowRef<Record<string, unknown> | null>(null);
-
-	function syncState() {
-		state.value = EventEditor?.state ?? 'closed';
-		target.value = EventEditor?.target ?? null;
-	}
 
 	function initialize() {
 		EventEditor?.initialize?.();
@@ -108,7 +106,6 @@ export const useCommandStore = defineStore('command', () => {
 	return {
 		state,
 		target,
-		syncState,
 		initialize,
 		open,
 		close,
@@ -133,3 +130,7 @@ export const useCommandStore = defineStore('command', () => {
 		apply
 	};
 });
+
+export function getCommandStore() {
+	return useCommandStore(pinia);
+}

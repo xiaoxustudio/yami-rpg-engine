@@ -1,7 +1,6 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, write } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+﻿import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils';
+import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
 import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
 interface StateGetterShape extends AccessorBaseShape {
@@ -42,29 +41,7 @@ StateGetter.initialize = function (this: StateGetterShape) {
 
 StateGetter.open = function (this: StateGetterShape, target: AccessorTarget) {
 	this.target = target;
-	Window.open!('stateGetter');
-
-	let actor = { type: 'trigger' };
-	let stateId = '';
-	let variable = { type: 'local', key: '' };
-	const state = target.read?.();
-	switch (state.type) {
-		case 'trigger':
-		case 'latest':
-			break;
-		case 'by-id':
-			actor = state.actor;
-			stateId = state.stateId;
-			break;
-		case 'variable':
-			variable = state.variable;
-			break;
-	}
-	write($('#stateGetter-type'), state.type);
-	write($('#stateGetter-actor'), actor);
-	write($('#stateGetter-stateId'), stateId);
-	write($('#stateGetter-variable'), variable);
-	getFocus($('#stateGetter-type'));
+	useStateGetterWindow().open(target);
 };
 
 StateGetter.checkDataForPlugin = function (this: StateGetterShape, data: unknown) {
@@ -79,35 +56,5 @@ StateGetter.createDefaultForPlugin = function (this: StateGetterShape) {
 };
 
 StateGetter.confirm = function (this: StateGetterShape, event: Event) {
-	const read = getElementReader('stateGetter');
-	const type = read('type');
-	let getter;
-	switch (type) {
-		case 'trigger':
-		case 'latest':
-			getter = { type };
-			break;
-		case 'by-id': {
-			const actor = read('actor');
-			const stateId = read('stateId');
-			if (stateId === '') {
-				return getFocus($('#stateGetter-stateId'));
-			}
-			getter = { type, actor, stateId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#stateGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	if (this.target!.isPluginInput) {
-		getter = { getter: 'state', ...getter };
-	}
-	this.target?.input?.(getter!);
-	Window.close!('stateGetter');
-}.bind(StateGetter);
+	useStateGetterWindow().confirm();
+};

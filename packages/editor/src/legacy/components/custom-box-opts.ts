@@ -204,6 +204,9 @@ export const customBoxOptions: CustomBoxApiOptions = {
 				Command.parseObject as ((value: unknown) => string | undefined) | undefined
 			),
 		element: parseWithInvalid((element: unknown) => Command.parseElement?.(element) ?? ''),
+		'ancestor-element': parseWithInvalid(
+			(element: unknown) => Command.parseElement?.(element) ?? ''
+		),
 		'preset-object': (preset: unknown) =>
 			parseText(
 				preset,

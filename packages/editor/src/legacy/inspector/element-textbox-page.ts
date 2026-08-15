@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -7,7 +6,6 @@ import { UI } from '@/ui/ui-window.ts';
 	interface UITextBoxShape {
 		target: UITextBoxData | null;
 		update: ((node: UITextBoxData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	interface UITextBoxData {
@@ -35,8 +33,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UITextBox.initialize = function (this: typeof UITextBox) {
@@ -121,26 +118,13 @@ import { UI } from '@/ui/ui-window.ts';
 		if (this.target !== node) {
 			this.target = node;
 
-			const write = getElementWriter('uiTextBox', node);
 			const number = $('#uiTextBox-number');
 			(number.input! as HTMLInputElement).min = node.min;
 			(number.input! as HTMLInputElement).max = node.max;
 			number.decimals = node.decimals;
-			write('type');
-			write('align');
-			write('text');
-			write('maxLength');
-			write('number');
-			write('min');
-			write('max');
-			write('decimals');
-			write('padding');
-			write('size');
-			write('font');
-			write('color');
-			write('selectionColor');
-			write('selectionBgColor');
 			Inspector.uiElement.open(node);
+
+			($('#uiTextBox-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -207,10 +191,6 @@ import { UI } from '@/ui/ui-window.ts';
 				break;
 		}
 		UI.requestRendering!();
-	};
-
-	UITextBox.paramInput = function (this: typeof UITextBox, event: Event) {
-		UITextBox.update!(UITextBox.target as UITextBoxData, Inspector.getKey!(this), read(this));
 	};
 
 	Inspector.uiTextBox = UITextBox;

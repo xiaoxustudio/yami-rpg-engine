@@ -8,8 +8,11 @@ type ActiveEditorShape = {
 export const UndoManager = {
 	active: null as unknown as ActiveEditorShape | null,
 
+	onActiveChange: null as (() => void) | null,
+
 	setActive(editor: ActiveEditorShape | null) {
 		this.active = editor;
+		this.onActiveChange?.();
 	},
 
 	getActive() {

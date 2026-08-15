@@ -611,7 +611,8 @@ export const treeListPrototype: Record<string, (...args: any[]) => any> = {
 	): TreeItem | undefined {
 		const entries = Object.entries(properties);
 
-		const find = (items: TreeItem[]): TreeItem | undefined => {
+		const find = (items: TreeItem[] | null | undefined): TreeItem | undefined => {
+			if (!items) return undefined;
 			const length = items.length;
 			for (let i = 0; i < length; i++) {
 				const item = items[i];

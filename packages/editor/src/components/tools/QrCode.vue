@@ -41,7 +41,7 @@ onMounted(() => {
 	const el = document.getElementById('qr-code-content');
 	if (!el) return;
 	attachElementApi(el, { update });
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

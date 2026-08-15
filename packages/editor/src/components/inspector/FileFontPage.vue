@@ -22,23 +22,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { useInspectorStore } from '@app/stores/inspector';
+import { useFileFontPage } from '@app/composables/useFileFontPage';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 
-const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const onTextInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.fileFont?.textInput?.({ target });
-};
-onMounted(() => {
-	inspector.syncState();
-	local.syncState();
-});
+const { onTextInput } = useFileFontPage();
 </script>

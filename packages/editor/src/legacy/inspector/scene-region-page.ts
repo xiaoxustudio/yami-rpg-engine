@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, read, write } from '@/util/element-utils';
+import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -10,7 +10,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	interface SceneRegionShape {
 		target: Record<string, unknown> | null;
 		update: ((region: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const SceneRegion: SceneRegionShape = {
@@ -22,8 +21,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	SceneRegion.initialize = function (this: typeof SceneRegion) {
@@ -76,15 +74,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = region;
 
 			const write = getElementWriter('sceneRegion', region);
-			write('name');
-			write('color');
-			write('x');
-			write('y');
-			write('width');
-			write('height');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneRegion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -140,20 +133,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 		}
 		Scene.requestRendering!();
-	};
-
-	SceneRegion.paramInput = function (this: typeof SceneRegion, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneRegion-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		SceneRegion.update!(
-			SceneRegion.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.sceneRegion = SceneRegion;

@@ -146,7 +146,5 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const local = useLocalStore();
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
 });
 </script>

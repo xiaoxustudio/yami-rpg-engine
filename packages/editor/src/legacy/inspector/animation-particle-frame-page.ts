@@ -2,13 +2,11 @@ import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';
-import { read } from '@/util/element-utils.ts';
 
 {
 	interface AnimParticleFrameShape {
 		target: Record<string, unknown> | null;
 		update: ((frame: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimParticleFrame: AnimParticleFrameShape = {
@@ -19,8 +17,7 @@ import { read } from '@/util/element-utils.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimParticleFrame.initialize = function (this: typeof AnimParticleFrame) {
@@ -115,20 +112,6 @@ import { read } from '@/util/element-utils.ts';
 				break;
 		}
 		Animation.requestRendering!();
-	};
-
-	AnimParticleFrame.paramInput = function (this: typeof AnimParticleFrame, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animParticleFrame-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimParticleFrame.update!(
-			AnimParticleFrame.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animParticleFrame = AnimParticleFrame;

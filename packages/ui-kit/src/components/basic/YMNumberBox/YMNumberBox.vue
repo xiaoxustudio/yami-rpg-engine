@@ -4,7 +4,7 @@ import { attachApi } from '../../../utils/attach-api';
 
 interface Props {
 	id?: string;
-	modelValue?: number;
+	modelValue?: number | string;
 	min?: number | string;
 	max?: number | string;
 	step?: number | string;

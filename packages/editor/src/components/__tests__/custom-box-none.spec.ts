@@ -3,7 +3,7 @@ import { Local } from '@/tools/localization.ts';
 import { customBoxOptions } from '@/components/custom-box-opts.ts';
 
 beforeEach(() => {
-	vi.spyOn(Local, 'get').mockReturnValue('None');
+	vi.spyOn(Local as unknown as { get: (key: string) => string }, 'get').mockReturnValue('None');
 });
 
 const parse = (type: string, value: unknown): string => {

@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, hide, read, show, write } from '@/util/element-utils';
+import { clear, hide, show, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
@@ -21,7 +21,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	interface SceneActorShape {
 		target: SceneActorData | null;
 		update: ((actor: SceneActorData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		typeWrite: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
@@ -36,7 +35,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		write: null,
 		update: null,
 		datachange: null,
-		paramInput: null,
 		typeWrite: null
 	};
 
@@ -114,17 +112,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			elTeamId.loadItems(Data.createTeamItems!());
 
 			const write = getElementWriter('sceneActor', actor);
-			write('name');
-			write('type');
-			write('actorId');
-			write('teamId');
-			write('x');
-			write('y');
-			write('angle');
-			write('scale');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneActor-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -216,20 +207,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			elTeamId.dispatchEvent(new Event('input'));
 		}
 	}.bind(SceneActor);
-
-	SceneActor.paramInput = function (this: typeof SceneActor, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneActor-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		SceneActor.update!(
-			SceneActor.target as SceneActorData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
-	};
 
 	SceneActor.typeWrite = function (this: typeof SceneActor, event: Event & { value: unknown }) {
 		switch (event.value) {

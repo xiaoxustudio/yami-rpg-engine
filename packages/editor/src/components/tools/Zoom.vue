@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { Zoom, type ZoomForm } from '@/tools/zoom-window.ts';
+import { onMounted, ref } from 'vue';
+import { useZoomWindow, type ZoomForm } from '@app/composables/useZoomWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -27,7 +27,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-const form = reactive<ZoomForm>({ factor: 1 });
+const zoom = useZoomWindow();
+const form = zoom.form;
 
 const setForm = (data: Partial<ZoomForm>): void => {
 	Object.assign(form, data);
@@ -65,7 +66,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onConfirm = () => {
-	Zoom?.confirm?.();
+	zoom.confirm();
 };
 
 onMounted(() => {
@@ -73,7 +74,7 @@ onMounted(() => {
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
 	}
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

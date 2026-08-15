@@ -20,12 +20,6 @@ export const useEasingStore = defineStore('easing', () => {
 	const target = shallowRef<Record<string, unknown> | null>(null);
 	const data = shallowRef<EasingDataShape[] | null>(null);
 
-	function syncState() {
-		state.value = Easing?.state ?? 'closed';
-		target.value = Easing?.target ?? null;
-		data.value = Easing?.data ?? null;
-	}
-
 	function open(target?: unknown) {
 		Easing?.open?.(target);
 	}
@@ -90,7 +84,6 @@ export const useEasingStore = defineStore('easing', () => {
 		state,
 		target,
 		data,
-		syncState,
 		open,
 		close,
 		load,

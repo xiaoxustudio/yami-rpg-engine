@@ -13,25 +13,6 @@ describe('animation-window 控件值桥接（Animation ↔ animation store 双�
 		Animation.playing = false;
 		Animation.speed = null;
 		Animation.zoom = null;
-		store.syncState();
-	});
-
-	it('syncState 从 Animation 读取控件值', () => {
-		Animation.showMark = true;
-		Animation.showOnionskin = true;
-		Animation.mirror = true;
-		Animation.loop = true;
-		Animation.playing = true;
-		Animation.speed = 1.5;
-		Animation.zoom = 3;
-		store.syncState();
-		expect(store.showMark).toBe(true);
-		expect(store.showOnionskin).toBe(true);
-		expect(store.mirror).toBe(true);
-		expect(store.loop).toBe(true);
-		expect(store.playing).toBe(true);
-		expect(store.speed).toBe(1.5);
-		expect(store.zoom).toBe(3);
 	});
 
 	it('Animation 属性写入实时反映到 store（bridge 桥接）', () => {

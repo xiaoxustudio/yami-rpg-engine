@@ -13,7 +13,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		meta: { file: unknown } | null;
 		motions: unknown;
 		update: ((trigger: FileTriggerData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		listChange: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
@@ -42,7 +41,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		close: null,
 		update: null,
 		animationIdWrite: null,
-		paramInput: null,
 		listChange: null
 	};
 
@@ -162,31 +160,9 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.meta = meta;
 
 			const write = getElementWriter('fileTrigger', trigger);
-			const shape = trigger.shape;
-			write('selector');
-			write('onHitWalls');
-			write('onHitActors');
-			write('hitCount');
-			write('shape-type');
-			write('shape-width', shape.width ?? 1);
-			write('shape-height', shape.height ?? 1);
-			write('shape-anchor', shape.anchor ?? 0.5);
-			write('shape-radius', shape.radius ?? 0.5);
-			write('shape-centralAngle', shape.centralAngle ?? 90);
-			write('speed');
-			write('hitMode');
-			write('hitInterval');
-			write('initialDelay');
-			write('effectiveTime');
-			write('duration');
-			write('inherit');
-			write('animationId');
-			write('motion');
-			write('priority');
-			write('offsetY');
-			write('rotatable');
 			write('events');
 			write('scripts');
+			($('#fileTrigger-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -295,16 +271,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		const elMotion = $('#fileTrigger-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		write(elMotion, read(elMotion));
-	};
-
-	FileTrigger.paramInput = function (this: typeof FileTrigger, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^fileTrigger-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		FileTrigger.update!(FileTrigger.target!, Inspector.getKey!(element), read(element));
 	};
 
 	FileTrigger.listChange = function (this: typeof FileTrigger, event: Event) {

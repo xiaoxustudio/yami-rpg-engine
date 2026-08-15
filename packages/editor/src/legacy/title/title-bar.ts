@@ -17,6 +17,7 @@ import { File } from '@/file/file-system-core.ts';
 import { Layout } from '@/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
+import { getTitleStore } from '@app/stores/title';
 import { ApkBuilder } from '@/module/apkbuilder.ts';
 import { WebServer } from '@/module/webserver.ts';
 import { Particle } from '@/particle/particle-window.ts';
@@ -71,9 +72,6 @@ interface TitleTabBarShape extends HTMLElement {
 interface TitleShape extends DynamicShape {
 	target: TitleTargetShape;
 	tabBar: TitleTabBarShape;
-	theme: string;
-	maximized: boolean;
-	fullscreen: boolean;
 	initialize: (() => void) | null;
 	newProject: TitleMethod;
 	openProject: TitleMethod;
@@ -117,9 +115,6 @@ interface TitleShape extends DynamicShape {
 export const Title: TitleShape = {
 	target: null as unknown as TitleTargetShape,
 	tabBar: null as unknown as TitleTabBarShape,
-	theme: null as unknown as string,
-	maximized: false,
-	fullscreen: false,
 	initialize: null,
 	newProject: null,
 	openProject: null,
@@ -348,7 +343,8 @@ Title.updateTitleName = (function IIFE() {
 })();
 
 Title.updateBodyClass = function (this: TitleShape) {
-	if (this.maximized || this.fullscreen) {
+	const { maximized, fullscreen } = getTitleStore();
+	if (maximized || fullscreen) {
 		addClass(document.body, 'maximized');
 		removeClass(document.body, 'border');
 	} else {
@@ -383,7 +379,7 @@ Title.switchTheme = function (this: TitleShape, scheme: 'light' | 'dark') {
 Title.dispatchThemechangeEvent = (function IIFE() {
 	const themechange = new Event('themechange');
 	return function (this: TitleShape, theme: 'light' | 'dark') {
-		this.theme = theme;
+		getTitleStore().theme = theme;
 		themechange.value = theme;
 		window.dispatchEvent(themechange);
 	};
@@ -413,7 +409,7 @@ Title.playGame = async function (this: TitleShape) {
 };
 
 Title.saveToConfig = function (this: TitleShape, config: EditorConfigShape) {
-	config.theme = this.theme;
+	config.theme = getTitleStore().theme ?? undefined;
 };
 
 Title.loadFromConfig = function (this: TitleShape, config: EditorConfigShape) {
@@ -513,22 +509,22 @@ Title.windowBeforeClose = function (this: TitleShape, event: Event) {
 };
 
 Title.windowMaximize = function (this: TitleShape, event: Event) {
-	this.maximized = true;
+	getTitleStore().maximized = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
 Title.windowUnmaximize = function (this: TitleShape, event: Event) {
-	this.maximized = false;
+	getTitleStore().maximized = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
 Title.windowEnterFullScreen = function (this: TitleShape, event: Event) {
-	this.fullscreen = true;
+	getTitleStore().fullscreen = true;
 	this.updateBodyClass!();
 }.bind(Title);
 
 Title.windowLeaveFullScreen = function (this: TitleShape, event: Event) {
-	this.fullscreen = false;
+	getTitleStore().fullscreen = false;
 	this.updateBodyClass!();
 }.bind(Title);
 
@@ -736,19 +732,14 @@ Title.closeClick = function (this: TitleShape, event: MouseEvent) {
 	Title.windowBeforeClose!();
 };
 
-const titleStateKeys = ['theme', 'playing', 'maximized', 'fullscreen'] as const;
-import { getTitleStore } from '@app/stores/title';
+const titleStateKeys = ['theme', 'maximized', 'fullscreen'] as const;
 
 for (const key of titleStateKeys) {
 	Object.defineProperty(Title, key, {
 		get: () => getTitleStore()[key],
 		set: (value: unknown) => {
-			(
-				getTitleStore() as unknown as Record<
-					'theme' | 'playing' | 'maximized' | 'fullscreen',
-					any
-				>
-			)[key] = value;
+			(getTitleStore() as unknown as Record<(typeof titleStateKeys)[number], any>)[key] =
+				value;
 		},
 		configurable: true
 	});

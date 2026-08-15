@@ -1,7 +1,6 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, write } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+﻿import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils';
+import { useSkillGetterWindow } from '@app/composables/useSkillGetterWindow';
 import { Enum } from '@/enum/enum-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
@@ -48,37 +47,9 @@ SkillGetter.initialize = function (this: SkillGetterShape) {
 
 SkillGetter.open = function (this: SkillGetterShape, target: AccessorTarget) {
 	this.target = target;
-	Window.open!('skillGetter');
-
+	const key = Enum.getDefStringId('shortcut-key');
 	$('#skillGetter-key').loadItems(Enum.getStringItems('shortcut-key'));
-
-	let actor = { type: 'trigger' };
-	let key = Enum.getDefStringId('shortcut-key');
-	let skillId = '';
-	let variable = { type: 'local', key: '' };
-	const skill = target.read?.();
-	switch (skill.type) {
-		case 'trigger':
-		case 'latest':
-			break;
-		case 'by-key':
-			actor = skill.actor;
-			key = skill.key;
-			break;
-		case 'by-id':
-			actor = skill.actor;
-			skillId = skill.skillId;
-			break;
-		case 'variable':
-			variable = skill.variable;
-			break;
-	}
-	write($('#skillGetter-type'), skill.type);
-	write($('#skillGetter-actor'), actor);
-	write($('#skillGetter-key'), key);
-	write($('#skillGetter-skillId'), skillId);
-	write($('#skillGetter-variable'), variable);
-	getFocus($('#skillGetter-type'));
+	useSkillGetterWindow().open(target, { key });
 };
 
 SkillGetter.checkDataForPlugin = function (this: SkillGetterShape, data: unknown) {
@@ -93,44 +64,5 @@ SkillGetter.createDefaultForPlugin = function (this: SkillGetterShape) {
 };
 
 SkillGetter.confirm = function (this: SkillGetterShape, event: Event) {
-	const read = getElementReader('skillGetter');
-	const type = read('type');
-	let getter;
-	switch (type) {
-		case 'trigger':
-		case 'latest':
-			getter = { type };
-			break;
-		case 'by-key': {
-			const actor = read('actor');
-			const key = read('key');
-			if (key === '') {
-				return getFocus($('#skillGetter-key'));
-			}
-			getter = { type, actor, key };
-			break;
-		}
-		case 'by-id': {
-			const actor = read('actor');
-			const skillId = read('skillId');
-			if (skillId === '') {
-				return getFocus($('#skillGetter-skillId'));
-			}
-			getter = { type, actor, skillId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#skillGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	if (this.target!.isPluginInput) {
-		getter = { getter: 'skill', ...getter };
-	}
-	this.target?.input?.(getter!);
-	Window.close!('skillGetter');
-}.bind(SkillGetter);
+	useSkillGetterWindow().confirm();
+};

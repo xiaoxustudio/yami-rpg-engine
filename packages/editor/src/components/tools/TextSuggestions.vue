@@ -19,7 +19,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

@@ -54,18 +54,4 @@ describe('useParticleStore（Particle 窗口状态桥接）', () => {
 		store.scaleX = null;
 		store.scaleY = null;
 	});
-
-	it('无 Particle 时 syncState 兜底默认值', () => {
-		const store = getParticleStore();
-		store.syncState();
-		expect(store.state).toBe('closed');
-		expect(store.target).toBe(null);
-		expect(store.paused).toBe(false);
-		expect(store.showWireframe).toBe(false);
-		expect(store.showAnchor).toBe(false);
-		expect(store.speed).toBe(null);
-		expect(store.zoom).toBe(null);
-		expect(store.scaleX).toBe(null);
-		expect(store.scaleY).toBe(null);
-	});
 });

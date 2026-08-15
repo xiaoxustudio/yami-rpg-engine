@@ -14,14 +14,11 @@ type LocalizationItemShape = {
 	element?: HTMLElement & { initText?: HTMLElement; attrValue?: string };
 };
 
+export const localizationStateKeys = ['state', 'strings'] as const;
+
 export const useLocalizationStore = defineStore('localization', () => {
 	const state = shallowRef<string>('closed');
 	const strings = shallowRef<Record<string, string>>({});
-
-	function syncState() {
-		state.value = Localization?.state ?? 'closed';
-		strings.value = Localization?.strings ?? {};
-	}
 
 	function initialize() {
 		Localization?.initialize?.();
@@ -86,7 +83,6 @@ export const useLocalizationStore = defineStore('localization', () => {
 	return {
 		state,
 		strings,
-		syncState,
 		initialize,
 		open,
 		close,

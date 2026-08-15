@@ -51,7 +51,6 @@ interface TextCommandShape {
 type FontNameList = string[] & { remove(name: string): boolean };
 
 export class Printer {
-	static state: string | null = null;
 	static print: ((...args: unknown[]) => void) | null = null;
 	texture!: PrinterTexture | null;
 	// images 运行时挂�?.changed 标志（L56/L200/L469 读写�?
@@ -1381,4 +1380,18 @@ export class Printer {
 			}
 		}
 	}
+}
+
+const printerBridgeKeys = ['state'] as const;
+import { getPrinterStore } from '@app/stores/printer';
+
+for (const key of printerBridgeKeys) {
+	Object.defineProperty(Printer, key, {
+		get: () => getPrinterStore()[key],
+		set: (value: unknown) => {
+			(getPrinterStore() as unknown as Record<(typeof printerBridgeKeys)[number], any>)[key] =
+				value;
+		},
+		configurable: true
+	});
 }

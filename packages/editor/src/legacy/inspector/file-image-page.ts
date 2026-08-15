@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { hide, show } from '@/util/element-utils';
+import { hide } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { FileItem } from '@/file/file-item.ts';
 import type { FileMeta } from '@/data/metadata-manifest.ts';
@@ -9,8 +9,6 @@ import { Inspector } from './inspector.ts';
 {
 	interface FileImageShape {
 		image: HTMLImageElement | null;
-		updateImage: (() => void) | null;
-		windowResize: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const FileImage: FileImageShape = {
@@ -20,17 +18,12 @@ import { Inspector } from './inspector.ts';
 		image: null,
 		initialize: null,
 		open: null,
-		close: null,
-		updateImage: null,
-		windowResize: null
+		close: null
 	};
 
 	FileImage.initialize = function (this: typeof FileImage) {
 		if (!$('#fileImage-image')) return;
 		this.image = $('#fileImage-image') as HTMLImageElement;
-
-		$('#fileImage')?.on?.('resize', this.windowResize);
-		$('#fileImage-image-detail')?.on?.('toggle', this.windowResize);
 	};
 
 	FileImage.open = function (this: typeof FileImage, file: FileItem, meta: FileMeta | null) {
@@ -65,7 +58,9 @@ import { Inspector } from './inspector.ts';
 			}).then(() => {
 				if (this.symbol === symbol) {
 					this.symbol = null;
-					this.updateImage!();
+					(
+						$('#fileImage') as HTMLElement & { updateImage?: () => void }
+					)?.updateImage?.();
 					const width = image.naturalWidth;
 					const height = image.naturalHeight;
 					elResolution.textContent = `${width} x ${height}`;
@@ -81,47 +76,6 @@ import { Inspector } from './inspector.ts';
 			this.meta = null;
 			this.symbol = null;
 			this.image!.src = '';
-		}
-	};
-
-	FileImage.updateImage = function (this: typeof FileImage) {
-		const image = this.image!;
-		hide(image);
-		const frame = image.parentElement!;
-		const frameBox = CSS.getDevicePixelContentBoxSize(frame);
-		const cw = frameBox.width;
-		const ch = frameBox.height;
-		if (cw > 0 && ch > 0) {
-			const nw = image.naturalWidth;
-			const nh = image.naturalHeight;
-			let dw;
-			let dh;
-			if (nw <= cw && nh <= ch) {
-				dw = nw;
-				dh = nh;
-			} else {
-				const scaleX = cw / nw;
-				const scaleY = ch / nh;
-				if (scaleX < scaleY) {
-					dw = cw;
-					dh = Math.round(nh * scaleX);
-				} else {
-					dw = Math.round(nw * scaleY);
-					dh = ch;
-				}
-			}
-			const dpr = window.devicePixelRatio;
-			image.style.left = `${((cw - dw) >> 1) / dpr}px`;
-			image.style.top = `${((ch - dh) >> 1) / dpr}px`;
-			image.style.width = `${dw / dpr}px`;
-			image.style.height = `${dh / dpr}px`;
-			show(image);
-		}
-	};
-
-	FileImage.windowResize = function (this: typeof FileImage, event: Event) {
-		if (FileImage.target !== null && FileImage.symbol === null) {
-			FileImage.updateImage!();
 		}
 	};
 

@@ -186,6 +186,8 @@ Local.update = (function IIFE() {
 	return function (this: typeof Local, data: Record<string, unknown>) {
 		this.setProperties!(data.properties as Record<string, unknown>);
 		this.components = (data.components ?? {}) as Record<string, LocalComponentItem>;
+		getLocalStore().properties = this.properties;
+		getLocalStore().components = this.components;
 		const entries = Object.entries(data.components ?? {});
 		const length = entries.length;
 		for (let i = 0; i < length; i++) {

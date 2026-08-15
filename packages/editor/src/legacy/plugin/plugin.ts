@@ -153,8 +153,8 @@ interface PluginManagerShape {
 	list_saveSelection: (() => void) | null;
 	list_restoreSelection: (() => void) | null;
 	list_updateTextNode: ((item: PluginItemShape) => void) | null;
-	plugins: (PluginItemShape[] | Record<string, PluginItemShape>) | null;
 	reload: (() => void) | null;
+	[k: string]: any;
 }
 
 export const PluginManager: PluginManagerShape = {
@@ -204,7 +204,6 @@ export const PluginManager: PluginManagerShape = {
 	list_saveSelection: null,
 	list_restoreSelection: null,
 	list_updateTextNode: null,
-	plugins: null,
 	reload: null
 };
 
@@ -1910,7 +1909,7 @@ PluginManager.list_saveSelection = function (this: TreeListElement) {
 // 列表 - 恢复选项状态
 PluginManager.list_restoreSelection = function (this: TreeListElement) {
 	const id = Data.plugins.selection;
-	const item = PluginManager.getItemById!(id) ?? this.data[0];
+	const item = PluginManager.getItemById!(id) ?? this.data?.[0];
 	this.select(item);
 	this.update();
 	this.scrollToSelection();
@@ -1926,3 +1925,17 @@ PluginManager.list_updateTextNode = function (this: TreeListElement, item: Plugi
 };
 
 // 注意：不再重写 ParameterPane.createDetailBox / clear，以保留参数面板按 @group 分组的多 detail-box 渲染能力 （原生 ParameterPane 已支持，见 components/parameter-pane.js）
+
+const pluginBridgeKeys = ['plugins'] as const;
+import { getPluginStore } from '@app/stores/plugin';
+
+for (const key of pluginBridgeKeys) {
+	Object.defineProperty(PluginManager, key, {
+		get: () => getPluginStore()[key],
+		set: (value: unknown) => {
+			(getPluginStore() as unknown as Record<(typeof pluginBridgeKeys)[number], any>)[key] =
+				value;
+		},
+		configurable: true
+	});
+}

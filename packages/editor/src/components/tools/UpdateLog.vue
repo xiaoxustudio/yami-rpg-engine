@@ -90,8 +90,8 @@ const onDonorClick = (donor: Donor) => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 	refresh();
 	window.addEventListener('update-log-update', refresh);
 });

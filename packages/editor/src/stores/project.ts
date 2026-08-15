@@ -14,13 +14,7 @@ type ProjectDataShape = {
 export const useProjectStore = defineStore('project', () => {
 	const state = shallowRef<string>('closed');
 	const target = shallowRef<any>(null);
-	const data = shallowRef<ProjectDataShape | null>(null);
-
-	function syncState() {
-		state.value = Project?.state ?? 'closed';
-		target.value = Project?.target ?? null;
-		data.value = Project?.data ?? null;
-	}
+	const data = shallowRef<any>(null);
 
 	function initialize() {
 		Project?.initialize?.();
@@ -50,7 +44,6 @@ export const useProjectStore = defineStore('project', () => {
 		state,
 		target,
 		data,
-		syncState,
 		initialize,
 		open,
 		close,

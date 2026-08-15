@@ -151,8 +151,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 import { Inspector } from '@/inspector/inspector.ts';
+import { useFileActorPage } from '@app/composables/useFileActorPage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
@@ -164,60 +165,11 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-interface ActorForm {
-	portrait: string;
-	clip: number[];
-	animationId: string;
-	idleMotion: string;
-	moveMotion: string;
-	rotatable: boolean;
-	passage: string;
-	speed: number;
-	shape: string;
-	size: number;
-	weight: number;
-	immovable: boolean;
-	scale: number;
-	priority: number;
-	inherit: string;
-}
-
-const ACTOR_KEYS: (keyof ActorForm)[] = [
-	'portrait',
-	'clip',
-	'animationId',
-	'idleMotion',
-	'moveMotion',
-	'rotatable',
-	'passage',
-	'speed',
-	'shape',
-	'size',
-	'weight',
-	'immovable',
-	'scale',
-	'priority',
-	'inherit'
-];
-
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
-const form = reactive<Partial<ActorForm>>({});
+const { form, sync, onParamInput } = useFileActorPage();
 
-const sync = (): void => {
-	const target = Inspector?.fileActor?.target as Partial<ActorForm> | null | undefined;
-	if (!target) return;
-	for (const key of ACTOR_KEYS) {
-		form[key] = target[key];
-	}
-};
-
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.fileActor?.paramInput?.({ target });
-	sync();
-};
 const onAnimationIdWrite = (value: unknown) => {
 	Inspector?.fileActor?.animationIdWrite?.({ value });
 };
@@ -231,7 +183,5 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 	sync();
-	inspector.syncState();
-	local.syncState();
 });
 </script>

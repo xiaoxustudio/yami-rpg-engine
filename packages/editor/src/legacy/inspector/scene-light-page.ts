@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, read, write } from '@/util/element-utils';
+import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -10,7 +10,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	interface SceneLightShape {
 		target: SceneLightData | null;
 		update: ((light: SceneLightData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	interface SceneLightData {
@@ -26,8 +25,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	SceneLight.initialize = function (this: typeof SceneLight) {
@@ -235,20 +233,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 		}
 		Scene.requestRendering!();
-	};
-
-	SceneLight.paramInput = function (this: typeof SceneLight, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneLight-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		SceneLight.update!(
-			SceneLight.target as SceneLightData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.sceneLight = SceneLight;

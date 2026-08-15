@@ -63,6 +63,7 @@ type EasingCanvasShape = HTMLCanvasElement & {
 };
 
 export const Easing = {
+	data: null as unknown as EasingData[] | null,
 	list: null as
 		| (HTMLElement & {
 				read: () => Record<string, any>;
@@ -78,7 +79,6 @@ export const Easing = {
 		| null,
 	curve: null as EasingCanvasShape | null,
 	preview: null as EasingCanvasShape | null,
-	data: null as Array<EasingData> | null,
 	points: null as Array<EasingPoint> | null,
 	dragging: null as EasingDrag | null,
 	activePoint: null as EasingPoint | null,
@@ -151,8 +151,6 @@ export const Easing = {
 	list_restoreSelection: null as unknown as () => void,
 	list_updateItemName: null as unknown as (item: EasingListItem) => void,
 	list_updateTextNode: null as unknown as (item: EasingListItem) => void,
-	state: null as string | null,
-	target: null as Record<string, unknown> | null,
 	saveToProject: null as ((project: EditorProjectShape) => void) | null,
 	loadFromProject: null as ((project: EditorProjectShape) => void) | null,
 	close: null as (() => void) | null
@@ -173,7 +171,6 @@ function ensureDomBound() {
 
 // 用箭头函数绑定 Easing 词法作用域，避免裸调 initialize() 时 this===undefined 炸 （initialize.js 用 .call(Easing) 绑 this，但若别处裸调会丢上下文；箭头函数根除问题）
 Easing.initialize = () => {
-	getEasingStore().syncState();
 	ensureDomBound();
 	if (!Easing.list) return;
 	Easing.startPoint = { x: 0, y: 0 };
@@ -183,7 +180,7 @@ Easing.initialize = () => {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
-	list.bind(() => Easing.data);
+	list.bind(() => getEasingStore().data);
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	$('#easing-mode').loadItems([
@@ -331,10 +328,10 @@ Easing.initialize = () => {
 
 Easing.open = function (this: typeof Easing, target?: unknown) {
 	Window.open!('easing');
-	this.state = 'open';
-	this.target = (target as Record<string, unknown> | undefined) ?? null;
+	getEasingStore().data = Object.clone(Data.easings);
+	getEasingStore().target = (target as Record<string, unknown> | undefined) ?? null;
 
-	this.data = Object.clone(Data.easings);
+	getEasingStore().state = 'open';
 
 	this.curveMap = new Easing.CurveMap();
 	this.easingMap = new Easing.EasingMap();
@@ -395,7 +392,7 @@ Easing.paste = function (this: typeof Easing, dItem?: EasingData) {
 };
 
 Easing.delete = function (this: typeof Easing, item: EasingData) {
-	const items = this.data!;
+	const items = getEasingStore().data!;
 	if (items.length > 1) {
 		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
@@ -449,7 +446,8 @@ Easing.setEasingKey = function (this: typeof Easing, item: EasingData) {
 };
 
 Easing.getItemById = function (this: typeof Easing, id: string) {
-	const data = this.data!;
+	const data = this.data;
+	if (!data) return null;
 	const { length } = data;
 	for (let i = 0; i < length; i++) {
 		if (data[i].id === id) {
@@ -772,7 +770,7 @@ Easing.createPreviewImage = function (this: typeof Easing) {
 };
 
 Easing.requestRendering = function (this: typeof Easing) {
-	if (this.data !== null) {
+	if (getEasingStore().data !== null) {
 		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
@@ -810,12 +808,12 @@ Easing.windowClose = function (this: typeof Easing, event: Event) {
 };
 
 Easing.windowClosed = function (this: typeof Easing, event: Event) {
-	this.state = 'closed';
-	this.target = null;
+	getEasingStore().state = 'closed';
+	getEasingStore().target = null;
 	this.list!.saveSelection();
 	this.curve!.blur();
 	this.timer.remove();
-	this.data = null;
+	getEasingStore().data = null;
 	this.points = null;
 	this.curveMap = null;
 	this.easingMap = null;
@@ -826,7 +824,7 @@ Easing.windowClosed = function (this: typeof Easing, event: Event) {
 }.bind(Easing);
 
 Easing.dprchange = function (this: typeof Easing, event: Event) {
-	if (this.data !== null) {
+	if (getEasingStore().data !== null) {
 		this.updateCanvases();
 		this.requestRendering();
 	}
@@ -900,7 +898,7 @@ Easing.listPopup = function (
 	const item = event.value;
 	const selected = !!item;
 	const pastable = Clipboard.has('yami.data.easing');
-	const deletable = selected && Easing.data!.length > 1;
+	const deletable = selected && getEasingStore().data!.length > 1;
 	const get = Local.createGetter!('menuEasingList');
 	Menu.popup(
 		{
@@ -1215,7 +1213,7 @@ Easing.confirm = function (this: typeof Easing, event: Event) {
 	if (this.changed) {
 		this.changed = false;
 		this.clear();
-		const easings = this.data!;
+		const easings = getEasingStore().data!;
 		TreeList.deleteCaches(easings);
 		Data.easings = easings;
 		Data.createGUIDMap(easings);
@@ -1335,7 +1333,7 @@ Easing.list_saveSelection = function (this: HTMLElement) {
 
 Easing.list_restoreSelection = function (this: HTMLElement) {
 	const id = Data.easings.selection;
-	const item = Easing.getItemById(id) ?? this.data[0];
+	const item = Easing.getItemById(id) ?? this.data?.[0];
 	this.select(item);
 	this.update();
 	this.scrollToSelection();

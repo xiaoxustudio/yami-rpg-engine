@@ -2,15 +2,13 @@ import { defineStore } from 'pinia';
 import { CustomCommand, type CustomCommandData } from '@/command/custom-command-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
+
+export const customCommandStateKeys = ['state', 'commands'] as const;
 
 export const useCustomCommandStore = defineStore('customCommand', () => {
 	const state = shallowRef<string>('closed');
 	const commands = shallowRef<CustomCommandData[]>([]);
-
-	function syncState() {
-		state.value = CustomCommand?.state ?? 'closed';
-		commands.value = CustomCommand?.commands ?? [];
-	}
 
 	function initialize() {
 		CustomCommand?.initialize?.();
@@ -55,7 +53,6 @@ export const useCustomCommandStore = defineStore('customCommand', () => {
 	return {
 		state,
 		commands,
-		syncState,
 		initialize,
 		open,
 		close,
@@ -68,3 +65,7 @@ export const useCustomCommandStore = defineStore('customCommand', () => {
 		loadFromProject
 	};
 });
+
+export function getCustomCommandStore() {
+	return useCustomCommandStore(pinia);
+}

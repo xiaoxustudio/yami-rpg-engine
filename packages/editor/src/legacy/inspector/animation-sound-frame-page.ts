@@ -1,5 +1,4 @@
 import { $ } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
@@ -7,7 +6,6 @@ import { Inspector } from './inspector.ts';
 	interface AnimSoundFrameShape {
 		target: Record<string, unknown> | null;
 		update: ((frame: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimSoundFrame: AnimSoundFrameShape = {
@@ -18,8 +16,7 @@ import { Inspector } from './inspector.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimSoundFrame.initialize = function (this: typeof AnimSoundFrame) {
@@ -87,20 +84,6 @@ import { Inspector } from './inspector.ts';
 				}
 				break;
 		}
-	};
-
-	AnimSoundFrame.paramInput = function (this: typeof AnimSoundFrame, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animSoundFrame-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimSoundFrame.update!(
-			AnimSoundFrame.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animSoundFrame = AnimSoundFrame;

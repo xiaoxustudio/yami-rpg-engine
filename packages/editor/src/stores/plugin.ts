@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { shallowRef } from 'vue';
+import { pinia } from './pinia';
 
 type PluginItemShape = { id: string; enabled: boolean; [k: string]: any };
 
+export const pluginStateKeys = ['plugins'] as const;
+
 export const usePluginStore = defineStore('plugin', () => {
 	const plugins = shallowRef<PluginItemShape[] | Record<string, PluginItemShape>>([]);
-
-	function syncState() {
-		plugins.value = PluginManager?.plugins ?? [];
-	}
 
 	function load() {
 		PluginManager?.load?.();
@@ -129,7 +128,6 @@ export const usePluginStore = defineStore('plugin', () => {
 
 	return {
 		plugins,
-		syncState,
 		load,
 		reload,
 		initialize,
@@ -161,3 +159,7 @@ export const usePluginStore = defineStore('plugin', () => {
 		checkValidate
 	};
 });
+
+export function getPluginStore() {
+	return usePluginStore(pinia);
+}

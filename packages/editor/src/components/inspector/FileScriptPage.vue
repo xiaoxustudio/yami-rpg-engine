@@ -35,8 +35,8 @@ const syncOverview = (): void => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 	overviewEl.value?.addEventListener('update', syncOverview);
 });
 </script>

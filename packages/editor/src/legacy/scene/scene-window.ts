@@ -22,8 +22,6 @@ import { UndoManager } from '@/tools/undo-manager.ts';
 import { Matrix } from '@/webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 
-type SceneState = 'closed' | 'open' | 'loading';
-
 // 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
 interface SceneListItem {
 	class: string;
@@ -58,7 +56,6 @@ interface SceneListExtensions {
 }
 
 interface SceneShape {
-	state: SceneState;
 	page: HTMLElement;
 	head: HTMLElement & { width?: number };
 	body: HTMLElement & { hide(): HTMLElement; show(): HTMLElement };
@@ -126,7 +123,6 @@ interface SceneContextShape {
 type PresetNodeShape = { presetId: string; children?: unknown } & Record<string, unknown>;
 
 export const Scene: SceneShape = {
-	state: 'closed',
 	page: $('#scene'),
 	head: $('#scene-head'),
 	body: hide($('#scene-body')),
@@ -136,9 +132,6 @@ export const Scene: SceneShape = {
 	searcher: $('#scene-searcher'),
 	list: ($('#scene-list') as unknown as never) || ({} as never),
 	dragging: null,
-	tilemap: null,
-	target: null,
-	layer: null,
 	brush: null,
 	symbol: null,
 	history: null,
@@ -146,18 +139,14 @@ export const Scene: SceneShape = {
 	shiftKey: false,
 	translationKey: 0b0000,
 	translationTimer: null,
-	showGrid: false,
 	showLight: false,
 	showAnimation: false,
 	animationFrame: null,
 	animationElapsed: null,
 	background: null,
 	matrix: null,
-	zoom: null,
 	zoomTimer: null,
 	scale: null,
-	scaleX: null,
-	scaleY: null,
 	scaledTileWidth: null,
 	scaledTileHeight: null,
 	aspectRatio: null,
@@ -438,7 +427,6 @@ getListConfig(Scene.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(Scene.list).onResume = null as unknown as (item: unknown) => void;
 
 Scene.initialize = function (this: SceneShape) {
-	getSceneStore().syncState();
 	this.page = $('#scene');
 	this.head = $('#scene-head');
 	this.body = hide($('#scene-body'));
@@ -463,7 +451,7 @@ Scene.initialize = function (this: SceneShape) {
 	this.translationTimer = new Timer({
 		duration: Infinity,
 		update: (timer: Timer) => {
-			if (this.state === 'open' && this.dragging === null) {
+			if (getSceneStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const meta = this.meta;
 				const step = (Timer.deltaTime * 0.04) / this.scale;
@@ -502,7 +490,7 @@ Scene.initialize = function (this: SceneShape) {
 	this.zoomTimer = new Timer({
 		duration: 80,
 		update: (timer: Timer) => {
-			if (this.state === 'open') {
+			if (getSceneStore().state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
@@ -901,7 +889,7 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 	Particle.Element.stage = this;
 
 	if (context.scene) {
-		this.state = 'open';
+		getSceneStore().state = 'open';
 		this.load!(context);
 		show(this.body);
 		// 因此在这里调用resize
@@ -914,7 +902,7 @@ Scene.open = function (this: SceneShape, context: SceneContextShape) {
 	const scene = Data.scenes[meta.guid];
 	if (scene) {
 		context.scene = Codec.decodeScene!(scene) as unknown as SceneDataShape;
-		this.state = 'loading';
+		getSceneStore().state = 'loading';
 		this.load!(context);
 	} else {
 		Layout.manager.switch('directory');
@@ -1013,18 +1001,18 @@ Scene.load = function (this: SceneShape, context: SceneContextShape) {
 	if (editor.tilemap) {
 		this.openTilemap!(editor.tilemap);
 	}
-	if (this.layer === null) {
+	if (getSceneStore().layer === null) {
 		this.switchLayer!('object');
 	}
 
 	if (this.ambient) {
 		GL.setAmbientLight!(this.ambient);
 	}
-	UndoManager.setActive!(Scene);
+	UndoManager.setActive!(Scene as never);
 };
 
 Scene.save = function (this: SceneShape) {
-	if (this.state === 'open') {
+	if (getSceneStore().state === 'open') {
 		const { scene, editor } = this.context;
 
 		scene.width = this.width;
@@ -1037,8 +1025,8 @@ Scene.save = function (this: SceneShape) {
 		scene.scripts = this.scripts;
 		scene.objects = this.objects;
 
-		editor.target = this.target;
-		editor.tilemap = this.tilemap;
+		editor.target = getSceneStore().target;
+		editor.tilemap = getSceneStore().tilemap;
 		editor.history = this.history;
 		editor.textures = this.textures;
 		editor.tilemaps = this.tilemaps;
@@ -1064,7 +1052,7 @@ Scene.save = function (this: SceneShape) {
 };
 
 Scene.close = function (this: SceneShape) {
-	if (this.state !== 'closed') {
+	if (getSceneStore().state !== 'closed') {
 		this.screen?.blur();
 		this.closeTilemap!();
 		this.setTarget!(null);
@@ -1072,7 +1060,7 @@ Scene.close = function (this: SceneShape) {
 		if (Inspector.type === 'fileScene') {
 			Inspector.close!();
 		}
-		this.state = 'closed';
+		getSceneStore().state = 'closed';
 		this.symbol = null;
 		this.context = null;
 		this.meta = null;
@@ -1266,13 +1254,13 @@ Scene.getDefaultObjectFolder = function (this: SceneShape, kind: string) {
 };
 
 Scene.copy = function (this: SceneShape) {
-	if (this.state === 'open' && this.target !== null) {
-		this.list.copy!(this.target);
+	if (getSceneStore().state === 'open' && getSceneStore().target !== null) {
+		this.list.copy!(getSceneStore().target);
 	}
 };
 
 Scene.paste = function (this: SceneShape, x?: number, y?: number) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getSceneStore().state === 'open' && this.dragging === null) {
 		if (x === undefined) {
 			x = this.meta.x;
 			y = this.meta.y;
@@ -1295,8 +1283,8 @@ Scene.paste = function (this: SceneShape, x?: number, y?: number) {
 };
 
 Scene.duplicate = function (this: SceneShape) {
-	if (this.target) {
-		this.list.duplicate(this.target);
+	if (getSceneStore().target) {
+		this.list.duplicate(getSceneStore().target);
 	}
 };
 
@@ -1312,23 +1300,27 @@ Scene.create = function (this: SceneShape, kind: string, x: number, y: number) {
 };
 
 Scene.delete = function (this: SceneShape) {
-	if (this.state === 'open' && this.target !== null && this.dragging === null) {
-		this.list.delete!(this.target);
+	if (
+		getSceneStore().state === 'open' &&
+		getSceneStore().target !== null &&
+		this.dragging === null
+	) {
+		this.list.delete!(getSceneStore().target);
 	}
 };
 
 Scene.toggle = function (this: SceneShape) {
-	this.list.toggle!(this.target);
+	this.list.toggle!(getSceneStore().target);
 };
 
 Scene.undo = function (this: SceneShape) {
-	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
+	if (getSceneStore().state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 	}
 };
 
 Scene.redo = function (this: SceneShape) {
-	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
+	if (getSceneStore().state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 	}
 };
@@ -1458,6 +1450,8 @@ Scene.planToSaveTerrains = function (this: SceneShape) {
 };
 
 const sceneBridgeKeys = [
+	'state',
+	'target',
 	'mode',
 	'tilemap',
 	'layer',

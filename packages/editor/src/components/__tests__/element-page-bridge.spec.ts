@@ -12,11 +12,20 @@ interface ElementData {
 
 const uiElement = vi.hoisted(() => ({
 	target: null as ElementData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
+}));
+
+const uiImage = vi.hoisted(() => ({
+	target: null as Record<string, unknown> | null,
+	update: vi.fn()
 }));
 
 vi.mock('@/inspector/inspector.ts', () => ({
-	Inspector: { uiElement }
+	Inspector: {
+		uiElement,
+		uiImage,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/ui', () => ({
@@ -33,7 +42,8 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		uiElement.target = null;
-		uiElement.paramInput.mockClear();
+		uiElement.update.mockClear();
+		uiImage.update.mockClear();
 	});
 
 	const mountPage = async () => {
@@ -118,23 +128,22 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 		wrapper.unmount();
 	});
 
-	it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+	it('控件 input 经 composable onParamInput 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
 		const el = document.getElementById('uiImage-vue-mount') as SyncEl;
 		uiElement.target = makeElement();
 		el.sync?.();
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
-		uiElement.paramInput.mockImplementation(() => {
-			if (uiElement.target) {
-				uiElement.target.name = 'Image 3';
-			}
+		uiElement.update.mockImplementation((target: ElementData, key: string, value: unknown) => {
+			(target as unknown as Record<string, unknown>)[key] = value;
 		});
 		const input = document.getElementById('uiElement-name')?.querySelector('input');
 		expect(input).toBeTruthy();
 		input!.value = 'Image 3';
+		input!.focus();
 		input!.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(uiElement.paramInput).toHaveBeenCalled();
+		expect(uiElement.update).toHaveBeenCalled();
 		await wrapper.vm.$nextTick();
 		expect(read('uiElement-name')).toBe('Image 3');
 		wrapper.unmount();

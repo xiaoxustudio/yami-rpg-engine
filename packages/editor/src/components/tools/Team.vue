@@ -84,7 +84,5 @@ const onListChange = (event: Event & { value?: unknown }) => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
 });
 </script>

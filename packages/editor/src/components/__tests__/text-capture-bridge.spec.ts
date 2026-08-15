@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Font from '@app/components/tools/Font.vue';
@@ -7,6 +7,10 @@ import TextPosition from '@app/components/tools/TextPosition.vue';
 import TextEffect from '@app/components/tools/TextEffect.vue';
 import InsertImage from '@app/components/tools/InsertImage.vue';
 import LocalVariable from '@app/components/tools/LocalVariable.vue';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 interface FormFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;

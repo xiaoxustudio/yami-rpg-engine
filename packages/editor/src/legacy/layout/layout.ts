@@ -93,11 +93,7 @@ export const Layout: DynamicShape = {
 	layouts: null,
 	layout: null as Record<string, LayoutScheme> | null,
 	default: null,
-	dragging: null,
-	resizing: null,
 	afterChange: null as (() => void) | null,
-	focusableSelector: null as string | null,
-	focusableElements: null as HTMLElement[] | null,
 	initialize: null as (() => void) | null,
 	switchLayout: null as ((layout: Record<string, LayoutScheme>) => void) | null,
 	createGroups: null as ((item: LayoutScheme, parent: HTMLElement) => void) | null,
@@ -191,7 +187,7 @@ Layout.initialize = function () {
 		this.default = config.layout;
 	});
 
-	this.focusableSelector = `
+	getLayoutStore().focusableSelector = `
   input, textarea, button, .select-box, .check-box, .radio-box,
   .color-box, .custom-box, .common-list, .tree-list, .param-list,
   .command-list, file-body-content`;
@@ -199,7 +195,6 @@ Layout.initialize = function () {
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
 	this.manager?.on('switch', this.pageSwitch!);
-	getLayoutStore().syncState();
 };
 
 Layout.switchLayout = function (layout: Record<string, LayoutScheme>) {
@@ -347,7 +342,7 @@ Layout.updateGroupTabs = function (group: LayoutGroupElement) {
 };
 
 Layout.updateGroupInfo = function () {
-	for (const info of this.resizing.infos) {
+	for (const info of getLayoutStore().resizing.infos) {
 		const box = CSS.getDevicePixelContentBoxSize(info.manager);
 		info.textContent = `${box.width} x ${box.height}`;
 	}
@@ -501,7 +496,7 @@ Layout.computeSizesAfter = function (group: LayoutGroupElement) {
 };
 
 Layout.updateHint = function (location: LayoutDragLocation | null) {
-	const { dragging } = this;
+	const { dragging } = getLayoutStore();
 	const { hint } = dragging;
 	if (dragging.location) {
 		const { trigger } = dragging.location;
@@ -620,14 +615,15 @@ Layout.createGroupBorder = function (group: LayoutGroupElement) {
 };
 
 Layout.enableFocusableElements = function () {
-	const elements = this.focusableElements;
+	const store = getLayoutStore();
+	const elements = store.focusableElements;
 	if (elements) {
 		for (const element of elements) {
 			if (element.clientWidth !== 0) {
 				element.tabIndex += 1;
 			}
 		}
-		this.focusableElements = null;
+		store.focusableElements = null;
 	}
 };
 
@@ -636,7 +632,7 @@ Layout.disableFocusableElements = function () {
 	const { active } = this.manager;
 	if (active) {
 		const nodes: HTMLElement[] = [];
-		const selector = this.focusableSelector;
+		const selector = getLayoutStore().focusableSelector;
 		const elements = active.querySelectorAll(selector);
 		for (const element of elements) {
 			if (element.clientWidth !== 0) {
@@ -645,7 +641,7 @@ Layout.disableFocusableElements = function () {
 			}
 		}
 		// 因为禁用情况下可能会创建新元素(脚本参数) 因此记录已修改的元素再进行恢复更安全
-		this.focusableElements = nodes;
+		getLayoutStore().focusableElements = nodes;
 	}
 };
 
@@ -891,8 +887,8 @@ Layout.navPointerdown = function (event: { button: number; target: LayoutItemEle
 };
 
 Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
-	if (!Layout.dragging) {
-		Layout.dragging = event;
+	if (!getLayoutStore().dragging) {
+		getLayoutStore().dragging = event;
 		Object.defineProperty(event, 'clientX', { writable: true });
 		Object.defineProperty(event, 'clientY', { writable: true });
 		event.preventDefault = Function.empty;
@@ -925,7 +921,7 @@ Layout.navDragstart = function (this: typeof Layout, event: LayoutDragEvent) {
 };
 
 Layout.navDragend = function (event: EditorEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if (dragging) {
 		window.removeEventListener('dragenter', Layout.navDragover!);
 		window.removeEventListener('dragover', Layout.navDragover!);
@@ -944,12 +940,12 @@ Layout.navDragend = function (event: EditorEvent) {
 			head.style.pointerEvents = '';
 		}
 		Layout.updateHint!(null);
-		Layout.dragging = null;
+		getLayoutStore().dragging = null;
 	}
 };
 
 Layout.navDragenter = function (this: typeof Layout, event: DragEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if (dragging) {
 		event.preventDefault();
 		event.dataTransfer!.dropEffect = 'move';
@@ -978,7 +974,7 @@ Layout.navDragenter = function (this: typeof Layout, event: DragEvent) {
 };
 
 Layout.navDragleave = function (event: EditorEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if (dragging && dragging.location && dragging.location.trigger === event.target) {
 		Layout.updateHint!(null);
 	}
@@ -990,7 +986,7 @@ Layout.navDragover = function (event: DragEvent) {
 };
 
 Layout.navDrop = function (event: EditorEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if (!dragging) {
 		return;
 	}
@@ -1123,14 +1119,14 @@ Layout.navDrop = function (event: EditorEvent) {
 };
 
 Layout.regionDragleave = function (this: typeof Layout, event: EditorEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if (dragging && dragging.location && dragging.location.trigger === this) {
 		Layout.updateHint!(null);
 	}
 };
 
 Layout.regionDragover = function (this: typeof Layout, event: DragEvent) {
-	const { dragging } = Layout;
+	const { dragging } = getLayoutStore();
 	if ((dragging && dragging.clientX !== event.clientX) || dragging.clientY !== event.clientY) {
 		dragging.clientX = event.clientX;
 		dragging.clientY = event.clientY;
@@ -1318,8 +1314,8 @@ Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutR
 	// event.preventDefault()
 	switch (event.button) {
 		case 0:
-			if (!Layout.resizing) {
-				Layout.resizing = event;
+			if (!getLayoutStore().resizing) {
+				getLayoutStore().resizing = event;
 				const group = (this as HTMLElement & typeof Layout)
 					.parentNode as LayoutGroupElement;
 				const outer = group.parentNode as LayoutGroupElement;
@@ -1355,7 +1351,7 @@ Layout.borderPointerdown = function (this: typeof Layout, event: Event & LayoutR
 };
 
 Layout.pointerup = function (event?: EditorEvent) {
-	const { resizing } = Layout;
+	const { resizing } = getLayoutStore();
 	if (resizing === null) {
 		return;
 	}
@@ -1374,7 +1370,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 		for (const info of resizing.infos) {
 			info.remove();
 		}
-		Layout.resizing = null;
+		getLayoutStore().resizing = null;
 		window.removeEventListener('pointerup', Layout.pointerup!);
 		window.removeEventListener('pointermove', Layout.pointermove!);
 	}
@@ -1382,7 +1378,7 @@ Layout.pointerup = function (event?: EditorEvent) {
 
 Layout.pointermove = function (event: EditorEvent) {
 	let end: number | undefined = undefined;
-	const { resizing } = Layout;
+	const { resizing } = getLayoutStore();
 	switch (resizing.mode) {
 		case 'col-resize':
 			end =

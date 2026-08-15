@@ -1,7 +1,5 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { write, getFocus } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+import { $ } from '@/util/dom.ts';
+import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
@@ -45,39 +43,9 @@ ActorGetter.initialize = function (this: ActorGetterShape) {
 
 ActorGetter.open = function (this: ActorGetterShape, target: AccessorTarget) {
 	this.target = target;
-	Window.open!('actorGetter');
-
-	let memberId = 0;
-	let actorId = '';
-	let presetId = PresetObject.getDefaultPresetId('actor');
-	let variable = { type: 'local', key: '' };
-	const actor = target.read?.();
-	switch (actor.type) {
-		case 'trigger':
-		case 'caster':
-		case 'latest':
-		case 'target':
-		case 'player':
-			break;
-		case 'member':
-			memberId = actor.memberId;
-			break;
-		case 'global':
-			actorId = actor.actorId;
-			break;
-		case 'by-id':
-			presetId = actor.presetId;
-			break;
-		case 'variable':
-			variable = actor.variable;
-			break;
-	}
-	write($('#actorGetter-type'), actor.type);
-	write($('#actorGetter-memberId'), memberId);
-	write($('#actorGetter-actorId'), actorId);
-	write($('#actorGetter-presetId'), presetId);
-	write($('#actorGetter-variable'), variable);
-	getFocus($('#actorGetter-type'));
+	useActorGetterWindow().open(target, {
+		presetId: PresetObject.getDefaultPresetId('actor')
+	});
 };
 
 ActorGetter.checkDataForPlugin = function (this: ActorGetterShape, data: unknown) {
@@ -92,50 +60,5 @@ ActorGetter.createDefaultForPlugin = function (this: ActorGetterShape) {
 };
 
 ActorGetter.confirm = function (this: ActorGetterShape, event: Event) {
-	const read = getElementReader('actorGetter');
-	const type = read('type');
-	let getter;
-	switch (type) {
-		case 'trigger':
-		case 'caster':
-		case 'latest':
-		case 'target':
-		case 'player':
-			getter = { type };
-			break;
-		case 'member': {
-			const memberId = read('memberId');
-			getter = { type, memberId };
-			break;
-		}
-		case 'global': {
-			const actorId = read('actorId');
-			if (actorId === '') {
-				return getFocus($('#actorGetter-actorId'));
-			}
-			getter = { type, actorId };
-			break;
-		}
-		case 'by-id': {
-			const presetId = read('presetId');
-			if (presetId === '') {
-				return getFocus($('#actorGetter-presetId'));
-			}
-			getter = { type, presetId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#actorGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	if (this.target!.isPluginInput) {
-		getter = { getter: 'actor', ...getter };
-	}
-	this.target?.input?.(getter!);
-	Window.close!('actorGetter');
-}.bind(ActorGetter);
+	useActorGetterWindow().confirm();
+};

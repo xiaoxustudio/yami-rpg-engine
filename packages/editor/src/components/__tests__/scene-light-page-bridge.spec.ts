@@ -27,11 +27,14 @@ interface LightData {
 
 const sceneLight = vi.hoisted(() => ({
 	target: null as LightData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 vi.mock('@/inspector/inspector.ts', () => ({
-	Inspector: { sceneLight }
+	Inspector: {
+		sceneLight,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/scene', () => ({
@@ -48,7 +51,7 @@ describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）',
 	beforeEach(() => {
 		document.body.innerHTML = '';
 		sceneLight.target = null;
-		sceneLight.paramInput.mockClear();
+		sceneLight.update.mockClear();
 	});
 
 	const mountPage = async () => {
@@ -136,23 +139,21 @@ describe('SceneLightPage（sceneLight inspector 响应式双向绑定桥接）',
 		wrapper.unmount();
 	});
 
-	it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+	it('控件 input 经 composable paramInput 调用 update 并保持 form 与 target 同步', async () => {
 		const wrapper = await mountPage();
-		const el = document.getElementById('sceneLight-vue-mount') as SyncEl;
-		sceneLight.target = makeLight();
-		el.sync?.();
-		await wrapper.vm.$nextTick();
-		await wrapper.vm.$nextTick();
-		sceneLight.paramInput.mockImplementation(() => {
-			if (sceneLight.target) {
-				sceneLight.target.name = 'Light 3';
-			}
+		const light = makeLight();
+		sceneLight.update.mockImplementation((target: LightData, key: string, value: unknown) => {
+			(target as unknown as Record<string, unknown>)[key] = value;
 		});
+		sceneLight.target = light;
+		await wrapper.vm.$nextTick();
+		await wrapper.vm.$nextTick();
 		const input = document.getElementById('sceneLight-name')?.querySelector('input');
 		expect(input).toBeTruthy();
 		input!.value = 'Light 3';
+		input!.focus();
 		input!.dispatchEvent(new Event('input', { bubbles: true }));
-		expect(sceneLight.paramInput).toHaveBeenCalled();
+		expect(sceneLight.update).toHaveBeenCalledWith(light, 'name', 'Light 3');
 		await wrapper.vm.$nextTick();
 		expect(read('sceneLight-name')).toBe('Light 3');
 		wrapper.unmount();

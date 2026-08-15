@@ -6,7 +6,6 @@ import { History } from '@/tools/history.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
 import { Reference } from '@/log/related-references.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
-import type { IArrayHistory } from '@/types/history.ts';
 import type { PageManagerApi } from '@ui-kit';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
@@ -27,11 +26,6 @@ interface VariableModule {
 		sort?: unknown;
 		[k: string]: unknown;
 	};
-	target: { getFocus?: () => unknown } | null;
-	data: unknown;
-	idMap: Record<string, unknown>;
-	history: IArrayHistory & Array<{ type: unknown; item: unknown }>;
-	changed: boolean;
 	_previousActive: ReturnType<typeof UndoManager.getActive>;
 	initialize: (() => void) | null;
 	open: ((target?: unknown) => void) | null;
@@ -75,6 +69,7 @@ interface VariableModule {
 	list_onDelete: (item: unknown) => void;
 	list_onResume: (item: unknown) => void;
 	_listMethodsLoaded: boolean;
+	[k: string]: any;
 }
 
 export const Variable: VariableModule = {
@@ -91,11 +86,6 @@ export const Variable: VariableModule = {
 		boolean: { read: null },
 		type: { write: null }
 	},
-	target: null,
-	data: null,
-	idMap: null as unknown as Record<string, unknown>,
-	history: null as unknown as IArrayHistory & Array<{ type: unknown; item: unknown }>,
-	changed: false,
 	_previousActive: null as unknown as ReturnType<typeof UndoManager.getActive>,
 	initialize: null,
 	open: null,
@@ -172,7 +162,7 @@ function ensureDomBound() {
 	getListConfig(Variable.list).onDelete = Variable.list_onDelete;
 	getListConfig(Variable.list).onResume = Variable.list_onResume;
 	bindListClipboardMethods({
-		module: Variable,
+		module: Variable as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list,
 		clipboardKey: 'yami.data.variable'
 	});
@@ -209,7 +199,7 @@ Variable.initialize = function () {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
-	list.bind(() => this.data);
+	list.bind(() => getVariableStore().state.data);
 
 	if (this.panel) getVariableStore().state.selected = null;
 	this.searcher?.addCloseButton?.();
@@ -223,7 +213,7 @@ Variable.initialize = function () {
 		if (read(list) === null && getVariableStore().state.selected !== null) {
 			this.closePropertyPanel();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-name-change'] = (
 		operation: string,
@@ -240,7 +230,7 @@ Variable.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-sort-change'] = (
 		operation: string,
@@ -268,7 +258,7 @@ Variable.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-type-change'] = (
 		operation: string,
@@ -287,7 +277,7 @@ Variable.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-value-change'] = (
 		operation: string,
@@ -304,7 +294,7 @@ Variable.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 	History.processors['variable-note-change'] = (
 		operation: string,
@@ -321,7 +311,7 @@ Variable.initialize = function () {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getVariableStore().state.changed = true;
 	};
 
 	on($('#variable'), 'close', this.windowClose!);

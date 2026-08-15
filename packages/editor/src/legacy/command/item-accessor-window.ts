@@ -1,7 +1,5 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { write, getFocus } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+import { $ } from '@/util/dom.ts';
+import { useItemGetterWindow } from '@app/composables/useItemGetterWindow';
 import { Enum } from '@/enum/enum-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
@@ -46,37 +44,9 @@ ItemGetter.initialize = function (this: ItemGetterShape) {
 
 ItemGetter.open = function (this: ItemGetterShape, target: AccessorTarget) {
 	this.target = target;
-	Window.open!('itemGetter');
-
+	const key = Enum.getDefStringId('shortcut-key');
 	$('#itemGetter-key').loadItems(Enum.getStringItems('shortcut-key'));
-
-	let actor = { type: 'trigger' };
-	let key = Enum.getDefStringId('shortcut-key');
-	let itemId = '';
-	let variable = { type: 'local', key: '' };
-	const item = target.read?.();
-	switch (item.type) {
-		case 'trigger':
-		case 'latest':
-			break;
-		case 'by-key':
-			actor = item.actor;
-			key = item.key;
-			break;
-		case 'by-id':
-			actor = item.actor;
-			itemId = item.itemId;
-			break;
-		case 'variable':
-			variable = item.variable;
-			break;
-	}
-	write($('#itemGetter-type'), item.type);
-	write($('#itemGetter-actor'), actor);
-	write($('#itemGetter-key'), key);
-	write($('#itemGetter-itemId'), itemId);
-	write($('#itemGetter-variable'), variable);
-	getFocus($('#itemGetter-type'));
+	useItemGetterWindow().open(target, { key });
 };
 
 ItemGetter.checkDataForPlugin = function (this: ItemGetterShape, data: unknown) {
@@ -91,44 +61,5 @@ ItemGetter.createDefaultForPlugin = function (this: ItemGetterShape) {
 };
 
 ItemGetter.confirm = function (this: ItemGetterShape, event: Event) {
-	const read = getElementReader('itemGetter');
-	const type = read('type');
-	let getter;
-	switch (type) {
-		case 'trigger':
-		case 'latest':
-			getter = { type };
-			break;
-		case 'by-key': {
-			const actor = read('actor');
-			const key = read('key');
-			if (key === '') {
-				return getFocus($('#itemGetter-key'));
-			}
-			getter = { type, actor, key };
-			break;
-		}
-		case 'by-id': {
-			const actor = read('actor');
-			const itemId = read('itemId');
-			if (itemId === '') {
-				return getFocus($('#itemGetter-itemId'));
-			}
-			getter = { type, actor, itemId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#itemGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	if (this.target!.isPluginInput) {
-		getter = { getter: 'item', ...getter };
-	}
-	this.target?.input?.(getter!);
-	Window.close!('itemGetter');
-}.bind(ItemGetter);
+	useItemGetterWindow().confirm();
+};

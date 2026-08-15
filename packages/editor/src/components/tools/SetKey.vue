@@ -9,8 +9,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { SetKey, type SetKeyForm } from '@/tools/set-key-window.ts';
+import { onMounted, ref } from 'vue';
+import { useSetKeyWindow, type SetKeyForm } from '@app/composables/useSetKeyWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -18,7 +18,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
 
-const form = reactive<SetKeyForm>({ key: '' });
+const setKey = useSetKeyWindow();
+const form = setKey.form;
 
 const setForm = (data: Partial<SetKeyForm>): void => {
 	Object.assign(form, data);
@@ -56,15 +57,16 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 const onConfirm = () => {
-	SetKey?.confirm?.();
+	setKey.confirm();
 };
 
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
+		el.on('closed', () => setKey.onWindowClosed());
 	}
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

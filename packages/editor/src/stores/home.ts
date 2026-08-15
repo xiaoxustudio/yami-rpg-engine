@@ -3,12 +3,14 @@ import { Home } from '@/title/home-page.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
+export interface HomeShape {
+	state: string;
+}
+
+export const homeStateKeys: (keyof HomeShape)[] = ['state'];
+
 export const useHomeStore = defineStore('home', () => {
 	const state = shallowRef<string>('closed');
-
-	function syncState() {
-		state.value = Home?.state ?? 'closed';
-	}
 
 	function openProject(path: string) {
 		Home?.openProject?.(path);
@@ -64,7 +66,6 @@ export const useHomeStore = defineStore('home', () => {
 
 	return {
 		state,
-		syncState,
 		openProject,
 		createProject,
 		initialize,

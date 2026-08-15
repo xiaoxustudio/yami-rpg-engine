@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetQuantity from '@app/components/tools/SetQuantity.vue';
@@ -6,6 +6,13 @@ import Rename from '@app/components/tools/Rename.vue';
 import SetKey from '@app/components/tools/SetKey.vue';
 import Zoom from '@app/components/tools/Zoom.vue';
 import SceneShift from '@app/components/tools/SceneShift.vue';
+import { Rename as RenameController } from '@/tools/rename-window.ts';
+import { SetKey as SetKeyController } from '@/tools/set-key-window.ts';
+import { Window } from '@/tools/window-object.ts';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 interface FormFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;
@@ -65,6 +72,23 @@ describe('低频工具窗口表单桥接（P3 表单读写型迁移回归保护�
 		wrapper.unmount();
 	});
 
+	it('rename 经 legacy 入口 open/confirm 完整流程（composable 转发）', async () => {
+		const wrapper = mount(Rename, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+		Window.open = vi.fn();
+		Window.close = vi.fn();
+		const callback = vi.fn();
+		RenameController.open('hello', callback);
+		expect(Window.open).toHaveBeenCalledWith('rename');
+		expect(getFrame('rename').getForm().name).toBe('hello');
+		getControl('rename-name').write('world');
+		getFrame('rename').dispatchEvent(new CustomEvent('confirm'));
+		await wrapper.vm.$nextTick();
+		expect(callback).toHaveBeenCalledWith('world');
+		expect(Window.close).toHaveBeenCalledWith('rename');
+		wrapper.unmount();
+	});
+
 	it('rename 控件值变更在 getForm 时读回', async () => {
 		const wrapper = mount(Rename, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
@@ -87,6 +111,23 @@ describe('低频工具窗口表单桥接（P3 表单读写型迁移回归保护�
 		getControl('setKey-key').write('a');
 		await wrapper.vm.$nextTick();
 		expect(frame.getForm().key).toBe('a');
+		wrapper.unmount();
+	});
+
+	it('setKey 经 legacy 入口 open/confirm 完整流程（composable 转发）', async () => {
+		const wrapper = mount(SetKey, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+		Window.open = vi.fn();
+		Window.close = vi.fn();
+		const callback = vi.fn();
+		SetKeyController.open('w', callback);
+		expect(Window.open).toHaveBeenCalledWith('setKey');
+		expect(getFrame('setKey').getForm().key).toBe('w');
+		getControl('setKey-key').write('a');
+		getFrame('setKey').dispatchEvent(new CustomEvent('confirm'));
+		await wrapper.vm.$nextTick();
+		expect(callback).toHaveBeenCalledWith('a');
+		expect(Window.close).toHaveBeenCalledWith('setKey');
 		wrapper.unmount();
 	});
 

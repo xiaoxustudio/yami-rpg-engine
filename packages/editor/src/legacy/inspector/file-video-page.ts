@@ -9,7 +9,6 @@ import { Inspector } from './inspector.ts';
 {
 	interface FileVideoShape {
 		video: HTMLVideoElement | null;
-		windowError: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const FileVideo: FileVideoShape = {
@@ -20,15 +19,12 @@ import { Inspector } from './inspector.ts';
 		initialize: null,
 		open: null,
 		close: null,
-		play: null,
-		windowError: null
+		play: null
 	};
 
 	FileVideo.initialize = function (this: typeof FileVideo) {
 		if (!$('#fileVideo-video')) return;
 		this.video = $('#fileVideo-video') as HTMLVideoElement;
-
-		window.addEventListener('error', this.windowError!);
 	};
 
 	FileVideo.open = function (this: typeof FileVideo, file: FileItem, meta: FileMeta | null) {
@@ -96,12 +92,6 @@ import { Inspector } from './inspector.ts';
 			} else {
 				video.currentTime = 0;
 			}
-		}
-	};
-
-	FileVideo.windowError = function (this: typeof FileVideo, event: Event) {
-		if ((event as ErrorEvent).message === 'ResizeObserver loop limit exceeded') {
-			event.stopImmediatePropagation();
 		}
 	};
 

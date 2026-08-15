@@ -1,4 +1,5 @@
 import { HistoryData, IArrayHistory } from '@/types/history.ts';
+import { getHistoryStore } from '@app/stores/history';
 
 export type HistoryRecord = HistoryData;
 
@@ -38,6 +39,7 @@ export class History extends Array implements IArrayHistory {
 		}
 
 		this.onSave?.(data);
+		getHistoryStore().syncState();
 	}
 
 	restore(operation: string) {
@@ -61,6 +63,7 @@ export class History extends Array implements IArrayHistory {
 				}
 
 				this.onRestore?.(data);
+				getHistoryStore().syncState();
 			}
 		}
 	}

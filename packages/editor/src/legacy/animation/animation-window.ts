@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
@@ -44,6 +44,7 @@ import { ImageTexture } from '../webgl/image-texture.ts';
 import { Matrix } from '@/webgl/matrix2.ts';
 import { GL } from '@/webgl/webgl-init.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { getAnimationStore } from '@app/stores/animation';
 
 const Clipboard = getGlobalClipboard();
 
@@ -185,7 +186,6 @@ type AnimationHistoryTargetIndex = {
 };
 
 interface AnimationShape {
-	state: AnimationState;
 	page: AnimationElement;
 	head: AnimationElement;
 	body: AnimationElement & {
@@ -215,7 +215,6 @@ interface AnimationShape {
 }
 
 export const Animation: AnimationShape = {
-	state: 'closed',
 	page: $('#animation'),
 	head: $('#animation-head'),
 	body: $('#animation-body'),
@@ -239,10 +238,6 @@ export const Animation: AnimationShape = {
 	pointer: $('#animation-timeline-pointer'),
 	dirTags: null,
 	dragging: null,
-	playing: false,
-	motion: null,
-	direction: 0,
-	target: null,
 	hover: null,
 	history: null,
 	contextLoaded: false,
@@ -254,14 +249,8 @@ export const Animation: AnimationShape = {
 	controlPointRotation: null,
 	translationKey: 0b0000,
 	translationTimer: null,
-	showMark: false,
-	showOnionskin: false,
-	mirror: false,
-	loop: false,
 	background: null,
 	matrix: null,
-	speed: null,
-	zoom: null,
 	zoomTimer: null,
 	scale: null,
 	scaleX: null,
@@ -281,7 +270,6 @@ export const Animation: AnimationShape = {
 	context: null,
 	meta: null,
 	player: null,
-	mode: null,
 	sprites: null,
 	motions: null,
 	layers: null,
@@ -512,7 +500,6 @@ Animation.timelineMarquee.isExtendable = null;
 Animation.timelineMarquee.isShrinkable = null;
 
 Animation.initialize = function (this: typeof Animation) {
-	getAnimationStore().syncState();
 	this.page = $('#animation');
 	this.head = $('#animation-head');
 	this.screen = $('#animation-screen');
@@ -625,7 +612,7 @@ Animation.initialize = function (this: typeof Animation) {
 	this.translationTimer = new Timer({
 		duration: Infinity,
 		update: (timer: Timer) => {
-			if (this.state === 'open' && this.dragging === null) {
+			if (getAnimationStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
 				let x = 0;
@@ -662,7 +649,7 @@ Animation.initialize = function (this: typeof Animation) {
 	this.zoomTimer = new Timer({
 		duration: 80,
 		update: (timer: Timer) => {
-			if (this.state === 'open') {
+			if (getAnimationStore().state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
@@ -997,7 +984,7 @@ Animation.open = function (this: typeof Animation, context: AnimationFileContext
 		context.animation = Data.animations[meta.guid];
 	}
 	if (context.animation) {
-		this.state = 'open';
+		getAnimationStore().state = 'open';
 		this.context = context;
 		this.meta = meta;
 		show(this.body);
@@ -1039,7 +1026,7 @@ Animation.load = function (this: typeof Animation, context: AnimationFileContext
 	}
 	const { animation, editor } = context;
 
-	this.mode = animation.mode;
+	getAnimationStore().mode = animation.mode;
 	this.sprites = animation.sprites;
 	this.motions = animation.motions;
 
@@ -1063,19 +1050,19 @@ Animation.load = function (this: typeof Animation, context: AnimationFileContext
 		this.selectFrame!(editor.target, editor.selectionX, editor.selectionLength);
 	}
 
-	UndoManager.setActive!(Animation);
+	UndoManager.setActive!(Animation as never);
 };
 
 Animation.save = function (this: typeof Animation) {
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		const { animation, editor } = this.context;
 
-		animation.mode = this.mode;
+		animation.mode = getAnimationStore().mode!;
 		animation.sprites = this.sprites;
 		animation.motions = this.motions;
 
-		editor.motion = this.motion;
-		editor.target = this.target;
+		editor.motion = getAnimationStore().motion;
+		editor.target = getAnimationStore().target;
 		editor.player = this.player;
 		editor.history = this.history;
 		editor.centerX = this.centerX;
@@ -1087,17 +1074,17 @@ Animation.save = function (this: typeof Animation) {
 };
 
 Animation.close = function (this: typeof Animation) {
-	if (this.state !== 'closed') {
+	if (getAnimationStore().state !== 'closed') {
 		this.screen.blur();
 		this.setMotion!(null);
 		if (Inspector.type === 'fileAnimation') {
 			Inspector.close!();
 		}
-		this.state = 'closed';
+		getAnimationStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
 		this.player = null;
-		this.mode = null;
+		getAnimationStore().mode = null;
 		this.sprites = null;
 		this.motions = null;
 		this.history = null;
@@ -1127,10 +1114,10 @@ Animation.destroy = function (this: typeof Animation, context: AnimationFileCont
 };
 
 Animation.play = function (this: typeof Animation) {
-	if (this.playing) {
+	if (getAnimationStore().playing) {
 		return this.stop!();
 	}
-	if (this.motion === null) return;
+	if (getAnimationStore().motion === null) return;
 	const range = this.getAnimationRange!();
 	const player = this.player;
 	// 使用animIndex属性来避免加载最后一帧时被取整的情况
@@ -1139,46 +1126,50 @@ Animation.play = function (this: typeof Animation) {
 	} else {
 		this.animIndex = -1;
 	}
-	this.playing = true;
+	getAnimationStore().playing = true;
 	this.requestAnimation!();
 	player.clearParticles();
 };
 
 Animation.stop = function (this: typeof Animation) {
-	if (this.playing) {
-		this.playing = false;
+	if (getAnimationStore().playing) {
+		getAnimationStore().playing = false;
 		this.resetSoundContexts!();
 		this.loadFrames!(Math.floor(this.animIndex));
 	}
 };
 
 Animation.copy = function (this: typeof Animation) {
-	if (this.state === 'open' && this.motion !== null) {
-		this.list.copy(this.motion);
+	if (getAnimationStore().state === 'open' && getAnimationStore().motion !== null) {
+		this.list.copy(getAnimationStore().motion);
 	}
 };
 
 Animation.paste = function (this: typeof Animation) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getAnimationStore().state === 'open' && this.dragging === null) {
 		this.list.paste(null);
 	}
 };
 
 Animation.delete = function (this: typeof Animation) {
-	if (this.state === 'open' && this.motion !== null && this.dragging === null) {
-		this.list.delete(this.motion);
+	if (
+		getAnimationStore().state === 'open' &&
+		getAnimationStore().motion !== null &&
+		this.dragging === null
+	) {
+		this.list.delete(getAnimationStore().motion);
 	}
 };
 
 Animation.undo = function (this: typeof Animation) {
-	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
+	if (getAnimationStore().state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
 Animation.redo = function (this: typeof Animation) {
-	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
+	if (getAnimationStore().state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
 	}
@@ -1328,13 +1319,13 @@ Animation.nextKeyFrame = function (this: typeof Animation) {
 
 Animation.setSpeed = (function IIFE() {
 	return function (this: typeof Animation, speed: number) {
-		this.speed = speed;
+		getAnimationStore().speed = speed;
 	};
 })();
 
 Animation.setZoom = (function IIFE() {
 	return function (this: typeof Animation, zoom: number) {
-		if (this.zoom !== zoom) {
+		if (getAnimationStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
 				case 0:
@@ -1361,8 +1352,8 @@ Animation.setZoom = (function IIFE() {
 				default:
 					return;
 			}
-			this.zoom = zoom;
-			if (this.state === 'open') {
+			getAnimationStore().zoom = zoom;
+			if (getAnimationStore().state === 'open') {
 				const timer = this.zoomTimer;
 				timer.start = this.scale;
 				timer.end = scale;
@@ -1383,8 +1374,8 @@ Animation.setHover = function (this: typeof Animation, hover: AnimationFrame | n
 };
 
 Animation.setMotion = function (this: typeof Animation, motion: AnimationMotion | null) {
-	if (this.motion !== motion) {
-		this.motion = motion;
+	if (getAnimationStore().motion !== motion) {
+		getAnimationStore().motion = motion;
 		this.updateMotionItem!();
 		this.createDirItems!();
 		this.stop!();
@@ -1396,7 +1387,7 @@ Animation.setMotion = function (this: typeof Animation, motion: AnimationMotion 
 			show(this.timeline);
 			this.timeline.updateHead();
 			Curve.open!();
-			this.setDirection!(this.direction);
+			this.setDirection!(getAnimationStore().direction ?? 0);
 		} else {
 			this.layers = null;
 			hide(this.timeline);
@@ -1411,16 +1402,16 @@ Animation.setMotion = function (this: typeof Animation, motion: AnimationMotion 
 };
 
 Animation.setMotionMode = function (this: typeof Animation, mode: string) {
-	if (!this.motion) return;
-	const dirCases = this.motion.dirCases;
+	if (!getAnimationStore().motion) return;
+	const dirCases = getAnimationStore().motion!.dirCases;
 	this.history.save({
 		type: 'animation-motion-mode-change',
-		motion: this.motion,
-		direction: this.direction,
-		mode: this.motion.mode,
+		motion: getAnimationStore().motion,
+		direction: getAnimationStore().direction,
+		mode: getAnimationStore().motion!.mode,
 		dirCases: dirCases.slice()
 	});
-	this.motion.mode = mode;
+	getAnimationStore().motion!.mode = mode;
 	const dirs = this.dirTags[mode];
 	const length = dirs.length;
 	for (let i = dirCases.length; i < length; i++) {
@@ -1432,11 +1423,11 @@ Animation.setMotionMode = function (this: typeof Animation, mode: string) {
 };
 
 Animation.setDirection = function (this: typeof Animation, direction: number) {
-	if (!this.motion) return;
-	const dirCases = this.motion.dirCases;
+	if (!getAnimationStore().motion) return;
+	const dirCases = getAnimationStore().motion!.dirCases;
 	const dirIndex = Math.min(direction, dirCases.length - 1);
-	const dirCase = this.motion.dirCases[dirIndex];
-	this.direction = dirIndex;
+	const dirCase = getAnimationStore().motion!.dirCases[dirIndex];
+	getAnimationStore().direction = dirIndex;
 	this.layers = dirCase.layers;
 	this.updatePlayerMotion!();
 	this.contextLoaded = false;
@@ -1453,13 +1444,13 @@ Animation.setDirection = function (this: typeof Animation, direction: number) {
 
 Animation.createDirItems = function (this: typeof Animation) {
 	const dirList = this.dirList;
-	const motion = this.motion;
+	const motion = getAnimationStore().motion;
 	const mode = motion?.mode ?? 'none';
 	// 当动作模式发生变化时，更新方向选项
 	if (dirList.mode !== mode) {
 		dirList.mode = mode;
 		const dirs = this.dirTags[mode] ?? [];
-		dirList.setDirItems?.(dirs, this.direction);
+		dirList.setDirItems?.(dirs, getAnimationStore().direction);
 	}
 };
 
@@ -1501,7 +1492,7 @@ Animation.revealTarget = (function IIFE() {
 		duration: 200,
 		update: (timer: Timer) => {
 			const { target } = timer;
-			if (target === Animation.target) {
+			if (target === getAnimationStore().target) {
 				const easing = Easing.EasingMap.easeInOut;
 				const time = easing.ease(timer.elapsed / timer.duration);
 				const x = timer.startX * (1 - time) + timer.endX * time;
@@ -1525,7 +1516,7 @@ Animation.revealTarget = (function IIFE() {
 		}
 	});
 	return function (this: typeof Animation) {
-		const target = this.target;
+		const target = getAnimationStore().target;
 		if (target && !timer.target) {
 			const matrix = GL.matrix.reset().multiply(this.targetContext.matrix);
 			const x = matrix[6];
@@ -1549,7 +1540,7 @@ Animation.revealTarget = (function IIFE() {
 
 Animation.shiftTarget = function (this: typeof Animation, x: number, y: number) {
 	const context = this.targetContext;
-	const target = this.target;
+	const target = getAnimationStore().target;
 	if (context !== null && target !== null) {
 		this.planToSave!();
 		const map = this.inspectorTypeMap;
@@ -1569,8 +1560,8 @@ Animation.shiftTarget = function (this: typeof Animation, x: number, y: number) 
 			history.save({
 				type: type,
 				editor: editor,
-				motion: this.motion,
-				direction: this.direction,
+				motion: getAnimationStore().motion,
+				direction: getAnimationStore().direction,
 				target: target,
 				x: target.x,
 				y: target.y
@@ -1589,7 +1580,7 @@ Animation.shiftTarget = function (this: typeof Animation, x: number, y: number) 
 
 Animation.resizeTarget = function (this: typeof Animation, scaleX: number, scaleY: number) {
 	const context = this.targetContext;
-	const target = this.target;
+	const target = getAnimationStore().target;
 	if (context !== null && target !== null) {
 		this.planToSave!();
 		const map = this.inspectorTypeMap;
@@ -1609,8 +1600,8 @@ Animation.resizeTarget = function (this: typeof Animation, scaleX: number, scale
 			history.save({
 				type: type,
 				editor: editor,
-				motion: this.motion,
-				direction: this.direction,
+				motion: getAnimationStore().motion,
+				direction: getAnimationStore().direction,
 				target: target,
 				scaleX: target.scaleX,
 				scaleY: target.scaleY
@@ -1633,7 +1624,7 @@ Animation.resizeTarget = function (this: typeof Animation, scaleX: number, scale
 
 Animation.rotateTarget = function (this: typeof Animation, rotation: number) {
 	const context = this.targetContext;
-	const target = this.target;
+	const target = getAnimationStore().target;
 	if (context !== null && target !== null) {
 		this.planToSave!();
 		const map = this.inspectorTypeMap;
@@ -1653,8 +1644,8 @@ Animation.rotateTarget = function (this: typeof Animation, rotation: number) {
 			history.save({
 				type: type,
 				editor: editor,
-				motion: this.motion,
-				direction: this.direction,
+				motion: getAnimationStore().motion,
+				direction: getAnimationStore().direction,
 				target: target,
 				rotation: target.rotation
 			});
@@ -1706,7 +1697,7 @@ Animation.setControlPoint = function (
 				} else {
 					cursor = 'nesw-resize';
 				}
-				if (this.mirror)
+				if (getAnimationStore().mirror)
 					switch (cursor) {
 						case 'nwse-resize':
 							cursor = 'nesw-resize';
@@ -1724,13 +1715,13 @@ Animation.setControlPoint = function (
 
 Animation.updateMotion = function (this: typeof Animation) {
 	const item = read(this.list);
-	if (item !== this.motion) {
+	if (item !== getAnimationStore().motion) {
 		this.setMotion!(item);
 	}
 };
 
 Animation.updateMotionItem = function (this: typeof Animation) {
-	const { motion } = this;
+	const motion = getAnimationStore().motion;
 	if (motion !== null) {
 		const { list } = this;
 		if (read(list) !== motion) {
@@ -1740,7 +1731,7 @@ Animation.updateMotionItem = function (this: typeof Animation) {
 };
 
 Animation.updateTarget = function (this: typeof Animation) {
-	if (this.target !== null) {
+	if (getAnimationStore().target !== null) {
 		const { layer } = this.timelineMarquee;
 		if (read(this.layerList) !== layer) {
 			this.unselectMarquee!();
@@ -1749,7 +1740,7 @@ Animation.updateTarget = function (this: typeof Animation) {
 };
 
 Animation.updateTargetContext = function (this: typeof Animation) {
-	const target = this.target;
+	const target = getAnimationStore().target;
 	if (target !== null) {
 		const { contexts } = this.player;
 		const { count } = contexts;
@@ -1765,8 +1756,8 @@ Animation.updateTargetContext = function (this: typeof Animation) {
 };
 
 Animation.updatePlayerMotion = function (this: typeof Animation) {
-	this.player.motion = this.motion;
-	this.player.direction = this.direction;
+	this.player.motion = getAnimationStore().motion;
+	this.player.direction = getAnimationStore().direction;
 	this.player.layers = this.layers;
 };
 
@@ -1774,12 +1765,12 @@ Animation.updateFrameContexts = function (this: typeof Animation) {
 	const player = this.player;
 	const fi = player.index;
 	player.updateFrameParameters(player.contexts, fi);
-	if (this.showOnionskin) {
+	if (getAnimationStore().showOnionskin) {
 		const { length } = player;
 		if (length <= 1) return;
 		let pi = fi - 1;
 		let ni = fi + 1;
-		if (this.loop) {
+		if (getAnimationStore().loop) {
 			pi += length;
 			pi %= length;
 			ni %= length;
@@ -1960,7 +1951,7 @@ Animation.updateHead = function (this: typeof Animation) {
 };
 
 Animation.resize = function (this: typeof Animation) {
-	if (this.state === 'open' && this.screen.clientWidth !== 0) {
+	if (getAnimationStore().state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
@@ -1994,7 +1985,7 @@ Animation.getPointerCoords = (function IIFE() {
 		const dpr = window.devicePixelRatio;
 		point.x = (coords.x * dpr - (this.outerWidth >> 1)) / this.scaleX;
 		point.y = (coords.y * dpr - (this.outerHeight >> 1)) / this.scaleY;
-		if (this.mirror) {
+		if (getAnimationStore().mirror) {
 			point.x = -point.x;
 		}
 		return point;
@@ -2050,7 +2041,16 @@ Animation.getLayerIndex = function (this: typeof Animation, layer: AnimationLaye
 };
 
 Animation.getMotionListItems = function (this: typeof Animation, animationId: string) {
-	const motions = Data.animations[animationId]?.motions;
+	const animations = Data.animations;
+	if (!animations) {
+		return [
+			{
+				name: Local.get!('common.none'),
+				value: ''
+			}
+		];
+	}
+	const motions = animations[animationId]?.motions;
 	if (!motions)
 		return [
 			{
@@ -2087,7 +2087,9 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: st
 };
 
 Animation.getSpriteListItems = function (this: typeof Animation, animationId: string) {
-	const sprites = Data.animations[animationId]?.sprites;
+	const animations = Data.animations;
+	if (!animations) return [{ name: 'No Image', value: '' }];
+	const sprites = animations[animationId]?.sprites;
 	if (!sprites) return [{ name: 'No Image', value: '' }];
 
 	if (!('listItems' in sprites)) {
@@ -2152,7 +2154,7 @@ Animation.updateMatrix = function (this: typeof Animation) {
 		.reset()
 		.scale(this.scaleX, this.scaleY)
 		.translate(-this.scrollLeft, -this.scrollTop);
-	if (this.mirror) {
+	if (getAnimationStore().mirror) {
 		matrix.mirrorh();
 	}
 };
@@ -2319,10 +2321,10 @@ Animation.selectMarquee = function (
 
 Animation.unselectMarquee = function (this: typeof Animation, frame?: AnimationFrame | null) {
 	const marquee = this.timelineMarquee;
-	if (frame !== undefined ? this.target === frame : marquee.layer !== null) {
+	if (frame !== undefined ? getAnimationStore().target === frame : marquee.layer !== null) {
 		marquee.layer = null;
-		if (this.target !== null) {
-			this.target = null;
+		if (getAnimationStore().target !== null) {
+			getAnimationStore().target = null;
 			this.updateTargetContext!();
 			this.requestRendering!();
 			Inspector.close!();
@@ -2547,8 +2549,8 @@ Animation.openFrame = function (this: typeof Animation) {
 		const end = frame.end;
 		if (x >= end) continue;
 		if (x < start) break;
-		if (this.target !== frame) {
-			this.target = frame;
+		if (getAnimationStore().target !== frame) {
+			getAnimationStore().target = frame;
 			this.updateTargetContext!();
 			this.requestRendering!();
 			const map = this.inspectorTypeMap;
@@ -2557,8 +2559,8 @@ Animation.openFrame = function (this: typeof Animation) {
 		}
 		return;
 	}
-	if (this.target !== null) {
-		this.target = null;
+	if (getAnimationStore().target !== null) {
+		getAnimationStore().target = null;
 		this.updateTargetContext!();
 		this.requestRendering!();
 		Inspector.close!();
@@ -2566,7 +2568,7 @@ Animation.openFrame = function (this: typeof Animation) {
 };
 
 Animation.loadTextures = function (this: typeof Animation) {
-	if (this.state === 'closed') return;
+	if (getAnimationStore().state === 'closed') return;
 	const { floor, max } = Math;
 	const player = this.player;
 	const last = player.textures;
@@ -2641,7 +2643,7 @@ Animation.drawBackground = function (this: typeof Animation) {
 };
 
 Animation.drawOnionskins = function (this: typeof Animation) {
-	if (this.showOnionskin) {
+	if (getAnimationStore().showOnionskin) {
 		GL.alpha = 0.25;
 		const { prev, next } = this.player.onionskin;
 		this.drawSpriteLayers!(prev);
@@ -2681,7 +2683,7 @@ Animation.drawSpriteLayers = function (this: typeof Animation, contexts = this.p
 };
 
 Animation.drawEmitters = function (this: typeof Animation) {
-	if (!this.showMark) return;
+	if (!getAnimationStore().showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix;
@@ -2719,7 +2721,7 @@ Animation.drawEmitters = function (this: typeof Animation) {
 			gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
 			switch (frame) {
-				case this.target:
+				case getAnimationStore().target:
 					gl.vertexAttrib4f(program.a_Color, 0, 1, 1, 1);
 					break;
 				case this.hover:
@@ -2846,7 +2848,7 @@ Animation.drawCoordinateAxes = function (this: typeof Animation) {
 };
 
 Animation.drawJointNodes = function (this: typeof Animation) {
-	if (!this.showMark) return;
+	if (!getAnimationStore().showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix;
@@ -2883,7 +2885,7 @@ Animation.drawJointNodes = function (this: typeof Animation) {
 			gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
 			switch (frame) {
-				case this.target:
+				case getAnimationStore().target:
 					gl.vertexAttrib4f(program.a_Color, 0, 1, 1, 1);
 					break;
 				case this.hover:
@@ -2899,7 +2901,7 @@ Animation.drawJointNodes = function (this: typeof Animation) {
 };
 
 Animation.drawJointArrows = function (this: typeof Animation) {
-	if (!this.showMark) return;
+	if (!getAnimationStore().showMark) return;
 	const gl = GL;
 	const vertices = gl.arrays[0].float32;
 	const matrix = gl.matrix;
@@ -2953,7 +2955,7 @@ Animation.drawJointArrows = function (this: typeof Animation) {
 			gl.uniformMatrix3fv(program.u_Matrix, false, matrix);
 			gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW, 0, vi);
 			switch (parent.frame) {
-				case this.target:
+				case getAnimationStore().target:
 					gl.vertexAttrib4f(program.a_Color, 0, 1, 1, 1);
 					break;
 				case this.hover:
@@ -2970,7 +2972,7 @@ Animation.drawJointArrows = function (this: typeof Animation) {
 
 Animation.drawJointSpinner = function (this: typeof Animation) {
 	const context = this.targetContext;
-	const target = this.target;
+	const target = getAnimationStore().target;
 	if (
 		target !== null &&
 		context !== null &&
@@ -3039,7 +3041,7 @@ Animation.drawJointSpinner = function (this: typeof Animation) {
 
 Animation.drawHoverWireframe = function (this: typeof Animation) {
 	const hover = this.hover;
-	if (hover !== null && hover !== this.target) {
+	if (hover !== null && hover !== getAnimationStore().target) {
 		const { contexts } = this.player;
 		const { count } = contexts;
 		for (let i = 0; i < count; i++) {
@@ -3064,7 +3066,7 @@ Animation.drawHoverWireframe = function (this: typeof Animation) {
 
 Animation.drawTargetWireframe = function (this: typeof Animation) {
 	const context = this.targetContext;
-	if (context !== null && this.target !== null) {
+	if (context !== null && getAnimationStore().target !== null) {
 		switch (context.layer.class) {
 			case 'joint':
 			case 'sound':
@@ -3224,7 +3226,7 @@ Animation.drawEmitterWireframe = function (
 
 Animation.drawTargetAnchor = function (this: typeof Animation) {
 	const context = this.targetContext;
-	if (context !== null && this.target !== null) {
+	if (context !== null && getAnimationStore().target !== null) {
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const colors = gl.arrays[0].uint32;
@@ -3257,7 +3259,7 @@ Animation.drawTargetAnchor = function (this: typeof Animation) {
 
 Animation.drawSpriteControlPoints = function (this: typeof Animation) {
 	const context = this.targetContext;
-	const target = this.target;
+	const target = getAnimationStore().target;
 	const texture = UI.controlPointTexture;
 	if (!context || !target || !texture) return;
 	if (this.updateControlPoints!(context)) {
@@ -3423,8 +3425,8 @@ Animation.saveFrames = function (
 	this.planToSave!();
 	this.history.save({
 		type: 'animation-frames-change',
-		motion: Animation.motion,
-		direction: Animation.direction,
+		motion: getAnimationStore().motion,
+		direction: getAnimationStore().direction,
 		changes: changes,
 		sMarquee: sMarquee,
 		dMarquee: dMarquee
@@ -3854,7 +3856,7 @@ Animation.shiftSelectedFrames = function (this: typeof Animation, mode: string) 
 };
 
 Animation.selectControlPoint = function (this: typeof Animation, x: number, y: number) {
-	const target = this.target;
+	const target = getAnimationStore().target;
 	const context = this.targetContext;
 	if (target !== null && context !== null) {
 		const points = this.controlPoints;
@@ -3902,7 +3904,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 	let weight = 0;
 
 	// 选择关节对象 - 节点
-	if (this.showMark && target === null) {
+	if (getAnimationStore().showMark && target === null) {
 		const active = this.targetContext;
 		const scale = Math.max(this.scale, 1);
 		const jointRadius = 16 / scale;
@@ -3926,7 +3928,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 	}
 
 	// 选择粒子发射器对象 - 锚点
-	if (this.showMark && target === null) {
+	if (getAnimationStore().showMark && target === null) {
 		const scale = Math.max(this.scale, 1);
 		const anchorRadius = 32 / scale;
 		for (let i = last; i >= 0; i--) {
@@ -3949,7 +3951,7 @@ Animation.selectObject = function (this: typeof Animation, x: number, y: number)
 	}
 
 	// 选择关节对象 - 手臂
-	if (this.showMark && target === null) {
+	if (getAnimationStore().showMark && target === null) {
 		const active = this.targetContext;
 		const scale = Math.max(this.scale, 1);
 		const armWidth = 12 / scale;
@@ -4082,7 +4084,7 @@ Animation.getAnimationRange = (function IIFE() {
 })();
 
 Animation.requestRefreshingList = function (this: typeof Animation) {
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		const list = this.list;
 		if (!list.refreshing) {
 			list.refreshing = true;
@@ -4095,19 +4097,19 @@ Animation.requestRefreshingList = function (this: typeof Animation) {
 };
 
 Animation.requestAnimation = function (this: typeof Animation) {
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		Timer.appendUpdater!('stageAnimation', this.updateAnimation);
 	}
 };
 
 Animation.updateAnimation = function (this: typeof Animation, deltaTime: number) {
-	deltaTime *= Animation.speed;
-	if (Animation.playing) {
+	deltaTime *= getAnimationStore().speed ?? 0;
+	if (getAnimationStore().playing) {
 		const { start, end } = Animation.getAnimationRange!();
 		const offset = deltaTime / Animation.Player.step;
 		let index = Math.max(Animation.animIndex + offset, start);
 		if (index >= end) {
-			if (Animation.loop && end > 0) {
+			if (getAnimationStore().loop && end > 0) {
 				do {
 					index += start - end;
 				} while (index >= end);
@@ -4125,7 +4127,7 @@ Animation.updateAnimation = function (this: typeof Animation, deltaTime: number)
 	}
 	Animation.updateParticles!(deltaTime);
 	// 不能保证加载帧的时候一定会请求渲染(尾帧截止) 所以在播放状态时再次请求渲染
-	if (Animation.playing || Animation.particleUpdating) {
+	if (getAnimationStore().playing || Animation.particleUpdating) {
 		Animation.requestRendering!();
 	} else {
 		Animation.stopAnimation!();
@@ -4137,7 +4139,7 @@ Animation.stopAnimation = function (this: typeof Animation) {
 };
 
 Animation.requestRendering = function (this: typeof Animation) {
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
@@ -4168,18 +4170,18 @@ Animation.stopRendering = function (this: typeof Animation) {
 };
 
 Animation.switchMark = (function IIFE() {
-	return function (this: typeof Animation, enabled = !this.showMark) {
-		this.showMark = enabled;
+	return function (this: typeof Animation, enabled = !getAnimationStore().showMark) {
+		getAnimationStore().showMark = enabled;
 		this.requestRendering!();
 	};
 })();
 
 Animation.switchOnionskin = (function IIFE() {
-	return function (this: typeof Animation, enabled = !this.showOnionskin) {
-		this.showOnionskin = enabled;
+	return function (this: typeof Animation, enabled = !getAnimationStore().showOnionskin) {
+		getAnimationStore().showOnionskin = enabled;
 		this.requestRendering!();
 		if (enabled) {
-			if (this.motion) {
+			if (getAnimationStore().motion) {
 				const player = this.player;
 				const { prev, next } = player.onionskin;
 				player.loadContexts(prev);
@@ -4191,10 +4193,10 @@ Animation.switchOnionskin = (function IIFE() {
 })();
 
 Animation.switchMirror = (function IIFE() {
-	return function (this: typeof Animation, enabled = !this.mirror) {
-		this.mirror = enabled;
+	return function (this: typeof Animation, enabled = !getAnimationStore().mirror) {
+		getAnimationStore().mirror = enabled;
 		this.requestRendering!();
-		if (this.state === 'open') {
+		if (getAnimationStore().state === 'open') {
 			this.updateMatrix!();
 		}
 	};
@@ -4209,10 +4211,10 @@ Animation.switchSettings = function (this: typeof Animation) {
 };
 
 Animation.switchLoop = (function IIFE() {
-	return function (this: typeof Animation, enabled = !this.loop) {
-		this.loop = enabled;
+	return function (this: typeof Animation, enabled = !getAnimationStore().loop) {
+		getAnimationStore().loop = enabled;
 		// 在开启残影的情况下应该刷新
-		if (this.showOnionskin && this.state === 'open') {
+		if (getAnimationStore().showOnionskin && getAnimationStore().state === 'open') {
 			this.updateFrameContexts!();
 			this.requestRendering!();
 		}
@@ -4253,12 +4255,12 @@ Animation.saveToProject = function (
 	}
 ) {
 	const { animation } = project;
-	animation.mark = this.showMark ?? animation.mark;
-	animation.onionskin = this.showOnionskin ?? animation.onionskin;
-	animation.mirror = this.mirror ?? animation.mirror;
-	animation.loop = this.loop ?? animation.loop;
-	animation.speed = this.speed ?? animation.speed;
-	animation.zoom = this.zoom ?? animation.zoom;
+	animation.mark = getAnimationStore().showMark ?? animation.mark;
+	animation.onionskin = getAnimationStore().showOnionskin ?? animation.onionskin;
+	animation.mirror = getAnimationStore().mirror ?? animation.mirror;
+	animation.loop = getAnimationStore().loop ?? animation.loop;
+	animation.speed = getAnimationStore().speed ?? animation.speed;
+	animation.zoom = getAnimationStore().zoom ?? animation.zoom;
 };
 
 Animation.loadFromProject = function (
@@ -4284,14 +4286,14 @@ Animation.loadFromProject = function (
 };
 
 Animation.webglRestored = function (this: typeof Animation, event: Event) {
-	if (Animation.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		Animation.requestRendering!();
 	}
 };
 
 Animation.windowResize = function (this: typeof Animation, event: Event) {
 	this.updateHead!();
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		this.resize!();
 		this.updateCamera!();
 		this.requestRendering!();
@@ -4315,7 +4317,7 @@ Animation.enumchange = function (this: typeof Animation, event: Event) {
 }.bind(Animation);
 
 Animation.keydown = function (this: typeof Animation, event: KeyboardEvent) {
-	if (Animation.state === 'open' && Animation.dragging === null) {
+	if (getAnimationStore().state === 'open' && Animation.dragging === null) {
 		if (event.altKey) {
 			switch (event.code) {
 				case 'KeyS':
@@ -4323,7 +4325,7 @@ Animation.keydown = function (this: typeof Animation, event: KeyboardEvent) {
 					break;
 			}
 		}
-		if (!Animation.motion) return;
+		if (!getAnimationStore().motion) return;
 		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
@@ -4395,7 +4397,11 @@ Animation.zoomInput = function (this: typeof Animation, event: Event) {
 };
 
 Animation.screenKeydown = function (this: typeof Animation, event: KeyboardEvent) {
-	if (this.state === 'open' && this.motion !== null && this.dragging === null) {
+	if (
+		getAnimationStore().state === 'open' &&
+		getAnimationStore().motion !== null &&
+		this.dragging === null
+	) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'ArrowLeft':
@@ -4450,9 +4456,9 @@ Animation.screenKeydown = function (this: typeof Animation, event: KeyboardEvent
 			case 'ArrowUp':
 			case 'ArrowRight':
 			case 'ArrowDown':
-				if (this.target !== null) {
+				if (getAnimationStore().target !== null) {
 					event.preventDefault();
-					const target = this.target;
+					const target = getAnimationStore().target!;
 					let offsetX = 0;
 					let offsetY = 0;
 					switch (event.code) {
@@ -4480,11 +4486,11 @@ Animation.screenKeydown = function (this: typeof Animation, event: KeyboardEvent
 				break;
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom!(this.zoom - 1);
+				this.setZoom!((getAnimationStore().zoom ?? 0) - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom!(this.zoom + 1);
+				this.setZoom!((getAnimationStore().zoom ?? 0) + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -4523,17 +4529,17 @@ Animation.translationKeyup = function (this: typeof Animation, event: KeyboardEv
 }.bind(Animation);
 
 Animation.screenWheel = function (this: typeof Animation, event: WheelEvent) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getAnimationStore().state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom!(this.zoom + step);
+			this.setZoom!((getAnimationStore().zoom ?? 0) + step);
 		}
 	}
 }.bind(Animation);
 
 Animation.screenUserscroll = function (this: typeof Animation, event: Event) {
-	if (this.state === 'open') {
+	if (getAnimationStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
@@ -4568,7 +4574,7 @@ Animation.marqueePointerdown = function (
 		startY?: number;
 	}
 ) {
-	if (this.dragging || !this.motion) {
+	if (this.dragging || !getAnimationStore().motion) {
 		return;
 	}
 	switch (event.button) {
@@ -4583,9 +4589,9 @@ Animation.marqueePointerdown = function (
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			if (this.controlPointActive && this.target) {
+			if (this.controlPointActive && getAnimationStore().target) {
 				const context = this.targetContext;
-				const target = this.target;
+				const target = getAnimationStore().target!;
 				const points = this.controlPoints;
 				this.dragging = event;
 				switch (this.controlPointActive) {
@@ -4646,8 +4652,8 @@ Animation.marqueePointerdown = function (
 			}
 			const { x, y } = this.getPointerCoords!(event);
 			let object;
-			if ((event.ctrlKey || event.metaKey) && this.target) {
-				object = this.target;
+			if ((event.ctrlKey || event.metaKey) && getAnimationStore().target) {
+				object = getAnimationStore().target;
 			}
 			if (object === undefined) {
 				object = this.selectObject!(x, y);
@@ -4676,10 +4682,10 @@ Animation.marqueePointerdown = function (
 }.bind(Animation);
 
 Animation.marqueePointermove = function (this: typeof Animation, event: PointerEvent) {
-	if (!this.dragging && this.motion) {
+	if (!this.dragging && getAnimationStore().motion) {
 		this.marquee.pointerevent = event;
 		const { x, y } = this.getPointerCoords!(event);
-		if (this.target) {
+		if (getAnimationStore().target) {
 			const point = this.selectControlPoint!(x, y);
 			if (point) {
 				this.setHover!(null);
@@ -4703,7 +4709,7 @@ Animation.marqueePointerleave = function (this: typeof Animation, event: Event) 
 }.bind(Animation);
 
 Animation.marqueeDoubleclick = function (this: typeof Animation, event: Event) {
-	if (this.target) {
+	if (getAnimationStore().target) {
 		this.screenBlur!();
 		this.revealTarget!();
 	}
@@ -4741,35 +4747,38 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
 			case 'object-rotate':
-				if (Animation.target) {
+				if (getAnimationStore().target) {
 					const { x, y } = getRelativeCoords(event, GL.canvas);
 					const distX = x * dpr - dragging.absoluteAnchorX;
 					const distY = y * dpr - dragging.absoluteAnchorY;
 					const currentAngle = Math.atan2(distY, distX);
 					const angle = Math.modRadians(currentAngle - dragging.lastAngle);
 					const increment = angle < Math.PI ? angle : angle - Math.PI * 2;
-					dragging.rotationRadians += Animation.mirror ? -increment : increment;
+					dragging.rotationRadians += getAnimationStore().mirror ? -increment : increment;
 					let rotation = Math.round(
 						dragging.startRotation + Math.degrees(dragging.rotationRadians)
 					);
 					if (event.shiftKey) {
 						rotation = Math.round(rotation / 15) * 15;
 					}
-					if (Animation.target.rotation !== rotation) {
+					if (getAnimationStore().target!.rotation !== rotation) {
 						Animation.rotateTarget!(rotation);
 					}
 					dragging.lastAngle = currentAngle;
 				}
 				break;
 			case 'object-resize':
-				if (Animation.target) {
+				if (getAnimationStore().target) {
 					const points = Animation.controlPoints;
 					const point = Animation.controlPointActive;
 					const angle = Math.radians(point.angle + Animation.controlPointRotation);
 					const distX = ((event.clientX - dragging.clientX) * dpr) / Animation.scaleX;
 					const distY = ((event.clientY - dragging.clientY) * dpr) / Animation.scaleY;
 					const dist = Math.sqrt(distX ** 2 + distY ** 2);
-					const distAngle = Math.atan2(distY, Animation.mirror ? -distX : distX);
+					const distAngle = Math.atan2(
+						distY,
+						getAnimationStore().mirror ? -distX : distX
+					);
 					let width = undefined;
 					let height = undefined;
 					switch (point) {
@@ -4847,8 +4856,8 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 						scaleY = Math.roundTo(dragging.startScaleY + scaleY, 4);
 					}
 					if (
-						(scaleX !== undefined && Animation.target.scaleX !== scaleX) ||
-						(scaleY !== undefined && Animation.target.scaleY !== scaleY)
+						(scaleX !== undefined && getAnimationStore().target!.scaleX !== scaleX) ||
+						(scaleY !== undefined && getAnimationStore().target!.scaleY !== scaleY)
 					) {
 						Animation.resizeTarget!(scaleX, scaleY);
 					}
@@ -4867,9 +4876,9 @@ Animation.pointermove = function (this: typeof Animation, event: PointerEvent) {
 						break;
 					}
 				}
-				if (Animation.target) {
-					const target = Animation.target;
-					const mirrorX = Animation.mirror ? -1 : 1;
+				if (getAnimationStore().target) {
+					const target = getAnimationStore().target!;
+					const mirrorX = getAnimationStore().mirror ? -1 : 1;
 					const distX =
 						(((event.clientX - dragging.clientX) * dpr) / Animation.scaleX) * mirrorX;
 					const distY = ((event.clientY - dragging.clientY) * dpr) / Animation.scaleY;
@@ -5211,8 +5220,8 @@ Animation.layerListRecord = function (
 			Animation.contextLoaded = false;
 			Animation.history.save({
 				type: `animation-layer-${type}`,
-				motion: Animation.motion,
-				direction: Animation.direction,
+				motion: getAnimationStore().motion,
+				direction: getAnimationStore().direction,
 				response: response
 			});
 			break;
@@ -5327,8 +5336,8 @@ Animation.layerListPopup = function (
 					SceneShift.open!((x: number, y: number) => {
 						Animation.history.save({
 							type: 'animation-layer-shift',
-							motion: Animation.motion,
-							direction: Animation.direction,
+							motion: getAnimationStore().motion,
+							direction: getAnimationStore().direction,
 							layer: item,
 							shiftX: x,
 							shiftY: y
@@ -5865,7 +5874,7 @@ Animation.layerList.update = function (this: typeof Animation) {
 		const { contexts } = player;
 		player.destroyContextEmitters();
 		player.loadContexts(contexts);
-		if (Animation.showOnionskin) {
+		if (getAnimationStore().showOnionskin) {
 			const { prev, next } = player.onionskin;
 			player.loadContexts(prev);
 			player.loadContexts(next);
@@ -6004,6 +6013,10 @@ Animation.timelineMarquee.isShrinkable = function (this: typeof Animation) {
 };
 
 const animationBridgeKeys = [
+	'state',
+	'target',
+	'motion',
+	'direction',
 	'mode',
 	'speed',
 	'zoom',
@@ -6013,7 +6026,6 @@ const animationBridgeKeys = [
 	'loop',
 	'playing'
 ] as const;
-import { getAnimationStore } from '@app/stores/animation';
 
 for (const key of animationBridgeKeys) {
 	Object.defineProperty(Animation, key, {

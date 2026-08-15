@@ -54,7 +54,7 @@ const updateItems = (items: ReferenceItem[]): void => {
 
 onMounted(() => {
 	registerReferenceUpdate(updateItems);
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

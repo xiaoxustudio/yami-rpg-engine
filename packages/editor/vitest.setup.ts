@@ -12,7 +12,8 @@ const mockContext = {
 	getExtension: () => null,
 	getParameter: () => null,
 	getContextAttributes: () => null,
-	getShaderPrecisionFormat: () => ({ rangeMin: 0, rangeMax: 0, precision: 0 })
+	getShaderPrecisionFormat: () => ({ rangeMin: 0, rangeMax: 0, precision: 0 }),
+	measureText: () => ({ width: 0 })
 };
 HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): typeof mockContext {
 	return mockContext;

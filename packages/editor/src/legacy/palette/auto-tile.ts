@@ -53,21 +53,13 @@ export const AutoTile: Record<string, any> = {
 	templateList: null,
 	nodeList: null,
 	frameList: null,
-	templates: null,
-	template: null,
 	nodes: null,
 	node: null,
-	nodeIndex: null,
 	nodeMaximum: null,
 	frames: null,
-	frameIndex: null,
 	frameMaximum: null,
 	noImage: Symbol(),
-	imageId: null,
 	image: null,
-	offsetX: null,
-	offsetY: null,
-	changed: false,
 	initialize: null,
 	open: null,
 	create: null,
@@ -139,7 +131,6 @@ function ensureDomBound() {
 }
 
 AutoTile.initialize = function (this: typeof AutoTile) {
-	getAutoTileStore().syncState();
 	ensureDomBound();
 	if (!AutoTile.templateList) return;
 	this.nodeMaximum = 64;
@@ -149,7 +140,7 @@ AutoTile.initialize = function (this: typeof AutoTile) {
 	getListConfig(list).removable = true;
 	getListConfig(list).foldable = false;
 	getListConfig(list).renamable = true;
-	list.bind(() => this.templates);
+	list.bind(() => getAutoTileStore().templates);
 	getListConfig(list).updaters.push(list.updateTextNode);
 
 	window.addEventListener('dprchange', this.dprchange);
@@ -171,15 +162,15 @@ AutoTile.open = function (this: typeof AutoTile, { template, image, x, y }: Auto
 	write($('#autoTile-image'), image);
 	write($('#autoTile-x'), x);
 	write($('#autoTile-y'), y);
-	this.templates = Object.clone(Data.autotiles);
-	this.nodeIndex = 0;
-	this.frameIndex = 0;
-	this.imageId = image;
-	this.offsetX = x;
-	this.offsetY = y;
+	getAutoTileStore().templates = Object.clone(Data.autotiles);
+	getAutoTileStore().nodeIndex = 0;
+	getAutoTileStore().frameIndex = 0;
+	getAutoTileStore().imageId = image;
+	getAutoTileStore().offsetX = x;
+	getAutoTileStore().offsetY = y;
 	this.updateCanvas();
 	this.templateList.update();
-	this.templateList.select(this.getTemplateById(template) ?? this.templates[0]);
+	this.templateList.select(this.getTemplateById(template) ?? getAutoTileStore().templates[0]);
 	this.templateList.scrollToSelection();
 	getFocus($('#autoTile-image'));
 };
@@ -213,7 +204,7 @@ AutoTile.pasteTemplate = function (this: typeof AutoTile, dItem: AutoTileTemplat
 };
 
 AutoTile.deleteTemplate = function (this: typeof AutoTile, item: AutoTileTemplateData) {
-	const items = this.templates;
+	const items = getAutoTileStore().templates;
 	if (items.length > 1) {
 		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
@@ -268,7 +259,7 @@ AutoTile.shiftTemplateFrames = function (
 		}
 	}
 	this.createFrameItems();
-	this.changed = true;
+	getAutoTileStore().changed = true;
 };
 
 AutoTile.createTemplateId = function (this: typeof AutoTile) {
@@ -289,7 +280,8 @@ AutoTile.createTemplateData = function (this: typeof AutoTile) {
 };
 
 AutoTile.getTemplateById = function (this: typeof AutoTile, id: string) {
-	const { templates } = this;
+	const { templates } = getAutoTileStore();
+	if (!templates) return undefined;
 	const { length } = templates;
 	for (let i = 0; i < length; i++) {
 		if (templates[i].id === id) {
@@ -299,25 +291,25 @@ AutoTile.getTemplateById = function (this: typeof AutoTile, id: string) {
 	return undefined;
 };
 
-AutoTile.insertNode = function (this: typeof AutoTile, id = this.nodeIndex) {
+AutoTile.insertNode = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	if (id <= this.nodes.length) {
 		this.nodes.splice(id, 0, this.createNodeData());
-		if (this.template.cover >= id) {
-			this.template.cover += 1;
+		if (getAutoTileStore().template.cover >= id) {
+			getAutoTileStore().template.cover += 1;
 		}
 		this.createNodeItems(id);
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
-AutoTile.cutNode = function (this: typeof AutoTile, id = this.nodeIndex) {
+AutoTile.cutNode = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	if (this.nodes.length > 1) {
 		this.copyNode(id);
 		this.deleteNode(id);
 	}
 };
 
-AutoTile.copyNode = function (this: typeof AutoTile, id = this.nodeIndex) {
+AutoTile.copyNode = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	if (id < this.nodes.length) {
 		(GlobalClipboard as unknown as ClipboardShape).write('yami.ruletile.node', this.nodes[id]);
 	}
@@ -328,22 +320,22 @@ AutoTile.pasteNode = function (this: typeof AutoTile, id = this.nodes.length) {
 	if (copy && id <= this.nodes.length) {
 		this.nodes.splice(id, 0, copy);
 		this.createNodeItems(id);
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
-AutoTile.deleteNode = function (this: typeof AutoTile, id = this.nodeIndex) {
+AutoTile.deleteNode = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	if (id < this.nodes.length && this.nodes.length > 1) {
 		this.nodes.splice(id, 1);
-		if (this.template.cover >= id) {
-			if (this.template.cover === id) {
-				this.template.cover = 0;
+		if (getAutoTileStore().template.cover >= id) {
+			if (getAutoTileStore().template.cover === id) {
+				getAutoTileStore().template.cover = 0;
 			} else {
-				this.template.cover -= 1;
+				getAutoTileStore().template.cover -= 1;
 			}
 		}
 		this.createNodeItems();
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
@@ -357,11 +349,11 @@ AutoTile.setNodeQuantity = function (this: typeof AutoTile, count: number) {
 				nodes[i] = this.createNodeData();
 			}
 		}
-		if (this.template.cover >= count) {
-			this.template.cover = 0;
+		if (getAutoTileStore().template.cover >= count) {
+			getAutoTileStore().template.cover = 0;
 		}
 		this.createNodeItems();
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
@@ -372,9 +364,9 @@ AutoTile.createNodeData = function (this: typeof AutoTile) {
 	};
 };
 
-AutoTile.createNodeItems = function (this: typeof AutoTile, id = this.nodeIndex) {
+AutoTile.createNodeItems = function (this: typeof AutoTile, id = getAutoTileStore().nodeIndex) {
 	const list = this.nodeList.reload();
-	const cover = this.template.cover;
+	const cover = getAutoTileStore().template.cover;
 	const nodes = this.nodes;
 	const length = nodes.length;
 	const digits = Number.computeIndexDigits(length);
@@ -396,22 +388,22 @@ AutoTile.editFrame = function (this: typeof AutoTile) {
 	}
 };
 
-AutoTile.insertFrame = function (this: typeof AutoTile, id = this.frameIndex) {
+AutoTile.insertFrame = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	if (id <= this.frames.length) {
 		this.frames.splice(id, 0, this.createFrameData());
 		this.createFrameItems(id);
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
-AutoTile.cutFrame = function (this: typeof AutoTile, id = this.frameIndex) {
+AutoTile.cutFrame = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	if (this.frames.length > 1) {
 		this.copyFrame(id);
 		this.deleteFrame(id);
 	}
 };
 
-AutoTile.copyFrame = function (this: typeof AutoTile, id = this.frameIndex) {
+AutoTile.copyFrame = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	if (id < this.frames.length) {
 		(GlobalClipboard as unknown as ClipboardShape).write('yami.ruletile.frame', {
 			frame: this.frames[id]
@@ -424,15 +416,15 @@ AutoTile.pasteFrame = function (this: typeof AutoTile, id = this.frames.length) 
 	if (copy && id <= this.frames.length) {
 		this.frames.splice(id, 0, copy.frame);
 		this.createFrameItems(id);
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
-AutoTile.deleteFrame = function (this: typeof AutoTile, id = this.frameIndex) {
+AutoTile.deleteFrame = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	if (id < this.frames.length && this.frames.length > 1) {
 		this.frames.splice(id, 1);
 		this.createFrameItems();
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
@@ -447,7 +439,7 @@ AutoTile.setFrameQuantity = function (this: typeof AutoTile, count: number) {
 			}
 		}
 		this.createFrameItems();
-		this.changed = true;
+		getAutoTileStore().changed = true;
 	}
 };
 
@@ -480,14 +472,14 @@ AutoTile.generateFrames = function (
 		frames.splice(++id, 0, x | (y << 8));
 	}
 	this.createFrameItems();
-	this.changed = true;
+	getAutoTileStore().changed = true;
 };
 
 AutoTile.createFrameData = function (this: typeof AutoTile) {
 	return 0;
 };
 
-AutoTile.createFrameItems = function (this: typeof AutoTile, id = this.frameIndex) {
+AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	const list = this.frameList.reload();
 	const frames = this.frames;
 	const length = frames.length;
@@ -509,7 +501,7 @@ AutoTile.createFrameItems = function (this: typeof AutoTile, id = this.frameInde
 
 AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const frames = this.frames;
-	const index = this.frameIndex;
+	const index = getAutoTileStore().frameIndex;
 	const length = frames.length;
 	const frame = frames[index];
 	const prefix = Number.padZero(index, length);
@@ -540,7 +532,7 @@ AutoTile.drawFrame = function (this: typeof AutoTile) {
 
 	if (!(this.image instanceof Image)) {
 		if (this.image === this.noImage) return;
-		const guid = this.imageId;
+		const guid = getAutoTileStore().imageId;
 		if (!guid) {
 			return;
 		}
@@ -562,17 +554,17 @@ AutoTile.drawFrame = function (this: typeof AutoTile) {
 
 	const image = this.image;
 	const frames = this.frames;
-	const frame = frames[this.frameIndex];
+	const frame = frames[getAutoTileStore().frameIndex];
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;
-	const x = (this.offsetX + (frame & 0xff)) * tileWidth;
-	const y = (this.offsetY + (frame >> 8)) * tileHeight;
+	const x = (getAutoTileStore().offsetX + (frame & 0xff)) * tileWidth;
+	const y = (getAutoTileStore().offsetY + (frame >> 8)) * tileHeight;
 
 	drawAndFitImage(context, image, x, y, tileWidth, tileHeight);
 };
 
 AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
-	if (this.changed) {
+	if (getAutoTileStore().changed) {
 		event.preventDefault();
 		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
@@ -583,7 +575,7 @@ AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
 				{
 					label: get('yes'),
 					click: () => {
-						this.changed = false;
+						getAutoTileStore().changed = false;
 						Window.close!('autoTile');
 					}
 				},
@@ -596,8 +588,8 @@ AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
 }.bind(AutoTile);
 
 AutoTile.windowClosed = function (this: typeof AutoTile, event: Event) {
-	this.templates = null;
-	this.template = null;
+	getAutoTileStore().templates = null;
+	getAutoTileStore().template = null;
 	this.nodes = null;
 	this.node = null;
 	this.frames = null;
@@ -645,14 +637,14 @@ AutoTile.templatesSelect = function (
 	event: Event & { value?: AutoTileTemplateData }
 ) {
 	const item = event.value;
-	this.template = item;
+	getAutoTileStore().template = item;
 	this.nodes = item.nodes;
 
 	this.createNodeItems();
 }.bind(AutoTile);
 
 AutoTile.templatesChange = function (this: typeof AutoTile, event: Event) {
-	this.changed = true;
+	getAutoTileStore().changed = true;
 }.bind(AutoTile);
 
 AutoTile.templatesPopup = function (
@@ -663,7 +655,7 @@ AutoTile.templatesPopup = function (
 	const item = event.value;
 	const selected = !!item;
 	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.template');
-	const deletable = selected && AutoTile.templates.length > 1;
+	const deletable = selected && getAutoTileStore().templates.length > 1;
 	const get = Local.createGetter!('menuAutoTileTemplateList');
 	Menu.popup(
 		{
@@ -728,7 +720,7 @@ AutoTile.templatesPopup = function (
 
 AutoTile.nodesWrite = function (this: typeof AutoTile, event: Event & { value?: number }) {
 	const nodeIndex = event.value;
-	this.nodeIndex = nodeIndex;
+	getAutoTileStore().nodeIndex = nodeIndex;
 	this.node = this.nodes[nodeIndex];
 	this.frames = this.node.frames;
 	const write = getElementWriter('autoTile');
@@ -750,7 +742,7 @@ AutoTile.nodesPopup = function (
 	event: MouseEvent & { value?: number | null }
 ) {
 	const id = event.value;
-	const cover = this.template.cover;
+	const cover = getAutoTileStore().template.cover;
 	const nodes = this.nodes;
 	const selected = id !== null;
 	const insertable = nodes.length < this.nodeMaximum;
@@ -823,8 +815,8 @@ AutoTile.nodesPopup = function (
 				label: get('setAsCover'),
 				enabled: coverable,
 				click: () => {
-					this.template.cover = id;
-					this.changed = true;
+					getAutoTileStore().template.cover = id;
+					getAutoTileStore().changed = true;
 					this.createNodeItems();
 				}
 			}
@@ -871,11 +863,11 @@ AutoTile.ruleNeighborInput = function (this: typeof AutoTile, event: Event) {
 		(read('6') << 12) |
 		(read('7') << 14);
 	AutoTile.node.rule = rule;
-	AutoTile.changed = true;
+	getAutoTileStore().changed = true;
 };
 
 AutoTile.framesWrite = function (this: typeof AutoTile, event: Event & { value?: number }) {
-	this.frameIndex = event.value;
+	getAutoTileStore().frameIndex = event.value;
 	this.drawFrame();
 }.bind(AutoTile);
 
@@ -1039,9 +1031,9 @@ AutoTile.offsetYInput = function (this: typeof AutoTile, event: Event) {
 };
 
 AutoTile.confirm = function (this: typeof AutoTile, event: Event) {
-	if (this.changed) {
-		this.changed = false;
-		const templates = this.templates;
+	if (getAutoTileStore().changed) {
+		getAutoTileStore().changed = false;
+		const templates = getAutoTileStore().templates;
 		TreeList.deleteCaches(templates);
 		Data.autotiles = templates;
 		Data.createGUIDMap(templates);
@@ -1051,10 +1043,10 @@ AutoTile.confirm = function (this: typeof AutoTile, event: Event) {
 	const index = Palette.openIndex;
 	const isNew = !tiles[index];
 	tiles[index] = {
-		template: this.template.id,
-		image: this.imageId,
-		x: this.offsetX,
-		y: this.offsetY
+		template: getAutoTileStore().template.id,
+		image: getAutoTileStore().imageId,
+		x: getAutoTileStore().offsetX,
+		y: getAutoTileStore().offsetY
 	};
 	if (isNew) {
 		const { marquee } = Palette;

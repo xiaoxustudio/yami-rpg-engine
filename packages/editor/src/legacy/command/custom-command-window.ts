@@ -58,8 +58,6 @@ type CustomCommandMethod = ((...args: any[]) => any) | null;
 
 interface CustomCommandShape {
 	close: ((id?: string) => void) | null;
-	state: string | null;
-	commands: CustomCommandData[] | null;
 	saveToProject: ((project: EditorProjectShape) => void) | null;
 	loadFromProject: ((project: EditorProjectShape) => void) | null;
 
@@ -117,6 +115,7 @@ interface CustomCommandShape {
 	list_paste: CustomCommandMethod;
 	list_saveSelection: CustomCommandMethod;
 	list_restoreSelection: CustomCommandMethod;
+	[k: string]: any;
 }
 
 export const CustomCommand: CustomCommandShape = {
@@ -158,8 +157,6 @@ export const CustomCommand: CustomCommandShape = {
 	list_paste: null,
 	list_saveSelection: null,
 	list_restoreSelection: null,
-	state: null as string | null,
-	commands: null as CustomCommandData[] | null,
 	saveToProject: null,
 	loadFromProject: null,
 	close: null as ((id?: string) => void) | null
@@ -301,7 +298,10 @@ CustomCommand.windowClosed = function (this: CustomCommandShape, event: Event): 
 	window.removeEventListener('script-change', this.scriptChange! as EventListener);
 }.bind(CustomCommand);
 
-CustomCommand.pointerdown = PluginManager.pointerdown;
+Object.defineProperty(CustomCommand, 'pointerdown', {
+	get: () => PluginManager.pointerdown,
+	configurable: true
+});
 
 CustomCommand.scriptChange = function (event: Event & { changedMeta: unknown }): void {
 	if (CustomCommand.meta === event.changedMeta) {
@@ -549,8 +549,26 @@ CustomCommand.list_saveSelection = function (this: CustomCommandList): void {
 
 CustomCommand.list_restoreSelection = function (this: CustomCommandList): void {
 	const id = Data.commands.selection;
-	const item = CustomCommand.getItemById!(id) ?? this.data[0];
+	const item = CustomCommand.getItemById!(id) ?? this.data?.[0];
 	this.select(item);
 	this.update();
 	this.scrollToSelection();
 };
+
+const customCommandBridgeKeys = ['state', 'commands'] as const;
+import { getCustomCommandStore } from '@app/stores/customCommand';
+
+for (const key of customCommandBridgeKeys) {
+	Object.defineProperty(CustomCommand, key, {
+		get: () => getCustomCommandStore()[key],
+		set: (value: unknown) => {
+			(
+				getCustomCommandStore() as unknown as Record<
+					(typeof customCommandBridgeKeys)[number],
+					any
+				>
+			)[key] = value;
+		},
+		configurable: true
+	});
+}

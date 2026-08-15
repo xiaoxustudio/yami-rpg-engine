@@ -9,6 +9,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-anchorX"
+					v-model="form.anchorX"
 					min="-10"
 					max="10"
 					step="0.1"
@@ -16,6 +17,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-anchorY"
+					v-model="form.anchorY"
 					min="-10"
 					max="10"
 					step="0.1"
@@ -29,6 +31,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-pivotX"
+					v-model="form.pivotX"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -36,6 +39,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-pivotY"
+					v-model="form.pivotY"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -49,6 +53,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-x"
+					v-model="form.x"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -56,6 +61,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-y"
+					v-model="form.y"
 					min="-10000"
 					max="10000"
 					decimals="4"
@@ -69,6 +75,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-rotation"
+					v-model="form.rotation"
 					min="-36000"
 					max="36000"
 					decimals="4"
@@ -82,6 +89,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-scaleX"
+					v-model="form.scaleX"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -89,6 +97,7 @@
 				></NumberBox>
 				<NumberBox
 					id="animSpriteFrame-scaleY"
+					v-model="form.scaleY"
 					min="-100"
 					max="100"
 					step="0.1"
@@ -102,6 +111,7 @@
 			>
 				<NumberBox
 					id="animSpriteFrame-opacity"
+					v-model="form.opacity"
 					min="0"
 					max="1"
 					step="0.05"
@@ -112,12 +122,14 @@
 			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
+					v-model="form.tint[0]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-0"
+					v-model="form.tint[0]"
 					min="-255"
 					max="255"
 					step="5"
@@ -127,12 +139,14 @@
 			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
+					v-model="form.tint[1]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-1"
+					v-model="form.tint[1]"
 					min="-255"
 					max="255"
 					step="5"
@@ -142,12 +156,14 @@
 			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
+					v-model="form.tint[2]"
 					min="-255"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-2"
+					v-model="form.tint[2]"
 					min="-255"
 					max="255"
 					step="5"
@@ -157,12 +173,14 @@
 			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
+					v-model="form.tint[3]"
 					min="0"
 					max="255"
 					step="15"
 				></SliderBox>
 				<NumberBox
 					id="animSpriteFrame-tint-3"
+					v-model="form.tint[3]"
 					min="0"
 					max="255"
 					step="5"
@@ -206,23 +224,19 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { Sprite } from '@/sprite/sprite.ts';
-import { useAnimationStore } from '@app/stores/animation';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
-const animation = useAnimationStore();
 const local = useLocalStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.animSpriteFrame?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useAnimSpriteFramePage();
 
 const onZoomInput = (value: number) => {
 	Sprite?.setZoom?.(value);
@@ -241,7 +255,10 @@ const onMarqueePointerdown = (event: PointerEvent) => {
 };
 
 onMounted(() => {
-	animation.syncState();
-	local.syncState();
+	const el = document.getElementById('animSpriteFrame-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

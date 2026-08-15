@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { Palette } from '@/palette/palette.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 
@@ -35,26 +34,11 @@ export const paletteStateKeys: (keyof PaletteShape)[] = [
 export const usePaletteStore = defineStore('palette', () => {
 	const state = shallowRef<string>('closed');
 	const mode = shallowRef<string>('normal');
-	const zoom = shallowRef<number | null>(null);
+	const zoom = shallowRef<any>(null);
 	const showGrid = shallowRef<boolean>(true);
 	const scrollable = shallowRef<boolean>(false);
 	const activeIndex = shallowRef<number | null>(null);
-	const tileset = shallowRef<PaletteTilesetShape | null>(null);
-	let listening = false;
-
-	function syncState() {
-		state.value = Palette?.state ?? 'closed';
-		mode.value = Palette?.mode ?? 'normal';
-		zoom.value = Palette?.zoom ?? null;
-		showGrid.value = Palette?.showGrid ?? true;
-		scrollable.value = Palette?.scrollable ?? false;
-		activeIndex.value = Palette?.activeIndex ?? null;
-		tileset.value = Palette?.tileset ?? null;
-		if (!listening && typeof window !== 'undefined') {
-			window.addEventListener('localize', syncState);
-			listening = true;
-		}
-	}
+	const tileset = shallowRef<any>(null);
 
 	function setMode(value: PaletteMode) {
 		mode.value = value;
@@ -76,7 +60,6 @@ export const usePaletteStore = defineStore('palette', () => {
 		scrollable,
 		activeIndex,
 		tileset,
-		syncState,
 		setMode,
 		setState,
 		setActiveIndex

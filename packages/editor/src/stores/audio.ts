@@ -7,11 +7,6 @@ export const useAudioStore = defineStore('audio', () => {
 	const state = shallowRef<string>('closed');
 	const music = shallowRef<any>(null);
 
-	function syncState() {
-		state.value = AudioManager?.state ?? 'closed';
-		music.value = AudioManager?.music ?? null;
-	}
-
 	function initialize() {
 		AudioManager?.initialize?.();
 	}
@@ -39,7 +34,6 @@ export const useAudioStore = defineStore('audio', () => {
 	return {
 		state,
 		music,
-		syncState,
 		initialize,
 		close,
 		getWaveform,

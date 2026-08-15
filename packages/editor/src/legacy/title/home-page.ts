@@ -9,6 +9,7 @@ import { Layout } from '@/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
 import { Title } from './title-bar.ts';
 import { Local } from '@/tools/localization.ts';
+import { getHomeStore } from '@app/stores/home';
 
 import type { Dirent, Stats } from 'node:fs';
 
@@ -47,7 +48,6 @@ export interface HomeRecentCard {
 
 interface HomeShape {
 	dependsOn?: string[];
-	state: string | null;
 	openProject: ((path?: string) => void) | null;
 	createProject: ((path?: string) => void) | null;
 	recentCards: HomeRecentCard[] | null;
@@ -64,6 +64,7 @@ interface HomeShape {
 	startClick: ((this: typeof Home, event: Event) => void) | null;
 	recentClick: ((this: typeof Home, event: Event) => void) | null;
 	recentPointerup: ((this: typeof Home, event: Event) => void) | null;
+	[k: string]: any;
 }
 
 export const Home: HomeShape = {
@@ -80,17 +81,15 @@ export const Home: HomeShape = {
 	startClick: null,
 	recentClick: null,
 	recentPointerup: null,
-	state: null as string | null,
 	recentCards: null as HomeRecentCard[] | null,
 	openProject: null as ((path?: string) => void) | null,
 	createProject: null as (() => void) | null
 };
 
 Home.initialize = function (this: typeof Home) {
-	getHomeStore().syncState();
-	Home.state = Layout.manager?.index === 'home' ? 'open' : 'closed';
+	getHomeStore().state = Layout.manager?.index === 'home' ? 'open' : 'closed';
 	Layout.manager?.on('switch', (event: Event & { value: string | null }) => {
-		Home.state = event.value === 'home' ? 'open' : 'closed';
+		getHomeStore().state = event.value === 'home' ? 'open' : 'closed';
 	});
 	window.addEventListener('resize', this.windowResize!);
 	window.addEventListener('localize', this.windowLocalize!);
@@ -421,7 +420,18 @@ Home.startClick = function (this: typeof Home, event: Event) {
 	}
 };
 
-import { getHomeStore } from '@app/stores/home';
+const homeBridgeKeys = ['state'] as const;
+
+for (const key of homeBridgeKeys) {
+	Object.defineProperty(Home, key, {
+		get: () => getHomeStore()[key],
+		set: (value: unknown) => {
+			(getHomeStore() as unknown as Record<(typeof homeBridgeKeys)[number], any>)[key] =
+				value;
+		},
+		configurable: true
+	});
+}
 
 Home.recentClick = function (this: typeof Home, event: Event) {
 	const element = event.target as HTMLElement;

@@ -17,16 +17,21 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useInspectorStore } from '@app/stores/inspector';
+import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
-const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const { updateImage, windowResize } = useFileImagePage();
+
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+	const el = document.getElementById('fileImage');
+	if (!el) return;
+	attachElementApi(el, { updateImage });
+	el.addEventListener('resize', windowResize);
+	document.getElementById('fileImage-image-detail')?.on?.('toggle', windowResize);
 });
 </script>

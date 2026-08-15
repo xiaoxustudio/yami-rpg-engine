@@ -1,9 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import '@/data/metadata.ts';
 import Reference from '@app/components/tools/Reference.vue';
 import { Reference as ReferenceLegacy } from '@/log/related-references.ts';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 beforeEach(() => {
 	setActivePinia(createPinia());

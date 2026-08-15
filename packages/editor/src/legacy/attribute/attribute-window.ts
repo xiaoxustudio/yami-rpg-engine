@@ -19,7 +19,7 @@ import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
-import type { AttributeItemShape } from '@app/stores/attribute';
+import type { AttributeItemShape, AttributeWindowState } from '@app/stores/attribute';
 
 interface AttributeItem {
 	id: string;
@@ -32,6 +32,7 @@ interface AttributeItem {
 	expanded?: boolean;
 	children?: AttributeItem[];
 	element?: HTMLElement;
+	[k: string]: unknown;
 }
 
 interface AttributeTarget {
@@ -57,14 +58,6 @@ interface AttributeWindowShape {
 		enumBox: HTMLElement | null;
 		type: HTMLElement | null;
 	};
-	mode: string | null;
-	target: AttributeTarget | null;
-	data: AttributeItem[] | null;
-	idMap: Record<string, boolean>;
-	settings: Record<string, string>;
-	settingKeys: string[];
-	history: History;
-	changed: boolean;
 	_previousActive: ReturnType<typeof UndoManager.getActive>;
 	initialize: (this: typeof Attribute) => void;
 	open: (this: typeof Attribute, target?: AttributeTarget, mode?: string) => void;
@@ -126,6 +119,7 @@ interface AttributeWindowShape {
 	list_onCreate: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onDelete: (this: typeof Attribute, item: AttributeItem) => void;
 	list_onResume: (this: typeof Attribute, item: AttributeItem) => void;
+	[k: string]: any;
 }
 
 export const Attribute: AttributeWindowShape = {
@@ -140,14 +134,6 @@ export const Attribute: AttributeWindowShape = {
 		enumBox: null,
 		type: null
 	},
-	mode: null,
-	target: null,
-	data: null,
-	idMap: null as unknown as AttributeWindowShape['idMap'],
-	settings: null as unknown as AttributeWindowShape['settings'],
-	settingKeys: null as unknown as AttributeWindowShape['settingKeys'],
-	history: null as unknown as AttributeWindowShape['history'],
-	changed: false,
 	_previousActive: null,
 	initialize: null as unknown as AttributeWindowShape['initialize'],
 	open: null as unknown as AttributeWindowShape['open'],
@@ -225,7 +211,7 @@ function ensureDomBound() {
 	getListConfig(list).onDelete = Attribute.list_onDelete as (item: unknown) => void;
 	getListConfig(list).onResume = Attribute.list_onResume as (item: unknown) => void;
 	bindListClipboardMethods({
-		module: Attribute,
+		module: Attribute as unknown as Parameters<typeof bindListClipboardMethods>[0]['module'],
 		list,
 		clipboardKey: 'yami.data.attribute'
 	});
@@ -246,7 +232,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 	const { list } = this;
 	getListConfig(list).removable = true;
 	getListConfig(list).renamable = true;
-	list.bind(() => this.data);
+	list.bind(() => getAttributeStore().state.data);
 
 	if (this.panel) getAttributeStore().state.selected = null;
 
@@ -261,17 +247,17 @@ Attribute.initialize = function (this: typeof Attribute) {
 		if (read(list) === null && getAttributeStore().state.selected !== null) {
 			this.closePropertyPanel();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-settings-change'] = (
 		operation: string,
 		data: AttributeHistoryData
 	) => {
 		const { settings } = data;
-		data.settings = this.settings;
-		this.settings = settings;
+		data.settings = getAttributeStore().state.settings!;
+		getAttributeStore().state.settings = settings;
 		list.update();
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-name-change'] = (
 		operation: string,
@@ -288,7 +274,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-key-change'] = (
 		operation: string,
@@ -305,7 +291,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-type-change'] = (
 		operation: string,
@@ -322,7 +308,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-enum-change'] = (
 		operation: string,
@@ -338,7 +324,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 	History.processors['attribute-note-change'] = (
 		operation: string,
@@ -355,7 +341,7 @@ Attribute.initialize = function (this: typeof Attribute) {
 			list.expandToSelection();
 			list.scrollToSelection();
 		}
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	};
 
 	on($('#attribute'), 'close', this.windowClose);
@@ -383,10 +369,10 @@ Attribute.open = function (
 	target: AttributeTarget | null | undefined = null,
 	mode: string | null | undefined = 'normal'
 ) {
-	this.mode = mode;
-	this.target = target;
+	getAttributeStore().state.mode = mode;
+	getAttributeStore().state.target = target as AttributeWindowState['target'];
 	this._previousActive = UndoManager.getActive();
-	this.history = new History(100);
+	getAttributeStore().state.history = new History(100);
 	UndoManager.setActive(this);
 	this.unpackAttribute();
 	Window.open!('attribute');
@@ -415,14 +401,16 @@ Attribute.open = function (
 };
 
 Attribute.undo = function (this: typeof Attribute) {
-	if (this.history.canUndo()) {
-		this.history.restore('undo');
+	const history = getAttributeStore().state.history as History;
+	if (history.canUndo()) {
+		history.restore('undo');
 	}
 };
 
 Attribute.redo = function (this: typeof Attribute) {
-	if (this.history.canRedo()) {
-		this.history.restore('redo');
+	const history = getAttributeStore().state.history as History;
+	if (history.canRedo()) {
+		history.restore('redo');
 	}
 };
 
@@ -447,18 +435,18 @@ Attribute.setFolderGroup = function (
 	folder: AttributeItem,
 	newGroup: string
 ) {
-	const oldGroup =
-		Object.keys(this.settings).find((key) => this.settings[key] === folder.id) ?? '';
+	const settings = getAttributeStore().state.settings!;
+	const oldGroup = Object.keys(settings).find((key) => settings[key] === folder.id) ?? '';
 	if (oldGroup !== newGroup) {
-		const settings = Object.clone(this.settings);
-		if (oldGroup) this.settings[oldGroup] = '';
-		if (newGroup) this.settings[newGroup] = folder.id;
-		this.history.save({
+		const copy = Object.clone(settings);
+		if (oldGroup) settings[oldGroup] = '';
+		if (newGroup) settings[newGroup] = folder.id;
+		(getAttributeStore().state.history as History).save({
 			type: 'attribute-settings-change',
-			settings: settings
+			settings: copy
 		});
 		this.list.update();
-		this.changed = true;
+		getAttributeStore().state.changed = true;
 	}
 };
 
@@ -538,7 +526,7 @@ Attribute.unpackAttribute = (function IIFE() {
 		const copies = new Array(length);
 		for (let i = 0; i < length; i++) {
 			const item = items![i];
-			Attribute.idMap[item.id] = true;
+			getAttributeStore().state.idMap![item.id] = true;
 			if (item.class !== 'folder') {
 				copies[i] = Object.clone(item);
 			} else {
@@ -548,11 +536,13 @@ Attribute.unpackAttribute = (function IIFE() {
 		return copies;
 	};
 	return function (this: typeof Attribute) {
-		this.idMap = {};
-		this.data = clone(Data.attribute.keys);
-		this.settings = Object.clone(Data.attribute.settings);
-		if (!this.settingKeys) {
-			this.settingKeys = Object.keys(this.settings);
+		getAttributeStore().state.idMap = {};
+		getAttributeStore().state.data = clone(Data.attribute.keys) as AttributeItemShape[];
+		getAttributeStore().state.settings = Object.clone(Data.attribute.settings);
+		if (!getAttributeStore().state.settingKeys) {
+			getAttributeStore().state.settingKeys = Object.keys(
+				getAttributeStore().state.settings!
+			);
 		}
 	};
 })();
@@ -582,8 +572,10 @@ Attribute.packAttribute = (function IIFE() {
 		return copies;
 	};
 	return function (this: typeof Attribute) {
-		Data.attribute.keys = clone(this.data);
-		Data.attribute.settings = Object.clone(this.settings);
+		Data.attribute.keys = clone(
+			getAttributeStore().state.data as unknown as AttributeItem[] | null
+		);
+		Data.attribute.settings = Object.clone(getAttributeStore().state.settings);
 		Data.createAttributeContext();
 	};
 })();
@@ -595,7 +587,7 @@ Attribute.saveHistory = function (
 	value?: string
 ) {
 	const type = `attribute-${key}-change`;
-	const history = this.history;
+	const history = getAttributeStore().state.history as History;
 	const index = history.index;
 	const length = history.length;
 	const record = history[index];
@@ -615,7 +607,7 @@ Attribute.saveHistory = function (
 
 Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 	this.list.saveScroll();
-	if (this.changed) {
+	if (getAttributeStore().state.changed) {
 		event.preventDefault();
 		const get = Local.createGetter!('confirmation');
 		Window.confirm!(
@@ -626,7 +618,7 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 				{
 					label: get('yes'),
 					click: () => {
-						this.changed = false;
+						getAttributeStore().state.changed = false;
 						Window.close!('attribute');
 					}
 				},
@@ -639,11 +631,11 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 }.bind(Attribute);
 
 Attribute.windowClosed = function (this: typeof Attribute, event: Event) {
-	this.data = null;
-	this.idMap = null as unknown as Record<string, boolean>;
+	getAttributeStore().state.data = null;
+	getAttributeStore().state.idMap = null;
 	UndoManager.setActive(this._previousActive);
 	this._previousActive = null;
-	this.history = null as unknown as History;
+	getAttributeStore().state.history = null;
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();
@@ -696,17 +688,17 @@ Attribute.listPointerdown = function (this: TreeListElement, event: PointerEvent
 };
 
 Attribute.listDoubleclick = function (event: MouseEvent) {
-	switch (Attribute.mode) {
+	switch (getAttributeStore().state.mode) {
 		case 'group':
 			if (read(Attribute.list)?.class === 'folder') {
-				getFocus(Attribute.target);
+				getFocus(getAttributeStore().state.target);
 				event.stopPropagation();
 				Attribute.confirm();
 			}
 			break;
 		case 'attribute':
 			if (read(Attribute.list)?.key !== undefined) {
-				getFocus(Attribute.target);
+				getFocus(getAttributeStore().state.target);
 				event.stopPropagation();
 				Attribute.confirm();
 			}
@@ -722,7 +714,7 @@ Attribute.listSelect = function (event: Event) {
 };
 
 Attribute.listRecord = function (event: Event) {
-	Attribute.changed = true;
+	getAttributeStore().state.changed = true;
 	const response = event.value;
 	switch (response.type) {
 		case 'rename': {
@@ -735,7 +727,7 @@ Attribute.listRecord = function (event: Event) {
 			}
 		}
 		default:
-			Attribute.history!.save({
+			(getAttributeStore().state.history as History).save({
 				type: 'attribute-list-operation',
 				response: response
 			});
@@ -753,8 +745,8 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 	const selected = !!item;
 	const copyable = selected && item.class !== 'folder';
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.attribute');
-	const undoable = Attribute.history!.canUndo();
-	const redoable = Attribute.history!.canRedo();
+	const undoable = (getAttributeStore().state.history as History).canUndo();
+	const redoable = (getAttributeStore().state.history as History).canRedo();
 	const get = Local.createGetter!('menuAttributeList');
 	const items: MenuItem[] = [
 		{
@@ -853,7 +845,7 @@ Attribute.listPopup = function (event: Event & { clientX: number; clientY: numbe
 				}
 			}
 		];
-		for (const groupKey of Attribute.settingKeys) {
+		for (const groupKey of getAttributeStore().state.settingKeys ?? []) {
 			submenu.push({
 				label: get('set-as.' + groupKey),
 				checked: group === groupKey,
@@ -882,7 +874,7 @@ Attribute.nameInput = function (event: InputEvent & { target: HTMLInputElement }
 		Attribute.saveHistory(item, 'name', item.name);
 		item.name = event.target.value;
 		Attribute.list!.updateItemName(item);
-		Attribute.changed = true;
+		getAttributeStore().state.changed = true;
 	}
 };
 
@@ -892,7 +884,7 @@ Attribute.keyInput = function (event: InputEvent & { target: HTMLInputElement })
 		Attribute.saveHistory(item, 'key', item.key);
 		item.key = event.target.value;
 		Attribute.list!.update();
-		Attribute.changed = true;
+		getAttributeStore().state.changed = true;
 	}
 };
 
@@ -917,14 +909,14 @@ Attribute.typeInput = function (event: Event) {
 	Attribute.saveHistory(item, 'type', item.type);
 	item.type = event.value;
 	Attribute.list!.update();
-	Attribute.changed = true;
+	getAttributeStore().state.changed = true;
 };
 
 Attribute.enumInput = function (event: Event) {
 	const item = getAttributeStore().state.selected as AttributeItem;
 	Attribute.saveHistory(item, 'enum', item.enum);
 	item.enum = event.value;
-	Attribute.changed = true;
+	getAttributeStore().state.changed = true;
 };
 
 Attribute.noteInput = function (this: HTMLElement, event: InputEvent) {
@@ -933,7 +925,7 @@ Attribute.noteInput = function (this: HTMLElement, event: InputEvent) {
 		Attribute.saveHistory(item, 'note', item.note);
 		item.note = read(this);
 		Attribute.list!.update();
-		Attribute.changed = true;
+		getAttributeStore().state.changed = true;
 	}
 };
 
@@ -964,7 +956,7 @@ Attribute.searcherInput = function (this: TextBox, event: InputEvent) {
 };
 
 Attribute.confirm = function (this: typeof Attribute, event?: Event) {
-	switch (this.mode) {
+	switch (getAttributeStore().state.mode) {
 		case 'normal':
 			this.apply();
 			break;
@@ -974,7 +966,7 @@ Attribute.confirm = function (this: typeof Attribute, event?: Event) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target?.input?.(item ? item.id : '');
+			getAttributeStore().state.target?.input?.(item ? item.id : '');
 			break;
 		}
 		case 'attribute': {
@@ -983,7 +975,7 @@ Attribute.confirm = function (this: typeof Attribute, event?: Event) {
 				return getFocus(this.list);
 			}
 			this.apply();
-			this.target?.input?.(item ? item.id : '');
+			getAttributeStore().state.target?.input?.(item ? item.id : '');
 			break;
 		}
 	}
@@ -991,8 +983,8 @@ Attribute.confirm = function (this: typeof Attribute, event?: Event) {
 }.bind(Attribute);
 
 Attribute.apply = function (this: typeof Attribute, event?: Event) {
-	if (this.changed) {
-		this.changed = false;
+	if (getAttributeStore().state.changed) {
+		getAttributeStore().state.changed = false;
 
 		this.packAttribute();
 		File.planToSave!(Data.manifest.project.attribute);

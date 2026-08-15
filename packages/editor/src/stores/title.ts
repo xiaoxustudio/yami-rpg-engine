@@ -22,13 +22,6 @@ export const useTitleStore = defineStore('title', () => {
 		playing.value = value;
 	}
 
-	function syncState() {
-		theme.value = Title?.theme ?? null;
-		playing.value = Title?.playing ?? false;
-		maximized.value = Title?.maximized ?? false;
-		fullscreen.value = Title?.fullscreen ?? false;
-	}
-
 	function playGame() {
 		Title.playGame?.();
 	}
@@ -67,7 +60,6 @@ export const useTitleStore = defineStore('title', () => {
 		maximized,
 		fullscreen,
 		setPlaying,
-		syncState,
 		playGame,
 		minimizeClick,
 		maximizeClick,

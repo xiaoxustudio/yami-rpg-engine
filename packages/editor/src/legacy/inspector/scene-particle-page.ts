@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, read, write } from '@/util/element-utils';
+import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -19,7 +19,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	interface SceneParticleShape {
 		target: SceneParticleData | null;
 		update: ((particle: SceneParticleData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const SceneParticle: SceneParticleShape = {
@@ -31,8 +30,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	SceneParticle.initialize = function (this: typeof SceneParticle) {
@@ -106,18 +104,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = particle;
 
 			const write = getElementWriter('sceneParticle', particle);
-			write('name');
-			write('particleId');
-			write('x');
-			write('y');
-			write('angle');
-			write('scale');
-			write('speed');
-			write('opacity');
-			write('priority');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneParticle-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -207,20 +197,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				break;
 		}
 		Scene.requestRendering!();
-	};
-
-	SceneParticle.paramInput = function (this: typeof SceneParticle, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneParticle-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		SceneParticle.update!(
-			SceneParticle.target as SceneParticleData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.sceneParticle = SceneParticle;

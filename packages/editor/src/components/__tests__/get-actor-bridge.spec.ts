@@ -8,6 +8,10 @@ import { Attribute } from '@/attribute/attribute-window.ts';
 import { Data } from '@/data/data-object.ts';
 import '@/module/command/getActor.ts';
 
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
 interface GetActorFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;
 	getForm(): Record<string, unknown>;

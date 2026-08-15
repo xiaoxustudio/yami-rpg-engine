@@ -1,5 +1,5 @@
 ﻿import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, disable, enable, hide, read, show } from '@/util/element-utils';
+import { clear, disable, enable, hide, show } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
@@ -56,8 +56,7 @@ import { UI } from '@/ui/ui-window.ts';
 		close: null,
 		update: null,
 		pageSwitch: null,
-		alignmentClick: null,
-		paramInput: null
+		alignmentClick: null
 	};
 
 	UIElement.initialize = function (this: typeof UIElement) {
@@ -359,20 +358,6 @@ import { UI } from '@/ui/ui-window.ts';
 			});
 			($('#uiImage-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
-	};
-
-	UIElement.paramInput = function (this: typeof UIElement, event?: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (element.id) break;
-			element = element.parentElement;
-		}
-		UIElement.update(
-			UIElement.target,
-			Inspector.getKey!(element as HTMLElement),
-			read(element)
-		);
 	};
 
 	Inspector.uiElement = UIElement;

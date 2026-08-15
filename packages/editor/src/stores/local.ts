@@ -18,19 +18,6 @@ export const useLocalStore = defineStore('local', () => {
 	const languages = shallowRef<{ key: string; alias: string; filename: string }[]>([]);
 	const properties = shallowRef<Record<string, string>>({});
 	const components = shallowRef<Record<string, LocalComponentShape>>({});
-	let listening = false;
-
-	function syncState() {
-		language.value = Local?.language ?? 'en';
-		active.value = Local?.active ?? null;
-		languages.value = Local?.languages ?? [];
-		properties.value = Local?.properties ?? {};
-		components.value = Local?.components ?? {};
-		if (!listening && typeof window !== 'undefined') {
-			window.addEventListener('localize', syncState);
-			listening = true;
-		}
-	}
 
 	function setLanguage(value: string) {
 		language.value = value;
@@ -76,7 +63,6 @@ export const useLocalStore = defineStore('local', () => {
 		languages,
 		properties,
 		components,
-		syncState,
 		setLanguage,
 		setActive,
 		setLanguages,

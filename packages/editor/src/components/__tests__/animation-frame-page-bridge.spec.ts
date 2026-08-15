@@ -25,21 +25,26 @@ interface SoundFrameData {
 
 const animJointFrame = vi.hoisted(() => ({
 	target: null as JointFrameData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 const animParticleFrame = vi.hoisted(() => ({
 	target: null as ParticleFrameData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 const animSoundFrame = vi.hoisted(() => ({
 	target: null as SoundFrameData | null,
-	paramInput: vi.fn()
+	update: vi.fn()
 }));
 
 vi.mock('@/inspector/inspector.ts', () => ({
-	Inspector: { animJointFrame, animParticleFrame, animSoundFrame }
+	Inspector: {
+		animJointFrame,
+		animParticleFrame,
+		animSoundFrame,
+		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
+	}
 }));
 
 vi.mock('@app/stores/animation', () => ({
@@ -58,9 +63,9 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 		animJointFrame.target = null;
 		animParticleFrame.target = null;
 		animSoundFrame.target = null;
-		animJointFrame.paramInput.mockClear();
-		animParticleFrame.paramInput.mockClear();
-		animSoundFrame.paramInput.mockClear();
+		animJointFrame.update.mockClear();
+		animParticleFrame.update.mockClear();
+		animSoundFrame.update.mockClear();
 	});
 
 	const mountPage = async (mountId: string, component: typeof AnimJointFramePage) => {
@@ -109,13 +114,13 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			wrapper.unmount();
 		});
 
-		it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animJointFrame-vue-mount', AnimJointFramePage);
 			animJointFrame.target = makeFrame();
 			(document.getElementById('animJointFrame-vue-mount') as SyncEl).sync?.();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
-			animJointFrame.paramInput.mockImplementation(() => {
+			animJointFrame.update.mockImplementation(() => {
 				if (animJointFrame.target) {
 					animJointFrame.target.x = 99;
 				}
@@ -124,7 +129,7 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			expect(input).toBeTruthy();
 			input!.value = '99';
 			input!.dispatchEvent(new Event('input', { bubbles: true }));
-			expect(animJointFrame.paramInput).toHaveBeenCalled();
+			expect(animJointFrame.update).toHaveBeenCalled();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animJointFrame-x')).toBe(99);
@@ -165,13 +170,13 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			wrapper.unmount();
 		});
 
-		it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animParticleFrame-vue-mount', AnimParticleFramePage);
 			animParticleFrame.target = makeFrame();
 			(document.getElementById('animParticleFrame-vue-mount') as SyncEl).sync?.();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
-			animParticleFrame.paramInput.mockImplementation(() => {
+			animParticleFrame.update.mockImplementation(() => {
 				if (animParticleFrame.target) {
 					animParticleFrame.target.speed = 5;
 				}
@@ -182,7 +187,7 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			expect(input).toBeTruthy();
 			input!.value = '5';
 			input!.dispatchEvent(new Event('input', { bubbles: true }));
-			expect(animParticleFrame.paramInput).toHaveBeenCalled();
+			expect(animParticleFrame.update).toHaveBeenCalled();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animParticleFrame-speed')).toBe(5);
@@ -215,13 +220,13 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			wrapper.unmount();
 		});
 
-		it('控件 input 转发 paramInput 并保持 form 与 target 同步', async () => {
+		it('控件 input 转发 update 并保持 form 与 target 同步', async () => {
 			const wrapper = await mountPage('animSoundFrame-vue-mount', AnimSoundFramePage);
 			animSoundFrame.target = makeFrame();
 			(document.getElementById('animSoundFrame-vue-mount') as SyncEl).sync?.();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
-			animSoundFrame.paramInput.mockImplementation(() => {
+			animSoundFrame.update.mockImplementation(() => {
 				if (animSoundFrame.target) {
 					animSoundFrame.target.volume = 0.9;
 				}
@@ -230,7 +235,7 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 			expect(input).toBeTruthy();
 			input!.value = '0.9';
 			input!.dispatchEvent(new Event('input', { bubbles: true }));
-			expect(animSoundFrame.paramInput).toHaveBeenCalled();
+			expect(animSoundFrame.update).toHaveBeenCalled();
 			await wrapper.vm.$nextTick();
 			await wrapper.vm.$nextTick();
 			expect(read('animSoundFrame-volume')).toBe(0.9);

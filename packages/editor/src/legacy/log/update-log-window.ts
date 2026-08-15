@@ -2,6 +2,7 @@ import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { on } from '@/util/element-utils.ts';
 import { Updater } from '@/update/updater.ts';
+import { initializeUpdateLog } from '@/module/global.ts';
 
 export interface UpdateLogItem {
 	title?: string;
@@ -26,6 +27,10 @@ export const UpdateLog = {
 };
 
 UpdateLog.initialize = function () {
+	initializeUpdateLog();
+	this.currentMode = 'internal';
+	this.internalItems = [];
+	this.communityItems = [];
 	const el = $('#update-log');
 	if (el) on(el, 'closed', this.windowClosed!);
 };

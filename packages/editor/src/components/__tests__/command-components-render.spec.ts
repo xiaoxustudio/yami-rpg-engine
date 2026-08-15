@@ -1,9 +1,13 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ChangeActorSkill from '@app/components/commands/ChangeActorSkill.vue';
 import HttpRequest from '@app/components/commands/HttpRequest.vue';
 import RequestURL from '@app/components/commands/RequestURL.vue';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
 
 describe('命令组件控件 DOM 完整性（initAll 依赖回归）', () => {
 	beforeEach(() => {

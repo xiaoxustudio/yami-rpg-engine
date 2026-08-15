@@ -346,9 +346,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { useUIStore } from '@app/stores/ui';
+import { onMounted } from 'vue';
+import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -361,73 +360,9 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-interface UIElementForm {
-	name: string;
-	pointerEvents: string;
-	anchorX: number;
-	anchorY: number;
-	x: number;
-	x2: number;
-	y: number;
-	y2: number;
-	width: number;
-	width2: number;
-	height: number;
-	height2: number;
-	rotation: number;
-	scaleX: number;
-	scaleY: number;
-	skewX: number;
-	skewY: number;
-	opacity: number;
-}
-
-const NODE_KEYS: (keyof UIElementForm)[] = ['name', 'pointerEvents'];
-
-const TRANSFORM_KEYS: (keyof UIElementForm)[] = [
-	'anchorX',
-	'anchorY',
-	'x',
-	'x2',
-	'y',
-	'y2',
-	'width',
-	'width2',
-	'height',
-	'height2',
-	'rotation',
-	'scaleX',
-	'scaleY',
-	'skewX',
-	'skewY',
-	'opacity'
-];
-
-const ui = useUIStore();
 const local = useLocalStore();
 
-const form = reactive<Partial<UIElementForm>>({});
-
-const sync = (): void => {
-	const target = Inspector?.uiElement?.target as
-		| (Partial<UIElementForm> & { transform?: Partial<UIElementForm> })
-		| null
-		| undefined;
-	if (!target) return;
-	for (const key of NODE_KEYS) {
-		form[key] = target[key];
-	}
-	const transform = target.transform ?? {};
-	for (const key of TRANSFORM_KEYS) {
-		form[key] = transform[key];
-	}
-};
-
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.uiElement?.paramInput?.({ target });
-	sync();
-};
+const { form, sync, onParamInput } = useUIImagePage();
 
 onMounted(() => {
 	const el = document.getElementById('uiImage-vue-mount');
@@ -435,7 +370,5 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 	sync();
-	ui.syncState();
-	local.syncState();
 });
 </script>

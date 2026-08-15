@@ -4,12 +4,26 @@ export interface ToolInstance {
 	initialize?: (...args: unknown[]) => void;
 }
 
-const toolRegistry = new Map<string, ToolInstance>();
+type ToolRegistryShape = {
+	registerTool(name: string, instance: ToolInstance): void;
+	getToolInstance(name: string): ToolInstance | undefined;
+};
+
+let registry: ToolRegistryShape | null = null;
+const fallbackRegistry = new Map<string, ToolInstance>();
+
+export function bindToolRegistry(bridge: ToolRegistryShape): void {
+	registry = bridge;
+}
 
 export function registerTool(name: string, instance: ToolInstance): void {
-	toolRegistry.set(name, instance);
+	if (registry) {
+		registry.registerTool(name, instance);
+		return;
+	}
+	fallbackRegistry.set(name, instance);
 }
 
 export function getToolInstance(name: string): ToolInstance | undefined {
-	return toolRegistry.get(name);
+	return registry?.getToolInstance(name) ?? fallbackRegistry.get(name);
 }

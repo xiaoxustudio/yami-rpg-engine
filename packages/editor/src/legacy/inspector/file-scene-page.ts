@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { addClass, clear, read, removeClass, write } from '@/util/element-utils';
+import { addClass, clear, removeClass, write } from '@/util/element-utils';
 import { Codec } from '@/codec/codec.ts';
 import { Inspector } from './inspector.ts';
 import { Editor } from '@/main/editor.ts';
@@ -28,8 +28,7 @@ import { GL } from '@/webgl/webgl-init.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	FileScene.initialize = function (this: typeof FileScene) {
@@ -143,16 +142,9 @@ import { GL } from '@/webgl/webgl-init.ts';
 			addClass(this.button, 'selected');
 
 			const write = getElementWriter('fileScene', Scene);
-			write('width');
-			write('height');
-			write('tileWidth');
-			write('tileHeight');
-			write('ambient-red');
-			write('ambient-green');
-			write('ambient-blue');
-			write('ambient-direct');
 			write('events');
 			write('scripts');
+			($('#fileScene-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -221,20 +213,6 @@ import { GL } from '@/webgl/webgl-init.ts';
 				break;
 			}
 		}
-	};
-
-	FileScene.paramInput = function (this: typeof FileScene, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^fileScene-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		FileScene.update!(
-			FileScene.target,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.fileScene = FileScene;

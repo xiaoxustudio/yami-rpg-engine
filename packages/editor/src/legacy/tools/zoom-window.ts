@@ -1,41 +1,14 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
-import { Editor } from '@/main/editor.ts';
-import { webFrame } from 'electron';
+import { useZoomWindow, type ZoomForm } from '@app/composables/useZoomWindow';
 
-export interface ZoomForm {
-	factor: number;
-}
+export type { ZoomForm };
 
 export const Zoom = {
-	initialize: null as unknown as () => void,
-	getFactor: null as unknown as () => number,
-	open: null as unknown as () => void,
-	confirm: null as unknown as () => void
-};
-
-Zoom.initialize = function (this: typeof Zoom) {};
-
-Zoom.open = function (this: typeof Zoom) {
-	Window.open!('zoom');
-	const setForm = (
-		$('#zoom') as (HTMLElement & { setForm?: (data: Partial<ZoomForm>) => void }) | null
-	)?.setForm;
-	setForm?.({ factor: this.getFactor!() });
-	getFocus($('#zoom-factor'), 'all');
-};
-
-Zoom.getFactor = function (this: typeof Zoom) {
-	return webFrame.getZoomFactor();
-};
-
-Zoom.confirm = function (this: typeof Zoom) {
-	const getForm = ($('#zoom') as (HTMLElement & { getForm?: () => ZoomForm }) | null)?.getForm;
-	const factor = getForm?.()?.factor;
-	if (factor !== undefined) {
-		Editor.config!.zoom = factor;
+	initialize: (): void => undefined,
+	getFactor: (): number => useZoomWindow().getFactor(),
+	open: (): void => {
+		useZoomWindow().open();
+	},
+	confirm: (): void => {
+		useZoomWindow().confirm();
 	}
-	Window.close!('zoom');
-	webFrame.setZoomFactor(Editor.config!.zoom!);
 };

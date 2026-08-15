@@ -1,5 +1,5 @@
+import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { attachDoubleclick } from '@/util/doubleclick.ts';
 import { on, hide, show, hasClass, read } from '@/util/element-utils.ts';
@@ -84,14 +84,10 @@ ImageClip.initialize = function (this: typeof ImageClip) {
 ImageClip.open = async function (this: typeof ImageClip, ...args: unknown[]) {
 	const target = args[0] as CropTarget;
 	this.target = target;
-	Window.open!('imageClip');
-
-	const write = getElementWriter('imageClip');
 	const [x, y, width, height] = read(target);
-	write('x', x);
-	write('y', y);
-	write('width', width);
-	write('height', height);
+	useImageClipWindow().open({ x, y, width, height }, (value) => {
+		this.target?.input?.(value);
+	});
 
 	this.loadImage!();
 };
@@ -262,6 +258,7 @@ ImageClip.windowClosed = function (this: typeof ImageClip, event: Event) {
 	this.image.src = '';
 	hide(this.image);
 	hide(this.marquee);
+	useImageClipWindow().onWindowClosed();
 }.bind(ImageClip);
 
 ImageClip.windowResize = function (this: typeof ImageClip, event: Event) {
@@ -367,7 +364,5 @@ ImageClip.paramInput = function (this: typeof ImageClip, event: Event) {
 };
 
 ImageClip.confirm = function (this: typeof ImageClip, event: Event) {
-	const read = getElementReader('imageClip');
-	this.target?.input?.([read('x'), read('y'), read('width'), read('height')]);
-	Window.close!('imageClip');
-}.bind(ImageClip);
+	useImageClipWindow().confirm();
+};

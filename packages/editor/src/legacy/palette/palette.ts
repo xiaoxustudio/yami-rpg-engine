@@ -33,7 +33,6 @@ import { Timer } from '@/util/timer.ts';
 import { h, render } from 'vue';
 
 export const Palette: Record<string, any> = {
-	state: 'closed',
 	page: null,
 	head: null,
 	body: null,
@@ -50,19 +49,13 @@ export const Palette: Record<string, any> = {
 	zoomSlider: null,
 	symbol: null,
 	meta: null,
-	tileset: null,
 	images: null,
 	priorities: null,
 	terrains: null,
 	dragging: null,
 	explicit: false,
-	mode: 'normal',
-	scrollable: false,
-	showGrid: true,
-	activeIndex: null,
 	openIndex: null,
 	gridColor: null,
-	zoom: null,
 	zoomTimer: null,
 	scale: null,
 	scaleX: null,
@@ -195,7 +188,7 @@ Palette.initialize = function (this: typeof Palette) {
 	this.zoomTimer = new Timer({
 		duration: 80,
 		update: (timer: Timer) => {
-			if (this.state === 'open') {
+			if (getPaletteStore().state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
@@ -261,7 +254,8 @@ Palette.initialize = function (this: typeof Palette) {
 		const { x: sx, y: sy } = source;
 		const { x: dx, y: dy } = destination;
 		if (sx !== dx || sy !== dy) {
-			const tileset = Palette.tileset;
+			const tileset = getPaletteStore().tileset;
+			if (!tileset) return;
 			const tiles = tileset.tiles;
 			const priorities = tileset.priorities;
 			const terrains = tileset.terrains;
@@ -315,12 +309,12 @@ Palette.open = function (
 	this.close();
 	const data = Data.tilesets[meta.guid];
 	if (data) {
-		this.state = 'loading';
+		getPaletteStore().state = 'loading';
 		this.meta = meta;
-		this.tileset = data;
+		getPaletteStore().tileset = data;
 		this.loadImages();
 		// 如果在编辑模式中打开普通图块组，则关闭编辑模式
-		if (this.mode === 'edit' && data.type === 'normal') {
+		if (getPaletteStore().mode === 'edit' && data.type === 'normal') {
 			this.switchEdit();
 		}
 	} else {
@@ -339,11 +333,11 @@ Palette.open = function (
 };
 
 Palette.close = function (this: typeof Palette) {
-	if (this.state !== 'closed') {
-		this.state = 'closed';
+	if (getPaletteStore().state !== 'closed') {
+		getPaletteStore().state = 'closed';
 		this.symbol = null;
 		this.meta = null;
-		this.tileset = null;
+		getPaletteStore().tileset = null;
 		hide(this.window);
 		clear(this.marquee);
 		this.stopRendering();
@@ -351,15 +345,15 @@ Palette.close = function (this: typeof Palette) {
 };
 
 Palette.suspend = function (this: typeof Palette) {
-	if (this.state === 'open') {
-		this.state = 'suspended';
+	if (getPaletteStore().state === 'open') {
+		getPaletteStore().state = 'suspended';
 		this.stopRendering();
 	}
 };
 
 Palette.resume = function (this: typeof Palette) {
-	if (this.state === 'suspended') {
-		this.state = 'open';
+	if (getPaletteStore().state === 'suspended') {
+		getPaletteStore().state = 'open';
 		this.resize();
 		this.requestRendering();
 	}
@@ -367,7 +361,7 @@ Palette.resume = function (this: typeof Palette) {
 
 Palette.setZoom = (function IIFE() {
 	return function (this: typeof Palette, zoom: number) {
-		if (this.zoom !== zoom) {
+		if (getPaletteStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
 				case 0:
@@ -388,9 +382,9 @@ Palette.setZoom = (function IIFE() {
 				default:
 					return;
 			}
-			this.zoom = zoom;
+			getPaletteStore().zoom = zoom;
 			if (this.zoomSlider) write(this.zoomSlider, zoom);
-			if (this.state === 'open') {
+			if (getPaletteStore().state === 'open') {
 				const timer = this.zoomTimer;
 				timer.start = this.scale;
 				timer.end = scale;
@@ -404,13 +398,16 @@ Palette.setZoom = (function IIFE() {
 })();
 
 Palette.setImage = function (this: typeof Palette, image: string) {
-	this.tileset.image = image;
+	const tileset = getPaletteStore().tileset;
+	if (!tileset) return;
+	tileset.image = image;
 	this.loadImages();
 };
 
 Palette.setSize = function (this: typeof Palette, width: number, height: number) {
 	const length = width * height;
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
+	if (!tileset) return;
 	switch (tileset.type) {
 		case 'normal': {
 			const dPriorities = new Array(length).fill(0);
@@ -469,7 +466,8 @@ Palette.setSize = function (this: typeof Palette, width: number, height: number)
 };
 
 Palette.setTileSize = function (this: typeof Palette, tileWidth: number, tileHeight: number) {
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
+	if (!tileset) return;
 	tileset.tileWidth = tileWidth;
 	tileset.tileHeight = tileHeight;
 	this.resize();
@@ -478,7 +476,8 @@ Palette.setTileSize = function (this: typeof Palette, tileWidth: number, tileHei
 };
 
 Palette.setTerrain = function (this: typeof Palette, x: number, y: number, offset: number) {
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
+	if (!tileset) return;
 	const terrains = tileset.terrains;
 	const i = x + y * tileset.width;
 	if (tileset.type === 'normal' || tileset.tiles[i] !== 0) {
@@ -492,7 +491,7 @@ Palette.loadImages = async function (this: typeof Palette) {
 	const last = this.images;
 	const images = { '': null } as Record<string, HTMLImageElement | symbol | null>;
 	const promises: Promise<void>[] = [];
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
 	switch (tileset.type) {
 		case 'normal': {
 			const guid = tileset.image;
@@ -553,11 +552,11 @@ Palette.loadImages = async function (this: typeof Palette) {
 		this.symbol = null;
 		show(this.window);
 		if (this.body.clientWidth > 0) {
-			this.state = 'open';
+			getPaletteStore().state = 'open';
 			this.resize();
 			this.requestRendering();
 		} else {
-			this.state = 'suspended';
+			getPaletteStore().state = 'suspended';
 		}
 	}
 };
@@ -574,8 +573,8 @@ Palette.updateHead = function (this: typeof Palette) {
 };
 
 Palette.resize = function (this: typeof Palette) {
-	if (this.state === 'open') {
-		const tileset = this.tileset;
+	if (getPaletteStore().state === 'open') {
+		const tileset = getPaletteStore().tileset;
 		const scale = this.scale;
 		const scaledTileWidth = Math.round(tileset.tileWidth * scale);
 		const scaledTileHeight = Math.round(tileset.tileHeight * scale);
@@ -610,7 +609,7 @@ Palette.resize = function (this: typeof Palette) {
 		this.marquee.style.height = `${innerHeight / dpr}px`;
 		this.marquee.scaleX = scaledTileWidth / dpr;
 		this.marquee.scaleY = scaledTileHeight / dpr;
-		this.marquee.visible && this.mode === 'normal' && this.marquee.select();
+		this.marquee.visible && getPaletteStore().mode === 'normal' && this.marquee.select();
 
 		const canvasWidth = Math.min(innerWidth, screenWidth);
 		const canvasHeight = Math.min(innerHeight, screenHeight);
@@ -642,7 +641,8 @@ Palette.getTileCoords = (function IIFE() {
 	const point = { x: 0, y: 0 };
 	return function (this: typeof Palette, event: PointerEvent, clamp: boolean = false) {
 		const coords = getRelativeCoords(event, this.marquee);
-		const tileset = this.tileset;
+		const tileset = getPaletteStore().tileset;
+		if (!tileset) return point;
 		const stw = this.scaledTileWidth;
 		const sth = this.scaledTileHeight;
 		const dpr = window.devicePixelRatio;
@@ -704,7 +704,10 @@ Palette.updateBackground = function (this: typeof Palette) {
 	}
 };
 
-Palette.updateInfo = function (this: typeof Palette, index: number | null = this.activeIndex) {
+Palette.updateInfo = function (
+	this: typeof Palette,
+	index: number | null = getPaletteStore().activeIndex
+) {
 	getPaletteStore().setActiveIndex(index);
 };
 
@@ -820,7 +823,7 @@ Palette.drawTileset = function (this: typeof Palette) {
 
 Palette.drawTiles = function (this: typeof Palette) {
 	const context = this.context;
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
 	const images = this.images;
 	context.imageSmoothingEnabled = this.scale < 1;
 	switch (tileset.type) {
@@ -907,7 +910,7 @@ Palette.drawTiles = function (this: typeof Palette) {
 };
 
 Palette.drawTileGrid = function (this: typeof Palette) {
-	if (this.showGrid) {
+	if (getPaletteStore().showGrid) {
 		const context = this.context;
 		const sl = this.scrollLeft;
 		const st = this.scrollTop;
@@ -935,9 +938,9 @@ Palette.drawTileGrid = function (this: typeof Palette) {
 };
 
 Palette.drawPriorities = function (this: typeof Palette) {
-	if (this.mode === 'priority') {
+	if (getPaletteStore().mode === 'priority') {
 		const context = this.context;
-		const tileset = this.tileset;
+		const tileset = getPaletteStore().tileset;
 		const priorities = tileset.priorities;
 		const tro = tileset.width;
 		const sl = this.scrollLeft;
@@ -969,7 +972,7 @@ Palette.drawPriorities = function (this: typeof Palette) {
 				}
 				break;
 			default:
-				activeIndex = this.activeIndex;
+				activeIndex = getPaletteStore().activeIndex;
 				activeOffset = height;
 				break;
 		}
@@ -1015,9 +1018,9 @@ Palette.drawPriorities = function (this: typeof Palette) {
 };
 
 Palette.drawTags = function (this: typeof Palette) {
-	if (this.mode === 'tag') {
+	if (getPaletteStore().mode === 'tag') {
 		const context = this.context;
-		const tileset = this.tileset;
+		const tileset = getPaletteStore().tileset;
 		const tags = tileset.tags;
 		const tro = tileset.width;
 		const sl = this.scrollLeft;
@@ -1049,7 +1052,7 @@ Palette.drawTags = function (this: typeof Palette) {
 				}
 				break;
 			default:
-				activeIndex = this.activeIndex;
+				activeIndex = getPaletteStore().activeIndex;
 				activeOffset = height;
 				break;
 		}
@@ -1097,9 +1100,9 @@ Palette.drawTags = function (this: typeof Palette) {
 };
 
 Palette.drawTerrains = function (this: typeof Palette) {
-	if (this.mode === 'terrain') {
+	if (getPaletteStore().mode === 'terrain') {
 		const context = this.context;
-		const tileset = this.tileset;
+		const tileset = getPaletteStore().tileset;
 		const terrains = tileset.terrains;
 		const tro = tileset.width;
 		const sl = this.scrollLeft;
@@ -1133,8 +1136,8 @@ Palette.drawTerrains = function (this: typeof Palette) {
 };
 
 Palette.editAutoTile = function (this: typeof Palette, index: number) {
-	if (this.tileset.type === 'auto') {
-		const tiles = this.tileset.tiles;
+	if (getPaletteStore().tileset.type === 'auto') {
+		const tiles = getPaletteStore().tileset.tiles;
 		if (index < tiles.length) {
 			const tile = tiles[index];
 			this.openIndex = index;
@@ -1144,8 +1147,8 @@ Palette.editAutoTile = function (this: typeof Palette, index: number) {
 };
 
 Palette.copyAutoTile = function (this: typeof Palette, index: number) {
-	if (this.tileset.type === 'auto') {
-		const tileset = this.tileset;
+	if (getPaletteStore().tileset.type === 'auto') {
+		const tileset = getPaletteStore().tileset;
 		const tiles = tileset.tiles;
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
@@ -1160,8 +1163,8 @@ Palette.copyAutoTile = function (this: typeof Palette, index: number) {
 };
 
 Palette.pasteAutoTile = function (this: typeof Palette, index: number) {
-	if (this.tileset.type === 'auto') {
-		const tileset = this.tileset;
+	if (getPaletteStore().tileset.type === 'auto') {
+		const tileset = getPaletteStore().tileset;
 		const tiles = tileset.tiles;
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
@@ -1177,8 +1180,8 @@ Palette.pasteAutoTile = function (this: typeof Palette, index: number) {
 };
 
 Palette.deleteAutoTile = function (this: typeof Palette, index: number) {
-	if (this.tileset.type === 'auto') {
-		const tileset = this.tileset;
+	if (getPaletteStore().tileset.type === 'auto') {
+		const tileset = getPaletteStore().tileset;
 		const tiles = tileset.tiles;
 		const priorities = tileset.priorities;
 		const terrains = tileset.terrains;
@@ -1203,7 +1206,7 @@ Palette.selectTiles = function (
 		Scene.switchBrush('pencil');
 	}
 
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
 	const sro = tileset.width;
 	const dTiles = Scene.createTiles(width, height);
 	const dro = dTiles.rowOffset;
@@ -1331,7 +1334,8 @@ Palette.flipTiles = function (this: typeof Palette) {
 };
 
 Palette.openSelection = function (this: typeof Palette) {
-	const { tileset, marquee } = this;
+	const tileset = getPaletteStore().tileset;
+	const { marquee } = this;
 	if (tileset.type === 'auto' && marquee.visible) {
 		const { x, y, width, height } = marquee;
 		const i = x + y * tileset.width;
@@ -1347,7 +1351,8 @@ Palette.openSelection = function (this: typeof Palette) {
 };
 
 Palette.editSelection = function (this: typeof Palette) {
-	const { tileset, marquee } = this;
+	const tileset = getPaletteStore().tileset;
+	const { marquee } = this;
 	if (tileset.type === 'auto' && marquee.visible) {
 		const { x, y, width, height } = marquee;
 		const i = x + y * tileset.width;
@@ -1358,7 +1363,7 @@ Palette.editSelection = function (this: typeof Palette) {
 };
 
 Palette.editTagAt = function (this: typeof Palette, x: number, y: number) {
-	const tileset = this.tileset;
+	const tileset = getPaletteStore().tileset;
 	const tags = tileset?.tags;
 	if (!tags) return;
 	const i = x + y * tileset.width;
@@ -1413,7 +1418,7 @@ Palette.scrollToSelection = function (this: typeof Palette, shiftKey: boolean) {
 };
 
 Palette.requestRendering = function (this: typeof Palette) {
-	if (this.state === 'open') {
+	if (getPaletteStore().state === 'open') {
 		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
 	}
 };
@@ -1428,7 +1433,7 @@ Palette.stopRendering = function (this: typeof Palette) {
 
 Palette.skipScrollEvent = (function IIFE() {
 	const restore = () => {
-		if (Palette.scrollable) {
+		if (getPaletteStore().scrollable) {
 			on(Palette.screen, 'scroll', Palette.screenUserscroll);
 		}
 	};
@@ -1436,7 +1441,7 @@ Palette.skipScrollEvent = (function IIFE() {
 		requestAnimationFrame(restore);
 	};
 	return () => {
-		if (Palette.scrollable) {
+		if (getPaletteStore().scrollable) {
 			off(Palette.screen, 'scroll', Palette.screenUserscroll);
 			// 在动画队列中调用此方法就不需要了
 			window.event?.type === 'resize'
@@ -1447,7 +1452,7 @@ Palette.skipScrollEvent = (function IIFE() {
 })();
 
 Palette.switchScroll = (function IIFE() {
-	return function (this: typeof Palette, enabled = !this.scrollable) {
+	return function (this: typeof Palette, enabled = !getPaletteStore().scrollable) {
 		if (enabled) {
 			addClass(this.itemScroll, 'selected');
 			addClass(this.screen, 'scrollable');
@@ -1459,12 +1464,12 @@ Palette.switchScroll = (function IIFE() {
 			off(this.screen, 'scroll', this.screenUserscroll);
 			on(this.screen, 'userscroll', this.screenUserscroll);
 		}
-		this.scrollable = enabled;
+		getPaletteStore().scrollable = enabled;
 	};
 })();
 
 Palette.switchPriority = (function IIFE() {
-	return function (this: typeof Palette, enabled = this.mode !== 'priority') {
+	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'priority') {
 		if (enabled) {
 			addClass(this.itemPriority, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1481,13 +1486,13 @@ Palette.switchPriority = (function IIFE() {
 		removeClass(this.itemTag, 'selected');
 		removeClass(this.itemTerrain, 'selected');
 		removeClass(this.itemEdit, 'selected');
-		this.mode = enabled ? 'priority' : 'normal';
+		getPaletteStore().mode = enabled ? 'priority' : 'normal';
 		this.requestRendering();
 	};
 })();
 
 Palette.switchTag = (function IIFE() {
-	return function (this: typeof Palette, enabled = this.mode !== 'tag') {
+	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'tag') {
 		if (enabled) {
 			addClass(this.itemTag, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1504,13 +1509,13 @@ Palette.switchTag = (function IIFE() {
 		removeClass(this.itemPriority, 'selected');
 		removeClass(this.itemTerrain, 'selected');
 		removeClass(this.itemEdit, 'selected');
-		this.mode = enabled ? 'tag' : 'normal';
+		getPaletteStore().mode = enabled ? 'tag' : 'normal';
 		this.requestRendering();
 	};
 })();
 
 Palette.switchTerrain = (function IIFE() {
-	return function (this: typeof Palette, enabled = this.mode !== 'terrain') {
+	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'terrain') {
 		if (enabled) {
 			addClass(this.itemTerrain, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1527,13 +1532,13 @@ Palette.switchTerrain = (function IIFE() {
 		removeClass(this.itemPriority, 'selected');
 		removeClass(this.itemTag, 'selected');
 		removeClass(this.itemEdit, 'selected');
-		this.mode = enabled ? 'terrain' : 'normal';
+		getPaletteStore().mode = enabled ? 'terrain' : 'normal';
 		this.requestRendering();
 	};
 })();
 
 Palette.switchEdit = (function IIFE() {
-	return function (this: typeof Palette, enabled = this.mode !== 'edit') {
+	return function (this: typeof Palette, enabled = getPaletteStore().mode !== 'edit') {
 		if (enabled) {
 			addClass(this.itemEdit, 'selected');
 			this.marquee.visible && hide(this.marquee.selection);
@@ -1550,14 +1555,14 @@ Palette.switchEdit = (function IIFE() {
 		removeClass(this.itemPriority, 'selected');
 		removeClass(this.itemTag, 'selected');
 		removeClass(this.itemTerrain, 'selected');
-		this.mode = enabled ? 'edit' : 'normal';
+		getPaletteStore().mode = enabled ? 'edit' : 'normal';
 		this.requestRendering();
 	};
 })();
 
 Palette.saveToProject = function (this: typeof Palette, project: EditorProjectShape) {
 	const { palette } = project;
-	const zoom = this.zoom;
+	const zoom = getPaletteStore().zoom;
 	if (zoom !== null) {
 		palette.zoom = zoom;
 	}
@@ -1573,7 +1578,7 @@ Palette.windowResize = function (this: typeof Palette, event: Event) {
 		return this.suspend();
 	}
 	this.updateHead();
-	switch (this.state) {
+	switch (getPaletteStore().state) {
 		case 'open':
 			this.resize();
 			this.requestRendering();
@@ -1602,7 +1607,7 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 			event.preventDefault();
 			break;
 	}
-	if (Palette.state === 'open' && Palette.dragging === null) {
+	if (getPaletteStore().state === 'open' && Palette.dragging === null) {
 		switch (event.code) {
 			case 'Enter':
 			case 'NumpadEnter': {
@@ -1621,7 +1626,7 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 				event.preventDefault();
 				const marquee = Palette.marquee;
 				if (!marquee.visible) return;
-				const tileset = Palette.tileset;
+				const tileset = getPaletteStore().tileset;
 				const hframes = tileset.width;
 				const vframes = tileset.height;
 				let mx = marquee.x;
@@ -1703,11 +1708,11 @@ Palette.screenKeydown = function (this: typeof Palette, event: KeyboardEvent) {
 			}
 			case 'Minus':
 			case 'NumpadSubtract':
-				Palette.setZoom(Palette.zoom - 1);
+				Palette.setZoom(getPaletteStore().zoom - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				Palette.setZoom(Palette.zoom + 1);
+				Palette.setZoom(getPaletteStore().zoom + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -1727,7 +1732,7 @@ Palette.screenWheel = (function IIFE() {
 		}
 	});
 	return function (this: typeof Palette, event: WheelEvent) {
-		if (this.scrollable) {
+		if (getPaletteStore().scrollable) {
 			timer.elapsed = 0;
 			if (!timerIsWorking) {
 				timerIsWorking = true;
@@ -1737,14 +1742,14 @@ Palette.screenWheel = (function IIFE() {
 		} else {
 			event.preventDefault();
 			if (event.deltaY !== 0 && this.dragging === null) {
-				this.setZoom(this.zoom + (event.deltaY > 0 ? -1 : 1));
+				this.setZoom(getPaletteStore().zoom + (event.deltaY > 0 ? -1 : 1));
 			}
 		}
 	}.bind(Palette);
 })();
 
 Palette.screenUserscroll = function (this: typeof Palette, event: Event) {
-	if (this.state === 'open') {
+	if (getPaletteStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
 		this.updateTransform();
@@ -1795,7 +1800,7 @@ Palette.marqueePointerdown = function (
 				return;
 			}
 			if (event.ctrlKey || event.metaKey) {
-				const tileset = this.tileset;
+				const tileset = getPaletteStore().tileset;
 				if (tileset.type === 'auto') {
 					const i = x + y * tileset.width;
 					this.dragging = event;
@@ -1812,7 +1817,7 @@ Palette.marqueePointerdown = function (
 				}
 			}
 			const { marquee } = this;
-			switch (this.mode) {
+			switch (getPaletteStore().mode) {
 				case 'normal':
 					if (event.shiftKey && marquee.visible) {
 						const ox = marquee.originX;
@@ -1845,7 +1850,7 @@ Palette.marqueePointerdown = function (
 					Scene.marquee.style.pointerEvents = 'none';
 					break;
 				case 'priority': {
-					const tileset = this.tileset;
+					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
 					this.dragging = event;
 					event.mode = 'increase-priority';
@@ -1860,7 +1865,7 @@ Palette.marqueePointerdown = function (
 					break;
 				}
 				case 'tag': {
-					const tileset = this.tileset;
+					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
 					this.dragging = event;
 					event.mode = 'increase-tag';
@@ -1879,7 +1884,7 @@ Palette.marqueePointerdown = function (
 					// window.addEventListener('pointerup', this.pointerup) window.addEventListener('pointermove', this.pointermove)
 					break;
 				case 'edit': {
-					const tileset = this.tileset;
+					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
 					switch (tileset.type) {
 						case 'normal':
@@ -1911,7 +1916,7 @@ Palette.marqueePointerdown = function (
 			break;
 		}
 		case 2:
-			switch (this.mode) {
+			switch (getPaletteStore().mode) {
 				case 'normal':
 					this.dragging = event;
 					event.mode = 'scroll';
@@ -1922,7 +1927,7 @@ Palette.marqueePointerdown = function (
 					window.addEventListener('pointermove', this.pointermove);
 					break;
 				case 'priority': {
-					const tileset = this.tileset;
+					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
 					this.dragging = event;
 					event.mode = 'ready-to-decrease-priority';
@@ -1939,7 +1944,7 @@ Palette.marqueePointerdown = function (
 					break;
 				}
 				case 'tag': {
-					const tileset = this.tileset;
+					const tileset = getPaletteStore().tileset;
 					const i = x + y * tileset.width;
 					this.dragging = event;
 					event.mode = 'ready-to-decrease-tag';
@@ -1981,10 +1986,12 @@ Palette.marqueePointerdown = function (
 
 Palette.marqueePointermove = function (this: typeof Palette, event: PointerEvent) {
 	if (this.dragging === null) {
+		const tileset = getPaletteStore().tileset;
+		if (!tileset) return;
 		const { x, y } = this.getTileCoords(event, true);
-		const index = x + y * this.tileset.width;
-		if (this.activeIndex !== index) {
-			this.activeIndex = index;
+		const index = x + y * tileset.width;
+		if (getPaletteStore().activeIndex !== index) {
+			getPaletteStore().activeIndex = index;
 			this.updateInfo(index);
 			this.requestRendering();
 		}
@@ -1992,15 +1999,15 @@ Palette.marqueePointermove = function (this: typeof Palette, event: PointerEvent
 }.bind(Palette);
 
 Palette.marqueePointerleave = function (this: typeof Palette, event: PointerEvent) {
-	if (this.activeIndex !== null) {
-		this.activeIndex = null;
+	if (getPaletteStore().activeIndex !== null) {
+		getPaletteStore().activeIndex = null;
 		this.updateInfo(null);
 		this.requestRendering();
 	}
 }.bind(Palette);
 
 Palette.marqueeDoubleclick = function (this: typeof Palette, event: PointerEvent) {
-	if (this.mode === 'tag') {
+	if (getPaletteStore().mode === 'tag') {
 		const { x, y } = this.getTileCoords(event, true);
 		this.editTagAt(x, y);
 		return;
@@ -2009,10 +2016,10 @@ Palette.marqueeDoubleclick = function (this: typeof Palette, event: PointerEvent
 }.bind(Palette);
 
 Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
-	if (this.mode === 'edit' && this.tileset.type === 'auto') {
+	if (getPaletteStore().mode === 'edit' && getPaletteStore().tileset.type === 'auto') {
 		const { x, y } = this.getTileCoords(event, true);
-		const tiles = this.tileset.tiles;
-		const index = x + y * this.tileset.width;
+		const tiles = getPaletteStore().tileset.tiles;
+		const index = x + y * getPaletteStore().tileset.width;
 		const existing = !!tiles[index];
 		const editable = true;
 		const copyable = existing;
@@ -2230,14 +2237,22 @@ Palette.pointermove = function (this: typeof Palette, event: PointerEvent) {
 	}
 }.bind(Palette);
 
-const paletteStateKeys = ['state', 'mode'] as const;
+const paletteBridgeKeys = [
+	'state',
+	'mode',
+	'zoom',
+	'showGrid',
+	'scrollable',
+	'activeIndex',
+	'tileset'
+] as const;
 import { getPaletteStore } from '@app/stores/palette';
 
-for (const key of paletteStateKeys) {
+for (const key of paletteBridgeKeys) {
 	Object.defineProperty(Palette, key, {
 		get: () => getPaletteStore()[key],
-		set: (value: string) => {
-			(getPaletteStore() as unknown as Record<'state' | 'mode', any>)[key] = value;
+		set: (value: any) => {
+			(getPaletteStore() as unknown as Record<string, any>)[key] = value;
 		},
 		configurable: true
 	});

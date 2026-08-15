@@ -6,7 +6,26 @@ interface WaveformPromise extends Promise<string | undefined> {
 	canceled?: boolean;
 }
 
-export const AudioManager = {
+interface AudioManagerShape {
+	context: AudioContext | null;
+	player: AudioPlayer | null;
+	se:
+		| (MultipleAudioPlayer & {
+				play: (sound: string, volume: number) => void;
+		  })
+		| null;
+	analyser: AnalyserNode | null;
+	waveforms: Record<string, string | WaveformPromise>;
+	initialize: (() => void) | null;
+	getWaveform: ((guid: string) => Promise<string | undefined>) | null;
+	close: (() => void) | null;
+	playMusic: ((name: string) => void) | null;
+	stopMusic: (() => void) | null;
+	playSound: ((name: string) => void) | null;
+	[k: string]: any;
+}
+
+export const AudioManager: AudioManagerShape = {
 	context: null as AudioContext | null,
 	player: null as AudioPlayer | null,
 	se: null as
@@ -19,16 +38,13 @@ export const AudioManager = {
 	initialize: null as (() => void) | null,
 	getWaveform: null as ((guid: string) => Promise<string | undefined>) | null,
 	close: null as (() => void) | null,
-	state: null as string | null,
-	music: null as Record<string, unknown> | null,
 	playMusic: null as ((name: string) => void) | null,
 	stopMusic: null as (() => void) | null,
 	playSound: null as ((name: string) => void) | null
 };
 
 AudioManager.initialize = function () {
-	getAudioStore().syncState();
-	this.state = 'open';
+	getAudioStore().state = 'open';
 
 	this.context = new AudioContext();
 
@@ -96,18 +112,31 @@ AudioManager.getWaveform = function (guid: string) {
 };
 
 AudioManager.close = function () {
-	this.state = 'closed';
-	this.music = null;
+	getAudioStore().state = 'closed';
+	getAudioStore().music = null;
 	this.player?.stop();
 	this.waveforms = {};
 };
 
 AudioManager.playMusic = function (name: string) {
-	this.music = { name };
+	getAudioStore().music = { name };
 };
 
 AudioManager.stopMusic = function () {
-	this.music = null;
+	getAudioStore().music = null;
 };
 
 import { getAudioStore } from '@app/stores/audio';
+
+const audioBridgeKeys = ['state', 'music'] as const;
+
+for (const key of audioBridgeKeys) {
+	Object.defineProperty(AudioManager, key, {
+		get: () => getAudioStore()[key],
+		set: (value: unknown) => {
+			(getAudioStore() as unknown as Record<(typeof audioBridgeKeys)[number], any>)[key] =
+				value;
+		},
+		configurable: true
+	});
+}

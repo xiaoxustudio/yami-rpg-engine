@@ -1,5 +1,5 @@
 import { $, getElementReader } from '@/util/dom.ts';
-import { read, write } from '@/util/element-utils';
+import { write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -26,8 +26,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UIButton.initialize = function (this: typeof UIButton) {
@@ -414,20 +413,6 @@ import { UI } from '@/ui/ui-window.ts';
 			}
 		}
 		UI.requestRendering!();
-	};
-
-	UIButton.paramInput = function (this: HTMLElement & { [k: string]: unknown }, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^uiButton-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		UIButton.update(
-			UIButton.target,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.uiButton = UIButton;

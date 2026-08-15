@@ -9,6 +9,10 @@ import { Enum } from '@/enum/enum-window.ts';
 import { Data } from '@/data/data-object.ts';
 import '@/command/set-value-operand-window.ts';
 
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
 interface SetNumberOperandFrame extends HTMLElement {
 	setForm(data: Record<string, unknown>): void;
 	getForm(): Record<string, unknown>;

@@ -16,19 +16,19 @@ export const animationStateKeys = [
 type AnimationFrameShape = {
 	start: number;
 	end: number;
-	[key: string]: unknown;
+	[key: string]: any;
 };
 
 type AnimationMotionShape = {
 	id: string;
 	mode: string;
-	[key: string]: unknown;
+	[key: string]: any;
 };
 
 type AnimationContextShape = {
 	meta: { guid: string; path: string } & Record<string, unknown>;
 	animation: { mode: string; motions: AnimationMotionShape[] } & Record<string, unknown>;
-	[key: string]: unknown;
+	[key: string]: any;
 };
 
 export const useAnimationStore = defineStore('animation', () => {
@@ -44,21 +44,6 @@ export const useAnimationStore = defineStore('animation', () => {
 	const mirror = shallowRef<boolean>(false);
 	const loop = shallowRef<boolean>(false);
 	const playing = shallowRef<boolean>(false);
-
-	function syncState() {
-		state.value = Animation?.state ?? 'closed';
-		target.value = Animation?.target ?? null;
-		motion.value = Animation?.motion ?? null;
-		direction.value = Animation?.direction ?? null;
-		mode.value = Animation?.mode ?? null;
-		speed.value = Animation?.speed ?? null;
-		zoom.value = Animation?.zoom ?? null;
-		showMark.value = Animation?.showMark ?? false;
-		showOnionskin.value = Animation?.showOnionskin ?? false;
-		mirror.value = Animation?.mirror ?? false;
-		loop.value = Animation?.loop ?? false;
-		playing.value = Animation?.playing ?? false;
-	}
 
 	function open(context: AnimationContextShape) {
 		Animation?.open?.(context);
@@ -161,7 +146,6 @@ export const useAnimationStore = defineStore('animation', () => {
 		mirror,
 		loop,
 		playing,
-		syncState,
 		open,
 		load,
 		save,

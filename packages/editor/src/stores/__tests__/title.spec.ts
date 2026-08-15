@@ -1,7 +1,8 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { getTitleStore, titleStateKeys } from '@app/stores/title';
+import { Title } from '@/title/title-bar.ts';
 
-describe('useTitleStore（Title 状态桥接）', () => {
+describe('useTitleStore（Title 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {
 		const store = getTitleStore();
 		expect(store.theme).toBe(null);
@@ -43,13 +44,20 @@ describe('useTitleStore（Title 状态桥接）', () => {
 		store.fullscreen = false;
 	});
 
-	it('无 Title 时 syncState 兜底默认值', () => {
+	it('legacy 写入经 store 生效（store 为源）', () => {
 		const store = getTitleStore();
-		store.syncState();
-		expect(store.theme).toBe(null);
-		expect(store.playing).toBe(false);
+		Title.windowMaximize!(new Event('maximize'));
+		expect(store.maximized).toBe(true);
+		Title.windowUnmaximize!(new Event('unmaximize'));
 		expect(store.maximized).toBe(false);
+		Title.windowEnterFullScreen!(new Event('enter-full-screen'));
+		expect(store.fullscreen).toBe(true);
+		Title.windowLeaveFullScreen!(new Event('leave-full-screen'));
 		expect(store.fullscreen).toBe(false);
+		Title.dispatchThemechangeEvent!('dark');
+		expect(store.theme).toBe('dark');
+		Title.dispatchThemechangeEvent!('light');
+		expect(store.theme).toBe('light');
 	});
 
 	it('桥方法存在且惰性可调用（jsdom 下 Title 未挂载，可选链安全）', () => {

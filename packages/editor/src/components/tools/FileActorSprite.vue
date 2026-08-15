@@ -28,7 +28,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

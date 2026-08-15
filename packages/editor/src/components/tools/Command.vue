@@ -114,7 +114,7 @@ const onApply = () => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

@@ -40,7 +40,7 @@ const nodeExtras = (item: unknown): VNode[] => {
 };
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

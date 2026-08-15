@@ -58,7 +58,6 @@ interface UIControlPoints {
 }
 
 interface UIShape {
-	state: string;
 	page: HTMLElement;
 	head: HTMLElement;
 	body: HTMLElement;
@@ -73,7 +72,6 @@ interface UIShape {
 	background: StageColor;
 	foreground: StageColor;
 	matrix: Matrix;
-	zoom: number;
 	scale: number;
 	scaleX: number;
 	scaleY: number;
@@ -90,8 +88,6 @@ interface UIShape {
 	padding: number;
 	paddingLeft: number;
 	paddingTop: number;
-	width: number;
-	height: number;
 	inspectorTypeMap: Record<string, string>;
 	[k: string]: any;
 }
@@ -130,7 +126,6 @@ type UIPointerEvent = PointerEvent & {
 };
 
 export const UI: UIShape = {
-	state: 'closed',
 	page: $('#ui'),
 	head: $('#ui-head'),
 	body: hide($('#ui-body')),
@@ -139,7 +134,6 @@ export const UI: UIShape = {
 	searcher: $('#ui-searcher'),
 	list: $('#ui-list') || {},
 	dragging: null,
-	target: null,
 	hover: null,
 	history: null as unknown as History,
 	controlPoints: null,
@@ -150,7 +144,6 @@ export const UI: UIShape = {
 	background: null as unknown as StageColor,
 	foreground: null as unknown as StageColor,
 	matrix: null as unknown as Matrix,
-	zoom: null as unknown as number,
 	zoomTimer: null,
 	scale: null as unknown as number,
 	scaleX: null as unknown as number,
@@ -171,8 +164,6 @@ export const UI: UIShape = {
 	inspectorTypeMap: null as unknown as Record<string, string>,
 	context: null,
 	meta: null,
-	width: null as unknown as number,
-	height: null as unknown as number,
 	nodes: null,
 	root: null,
 	initialize: null,
@@ -314,7 +305,6 @@ getListConfig(UI.list).onDelete = null as unknown as (item: unknown) => void;
 getListConfig(UI.list).onResume = null as unknown as (item: unknown) => void;
 
 UI.initialize = function (this: UIShape) {
-	getUIStore().syncState();
 	this.page = $('#ui');
 	this.head = $('#ui-head');
 	this.body = hide($('#ui-body'));
@@ -383,7 +373,7 @@ UI.initialize = function (this: UIShape) {
 	this.translationTimer = new Timer({
 		duration: Infinity,
 		update: (timer: Timer) => {
-			if (this.state === 'open' && this.dragging === null) {
+			if (getUIStore().state === 'open' && this.dragging === null) {
 				const key = this.translationKey;
 				const step = (Timer.deltaTime * 1.5) / this.scale;
 				let x = 0;
@@ -421,7 +411,7 @@ UI.initialize = function (this: UIShape) {
 	this.zoomTimer = new Timer({
 		duration: 80,
 		update: (timer: Timer) => {
-			if (this.state === 'open') {
+			if (getUIStore().state === 'open') {
 				const { elapsed, duration, start, end } = timer;
 				const time = elapsed / duration;
 				this.scale = start * (1 - time) + end * time;
@@ -643,7 +633,7 @@ UI.open = function (this: UIShape, context: UIContextShape) {
 		context.ui = Data.ui[meta.guid];
 	}
 	if (context.ui) {
-		this.state = 'open';
+		getUIStore().state = 'open';
 		this.context = context;
 		this.meta = meta;
 		show(this.body);
@@ -679,8 +669,8 @@ UI.load = function (this: UIShape, context: UIContextShape) {
 	}
 	const { ui, editor } = context;
 
-	this.width = ui!.width;
-	this.height = ui!.height;
+	getUIStore().width = ui!.width;
+	getUIStore().height = ui!.height;
 	this.nodes = ui!.nodes;
 
 	this.root = editor!.root;
@@ -719,14 +709,14 @@ UI.load = function (this: UIShape, context: UIContextShape) {
 };
 
 UI.save = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		const { ui, editor } = this.context;
 
-		ui.width = this.width;
-		ui.height = this.height;
+		ui.width = getUIStore().width!;
+		ui.height = getUIStore().height!;
 		ui.nodes = this.nodes;
 
-		editor.target = this.target;
+		editor.target = getUIStore().target;
 		editor.root = this.root;
 		editor.history = this.history;
 		editor.centerX = this.centerX;
@@ -736,13 +726,13 @@ UI.save = function (this: UIShape) {
 };
 
 UI.close = function (this: UIShape) {
-	if (this.state !== 'closed') {
+	if (getUIStore().state !== 'closed') {
 		this.screen.blur();
 		if (Inspector.type === 'fileUI') {
 			Inspector.close!();
 		}
 		this.setTarget!(null);
-		this.state = 'closed';
+		getUIStore().state = 'closed';
 		this.context = null;
 		this.meta = null;
 		this.nodes = null;
@@ -770,13 +760,13 @@ UI.destroy = function (this: UIShape, context: UIContextShape) {
 };
 
 UI.copy = function (this: UIShape) {
-	if (this.state === 'open' && this.target !== null) {
-		this.list.copy(this.target);
+	if (getUIStore().state === 'open' && getUIStore().target !== null) {
+		this.list.copy(getUIStore().target);
 	}
 };
 
 UI.paste = function (this: UIShape, x?: number, y?: number) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getUIStore().state === 'open' && this.dragging === null) {
 		if (x === undefined) {
 			x = this.centerX;
 			y = this.centerY;
@@ -792,8 +782,8 @@ UI.paste = function (this: UIShape, x?: number, y?: number) {
 };
 
 UI.duplicate = function (this: UIShape) {
-	if (this.target) {
-		this.list.duplicate(this.target);
+	if (getUIStore().target) {
+		this.list.duplicate(getUIStore().target);
 	}
 };
 
@@ -851,24 +841,24 @@ UI.createShortcut = function (this: UIShape, item: UINodeShape) {
 };
 
 UI.delete = function (this: UIShape) {
-	if (this.state === 'open' && this.target !== null && this.dragging === null) {
-		this.list.delete(this.target);
+	if (getUIStore().state === 'open' && getUIStore().target !== null && this.dragging === null) {
+		this.list.delete(getUIStore().target);
 	}
 };
 
 UI.toggle = function (this: UIShape) {
-	this.list.toggle(this.target);
+	this.list.toggle(getUIStore().target);
 };
 
 UI.undo = function (this: UIShape) {
-	if (this.state === 'open' && !this.dragging && this.history.canUndo()) {
+	if (getUIStore().state === 'open' && !this.dragging && this.history.canUndo()) {
 		this.history.restore('undo');
 		this.marquee.resize();
 	}
 };
 
 UI.redo = function (this: UIShape) {
-	if (this.state === 'open' && !this.dragging && this.history.canRedo()) {
+	if (getUIStore().state === 'open' && !this.dragging && this.history.canRedo()) {
 		this.history.restore('redo');
 		this.marquee.resize();
 	}
@@ -877,7 +867,7 @@ UI.redo = function (this: UIShape) {
 UI.setZoom = (function IIFE() {
 	return function (this: UIShape, zoom: number) {
 		const slider = $('#ui-zoom');
-		if (this.zoom !== zoom) {
+		if (getUIStore().zoom !== zoom) {
 			let scale;
 			switch (zoom) {
 				case 0:
@@ -898,9 +888,9 @@ UI.setZoom = (function IIFE() {
 				default:
 					return;
 			}
-			this.zoom = zoom;
+			getUIStore().zoom = zoom;
 			if (slider) write(slider, zoom);
-			if (this.state === 'open') {
+			if (getUIStore().state === 'open') {
 				const timer = this.zoomTimer!;
 				timer.start = this.scale;
 				timer.end = scale;
@@ -914,13 +904,15 @@ UI.setZoom = (function IIFE() {
 })();
 
 UI.setSize = function (this: UIShape, width: number, height: number) {
-	if (this.width !== width) {
-		this.centerX = (this.centerX * width) / this.width;
-		this.width = width;
+	const currentWidth = getUIStore().width;
+	if (currentWidth !== width) {
+		this.centerX = (this.centerX * width) / currentWidth!;
+		getUIStore().width = width;
 	}
-	if (this.height !== height) {
-		this.centerY = (this.centerY * height) / this.height;
-		this.height = height;
+	const currentHeight = getUIStore().height;
+	if (currentHeight !== height) {
+		this.centerY = (this.centerY * height) / currentHeight!;
+		getUIStore().height = height;
 	}
 	this.resize!();
 	this.requestRendering!();
@@ -934,8 +926,8 @@ UI.setHover = function (this: UIShape, hover: UINodeShape | null) {
 };
 
 UI.setTarget = function (this: UIShape, target: UINodeShape | null) {
-	if (this.target !== target) {
-		this.target = target;
+	if (getUIStore().target !== target) {
+		getUIStore().target = target;
 		this.updateTargetItem!();
 		this.requestRendering!();
 		if (target) {
@@ -953,7 +945,7 @@ UI.revealTarget = (function IIFE() {
 		duration: 200,
 		update: (timer: Timer) => {
 			const { target } = timer;
-			if (target === UI.target) {
+			if (target === getUIStore().target) {
 				const easing = Easing.EasingMap.easeInOut;
 				const time = easing.ease(timer.elapsed / timer.duration);
 				const x = timer.startX * (1 - time) + timer.endX * time;
@@ -978,7 +970,7 @@ UI.revealTarget = (function IIFE() {
 		}
 	});
 	return function (this: UIShape) {
-		const target = this.target;
+		const target = getUIStore().target;
 		if (target && !timer.target) {
 			const instance = target.instance;
 			const matrix = instance.matrix;
@@ -1020,7 +1012,7 @@ UI.revealTarget = (function IIFE() {
 })();
 
 UI.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number) {
-	const target = this.target;
+	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
 		const instances = target.instances;
@@ -1058,7 +1050,7 @@ UI.shiftAnchor = function (this: UIShape, anchorX: number, anchorY: number) {
 };
 
 UI.shiftTarget = function (this: UIShape, x: number, y: number) {
-	const target = this.target;
+	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
 		const instances = target.instances;
@@ -1122,7 +1114,7 @@ UI.shiftTarget = function (this: UIShape, x: number, y: number) {
 };
 
 UI.resizeTarget = function (this: UIShape, width?: number, height?: number) {
-	const target = this.target;
+	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
 		const instances = target.instances;
@@ -1168,7 +1160,7 @@ UI.resizeTarget = function (this: UIShape, width?: number, height?: number) {
 };
 
 UI.rotateTarget = function (this: UIShape, rotation: number) {
-	const target = this.target;
+	const target = getUIStore().target;
 	if (target !== null) {
 		this.planToSave!();
 		const instances = target.instances;
@@ -1251,7 +1243,7 @@ UI.updateHover = function (this: UIShape) {
 
 UI.updateTarget = function (this: UIShape) {
 	const item = read(this.list);
-	if (item !== this.target) {
+	if (item !== getUIStore().target) {
 		this.setTarget!(item);
 	}
 };
@@ -1271,7 +1263,7 @@ UI.updateTargetItem = function (this: UIShape) {
 };
 
 UI.updateElementFont = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		if (this.context.fontChanged) {
 			delete this.context.fontChanged;
 		}
@@ -1306,7 +1298,7 @@ UI.updateElementFont = function (this: UIShape) {
 };
 
 UI.updateElementLanguage = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		if (this.context.languageChanged) {
 			delete this.context.languageChanged;
 		}
@@ -1322,7 +1314,7 @@ UI.updateElementLanguage = function (this: UIShape) {
 };
 
 UI.updateElementTextScaling = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		if (this.context.scalingChanged) {
 			delete this.context.scalingChanged;
 		}
@@ -1338,7 +1330,7 @@ UI.updateElementTextScaling = function (this: UIShape) {
 };
 
 UI.updateIndexedColor = function (this: UIShape, index: number) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		const TextElement = UI.Text;
 		const regexp = new RegExp(`<color:${index}>`, 'i');
 		const update = (element: UINodeShape): void => {
@@ -1357,9 +1349,10 @@ UI.updateIndexedColor = function (this: UIShape, index: number) {
 };
 
 UI.updateControlPoints = function (this: UIShape) {
-	if (this.target !== null) {
+	const target = getUIStore().target;
+	if (target !== null) {
 		const POINT_RADIUS = 4 / this.scale;
-		const { instance } = this.target;
+		const { instance } = target;
 		const points = this.controlPoints!;
 		const matrix = instance.matrix;
 		const L = instance.x;
@@ -1449,7 +1442,7 @@ UI.updateAllPrinters = function (this: UIShape) {
 };
 
 UI.updateAllReferences = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		const update = (elements: UINodeShape[]): void => {
 			for (const element of elements) {
 				if (element instanceof UI.Reference) {
@@ -1516,11 +1509,13 @@ UI.updateHead = function (this: UIShape) {
 };
 
 UI.resize = function (this: UIShape) {
-	if (this.state === 'open' && this.screen.clientWidth !== 0) {
+	if (getUIStore().state === 'open' && this.screen.clientWidth !== 0) {
 		const scale = this.scale;
+		const width = getUIStore().width!;
+		const height = getUIStore().height!;
 		const scaledPadding = Math.round(this.padding * scale);
-		const innerWidth = Math.round((this.width * scale) / 2) * 2;
-		const innerHeight = Math.round((this.height * scale) / 2) * 2;
+		const innerWidth = Math.round((width * scale) / 2) * 2;
+		const innerHeight = Math.round((height * scale) / 2) * 2;
 		const screenBox = CSS.getDevicePixelContentBoxSize(this.screen);
 		const screenWidth = screenBox.width;
 		const screenHeight = screenBox.height;
@@ -1531,8 +1526,8 @@ UI.resize = function (this: UIShape) {
 		const outerWidth = innerWidth + paddingLeft + paddingRight;
 		const outerHeight = innerHeight + paddingTop + paddingBottom;
 		const dpr = window.devicePixelRatio;
-		this.scaleX = innerWidth / this.width;
-		this.scaleY = innerHeight / this.height;
+		this.scaleX = innerWidth / width;
+		this.scaleY = innerHeight / height;
 		this.outerWidth = outerWidth;
 		this.outerHeight = outerHeight;
 		this.centerOffsetX =
@@ -1765,8 +1760,9 @@ UI.drawElements = function (this: UIShape) {
 };
 
 UI.drawCoordinateAxes = function (this: UIShape) {
-	if (this.target !== null) {
-		const { parent } = this.target.instance;
+	const target = getUIStore().target;
+	if (target !== null) {
+		const { parent } = target.instance;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(UI.matrix).multiply(parent.matrix);
@@ -1837,7 +1833,7 @@ UI.drawCoordinateAxes = function (this: UIShape) {
 };
 
 UI.drawHoverWireframe = function (this: UIShape) {
-	if (this.hover !== null && this.hover !== this.target) {
+	if (this.hover !== null && this.hover !== getUIStore().target) {
 		const { instance } = this.hover;
 		if (instance.visible) {
 			instance.drawWireframe(0xffffffff);
@@ -1846,15 +1842,17 @@ UI.drawHoverWireframe = function (this: UIShape) {
 };
 
 UI.drawTargetWireframe = function (this: UIShape) {
-	if (this.target !== null) {
-		const { instance } = this.target;
+	const target = getUIStore().target;
+	if (target !== null) {
+		const { instance } = target;
 		instance.drawWireframe(0xffc0ff00);
 	}
 };
 
 UI.drawTargetAnchor = function (this: UIShape) {
-	if (this.target !== null) {
-		const { instance } = this.target;
+	const target = getUIStore().target;
+	if (target !== null) {
+		const { instance } = target;
 		const gl = GL;
 		const vertices = gl.arrays[0].float32;
 		const matrix = gl.matrix.set(UI.matrix).multiply(instance.matrix);
@@ -1890,7 +1888,7 @@ UI.drawTargetAnchor = function (this: UIShape) {
 };
 
 UI.drawControlPoints = function (this: UIShape) {
-	const target = this.target;
+	const target = getUIStore().target;
 	const texture = this.controlPointTexture;
 	if (target !== null && texture !== null) {
 		this.updateControlPoints!();
@@ -1939,7 +1937,8 @@ UI.drawControlPoints = function (this: UIShape) {
 };
 
 UI.selectControlPoint = function (this: UIShape, x: number, y: number) {
-	if (this.target !== null && !(this.target.class === 'reference' && this.target.synchronous)) {
+	const target = getUIStore().target;
+	if (target !== null && !(target.class === 'reference' && target.synchronous)) {
 		const radius = 6 / this.scale;
 		const { list } = this.controlPoints!;
 		for (let i = list.length - 1; i >= 0; i--) {
@@ -1980,7 +1979,7 @@ UI.selectObject = (function IIFE() {
 })();
 
 UI.requestRendering = function (this: UIShape) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		Timer.appendUpdater!('stageRendering', this.renderingFunction);
 	}
 };
@@ -2021,7 +2020,7 @@ UI.saveToConfig = function (this: UIShape, config: { colors: Record<string, stri
 UI.loadFromConfig = function (this: UIShape, config: { colors: Record<string, string> }) {
 	this.background = new StageColor(config.colors.uiBackground, () => this.requestRendering!());
 	this.foreground = new StageColor(config.colors.uiForeground, () => {
-		if (this.state === 'open') {
+		if (getUIStore().state === 'open') {
 			this.root.resize();
 			this.requestRendering!();
 		}
@@ -2033,7 +2032,7 @@ UI.saveToProject = function (
 	project: { ui: { zoom?: number } & Record<string, unknown>; uiPrefabs?: string[] }
 ) {
 	const { ui, uiPrefabs } = project;
-	ui.zoom = this.zoom ?? ui.zoom;
+	ui.zoom = getUIStore().zoom ?? ui.zoom;
 	UI.clearInvalidPrefabs!(uiPrefabs ?? []);
 };
 
@@ -2043,14 +2042,14 @@ UI.loadFromProject = function (this: UIShape, project: { ui: { zoom: number } })
 };
 
 UI.webglRestored = function (this: UIShape, event: Event) {
-	if (UI.state === 'open') {
+	if (getUIStore().state === 'open') {
 		UI.requestRendering!();
 	}
 };
 
 UI.windowResize = function (this: UIShape, event: Event) {
 	this.updateHead!();
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		this.resize!();
 		this.updateCamera!();
 		this.requestRendering!();
@@ -2066,7 +2065,7 @@ UI.localizationchange = function (this: UIShape, event: Event) {
 }.bind(UI);
 
 UI.keydown = function (this: UIShape, event: KeyboardEvent) {
-	if (UI.state === 'open' && UI.dragging === null) {
+	if (getUIStore().state === 'open' && UI.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			return;
 		} else if (event.altKey) {
@@ -2126,7 +2125,7 @@ UI.zoomInput = function (this: UIShape, event: Event & { value?: number }) {
 };
 
 UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getUIStore().state === 'open' && this.dragging === null) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
 				case 'KeyX':
@@ -2204,9 +2203,9 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 			case 'ArrowUp':
 			case 'ArrowRight':
 			case 'ArrowDown':
-				if (this.target !== null) {
+				if (getUIStore().target !== null) {
 					event.preventDefault();
-					const transform = this.target.transform;
+					const transform = getUIStore().target!.transform;
 					let offsetX = 0;
 					let offsetY = 0;
 					switch (event.code) {
@@ -2239,11 +2238,11 @@ UI.screenKeydown = function (this: UIShape, event: KeyboardEvent) {
 				break;
 			case 'Minus':
 			case 'NumpadSubtract':
-				this.setZoom!(this.zoom - 1);
+				this.setZoom!(getUIStore().zoom! - 1);
 				break;
 			case 'Equal':
 			case 'NumpadAdd':
-				this.setZoom!(this.zoom + 1);
+				this.setZoom!(getUIStore().zoom! + 1);
 				break;
 			case 'Digit0':
 			case 'Numpad0':
@@ -2283,17 +2282,17 @@ UI.translationKeyup = function (this: UIShape, event?: KeyboardEvent) {
 }.bind(UI);
 
 UI.screenWheel = function (this: UIShape, event: WheelEvent) {
-	if (this.state === 'open' && this.dragging === null) {
+	if (getUIStore().state === 'open' && this.dragging === null) {
 		event.preventDefault();
 		if (event.deltaY !== 0) {
 			const step = event.deltaY > 0 ? -1 : 1;
-			this.setZoom!(this.zoom + step);
+			this.setZoom!(getUIStore().zoom! + step);
 		}
 	}
 }.bind(UI);
 
 UI.screenUserscroll = function (this: UIShape, event: Event) {
-	if (this.state === 'open') {
+	if (getUIStore().state === 'open') {
 		this.screen.rawScrollLeft = this.screen.scrollLeft;
 		this.screen.rawScrollTop = this.screen.scrollTop;
 		this.updateTransform!();
@@ -2325,8 +2324,9 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 				window.addEventListener('pointermove', this.pointermove);
 				return;
 			}
-			if (this.controlPointActive && this.target) {
-				const { transform } = this.target;
+			const target = getUIStore().target;
+			if (this.controlPointActive && target) {
+				const { transform } = target;
 				const points = this.controlPoints!;
 				this.dragging = event;
 				switch (this.controlPointActive) {
@@ -2334,7 +2334,7 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 					case points.rotate.TR:
 					case points.rotate.BL:
 					case points.rotate.BR: {
-						const { instance } = this.target;
+						const { instance } = target;
 						const matrix = Matrix.instance.set(UI.matrix).multiply(instance.matrix);
 						const X = instance.x + instance.width * transform.anchorX;
 						const Y = instance.y + instance.height * transform.anchorY;
@@ -2375,8 +2375,8 @@ UI.marqueePointerdown = function (this: UIShape, event: UIPointerEvent) {
 			}
 			const { x, y } = this.getPointerCoords!(event);
 			let object;
-			if ((event.ctrlKey || event.metaKey) && this.target) {
-				object = this.target;
+			if ((event.ctrlKey || event.metaKey) && getUIStore().target) {
+				object = getUIStore().target;
 			}
 			if (object === undefined) {
 				object = this.selectObject!(x, y);
@@ -2410,7 +2410,7 @@ UI.marqueePointermove = function (this: UIShape, event: UIPointerEvent) {
 	if (!this.dragging) {
 		this.marquee.pointerevent = event;
 		const { x, y } = this.getPointerCoords!(event);
-		if (this.target) {
+		if (getUIStore().target) {
 			const point = this.selectControlPoint!(x, y);
 			if (point) {
 				this.setHover!(null);
@@ -2434,7 +2434,7 @@ UI.marqueePointerleave = function (this: UIShape, event: UIPointerEvent) {
 }.bind(UI);
 
 UI.marqueeDoubleclick = function (this: UIShape, event: UIPointerEvent) {
-	if (this.target) {
+	if (getUIStore().target) {
 		this.screenBlur!();
 		this.revealTarget!();
 	}
@@ -2480,8 +2480,9 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 	if (dragging && relate(dragging, event)) {
 		const dpr = window.devicePixelRatio;
 		switch (dragging.mode) {
-			case 'object-rotate':
-				if (this.target) {
+			case 'object-rotate': {
+				const target = getUIStore().target;
+				if (target) {
 					const { x, y } = getRelativeCoords(event, GL.canvas);
 					const distX = x * dpr - dragging.absoluteAnchorX;
 					const distY = y * dpr - dragging.absoluteAnchorY;
@@ -2494,16 +2495,18 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					if (event.shiftKey) {
 						rotation = Math.round(rotation / 15) * 15;
 					}
-					const transform = this.target.transform;
+					const transform = target.transform;
 					if (transform.rotation !== rotation) {
 						this.rotateTarget!(rotation);
 					}
 					dragging.lastAngle = currentAngle;
 				}
 				break;
-			case 'object-resize':
-				if (this.target) {
-					const { instance } = this.target;
+			}
+			case 'object-resize': {
+				const target = getUIStore().target;
+				if (target) {
+					const { instance } = target;
 					const { parent, transform } = instance;
 					const points = this.controlPoints!;
 					const point = this.controlPointActive!;
@@ -2597,7 +2600,9 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					}
 				}
 				break;
-			case 'object-move':
+			}
+			case 'object-move': {
+				const target = getUIStore().target;
 				if (!dragging.enabled) {
 					const distX = event.clientX - dragging.clientX;
 					const distY = event.clientY - dragging.clientY;
@@ -2610,8 +2615,8 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 						break;
 					}
 				}
-				if (this.target) {
-					const transform = this.target.transform;
+				if (target) {
+					const transform = target.transform;
 					const distX = ((event.clientX - dragging.clientX) * dpr) / this.scaleX;
 					const distY = ((event.clientY - dragging.clientY) * dpr) / this.scaleY;
 					let x;
@@ -2642,6 +2647,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 					}
 				}
 				break;
+			}
 			case 'ready-to-scroll': {
 				const distX = event.clientX - dragging.clientX;
 				const distY = event.clientY - dragging.clientY;
@@ -2666,7 +2672,7 @@ UI.pointermove = function (this: UIShape, event: UIPointerEvent) {
 UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	this.translationKeyup!();
 	const { x, y } = this.getPointerCoords!(event);
-	const target = this.target;
+	const target = getUIStore().target;
 	const selected = !!target;
 	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
 	const get = Local.createGetter!('menuUIList');
@@ -2806,14 +2812,14 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 			label: get('copy-id'),
 			enabled: selected,
 			click: () => {
-				navigator.clipboard.writeText(target.presetId);
+				navigator.clipboard.writeText(target!.presetId);
 			}
 		},
 		{
 			label: get('find-references'),
 			enabled: selected,
 			click: () => {
-				Reference.openRelated!(target.presetId);
+				Reference.openRelated!(target!.presetId);
 			}
 		}
 	];
@@ -3276,7 +3282,7 @@ getListConfig(UI.list).onResume = function (this: UIShape, item: UINodeShape) {
 	UI.updateElement!(item);
 } as (item: unknown) => void;
 
-const uiBridgeKeys = ['zoom', 'mode'] as const;
+const uiBridgeKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'] as const;
 import { getUIStore } from '@app/stores/ui';
 
 for (const key of uiBridgeKeys) {

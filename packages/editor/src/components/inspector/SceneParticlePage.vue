@@ -2,16 +2,16 @@
 	<DetailBox open>
 		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
-			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
 			<div class="text">{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</div
 			><CustomBox
-				id="sceneParticle-particleId" @input="onParamInput"
+				id="sceneParticle-particleId" :model-value="form.particleId" @input="onParamInput"
 				type="file"
 				filter="particle"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('sceneParticle-x') || 'X' }}</div
 			><NumberBox
-				id="sceneParticle-x" @input="onParamInput"
+				id="sceneParticle-x" v-model="form.x" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -19,7 +19,7 @@
 			></NumberBox>
 			<div class="text">{{ local.getLabel('sceneParticle-y') || 'Y' }}</div
 			><NumberBox
-				id="sceneParticle-y" @input="onParamInput"
+				id="sceneParticle-y" v-model="form.y" @input="onParamInput"
 				min="-128"
 				max="640"
 				step="0.1"
@@ -29,12 +29,13 @@
 			><div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
+					v-model="form.angle"
 					min="0"
 					max="360"
 					step="45"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-angle" @input="onParamInput"
+					id="sceneParticle-angle" v-model="form.angle" @input="onParamInput"
 					min="-360"
 					max="360"
 					step="45"
@@ -46,12 +47,13 @@
 			><div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
+					v-model="form.scale"
 					min="0"
 					max="2"
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-scale" @input="onParamInput"
+					id="sceneParticle-scale" v-model="form.scale" @input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
@@ -62,12 +64,13 @@
 			><div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
+					v-model="form.speed"
 					min="0"
 					max="2"
 					step="0.1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-speed" @input="onParamInput"
+					id="sceneParticle-speed" v-model="form.speed" @input="onParamInput"
 					min="0"
 					max="10"
 					step="0.1"
@@ -78,12 +81,13 @@
 			><div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
+					v-model="form.opacity"
 					min="0"
 					max="1"
 					step="0.05"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-opacity" @input="onParamInput"
+					id="sceneParticle-opacity" v-model="form.opacity" @input="onParamInput"
 					min="0"
 					max="1"
 					step="0.05"
@@ -94,12 +98,13 @@
 			><div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"
+					v-model="form.priority"
 					min="-4"
 					max="4"
 					step="1"
 				></SliderBox>
 				<NumberBox
-					id="sceneParticle-priority" @input="onParamInput"
+					id="sceneParticle-priority" v-model="form.priority" @input="onParamInput"
 					min="-512"
 					max="512"
 				></NumberBox>
@@ -136,9 +141,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -151,13 +157,13 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 const scene = useSceneStore();
 const local = useLocalStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.sceneParticle?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useSceneParticlePage();
 
 onMounted(() => {
-	scene.syncState();
-	local.syncState();
+	const el = document.getElementById('sceneParticle-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

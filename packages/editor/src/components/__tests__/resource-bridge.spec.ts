@@ -12,6 +12,10 @@ vi.mock('@/module/resource', () => ({
 	Resources: resources
 }));
 
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
 type UpdateEl = HTMLElement & { update?: () => void };
 
 describe('Resource（资源窗口按钮文本响应式渲染桥接）', () => {

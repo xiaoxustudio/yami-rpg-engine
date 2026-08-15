@@ -8,7 +8,7 @@ export const uiStateKeys = ['state', 'target', 'zoom', 'width', 'height', 'mode'
 interface UINodeShape {
 	class: string;
 	children: UINodeShape[];
-	[key: string]: unknown;
+	[key: string]: any;
 }
 
 interface UIContextShape {
@@ -47,15 +47,6 @@ export const useUIStore = defineStore('ui', () => {
 	const width = shallowRef<number | null>(null);
 	const height = shallowRef<number | null>(null);
 	const mode = shallowRef<string | null>(null);
-
-	function syncState() {
-		state.value = UI?.state ?? 'closed';
-		target.value = UI?.target ?? null;
-		zoom.value = UI?.zoom ?? null;
-		width.value = UI?.width ?? null;
-		height.value = UI?.height ?? null;
-		mode.value = UI?.mode ?? null;
-	}
 
 	function open(context: UIContextShape) {
 		UI?.open?.(context);
@@ -261,7 +252,6 @@ export const useUIStore = defineStore('ui', () => {
 		width,
 		height,
 		mode,
-		syncState,
 		open,
 		close,
 		planToSave,

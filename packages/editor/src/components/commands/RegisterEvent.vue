@@ -20,19 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+
 import { Command } from '@/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const inspector = useInspectorStore();
-const local = useLocalStore();
 
 const onTargetWrite = (value: unknown) => {
 	Command?.cases?.registerEvent?.targetWrite?.({ value });
@@ -48,8 +44,4 @@ const onConfirm = () => {
 	Command?.cases?.registerEvent?.save?.();
 };
 
-onMounted(() => {
-	inspector.syncState();
-	local.syncState();
-});
 </script>

@@ -1,13 +1,23 @@
 import { macRedoKey } from '@/util/event-accessors';
-export const ShortcutRegistry = {
-	shortcuts: {} as Record<string, (...args: unknown[]) => boolean>,
 
+type ShortcutStoreShape = {
+	registerShortcut(id: string, handler: (...args: unknown[]) => boolean): void;
+	getShortcut(id: string): ((...args: unknown[]) => boolean) | undefined;
+};
+
+let shortcutStore: ShortcutStoreShape | null = null;
+
+export function bindShortcutStore(bridge: ShortcutStoreShape): void {
+	shortcutStore = bridge;
+}
+
+export const ShortcutRegistry = {
 	register(id: string, handler: (...args: unknown[]) => boolean) {
-		this.shortcuts[id] = handler;
+		shortcutStore?.registerShortcut(id, handler);
 	},
 
 	get(id: string) {
-		return this.shortcuts[id];
+		return shortcutStore?.getShortcut(id);
 	}
 };
 

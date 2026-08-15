@@ -1,5 +1,5 @@
 import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, read, write } from '@/util/element-utils';
+import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { ConditionListInterface } from '@/tools/condition-list.ts';
@@ -10,7 +10,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 	interface SceneParallaxShape {
 		target: SceneParallaxData | null;
 		update: ((parallax: SceneParallaxData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	interface SceneParallaxData {
@@ -32,8 +31,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	SceneParallax.initialize = function (this: typeof SceneParallax) {
@@ -146,34 +144,10 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			this.target = parallax;
 
 			const write = getElementWriter('sceneParallax', parallax);
-			write('name');
-			write('image');
-			write('layer');
-			write('order');
-			write('light');
-			write('blend');
-			write('opacity');
-			write('x');
-			write('y');
-			write('scaleX');
-			write('scaleY');
-			write('repeatX');
-			write('repeatY');
-			write('anchorX');
-			write('anchorY');
-			write('offsetX');
-			write('offsetY');
-			write('parallaxFactorX');
-			write('parallaxFactorY');
-			write('shiftSpeedX');
-			write('shiftSpeedY');
-			write('tint-0');
-			write('tint-1');
-			write('tint-2');
-			write('tint-3');
 			write('conditions');
 			write('events');
 			write('scripts');
+			($('#sceneParallax-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -276,20 +250,6 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 			}
 		}
 		Scene.requestRendering!();
-	};
-
-	SceneParallax.paramInput = function (this: typeof SceneParallax, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^sceneParallax-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		SceneParallax.update!(
-			SceneParallax.target as SceneParallaxData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.sceneParallax = SceneParallax;

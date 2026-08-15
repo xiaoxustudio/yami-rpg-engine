@@ -79,54 +79,17 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { useAnimationStore } from '@app/stores/animation';
+import { onMounted } from 'vue';
+import { useAnimJointFramePage } from '@app/composables/useAnimJointFramePage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-interface AnimJointFrameForm {
-	x: number;
-	y: number;
-	rotation: number;
-	scaleX: number;
-	scaleY: number;
-	opacity: number;
-}
-
-const FORM_KEYS: (keyof AnimJointFrameForm)[] = [
-	'x',
-	'y',
-	'rotation',
-	'scaleX',
-	'scaleY',
-	'opacity'
-];
-
-const animation = useAnimationStore();
 const local = useLocalStore();
 
-const form = reactive<Partial<AnimJointFrameForm>>({});
-
-const sync = (): void => {
-	const target = Inspector?.animJointFrame?.target as
-		| Partial<AnimJointFrameForm>
-		| null
-		| undefined;
-	if (!target) return;
-	for (const key of FORM_KEYS) {
-		form[key] = target[key];
-	}
-};
-
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.animJointFrame?.paramInput?.({ target });
-	sync();
-};
+const { form, sync, onParamInput } = useAnimJointFramePage();
 
 onMounted(() => {
 	const el = document.getElementById('animJointFrame-vue-mount');
@@ -134,7 +97,5 @@ onMounted(() => {
 		attachElementApi(el, { sync });
 	}
 	sync();
-	animation.syncState();
-	local.syncState();
 });
 </script>

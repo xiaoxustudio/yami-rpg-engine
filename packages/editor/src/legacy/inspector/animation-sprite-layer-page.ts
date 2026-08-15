@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
@@ -7,7 +6,6 @@ import { Inspector } from './inspector.ts';
 	interface AnimSpriteLayerShape {
 		target: Record<string, unknown> | null;
 		update: ((layer: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimSpriteLayer: AnimSpriteLayerShape = {
@@ -17,8 +15,7 @@ import { Inspector } from './inspector.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimSpriteLayer.initialize = function (this: typeof AnimSpriteLayer) {
@@ -73,10 +70,7 @@ import { Inspector } from './inspector.ts';
 			const items = Animation.getSpriteListItems!(id);
 			$('#animSpriteLayer-sprite').loadItems(items);
 
-			const write = getElementWriter('animSpriteLayer', layer);
-			write('sprite');
-			write('blend');
-			write('light');
+			($('#animSpriteLayer-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -104,20 +98,6 @@ import { Inspector } from './inspector.ts';
 				break;
 		}
 		Animation.requestRendering!();
-	};
-
-	AnimSpriteLayer.paramInput = function (this: typeof AnimSpriteLayer, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animSpriteLayer-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimSpriteLayer.update!(
-			AnimSpriteLayer.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animSpriteLayer = AnimSpriteLayer;

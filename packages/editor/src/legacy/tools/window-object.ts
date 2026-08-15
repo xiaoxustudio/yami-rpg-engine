@@ -7,6 +7,7 @@ import { Layout } from '@/layout/layout.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';
+import { DynamicShape } from '@/types/legacy-shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 
 type WindowFrame = HTMLElement & {
@@ -16,7 +17,34 @@ type WindowFrame = HTMLElement & {
 	enableAmbient: boolean;
 };
 
-export const Window = {
+interface WindowShape extends DynamicShape {
+	readonly ambient: HTMLElement;
+	frames: HTMLElement[] & {
+		append(element: HTMLElement): boolean;
+		remove(element: HTMLElement): boolean;
+	};
+	afterChange: (() => void) | null;
+	initialize: (() => void) | null;
+	open: ((id: string) => void) | null;
+	close: ((id?: string | null) => void) | null;
+	closeAll: (() => void) | null;
+	isWindowOpen: ((id: string) => boolean) | null;
+	getTopWindow: (() => HTMLElement | undefined) | null;
+	setPositionMode: ((mode: string) => void) | null;
+	saveActiveElement: (() => void) | null;
+	restoreActiveElement: (() => void) | null;
+	refocus: (() => void) | null;
+	confirm:
+		| ((
+				options: { message?: string; close?: () => void },
+				items: Array<{ label?: string; click?: () => void }>
+		  ) => void)
+		| null;
+	keydown: ((event: KeyboardEvent) => void) | null;
+	cancel: ((event: Event) => void) | null;
+}
+
+export const Window: WindowShape = {
 	get ambient() {
 		return $('#window-ambient');
 	},
@@ -24,33 +52,23 @@ export const Window = {
 		append(element: HTMLElement): boolean;
 		remove(element: HTMLElement): boolean;
 	},
-	afterChange: null as (() => void) | null,
-	positionMode: 'center',
-	absolutePos: { x: 0, y: 0 },
-	overlapRoot: null as HTMLElement | null,
-	activeElement: null as Element | null,
-	initialize: null as (() => void) | null,
-	open: null as ((id: string) => void) | null,
-	close: null as ((id?: string | null) => void) | null,
-	closeAll: null as (() => void) | null,
-	isWindowOpen: null as ((id: string) => boolean) | null,
-	getTopWindow: null as (() => HTMLElement | undefined) | null,
-	setPositionMode: null as ((mode: string) => void) | null,
-	saveActiveElement: null as (() => void) | null,
-	restoreActiveElement: null as (() => void) | null,
-	refocus: null as (() => void) | null,
-	confirm: null as
-		| ((
-				options: { message?: string; close?: () => void },
-				items: Array<{ label?: string; click?: () => void }>
-		  ) => void)
-		| null,
-	keydown: null as ((event: KeyboardEvent) => void) | null,
-	cancel: null as ((event: Event) => void) | null
+	afterChange: null,
+	initialize: null,
+	open: null,
+	close: null,
+	closeAll: null,
+	isWindowOpen: null,
+	getTopWindow: null,
+	setPositionMode: null,
+	saveActiveElement: null,
+	restoreActiveElement: null,
+	refocus: null,
+	confirm: null,
+	keydown: null,
+	cancel: null
 };
 
 Window.initialize = function (this: typeof Window) {
-	getWindowStore().syncState();
 	const buttons = document.getElementsByName('cancel');
 	const length = buttons.length;
 	for (let i = 0; i < length; i++) {
@@ -142,7 +160,7 @@ Window.close = function (this: typeof Window, id: string | null = null) {
 			console.error('[window] close restore error:', error);
 		}
 		window.scrollTo(0, 0);
-		if (this.overlapRoot === element) {
+		if (getWindowStore().overlapRoot === element) {
 			this.setPositionMode!('center');
 		}
 		this.afterChange?.();
@@ -177,9 +195,10 @@ Window.getTopWindow = function (this: typeof Window) {
 };
 
 Window.setPositionMode = function (this: typeof Window, mode: string) {
-	if (this.positionMode !== mode) {
-		if (this.overlapRoot) {
-			this.overlapRoot = null;
+	const store = getWindowStore();
+	if (store.positionMode !== mode) {
+		if (store.overlapRoot) {
+			store.overlapRoot = null;
 		}
 		switch (mode) {
 			case 'center':
@@ -190,27 +209,28 @@ Window.setPositionMode = function (this: typeof Window, mode: string) {
 				const { frames } = this;
 				const { length } = frames;
 				if (length === 0) return;
-				this.overlapRoot = frames[length - 1];
+				store.overlapRoot = frames[length - 1];
 				break;
 			}
 		}
-		this.positionMode = mode;
+		store.positionMode = mode;
 	}
 };
 
 Window.saveActiveElement = function (this: typeof Window) {
 	const { activeElement } = document;
 	if (activeElement !== null && activeElement !== document.body) {
-		this.activeElement = activeElement;
+		getWindowStore().activeElement = activeElement;
 		activeElement.blur();
 	}
 };
 
 Window.restoreActiveElement = function (this: typeof Window) {
-	if (this.activeElement) {
+	const store = getWindowStore();
+	if (store.activeElement) {
 		// preventScroll 防止 focus 触发浏览器滚动（body overflow hidden 下 scrollY 变化会把顶栏滚出视口）
-		(this.activeElement as HTMLElement).focus();
-		this.activeElement = null;
+		(store.activeElement as HTMLElement).focus();
+		store.activeElement = null;
 	}
 };
 

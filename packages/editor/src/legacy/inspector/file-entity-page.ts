@@ -73,6 +73,8 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 			write('attributes');
 			write('events');
 			write('scripts');
+
+			($(`#${domKey}-vue-mount`) as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 

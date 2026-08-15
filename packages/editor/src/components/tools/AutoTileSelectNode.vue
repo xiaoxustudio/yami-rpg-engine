@@ -22,7 +22,7 @@ const inspector = useInspectorStore();
 const local = useLocalStore();
 
 onMounted(() => {
-	inspector.syncState();
-	local.syncState();
+
+
 });
 </script>

@@ -26,18 +26,6 @@ export const useSceneStore = defineStore('scene', () => {
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
 
-	function syncState() {
-		state.value = Scene?.state ?? 'closed';
-		target.value = Scene?.target ?? null;
-		mode.value = Scene?.mode ?? null;
-		tilemap.value = Scene?.tilemap ?? null;
-		layer.value = Scene?.layer ?? null;
-		showGrid.value = Scene?.showGrid ?? false;
-		zoom.value = Scene?.zoom ?? null;
-		scaleX.value = Scene?.scaleX ?? null;
-		scaleY.value = Scene?.scaleY ?? null;
-	}
-
 	function open(target: unknown) {
 		Scene?.open?.(target);
 	}
@@ -108,7 +96,6 @@ export const useSceneStore = defineStore('scene', () => {
 		zoom,
 		scaleX,
 		scaleY,
-		syncState,
 		open,
 		close,
 		planToSave,

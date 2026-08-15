@@ -39,16 +39,4 @@ describe('useAnimationStore（Animation 窗口状态桥接）', () => {
 		store.direction = null;
 		store.motion = null;
 	});
-
-	it('无 Animation 时 syncState 兜底默认值', () => {
-		const store = getAnimationStore();
-		store.syncState();
-		expect(store.state).toBe('closed');
-		expect(store.target).toBe(null);
-		expect(store.motion).toBe(null);
-		expect(store.direction).toBe(0);
-		expect(store.mode).toBe(null);
-		expect(store.speed).toBe(null);
-		expect(store.zoom).toBe(null);
-	});
 });
