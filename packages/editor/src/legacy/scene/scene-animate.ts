@@ -1,50 +1,16 @@
 import { $ } from '@/util/dom.ts';
-import { addClass, removeClass, hasClass, css } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
+import { addClass, removeClass, hasClass } from '@/util/element-utils.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
-import { GL } from '@/webgl/webgl-init.ts';
-Scene.requestAnimation = function (this: typeof Scene) {
-	if (this.state === 'open' && this.showAnimation) {
-		Timer.appendUpdater!('stageAnimation', this.updateAnimation);
-	}
-};
+import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 
-Scene.updateAnimation = function (this: typeof Scene, deltaTime: number) {
-	const { animationInterval } = Scene;
-	if (animationInterval > 0) {
-		Scene.animationElapsed += deltaTime;
-		if (Scene.animationElapsed >= animationInterval) {
-			Scene.animationElapsed -= animationInterval;
-			Scene.animationFrame += 1;
-		}
-	}
-	Scene.updateParallaxes!(deltaTime);
-	Scene.updateAnimations!(deltaTime);
-	Scene.updateParticles!(deltaTime);
-	if (Timer.updaters.stageRendering !== Scene.renderingFunction) {
-		Scene.drawScene!();
-	}
-};
-
-Scene.stopAnimation = function (this: typeof Scene) {
-	Timer.removeUpdater!('stageAnimation', this.updateAnimation);
-};
-
-Scene.requestRendering = function (this: typeof Scene) {
-	if (this.state === 'open') {
-		Timer.appendUpdater!('stageRendering', this.renderingFunction);
-	}
-};
-
-Scene.renderingFunction = function (this: typeof Scene) {
-	Scene.updateAnimations!(0);
-	Scene.drawScene!();
-};
-
-Scene.stopRendering = function (this: typeof Scene) {
-	Timer.removeUpdater!('stageRendering', this.renderingFunction);
-};
+Scene.requestAnimation = SceneAnimateEngine.requestAnimation;
+Scene.updateAnimation = SceneAnimateEngine.updateAnimation;
+Scene.stopAnimation = SceneAnimateEngine.stopAnimation;
+Scene.requestRendering = SceneAnimateEngine.requestRendering;
+Scene.renderingFunction = SceneAnimateEngine.renderingFunction;
+Scene.stopRendering = SceneAnimateEngine.stopRendering;
+Scene.updateFont = SceneAnimateEngine.updateFont;
 
 Scene.switchLayer = (function IIFE() {
 	let layerGroup: HTMLElement | null = null;
@@ -215,14 +181,5 @@ Scene.resetAnimations = function (this: typeof Scene) {
 		for (const { emitter } of this.particles) {
 			emitter?.clear();
 		}
-	}
-};
-
-Scene.updateFont = function (this: typeof Scene) {
-	const context = GL.context2d;
-	const size = window.devicePixelRatio * 12;
-	if (context.size !== size) {
-		context.size = size;
-		context.font = `${size}px ${css(document.body).fontFamily}`;
 	}
 };

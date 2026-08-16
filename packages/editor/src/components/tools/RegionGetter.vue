@@ -16,8 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { RegionGetter, type RegionGetterForm } from '@/command/region-accessor-window.ts';
+import { onMounted, ref } from 'vue';
+import { RegionGetter } from '@/command/region-accessor-window.ts';
+import {
+	useRegionGetterWindow,
+	type RegionGetterForm
+} from '@app/composables/useRegionGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -26,7 +30,8 @@ import { attachElementApi } from '@/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const form = reactive<RegionGetterForm>({ type: '', presetId: '' });
+const regionGetter = useRegionGetterWindow();
+const form = regionGetter.form;
 
 const FIELD_BY_ID: Record<string, keyof RegionGetterForm> = {
 	'regionGetter-type': 'type',
@@ -72,6 +77,7 @@ onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
+		el.on('closed', () => regionGetter.onWindowClosed());
 	}
 
 

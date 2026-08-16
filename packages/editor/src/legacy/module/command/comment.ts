@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
 
@@ -20,8 +18,5 @@ Command.cases.comment = new CommandSchema({
 			contents.unshift({ fold: true });
 		}
 		return contents;
-	},
-	onLoad() {
-		getFocus($('#comment-comment'), 'end');
 	}
 });

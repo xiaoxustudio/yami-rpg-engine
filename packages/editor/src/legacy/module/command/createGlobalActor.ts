@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -12,14 +10,6 @@ Command.cases.createGlobalActor = new CommandSchema({
 		{ key: 'actorId', default: '', required: true },
 		{ key: 'teamId', default: () => Data.teams.list[0].id }
 	],
-	onInitialize() {
-		$('#createGlobalActor')?.on?.('open', function (event: Event) {
-			$('#createGlobalActor-teamId')?.loadItems?.(Data.createTeamItems!());
-		});
-		$('#createGlobalActor')?.on?.('closed', function (event: Event) {
-			clear($('#createGlobalActor-teamId'));
-		});
-	},
 	customParse({ actorId, teamId }: { actorId: unknown; teamId: unknown }) {
 		const words = Command.words
 			.push(Command.parseFileName!(actorId))
@@ -29,8 +19,5 @@ Command.cases.createGlobalActor = new CommandSchema({
 			{ text: Local.get!('command.createGlobalActor') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#createGlobalActor-actorId'));
 	}
 });

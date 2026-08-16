@@ -1,42 +1,22 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.loadImage = new CommandSchema({
 	name: 'loadImage',
-	onInitialize() {
-		$('#loadImage-type')?.loadItems?.([
-			{ name: 'Actor Portrait', value: 'actor-portrait' },
-			{ name: 'Skill Icon', value: 'skill-icon' },
-			{ name: 'State Icon', value: 'state-icon' },
-			{ name: 'Equipment Icon', value: 'equipment-icon' },
-			{ name: 'Item Icon', value: 'item-icon' },
-			{ name: 'Shortcut Icon', value: 'shortcut-icon' },
-			{ name: 'Base64 Image', value: 'base64' }
-		]);
-		$('#loadImage-type')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'actor-portrait', targets: [$('#loadImage-actor')] },
-				{ case: 'skill-icon', targets: [$('#loadImage-skill')] },
-				{ case: 'state-icon', targets: [$('#loadImage-state')] },
-				{
-					case: 'equipment-icon',
-					targets: [$('#loadImage-equipment')]
-				},
-				{ case: 'item-icon', targets: [$('#loadImage-item')] },
-				{
-					case: 'shortcut-icon',
-					targets: [$('#loadImage-actor'), $('#loadImage-key')]
-				},
-				{ case: 'base64', targets: [$('#loadImage-variable')] }
-			]);
-	},
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'type', default: 'actor-portrait' },
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'state', default: { type: 'trigger' } },
+		{ key: 'equipment', default: { type: 'trigger' } },
+		{ key: 'item', default: { type: 'trigger' } },
+		{ key: 'key', default: () => Enum.getDefStringId!('shortcut-key') },
+		{ key: 'variable', default: { type: 'local', key: '' } }
+	],
 	customParse({
 		element,
 		type,
@@ -93,73 +73,5 @@ Command.cases.loadImage = new CommandSchema({
 			{ text: Local.get!('command.loadImage') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		element = { type: 'trigger' },
-		type = 'actor-portrait',
-		actor = { type: 'trigger' },
-		skill = { type: 'trigger' },
-		state = { type: 'trigger' },
-		equipment = { type: 'trigger' },
-		item = { type: 'trigger' },
-		key = Enum.getDefStringId!('shortcut-key'),
-		variable = { type: 'local', key: '' }
-	}) {
-		$('#loadImage-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-		const write = getElementWriter('loadImage');
-		write('element', element);
-		write('type', type);
-		write('actor', actor);
-		write('skill', skill);
-		write('state', state);
-		write('equipment', equipment);
-		write('item', item);
-		write('key', key);
-		write('variable', variable);
-		getFocus($('#loadImage-element'));
-	},
-	customSave() {
-		const read = getElementReader('loadImage');
-		const element = read('element');
-		const type = read('type');
-		switch (type) {
-			case 'actor-portrait': {
-				Command.save!({ element, type, actor: read('actor') });
-				break;
-			}
-			case 'skill-icon': {
-				Command.save!({ element, type, skill: read('skill') });
-				break;
-			}
-			case 'state-icon': {
-				Command.save!({ element, type, state: read('state') });
-				break;
-			}
-			case 'equipment-icon': {
-				Command.save!({ element, type, equipment: read('equipment') });
-				break;
-			}
-			case 'item-icon': {
-				Command.save!({ element, type, item: read('item') });
-				break;
-			}
-			case 'shortcut-icon': {
-				Command.save!({
-					element,
-					type,
-					actor: read('actor'),
-					key: read('key')
-				});
-				break;
-			}
-			case 'base64': {
-				const variable = read('variable');
-				if (VariableGetter.isNone!(variable)) {
-					return getFocus($('#loadImage-variable'));
-				}
-				Command.save!({ element, type, variable });
-				break;
-			}
-		}
 	}
 });

@@ -1,7 +1,4 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
@@ -14,15 +11,6 @@ Command.cases.changeActorSprite = new CommandSchema({
 		{ key: 'spriteId', default: '', required: true },
 		{ key: 'image', default: '' }
 	],
-	onInitialize() {
-		// changeActorSprite-animationId write 经 Vue 模板转发（changeActorSprite.vue @write → Command.cases.changeActorSprite.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		const items = Animation.getSpriteListItems!(event.value);
-		const elSpriteId = $('#changeActorSprite-spriteId');
-		elSpriteId.loadItems(items);
-		write(elSpriteId, read(elSpriteId));
-	},
 	customParse({
 		actor,
 		animationId,
@@ -44,8 +32,5 @@ Command.cases.changeActorSprite = new CommandSchema({
 			{ text: Local.get!('command.changeActorSprite') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#changeActorSprite-actor'));
 	}
 });

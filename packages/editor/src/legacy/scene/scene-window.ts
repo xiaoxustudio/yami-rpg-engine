@@ -1,4 +1,4 @@
-﻿import { $ } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@/util/element-utils.ts';
 import { getListConfig } from '@ui-kit';
@@ -8,10 +8,10 @@ import { File } from '@/file/file-system-core.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
 import { GUID } from '@/file/guid.ts';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Palette } from '@/palette/palette.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { ObjectFolder } from './default-object-folder.ts';
@@ -19,8 +19,8 @@ import { SceneShift } from './move-scene.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
 import { History } from '@/tools/history.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
-import { Matrix } from '@/webgl/matrix2.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 // 列表运行时挂载的扩展方法（Scene.list / UI.list 共享，ui-window.ts:218-238 调用）
 interface SceneListItem {

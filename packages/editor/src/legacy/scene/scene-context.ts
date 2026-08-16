@@ -8,6 +8,9 @@ import { Particle } from '@/particle/particle-window.ts';
 import { Light } from './light.ts';
 import { Parallax } from './parallax.ts';
 import { Scene } from './scene-window.ts';
+import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
+
+Scene.updateParallaxes = SceneAnimateEngine.updateParallaxes;
 
 interface SceneNode {
 	class: string;
@@ -526,12 +529,5 @@ Scene.deletePreviewObject = function (this: typeof Scene) {
 		}
 		this.previewObject = null;
 		this.requestRendering!();
-	}
-};
-
-Scene.updateParallaxes = function (this: typeof Scene, deltaTime: number) {
-	for (const parallax of this.parallaxes) {
-		if (parallax.hidden) continue;
-		parallax.player.update(deltaTime);
 	}
 };

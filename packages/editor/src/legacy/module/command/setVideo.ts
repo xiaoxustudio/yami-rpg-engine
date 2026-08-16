@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { VideoProperty } from '@/command/set-video-property-window.ts';
@@ -8,12 +6,10 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setVideo = new CommandSchema({
 	name: 'setVideo',
-	onInitialize() {
-		$('#setVideo-properties')?.bind?.(VideoProperty);
-		$('#setVideo')?.on?.('closed', (event: Event) => {
-			clear($('#setVideo-properties'));
-		});
-	},
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'properties', default: [] }
+	],
 	customParse({
 		element,
 		properties
@@ -30,26 +26,5 @@ Command.cases.setVideo = new CommandSchema({
 			{ text: Local.get!('command.setVideo') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		element = { type: 'trigger' },
-		properties = []
-	}: {
-		element: unknown;
-		properties: unknown[];
-	}) {
-		const write = getElementWriter('setVideo');
-		write('element', element);
-		write('properties', properties.slice());
-		getFocus($('#setVideo-element'));
-	},
-	customSave() {
-		const read = getElementReader('setVideo');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setVideo-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

@@ -1,32 +1,19 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { disable, enable, getFocus, read, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { RequestkeyValueBind } from './requestURL.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.downloadFile = new CommandSchema({
 	name: 'downloadFile',
-	onInitialize() {
-		$('#downloadFile-method')?.loadItems?.([
-			{ name: 'GET', value: 'GET' },
-			{ name: 'POST', value: 'POST' },
-			{ name: 'PUT', value: 'PUT' },
-			{ name: 'DELETE', value: 'DELETE' }
-		]);
-		$('#downloadFile-isBackground')?.relate?.([$('#downloadFile-isBackground-path')]);
-		disable($('#downloadFile-isBackground-path'));
-		write($('#downloadFile-method'), 'GET');
-		write($('#downloadFile-url'), '');
-		write($('#downloadFile-isBackground-path'), '');
-		$('#downloadFile-header')?.bind?.(RequestkeyValueBind);
-		$('#downloadFile-data')?.bind?.(RequestkeyValueBind);
-	},
-	isBackgroundInput(event: Event & { value?: boolean }) {
-		if (event.value) enable($('#downloadFile-isBackground-path'));
-		else disable($('#downloadFile-isBackground-path'));
-	},
+	fields: [
+		{ key: 'url', default: '' },
+		{ key: 'method', default: 'GET' },
+		{ key: 'header', default: [] },
+		{ key: 'data', default: [] },
+		{ key: 'callback', default: '' },
+		{ key: 'rateCallback', default: '' },
+		{ key: 'isBackground', default: false },
+		{ key: 'isBackgroundPath', domId: 'isBackground-path', default: '' }
+	],
 	customParse({
 		url = '',
 		method = 'GET',
@@ -103,43 +90,5 @@ Command.cases.downloadFile = new CommandSchema({
 					]
 				: [])
 		);
-	},
-	customLoad({
-		url = '',
-		method = 'GET',
-		headers = [],
-		data = [],
-		callback = '',
-		rateCallback = '',
-		isBackground = false,
-		isBackgroundPath = ''
-	}) {
-		write($('#downloadFile-method'), method);
-		write($('#downloadFile-callback'), callback);
-		write($('#downloadFile-url'), url);
-		write($('#downloadFile-isBackground'), isBackground);
-		write($('#downloadFile-isBackground-path'), isBackgroundPath);
-		getFocus($('#downloadFile-url'));
-		const elementWriter = getElementWriter('downloadFile');
-		elementWriter('header', headers);
-		elementWriter('data', data);
-	},
-	customSave() {
-		const elVariable = $('#downloadFile-url');
-		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
-		}
-		const elementReader = getElementReader('downloadFile');
-		Command.save!({
-			url: variable,
-			method: elementReader('method'),
-			headers: elementReader('header'),
-			data: elementReader('data'),
-			callback: elementReader('callback'),
-			rateCallback: elementReader('rateCallback'),
-			isBackground: elementReader('isBackground'),
-			isBackgroundPath: elementReader('isBackground-path')
-		});
 	}
 });

@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -18,30 +16,13 @@ type MoveActorData = {
 
 Command.cases.moveActor = new CommandSchema({
 	name: 'moveActor',
-	onInitialize() {
-		$('#moveActor-mode')?.loadItems?.([
-			{ name: 'Stop', value: 'stop' },
-			{ name: 'Keep', value: 'keep' },
-			{ name: 'Straight', value: 'straight' },
-			{ name: 'Navigate', value: 'navigate' },
-			{ name: 'Navigate - Bypass Actors', value: 'navigate-bypass' },
-			{ name: 'Teleport', value: 'teleport' }
-		]);
-		$('#moveActor-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'keep', targets: [$('#moveActor-angle')] },
-				{
-					case: ['straight', 'navigate', 'navigate-bypass'],
-					targets: [$('#moveActor-destination'), $('#moveActor-wait')]
-				},
-				{ case: 'teleport', targets: [$('#moveActor-destination')] }
-			]);
-		$('#moveActor-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'straight' },
+		{ key: 'angle', default: 0 },
+		{ key: 'destination', default: { type: 'absolute', x: 0, y: 0 } },
+		{ key: 'wait', default: false }
+	],
 	parseMode(mode: MoveActorMode) {
 		let string = Local.get!('command.moveActor.mode.' + mode);
 		if (mode === 'navigate-bypass') {
@@ -72,53 +53,5 @@ Command.cases.moveActor = new CommandSchema({
 			{ text: Local.get!('command.moveActor') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		mode = 'straight',
-		angle = 0,
-		destination = { type: 'absolute', x: 0, y: 0 },
-		wait = false
-	}) {
-		const write = getElementWriter('moveActor');
-		write('actor', actor);
-		write('mode', mode);
-		write('angle', angle);
-		write('destination', destination);
-		write('wait', wait);
-		getFocus($('#moveActor-actor'));
-	},
-	customSave() {
-		const read = getElementReader('moveActor');
-		const actor = read('actor');
-		const mode = read('mode');
-		switch (mode) {
-			case 'stop':
-				Command.save!({ actor, mode });
-				break;
-			case 'keep': {
-				Command.save!({ actor, mode, angle: read('angle') });
-				break;
-			}
-			case 'straight':
-			case 'navigate':
-			case 'navigate-bypass': {
-				Command.save!({
-					actor,
-					mode,
-					destination: read('destination'),
-					wait: read('wait')
-				});
-				break;
-			}
-			case 'teleport': {
-				Command.save!({
-					actor,
-					mode,
-					destination: read('destination')
-				});
-				break;
-			}
-		}
 	}
 });

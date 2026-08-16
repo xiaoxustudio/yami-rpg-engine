@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -15,24 +13,6 @@ Command.cases.setPan = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setPan-type')?.loadItems?.([
-			{ name: 'BGM', value: 'bgm' },
-			{ name: 'BGS', value: 'bgs' },
-			{ name: 'CV', value: 'cv' },
-			{ name: 'SE', value: 'se' }
-		]);
-		$('#setPan-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setPan')?.on?.('open', function (event: Event) {
-			$('#setPan-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setPan')?.on?.('closed', function (event: Event) {
-			clear($('#setPan-easingId'));
-		});
-	},
 	customParse({
 		type,
 		pan,
@@ -55,8 +35,5 @@ Command.cases.setPan = new CommandSchema({
 			{ text: Local.get!('command.setPan') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setPan-type'));
 	}
 });

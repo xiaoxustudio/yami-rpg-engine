@@ -1,5 +1,3 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { AnimationProperty } from '@/command/set-animation-property-window.ts';
@@ -12,12 +10,6 @@ Command.cases.setAnimation = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'properties', default: [] }
 	],
-	onInitialize() {
-		$('#setAnimation-properties')?.bind?.(AnimationProperty);
-		$('#setAnimation')?.on?.('closed', (event: Event) => {
-			clear($('#setAnimation-properties'));
-		});
-	},
 	customParse({
 		element,
 		properties
@@ -34,17 +26,5 @@ Command.cases.setAnimation = new CommandSchema({
 			{ text: Local.get!('command.setAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setAnimation-element'));
-	},
-	customSave() {
-		const read = getElementReader('setAnimation');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setAnimation-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

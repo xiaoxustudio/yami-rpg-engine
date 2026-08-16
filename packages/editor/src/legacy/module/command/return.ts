@@ -1,7 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
@@ -22,76 +19,21 @@ Command.cases.return = new CommandSchema({
 		light: { name: 'Light', value: 'light' },
 		element: { name: 'Element', value: 'element' }
 	},
-	onInitialize() {
-		$('#return-type')?.loadItems?.(Object.values(this.typeItems));
-		$('#return-boolean')?.loadItems?.([
-			{ name: 'False', value: false },
-			{ name: 'True', value: true }
-		]);
-		$('#return-type')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'boolean', targets: [$('#return-boolean')] },
-				{ case: 'number', targets: [$('#return-number')] },
-				{ case: 'string', targets: [$('#return-string')] },
-				{ case: 'object', targets: [$('#return-object')] },
-				{ case: 'actor', targets: [$('#return-actor')] },
-				{ case: 'skill', targets: [$('#return-skill')] },
-				{ case: 'state', targets: [$('#return-state')] },
-				{ case: 'equipment', targets: [$('#return-equipment')] },
-				{ case: 'item', targets: [$('#return-item')] },
-				{ case: 'trigger', targets: [$('#return-trigger')] },
-				{ case: 'light', targets: [$('#return-light')] },
-				{ case: 'element', targets: [$('#return-element')] }
-			]);
-	},
-	loadTypeItems(type: string) {
-		let items;
-		switch (type) {
-			case 'none':
-				items = [this.typeItems.none];
-				break;
-			case 'boolean':
-				items = [this.typeItems.boolean];
-				break;
-			case 'number':
-				items = [this.typeItems.number];
-				break;
-			case 'string':
-				items = [this.typeItems.string];
-				break;
-			case 'object':
-				items = [this.typeItems.object];
-				break;
-			case 'actor':
-				items = [this.typeItems.actor];
-				break;
-			case 'skill':
-				items = [this.typeItems.skill];
-				break;
-			case 'state':
-				items = [this.typeItems.state];
-				break;
-			case 'equipment':
-				items = [this.typeItems.equipment];
-				break;
-			case 'item':
-				items = [this.typeItems.item];
-				break;
-			case 'trigger':
-				items = [this.typeItems.trigger];
-				break;
-			case 'light':
-				items = [this.typeItems.light];
-				break;
-			case 'element':
-				items = [this.typeItems.element];
-				break;
-			default:
-				throw new Error('Not implemented');
-		}
-		$('#return-type')?.loadItems?.(items);
-	},
+	fields: [
+		{ key: 'type', default: () => Command.returnType },
+		{ key: 'boolean', default: false },
+		{ key: 'number', default: 0 },
+		{ key: 'string', default: '' },
+		{ key: 'object', default: { type: 'local', key: '' } },
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'state', default: { type: 'trigger' } },
+		{ key: 'equipment', default: { type: 'trigger' } },
+		{ key: 'item', default: { type: 'trigger' } },
+		{ key: 'trigger', default: { type: 'trigger' } },
+		{ key: 'light', default: { type: 'trigger' } },
+		{ key: 'element', default: { type: 'trigger' } }
+	],
 	customParse({ type, value }: { type: string; value: number | string | boolean }) {
 		const words = Command.words;
 		switch (type) {
@@ -144,73 +86,5 @@ Command.cases.return = new CommandSchema({
 			{ color: 'restore' },
 			{ text: info }
 		];
-	},
-	customLoad({ type = Command.returnType, value = null }) {
-		this.loadTypeItems!(Command.returnType);
-		const write = getElementWriter('return');
-		write('type', type);
-		write('boolean', type === 'boolean' && value !== null ? value : false);
-		write('number', type === 'number' && value !== null ? value : 0);
-		write('string', type === 'string' && value !== null ? value : '');
-		write('object', type === 'object' && value !== null ? value : { type: 'local', key: '' });
-		write('actor', type === 'actor' && value !== null ? value : { type: 'trigger' });
-		write('skill', type === 'skill' && value !== null ? value : { type: 'trigger' });
-		write('state', type === 'state' && value !== null ? value : { type: 'trigger' });
-		write('equipment', type === 'equipment' && value !== null ? value : { type: 'trigger' });
-		write('item', type === 'item' && value !== null ? value : { type: 'trigger' });
-		write('trigger', type === 'trigger' && value !== null ? value : { type: 'trigger' });
-		write('light', type === 'light' && value !== null ? value : { type: 'trigger' });
-		write('element', type === 'element' && value !== null ? value : { type: 'trigger' });
-		getFocus($('#return-type'));
-	},
-	customSave() {
-		const read = getElementReader('return');
-		const type = read('type');
-		switch (type) {
-			case 'none':
-				Command.save!({ type });
-				break;
-			case 'boolean':
-				Command.save!({ type, value: read('boolean') });
-				break;
-			case 'number':
-				Command.save!({ type, value: read('number') });
-				break;
-			case 'string':
-				Command.save!({ type, value: read('string') });
-				break;
-			case 'object': {
-				const variable = read('object');
-				if (VariableGetter.isNone!(variable)) {
-					return getFocus($('#return-object'));
-				}
-				Command.save!({ type, value: variable });
-				break;
-			}
-			case 'actor':
-				Command.save!({ type, value: read('actor') });
-				break;
-			case 'skill':
-				Command.save!({ type, value: read('skill') });
-				break;
-			case 'state':
-				Command.save!({ type, value: read('state') });
-				break;
-			case 'equipment':
-				Command.save!({ type, value: read('equipment') });
-				break;
-			case 'item':
-				Command.save!({ type, value: read('item') });
-				break;
-			case 'trigger':
-				Command.save!({ type, value: read('trigger') });
-				break;
-			case 'light':
-				Command.save!({ type, value: read('light') });
-				break;
-			case 'element':
-				Command.save!({ type, value: read('element') });
-				break;
-		}
 	}
 });

@@ -3,30 +3,53 @@
 	<template #title><TitleBar>Detect Targets<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="detectTargets-actor" type="actor" /><div class="text">Distance</div
+			<div class="text">Actor</div><CustomBox id="detectTargets-actor" type="actor" @input="onActor" /><div class="text">Distance</div
 			><NumberVar
 				id="detectTargets-distance"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
-			 /><div class="text">Selector</div><SelectBox id="detectTargets-selector" /><div class="text">In Sight</div><SelectBox id="detectTargets-inSight" /></div>
+				v-model="form.distance"
+			 /><div class="text">Selector</div><SelectBox id="detectTargets-selector" v-model="form.selector" /><div class="text">In Sight</div><SelectBox id="detectTargets-inSight" v-model="form.inSight" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useDetectTargetsCommandSchema } from '@app/composables/commands/useDetectTargetsCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useDetectTargetsCommandSchema();
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.detectTargets?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#detectTargets-selector')?.loadItems?.([
+		{ name: 'Enemy', value: 'enemy' },
+		{ name: 'Friend', value: 'friend' },
+		{ name: 'Team Member', value: 'team' },
+		{ name: 'Team Member Except Self', value: 'team-except-self' },
+		{ name: 'Any Except Self', value: 'any-except-self' },
+		{ name: 'Any', value: 'any' }
+	]);
+	$('#detectTargets-inSight')?.loadItems?.([
+		{ name: 'Enabled', value: true },
+		{ name: 'Disabled', value: false }
+	]);
+});
 
 </script>

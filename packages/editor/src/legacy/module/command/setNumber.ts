@@ -1,13 +1,10 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
-import { Token } from '@/command/mark-string-manager.ts';
 import { Command } from '@/command/command-object.ts';
+import { Token } from '@/command/mark-string-manager.ts';
 import { NumberOperand } from '@/command/set-value-operand-window.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
-interface SetNumberOperand {
+export interface SetNumberOperand {
 	operation: string;
 	type: string;
 	value?: number;
@@ -17,12 +14,16 @@ interface SetNumberOperand {
 
 Command.cases.setNumber = new CommandSchema({
 	name: 'setNumber',
-	onInitialize() {
-		$('#setNumber-operands')?.bind?.(NumberOperand);
-		$('#setNumber')?.on?.('closed', (event: Event) => {
-			clear($('#setNumber-operands'));
-		});
-	},
+	fields: [
+		{ key: 'variable', default: { type: 'local', key: '' } },
+		{ key: 'operation', default: 'set' },
+		{
+			key: 'operands',
+			default: () => [
+				{ operation: 'add', type: 'constant', value: 0 } as unknown as SetNumberOperand
+			]
+		}
+	],
 	parseOperation(operation: string) {
 		switch (operation) {
 			case 'set':
@@ -95,34 +96,5 @@ Command.cases.setNumber = new CommandSchema({
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${expression}` }
 		];
-	},
-	customLoad({
-		variable = { type: 'local', key: '' },
-		operation = 'set',
-		operands = [{ operation: 'add', type: 'constant', value: 0 } as unknown as SetNumberOperand]
-	}: {
-		variable?: unknown;
-		operation?: string;
-		operands?: SetNumberOperand[];
-	}) {
-		const write = getElementWriter('setNumber');
-		write('variable', variable);
-		write('operation', operation);
-		write('operands', operands.slice());
-		getFocus($('#setNumber-variable'));
-	},
-	customSave() {
-		const read = getElementReader('setNumber');
-		const variable = read('variable');
-		if (VariableGetter.isNone!(variable)) {
-			return getFocus($('#setNumber-variable'));
-		}
-		const operation = read('operation');
-		const operands = read('operands');
-		if (operands.length === 0) {
-			return getFocus($('#setNumber-operands'));
-		}
-		operands[0].operation = 'add';
-		Command.save!({ variable, operation, operands });
 	}
 });

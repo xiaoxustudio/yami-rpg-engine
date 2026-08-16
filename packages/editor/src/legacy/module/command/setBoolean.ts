@@ -1,7 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
@@ -16,63 +13,6 @@ interface SetBooleanOperand {
 
 Command.cases.setBoolean = new CommandSchema({
 	name: 'setBoolean',
-	onInitialize() {
-		$('#setBoolean-operation')?.loadItems?.([
-			{ name: 'Set', value: 'set' },
-			{ name: 'Not', value: 'not' },
-			{ name: 'And', value: 'and' },
-			{ name: 'Or', value: 'or' },
-			{ name: 'Xor', value: 'xor' }
-		]);
-		$('#setBoolean-operand-type')?.loadItems?.([
-			{ name: 'Constant', value: 'constant' },
-			{ name: 'Variable', value: 'variable' },
-			{ name: 'List', value: 'list' },
-			{ name: 'Parameter', value: 'parameter' },
-			{ name: 'Script', value: 'script' }
-		]);
-		$('#setBoolean-operand-type')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'constant',
-					targets: [$('#setBoolean-constant-value')]
-				},
-				{
-					case: 'variable',
-					targets: [$('#setBoolean-common-variable')]
-				},
-				{
-					case: 'list',
-					targets: [$('#setBoolean-common-variable'), $('#setBoolean-list-index')]
-				},
-				{
-					case: 'parameter',
-					targets: [$('#setBoolean-parameter-key')]
-				},
-				{ case: 'script', targets: [$('#setBoolean-script')] }
-			]);
-		$('#setBoolean-constant-value')?.loadItems?.([
-			{ name: 'False', value: false },
-			{ name: 'True', value: true }
-		]);
-		// setBoolean-operand-type write 经 Vue 模板转发（setBoolean.vue @write → Command.cases.setBoolean.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		let filter = 'all';
-		switch (event.value) {
-			case 'variable':
-				filter = 'boolean';
-				break;
-			case 'list':
-				filter = 'object';
-				break;
-		}
-		const element = $('#setBoolean-common-variable');
-		if (element) {
-			element.filter = filter;
-		}
-	},
 	parseOperation(operation: string) {
 		switch (operation) {
 			case 'set':
@@ -119,100 +59,5 @@ Command.cases.setBoolean = new CommandSchema({
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${value}` }
 		];
-	},
-	customLoad({
-		variable = { type: 'local', key: '' },
-		operation = 'set',
-		operand = { type: 'constant', value: false } as SetBooleanOperand
-	}: {
-		variable?: unknown;
-		operation?: string;
-		operand?: SetBooleanOperand;
-	}) {
-		const write = getElementWriter('setBoolean');
-		let constantValue = false;
-		let commonVariable = { type: 'local', key: '' };
-		let listIndex = 0;
-		let parameterKey = '';
-		let script = '';
-		const op = operand ?? ({ type: 'constant', value: false } as SetBooleanOperand);
-		switch (op.type) {
-			case 'constant':
-				constantValue = op.value;
-				break;
-			case 'variable':
-				commonVariable = op.variable;
-				break;
-			case 'list':
-				commonVariable = op.variable;
-				listIndex = op.index;
-				break;
-			case 'parameter':
-				parameterKey = op.key;
-				break;
-			case 'script':
-				script = op.script;
-				break;
-		}
-		write('variable', variable);
-		write('operation', operation);
-		write('operand-type', operand.type);
-		write('constant-value', constantValue);
-		write('common-variable', commonVariable);
-		write('list-index', listIndex);
-		write('parameter-key', parameterKey);
-		write('script', script);
-		getFocus($('#setBoolean-variable'));
-	},
-	customSave() {
-		const read = getElementReader('setBoolean');
-		const variable = read('variable');
-		if (VariableGetter.isNone!(variable)) {
-			return getFocus($('#setBoolean-variable'));
-		}
-		const operation = read('operation');
-		const type = read('operand-type');
-		let operand;
-		switch (type) {
-			case 'constant': {
-				const value = read('constant-value');
-				operand = { type, value };
-				break;
-			}
-			case 'variable': {
-				const variable = read('common-variable');
-				if (VariableGetter.isNone!(variable)) {
-					return getFocus($('#setBoolean-common-variable'));
-				}
-				operand = { type, variable };
-				break;
-			}
-			case 'list': {
-				const variable = read('common-variable');
-				if (VariableGetter.isNone!(variable)) {
-					return getFocus($('#setBoolean-common-variable'));
-				}
-				const index = read('list-index');
-				operand = { type, variable, index };
-				break;
-			}
-			case 'parameter': {
-				const key = read('parameter-key');
-				if (key === '') {
-					return getFocus($('#setBoolean-parameter-key'));
-				}
-				operand = { type, key };
-				break;
-			}
-			case 'script': {
-				const script = read('script').trim();
-				if (script === '') {
-					return getFocus($('#setBoolean-script'));
-				}
-				operand = { type, script };
-				break;
-			}
-		}
-		Command.save!({ variable, operation, operand });
 	}
 });

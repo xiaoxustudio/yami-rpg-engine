@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -50,8 +48,5 @@ Command.cases.clampCamera = new CommandSchema({
 			{ text: Local.get!('command.clampCamera') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#clampCamera-left'), 'all');
 	}
 });

@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -8,67 +6,18 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
-	onInitialize() {
-		$('#tintImage-mode')?.loadItems?.([
-			{ name: 'Full', value: 'full' },
-			{ name: 'RGB', value: 'rgb' },
-			{ name: 'Gray', value: 'gray' }
-		]);
-		$('#tintImage-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'full',
-					targets: [
-						$('#tintImage-tint-0'),
-						$('#tintImage-tint-1'),
-						$('#tintImage-tint-2'),
-						$('#tintImage-tint-3')
-					]
-				},
-				{
-					case: 'rgb',
-					targets: [
-						$('#tintImage-tint-0'),
-						$('#tintImage-tint-1'),
-						$('#tintImage-tint-2')
-					]
-				},
-				{ case: 'gray', targets: [$('#tintImage-tint-3')] }
-			]);
-		$('#tintImage-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#tintImage')?.on?.('open', () => {
-			$('#tintImage-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#tintImage')?.on?.('closed', () => {
-			clear($('#tintImage-easingId'));
-			clear($('#tintImage-filter'));
-		});
-	},
-	input() {
-		const tint = [0, 0, 0, 0];
-		const read = getElementReader('tintImage');
-		switch (read('mode')) {
-			case 'full':
-				tint[0] = read('tint-0');
-				tint[1] = read('tint-1');
-				tint[2] = read('tint-2');
-				tint[3] = read('tint-3');
-				break;
-			case 'rgb':
-				tint[0] = read('tint-0');
-				tint[1] = read('tint-1');
-				tint[2] = read('tint-2');
-				break;
-			case 'gray':
-				tint[3] = read('tint-3');
-				break;
-		}
-		write($('#tintImage-filter'), tint);
-	},
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'full' },
+		{ key: 'tint-0', default: 0 },
+		{ key: 'tint-1', default: 0 },
+		{ key: 'tint-2', default: 0 },
+		{ key: 'tint-3', default: 0 },
+		{ key: 'filter', default: [0, 0, 0, 0], domId: 'filter' },
+		{ key: 'easingId', default: () => Data.easings[0].id },
+		{ key: 'duration', default: 0 },
+		{ key: 'wait', default: false }
+	],
 	parseTint(mode: 'full' | 'rgb' | 'gray', [red, green, blue, gray]: [any, any, any, any]) {
 		const label = Local.get!('command.tintImage.' + mode);
 		const _red = Command.setNumberColor!(red);
@@ -128,59 +77,5 @@ Command.cases.tintImage = new CommandSchema({
 			{ text: Local.get!('command.tintImage') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		element = { type: 'trigger' },
-		mode = 'full',
-		tint = [0, 0, 0, 0],
-		easingId = Data.easings[0].id,
-		duration = 0,
-		wait = false
-	}: {
-		element: unknown;
-		mode: string;
-		tint: number[];
-		easingId: string;
-		duration: number;
-		wait: boolean;
-	}) {
-		const write = getElementWriter('tintImage');
-		write('element', element);
-		write('mode', mode);
-		write('tint-0', tint[0]);
-		write('tint-1', tint[1]);
-		write('tint-2', tint[2]);
-		write('tint-3', tint[3]);
-		write('filter', tint);
-		write('easingId', easingId);
-		write('duration', duration);
-		write('wait', wait);
-		getFocus($('#tintImage-element'));
-	},
-	customSave() {
-		const read = getElementReader('tintImage');
-		const element = read('element');
-		const mode = read('mode');
-		let red = read('tint-0');
-		let green = read('tint-1');
-		let blue = read('tint-2');
-		let gray = read('tint-3');
-		switch (mode) {
-			case 'full':
-				break;
-			case 'rgb':
-				gray = 0;
-				break;
-			case 'gray':
-				red = 0;
-				green = 0;
-				blue = 0;
-				break;
-		}
-		const easingId = read('easingId');
-		const duration = read('duration');
-		const wait = read('wait');
-		const tint = [red, green, blue, gray];
-		Command.save!({ element, mode, tint, easingId, duration, wait });
 	}
 });

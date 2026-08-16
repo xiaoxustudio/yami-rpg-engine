@@ -1,24 +1,10 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { IfBranch } from '@/command/conditional-branch-window.ts';
-import { IfCondition } from '@/command/conditional-condition-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.if = new CommandSchema({
 	name: 'if',
-	onInitialize() {
-		const confirmEl = $('#if-confirm');
-		if (!confirmEl) return;
-		confirmEl.on('click', () => this.save!());
-		$('#if-branches')?.bind(IfBranch);
-		$('#if-branch-conditions')?.bind(IfCondition);
-		$('#if')?.on('closed', () => {
-			this.elseCommands = null;
-			clear($('#if-branches'));
-		});
-	},
 	customParse({
 		branches,
 		elseCommands
@@ -55,35 +41,5 @@ Command.cases.if = new CommandSchema({
 		}
 		contents.push({ color: 'flow' }, { text: Local.get!('command.if.end') });
 		return contents;
-	},
-	customLoad({
-		branches = [],
-		elseCommands = null
-	}: {
-		branches: unknown[];
-		elseCommands: unknown;
-	}) {
-		const write = getElementWriter('if');
-		write('branches', branches.slice());
-		write('else', !!elseCommands);
-		this.elseCommands = elseCommands;
-		getFocus($('#if-branches'));
-	},
-	customSave() {
-		const read = getElementReader('if');
-		const branches = read('branches');
-		if (branches.length === 0) {
-			return getFocus($('#if-branches'));
-		}
-		switch (read('else')) {
-			case true: {
-				const elseCommands = this.elseCommands ?? [];
-				Command.save!({ branches, elseCommands });
-				break;
-			}
-			case false:
-				Command.save!({ branches });
-				break;
-		}
 	}
 });

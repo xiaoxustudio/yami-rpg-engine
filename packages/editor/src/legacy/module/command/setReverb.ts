@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -16,24 +14,6 @@ Command.cases.setReverb = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setReverb-type')?.loadItems?.([
-			{ name: 'BGM', value: 'bgm' },
-			{ name: 'BGS', value: 'bgs' },
-			{ name: 'CV', value: 'cv' },
-			{ name: 'SE', value: 'se' }
-		]);
-		$('#setReverb-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setReverb')?.on?.('open', function (event: Event) {
-			$('#setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setReverb')?.on?.('closed', function (event: Event) {
-			clear($('#setReverb-easingId'));
-		});
-	},
 	customParse({
 		type,
 		dry,
@@ -59,8 +39,5 @@ Command.cases.setReverb = new CommandSchema({
 			{ text: Local.get!('command.setReverb') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setReverb-type'));
 	}
 });

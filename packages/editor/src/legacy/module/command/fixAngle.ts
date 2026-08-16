@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -17,12 +15,6 @@ Command.cases.fixAngle = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'fixed', default: true }
 	],
-	onInitialize() {
-		$('#fixAngle-fixed')?.loadItems?.([
-			{ name: 'Fixed', value: true },
-			{ name: 'Unfixed', value: false }
-		]);
-	},
 	customParse({ actor, fixed }: FixAngleData) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
@@ -32,8 +24,5 @@ Command.cases.fixAngle = new CommandSchema({
 			{ text: Local.get!('command.fixAngle') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#fixAngle-actor'));
 	}
 });

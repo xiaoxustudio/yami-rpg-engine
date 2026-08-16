@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -17,12 +15,6 @@ Command.cases.setActive = new CommandSchema({
 		{ key: 'actor', default: { type: 'trigger' } },
 		{ key: 'active', default: false }
 	],
-	onInitialize() {
-		$('#setActive-active')?.loadItems?.([
-			{ name: 'Active', value: true },
-			{ name: 'Inactive', value: false }
-		]);
-	},
 	customParse({ actor, active }: SetActiveData) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
@@ -32,8 +24,5 @@ Command.cases.setActive = new CommandSchema({
 			{ text: Local.get!('command.setActive') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setActive-actor'));
 	}
 });

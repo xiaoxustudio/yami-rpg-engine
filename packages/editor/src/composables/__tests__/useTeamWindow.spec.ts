@@ -5,7 +5,7 @@ import Team from '@app/components/tools/Team.vue';
 import { useTeamWindow } from '@app/composables/useTeamWindow';
 import { getTeamStore } from '@app/stores/team';
 import { Window } from '@/tools/window-object.ts';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Data } from '@/data/data-object.ts';
 import { Menu } from '@/components/menu-list.ts';
@@ -15,7 +15,7 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@/webgl/webgl-init.ts', () => ({
+vi.mock('@app/engine/webgl/webgl-init.ts', () => ({
 	GL: {
 		arrays: [{ uint8: new Uint8Array(4096) }, { uint8: new Uint8Array(4096) }]
 	}
@@ -66,8 +66,8 @@ const makeTeamsData = () => ({
 		{ id: 't1', name: 'Team A', color: 'ff0000ff' },
 		{ id: 't2', name: 'Team B', color: '00ff00ff' }
 	],
-	relations: Codec.encodeTeamData(new Uint8Array([1, 0, 1])),
-	collisions: Codec.encodeTeamData(new Uint8Array([1, 1, 1])),
+	relations: Codec.encodeTeamData!(new Uint8Array([1, 0, 1])),
+	collisions: Codec.encodeTeamData!(new Uint8Array([1, 1, 1])),
 	map: {},
 	selection: ''
 });
@@ -133,7 +133,7 @@ describe('useTeamWindow（队伍窗口 composable：数据加载 + 列表编辑 
 		expect(Data.createTeamMap).toHaveBeenCalled();
 		expect(Window.close).toHaveBeenCalledWith('team');
 		expect(vi.mocked(Data).teams.list).toHaveLength(2);
-		const decoded = Codec.decodeTeamData(vi.mocked(Data).teams.relations, 2);
+		const decoded = Codec.decodeTeamData!(vi.mocked(Data).teams.relations, 2);
 		expect(Array.from(decoded)).toEqual([1, 1, 1]);
 		wrapper.unmount();
 	});

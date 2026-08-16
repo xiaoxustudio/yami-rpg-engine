@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,7 +5,14 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setTile = new CommandSchema({
 	name: 'setTile',
-	onInitialize() {},
+	fields: [
+		{ key: 'tilemap', default: { type: 'trigger' } },
+		{ key: 'tilemapX', default: 0 },
+		{ key: 'tilemapY', default: 0 },
+		{ key: 'tilesetId', default: '' },
+		{ key: 'tilesetX', default: 0 },
+		{ key: 'tilesetY', default: 0 }
+	],
 	customParse({
 		tilemap,
 		tilemapX,
@@ -35,37 +40,5 @@ Command.cases.setTile = new CommandSchema({
 			{ text: Local.get!('command.setTile') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		tilemap = { type: 'trigger' },
-		tilemapX = 0,
-		tilemapY = 0,
-		tilesetId = '',
-		tilesetX = 0,
-		tilesetY = 0
-	}) {
-		const write = getElementWriter('setTile');
-		write('tilemap', tilemap);
-		write('tilemapX', tilemapX);
-		write('tilemapY', tilemapY);
-		write('tilesetId', tilesetId);
-		write('tilesetX', tilesetX);
-		write('tilesetY', tilesetY);
-		getFocus($('#setTile-tilemap'));
-	},
-	customSave() {
-		const read = getElementReader('setTile');
-		const tilesetId = read('tilesetId');
-		if (tilesetId === '') {
-			return getFocus($('#setTile-tilesetId'));
-		}
-		Command.save!({
-			tilemap: read('tilemap'),
-			tilemapX: read('tilemapX'),
-			tilemapY: read('tilemapY'),
-			tilesetId,
-			tilesetX: read('tilesetX'),
-			tilesetY: read('tilesetY')
-		});
 	}
 });

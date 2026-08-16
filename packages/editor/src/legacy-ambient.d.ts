@@ -6,8 +6,6 @@ declare module '@/local/*';
 declare module '@/local/*.ts';
 declare module '@/codec/*';
 declare module '@/codec/*.ts';
-declare module '@/webgl/*';
-declare module '@/webgl/*.ts';
 declare module '@/layout/*';
 declare module '@/layout/*.ts';
 declare module '@/animation/*';

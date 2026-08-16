@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,40 +5,20 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.followActor = new CommandSchema({
 	name: 'followActor',
-	onInitialize() {
-		$('#followActor-mode')?.loadItems?.([
-			{ name: 'Circle', value: 'circle' },
-			{ name: 'Rectangle', value: 'rectangle' }
-		]);
-		$('#followActor-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'circle', targets: [$('#followActor-offset')] },
-				{ case: 'rectangle', targets: [$('#followActor-vertDist')] }
-			]);
-		$('#followActor-navigate')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#followActor-navigate')
-			?.enableHiddenMode?.()
-			?.relate?.([{ case: true, targets: [$('#followActor-bypass')] }]);
-		$('#followActor-bypass')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#followActor-once')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#followActor-once')
-			?.enableHiddenMode?.()
-			?.relate?.([{ case: true, targets: [$('#followActor-wait')] }]);
-		$('#followActor-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'target', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'circle' },
+		{ key: 'minDist', default: 1 },
+		{ key: 'maxDist', default: 2 },
+		{ key: 'offset', default: 0 },
+		{ key: 'vertDist', default: 0 },
+		{ key: 'bufferDist', default: 0 },
+		{ key: 'navigate', default: true },
+		{ key: 'bypass', default: false },
+		{ key: 'once', default: false },
+		{ key: 'wait', default: false }
+	],
 	parseActors(actor: unknown, target: unknown) {
 		const sActor = Command.parseActor!(actor);
 		const dActor = Command.parseActor!(target);
@@ -108,81 +86,5 @@ Command.cases.followActor = new CommandSchema({
 			{ text: Local.get!('command.followActor') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		target = { type: 'trigger' },
-		mode = 'circle',
-		minDist = 1,
-		maxDist = 2,
-		offset = 0,
-		vertDist = 0,
-		bufferDist = 0,
-		navigate = true,
-		bypass = false,
-		once = false,
-		wait = false
-	}) {
-		const write = getElementWriter('followActor');
-		write('actor', actor);
-		write('target', target);
-		write('mode', mode);
-		write('minDist', minDist);
-		write('maxDist', maxDist);
-		write('offset', offset);
-		write('vertDist', vertDist);
-		write('bufferDist', bufferDist);
-		write('navigate', navigate);
-		write('bypass', bypass);
-		write('once', once);
-		write('wait', wait);
-		getFocus($('#followActor-actor'));
-	},
-	customSave() {
-		const read = getElementReader('followActor');
-		const actor = read('actor');
-		const target = read('target');
-		const mode = read('mode');
-		const minDist = read('minDist');
-		const maxDist = read('maxDist');
-		const bufferDist = read('bufferDist');
-		const navigate = read('navigate');
-		const bypass = navigate ? { bypass: read('bypass') } : {};
-		const once = read('once');
-		const wait = once ? read('wait') : false;
-		switch (mode) {
-			case 'circle': {
-				Command.save!({
-					actor,
-					target,
-					mode,
-					minDist,
-					maxDist,
-					offset: read('offset'),
-					bufferDist,
-					navigate,
-					...bypass,
-					once,
-					wait
-				});
-				break;
-			}
-			case 'rectangle': {
-				Command.save!({
-					actor,
-					target,
-					mode,
-					minDist,
-					maxDist,
-					vertDist: read('vertDist'),
-					bufferDist,
-					navigate,
-					...bypass,
-					once,
-					wait
-				});
-				break;
-			}
-		}
 	}
 });

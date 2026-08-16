@@ -1,5 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@/util/dom.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -16,7 +15,6 @@ import { UI } from '@/ui/ui-window.ts';
 	interface UIReferenceShape {
 		target: UIReferenceData | null;
 		update: ((node: UIReferenceData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const UIReference: UIReferenceShape = {
@@ -26,8 +24,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UIReference.initialize = function (this: typeof UIReference) {
@@ -67,11 +64,8 @@ import { UI } from '@/ui/ui-window.ts';
 	UIReference.open = function (this: typeof UIReference, node: UIReferenceData) {
 		if (this.target !== node) {
 			this.target = node;
-
-			const write = getElementWriter('uiReference', node);
-			write('prefabId');
-			write('synchronous');
 			Inspector.uiElement.open(node);
+			($('#uiReference-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -113,20 +107,6 @@ import { UI } from '@/ui/ui-window.ts';
 				break;
 		}
 		UI.requestRendering!();
-	};
-
-	UIReference.paramInput = function (this: typeof UIReference, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^uiReference-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		UIReference.update!(
-			UIReference.target as UIReferenceData,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.uiReference = UIReference;

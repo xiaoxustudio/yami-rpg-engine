@@ -4,23 +4,38 @@
 	
 		<div class="grid-box">
 			<div class="text">Actor</div
-			><CustomBox id="changePassableTerrain-actor" type="actor" /><div class="text">Passable Terrain</div
-			><SelectBox id="changePassableTerrain-passage" /></div>
+			><CustomBox id="changePassableTerrain-actor" type="actor" @input="onActor" /><div class="text">Passable Terrain</div
+			><SelectBox id="changePassableTerrain-passage" v-model="form.passage" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useChangePassableTerrainCommandSchema();
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.changePassableTerrain?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#changePassableTerrain-passage')?.loadItems?.([
+		{ name: 'Land', value: 'land' },
+		{ name: 'Water', value: 'water' },
+		{ name: 'Unrestricted', value: 'unrestricted' }
+	]);
+});
 
 </script>

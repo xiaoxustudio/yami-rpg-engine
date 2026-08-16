@@ -1,24 +1,18 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { RequestkeyValueBind } from './requestURL.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.uploadFile = new CommandSchema({
 	name: 'uploadFile',
-	onInitialize() {
-		$('#uploadFile-method')?.loadItems?.([
-			{ name: 'POST', value: 'POST' },
-			{ name: 'PUT', value: 'PUT' }
-		]);
-		write($('#uploadFile-method'), 'POST');
-		write($('#uploadFile-url'), '');
-		write($('#uploadFile-path'), '');
-		$('#uploadFile-header')?.bind?.(RequestkeyValueBind);
-		write($('#uploadFile-field'), 'file');
-	},
+	fields: [
+		{ key: 'url', default: '' },
+		{ key: 'method', default: 'POST' },
+		{ key: 'path', default: '' },
+		{ key: 'field', default: 'file' },
+		{ key: 'header', default: [] },
+		{ key: 'callback', default: '' },
+		{ key: 'rateCallback', default: '' }
+	],
 	customParse({
 		url = '',
 		method = 'POST',
@@ -78,46 +72,5 @@ Command.cases.uploadFile = new CommandSchema({
 			{ text: ' , ' },
 			{ text: rateCallback }
 		);
-	},
-	customLoad({
-		url = '',
-		method = 'POST',
-		path = '',
-		field = 'file',
-		headers = [],
-		callback = '',
-		rateCallback = ''
-	}) {
-		write($('#uploadFile-method'), method);
-		write($('#uploadFile-callback'), callback);
-		write($('#uploadFile-rateCallback'), rateCallback);
-		write($('#uploadFile-url'), url);
-		write($('#uploadFile-path'), path);
-		write($('#uploadFile-field'), field);
-		getFocus($('#uploadFile-url'));
-		const writer = getElementWriter('uploadFile');
-		writer('header', headers);
-	},
-	customSave() {
-		const elVariable = $('#uploadFile-url');
-		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
-		}
-		const elPath = $('#uploadFile-path');
-		const path = read(elPath);
-		if (!path || VariableGetter.isNone!(path)) {
-			return getFocus(elPath);
-		}
-		const reader = getElementReader('uploadFile');
-		Command.save!({
-			url: variable,
-			method: reader('method'),
-			path: path,
-			field: reader('field'),
-			headers: reader('header'),
-			callback: reader('callback'),
-			rateCallback: reader('rateCallback')
-		});
 	}
 });

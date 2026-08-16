@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -14,8 +12,5 @@ Command.cases.unloadSubscene = new CommandSchema({
 			{ text: Local.get!('command.unloadSubscene') + Token(': ') },
 			{ text: Command.parseVariableFile(sceneId) }
 		];
-	},
-	onLoad() {
-		getFocus($('#unloadSubscene-sceneId'));
 	}
 });

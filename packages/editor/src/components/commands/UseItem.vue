@@ -3,12 +3,12 @@
 	<template #title><TitleBar>Use Item<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" />
-			<div class="text">Mode</div><SelectBox id="useItem-mode" /> <div class="text">Shortcut Key</div
-			><SelectBox id="useItem-key" /> <div class="text">Item</div
-			><CustomBox id="useItem-itemId" type="file" filter="item" />
-			<div class="text">Item</div><CustomBox id="useItem-item" type="item" />
-			<div class="text">Wait</div><SelectBox id="useItem-wait" name="wait" />
+			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" @input="onActor" />
+			<div class="text">Mode</div><SelectBox id="useItem-mode" v-model="form.mode" /> <div class="text">Shortcut Key</div
+			><SelectBox id="useItem-key" v-model="form.key" /> <div class="text">Item</div
+			><CustomBox id="useItem-itemId" type="file" filter="item" @input="onItemId" />
+			<div class="text">Item</div><CustomBox id="useItem-item" type="item" @input="onItem" />
+			<div class="text">Wait</div><SelectBox id="useItem-wait" name="wait" v-model="form.wait" />
 		</div>
 	
 </WindowFrame>
@@ -16,15 +16,49 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useUseItemCommandSchema } from '@app/composables/commands/useUseItemCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useUseItemCommandSchema();
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
+
+const onItemId = (value: unknown) => {
+	form.itemId = value;
+};
+
+const onItem = (value: unknown) => {
+	form.item = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.useItem?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#useItem-mode')?.loadItems?.([
+		{ name: 'By Shortcut Key', value: 'by-key' },
+		{ name: 'By Item ID', value: 'by-id' },
+		{ name: 'By Item Instance', value: 'by-item' }
+	]);
+	$('#useItem-mode')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'by-key', targets: [$('#useItem-key')] },
+			{ case: 'by-id', targets: [$('#useItem-itemId')] },
+			{ case: 'by-item', targets: [$('#useItem-item')] }
+		]);
+	$('#useItem-wait')?.loadItems?.([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
+});
 
 </script>

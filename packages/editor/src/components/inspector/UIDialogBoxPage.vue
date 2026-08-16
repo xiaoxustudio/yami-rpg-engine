@@ -5,11 +5,13 @@
 			<div class="text">{{ local.getLabel('uiDialogBox-content') || 'Content' }}</div
 			><TextArea
 				id="uiDialogBox-content"
+				:model-value="form.content"
 				menu="tag-localization" @input="onParamInput"
 			></TextArea>
 			<div class="text">{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</div
 			><NumberBox
 				id="uiDialogBox-interval"
+				v-model="form.interval"
 				min="0"
 				max="100"
 				decimals="4"
@@ -25,6 +27,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiDialogBox-size"
+					v-model="form.size"
 					min="10"
 					max="400"
 					step="1"
@@ -41,6 +44,7 @@
 				></SliderBox>
 				<NumberBox
 					id="uiDialogBox-lineSpacing"
+					v-model="form.lineSpacing"
 					min="-10"
 					max="100"
 					step="1"
@@ -57,20 +61,22 @@
 				></SliderBox>
 				<NumberBox
 					id="uiDialogBox-letterSpacing"
+					v-model="form.letterSpacing"
 					min="-10"
 					max="100"
 					step="1"
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface" @input="onParamInput"></SelectBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</div
-			><SelectBox id="uiDialogBox-effect-type" @input="onParamInput"></SelectBox>
+			><SelectBox id="uiDialogBox-effect-type" v-model="form.effect.type" @input="onParamInput"></SelectBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetX"
+				v-model="form.effect.shadowOffsetX"
 				min="-9"
 				max="9"
 				unit="px" @input="onParamInput"
@@ -78,6 +84,7 @@
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetY"
+				v-model="form.effect.shadowOffsetY"
 				min="-9"
 				max="9"
 				unit="px" @input="onParamInput"
@@ -85,21 +92,23 @@
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-strokeWidth"
+				v-model="form.effect.strokeWidth"
 				min="1"
 				max="20"
 				unit="px" @input="onParamInput"
 			></NumberBox>
 			<div class="text">{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiDialogBox-effect-color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
-			><SelectBox id="uiDialogBox-blend" @input="onParamInput"></SelectBox>
+			><ColorBox id="uiDialogBox-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
+			><SelectBox id="uiDialogBox-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
@@ -109,13 +118,15 @@ import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.uiElement?.paramInput?.({ target });
-};
-
 const local = useLocalStore();
 
+const { form, sync, onParamInput } = useUIDialogBoxPage();
+
 onMounted(() => {
+	const el = document.getElementById('uiDialogBox-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

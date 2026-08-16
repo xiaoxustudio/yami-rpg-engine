@@ -1,11 +1,5 @@
-﻿import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on } from '@/util/element-utils';
-import { getVariable } from '@/util/safe.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { EventEditor } from './event-editor.ts';
-import { TextSuggestion, TextSuggestionTarget } from './text-tip.ts';
-import { selectBoxSetItemNames } from '@/components/select-box.ts';
+﻿import { Window } from '@/tools/window-object.ts';
+import { useVariableGetterWindow } from '@app/composables/useVariableGetterWindow';
 
 interface VariableGetterTarget {
 	filter: string;
@@ -75,16 +69,7 @@ interface VariableGetterShape {
 }
 
 export const VariableGetter: VariableGetterShape = {
-	keyBox: $('#variableGetter-preset-key') as unknown as HTMLElement & {
-		loadItems: (items: VarTypeItem[]) => void;
-		selectBox: HTMLElement & {
-			textContent: string;
-			write: (v: unknown) => void;
-			read: () => unknown;
-			invalid: boolean;
-			dataItems: VarTypeItem[];
-		};
-	},
+	keyBox: null as unknown as VariableGetterShape['keyBox'],
 	target: null,
 	filter: null,
 	types: null,
@@ -105,115 +90,13 @@ export const VariableGetter: VariableGetterShape = {
 };
 
 VariableGetter.initialize = function (this: VariableGetterShape): void {
-	this.keyBox = $('#variableGetter-preset-key') as unknown as HTMLElement & {
-		loadItems: (items: VarTypeItem[]) => void;
-		selectBox: HTMLElement & {
-			textContent: string;
-			write: (v: unknown) => void;
-			read: () => unknown;
-			invalid: boolean;
-			dataItems: VarTypeItem[];
-		};
-	};
-	if (!this.keyBox) return;
-	const types = {
-		local: { name: 'Local', value: 'local' },
-		global: { name: 'Global', value: 'global' },
-		self: { name: 'Self Variable', value: 'self' },
-		actor: { name: 'Actor Attribute', value: 'actor' },
-		skill: { name: 'Skill Attribute', value: 'skill' },
-		state: { name: 'State Attribute', value: 'state' },
-		equipment: { name: 'Equipment Attribute', value: 'equipment' },
-		item: { name: 'Item Attribute', value: 'item' },
-		element: { name: 'Element Attribute', value: 'element' }
-	};
-	const allTypes = Object.values(types);
-	const writableTypes = allTypes.filter((item: VarTypeItem) => item.value !== 'item');
-	const deletableTypes = writableTypes.filter(
-		(item: VarTypeItem) => item.value !== 'global' && item.value !== 'self'
-	);
-	const objectTypes = [types.local, types.global, types.element];
-	const objectTypes2 = [types.local, types.global];
-	this.types = {
-		all: allTypes,
-		object: objectTypes,
-		object2: objectTypes2,
-		writable: writableTypes,
-		deletable: deletableTypes
-	};
-
-	const actor = $('#variableGetter-actor');
-	const skill = $('#variableGetter-skill');
-	const state = $('#variableGetter-state');
-	const equipment = $('#variableGetter-equipment');
-	const item = $('#variableGetter-item');
-	const element = $('#variableGetter-element');
-	const commonKey = $('#variableGetter-common-key');
-	const presetKey = $('#variableGetter-preset-key');
-	const globalKey = $('#variableGetter-global-key');
-	$('#variableGetter-type')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'local', targets: [commonKey] },
-			{ case: 'global', targets: [globalKey] },
-			{ case: 'actor', targets: [actor, presetKey] },
-			{ case: 'skill', targets: [skill, presetKey] },
-			{ case: 'state', targets: [state, presetKey] },
-			{ case: 'equipment', targets: [equipment, presetKey] },
-			{ case: 'item', targets: [item, presetKey] },
-			{ case: 'element', targets: [element, presetKey] }
-		]);
-
-	$('#variableGetter-type').setItemNames = function (
-		this: HTMLElement & { dataItems: VarTypeItem[] },
-		options: Record<string, string | { name?: string; tip?: string }>
-	) {
-		const backup = this.dataItems;
-		this.dataItems = allTypes;
-		selectBoxSetItemNames(this, options);
-		this.dataItems = backup;
-	};
-
-	// 变量访问器窗口2（递归叠加打开，复用同一套逻辑，仅支持 local/global/element）
-	$('#variableGetter2-type')
-		.enableHiddenMode()
-		.relate([
-			{ case: 'local', targets: [$('#variableGetter2-common-key')] },
-			{ case: 'global', targets: [$('#variableGetter2-global-key')] },
-			{
-				case: 'element',
-				targets: [$('#variableGetter2-element'), $('#variableGetter2-preset-key')]
-			}
-		]);
-	on($('#variableGetter2-confirm'), 'click', this.confirm2);
-	TextSuggestion.listen!(
-		$('#variableGetter-common-key') as unknown as TextSuggestionTarget,
-		VariableGetter.createVarListGenerator(this)
-	);
-
-	// 递归状态（按窗口名隔离，避免覆盖主窗口的 target/filter）
-	this._state = { variableGetter: null, variableGetter2: null };
-
-	on($('#variableGetter-type'), 'write', this.typeWrite);
-	on($('#variableGetter-type'), 'input', this.typeInput);
-	on($('#variableGetter-confirm'), 'click', this.confirm);
-	TextSuggestion.listen!(
-		$('#variableGetter-common-key') as unknown as TextSuggestionTarget,
-		VariableGetter.createVarListGenerator(this)
-	);
+	useVariableGetterWindow().initialize();
 };
 
 VariableGetter.open = function (this: VariableGetterShape, target: VariableGetterTarget): void {
-	if (!this.types || !this._state) {
-		this.initialize!();
-	}
 	const filter = target.filter ?? 'all';
-	// 若主窗口已打开，则叠加打开窗口2（避免递归冲突�?
-	if (Window.isWindowOpen!('variableGetter')) {
-		this._openCore!(target, filter, 'variableGetter2');
-	} else {
-		this._openCore!(target, filter, 'variableGetter');
-	}
+	const prefix = Window.isWindowOpen!('variableGetter') ? 'variableGetter2' : 'variableGetter';
+	useVariableGetterWindow().open(target, { filter, prefix });
 };
 
 VariableGetter._openCore = function (
@@ -222,156 +105,22 @@ VariableGetter._openCore = function (
 	filter: string,
 	prefix: string
 ): void {
-	// 递归状态按窗口名隔离（窗口2不污染主窗口的 target/filter）
-	this._state[prefix] = { target, filter };
-	const types = this.types!;
-	let items;
-	switch (filter) {
-		case 'all':
-		case 'boolean':
-		case 'number':
-		case 'string':
-			items = prefix === 'variableGetter2' ? types.object : types.all;
-			break;
-		case 'object':
-			items = !Window.isWindowOpen!('elementGetter') ? types.object : types.object2;
-			break;
-		case 'writable-boolean':
-		case 'writable-number':
-		case 'writable-string':
-			items = types.writable;
-			break;
-		case 'deletable':
-			items = types.deletable;
-			break;
-	}
-	$(`#${prefix}-type`).loadItems(items);
-	$(`#${prefix}-global-key`).filter = filter.startsWith('writable-') ? filter.slice(9) : filter;
-
-	const variable = target.read?.() ?? { type: '', key: '' };
-	const type = variable.type;
-	const key = variable.key;
-	const write = getElementWriter(prefix);
-	if (prefix === 'variableGetter2') {
-		let element = { type: 'trigger' };
-		let commonKey = '';
-		let globalKey = '';
-		let presetKey = Attribute.getDefAttributeId('element', filter);
-		switch (type) {
-			case 'local':
-				commonKey = key;
-				break;
-			case 'global':
-				globalKey = key;
-				break;
-			case 'element':
-				element = variable.element!;
-				presetKey = key;
-				break;
-		}
-		$(`#${prefix}-preset-key`).loadItems(Attribute.getAttributeItems('element', filter));
-		write('type', type);
-		write('element', element);
-		write('common-key', commonKey);
-		write('global-key', globalKey);
-		write('preset-key', presetKey);
-	} else {
-		this.filter = filter;
-		let commonKey = '';
-		let presetKey = '';
-		let globalKey = '';
-		let actor = { type: 'trigger' };
-		let skill = { type: 'trigger' };
-		let state = { type: 'trigger' };
-		let equipment = { type: 'trigger' };
-		let item = { type: 'trigger' };
-		let element = { type: 'trigger' };
-		switch (type) {
-			case 'local':
-				commonKey = key;
-				break;
-			case 'global':
-				globalKey = key;
-				break;
-			case 'actor':
-				this.loadPresetKeys(type);
-				actor = variable.actor!;
-				presetKey = key;
-				break;
-			case 'skill':
-				this.loadPresetKeys(type);
-				skill = variable.skill!;
-				presetKey = key;
-				break;
-			case 'state':
-				this.loadPresetKeys(type);
-				state = variable.state!;
-				presetKey = key;
-				break;
-			case 'equipment':
-				this.loadPresetKeys(type);
-				equipment = variable.equipment!;
-				presetKey = key;
-				break;
-			case 'item':
-				this.loadPresetKeys(type);
-				item = variable.item!;
-				presetKey = key;
-				break;
-			case 'element':
-				this.loadPresetKeys(type);
-				element = variable.element!;
-				presetKey = key;
-				break;
-		}
-		write('type', type);
-		write('actor', actor);
-		write('skill', skill);
-		write('state', state);
-		write('equipment', equipment);
-		write('item', item);
-		write('element', element);
-		write('common-key', commonKey);
-		write('preset-key', presetKey);
-		write('global-key', globalKey);
-		// 主窗口分支保持与原 open 一致，供 typeWrite/typeInput 使用
-		this.target = target;
-	}
-	getFocus($(`#${prefix}-type`));
-	Window.open!(prefix);
+	useVariableGetterWindow().open(target, { filter, prefix });
 };
 
 VariableGetter.isNone = function (this: typeof VariableGetter, variable: { key: string }): boolean {
-	return variable.key === '';
+	return useVariableGetterWindow().isNone(variable);
 };
 
 VariableGetter.loadPresetKeys = function (this: VariableGetterShape, group: string): void {
-	let type = undefined;
-	switch (this.filter) {
-		case 'boolean':
-		case 'number':
-		case 'string':
-		case 'object':
-			type = this.filter;
-			break;
-		case 'writable-boolean':
-		case 'writable-number':
-		case 'writable-string':
-			type = this.filter.split('-')[1];
-			break;
-	}
-	const items = Attribute.getAttributeItems(group, type);
-	this.keyBox.loadItems(items);
+	useVariableGetterWindow().loadPresetKeys(group);
 };
 
 VariableGetter.checkDataForPlugin = function (
 	this: typeof VariableGetter,
 	data: { getter?: string }
 ): boolean {
-	if (data instanceof Object) {
-		return (data as { getter?: string }).getter === 'variable';
-	}
-	return false;
+	return useVariableGetterWindow().checkDataForPlugin(data);
 };
 
 VariableGetter.createDefaultForPlugin = function (this: typeof VariableGetter): {
@@ -379,223 +128,43 @@ VariableGetter.createDefaultForPlugin = function (this: typeof VariableGetter): 
 	type: string;
 	key: string;
 } {
-	return { getter: 'variable', type: 'local', key: '' };
+	return useVariableGetterWindow().createDefaultForPlugin();
 };
 
 VariableGetter.createVarListGenerator = function (
 	this: typeof VariableGetter,
 	filterObject: VariableGetterShape
 ): () => VarListEntry[] {
-	return function (): VarListEntry[] {
-		if (!EventEditor.commandList.read()) return [];
-
-		const filter = (filterObject.filter as string).includes('boolean')
-			? 'boolean'
-			: (filterObject.filter as string).includes('number')
-				? 'number'
-				: (filterObject.filter as string).includes('string')
-					? 'string'
-					: (filterObject.filter as string).includes('object')
-						? 'object'
-						: 'any';
-
-		const list = EventEditor.commandList as unknown as {
-			elements: HTMLElement[] & { count?: number };
-			active: number | null | undefined;
-			varList?: VarListEntry[];
-		};
-		const elements = list.elements;
-		const count = elements.count ?? 0;
-		const parentMap = new Map();
-		const stack = [];
-		for (let i = 0; i < count; i++) {
-			const element = elements[i];
-			if (element.dataKey === true && element.dataItem) {
-				const indent = element.dataIndent ?? 0;
-				while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
-					stack.pop();
-				}
-				const parent = stack.length > 0 ? stack[stack.length - 1].command : null;
-				if (!parentMap.has(element.dataItem)) {
-					parentMap.set(element.dataItem, parent);
-				}
-				stack.push({ command: element.dataItem, indent });
-			}
-		}
-		const getNamespaceRoot = (
-			command: { id: string; params?: { namespace?: string; operation?: string } } | null
-		): { id: string; params?: { namespace?: string; operation?: string } } | null => {
-			let current = command;
-			while (current) {
-				if (
-					current.id === 'registerEvent' &&
-					current.params?.namespace &&
-					current.params?.operation === 'register'
-				) {
-					return current;
-				}
-				current = parentMap.get(current);
-			}
-			return null;
-		};
-		const activeIndex = list.active;
-		const activeElement =
-			activeIndex !== null && activeIndex !== undefined ? elements[activeIndex] : null;
-		const activeCommand = activeElement?.dataItem ?? activeElement?.dataParent ?? null;
-		const activeNamespace = activeCommand ? getNamespaceRoot(activeCommand) : null;
-
-		return (list.varList ?? []).filter(
-			(item: { type: string; command?: { id: string } | null }) => {
-				if (filter !== 'any' && item.type !== 'any' && filter !== item.type) {
-					return false;
-				}
-				const itemCommand = item.command;
-				const itemNamespace = itemCommand ? getNamespaceRoot(itemCommand) : null;
-				return itemNamespace === activeNamespace;
-			}
-		);
-	};
+	return useVariableGetterWindow().createVarListGenerator(filterObject);
 };
 
 VariableGetter.typeWrite = function (
 	this: typeof VariableGetter,
 	event: Event & { value: string }
 ): void {
-	const type = event.value;
-	switch (type) {
-		case 'actor':
-		case 'skill':
-		case 'state':
-		case 'item':
-		case 'equipment':
-		case 'element':
-			VariableGetter.loadPresetKeys(type);
-			break;
-	}
+	useVariableGetterWindow().typeWrite(event);
 };
 
 VariableGetter.typeInput = function (
 	this: typeof VariableGetter,
 	event: Event & { value: string }
 ): void {
-	const type = event.value;
-	switch (type) {
-		case 'actor':
-		case 'skill':
-		case 'state':
-		case 'item':
-		case 'equipment':
-		case 'element': {
-			const { selectBox } = VariableGetter.keyBox;
-			if (!selectBox) break;
-			const attrName = selectBox.textContent;
-			selectBox.write(selectBox.read());
-			if (selectBox.invalid) {
-				const items = selectBox.dataItems;
-				let defValue = items[0]?.value;
-				for (const item of items) {
-					if (item.name === attrName) {
-						defValue = item.value;
-						break;
-					}
-				}
-				if (defValue !== undefined) {
-					selectBox.write(defValue);
-				}
-			}
-			break;
-		}
-	}
+	useVariableGetterWindow().typeInput(event);
 };
 
 VariableGetter.confirm = function (this: VariableGetterShape, event: Event): void {
-	this._confirmCore!('variableGetter');
-}.bind(VariableGetter);
+	useVariableGetterWindow().confirm();
+};
 
 VariableGetter.confirm2 = function (this: VariableGetterShape, event: Event): void {
-	this._confirmCore!('variableGetter2');
-}.bind(VariableGetter);
+	useVariableGetterWindow().confirm2();
+};
 
-// 内部：按窗口前缀执行确认（统一校验逻辑，消除双实现行为漂移）
 VariableGetter._confirmCore = function (this: VariableGetterShape, prefix: string): void {
-	const state = this._state![prefix];
-	const target = state!.target;
-	const filter = state!.filter;
-	const read = getElementReader(prefix);
-	const type = read('type');
-	let getter;
-	let key;
-	switch (type) {
-		case 'local':
-			key = read('common-key').trim();
-			if (key === '') {
-				return getFocus($(`#${prefix}-common-key`));
-			}
-			getter = { type, key };
-			break;
-		case 'global': {
-			key = read('global-key');
-			const variable = getVariable(key);
-			// 仅对基础类型做类型校验（all/object/writable 不校验，避免错误拒绝）
-			const baseType =
-				filter === 'boolean' || filter === 'number' || filter === 'string' ? filter : null;
-			if (key === '' || (baseType && typeof variable?.value !== baseType)) {
-				return getFocus($(`#${prefix}-global-key`));
-			}
-			getter = { type, key };
-			break;
-		}
-		case 'element': {
-			const element = read('element');
-			key = read('preset-key');
-			if (key === '') {
-				return getFocus($(`#${prefix}-preset-key`));
-			}
-			getter = { type, element, key };
-			break;
-		}
-		case 'self':
-			getter = { type };
-			break;
-		case 'actor': {
-			const actor = read('actor');
-			key = read('preset-key');
-			if (key === '') return getFocus($(`#${prefix}-preset-key`));
-			getter = { type, actor, key };
-			break;
-		}
-		case 'skill': {
-			const skill = read('skill');
-			key = read('preset-key');
-			if (key === '') return getFocus($(`#${prefix}-preset-key`));
-			getter = { type, skill, key };
-			break;
-		}
-		case 'state': {
-			const stateVal = read('state');
-			key = read('preset-key');
-			if (key === '') return getFocus($(`#${prefix}-preset-key`));
-			getter = { type, state: stateVal, key };
-			break;
-		}
-		case 'equipment': {
-			const equipment = read('equipment');
-			key = read('preset-key');
-			if (key === '') return getFocus($(`#${prefix}-preset-key`));
-			getter = { type, equipment, key };
-			break;
-		}
-		case 'item': {
-			const item = read('item');
-			key = read('preset-key');
-			if (key === '') return getFocus($(`#${prefix}-preset-key`));
-			getter = { type, item, key };
-			break;
-		}
+	const composable = useVariableGetterWindow();
+	if (prefix === 'variableGetter2') {
+		composable.confirm2();
+	} else {
+		composable.confirm();
 	}
-	if (target.isPluginInput) {
-		getter = { getter: 'variable', ...getter };
-	}
-	target?.input?.(getter!);
-	Window.close!(prefix);
 };

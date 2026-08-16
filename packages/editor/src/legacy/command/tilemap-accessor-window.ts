@@ -1,7 +1,6 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, write } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+﻿import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils.ts';
+import { useTilemapGetterWindow } from '@app/composables/useTilemapGetterWindow';
 import { PresetObject } from '@/tools/scene-preset-window.ts';
 import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
 
@@ -43,52 +42,9 @@ TilemapGetter.initialize = function (this: typeof TilemapGetter) {
 
 TilemapGetter.open = function (this: typeof TilemapGetter, target: TilemapTarget) {
 	this.target = target;
-	Window.open!('tilemapGetter');
-
-	let presetId = PresetObject.getDefaultPresetId('tilemap');
-	let variable = { type: 'local', key: '' };
-	const tilemap = target.read?.()!;
-	switch (tilemap.type) {
-		case 'trigger':
-			break;
-		case 'by-id':
-			presetId = tilemap.presetId;
-			break;
-		case 'variable':
-			variable = tilemap.variable;
-			break;
-	}
-	write($('#tilemapGetter-type'), tilemap.type);
-	write($('#tilemapGetter-presetId'), presetId);
-	write($('#tilemapGetter-variable'), variable);
-	getFocus($('#tilemapGetter-type'));
+	useTilemapGetterWindow().open(target, { presetId: PresetObject.getDefaultPresetId('tilemap') });
 };
 
 TilemapGetter.confirm = function (this: typeof TilemapGetter, event: Event) {
-	const read = getElementReader('tilemapGetter');
-	const type = read('type');
-	let getter: Record<string, unknown> | undefined;
-	switch (type) {
-		case 'trigger':
-			getter = { type };
-			break;
-		case 'by-id': {
-			const presetId = read('presetId');
-			if (presetId === '') {
-				return getFocus($('#tilemapGetter-presetId'));
-			}
-			getter = { type, presetId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#tilemapGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	this.target?.input?.(getter!);
-	Window.close!('tilemapGetter');
-}.bind(TilemapGetter);
+	useTilemapGetterWindow().confirm();
+};

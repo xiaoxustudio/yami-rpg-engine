@@ -1,7 +1,7 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { dispatchChangeEvent, rect } from '@/util/element-utils.ts';
-import { Codec } from '@/codec/codec.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
 import { Scene } from './scene-window.ts';
 import { Local } from '@/tools/localization.ts';

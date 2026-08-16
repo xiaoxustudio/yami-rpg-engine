@@ -13,12 +13,18 @@
 </template>
 
 <script setup lang="ts">
-
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useScriptCommandSchema } from '@app/composables/commands/useScriptCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
+
+const { save, initialize } = useScriptCommandSchema();
+
 const onConfirm = () => {
-	Command?.cases?.script?.save?.();
+	save();
 };
 
+onMounted(() => {
+	initialize();
+});
 </script>

@@ -24,7 +24,7 @@ import { computed, ref } from 'vue';
 import { YMFileBodyPane } from '@ui-kit';
 import { Data } from '@/data/data-object.ts';
 import { Window } from '@/tools/window-object.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { Directory } from '@/file/directory-object.ts';

@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,22 +5,12 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
-	onInitialize() {
-		$('#setMovementSpeed-property')?.loadItems?.([
-			{ name: 'Base Speed', value: 'base' },
-			{ name: 'Speed Factor', value: 'factor' },
-			{ name: 'Speed Factor (Temp)', value: 'factor-temp' }
-		]);
-		$('#setMovementSpeed-property')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'base', targets: [$('#setMovementSpeed-base')] },
-				{
-					case: ['factor', 'factor-temp'],
-					targets: [$('#setMovementSpeed-factor')]
-				}
-			]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'property', default: 'base' },
+		{ key: 'base', default: 0 },
+		{ key: 'factor', default: 0 }
+	],
 	customParse({
 		actor,
 		property,
@@ -52,29 +40,5 @@ Command.cases.setMovementSpeed = new CommandSchema({
 			{ text: Local.get!('command.setMovementSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ actor = { type: 'trigger' }, property = 'base', base = 0, factor = 0 }) {
-		const write = getElementWriter('setMovementSpeed');
-		write('actor', actor);
-		write('property', property);
-		write('base', base);
-		write('factor', factor);
-		getFocus($('#setMovementSpeed-actor'));
-	},
-	customSave() {
-		const read = getElementReader('setMovementSpeed');
-		const actor = read('actor');
-		const property = read('property');
-		switch (property) {
-			case 'base': {
-				Command.save!({ actor, property, base: read('base') });
-				break;
-			}
-			case 'factor':
-			case 'factor-temp': {
-				Command.save!({ actor, property, factor: read('factor') });
-				break;
-			}
-		}
 	}
 });

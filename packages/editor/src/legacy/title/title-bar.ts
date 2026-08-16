@@ -14,7 +14,7 @@ import { Data } from '@/data/data-object.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { getTitleStore } from '@app/stores/title';

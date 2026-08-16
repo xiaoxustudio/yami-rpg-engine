@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,22 +5,10 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setPointerEventRoot = new CommandSchema({
 	name: 'setPointerEventRoot',
-	onInitialize() {
-		$('#setPointerEventRoot-operation')?.loadItems?.([
-			{ name: 'Add Root Element', value: 'add' },
-			{ name: 'Remove Root Element', value: 'remove' },
-			{ name: 'Remove The Latest Root Element', value: 'remove-latest' },
-			{ name: 'Reset', value: 'reset' }
-		]);
-		$('#setPointerEventRoot-operation')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: ['add', 'remove'],
-					targets: [$('#setPointerEventRoot-element')]
-				}
-			]);
-	},
+	fields: [
+		{ key: 'operation', default: 'add' },
+		{ key: 'element', default: { type: 'trigger' } }
+	],
 	customParse({ operation, element }: { operation: string; element: unknown }) {
 		if (operation === 'set') {
 			operation = 'add';
@@ -39,28 +25,5 @@ Command.cases.setPointerEventRoot = new CommandSchema({
 			{ text: Local.get!('command.setPointerEventRoot') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ operation = 'add', element = { type: 'trigger' } }) {
-		if (operation === 'set') {
-			operation = 'add';
-		}
-		write($('#setPointerEventRoot-operation'), operation);
-		write($('#setPointerEventRoot-element'), element);
-		getFocus($('#setPointerEventRoot-operation'));
-	},
-	customSave() {
-		const operation = read($('#setPointerEventRoot-operation'));
-		switch (operation) {
-			case 'add':
-			case 'remove': {
-				const element = read($('#setPointerEventRoot-element'));
-				Command.save!({ operation, element });
-				break;
-			}
-			case 'remove-latest':
-			case 'reset':
-				Command.save!({ operation });
-				break;
-		}
 	}
 });

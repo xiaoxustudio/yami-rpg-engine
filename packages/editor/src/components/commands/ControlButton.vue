@@ -3,8 +3,8 @@
 		<template #title><TitleBar>Control Button<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="controlButton-operation" />
-				<div class="text">Element</div><CustomBox id="controlButton-element" type="element" />
+				<div class="text">Operation</div><SelectBox id="controlButton-operation" v-model="form.operation" />
+				<div class="text">Element</div><CustomBox id="controlButton-element" type="element" @input="onElement" />
 			</div>
 		
 	</WindowFrame>
@@ -12,15 +12,40 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useControlButtonCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.controlButton?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#controlButton-operation')?.loadItems?.([
+		{ name: 'Select Default Button', value: 'select-default' },
+		{ name: 'Select Button', value: 'select' },
+		{ name: 'Display Hover Mode', value: 'hover-mode' },
+		{ name: 'Display Active Mode', value: 'active-mode' },
+		{ name: 'Restore Display Mode', value: 'normal-mode' }
+	]);
+	$('#controlButton-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['select', 'hover-mode', 'active-mode', 'normal-mode'],
+				targets: [$('#controlButton-element')]
+			}
+		]);
+});
 
 </script>

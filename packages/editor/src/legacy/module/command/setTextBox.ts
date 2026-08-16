@@ -1,5 +1,3 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { TextBoxProperty } from '@/command/set-textbox-property-window.ts';
@@ -12,12 +10,6 @@ Command.cases.setTextBox = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'properties', default: [] }
 	],
-	onInitialize() {
-		$('#setTextBox-properties')?.bind?.(TextBoxProperty);
-		$('#setTextBox')?.on?.('closed', (event: Event) => {
-			clear($('#setTextBox-properties'));
-		});
-	},
 	customParse({
 		element,
 		properties
@@ -34,17 +26,5 @@ Command.cases.setTextBox = new CommandSchema({
 			{ text: Local.get!('command.setTextBox') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setTextBox-element'));
-	},
-	customSave() {
-		const read = getElementReader('setTextBox');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setTextBox-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

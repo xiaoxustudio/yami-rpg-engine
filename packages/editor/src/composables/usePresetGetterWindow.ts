@@ -1,0 +1,152 @@
+import { reactive } from 'vue';
+import { Window } from '@/tools/window-object.ts';
+import { getFocus } from '@/util/element-utils';
+import { PresetObject } from '@/tools/scene-preset-window.ts';
+
+export interface PresetGetterForm {
+	type: string;
+	presetId: string;
+	variable: { type: string; key: string };
+}
+
+interface PresetGetterTarget {
+	dataValue?: any;
+	read?: () => any;
+	input: (getter: Record<string, unknown>) => void;
+	isPluginInput?: boolean;
+}
+
+interface PresetGetterWindow {
+	form: PresetGetterForm;
+	initialize: () => void;
+	open: (target: PresetGetterTarget) => void;
+	confirm: () => void;
+	onWindowClosed: () => void;
+}
+
+type PresetGetterFrame = HTMLElement & {
+	setForm?: (data: Partial<PresetGetterForm>) => void;
+	getForm?: () => PresetGetterForm;
+};
+
+interface PresetAccessorConfig {
+	domKey: string;
+	presetCategory: string;
+	items: { name: string; value: string }[];
+}
+
+function createPresetGetterWindow(config: PresetAccessorConfig): PresetGetterWindow {
+	const { domKey, presetCategory, items } = config;
+	const form = reactive<PresetGetterForm>({
+		type: 'trigger',
+		presetId: '',
+		variable: { type: 'local', key: '' }
+	});
+	let callback: ((getter: Record<string, unknown>) => void) | null = null;
+
+	const getFrame = (): PresetGetterFrame | null =>
+		document.getElementById(domKey) as PresetGetterFrame | null;
+
+	const initialize = (): void => {
+		const typeEl = document.getElementById(`${domKey}-type`);
+		if (!typeEl) return;
+		typeEl.loadItems(items);
+		typeEl.enableHiddenMode().relate([
+			{ case: 'by-id', targets: [document.getElementById(`${domKey}-presetId`)] },
+			{ case: 'variable', targets: [document.getElementById(`${domKey}-variable`)] }
+		]);
+	};
+
+	const open = (target: PresetGetterTarget): void => {
+		callback = (getter: Record<string, unknown>) => target.input(getter);
+		Window.open!(domKey);
+
+		let presetId = PresetObject.getDefaultPresetId(presetCategory);
+		let variable = { type: 'local', key: '' };
+		const data = target.read?.();
+		switch (data.type) {
+			case 'trigger':
+			case 'latest':
+				break;
+			case 'by-id':
+				presetId = data.presetId;
+				break;
+			case 'variable':
+				variable = data.variable;
+				break;
+		}
+		Object.assign(form, { type: data.type, presetId, variable });
+		getFrame()?.setForm?.(form);
+		getFocus(document.getElementById(`${domKey}-type`));
+	};
+
+	const confirm = (): void => {
+		const data = getFrame()?.getForm?.() ?? form;
+		let getter: Record<string, unknown> | undefined;
+		switch (data.type) {
+			case 'trigger':
+			case 'latest':
+				getter = { type: data.type };
+				break;
+			case 'by-id': {
+				if (data.presetId === '') {
+					getFocus(document.getElementById(`${domKey}-presetId`));
+					return;
+				}
+				getter = { type: data.type, presetId: data.presetId };
+				break;
+			}
+			case 'variable': {
+				if ((data.variable as { key: string }).key === '') {
+					getFocus(document.getElementById(`${domKey}-variable`));
+					return;
+				}
+				getter = { type: data.type, variable: data.variable };
+				break;
+			}
+		}
+		callback?.(getter!);
+		Window.close!(domKey);
+	};
+
+	const onWindowClosed = (): void => {
+		callback = null;
+	};
+
+	return { form, initialize, open, confirm, onWindowClosed };
+}
+
+let lightWindow: PresetGetterWindow | null = null;
+let objectWindow: PresetGetterWindow | null = null;
+
+export function useLightGetterWindow(): PresetGetterWindow {
+	if (!lightWindow) {
+		lightWindow = createPresetGetterWindow({
+			domKey: 'lightGetter',
+			presetCategory: 'light',
+			items: [
+				{ name: 'Event Trigger Light', value: 'trigger' },
+				{ name: 'Latest Light', value: 'latest' },
+				{ name: 'By Light ID', value: 'by-id' },
+				{ name: 'Variable', value: 'variable' }
+			]
+		});
+	}
+	return lightWindow;
+}
+
+export function useObjectGetterWindow(): PresetGetterWindow {
+	if (!objectWindow) {
+		objectWindow = createPresetGetterWindow({
+			domKey: 'objectGetter',
+			presetCategory: 'any',
+			items: [
+				{ name: 'Event Trigger Object', value: 'trigger' },
+				{ name: 'Latest Scene Object', value: 'latest' },
+				{ name: 'By Object ID', value: 'by-id' },
+				{ name: 'Variable', value: 'variable' }
+			]
+		});
+	}
+	return objectWindow;
+}

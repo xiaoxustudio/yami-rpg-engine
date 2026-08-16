@@ -4,22 +4,40 @@
 	
 		<div class="grid-box">
 			<div class="text">Actor</div
-			><CustomBox id="createGlobalActor-actorId" type="file" filter="actor" /><div class="text">Team</div><SelectBox id="createGlobalActor-teamId" /></div>
+			><CustomBox id="createGlobalActor-actorId" type="file" filter="actor" @input="onActorId" /><div class="text">Team</div><SelectBox id="createGlobalActor-teamId" v-model="form.teamId" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useCreateGlobalActorCommandSchema();
+
+const onActorId = (value: unknown) => {
+	form.actorId = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.createGlobalActor?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#createGlobalActor')?.on?.('open', () => {
+		$('#createGlobalActor-teamId')?.loadItems?.(Data.createTeamItems!());
+	});
+	$('#createGlobalActor')?.on?.('closed', () => {
+		clear($('#createGlobalActor-teamId'));
+	});
+});
 
 </script>

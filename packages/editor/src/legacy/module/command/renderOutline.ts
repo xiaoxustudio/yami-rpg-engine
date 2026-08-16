@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -17,22 +15,11 @@ type RenderOutlineData = {
 
 Command.cases.renderOutline = new CommandSchema({
 	name: 'renderOutline',
-	onInitialize() {
-		$('#renderOutline-operation')?.loadItems?.([
-			{ name: 'Add', value: 'add' },
-			{ name: 'Remove', value: 'remove' },
-			{ name: 'Reset', value: 'reset' }
-		]);
-		$('#renderOutline-operation')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'add',
-					targets: [$('#renderOutline-actor'), $('#renderOutline-color')]
-				},
-				{ case: 'remove', targets: [$('#renderOutline-actor')] }
-			]);
-	},
+	fields: [
+		{ key: 'operation', default: 'add' },
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'color', default: 'ffffffff' }
+	],
 	customParse({ operation, actor, color }: RenderOutlineData) {
 		const label = Local.get!('command.renderOutline.' + operation);
 		const words = Command.words;
@@ -55,34 +42,5 @@ Command.cases.renderOutline = new CommandSchema({
 			{ text: Local.get!('command.renderOutline') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ operation = 'add', actor = { type: 'trigger' }, color = 'ffffffff' }) {
-		write($('#renderOutline-operation'), operation);
-		write($('#renderOutline-actor'), actor);
-		write($('#renderOutline-color'), color);
-		getFocus($('#renderOutline-operation'));
-	},
-	customSave() {
-		const operation = read($('#renderOutline-operation'));
-		switch (operation) {
-			case 'add': {
-				Command.save!({
-					operation,
-					actor: read($('#renderOutline-actor')),
-					color: read($('#renderOutline-color'))
-				});
-				break;
-			}
-			case 'remove': {
-				Command.save!({
-					operation,
-					actor: read($('#renderOutline-actor'))
-				});
-				break;
-			}
-			case 'reset':
-				Command.save!({ operation });
-				break;
-		}
 	}
 });

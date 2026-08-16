@@ -4,14 +4,14 @@
 		
 			<div class="grid-box" id="tintScreen-grid-box">
 				<div class="text">Tint - Red</div
-				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" @input="onInput" />
+				><NumberBox id="tintScreen-tint-0" min="-255" max="255" step="5" v-model="form['tint-0']" />
 				<div class="text">Tint - Green</div
-				><NumberBox id="tintScreen-tint-1" min="-255" max="255" step="5" @input="onInput" />
+				><NumberBox id="tintScreen-tint-1" min="-255" max="255" step="5" v-model="form['tint-1']" />
 				<div class="text">Tint - Blue</div
-				><NumberBox id="tintScreen-tint-2" min="-255" max="255" step="5" @input="onInput" />
+				><NumberBox id="tintScreen-tint-2" min="-255" max="255" step="5" v-model="form['tint-2']" />
 				<div class="text">Tint - Grayscale</div
-				><NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" @input="onInput" />
-				<div class="text">Easing</div><SelectBox id="tintScreen-easingId" name="easing" />
+				><NumberBox id="tintScreen-tint-3" min="0" max="255" step="5" v-model="form['tint-3']" />
+				<div class="text">Easing</div><SelectBox id="tintScreen-easingId" name="easing" v-model="form.easingId" />
 				<div class="text">Duration</div
 				><NumberBox
 					id="tintScreen-duration"
@@ -19,8 +19,9 @@
 					min="0"
 					max="3600000"
 					unit="ms"
+					v-model="form.duration"
 				 />
-				<div class="text">Wait</div><SelectBox id="tintScreen-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="tintScreen-wait" name="wait" v-model="form.wait" />
 			</div>
 			<FilterBox id="tintScreen-filter" width="96" height="160" />
 		
@@ -30,19 +31,47 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted, watch } from 'vue';
+import { useTintScreenCommandSchema } from '@app/composables/commands/useTintScreenCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear, write } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FilterBox from '@app/components/common/FilterBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useTintScreenCommandSchema();
 
-const onInput = () => {
-	Command?.cases?.tintScreen?.input?.();
-};
 const onConfirm = () => {
-	Command?.cases?.tintScreen?.save?.();
+	save();
 };
+
+watch(
+	[
+		() => form['tint-0'],
+		() => form['tint-1'],
+		() => form['tint-2'],
+		() => form['tint-3']
+	],
+	([red, green, blue, gray]) => {
+		write($('#tintScreen-filter'), [red, green, blue, gray]);
+	}
+);
+
+onMounted(() => {
+	$('#tintScreen-wait')?.loadItems?.([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
+	$('#tintScreen')?.on?.('open', () => {
+		$('#tintScreen-easingId')?.loadItems?.(Data.createEasingItems!());
+	});
+	$('#tintScreen')?.on?.('closed', () => {
+		clear($('#tintScreen-easingId'));
+		clear($('#tintScreen-filter'));
+	});
+});
 
 </script>

@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -11,17 +9,6 @@ Command.cases.setLoop = new CommandSchema({
 		{ key: 'type', default: 'bgm' },
 		{ key: 'loop', default: false }
 	],
-	onInitialize() {
-		$('#setLoop-type')?.loadItems?.([
-			{ name: 'BGM', value: 'bgm' },
-			{ name: 'BGS', value: 'bgs' },
-			{ name: 'CV', value: 'cv' }
-		]);
-		$('#setLoop-loop')?.loadItems?.([
-			{ name: 'Once', value: false },
-			{ name: 'Loop', value: true }
-		]);
-	},
 	parseLoop(loop: boolean) {
 		switch (loop) {
 			case false:
@@ -37,8 +24,5 @@ Command.cases.setLoop = new CommandSchema({
 			{ text: Local.get!('command.setLoop') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setLoop-type'));
 	}
 });

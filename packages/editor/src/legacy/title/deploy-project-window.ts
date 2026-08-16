@@ -2,7 +2,7 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { disable, enable, getFocus, read, write } from '@/util/element-utils';
 import { Timer } from '@/util/timer.ts';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FS, FSP } from '@/file/file-system.ts';

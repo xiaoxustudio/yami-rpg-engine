@@ -1,5 +1,4 @@
-import { $, measureText } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { measureText } from '@/util/dom.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { GameLocal } from '@/local/local-object.ts';
@@ -22,9 +21,13 @@ type ShowTextCharMetrics = {
 
 Command.cases.showText = new CommandSchema({
 	name: 'showText',
+	fields: [
+		{ key: 'target', default: { type: 'trigger' } },
+		{ key: 'parameters', default: '' },
+		{ key: 'content', default: '' }
+	],
 	latinCharWidth: 0,
 	otherCharWidth: 0,
-	onInitialize() {},
 	customParse({ target, parameters, content }: ShowTextCommandData) {
 		const alias = Local.get!('command.showText.alias');
 		const words = Command.words
@@ -42,25 +45,6 @@ Command.cases.showText = new CommandSchema({
 		content = Command.parseVariableTag!(content);
 		this.appendTextLines!(contents, alias, content);
 		return contents;
-	},
-	customLoad({ target = { type: 'trigger' }, parameters = '', content = '' }) {
-		write($('#showText-target'), target);
-		write($('#showText-parameters'), parameters);
-		write($('#showText-content'), content);
-		if (content === '') {
-			getFocus($('#showText-target'));
-		} else {
-			getFocus($('#showText-content'));
-		}
-	},
-	customSave() {
-		const target = read($('#showText-target'));
-		const parameters = read($('#showText-parameters'));
-		const content = read($('#showText-content'));
-		if (content === '') {
-			return getFocus($('#showText-content'));
-		}
-		Command.save!({ target, parameters, content });
 	},
 	updateCharWidth() {
 		if (this.latinCharWidth === 0) {

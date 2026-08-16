@@ -3,8 +3,8 @@
 		<template #title><TitleBar>Delete Element<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="deleteElement-operation" />
-				<div class="text">Element</div><CustomBox id="deleteElement-element" type="element" />
+				<div class="text">Operation</div><SelectBox id="deleteElement-operation" v-model="form.operation" />
+				<div class="text">Element</div><CustomBox id="deleteElement-element" type="element" @input="onElement" />
 			</div>
 		
 	</WindowFrame>
@@ -12,15 +12,38 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useDeleteElementCommandSchema } from '@app/composables/commands/useDeleteElementCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useDeleteElementCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.deleteElement?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#deleteElement-operation')?.loadItems?.([
+		{ name: 'Delete Element', value: 'delete-element' },
+		{ name: 'Delete Children', value: 'delete-children' },
+		{ name: 'Delete All', value: 'delete-all' }
+	]);
+	$('#deleteElement-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['delete-element', 'delete-children'],
+				targets: [$('#deleteElement-element')]
+			}
+		]);
+});
 
 </script>

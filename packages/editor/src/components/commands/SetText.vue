@@ -3,7 +3,7 @@
 		<template #title><TitleBar>Set Text<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setText-element" type="element" />
+				<div class="text">Element</div><CustomBox id="setText-element" type="element" @input="onElement" />
 				<div class="text">Properties</div><ParamList id="setText-properties" />
 			</div>
 		
@@ -12,15 +12,31 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetTextCommandSchema } from '@app/composables/commands/useSetTextCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { TextProperty } from '@/command/set-text-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
+const { form, save } = useSetTextCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.setText?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setText-properties')?.bind?.(TextProperty);
+	$('#setText')?.on?.('closed', () => {
+		clear($('#setText-properties'));
+	});
+});
 
 </script>

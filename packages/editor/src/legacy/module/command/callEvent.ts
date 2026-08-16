@@ -1,322 +1,42 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { addClass, getFocus, hide, read, setTooltip, show, write } from '@/util/element-utils.ts';
-import { createTextAreaVar } from '@/components/textarea-var.ts';
 import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { createCustomBox } from '@/components/custom-box.ts';
-import { createNumberVar } from '@/components/number-var.ts';
-import { createSelectBox } from '@/components/select-box.ts';
 import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
-import { Selection } from '@/tools/text-capture.ts';
-import { h, render } from 'vue';
 
-interface CallEventArg {
+export interface CallEventArg {
 	type: string;
 	key: string;
 	value?: unknown;
 	note?: string;
 }
 
-interface CallEventObject {
-	type: string;
-	[k: string]: unknown;
-}
-
-interface CallEventParams {
-	type: string;
-	actor?: CallEventObject;
-	skill?: CallEventObject;
-	state?: CallEventObject;
-	equipment?: CallEventObject;
-	item?: CallEventObject;
-	light?: CallEventObject;
-	element?: CallEventObject;
-	eventId?: string;
-	eventArgs?: CallEventArg[];
-	eventResult?: CallEventResultData;
-	eventType?: string;
-}
-
-interface CallEventMeta {
+export interface CallEventMeta {
 	parameters: CallEventArg[];
 	[k: string]: unknown;
 }
 
-interface CallEventResultData {
+export interface CallEventResultData {
 	type: string;
 	variable?: { type: string; key: string };
 }
 
-interface CallEventInputApi {
-	loadItems?(items: unknown[]): void;
-	numBox?: { input?: HTMLInputElement; decimals?: number };
-	strBox?: HTMLElement | null;
-	type?: string | null;
-	filter?: string | null;
-	on?(type: string, listener: (event: Event) => void): void;
-}
-
 Command.cases.callEvent = new CommandSchema({
 	name: 'callEvent',
-	windowFrame: null,
-	gridBox: null,
-	eventArgs: [],
-	parameters: [],
-	eventResult: null,
-	onInitialize() {
-		this.windowFrame = $('#callEvent');
-		this.gridBox = $('#callEvent')?.querySelector?.('.grid-box');
-
-		$('#callEvent-type')?.loadItems?.([
-			{ name: 'Global', value: 'global' },
-			{ name: 'Inherited', value: 'inherited' },
-			{ name: 'Scene', value: 'scene' },
-			{ name: 'Actor', value: 'actor' },
-			{ name: 'Skill', value: 'skill' },
-			{ name: 'State', value: 'state' },
-			{ name: 'Equipment', value: 'equipment' },
-			{ name: 'Item', value: 'item' },
-			{ name: 'Light', value: 'light' },
-			{ name: 'Element', value: 'element' }
-		]);
-
-		$('#callEvent-type')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'global', targets: [$('#callEvent-eventId')] },
-				{ case: 'scene', targets: [$('#callEvent-eventType')] },
-				{
-					case: 'actor',
-					targets: [$('#callEvent-actor'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'skill',
-					targets: [$('#callEvent-skill'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'state',
-					targets: [$('#callEvent-state'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'equipment',
-					targets: [$('#callEvent-equipment'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'item',
-					targets: [$('#callEvent-item'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'light',
-					targets: [$('#callEvent-light'), $('#callEvent-eventType')]
-				},
-				{
-					case: 'element',
-					targets: [$('#callEvent-element'), $('#callEvent-eventType')]
-				}
-			]);
-
-		this.windowFrame.on('closed', () => {
-			this.eventArgs = [];
-			this.clearGlobalEventElements!();
-		});
-	},
-	typeWrite(event: Event & { value: string }) {
-		const type = event.value;
-		if (type !== 'inherited') {
-			const elEventType = $('#callEvent-eventType');
-			const eventTypes = Enum.getMergedItems!(
-				EventEditor.types?.[type] ?? EventEditor.types?.all,
-				type + '-event'
-			);
-			elEventType.loadItems(eventTypes);
-			elEventType.createTooltip();
-			write(elEventType, eventTypes[0].value);
-		}
-		for (const element of $('.call-event-component')) {
-			type === 'global' ? show(element) : hide(element);
-		}
-		this.resizeWindow!();
-	},
-	eventIdWrite(event: Event & { value: string }) {
-		this.eventArgs = this.readEventArgs!();
-		this.clearGlobalEventElements!();
-		const id = event.value;
-		if (id) {
-			const flags = {} as Record<string, boolean>;
-			const globalEvent = Data.events[id];
-			for (const parameter of globalEvent.parameters) {
-				if (parameter.key in flags) {
-					continue;
-				}
-				flags[parameter.key] = true;
-				this.createParameterElements!(parameter);
-			}
-			this.createEventResultElements!(globalEvent.returnType);
-		}
-		this.resizeWindow!();
-	},
-	eventIdInput(event: Event & { value: string }) {
-		if (this.eventArgs) {
-			this.writeEventArgs!(this.eventArgs);
-		}
-	},
-	resizeWindow() {
-		const frame = this.windowFrame;
-		const gridBox = this.gridBox;
-		if (frame && gridBox) {
-			frame.style.height = `${gridBox.clientHeight + 78}px`;
-		}
-	},
-	clearGlobalEventElements() {
-		const { parameters } = this;
-		if (parameters.length !== 0) {
-			for (const { label, input } of parameters) {
-				label.remove();
-				input.remove();
-			}
-			parameters.length = 0;
-		}
-		const { eventResult } = this;
-		if (eventResult) {
-			eventResult.label.remove();
-			eventResult.input!.remove();
-			this.eventResult = null;
-		}
-	},
-	createParameterElements(parameter: CallEventArg) {
-		const { type, key, note } = parameter;
-		const name = key ? key.charAt(0).toUpperCase() + key.slice(1) : '';
-		const label = document.createElement('div');
-		render(h('div', { class: 'text call-event-component' }, name), label);
-		const labelEl = label.firstElementChild as HTMLElement;
-		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
-			CallEventInputApi;
-		switch (type) {
-			case 'boolean':
-				input = createSelectBox() as unknown as HTMLElement & CallEventInputApi;
-				input.loadItems([
-					{ name: 'False', value: false },
-					{ name: 'True', value: true }
-				]);
-				break;
-			case 'number':
-				input = createNumberVar();
-				input.numBox!.input!.min = '-1000000000';
-				input.numBox!.input!.max = '1000000000';
-				input.numBox!.decimals = 10;
-				break;
-			case 'string':
-				input = createTextAreaVar();
-				input.strBox!.setAttribute(
-					'menu',
-					'tag-local-var tag-global-var tag-dynamic-global-var tag-localization'
-				);
-				addClass(input, 'callEvent-argument-string');
-				input.on('change', () => this.resizeWindow!());
-				Selection.addEventListeners!(input.strBox!);
-				break;
-			case 'object':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'object';
-				break;
-			case 'actor':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'actor';
-				break;
-			case 'skill':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'skill';
-				break;
-			case 'state':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'state';
-				break;
-			case 'equipment':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'equipment';
-				break;
-			case 'item':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'item';
-				break;
-			case 'trigger':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'trigger';
-				break;
-			case 'light':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'light';
-				break;
-			case 'element':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'element';
-				break;
-		}
-		if (note) {
-			setTooltip(input, `<b>${name}</b>\n${note}`);
-		}
-		addClass(input, 'call-event-component');
-		this.gridBox.appendChild(labelEl);
-		this.gridBox.appendChild(input);
-		this.parameters.push({ key, type, label: labelEl, input });
-	},
-	createEventResultElements(type: string) {
-		let input: HTMLElement & CallEventInputApi = null as unknown as HTMLElement &
-			CallEventInputApi;
-		switch (type) {
-			case 'none':
-				return;
-			case 'boolean':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'boolean';
-				break;
-			case 'number':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'number';
-				break;
-			case 'string':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'string';
-				break;
-			case 'object':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'object';
-				break;
-			case 'actor':
-			case 'skill':
-			case 'state':
-			case 'equipment':
-			case 'item':
-			case 'trigger':
-			case 'light':
-			case 'element':
-				input = createCustomBox() as unknown as HTMLElement & CallEventInputApi;
-				input.type = 'variable';
-				input.filter = 'object';
-				break;
-		}
-		write(input, { type: 'local', key: '' });
-		const label = document.createElement('div');
-		const text = Local.get!('command.callEvent.return');
-		const tip = Local.get!('command.callEvent.return.tip');
-		render(h('div', { class: 'text call-event-component' }, text), label);
-		const labelEl = label.firstElementChild as HTMLElement;
-		setTooltip(input, `<b>${text}</b>\n${tip}`);
-		addClass(input, 'call-event-component');
-		this.gridBox.appendChild(labelEl);
-		this.gridBox.appendChild(input);
-		this.eventResult = { type, label: labelEl, input };
-	},
+	fields: [
+		{ key: 'type', default: 'global' },
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'state', default: { type: 'trigger' } },
+		{ key: 'equipment', default: { type: 'trigger' } },
+		{ key: 'item', default: { type: 'trigger' } },
+		{ key: 'light', default: { type: 'trigger' } },
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'eventId', default: '' },
+		{ key: 'eventType', default: '' },
+		{ key: 'eventArgs', default: [] },
+		{ key: 'eventResult', default: { type: 'none' } }
+	],
 	parseEventArgs(event: CallEventMeta, args: CallEventArg[]) {
 		const words = Command.words;
 		if (event) {
@@ -371,73 +91,6 @@ Command.cases.callEvent = new CommandSchema({
 			case 'element':
 				return Command.parseElement!(arg.value);
 		}
-	},
-	getDefaultArgValue(type: string) {
-		switch (type) {
-			case 'boolean':
-				return false;
-			case 'number':
-				return 0;
-			case 'string':
-				return '';
-			case 'object':
-				return { type: 'local', key: '' };
-			case 'actor':
-			case 'skill':
-			case 'state':
-			case 'equipment':
-			case 'item':
-			case 'trigger':
-			case 'light':
-			case 'element':
-				return { type: 'trigger' };
-		}
-	},
-	writeEventArgs(args: CallEventArg[]) {
-		outer: for (const { type, key, input } of this.parameters) {
-			for (const arg of args) {
-				if (arg.key === key && arg.type === type) {
-					write(input, arg.value);
-					continue outer;
-				}
-			}
-			write(input, this.getDefaultArgValue!(type));
-		}
-	},
-	readEventArgs() {
-		const args: CallEventArg[] = [];
-		for (const { type, key, input } of this.parameters) {
-			const value = read(input);
-			if (type === 'object' && VariableGetter.isNone!(value)) {
-				getFocus(input);
-				return null;
-			}
-			args.push({ type, key, value });
-		}
-		return args;
-	},
-	writeEventResult(eventResult: CallEventResultData) {
-		if (this.eventResult === null) return;
-		if (eventResult.type === 'none') return;
-		const baseTypes = 'boolean|number|string';
-		const objectTypes = 'actor|skill|state|equipment|item|trigger|light|element|any';
-		if (
-			eventResult.type === this.eventResult.type ||
-			(baseTypes.includes(eventResult.type) &&
-				baseTypes.includes(this.eventResult.type) &&
-				eventResult.variable!.type === 'local') ||
-			(objectTypes.includes(eventResult.type) && objectTypes.includes(this.eventResult.type))
-		) {
-			write(this.eventResult.input, eventResult.variable);
-		}
-	},
-	readEventResult() {
-		const eventResult: CallEventResultData = { type: 'none' };
-		if (this.eventResult !== null) {
-			eventResult.type = this.eventResult.type;
-			eventResult.variable = read(this.eventResult.input);
-		}
-		return eventResult;
 	},
 	customParse({
 		type,
@@ -563,77 +216,5 @@ Command.cases.callEvent = new CommandSchema({
 			contents.unshift({ class: 'parent:global-event' });
 		}
 		return contents;
-	},
-	customLoad({
-		type = 'global',
-		actor = { type: 'trigger' },
-		skill = { type: 'trigger' },
-		state = { type: 'trigger' },
-		equipment = { type: 'trigger' },
-		item = { type: 'trigger' },
-		light = { type: 'trigger' },
-		element = { type: 'trigger' },
-		eventId = '',
-		eventArgs = [],
-		eventResult = { type: 'none' },
-		eventType = ''
-	}) {
-		const write = getElementWriter('callEvent');
-		write('type', type);
-		write('actor', actor);
-		write('skill', skill);
-		write('state', state);
-		write('equipment', equipment);
-		write('item', item);
-		write('light', light);
-		write('element', element);
-		write('eventId', eventId);
-		write('eventType', eventType);
-		this.writeEventArgs!(eventArgs);
-		this.writeEventResult!(eventResult);
-		getFocus($('#callEvent-type'));
-	},
-	customSave() {
-		const read = getElementReader('callEvent');
-		const type = read('type');
-		switch (type) {
-			case 'global': {
-				const eventId = read('eventId');
-				if (eventId === '') {
-					return getFocus($('#callEvent-eventId'));
-				}
-				const eventArgs = this.readEventArgs!();
-				if (eventArgs === null) return;
-				const eventResult = this.readEventResult!();
-				if (eventResult.type !== 'none' && VariableGetter.isNone!(eventResult.variable)) {
-					return getFocus(this.eventResult.input);
-				}
-				Command.save!({ type, eventId, eventArgs, eventResult });
-				break;
-			}
-			case 'inherited':
-				Command.save!({ type });
-				break;
-			case 'scene':
-				const eventType = read('eventType');
-				if (eventType === '') {
-					return getFocus($('#callEvent-eventType'));
-				}
-				Command.save!({ type, eventType });
-				break;
-			default: {
-				const target = read(type);
-				const eventType = read('eventType');
-				if (eventType === '') {
-					return getFocus($('#callEvent-eventType'));
-				}
-				Command.save!({
-					type: type,
-					[type]: target,
-					eventType: eventType
-				});
-				break;
-			}
-		}
 	}
 });

@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="choice">
+	<WindowFrame ref="frame" id="choice" @confirm="onConfirm">
 		<template #title><TitleBar>Choice<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -16,7 +16,10 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils.ts';
 import type { ChoicesForm } from '@/command/show-options-window.ts';
+import { Choices } from '@/command/show-options-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -54,12 +57,17 @@ const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 const inspector = useInspectorStore();
 const local = useLocalStore();
 
+const onConfirm = () => {
+	Choices?.confirm?.(new Event('click'));
+};
+
 onMounted(() => {
 	const el = frame.value?.root;
 	if (el) {
 		attachElementApi(el, { setForm, getForm });
 	}
 
-
+	on($('#choice'), 'closed', () => Choices.windowClosed?.(new Event('closed')));
+	on($('#choice-confirm'), 'click', () => Choices.confirm?.(new Event('click')));
 });
 </script>

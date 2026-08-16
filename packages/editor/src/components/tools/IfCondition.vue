@@ -244,6 +244,9 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { on, clear } from '@/util/element-utils.ts';
+import { Data } from '@/data/data-object.ts';
 import { IfCondition, type IfConditionForm } from '@/command/conditional-condition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -398,6 +401,339 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
+	const typeEl = $('#if-condition-type');
+	if (!typeEl) return;
+	typeEl.loadItems([
+		{ name: 'Boolean', value: 'boolean' },
+		{ name: 'Number', value: 'number' },
+		{ name: 'String', value: 'string' },
+		{ name: 'Object', value: 'object' },
+		{ name: 'Actor', value: 'actor' },
+		{ name: 'Element', value: 'element' },
+		{ name: 'Keyboard', value: 'keyboard' },
+		{ name: 'Gamepad', value: 'gamepad' },
+		{ name: 'Mouse', value: 'mouse' },
+		{ name: 'List', value: 'list' },
+		{ name: 'Other', value: 'other' }
+	]);
 
+	typeEl.enableHiddenMode().relate([
+		{
+			case: 'boolean',
+			targets: [
+				$('#if-condition-common-variable'),
+				$('#if-condition-boolean-operation'),
+				$('#if-condition-boolean-operand-type')
+			]
+		},
+		{
+			case: 'number',
+			targets: [
+				$('#if-condition-common-variable'),
+				$('#if-condition-number-operation'),
+				$('#if-condition-number-operand-type')
+			]
+		},
+		{
+			case: 'string',
+			targets: [
+				$('#if-condition-common-variable'),
+				$('#if-condition-string-operation'),
+				$('#if-condition-string-operand-type')
+			]
+		},
+		{
+			case: 'object',
+			targets: [$('#if-condition-common-variable'), $('#if-condition-object-operation')]
+		},
+		{
+			case: 'actor',
+			targets: [$('#if-condition-common-actor'), $('#if-condition-actor-operation')]
+		},
+		{
+			case: 'element',
+			targets: [$('#if-condition-common-element'), $('#if-condition-element-operation')]
+		},
+		{
+			case: 'keyboard',
+			targets: [$('#if-condition-keyboard-keycode'), $('#if-condition-keyboard-state')]
+		},
+		{
+			case: 'gamepad',
+			targets: [$('#if-condition-gamepad-button'), $('#if-condition-gamepad-state')]
+		},
+		{
+			case: 'mouse',
+			targets: [$('#if-condition-mouse-button'), $('#if-condition-mouse-state')]
+		},
+		{
+			case: 'list',
+			targets: [
+				$('#if-condition-common-variable'),
+				$('#if-condition-list-operation'),
+				$('#if-condition-operand-variable')
+			]
+		},
+		{ case: 'other', targets: [$('#if-condition-other-key')] }
+	]);
+
+	$('#if-condition-boolean-operation').loadItems([
+		{ name: '==', value: 'equal' },
+		{ name: '!=', value: 'unequal' }
+	]);
+
+	$('#if-condition-boolean-operand-type').loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Constant', value: 'constant' },
+		{ name: 'Variable', value: 'variable' }
+	]);
+
+	$('#if-condition-boolean-operand-type')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: 'constant',
+				targets: [$('#if-condition-boolean-constant-value')]
+			},
+			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+		]);
+
+	$('#if-condition-boolean-constant-value').loadItems([
+		{ name: 'False', value: false },
+		{ name: 'True', value: true }
+	]);
+
+	$('#if-condition-number-operation').loadItems([
+		{ name: '==', value: 'equal' },
+		{ name: '!=', value: 'unequal' },
+		{ name: '>=', value: 'greater-or-equal' },
+		{ name: '<=', value: 'less-or-equal' },
+		{ name: '>', value: 'greater' },
+		{ name: '<', value: 'less' }
+	]);
+
+	$('#if-condition-number-operand-type').loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Constant', value: 'constant' },
+		{ name: 'Variable', value: 'variable' }
+	]);
+
+	$('#if-condition-number-operand-type')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: 'constant',
+				targets: [$('#if-condition-number-constant-value')]
+			},
+			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+		]);
+
+	$('#if-condition-string-operation').loadItems([
+		{ name: '==', value: 'equal' },
+		{ name: '!=', value: 'unequal' },
+		{ name: 'Include', value: 'include' },
+		{ name: 'Exclude', value: 'exclude' }
+	]);
+
+	$('#if-condition-string-operand-type').loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Constant', value: 'constant' },
+		{ name: 'Variable', value: 'variable' },
+		{ name: 'Enumeration', value: 'enum' }
+	]);
+
+	$('#if-condition-string-operand-type')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: 'constant',
+				targets: [$('#if-condition-string-constant-value')]
+			},
+			{
+				case: 'variable',
+				targets: [$('#if-condition-operand-variable')]
+			},
+			{ case: 'enum', targets: [$('#if-condition-string-enum-stringId')] }
+		]);
+
+	$('#if-condition-object-operation').loadItems([
+		{ name: '==', value: 'equal' },
+		{ name: '!=', value: 'unequal' },
+		{ name: 'Is Actor', value: 'is-actor' },
+		{ name: 'Is Skill', value: 'is-skill' },
+		{ name: 'Is State', value: 'is-state' },
+		{ name: 'Is Equipment', value: 'is-equipment' },
+		{ name: 'Is Item', value: 'is-item' },
+		{ name: 'Is Trigger', value: 'is-trigger' },
+		{ name: 'Is Light', value: 'is-light' },
+		{ name: 'Is Element', value: 'is-element' }
+	]);
+
+	$('#if-condition-object-operation')
+		.enableHiddenMode()
+		.relate([
+			{
+				case: ['equal', 'unequal'],
+				targets: [$('#if-condition-object-operand-type')]
+			}
+		]);
+
+	$('#if-condition-object-operand-type').loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Actor', value: 'actor' },
+		{ name: 'Skill', value: 'skill' },
+		{ name: 'State', value: 'state' },
+		{ name: 'Equipment', value: 'equipment' },
+		{ name: 'Item', value: 'item' },
+		{ name: 'Trigger', value: 'trigger' },
+		{ name: 'Light', value: 'light' },
+		{ name: 'Element', value: 'element' },
+		{ name: 'Variable', value: 'variable' }
+	]);
+
+	$('#if-condition-object-operand-type')
+		.enableHiddenMode()
+		.relate([
+			{ case: 'actor', targets: [$('#if-condition-common-actor')] },
+			{ case: 'skill', targets: [$('#if-condition-common-skill')] },
+			{ case: 'state', targets: [$('#if-condition-common-state')] },
+			{
+				case: 'equipment',
+				targets: [$('#if-condition-common-equipment')]
+			},
+			{ case: 'item', targets: [$('#if-condition-common-item')] },
+			{ case: 'trigger', targets: [$('#if-condition-common-trigger')] },
+			{ case: 'light', targets: [$('#if-condition-common-light')] },
+			{ case: 'element', targets: [$('#if-condition-common-element')] },
+			{ case: 'variable', targets: [$('#if-condition-operand-variable')] }
+		]);
+
+	$('#if-condition-actor-operation').loadItems([
+		{ name: 'Present and Active', value: 'present-active' },
+		{ name: 'Present', value: 'present' },
+		{ name: 'Absent', value: 'absent' },
+		{ name: 'active', value: 'active' },
+		{ name: 'inactive', value: 'inactive' },
+		{ name: 'Has Targets', value: 'has-targets' },
+		{ name: 'Has No Targets', value: 'has-no-targets' },
+		{ name: 'In Screen', value: 'in-screen' },
+		{ name: 'Is Player Actor', value: 'is-player' },
+		{ name: 'Is Party Member', value: 'is-member' },
+		{ name: 'Has Skill', value: 'has-skill' },
+		{ name: 'Has State', value: 'has-state' },
+		{ name: 'Has Items', value: 'has-items' },
+		{ name: 'Has Equipments', value: 'has-equipments' },
+		{ name: 'Has Skill Shortcut', value: 'has-skill-shortcut' },
+		{ name: 'Has Item Shortcut', value: 'has-item-shortcut' },
+		{ name: 'Equipped', value: 'equipped' },
+		{ name: 'Is a Teammate of Actor ...', value: 'is-teammate' },
+		{ name: 'Is a Friend of Actor ...', value: 'is-friend' },
+		{ name: 'Is an Enemy of Actor ...', value: 'is-enemy' },
+		{ name: 'Is a Member of Team ...', value: 'is-team-member' },
+		{ name: 'Is a Friend of Team ...', value: 'is-team-friend' },
+		{ name: 'Is an Enemy of Team ...', value: 'is-team-enemy' }
+	]);
+
+	$('#if-condition-actor-operation')
+		.enableHiddenMode()
+		.relate([
+			{ case: 'has-skill', targets: [$('#if-condition-actor-skillId')] },
+			{ case: 'has-state', targets: [$('#if-condition-actor-stateId')] },
+			{
+				case: 'has-items',
+				targets: [$('#if-condition-actor-itemId'), $('#if-condition-actor-quantity')]
+			},
+			{
+				case: 'has-equipments',
+				targets: [$('#if-condition-actor-equipmentId'), $('#if-condition-actor-quantity')]
+			},
+			{
+				case: ['has-skill-shortcut', 'has-item-shortcut'],
+				targets: [$('#if-condition-actor-shortcutKey')]
+			},
+			{
+				case: 'equipped',
+				targets: [$('#if-condition-actor-equipmentId')]
+			},
+			{
+				case: ['is-teammate', 'is-friend', 'is-enemy'],
+				targets: [$('#if-condition-actor-target')]
+			},
+			{
+				case: ['is-team-member', 'is-team-friend', 'is-team-enemy'],
+				targets: [$('#if-condition-actor-teamId')]
+			}
+		]);
+
+	$('#if-condition-element-operation').loadItems([
+		{ name: 'Present', value: 'present' },
+		{ name: 'Absent', value: 'absent' },
+		{ name: 'Visible', value: 'visible' },
+		{ name: 'Invisible', value: 'invisible' },
+		{ name: 'Is Focus Element', value: 'is-focus' },
+		{ name: 'Dialog Box - is Paused', value: 'dialogbox-is-paused' },
+		{ name: 'Dialog Box - is Updating', value: 'dialogbox-is-updating' },
+		{ name: 'Dialog Box - is Waiting', value: 'dialogbox-is-waiting' },
+		{ name: 'Dialog Box - is Complete', value: 'dialogbox-is-complete' }
+	]);
+
+	$('#if-condition-keyboard-state').loadItems([
+		{ name: 'Just Pressed', value: 'just-pressed' },
+		{ name: 'Just Released', value: 'just-released' },
+		{ name: 'Pressed', value: 'pressed' },
+		{ name: 'Released', value: 'released' }
+	]);
+
+	$('#if-condition-gamepad-state').loadItems([
+		{ name: 'Just Pressed', value: 'just-pressed' },
+		{ name: 'Just Released', value: 'just-released' },
+		{ name: 'Pressed', value: 'pressed' },
+		{ name: 'Released', value: 'released' }
+	]);
+
+	$('#if-condition-mouse-button').loadItems([
+		{ name: 'Left Button', value: 0 },
+		{ name: 'Middle Button', value: 1 },
+		{ name: 'Right Button', value: 2 },
+		{ name: 'Back Button', value: 3 },
+		{ name: 'Forward Button', value: 4 }
+	]);
+
+	$('#if-condition-mouse-state').loadItems([
+		{ name: 'Just Pressed', value: 'just-pressed' },
+		{ name: 'Just Released', value: 'just-released' },
+		{ name: 'Pressed', value: 'pressed' },
+		{ name: 'Released', value: 'released' }
+	]);
+
+	$('#if-condition-list-operation').loadItems([
+		{ name: 'Include', value: 'include' },
+		{ name: 'Exclude', value: 'exclude' }
+	]);
+
+	$('#if-condition-other-key').loadItems([
+		{ name: 'Mouse has entered the window', value: 'mouse-entered' },
+		{ name: 'Mouse has left the window', value: 'mouse-left' },
+		{ name: 'Game is paused', value: 'game-is-paused' },
+		{ name: 'Game is not paused', value: 'game-is-not-paused' },
+		{ name: 'Scene input is prevented', value: 'scene-input-is-prevented' },
+		{
+			name: 'Scene input is not prevented',
+			value: 'scene-input-is-not-prevented'
+		},
+		{ name: 'In debugging mode', value: 'status-debugging' },
+		{ name: 'In deployed mode', value: 'status-deployed' },
+		{ name: 'Running on Windows platform', value: 'platform-windows' },
+		{ name: 'Running on MacOS platform', value: 'platform-macos' },
+		{ name: 'Running on a mobile platform', value: 'platform-mobile' }
+	]);
+
+	$('#if-condition')?.on?.('open', () => {
+		$('#if-condition-actor-teamId').loadItems(Data.createTeamItems!());
+	});
+
+	$('#if-condition')?.on?.('closed', () => {
+		clear($('#if-condition-actor-teamId'));
+	});
 });
 </script>

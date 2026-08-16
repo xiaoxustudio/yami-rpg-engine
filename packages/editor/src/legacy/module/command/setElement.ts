@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -11,17 +9,6 @@ Command.cases.setElement = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'operation', default: 'hide' }
 	],
-	onInitialize() {
-		$('#setElement-operation')?.loadItems?.([
-			{ name: 'Hide', value: 'hide' },
-			{ name: 'Show', value: 'show' },
-			{ name: 'Disable Pointer Events', value: 'disable-pointer-events' },
-			{ name: 'Enable Pointer Events', value: 'enable-pointer-events' },
-			{ name: 'Skip Pointer Events', value: 'skip-pointer-events' },
-			{ name: 'Move to First', value: 'move-to-first' },
-			{ name: 'Move to Last', value: 'move-to-last' }
-		]);
-	},
 	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
@@ -31,8 +18,5 @@ Command.cases.setElement = new CommandSchema({
 			{ text: Local.get!('command.setElement.alias') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setElement-element'));
 	}
 });

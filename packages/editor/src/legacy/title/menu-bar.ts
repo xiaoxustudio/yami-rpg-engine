@@ -27,7 +27,7 @@ import { Easing } from '@/data/transition-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FS, FSP } from '@/file/file-system.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { ExportLanguage } from '@/local/export-language-window.ts';
 import { ImportLanguage } from '@/local/import-language-window.ts';
 import { Localization } from '@/local/local-window.ts';

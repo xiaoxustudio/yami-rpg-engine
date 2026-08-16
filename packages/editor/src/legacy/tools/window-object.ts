@@ -3,7 +3,7 @@ import { addClass, removeClass } from '@/util/element-utils';
 import { Scene } from '@/scene/scene-window.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Animation } from '@/animation/animation-window.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Menubar } from '@/title/menu-bar.ts';
 import { Title } from '@/title/title-bar.ts';

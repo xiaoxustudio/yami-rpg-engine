@@ -3,8 +3,8 @@
 		<template #title><TitleBar>webSocketSend<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">ID</div><StringVar id="webSocketSend-id" /> <div class="text">Data</div
-				><StringVar id="webSocketSend-data" />
+				<div class="text">ID</div><StringVar id="webSocketSend-id" v-model="form.id" /> <div class="text">Data</div
+				><StringVar id="webSocketSend-data" v-model="form.data" />
 			</div>
 		
 	</WindowFrame>
@@ -13,14 +13,15 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { useWebSocketSendCommandSchema } from '@app/composables/commands/useWebSocketSendCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 
+const { form, save } = useWebSocketSendCommandSchema();
 
 const onConfirm = () => {
-	Command?.cases?.webSocketSend?.save?.();
+	save();
 };
 
 </script>

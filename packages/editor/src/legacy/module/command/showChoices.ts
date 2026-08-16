@@ -1,32 +1,11 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { Choices } from '@/command/show-options-window.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.showChoices = new CommandSchema({
 	name: 'showChoices',
-	onInitialize() {
-		$('#showChoices-choices')?.bind(Choices);
-		$('#showChoices')?.on('closed', () => {
-			clear($('#showChoices-choices'));
-		});
-	},
-	createDefaultChoices() {
-		return [
-			{
-				content: Local.get!('showChoices.yes'),
-				commands: []
-			},
-			{
-				content: Local.get!('showChoices.no'),
-				commands: []
-			}
-		];
-	},
 	customParse({
 		choices,
 		parameters
@@ -73,27 +52,5 @@ Command.cases.showChoices = new CommandSchema({
 		}
 		contents.push({ color: 'flow' }, { text: Local.get!('command.showChoices.end') });
 		return contents;
-	},
-	customLoad(
-		this: CommandSchema,
-		{
-			choices = this.createDefaultChoices!(),
-			parameters = ''
-		}: { choices: unknown[]; parameters: string }
-	) {
-		const write = getElementWriter('showChoices');
-		write('choices', choices.slice());
-		write('parameters', parameters);
-		this.choices = choices;
-		getFocus($('#showChoices-choices'));
-	},
-	customSave() {
-		const read = getElementReader('showChoices');
-		const choices = read('choices');
-		if (choices.length === 0) {
-			return getFocus($('#showChoices-choices'));
-		}
-		const parameters = read('parameters');
-		Command.save!({ choices, parameters });
 	}
 });

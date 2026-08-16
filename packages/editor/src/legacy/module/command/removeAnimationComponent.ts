@@ -1,7 +1,4 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus, read } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
@@ -13,14 +10,6 @@ Command.cases.removeAnimationComponent = new CommandSchema({
 		{ key: 'animationId', default: '', required: true },
 		{ key: 'motion', default: '', required: true }
 	],
-	onInitialize() {
-		// removeAnimationComponent-animationId write 经 Vue 模板转发（removeAnimationComponent.vue @write → Command.cases.removeAnimationComponent.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		const elMotion = $('#removeAnimationComponent-motion');
-		elMotion.loadItems(Animation.getMotionListItems!(event.value));
-		elMotion.write2(read(elMotion));
-	},
 	customParse({
 		actor,
 		animationId,
@@ -41,8 +30,5 @@ Command.cases.removeAnimationComponent = new CommandSchema({
 			},
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#removeAnimationComponent-actor'));
 	}
 });

@@ -3,12 +3,13 @@
 	<template #title><TitleBar>Change Actor Portrait<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" /><div class="text">Portrait</div
-			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" /><div class="text">Clip</div
+			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" @input="onActor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" v-model="form.mode" /><div class="text">Portrait</div
+			><CustomBox id="changeActorPortrait-portrait" type="file" filter="image" @input="onPortrait" /><div class="text">Clip</div
 			><CustomBox
 				id="changeActorPortrait-clip"
 				type="clip"
 				image="changeActorPortrait-portrait"
+				@input="onClip"
 			 /></div>
 	
 </WindowFrame>
@@ -16,15 +17,51 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useChangeActorPortraitCommandSchema } from '@app/composables/commands/useChangeActorPortraitCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useChangeActorPortraitCommandSchema();
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
+
+const onPortrait = (value: unknown) => {
+	form.portrait = value;
+};
+
+const onClip = (value: unknown) => {
+	form.clip = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.changeActorPortrait?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#changeActorPortrait-mode')?.loadItems?.([
+		{ name: 'Full Mode', value: 'full' },
+		{ name: 'Image Mode', value: 'portrait' },
+		{ name: 'Clip Mode', value: 'clip' }
+	]);
+	$('#changeActorPortrait-mode')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'full',
+				targets: [$('#changeActorPortrait-portrait'), $('#changeActorPortrait-clip')]
+			},
+			{
+				case: 'portrait',
+				targets: [$('#changeActorPortrait-portrait')]
+			},
+			{ case: 'clip', targets: [$('#changeActorPortrait-clip')] }
+		]);
+});
 
 </script>

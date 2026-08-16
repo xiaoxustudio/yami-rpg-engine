@@ -1,6 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, read } from '@/util/element-utils';
-import { Animation } from '@/animation/animation-window.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -25,79 +22,22 @@ type SetAnimationComponentData = {
 
 Command.cases.setAnimationComponent = new CommandSchema({
 	name: 'setAnimationComponent',
-	onInitialize() {
-		$('#setAnimationComponent-operation')?.loadItems?.([
-			{ name: 'Set Angle', value: 'set-angle' },
-			{ name: 'Set Scale', value: 'set-scale' },
-			{ name: 'Set Speed', value: 'set-speed' },
-			{ name: 'Set Opacity', value: 'set-opacity' },
-			{ name: 'Set Priority', value: 'set-priority' },
-			{ name: 'Set Offset Y', value: 'set-offsetY' },
-			{ name: 'Set Sprite', value: 'set-sprite' },
-			{ name: 'Play Motion', value: 'play-motion' },
-			{ name: 'Stop Motion', value: 'stop-motion' }
-		]);
-		$('#setAnimationComponent-operation')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'set-angle',
-					targets: [$('#setAnimationComponent-angle')]
-				},
-				{
-					case: 'set-scale',
-					targets: [$('#setAnimationComponent-scale')]
-				},
-				{
-					case: 'set-speed',
-					targets: [$('#setAnimationComponent-speed')]
-				},
-				{
-					case: 'set-opacity',
-					targets: [$('#setAnimationComponent-opacity')]
-				},
-				{
-					case: 'set-priority',
-					targets: [$('#setAnimationComponent-priority')]
-				},
-				{
-					case: 'set-offsetY',
-					targets: [$('#setAnimationComponent-offsetY')]
-				},
-				{
-					case: 'set-sprite',
-					targets: [
-						$('#setAnimationComponent-spriteId'),
-						$('#setAnimationComponent-image')
-					]
-				},
-				{
-					case: 'play-motion',
-					targets: [
-						$('#setAnimationComponent-playMotion'),
-						$('#setAnimationComponent-wait')
-					]
-				}
-			]);
-		$('#setAnimationComponent-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		// setAnimationComponent-animationId write 经 Vue 模板转发（setAnimationComponent.vue @write → Command.cases.setAnimationComponent.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		const elMotion = $('#setAnimationComponent-motion');
-		const elPlayMotion = $('#setAnimationComponent-playMotion');
-		const elSpriteId = $('#setAnimationComponent-spriteId');
-		const motionItems = Animation.getMotionListItems!(event.value);
-		const spriteItems = Animation.getSpriteListItems!(event.value);
-		elMotion.loadItems(motionItems);
-		elPlayMotion.loadItems(motionItems);
-		elSpriteId.loadItems(spriteItems);
-		elMotion.write2(read(elMotion));
-		elPlayMotion.write2(read(elPlayMotion));
-		elSpriteId.write2(read(elSpriteId));
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'animationId', default: '' },
+		{ key: 'motion', default: '' },
+		{ key: 'operation', default: 'set-angle' },
+		{ key: 'angle', default: { type: 'absolute', degrees: 0 } },
+		{ key: 'scale', default: 1 },
+		{ key: 'speed', default: 1 },
+		{ key: 'opacity', default: 1 },
+		{ key: 'priority', default: 0 },
+		{ key: 'offsetY', default: 0 },
+		{ key: 'spriteId', default: '' },
+		{ key: 'image', default: '' },
+		{ key: 'playMotion', default: '' },
+		{ key: 'wait', default: false }
+	],
 	parsePriority(priority: number) {
 		const abs = Command.setNumberColor!(Math.abs(priority));
 		return priority === 0 ? abs : priority > 0 ? Token('+') + abs : Token('-') + abs;
@@ -160,135 +100,5 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			{ text: Local.get!('command.setAnimationComponent') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		animationId = '',
-		motion = '',
-		operation = 'set-angle',
-		angle = { type: 'absolute', degrees: 0 },
-		scale = 1,
-		speed = 1,
-		opacity = 1,
-		priority = 0,
-		offsetY = 0,
-		spriteId = '',
-		image = '',
-		playMotion = '',
-		wait = false
-	}) {
-		const write = getElementWriter('setAnimationComponent');
-		write('actor', actor);
-		write('animationId', animationId);
-		write('motion', motion);
-		write('operation', operation);
-		write('angle', angle);
-		write('scale', scale);
-		write('speed', speed);
-		write('opacity', opacity);
-		write('priority', priority);
-		write('offsetY', offsetY);
-		write('spriteId', spriteId);
-		write('image', image);
-		write('wait', wait);
-		if (playMotion) write('playMotion', playMotion);
-		getFocus($('#setAnimationComponent-actor'));
-	},
-	customSave() {
-		const read = getElementReader('setAnimationComponent');
-		const actor = read('actor');
-		const animationId = read('animationId');
-		if (animationId === '') {
-			return getFocus($('#setAnimationComponent-animationId'));
-		}
-		const motion = read('motion');
-		if (motion === '') {
-			return getFocus($('#setAnimationComponent-motion'));
-		}
-		const operation = read('operation');
-		switch (operation) {
-			case 'set-angle': {
-				const angle = read('angle');
-				Command.save!({ actor, animationId, motion, operation, angle });
-				break;
-			}
-			case 'set-scale': {
-				const scale = read('scale');
-				Command.save!({ actor, animationId, motion, operation, scale });
-				break;
-			}
-			case 'set-speed': {
-				const speed = read('speed');
-				Command.save!({ actor, animationId, motion, operation, speed });
-				break;
-			}
-			case 'set-opacity': {
-				const opacity = read('opacity');
-				Command.save!({
-					actor,
-					animationId,
-					motion,
-					operation,
-					opacity
-				});
-				break;
-			}
-			case 'set-priority': {
-				const priority = read('priority');
-				Command.save!({
-					actor,
-					animationId,
-					motion,
-					operation,
-					priority
-				});
-				break;
-			}
-			case 'set-offsetY':
-				const offsetY = read('offsetY');
-				Command.save!({
-					actor,
-					animationId,
-					motion,
-					operation,
-					offsetY
-				});
-				break;
-			case 'set-sprite': {
-				const spriteId = read('spriteId');
-				const image = read('image');
-				if (spriteId === '') {
-					return getFocus($('#setAnimationComponent-spriteId'));
-				}
-				Command.save!({
-					actor,
-					animationId,
-					motion,
-					operation,
-					spriteId,
-					image
-				});
-				break;
-			}
-			case 'play-motion': {
-				const playMotion = read('playMotion');
-				if (playMotion === '') {
-					return getFocus($('#setAnimationComponent-playMotion'));
-				}
-				const wait = read('wait');
-				Command.save!({
-					actor,
-					animationId,
-					motion,
-					operation,
-					playMotion,
-					wait
-				});
-				break;
-			}
-			case 'stop-motion':
-				Command.save!({ actor, animationId, motion, operation });
-				break;
-		}
 	}
 });

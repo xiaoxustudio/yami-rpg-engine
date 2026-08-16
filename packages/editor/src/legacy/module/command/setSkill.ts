@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,13 +5,11 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setSkill = new CommandSchema({
 	name: 'setSkill',
-	onInitialize() {
-		$('#setSkill-operation')?.loadItems?.([
-			{ name: 'Set Cooldown Time', value: 'set-cooldown' },
-			{ name: 'Increase Cooldown Time', value: 'increase-cooldown' },
-			{ name: 'Decrease Cooldown Time', value: 'decrease-cooldown' }
-		]);
-	},
+	fields: [
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'operation', default: 'set-cooldown' },
+		{ key: 'cooldown', default: 0 }
+	],
 	customParse({
 		skill,
 		operation,
@@ -38,29 +34,5 @@ Command.cases.setSkill = new CommandSchema({
 			{ text: Local.get!('command.setSkill') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ skill = { type: 'trigger' }, operation = 'set-cooldown', cooldown = 0 }) {
-		const write = getElementWriter('setSkill');
-		write('skill', skill);
-		write('operation', operation);
-		write('cooldown', cooldown);
-		getFocus($('#setSkill-skill'));
-	},
-	customSave() {
-		const read = getElementReader('setSkill');
-		const skill = read('skill');
-		const operation = read('operation');
-		switch (operation) {
-			case 'set-cooldown':
-			case 'increase-cooldown':
-			case 'decrease-cooldown': {
-				Command.save!({
-					skill,
-					operation,
-					cooldown: read('cooldown')
-				});
-				break;
-			}
-		}
 	}
 });

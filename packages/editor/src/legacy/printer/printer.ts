@@ -2,10 +2,10 @@ import { CSSRGBA } from '@/util/color-utils.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from '@/inspector/inspector.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { Title } from '@/title/title-bar.ts';
-import { Texture as PrinterTexture } from '../webgl/texture.ts';
+import { Texture as PrinterTexture } from '@app/engine/webgl/texture.ts';
 
 type CanvasTextContext = CanvasRenderingContext2D & {
 	paddingItalic?: number;

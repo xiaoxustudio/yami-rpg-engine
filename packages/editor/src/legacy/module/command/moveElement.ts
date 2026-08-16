@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { TransformProperty } from '@/command/move-element-property-window.ts';
@@ -9,20 +7,13 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.moveElement = new CommandSchema({
 	name: 'moveElement',
-	onInitialize() {
-		$('#moveElement-properties')?.bind?.(TransformProperty);
-		$('#moveElement-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#moveElement')?.on?.('open', function (event: Event) {
-			$('#moveElement-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#moveElement')?.on?.('closed', function (event: Event) {
-			clear($('#moveElement-properties'));
-			clear($('#moveElement-easingId'));
-		});
-	},
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'properties', default: [] },
+		{ key: 'easingId', default: () => Data.easings[0].id },
+		{ key: 'duration', default: 0 },
+		{ key: 'wait', default: false }
+	],
 	customParse({
 		element,
 		properties,
@@ -46,40 +37,5 @@ Command.cases.moveElement = new CommandSchema({
 			{ text: Local.get!('command.moveElement') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		element = { type: 'trigger' },
-		properties = [],
-		easingId = Data.easings[0].id,
-		duration = 0,
-		wait = false
-	}: {
-		element: unknown;
-		properties: unknown[];
-		easingId: string;
-		duration: number;
-		wait: boolean;
-	}) {
-		const write = getElementWriter('moveElement');
-		write('element', element);
-		write('properties', properties.slice());
-		write('easingId', easingId);
-		write('duration', duration);
-		write('wait', wait);
-		getFocus($('#moveElement-element'));
-	},
-	customSave() {
-		const read = getElementReader('moveElement');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#moveElement-properties'));
-		}
-		Command.save!({
-			element: read('element'),
-			properties,
-			easingId: read('easingId'),
-			duration: read('duration'),
-			wait: read('wait')
-		});
 	}
 });

@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,13 +5,10 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setTerrain = new CommandSchema({
 	name: 'setTerrain',
-	onInitialize() {
-		$('#setTerrain-terrain')?.loadItems?.([
-			{ name: 'Land', value: 'land' },
-			{ name: 'Water', value: 'water' },
-			{ name: 'Wall', value: 'wall' }
-		]);
-	},
+	fields: [
+		{ key: 'position', default: { type: 'absolute', x: 0, y: 0 } },
+		{ key: 'terrain', default: 'land' }
+	],
 	customParse({ position, terrain }: { position: unknown; terrain: string }) {
 		const words = Command.words
 			.push(Command.parsePosition!(position))
@@ -23,18 +18,5 @@ Command.cases.setTerrain = new CommandSchema({
 			{ text: Local.get!('command.setTerrain') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ position = { type: 'absolute', x: 0, y: 0 }, terrain = 'land' }) {
-		const write = getElementWriter('setTerrain');
-		write('position', position);
-		write('terrain', terrain);
-		getFocus($('#setTerrain-position'));
-	},
-	customSave() {
-		const read = getElementReader('setTerrain');
-		Command.save!({
-			position: read('position'),
-			terrain: read('terrain')
-		});
 	}
 });

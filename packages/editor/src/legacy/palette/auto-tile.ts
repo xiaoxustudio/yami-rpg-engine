@@ -1,5 +1,4 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { drawAndFitImage } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
 import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
@@ -16,6 +15,7 @@ import { Palette } from './palette.ts';
 import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
 import { SceneShift } from '@/scene/move-scene.ts';
+import { AutoTileEngine } from '@app/engine/palette/auto-tile-engine.ts';
 import { Local } from '@/tools/localization.ts';
 import { SetQuantity } from '@/tools/set-number-window.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
@@ -67,7 +67,6 @@ export const AutoTile: Record<string, any> = {
 	copyTemplate: null,
 	pasteTemplate: null,
 	deleteTemplate: null,
-	shiftTemplateFrames: null,
 	createTemplateId: null,
 	createTemplateData: null,
 	getTemplateById: null,
@@ -86,12 +85,8 @@ export const AutoTile: Record<string, any> = {
 	pasteFrame: null,
 	deleteFrame: null,
 	setFrameQuantity: null,
-	generateFrames: null,
-	createFrameData: null,
 	createFrameItems: null,
 	updateFrameItem: null,
-	updateCanvas: null,
-	drawFrame: null,
 	windowClose: null,
 	windowClosed: null,
 	dprchange: null,
@@ -113,6 +108,12 @@ export const AutoTile: Record<string, any> = {
 	offsetYInput: null,
 	confirm: null
 };
+
+AutoTile.updateCanvas = AutoTileEngine.updateCanvas;
+AutoTile.drawFrame = AutoTileEngine.drawFrame;
+AutoTile.createFrameData = AutoTileEngine.createFrameData;
+AutoTile.generateFrames = AutoTileEngine.generateFrames;
+AutoTile.shiftTemplateFrames = AutoTileEngine.shiftTemplateFrames;
 
 function ensureDomBound() {
 	if (AutoTile.templateList) return;
@@ -228,38 +229,6 @@ AutoTile.deleteTemplate = function (this: typeof AutoTile, item: AutoTileTemplat
 			]
 		);
 	}
-};
-
-AutoTile.shiftTemplateFrames = function (
-	this: typeof AutoTile,
-	template: AutoTileTemplateData,
-	offsetX: number,
-	offsetY: number
-) {
-	const sprite = this.image;
-	if (!(sprite instanceof Image)) {
-		return;
-	}
-	const tileWidth = Palette.tileset.tileWidth;
-	const tileHeight = Palette.tileset.tileHeight;
-	const hframes = Math.floor(sprite.naturalWidth / tileWidth);
-	const vframes = Math.floor(sprite.naturalHeight / tileHeight);
-	const ox = ((offsetX % hframes) + hframes) % hframes;
-	const oy = ((offsetY % vframes) + vframes) % vframes;
-	for (const node of template.nodes) {
-		const frames = node.frames;
-		const length = frames.length;
-		for (let i = 0; i < length; i++) {
-			const frame = frames[i];
-			const sx = frame & 0xff;
-			const sy = frame >> 8;
-			const dx = (sx + ox) % hframes;
-			const dy = (sy + oy) % vframes;
-			frames[i] = dx | (dy << 8);
-		}
-	}
-	this.createFrameItems();
-	getAutoTileStore().changed = true;
 };
 
 AutoTile.createTemplateId = function (this: typeof AutoTile) {
@@ -443,42 +412,6 @@ AutoTile.setFrameQuantity = function (this: typeof AutoTile, count: number) {
 	}
 };
 
-AutoTile.generateFrames = function (
-	this: typeof AutoTile,
-	id: number,
-	strideX: number,
-	strideY: number,
-	count: number
-) {
-	const sprite = this.image;
-	if (!(sprite instanceof Image)) {
-		return;
-	}
-	const tileWidth = Palette.tileset.tileWidth;
-	const tileHeight = Palette.tileset.tileHeight;
-	const hframes = Math.floor(sprite.naturalWidth / tileWidth);
-	const vframes = Math.floor(sprite.naturalHeight / tileHeight);
-	const ox = ((strideX % hframes) + hframes) % hframes;
-	const oy = ((strideY % vframes) + vframes) % vframes;
-	const maximum = this.frameMaximum;
-	const frames = this.frames;
-	const frame = frames[id];
-	let x = frame & 0xff;
-	let y = frame >> 8;
-	count = Math.min(count, maximum - frames.length);
-	while (count-- > 0) {
-		x = (x + ox) % hframes;
-		y = (y + oy) % vframes;
-		frames.splice(++id, 0, x | (y << 8));
-	}
-	this.createFrameItems();
-	getAutoTileStore().changed = true;
-};
-
-AutoTile.createFrameData = function (this: typeof AutoTile) {
-	return 0;
-};
-
 AutoTile.createFrameItems = function (this: typeof AutoTile, id = getAutoTileStore().frameIndex) {
 	const list = this.frameList.reload();
 	const frames = this.frames;
@@ -509,58 +442,6 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 	const y = frame >> 8;
 	this.frameList.selection.textContent = `#${prefix}: ${x},${y}`;
 	this.drawFrame();
-};
-
-AutoTile.updateCanvas = function (this: typeof AutoTile) {
-	const canvas = this.canvas;
-	const { width, height } = CSS.getDevicePixelContentBoxSize(canvas);
-	if (canvas.width !== width) {
-		canvas.width = width;
-	}
-	if (canvas.height !== height) {
-		canvas.height = height;
-	}
-};
-
-AutoTile.drawFrame = function (this: typeof AutoTile) {
-	const canvas = this.canvas;
-	const context = canvas.getContext('2d');
-	const width = canvas.width;
-	const height = canvas.height;
-
-	context.clearRect(0, 0, width, height);
-
-	if (!(this.image instanceof Image)) {
-		if (this.image === this.noImage) return;
-		const guid = getAutoTileStore().imageId;
-		if (!guid) {
-			return;
-		}
-		const symbol = (this.image = Symbol());
-		return File.get!({
-			guid: guid,
-			type: 'image'
-		}).then((image: CanvasImageSource | null) => {
-			if (this.image === symbol) {
-				if (image) {
-					this.image = image;
-					this.drawFrame();
-				} else {
-					this.image = this.noImage;
-				}
-			}
-		});
-	}
-
-	const image = this.image;
-	const frames = this.frames;
-	const frame = frames[getAutoTileStore().frameIndex];
-	const tileWidth = Palette.tileset.tileWidth;
-	const tileHeight = Palette.tileset.tileHeight;
-	const x = (getAutoTileStore().offsetX + (frame & 0xff)) * tileWidth;
-	const y = (getAutoTileStore().offsetY + (frame >> 8)) * tileHeight;
-
-	drawAndFitImage(context, image, x, y, tileWidth, tileHeight);
 };
 
 AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {

@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -12,13 +10,6 @@ Command.cases.setTriggerDuration = new CommandSchema({
 		{ key: 'operation', default: 'set' },
 		{ key: 'duration', default: 0 }
 	],
-	onInitialize() {
-		$('#setTriggerDuration-operation')?.loadItems?.([
-			{ name: 'Set', value: 'set' },
-			{ name: 'Increase', value: 'increase' },
-			{ name: 'Decrease', value: 'decrease' }
-		]);
-	},
 	customParse({
 		trigger,
 		operation,
@@ -37,8 +28,5 @@ Command.cases.setTriggerDuration = new CommandSchema({
 			{ text: Local.get!('command.setTriggerDuration') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setTriggerDuration-trigger'));
 	}
 });

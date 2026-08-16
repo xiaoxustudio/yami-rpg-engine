@@ -25,7 +25,9 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,13 +36,56 @@ import StringVar from '@app/components/common/StringVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const onWrite = (value: unknown) => {
-	Command?.cases?.setBoolean?.writeHandler?.({ value });
-};
+const { save, writeHandler } = useSetBooleanCommandSchema();
 
+const onWrite = (value: unknown) => {
+	writeHandler?.({ value: value as string });
+};
 
 const onConfirm = () => {
-	Command?.cases?.setBoolean?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setBoolean-operation')?.loadItems?.([
+		{ name: 'Set', value: 'set' },
+		{ name: 'Not', value: 'not' },
+		{ name: 'And', value: 'and' },
+		{ name: 'Or', value: 'or' },
+		{ name: 'Xor', value: 'xor' }
+	]);
+	$('#setBoolean-operand-type')?.loadItems?.([
+		{ name: 'Constant', value: 'constant' },
+		{ name: 'Variable', value: 'variable' },
+		{ name: 'List', value: 'list' },
+		{ name: 'Parameter', value: 'parameter' },
+		{ name: 'Script', value: 'script' }
+	]);
+	$('#setBoolean-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'constant',
+				targets: [$('#setBoolean-constant-value')]
+			},
+			{
+				case: 'variable',
+				targets: [$('#setBoolean-common-variable')]
+			},
+			{
+				case: 'list',
+				targets: [$('#setBoolean-common-variable'), $('#setBoolean-list-index')]
+			},
+			{
+				case: 'parameter',
+				targets: [$('#setBoolean-parameter-key')]
+			},
+			{ case: 'script', targets: [$('#setBoolean-script')] }
+		]);
+	$('#setBoolean-constant-value')?.loadItems?.([
+		{ name: 'False', value: false },
+		{ name: 'True', value: true }
+	]);
+});
 
 </script>

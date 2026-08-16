@@ -3,15 +3,15 @@
 		<template #title><TitleBar>Load Image<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="loadImage-element" type="element" />
-				<div class="text">Type</div><SelectBox id="loadImage-type" /> <div class="text">Actor</div
-				><CustomBox id="loadImage-actor" type="actor" /> <div class="text">Skill</div
-				><CustomBox id="loadImage-skill" type="skill" /> <div class="text">State</div
-				><CustomBox id="loadImage-state" type="state" /> <div class="text">Equipment</div
-				><CustomBox id="loadImage-equipment" type="equipment" /> <div class="text">Item</div
-				><CustomBox id="loadImage-item" type="item" /> <div class="text">Shortcut Key</div
-				><SelectVar id="loadImage-key" /> <div class="text">Base64 Coding</div
-				><CustomBox id="loadImage-variable" type="variable" filter="string" />
+				<div class="text">Element</div><CustomBox id="loadImage-element" type="element" @input="onElement" />
+				<div class="text">Type</div><SelectBox id="loadImage-type" v-model="form.type" /> <div class="text">Actor</div
+				><CustomBox id="loadImage-actor" type="actor" @input="onActor" /> <div class="text">Skill</div
+				><CustomBox id="loadImage-skill" type="skill" @input="onSkill" /> <div class="text">State</div
+				><CustomBox id="loadImage-state" type="state" @input="onState" /> <div class="text">Equipment</div
+				><CustomBox id="loadImage-equipment" type="equipment" @input="onEquipment" /> <div class="text">Item</div
+				><CustomBox id="loadImage-item" type="item" @input="onItem" /> <div class="text">Shortcut Key</div
+				><SelectVar id="loadImage-key" v-model="form.key" /> <div class="text">Base64 Coding</div
+				><CustomBox id="loadImage-variable" type="variable" filter="string" @input="onVariable" />
 			</div>
 		
 	</WindowFrame>
@@ -19,16 +19,76 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useLoadImageCommandSchema } from '@app/composables/commands/useLoadImageCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useLoadImageCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
+
+const onSkill = (value: unknown) => {
+	form.skill = value;
+};
+
+const onState = (value: unknown) => {
+	form.state = value;
+};
+
+const onEquipment = (value: unknown) => {
+	form.equipment = value;
+};
+
+const onItem = (value: unknown) => {
+	form.item = value;
+};
+
+const onVariable = (value: unknown) => {
+	form.variable = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.loadImage?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#loadImage-type')?.loadItems?.([
+		{ name: 'Actor Portrait', value: 'actor-portrait' },
+		{ name: 'Skill Icon', value: 'skill-icon' },
+		{ name: 'State Icon', value: 'state-icon' },
+		{ name: 'Equipment Icon', value: 'equipment-icon' },
+		{ name: 'Item Icon', value: 'item-icon' },
+		{ name: 'Shortcut Icon', value: 'shortcut-icon' },
+		{ name: 'Base64 Image', value: 'base64' }
+	]);
+	$('#loadImage-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'actor-portrait', targets: [$('#loadImage-actor')] },
+			{ case: 'skill-icon', targets: [$('#loadImage-skill')] },
+			{ case: 'state-icon', targets: [$('#loadImage-state')] },
+			{
+				case: 'equipment-icon',
+				targets: [$('#loadImage-equipment')]
+			},
+			{ case: 'item-icon', targets: [$('#loadImage-item')] },
+			{
+				case: 'shortcut-icon',
+				targets: [$('#loadImage-actor'), $('#loadImage-key')]
+			},
+			{ case: 'base64', targets: [$('#loadImage-variable')] }
+		]);
+});
 
 </script>

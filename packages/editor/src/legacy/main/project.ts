@@ -7,7 +7,7 @@ import { Palette } from '@/palette/palette.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { Sprite } from '@/sprite/sprite.ts';
+import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { Title } from '@/title/title-bar.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';

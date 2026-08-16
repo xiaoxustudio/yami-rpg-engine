@@ -1,6 +1,6 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, read, write } from '@/util/element-utils';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { selectBoxSetItemNames } from '@/components/select-box.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';

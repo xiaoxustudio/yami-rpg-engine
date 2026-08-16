@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -11,12 +9,6 @@ Command.cases.setPartyMember = new CommandSchema({
 		{ key: 'operation', default: 'add' },
 		{ key: 'actor', default: { type: 'trigger' } }
 	],
-	onInitialize() {
-		$('#setPartyMember-operation')?.loadItems?.([
-			{ name: 'Add', value: 'add' },
-			{ name: 'Remove', value: 'remove' }
-		]);
-	},
 	customParse({ operation, actor }: { operation: string; actor: unknown }) {
 		const words = Command.words
 			.push(Local.get!('command.setPartyMember.' + operation))
@@ -26,8 +18,5 @@ Command.cases.setPartyMember = new CommandSchema({
 			{ text: Local.get!('command.setPartyMember') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setPartyMember-operation'));
 	}
 });

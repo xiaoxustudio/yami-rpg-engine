@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { pinia } from './pinia';
 import type { EditorEvent } from '@/types/editor-event.ts';
 import { shallowRef } from 'vue';

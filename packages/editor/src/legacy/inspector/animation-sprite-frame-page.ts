@@ -2,7 +2,7 @@ import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Curve } from '@/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';
-import { Sprite } from '@/sprite/sprite.ts';
+import { Sprite } from '@app/engine/sprite/sprite.ts';
 
 {
 	interface AnimSpriteFrameData {

@@ -8,7 +8,7 @@ import { GUID } from './guid.ts';
 import { Local } from '@/tools/localization.ts';
 
 import { Path } from '@/util/config.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 type FileMeta = InstanceType<typeof Meta>;
 
 export class FileItem {

@@ -1,0 +1,140 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { mount } from '@vue/test-utils';
+import SetNumber from '@app/components/commands/SetNumber.vue';
+import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
+import { Command } from '@/command/command-object.ts';
+import { CommandSchema } from '@/module/command/schema.ts';
+import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import { Data } from '@/data/data-object.ts';
+import { Window } from '@/tools/window-object.ts';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
+interface ParamListElement extends HTMLElement {
+	read(): unknown[] | null;
+	write(data: unknown[]): void;
+}
+
+interface ControlEl extends HTMLElement {
+	read(): unknown;
+	write(value: unknown): void;
+	input(value: unknown): void;
+}
+
+const getList = (id: string): ParamListElement =>
+	document.getElementById(id) as unknown as ParamListElement;
+const getControl = (id: string): ControlEl => document.getElementById(id) as unknown as ControlEl;
+
+const target = {
+	scrollAndResize: vi.fn(),
+	getSelectionPosition: () => ({ x: 100, y: 100 }),
+	save: vi.fn()
+};
+
+describe('useSetNumberCommandSchema（setNumber 命令表单 composable：insert/edit/save/校验路径）', () => {
+	beforeEach(() => {
+		setActivePinia(createPinia());
+		VariableGetter.isNone = vi.fn((variable: unknown) => {
+			return !variable || (variable as { key?: string })?.key === '';
+		}) as never;
+		Window.open = vi.fn();
+		Window.close = vi.fn();
+		Data.teams = { list: [{ id: 'team0' }] } as never;
+		Data.createTeamItems = vi.fn(() => [{ name: 'Team 0', value: 'team0' }]) as never;
+		Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
+		Command.parseVariable = ((value: unknown) => `[var:${JSON.stringify(value)}]`) as never;
+		Command.removeTextTags = ((value: string) => value) as never;
+	});
+
+	const mountAll = async () => {
+		const commandWrapper = mount(SetNumber, { attachTo: document.body });
+		const operandWrapper = mount(SetNumberOperand, { attachTo: document.body });
+		await commandWrapper.vm.$nextTick();
+		await operandWrapper.vm.$nextTick();
+		return { commandWrapper, operandWrapper };
+	};
+
+	it('insert 路径：打开窗口并 load 默认 form 到控件 DOM', async () => {
+		const { commandWrapper, operandWrapper } = await mountAll();
+		CommandSchema.insert(target, 'setNumber');
+		expect(Window.open).toHaveBeenCalledWith('setNumber');
+		expect(getControl('setNumber-variable').read()).toEqual({ type: 'local', key: '' });
+		expect(getList('setNumber-operands').read()).toEqual([
+			{ operation: 'add', type: 'constant', value: 0 }
+		]);
+		commandWrapper.unmount();
+		operandWrapper.unmount();
+	});
+
+	it('edit 路径：customLoad 解构 params 到控件 DOM', async () => {
+		const { commandWrapper, operandWrapper } = await mountAll();
+		const operands = [
+			{ operation: 'add', type: 'constant', value: 5 },
+			{ operation: 'add', type: 'variable', variable: { type: 'local', key: 'v' } }
+		];
+		CommandSchema.edit(target, {
+			id: 'setNumber',
+			params: { variable: { type: 'local', key: 'foo' }, operation: 'set', operands }
+		});
+		expect(Window.open).toHaveBeenCalledWith('setNumber');
+		expect(getControl('setNumber-variable').read()).toEqual({ type: 'local', key: 'foo' });
+		expect(getList('setNumber-operands').read()).toEqual(operands);
+		commandWrapper.unmount();
+		operandWrapper.unmount();
+	});
+
+	it('save 路径：用户改控件后经 Command.cases.setNumber.save 保存', async () => {
+		const { commandWrapper, operandWrapper } = await mountAll();
+		Command.cases.setNumber.customLoad!({
+			variable: { type: 'local', key: 'foo' },
+			operation: 'add',
+			operands: [{ operation: 'add', type: 'constant', value: 1 }]
+		});
+		getControl('setNumber-variable').write({ type: 'global', key: 'bar' });
+		getList('setNumber-operands').write([{ operation: 'add', type: 'constant', value: 2 }]);
+		const saved = vi.fn();
+		Command.save = saved;
+		Command.cases.setNumber.save!();
+		expect(saved).toHaveBeenCalledWith({
+			variable: { type: 'global', key: 'bar' },
+			operation: 'add',
+			operands: [{ operation: 'add', type: 'constant', value: 2 }]
+		});
+		commandWrapper.unmount();
+		operandWrapper.unmount();
+	});
+
+	it('save 路径：variable 无效校验失败不保存', async () => {
+		const { commandWrapper, operandWrapper } = await mountAll();
+		Command.cases.setNumber.customLoad!({
+			variable: { type: 'local', key: '' },
+			operation: 'set',
+			operands: [{ operation: 'add', type: 'constant', value: 0 }]
+		});
+		const saved = vi.fn();
+		Command.save = saved;
+		Command.cases.setNumber.save!();
+		expect(saved).not.toHaveBeenCalled();
+		commandWrapper.unmount();
+		operandWrapper.unmount();
+	});
+
+	it('save 路径：空 operands 校验失败不保存', async () => {
+		const { commandWrapper, operandWrapper } = await mountAll();
+		Command.cases.setNumber.customLoad!({
+			variable: { type: 'local', key: 'foo' },
+			operation: 'set',
+			operands: [{ operation: 'add', type: 'constant', value: 0 }]
+		});
+		getList('setNumber-operands').write([]);
+		const saved = vi.fn();
+		Command.save = saved;
+		Command.cases.setNumber.save!();
+		expect(saved).not.toHaveBeenCalled();
+		commandWrapper.unmount();
+		operandWrapper.unmount();
+	});
+});

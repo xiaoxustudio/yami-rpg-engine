@@ -1,40 +1,16 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.setEvent = new CommandSchema({
 	name: 'setEvent',
-	onInitialize() {
-		$('#setEvent-operation')?.loadItems?.([
-			{ name: 'Stop Propagation', value: 'stop-propagation' },
-			{ name: 'Pause and Save to Variable', value: 'pause' },
-			{ name: 'Continue and Reset Variable', value: 'continue' },
-			{ name: 'Enable Global Event', value: 'enable' },
-			{ name: 'Disable Global Event', value: 'disable' },
-			{ name: 'Set to Highest Priority', value: 'highest-priority' },
-			{ name: 'Go to Choice Branch', value: 'goto-choice-branch' }
-		]);
-		$('#setEvent-operation')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: ['pause', 'continue'],
-					targets: [$('#setEvent-variable')]
-				},
-				{
-					case: ['enable', 'disable', 'highest-priority'],
-					targets: [$('#setEvent-eventId')]
-				},
-				{
-					case: 'goto-choice-branch',
-					targets: [$('#setEvent-choiceIndex')]
-				}
-			]);
-	},
+	fields: [
+		{ key: 'operation', default: 'stop-propagation' },
+		{ key: 'variable', default: { type: 'global', key: '' } },
+		{ key: 'eventId', default: '' },
+		{ key: 'choiceIndex', default: 0 }
+	],
 	customParse({
 		operation,
 		variable,
@@ -68,57 +44,5 @@ Command.cases.setEvent = new CommandSchema({
 			{ text: Local.get!('command.setEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		operation = 'stop-propagation',
-		variable = { type: 'global', key: '' },
-		eventId = '',
-		choiceIndex = 0
-	}) {
-		switch (operation) {
-			case 'prevent-scene-input-events':
-			case 'restore-scene-input-events':
-				operation = 'stop-propagation';
-				break;
-		}
-		const write = getElementWriter('setEvent');
-		write('operation', operation);
-		write('variable', variable);
-		write('eventId', eventId);
-		write('choiceIndex', choiceIndex);
-		getFocus($('#setEvent-operation'));
-	},
-	customSave() {
-		const read = getElementReader('setEvent');
-		const operation = read('operation');
-		switch (operation) {
-			case 'stop-propagation':
-				Command.save!({ operation });
-				break;
-			case 'pause':
-			case 'continue': {
-				const variable = read('variable');
-				if (VariableGetter.isNone!(variable)) {
-					return getFocus($('#setEvent-variable'));
-				}
-				Command.save!({ operation, variable });
-				break;
-			}
-			case 'enable':
-			case 'disable':
-			case 'highest-priority': {
-				const eventId = read('eventId');
-				if (eventId === '') {
-					return getFocus($('#setEvent-eventId'));
-				}
-				Command.save!({ operation, eventId });
-				break;
-			}
-			case 'goto-choice-branch': {
-				const choiceIndex = read('choiceIndex');
-				Command.save!({ operation, choiceIndex });
-				break;
-			}
-		}
 	}
 });

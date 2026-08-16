@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame ref="frame" id="setString" @confirm="onConfirm">
+	<WindowFrame id="setString" @confirm="onConfirm">
 		<template #title><TitleBar>Set String<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -8,182 +8,182 @@
 					id="setString-variable"
 					type="variable"
 					filter="writable-string"
-					:model-value="form.variable"
+					@input="onVariable"
 				/>
 				<div class="text">Operation</div
-				><SelectBox id="setString-operation" :model-value="form.operation" />
+				><SelectBox id="setString-operation" v-model="form.operation" />
 				<div class="text">Type</div
 				><SelectBox
 					id="setString-operand-type"
-					:model-value="form.operandType"
+					v-model="form.operandType"
 					@write="onWrite"
 				/>
 				<div class="text">String</div
 				><TextArea
 					id="setString-operand-common-value"
 					menu="tag-local-var tag-global-var tag-localization"
-					:model-value="form.commonValue"
+					v-model="form.commonValue"
 				/>
 				<div class="text">String Method</div
 				><SelectBox
 					id="setString-operand-string-method"
-					:model-value="form.stringMethod"
+					v-model="form.stringMethod"
 				/>
 				<div class="text">Variable</div
 				><CustomBox
 					id="setString-operand-common-variable"
 					type="variable"
 					filter="all"
-					:model-value="form.commonVariable"
+					@input="onCommonVariable"
 				/>
 				<div class="text">Index</div
 				><NumberVar
 					id="setString-operand-string-char-index"
 					min="0"
 					max="1000000000"
-					:model-value="form.stringCharIndex"
+					v-model="form.stringCharIndex"
 				/>
 				<div class="text">Begin Index</div
 				><NumberVar
 					id="setString-operand-string-slice-begin"
 					min="-1000000000"
 					max="1000000000"
-					:model-value="form.stringSliceBegin"
+					v-model="form.stringSliceBegin"
 				/>
 				<div class="text">End Index</div
 				><NumberVar
 					id="setString-operand-string-slice-end"
 					min="-1000000000"
 					max="1000000000"
-					:model-value="form.stringSliceEnd"
+					v-model="form.stringSliceEnd"
 				/>
 				<div class="text">Target Length</div
 				><NumberBox
 					id="setString-operand-string-pad-start-length"
 					min="2"
 					max="10"
-					:model-value="form.stringPadStartLength"
+					v-model="form.stringPadStartLength"
 				/>
 				<div class="text">Pad String</div
 				><TextBox
 					id="setString-operand-string-pad-start-pad"
-					:model-value="form.stringPadStartPad"
+					v-model="form.stringPadStartPad"
 				/>
 				<div class="text">Substring</div
 				><StringVar
 					id="setString-operand-string-replace-pattern"
-					:model-value="form.stringReplacePattern"
+					v-model="form.stringReplacePattern"
 				/>
 				<div class="text">Replacement</div
 				><StringVar
 					id="setString-operand-string-replace-replacement"
-					:model-value="form.stringReplaceReplacement"
+					v-model="form.stringReplaceReplacement"
 				/>
 				<div class="text">Attribute Key</div
 				><CustomBox
 					id="setString-operand-attribute-attributeId"
 					type="attribute"
-					:model-value="form.attributeId"
+					@input="onAttributeId"
 				/>
 				<div class="text">Enum String</div
 				><CustomBox
 					id="setString-operand-enum-stringId"
 					type="enum-string"
-					:model-value="form.enumStringId"
+					@input="onEnumStringId"
 				/>
 				<div class="text">Property</div
 				><SelectBox
 					id="setString-operand-object-property"
-					:model-value="form.objectProperty"
+					v-model="form.objectProperty"
 				/>
 				<div class="text">Property</div
 				><SelectBox
 					id="setString-operand-element-property"
-					:model-value="form.elementProperty"
+					v-model="form.elementProperty"
 				/>
 				<div class="text">Element</div
 				><CustomBox
 					id="setString-operand-element-element"
 					type="element"
-					:model-value="form.elementElement"
+					@input="onElementElement"
 				/>
 				<div class="text">Actor</div
 				><CustomBox
 					id="setString-operand-common-actor"
 					type="actor"
-					:model-value="form.commonActor"
+					@input="onCommonActor"
 				/>
 				<div class="text">Skill</div
 				><CustomBox
 					id="setString-operand-common-skill"
 					type="skill"
-					:model-value="form.commonSkill"
+					@input="onCommonSkill"
 				/>
 				<div class="text">Trigger</div
 				><CustomBox
 					id="setString-operand-common-trigger"
 					type="trigger"
-					:model-value="form.commonTrigger"
+					@input="onCommonTrigger"
 				/>
 				<div class="text">State</div
 				><CustomBox
 					id="setString-operand-common-state"
 					type="state"
-					:model-value="form.commonState"
+					@input="onCommonState"
 				/>
 				<div class="text">Equipment</div
 				><CustomBox
 					id="setString-operand-common-equipment"
 					type="equipment"
-					:model-value="form.commonEquipment"
+					@input="onCommonEquipment"
 				/>
 				<div class="text">Item</div
 				><CustomBox
 					id="setString-operand-common-item"
 					type="item"
-					:model-value="form.commonItem"
+					@input="onCommonItem"
 				/>
 				<div class="text">File</div
 				><CustomBox
 					id="setString-operand-object-fileId"
 					type="file"
-					:model-value="form.objectFileId"
+					@input="onObjectFileId"
 				/>
 				<div class="text">Index</div
 				><NumberVar
 					id="setString-operand-list-index"
 					min="0"
 					max="1000000000"
-					:model-value="form.listIndex"
+					v-model="form.listIndex"
 				/>
 				<div class="text">Param Name</div
 				><StringVar
 					id="setString-operand-parameter-key"
-					:model-value="form.parameterKey"
+					v-model="form.parameterKey"
 				/>
 				<div class="text">Script</div
-				><TextBox id="setString-operand-script" :model-value="form.script" /> <div class="text">Data</div
+				><TextBox id="setString-operand-script" v-model="form.script" /> <div class="text">Data</div
 				><SelectBox
 					id="setString-operand-other-data"
-					:model-value="form.otherData"
+					v-model="form.otherData"
 				/> <div class="text">Choice Index</div
 				><NumberVar
 					id="setString-operand-showChoices-content-choiceIndex"
 					min="0"
 					max="255"
-					:model-value="form.showChoicesIndex"
+					v-model="form.showChoicesIndex"
 				/>
 				<div class="text">Timestamp</div
 				><CustomBox
 					id="setString-operand-parse-timestamp-variable"
 					type="variable"
 					filter="number"
-					:model-value="form.parseTimestampVariable"
+					@input="onParseTimestampVariable"
 				/>
 				<div class="text">Date Format</div
 				><TextBox
 					id="setString-operand-parse-timestamp-format"
-					:model-value="form.parseTimestampFormat"
+					v-model="form.parseTimestampFormat"
 				/>
 				<div class="text">Image Width</div
 				><NumberBox
@@ -191,7 +191,7 @@
 					min="64"
 					max="7680"
 					unit="px"
-					:model-value="form.screenshotWidth"
+					v-model="form.screenshotWidth"
 				/>
 				<div class="text">Image Height</div
 				><NumberBox
@@ -199,7 +199,7 @@
 					min="64"
 					max="7680"
 					unit="px"
-					:model-value="form.screenshotHeight"
+					v-model="form.screenshotHeight"
 				/>
 			</div>
 		
@@ -207,14 +207,11 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalStore } from '@app/stores/local';
-import { useInspectorStore } from '@app/stores/inspector';
-import { onMounted, reactive, ref } from 'vue';
-import { Command } from '@/command/command-object.ts';
-import type { SetStringForm } from '@/module/command/setString.ts';
+import { onMounted } from 'vue';
+import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
@@ -223,123 +220,263 @@ import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const form = reactive<SetStringForm>({
-	variable: { type: 'local', key: '' },
-	operation: 'set',
-	operandType: 'constant',
-	commonValue: '',
-	stringMethod: 'char',
-	commonVariable: { type: 'local', key: '' },
-	stringCharIndex: 0,
-	stringSliceBegin: 0,
-	stringSliceEnd: 0,
-	stringPadStartLength: 2,
-	stringPadStartPad: '0',
-	stringReplacePattern: '',
-	stringReplaceReplacement: '',
-	attributeId: '',
-	enumStringId: '',
-	objectProperty: 'actor-team-id',
-	elementProperty: 'text-content',
-	elementElement: { type: 'trigger' },
-	commonActor: { type: 'trigger' },
-	commonSkill: { type: 'trigger' },
-	commonTrigger: { type: 'trigger' },
-	commonState: { type: 'trigger' },
-	commonEquipment: { type: 'trigger' },
-	commonItem: { type: 'trigger' },
-	objectFileId: '',
-	listIndex: 0,
-	parameterKey: '',
-	script: '',
-	otherData: 'trigger-key',
-	showChoicesIndex: 0,
-	parseTimestampVariable: { type: 'local', key: '' },
-	parseTimestampFormat: '{Y}-{M}-{D} {h}:{m}:{s}',
-	screenshotWidth: 320,
-	screenshotHeight: 180
-});
+const { form, save, writeHandler } = useSetStringCommandSchema();
 
-const setForm = (data: Partial<SetStringForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
+const onVariable = (value: unknown) => {
+	form.variable = value;
 };
 
-const getForm = (): SetStringForm => {
-	const data = { ...form } as SetStringForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
-			| (HTMLElement & { read?: () => unknown })
-			| null;
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
+const onCommonVariable = (value: unknown) => {
+	form.commonVariable = value;
 };
 
-const FIELD_BY_ID: Record<string, keyof SetStringForm> = {
-	'setString-variable': 'variable',
-	'setString-operation': 'operation',
-	'setString-operand-type': 'operandType',
-	'setString-operand-common-value': 'commonValue',
-	'setString-operand-string-method': 'stringMethod',
-	'setString-operand-common-variable': 'commonVariable',
-	'setString-operand-string-char-index': 'stringCharIndex',
-	'setString-operand-string-slice-begin': 'stringSliceBegin',
-	'setString-operand-string-slice-end': 'stringSliceEnd',
-	'setString-operand-string-pad-start-length': 'stringPadStartLength',
-	'setString-operand-string-pad-start-pad': 'stringPadStartPad',
-	'setString-operand-string-replace-pattern': 'stringReplacePattern',
-	'setString-operand-string-replace-replacement': 'stringReplaceReplacement',
-	'setString-operand-attribute-attributeId': 'attributeId',
-	'setString-operand-enum-stringId': 'enumStringId',
-	'setString-operand-object-property': 'objectProperty',
-	'setString-operand-element-property': 'elementProperty',
-	'setString-operand-element-element': 'elementElement',
-	'setString-operand-common-actor': 'commonActor',
-	'setString-operand-common-skill': 'commonSkill',
-	'setString-operand-common-trigger': 'commonTrigger',
-	'setString-operand-common-state': 'commonState',
-	'setString-operand-common-equipment': 'commonEquipment',
-	'setString-operand-common-item': 'commonItem',
-	'setString-operand-object-fileId': 'objectFileId',
-	'setString-operand-list-index': 'listIndex',
-	'setString-operand-parameter-key': 'parameterKey',
-	'setString-operand-script': 'script',
-	'setString-operand-other-data': 'otherData',
-	'setString-operand-showChoices-content-choiceIndex': 'showChoicesIndex',
-	'setString-operand-parse-timestamp-variable': 'parseTimestampVariable',
-	'setString-operand-parse-timestamp-format': 'parseTimestampFormat',
-	'setString-operand-screenshot-width': 'screenshotWidth',
-	'setString-operand-screenshot-height': 'screenshotHeight'
+const onAttributeId = (value: unknown) => {
+	form.attributeId = value;
 };
 
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
+const onEnumStringId = (value: unknown) => {
+	form.enumStringId = value;
+};
 
-const inspector = useInspectorStore();
+const onElementElement = (value: unknown) => {
+	form.elementElement = value;
+};
+
+const onCommonActor = (value: unknown) => {
+	form.commonActor = value;
+};
+
+const onCommonSkill = (value: unknown) => {
+	form.commonSkill = value;
+};
+
+const onCommonTrigger = (value: unknown) => {
+	form.commonTrigger = value;
+};
+
+const onCommonState = (value: unknown) => {
+	form.commonState = value;
+};
+
+const onCommonEquipment = (value: unknown) => {
+	form.commonEquipment = value;
+};
+
+const onCommonItem = (value: unknown) => {
+	form.commonItem = value;
+};
+
+const onObjectFileId = (value: unknown) => {
+	form.objectFileId = value;
+};
+
+const onParseTimestampVariable = (value: unknown) => {
+	form.parseTimestampVariable = value;
+};
+
 const onWrite = (value: unknown) => {
-	Command?.cases?.setString?.writeHandler?.({ value });
+	writeHandler({ value: value as string });
 };
-
-const local = useLocalStore();
 
 const onConfirm = () => {
-	Command?.cases?.setString?.save?.();
+	save();
 };
 
 onMounted(() => {
-	const el = frame.value?.root;
-	if (el) {
-		attachElementApi(el, { setForm, getForm });
-	}
+	$('#setString-operation')?.loadItems?.([
+		{ name: 'Set', value: 'set' },
+		{ name: 'Add', value: 'add' }
+	]);
+	$('#setString-operand-type')?.loadItems?.([
+		{ name: 'Constant', value: 'constant' },
+		{ name: 'Variable', value: 'variable' },
+		{ name: 'Template String', value: 'template' },
+		{ name: 'String Method', value: 'string' },
+		{ name: 'Attribute Key', value: 'attribute' },
+		{ name: 'Enumeration', value: 'enum' },
+		{ name: 'Object', value: 'object' },
+		{ name: 'Element', value: 'element' },
+		{ name: 'List', value: 'list' },
+		{ name: 'Parameter', value: 'parameter' },
+		{ name: 'Script', value: 'script' },
+		{ name: 'Other', value: 'other' }
+	]);
+	$('#setString-operand-type')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'constant',
+				targets: [$('#setString-operand-common-value')]
+			},
+			{
+				case: 'variable',
+				targets: [$('#setString-operand-common-variable')]
+			},
+			{
+				case: 'template',
+				targets: [$('#setString-operand-common-value')]
+			},
+			{
+				case: 'string',
+				targets: [
+					$('#setString-operand-string-method'),
+					$('#setString-operand-common-variable')
+				]
+			},
+			{
+				case: 'attribute',
+				targets: [$('#setString-operand-attribute-attributeId')]
+			},
+			{
+				case: 'enum',
+				targets: [$('#setString-operand-enum-stringId')]
+			},
+			{
+				case: 'object',
+				targets: [$('#setString-operand-object-property')]
+			},
+			{
+				case: 'element',
+				targets: [
+					$('#setString-operand-element-property'),
+					$('#setString-operand-element-element')
+				]
+			},
+			{
+				case: 'list',
+				targets: [
+					$('#setString-operand-common-variable'),
+					$('#setString-operand-list-index')
+				]
+			},
+			{
+				case: 'parameter',
+				targets: [$('#setString-operand-parameter-key')]
+			},
+			{ case: 'script', targets: [$('#setString-operand-script')] },
+			{ case: 'other', targets: [$('#setString-operand-other-data')] }
+		]);
+	$('#setString-operand-string-method')?.loadItems?.([
+		{ name: 'Char', value: 'char' },
+		{ name: 'Slice', value: 'slice' },
+		{ name: 'Pad Start', value: 'pad-start' },
+		{ name: 'Replace', value: 'replace' },
+		{ name: 'Replace All', value: 'replace-all' }
+	]);
+	$('#setString-operand-string-method')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'char',
+				targets: [$('#setString-operand-string-char-index')]
+			},
+			{
+				case: 'slice',
+				targets: [
+					$('#setString-operand-string-slice-begin'),
+					$('#setString-operand-string-slice-end')
+				]
+			},
+			{
+				case: 'pad-start',
+				targets: [
+					$('#setString-operand-string-pad-start-length'),
+					$('#setString-operand-string-pad-start-pad')
+				]
+			},
+			{
+				case: ['replace', 'replace-all'],
+				targets: [
+					$('#setString-operand-string-replace-pattern'),
+					$('#setString-operand-string-replace-replacement')
+				]
+			}
+		]);
+	$('#setString-operand-object-property')?.loadItems?.([
+		{ name: 'Actor - Team ID', value: 'actor-team-id' },
+		{ name: 'Actor - File ID', value: 'actor-file-id' },
+		{
+			name: 'Actor - Anim Motion Name',
+			value: 'actor-animation-motion-name'
+		},
+		{ name: 'Skill - File ID', value: 'skill-file-id' },
+		{ name: 'Trigger - File ID', value: 'trigger-file-id' },
+		{ name: 'State - File ID', value: 'state-file-id' },
+		{ name: 'Equipment - File ID', value: 'equipment-file-id' },
+		{ name: 'Equipment - Slot', value: 'equipment-slot' },
+		{ name: 'Item - File ID', value: 'item-file-id' },
+		{ name: 'File - ID', value: 'file-id' }
+	]);
+	$('#setString-operand-object-property')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['actor-team-id', 'actor-file-id', 'actor-animation-motion-name'],
+				targets: [$('#setString-operand-common-actor')]
+			},
+			{
+				case: 'skill-file-id',
+				targets: [$('#setString-operand-common-skill')]
+			},
+			{
+				case: 'trigger-file-id',
+				targets: [$('#setString-operand-common-trigger')]
+			},
+			{
+				case: 'state-file-id',
+				targets: [$('#setString-operand-common-state')]
+			},
+			{
+				case: ['equipment-file-id', 'equipment-slot'],
+				targets: [$('#setString-operand-common-equipment')]
+			},
+			{
+				case: 'item-file-id',
+				targets: [$('#setString-operand-common-item')]
+			},
+			{
+				case: 'file-id',
+				targets: [$('#setString-operand-object-fileId')]
+			}
+		]);
+	$('#setString-operand-element-property')?.loadItems?.([
+		{ name: 'Text - Content', value: 'text-content' },
+		{ name: 'Text Box - Text', value: 'textBox-text' },
+		{ name: 'Dialog Box - Content', value: 'dialogBox-content' }
+	]);
+	$('#setString-operand-other-data')?.loadItems?.([
+		{ name: 'Event Trigger Key', value: 'trigger-key' },
+		{
+			name: 'Start Position - Scene ID',
+			value: 'start-position-scene-id'
+		},
+		{ name: 'Show Text - Content', value: 'showText-content' },
+		{ name: 'Show Choices - Content', value: 'showChoices-content' },
+		{ name: 'Parse Timestamp', value: 'parse-timestamp' },
+		{ name: 'Screenshot(Base64)', value: 'screenshot' },
+		{ name: 'Game Language', value: 'game-language' }
+	]);
+	$('#setString-operand-other-data')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'showChoices-content',
+				targets: [$('#setString-operand-showChoices-content-choiceIndex')]
+			},
+			{
+				case: 'parse-timestamp',
+				targets: [
+					$('#setString-operand-parse-timestamp-variable'),
+					$('#setString-operand-parse-timestamp-format')
+				]
+			},
+			{
+				case: 'screenshot',
+				targets: [
+					$('#setString-operand-screenshot-width'),
+					$('#setString-operand-screenshot-height')
+				]
+			}
+		]);
 });
 </script>

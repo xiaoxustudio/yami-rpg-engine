@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -14,18 +12,6 @@ Command.cases.setGameSpeed = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setGameSpeed-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setGameSpeed')?.on?.('open', function (event: Event) {
-			$('#setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setGameSpeed')?.on?.('closed', function (event: Event) {
-			clear($('#setGameSpeed-easingId'));
-		});
-	},
 	customParse({
 		speed,
 		easingId,
@@ -45,8 +31,5 @@ Command.cases.setGameSpeed = new CommandSchema({
 			{ text: Local.get!('command.setGameSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setGameSpeed-speed'), 'all');
 	}
 });

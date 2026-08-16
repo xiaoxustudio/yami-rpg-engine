@@ -1,7 +1,7 @@
 import { GlobalPath, Path } from '@/util/config.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { FSP } from '@/file/file-system.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from './editor.ts';
 import { Particle } from '@/particle/particle-window.ts';

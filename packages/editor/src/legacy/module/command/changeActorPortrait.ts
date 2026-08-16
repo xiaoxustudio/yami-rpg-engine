@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,26 +5,12 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.changeActorPortrait = new CommandSchema({
 	name: 'changeActorPortrait',
-	onInitialize() {
-		$('#changeActorPortrait-mode')?.loadItems?.([
-			{ name: 'Full Mode', value: 'full' },
-			{ name: 'Image Mode', value: 'portrait' },
-			{ name: 'Clip Mode', value: 'clip' }
-		]);
-		$('#changeActorPortrait-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'full',
-					targets: [$('#changeActorPortrait-portrait'), $('#changeActorPortrait-clip')]
-				},
-				{
-					case: 'portrait',
-					targets: [$('#changeActorPortrait-portrait')]
-				},
-				{ case: 'clip', targets: [$('#changeActorPortrait-clip')] }
-			]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'full' },
+		{ key: 'portrait', default: '' },
+		{ key: 'clip', default: [0, 0, 64, 64] }
+	],
 	parsePortraitClip(clip: number[]) {
 		const label = Local.get!('command.changeActorPortrait.clip');
 		const x = Command.setNumberColor!(clip[0]);
@@ -74,33 +58,5 @@ Command.cases.changeActorPortrait = new CommandSchema({
 			{ text: Local.get!('command.changeActorPortrait') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		mode = 'full',
-		portrait = '',
-		clip = [0, 0, 64, 64]
-	}) {
-		const write = getElementWriter('changeActorPortrait');
-		write('actor', actor);
-		write('mode', mode);
-		write('portrait', portrait);
-		write('clip', clip);
-		getFocus($('#changeActorPortrait-actor'));
-	},
-	customSave() {
-		const read = getElementReader('changeActorPortrait');
-		const actor = read('actor');
-		const mode = read('mode');
-		const portrait = read('portrait');
-		const clip = read('clip');
-		switch (mode) {
-			case 'full':
-				return Command.save!({ actor, mode, portrait, clip });
-			case 'portrait':
-				return Command.save!({ actor, mode, portrait });
-			case 'clip':
-				return Command.save!({ actor, mode, clip });
-		}
 	}
 });

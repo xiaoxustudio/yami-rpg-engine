@@ -225,7 +225,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
-import { Sprite } from '@/sprite/sprite.ts';
+import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';

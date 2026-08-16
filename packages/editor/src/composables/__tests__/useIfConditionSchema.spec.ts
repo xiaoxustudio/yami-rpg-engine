@@ -1,0 +1,188 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
+import { mount } from '@vue/test-utils';
+import IfConditionWindow from '@app/components/tools/IfCondition.vue';
+import { IfCondition, type IfConditionData } from '@/command/conditional-condition-window.ts';
+import { Command } from '@/command/command-object.ts';
+import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import { Enum } from '@/enum/enum-window.ts';
+import { Data } from '@/data/data-object.ts';
+import { Window } from '@/tools/window-object.ts';
+
+vi.mock('@app/stores/local', () => ({
+	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
+}));
+
+vi.mock('@/tools/localization.ts', () => ({
+	Local: { get: (key: string) => key }
+}));
+
+const target = {
+	save: vi.fn(() => ({ type: 'number' }) as never)
+};
+
+const mockCommand = (): void => {
+	Command.setOperatorColor = ((value: unknown) => `[op:${value}]`) as never;
+	Command.setBooleanColor = ((value: unknown) => `[bool:${value}]`) as never;
+	Command.setNumberColor = ((value: unknown) => `[num:${value}]`) as never;
+	Command.setStringColor = ((value: unknown) => `[str:${value}]`) as never;
+	Command.setDelimiterColor = ((value: unknown) => `[dl:${value}]`) as never;
+	Command.parseVariable = ((variable: { key: string }, type: string) =>
+		`<var:${variable.key}:${type}>`) as never;
+	Command.parseMultiLineString = ((value: unknown) => String(value)) as never;
+	Command.parseEnumStringTag = ((id: string) => `<enum:${id}>`) as never;
+	Command.parseFileName = ((id: string) => `<file:${id}>`) as never;
+	Command.parseVariableEnum = ((group: string, key: string) =>
+		`<venum:${group}:${key}>`) as never;
+	Command.parseActor = ((actor: { type: string }) => `<actor:${actor.type}>`) as never;
+	Command.parseSkill = ((skill: { type: string }) => `<skill:${skill.type}>`) as never;
+	Command.parseState = ((state: { type: string }) => `<state:${state.type}>`) as never;
+	Command.parseEquipment = ((equipment: { type: string }) =>
+		`<equipment:${equipment.type}>`) as never;
+	Command.parseItem = ((item: { type: string }) => `<item:${item.type}>`) as never;
+	Command.parseTrigger = ((trigger: { type: string }) => `<trigger:${trigger.type}>`) as never;
+	Command.parseLight = ((light: { type: string }) => `<light:${light.type}>`) as never;
+	Command.parseElement = ((element: { type: string }) => `<element:${element.type}>`) as never;
+	Command.parseTeam = ((teamId: string) => `<team:${teamId}>`) as never;
+	Command.removeTextTags = ((value: string) => value) as never;
+};
+
+describe('useIfConditionSchema（if 条件窗口 composable：parse 树形渲染/校验/动态绑定转发）', () => {
+	beforeEach(() => {
+		setActivePinia(createPinia());
+		VariableGetter.isNone = (variable: { key: string }) => variable.key === '';
+		Window.open = vi.fn();
+		Window.close = vi.fn();
+		Enum.getStringItems = vi.fn(() => []) as never;
+		Enum.getDefStringId = vi.fn(() => 'id0') as never;
+		Data.teams = { list: [{ id: 'team0' }] } as never;
+		mockCommand();
+		IfCondition.target = target as never;
+	});
+
+	it('parse 树形渲染：boolean/number/string/object/actor/element 各类型', () => {
+		expect(
+			IfCondition.parse!({
+				type: 'number',
+				variable: { type: 'local', key: 'hp' },
+				operation: 'greater',
+				operand: { type: 'constant', value: 5 }
+			} as IfConditionData)
+		).toBe('<var:hp:number> [op:>] [num:5]');
+		expect(
+			IfCondition.parse!({
+				type: 'boolean',
+				variable: { type: 'local', key: 'flag' },
+				operation: 'equal',
+				operand: { type: 'variable', variable: { type: 'local', key: 'other' } }
+			} as IfConditionData)
+		).toBe('<var:flag:boolean> [op:==] <var:other:boolean>');
+		expect(
+			IfCondition.parse!({
+				type: 'string',
+				variable: { type: 'local', key: 'name' },
+				operation: 'equal',
+				operand: { type: 'enum', stringId: 'en0' }
+			} as IfConditionData)
+		).toBe('<var:name:string> [op:==] <enum:en0>');
+		expect(
+			IfCondition.parse!({
+				type: 'object',
+				variable: { type: 'local', key: 'obj' },
+				operation: 'equal',
+				operand: { type: 'actor', actor: { type: 'trigger' } }
+			} as IfConditionData)
+		).toBe('<var:obj:object> [op:==] <actor:trigger>');
+		expect(
+			IfCondition.parse!({
+				type: 'actor',
+				actor: { type: 'trigger' },
+				operation: 'has-skill',
+				skillId: 'skill0'
+			} as IfConditionData)
+		).toContain('<actor:trigger>');
+		expect(
+			IfCondition.parse!({
+				type: 'element',
+				element: { type: 'trigger' },
+				operation: 'visible'
+			} as IfConditionData)
+		).toContain('<element:trigger>');
+	});
+
+	it('parse 树形渲染：keyboard/gamepad/mouse/list/other 各类型', () => {
+		expect(
+			IfCondition.parse!({
+				type: 'keyboard',
+				keycode: 'Enter',
+				state: 'just-pressed'
+			} as IfConditionData)
+		).toContain('Enter');
+		expect(
+			IfCondition.parse!({
+				type: 'gamepad',
+				button: 1,
+				state: 'pressed'
+			} as IfConditionData)
+		).toContain('B');
+		expect(
+			IfCondition.parse!({
+				type: 'mouse',
+				button: 2,
+				state: 'pressed'
+			} as IfConditionData)
+		).toContain('command.if.mouse');
+		expect(
+			IfCondition.parse!({
+				type: 'list',
+				list: { type: 'local', key: 'list' },
+				operation: 'include',
+				target: { type: 'local', key: 'item' }
+			} as IfConditionData)
+		).toBe('<var:list:object> command.if.list.include <var:item:any>');
+		expect(IfCondition.parseListOperation!({ operation: 'include' } as IfConditionData)).toBe(
+			'command.if.list.include'
+		);
+		expect(IfCondition.parseOther!({ key: 'mouse-entered' } as IfConditionData)).toBe(
+			'command.if.other.mouse-entered'
+		);
+	});
+
+	it('writeHandler 按类型更新变量过滤器', async () => {
+		const wrapper = mount(IfConditionWindow, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+		IfCondition.writeHandler!({ value: 'number' });
+		const common = document.getElementById('if-condition-common-variable') as unknown as {
+			filter: string;
+		};
+		expect(common.filter).toBe('number');
+		IfCondition.writeHandler!({ value: 'list' });
+		expect(common.filter).toBe('object');
+		wrapper.unmount();
+	});
+
+	it('save 树形校验：object 类型 equal 分支组装 operand', async () => {
+		const wrapper = mount(IfConditionWindow, { attachTo: document.body });
+		await wrapper.vm.$nextTick();
+		IfCondition.open!({
+			type: 'object',
+			variable: { type: 'local', key: 'obj' },
+			operation: 'equal',
+			operand: { type: 'actor', actor: { type: 'trigger' } }
+		});
+		await wrapper.vm.$nextTick();
+		expect(IfCondition.save!()).toEqual({
+			type: 'object',
+			variable: { type: 'local', key: 'obj' },
+			operation: 'equal',
+			operand: { type: 'actor', actor: { type: 'trigger' } }
+		});
+		wrapper.unmount();
+	});
+
+	it('confirm 转发到 target.save', () => {
+		target.save.mockClear();
+		IfCondition.confirm!(new Event('click'));
+		expect(target.save).toHaveBeenCalled();
+	});
+});

@@ -1,12 +1,12 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { addClass, clear, removeClass, write } from '@/util/element-utils';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from './inspector.ts';
 import { Editor } from '@/main/editor.ts';
 import { Scene } from '@/scene/scene-window.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 {
 	interface FileSceneShape {

@@ -8,13 +8,28 @@ for (const id of ['tooltip', 'window-ambient']) {
 }
 
 // WebGL mock（jsdom 无 canvas 实现——GL 初始化需要 getContext/getExtension）
-const mockContext = {
-	getExtension: () => null,
-	getParameter: () => null,
-	getContextAttributes: () => null,
-	getShaderPrecisionFormat: () => ({ rangeMin: 0, rangeMax: 0, precision: 0 }),
-	measureText: () => ({ width: 0 })
-};
+const mockContext = new Proxy(
+	{
+		getExtension: () => null,
+		getParameter: () => null,
+		getContextAttributes: () => null,
+		getShaderPrecisionFormat: () => ({ rangeMin: 0, rangeMax: 0, precision: 0 }),
+		measureText: () => ({ width: 0 }),
+		createLinearGradient: () => ({ addColorStop: () => undefined })
+	},
+	{
+		get(target, prop) {
+			if (prop in target) {
+				return target[prop as keyof typeof target];
+			}
+			return () => undefined;
+		},
+		set(target, prop, value) {
+			target[prop as keyof typeof target] = value;
+			return true;
+		}
+	}
+);
 HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement): typeof mockContext {
 	return mockContext;
 } as any;

@@ -80,8 +80,16 @@ function walk(dir, out = []) {
 }
 
 const rel = (p) => path.relative(LEGACY_DIR, p).replace(/\\/g, '/');
+const SRC_DIR = path.resolve(ROOT, 'src');
 const resolveImport = (fromDir, spec) => {
-	let target = path.resolve(fromDir, spec);
+	let target;
+	if (spec.startsWith('@app/')) {
+		target = path.resolve(SRC_DIR, spec.slice(5));
+	} else if (spec.startsWith('@/')) {
+		target = path.resolve(LEGACY_DIR, spec.slice(2));
+	} else {
+		target = path.resolve(fromDir, spec);
+	}
 	if (!target.endsWith('.ts')) target += '.ts';
 	return target;
 };

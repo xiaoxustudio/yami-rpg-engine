@@ -3,11 +3,11 @@
 	<template #title><TitleBar>Set Reverb<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Type</div><SelectBox id="setReverb-type" /> <div class="text">Dry</div
-			><NumberVar id="setReverb-dry" min="0" max="1" step="0.1" decimals="4" />
+			<div class="text">Type</div><SelectBox id="setReverb-type" v-model="form.type" /> <div class="text">Dry</div
+			><NumberVar id="setReverb-dry" min="0" max="1" step="0.1" decimals="4" v-model="form.dry" />
 			<div class="text">Wet</div
-			><NumberVar id="setReverb-wet" min="0" max="1" step="0.1" decimals="4" />
-			<div class="text">Easing</div><SelectBox id="setReverb-easingId" name="easing" />
+			><NumberVar id="setReverb-wet" min="0" max="1" step="0.1" decimals="4" v-model="form.wet" />
+			<div class="text">Easing</div><SelectBox id="setReverb-easingId" name="easing" v-model="form.easingId" />
 			<div class="text">Duration</div
 			><NumberBox
 				id="setReverb-duration"
@@ -15,8 +15,9 @@
 				min="0"
 				max="3600000"
 				unit="ms"
+				v-model="form.duration"
 			 />
-			<div class="text">Wait</div><SelectBox id="setReverb-wait" name="wait" />
+			<div class="text">Wait</div><SelectBox id="setReverb-wait" name="wait" v-model="form.wait" />
 		</div>
 	
 </WindowFrame>
@@ -24,16 +25,40 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useSetReverbCommandSchema();
 
 const onConfirm = () => {
-	Command?.cases?.setReverb?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setReverb-type')?.loadItems?.([
+		{ name: 'BGM', value: 'bgm' },
+		{ name: 'BGS', value: 'bgs' },
+		{ name: 'CV', value: 'cv' },
+		{ name: 'SE', value: 'se' }
+	]);
+	$('#setReverb-wait')?.loadItems?.([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
+	$('#setReverb')?.on?.('open', () => {
+		$('#setReverb-easingId')?.loadItems?.(Data.createEasingItems!());
+	});
+	$('#setReverb')?.on?.('closed', () => {
+		clear($('#setReverb-easingId'));
+	});
+});
 
 </script>

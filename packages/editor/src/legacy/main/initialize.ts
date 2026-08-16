@@ -20,7 +20,7 @@ import { Easing } from '@/data/transition-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Localization } from '@/local/local-window.ts';
 import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';

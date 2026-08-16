@@ -1,7 +1,4 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus, read } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
@@ -17,22 +14,6 @@ Command.cases.addAnimationComponent = new CommandSchema({
 		{ key: 'priority', default: 0 },
 		{ key: 'offsetY', default: 0 }
 	],
-	onInitialize() {
-		$('#addAnimationComponent-rotatable')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#addAnimationComponent-syncAngle')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		// addAnimationComponent-animationId write 经 Vue 模板转发（addAnimationComponent.vue @write → Command.cases.addAnimationComponent.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		const elMotion = $('#addAnimationComponent-motion');
-		elMotion.loadItems(Animation.getMotionListItems!(event.value));
-		elMotion.write2(read(elMotion));
-	},
 	parseRotatable(rotatable: boolean) {
 		return rotatable ? Local.get!('command.addAnimationComponent.rotatable') : '';
 	},
@@ -81,8 +62,5 @@ Command.cases.addAnimationComponent = new CommandSchema({
 			{ text: Local.get!('command.addAnimationComponent') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#addAnimationComponent-actor'));
 	}
 });

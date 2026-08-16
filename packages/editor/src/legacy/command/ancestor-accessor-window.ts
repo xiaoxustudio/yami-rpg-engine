@@ -1,7 +1,6 @@
-﻿import { $, getElementReader } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, write } from '@/util/element-utils.ts';
-import { VariableGetter } from './variable-accessor-window.ts';
+﻿import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils.ts';
+import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
 import { PresetElement } from '@/tools/preset-element-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
 
@@ -38,54 +37,9 @@ AncestorGetter.initialize = function (this: AncestorGetterShape) {
 
 AncestorGetter.open = function (this: AncestorGetterShape, target: AccessorTarget) {
 	this.target = target;
-	Window.open!('ancestorGetter');
-
-	let presetId = PresetElement.getDefaultPresetId!();
-	let variable = { type: 'local', key: '' };
-	const element = target.read?.();
-	switch (element.type) {
-		case 'trigger':
-		case 'latest':
-			break;
-		case 'by-id':
-			presetId = element.presetId;
-			break;
-		case 'variable':
-			variable = element.variable;
-			break;
-	}
-	write($('#ancestorGetter-type'), element.type);
-	write($('#ancestorGetter-presetId'), presetId);
-	write($('#ancestorGetter-variable'), variable);
-	getFocus($('#ancestorGetter-type'));
+	useAncestorGetterWindow().open(target, { presetId: PresetElement.getDefaultPresetId() });
 };
 
 AncestorGetter.confirm = function (this: AncestorGetterShape, event: Event) {
-	const read = getElementReader('ancestorGetter');
-	const type = read('type');
-	let getter;
-	switch (type) {
-		case 'trigger':
-		case 'latest':
-			getter = { type };
-			break;
-		case 'by-id': {
-			const presetId = read('presetId');
-			if (presetId === '') {
-				return getFocus($('#ancestorGetter-presetId'));
-			}
-			getter = { type, presetId };
-			break;
-		}
-		case 'variable': {
-			const variable = read('variable');
-			if (VariableGetter.isNone(variable)) {
-				return getFocus($('#ancestorGetter-variable'));
-			}
-			getter = { type, variable };
-			break;
-		}
-	}
-	this.target?.input?.(getter!);
-	Window.close!('ancestorGetter');
-}.bind(AncestorGetter);
+	useAncestorGetterWindow().confirm();
+};

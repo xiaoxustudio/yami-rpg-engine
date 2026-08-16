@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,15 +5,12 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.loadScene = new CommandSchema({
 	name: 'loadScene',
-	onInitialize() {
-		$('#loadScene-transfer')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#loadScene-transfer')
-			?.enableHiddenMode?.()
-			?.relate?.([{ case: true, targets: [$('#loadScene-x'), $('#loadScene-y')] }]);
-	},
+	fields: [
+		{ key: 'sceneId', default: '' },
+		{ key: 'transfer', default: true },
+		{ key: 'x', default: 0 },
+		{ key: 'y', default: 0 }
+	],
 	customParse({
 		sceneId,
 		transfer,
@@ -36,34 +31,5 @@ Command.cases.loadScene = new CommandSchema({
 			{ text: Local.get!('command.loadScene') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({ sceneId = '', transfer = true, x = 0, y = 0 }) {
-		const write = getElementWriter('loadScene');
-		write('sceneId', sceneId);
-		write('transfer', transfer);
-		write('x', x);
-		write('y', y);
-		getFocus($('#loadScene-sceneId'));
-	},
-	customSave() {
-		const read = getElementReader('loadScene');
-		const sceneId = read('sceneId');
-		if (sceneId === '') {
-			return getFocus($('#loadScene-sceneId'));
-		}
-		const transfer = read('transfer');
-		switch (transfer) {
-			case true:
-				Command.save!({
-					sceneId,
-					transfer,
-					x: read('x'),
-					y: read('y')
-				});
-				break;
-			case false:
-				Command.save!({ sceneId, transfer });
-				break;
-		}
 	}
 });

@@ -3,18 +3,19 @@
 		<template #title><TitleBar>Move Camera<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Mode</div><SelectBox id="moveCamera-mode" /> <div class="text">Position</div
-				><CustomBox id="moveCamera-position" type="position" /> <div class="text">Actor</div
-				><CustomBox id="moveCamera-actor" type="actor" /> <div class="text">Easing</div
-				><SelectBox id="moveCamera-easingId" name="easing" /> <div class="text">Duration</div
+				<div class="text">Mode</div><SelectBox id="moveCamera-mode" v-model="form.mode" /> <div class="text">Position</div
+				><CustomBox id="moveCamera-position" type="position" @input="onPosition" /> <div class="text">Actor</div
+				><CustomBox id="moveCamera-actor" type="actor" @input="onActor" /> <div class="text">Easing</div
+				><SelectBox id="moveCamera-easingId" name="easing" v-model="form.easingId" /> <div class="text">Duration</div
 				><NumberBox
 					id="moveCamera-duration"
 					name="duration"
 					min="0"
 					max="3600000"
 					unit="ms"
+					v-model="form.duration"
 				 />
-				<div class="text">Wait</div><SelectBox id="moveCamera-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="moveCamera-wait" name="wait" v-model="form.wait" />
 			</div>
 		
 	</WindowFrame>
@@ -23,16 +24,52 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useMoveCameraCommandSchema();
+
+const onPosition = (value: unknown) => {
+	form.position = value;
+};
+
+const onActor = (value: unknown) => {
+	form.actor = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.moveCamera?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#moveCamera-mode')?.loadItems?.([
+		{ name: 'Move to Position', value: 'position' },
+		{ name: 'Follow Actor', value: 'actor' }
+	]);
+	$('#moveCamera-mode')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'position', targets: [$('#moveCamera-position')] },
+			{ case: 'actor', targets: [$('#moveCamera-actor')] }
+		]);
+	$('#moveCamera-wait')?.loadItems?.([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
+	$('#moveCamera')?.on?.('open', () => {
+		$('#moveCamera-easingId')?.loadItems?.(Data.createEasingItems!());
+	});
+	$('#moveCamera')?.on?.('closed', () => {
+		clear($('#moveCamera-easingId'));
+	});
+});
 
 </script>

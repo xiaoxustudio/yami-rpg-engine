@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
-import { Layout } from '@/layout/layout';
+import { Layout } from '@app/engine/layout/layout';
 import { Local } from '@/tools/localization';
 import { attachElementApi } from '@/utils/attach-element-api';
 

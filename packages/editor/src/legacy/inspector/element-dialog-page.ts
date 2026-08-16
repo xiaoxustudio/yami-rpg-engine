@@ -1,5 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $, getElementReader } from '@/util/dom.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 
@@ -7,7 +6,6 @@ import { UI } from '@/ui/ui-window.ts';
 	interface UIDialogBoxShape {
 		target: UIDialogBoxData | null;
 		update: ((node: UIDialogBoxData, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	interface UIDialogBoxData {
@@ -22,8 +20,7 @@ import { UI } from '@/ui/ui-window.ts';
 		create: null,
 		open: null,
 		close: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	UIDialogBox.initialize = function (this: typeof UIDialogBox) {
@@ -128,23 +125,8 @@ import { UI } from '@/ui/ui-window.ts';
 	UIDialogBox.open = function (this: typeof UIDialogBox, node: UIDialogBoxData) {
 		if (this.target !== node) {
 			this.target = node;
-
-			const write = getElementWriter('uiDialogBox', node);
-			write('content');
-			write('interval');
-			write('size');
-			write('lineSpacing');
-			write('letterSpacing');
-			write('color');
-			write('font');
-			write('typeface');
-			write('effect-type');
-			write('effect-shadowOffsetX', node.effect.shadowOffsetX || 1);
-			write('effect-shadowOffsetY', node.effect.shadowOffsetY || 1);
-			write('effect-strokeWidth', node.effect.strokeWidth || 1);
-			write('effect-color', node.effect.color || '000000ff');
-			write('blend');
 			Inspector.uiElement.open(node);
+			($('#uiDialogBox-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -234,14 +216,6 @@ import { UI } from '@/ui/ui-window.ts';
 			}
 		}
 		UI.requestRendering!();
-	};
-
-	UIDialogBox.paramInput = function (this: typeof UIDialogBox, event: Event) {
-		UIDialogBox.update!(
-			UIDialogBox.target as UIDialogBoxData,
-			Inspector.getKey!(this),
-			read(this)
-		);
 	};
 
 	Inspector.uiDialogBox = UIDialogBox;

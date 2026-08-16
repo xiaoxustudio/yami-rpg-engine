@@ -1,5 +1,3 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { ImageProperty } from '@/command/set-image-property-window.ts';
@@ -12,12 +10,6 @@ Command.cases.setImage = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'properties', default: [] }
 	],
-	onInitialize() {
-		$('#setImage-properties')?.bind?.(ImageProperty);
-		$('#setImage')?.on?.('closed', (event: Event) => {
-			clear($('#setImage-properties'));
-		});
-	},
 	customParse({
 		element,
 		properties
@@ -34,17 +26,5 @@ Command.cases.setImage = new CommandSchema({
 			{ text: Local.get!('command.setImage') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setImage-element'));
-	},
-	customSave() {
-		const read = getElementReader('setImage');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setImage-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

@@ -1,7 +1,7 @@
 import { File } from '@/file/file-system-core.ts';
 import { GUID } from '@/file/guid.ts';
 import { AttributeContext } from '@/attribute/attribute-context.ts';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { Manifest } from './metadata-manifest.ts';
 import { EnumerationContext } from '@/enum/enum-context.ts';
 import { FSP } from '@/file/file-system.ts';
@@ -190,7 +190,7 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 	const { scenes } = this;
 	if (scenes[guid]) {
 		return new Promise<unknown>((resolve) => {
-			resolve(Codec.decodeScene(scenes[guid]));
+			resolve(Codec.decodeScene!(scenes[guid]));
 		});
 	}
 
@@ -206,7 +206,7 @@ Data.loadScene = function (this: typeof Data, guid: string) {
 		type: 'text'
 	}).then((code: string) => {
 		try {
-			return Codec.decodeScene((scenes[guid] = code as any));
+			return Codec.decodeScene!((scenes[guid] = code as any));
 		} catch (error: unknown) {
 			(error as Error).message = `${path}\n${(error as Error).message}`;
 			throw error;

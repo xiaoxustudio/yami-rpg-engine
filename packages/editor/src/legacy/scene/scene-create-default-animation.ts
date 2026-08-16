@@ -2,7 +2,7 @@ import { File } from '@/file/file-system-core.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from '@/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
+import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 Scene.createDefaultAnimation = (function IIFE() {
 	type DefaultPlayerClass = new (target: object) => (typeof Animation)['Player'];
 	let DefaultPlayer: DefaultPlayerClass | undefined;

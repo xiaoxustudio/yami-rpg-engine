@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import '@/util/array.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
-import { Layout } from '@/layout/layout';
+import { Layout } from '@app/engine/layout/layout';
 import { Title } from '@/title/title-bar';
 import { Window } from '@/tools/window-object';
 

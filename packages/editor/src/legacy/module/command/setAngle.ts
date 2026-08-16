@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -15,18 +13,6 @@ Command.cases.setAngle = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setAngle-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setAngle')?.on?.('open', function (event: Event) {
-			$('#setAngle-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setAngle')?.on?.('closed', function (event: Event) {
-			clear($('#setAngle-easingId'));
-		});
-	},
 	customParse({
 		actor,
 		angle,
@@ -49,8 +35,5 @@ Command.cases.setAngle = new CommandSchema({
 			{ text: Local.get!('command.setAngle') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setAngle-actor'));
 	}
 });

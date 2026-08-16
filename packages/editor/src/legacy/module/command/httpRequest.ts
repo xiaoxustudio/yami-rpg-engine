@@ -1,39 +1,21 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { RequestkeyValueBind } from './requestURL.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.httpRequest = new CommandSchema({
 	name: 'httpRequest',
-	onInitialize() {
-		$('#httpRequest-method')?.loadItems?.([
-			{ name: 'GET', value: 'GET' },
-			{ name: 'POST', value: 'POST' },
-			{ name: 'PUT', value: 'PUT' },
-			{ name: 'DELETE', value: 'DELETE' },
-			{ name: 'PATCH', value: 'PATCH' }
-		]);
-		$('#httpRequest-responseType')?.loadItems?.([
-			{ name: 'JSON', value: 'json' },
-			{ name: 'Text', value: 'text' },
-			{ name: 'Blob', value: 'blob' },
-			{ name: 'ArrayBuffer', value: 'arraybuffer' },
-			{ name: 'Document', value: 'document' },
-			{ name: 'Stream', value: 'stream' }
-		]);
-		write($('#httpRequest-method'), 'GET');
-		write($('#httpRequest-url'), '');
-		$('#httpRequest-header')?.bind?.(RequestkeyValueBind);
-		$('#httpRequest-data')?.bind?.(RequestkeyValueBind);
-		write($('#httpRequest-timeout'), '');
-		write($('#httpRequest-responseType'), 'json');
-		write($('#httpRequest-withCredentials'), false);
-		write($('#httpRequest-authUser'), '');
-		write($('#httpRequest-authPass'), '');
-	},
+	fields: [
+		{ key: 'url', default: '' },
+		{ key: 'method', default: 'GET' },
+		{ key: 'headers', default: [], domId: 'header' },
+		{ key: 'data', default: [], domId: 'data' },
+		{ key: 'callback', default: '' },
+		{ key: 'timeout', default: '' },
+		{ key: 'responseType', default: 'json' },
+		{ key: 'withCredentials', default: false },
+		{ key: 'authUser', default: '' },
+		{ key: 'authPass', default: '' }
+	],
 	customParse({
 		url = '',
 		method = 'GET',
@@ -130,51 +112,5 @@ Command.cases.httpRequest = new CommandSchema({
 			datas.slice(1),
 			...extra
 		);
-	},
-	customLoad({
-		url = '',
-		method = 'GET',
-		headers = [],
-		data = [],
-		callback = '',
-		timeout = '',
-		responseType = 'json',
-		withCredentials = false,
-		authUser = '',
-		authPass = ''
-	}) {
-		write($('#httpRequest-method'), method);
-		write($('#httpRequest-callback'), callback);
-		write($('#httpRequest-url'), url);
-		write($('#httpRequest-timeout'), timeout ?? '');
-		write($('#httpRequest-responseType'), responseType);
-		write($('#httpRequest-withCredentials'), withCredentials);
-		write($('#httpRequest-authUser'), authUser);
-		write($('#httpRequest-authPass'), authPass);
-		getFocus($('#httpRequest-url'));
-		const writer = getElementWriter('httpRequest');
-		writer('header', headers);
-		writer('data', data);
-	},
-	customSave() {
-		const elVariable = $('#httpRequest-url');
-		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
-		}
-		const elementReader = getElementReader('httpRequest');
-		const timeout = elementReader('timeout');
-		Command.save!({
-			url: variable,
-			method: elementReader('method'),
-			headers: elementReader('header'),
-			data: elementReader('data'),
-			callback: elementReader('callback'),
-			timeout: timeout === '' ? '' : Number(timeout),
-			responseType: elementReader('responseType'),
-			withCredentials: elementReader('withCredentials'),
-			authUser: elementReader('authUser'),
-			authPass: elementReader('authPass')
-		});
 	}
 });

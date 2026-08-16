@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,7 +5,15 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.createTrigger = new CommandSchema({
 	name: 'createTrigger',
-	onInitialize() {},
+	fields: [
+		{ key: 'triggerId', default: '' },
+		{ key: 'caster', default: { type: 'trigger' } },
+		{ key: 'origin', default: { type: 'actor', actor: { type: 'trigger' } } },
+		{ key: 'angle', default: { type: 'direction', degrees: 0 } },
+		{ key: 'distance', default: 0 },
+		{ key: 'scale', default: 1 },
+		{ key: 'timeScale', default: 1 }
+	],
 	customParse({
 		triggerId,
 		caster,
@@ -40,40 +46,5 @@ Command.cases.createTrigger = new CommandSchema({
 			{ text: Local.get!('command.createTrigger') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		triggerId = '',
-		caster = { type: 'trigger' },
-		origin = { type: 'actor', actor: { type: 'trigger' } },
-		angle = { type: 'direction', degrees: 0 },
-		distance = 0,
-		scale = 1,
-		timeScale = 1
-	}) {
-		const write = getElementWriter('createTrigger');
-		write('triggerId', triggerId);
-		write('caster', caster);
-		write('origin', origin);
-		write('angle', angle);
-		write('distance', distance);
-		write('scale', scale);
-		write('timeScale', timeScale);
-		getFocus($('#createTrigger-triggerId'));
-	},
-	customSave() {
-		const read = getElementReader('createTrigger');
-		const triggerId = read('triggerId');
-		if (triggerId === '') {
-			return getFocus($('#createTrigger-triggerId'));
-		}
-		Command.save!({
-			triggerId,
-			caster: read('caster'),
-			origin: read('origin'),
-			angle: read('angle'),
-			distance: read('distance'),
-			scale: read('scale'),
-			timeScale: read('timeScale')
-		});
 	}
 });

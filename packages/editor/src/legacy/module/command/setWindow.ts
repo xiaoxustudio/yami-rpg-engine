@@ -1,5 +1,3 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { WindowProperty } from '@/command/set-window-property-window.ts';
@@ -12,12 +10,6 @@ Command.cases.setWindow = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'properties', default: [] }
 	],
-	onInitialize() {
-		$('#setWindow-properties')?.bind?.(WindowProperty);
-		$('#setWindow')?.on?.('closed', (event: Event) => {
-			clear($('#setWindow-properties'));
-		});
-	},
 	customParse({
 		element,
 		properties
@@ -34,17 +26,5 @@ Command.cases.setWindow = new CommandSchema({
 			{ text: Local.get!('command.setWindow') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setWindow-element'));
-	},
-	customSave() {
-		const read = getElementReader('setWindow');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setWindow-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

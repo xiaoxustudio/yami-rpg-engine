@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getLayoutStore, layoutStateKeys } from '@app/stores/layout';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 
 describe('useLayoutStore（Layout 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

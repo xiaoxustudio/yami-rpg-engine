@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -13,21 +11,6 @@ Command.cases.setTeamRelation = new CommandSchema({
 		{ key: 'teamId2', default: () => Data.teams.list[0].id },
 		{ key: 'relation', default: 0 }
 	],
-	onInitialize() {
-		$('#setTeamRelation-relation')?.loadItems?.([
-			{ name: 'Enemy', value: 0 },
-			{ name: 'Friend', value: 1 }
-		]);
-		$('#setTeamRelation')?.on?.('open', function (event: Event) {
-			const items = Data.createTeamItems!();
-			$('#setTeamRelation-teamId1')?.loadItems?.(items);
-			$('#setTeamRelation-teamId2')?.loadItems?.(items);
-		});
-		$('#setTeamRelation')?.on?.('closed', function (event: Event) {
-			clear($('#setTeamRelation-teamId1'));
-			clear($('#setTeamRelation-teamId2'));
-		});
-	},
 	parseRelation(relation: number) {
 		return Local.get!('command.setTeamRelation.relation.' + relation);
 	},
@@ -49,8 +32,5 @@ Command.cases.setTeamRelation = new CommandSchema({
 			{ text: Local.get!('command.setTeamRelation') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setTeamRelation-teamId1'));
 	}
 });

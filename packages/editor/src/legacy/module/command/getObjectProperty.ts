@@ -53,12 +53,11 @@ export const IndexBind = {
 
 Command.cases.getObjectProperty = new CommandSchema({
 	name: 'getObjectProperty',
-	onInitialize() {
-		$('#getObjectProperty-list')?.bind?.(IndexBind);
-		$('#getObjectProperty')?.on?.('closed', () => {
-			clear($('#getObjectProperty-list'));
-		});
-	},
+	fields: [
+		{ key: 'variable', default: { type: 'local', key: '' } },
+		{ key: 'saveVariable', default: { type: 'local', key: '' }, domId: 'save-variable' },
+		{ key: 'properties', default: [], domId: 'list' }
+	],
 	customParse({ variable, saveVariable, properties }: GetObjectPropertyCommandData) {
 		const contents: Array<{ text?: string; color?: string }> = [];
 		for (const i of properties) {
@@ -72,35 +71,6 @@ Command.cases.getObjectProperty = new CommandSchema({
 				{ text: Command.parseVariable!(variable, 'any') + '.' }
 			] as Array<{ text?: string; color?: string }>
 		).concat(contents.slice(1));
-	},
-	customLoad({
-		variable = { type: 'local', key: '' },
-		saveVariable = { type: 'local', key: '' },
-		properties = []
-	}) {
-		write($('#getObjectProperty-save-variable'), saveVariable);
-		write($('#getObjectProperty-variable'), variable);
-		getFocus($('#getObjectProperty-variable'));
-		const elementWriter = getElementWriter('getObjectProperty');
-		elementWriter('list', properties);
-	},
-	customSave() {
-		const elVariable = $('#getObjectProperty-variable');
-		const variable = read(elVariable);
-		if (VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
-		}
-		const elsaveVariable = $('#getObjectProperty-save-variable');
-		const saveVariable = read(elsaveVariable);
-		if (VariableGetter.isNone!(saveVariable)) {
-			return getFocus(elsaveVariable);
-		}
-		const elementReader = getElementReader('getObjectProperty');
-		const properties = elementReader('list');
-		if (properties.length === 0) {
-			return getFocus($('#getObjectProperty-list'));
-		}
-		Command.save!({ variable, saveVariable, properties });
 	}
 });
 

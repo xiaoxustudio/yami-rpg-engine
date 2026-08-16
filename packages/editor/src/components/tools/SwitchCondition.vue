@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { $ } from '@/util/dom.ts';
 import { SwitchCondition } from '@/command/match-condition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -54,7 +55,59 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const typeEl = $('#switch-condition-type');
+	if (!typeEl) return;
+	typeEl.loadItems([
+		{ name: 'None', value: 'none' },
+		{ name: 'Boolean', value: 'boolean' },
+		{ name: 'Number', value: 'number' },
+		{ name: 'String', value: 'string' },
+		{ name: 'Attribute Key', value: 'attribute' },
+		{ name: 'Enum String', value: 'enum' },
+		{ name: 'Keyboard', value: 'keyboard' },
+		{ name: 'Gamepad', value: 'gamepad' },
+		{ name: 'Mouse', value: 'mouse' },
+		{ name: 'Variable', value: 'variable' }
+	]);
 
+	typeEl.enableHiddenMode().relate([
+		{
+			case: 'boolean',
+			targets: [$('#switch-condition-boolean-value')]
+		},
+		{ case: 'number', targets: [$('#switch-condition-number-value')] },
+		{ case: 'string', targets: [$('#switch-condition-string-value')] },
+		{
+			case: 'attribute',
+			targets: [$('#switch-condition-attribute-attributeId')]
+		},
+		{ case: 'enum', targets: [$('#switch-condition-enum-stringId')] },
+		{
+			case: 'keyboard',
+			targets: [$('#switch-condition-keyboard-keycode')]
+		},
+		{
+			case: 'gamepad',
+			targets: [$('#switch-condition-gamepad-button')]
+		},
+		{ case: 'mouse', targets: [$('#switch-condition-mouse-button')] },
+		{
+			case: 'variable',
+			targets: [$('#switch-condition-variable-variable')]
+		}
+	]);
 
+	$('#switch-condition-boolean-value').loadItems([
+		{ name: 'False', value: false },
+		{ name: 'True', value: true }
+	]);
+
+	$('#switch-condition-mouse-button').loadItems([
+		{ name: 'Left Button', value: 0 },
+		{ name: 'Middle Button', value: 1 },
+		{ name: 'Right Button', value: 2 },
+		{ name: 'Back Button', value: 3 },
+		{ name: 'Forward Button', value: 4 }
+	]);
 });
 </script>

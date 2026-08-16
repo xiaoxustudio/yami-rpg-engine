@@ -3,19 +3,21 @@
 	<template #title><TitleBar>requestURL<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">URL</div><StringVar id="requestURL-url" /> <div class="text">Header</div
+			<div class="text">URL</div><StringVar id="requestURL-url" v-model="form.url" /> <div class="text">Header</div
 			><ParamList id="requestURL-header" /> <div class="text">Method</div
-			><SelectBox id="requestURL-method" /> <div class="text">Data</div
+			><SelectBox id="requestURL-method" v-model="form.method" /> <div class="text">Data</div
 			><ParamList id="requestURL-data" /> <div class="text">CallBack</div
-			><CustomBox id="requestURL-callback" type="file" filter="event" />
+			><CustomBox id="requestURL-callback" type="file" filter="event" @input="onCallback" />
 		</div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
-
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { RequestkeyValueBind } from '@/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -23,9 +25,24 @@ import StringVar from '@app/components/common/StringVar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useRequestURLCommandSchema();
 
-const onConfirm = () => {
-	Command?.cases?.requestURL?.save?.();
+const onCallback = (value: unknown) => {
+	form.callback = value;
 };
 
+const onConfirm = () => {
+	save();
+};
+
+onMounted(() => {
+	$('#requestURL-method')?.loadItems?.([
+		{ name: 'GET', value: 'GET' },
+		{ name: 'POST', value: 'POST' },
+		{ name: 'PUT', value: 'PUT' },
+		{ name: 'DELETE', value: 'DELETE' }
+	]);
+	$('#requestURL-header')?.bind?.(RequestkeyValueBind);
+	$('#requestURL-data')?.bind?.(RequestkeyValueBind);
+});
 </script>

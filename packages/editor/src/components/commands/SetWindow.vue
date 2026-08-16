@@ -3,7 +3,7 @@
 		<template #title><TitleBar>Set Window<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Element</div><CustomBox id="setWindow-element" type="element" />
+				<div class="text">Element</div><CustomBox id="setWindow-element" type="element" @input="onElement" />
 				<div class="text">Properties</div><ParamList id="setWindow-properties" />
 			</div>
 		
@@ -12,15 +12,31 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetWindowCommandSchema } from '@app/composables/commands/useSetWindowCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { WindowProperty } from '@/command/set-window-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
+const { form, save } = useSetWindowCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.setWindow?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setWindow-properties')?.bind?.(WindowProperty);
+	$('#setWindow')?.on?.('closed', () => {
+		clear($('#setWindow-properties'));
+	});
+});
 
 </script>

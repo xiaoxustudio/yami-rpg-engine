@@ -8,6 +8,7 @@
 					id="getObjectProperty-variable"
 					type="variable"
 					filter="object"
+					@input="onVariable"
 				/>
 				<div class="text">getObjectProperty</div><ParamList id="getObjectProperty-list" />
 				<div class="text">saveVariable</div
@@ -15,6 +16,7 @@
 					id="getObjectProperty-save-variable"
 					type="variable"
 					filter="object"
+					@input="onSaveVariable"
 				/>
 			</div>
 		
@@ -23,15 +25,35 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { IndexBind } from '@/module/command/getObjectProperty.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
+const { form, save } = useGetObjectPropertyCommandSchema();
+
+const onVariable = (value: unknown) => {
+	form.variable = value;
+};
+
+const onSaveVariable = (value: unknown) => {
+	form.saveVariable = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.getObjectProperty?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#getObjectProperty-list')?.bind?.(IndexBind);
+	$('#getObjectProperty')?.on?.('closed', () => {
+		clear($('#getObjectProperty-list'));
+	});
+});
 
 </script>

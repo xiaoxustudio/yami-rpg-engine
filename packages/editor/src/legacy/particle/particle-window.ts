@@ -22,7 +22,7 @@ import { Menu } from '@/components/menu-list.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
@@ -34,9 +34,9 @@ import { getParticleStore, type ParticleTargetShape } from '@app/stores/particle
 
 import { StageColor } from '@/util/stage-color.ts';
 import { Timer } from '@/util/timer.ts';
-import { ImageTexture } from '@/webgl/image-texture.ts';
-import { Matrix } from '../webgl/matrix2.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
+import { Matrix } from '@app/engine/webgl/matrix2.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 import type { ParticleElementLayer } from './particle-element.ts';
 
 type ParticleState = 'closed' | 'open';

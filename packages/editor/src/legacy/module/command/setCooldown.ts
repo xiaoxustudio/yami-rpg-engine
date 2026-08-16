@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Enum } from '@/enum/enum-window.ts';
@@ -18,13 +16,6 @@ Command.cases.setCooldown = new CommandSchema({
 		},
 		{ key: 'cooldown', default: 0 }
 	],
-	onInitialize() {
-		$('#setCooldown-operation')?.loadItems?.([
-			{ name: 'Set', value: 'set' },
-			{ name: 'Increase', value: 'increase' },
-			{ name: 'Decrease', value: 'decrease' }
-		]);
-	},
 	customParse({
 		actor,
 		operation,
@@ -46,9 +37,5 @@ Command.cases.setCooldown = new CommandSchema({
 			{ text: Local.get!('command.setCooldown') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		$('#setCooldown-key')?.loadItems?.(Enum.getStringItems!('cooldown-key'));
-		getFocus($('#setCooldown-actor'));
 	}
 });

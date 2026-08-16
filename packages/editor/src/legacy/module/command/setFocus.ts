@@ -1,5 +1,3 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { getFocus, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -7,34 +5,12 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setFocus = new CommandSchema({
 	name: 'setFocus',
-	onInitialize() {
-		$('#setFocus-operation')?.loadItems?.([
-			{ name: 'Add Focus', value: 'add' },
-			{ name: 'Remove Focus', value: 'remove' },
-			{ name: 'Remove The Latest Focus', value: 'remove-latest' },
-			{ name: 'Reset', value: 'reset' }
-		]);
-		$('#setFocus-mode')?.loadItems?.([
-			{ name: 'Control Child Buttons', value: 'control-child-buttons' },
-			{
-				name: 'Control Descendant Buttons',
-				value: 'control-descendant-buttons'
-			}
-		]);
-		$('#setFocus-operation')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: 'add',
-					targets: [
-						$('#setFocus-element'),
-						$('#setFocus-mode'),
-						$('#setFocus-cancelable')
-					]
-				},
-				{ case: 'remove', targets: [$('#setFocus-element')] }
-			]);
-	},
+	fields: [
+		{ key: 'operation', default: 'add' },
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'control-child-buttons' },
+		{ key: 'cancelable', default: true }
+	],
 	customParse({
 		operation,
 		element,
@@ -67,40 +43,5 @@ Command.cases.setFocus = new CommandSchema({
 			{ text: Local.get!('command.setFocus') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		operation = 'add',
-		element = { type: 'trigger' },
-		mode = 'control-child-buttons',
-		cancelable = true
-	}) {
-		write($('#setFocus-operation'), operation);
-		write($('#setFocus-element'), element);
-		write($('#setFocus-mode'), mode);
-		write($('#setFocus-cancelable'), cancelable);
-		getFocus($('#setFocus-operation'));
-	},
-	customSave() {
-		const read = getElementReader('setFocus');
-		const operation = read('operation');
-		switch (operation) {
-			case 'add': {
-				Command.save!({
-					operation,
-					element: read('element'),
-					mode: read('mode'),
-					cancelable: read('cancelable')
-				});
-				break;
-			}
-			case 'remove': {
-				Command.save!({ operation, element: read('element') });
-				break;
-			}
-			case 'remove-latest':
-			case 'reset':
-				Command.save!({ operation });
-				break;
-		}
 	}
 });

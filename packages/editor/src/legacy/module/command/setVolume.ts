@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -15,24 +13,6 @@ Command.cases.setVolume = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setVolume-type')?.loadItems?.([
-			{ name: 'BGM', value: 'bgm' },
-			{ name: 'BGS', value: 'bgs' },
-			{ name: 'CV', value: 'cv' },
-			{ name: 'SE', value: 'se' }
-		]);
-		$('#setVolume-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setVolume')?.on?.('open', function (event: Event) {
-			$('#setVolume-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setVolume')?.on?.('closed', function (event: Event) {
-			clear($('#setVolume-easingId'));
-		});
-	},
 	customParse({
 		type,
 		volume,
@@ -55,8 +35,5 @@ Command.cases.setVolume = new CommandSchema({
 			{ text: Local.get!('command.setVolume') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setVolume-type'));
 	}
 });

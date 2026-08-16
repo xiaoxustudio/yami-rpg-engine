@@ -1,45 +1,18 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
+import { Attribute } from '@/attribute/attribute-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.getTarget = new CommandSchema({
 	name: 'getTarget',
-	onInitialize() {
-		$('#getTarget-selector')?.loadItems?.([
-			{ name: 'Enemy', value: 'enemy' },
-			{ name: 'Friend', value: 'friend' },
-			{ name: 'Team Member', value: 'team' },
-			{ name: 'Team Member Except Self', value: 'team-except-self' },
-			{ name: 'Any Except Self', value: 'any-except-self' },
-			{ name: 'Any', value: 'any' }
-		]);
-		$('#getTarget-condition')?.loadItems?.([
-			{ name: 'Max Threat', value: 'max-threat' },
-			{ name: 'Nearest', value: 'nearest' },
-			{ name: 'Farthest', value: 'farthest' },
-			{ name: 'Min Attribute Value', value: 'min-attribute-value' },
-			{ name: 'Max Attribute Value', value: 'max-attribute-value' },
-			{ name: 'Min Attribute Ratio', value: 'min-attribute-ratio' },
-			{ name: 'Max Attribute Ratio', value: 'max-attribute-ratio' },
-			{ name: 'Random', value: 'random' }
-		]);
-		$('#getTarget-condition')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{
-					case: ['min-attribute-value', 'max-attribute-value'],
-					targets: [$('#getTarget-attribute')]
-				},
-				{
-					case: ['min-attribute-ratio', 'max-attribute-ratio'],
-					targets: [$('#getTarget-attribute'), $('#getTarget-divisor')]
-				}
-			]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'selector', default: 'enemy' },
+		{ key: 'condition', default: 'max-threat' },
+		{ key: 'attribute', default: () => Attribute.getDefAttributeId!('actor', 'number') },
+		{ key: 'divisor', default: () => Attribute.getDefAttributeId!('actor', 'number') }
+	],
 	parseCondition(condition: string, attribute: unknown, divisor: unknown) {
 		const label = Local.get!('command.getTarget.condition.' + condition);
 		switch (condition) {
@@ -87,65 +60,5 @@ Command.cases.getTarget = new CommandSchema({
 			{ text: Local.get!('command.getTarget') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		selector = 'enemy',
-		condition = 'max-threat',
-		attribute = Attribute.getDefAttributeId!('actor', 'number'),
-		divisor = Attribute.getDefAttributeId!('actor', 'number')
-	}) {
-		const attrItems = Attribute.getAttributeItems!('actor', 'number');
-		$('#getTarget-attribute')?.loadItems?.(attrItems);
-		$('#getTarget-divisor')?.loadItems?.(attrItems);
-		const write = getElementWriter('getTarget');
-		write('actor', actor);
-		write('selector', selector);
-		write('condition', condition);
-		write('attribute', attribute);
-		write('divisor', divisor);
-		getFocus($('#getTarget-actor'));
-	},
-	customSave() {
-		const read = getElementReader('getTarget');
-		const actor = read('actor');
-		const selector = read('selector');
-		const condition = read('condition');
-		switch (condition) {
-			case 'max-threat':
-			case 'nearest':
-			case 'farthest':
-			case 'random':
-				Command.save!({ actor, selector, condition });
-				break;
-			case 'min-attribute-value':
-			case 'max-attribute-value': {
-				const attribute = read('attribute');
-				if (attribute === '') {
-					return getFocus($('#getTarget-attribute'));
-				}
-				Command.save!({ actor, selector, condition, attribute });
-				break;
-			}
-			case 'min-attribute-ratio':
-			case 'max-attribute-ratio': {
-				const attribute = read('attribute');
-				const divisor = read('divisor');
-				if (attribute === '') {
-					return getFocus($('#getTarget-attribute'));
-				}
-				if (divisor === '') {
-					return getFocus($('#getTarget-divisor'));
-				}
-				Command.save!({
-					actor,
-					selector,
-					condition,
-					attribute,
-					divisor
-				});
-				break;
-			}
-		}
 	}
 });

@@ -4,14 +4,15 @@
 		
 			<div class="grid-box">
 				<div class="text">Trigger</div
-				><CustomBox id="setTriggerDuration-trigger" type="trigger" />
-				<div class="text">Operation</div><SelectBox id="setTriggerDuration-operation" />
+				><CustomBox id="setTriggerDuration-trigger" type="trigger" @input="onTrigger" />
+				<div class="text">Operation</div><SelectBox id="setTriggerDuration-operation" v-model="form.operation" />
 				<div class="text">Duration</div
 				><NumberVar
 					id="setTriggerDuration-duration"
 					min="0"
 					max="3600000"
 					unit="ms"
+					v-model="form.duration"
 				 />
 			</div>
 		
@@ -21,16 +22,31 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetTriggerDurationCommandSchema } from '@app/composables/commands/useSetTriggerDurationCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useSetTriggerDurationCommandSchema();
+
+const onTrigger = (value: unknown) => {
+	form.trigger = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.setTriggerDuration?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setTriggerDuration-operation')?.loadItems?.([
+		{ name: 'Set', value: 'set' },
+		{ name: 'Increase', value: 'increase' },
+		{ name: 'Decrease', value: 'decrease' }
+	]);
+});
 
 </script>

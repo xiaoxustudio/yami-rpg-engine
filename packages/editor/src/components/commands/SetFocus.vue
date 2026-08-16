@@ -3,10 +3,10 @@
 		<template #title><TitleBar>Set Focus<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="setFocus-operation" />
-				<div class="text">Element</div><CustomBox id="setFocus-element" type="element" />
-				<div class="text">Mode</div><SelectBox id="setFocus-mode" /> <div class="text">Cancelable</div
-				><CheckBox id="setFocus-cancelable" class="standard large" />
+				<div class="text">Operation</div><SelectBox id="setFocus-operation" v-model="form.operation" />
+				<div class="text">Element</div><CustomBox id="setFocus-element" type="element" @input="onElement" />
+				<div class="text">Mode</div><SelectBox id="setFocus-mode" v-model="form.mode" /> <div class="text">Cancelable</div
+				><CheckBox id="setFocus-cancelable" class="standard large" v-model="form.cancelable" />
 			</div>
 		
 	</WindowFrame>
@@ -14,16 +14,52 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useSetFocusCommandSchema();
+
+const onElement = (value: unknown) => {
+	form.element = value;
+};
 
 const onConfirm = () => {
-	Command?.cases?.setFocus?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setFocus-operation')?.loadItems?.([
+		{ name: 'Add Focus', value: 'add' },
+		{ name: 'Remove Focus', value: 'remove' },
+		{ name: 'Remove The Latest Focus', value: 'remove-latest' },
+		{ name: 'Reset', value: 'reset' }
+	]);
+	$('#setFocus-mode')?.loadItems?.([
+		{ name: 'Control Child Buttons', value: 'control-child-buttons' },
+		{
+			name: 'Control Descendant Buttons',
+			value: 'control-descendant-buttons'
+		}
+	]);
+	$('#setFocus-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'add',
+				targets: [
+					$('#setFocus-element'),
+					$('#setFocus-mode'),
+					$('#setFocus-cancelable')
+				]
+			},
+			{ case: 'remove', targets: [$('#setFocus-element')] }
+		]);
+});
 
 </script>

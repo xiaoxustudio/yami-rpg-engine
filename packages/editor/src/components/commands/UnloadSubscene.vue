@@ -1,10 +1,10 @@
 <template>
-	<WindowFrame id="unloadSubscene">
+	<WindowFrame id="unloadSubscene" @confirm="onConfirm">
 		<template #title><TitleBar>Unload Subscene<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Scene</div
-				><FileVar id="unloadSubscene-sceneId" type="file" filter="scene" />
+				><FileVar id="unloadSubscene-sceneId" type="file" filter="scene" v-model="form.sceneId" />
 			</div>
 		
 	</WindowFrame>
@@ -13,10 +13,15 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { useUnloadSubsceneCommandSchema } from '@app/composables/commands/useUnloadSubsceneCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 
+const { form, save } = useUnloadSubsceneCommandSchema();
+
+const onConfirm = () => {
+	save();
+};
 
 </script>

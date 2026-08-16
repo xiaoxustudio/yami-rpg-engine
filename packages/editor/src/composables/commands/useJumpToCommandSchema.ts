@@ -1,0 +1,64 @@
+import '@/module/command/jumpTo.ts';
+import { $ } from '@/util/dom.ts';
+import { getFocus, read, write } from '@/util/element-utils.ts';
+import { Command } from '@/command/command-object.ts';
+import { EventEditor } from '@/command/event-editor.ts';
+
+type LabelCommand = {
+	id: string;
+	params: { name: string; [k: string]: unknown };
+};
+
+const loadLabels = (): Array<{ name: string; icon: string }> => {
+	const items: Array<{ name: string; icon: string }> = [];
+	const commands = read(EventEditor.commandList);
+	if (!commands) return items;
+	Command.forEachCommand!(commands, (command: LabelCommand) => {
+		if (command.id === 'label') {
+			items.push({
+				name: command.params.name,
+				icon: 'icon-label'
+			});
+		}
+	});
+	return items.sort((a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name));
+};
+
+const load = ({
+	operation = 'jump',
+	label = ''
+}: {
+	operation?: string;
+	label?: string;
+} = {}): void => {
+	write($('#jumpTo-operation'), operation);
+	write($('#jumpTo-label'), label);
+	getFocus($('#jumpTo-operation'));
+};
+
+const save = (): unknown => {
+	const operation = read($('#jumpTo-operation'));
+	switch (operation) {
+		case 'jump':
+		case 'save-jump': {
+			const label = read($('#jumpTo-label')).trim();
+			if (label === '') {
+				return getFocus($('#jumpTo-label'));
+			}
+			Command.save?.({ operation, label });
+			break;
+		}
+		case 'return':
+			Command.save?.({ operation });
+			break;
+	}
+};
+
+const schema = Command.cases.jumpTo;
+schema.customLoad = load;
+schema.customSave = save;
+schema.onInitialize = (): void => {};
+
+export function useJumpToCommandSchema() {
+	return { load, save, loadLabels };
+}

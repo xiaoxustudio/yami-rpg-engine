@@ -3,23 +3,56 @@
 	<template #title><TitleBar>Change Actor State<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorState-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorState-operation" /><div class="text">State</div
-			><CustomBox id="changeActorState-stateId" type="file" filter="state" /><div class="text">State</div><CustomBox id="changeActorState-state" type="state" /></div>
+			<div class="text">Actor</div><CustomBox id="changeActorState-actor" type="actor" @input="onActor" /><div class="text">Operation</div><SelectBox id="changeActorState-operation" v-model="form.operation" /><div class="text">State</div
+			><CustomBox id="changeActorState-stateId" type="file" filter="state" @input="onStateId" /><div class="text">State</div><CustomBox id="changeActorState-state" type="state" @input="onState" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
-
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useChangeActorStateCommandSchema } from '@app/composables/commands/useChangeActorStateCommandSchema';
+import { $ } from '@/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useChangeActorStateCommandSchema();
 
-const onConfirm = () => {
-	Command?.cases?.changeActorState?.save?.();
+const onActor = (value: unknown) => {
+	form.actor = value;
 };
 
+const onStateId = (value: unknown) => {
+	form.stateId = value;
+};
+
+const onState = (value: unknown) => {
+	form.state = value;
+};
+
+const onConfirm = () => {
+	save();
+};
+
+onMounted(() => {
+	$('#changeActorState-operation')?.loadItems?.([
+		{ name: 'Add', value: 'add' },
+		{ name: 'Remove', value: 'remove' },
+		{ name: 'Remove Instance', value: 'remove-instance' }
+	]);
+	$('#changeActorState-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['add', 'remove'],
+				targets: [$('#changeActorState-stateId')]
+			},
+			{
+				case: 'remove-instance',
+				targets: [$('#changeActorState-state')]
+			}
+		]);
+});
 </script>

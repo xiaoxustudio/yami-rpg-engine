@@ -56,13 +56,17 @@
 <script setup lang="ts">
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
-import { Command } from '@/command/command-object.ts';
+import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils.ts';
 import type { ForEachForm } from '@/module/command/forEach.ts';
+import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { attachElementApi } from '@/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { save, windowClosed } = useForEachCommandSchema();
 
 const form = reactive<ForEachForm>({
 	data: 'list',
@@ -119,7 +123,7 @@ const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
 const local = useLocalStore();
 
 const onConfirm = () => {
-	Command?.cases?.forEach?.save?.();
+	save();
 };
 
 onMounted(() => {
@@ -128,6 +132,50 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
-
+	$('#forEach-data')
+		?.loadItems?.([
+			{ name: 'List', value: 'list' },
+			{ name: 'Skill', value: 'skill' },
+			{ name: 'State', value: 'state' },
+			{ name: 'Equipment', value: 'equipment' },
+			{ name: 'Inventory', value: 'inventory' },
+			{ name: 'Element', value: 'element' },
+			{ name: 'Party Member', value: 'member' },
+			{ name: 'Attribute Key', value: 'attribute' },
+			{ name: 'Enumeration Value', value: 'enum' },
+			{ name: 'Save Data', value: 'save' },
+			{ name: 'Touch Point', value: 'touch' },
+			{ name: 'Changed Touch Point', value: 'changed-touch' }
+		])
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: 'list',
+				targets: [$('#forEach-list'), $('#forEach-variable')]
+			},
+			{
+				case: ['skill', 'state', 'equipment', 'inventory'],
+				targets: [$('#forEach-actor'), $('#forEach-variable')]
+			},
+			{
+				case: 'element',
+				targets: [$('#forEach-element'), $('#forEach-variable')]
+			},
+			{ case: 'member', targets: [$('#forEach-variable')] },
+			{
+				case: 'attribute',
+				targets: [$('#forEach-attribute-groupId'), $('#forEach-variable')]
+			},
+			{
+				case: 'enum',
+				targets: [$('#forEach-enum-groupId'), $('#forEach-variable')]
+			},
+			{ case: 'save', targets: [$('#forEach-saveIndex')] },
+			{
+				case: ['touch', 'changed-touch'],
+				targets: [$('#forEach-touchId')]
+			}
+		]);
+	on($('#forEach'), 'closed', () => windowClosed(new Event('closed')));
 });
 </script>

@@ -1,7 +1,7 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $ } from '@/util/dom.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
-import { read, write } from '@/util/element-utils.ts';
+import { write } from '@/util/element-utils.ts';
 
 {
 	interface AnimMotionShape {
@@ -12,7 +12,6 @@ import { read, write } from '@/util/element-utils.ts';
 		close: (() => void) | null;
 		write: ((options: Record<string, unknown>) => void) | null;
 		update: ((motion: Record<string, unknown>, key: string, value: unknown) => void) | null;
-		paramInput: ((event: Event) => void) | null;
 		[k: string]: unknown;
 	}
 	const AnimMotion: AnimMotionShape = {
@@ -24,8 +23,7 @@ import { read, write } from '@/util/element-utils.ts';
 		open: null,
 		close: null,
 		write: null,
-		update: null,
-		paramInput: null
+		update: null
 	};
 
 	AnimMotion.initialize = function (this: typeof AnimMotion) {
@@ -80,12 +78,7 @@ import { read, write } from '@/util/element-utils.ts';
 	AnimMotion.open = function (this: typeof AnimMotion, motion: Record<string, unknown>) {
 		if (this.target !== motion) {
 			this.target = motion;
-
-			const write = getElementWriter('animMotion', motion);
-			write('mode');
-			write('skip');
-			write('loop');
-			write('loopStart');
+			($('#animMotion-vue-mount') as HTMLElement & { sync?: () => void })?.sync?.();
 		}
 	};
 
@@ -129,20 +122,6 @@ import { read, write } from '@/util/element-utils.ts';
 				}
 				break;
 		}
-	};
-
-	AnimMotion.paramInput = function (this: typeof AnimMotion, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp('^animMotion-').test(element.id)) break;
-			element = element.parentElement;
-		}
-		AnimMotion.update!(
-			AnimMotion.target as Record<string, unknown>,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	Inspector.animMotion = AnimMotion;

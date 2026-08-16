@@ -21,7 +21,9 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -29,19 +31,39 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema();
 
 const onTargetWrite = (value: unknown) => {
-	Command?.cases?.registerEvent?.targetWrite?.({ value });
+	targetWrite?.({ value: value as string });
 };
 const onOperationWrite = () => {
-	Command?.cases?.registerEvent?.operationWrite?.();
+	operationWrite?.();
 };
 const onTypeWrite = () => {
-	Command?.cases?.registerEvent?.typeWrite?.();
+	typeWrite?.();
 };
 
 const onConfirm = () => {
-	Command?.cases?.registerEvent?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#registerEvent-target')?.loadItems?.([
+		{ name: 'Global', value: 'global' },
+		{ name: 'Actor', value: 'actor' },
+		{ name: 'Element', value: 'element' }
+	]);
+	$('#registerEvent-target')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'actor', targets: [$('#registerEvent-actor')] },
+			{ case: 'element', targets: [$('#registerEvent-element')] }
+		]);
+	$('#registerEvent-operation')?.loadItems?.([
+		{ name: 'Register', value: 'register' },
+		{ name: 'Unregister', value: 'unregister' },
+		{ name: 'Reset', value: 'reset' }
+	]);
+});
 
 </script>

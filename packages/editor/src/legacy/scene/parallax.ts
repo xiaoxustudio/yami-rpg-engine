@@ -1,6 +1,6 @@
 import { Scene } from './scene-window.ts';
-import { ImageTexture } from '../webgl/image-texture.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 interface ParallaxData {
 	shiftSpeedX: number;

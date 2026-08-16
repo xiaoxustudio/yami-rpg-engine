@@ -7,7 +7,7 @@ import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
 import { Token } from './mark-string-manager.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { Data } from '@/data/data-object.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { PluginManager } from '@/plugin/plugin.ts';
 import { Local } from '@/tools/localization.ts';
 

@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -20,8 +18,5 @@ Command.cases.setTriggerMotion = new CommandSchema({
 			{ text: Local.get!('command.setTriggerMotion') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setTriggerMotion-trigger'));
 	}
 });

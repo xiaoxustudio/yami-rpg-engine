@@ -10,8 +10,9 @@
 					max="10"
 					step="0.1"
 					decimals="4"
+					v-model="form.speed"
 				/>
-				<div class="text">Easing</div><SelectBox id="setGameSpeed-easingId" name="easing" />
+				<div class="text">Easing</div><SelectBox id="setGameSpeed-easingId" name="easing" v-model="form.easingId" />
 				<div class="text">Duration</div
 				><NumberVar
 					id="setGameSpeed-duration"
@@ -19,8 +20,9 @@
 					min="0"
 					max="3600000"
 					unit="ms"
+					v-model="form.duration"
 				/>
-				<div class="text">Wait</div><SelectBox id="setGameSpeed-wait" name="wait" />
+				<div class="text">Wait</div><SelectBox id="setGameSpeed-wait" name="wait" v-model="form.wait" />
 			</div>
 		
 	</WindowFrame>
@@ -28,15 +30,33 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { useSetGameSpeedCommandSchema } from '@app/composables/commands/useSetGameSpeedCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { form, save } = useSetGameSpeedCommandSchema();
 
 const onConfirm = () => {
-	Command?.cases?.setGameSpeed?.save?.();
+	save();
 };
+
+onMounted(() => {
+	$('#setGameSpeed-wait')?.loadItems?.([
+		{ name: 'Yes', value: true },
+		{ name: 'No', value: false }
+	]);
+	$('#setGameSpeed')?.on?.('open', () => {
+		$('#setGameSpeed-easingId')?.loadItems?.(Data.createEasingItems!());
+	});
+	$('#setGameSpeed')?.on?.('closed', () => {
+		clear($('#setGameSpeed-easingId'));
+	});
+});
 
 </script>

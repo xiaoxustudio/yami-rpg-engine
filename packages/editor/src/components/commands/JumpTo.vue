@@ -3,8 +3,8 @@
 	<template #title><TitleBar>Jump to<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Operation</div><SelectBox id="jumpTo-operation" />
-			<div class="text">Label Name</div><TextBox id="jumpTo-label" />
+			<div class="text">Operation</div><SelectBox id="jumpTo-operation" v-model="form.operation" />
+			<div class="text">Label Name</div><TextBox id="jumpTo-label" v-model="form.label" />
 		</div>
 	
 </WindowFrame>
@@ -12,15 +12,39 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted, reactive } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { TextSuggestion, type TextSuggestionTarget } from '@/command/text-tip.ts';
+import { useJumpToCommandSchema } from '@app/composables/commands/useJumpToCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { save, loadLabels } = useJumpToCommandSchema();
+
+const form = reactive({
+	operation: 'jump',
+	label: ''
+});
 
 const onConfirm = () => {
-	Command?.cases?.jumpTo?.save?.();
+	save();
 };
+
+onMounted(() => {
+	TextSuggestion.listen!(
+		$('#jumpTo-label') as unknown as TextSuggestionTarget,
+		loadLabels
+	);
+	$('#jumpTo-operation')?.loadItems?.([
+		{ name: 'Jump to Label', value: 'jump' },
+		{ name: 'Save and Jump to Label', value: 'save-jump' },
+		{ name: 'Jump to the Saved Location', value: 'return' }
+	]);
+	$('#jumpTo-operation')
+		?.enableHiddenMode?.()
+		?.relate?.([{ case: ['jump', 'save-jump'], targets: [$('#jumpTo-label')] }]);
+});
 
 </script>

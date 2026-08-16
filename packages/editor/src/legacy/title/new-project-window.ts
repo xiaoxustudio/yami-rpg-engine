@@ -6,7 +6,7 @@ import { Data } from '@/data/data-object.ts';
 import { GUID } from '@/file/guid.ts';
 import { File } from '@/file/file-system-core.ts';
 import { FS, FSP } from '@/file/file-system.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { TemplatesPath } from '@/module/global.ts';

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Home } from '@/title/home-page.ts';
-import { Layout } from '@/layout/layout.ts';
+import { Layout } from '@app/engine/layout/layout.ts';
 import { getHomeStore, homeStateKeys } from '@app/stores/home';
 
 describe('Home.initialize（Layout 时序判空回归：11.32/11.32b）', () => {

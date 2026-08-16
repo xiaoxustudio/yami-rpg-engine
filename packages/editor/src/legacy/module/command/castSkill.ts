@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Enum } from '@/enum/enum-window.ts';
@@ -8,26 +6,15 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.castSkill = new CommandSchema({
 	name: 'castSkill',
-	onInitialize() {
-		$('#castSkill-mode')?.loadItems?.([
-			{ name: 'By Shortcut Key', value: 'by-key' },
-			{ name: 'By Skill ID', value: 'by-id' },
-			{ name: 'By Skill Instance', value: 'by-skill' },
-			{ name: 'By Variable', value: 'by-variable' }
-		]);
-		$('#castSkill-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'by-key', targets: [$('#castSkill-key')] },
-				{ case: 'by-id', targets: [$('#castSkill-skillId')] },
-				{ case: 'by-skill', targets: [$('#castSkill-skill')] },
-				{ case: 'by-variable', targets: [$('#castSkill-keyVar')] }
-			]);
-		$('#castSkill-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'by-key' },
+		{ key: 'key', default: () => Enum.getDefStringId!('shortcut-key') },
+		{ key: 'skillId', default: '' },
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'keyVar', default: '' },
+		{ key: 'wait', default: false }
+	],
 	customParse({
 		actor,
 		mode,
@@ -66,63 +53,5 @@ Command.cases.castSkill = new CommandSchema({
 			{ text: Local.get!('command.castSkill') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		mode = 'by-key',
-		key = Enum.getDefStringId!('shortcut-key'),
-		skillId = '',
-		skill = { type: 'trigger' },
-		keyVar = '',
-		wait = false
-	}) {
-		$('#castSkill-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-		const write = getElementWriter('castSkill');
-		write('actor', actor);
-		write('mode', mode);
-		write('key', key);
-		write('skillId', skillId);
-		write('skill', skill);
-		write('keyVar', keyVar);
-		write('wait', wait);
-		getFocus($('#castSkill-actor'));
-	},
-	customSave() {
-		const read = getElementReader('castSkill');
-		const actor = read('actor');
-		const mode = read('mode');
-		const wait = read('wait');
-		switch (mode) {
-			case 'by-key': {
-				const key = read('key');
-				if (key === '') {
-					return getFocus($('#castSkill-key'));
-				}
-				Command.save!({ actor, mode, key, wait });
-				break;
-			}
-			case 'by-id': {
-				const skillId = read('skillId');
-				if (skillId === '') {
-					return getFocus($('#castSkill-skillId'));
-				}
-				Command.save!({ actor, mode, skillId, wait });
-				break;
-			}
-			case 'by-skill': {
-				Command.save!({
-					actor,
-					mode,
-					skill: read('skill'),
-					wait
-				});
-				break;
-			}
-			case 'by-variable': {
-				const keyVar = read('keyVar');
-				Command.save!({ actor, mode, keyVar, wait });
-				break;
-			}
-		}
 	}
 });

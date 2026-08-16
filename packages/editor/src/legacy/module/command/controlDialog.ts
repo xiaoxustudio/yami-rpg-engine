@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -11,14 +9,6 @@ Command.cases.controlDialog = new CommandSchema({
 		{ key: 'element', default: { type: 'trigger' } },
 		{ key: 'operation', default: 'pause' }
 	],
-	onInitialize() {
-		$('#controlDialog-operation')?.loadItems?.([
-			{ name: 'Pause Printing', value: 'pause' },
-			{ name: 'Continue Printing', value: 'continue' },
-			{ name: 'Print Immediately', value: 'print-immediately' },
-			{ name: 'Print Next Page', value: 'print-next-page' }
-		]);
-	},
 	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
@@ -28,8 +18,5 @@ Command.cases.controlDialog = new CommandSchema({
 			{ text: Local.get!('command.controlDialog') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#controlDialog-element'));
 	}
 });

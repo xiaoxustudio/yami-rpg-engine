@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { ProgressBarProperty } from '@/command/set-progress-property-window.ts';
@@ -8,12 +6,10 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.setProgressBar = new CommandSchema({
 	name: 'setProgressBar',
-	onInitialize() {
-		$('#setProgressBar-properties')?.bind?.(ProgressBarProperty);
-		$('#setProgressBar')?.on?.('closed', (event: Event) => {
-			clear($('#setProgressBar-properties'));
-		});
-	},
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'properties', default: [] }
+	],
 	customParse({
 		element,
 		properties
@@ -30,26 +26,5 @@ Command.cases.setProgressBar = new CommandSchema({
 			{ text: Local.get!('command.setProgressBar') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		element = { type: 'trigger' },
-		properties = []
-	}: {
-		element: unknown;
-		properties: unknown[];
-	}) {
-		const write = getElementWriter('setProgressBar');
-		write('element', element);
-		write('properties', properties.slice());
-		getFocus($('#setProgressBar-element'));
-	},
-	customSave() {
-		const read = getElementReader('setProgressBar');
-		const element = read('element');
-		const properties = read('properties');
-		if (properties.length === 0) {
-			return getFocus($('#setProgressBar-properties'));
-		}
-		Command.save!({ element, properties });
 	}
 });

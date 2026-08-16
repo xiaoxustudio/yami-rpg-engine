@@ -1,5 +1,5 @@
 <template>
-	<WindowFrame id="clampCamera">
+	<WindowFrame id="clampCamera" @confirm="onConfirm">
 		<template #title><TitleBar>Clamp Camera<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
@@ -10,6 +10,7 @@
 					max="1000"
 					step="0.1"
 					decimals="4"
+					v-model="form.left"
 				 />
 				<div class="text">Top</div
 				><NumberVar
@@ -18,6 +19,7 @@
 					max="1000"
 					step="0.1"
 					decimals="4"
+					v-model="form.top"
 				 />
 				<div class="text">Right</div
 				><NumberVar
@@ -26,6 +28,7 @@
 					max="1000"
 					step="0.1"
 					decimals="4"
+					v-model="form.right"
 				 />
 				<div class="text">Bottom</div
 				><NumberVar
@@ -34,6 +37,7 @@
 					max="1000"
 					step="0.1"
 					decimals="4"
+					v-model="form.bottom"
 				 />
 			</div>
 		
@@ -43,10 +47,15 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { useClampCameraCommandSchema } from '@app/composables/commands/useClampCameraCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 
+const { form, save } = useClampCameraCommandSchema();
+
+const onConfirm = () => {
+	save();
+};
 
 </script>

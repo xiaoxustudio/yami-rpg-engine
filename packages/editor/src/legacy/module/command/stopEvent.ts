@@ -1,76 +1,22 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
 import { Token } from '@/command/mark-string-manager.ts';
-import { Enum } from '@/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
 Command.cases.stopEvent = new CommandSchema({
 	name: 'stopEvent',
-	onInitialize() {
-		$('#stopEvent-type')?.loadItems?.([
-			{ name: 'Current', value: 'current' },
-			{ name: 'Global', value: 'global' },
-			{ name: 'Scene', value: 'scene' },
-			{ name: 'Actor', value: 'actor' },
-			{ name: 'Skill', value: 'skill' },
-			{ name: 'State', value: 'state' },
-			{ name: 'Equipment', value: 'equipment' },
-			{ name: 'Item', value: 'item' },
-			{ name: 'Light', value: 'light' },
-			{ name: 'Element', value: 'element' }
-		]);
-		$('#stopEvent-type')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'global', targets: [$('#stopEvent-eventId')] },
-				{ case: 'scene', targets: [$('#stopEvent-eventType')] },
-				{
-					case: 'actor',
-					targets: [$('#stopEvent-actor'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'skill',
-					targets: [$('#stopEvent-skill'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'state',
-					targets: [$('#stopEvent-state'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'equipment',
-					targets: [$('#stopEvent-equipment'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'item',
-					targets: [$('#stopEvent-item'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'light',
-					targets: [$('#stopEvent-light'), $('#stopEvent-eventType')]
-				},
-				{
-					case: 'element',
-					targets: [$('#stopEvent-element'), $('#stopEvent-eventType')]
-				}
-			]);
-		// stopEvent-type write 经 Vue 模板转发（stopEvent.vue @write → Command.cases.stopEvent.writeHandler）
-	},
-	writeHandler(event: { value: string }) {
-		const type = event.value;
-		if (type !== 'current') {
-			const elEventType = $('#stopEvent-eventType');
-			const eventTypes = Enum.getMergedItems!(
-				EventEditor.types?.[type] ?? EventEditor.types?.all,
-				type + '-event'
-			);
-			elEventType.loadItems(eventTypes);
-			elEventType.createTooltip();
-			write(elEventType, eventTypes[0].value);
-		}
-	},
+	fields: [
+		{ key: 'type', default: 'current' },
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'skill', default: { type: 'trigger' } },
+		{ key: 'state', default: { type: 'trigger' } },
+		{ key: 'equipment', default: { type: 'trigger' } },
+		{ key: 'item', default: { type: 'trigger' } },
+		{ key: 'light', default: { type: 'trigger' } },
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'eventId', default: '' },
+		{ key: 'eventType', default: '' }
+	],
 	customParse({
 		type,
 		actor,
@@ -138,68 +84,5 @@ Command.cases.stopEvent = new CommandSchema({
 			{ text: Local.get!('command.stopEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		type = 'current',
-		actor = { type: 'trigger' },
-		skill = { type: 'trigger' },
-		state = { type: 'trigger' },
-		equipment = { type: 'trigger' },
-		item = { type: 'trigger' },
-		light = { type: 'trigger' },
-		element = { type: 'trigger' },
-		eventId = '',
-		eventType = ''
-	}) {
-		const write = getElementWriter('stopEvent');
-		write('type', type);
-		write('actor', actor);
-		write('skill', skill);
-		write('state', state);
-		write('equipment', equipment);
-		write('item', item);
-		write('light', light);
-		write('element', element);
-		write('eventId', eventId);
-		write('eventType', eventType);
-		getFocus($('#stopEvent-type'));
-	},
-	customSave() {
-		const read = getElementReader('stopEvent');
-		const type = read('type');
-		switch (type) {
-			case 'current':
-				Command.save!({ type });
-				break;
-			case 'global': {
-				const eventId = read('eventId');
-				if (eventId === '') {
-					return getFocus($('#stopEvent-eventId'));
-				}
-				Command.save!({ type, eventId });
-				break;
-			}
-			case 'scene': {
-				const eventType = read('eventType');
-				if (eventType === '') {
-					return getFocus($('#stopEvent-eventType'));
-				}
-				Command.save!({ type, eventType });
-				break;
-			}
-			default: {
-				const target = read(type);
-				const eventType = read('eventType');
-				if (eventType === '') {
-					return getFocus($('#stopEvent-eventType'));
-				}
-				Command.save!({
-					type: type,
-					[type]: target,
-					eventType: eventType
-				});
-				break;
-			}
-		}
 	}
 });

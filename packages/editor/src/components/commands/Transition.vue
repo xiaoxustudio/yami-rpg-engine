@@ -35,16 +35,25 @@
 
 <script setup lang="ts">
 
-import { Command } from '@/command/command-object.ts';
+import { onMounted } from 'vue';
+import { $ } from '@/util/dom.ts';
+import { on } from '@/util/element-utils';
+import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { save, open, windowClosed } = useTransitionCommandSchema();
 
 const onConfirm = () => {
-	Command?.cases?.transition?.save?.();
+	save();
 };
+
+onMounted(() => {
+	on($('#transition'), 'open', () => open());
+	on($('#transition'), 'closed', () => windowClosed(new Event('closed')));
+});
 
 </script>

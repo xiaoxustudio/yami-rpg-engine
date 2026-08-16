@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Enum } from '@/enum/enum-window.ts';
@@ -8,24 +6,14 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.useItem = new CommandSchema({
 	name: 'useItem',
-	onInitialize() {
-		$('#useItem-mode')?.loadItems?.([
-			{ name: 'By Shortcut Key', value: 'by-key' },
-			{ name: 'By Item ID', value: 'by-id' },
-			{ name: 'By Item Instance', value: 'by-item' }
-		]);
-		$('#useItem-mode')
-			?.enableHiddenMode?.()
-			?.relate?.([
-				{ case: 'by-key', targets: [$('#useItem-key')] },
-				{ case: 'by-id', targets: [$('#useItem-itemId')] },
-				{ case: 'by-item', targets: [$('#useItem-item')] }
-			]);
-		$('#useItem-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-	},
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'by-key' },
+		{ key: 'key', default: () => Enum.getDefStringId!('shortcut-key') },
+		{ key: 'itemId', default: '' },
+		{ key: 'item', default: { type: 'trigger' } },
+		{ key: 'wait', default: false }
+	],
 	customParse({
 		actor,
 		mode,
@@ -59,56 +47,5 @@ Command.cases.useItem = new CommandSchema({
 			{ text: Local.get!('command.useItem') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		actor = { type: 'trigger' },
-		mode = 'by-key',
-		key = Enum.getDefStringId!('shortcut-key'),
-		itemId = '',
-		item = { type: 'trigger' },
-		wait = false
-	}) {
-		$('#useItem-key')?.loadItems?.(Enum.getStringItems!('shortcut-key'));
-		const write = getElementWriter('useItem');
-		write('actor', actor);
-		write('mode', mode);
-		write('key', key);
-		write('itemId', itemId);
-		write('item', item);
-		write('wait', wait);
-		getFocus($('#useItem-actor'));
-	},
-	customSave() {
-		const read = getElementReader('useItem');
-		const actor = read('actor');
-		const mode = read('mode');
-		const wait = read('wait');
-		switch (mode) {
-			case 'by-key': {
-				const key = read('key');
-				if (key === '') {
-					return getFocus($('#useItem-key'));
-				}
-				Command.save!({ actor, mode, key, wait });
-				break;
-			}
-			case 'by-id': {
-				const itemId = read('itemId');
-				if (itemId === '') {
-					return getFocus($('#useItem-itemId'));
-				}
-				Command.save!({ actor, mode, itemId, wait });
-				break;
-			}
-			case 'by-item': {
-				Command.save!({
-					actor,
-					mode,
-					item: read('item'),
-					wait
-				});
-				break;
-			}
-		}
 	}
 });

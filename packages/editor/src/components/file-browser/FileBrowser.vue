@@ -28,7 +28,7 @@ import { YMFileBrowser, type MenuItem, type MenuOptions } from '@ui-kit';
 import { Menu } from '@/components/menu-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Window } from '@/tools/window-object.ts';
-import { GL } from '@/webgl/webgl-init.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
 import { Directory } from '@/file/directory-object.ts';

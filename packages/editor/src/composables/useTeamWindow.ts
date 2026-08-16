@@ -4,8 +4,8 @@ import { Window } from '@/tools/window-object.ts';
 import { getFocus, hasClass, on } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
 import { File } from '@/file/file-system-core.ts';
-import { GL } from '@/webgl/webgl-init.ts';
-import { Codec } from '@/codec/codec.ts';
+import { GL } from '@app/engine/webgl/webgl-init.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import { Data } from '@/data/data-object.ts';
@@ -163,8 +163,8 @@ function getItemById(id: string): TeamData | null {
 function unpackTeams(): void {
 	const items = Data.teams.list;
 	const length = items.length;
-	const sRelations = Codec.decodeTeamData(Data.teams.relations, length);
-	const sCollisions = Codec.decodeTeamData(Data.teams.collisions, length);
+	const sRelations = Codec.decodeTeamData!(Data.teams.relations, length);
+	const sCollisions = Codec.decodeTeamData!(Data.teams.collisions, length);
 	const copies = new Array(length);
 	const a = length * 2;
 	for (let i = 0; i < length; i++) {
@@ -218,8 +218,8 @@ function packTeams(): void {
 		};
 	}
 	Data.teams.list = copies;
-	Data.teams.relations = Codec.encodeTeamData(new Uint8Array(dRelations.buffer, 0, ri));
-	Data.teams.collisions = Codec.encodeTeamData(new Uint8Array(dCollisions.buffer, 0, ri));
+	Data.teams.relations = Codec.encodeTeamData!(new Uint8Array(dRelations.buffer, 0, ri));
+	Data.teams.collisions = Codec.encodeTeamData!(new Uint8Array(dCollisions.buffer, 0, ri));
 	Data.createTeamMap();
 }
 

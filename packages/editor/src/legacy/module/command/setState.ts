@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -12,13 +10,6 @@ Command.cases.setState = new CommandSchema({
 		{ key: 'operation', default: 'set-time' },
 		{ key: 'time', default: 0 }
 	],
-	onInitialize() {
-		$('#setState-operation')?.loadItems?.([
-			{ name: 'Set Time', value: 'set-time' },
-			{ name: 'Increase Time', value: 'increase-time' },
-			{ name: 'Decrease Time', value: 'decrease-time' }
-		]);
-	},
 	parseOperation(operation: string) {
 		return Local.get!('command.setState.' + operation);
 	},
@@ -32,8 +23,5 @@ Command.cases.setState = new CommandSchema({
 			{ text: Local.get!('command.setState') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setState-state'));
 	}
 });

@@ -5,12 +5,14 @@
 			<div class="text">{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</div
 			><CustomBox
 				id="uiReference-prefabId"
+				:model-value="form.prefabId"
 				type="preset-element"
 				@input="onParamInput"
 			></CustomBox>
 			<div class="text">{{ local.getLabel('uiReference-synchronous') || 'Synchronous' }}</div
 			><CheckBox
 				id="uiReference-synchronous"
+				:model-value="form.synchronous"
 				class="standard large"
 				@input="onParamInput"
 			></CheckBox>
@@ -20,8 +22,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { useUIReferencePage } from '@app/composables/useUIReferencePage';
 import { useLocalStore } from '@app/stores/local';
+import { attachElementApi } from '@/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -29,11 +32,13 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 
 const local = useLocalStore();
 
-const onParamInput = (event: Event) => {
-	const target = event?.target ?? document.activeElement;
-	Inspector?.uiReference?.paramInput?.({ target });
-};
+const { form, sync, onParamInput } = useUIReferencePage();
 
 onMounted(() => {
+	const el = document.getElementById('uiReference-vue-mount');
+	if (el) {
+		attachElementApi(el, { sync });
+	}
+	sync();
 });
 </script>

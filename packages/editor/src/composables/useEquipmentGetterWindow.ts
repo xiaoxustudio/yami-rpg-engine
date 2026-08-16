@@ -1,0 +1,120 @@
+import { reactive } from 'vue';
+import { Window } from '@/tools/window-object.ts';
+import { getFocus } from '@/util/element-utils';
+
+export interface EquipmentGetterForm {
+	type: string;
+	actor: { type: string };
+	slot: string;
+	equipmentId: string;
+	variable: { type: string; key: string };
+}
+
+interface EquipmentGetterTarget {
+	read?: () => any;
+	input: (getter: Record<string, unknown>) => void;
+	isPluginInput?: boolean;
+}
+
+interface EquipmentGetterWindow {
+	form: EquipmentGetterForm;
+	open: (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterForm>) => void;
+	confirm: () => void;
+	onWindowClosed: () => void;
+}
+
+type EquipmentGetterFrame = HTMLElement & {
+	setForm?: (data: Partial<EquipmentGetterForm>) => void;
+	getForm?: () => EquipmentGetterForm;
+};
+
+const form = reactive<EquipmentGetterForm>({
+	type: 'trigger',
+	actor: { type: 'trigger' },
+	slot: '',
+	equipmentId: '',
+	variable: { type: 'local', key: '' }
+});
+let callback: ((getter: Record<string, unknown>) => void) | null = null;
+let pluginInput = false;
+
+const getFrame = (): EquipmentGetterFrame | null =>
+	document.getElementById('equipmentGetter') as EquipmentGetterFrame | null;
+
+const open = (target: EquipmentGetterTarget, defaults?: Partial<EquipmentGetterForm>): void => {
+	callback = (getter: Record<string, unknown>) => target.input(getter);
+	pluginInput = target.isPluginInput === true;
+	Window.open!('equipmentGetter');
+
+	let actor = { type: 'trigger' };
+	let slot = defaults?.slot ?? '';
+	let equipmentId = '';
+	let variable = { type: 'local', key: '' };
+	const equipment = target.read?.() ?? {};
+	switch (equipment.type) {
+		case 'trigger':
+		case 'latest':
+			break;
+		case 'by-slot':
+			actor = equipment.actor;
+			slot = equipment.slot;
+			break;
+		case 'by-id-equipped':
+		case 'by-id-inventory':
+			actor = equipment.actor;
+			equipmentId = equipment.equipmentId;
+			break;
+		case 'variable':
+			variable = equipment.variable;
+			break;
+	}
+	Object.assign(form, { type: equipment.type, actor, slot, equipmentId, variable });
+	getFrame()?.setForm?.(form);
+	getFocus(document.getElementById('equipmentGetter-type'));
+};
+
+const confirm = (): void => {
+	const data = getFrame()?.getForm?.() ?? form;
+	let getter: Record<string, unknown> | undefined;
+	switch (data.type) {
+		case 'trigger':
+		case 'latest':
+			getter = { type: data.type };
+			break;
+		case 'by-slot':
+			if (data.slot === '') {
+				getFocus(document.getElementById('equipmentGetter-slot'));
+				return;
+			}
+			getter = { type: data.type, actor: data.actor, slot: data.slot };
+			break;
+		case 'by-id-equipped':
+		case 'by-id-inventory':
+			if (data.equipmentId === '') {
+				getFocus(document.getElementById('equipmentGetter-equipmentId'));
+				return;
+			}
+			getter = { type: data.type, actor: data.actor, equipmentId: data.equipmentId };
+			break;
+		case 'variable':
+			if (data.variable.key === '') {
+				getFocus(document.getElementById('equipmentGetter-variable'));
+				return;
+			}
+			getter = { type: data.type, variable: data.variable };
+			break;
+	}
+	if (pluginInput) {
+		getter = { getter: 'equipment', ...getter };
+	}
+	callback?.(getter!);
+	Window.close!('equipmentGetter');
+};
+
+const onWindowClosed = (): void => {
+	callback = null;
+};
+
+export function useEquipmentGetterWindow(): EquipmentGetterWindow {
+	return { form, open, confirm, onWindowClosed };
+}

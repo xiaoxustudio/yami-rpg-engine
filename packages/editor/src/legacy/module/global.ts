@@ -2,7 +2,7 @@ import { $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
 import { getFocus, off, on, read, write } from '@/util/element-utils.ts';
 import { Attribute } from '@/attribute/attribute-window.ts';
-import { Codec } from '@/codec/codec.ts';
+import { Codec } from '@app/engine/codec/codec.ts';
 import { CommandList } from '@/components/command-list.ts';
 import { Data } from '@/data/data-object.ts';
 import { Project } from '@/data/project-settings-window.ts';
@@ -266,7 +266,7 @@ EventBus.once('editor_loaded', () => {
 			if (copy && this.data) {
 				switch (copy.class) {
 					case 'tilemap':
-						Codec.decodeTilemap(copy);
+						Codec.decodeTilemap!(copy);
 						copy.shortcut = 0;
 						break;
 				}

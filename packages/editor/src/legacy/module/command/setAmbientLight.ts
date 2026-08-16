@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -25,18 +23,6 @@ Command.cases.setAmbientLight = new CommandSchema({
 		{ key: 'duration', default: 0 },
 		{ key: 'wait', default: false }
 	],
-	onInitialize() {
-		$('#setAmbientLight-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#setAmbientLight')?.on?.('open', function (event: Event) {
-			$('#setAmbientLight-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#setAmbientLight')?.on?.('closed', function (event: Event) {
-			clear($('#setAmbientLight-easingId'));
-		});
-	},
 	parseColor(red: number | string, green: number | string, blue: number | string) {
 		const r = Command.parseVariableNumber!(red);
 		const g = Command.parseVariableNumber!(green);
@@ -52,8 +38,5 @@ Command.cases.setAmbientLight = new CommandSchema({
 			{ text: Local.get!('command.setAmbientLight') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#setAmbientLight-red'), 'all');
 	}
 });

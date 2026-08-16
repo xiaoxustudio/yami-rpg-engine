@@ -1,5 +1,3 @@
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
@@ -25,12 +23,6 @@ Command.cases.changeThreat = new CommandSchema({
 		{ key: 'operation', default: 'increase' },
 		{ key: 'threat', default: 0 }
 	],
-	onInitialize() {
-		$('#changeThreat-operation')?.loadItems?.([
-			{ name: 'Increase', value: 'increase' },
-			{ name: 'Decrease', value: 'decrease' }
-		]);
-	},
 	parseActors(actor: ActorRef, target: ActorRef) {
 		const sActor = Command.parseActor!(actor);
 		const dActor = Command.parseActor!(target);
@@ -49,8 +41,5 @@ Command.cases.changeThreat = new CommandSchema({
 			{ text: Local.get!('command.changeThreat') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	onLoad() {
-		getFocus($('#changeThreat-actor'));
 	}
 });

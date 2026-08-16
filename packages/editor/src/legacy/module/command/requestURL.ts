@@ -1,22 +1,13 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { getElementReader, $ } from '@/util/dom.ts';
 import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { getFocus, write } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
 import { Local } from '@/tools/localization.ts';
 
-type RequestKeyValue = {
+export type RequestKeyValue = {
 	key: string | { key: string };
 	value: string | { key: string };
-};
-
-type RequestURLCommandData = {
-	url?: string | { key: string };
-	method?: string;
-	headers?: RequestKeyValue[];
-	data?: RequestKeyValue[];
-	callback?: string;
 };
 
 export const RequestkeyValueBind = {
@@ -66,25 +57,26 @@ export const RequestkeyValueBind = {
 // 请求RequestURL
 Command.cases.requestURL = new CommandSchema({
 	name: 'requestURL',
-	onInitialize() {
-		$('#requestURL-method')?.loadItems?.([
-			{ name: 'GET', value: 'GET' },
-			{ name: 'POST', value: 'POST' },
-			{ name: 'PUT', value: 'PUT' },
-			{ name: 'DELETE', value: 'DELETE' }
-		]);
-		write($('#requestURL-method'), 'GET');
-		write($('#requestURL-url'), '');
-		$('#requestURL-header')?.bind?.(RequestkeyValueBind);
-		$('#requestURL-data')?.bind?.(RequestkeyValueBind);
-	},
+	fields: [
+		{ key: 'url', default: '' },
+		{ key: 'method', default: 'GET' },
+		{ key: 'headers', default: [], domId: 'header' },
+		{ key: 'data', default: [], domId: 'data' },
+		{ key: 'callback', default: '' }
+	],
 	customParse({
 		url = '',
 		method = 'GET',
 		headers = [],
 		data = [],
 		callback = ''
-	}: RequestURLCommandData) {
+	}: {
+		url: unknown;
+		method: string;
+		headers: RequestKeyValue[];
+		data: RequestKeyValue[];
+		callback: unknown;
+	}) {
 		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
 			{ text: Local.get!('command.requestURL') },
@@ -124,29 +116,5 @@ Command.cases.requestURL = new CommandSchema({
 			{ text: `, ${Local.get!('command.requestURLData')} = ` },
 			datas.slice(1)
 		);
-	},
-	customLoad({ url = '', method = 'GET', headers = [], data = [], callback = '' }) {
-		write($('#requestURL-method'), method);
-		write($('#requestURL-callback'), callback);
-		write($('#requestURL-url'), url);
-		getFocus($('#requestURL-url'));
-		const writer = getElementWriter('requestURL');
-		writer('header', headers);
-		writer('data', data);
-	},
-	customSave() {
-		const elVariable = $('#requestURL-url');
-		const variable = read(elVariable);
-		if (!variable || VariableGetter.isNone!(variable)) {
-			return getFocus(elVariable);
-		}
-		const reader = getElementReader('requestURL');
-		Command.save!({
-			url: variable,
-			method: reader('method'),
-			headers: reader('header'),
-			data: reader('data'),
-			callback: reader('callback')
-		});
 	}
 });

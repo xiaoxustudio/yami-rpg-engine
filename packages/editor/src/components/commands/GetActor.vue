@@ -1,5 +1,5 @@
 <template>
-<WindowFrame ref="frame" id="getActor" @confirm="onConfirm">
+<WindowFrame id="getActor" @confirm="onConfirm">
 	<template #title><TitleBar>Get Actor<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
@@ -8,17 +8,17 @@
 				id="getActor-variable"
 				type="variable"
 				filter="object"
-				:model-value="form.variable"
+				@input="onVariable"
 			/><div class="text">Position</div
-			><CustomBox id="getActor-position" type="position" :model-value="form.position" /><div class="text">Area</div
-			><SelectBox id="getActor-area" :model-value="form.area" /><div class="text">Size</div
+			><CustomBox id="getActor-position" type="position" @input="onPosition" /><div class="text">Area</div
+			><SelectBox id="getActor-area" v-model="form.area" /><div class="text">Size</div
 			><NumberVar
 				id="getActor-size"
 				min="0"
 				max="512"
 				decimals="4"
 				unit="tile"
-				:model-value="form.size"
+				v-model="form.size"
 			/><div class="text">Radius</div
 			><NumberVar
 				id="getActor-radius"
@@ -26,112 +26,128 @@
 				max="256"
 				decimals="4"
 				unit="tile"
-				:model-value="form.radius"
+				v-model="form.radius"
 			 /><div class="text">Selector</div
-			><SelectBox id="getActor-selector" :model-value="form.selector" /><div class="text">Team</div
-			><SelectVar id="getActor-teamId" :model-value="form.teamId" /><div class="text">Condition</div
-			><SelectBox id="getActor-condition" :model-value="form.condition" /><div class="text">Attribute</div
-			><SelectBox id="getActor-attribute" :model-value="form.attribute" /><div class="text">Attribute 2</div
-			><SelectBox id="getActor-divisor" :model-value="form.divisor" /><div class="text">Activation</div
-			><SelectBox id="getActor-activation" :model-value="form.activation" /><div class="text">Exclusion</div
-			><SelectBox id="getActor-exclusion" :model-value="form.exclusion" /><div class="text">Exclusion Actor</div
+			><SelectBox id="getActor-selector" v-model="form.selector" /><div class="text">Team</div
+			><SelectVar id="getActor-teamId" v-model="form.teamId" /><div class="text">Condition</div
+			><SelectBox id="getActor-condition" v-model="form.condition" /><div class="text">Attribute</div
+			><SelectBox id="getActor-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div
+			><SelectBox id="getActor-divisor" v-model="form.divisor" /><div class="text">Activation</div
+			><SelectBox id="getActor-activation" v-model="form.activation" /><div class="text">Exclusion</div
+			><SelectBox id="getActor-exclusion" v-model="form.exclusion" /><div class="text">Exclusion Actor</div
 			><CustomBox
 				id="getActor-exclusionActor"
 				type="actor"
-				:model-value="form.exclusionActor"
+				@input="onExclusionActor"
 			/><div class="text">Exclusion Team</div
-			><SelectVar id="getActor-exclusionTeamId" :model-value="form.exclusionTeamId" /></div>
+			><SelectVar id="getActor-exclusionTeamId" v-model="form.exclusionTeamId" /></div>
 	
 </WindowFrame>
 </template>
 
 <script setup lang="ts">
-import { useLocalStore } from '@app/stores/local';
-import { onMounted, reactive, ref } from 'vue';
-import { Command } from '@/command/command-object.ts';
-import type { GetActorForm } from '@/module/command/getActor.ts';
+
+import { onMounted } from 'vue';
+import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
+import { $ } from '@/util/dom.ts';
+import { clear } from '@/util/element-utils';
+import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const form = reactive<GetActorForm>({
-	variable: { type: 'local', key: '' },
-	position: { type: 'absolute', x: 0, y: 0 },
-	area: 'square',
-	size: 1,
-	radius: 0.5,
-	selector: 'enemy',
-	teamId: '',
-	condition: 'nearest',
-	attribute: '',
-	divisor: '',
-	activation: 'active',
-	exclusion: 'none',
-	exclusionActor: { type: 'trigger' },
-	exclusionTeamId: ''
-});
+const { form, save } = useGetActorCommandSchema();
 
-const setForm = (data: Partial<GetActorForm>): void => {
-	Object.assign(form, data);
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		if (!(field in data)) continue;
-		const control = document.getElementById(id) as
-			| (HTMLElement & { write?: (value: unknown) => void })
-			| null;
-		if (control && typeof control.write === 'function') {
-			control.write(data[field] as never);
-		}
-	}
+const onVariable = (value: unknown) => {
+	form.variable = value;
 };
 
-const getForm = (): GetActorForm => {
-	const data = { ...form } as GetActorForm;
-	for (const [id, field] of Object.entries(FIELD_BY_ID)) {
-		const control = document.getElementById(id) as
-			| (HTMLElement & { read?: () => unknown })
-			| null;
-		if (control && typeof control.read === 'function') {
-			data[field] = control.read() as never;
-		}
-	}
-	return data;
+const onPosition = (value: unknown) => {
+	form.position = value;
 };
 
-const FIELD_BY_ID: Record<string, keyof GetActorForm> = {
-	'getActor-variable': 'variable',
-	'getActor-position': 'position',
-	'getActor-area': 'area',
-	'getActor-size': 'size',
-	'getActor-radius': 'radius',
-	'getActor-selector': 'selector',
-	'getActor-teamId': 'teamId',
-	'getActor-condition': 'condition',
-	'getActor-attribute': 'attribute',
-	'getActor-divisor': 'divisor',
-	'getActor-activation': 'activation',
-	'getActor-exclusion': 'exclusion',
-	'getActor-exclusionActor': 'exclusionActor',
-	'getActor-exclusionTeamId': 'exclusionTeamId'
+const onExclusionActor = (value: unknown) => {
+	form.exclusionActor = value;
 };
-
-const frame = ref<InstanceType<typeof WindowFrame> | null>(null);
-
-const local = useLocalStore();
 
 const onConfirm = () => {
-	Command?.cases?.getActor?.save?.();
+	save();
 };
 
 onMounted(() => {
-	const el = frame.value?.root;
-	if (el) {
-		attachElementApi(el, { setForm, getForm });
-	}
-
-
+	$('#getActor-area')?.loadItems?.([
+		{ name: 'Square', value: 'square' },
+		{ name: 'Circle', value: 'circle' }
+	]);
+	$('#getActor-area')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'square', targets: [$('#getActor-size')] },
+			{ case: 'circle', targets: [$('#getActor-radius')] }
+		]);
+	$('#getActor-selector')?.loadItems?.([
+		{ name: 'Team Enemy', value: 'enemy' },
+		{ name: 'Team Friend', value: 'friend' },
+		{ name: 'Team Member', value: 'team' },
+		{ name: 'Any', value: 'any' }
+	]);
+	$('#getActor-selector')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['enemy', 'friend', 'team'],
+				targets: [$('#getActor-teamId')]
+			}
+		]);
+	$('#getActor-condition')?.loadItems?.([
+		{ name: 'Nearest', value: 'nearest' },
+		{ name: 'Farthest', value: 'farthest' },
+		{ name: 'Min Attribute Value', value: 'min-attribute-value' },
+		{ name: 'Max Attribute Value', value: 'max-attribute-value' },
+		{ name: 'Min Attribute Ratio', value: 'min-attribute-ratio' },
+		{ name: 'Max Attribute Ratio', value: 'max-attribute-ratio' },
+		{ name: 'Random', value: 'random' }
+	]);
+	$('#getActor-condition')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{
+				case: ['min-attribute-value', 'max-attribute-value'],
+				targets: [$('#getActor-attribute')]
+			},
+			{
+				case: ['min-attribute-ratio', 'max-attribute-ratio'],
+				targets: [$('#getActor-attribute'), $('#getActor-divisor')]
+			}
+		]);
+	$('#getActor-activation')?.loadItems?.([
+		{ name: 'Active', value: 'active' },
+		{ name: 'Inactive', value: 'inactive' },
+		{ name: 'Either', value: 'either' }
+	]);
+	$('#getActor-exclusion')?.loadItems?.([
+		{ name: 'None', value: 'none' },
+		{ name: 'Exclude an Actor', value: 'actor' },
+		{ name: 'Exclude a Team', value: 'team' }
+	]);
+	$('#getActor-exclusion')
+		?.enableHiddenMode?.()
+		?.relate?.([
+			{ case: 'actor', targets: [$('#getActor-exclusionActor')] },
+			{ case: 'team', targets: [$('#getActor-exclusionTeamId')] }
+		]);
+	$('#getActor')?.on?.('open', () => {
+		const items = Data.createTeamItems!();
+		$('#getActor-teamId')?.loadItems?.(items);
+		$('#getActor-exclusionTeamId')?.loadItems?.(items);
+	});
+	$('#getActor')?.on?.('closed', () => {
+		clear($('#getActor-teamId'));
+		clear($('#getActor-exclusionTeamId'));
+	});
 });
+
 </script>

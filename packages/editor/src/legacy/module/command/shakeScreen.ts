@@ -1,5 +1,3 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
 import { Command } from '@/command/command-object.ts';
 import { Token } from '@/command/mark-string-manager.ts';
 import { Data } from '@/data/data-object.ts';
@@ -8,23 +6,14 @@ import { Local } from '@/tools/localization.ts';
 
 Command.cases.shakeScreen = new CommandSchema({
 	name: 'shakeScreen',
-	onInitialize() {
-		$('#shakeScreen-mode')?.loadItems?.([
-			{ name: 'Random', value: 'random' },
-			{ name: 'Horizontal', value: 'horizontal' },
-			{ name: 'Vertical', value: 'vertical' }
-		]);
-		$('#shakeScreen-wait')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-		$('#shakeScreen')?.on?.('open', function (event: Event) {
-			$('#shakeScreen-easingId')?.loadItems?.(Data.createEasingItems!());
-		});
-		$('#shakeScreen')?.on?.('closed', function (event: Event) {
-			clear($('#shakeScreen-easingId'));
-		});
-	},
+	fields: [
+		{ key: 'mode', default: 'random' },
+		{ key: 'power', default: 5 },
+		{ key: 'speed', default: 10 },
+		{ key: 'easingId', default: () => Data.easings[0].id },
+		{ key: 'duration', default: 200 },
+		{ key: 'wait', default: false }
+	],
 	customParse({
 		mode,
 		power,
@@ -50,33 +39,5 @@ Command.cases.shakeScreen = new CommandSchema({
 			{ text: Local.get!('command.shakeScreen') + Token(': ') },
 			{ text: words.join() }
 		];
-	},
-	customLoad({
-		mode = 'random',
-		power = 5,
-		speed = 10,
-		easingId = Data.easings[0].id,
-		duration = 200,
-		wait = false
-	}) {
-		const write = getElementWriter('shakeScreen');
-		write('mode', mode);
-		write('power', power);
-		write('speed', speed);
-		write('easingId', easingId);
-		write('duration', duration);
-		write('wait', wait);
-		getFocus($('#shakeScreen-mode'));
-	},
-	customSave() {
-		const read = getElementReader('shakeScreen');
-		Command.save!({
-			mode: read('mode'),
-			power: read('power'),
-			speed: read('speed'),
-			easingId: read('easingId'),
-			duration: read('duration'),
-			wait: read('wait')
-		});
 	}
 });
