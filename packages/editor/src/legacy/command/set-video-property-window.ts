@@ -1,6 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
+import { Local } from '@/tools/localization.ts';
 
 export const VideoProperty = createPropertyWindow({
 	prefix: 'setVideo',
@@ -13,9 +14,22 @@ export const VideoProperty = createPropertyWindow({
 		{ name: 'Blend', value: 'blend', default: 'normal' }
 	],
 	init() {
-		$('#setVideo-property-loop').loadItems($('#uiVideo-loop').dataItems);
-		$('#setVideo-property-flip').loadItems($('#uiVideo-flip').dataItems);
-		$('#setVideo-property-blend').loadItems($('#uiVideo-blend').dataItems);
+		const get = Local.createGetter!('command.setVideo');
+		$('#setVideo-property-loop').loadItems([
+			{ name: get('loop.false') || 'Once', value: false },
+			{ name: get('loop.true') || 'Loop', value: true }
+		]);
+		$('#setVideo-property-flip').loadItems([
+			{ name: get('flip.none') || 'None', value: 'none' },
+			{ name: get('flip.horizontal') || 'Horizontal', value: 'horizontal' },
+			{ name: get('flip.vertical') || 'Vertical', value: 'vertical' },
+			{ name: get('flip.both') || 'Both', value: 'both' }
+		]);
+		$('#setVideo-property-blend').loadItems([
+			{ name: Local.get!('blend.normal') || 'Normal', value: 'normal' },
+			{ name: Local.get!('blend.additive') || 'Additive', value: 'additive' },
+			{ name: Local.get!('blend.subtract') || 'Subtract', value: 'subtract' }
+		]);
 	},
 	parsers: {
 		video: (value) => Command.parseFileName(value),

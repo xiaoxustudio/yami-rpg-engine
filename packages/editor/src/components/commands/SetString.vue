@@ -210,6 +210,7 @@
 import { onMounted } from 'vue';
 import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -283,6 +284,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setString');
 	$('#setString-operation')?.loadItems?.([
 		{ name: 'Set', value: 'set' },
 		{ name: 'Add', value: 'add' }
@@ -357,11 +359,11 @@ onMounted(() => {
 			{ case: 'other', targets: [$('#setString-operand-other-data')] }
 		]);
 	$('#setString-operand-string-method')?.loadItems?.([
-		{ name: 'Char', value: 'char' },
-		{ name: 'Slice', value: 'slice' },
-		{ name: 'Pad Start', value: 'pad-start' },
-		{ name: 'Replace', value: 'replace' },
-		{ name: 'Replace All', value: 'replace-all' }
+		{ name: get('string.char') || 'Char', value: 'char' },
+		{ name: get('string.slice') || 'Slice', value: 'slice' },
+		{ name: get('string.pad-start') || 'Pad Start', value: 'pad-start' },
+		{ name: get('string.replace') || 'Replace', value: 'replace' },
+		{ name: get('string.replace-all') || 'Replace All', value: 'replace-all' }
 	]);
 	$('#setString-operand-string-method')
 		?.enableHiddenMode?.()
@@ -393,19 +395,19 @@ onMounted(() => {
 			}
 		]);
 	$('#setString-operand-object-property')?.loadItems?.([
-		{ name: 'Actor - Team ID', value: 'actor-team-id' },
-		{ name: 'Actor - File ID', value: 'actor-file-id' },
+		{ name: get('object.actor-team-id') || 'Actor - Team ID', value: 'actor-team-id' },
+		{ name: get('object.actor-file-id') || 'Actor - File ID', value: 'actor-file-id' },
 		{
-			name: 'Actor - Anim Motion Name',
+			name: get('object.actor-animation-motion-name') || 'Actor - Anim Motion Name',
 			value: 'actor-animation-motion-name'
 		},
-		{ name: 'Skill - File ID', value: 'skill-file-id' },
-		{ name: 'Trigger - File ID', value: 'trigger-file-id' },
-		{ name: 'State - File ID', value: 'state-file-id' },
-		{ name: 'Equipment - File ID', value: 'equipment-file-id' },
-		{ name: 'Equipment - Slot', value: 'equipment-slot' },
-		{ name: 'Item - File ID', value: 'item-file-id' },
-		{ name: 'File - ID', value: 'file-id' }
+		{ name: get('object.skill-file-id') || 'Skill - File ID', value: 'skill-file-id' },
+		{ name: get('object.trigger-file-id') || 'Trigger - File ID', value: 'trigger-file-id' },
+		{ name: get('object.state-file-id') || 'State - File ID', value: 'state-file-id' },
+		{ name: get('object.equipment-file-id') || 'Equipment - File ID', value: 'equipment-file-id' },
+		{ name: get('object.equipment-slot') || 'Equipment - Slot', value: 'equipment-slot' },
+		{ name: get('object.item-file-id') || 'Item - File ID', value: 'item-file-id' },
+		{ name: get('object.file-id') || 'File - ID', value: 'file-id' }
 	]);
 	$('#setString-operand-object-property')
 		?.enableHiddenMode?.()
@@ -440,21 +442,21 @@ onMounted(() => {
 			}
 		]);
 	$('#setString-operand-element-property')?.loadItems?.([
-		{ name: 'Text - Content', value: 'text-content' },
-		{ name: 'Text Box - Text', value: 'textBox-text' },
-		{ name: 'Dialog Box - Content', value: 'dialogBox-content' }
+		{ name: get('element.text-content') || 'Text - Content', value: 'text-content' },
+		{ name: get('element.textBox-text') || 'Text Box - Text', value: 'textBox-text' },
+		{ name: get('element.dialogBox-content') || 'Dialog Box - Content', value: 'dialogBox-content' }
 	]);
 	$('#setString-operand-other-data')?.loadItems?.([
-		{ name: 'Event Trigger Key', value: 'trigger-key' },
+		{ name: get('other.trigger-key') || 'Event Trigger Key', value: 'trigger-key' },
 		{
-			name: 'Start Position - Scene ID',
+			name: get('other.start-position-scene-id') || 'Start Position - Scene ID',
 			value: 'start-position-scene-id'
 		},
-		{ name: 'Show Text - Content', value: 'showText-content' },
-		{ name: 'Show Choices - Content', value: 'showChoices-content' },
-		{ name: 'Parse Timestamp', value: 'parse-timestamp' },
-		{ name: 'Screenshot(Base64)', value: 'screenshot' },
-		{ name: 'Game Language', value: 'game-language' }
+		{ name: get('other.showText-content') || 'Show Text - Content', value: 'showText-content' },
+		{ name: get('other.showChoices-content') || 'Show Choices - Content', value: 'showChoices-content' },
+		{ name: get('other.parse-timestamp') || 'Parse Timestamp', value: 'parse-timestamp' },
+		{ name: get('other.screenshot') || 'Screenshot(Base64)', value: 'screenshot' },
+		{ name: get('other.game-language') || 'Game Language', value: 'game-language' }
 	]);
 	$('#setString-operand-other-data')
 		?.enableHiddenMode?.()

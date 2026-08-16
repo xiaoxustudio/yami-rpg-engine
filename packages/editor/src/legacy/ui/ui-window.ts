@@ -20,7 +20,7 @@ import { Inspector } from '@/inspector/inspector.ts';
 
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Cursor } from '@/tools/pointer-object.ts';
 import { UndoManager } from '@/tools/undo-manager.ts';
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';

@@ -7,6 +7,7 @@ import { exec, type ChildProcess } from 'child_process';
 const execPromise = util.promisify(exec);
 import sharp from 'sharp';
 import type { ApkConfig, ApkOptions, ApkResult } from './types/apk.ts';
+import { CHANNELS } from '../src/services/ipc/channels.ts';
 
 let isBuilding = false;
 let currentChildProcess: ChildProcess | null = null;
@@ -82,7 +83,7 @@ async function copyFolderAsync(source: string, destination: string): Promise<voi
 
 function sendLog(msg: string, percentage: number | null = null, isError: boolean = false): void {
 	if ((globalThis as any).editor && typeof (globalThis as any).editor.send === 'function') {
-		(globalThis as any).editor.send('apk-log', {
+		(globalThis as any).editor.send(CHANNELS.send.apkLog, {
 			done: isError,
 			msg: percentage !== null ? `[${percentage}%] ${msg}` : msg
 		});

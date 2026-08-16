@@ -14,6 +14,7 @@
 import { onMounted } from 'vue';
 import { useChangeActorMotionCommandSchema } from '@app/composables/commands/useChangeActorMotionCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -34,9 +35,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.changeActorMotion');
 	$('#changeActorMotion-type')?.loadItems?.([
-		{ name: 'Idle', value: 'idle' },
-		{ name: 'Move', value: 'move' }
+		{ name: get('type.idle') || 'Idle', value: 'idle' },
+		{ name: get('type.move') || 'Move', value: 'move' }
 	]);
 });
 

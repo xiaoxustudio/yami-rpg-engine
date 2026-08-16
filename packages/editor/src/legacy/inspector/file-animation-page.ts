@@ -3,7 +3,7 @@ import { Window } from '@/tools/window-object.ts';
 import { addClass, getFocus, removeClass } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Command } from '@/command/command-object.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Inspector } from './inspector.ts';
 
 {

@@ -1,12 +1,11 @@
-﻿import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
 import { Editor } from '@/main/editor.ts';
 import { shallowRef } from 'vue';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
+import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
+import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FSP } from '@/file/file-system.ts';
-import { FolderItem } from '@/file/folder-item.ts';
-import { GUID } from '@/file/guid.ts';
+import { FSP } from '@app/services/file-system/fs-bridge.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Data } from '@/data/data-object.ts';
 import { Path } from '@/util/config.ts';
 import { TemplatesPath } from '@/module/global.ts';
@@ -226,6 +225,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	) {
 		const Browser = getBrowser();
 		if (!Browser) return;
+		const Directory = getDirectoryTree();
 		const items: MenuItem[] = [];
 		const { target } = event.raw;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
@@ -341,7 +341,7 @@ export const useBrowserStore = defineStore('browser', () => {
 					{
 						label: get('delete'),
 						accelerator: 'Delete',
-						enabled: !(selections as unknown[]).includes(Directory.assets),
+						enabled: !(selections as unknown[]).includes(Directory?.assets),
 						click: () => {
 							Browser.body?.deleteFiles?.();
 						}
@@ -429,6 +429,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	function createFile(filename: string, data: unknown) {
 		const Browser = getBrowser();
 		if (!Browser) return;
+		const Directory = getDirectoryTree();
 		let guid: string;
 		do {
 			guid = GUID.generate64bit();
@@ -441,14 +442,14 @@ export const useBrowserStore = defineStore('browser', () => {
 		const route = File.path?.(path);
 		const json = data instanceof Object ? JSON.stringify(data, null, 2) : data;
 		FSP.writeFile(route, json)
-			.then(() => Directory.update?.())
-			.then((changed: boolean) => {
+			.then(() => Directory?.update?.() ?? Promise.resolve(false))
+			.then((changed: unknown) => {
 				if (changed) {
-					const folder = Directory.getFolder?.(dirname);
-					if (folder.path === dirname) {
+					const folder = Directory?.getFolder?.(dirname);
+					if (folder?.path === dirname) {
 						Browser.nav?.load?.(folder);
 					}
-					const file = Directory.getFile?.(path);
+					const file = Directory?.getFile?.(path);
 					if (file?.path === path) {
 						body?.select?.(file);
 						body?.rename?.(file);
@@ -464,6 +465,7 @@ export const useBrowserStore = defineStore('browser', () => {
 	function createScript(filename: string) {
 		const Browser = getBrowser();
 		if (!Browser) return;
+		const Directory = getDirectoryTree();
 		let guid: string;
 		do {
 			guid = GUID.generate64bit();
@@ -476,14 +478,14 @@ export const useBrowserStore = defineStore('browser', () => {
 		const route = File.path?.(path);
 		const source = Path.resolve(TemplatesPath, 'script', filename);
 		FSP.copyFile(source, route)
-			.then(() => Directory.update?.())
-			.then((changed: boolean) => {
+			.then(() => Directory?.update?.() ?? Promise.resolve(false))
+			.then((changed: unknown) => {
 				if (changed) {
-					const folder = Directory.getFolder?.(dirname);
-					if (folder.path === dirname) {
+					const folder = Directory?.getFolder?.(dirname);
+					if (folder?.path === dirname) {
 						Browser.nav?.load?.(folder);
 					}
-					const file = Directory.getFile?.(path);
+					const file = Directory?.getFile?.(path);
 					if (file?.path === path) {
 						body?.select?.(file);
 						body?.rename?.(file);
@@ -526,15 +528,16 @@ export const useBrowserStore = defineStore('browser', () => {
 	function loadFromProject(project: { browser: { view: number; folders: string[] } }) {
 		const Browser = getBrowser();
 		if (!Browser) return;
+		const Directory = getDirectoryTree();
 		const { view, folders } = project.browser;
 		const selections: (FolderItem | null)[] = [];
 		for (const path of folders) {
-			selections.push(Directory.getFolder?.(path));
+			selections.push(Directory?.getFolder?.(path) ?? null);
 		}
 		if (selections.length === 0) {
-			selections.push(Directory.assets);
+			selections.push(Directory?.assets ?? null);
 		}
-		Browser.directory = Directory.assets as unknown as string;
+		Browser.directory = Directory?.assets as unknown as string;
 		Browser.body?.setViewIndex?.(view);
 		Browser.nav?.load?.(...selections);
 	}

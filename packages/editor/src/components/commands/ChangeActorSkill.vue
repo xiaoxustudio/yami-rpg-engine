@@ -14,6 +14,7 @@
 import { onMounted } from 'vue';
 import { useChangeActorSkillCommandSchema } from '@app/composables/commands/useChangeActorSkillCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -35,11 +36,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.changeActorSkill');
 	$('#changeActorSkill-operation')?.loadItems?.([
-		{ name: 'Add', value: 'add' },
-		{ name: 'Remove', value: 'remove' },
-		{ name: 'Remove Instance', value: 'remove-instance' },
-		{ name: 'Sort by Filename', value: 'sort-by-order' }
+		{ name: get('add') || 'Add', value: 'add' },
+		{ name: get('remove') || 'Remove', value: 'remove' },
+		{ name: get('remove-instance') || 'Remove Instance', value: 'remove-instance' },
+		{ name: get('sort-by-order') || 'Sort by Filename', value: 'sort-by-order' }
 	]);
 	$('#changeActorSkill-operation')
 		?.enableHiddenMode?.()

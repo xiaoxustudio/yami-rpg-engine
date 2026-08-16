@@ -54,6 +54,7 @@
 import { onMounted } from 'vue';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -76,9 +77,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.followActor');
 	$('#followActor-mode')?.loadItems?.([
-		{ name: 'Circle', value: 'circle' },
-		{ name: 'Rectangle', value: 'rectangle' }
+		{ name: get('mode.circle') || 'Circle', value: 'circle' },
+		{ name: get('mode.rectangle') || 'Rectangle', value: 'rectangle' }
 	]);
 	$('#followActor-mode')
 		?.enableHiddenMode?.()

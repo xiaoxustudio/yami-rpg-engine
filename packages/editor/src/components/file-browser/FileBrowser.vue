@@ -34,7 +34,7 @@ import { Editor } from '@/main/editor.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { FileItem } from '@/file/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FSP } from '@/file/file-system.ts';
+import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@/file/folder-item.ts';
 import { Local } from '@/tools/localization.ts';
 import { Path } from '@/util/config.ts';

@@ -17,6 +17,7 @@
 import { onMounted } from 'vue';
 import { useCommandLineCommandSchema } from '@app/composables/commands/useCommandLineCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -38,11 +39,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.commandLine');
 	$('#commandLine-type')?.loadItems?.([
-		{ name: 'get', value: 'get' },
-		{ name: 'rm', value: 'rm' },
-		{ name: 'set', value: 'set' },
-		{ name: 'has', value: 'has' }
+		{ name: get('get') || 'get', value: 'get' },
+		{ name: get('rm') || 'rm', value: 'rm' },
+		{ name: get('set') || 'set', value: 'set' },
+		{ name: get('has') || 'has', value: 'has' }
 	]);
 	$('#commandLine-type')
 		?.enableHiddenMode?.()

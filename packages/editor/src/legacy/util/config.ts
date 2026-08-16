@@ -2,6 +2,7 @@ import { ipcRenderer } from 'electron';
 import nodePath from 'node:path';
 import os from 'node:os';
 import nodeFs from 'node:fs';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import type { EditorConfigShape } from '@app/stores/editor';
 export const Path: typeof nodePath & { slash: (path: string) => string } =
 	nodePath as typeof nodePath & { slash: (path: string) => string };
@@ -40,7 +41,7 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 						path: ''
 					};
 					return ipcRenderer
-						.invoke('get-dir-path', 'documents')
+						.invoke(CHANNELS.invoke.getDirPath, 'documents')
 						.catch((error) => 'C:')
 						.then((docPath) => {
 							const dialogs = config.dialogs as Record<string, string> | undefined;

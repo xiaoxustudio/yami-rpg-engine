@@ -14,6 +14,7 @@
 import { onMounted } from 'vue';
 import { useSetPartyMemberCommandSchema } from '@app/composables/commands/useSetPartyMemberCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -30,9 +31,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setPartyMember');
 	$('#setPartyMember-operation')?.loadItems?.([
-		{ name: 'Add', value: 'add' },
-		{ name: 'Remove', value: 'remove' }
+		{ name: get('add') || 'Add', value: 'add' },
+		{ name: get('remove') || 'Remove', value: 'remove' }
 	]);
 });
 

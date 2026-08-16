@@ -1,5 +1,6 @@
 import '@/module/command/script.ts';
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { $ } from '@/util/dom.ts';
 import { getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
 import { Command } from '@/command/command-object.ts';
@@ -200,7 +201,7 @@ const save = async (): Promise<void> => {
 		if (currentLanguage === 'javascript') {
 			new Function(script);
 		} else {
-			const result = (await ipcRenderer.invoke('tsc-file', script)) as {
+			const result = (await ipcRenderer.invoke(CHANNELS.invoke.tscFile, script)) as {
 				error?: unknown;
 				res?: string;
 			};

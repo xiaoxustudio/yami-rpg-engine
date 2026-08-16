@@ -7,7 +7,7 @@ import { Data } from '@/data/data-object.ts';
 import { Project } from '@/data/project-settings-window.ts';
 import { Directory } from '@/file/directory-object.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FS } from '@/file/file-system.ts';
+import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { GameLocal } from '@/local/local-object.ts';
 import { Log } from '@/log/log-window.ts';

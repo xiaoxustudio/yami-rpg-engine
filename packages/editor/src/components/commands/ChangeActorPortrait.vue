@@ -20,6 +20,7 @@
 import { onMounted } from 'vue';
 import { useChangeActorPortraitCommandSchema } from '@app/composables/commands/useChangeActorPortraitCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -44,10 +45,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.changeActorPortrait');
 	$('#changeActorPortrait-mode')?.loadItems?.([
 		{ name: 'Full Mode', value: 'full' },
 		{ name: 'Image Mode', value: 'portrait' },
-		{ name: 'Clip Mode', value: 'clip' }
+		{ name: get('clip') || 'Clip Mode', value: 'clip' }
 	]);
 	$('#changeActorPortrait-mode')
 		?.enableHiddenMode?.()

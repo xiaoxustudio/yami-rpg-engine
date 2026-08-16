@@ -7,7 +7,7 @@ import { File } from '@/file/file-system-core.ts';
 
 import { Reference } from '@/log/related-references.ts';
 import { Editor } from '@/main/editor.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from '@/inspector/inspector.ts';

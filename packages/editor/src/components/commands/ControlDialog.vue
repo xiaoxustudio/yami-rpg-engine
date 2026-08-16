@@ -15,6 +15,7 @@
 import { onMounted } from 'vue';
 import { useControlDialogCommandSchema } from '@app/composables/commands/useControlDialogCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -31,11 +32,12 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.controlDialog');
 	$('#controlDialog-operation')?.loadItems?.([
-		{ name: 'Pause Printing', value: 'pause' },
-		{ name: 'Continue Printing', value: 'continue' },
-		{ name: 'Print Immediately', value: 'print-immediately' },
-		{ name: 'Print Next Page', value: 'print-next-page' }
+		{ name: get('pause') || 'Pause Printing', value: 'pause' },
+		{ name: get('continue') || 'Continue Printing', value: 'continue' },
+		{ name: get('print-immediately') || 'Print Immediately', value: 'print-immediately' },
+		{ name: get('print-next-page') || 'Print Next Page', value: 'print-next-page' }
 	]);
 });
 

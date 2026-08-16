@@ -9,7 +9,7 @@ import { Codec } from '@app/engine/codec/codec.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { getGlobalClipboard } from '@/types/global-clipboard.ts';
 import { Data } from '@/data/data-object.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Color } from '@/tools/color-picker-window.ts';
 import { Local } from '@/tools/localization.ts';
 import '@/util/number.ts';

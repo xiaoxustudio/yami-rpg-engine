@@ -13,6 +13,7 @@
 import { onMounted } from 'vue';
 import { useSetActiveCommandSchema } from '@app/composables/commands/useSetActiveCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -29,9 +30,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setActive');
 	$('#setActive-active')?.loadItems?.([
-		{ name: 'Active', value: true },
-		{ name: 'Inactive', value: false }
+		{ name: get('active.true') || 'Active', value: true },
+		{ name: get('active.false') || 'Inactive', value: false }
 	]);
 });
 

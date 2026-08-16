@@ -5,7 +5,7 @@ import { Timer } from '@/util/timer.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FS, FSP } from '@/file/file-system.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@/file/folder-item.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';

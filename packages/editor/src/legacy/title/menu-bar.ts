@@ -1,6 +1,7 @@
 import { macRedoKey } from '@/util/event-accessors';
 import { Window } from '@/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { SettingConfig } from '@/module/settingconfig';
 import type { MenuItem } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
@@ -26,7 +27,7 @@ import { Team } from '@/data/team-window.ts';
 import { Easing } from '@/data/transition-window.ts';
 import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FS, FSP } from '@/file/file-system.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { ExportLanguage } from '@/local/export-language-window.ts';
 import { ImportLanguage } from '@/local/import-language-window.ts';
@@ -121,7 +122,7 @@ Menubar.initialize = function (this: typeof Menubar) {
 
 // 开关全屏模式
 Menubar.toggleFullScreen = function (this: typeof Menubar) {
-	ipcRenderer.send('toggle-full-screen');
+	ipcRenderer.send(CHANNELS.on.toggleFullScreen);
 };
 
 // 弹出文件菜单
@@ -969,7 +970,7 @@ Menubar.revealSaveDirectory = async function (this: typeof Menubar) {
 	let saveDir;
 	const { location, subdir } = Data.config.save;
 	if (location !== 'local') {
-		const dirname = await ipcRenderer.invoke('get-dir-path', location);
+		const dirname = await ipcRenderer.invoke(CHANNELS.invoke.getDirPath, location);
 		const folder = this.sanitizeFolderName!(subdir);
 		saveDir = Path.resolve!(dirname, folder);
 	} else {

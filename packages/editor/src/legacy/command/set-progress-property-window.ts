@@ -1,6 +1,7 @@
 import { $ } from '@/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
+import { Local } from '@/tools/localization.ts';
 
 export const ProgressBarProperty = createPropertyWindow({
 	prefix: 'setProgressBar',
@@ -20,8 +21,16 @@ export const ProgressBarProperty = createPropertyWindow({
 		{ name: 'Color Alpha', value: 'color-3', default: 0 }
 	],
 	init() {
-		$('#setProgressBar-property-display').loadItems($('#uiProgressBar-display').dataItems);
-		$('#setProgressBar-property-blend').loadItems($('#uiProgressBar-blend').dataItems);
+		const get = Local.createGetter!('command.setProgressBar');
+		$('#setProgressBar-property-display').loadItems([
+			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
+			{ name: get('display.clip') || 'Clip', value: 'clip' }
+		]);
+		$('#setProgressBar-property-blend').loadItems([
+			{ name: Local.get!('blend.normal') || 'Normal', value: 'normal' },
+			{ name: Local.get!('blend.additive') || 'Additive', value: 'additive' },
+			{ name: Local.get!('blend.subtract') || 'Subtract', value: 'subtract' }
+		]);
 	},
 	parsers: {
 		image: (value) => Command.parseFileName(value),

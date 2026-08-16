@@ -31,6 +31,7 @@
 import { onMounted } from 'vue';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -57,21 +58,22 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setInventory');
 	$('#setInventory-operation')?.loadItems?.([
-		{ name: 'Increase Money', value: 'increase-money' },
-		{ name: 'Decrease Money', value: 'decrease-money' },
-		{ name: 'Increase Items', value: 'increase-items' },
-		{ name: 'Decrease Items', value: 'decrease-items' },
-		{ name: 'Gain Equipment', value: 'gain-equipment' },
-		{ name: 'Lose Equipment', value: 'lose-equipment' },
-		{ name: 'Gain Equipment', value: 'gain-equipment-instance' },
-		{ name: 'Lose Equipment', value: 'lose-equipment-instance' },
-		{ name: 'Swap Order of Items', value: 'swap' },
-		{ name: 'Sort Simply', value: 'sort' },
-		{ name: 'Sort by Filename', value: 'sort-by-order' },
-		{ name: "Use Global Actor's Inventory", value: 'reference' },
-		{ name: 'Restore Inventory', value: 'dereference' },
-		{ name: 'Reset', value: 'reset' }
+		{ name: get('increase-money') || 'Increase Money', value: 'increase-money' },
+		{ name: get('decrease-money') || 'Decrease Money', value: 'decrease-money' },
+		{ name: get('increase-items') || 'Increase Items', value: 'increase-items' },
+		{ name: get('decrease-items') || 'Decrease Items', value: 'decrease-items' },
+		{ name: get('gain-equipment') || 'Gain Equipment', value: 'gain-equipment' },
+		{ name: get('lose-equipment') || 'Lose Equipment', value: 'lose-equipment' },
+		{ name: get('gain-equipment-instance') || 'Gain Equipment', value: 'gain-equipment-instance' },
+		{ name: get('lose-equipment-instance') || 'Lose Equipment', value: 'lose-equipment-instance' },
+		{ name: get('swap') || 'Swap Order of Items', value: 'swap' },
+		{ name: get('sort') || 'Sort Simply', value: 'sort' },
+		{ name: get('sort-by-order') || 'Sort by Filename', value: 'sort-by-order' },
+		{ name: get('reference') || "Use Global Actor's Inventory", value: 'reference' },
+		{ name: get('dereference') || 'Restore Inventory', value: 'dereference' },
+		{ name: get('reset') || 'Reset', value: 'reset' }
 	]);
 	$('#setInventory-operation')
 		?.enableHiddenMode?.()

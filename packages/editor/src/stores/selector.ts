@@ -7,10 +7,9 @@ import { clear, hasClass, seek } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { AudioManager } from '@/audio/audio-manager.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
+import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
+import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@/file/file-system-core.ts';
-import { FolderItem } from '@/file/folder-item.ts';
 import { Reference } from '@/log/related-references.ts';
 import { Local } from '@/tools/localization.ts';
 import { EventBus } from '@/module/eventbus.ts';
@@ -140,6 +139,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	) {
 		const Selector = getSelector();
 		if (!Selector) return;
+		const Directory = getDirectoryTree();
 		bindConfirm();
 		Selector.target = t;
 		Selector.allowNone = allowNoneParam;
@@ -155,10 +155,10 @@ export const useSelectorStore = defineStore('selector', () => {
 		body?.computeGridProperties?.();
 		if (meta !== undefined) {
 			const path = meta.path;
-			nav?.load?.(Directory.getFolder?.(path));
+			nav?.load?.(Directory?.getFolder?.(path));
 			body?.selectByPath?.(path);
 		} else {
-			nav?.load?.(Directory.getFolder?.(Selector.lastDir ?? 'Assets'));
+			nav?.load?.(Directory?.getFolder?.(Selector.lastDir ?? 'Assets'));
 		}
 		head?.searcher?.getFocus?.();
 	}
@@ -218,8 +218,9 @@ export const useSelectorStore = defineStore('selector', () => {
 	function loadFromProject(project: { selector?: { view?: number } }) {
 		const Selector = getSelector();
 		if (!Selector) return;
+		const Directory = getDirectoryTree();
 		const { view } = project.selector!;
-		Selector.directory = [Directory.assets];
+		Selector.directory = [Directory?.assets];
 		Selector.body?.setViewIndex?.(view as number);
 	}
 
@@ -305,6 +306,7 @@ export const useSelectorStore = defineStore('selector', () => {
 	) {
 		const Selector = getSelector();
 		if (!Selector) return;
+		const Directory = getDirectoryTree();
 		const items: MenuItem[] = [];
 		const { target: rawTarget } = event.raw;
 		const { browser, nav } = Selector.links ?? {};
@@ -346,7 +348,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				items.push({
 					label: get('delete'),
 					accelerator: 'Delete',
-					enabled: !(selections ?? []).includes(Directory.assets),
+					enabled: !(selections ?? []).includes(Directory?.assets),
 					click: () => {
 						Selector.deleteFiles?.();
 					}
@@ -354,7 +356,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				items.push({
 					label: get('rename'),
 					accelerator: 'F2',
-					enabled: single && file !== Directory.assets,
+					enabled: single && file !== Directory?.assets,
 					click: () => {
 						Selector.rename?.(file);
 					}

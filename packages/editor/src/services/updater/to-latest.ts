@@ -1,0 +1,90 @@
+import { Path } from '@/util/config.ts';
+import { Data } from '@/data/data-object.ts';
+import { File } from '@/file/file-system-core.ts';
+import { FS } from '@app/services/file-system/fs-bridge.ts';
+import { Updater } from './updater.ts';
+// ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
+import { fileURLToPath } from 'node:url';
+const _moduleURL = new URL(import.meta.url);
+const _modulePath =
+	typeof fileURLToPath === 'function' && _moduleURL.protocol === 'file:'
+		? fileURLToPath(_moduleURL)
+		: typeof process !== 'undefined' &&
+			  typeof process.cwd === 'function' &&
+			  typeof Path.resolve === 'function'
+			? Path.resolve!(process.cwd(), 'Project', _moduleURL.pathname.split('/').pop() ?? '')
+			: '';
+const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
+
+Updater.updateToLatest = function (this: typeof Updater, version: string) {
+	const verNum = Updater.getVersionNumber!(version);
+	if (verNum >= Updater.getVersionNumber!('1.0.122')) {
+		return Updater.updateIncrementalChanges!(version);
+	}
+
+	const dstProjectDir = Path.dirname!(Updater.hooks.getProjectPath()!);
+	const srcProjectDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update');
+	const srcScriptDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/script');
+	const srcPluginDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update/plugins');
+	const dstScriptDir = Path.resolve!(dstProjectDir, 'Script');
+
+	const deleteScripts = [
+		'util.js',
+		'file.js',
+		'codec.js',
+		'webgl.js',
+		'audio.js',
+		'printer.js',
+		'variable.js',
+		'animation.js',
+		'data.js',
+		'local.js',
+		'stage.js',
+		'camera.js',
+		'scene.js',
+		'actor.js',
+		'trigger.js',
+		'filter.js',
+		'controller.js',
+		'ui.js',
+		'time.js',
+		'event.js',
+		'command.js',
+		'main.js'
+	];
+	for (const fileName of deleteScripts) {
+		const path = Path.resolve!(dstScriptDir, fileName);
+		try {
+			if (FS.statSync!(path).isFile()) {
+				FS.unlinkSync!(path);
+			}
+		} catch (error: unknown) {}
+	}
+
+	FS.cpSync!(srcScriptDir, dstScriptDir, { recursive: true });
+
+	const jsExtname = /\.js$/;
+	const guidRegExp = /(?<=\.)[0-9a-f]{16}(?=\.\w+$)/;
+	const files = FS.readdirSync!(srcPluginDir, { withFileTypes: true });
+	for (const file of files) {
+		const guid = guidRegExp.exec(file.name)?.[0];
+		const meta = Data.manifest.guidMap[guid as string];
+		if (meta) {
+			const sPath = Path.resolve!(srcPluginDir, file.name);
+			const jsPath = File.path!(meta.path);
+			const tsPath = File.path!(meta.path.replace(jsExtname, '.ts'));
+			FS.copyFileSync!(sPath, jsPath);
+			FS.renameSync!(jsPath, tsPath);
+		}
+	}
+
+	const sIndexPath = Path.resolve!(srcProjectDir, 'index.html');
+	const dIndexPath = Path.resolve!(dstProjectDir, 'index.html');
+	FS.copyFileSync!(sIndexPath, dIndexPath);
+
+	const sTsconfigPath = Path.resolve!(srcProjectDir, 'tsconfig.json');
+	const dTsconfigPath = Path.resolve!(dstProjectDir, 'tsconfig.json');
+	FS.copyFileSync!(sTsconfigPath, dTsconfigPath);
+
+	Updater.hooks.openUpdateLog();
+};

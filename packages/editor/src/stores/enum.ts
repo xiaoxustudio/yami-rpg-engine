@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import type { History } from '@/tools/history.ts';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
-import { GUID } from '@/file/guid';
+import { GUID } from '@app/services/file-system/guid';
 
 export interface EnumItemShape {
 	id: string;

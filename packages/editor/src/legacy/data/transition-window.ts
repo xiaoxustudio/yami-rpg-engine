@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { getRelativeCoords } from '@/util/element-utils';
 import { Window } from '@/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
@@ -9,7 +9,7 @@ import { Data } from './data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 
 import { Inspector } from '@/inspector/inspector.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { TreeList } from '@/components/tree-list.ts';
 import { Local } from '@/tools/localization.ts';

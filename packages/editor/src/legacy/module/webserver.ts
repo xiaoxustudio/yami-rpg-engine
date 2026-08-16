@@ -1,9 +1,10 @@
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
 import { disable, enable, on, write } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
-import { FSP } from '@/file/file-system.ts';
+import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 import { Deployment } from '@/title/deploy-project-window.ts';
@@ -20,10 +21,10 @@ export const WebServer = new (class {
 		on($('#qr-close-button'), 'click', () => this.stop!());
 	}
 	get enable() {
-		return ipcRenderer.sendSync('get-server-state');
+		return ipcRenderer.sendSync(CHANNELS.on.getServerState);
 	}
 	start(path: string) {
-		ipcRenderer.invoke('start-server', {
+		ipcRenderer.invoke(CHANNELS.invoke.startServer, {
 			port: this.port,
 			path
 		});
@@ -31,14 +32,14 @@ export const WebServer = new (class {
 		this.load!();
 	}
 	toDataUrl(url: string) {
-		return ipcRenderer.invoke('to-qrcode', url);
+		return ipcRenderer.invoke(CHANNELS.invoke.toQrcode, url);
 	}
 	getIp() {
-		return ipcRenderer.invoke('get-local-ip');
+		return ipcRenderer.invoke(CHANNELS.invoke.getLocalIp);
 	}
 	stop() {
 		if (!this.enable) return;
-		ipcRenderer.invoke('stop-server');
+		ipcRenderer.invoke(CHANNELS.invoke.stopServer);
 		window.removeEventListener('beforeunload', this.stop);
 		this.load!();
 	}

@@ -57,6 +57,7 @@
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import { on } from '@/util/element-utils.ts';
 import type { ForEachForm } from '@/module/command/forEach.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
@@ -132,20 +133,21 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
+	const get = Local.createGetter!('command.forEach');
 	$('#forEach-data')
 		?.loadItems?.([
-			{ name: 'List', value: 'list' },
-			{ name: 'Skill', value: 'skill' },
-			{ name: 'State', value: 'state' },
-			{ name: 'Equipment', value: 'equipment' },
-			{ name: 'Inventory', value: 'inventory' },
-			{ name: 'Element', value: 'element' },
-			{ name: 'Party Member', value: 'member' },
-			{ name: 'Attribute Key', value: 'attribute' },
-			{ name: 'Enumeration Value', value: 'enum' },
-			{ name: 'Save Data', value: 'save' },
-			{ name: 'Touch Point', value: 'touch' },
-			{ name: 'Changed Touch Point', value: 'changed-touch' }
+			{ name: get('list') || 'List', value: 'list' },
+			{ name: get('skill') || 'Skill', value: 'skill' },
+			{ name: get('state') || 'State', value: 'state' },
+			{ name: get('equipment') || 'Equipment', value: 'equipment' },
+			{ name: get('inventory') || 'Inventory', value: 'inventory' },
+			{ name: get('element') || 'Element', value: 'element' },
+			{ name: get('member') || 'Party Member', value: 'member' },
+			{ name: get('attribute') || 'Attribute Key', value: 'attribute' },
+			{ name: get('enum') || 'Enumeration Value', value: 'enum' },
+			{ name: get('save') || 'Save Data', value: 'save' },
+			{ name: get('touch') || 'Touch Point', value: 'touch' },
+			{ name: get('changed-touch') || 'Changed Touch Point', value: 'changed-touch' }
 		])
 		?.enableHiddenMode?.()
 		?.relate?.([

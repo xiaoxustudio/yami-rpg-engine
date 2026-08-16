@@ -2,6 +2,7 @@ import { $ } from '@/util/dom.ts';
 import { Editor } from '@/main/editor.ts';
 
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 
 interface LogShape {
 	readonly box: HTMLElement | null;
@@ -58,7 +59,7 @@ Log.initialize = function () {
 
 	window.addEventListener('error', this.catchError!);
 	window.addEventListener('unhandledrejection', this.catchRejection!);
-	ipcRenderer?.on?.('tsc-log', this.tscLog!);
+	ipcRenderer?.on?.(CHANNELS.send.tscLog, this.tscLog!);
 };
 
 Log.throw = function (error: unknown) {
@@ -132,7 +133,7 @@ Log.catchRejection = function (event: unknown) {
 };
 
 Log.openVSCode = function (file: string, line: number, column: number) {
-	ipcRenderer.send('open-vscode', file, line, column);
+	ipcRenderer.send(CHANNELS.on.openVscode, file, line, column);
 };
 
 Log.tscLog = function (event: unknown, tscMessage: unknown) {

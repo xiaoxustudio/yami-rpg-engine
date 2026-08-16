@@ -15,6 +15,7 @@
 import { onMounted } from 'vue';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -31,12 +32,13 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.controlButton');
 	$('#controlButton-operation')?.loadItems?.([
-		{ name: 'Select Default Button', value: 'select-default' },
-		{ name: 'Select Button', value: 'select' },
-		{ name: 'Display Hover Mode', value: 'hover-mode' },
-		{ name: 'Display Active Mode', value: 'active-mode' },
-		{ name: 'Restore Display Mode', value: 'normal-mode' }
+		{ name: get('select-default') || 'Select Default Button', value: 'select-default' },
+		{ name: get('select') || 'Select Button', value: 'select' },
+		{ name: get('hover-mode') || 'Display Hover Mode', value: 'hover-mode' },
+		{ name: get('active-mode') || 'Display Active Mode', value: 'active-mode' },
+		{ name: get('normal-mode') || 'Restore Display Mode', value: 'normal-mode' }
 	]);
 	$('#controlButton-operation')
 		?.enableHiddenMode?.()

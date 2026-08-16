@@ -15,6 +15,7 @@
 import { onMounted } from 'vue';
 import { useSetLoopCommandSchema } from '@app/composables/commands/useSetLoopCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -26,14 +27,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setLoop');
 	$('#setLoop-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },
 		{ name: 'CV', value: 'cv' }
 	]);
 	$('#setLoop-loop')?.loadItems?.([
-		{ name: 'Once', value: false },
-		{ name: 'Loop', value: true }
+		{ name: get('once') || 'Once', value: false },
+		{ name: get('loop') || 'Loop', value: true }
 	]);
 });
 

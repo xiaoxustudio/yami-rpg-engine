@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
-import { GUID } from '@/file/guid';
+import { GUID } from '@app/services/file-system/guid';
 
 export interface VariableItemShape {
 	id?: string;

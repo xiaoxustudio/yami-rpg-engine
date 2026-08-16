@@ -16,7 +16,7 @@ import { YMFileNavPane } from '@ui-kit';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Directory } from '@/file/directory-object.ts';
-import { FS, FSP } from '@/file/file-system.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
 import { FileBrowserLinks } from '@/types/file-browser-links.ts';

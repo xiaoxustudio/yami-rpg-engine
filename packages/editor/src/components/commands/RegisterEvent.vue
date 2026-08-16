@@ -23,6 +23,7 @@
 
 import { onMounted } from 'vue';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -48,6 +49,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.registerEvent');
 	$('#registerEvent-target')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
 		{ name: 'Actor', value: 'actor' },
@@ -60,9 +62,9 @@ onMounted(() => {
 			{ case: 'element', targets: [$('#registerEvent-element')] }
 		]);
 	$('#registerEvent-operation')?.loadItems?.([
-		{ name: 'Register', value: 'register' },
-		{ name: 'Unregister', value: 'unregister' },
-		{ name: 'Reset', value: 'reset' }
+		{ name: get('alias.register') || 'Register', value: 'register' },
+		{ name: get('alias.unregister') || 'Unregister', value: 'unregister' },
+		{ name: get('alias.reset') || 'Reset', value: 'reset' }
 	]);
 });
 

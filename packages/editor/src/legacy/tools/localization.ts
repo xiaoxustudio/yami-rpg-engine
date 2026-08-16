@@ -3,7 +3,7 @@ import { addClass, setTooltip } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
 import { fileURLToPath } from 'node:url';
 import { File } from '@/file/file-system-core.ts';
-import { FSP } from '@/file/file-system.ts';
+import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
 

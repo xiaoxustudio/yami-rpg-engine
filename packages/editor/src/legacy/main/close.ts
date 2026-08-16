@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@/tools/window-object.ts';
@@ -50,5 +51,5 @@ Editor.quit = function (this: typeof Editor) {
 	this.saveProject!();
 	this.saveManifest!();
 	WebServer.stop();
-	ipcRenderer.send('force-close-window');
+	ipcRenderer.send(CHANNELS.on.forceCloseWindow);
 };

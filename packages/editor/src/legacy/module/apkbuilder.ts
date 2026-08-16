@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { $ } from '@/util/dom.ts';
 import { enable } from '@/util/element-utils.ts';
 import { Path } from '@/util/config.ts';
@@ -17,7 +18,7 @@ interface ApkLogEntry {
 export const ApkBuilder = new (class {
 	logs: ApkLogEntry[] = [];
 	constructor() {
-		ipcRenderer?.on?.('apk-log', (_: unknown, log: ApkLogEntry) => {
+		ipcRenderer?.on?.(CHANNELS.send.apkLog, (_: unknown, log: ApkLogEntry) => {
 			this.logs.push(log);
 			this.apkLog!(log);
 		});
@@ -26,7 +27,7 @@ export const ApkBuilder = new (class {
 		this.logs.length = 0;
 		this.notifyLogContent();
 		const config = this.process!(cfg);
-		ipcRenderer.invoke('build-apk', config);
+		ipcRenderer.invoke(CHANNELS.invoke.buildApk, config);
 	}
 	notifyLogContent() {
 		($('#export-apk-content') as HTMLElement & { update?: () => void }).update?.();
@@ -46,12 +47,12 @@ export const ApkBuilder = new (class {
 		this.logs = [];
 	}
 	stopBuild() {
-		ipcRenderer.invoke('stop-build-apk').then(() => {
+		ipcRenderer.invoke(CHANNELS.invoke.stopBuildApk).then(() => {
 			this.reset!();
 		});
 	}
 	isBuilding() {
-		return ipcRenderer.sendSync('isBuilding-apk');
+		return ipcRenderer.sendSync(CHANNELS.on.isBuildingApk);
 	}
 	processPathOnly(line: string) {
 		const pathPrefix = Path.resolve!(Path.dirname!(Editor.config!.project!), 'apk');

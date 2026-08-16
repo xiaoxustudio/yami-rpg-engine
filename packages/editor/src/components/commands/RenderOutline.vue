@@ -13,6 +13,7 @@
 import { onMounted } from 'vue';
 import { useRenderOutlineCommandSchema } from '@app/composables/commands/useRenderOutlineCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';
@@ -30,10 +31,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.renderOutline');
 	$('#renderOutline-operation')?.loadItems?.([
-		{ name: 'Add', value: 'add' },
-		{ name: 'Remove', value: 'remove' },
-		{ name: 'Reset', value: 'reset' }
+		{ name: get('add') || 'Add', value: 'add' },
+		{ name: get('remove') || 'Remove', value: 'remove' },
+		{ name: get('reset') || 'Reset', value: 'reset' }
 	]);
 	$('#renderOutline-operation')
 		?.enableHiddenMode?.()

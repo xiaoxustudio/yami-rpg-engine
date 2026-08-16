@@ -20,6 +20,7 @@
 import { onMounted } from 'vue';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -41,14 +42,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setEvent');
 	$('#setEvent-operation')?.loadItems?.([
-		{ name: 'Stop Propagation', value: 'stop-propagation' },
-		{ name: 'Pause and Save to Variable', value: 'pause' },
-		{ name: 'Continue and Reset Variable', value: 'continue' },
-		{ name: 'Enable Global Event', value: 'enable' },
-		{ name: 'Disable Global Event', value: 'disable' },
-		{ name: 'Set to Highest Priority', value: 'highest-priority' },
-		{ name: 'Go to Choice Branch', value: 'goto-choice-branch' }
+		{ name: get('stop-propagation') || 'Stop Propagation', value: 'stop-propagation' },
+		{ name: get('pause') || 'Pause and Save to Variable', value: 'pause' },
+		{ name: get('continue') || 'Continue and Reset Variable', value: 'continue' },
+		{ name: get('enable') || 'Enable Global Event', value: 'enable' },
+		{ name: get('disable') || 'Disable Global Event', value: 'disable' },
+		{ name: get('highest-priority') || 'Set to Highest Priority', value: 'highest-priority' },
+		{ name: get('goto-choice-branch') || 'Go to Choice Branch', value: 'goto-choice-branch' }
 	]);
 	$('#setEvent-operation')
 		?.enableHiddenMode?.()

@@ -4,7 +4,7 @@ import { addClass, hasClass, rect, removeClass } from '@/util/element-utils';
 import { Path } from '@/util/config.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Menu } from '@/components/menu-list.ts';
-import { FS, FSP } from '@/file/file-system.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@/main/editor.ts';
 import { Title } from './title-bar.ts';

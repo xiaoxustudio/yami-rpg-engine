@@ -84,6 +84,14 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 
 		init?.call(this);
 
+		if (init) {
+			const onLocalize = () => {
+				if (!document.getElementById(`${prefix}-property-key`)) return;
+				init.call(PropertyWindow);
+			};
+			window.addEventListener('localize', onLocalize);
+		}
+
 		$(`#${prefix}-property-confirm`).on('click', this.confirm);
 	};
 

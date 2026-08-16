@@ -1,10 +1,10 @@
 import { File } from '@/file/file-system-core.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { AttributeContext } from '@/attribute/attribute-context.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Manifest } from './metadata-manifest.ts';
 import { EnumerationContext } from '@/enum/enum-context.ts';
-import { FSP } from '@/file/file-system.ts';
+import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@/log/log-window.ts';
 import { Reference } from '@/log/related-references.ts';
 

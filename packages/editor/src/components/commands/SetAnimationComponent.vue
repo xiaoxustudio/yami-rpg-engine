@@ -56,6 +56,7 @@ import { onMounted } from 'vue';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
 import { $ } from '@/util/dom.ts';
 import { read } from '@/util/element-utils';
+import { Local } from '@/tools/localization.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -107,16 +108,17 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setAnimationComponent');
 	$('#setAnimationComponent-operation')?.loadItems?.([
-		{ name: 'Set Angle', value: 'set-angle' },
-		{ name: 'Set Scale', value: 'set-scale' },
-		{ name: 'Set Speed', value: 'set-speed' },
-		{ name: 'Set Opacity', value: 'set-opacity' },
-		{ name: 'Set Priority', value: 'set-priority' },
-		{ name: 'Set Offset Y', value: 'set-offsetY' },
-		{ name: 'Set Sprite', value: 'set-sprite' },
-		{ name: 'Play Motion', value: 'play-motion' },
-		{ name: 'Stop Motion', value: 'stop-motion' }
+		{ name: get('set-angle') || 'Set Angle', value: 'set-angle' },
+		{ name: get('set-scale') || 'Set Scale', value: 'set-scale' },
+		{ name: get('set-speed') || 'Set Speed', value: 'set-speed' },
+		{ name: get('set-opacity') || 'Set Opacity', value: 'set-opacity' },
+		{ name: get('set-priority') || 'Set Priority', value: 'set-priority' },
+		{ name: get('set-offsetY') || 'Set Offset Y', value: 'set-offsetY' },
+		{ name: get('set-sprite') || 'Set Sprite', value: 'set-sprite' },
+		{ name: get('play-motion') || 'Play Motion', value: 'play-motion' },
+		{ name: get('stop-motion') || 'Stop Motion', value: 'stop-motion' }
 	]);
 	$('#setAnimationComponent-operation')
 		?.enableHiddenMode?.()

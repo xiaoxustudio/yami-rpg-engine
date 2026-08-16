@@ -1,10 +1,12 @@
 import { ipcRenderer, shell } from 'electron';
 import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Path } from '@/util/config.ts';
 import { Animation } from '@/animation/animation-window.ts';
 import { Data } from '@/data/data-object.ts';
-import { FS, FSP } from './file-system.ts';
+import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
+import { filterGUID, parseFileSize, parseGUID } from '@app/services/file-system/path-utils.ts';
 import { Log } from '@/log/log-window.ts';
 import { Particle } from '@/particle/particle-window.ts';
 import { Scene } from '@/scene/scene-window.ts';
@@ -185,7 +187,7 @@ File.save = function (hint = true) {
 	}
 
 	// 未处理写入失败的情况
-	return ipcRenderer.invoke('wait-write-file');
+	return ipcRenderer.invoke(CHANNELS.invoke.waitWriteFile);
 };
 
 File.saveFile = function (meta) {
@@ -239,42 +241,7 @@ File.cancelSave = function (meta) {
 	return Data.manifest.changes.remove(meta);
 };
 
-File.parseFileSize = function (size) {
-	let string;
-	let unit;
-	if (size < 1000) {
-		unit = size === 1 ? 'byte' : 'bytes';
-	} else {
-		size /= 1024;
-		if (size < 1000) {
-			unit = 'KB';
-		} else {
-			size /= 1024;
-			if (size < 1000) {
-				unit = 'MB';
-			} else {
-				size /= 1024;
-				unit = 'GB';
-			}
-		}
-	}
-	switch (unit) {
-		case 'byte':
-		case 'bytes':
-			string = size.toString();
-			break;
-		default:
-			if (size < 10) {
-				string = size.toFixed(2);
-			} else if (size < 100) {
-				string = size.toFixed(1);
-			} else {
-				string = size.toFixed(0);
-			}
-			break;
-	}
-	return `${string}${unit}`;
-};
+File.parseFileSize = parseFileSize;
 
 File.getFileName = (function IIFE() {
 	const struct = { path: '', route: '' };
@@ -326,7 +293,7 @@ File.getImageResolution = (function IIFE() {
 })();
 
 File.openPath = function (path) {
-	ipcRenderer.send('open-path', path);
+	ipcRenderer.send(CHANNELS.on.openPath, path);
 };
 
 File.openURL = function (url) {
@@ -336,15 +303,15 @@ File.openURL = function (url) {
 };
 
 File.showInExplorer = function (path) {
-	ipcRenderer.send('show-item-in-folder', path);
+	ipcRenderer.send(CHANNELS.on.showItemInFolder, path);
 };
 
 File.showOpenDialog = function (options) {
-	return ipcRenderer.invoke('show-open-dialog', options);
+	return ipcRenderer.invoke(CHANNELS.invoke.showOpenDialog, options);
 };
 
 File.showSaveDialog = function (options) {
-	return ipcRenderer.invoke('show-save-dialog', options);
+	return ipcRenderer.invoke(CHANNELS.invoke.showSaveDialog, options);
 };
 
 File.parseMetaName = function (meta: { path: string }) {
@@ -353,20 +320,8 @@ File.parseMetaName = function (meta: { path: string }) {
 	return Path.basename(alias, extname);
 };
 
-File.parseGUID = (function IIFE() {
-	const regexp = /(?<=\.)[0-9a-f]{16}(?=\.\S+$)/;
-	return function (filename) {
-		const match = filename.match(regexp);
-		return match ? match[0] : '';
-	};
-})();
-
-File.filterGUID = (function IIFE() {
-	const regexp = /\.[0-9a-f]{16}(?=\.\S+$)/;
-	return function (filename) {
-		return filename.replace(regexp, '');
-	};
-})();
+File.parseGUID = parseGUID;
+File.filterGUID = filterGUID;
 
 File.updateRoot = function (path) {
 	const index = path.lastIndexOf('/');

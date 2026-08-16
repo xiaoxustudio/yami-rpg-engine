@@ -22,6 +22,7 @@
 import { onMounted } from 'vue';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,10 +40,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setMovementSpeed');
 	$('#setMovementSpeed-property')?.loadItems?.([
-		{ name: 'Base Speed', value: 'base' },
-		{ name: 'Speed Factor', value: 'factor' },
-		{ name: 'Speed Factor (Temp)', value: 'factor-temp' }
+		{ name: get('base') || 'Base Speed', value: 'base' },
+		{ name: get('factor') || 'Speed Factor', value: 'factor' },
+		{ name: get('factor-temp') || 'Speed Factor (Temp)', value: 'factor-temp' }
 	]);
 	$('#setMovementSpeed-property')
 		?.enableHiddenMode?.()

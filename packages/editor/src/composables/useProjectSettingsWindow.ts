@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { ipcRenderer } from 'electron';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@/tools/window-object.ts';
 import { $ } from '@/util/dom.ts';
@@ -190,14 +191,14 @@ function open(): void {
 function startTSC(): void {
 	if (!tscStarted) {
 		tscStarted = true;
-		ipcRenderer.send('start-tsc', File.root);
+		ipcRenderer.send(CHANNELS.on.startTsc, File.root);
 	}
 }
 
 function stopTSC(): void {
 	if (tscStarted) {
 		tscStarted = false;
-		ipcRenderer.send('stop-tsc');
+		ipcRenderer.send(CHANNELS.on.stopTsc);
 		Log.clear!();
 	}
 }

@@ -15,6 +15,7 @@
 import { onMounted } from 'vue';
 import { useChangePassableTerrainCommandSchema } from '@app/composables/commands/useChangePassableTerrainCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -31,10 +32,11 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.changePassableTerrain');
 	$('#changePassableTerrain-passage')?.loadItems?.([
-		{ name: 'Land', value: 'land' },
-		{ name: 'Water', value: 'water' },
-		{ name: 'Unrestricted', value: 'unrestricted' }
+		{ name: get('land') || 'Land', value: 'land' },
+		{ name: get('water') || 'Water', value: 'water' },
+		{ name: get('unrestricted') || 'Unrestricted', value: 'unrestricted' }
 	]);
 });
 

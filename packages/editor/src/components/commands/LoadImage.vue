@@ -22,6 +22,7 @@
 import { onMounted } from 'vue';
 import { useLoadImageCommandSchema } from '@app/composables/commands/useLoadImageCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -63,14 +64,15 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.loadImage');
 	$('#loadImage-type')?.loadItems?.([
-		{ name: 'Actor Portrait', value: 'actor-portrait' },
-		{ name: 'Skill Icon', value: 'skill-icon' },
-		{ name: 'State Icon', value: 'state-icon' },
-		{ name: 'Equipment Icon', value: 'equipment-icon' },
-		{ name: 'Item Icon', value: 'item-icon' },
-		{ name: 'Shortcut Icon', value: 'shortcut-icon' },
-		{ name: 'Base64 Image', value: 'base64' }
+		{ name: get('actor-portrait') || 'Actor Portrait', value: 'actor-portrait' },
+		{ name: get('skill-icon') || 'Skill Icon', value: 'skill-icon' },
+		{ name: get('state-icon') || 'State Icon', value: 'state-icon' },
+		{ name: get('equipment-icon') || 'Equipment Icon', value: 'equipment-icon' },
+		{ name: get('item-icon') || 'Item Icon', value: 'item-icon' },
+		{ name: get('shortcut-icon') || 'Shortcut Icon', value: 'shortcut-icon' },
+		{ name: get('base64') || 'Base64 Image', value: 'base64' }
 	]);
 	$('#loadImage-type')
 		?.enableHiddenMode?.()

@@ -50,6 +50,7 @@
 import { onMounted } from 'vue';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import { clear } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -78,9 +79,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.getActor');
 	$('#getActor-area')?.loadItems?.([
-		{ name: 'Square', value: 'square' },
-		{ name: 'Circle', value: 'circle' }
+		{ name: get('square') || 'Square', value: 'square' },
+		{ name: get('circle') || 'Circle', value: 'circle' }
 	]);
 	$('#getActor-area')
 		?.enableHiddenMode?.()
@@ -103,13 +105,13 @@ onMounted(() => {
 			}
 		]);
 	$('#getActor-condition')?.loadItems?.([
-		{ name: 'Nearest', value: 'nearest' },
-		{ name: 'Farthest', value: 'farthest' },
-		{ name: 'Min Attribute Value', value: 'min-attribute-value' },
-		{ name: 'Max Attribute Value', value: 'max-attribute-value' },
-		{ name: 'Min Attribute Ratio', value: 'min-attribute-ratio' },
-		{ name: 'Max Attribute Ratio', value: 'max-attribute-ratio' },
-		{ name: 'Random', value: 'random' }
+		{ name: get('condition.nearest') || 'Nearest', value: 'nearest' },
+		{ name: get('condition.farthest') || 'Farthest', value: 'farthest' },
+		{ name: get('condition.min-attribute-value') || 'Min Attribute Value', value: 'min-attribute-value' },
+		{ name: get('condition.max-attribute-value') || 'Max Attribute Value', value: 'max-attribute-value' },
+		{ name: get('condition.min-attribute-ratio') || 'Min Attribute Ratio', value: 'min-attribute-ratio' },
+		{ name: get('condition.max-attribute-ratio') || 'Max Attribute Ratio', value: 'max-attribute-ratio' },
+		{ name: get('condition.random') || 'Random', value: 'random' }
 	]);
 	$('#getActor-condition')
 		?.enableHiddenMode?.()
@@ -124,9 +126,9 @@ onMounted(() => {
 			}
 		]);
 	$('#getActor-activation')?.loadItems?.([
-		{ name: 'Active', value: 'active' },
-		{ name: 'Inactive', value: 'inactive' },
-		{ name: 'Either', value: 'either' }
+		{ name: get('active') || 'Active', value: 'active' },
+		{ name: get('inactive') || 'Inactive', value: 'inactive' },
+		{ name: get('either') || 'Either', value: 'either' }
 	]);
 	$('#getActor-exclusion')?.loadItems?.([
 		{ name: 'None', value: 'none' },

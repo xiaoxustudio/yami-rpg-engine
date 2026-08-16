@@ -1,5 +1,6 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { $ } from '@/util/dom.ts';
+import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@/tools/window-object.ts';
 import { on, show, hide, clear, addClass, read, write, getFocus } from '@/util/element-utils.ts';
 import { ctrl } from '@/util/event-accessors.ts';
@@ -11,7 +12,7 @@ import { createDetailSummary } from '@/components/detail-summary.ts';
 import { Menu } from '@/components/menu-list.ts';
 import { createTextArea } from '@/components/text-area.ts';
 import { TreeList } from '@/components/tree-list.ts';
-import { GUID } from '@/file/guid.ts';
+import { GUID } from '@app/services/file-system/guid.ts';
 import { ExportLanguage } from './export-language-window.ts';
 import { ImportLanguage } from './import-language-window.ts';
 import { Reference } from '@/log/related-references.ts';
@@ -781,7 +782,7 @@ Localization.apply = function (this: LocalizationShape, event?: Event) {
 }.bind(Localization);
 
 Localization.fromExcel = async function (this: LocalizationShape, event: Event) {
-	const items = await ipcRenderer.invoke('from-excel');
+	const items = await ipcRenderer.invoke(CHANNELS.invoke.fromExcel);
 	if (JSON.stringify(items) == JSON.stringify(Data.localization.list) || !items.length) return;
 	Data.localization.list = items;
 	Localization.windowClose(event);
@@ -792,7 +793,7 @@ Localization.fromExcel = async function (this: LocalizationShape, event: Event) 
 }.bind(Localization);
 
 Localization.toExcel = function (this: LocalizationShape, event?: Event) {
-	ipcRenderer.invoke('to-excel', {
+	ipcRenderer.invoke(CHANNELS.invoke.toExcel, {
 		langs: this.languages,
 		list: Data.localization.list
 	});

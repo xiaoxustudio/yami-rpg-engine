@@ -23,6 +23,7 @@
 import { onMounted } from 'vue';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -44,13 +45,14 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.moveActor');
 	$('#moveActor-mode')?.loadItems?.([
-		{ name: 'Stop', value: 'stop' },
-		{ name: 'Keep', value: 'keep' },
-		{ name: 'Straight', value: 'straight' },
-		{ name: 'Navigate', value: 'navigate' },
-		{ name: 'Navigate - Bypass Actors', value: 'navigate-bypass' },
-		{ name: 'Teleport', value: 'teleport' }
+		{ name: get('mode.stop') || 'Stop', value: 'stop' },
+		{ name: get('mode.keep') || 'Keep', value: 'keep' },
+		{ name: get('mode.straight') || 'Straight', value: 'straight' },
+		{ name: get('mode.navigate') || 'Navigate', value: 'navigate' },
+		{ name: get('mode.navigate-bypass') || 'Navigate - Bypass Actors', value: 'navigate-bypass' },
+		{ name: get('mode.teleport') || 'Teleport', value: 'teleport' }
 	]);
 	$('#moveActor-mode')
 		?.enableHiddenMode?.()

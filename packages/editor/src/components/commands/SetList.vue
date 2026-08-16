@@ -90,6 +90,7 @@
 import { onMounted } from 'vue';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -135,6 +136,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.setList');
 	$('#setList-operation')?.loadItems?.([
 		{ name: 'Set to Empty', value: 'set-empty' },
 		{ name: 'Set Numbers', value: 'set-numbers' },
@@ -143,14 +145,14 @@ onMounted(() => {
 		{ name: 'Set Number', value: 'set-number' },
 		{ name: 'Set String', value: 'set-string' },
 		{ name: 'Set Variable', value: 'set-variable' },
-		{ name: 'Split String', value: 'split-string' },
+		{ name: get('split-string') || 'Split String', value: 'split-string' },
 		{ name: 'Push', value: 'push' },
 		{ name: 'Remove', value: 'remove' },
-		{ name: 'Get Attribute Names', value: 'get-attribute-names' },
-		{ name: 'Get Attribute Keys', value: 'get-attribute-keys' },
-		{ name: 'Get Enumeration Names', value: 'get-enum-names' },
-		{ name: 'Get Enumeration Values', value: 'get-enum-values' },
-		{ name: 'Get Actor Targets', value: 'get-actor-targets' }
+		{ name: get('get-attribute-names') || 'Get Attribute Names', value: 'get-attribute-names' },
+		{ name: get('get-attribute-keys') || 'Get Attribute Keys', value: 'get-attribute-keys' },
+		{ name: get('get-enum-names') || 'Get Enumeration Names', value: 'get-enum-names' },
+		{ name: get('get-enum-values') || 'Get Enumeration Values', value: 'get-enum-values' },
+		{ name: get('get-actor-targets') || 'Get Actor Targets', value: 'get-actor-targets' }
 	]);
 	$('#setList-operation')
 		?.enableHiddenMode?.()

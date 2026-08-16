@@ -13,6 +13,7 @@
 import { onMounted } from 'vue';
 import { useFixAngleCommandSchema } from '@app/composables/commands/useFixAngleCommandSchema';
 import { $ } from '@/util/dom.ts';
+import { Local } from '@/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -29,9 +30,10 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
+	const get = Local.createGetter!('command.fixAngle');
 	$('#fixAngle-fixed')?.loadItems?.([
-		{ name: 'Fixed', value: true },
-		{ name: 'Unfixed', value: false }
+		{ name: get('fixed.true') || 'Fixed', value: true },
+		{ name: get('fixed.false') || 'Unfixed', value: false }
 	]);
 });
 
