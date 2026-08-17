@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Team } from '@/data/team-window.ts';
+import { Team } from '@app/legacy/data/team-window.ts';
 import type { TeamShape } from './data';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';

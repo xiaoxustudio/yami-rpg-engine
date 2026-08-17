@@ -54,10 +54,10 @@
 
 import { onMounted } from 'vue';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
-import { Local } from '@/tools/localization.ts';
-import { Animation } from '@/animation/animation-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { read } from '@app/legacy/util/element-utils';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

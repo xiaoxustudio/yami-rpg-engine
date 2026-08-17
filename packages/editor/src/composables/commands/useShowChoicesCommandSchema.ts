@@ -1,9 +1,11 @@
-import '@/module/command/showChoices.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { Local } from '@/tools/localization.ts';
+import '@app/legacy/module/command/showChoices.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { reactive } from 'vue';
 
+const form = reactive<Record<string, unknown>>({});
 let choices: unknown[] | null = null;
 
 const createDefaultChoices = (): unknown[] => {
@@ -26,20 +28,20 @@ const load = ({
 	choices?: unknown[];
 	parameters?: string;
 } = {}): void => {
-	const write = getElementWriter('showChoices');
-	write('choices', list.slice());
-	write('parameters', parameters);
+	form.choices = list.slice();
+	form.parameters = parameters;
+	write($('#showChoices-choices'), form.choices);
+	write($('#showChoices-parameters'), form.parameters);
 	choices = list;
 	getFocus($('#showChoices-choices'));
 };
 
 const save = (): unknown => {
-	const read = getElementReader('showChoices');
-	const list = read('choices');
+	const list = (read($('#showChoices-choices')) ?? form.choices) as unknown[];
 	if (list.length === 0) {
 		return getFocus($('#showChoices-choices'));
 	}
-	const parameters = read('parameters');
+	const parameters = read($('#showChoices-parameters')) ?? form.parameters;
 	Command.save?.({ choices: list, parameters });
 };
 

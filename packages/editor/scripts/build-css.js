@@ -24,6 +24,7 @@ files.sort((a, b) => order(a).localeCompare(order(b)));
 // ui-kit design tokens（--ym-*）最先加载，供组件 CSS Module 使用
 const imports = [
 	"@import '../../ui-kit/src/theme/tokens.css';",
+	"@import '../../ui-kit/src/styles/components.css';",
 	...files.map((f) => `@import './css/${f}';`)
 ].join('\n');
 

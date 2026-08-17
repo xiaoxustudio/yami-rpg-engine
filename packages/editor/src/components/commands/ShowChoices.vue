@@ -13,9 +13,9 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils.ts';
-import { Choices } from '@/command/show-options-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { Choices } from '@app/legacy/command/show-options-window.ts';
 import { useShowChoicesCommandSchema } from '@app/composables/commands/useShowChoicesCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

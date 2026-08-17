@@ -1,6 +1,6 @@
-import { css } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { css } from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 export const SceneAnimateEngine: Record<string, any> = {};

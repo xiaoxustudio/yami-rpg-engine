@@ -4,17 +4,12 @@ import { getFocus, read } from '@/util/element-utils.ts';
 import { Data } from '@/data/data-object.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Reference } from '@/log/related-references.ts';
-import { History } from '@/tools/history.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
 import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from './variable.ts';
 
 Variable.open = function (this: typeof Variable, target: unknown = null) {
-	this.target = target as { getFocus?: () => unknown } | null;
-	this._previousActive = UndoManager.getActive();
-	this.history = new History(100);
-	UndoManager.setActive(this);
+	getVariableStore().open(target as { [k: string]: unknown } | null);
 	this.unpackVariables!();
 	Window.open!('variable');
 

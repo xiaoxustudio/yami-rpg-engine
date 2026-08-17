@@ -26,7 +26,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

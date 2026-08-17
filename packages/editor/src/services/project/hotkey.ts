@@ -1,4 +1,4 @@
-import { Editor } from '@/main/editor.ts';
+import { Editor } from './editor.ts';
 
 Editor.switchHotkey = (function IIFE() {
 	const keydown = function (event: KeyboardEvent) {

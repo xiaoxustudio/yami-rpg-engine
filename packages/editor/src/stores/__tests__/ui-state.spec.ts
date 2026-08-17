@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getUIStore, uiStateKeys } from '@app/stores/ui';
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 describe('useUIStore（UI 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

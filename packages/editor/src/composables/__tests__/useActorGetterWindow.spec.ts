@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ActorGetter from '@app/components/tools/ActorGetter.vue';
 import { useActorGetterWindow } from '@app/composables/useActorGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { ActorGetter as ActorGetterController } from '@/command/actor-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { ActorGetter as ActorGetterController } from '@app/legacy/command/actor-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

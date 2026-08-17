@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.ts';
+import { Particle, type ParticleEmitterShape } from '@app/legacy/particle/particle-window.ts';
 import { shallowRef } from 'vue';
 import type { EditorProjectShape } from './editor';
-import type { History } from '@/tools/history.ts';
+import type { History } from '@app/legacy/tools/history.ts';
 import { pinia } from './pinia';
 
 export const particleStateKeys = [

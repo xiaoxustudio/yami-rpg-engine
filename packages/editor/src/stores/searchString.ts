@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { SearchString } from '@/module/searchstring.ts';
+import { SearchString } from '@app/legacy/module/searchstring.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

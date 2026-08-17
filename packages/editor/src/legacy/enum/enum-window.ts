@@ -11,7 +11,6 @@ import { GameLocal } from '@/local/local-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
@@ -52,7 +51,6 @@ interface EnumModule {
 		value: HTMLElement | null;
 		note: HTMLElement | null;
 	};
-	_previousActive: ReturnType<typeof UndoManager.getActive>;
 	initialize: (this: typeof Enum) => void;
 	open: (this: typeof Enum, target?: EnumTarget, mode?: string) => void;
 	undo: (this: typeof Enum) => void;
@@ -115,7 +113,6 @@ export const Enum: EnumModule = {
 		value: null,
 		note: null
 	},
-	_previousActive: null,
 	initialize: null as unknown as EnumModule['initialize'],
 	open: null as unknown as EnumModule['open'],
 	undo: null as unknown as EnumModule['undo'],
@@ -327,11 +324,10 @@ Enum.open = function (
 	target: EnumTarget | null | undefined = null,
 	mode: string | null | undefined = 'normal'
 ) {
-	getEnumStore().state.mode = mode;
-	getEnumStore().state.target = target;
-	this._previousActive = UndoManager.getActive();
-	getEnumStore().state.history = new History(100);
-	UndoManager.setActive(this);
+	getEnumStore().open(
+		target as { input?: (id: string) => void; [k: string]: unknown } | null,
+		mode as string | null
+	);
 	this.unpackEnumeration();
 	Window.open!('enum');
 
@@ -556,12 +552,7 @@ Enum.windowClose = function (this: typeof Enum, event: Event) {
 }.bind(Enum);
 
 Enum.windowClosed = function (this: typeof Enum, event: Event) {
-	getEnumStore().state.data = null;
-	getEnumStore().state.idMap = null;
-	getEnumStore().state.settings = null;
-	UndoManager.setActive(this._previousActive);
-	this._previousActive = null;
-	getEnumStore().state.history = null;
+	getEnumStore().close();
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();

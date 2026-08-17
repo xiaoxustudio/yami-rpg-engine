@@ -56,14 +56,14 @@
 <script setup lang="ts">
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { Local } from '@/tools/localization.ts';
-import { on } from '@/util/element-utils.ts';
-import type { ForEachForm } from '@/module/command/forEach.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 

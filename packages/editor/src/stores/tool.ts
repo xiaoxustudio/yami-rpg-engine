@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
-import { Zoom } from '@/tools/zoom-window.ts';
-import { PresetElement } from '@/tools/preset-element-window.ts';
-import { PresetObject } from '@/tools/scene-preset-window.ts';
-import { Color } from '@/tools/color-picker-window.ts';
-import { Selection } from '@/tools/text-capture.ts';
-import type { ToolInstance } from '@/tools/tool-registry';
-import { bindToolRegistry } from '@/tools/tool-registry';
-import { bindShortcutStore } from '@/tools/shortcut-registry';
+import { Zoom } from '@app/legacy/tools/zoom-window.ts';
+import { PresetElement } from '@app/legacy/tools/preset-element-window.ts';
+import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { Selection } from '@app/legacy/tools/text-capture.ts';
+import type { ToolInstance } from '@app/legacy/tools/tool-registry';
+import { bindToolRegistry } from '@app/legacy/tools/tool-registry';
+import { bindShortcutStore } from '@app/legacy/tools/shortcut-registry';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 

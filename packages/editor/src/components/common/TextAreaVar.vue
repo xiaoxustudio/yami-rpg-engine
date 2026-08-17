@@ -15,9 +15,9 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { YMTextAreaVar } from '@ui-kit';
-import { defVar } from '@/components/textarea-var';
+import { defVar } from '@app/legacy/components/textarea-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

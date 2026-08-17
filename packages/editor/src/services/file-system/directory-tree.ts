@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Path } from '@/util/config.ts';
+import { Path } from '@app/legacy/util/config.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import type { FileItemHooks } from '@app/services/file-system/file-item.ts';

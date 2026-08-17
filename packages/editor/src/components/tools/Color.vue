@@ -44,13 +44,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { Color } from '@/tools/color-picker-window.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';

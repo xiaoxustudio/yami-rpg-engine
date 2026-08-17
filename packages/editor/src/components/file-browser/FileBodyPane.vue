@@ -22,22 +22,23 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { YMFileBodyPane } from '@ui-kit';
-import { Data } from '@/data/data-object.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { FolderItem } from '@/file/folder-item.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Editor } from '@/main/editor.ts';
-import { Local } from '@/tools/localization.ts';
-import { Path } from '@/util/config.ts';
-import { setIconClip } from '@/util/icon-clip.ts';
-import { FileBrowserLinks } from '@/types/file-browser-links.ts';
+import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { setIconClip } from '@app/legacy/util/icon-clip.ts';
+import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
+import { useToastService } from '@app/composables/useToastService';
 
 interface Props {
 	links: FileBrowserLinks;
@@ -46,6 +47,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const Clipboard = null as unknown as { write(type: string, data: unknown): void; read(type: string): unknown; has(type: string): boolean };
+const toast = useToastService();
 
 const dataApi = {
 	get manifest() {
@@ -77,15 +79,22 @@ const directoryApi = {
 	sortFiles: (dir: Array<FileItem | FolderItem>) => Directory.sortFiles?.(dir),
 	getFolder: (path: string) => Directory.getFolder?.(path),
 	update: () => Directory.update?.(),
-	deleteFiles: (files: Array<FileItem | FolderItem>) => Directory.deleteFiles?.(files),
-	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) =>
-		Directory.moveFiles?.(path, dir),
+	deleteFiles: (files: Array<FileItem | FolderItem>) => {
+		try { Directory.deleteFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+	},
+	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) => {
+		try { Directory.moveFiles?.(path, dir); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	copyFiles: (
 		path: string,
 		dir: Array<{ name: string; path: string; children?: unknown[] }>,
 		prefix?: string
-	) => Directory.copyFiles?.(path, dir, prefix),
-	saveFiles: (files: Array<FileItem | FolderItem>) => Directory.saveFiles?.(files),
+	) => {
+		try { Directory.copyFiles?.(path, dir, prefix); } catch (e) { toast.show(String(e), 'error'); }
+	},
+	saveFiles: (files: Array<FileItem | FolderItem>) => {
+		try { Directory.saveFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	readdir: (paths: string[]) => Directory.readdir?.(paths),
 	get assets() {
 		return Directory.assets;
@@ -107,7 +116,9 @@ const fileSystemApi = {
 	mkdir: (p: string, options?: { recursive?: boolean; mode?: number }) => FSP.mkdir(p, options),
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
 	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
-	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
+	rename: (oldPath: string, newPath: string) => {
+		try { FSP.rename(oldPath, newPath); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	existsSync: (p: string) => FSP.existsSync(p),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)
 };

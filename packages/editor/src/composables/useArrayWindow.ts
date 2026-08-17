@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
-import { Local } from '@/tools/localization.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 export interface ArrayForm {
 	values: unknown[];

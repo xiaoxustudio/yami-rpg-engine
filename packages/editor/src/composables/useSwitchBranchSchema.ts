@@ -1,8 +1,11 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { SwitchCondition, type SwitchConditionData } from '@/command/match-condition-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import {
+	SwitchCondition,
+	type SwitchConditionData
+} from '@app/legacy/command/match-condition-window.ts';
 
 interface SwitchBranchTarget {
 	save: () => SwitchConditionData;

@@ -5,9 +5,9 @@ import ArrayList from '@app/components/tools/ArrayList.vue';
 import ArrayListNumber from '@app/components/tools/ArrayListNumber.vue';
 import ArrayListString from '@app/components/tools/ArrayListString.vue';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
-import { Window } from '@/tools/window-object.ts';
-import { ArrayList as ArrayListController } from '@/tools/array-window.ts';
-import '@/util/number.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { ArrayList as ArrayListController } from '@app/legacy/tools/array-window.ts';
+import '@app/legacy/util/number.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

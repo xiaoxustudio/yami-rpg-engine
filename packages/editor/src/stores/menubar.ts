@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import type { MenuItem } from '@ui-kit';
-import { Menubar } from '@/title/menu-bar.ts';
+import { Menubar } from '@app/legacy/title/menu-bar.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 

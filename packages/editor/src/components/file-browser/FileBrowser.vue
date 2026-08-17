@@ -25,24 +25,25 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { YMFileBrowser, type MenuItem, type MenuOptions } from '@ui-kit';
-import { Menu } from '@/components/menu-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Editor } from '@/main/editor.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { FolderItem } from '@/file/folder-item.ts';
-import { Local } from '@/tools/localization.ts';
-import { Path } from '@/util/config.ts';
-import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
-import { setIconClip } from '@/util/icon-clip.ts';
+import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
+import { setIconClip } from '@app/legacy/util/icon-clip.ts';
 import { getBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';
 import { getSelectorStore, type SelectorInstance } from '@app/stores/selector.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
+import { useToastService } from '@app/composables/useToastService';
 
 interface Props {
 	id?: string;
@@ -52,21 +53,29 @@ interface Props {
 const props = defineProps<Props>();
 
 const Clipboard = getGlobalClipboard();
+const toast = useToastService();
 
 const menuPopup = (options: MenuOptions, items: MenuItem[]) => Menu.popup(options, items);
 const directoryApi = {
 	sortFiles: (dir: Array<FileItem | FolderItem>) => Directory.sortFiles?.(dir),
 	getFolder: (path: string) => Directory.getFolder?.(path),
 	update: () => Directory.update?.(),
-	deleteFiles: (files: Array<FileItem | FolderItem>) => Directory.deleteFiles?.(files),
-	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) =>
-		Directory.moveFiles?.(path, dir),
+	deleteFiles: (files: Array<FileItem | FolderItem>) => {
+		try { Directory.deleteFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+	},
+	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) => {
+		try { Directory.moveFiles?.(path, dir); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	copyFiles: (
 		path: string,
 		dir: Array<{ name: string; path: string; children?: unknown[] }>,
 		prefix?: string
-	) => Directory.copyFiles?.(path, dir, prefix),
-	saveFiles: (files: Array<FileItem | FolderItem>) => Directory.saveFiles?.(files),
+	) => {
+		try { Directory.copyFiles?.(path, dir, prefix); } catch (e) { toast.show(String(e), 'error'); }
+	},
+	saveFiles: (files: Array<FileItem | FolderItem>) => {
+		try { Directory.saveFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	readdir: (paths: string[]) => Directory.readdir?.(paths),
 	searchFiles: (
 		filters: string[] | null,
@@ -76,7 +85,9 @@ const directoryApi = {
 	) => Directory.searchFiles?.(filters, kw, directory, results),
 	existFiles: (path: string, dir: Array<{ name: string; children?: unknown[] }>) =>
 		Directory.existFiles?.(path, dir),
-	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
+	rename: (oldPath: string, newPath: string) => {
+		try { FSP.rename(oldPath, newPath); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	existsSync: (p: string) => FSP.existsSync(p),
 	get assets() {
 		return Directory.assets;

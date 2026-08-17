@@ -1,9 +1,9 @@
-import '@/module/command/forEach.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import type { ForEachForm } from '@/module/command/forEach.ts';
+import '@app/legacy/module/command/forEach.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
 
 let commands: unknown[] | null = null;
 

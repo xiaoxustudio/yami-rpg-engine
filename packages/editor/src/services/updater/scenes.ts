@@ -1,7 +1,7 @@
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
-import type { FileMeta } from '@/data/metadata-manifest.ts';
+import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 
 interface SceneObject {
 	class: string;

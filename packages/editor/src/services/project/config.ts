@@ -1,13 +1,13 @@
-import { GlobalPath, Path } from '@/util/config.ts';
-import { Animation } from '@/animation/animation-window.ts';
+import { GlobalPath, Path } from '@app/legacy/util/config.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Title } from '@/title/title-bar.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from './editor.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 type LayoutConfigShape = Parameters<NonNullable<typeof Layout.saveToConfig>>[0];
 

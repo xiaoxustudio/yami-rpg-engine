@@ -1,13 +1,13 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Local } from '@/tools/localization.ts';
-import { getFocus } from '@/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { getFocus } from '@app/legacy/util/element-utils.ts';
 
 export interface IfConditionTarget {
 	save: () => unknown;

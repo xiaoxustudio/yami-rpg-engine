@@ -16,12 +16,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMParamList, type MenuItem, type MenuOptions } from '@ui-kit';
-import { ParamListHistory } from '@/components/param-history';
-import { ctrl as ctrlText } from '@/util/event-accessors';
-import { Menu } from '@/components/menu-list';
-import { Local } from '@/tools/localization';
-import { attachElementApi } from '@/utils/attach-element-api';
-import { getGlobalClipboard } from '@/types/global-clipboard';
+import { ParamListHistory } from '@app/legacy/components/param-history';
+import { ctrl as ctrlText } from '@app/legacy/util/event-accessors';
+import { Menu } from '@app/legacy/components/menu-list';
+import { Local } from '@app/legacy/tools/localization';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
 
 interface Props {
 	id?: string;

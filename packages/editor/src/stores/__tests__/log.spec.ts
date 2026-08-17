@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import '@/tools/window-object.ts';
-import { Log } from '@/log/log-window.ts';
+import '@app/legacy/tools/window-object.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
 import { getLogStore } from '@app/stores/log';
 
 describe('useLogStore（Log 状态反转：store 为源）', () => {

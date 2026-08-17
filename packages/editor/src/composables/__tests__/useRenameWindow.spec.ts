@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Rename from '@app/components/tools/Rename.vue';
 import { useRenameWindow } from '@app/composables/useRenameWindow';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

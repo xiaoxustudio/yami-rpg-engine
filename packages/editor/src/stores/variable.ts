@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
+import { History } from '@app/legacy/tools/history.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
 export interface VariableItemShape {
 	id?: string;
@@ -14,7 +16,7 @@ export interface VariableWindowState {
 	target: { [k: string]: unknown } | null;
 	data: VariableItemShape[] | null;
 	idMap: Record<string, boolean> | null;
-	history: { save: (data: unknown) => void } | null;
+	history: History | null;
 	changed: boolean;
 	selected: VariableItemShape | null;
 }
@@ -93,38 +95,51 @@ export const useVariableStore = defineStore('variable', () => {
 		return find(state.data);
 	}
 
+	let _previousActive: ReturnType<typeof UndoManager.getActive> = null;
+
+	const activeEditor = {
+		undo,
+		redo,
+		get history() {
+			return state.history;
+		}
+	};
+
+	function open(target: { [k: string]: unknown } | null = null): void {
+		state.target = target;
+		_previousActive = UndoManager.getActive();
+		state.history = new History(100);
+		UndoManager.setActive(activeEditor);
+	}
+
+	function close(): void {
+		state.target = null;
+		state.data = null;
+		state.idMap = null;
+		state.history = null;
+		UndoManager.setActive(_previousActive);
+		_previousActive = null;
+	}
+
 	function undo(): void {
-		const history = state.history as {
-			canUndo?: () => boolean;
-			restore?: (mode: string) => void;
-		} | null;
-		if (history?.canUndo?.()) {
-			history.restore?.('undo');
+		if (state.history?.canUndo()) {
+			state.history.restore('undo');
 		}
 	}
 
 	function redo(): void {
-		const history = state.history as {
-			canRedo?: () => boolean;
-			restore?: (mode: string) => void;
-		} | null;
-		if (history?.canRedo?.()) {
-			history.restore?.('redo');
+		if (state.history?.canRedo()) {
+			state.history.restore('redo');
 		}
 	}
 
 	function saveHistory(item: VariableItemShape, key: string, value: unknown): void {
-		const history = state.history as {
-			index?: number;
-			length?: number;
-			save: (data: unknown) => void;
-			[index: number]: unknown;
-		} | null;
+		const history = state.history;
 		if (!history) return;
 		const type = `variable-${key}-change`;
-		const index = history.index ?? 0;
-		const length = history.length ?? 0;
-		const record = history[index] as { type?: string; item?: unknown } | undefined;
+		const index = history.index;
+		const length = history.length;
+		const record = history[index];
 		if (
 			index !== length - 1 ||
 			record === undefined ||
@@ -164,6 +179,8 @@ export const useVariableStore = defineStore('variable', () => {
 		register,
 		unregister,
 		getVariableById,
+		open,
+		close,
 		undo,
 		redo,
 		saveHistory,

@@ -20,8 +20,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMNumberBox } from '@ui-kit';
-import { NumberHistory } from '@/components/number-history';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { NumberHistory } from '@app/legacy/components/number-history';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface NumberBoxElement extends HTMLElement {
 	input: HTMLInputElement;

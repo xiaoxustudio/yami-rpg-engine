@@ -20,7 +20,7 @@ const uiImage = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		uiElement,
 		uiImage,

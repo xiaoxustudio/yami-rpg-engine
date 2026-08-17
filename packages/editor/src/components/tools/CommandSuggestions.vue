@@ -6,7 +6,7 @@
 import { h, onMounted, type VNode } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();

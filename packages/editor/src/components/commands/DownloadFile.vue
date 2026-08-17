@@ -22,9 +22,9 @@
 
 import { onMounted } from 'vue';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { disable, enable } from '@/util/element-utils';
-import { RequestkeyValueBind } from '@/module/command/requestURL.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { disable, enable } from '@app/legacy/util/element-utils';
+import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';

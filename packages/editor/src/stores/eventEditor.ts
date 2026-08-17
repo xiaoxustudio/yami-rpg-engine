@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { EventEditor } from '@/command/event-editor.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

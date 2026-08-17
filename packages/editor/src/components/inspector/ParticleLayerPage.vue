@@ -902,7 +902,7 @@
 import { onMounted } from 'vue';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

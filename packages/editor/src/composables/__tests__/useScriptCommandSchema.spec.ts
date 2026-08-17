@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ScriptWindow from '@app/components/commands/Script.vue';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
-import { Window } from '@/tools/window-object.ts';
-import { Editor } from '@/main/editor.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { ipcRenderer } from 'electron';
-import { loadDtsFolder } from '@/module/global';
+import { loadDtsFolder } from '@app/legacy/module/global';
 
 const { modelMock, editorMock, monacoMock } = vi.hoisted(() => {
 	const modelMock: {
@@ -53,7 +53,7 @@ const { modelMock, editorMock, monacoMock } = vi.hoisted(() => {
 	return { modelMock, editorMock, monacoMock };
 });
 
-vi.mock('@/util/monaco', () => ({
+vi.mock('@app/legacy/util/monaco', () => ({
 	getMonaco: vi.fn(() => Promise.resolve(monacoMock))
 }));
 
@@ -61,7 +61,7 @@ vi.mock('electron', () => ({
 	ipcRenderer: { invoke: vi.fn() }
 }));
 
-vi.mock('@/module/global', () => ({
+vi.mock('@app/legacy/module/global', () => ({
 	loadDtsFolder: vi.fn(() => [])
 }));
 

@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
 
 export interface AngleGetterForm {
 	type: string;

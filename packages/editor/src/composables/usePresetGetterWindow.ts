@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
-import { PresetObject } from '@/tools/scene-preset-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
 
 export interface PresetGetterForm {
 	type: string;

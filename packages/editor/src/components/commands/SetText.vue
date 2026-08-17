@@ -14,9 +14,9 @@
 
 import { onMounted } from 'vue';
 import { useSetTextCommandSchema } from '@app/composables/commands/useSetTextCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { clear } from '@/util/element-utils';
-import { TextProperty } from '@/command/set-text-property-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear } from '@app/legacy/util/element-utils';
+import { TextProperty } from '@app/legacy/command/set-text-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

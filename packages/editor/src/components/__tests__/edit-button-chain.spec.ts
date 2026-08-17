@@ -3,7 +3,7 @@ import { h, type VNode } from 'vue';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import TreeList from '@app/components/common/TreeList.vue';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser.ts';
 
 interface ExtrasListEl extends HTMLElement {

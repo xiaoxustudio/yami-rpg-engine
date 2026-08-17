@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
-import { Title } from '@/title/title-bar';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { Title } from '@app/legacy/title/title-bar';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

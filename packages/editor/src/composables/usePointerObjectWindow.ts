@@ -1,5 +1,5 @@
-import { $ } from '@/util/dom.ts';
-import { addClass, removeClass } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, removeClass } from '@app/legacy/util/element-utils';
 
 interface PointerObjectWindow {
 	readonly region: HTMLElement;

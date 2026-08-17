@@ -11,7 +11,6 @@ import { GameLocal } from '@/local/local-object.ts';
 import { Reference } from '@/log/related-references.ts';
 import { History } from '@/tools/history.ts';
 import { Local } from '@/tools/localization.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
 
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
@@ -19,7 +18,7 @@ import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@/components/tree-list.ts';
 import { GlobalClipboard } from '@/util/clipboard.ts';
 import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
-import type { AttributeItemShape, AttributeWindowState } from '@app/stores/attribute';
+import type { AttributeItemShape } from '@app/stores/attribute';
 
 interface AttributeItem {
 	id: string;
@@ -58,7 +57,6 @@ interface AttributeWindowShape {
 		enumBox: HTMLElement | null;
 		type: HTMLElement | null;
 	};
-	_previousActive: ReturnType<typeof UndoManager.getActive>;
 	initialize: (this: typeof Attribute) => void;
 	open: (this: typeof Attribute, target?: AttributeTarget, mode?: string) => void;
 	undo: (this: typeof Attribute) => void;
@@ -134,7 +132,6 @@ export const Attribute: AttributeWindowShape = {
 		enumBox: null,
 		type: null
 	},
-	_previousActive: null,
 	initialize: null as unknown as AttributeWindowShape['initialize'],
 	open: null as unknown as AttributeWindowShape['open'],
 	undo: null as unknown as AttributeWindowShape['undo'],
@@ -369,11 +366,11 @@ Attribute.open = function (
 	target: AttributeTarget | null | undefined = null,
 	mode: string | null | undefined = 'normal'
 ) {
-	getAttributeStore().state.mode = mode;
-	getAttributeStore().state.target = target as AttributeWindowState['target'];
-	this._previousActive = UndoManager.getActive();
-	getAttributeStore().state.history = new History(100);
-	UndoManager.setActive(this);
+	const store = getAttributeStore();
+	store.open(
+		target as { input?: (id: string) => void; [k: string]: unknown } | null,
+		mode as string | null
+	);
 	this.unpackAttribute();
 	Window.open!('attribute');
 
@@ -401,17 +398,11 @@ Attribute.open = function (
 };
 
 Attribute.undo = function (this: typeof Attribute) {
-	const history = getAttributeStore().state.history as History;
-	if (history.canUndo()) {
-		history.restore('undo');
-	}
+	getAttributeStore().undo();
 };
 
 Attribute.redo = function (this: typeof Attribute) {
-	const history = getAttributeStore().state.history as History;
-	if (history.canRedo()) {
-		history.restore('redo');
-	}
+	getAttributeStore().redo();
 };
 
 Attribute.createId = function (this: typeof Attribute) {
@@ -586,23 +577,7 @@ Attribute.saveHistory = function (
 	key: string,
 	value?: string
 ) {
-	const type = `attribute-${key}-change`;
-	const history = getAttributeStore().state.history as History;
-	const index = history.index;
-	const length = history.length;
-	const record = history[index];
-	if (
-		index !== length - 1 ||
-		record === undefined ||
-		record.type !== type ||
-		record.item !== item
-	) {
-		history.save({
-			type: type,
-			item: item,
-			value: value
-		});
-	}
+	getAttributeStore().saveHistory(item as AttributeItemShape, key, value);
 };
 
 Attribute.windowClose = function (this: typeof Attribute, event: Event) {
@@ -631,11 +606,7 @@ Attribute.windowClose = function (this: typeof Attribute, event: Event) {
 }.bind(Attribute);
 
 Attribute.windowClosed = function (this: typeof Attribute, event: Event) {
-	getAttributeStore().state.data = null;
-	getAttributeStore().state.idMap = null;
-	UndoManager.setActive(this._previousActive);
-	this._previousActive = null;
-	getAttributeStore().state.history = null;
+	getAttributeStore().close();
 	write(this.searcher, '');
 	clear(this.list);
 	this.closePropertyPanel();

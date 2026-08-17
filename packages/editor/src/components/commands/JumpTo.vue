@@ -13,8 +13,8 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { TextSuggestion, type TextSuggestionTarget } from '@/command/text-tip.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { TextSuggestion, type TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
 import { useJumpToCommandSchema } from '@app/composables/commands/useJumpToCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

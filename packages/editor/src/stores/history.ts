@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { UndoManager } from '@/tools/undo-manager';
+import { UndoManager } from '@app/legacy/tools/undo-manager';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

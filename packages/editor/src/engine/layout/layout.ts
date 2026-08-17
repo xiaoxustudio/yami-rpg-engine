@@ -1,6 +1,6 @@
-import { relate, hideDragImage, getRelativeCoords } from '@/util/element-utils';
+import { relate, hideDragImage, getRelativeCoords } from '@app/legacy/util/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	on,
 	off,
@@ -11,23 +11,23 @@ import {
 	clear,
 	write,
 	dispatchResizeEvent
-} from '@/util/element-utils.ts';
-import { createDragAndDropHint } from '@/components/drag-and-drop-hint.ts';
-import { createNavBar } from '@/components/nav-bar.ts';
-import { createPageManager } from '@/components/page-manager.ts';
+} from '@app/legacy/util/element-utils.ts';
+import { createDragAndDropHint } from '@app/legacy/components/drag-and-drop-hint.ts';
+import { createNavBar } from '@app/legacy/components/nav-bar.ts';
+import { createPageManager } from '@app/legacy/components/page-manager.ts';
 import type { PageManagerApi } from '@ui-kit';
-import { File } from '@/file/file-system-core.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { GL } from '../webgl/webgl-init.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Home } from '@/title/home-page.ts';
-import { Title } from '@/title/title-bar.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { DynamicShape } from '@/types/legacy-shapes.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Home } from '@app/legacy/title/home-page.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
 import { h, render, type VNode } from 'vue';
 
 interface LayoutScheme {

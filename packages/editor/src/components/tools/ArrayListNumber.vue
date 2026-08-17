@@ -20,7 +20,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
 const arrayWindow = useArrayWindow();

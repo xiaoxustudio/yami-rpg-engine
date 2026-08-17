@@ -1,4 +1,4 @@
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 UI.Container = class ContainerElement extends UI.Element {
 	draw() {

@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Localization } from '@/local/local-window.ts';
+import { Localization } from '@app/legacy/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

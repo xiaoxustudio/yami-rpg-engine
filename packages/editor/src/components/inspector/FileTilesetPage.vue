@@ -116,10 +116,11 @@
 </template>
 
 <script setup lang="ts">
+import '@app/legacy/inspector/file-tileset-page.ts';
 import { computed, onMounted } from 'vue';
-import { focus } from '@/util/element-utils';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Palette } from '@/palette/palette.ts';
+import { focus } from '@app/legacy/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
 import { usePaletteStore } from '@app/stores/palette';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getMenubarStore, menubarStateKeys } from '@app/stores/menubar';
-import { Menubar } from '@/title/menu-bar.ts';
+import { Menubar } from '@app/legacy/title/menu-bar.ts';
 
 describe('useMenubarStore（Menubar 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

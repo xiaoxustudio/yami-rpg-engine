@@ -1,6 +1,6 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { getPaletteStore, paletteStateKeys } from '@app/stores/palette';
-import { Palette } from '@/palette/palette.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 
 describe('usePaletteStore（Palette 工具栏状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

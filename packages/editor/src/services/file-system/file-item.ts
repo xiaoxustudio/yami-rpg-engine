@@ -1,4 +1,4 @@
-import { Path } from '@/util/config.ts';
+import { Path } from '@app/legacy/util/config.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 

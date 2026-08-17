@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import { pinia } from '@app/stores/pinia';
 import '@app/utils/element-data.ts';
+import '@app/legacy/_register.ts';
 
 window.addEventListener('error', (e: ErrorEvent) => {
 	if (e.message === 'ResizeObserver loop limit exceeded') {
@@ -16,7 +17,5 @@ app.use(pinia);
 const el = document.getElementById('app');
 if (el) {
 	app.mount(el);
-	void import('@/main/module-init').then(() => {
-		window.dispatchEvent(new Event('vue-app-mounted'));
-	});
+	window.dispatchEvent(new Event('vue-app-mounted'));
 }

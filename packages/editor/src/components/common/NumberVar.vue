@@ -24,9 +24,9 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMNumberVar } from '@ui-kit';
-import { defVar, defVarForPlugin } from '@/components/number-var';
+import { defVar, defVarForPlugin } from '@app/legacy/components/number-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

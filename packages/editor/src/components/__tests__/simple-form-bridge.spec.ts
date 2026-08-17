@@ -6,9 +6,9 @@ import Rename from '@app/components/tools/Rename.vue';
 import SetKey from '@app/components/tools/SetKey.vue';
 import Zoom from '@app/components/tools/Zoom.vue';
 import SceneShift from '@app/components/tools/SceneShift.vue';
-import { Rename as RenameController } from '@/tools/rename-window.ts';
-import { SetKey as SetKeyController } from '@/tools/set-key-window.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Rename as RenameController } from '@app/legacy/tools/rename-window.ts';
+import { SetKey as SetKeyController } from '@app/legacy/tools/set-key-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

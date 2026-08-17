@@ -1,9 +1,11 @@
-import '@/module/command/switch.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import '@app/legacy/module/command/switch.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { reactive } from 'vue';
 
+const form = reactive<Record<string, unknown>>({});
 let defaultCommands: unknown[] | null = null;
 
 const load = ({
@@ -15,25 +17,26 @@ const load = ({
 	branches?: unknown[];
 	defaultCommands?: unknown;
 } = {}): void => {
-	const write = getElementWriter('switch');
-	write('variable', variable);
-	write('branches', branches.slice());
-	write('default', !!value);
+	form.variable = variable;
+	form.branches = branches.slice();
+	form.default = !!value;
+	write($('#switch-variable'), form.variable);
+	write($('#switch-branches'), form.branches);
+	write($('#switch-default'), form.default);
 	defaultCommands = value as unknown[] | null;
 	getFocus($('#switch-variable'));
 };
 
 const save = (): unknown => {
-	const read = getElementReader('switch');
-	const variable = read('variable');
-	if (VariableGetter.isNone!(variable)) {
+	const variable = read($('#switch-variable')) ?? form.variable;
+	if (VariableGetter.isNone!(variable as any)) {
 		return getFocus($('#switch-variable'));
 	}
-	const branches = read('branches');
+	const branches = (read($('#switch-branches')) ?? form.branches) as unknown[];
 	if (branches.length === 0) {
 		return getFocus($('#switch-branches'));
 	}
-	switch (read('default')) {
+	switch (read($('#switch-default')) ?? form.default) {
 		case true: {
 			const commands = defaultCommands ?? [];
 			Command.save?.({ variable, branches, defaultCommands: commands });

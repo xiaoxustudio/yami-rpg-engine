@@ -19,7 +19,7 @@
 
 import { onMounted } from 'vue';
 import { useLoadSceneCommandSchema } from '@app/composables/commands/useLoadSceneCommandSchema';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';

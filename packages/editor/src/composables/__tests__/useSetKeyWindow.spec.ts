@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetKey from '@app/components/tools/SetKey.vue';
 import { useSetKeyWindow } from '@app/composables/useSetKeyWindow';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

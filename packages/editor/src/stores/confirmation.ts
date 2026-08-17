@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { nextTick, shallowRef } from 'vue';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { pinia } from './pinia';
 
 export const useConfirmationStore = defineStore('confirmation', () => {

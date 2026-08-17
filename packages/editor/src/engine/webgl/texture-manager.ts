@@ -1,4 +1,4 @@
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { BaseTexture } from './base-texture.ts';
 import { ImageTexture } from './image-texture.ts';
 import { GL } from './webgl-init.ts';

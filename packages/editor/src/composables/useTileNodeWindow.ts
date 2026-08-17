@@ -1,11 +1,11 @@
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
-import { on, rect, css, addClass } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { Palette } from '@/palette/palette.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on, rect, css, addClass } from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 
 type TileNodeMarquee = HTMLElement & {
 	visible: boolean;

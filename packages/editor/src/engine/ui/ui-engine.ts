@@ -1,14 +1,14 @@
 import { getUIStore } from '@app/stores/ui';
-import { $ } from '@/util/dom.ts';
-import { getRelativeCoords } from '@/util/element-utils';
-import { write } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { write } from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { History } from '@/tools/history.ts';
+import type { History } from '@app/legacy/tools/history.ts';
 import type { Matrix } from '@app/engine/webgl/matrix2.ts';
-import type { StageColor } from '@/util/stage-color.ts';
+import type { StageColor } from '@app/legacy/util/stage-color.ts';
 
 export const UIEngine: Record<string, any> = {};
 

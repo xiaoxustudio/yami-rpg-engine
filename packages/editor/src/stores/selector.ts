@@ -1,18 +1,18 @@
 ﻿import { defineStore } from 'pinia';
 import type { MenuItem } from '@ui-kit';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { shallowRef } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { clear, hasClass, seek } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
-import { AudioManager } from '@/audio/audio-manager.ts';
-import { Menu } from '@/components/menu-list.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear, hasClass, seek } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Local } from '@/tools/localization.ts';
-import { EventBus } from '@/module/eventbus.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { pinia } from './pinia';
 
 export interface SelectorInstance {

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
 import { getConfirmationStore } from '@app/stores/confirmation';
-import { Window } from '@/tools/window-object';
+import { Window } from '@app/legacy/tools/window-object';
 
 describe('useConfirmationStore（确认窗口状态桥接）', () => {
 	it('初始状态默认值', () => {

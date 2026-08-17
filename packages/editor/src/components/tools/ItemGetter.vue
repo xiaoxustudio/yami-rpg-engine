@@ -16,13 +16,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ItemGetter } from '@/command/item-accessor-window.ts';
+import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
 import { useItemGetterWindow, type ItemGetterForm } from '@app/composables/useItemGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

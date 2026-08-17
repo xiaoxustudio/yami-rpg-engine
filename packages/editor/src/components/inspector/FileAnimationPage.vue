@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import '@app/legacy/inspector/file-animation-page.ts';
 import { onMounted } from 'vue';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';

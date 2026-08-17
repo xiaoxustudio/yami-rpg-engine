@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
-import { Command } from '@/command/command-object.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, read, write } from '@app/legacy/util/element-utils';
 
 export interface UseCommandSchemaOptions {
 	onLoad?: (params: Record<string, unknown>) => void;

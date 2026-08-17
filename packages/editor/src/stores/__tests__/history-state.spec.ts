@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getHistoryStore, historyStateKeys } from '@app/stores/history';
-import { UndoManager } from '@/tools/undo-manager';
+import { UndoManager } from '@app/legacy/tools/undo-manager';
 
 describe('useHistoryStore（undo/redo 状态桥接）', () => {
 	it('初始状态默认值', () => {

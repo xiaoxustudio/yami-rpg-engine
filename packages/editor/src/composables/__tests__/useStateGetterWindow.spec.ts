@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import StateGetter from '@app/components/tools/StateGetter.vue';
 import { useStateGetterWindow } from '@app/composables/useStateGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { StateGetter as StateGetterController } from '@/command/state-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { StateGetter as StateGetterController } from '@app/legacy/command/state-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

@@ -13,21 +13,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { YMFileNavPane } from '@ui-kit';
-import { Path } from '@/util/config.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Directory } from '@/file/directory-object.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { createTextBox as createTextBoxFactory } from '@/components/text-box.ts';
-import { FileBrowserLinks } from '@/types/file-browser-links.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { FolderItem } from '@/file/folder-item.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
+import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { useToastService } from '@app/composables/useToastService';
 
 interface Props {
 	links: FileBrowserLinks;
 }
 
 const props = defineProps<Props>();
+
+const toast = useToastService();
 
 const directoryApi = {
 	sortFiles: (dir: unknown) => Directory.sortFiles?.(dir),
@@ -43,7 +46,9 @@ const directoryApi = {
 
 const fileSystem = {
 	path: (p: string) => File.path(p),
-	rename: (oldPath: string, newPath: string) => FSP.rename(oldPath, newPath),
+	rename: (oldPath: string, newPath: string) => {
+		try { FSP.rename(oldPath, newPath); } catch (e) { toast.show(String(e), 'error'); }
+	},
 	existsSync: (p: string) => FS.existsSync(p)
 };
 

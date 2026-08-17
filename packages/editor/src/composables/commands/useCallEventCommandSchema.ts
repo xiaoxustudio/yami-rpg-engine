@@ -1,21 +1,21 @@
-import '@/module/command/callEvent.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils';
-import { addClass, hide, setTooltip, show } from '@/util/element-utils';
-import { createTextAreaVar } from '@/components/textarea-var.ts';
-import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { createCustomBox } from '@/components/custom-box.ts';
-import { createNumberVar } from '@/components/number-var.ts';
-import { createSelectBox } from '@/components/select-box.ts';
-import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Local } from '@/tools/localization.ts';
-import { Selection } from '@/tools/text-capture.ts';
+import '@app/legacy/module/command/callEvent.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { addClass, hide, setTooltip, show } from '@app/legacy/util/element-utils';
+import { createTextAreaVar } from '@app/legacy/components/textarea-var.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { createCustomBox } from '@app/legacy/components/custom-box.ts';
+import { createNumberVar } from '@app/legacy/components/number-var.ts';
+import { createSelectBox } from '@app/legacy/components/select-box.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Selection } from '@app/legacy/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { h, render } from 'vue';
-import type { CallEventArg, CallEventResultData } from '@/module/command/callEvent.ts';
+import type { CallEventArg, CallEventResultData } from '@app/legacy/module/command/callEvent.ts';
 
 interface CallEventInputApi {
 	loadItems?(items: unknown[]): void;

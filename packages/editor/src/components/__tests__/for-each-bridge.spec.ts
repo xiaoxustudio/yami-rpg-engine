@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ForEach from '@app/components/commands/ForEach.vue';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import '@/module/command/forEach.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import '@app/legacy/module/command/forEach.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

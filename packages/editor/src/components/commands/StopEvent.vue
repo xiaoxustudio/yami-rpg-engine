@@ -22,11 +22,11 @@
 
 import { onMounted } from 'vue';
 import { useStopEventCommandSchema } from '@app/composables/commands/useStopEventCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { write } from '@/util/element-utils';
-import { Local } from '@/tools/localization.ts';
-import { EventEditor } from '@/command/event-editor.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { write } from '@app/legacy/util/element-utils';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

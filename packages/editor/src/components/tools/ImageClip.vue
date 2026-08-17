@@ -29,13 +29,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ImageClip } from '@/tools/image-crop-window.ts';
+import { ImageClip } from '@app/legacy/tools/image-crop-window.ts';
 import { useImageClipWindow, type ImageClipForm } from '@app/composables/useImageClipWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 

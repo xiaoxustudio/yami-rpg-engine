@@ -3,7 +3,6 @@ import { $ } from '@/util/dom.ts';
 import { on, hide, read, write } from '@/util/element-utils.ts';
 import { RadioProxy } from '@/components/radio-proxy.ts';
 import { History } from '@/tools/history.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
 import { Reference } from '@/log/related-references.ts';
 import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
 import type { PageManagerApi } from '@ui-kit';
@@ -26,7 +25,6 @@ interface VariableModule {
 		sort?: unknown;
 		[k: string]: unknown;
 	};
-	_previousActive: ReturnType<typeof UndoManager.getActive>;
 	initialize: (() => void) | null;
 	open: ((target?: unknown) => void) | null;
 	undo: () => void;
@@ -86,7 +84,6 @@ export const Variable: VariableModule = {
 		boolean: { read: null },
 		type: { write: null }
 	},
-	_previousActive: null as unknown as ReturnType<typeof UndoManager.getActive>,
 	initialize: null,
 	open: null,
 	undo: null as unknown as () => void,

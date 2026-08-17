@@ -14,9 +14,9 @@
 
 import { onMounted } from 'vue';
 import { useSetWindowCommandSchema } from '@app/composables/commands/useSetWindowCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { clear } from '@/util/element-utils';
-import { WindowProperty } from '@/command/set-window-property-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear } from '@app/legacy/util/element-utils';
+import { WindowProperty } from '@app/legacy/command/set-window-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

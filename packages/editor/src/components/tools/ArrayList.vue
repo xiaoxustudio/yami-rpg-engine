@@ -9,13 +9,13 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ArrayList } from '@/tools/array-window.ts';
+import { ArrayList } from '@app/legacy/tools/array-window.ts';
 import { useArrayWindow, type ArrayForm } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();

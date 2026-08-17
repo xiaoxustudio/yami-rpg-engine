@@ -1,11 +1,19 @@
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { $ } from '@/util/dom.ts';
-import { addScrollbars, on, show, hide, clear, read, write } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Palette } from '@/palette/palette.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import {
+	addScrollbars,
+	on,
+	show,
+	hide,
+	clear,
+	read,
+	write
+} from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 
 interface SpriteScreen extends HTMLElement {

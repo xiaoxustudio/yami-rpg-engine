@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import AddAnimationComponent from '@app/components/commands/AddAnimationComponent.vue';
 import { useAddAnimationComponentCommandSchema } from '@app/composables/commands/useAddAnimationComponentCommandSchema';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

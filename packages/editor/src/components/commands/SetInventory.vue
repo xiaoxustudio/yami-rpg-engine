@@ -3,24 +3,24 @@
 	<template #title><TitleBar>Set Inventory<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" @input="onActor" />
-			<div class="text">Operation</div><SelectBox id="setInventory-operation" v-model="form.operation" />
+			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" />
+			<div class="text">Operation</div><SelectBox id="setInventory-operation" />
 			<div class="text">Money</div
-			><NumberVar id="setInventory-money" min="1" max="100000000" v-model="form.money" />
+			><NumberVar id="setInventory-money" min="1" max="100000000" />
 			<div class="text">Item</div
-			><FileVar id="setInventory-itemId" type="file" filter="item" v-model="form.itemId" />
+			><FileVar id="setInventory-itemId" type="file" filter="item" />
 			<div class="text">Quantity</div
-			><NumberVar id="setInventory-quantity" min="1" max="10000" v-model="form.quantity" />
+			><NumberVar id="setInventory-quantity" min="1" max="10000" />
 			<div class="text">Equipment</div
-			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" v-model="form.equipmentId" />
+			><FileVar id="setInventory-equipmentId" type="file" filter="equipment" />
 			<div class="text">Equipment</div
-			><CustomBox id="setInventory-equipment" type="equipment" @input="onEquipment" />
+			><CustomBox id="setInventory-equipment" type="equipment" />
 			<div class="text">Order A</div
-			><NumberVar id="setInventory-order1" min="0" max="10000" v-model="form.order1" />
+			><NumberVar id="setInventory-order1" min="0" max="10000" />
 			<div class="text">Order B</div
-			><NumberVar id="setInventory-order2" min="0" max="10000" v-model="form.order2" />
+			><NumberVar id="setInventory-order2" min="0" max="10000" />
 			<div class="text">Global Actor</div
-			><CustomBox id="setInventory-refActor" type="actor" @input="onRefActor" />
+			><CustomBox id="setInventory-refActor" type="actor" />
 		</div>
 	
 </WindowFrame>
@@ -30,8 +30,8 @@
 
 import { onMounted } from 'vue';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,19 +39,7 @@ import FileVar from '@app/components/common/FileVar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const { form, save } = useSetInventoryCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onEquipment = (value: unknown) => {
-	form.equipment = value;
-};
-
-const onRefActor = (value: unknown) => {
-	form.refActor = value;
-};
+const { save } = useSetInventoryCommandSchema();
 
 const onConfirm = () => {
 	save();

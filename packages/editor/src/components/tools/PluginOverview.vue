@@ -43,9 +43,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import type { OverviewShape, ParameterShape, PluginMetaShape } from '@/plugin/plugin.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import type { OverviewShape, ParameterShape, PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
 import { useLocalStore } from '@app/stores/local';
 
 const props = withDefaults(defineProps<{ meta: PluginMetaShape | null; detailed: boolean }>(), {

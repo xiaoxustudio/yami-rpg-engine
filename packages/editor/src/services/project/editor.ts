@@ -13,10 +13,7 @@ export interface EditorProjectHooks {
 		items: Array<{ label?: string; click?: () => void }>
 	) => void;
 	onTitleChanged: () => void;
-	saveToConfig: (config: EditorConfigShape) => void;
-	loadFromConfig: (config: EditorConfigShape) => void;
-	saveToProject: (project: EditorProjectShape) => void;
-	loadFromProject: (project: EditorProjectShape) => void;
+	onPluginLoad: (project: EditorProjectShape) => void;
 	onError: (error: unknown) => void;
 }
 

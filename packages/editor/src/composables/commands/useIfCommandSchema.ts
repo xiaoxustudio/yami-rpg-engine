@@ -1,8 +1,10 @@
-import '@/module/command/if.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
+import '@app/legacy/module/command/if.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { reactive } from 'vue';
 
+const form = reactive<Record<string, unknown>>({});
 let elseCommands: unknown[] | null = null;
 
 const load = ({
@@ -12,20 +14,20 @@ const load = ({
 	branches?: unknown[];
 	elseCommands?: unknown;
 } = {}): void => {
-	const write = getElementWriter('if');
-	write('branches', branches.slice());
-	write('else', !!value);
+	form.branches = branches.slice();
+	form.else = !!value;
+	write($('#if-branches'), form.branches);
+	write($('#if-else'), form.else);
 	elseCommands = value as unknown[] | null;
 	getFocus($('#if-branches'));
 };
 
 const save = (): unknown => {
-	const read = getElementReader('if');
-	const branches = read('branches');
+	const branches = (read($('#if-branches')) ?? form.branches) as unknown[];
 	if (branches.length === 0) {
 		return getFocus($('#if-branches'));
 	}
-	switch (read('else')) {
+	switch (read($('#if-else')) ?? form.else) {
 		case true: {
 			const commands = elseCommands ?? [];
 			Command.save?.({ branches, elseCommands: commands });

@@ -3,16 +3,16 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ShowChoicesCommandWindow from '@app/components/commands/ShowChoices.vue';
 import ChoiceWindow from '@app/components/tools/Choice.vue';
-import { Choices } from '@/command/show-options-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Choices } from '@app/legacy/command/show-options-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@/tools/localization.ts', () => ({
+vi.mock('@app/legacy/tools/localization.ts', () => ({
 	Local: { get: (key: string) => key }
 }));
 

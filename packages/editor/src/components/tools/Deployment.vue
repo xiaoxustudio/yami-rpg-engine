@@ -32,10 +32,12 @@ import { useLocalStore } from '@app/stores/local';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
-import { Deployment } from '@/title/deploy-project-window';
+import { Deployment } from '@app/legacy/title/deploy-project-window';
+import { useToastService } from '@app/composables/useToastService';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+const toast = useToastService();
 
 const onFolderBeforeinput = (event: InputEvent) => {
 	Deployment?.folderBeforeinput?.(event);
@@ -57,6 +59,7 @@ const onCompressChange = (value: boolean) => {
 };
 const onConfirm = () => {
 	Deployment?.confirm?.();
+	toast.show('Deployment started', 'info');
 };
 
 onMounted(() => {

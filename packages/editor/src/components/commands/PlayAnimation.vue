@@ -52,8 +52,8 @@
 
 import { onMounted } from 'vue';
 import { usePlayAnimationCommandSchema } from '@app/composables/commands/usePlayAnimationCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { read } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { read } from '@app/legacy/util/element-utils';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

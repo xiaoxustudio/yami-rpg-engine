@@ -170,15 +170,15 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on, clear } from '@/util/element-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { NumberOperand, type NumberOperandForm } from '@/command/set-value-operand-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on, clear } from '@app/legacy/util/element-utils.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { NumberOperand, type NumberOperandForm } from '@app/legacy/command/set-value-operand-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

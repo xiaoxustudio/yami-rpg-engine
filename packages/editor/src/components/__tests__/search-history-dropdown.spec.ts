@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mount, type VueWrapper } from '@vue/test-utils';
 import SearchHistoryDropdown from '@app/components/file-browser/SearchHistoryDropdown.vue';
-import { BrowserSearchHistory } from '@/module/browserSearchHistory.ts';
-import { SettingConfig } from '@/module/settingconfig';
+import { BrowserSearchHistory } from '@app/legacy/module/browserSearchHistory.ts';
+import { SettingConfig } from '@app/legacy/module/settingconfig';
 
 let wrapper: VueWrapper | null = null;
 

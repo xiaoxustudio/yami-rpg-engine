@@ -22,8 +22,8 @@ import {
 	hideChildNodes,
 	showChildNodes,
 	read as readElement
-} from '@/util/element-utils';
-import { attachElementApi } from '@/utils/attach-element-api';
+} from '@app/legacy/util/element-utils';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;

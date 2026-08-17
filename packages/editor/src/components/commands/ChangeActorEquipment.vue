@@ -3,14 +3,13 @@
 	<template #title><TitleBar>Change Actor Equipment<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" @input="onActor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" v-model="form.operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" v-model="form.slot" /><div class="text">Equipment</div
+			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" /><div class="text">Equipment</div
 			><CustomBox
 				id="changeActorEquipment-equipmentId"
 				type="file"
 				filter="equipment"
-				@input="onEquipmentId"
 			 /><div class="text">Equipment</div
-			><CustomBox id="changeActorEquipment-equipment" type="equipment" @input="onEquipment" /></div>
+			><CustomBox id="changeActorEquipment-equipment" type="equipment" /></div>
 	
 </WindowFrame>
 </template>
@@ -19,27 +18,15 @@
 
 import { onMounted } from 'vue';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const { form, save } = useChangeActorEquipmentCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
-
-const onEquipmentId = (value: unknown) => {
-	form.equipmentId = value;
-};
-
-const onEquipment = (value: unknown) => {
-	form.equipment = value;
-};
+const { save } = useChangeActorEquipmentCommandSchema();
 
 const onConfirm = () => {
 	save();

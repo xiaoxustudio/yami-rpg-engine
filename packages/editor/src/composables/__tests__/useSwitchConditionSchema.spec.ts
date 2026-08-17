@@ -2,18 +2,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
-import { SwitchCondition } from '@/command/match-condition-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Data } from '@/data/data-object.ts';
-import { Local } from '@/tools/localization.ts';
-import { Window } from '@/tools/window-object.ts';
+import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@/tools/localization.ts', () => ({
+vi.mock('@app/legacy/tools/localization.ts', () => ({
 	Local: { get: () => '' }
 }));
 

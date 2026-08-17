@@ -1,6 +1,6 @@
-import { File } from '@/file/file-system-core.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { Editor } from '@/main/editor.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { Editor } from './editor.ts';
 import { Updater } from '@app/services/updater/updater.ts';
 
 Editor.checkForEditorUpdates = function (this: typeof Editor) {

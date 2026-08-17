@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 describe('useCommandSchema 通用机制（B 类 fields 驱动表单）', () => {

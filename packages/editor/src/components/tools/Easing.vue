@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Easing } from '@/data/transition-window.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

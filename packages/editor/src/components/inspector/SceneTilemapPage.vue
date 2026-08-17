@@ -130,11 +130,11 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

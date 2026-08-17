@@ -1,5 +1,6 @@
+import '@app/legacy/inspector/file-audio-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 interface FileAudioForm {
 	name: string;

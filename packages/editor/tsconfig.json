@@ -1,7 +1,6 @@
 {
 	"compilerOptions": {
 	  "paths": {
-	   "@/*": ["./src/legacy/*"],
 	   "@app/*": ["./src/*"],
 	   "@ui-kit": ["../ui-kit/src/index.ts"],
 	   "@ui-kit/*": ["../ui-kit/src/*"]

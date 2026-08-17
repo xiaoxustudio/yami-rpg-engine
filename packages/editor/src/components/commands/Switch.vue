@@ -17,10 +17,10 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils.ts';
-import { SwitchBranch } from '@/command/match-branch-window.ts';
-import { SwitchCondition } from '@/command/match-condition-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
+import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
 import { useSwitchCommandSchema } from '@app/composables/commands/useSwitchCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

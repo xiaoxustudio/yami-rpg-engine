@@ -18,13 +18,13 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import type { TextEffectForm } from '@/tools/text-capture.ts';
-import { Selection } from '@/tools/text-capture.ts';
+import type { TextEffectForm } from '@app/legacy/tools/text-capture.ts';
+import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

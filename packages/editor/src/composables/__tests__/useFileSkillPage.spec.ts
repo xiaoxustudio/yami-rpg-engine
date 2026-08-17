@@ -14,7 +14,7 @@ const fileSkill = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileSkill,
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)

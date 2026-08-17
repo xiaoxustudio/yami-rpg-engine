@@ -1,8 +1,8 @@
-import { drawAndFitImage } from '@/util/element-utils';
-import { File } from '@/file/file-system-core.ts';
+import { drawAndFitImage } from '@app/legacy/util/element-utils';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { getPaletteStore } from '@app/stores/palette';
 import { getAutoTileStore } from '@app/stores/autoTile';
-import type { AutoTile } from '@/palette/auto-tile.ts';
+import type { AutoTile } from '@app/legacy/palette/auto-tile.ts';
 
 type AutoTileNodeData = {
 	rule: number;

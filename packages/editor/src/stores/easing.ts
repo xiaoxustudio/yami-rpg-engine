@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import '@/data/data-object.ts';
-import { Easing } from '@/data/transition-window.ts';
+import '@app/legacy/data/data-object.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';

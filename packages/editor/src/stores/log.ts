@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { UpdateLog } from '@/log/update-log-window.ts';
-import { Log } from '@/log/log-window.ts';
-import { Reference } from '@/log/related-references.ts';
+import { UpdateLog } from '@app/legacy/log/update-log-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
 import { pinia } from './pinia';
 import { shallowRef } from 'vue';
 

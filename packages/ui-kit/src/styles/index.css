@@ -1,4 +1,5 @@
-@import './theme/tokens.css';
+@import '../theme/tokens.css';
+@import './components.css';
 
 .hidden {
 	display: none !important;

@@ -1,4 +1,4 @@
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 

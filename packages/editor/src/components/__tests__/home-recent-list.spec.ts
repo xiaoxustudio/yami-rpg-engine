@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
-import type { HomeRecentCard } from '@/title/home-page.ts';
+import type { HomeRecentCard } from '@app/legacy/title/home-page.ts';
 
 const homeMock = vi.hoisted(() => ({
 	Home: {
@@ -11,9 +11,9 @@ const homeMock = vi.hoisted(() => ({
 	}
 }));
 
-vi.mock('@/title/home-page.ts', () => homeMock);
+vi.mock('@app/legacy/title/home-page.ts', () => homeMock);
 
-import { Home } from '@/title/home-page.ts';
+import { Home } from '@app/legacy/title/home-page.ts';
 
 const cards: HomeRecentCard[] = [
 	{

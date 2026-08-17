@@ -36,7 +36,7 @@
 
 import { onMounted } from 'vue';
 import { useSetObjectCommandSchema } from '@app/composables/commands/useSetObjectCommandSchema';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

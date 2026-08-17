@@ -1,10 +1,12 @@
-import '@/module/command/transition.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { clear, getFocus } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Data } from '@/data/data-object.ts';
+import '@app/legacy/module/command/transition.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { reactive } from 'vue';
 
+const form = reactive<Record<string, unknown>>({});
 let commands: unknown[] | null = null;
 
 const load = ({
@@ -22,31 +24,34 @@ const load = ({
 	duration?: unknown;
 	commands?: unknown;
 } = {}): void => {
-	const write = getElementWriter('transition');
-	write('variable', variable);
-	write('start', start);
-	write('end', end);
-	write('easingId', easingId);
-	write('duration', duration);
+	form.variable = variable;
+	form.start = start;
+	form.end = end;
+	form.easingId = easingId;
+	form.duration = duration;
+	write($('#transition-variable'), form.variable);
+	write($('#transition-start'), form.start);
+	write($('#transition-end'), form.end);
+	write($('#transition-easingId'), form.easingId);
+	write($('#transition-duration'), form.duration);
 	commands = children as unknown[];
 	getFocus($('#transition-variable'));
 };
 
 const save = (): unknown => {
-	const read = getElementReader('transition');
-	const variable = read('variable');
-	if (VariableGetter.isNone!(variable)) {
+	const variable = read($('#transition-variable')) ?? form.variable;
+	if (VariableGetter.isNone!(variable as any)) {
 		return getFocus($('#transition-variable'));
 	}
-	const duration = read('duration');
+	const duration = (read($('#transition-duration')) ?? form.duration) as number;
 	if (duration === 0) {
 		return getFocus($('#transition-duration'), 'all');
 	}
 	Command.save?.({
 		variable,
-		start: read('start'),
-		end: read('end'),
-		easingId: read('easingId'),
+		start: read($('#transition-start')) ?? form.start,
+		end: read($('#transition-end')) ?? form.end,
+		easingId: read($('#transition-easingId')) ?? form.easingId,
 		duration,
 		commands
 	});

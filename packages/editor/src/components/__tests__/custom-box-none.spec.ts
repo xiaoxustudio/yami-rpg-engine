@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Local } from '@/tools/localization.ts';
-import { customBoxOptions } from '@/components/custom-box-opts.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { customBoxOptions } from '@app/legacy/components/custom-box-opts.ts';
 
 beforeEach(() => {
 	vi.spyOn(Local as unknown as { get: (key: string) => string }, 'get').mockReturnValue('None');

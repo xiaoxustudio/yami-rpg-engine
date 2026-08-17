@@ -1,10 +1,10 @@
-import '@/module/command/setString.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, read } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import '@app/legacy/module/command/setString.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, read } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
-import type { SetStringOperand } from '@/module/command/setString.ts';
+import type { SetStringOperand } from '@app/legacy/module/command/setString.ts';
 
 export function useSetStringCommandSchema() {
 	const { form, save, load } = useCommandSchema('setString', {

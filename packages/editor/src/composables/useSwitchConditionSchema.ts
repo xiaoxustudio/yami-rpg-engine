@@ -1,12 +1,12 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
-import { Command } from '@/command/command-object.ts';
-import { IfCondition } from '@/command/conditional-condition-window.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Local } from '@/tools/localization.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 export interface SwitchConditionData {
 	type:

@@ -1,8 +1,8 @@
-import { $ } from '@/util/dom.ts';
-import { write } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { write } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 type ReferenceNodeShape = {
 	class?: string;

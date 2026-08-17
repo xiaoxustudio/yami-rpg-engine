@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import RegionGetter from '@app/components/tools/RegionGetter.vue';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { RegionGetter as RegionGetterController } from '@/command/region-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { RegionGetter as RegionGetterController } from '@app/legacy/command/region-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

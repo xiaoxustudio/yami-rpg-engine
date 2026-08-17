@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 export interface ImageClipForm {
 	x: number;

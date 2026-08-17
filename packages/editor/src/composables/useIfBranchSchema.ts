@@ -1,8 +1,11 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { IfCondition, type IfConditionData } from '@/command/conditional-condition-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import {
+	IfCondition,
+	type IfConditionData
+} from '@app/legacy/command/conditional-condition-window.ts';
 
 interface IfBranchTarget {
 	save: () => unknown;

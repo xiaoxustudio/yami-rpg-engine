@@ -33,8 +33,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Enum } from '@/enum/enum-window.ts';
-import { GameLocal } from '@/local/local-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

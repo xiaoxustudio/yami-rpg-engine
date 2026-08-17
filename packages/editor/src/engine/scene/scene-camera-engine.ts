@@ -1,7 +1,7 @@
-import { getRelativeCoords } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
+import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 
 export const SceneCameraEngine: Record<string, any> = {};
 SceneCameraEngine.getTileCoords = (function IIFE() {

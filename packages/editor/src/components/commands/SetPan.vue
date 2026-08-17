@@ -25,9 +25,9 @@
 
 import { onMounted } from 'vue';
 import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { clear } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

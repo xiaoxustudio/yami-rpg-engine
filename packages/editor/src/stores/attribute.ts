@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
+import { History } from '@app/legacy/tools/history.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
 export interface AttributeItemShape {
 	id: string;
@@ -18,7 +20,7 @@ export interface AttributeWindowState {
 	idMap: Record<string, boolean> | null;
 	settings: Record<string, string> | null;
 	settingKeys: string[] | null;
-	history: unknown;
+	history: History | null;
 	changed: boolean;
 	selected: AttributeItemShape | null;
 }
@@ -100,7 +102,80 @@ export const useAttributeStore = defineStore('attribute', () => {
 		return find(state.data);
 	}
 
-	return { state, createId, register, unregister, getItemById };
+	let _previousActive: ReturnType<typeof UndoManager.getActive> = null;
+
+	const activeEditor = {
+		undo,
+		redo,
+		get history() {
+			return state.history;
+		}
+	};
+
+	function open(
+		target: { input?: (id: string) => void; [k: string]: unknown } | null = null,
+		mode: string | null = 'normal'
+	): void {
+		state.mode = mode;
+		state.target = target as AttributeWindowState['target'];
+		_previousActive = UndoManager.getActive();
+		state.history = new History(100);
+		UndoManager.setActive(activeEditor);
+	}
+
+	function close(): void {
+		state.data = null;
+		state.idMap = null;
+		state.history = null;
+		UndoManager.setActive(_previousActive);
+		_previousActive = null;
+	}
+
+	function undo(): void {
+		if (state.history?.canUndo()) {
+			state.history.restore('undo');
+		}
+	}
+
+	function redo(): void {
+		if (state.history?.canRedo()) {
+			state.history.restore('redo');
+		}
+	}
+
+	function saveHistory(item: AttributeItemShape, key: string, value?: string): void {
+		const history = state.history;
+		if (!history) return;
+		const type = `attribute-${key}-change`;
+		const index = history.index;
+		const length = history.length;
+		const record = history[index];
+		if (
+			index !== length - 1 ||
+			record === undefined ||
+			record.type !== type ||
+			record.item !== item
+		) {
+			history.save({
+				type: type,
+				item: item,
+				value: value
+			});
+		}
+	}
+
+	return {
+		state,
+		createId,
+		register,
+		unregister,
+		getItemById,
+		open,
+		close,
+		undo,
+		redo,
+		saveHistory
+	};
 });
 
 export function getAttributeStore() {

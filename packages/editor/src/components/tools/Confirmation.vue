@@ -26,8 +26,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useConfirmationStore } from '@app/stores/confirmation';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { measureText } from '@/util/dom';
-import { getFocus } from '@/util/element-utils';
+import { measureText } from '@app/legacy/util/dom';
+import { getFocus } from '@app/legacy/util/element-utils';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

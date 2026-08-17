@@ -4,18 +4,18 @@ import { mount } from '@vue/test-utils';
 import SwitchCommandWindow from '@app/components/commands/Switch.vue';
 import SwitchBranchWindow from '@app/components/tools/SwitchBranch.vue';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
-import { SwitchBranch } from '@/command/match-branch-window.ts';
-import { SwitchCondition } from '@/command/match-condition-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Window } from '@/tools/window-object.ts';
+import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
+import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@/tools/localization.ts', () => ({
+vi.mock('@app/legacy/tools/localization.ts', () => ({
 	Local: { get: () => '' }
 }));
 

@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMFilterBox } from '@ui-kit';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface FilterBoxElement extends HTMLElement {
 	read(): [number, number, number, number] | null;

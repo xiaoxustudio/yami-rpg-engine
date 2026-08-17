@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
-import { Title } from '@/title/title-bar.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
 
 export interface TitleShape {
 	theme: string | null;

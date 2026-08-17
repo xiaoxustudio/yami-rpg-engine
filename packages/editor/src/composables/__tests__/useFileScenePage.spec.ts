@@ -24,14 +24,14 @@ const fileScene = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileScene,
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)
 	}
 }));
 
-vi.mock('@/scene/scene-window.ts', () => ({
+vi.mock('@app/legacy/scene/scene-window.ts', () => ({
 	Scene
 }));
 

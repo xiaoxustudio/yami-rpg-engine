@@ -21,8 +21,8 @@ import {
 	radioProxyMap,
 	type RadioProxyElement,
 	type RadioRelationEntry
-} from '@/components/radio-proxy';
-import { attachElementApi } from '@/utils/attach-element-api';
+} from '@app/legacy/components/radio-proxy';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;

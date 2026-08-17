@@ -1,8 +1,8 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { GameLocal } from '@/local/local-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
 
 export interface ChoicesForm {
 	content: string;

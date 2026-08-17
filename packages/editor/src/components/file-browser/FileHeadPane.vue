@@ -10,9 +10,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { YMFileHeadPane, type MenuItem, type MenuOptions } from '@ui-kit';
-import { Menu } from '@/components/menu-list.ts';
-import { FolderItem } from '@/file/folder-item.ts';
-import { FileBrowserLinks } from '@/types/file-browser-links.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
 
 interface Props {
 	links: FileBrowserLinks;

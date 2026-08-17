@@ -1,9 +1,9 @@
-import '@/module/command/registerEvent.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { getFocus, hide, read, show, write } from '@/util/element-utils';
+import '@app/legacy/module/command/registerEvent.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { getFocus, hide, read, show, write } from '@app/legacy/util/element-utils';
 
 let commands: unknown[] | null = null;
 let priorityEnabled = false;

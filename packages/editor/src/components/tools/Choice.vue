@@ -16,15 +16,15 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils.ts';
-import type { ChoicesForm } from '@/command/show-options-window.ts';
-import { Choices } from '@/command/show-options-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import type { ChoicesForm } from '@app/legacy/command/show-options-window.ts';
+import { Choices } from '@app/legacy/command/show-options-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
 
 const form = reactive<ChoicesForm>({ content: '' });

@@ -19,22 +19,22 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMParameterPane } from '@ui-kit';
-import { createCheckBox as createCheckBoxElement } from '@/components/check-box';
-import { createColorBox as createColorBoxElement } from '@/components/color-box';
-import { createKeyboardBox as createKeyboardBoxElement } from '@/components/keyboard-box';
-import { customBoxFactory, numberBoxFactory, selectBoxFactory, textBoxFactory } from '@/components/var-factories';
-import { createDetailBox as createDetailBoxElement } from '@/components/detail-box';
-import { createDetailSummary } from '@/components/detail-summary';
-import { createNumberVar as createNumberVarElement } from '@/components/number-var';
-import { TypeRegistry } from '@/components/type-registry';
-import { Select } from '@/components/select-list';
-import { Data } from '@/data/data-object';
-import { PluginManager } from '@/plugin/plugin';
-import { Local } from '@/tools/localization';
-import { Selection } from '@/tools/text-capture';
-import { measureText as measureTextUtil } from '@/util/dom';
-import { setTooltip as setTooltipUtil } from '@/util/element-utils';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { createCheckBox as createCheckBoxElement } from '@app/legacy/components/check-box';
+import { createColorBox as createColorBoxElement } from '@app/legacy/components/color-box';
+import { createKeyboardBox as createKeyboardBoxElement } from '@app/legacy/components/keyboard-box';
+import { customBoxFactory, numberBoxFactory, selectBoxFactory, textBoxFactory } from '@app/legacy/components/var-factories';
+import { createDetailBox as createDetailBoxElement } from '@app/legacy/components/detail-box';
+import { createDetailSummary } from '@app/legacy/components/detail-summary';
+import { createNumberVar as createNumberVarElement } from '@app/legacy/components/number-var';
+import { TypeRegistry } from '@app/legacy/components/type-registry';
+import { Select } from '@app/legacy/components/select-list';
+import { Data } from '@app/legacy/data/data-object';
+import { PluginManager } from '@app/legacy/plugin/plugin';
+import { Local } from '@app/legacy/tools/localization';
+import { Selection } from '@app/legacy/tools/text-capture';
+import { measureText as measureTextUtil } from '@app/legacy/util/dom';
+import { setTooltip as setTooltipUtil } from '@app/legacy/util/element-utils';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

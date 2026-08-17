@@ -12,8 +12,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMColorBox } from '@ui-kit';
-import { Color } from '@/tools/color-picker-window';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { Color } from '@app/legacy/tools/color-picker-window';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface ColorBoxElement extends HTMLElement {
 	dataValue: string;

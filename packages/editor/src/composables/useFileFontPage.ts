@@ -1,4 +1,5 @@
-import { Inspector } from '@/inspector/inspector.ts';
+import '@app/legacy/inspector/file-font-page.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 export function useFileFontPage() {
 	const onTextInput = (event: Event): void => {

@@ -1,5 +1,5 @@
-import { Path } from '@/util/config.ts';
-import { Editor } from '@/main/editor.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Editor } from './editor.ts';
 
 Editor.updatePath = function (this: typeof Editor, path: string) {
 	const { config } = this;

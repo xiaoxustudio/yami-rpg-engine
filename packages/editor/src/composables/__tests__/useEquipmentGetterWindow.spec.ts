@@ -3,9 +3,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import EquipmentGetter from '@app/components/tools/EquipmentGetter.vue';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { EquipmentGetter as EquipmentGetterController } from '@/command/equipment-accessor-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { EquipmentGetter as EquipmentGetterController } from '@app/legacy/command/equipment-accessor-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

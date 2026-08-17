@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import PositionGetter from '@app/components/tools/PositionGetter.vue';
 import { usePositionGetterWindow } from '@app/composables/usePositionGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { PositionGetter as PositionGetterController } from '@/command/position-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { PositionGetter as PositionGetterController } from '@app/legacy/command/position-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

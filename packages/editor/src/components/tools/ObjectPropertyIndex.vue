@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { IndexBind } from '@/module/command/getObjectProperty.ts';
+import { IndexBind } from '@app/legacy/module/command/getObjectProperty.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

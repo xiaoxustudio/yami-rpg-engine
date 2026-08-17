@@ -47,8 +47,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
-import { ApkBuilder } from '@/module/apkbuilder.ts';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { ApkBuilder } from '@app/legacy/module/apkbuilder.ts';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

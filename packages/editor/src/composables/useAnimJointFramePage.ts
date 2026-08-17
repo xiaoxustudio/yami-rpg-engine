@@ -1,6 +1,8 @@
+import '@app/legacy/inspector/animation-bone-layer-page.ts';
+import '@app/legacy/inspector/animation-bone-frame-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { read } from '@/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { read } from '@app/legacy/util/element-utils';
 
 interface AnimJointFrameForm {
 	x: number;

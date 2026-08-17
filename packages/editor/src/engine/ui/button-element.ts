@@ -1,5 +1,5 @@
-import { Inspector } from '@/inspector/inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 interface TextEffectShape {
 	type: string;

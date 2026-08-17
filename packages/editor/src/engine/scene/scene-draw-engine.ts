@@ -1,8 +1,8 @@
-import { INTRGBA } from '@/util/color-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { INTRGBA } from '@app/legacy/util/color-utils.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';

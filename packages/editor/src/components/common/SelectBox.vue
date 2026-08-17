@@ -19,10 +19,10 @@ import { YMSelectBox } from '@ui-kit';
 import {
 	setTooltip as setTooltipElement,
 	dispatchChangeEvent
-} from '@/util/element-utils';
-import { Select } from '@/components/select-list.ts';
-import { Local } from '@/tools/localization.ts';
-import { attachElementApi } from '@/utils/attach-element-api';
+} from '@app/legacy/util/element-utils';
+import { Select } from '@app/legacy/components/select-list.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
 	info: HTMLElement & { [k: string]: unknown };

@@ -16,7 +16,7 @@
 
 import { onMounted } from 'vue';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';

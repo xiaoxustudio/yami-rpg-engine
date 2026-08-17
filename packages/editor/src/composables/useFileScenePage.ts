@@ -1,7 +1,8 @@
+import '@app/legacy/inspector/file-scene-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { read } from '@/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { read } from '@app/legacy/util/element-utils';
 
 interface FileSceneForm {
 	width: number;

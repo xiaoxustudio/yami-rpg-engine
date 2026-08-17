@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import AngleGetter from '@app/components/tools/AngleGetter.vue';
 import { useAngleGetterWindow } from '@app/composables/useAngleGetterWindow';
-import { Window } from '@/tools/window-object.ts';
-import { AngleGetter as AngleGetterController } from '@/command/angle-accessor-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { AngleGetter as AngleGetterController } from '@app/legacy/command/angle-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

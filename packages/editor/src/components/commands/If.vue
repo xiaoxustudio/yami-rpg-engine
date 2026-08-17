@@ -11,10 +11,10 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils.ts';
-import { IfBranch } from '@/command/conditional-branch-window.ts';
-import { IfCondition } from '@/command/conditional-condition-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
+import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { useIfCommandSchema } from '@app/composables/commands/useIfCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

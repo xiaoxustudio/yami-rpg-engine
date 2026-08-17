@@ -23,8 +23,8 @@
 
 import { onMounted } from 'vue';
 import { useHttpRequestCommandSchema } from '@app/composables/commands/useHttpRequestCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { RequestkeyValueBind } from '@/module/command/requestURL.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import type { History } from '@/tools/history.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 import { shallowReactive } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
@@ -99,6 +100,36 @@ export const useEnumStore = defineStore('enum', () => {
 		return find(state.data);
 	}
 
+	let _previousActive: ReturnType<typeof UndoManager.getActive> = null;
+
+	const activeEditor = {
+		undo,
+		redo,
+		get history() {
+			return state.history;
+		}
+	};
+
+	function open(
+		target: { input?: (id: string) => void; [k: string]: unknown } | null = null,
+		mode: string | null = 'normal'
+	): void {
+		state.mode = mode;
+		state.target = target as EnumWindowState['target'];
+		_previousActive = UndoManager.getActive();
+		state.history = new History(100);
+		UndoManager.setActive(activeEditor);
+	}
+
+	function close(): void {
+		state.data = null;
+		state.idMap = null;
+		state.settings = null;
+		state.history = null;
+		UndoManager.setActive(_previousActive);
+		_previousActive = null;
+	}
+
 	function undo(): void {
 		if (state.history?.canUndo()) {
 			state.history.restore('undo');
@@ -132,7 +163,18 @@ export const useEnumStore = defineStore('enum', () => {
 		}
 	}
 
-	return { state, createId, register, unregister, getItemById, undo, redo, saveHistory };
+	return {
+		state,
+		createId,
+		register,
+		unregister,
+		getItemById,
+		open,
+		close,
+		undo,
+		redo,
+		saveHistory
+	};
 });
 
 export function getEnumStore() {

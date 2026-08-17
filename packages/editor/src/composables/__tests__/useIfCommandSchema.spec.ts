@@ -4,20 +4,20 @@ import { mount } from '@vue/test-utils';
 import IfCommandWindow from '@app/components/commands/If.vue';
 import IfBranchWindow from '@app/components/tools/IfBranch.vue';
 import IfConditionWindow from '@app/components/tools/IfCondition.vue';
-import { IfBranch } from '@/command/conditional-branch-window.ts';
-import { IfCondition } from '@/command/conditional-condition-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { CommandSchema } from '@/module/command/schema.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Data } from '@/data/data-object.ts';
-import { Window } from '@/tools/window-object.ts';
+import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
+import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@/tools/localization.ts', () => ({
+vi.mock('@app/legacy/tools/localization.ts', () => ({
 	Local: { get: () => '' }
 }));
 

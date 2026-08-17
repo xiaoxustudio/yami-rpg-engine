@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getPluginStore, pluginStateKeys } from '@app/stores/plugin';
-import { PluginManager } from '@/plugin/plugin.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 
 describe('usePluginStore（PluginManager 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

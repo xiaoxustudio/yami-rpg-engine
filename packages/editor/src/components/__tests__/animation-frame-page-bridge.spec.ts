@@ -38,7 +38,7 @@ const animSoundFrame = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		animJointFrame,
 		animParticleFrame,

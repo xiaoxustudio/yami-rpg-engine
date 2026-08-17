@@ -7,7 +7,7 @@ const fileFont = vi.hoisted(() => ({
 	textInput: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		fileFont
 	}

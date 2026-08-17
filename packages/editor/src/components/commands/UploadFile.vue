@@ -21,8 +21,8 @@
 
 import { onMounted } from 'vue';
 import { useUploadFileCommandSchema } from '@app/composables/commands/useUploadFileCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { RequestkeyValueBind } from '@/module/command/requestURL.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

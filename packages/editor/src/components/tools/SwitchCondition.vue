@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { SwitchCondition } from '@/command/match-condition-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import GamepadBox from '@app/components/common/GamepadBox.vue';

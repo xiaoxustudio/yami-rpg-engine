@@ -3,7 +3,7 @@
 	<template #title><TitleBar>Get Target<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
-			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" @input="onActor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" v-model="form.selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" v-model="form.condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" v-model="form.attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" v-model="form.divisor" /></div>
+			<div class="text">Actor</div><CustomBox id="getTarget-actor" type="actor" /><div class="text">Selector</div><SelectBox id="getTarget-selector" /><div class="text">Condition</div><SelectBox id="getTarget-condition" /><div class="text">Attribute</div><SelectBox id="getTarget-attribute" /><div class="text">Attribute 2</div><SelectBox id="getTarget-divisor" /></div>
 	
 </WindowFrame>
 </template>
@@ -12,18 +12,14 @@
 
 import { onMounted } from 'vue';
 import { useGetTargetCommandSchema } from '@app/composables/commands/useGetTargetCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const { form, save } = useGetTargetCommandSchema();
-
-const onActor = (value: unknown) => {
-	form.actor = value;
-};
+const { save } = useGetTargetCommandSchema();
 
 const onConfirm = () => {
 	save();

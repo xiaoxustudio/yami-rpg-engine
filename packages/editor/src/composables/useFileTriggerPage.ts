@@ -1,6 +1,7 @@
+import '@app/legacy/inspector/file-trigger-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import { read } from '@/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { read } from '@app/legacy/util/element-utils';
 
 interface TriggerForm {
 	selector: string;

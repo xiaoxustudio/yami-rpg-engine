@@ -396,17 +396,17 @@ import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
 import { useAnimationStore } from '@app/stores/animation';
-import { attachElementApi } from '@/utils/attach-element-api';
-import { Scene } from '@/scene/scene-window.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Curve } from '@/animation/curve-window.ts';
-import { Home } from '@/title/home-page.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { setIconClip } from '@/util/icon-clip.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Curve } from '@app/legacy/animation/curve-window.ts';
+import { Home } from '@app/legacy/title/home-page.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { setIconClip } from '@app/legacy/util/icon-clip.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 interface SceneExtrasNode {
 	class?: string;

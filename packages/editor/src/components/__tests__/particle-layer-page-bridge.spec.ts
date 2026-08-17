@@ -79,7 +79,7 @@ const particleLayer = vi.hoisted(() => ({
 	easingDefaultId: 'ease-linear'
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: { particleLayer }
 }));
 

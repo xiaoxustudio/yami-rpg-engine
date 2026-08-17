@@ -1,7 +1,7 @@
-import { Data } from '@/data/data-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 
 export const SceneEditEngine: Record<string, any> = {};
 

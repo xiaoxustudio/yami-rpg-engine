@@ -19,8 +19,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
-import { Local } from '@/tools/localization';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { Local } from '@app/legacy/tools/localization';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

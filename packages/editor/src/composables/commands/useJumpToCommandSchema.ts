@@ -1,8 +1,8 @@
-import '@/module/command/jumpTo.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, read, write } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
+import '@app/legacy/module/command/jumpTo.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
 
 type LabelCommand = {
 	id: string;

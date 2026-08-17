@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMTitleBar } from '@ui-kit';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

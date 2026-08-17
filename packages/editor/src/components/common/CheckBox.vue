@@ -20,8 +20,8 @@ import {
 	enable as enableElement,
 	disable as disableElement,
 	dispatchChangeEvent
-} from '@/util/element-utils';
-import { attachElementApi } from '@/utils/attach-element-api';
+} from '@app/legacy/util/element-utils';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface CheckBoxElement extends HTMLElement {
 	read(): boolean;

@@ -1,10 +1,10 @@
 import { getAnimationStore } from '@app/stores/animation';
-import { Animation } from '@/animation/animation-window.ts';
-import { Timer } from '@/util/timer.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { ParticleEmitterShape } from '@/particle/particle-window.ts';
+import type { ParticleEmitterShape } from '@app/legacy/particle/particle-window.ts';
 
 export const AnimationWindowEngine: Record<string, any> = {};
 

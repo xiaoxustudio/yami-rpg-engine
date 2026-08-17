@@ -8,18 +8,30 @@
 import { onMounted, ref } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { Log } from '@/log/log-window.ts';
-import { File } from '@/file/file-system-core.ts';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { useToastService } from '@app/composables/useToastService';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();
+const toast = useToastService();
 
 const items = ref<{ type: string; message: string; duration: number }[]>([]);
 const rootEl = ref<HTMLElement | null>(null);
 
 const update = (): void => {
-	items.value = Log.list.slice();
+	const next = Log.list.slice();
+	const prev = items.value;
+	if (next.length > prev.length) {
+		const newest = next.slice(prev.length);
+		for (const item of newest) {
+			if (item.type === 'error') {
+				toast.show(item.message, 'error');
+			}
+		}
+	}
+	items.value = next;
 };
 
 const onMessageClick = (event: MouseEvent): void => {

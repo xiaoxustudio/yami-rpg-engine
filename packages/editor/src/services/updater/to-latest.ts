@@ -1,6 +1,6 @@
-import { Path } from '@/util/config.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Updater } from './updater.ts';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project

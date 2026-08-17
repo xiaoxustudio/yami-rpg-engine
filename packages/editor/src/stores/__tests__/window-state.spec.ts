@@ -3,10 +3,10 @@ import { getAttributeStore, attributeStateKeys } from '@app/stores/attribute';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import { getWindowStore, windowStateKeys } from '@app/stores/window';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Variable } from '@/variable/variable.ts';
-import { Window } from '@/tools/window-object';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Variable } from '@app/legacy/variable/variable.ts';
+import { Window } from '@app/legacy/tools/window-object';
 
 describe('useAttributeStore（Attribute 窗口状态桥接）', () => {
 	it('初始状态默认值', () => {
@@ -116,12 +116,12 @@ describe('useVariableStore（Variable 窗口状态桥接）', () => {
 		store.state.target = { id: 'v1' };
 		store.state.data = [{ id: 'v1' }];
 		store.state.idMap = { v1: true };
-		store.state.history = { save: () => undefined };
+		store.state.history = { save: () => undefined } as any;
 		store.state.changed = true;
 		expect(store.state.target.id).toBe('v1');
 		expect(store.state.data[0].id).toBe('v1');
 		expect(store.state.idMap.v1).toBe(true);
-		expect(typeof store.state.history.save).toBe('function');
+		expect(typeof store.state.history!.save).toBe('function');
 		expect(store.state.changed).toBe(true);
 	});
 

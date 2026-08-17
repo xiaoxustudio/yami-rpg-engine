@@ -131,8 +131,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Variable } from '@/variable/variable.ts';
-import { Command } from '@/command/command-object.ts';
+import { Variable } from '@app/legacy/variable/variable.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

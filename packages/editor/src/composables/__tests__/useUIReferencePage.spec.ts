@@ -13,7 +13,7 @@ const uiReference = vi.hoisted(() => ({
 	update: vi.fn()
 }));
 
-vi.mock('@/inspector/inspector.ts', () => ({
+vi.mock('@app/legacy/inspector/inspector.ts', () => ({
 	Inspector: {
 		uiReference,
 		getKey: (el: HTMLElement) => el.id.slice(el.id.indexOf('-') + 1)

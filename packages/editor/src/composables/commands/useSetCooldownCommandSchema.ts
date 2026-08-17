@@ -1,7 +1,7 @@
-import '@/module/command/setCooldown.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus } from '@/util/element-utils';
-import { Enum } from '@/enum/enum-window.ts';
+import '@app/legacy/module/command/setCooldown.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetCooldownCommandSchema() {

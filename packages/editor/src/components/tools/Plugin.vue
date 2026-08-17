@@ -35,10 +35,10 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
-import { PluginManager } from '@/plugin/plugin.ts';
-import type { PluginMetaShape } from '@/plugin/plugin.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

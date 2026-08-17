@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { AudioManager } from '@/audio/audio-manager.ts';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

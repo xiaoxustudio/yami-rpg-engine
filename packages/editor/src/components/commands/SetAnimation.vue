@@ -14,9 +14,9 @@
 
 import { onMounted } from 'vue';
 import { useSetAnimationCommandSchema } from '@app/composables/commands/useSetAnimationCommandSchema';
-import { $ } from '@/util/dom.ts';
-import { clear } from '@/util/element-utils';
-import { AnimationProperty } from '@/command/set-animation-property-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { clear } from '@app/legacy/util/element-utils';
+import { AnimationProperty } from '@app/legacy/command/set-animation-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

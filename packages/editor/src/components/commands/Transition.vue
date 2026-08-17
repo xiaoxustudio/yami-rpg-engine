@@ -36,8 +36,8 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

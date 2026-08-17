@@ -1,7 +1,7 @@
-import '@/module/command/setLanguage.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, write } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
+import '@app/legacy/module/command/setLanguage.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetLanguageCommandSchema() {

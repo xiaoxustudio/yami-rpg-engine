@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia';
-import { CustomCommand, type CustomCommandData } from '@/command/custom-command-window.ts';
+import {
+	CustomCommand,
+	type CustomCommandData
+} from '@app/legacy/command/custom-command-window.ts';
 import type { EditorProjectShape } from './editor';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';

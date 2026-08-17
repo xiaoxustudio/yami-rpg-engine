@@ -1,6 +1,6 @@
 ﻿import { describe, expect, it } from 'vitest';
 import { getLocalStore, localStateKeys } from '@app/stores/local';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 describe('useLocalStore（Local 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

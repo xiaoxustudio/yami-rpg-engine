@@ -15,13 +15,14 @@
 </template>
 
 <script setup lang="ts">
+import '@app/legacy/inspector/file-script-page.ts';
 import { onMounted, ref } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
-import { Inspector } from '@/inspector/inspector.ts';
-import type { PluginMetaShape } from '@/plugin/plugin.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
 
 const inspector = useInspectorStore();

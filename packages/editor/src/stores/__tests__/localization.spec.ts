@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getLocalizationStore, localizationStateKeys } from '@app/stores/localization';
-import { Localization } from '@/local/local-window.ts';
+import { Localization } from '@app/legacy/local/local-window.ts';
 
 describe('useLocalizationStore（Localization 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

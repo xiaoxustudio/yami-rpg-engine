@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getPrinterStore } from '@app/stores/printer';
-import { Printer } from '@/printer/printer.ts';
+import { Printer } from '@app/legacy/printer/printer.ts';
 
 const PrinterState = Printer as typeof Printer & { state: string | null };
 

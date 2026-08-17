@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCustomCommandStore, customCommandStateKeys } from '@app/stores/customCommand';
-import { CustomCommand } from '@/command/custom-command-window.ts';
+import { CustomCommand } from '@app/legacy/command/custom-command-window.ts';
 
 describe('useCustomCommandStore（CustomCommand 状态反转：store 为源）', () => {
 	it('初始状态默认值', () => {

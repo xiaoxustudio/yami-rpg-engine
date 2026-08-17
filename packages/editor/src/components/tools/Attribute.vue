@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Attribute } from '@/attribute/attribute-window.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

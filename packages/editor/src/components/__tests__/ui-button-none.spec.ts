@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
-import { Local } from '@/tools/localization.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 describe('editor CustomBox 空值显示 None（真实链路）', () => {
 	beforeEach(() => {

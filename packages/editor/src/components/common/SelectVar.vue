@@ -23,10 +23,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMSelectVar } from '@ui-kit';
-import { defVar } from '@/components/select-var';
-import { Select } from '@/components/select-list.ts';
+import { defVar } from '@app/legacy/components/select-var';
+import { Select } from '@app/legacy/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
 	id?: string;

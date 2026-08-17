@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { AutoTile } from '@/palette/auto-tile.ts';
+import { AutoTile } from '@app/legacy/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

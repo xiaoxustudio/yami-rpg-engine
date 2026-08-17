@@ -1,5 +1,6 @@
+import '@app/legacy/inspector/particle-layer-page.ts';
 import { reactive } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 interface ParticleForm {
 	name: string;

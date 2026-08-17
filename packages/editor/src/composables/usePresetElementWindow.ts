@@ -1,8 +1,8 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, read, write } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 export type PresetElementNode = {
 	class: string;

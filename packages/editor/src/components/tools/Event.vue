@@ -24,8 +24,8 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
-import { Command } from '@/command/command-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

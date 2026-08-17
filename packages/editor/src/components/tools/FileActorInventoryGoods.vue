@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

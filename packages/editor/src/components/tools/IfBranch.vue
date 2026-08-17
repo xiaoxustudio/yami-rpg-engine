@@ -12,9 +12,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { $ } from '@/util/dom.ts';
-import { on } from '@/util/element-utils.ts';
-import { IfBranch } from '@/command/conditional-branch-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

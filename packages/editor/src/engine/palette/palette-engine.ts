@@ -1,11 +1,11 @@
-import { getRelativeCoords } from '@/util/element-utils';
-import { clear, removeClass } from '@/util/element-utils.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Data } from '@/data/data-object.ts';
-import { Timer } from '@/util/timer.ts';
+import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { clear, removeClass } from '@app/legacy/util/element-utils.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
 import { getPaletteStore } from '@app/stores/palette';
-import type { Palette } from '@/palette/palette.ts';
+import type { Palette } from '@app/legacy/palette/palette.ts';
 
 export const PaletteEngine: Record<string, any> = {};
 

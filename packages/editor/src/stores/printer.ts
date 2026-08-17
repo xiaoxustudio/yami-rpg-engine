@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Printer } from '@/printer/printer.ts';
+import { Printer } from '@app/legacy/printer/printer.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

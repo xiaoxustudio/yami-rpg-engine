@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
 

@@ -13,9 +13,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextArea } from '@ui-kit';
-import { TextHistory } from '@/components/text-history';
-import { listenDraggingScrollbarEvent } from '@/util/element-utils';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { TextHistory } from '@app/legacy/components/text-history';
+import { listenDraggingScrollbarEvent } from '@app/legacy/util/element-utils';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface TextAreaElement extends HTMLElement {
 	input: HTMLTextAreaElement;

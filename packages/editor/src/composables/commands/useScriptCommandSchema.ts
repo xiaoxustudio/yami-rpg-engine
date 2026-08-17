@@ -1,17 +1,17 @@
-import '@/module/command/script.ts';
+import '@app/legacy/module/command/script.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { $ } from '@/util/dom.ts';
-import { getFocus, hasClass, hide, show } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { Editor } from '@/main/editor.ts';
-import { loadDtsFolder } from '@/module/global.ts';
-import { Title } from '@/title/title-bar.ts';
-import { Local } from '@/tools/localization.ts';
-import { Path } from '@/util/config.ts';
-import { getMonaco } from '@/util/monaco.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { getFocus, hasClass, hide, show } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { loadDtsFolder } from '@app/legacy/module/global.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { getMonaco } from '@app/legacy/util/monaco.ts';
 import { reactive } from 'vue';
-import { Window } from '@/tools/window-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
 interface ScriptEditor {
 	layout(options: { width: number; height: number }): void;

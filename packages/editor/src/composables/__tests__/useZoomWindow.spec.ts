@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Zoom from '@app/components/tools/Zoom.vue';
 import { useZoomWindow } from '@app/composables/useZoomWindow';
-import { Window } from '@/tools/window-object.ts';
-import { Editor } from '@/main/editor.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { webFrame } from 'electron';
 
 vi.mock('@app/stores/local', () => ({
@@ -82,7 +82,7 @@ describe('useZoomWindow（缩放窗口 composable：form 状态 + getFactor/open
 	});
 
 	it('legacy 入口 Zoom.open/confirm 转发 composable', async () => {
-		const { Zoom: ZoomController } = await import('@/tools/zoom-window.ts');
+		const { Zoom: ZoomController } = await import('@app/legacy/tools/zoom-window.ts');
 		const wrapper = mount(Zoom, { attachTo: document.body });
 		await wrapper.vm.$nextTick();
 		ZoomController.open();

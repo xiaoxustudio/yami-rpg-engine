@@ -227,7 +227,7 @@ import { onMounted } from 'vue';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@/utils/attach-element-api';
+import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';

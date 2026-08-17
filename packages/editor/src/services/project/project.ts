@@ -1,15 +1,15 @@
-import { Data } from '@/data/data-object.ts';
-import { Animation } from '@/animation/animation-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from './editor.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
-import { Title } from '@/title/title-bar.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
 
@@ -56,7 +56,7 @@ Editor.loadProject = function (this: typeof Editor) {
 	Sprite.loadFromProject(project);
 	useBrowserStore().loadFromProject(project as { browser: { view: number; folders: string[] } });
 	useSelectorStore().loadFromProject(project);
-	PluginManager.loadFromProject!(project);
+	Editor.hooks.onPluginLoad(project);
 	Title.loadFromProject!(project);
 };
 
