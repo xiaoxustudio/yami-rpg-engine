@@ -9,7 +9,7 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Log } from '@app/legacy/log/log-window.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { getFocus, on, read, write } from '@app/legacy/util/element-utils.ts';
 import '@app/legacy/util/object.ts';
@@ -64,82 +64,82 @@ let tscStarted = false;
 
 function initialize(): void {
 	if (!document.getElementById('config-window-display')) return;
-	document.getElementById('config-window-display').loadItems([
+	document.getElementById('config-window-display')!.loadItems([
 		{ name: 'Windowed', value: 'windowed' },
 		{ name: 'Maximized', value: 'maximized' },
 		{ name: 'Fullscreen', value: 'fullscreen' }
 	]);
 
-	document.getElementById('config-collision-actor-enabled').loadItems([
+	document.getElementById('config-collision-actor-enabled')!.loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-collision-scene-enabled').loadItems([
+	document.getElementById('config-collision-scene-enabled')!.loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
 	document
-		.getElementById('config-collision-scene-enabled')
+		.getElementById('config-collision-scene-enabled')!
 		.enableHiddenMode()
 		.relate([
-			{ case: true, targets: [document.getElementById('config-collision-scene-actorSize')] }
+			{ case: true, targets: [document.getElementById('config-collision-scene-actorSize')!] }
 		]);
 
-	document.getElementById('config-collision-trigger-collideWithActorShape').loadItems([
+	document.getElementById('config-collision-trigger-collideWithActorShape')!.loadItems([
 		{ name: "Collide With Actor's Shape", value: true },
 		{ name: "Collide With Actor's Anchor", value: false }
 	]);
 
-	document.getElementById('config-text-importedFonts').bind(importedFonts);
+	document.getElementById('config-text-importedFonts')!.bind(importedFonts);
 
-	document.getElementById('config-text-highDefinition').loadItems([
+	document.getElementById('config-text-highDefinition')!.loadItems([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
 
-	document.getElementById('config-actor-tempAttributes').bind(new AttributeListInterface());
+	document.getElementById('config-actor-tempAttributes')!.bind(new AttributeListInterface());
 
-	document.getElementById('config-webgl-desynchronized').loadItems([
+	document.getElementById('config-webgl-desynchronized')!.loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-webgl-textureMagFilter').loadItems([
+	document.getElementById('config-webgl-textureMagFilter')!.loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	document.getElementById('config-webgl-textureMinFilter').loadItems([
+	document.getElementById('config-webgl-textureMinFilter')!.loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	document.getElementById('config-script-autoCompile').loadItems([
+	document.getElementById('config-script-autoCompile')!.loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	document.getElementById('config-save-location').loadItems([
+	document.getElementById('config-save-location')!.loadItems([
 		{ name: 'App Data', value: 'app-data' },
 		{ name: 'Documents', value: 'documents' },
 		{ name: 'Local Directory', value: 'local' }
 	]);
 
 	document
-		.getElementById('config-save-location')
+		.getElementById('config-save-location')!
 		.enableHiddenMode()
 		.relate([
 			{
 				case: ['app-data', 'documents'],
-				targets: [document.getElementById('config-save-subdir')]
+				targets: [document.getElementById('config-save-subdir')!]
 			}
 		]);
 
-	document.getElementById('config-localization-languages').bind(languages);
+	document.getElementById('config-localization-languages')!.bind(languages);
 
-	document.getElementById('config-preload').loadItems([
+	document.getElementById('config-preload')!.loadItems([
 		{ name: 'Never', value: 'never' },
 		{ name: 'Always', value: 'always' },
 		{ name: 'Only on Deployment', value: 'deployed' }
@@ -180,7 +180,9 @@ function open(): void {
 
 	getProjectStore().state = 'open';
 
-	document.getElementById('config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
+	document
+		.getElementById('config-soundAttenuation-easingId')!
+		.loadItems(Data.createEasingItems());
 
 	const data = getProjectStore().data;
 	const setForm = (
@@ -209,7 +211,7 @@ function stopTSC(): void {
 function windowClose(event: Event): void {
 	if (changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedProjectSettings')
@@ -343,13 +345,13 @@ const languages: LanguagesInterface = {
 	},
 	parse: function (this: LanguagesInterface, language: { name: string }) {
 		return [
-			{ content: Local.get!('languages.' + language.name) },
+			{ content: t('languages.' + language.name) },
 			{ content: language.name, class: 'weak' }
 		];
 	},
 	open: function (language = { name: '', font: '', scale: 1 }) {
-		document.getElementById('language-name').loadItems(this.createAllItems());
-		document.getElementById('language-name').write2(language.name);
+		document.getElementById('language-name')!.loadItems(this.createAllItems());
+		document.getElementById('language-name')!.write2(language.name);
 		write(document.getElementById('language-font'), language.font);
 		write(document.getElementById('language-scale'), language.scale);
 		getFocus(document.getElementById('language-name'));
@@ -363,14 +365,14 @@ const languages: LanguagesInterface = {
 		};
 	},
 	update: function () {
-		const selectBox = document.getElementById('config-localization-default');
+		const selectBox = document.getElementById('config-localization-default')!;
 		const defaultLang = read(selectBox);
 		selectBox.loadItems(languages.createValidItems());
 		if (defaultLang) write(selectBox, defaultLang);
 	},
 	createAllItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = Local.get!('languages');
+		const languages = t('languages');
 		if (languages) {
 			for (const [value, name] of Object.entries(
 				languages as unknown as Record<string, string>
@@ -384,7 +386,7 @@ const languages: LanguagesInterface = {
 	},
 	createValidItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = Local.get!('languages');
+		const languages = t('languages');
 		if (languages) {
 			const langList = new Set(
 				getProjectStore().data!.localization.languages.map(

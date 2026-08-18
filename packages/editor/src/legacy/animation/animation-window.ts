@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	addClass,
 	addSetScrollMethod,
@@ -14,35 +14,35 @@ import {
 	removeClass,
 	show,
 	write
-} from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Command } from '@/command/command-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
+} from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import { Curve } from './curve-window.ts';
-import { AudioManager } from '@/audio/audio-manager.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { GameLocal } from '@/local/local-object.ts';
-import { Particle, type ParticleEmitterShape } from '@/particle/particle-window.ts';
-import { SceneShift } from '@/scene/move-scene.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { Particle, type ParticleEmitterShape } from '@app/legacy/particle/particle-window.ts';
+import { SceneShift } from '@app/legacy/scene/move-scene.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
-import { History } from '@/tools/history.ts';
-import { Local } from '@/tools/localization.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { t, createGetter } from '@app/i18n';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
-import { StageColor } from '@/util/stage-color.ts';
+import { StageColor } from '@app/legacy/util/stage-color.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import { getAnimationStore } from '@app/stores/animation';
 import { AnimationWindowEngine } from '@app/engine/animation/animation-window-engine.ts';
 
@@ -2045,7 +2045,7 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: st
 	if (!animations) {
 		return [
 			{
-				name: Local.get!('common.none'),
+				name: t('common.none'),
 				value: ''
 			}
 		];
@@ -2054,7 +2054,7 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: st
 	if (!motions)
 		return [
 			{
-				name: Local.get!('common.none'),
+				name: t('common.none'),
 				value: ''
 			}
 		];
@@ -2079,7 +2079,7 @@ Animation.getMotionListItems = function (this: typeof Animation, animationId: st
 	}
 	if (items.length === 0) {
 		items.push({
-			name: Local.get!('common.none'),
+			name: t('common.none'),
 			value: ''
 		});
 	}
@@ -4234,7 +4234,7 @@ Animation.listPopup = function (
 ) {
 	const list = Animation.list;
 	const item = event.value;
-	const get = Local.createGetter!('menuAnimationList');
+	const get = createGetter('menuAnimationList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -4448,7 +4448,7 @@ Animation.layerListPopup = function (
 ) {
 	const list = Animation.layerList;
 	const item = event.value;
-	const get = Local.createGetter!('menuAnimationLayerList');
+	const get = createGetter('menuAnimationLayerList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -4822,7 +4822,7 @@ Animation.outerTimelineListPointerup = function (
 						const pastable = Clipboard.has(`yami.animFrame.${key}`);
 						const extendable = selected || marquee.isExtendable();
 						const shrinkable = selected || marquee.isShrinkable();
-						const get = Local.createGetter!('menuAnimationTimeline');
+						const get = createGetter('menuAnimationTimeline');
 						Menu.popup!(
 							{
 								x: event.clientX,

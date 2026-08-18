@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type ActorRef = {
 	type: string;
@@ -29,7 +29,7 @@ Command.cases.changeThreat = new CommandSchema({
 		return sActor + Token(' -> ') + dActor;
 	},
 	parseOperation(operation: string) {
-		return Local.get!('command.changeThreat.' + operation);
+		return t('command.changeThreat.' + operation);
 	},
 	customParse({ actor, target, operation, threat }: ChangeThreatData) {
 		const words = Command.words
@@ -38,7 +38,7 @@ Command.cases.changeThreat = new CommandSchema({
 			.push(Command.parseVariableNumber!(threat));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.changeThreat') + Token(': ') },
+			{ text: t('command.changeThreat') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

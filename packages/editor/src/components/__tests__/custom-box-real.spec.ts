@@ -2,14 +2,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { Local } from '@app/legacy/tools/localization.ts';
+
+vi.mock('@app/i18n', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('@app/i18n')>();
+	return { ...mod, t: () => 'None', createGetter: () => () => 'None' };
+});
 
 describe('editor CustomBox 空值显示 None（真实链路）', () => {
 	beforeEach(() => {
 		setActivePinia(createPinia());
-		vi.spyOn(Local as unknown as { get: (key: string) => string }, 'get').mockReturnValue(
-			'None'
-		);
 	});
 
 	it('type=file 空串 modelValue → None', async () => {

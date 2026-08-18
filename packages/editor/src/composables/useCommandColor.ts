@@ -1,4 +1,4 @@
-import { Token } from '@/command/mark-string-manager.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 
 export function setNormalColor(value: string): string {
 	return `$_normal_$${value}$_/_$`;

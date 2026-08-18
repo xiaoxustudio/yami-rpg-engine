@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.deleteObject = new CommandSchema({
 	name: 'deleteObject',
@@ -9,7 +9,7 @@ Command.cases.deleteObject = new CommandSchema({
 	customParse({ object }: { object: unknown }) {
 		return [
 			{ color: 'object' },
-			{ text: Local.get!('command.deleteObject') + Token(': ') },
+			{ text: t('command.deleteObject') + Token(': ') },
 			{ text: Command.parseObject(object) }
 		];
 	}

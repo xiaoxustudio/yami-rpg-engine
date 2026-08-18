@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { TextProperty } from '@/command/set-text-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { TextProperty } from '@app/legacy/command/set-text-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setText = new CommandSchema({
 	name: 'setText',
@@ -23,7 +23,7 @@ Command.cases.setText = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setText') + Token(': ') },
+			{ text: t('command.setText') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

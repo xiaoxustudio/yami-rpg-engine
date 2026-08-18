@@ -1,9 +1,9 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, read } from '@/util/element-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Reference } from '@/log/related-references.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, read } from '@app/legacy/util/element-utils.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
 import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from './variable.ts';

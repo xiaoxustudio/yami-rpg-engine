@@ -1,9 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear, read } from '@/util/element-utils';
-import { File } from '@/file/file-system-core.ts';
+import { clear, read } from '@app/legacy/util/element-utils';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { AttributeListInterface } from '@/tools/property-list.ts';
 
 type FileEntityData = {
 	icon: string;

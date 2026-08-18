@@ -1,11 +1,11 @@
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
-import { on, rect, css } from '@/util/element-utils.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on, rect, css } from '@app/legacy/util/element-utils.ts';
 
 import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 
 export const TileFrame: Record<string, any> = {
 	get window() {

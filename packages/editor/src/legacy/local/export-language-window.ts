@@ -1,12 +1,12 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { on } from '@/util/element-utils.ts';
-import { Path } from '@/util/config.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Editor } from '@/main/editor.ts';
-import { Data } from '@/data/data-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type LocalizationListItem = {
 	class?: string;
@@ -43,10 +43,10 @@ ExportLanguage.open = function (this: typeof ExportLanguage) {
 	Window.open!('exportLanguage');
 
 	const items: { name: string; value: string }[] = [];
-	const none = { name: Local.get!('common.none'), value: '' };
+	const none = { name: t('common.none'), value: '' };
 	for (const language of Data.config.localization.languages) {
 		items.push({
-			name: Local.get!('languages.' + language.name),
+			name: t('languages.' + language.name),
 			value: language.name
 		});
 	}

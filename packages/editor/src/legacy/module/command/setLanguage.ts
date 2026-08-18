@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setLanguage = new CommandSchema({
 	name: 'setLanguage',
@@ -10,13 +10,13 @@ Command.cases.setLanguage = new CommandSchema({
 	customParse({ language }: { language: string }) {
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.setLanguage') + Token(': ') },
-			{ text: Local.get!('languages.' + language) }
+			{ text: t('command.setLanguage') + Token(': ') },
+			{ text: t('languages.' + language) }
 		];
 	},
 	createLanguageItems() {
 		const items = [];
-		const languages = Local.get!('languages');
+		const languages = t('languages');
 		if (languages) {
 			const langList = new Set(
 				Data.config.localization.languages.map((lang: { name: string }) => lang.name)

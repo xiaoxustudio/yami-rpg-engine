@@ -1,24 +1,24 @@
 import { getListConfig } from '@ui-kit';
-import { Window } from '@/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { on, hasClass, write, getFocus, read, clear } from '@/util/element-utils.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { on, hasClass, write, getFocus, read, clear } from '@app/legacy/util/element-utils.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Team } from '@/data/team-window.ts';
-import { Easing } from '@/data/transition-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Team } from '@app/legacy/data/team-window.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
 import { Palette } from './palette.ts';
 import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
-import { SceneShift } from '@/scene/move-scene.ts';
+import { SceneShift } from '@app/legacy/scene/move-scene.ts';
 import { AutoTileEngine } from '@app/engine/palette/auto-tile-engine.ts';
-import { Local } from '@/tools/localization.ts';
-import { SetQuantity } from '@/tools/set-number-window.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { createGetter } from '@app/i18n';
+import { SetQuantity } from '@app/legacy/tools/set-number-window.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 import { h, render } from 'vue';
 
 type AutoTileClipboardData = AutoTileTemplateData | { frame: unknown };
@@ -207,7 +207,7 @@ AutoTile.pasteTemplate = function (this: typeof AutoTile, dItem: AutoTileTemplat
 AutoTile.deleteTemplate = function (this: typeof AutoTile, item: AutoTileTemplateData) {
 	const items = getAutoTileStore().templates;
 	if (items.length > 1) {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -447,7 +447,7 @@ AutoTile.updateFrameItem = function (this: typeof AutoTile) {
 AutoTile.windowClose = function (this: typeof AutoTile, event: Event) {
 	if (getAutoTileStore().changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedTiles')
@@ -537,7 +537,7 @@ AutoTile.templatesPopup = function (
 	const selected = !!item;
 	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.template');
 	const deletable = selected && getAutoTileStore().templates.length > 1;
-	const get = Local.createGetter!('menuAutoTileTemplateList');
+	const get = createGetter('menuAutoTileTemplateList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -632,7 +632,7 @@ AutoTile.nodesPopup = function (
 		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.node');
 	const deletable = selected && nodes.length > 1;
 	const coverable = selected && id !== cover;
-	const get = Local.createGetter!('menuAutoTileNodeList');
+	const get = createGetter('menuAutoTileNodeList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -765,7 +765,7 @@ AutoTile.framesPopup = function (
 	const pastable =
 		insertable && (GlobalClipboard as unknown as ClipboardShape).has('yami.ruletile.frame');
 	const deletable = selected && frames.length > 1;
-	const get = Local.createGetter!('menuAutoTileFrameList');
+	const get = createGetter('menuAutoTileFrameList');
 	Menu.popup(
 		{
 			x: event.clientX,

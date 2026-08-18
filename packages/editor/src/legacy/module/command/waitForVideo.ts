@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.waitForVideo = new CommandSchema({
 	name: 'waitForVideo',
@@ -9,7 +9,7 @@ Command.cases.waitForVideo = new CommandSchema({
 	customParse({ element }: { element: unknown }) {
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.waitForVideo') + Token(': ') },
+			{ text: t('command.waitForVideo') + Token(': ') },
 			{ text: Command.parseElement(element) }
 		];
 	}

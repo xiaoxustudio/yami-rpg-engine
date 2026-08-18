@@ -1,10 +1,10 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
-import { on, hide, read, write } from '@/util/element-utils.ts';
-import { RadioProxy } from '@/components/radio-proxy.ts';
-import { History } from '@/tools/history.ts';
-import { Reference } from '@/log/related-references.ts';
-import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { on, hide, read, write } from '@app/legacy/util/element-utils.ts';
+import { RadioProxy } from '@app/legacy/components/radio-proxy.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { bindListClipboardMethods } from '@app/legacy/tools/list-clipboard-methods.ts';
 import type { PageManagerApi } from '@ui-kit';
 import { getVariableStore, variableStateKeys } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';

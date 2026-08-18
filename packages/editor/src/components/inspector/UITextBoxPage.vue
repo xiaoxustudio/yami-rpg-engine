@@ -1,14 +1,14 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiTextBox-properties-grid') || 'TextBox Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiTextBox-properties-grid.label') || 'TextBox Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiTextBox-properties-grid">
-			<div class="text">{{ local.getLabel('uiTextBox-type') || 'Type' }}</div><SelectBox id="uiTextBox-type" v-model="form.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiTextBox-align') || 'Align' }}</div><SelectBox id="uiTextBox-align" v-model="form.align" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiTextBox-text') || 'Text' }}</div><TextBox id="uiTextBox-text" v-model="form.text" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiTextBox-maxLength') || 'Max Length' }}</div
+			<div class="text">{{ t('components.uiTextBox-type.label') || 'Type' }}</div><SelectBox id="uiTextBox-type" v-model="form.type" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiTextBox-align.label') || 'Align' }}</div><SelectBox id="uiTextBox-align" v-model="form.align" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiTextBox-text.label') || 'Text' }}</div><TextBox id="uiTextBox-text" v-model="form.text" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiTextBox-maxLength.label') || 'Max Length' }}</div
 			><NumberBox id="uiTextBox-maxLength" v-model="form.maxLength" min="1" max="100" @input="onParamInput"></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-number') || 'Number' }}</div><NumberBox id="uiTextBox-number" v-model="form.number" @input="onParamInput"></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-min') || 'Min' }}</div
+			<div class="text">{{ t('components.uiTextBox-number.label') || 'Number' }}</div><NumberBox id="uiTextBox-number" v-model="form.number" @input="onParamInput"></NumberBox>
+			<div class="text">{{ t('components.uiTextBox-min.label') || 'Min' }}</div
 			><NumberBox
 				id="uiTextBox-min"
 				v-model="form.min"
@@ -16,7 +16,7 @@
 				max="1000000000"
 				decimals="10" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-max') || 'Max' }}</div
+			<div class="text">{{ t('components.uiTextBox-max.label') || 'Max' }}</div
 			><NumberBox
 				id="uiTextBox-max"
 				v-model="form.max"
@@ -24,9 +24,9 @@
 				max="1000000000"
 				decimals="10" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-decimals') || 'Decimal Places' }}</div
+			<div class="text">{{ t('components.uiTextBox-decimals.label') || 'Decimal Places' }}</div
 			><NumberBox id="uiTextBox-decimals" v-model="form.decimals" min="0" max="10" @input="onParamInput"></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-padding') || 'Padding' }}</div
+			<div class="text">{{ t('components.uiTextBox-padding.label') || 'Padding' }}</div
 			><NumberBox
 				id="uiTextBox-padding"
 				v-model="form.padding"
@@ -34,7 +34,7 @@
 				max="100"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-size') || 'Size' }}</div
+			<div class="text">{{ t('components.uiTextBox-size.label') || 'Size' }}</div
 			><NumberBox
 				id="uiTextBox-size"
 				v-model="form.size"
@@ -42,11 +42,11 @@
 				max="400"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiTextBox-font') || 'Font' }}</div><TextBox id="uiTextBox-font" v-model="form.font" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiTextBox-color') || 'Text Color' }}</div><ColorBox id="uiTextBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiTextBox-selectionColor') || 'Selection Color' }}</div
+			<div class="text">{{ t('components.uiTextBox-font.label') || 'Font' }}</div><TextBox id="uiTextBox-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiTextBox-color.label') || 'Text Color' }}</div><ColorBox id="uiTextBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.uiTextBox-selectionColor.label') || 'Selection Color' }}</div
 			><ColorBox id="uiTextBox-selectionColor" v-model="form.selectionColor" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiTextBox-selectionBgColor') || 'Selection Bg Color' }}</div
+			<div class="text">{{ t('components.uiTextBox-selectionBgColor.label') || 'Selection Bg Color' }}</div
 			><ColorBox id="uiTextBox-selectionBgColor" v-model="form.selectionBgColor" @input="onParamInput"></ColorBox>
 		</div>
 	</DetailBox>
@@ -54,8 +54,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -66,7 +66,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUITextBoxPage();
 

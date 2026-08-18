@@ -1,29 +1,29 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, off, on, read, write } from '@/util/element-utils.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, off, on, read, write } from '@app/legacy/util/element-utils.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { CommandList } from '@/components/command-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Project } from '@/data/project-settings-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Localization } from '@/local/local-window.ts';
-import { UpdateLog, type UpdateLogItem } from '@/log/update-log-window.ts';
-import { Editor } from '@/main/editor.ts';
+import { CommandList } from '@app/legacy/components/command-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Project } from '@app/legacy/data/project-settings-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Localization } from '@app/legacy/local/local-window.ts';
+import { UpdateLog, type UpdateLogItem } from '@app/legacy/log/update-log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { EditDataInstance } from './editdata.ts';
 import { EventBus } from './eventbus.ts';
 import { Resources } from './resource.ts';
 import { SettingConfig } from './settingconfig';
-import { AutoTile } from '@/palette/auto-tile.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { NewProject } from '@/title/new-project-window.ts';
-import { Title } from '@/title/title-bar.ts';
-import { Local } from '@/tools/localization.ts';
+import { AutoTile } from '@app/legacy/palette/auto-tile.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { NewProject } from '@app/legacy/title/new-project-window.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { t } from '@app/i18n';
 import OriginPackmeta from './packmeta.json';
-import { UI } from '@/ui/ui-window.ts';
-import { Updater } from '@/update/updater.ts';
-import { Variable } from '@/variable/variable.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Updater } from '@app/legacy/update/updater.ts';
+import { Variable } from '@app/legacy/variable/variable.ts';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import Path from 'node:path';
 import os from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -132,7 +132,7 @@ NewProject.confirm = function () {
 	) {
 		TitleConfirmOld!.call(Title);
 	} else {
-		alert(Local.get!('confirmation.resource-not-found'));
+		alert(t('confirmation.resource-not-found'));
 	}
 };
 if (newProjectConfirm) off(newProjectConfirm, 'click', NewProject.confirm);
@@ -352,7 +352,7 @@ EventBus.once('editor_loaded', () => {
 		) {
 			const copy = Clipboard.read('yami.data.localization');
 			if (copy) {
-				if (Localization.idMap[copy.id]) {
+				if (Localization.idMap![copy.id]) {
 					copy.id = Localization.createId();
 					//如果需要去掉后面的 -copy，把下面这行注释就好了
 					copy.name += ' - Copy';

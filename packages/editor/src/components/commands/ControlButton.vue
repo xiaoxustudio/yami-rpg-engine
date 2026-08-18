@@ -15,7 +15,7 @@
 import { onMounted } from 'vue';
 import { useControlButtonCommandSchema } from '@app/composables/commands/useControlButtonCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -32,7 +32,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.controlButton');
+	const get = createGetter('command.controlButton');
 	$('#controlButton-operation')?.loadItems?.([
 		{ name: get('select-default') || 'Select Default Button', value: 'select-default' },
 		{ name: get('select') || 'Select Button', value: 'select' },

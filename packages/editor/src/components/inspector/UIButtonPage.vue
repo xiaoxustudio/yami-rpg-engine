@@ -1,53 +1,53 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiButton-image-properties-grid') || 'Image Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiButton-image-properties-grid.label') || 'Image Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiButton-image-properties-grid">
-			<div class="text">{{ local.getLabel('uiButton-display') || 'Display' }}</div><SelectBox id="uiButton-display" v-model="form.display" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-normalImage') || 'Normal Image' }}</div
+			<div class="text">{{ t('components.uiButton-display.label') || 'Display' }}</div><SelectBox id="uiButton-display" v-model="form.display" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiButton-normalImage.label') || 'Normal Image' }}</div
 			><CustomBox
 				id="uiButton-normalImage" :model-value="form.normalImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-normalClip') || 'Normal Clip' }}</div
+			<div class="text">{{ t('components.uiButton-normalClip.label') || 'Normal Clip' }}</div
 			><CustomBox
 				id="uiButton-normalClip" :model-value="form.normalClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-normalImage"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-hoverImage') || 'Hover Image' }}</div
+			<div class="text">{{ t('components.uiButton-hoverImage.label') || 'Hover Image' }}</div
 			><CustomBox
 				id="uiButton-hoverImage" :model-value="form.hoverImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-hoverClip') || 'Hover Clip' }}</div
+			<div class="text">{{ t('components.uiButton-hoverClip.label') || 'Hover Clip' }}</div
 			><CustomBox
 				id="uiButton-hoverClip" :model-value="form.hoverClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-hoverImage"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-activeImage') || 'Active Image' }}</div
+			<div class="text">{{ t('components.uiButton-activeImage.label') || 'Active Image' }}</div
 			><CustomBox
 				id="uiButton-activeImage" :model-value="form.activeImage" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-activeClip') || 'Active Clip' }}</div
+			<div class="text">{{ t('components.uiButton-activeClip.label') || 'Active Clip' }}</div
 			><CustomBox
 				id="uiButton-activeClip" :model-value="form.activeClip" @input="onParamInput"
 				type="clip"
 				image="uiButton-activeImage"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-flip') || 'Flip' }}</div><SelectBox id="uiButton-flip" v-model="form.flip" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-border') || 'Border' }}</div
+			<div class="text">{{ t('components.uiButton-flip.label') || 'Flip' }}</div><SelectBox id="uiButton-flip" v-model="form.flip" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiButton-border.label') || 'Border' }}</div
 			><NumberBox
 				id="uiButton-border" v-model="form.border" @input="onParamInput"
 				min="1"
 				max="100"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiButton-imagePadding-box') || 'Padding' }}</div>
+			<div class="text">{{ t('components.uiButton-imagePadding-box.label') || 'Padding' }}</div>
 			<div class="flex-box" id="uiButton-imagePadding-box">
 				<SliderBox
 					id="uiButton-imagePadding-slider"
@@ -62,7 +62,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-imageOpacity-box') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.uiButton-imageOpacity-box.label') || 'Opacity' }}</div>
 			<div class="flex-box" id="uiButton-imageOpacity-box">
 				<SliderBox
 					id="uiButton-imageOpacity-slider"
@@ -79,8 +79,8 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-imageEffect') || 'Effect' }}</div><SelectBox id="uiButton-imageEffect" v-model="form.imageEffect" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-normalTint-box') || 'Normal Tint' }}</div>
+			<div class="text">{{ t('components.uiButton-imageEffect.label') || 'Effect' }}</div><SelectBox id="uiButton-imageEffect" v-model="form.imageEffect" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiButton-normalTint-box.label') || 'Normal Tint' }}</div>
 			<div
 				id="uiButton-normalTint-box"
 				class="box uiElement-grid-box with-4-columns"
@@ -110,7 +110,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-hoverTint-box') || 'Hover Tint' }}</div>
+			<div class="text">{{ t('components.uiButton-hoverTint-box.label') || 'Hover Tint' }}</div>
 			<div
 				id="uiButton-hoverTint-box"
 				class="box uiElement-grid-box with-4-columns"
@@ -140,7 +140,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-activeTint-box') || 'Active Tint' }}</div>
+			<div class="text">{{ t('components.uiButton-activeTint-box.label') || 'Active Tint' }}</div>
 			<div
 				id="uiButton-activeTint-box"
 				class="box uiElement-grid-box with-4-columns"
@@ -173,10 +173,10 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiButton-text-properties-grid') || 'Text Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiButton-text-properties-grid.label') || 'Text Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiButton-text-properties-grid">
-			<div class="text">{{ local.getLabel('uiButton-direction') || 'Direction' }}</div><SelectBox id="uiButton-direction" v-model="form.direction" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-align-box') || 'Align' }}</div>
+			<div class="text">{{ t('components.uiButton-direction.label') || 'Direction' }}</div><SelectBox id="uiButton-direction" v-model="form.direction" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiButton-align-box.label') || 'Align' }}</div>
 			<div class="flex-box" id="uiButton-align-box">
 				<RadioBox
 					id="uiButton-align-left"
@@ -227,12 +227,12 @@
 					><div class="text">&#xf038;</div></RadioBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-content') || 'Content' }}</div
+			<div class="text">{{ t('components.uiButton-content.label') || 'Content' }}</div
 			><TextBox
 				id="uiButton-content" v-model="form.content" @input="onParamInput"
 				menu="tag-global-var tag-dynamic-global-var tag-localization"
 			></TextBox>
-			<div class="text">{{ local.getLabel('uiButton-size-box') || 'Size' }}</div>
+			<div class="text">{{ t('components.uiButton-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiButton-size-box">
 				<SliderBox
 					id="uiButton-size-slider"
@@ -249,7 +249,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-letterSpacing-box') || 'Letter Spacing' }}</div>
+			<div class="text">{{ t('components.uiButton-letterSpacing-box.label') || 'Letter Spacing' }}</div>
 			<div class="flex-box" id="uiButton-letterSpacing-box">
 				<SliderBox
 					id="uiButton-letterSpacing-slider"
@@ -266,7 +266,7 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-textPadding-box') || 'Padding' }}</div>
+			<div class="text">{{ t('components.uiButton-textPadding-box.label') || 'Padding' }}</div>
 			<div class="flex-box" id="uiButton-textPadding-box">
 				<SliderBox
 					id="uiButton-textPadding-slider"
@@ -283,50 +283,50 @@
 					unit="px"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiButton-font') || 'Font' }}</div><TextBox id="uiButton-font" v-model="form.font" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiButton-typeface') || 'Typeface' }}</div><SelectBox id="uiButton-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-textEffect-type') || 'Effect' }}</div
+			<div class="text">{{ t('components.uiButton-font.label') || 'Font' }}</div><TextBox id="uiButton-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiButton-typeface.label') || 'Typeface' }}</div><SelectBox id="uiButton-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiButton-textEffect-type.label') || 'Effect' }}</div
 			><SelectBox id="uiButton-textEffect-type" v-model="form.textEffect.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiButton-textEffect-shadowOffsetX') || 'Shadow X' }}</div
+			<div class="text">{{ t('components.uiButton-textEffect-shadowOffsetX.label') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiButton-textEffect-shadowOffsetX" v-model="form.textEffect.shadowOffsetX" @input="onParamInput"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiButton-textEffect-shadowOffsetY') || 'Shadow Y' }}</div
+			<div class="text">{{ t('components.uiButton-textEffect-shadowOffsetY.label') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiButton-textEffect-shadowOffsetY" v-model="form.textEffect.shadowOffsetY" @input="onParamInput"
 				min="-9"
 				max="9"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiButton-textEffect-strokeWidth') || 'Stroke Width' }}</div
+			<div class="text">{{ t('components.uiButton-textEffect-strokeWidth.label') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiButton-textEffect-strokeWidth" v-model="form.textEffect.strokeWidth" @input="onParamInput"
 				min="1"
 				max="20"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiButton-textEffect-color') || 'Effect Color' }}</div
+			<div class="text">{{ t('components.uiButton-textEffect-color.label') || 'Effect Color' }}</div
 			><ColorBox id="uiButton-textEffect-color" v-model="form.textEffect.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiButton-normalColor') || 'Normal Color' }}</div
+			<div class="text">{{ t('components.uiButton-normalColor.label') || 'Normal Color' }}</div
 			><ColorBox id="uiButton-normalColor" v-model="form.normalColor" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiButton-hoverColor') || 'Hover Color' }}</div><ColorBox id="uiButton-hoverColor" v-model="form.hoverColor" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiButton-activeColor') || 'Active Color' }}</div
+			<div class="text">{{ t('components.uiButton-hoverColor.label') || 'Hover Color' }}</div><ColorBox id="uiButton-hoverColor" v-model="form.hoverColor" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.uiButton-activeColor.label') || 'Active Color' }}</div
 			><ColorBox id="uiButton-activeColor" v-model="form.activeColor" @input="onParamInput"></ColorBox>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiButton-sound-effects-grid') || 'Sound Effects' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiButton-sound-effects-grid.label') || 'Sound Effects' }}</DetailSummary>
 		<div class="detail-grid" id="uiButton-sound-effects-grid">
-			<div class="text">{{ local.getLabel('uiButton-hoverSound') || 'Hover SE' }}</div
+			<div class="text">{{ t('components.uiButton-hoverSound.label') || 'Hover SE' }}</div
 			><CustomBox
 				id="uiButton-hoverSound" :model-value="form.hoverSound" @input="onParamInput"
 				type="file"
 				filter="audio"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiButton-clickSound') || 'Click SE' }}</div
+			<div class="text">{{ t('components.uiButton-clickSound.label') || 'Click SE' }}</div
 			><CustomBox
 				id="uiButton-clickSound" :model-value="form.clickSound" @input="onParamInput"
 				type="file"
@@ -338,8 +338,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -353,7 +353,7 @@ import SliderBox from '@app/components/common/SliderBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIButtonPage();
 

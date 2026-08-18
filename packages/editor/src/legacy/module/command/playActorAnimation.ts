@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.playActorAnimation = new CommandSchema({
 	name: 'playActorAnimation',
@@ -33,7 +33,7 @@ Command.cases.playActorAnimation = new CommandSchema({
 			.push(Command.parseWait!(wait));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.playActorAnimation') + Token(': ') },
+			{ text: t('command.playActorAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

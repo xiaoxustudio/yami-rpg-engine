@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { YMCommonList } from '@ui-kit';
-import { AutoTile } from '@/palette/auto-tile.ts';
-import '@/util/number.ts';
+import { AutoTile } from '@app/legacy/palette/auto-tile.ts';
+import '@app/legacy/util/number.ts';
 
 describe('AutoTile 列表项 Vue 渲染（common-item 回归保护）', () => {
 	const createList = async (id: string): Promise<HTMLElement> => {

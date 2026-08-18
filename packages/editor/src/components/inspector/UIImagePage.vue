@@ -1,16 +1,16 @@
-﻿<template>
+<template>
 	<DetailBox id="uiElement-general-group" open>
-		<DetailSummary>{{ local.getLabel('uiElement-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiElement-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
-			<div class="text">{{ local.getLabel('uiElement-name') || 'Name' }}</div><TextBox id="uiElement-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiElement-pointerEvents') || 'Pointer Events' }}</div
+			<div class="text">{{ t('components.uiElement-name.label') || 'Name' }}</div><TextBox id="uiElement-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiElement-pointerEvents.label') || 'Pointer Events' }}</div
 			><SelectBox id="uiElement-pointerEvents" v-model="form.pointerEvents" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-transform-group" open>
-		<DetailSummary>{{ local.getLabel('uiElement-transform-grid') || 'Transform' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiElement-transform-grid.label') || 'Transform' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-transform-grid">
-			<div class="text">{{ local.getLabel('uiElement-transform-align-box') || 'Align' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-align-box.label') || 'Align' }}</div>
 			<div class="flex-box" id="uiElement-transform-align-box">
 				<button
 					id="uiElement-transform-align-left"
@@ -55,7 +55,7 @@
 					<div class="text">&#xf038;</div>
 				</button>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-anchor-box') || 'Anchor' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-anchor-box.label') || 'Anchor' }}</div>
 			<div
 				id="uiElement-transform-anchor-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -75,7 +75,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-x-box') || 'X' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-x-box.label') || 'X' }}</div>
 			<div
 				id="uiElement-transform-x-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -96,7 +96,7 @@
 					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-y-box') || 'Y' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-y-box.label') || 'Y' }}</div>
 			<div
 				id="uiElement-transform-y-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -117,7 +117,7 @@
 					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-width-box') || 'Width' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-width-box.label') || 'Width' }}</div>
 			<div
 				id="uiElement-transform-width-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -138,7 +138,7 @@
 					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-height-box') || 'Height' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-height-box.label') || 'Height' }}</div>
 			<div
 				id="uiElement-transform-height-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -159,7 +159,7 @@
 					unit="r" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-rotation-box') || 'Rotation' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-rotation-box.label') || 'Rotation' }}</div>
 			<div
 				id="uiElement-transform-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -172,7 +172,7 @@
 					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-scale-box') || 'Scale' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-scale-box.label') || 'Scale' }}</div>
 			<div
 				id="uiElement-transform-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -192,7 +192,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-skew-box') || 'Skew' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-skew-box.label') || 'Skew' }}</div>
 			<div
 				id="uiElement-transform-skew-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -212,7 +212,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiElement-transform-opacity-box') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.uiElement-transform-opacity-box.label') || 'Opacity' }}</div>
 			<div
 				id="uiElement-transform-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -228,7 +228,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox id="uiElement-events-group" open>
-		<DetailSummary>{{ local.getLabel('uiElement-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiElement-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="uiElement-events"
 			class="inspector-list"
@@ -237,7 +237,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox id="uiElement-scripts-group" open>
-		<DetailSummary>{{ local.getLabel('uiElement-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiElement-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="uiElement-scripts"
 			class="inspector-list"
@@ -246,14 +246,14 @@
 	</DetailBox>
 	<ParameterPane id="uiElement-parameter-pane"></ParameterPane>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiImage-properties-grid') || 'Image Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiImage-properties-grid.label') || 'Image Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiImage-properties-grid">
-			<div class="text">{{ local.getLabel('uiImage-image') || 'Image' }}</div
+			<div class="text">{{ t('components.uiImage-image.label') || 'Image' }}</div
 			><CustomBox id="uiImage-image" type="file" filter="image" @input="onParamInput"></CustomBox>
-			<div class="text">{{ local.getLabel('uiImage-display') || 'Display' }}</div><SelectBox id="uiImage-display" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiImage-flip') || 'Flip' }}</div><SelectBox id="uiImage-flip" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiImage-blend') || 'Blend' }}</div><SelectBox id="uiImage-blend" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiImage-shift-box') || 'Shift' }}</div>
+			<div class="text">{{ t('components.uiImage-display.label') || 'Display' }}</div><SelectBox id="uiImage-display" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiImage-flip.label') || 'Flip' }}</div><SelectBox id="uiImage-flip" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiImage-blend.label') || 'Blend' }}</div><SelectBox id="uiImage-blend" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiImage-shift-box.label') || 'Shift' }}</div>
 			<div id="uiImage-shift-box" class="box uiElement-grid-box with-2-columns">
 				<NumberBox
 					id="uiImage-shiftX"
@@ -268,20 +268,20 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiImage-clip') || 'Clip' }}</div
+			<div class="text">{{ t('components.uiImage-clip.label') || 'Clip' }}</div
 			><CustomBox
 				id="uiImage-clip"
 				type="clip"
 				image="uiImage-image" @input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiImage-border') || 'Border' }}</div
+			<div class="text">{{ t('components.uiImage-border.label') || 'Border' }}</div
 			><NumberBox
 				id="uiImage-border"
 				min="1"
 				max="100"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiImage-tint-0-box') || 'Tint - Red' }}</div>
+			<div class="text">{{ t('components.uiImage-tint-0-box.label') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="uiImage-tint-0-box">
 				<SliderBox
 					id="uiImage-tint-0-slider"
@@ -296,7 +296,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiImage-tint-1-box') || 'Tint - Green' }}</div>
+			<div class="text">{{ t('components.uiImage-tint-1-box.label') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="uiImage-tint-1-box">
 				<SliderBox
 					id="uiImage-tint-1-slider"
@@ -311,7 +311,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiImage-tint-2-box') || 'Tint - Blue' }}</div>
+			<div class="text">{{ t('components.uiImage-tint-2-box.label') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="uiImage-tint-2-box">
 				<SliderBox
 					id="uiImage-tint-2-slider"
@@ -326,7 +326,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiImage-tint-3-box') || 'Tint - Grayscale' }}</div>
+			<div class="text">{{ t('components.uiImage-tint-3-box.label') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="uiImage-tint-3-box">
 				<SliderBox
 					id="uiImage-tint-3-slider"
@@ -347,8 +347,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -362,7 +362,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIImagePage();
 

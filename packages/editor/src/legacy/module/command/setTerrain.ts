@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTerrain = new CommandSchema({
 	name: 'setTerrain',
@@ -12,10 +12,10 @@ Command.cases.setTerrain = new CommandSchema({
 	customParse({ position, terrain }: { position: unknown; terrain: string }) {
 		const words = Command.words
 			.push(Command.parsePosition!(position))
-			.push(Local.get!('command.setTerrain.' + terrain));
+			.push(t('command.setTerrain.' + terrain));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get!('command.setTerrain') + Token(': ') },
+			{ text: t('command.setTerrain') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

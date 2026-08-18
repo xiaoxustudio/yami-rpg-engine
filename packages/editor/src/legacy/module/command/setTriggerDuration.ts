@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTriggerDuration = new CommandSchema({
 	name: 'setTriggerDuration',
@@ -21,11 +21,11 @@ Command.cases.setTriggerDuration = new CommandSchema({
 	}) {
 		const words = Command.words
 			.push(Command.parseTrigger!(trigger))
-			.push(Local.get!('command.setTriggerDuration.' + operation))
+			.push(t('command.setTriggerDuration.' + operation))
 			.push(Command.parseVariableNumber!(duration, 'ms'));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.setTriggerDuration') + Token(': ') },
+			{ text: t('command.setTriggerDuration') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

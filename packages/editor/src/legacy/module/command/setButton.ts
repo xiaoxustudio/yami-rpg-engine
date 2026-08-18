@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { ButtonProperty } from '@/command/set-button-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { ButtonProperty } from '@app/legacy/command/set-button-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setButton = new CommandSchema({
 	name: 'setButton',
@@ -23,7 +23,7 @@ Command.cases.setButton = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setButton') + Token(': ') },
+			{ text: t('command.setButton') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

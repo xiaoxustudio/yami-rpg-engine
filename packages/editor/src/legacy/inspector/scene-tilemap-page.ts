@@ -1,9 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, read, write } from '@/util/element-utils';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { clear, read, write } from '@app/legacy/util/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from './inspector.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 
 {
 	interface SceneTilemapLightItem {

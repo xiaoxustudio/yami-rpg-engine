@@ -1,18 +1,19 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { disable, enable, getFocus, read, write } from '@/util/element-utils';
-import { Timer } from '@/util/timer.ts';
-import { Data } from '@/data/data-object.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { disable, enable, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { TemplatesPath } from '@/module/global.ts';
-import { Local } from '@/tools/localization.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { TemplatesPath } from '@app/legacy/module/global.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 
-import { Path } from '@/util/config.ts';
+import { Path } from '@app/legacy/util/config.ts';
 
 type NewProjectState = 'passed' | 'open' | 'closed' | 'unnamed' | 'existing';
 
@@ -101,13 +102,13 @@ NewProject.check = function (this: typeof NewProject) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			$('#newProject-warning').textContent = Local.get!('confirmation.enterFolderName');
+			$('#newProject-warning').textContent = t('confirmation.enterFolderName');
 		}
 		disable($('#newProject-confirm'));
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			$('#newProject-warning').textContent = Local.get!('confirmation.folderAlreadyExists');
+			$('#newProject-warning').textContent = t('confirmation.folderAlreadyExists');
 		}
 		disable($('#newProject-confirm'));
 	} else {

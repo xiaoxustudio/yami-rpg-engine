@@ -57,7 +57,7 @@
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { on } from '@app/legacy/util/element-utils.ts';
 import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
@@ -133,7 +133,7 @@ onMounted(() => {
 		attachElementApi(el, { setForm, getForm });
 	}
 
-	const get = Local.createGetter!('command.forEach');
+	const get = createGetter('command.forEach');
 	$('#forEach-data')
 		?.loadItems?.([
 			{ name: get('list') || 'List', value: 'list' },

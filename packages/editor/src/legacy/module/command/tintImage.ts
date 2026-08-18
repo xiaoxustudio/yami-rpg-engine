@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.tintImage = new CommandSchema({
 	name: 'tintImage',
@@ -19,7 +19,7 @@ Command.cases.tintImage = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	parseTint(mode: 'full' | 'rgb' | 'gray', [red, green, blue, gray]: [any, any, any, any]) {
-		const label = Local.get!('command.tintImage.' + mode);
+		const label = t('command.tintImage.' + mode);
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
 		const _blue = Command.setNumberColor!(blue);
@@ -74,7 +74,7 @@ Command.cases.tintImage = new CommandSchema({
 			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.tintImage') + Token(': ') },
+			{ text: t('command.tintImage') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

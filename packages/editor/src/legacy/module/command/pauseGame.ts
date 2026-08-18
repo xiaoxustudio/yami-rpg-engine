@@ -1,12 +1,12 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.pauseGame = new CommandSchema({
 	name: 'pauseGame',
 	noWindow: true,
 	customParse() {
-		return [{ color: 'system' }, { text: Local.get!('command.pauseGame') }];
+		return [{ color: 'system' }, { text: t('command.pauseGame') }];
 	},
 	customSave() {
 		Command.save({});

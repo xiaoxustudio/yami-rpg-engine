@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.stopEvent = new CommandSchema({
 	name: 'stopEvent',
@@ -46,13 +46,13 @@ Command.cases.stopEvent = new CommandSchema({
 		const words = Command.words;
 		switch (type) {
 			case 'current':
-				words.push(Local.get!('command.stopEvent.current'));
+				words.push(t('command.stopEvent.current'));
 				break;
 			case 'global':
 				words.push(Command.parseFileName!(eventId));
 				break;
 			case 'scene':
-				words.push(Local.get!('command.stopEvent.scene'));
+				words.push(t('command.stopEvent.scene'));
 				break;
 			case 'actor':
 				words.push(Command.parseActor!(actor));
@@ -81,7 +81,7 @@ Command.cases.stopEvent = new CommandSchema({
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get!('command.stopEvent.alias') + Token(': ') },
+			{ text: t('command.stopEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

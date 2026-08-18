@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.httpRequest = new CommandSchema({
 	name: 'httpRequest',
@@ -41,7 +41,7 @@ Command.cases.httpRequest = new CommandSchema({
 	}) {
 		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
-			{ text: Local.get!('command.httpRequest') },
+			{ text: t('command.httpRequest') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -79,7 +79,7 @@ Command.cases.httpRequest = new CommandSchema({
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${Local.get!('command.httpRequestTimeout')} = ${timeout}`
+					text: `${t('command.httpRequestTimeout')} = ${timeout}`
 				}
 			);
 		}
@@ -87,14 +87,14 @@ Command.cases.httpRequest = new CommandSchema({
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
-				text: `${Local.get!('command.httpRequestResponseType')} = ${responseType}`
+				text: `${t('command.httpRequestResponseType')} = ${responseType}`
 			}
 		);
 		if (withCredentials) {
 			extra.push(
 				{ text: ' , ' },
 				{ color: 'normal' },
-				{ text: Local.get!('command.httpRequestWithCredentials') }
+				{ text: t('command.httpRequestWithCredentials') }
 			);
 		}
 		if (authUser || authPass) {
@@ -102,13 +102,13 @@ Command.cases.httpRequest = new CommandSchema({
 				{ text: ' , ' },
 				{ color: 'normal' },
 				{
-					text: `${Local.get!('command.httpRequestAuth')} = ${authUser}`
+					text: `${t('command.httpRequestAuth')} = ${authUser}`
 				}
 			);
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get!('command.httpRequestData')} = ` },
+			{ text: `, ${t('command.httpRequestData')} = ` },
 			datas.slice(1),
 			...extra
 		);

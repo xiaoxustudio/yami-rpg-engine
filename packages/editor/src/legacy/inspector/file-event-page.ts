@@ -1,12 +1,12 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, hide, show, write } from '@/util/element-utils';
-import { EventEditor } from '@/command/event-editor.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, hide, show, write } from '@app/legacy/util/element-utils';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 {
 	interface FileEventData {
@@ -201,7 +201,7 @@ import { Local } from '@/tools/localization.ts';
 			]);
 		},
 		parse: function ({ type, key, note }: { type: string; key: string; note: string }) {
-			return [{ content: key }, { content: Local.get!('eventParameterTypes.' + type) }];
+			return [{ content: key }, { content: t('eventParameterTypes.' + type) }];
 		},
 		open: function ({
 			type = 'number',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getToolInstance, registerTool } from '@/tools/tool-registry';
+import { getToolInstance, registerTool } from '@app/legacy/tools/tool-registry';
 
 describe('tool-registry（工具实例注册表）', () => {
 	it('注册后可读取', () => {

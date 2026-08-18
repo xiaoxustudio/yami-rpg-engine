@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { GameLocal } from '@/local/local-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.showChoices = new CommandSchema({
 	name: 'showChoices',
@@ -22,7 +22,7 @@ Command.cases.showChoices = new CommandSchema({
 		}> = [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get!('command.showChoices') + Token(': ') },
+			{ text: t('command.showChoices') + Token(': ') },
 			{ color: 'text' },
 			{ color: 'save' }
 		];
@@ -38,7 +38,7 @@ Command.cases.showChoices = new CommandSchema({
 		}
 		contents.push({ color: 'flow' });
 		contents.push({ break: true });
-		const when = Local.get!('command.showChoices.when');
+		const when = t('command.showChoices.when');
 		for (const choice of choices) {
 			contents.push(
 				{ color: 'flow' },
@@ -50,7 +50,7 @@ Command.cases.showChoices = new CommandSchema({
 				{ children: choice.commands }
 			);
 		}
-		contents.push({ color: 'flow' }, { text: Local.get!('command.showChoices.end') });
+		contents.push({ color: 'flow' }, { text: t('command.showChoices.end') });
 		return contents;
 	}
 });

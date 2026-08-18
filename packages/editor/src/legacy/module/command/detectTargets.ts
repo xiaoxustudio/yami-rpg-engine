@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.detectTargets = new CommandSchema({
 	name: 'detectTargets',
@@ -14,7 +14,7 @@ Command.cases.detectTargets = new CommandSchema({
 	parseInSight(inSight: boolean) {
 		switch (inSight) {
 			case true:
-				return Local.get!('command.detectTargets.inSight');
+				return t('command.detectTargets.inSight');
 			case false:
 				return '';
 		}
@@ -37,7 +37,7 @@ Command.cases.detectTargets = new CommandSchema({
 			.push(this.parseInSight!(inSight));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.detectTargets') + Token(': ') },
+			{ text: t('command.detectTargets') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { useElementGetterWindow } from '@app/composables/useElementGetterWindow';
-import { PresetElement } from '@/tools/preset-element-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { PresetElement } from '@app/legacy/tools/preset-element-window.ts';
+import { AccessorBaseShape } from '@app/legacy/types/legacy-shapes.ts';
 
 interface ElementGetterTarget {
 	dataValue: ElementData;

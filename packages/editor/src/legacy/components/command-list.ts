@@ -6,22 +6,23 @@ import {
 	type CommandListApiOptions
 } from '@ui-kit';
 import type { MenuItem, MenuOptions } from '@ui-kit';
-import { SettingConfig } from '@/module/settingconfig';
-import { getVariable } from '@/util/safe.ts';
+import { SettingConfig } from '@app/legacy/module/settingconfig';
+import { getVariable } from '@app/legacy/util/safe.ts';
 import { CommandHistory } from './command-history.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Command } from '@/command/command-object.ts';
-import { Data } from '@/data/data-object.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { CommandSuggestion } from '@/command/command-tip.ts';
-import { EventEditor } from '@/command/event-editor.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Menu } from './menu-list.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { GameLocal } from '@/local/local-object.ts';
-import { SearchString } from '@/module/searchstring.ts';
-import { Local } from '@/tools/localization.ts';
-import { setTooltip } from '@/util/element-utils.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { SearchString } from '@app/legacy/module/searchstring.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
+import { setTooltip } from '@app/legacy/util/element-utils.ts';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 
 const Clipboard = getGlobalClipboard();
 
@@ -53,8 +54,8 @@ const options = {
 	settingConfig: SettingConfig,
 	localize: {
 		language: () => Local.language,
-		get: (key: string) => Local.get!(key),
-		createGetter: (key: string) => Local.createGetter!(key)
+		get: (key: string) => t(key),
+		createGetter: (key: string) => createGetter(key)
 	},
 	commandSuggestion: {
 		searcher: () => CommandSuggestion.searcher

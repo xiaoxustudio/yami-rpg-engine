@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setSkill = new CommandSchema({
 	name: 'setSkill',
@@ -21,7 +21,7 @@ Command.cases.setSkill = new CommandSchema({
 	}) {
 		const words = Command.words
 			.push(Command.parseSkill!(skill))
-			.push(Local.get!('command.setSkill.' + operation));
+			.push(t('command.setSkill.' + operation));
 		switch (operation) {
 			case 'set-cooldown':
 			case 'increase-cooldown':
@@ -31,7 +31,7 @@ Command.cases.setSkill = new CommandSchema({
 		}
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.setSkill') + Token(': ') },
+			{ text: t('command.setSkill') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

@@ -1,12 +1,12 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.preventSceneInput = new CommandSchema({
 	name: 'preventSceneInput',
 	noWindow: true,
 	customParse() {
-		return [{ color: 'system' }, { text: Local.get!('command.preventSceneInput') }];
+		return [{ color: 'system' }, { text: t('command.preventSceneInput') }];
 	},
 	customSave() {
 		Command.save({});

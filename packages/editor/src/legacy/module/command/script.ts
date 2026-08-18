@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { getMonaco } from '@/util/monaco.ts';
+import { getMonaco } from '@app/legacy/util/monaco.ts';
 import { h, render } from 'vue';
-import { Title } from '@/title/title-bar.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
 
 Command.cases.script = new CommandSchema({
 	name: 'script',

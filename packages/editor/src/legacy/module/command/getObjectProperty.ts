@@ -1,10 +1,10 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type ObjectPropertyItem = { text: string };
 
@@ -66,7 +66,7 @@ Command.cases.getObjectProperty = new CommandSchema({
 		return (
 			[
 				{ color: 'variable' },
-				{ text: Local.get!('command.getObjectProperty') + ' ' },
+				{ text: t('command.getObjectProperty') + ' ' },
 				{ text: Command.parseVariable!(saveVariable, 'any') + '=' },
 				{ text: Command.parseVariable!(variable, 'any') + '.' }
 			] as Array<{ text?: string; color?: string }>
@@ -90,7 +90,7 @@ Command.cases.setObjectProperty = new CommandSchema({
 		return (
 			[
 				{ color: 'variable' },
-				{ text: Local.get!('command.setObjectProperty') + ' ' },
+				{ text: t('command.setObjectProperty') + ' ' },
 				{ text: Command.parseVariable!(variable, 'any') + '.' }
 			] as Array<{ text?: string; color?: string }>
 		)

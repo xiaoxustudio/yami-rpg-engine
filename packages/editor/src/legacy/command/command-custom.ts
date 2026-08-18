@@ -1,15 +1,15 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus } from '@app/legacy/util/element-utils';
 import { Command } from './command-object.ts';
 
 import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
 import { Token } from './mark-string-manager.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
-import { Local } from '@/tools/localization.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import { t } from '@app/i18n';
 
 interface CustomParameter {
 	type: string;
@@ -144,7 +144,7 @@ Command.custom = {
 		const meta = Data.scripts[id];
 		const name = this.commandNameMap![id];
 		if (meta === undefined || name === undefined) {
-			const label = Local.get!('command.invalidCommand');
+			const label = t('command.invalidCommand');
 			const cmdId = Command.parseUnlinkedId!(id);
 			return [{ color: 'invalid' }, { text: `${label}: ${cmdId}` }];
 		}

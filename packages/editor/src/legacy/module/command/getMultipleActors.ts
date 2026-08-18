@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.getMultipleActors = new CommandSchema({
 	name: 'getMultipleActors',
@@ -41,7 +41,7 @@ Command.cases.getMultipleActors = new CommandSchema({
 		const actors = Command.parseVariable!(variable, 'object', true);
 		const words = Command.words
 			.push(Command.parsePosition!(position))
-			.push(Local.get!('command.getMultipleActors.' + area));
+			.push(t('command.getMultipleActors.' + area));
 		switch (area) {
 			case 'rectangle':
 				words.push(Command.parseVariableNumber!(width, 't'));
@@ -64,10 +64,10 @@ Command.cases.getMultipleActors = new CommandSchema({
 				words.push(selectorLabel);
 				break;
 		}
-		words.push(Local.get!('command.getMultipleActors.' + activation));
+		words.push(t('command.getMultipleActors.' + activation));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.getMultipleActors') + Token(': ') },
+			{ text: t('command.getMultipleActors') + Token(': ') },
 			{ text: actors + Token(' = ') + words.join() }
 		];
 	}

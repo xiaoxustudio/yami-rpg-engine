@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { AnimationProperty } from '@/command/set-animation-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { AnimationProperty } from '@app/legacy/command/set-animation-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setAnimation = new CommandSchema({
 	name: 'setAnimation',
@@ -23,7 +23,7 @@ Command.cases.setAnimation = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setAnimation') + Token(': ') },
+			{ text: t('command.setAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

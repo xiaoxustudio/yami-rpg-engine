@@ -2,16 +2,16 @@ import { ipcRenderer, shell } from 'electron';
 import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Path } from '@/util/config.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Data } from '@/data/data-object.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { filterGUID, parseFileSize, parseGUID } from '@app/services/file-system/path-utils.ts';
-import { Log } from '@/log/log-window.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 type FileMethod = (...args: any[]) => any;
 

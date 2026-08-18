@@ -1,8 +1,8 @@
 <template>
 	<DetailBox id="animSpriteFrame-properties-detail" open>
-		<DetailSummary>{{ local.getLabel('animSpriteFrame-properties-grid') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animSpriteFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSpriteFrame-properties-grid">
-			<div class="text">{{ local.getLabel('animSpriteFrame-anchor-box') || 'Anchor' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-anchor-box.label') || 'Anchor' }}</div>
 			<div
 				id="animSpriteFrame-anchor-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -24,7 +24,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-pivot-box') || 'Pivot' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-pivot-box.label') || 'Pivot' }}</div>
 			<div
 				id="animSpriteFrame-pivot-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -46,7 +46,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-position-box') || 'Position' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-position-box.label') || 'Position' }}</div>
 			<div
 				id="animSpriteFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -68,7 +68,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-rotation-box') || 'Rotation' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-rotation-box.label') || 'Rotation' }}</div>
 			<div
 				id="animSpriteFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -82,7 +82,7 @@
 					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-scale-box') || 'Scale' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-scale-box.label') || 'Scale' }}</div>
 			<div
 				id="animSpriteFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -104,7 +104,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-opacity-box') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-opacity-box.label') || 'Opacity' }}</div>
 			<div
 				id="animSpriteFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -118,7 +118,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-tint-0-box') || 'Tint - Red' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-tint-0-box.label') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-0-box">
 				<SliderBox
 					id="animSpriteFrame-tint-0-slider"
@@ -135,7 +135,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-tint-1-box') || 'Tint - Green' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-tint-1-box.label') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-1-box">
 				<SliderBox
 					id="animSpriteFrame-tint-1-slider"
@@ -152,7 +152,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-tint-2-box') || 'Tint - Blue' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-tint-2-box.label') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-2-box">
 				<SliderBox
 					id="animSpriteFrame-tint-2-slider"
@@ -169,7 +169,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animSpriteFrame-tint-3-box') || 'Tint - Grayscale' }}</div>
+			<div class="text">{{ t('components.animSpriteFrame-tint-3-box.label') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="animSpriteFrame-tint-3-box">
 				<SliderBox
 					id="animSpriteFrame-tint-3-slider"
@@ -224,9 +224,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -236,7 +236,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimSpriteFramePage();
 

@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.clampCamera = new CommandSchema({
 	name: 'clampCamera',
@@ -23,29 +23,17 @@ Command.cases.clampCamera = new CommandSchema({
 		bottom: unknown;
 	}) {
 		const words = Command.words
+			.push(t('command.clampCamera.left') + Token(' = ') + Command.parseVariableNumber(left))
+			.push(t('command.clampCamera.top') + Token(' = ') + Command.parseVariableNumber(top))
 			.push(
-				Local.get!('command.clampCamera.left') +
-					Token(' = ') +
-					Command.parseVariableNumber(left)
+				t('command.clampCamera.right') + Token(' = ') + Command.parseVariableNumber(right)
 			)
 			.push(
-				Local.get!('command.clampCamera.top') +
-					Token(' = ') +
-					Command.parseVariableNumber(top)
-			)
-			.push(
-				Local.get!('command.clampCamera.right') +
-					Token(' = ') +
-					Command.parseVariableNumber(right)
-			)
-			.push(
-				Local.get!('command.clampCamera.bottom') +
-					Token(' = ') +
-					Command.parseVariableNumber(bottom)
+				t('command.clampCamera.bottom') + Token(' = ') + Command.parseVariableNumber(bottom)
 			);
 		return [
 			{ color: 'scene' },
-			{ text: Local.get!('command.clampCamera') + Token(': ') },
+			{ text: t('command.clampCamera') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

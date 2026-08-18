@@ -1,10 +1,10 @@
-import { ctrl } from '@/util/event-accessors.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import type { MenuItem } from '@ui-kit';
-import { write } from '@/util/element-utils.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Local } from '@/tools/localization.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { write } from '@app/legacy/util/element-utils.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { createGetter } from '@app/i18n';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from './variable.ts';
 
@@ -49,7 +49,7 @@ Variable.listPopup = function (
 	const pastable = Clipboard.has('yami.data.variable');
 	const undoable = Variable.history.canUndo();
 	const redoable = Variable.history.canRedo();
-	const get = Local.createGetter!('menuVariableList');
+	const get = createGetter('menuVariableList');
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

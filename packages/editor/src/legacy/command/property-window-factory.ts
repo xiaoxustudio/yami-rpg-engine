@@ -1,9 +1,9 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils.ts';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
-import { Local } from '@/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 
 interface PropertyKeyConfig {
 	name: string;
@@ -100,7 +100,7 @@ export function createPropertyWindow(config: PropertyWindowConfig): PropertyWind
 		{ key, value }: { key: string; value: unknown },
 		listData?: boolean
 	) {
-		const get = Local.createGetter!(locale);
+		const get = createGetter(locale);
 		const name = get(key).replace('.', Token('.'));
 		let string;
 

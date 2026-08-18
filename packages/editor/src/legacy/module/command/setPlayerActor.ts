@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setPlayerActor = new CommandSchema({
 	name: 'setPlayerActor',
@@ -9,7 +9,7 @@ Command.cases.setPlayerActor = new CommandSchema({
 	customParse({ actor }: { actor: unknown }) {
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.setPlayerActor') + Token(': ') },
+			{ text: t('command.setPlayerActor') + Token(': ') },
 			{ text: Command.parseActor(actor) }
 		];
 	}

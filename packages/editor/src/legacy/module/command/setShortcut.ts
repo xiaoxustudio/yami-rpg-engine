@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setShortcut = new CommandSchema({
 	name: 'setShortcut',
@@ -32,7 +32,7 @@ Command.cases.setShortcut = new CommandSchema({
 		const shortcutKey = Command.parseVariableEnum!('shortcut-key', key);
 		const words = Command.words
 			.push(Command.parseActor!(actor))
-			.push(Local.get!('command.setShortcut.' + operation));
+			.push(t('command.setShortcut.' + operation));
 		switch (operation) {
 			case 'set-item-shortcut': {
 				words.push(shortcutKey + Token(' = ') + Command.parseVariableFile!(itemId));
@@ -52,7 +52,7 @@ Command.cases.setShortcut = new CommandSchema({
 		}
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get!('command.setShortcut') + Token(': ') },
+			{ text: t('command.setShortcut') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

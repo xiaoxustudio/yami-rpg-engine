@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.addAnimationComponent = new CommandSchema({
 	name: 'addAnimationComponent',
@@ -15,10 +15,10 @@ Command.cases.addAnimationComponent = new CommandSchema({
 		{ key: 'offsetY', default: 0 }
 	],
 	parseRotatable(rotatable: boolean) {
-		return rotatable ? Local.get!('command.addAnimationComponent.rotatable') : '';
+		return rotatable ? t('command.addAnimationComponent.rotatable') : '';
 	},
 	parseSyncAngle(syncAngle: boolean) {
-		return syncAngle ? Local.get!('command.addAnimationComponent.syncAngle') : '';
+		return syncAngle ? t('command.addAnimationComponent.syncAngle') : '';
 	},
 	parsePriority(priority: number) {
 		if (priority === 0) return '';
@@ -59,7 +59,7 @@ Command.cases.addAnimationComponent = new CommandSchema({
 			.push(this.parseOffsetY!(offsetY));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.addAnimationComponent') + Token(': ') },
+			{ text: t('command.addAnimationComponent') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

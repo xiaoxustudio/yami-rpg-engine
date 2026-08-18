@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.changePassableTerrain = new CommandSchema({
 	name: 'changePassableTerrain',
@@ -12,10 +12,10 @@ Command.cases.changePassableTerrain = new CommandSchema({
 	customParse({ actor, passage }: { actor: unknown; passage: string }) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
-			.push(Local.get!('command.changePassableTerrain.' + passage));
+			.push(t('command.changePassableTerrain.' + passage));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.changePassableTerrain') + Token(': ') },
+			{ text: t('command.changePassableTerrain') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

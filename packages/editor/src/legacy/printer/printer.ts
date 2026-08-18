@@ -1,10 +1,10 @@
-import { CSSRGBA } from '@/util/color-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { CSSRGBA } from '@app/legacy/util/color-utils.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { Title } from '@/title/title-bar.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
 import { Texture as PrinterTexture } from '@app/engine/webgl/texture.ts';
 
 type CanvasTextContext = CanvasRenderingContext2D & {

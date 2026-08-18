@@ -1,17 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileAudio-info-grid') || 'File Info' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileAudio-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-info-grid">
-			<div class="text">{{ local.getLabel('fileAudio-name') || 'Name' }}</div><div class="text" id="fileAudio-name">{{ form.name }}</div> <div class="text">{{ local.getLabel('fileAudio-size') || 'Size' }}</div
-			><div class="text" id="fileAudio-size">{{ form.size }}</div> <div class="text">{{ local.getLabel('fileAudio-duration') || 'Duration' }}</div
-			><div class="text" id="fileAudio-duration">{{ form.duration }}</div> <div class="text">{{ local.getLabel('fileAudio-bitrate') || 'Bitrate' }}</div
+			<div class="text">{{ t('components.fileAudio-name.label') || 'Name' }}</div><div class="text" id="fileAudio-name">{{ form.name }}</div> <div class="text">{{ t('components.fileAudio-size.label') || 'Size' }}</div
+			><div class="text" id="fileAudio-size">{{ form.size }}</div> <div class="text">{{ t('components.fileAudio-duration.label') || 'Duration' }}</div
+			><div class="text" id="fileAudio-duration">{{ form.duration }}</div> <div class="text">{{ t('components.fileAudio-bitrate.label') || 'Bitrate' }}</div
 			><div class="text" id="fileAudio-bitrate">{{ form.bitrate }}</div>
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileAudio-mixer-grid') || 'Mixer' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileAudio-mixer-grid.label') || 'Mixer' }}</DetailSummary>
 		<div class="detail-grid" id="fileAudio-mixer-grid">
-			<div class="text">{{ local.getLabel('fileAudio-volume-box') || 'Volume' }}</div>
+			<div class="text">{{ t('components.fileAudio-volume-box.label') || 'Volume' }}</div>
 			<div class="flex-box" id="fileAudio-volume-box">
 				<SliderBox
 					id="fileAudio-volume" @input="onParamInput"
@@ -21,7 +21,7 @@
 				/>
 				<div class="text" id="fileAudio-volume-info">{{ form.volume * 100 }}%</div>
 			</div>
-			<div class="text">{{ local.getLabel('fileAudio-pan-box') || 'Pan' }}</div>
+			<div class="text">{{ t('components.fileAudio-pan-box.label') || 'Pan' }}</div>
 			<div class="flex-box" id="fileAudio-pan-box">
 				<SliderBox
 					id="fileAudio-pan" @input="onParamInput"
@@ -31,7 +31,7 @@
 				/>
 				<div class="text" id="fileAudio-pan-info">{{ form.pan * 100 }}%</div>
 			</div>
-			<div class="text">{{ local.getLabel('fileAudio-dry-box') || 'Reverb - Dry' }}</div>
+			<div class="text">{{ t('components.fileAudio-dry-box.label') || 'Reverb - Dry' }}</div>
 			<div class="flex-box" id="fileAudio-dry-box">
 				<SliderBox
 					id="fileAudio-dry" @input="onParamInput"
@@ -41,7 +41,7 @@
 				/>
 				<div class="text" id="fileAudio-dry-info">{{ form.dry * 100 }}%</div>
 			</div>
-			<div class="text">{{ local.getLabel('fileAudio-wet-box') || 'Reverb - Wet' }}</div>
+			<div class="text">{{ t('components.fileAudio-wet-box.label') || 'Reverb - Wet' }}</div>
 			<div class="flex-box" id="fileAudio-wet-box">
 				<SliderBox
 					id="fileAudio-wet" @input="onParamInput"
@@ -54,7 +54,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileAudio-progress-box') || 'Progress' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileAudio-progress-box.label') || 'Progress' }}</DetailSummary>
 		<div class="box" id="fileAudio-progress-box">
 			<div class="box" id="fileAudio-progress">
 				<div class="box" id="fileAudio-progress-filler"></div>
@@ -65,15 +65,15 @@
 		</div>
 	</DetailBox>
 	<DetailBox id="fileAudio-frequency-detail" open>
-		<DetailSummary>{{ local.getLabel('fileAudio-frequency-canvas') || 'Frequency' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileAudio-frequency-canvas.label') || 'Frequency' }}</DetailSummary>
 		<canvas id="fileAudio-frequency-canvas" width="0" height="0"></canvas>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -81,7 +81,7 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileAudioPage();
 

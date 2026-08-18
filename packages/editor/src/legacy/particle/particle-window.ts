@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	addClass,
 	addSetScrollMethod,
@@ -13,27 +13,27 @@ import {
 	removeClass,
 	show,
 	write
-} from '@/util/element-utils.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { Command } from '@/command/command-object.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+} from '@app/legacy/util/element-utils.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 
-import { History } from '@/tools/history.ts';
-import { Local } from '@/tools/localization.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
-import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { createGetter } from '@app/i18n';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
+import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { getParticleStore, type ParticleTargetShape } from '@app/stores/particle';
 
-import { StageColor } from '@/util/stage-color.ts';
-import { Timer } from '@/util/timer.ts';
+import { StageColor } from '@app/legacy/util/stage-color.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
@@ -1726,7 +1726,7 @@ Particle.listRecord = function (event: Event) {
 
 Particle.listPopup = function (this: ParticleShape['list'], event: PointerEvent) {
 	const item = event.value;
-	const get = Local.createGetter!('menuParticleList');
+	const get = createGetter('menuParticleList');
 	let copyable;
 	let pastable;
 	let deletable;

@@ -1,17 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileItem-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileItem-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileItem-general-grid">
-			<div class="text">{{ local.getLabel('fileItem-icon') || 'Icon' }}</div
+			<div class="text">{{ t('components.fileItem-icon.label') || 'Icon' }}</div
 			><CustomBox id="fileItem-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ local.getLabel('fileItem-clip') || 'Clip' }}</div
+			<div class="text">{{ t('components.fileItem-clip.label') || 'Clip' }}</div
 			><CustomBox id="fileItem-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileItem-icon" />
-			<div class="text">{{ local.getLabel('fileItem-inherit') || 'Inherit' }}</div
+			<div class="text">{{ t('components.fileItem-inherit.label') || 'Inherit' }}</div
 			><CustomBox id="fileItem-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="item" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileItem-attributes') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileItem-attributes.label') || 'Attributes' }}</DetailSummary>
 		<ParamList
 			id="fileItem-attributes" @change="onListChange"
 			class="inspector-list"
@@ -20,7 +20,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileItem-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileItem-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileItem-events" @change="onListChange"
 			class="inspector-list"
@@ -29,7 +29,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileItem-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileItem-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileItem-scripts" @change="onListChange"
 			class="inspector-list"
@@ -41,13 +41,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileItemPage } from '@app/composables/useFileItemPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -56,7 +56,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileItemPage();
 

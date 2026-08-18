@@ -1,5 +1,5 @@
-import { $ } from '@/util/dom.ts';
-import { Animation } from '@/animation/animation-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 
 {

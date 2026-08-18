@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
-import '@/util/math.ts';
+import { describe, expect, it, vi } from 'vitest';
+import '@app/legacy/util/math.ts';
 
 vi.mock('@app/legacy/util/element-utils', () => ({
 	getRelativeCoords: vi.fn(() => ({ x: 0, y: 0 })),
@@ -159,7 +159,6 @@ function createMockPalette(overrides: Record<string, any> = {}) {
 		tilesetMap: { 1: '' },
 		meta: { x: 0, y: 0, guid: '' },
 		drawTiles: vi.fn(),
-		drawTileGrid: vi.fn(),
 		drawPriorities: vi.fn(),
 		drawTags: vi.fn(),
 		drawTerrains: vi.fn(),

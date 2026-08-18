@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
-import { Local } from '@/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
 
 export const ImageProperty = createPropertyWindow({
 	prefix: 'setImage',
@@ -19,7 +19,7 @@ export const ImageProperty = createPropertyWindow({
 		{ name: 'Clip Height', value: 'clip-3', default: 0 }
 	],
 	init() {
-		const get = Local.createGetter!('command.setImage');
+		const get = createGetter('command.setImage');
 		$('#setImage-property-display').loadItems([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.tile') || 'Tile', value: 'tile' },
@@ -33,10 +33,10 @@ export const ImageProperty = createPropertyWindow({
 			{ name: get('flip.both') || 'Both', value: 'both' }
 		]);
 		$('#setImage-property-blend').loadItems([
-			{ name: Local.get!('blend.normal') || 'Normal', value: 'normal' },
-			{ name: Local.get!('blend.additive') || 'Additive', value: 'additive' },
-			{ name: Local.get!('blend.subtract') || 'Subtract', value: 'subtract' },
-			{ name: Local.get!('blend.mask') || 'Mask', value: 'mask' }
+			{ name: t('blend.normal') || 'Normal', value: 'normal' },
+			{ name: t('blend.additive') || 'Additive', value: 'additive' },
+			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' },
+			{ name: t('blend.mask') || 'Mask', value: 'mask' }
 		]);
 	},
 	parsers: {

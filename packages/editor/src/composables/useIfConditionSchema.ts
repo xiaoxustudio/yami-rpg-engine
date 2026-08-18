@@ -5,7 +5,7 @@ import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 import { getFocus } from '@app/legacy/util/element-utils.ts';
 
 export interface IfConditionTarget {
@@ -133,8 +133,8 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter2 = 'all';
 			break;
 	}
-	document.getElementById('if-condition-common-variable').filter = filter1;
-	document.getElementById('if-condition-operand-variable').filter = filter2;
+	document.getElementById('if-condition-common-variable')!.filter = filter1;
+	document.getElementById('if-condition-operand-variable')!.filter = filter2;
 };
 
 const parseBooleanOperation = ({ operation }: IfConditionData) => {
@@ -195,7 +195,7 @@ const parseStringOperation = ({ operation }: IfConditionData) => {
 		case 'unequal':
 			return set('!=');
 		default:
-			return Local.get!('command.if.string.' + operation);
+			return t('command.if.string.' + operation);
 	}
 };
 
@@ -220,7 +220,7 @@ const parseObjectOperation = ({ operation }: IfConditionData) => {
 		case 'unequal':
 			return set('!=');
 		default:
-			return Local.get!('command.if.object.' + operation);
+			return t('command.if.object.' + operation);
 	}
 };
 
@@ -261,7 +261,7 @@ const parseActorOperation = ({
 	target: actorTarget,
 	teamId
 }: IfConditionData) => {
-	const op = Local.get!('command.if.actor.' + operation);
+	const op = t('command.if.actor.' + operation);
 	switch (operation) {
 		case 'has-skill':
 			return `${op} ${Command.parseFileName!(skillId)}`;
@@ -294,31 +294,31 @@ const parseActorOperation = ({
 };
 
 const parseElementOperation = ({ operation }: IfConditionData): string => {
-	return Local.get!('command.if.element.' + operation);
+	return t('command.if.element.' + operation);
 };
 
 const parseKeyboardState = (state: string | undefined): string => {
-	return Local.get!('command.if.keyboard.' + state);
+	return t('command.if.keyboard.' + state);
 };
 
 const parseGamepadState = (state: string | undefined): string => {
-	return Local.get!('command.if.gamepad.' + state);
+	return t('command.if.gamepad.' + state);
 };
 
 const parseMouseButton = (button: number | undefined): string => {
-	return Local.get!('command.if.mouse.button.' + button);
+	return t('command.if.mouse.button.' + button);
 };
 
 const parseMouseState = (state: string | undefined): string => {
-	return Local.get!('command.if.mouse.' + state);
+	return t('command.if.mouse.' + state);
 };
 
 const parseListOperation = ({ operation }: IfConditionData) => {
-	return Local.get!('command.if.list.' + operation);
+	return t('command.if.list.' + operation);
 };
 
 const parseOther = ({ key }: IfConditionData): string => {
-	return Local.get!('command.if.other.' + key);
+	return t('command.if.other.' + key);
 };
 
 const parseTypeHandlers: Record<string, (condition: IfConditionData) => string> = {
@@ -358,19 +358,19 @@ const parseTypeHandlers: Record<string, (condition: IfConditionData) => string> 
 	},
 	keyboard: function (condition) {
 		const key = condition.keycode;
-		const keyboard = Local.get!('command.if.keyboard');
+		const keyboard = t('command.if.keyboard');
 		const state = parseKeyboardState(condition.state);
 		return keyboard + Token('[') + Command.setStringColor!(key) + Token(']') + ' ' + state;
 	},
 	gamepad: function (condition) {
 		const button = getButtonName(condition.button!);
-		const gamepad = Local.get!('command.if.gamepad');
+		const gamepad = t('command.if.gamepad');
 		const state = parseGamepadState(condition.state);
 		return gamepad + Token('[') + Command.setStringColor!(button) + Token(']') + ' ' + state;
 	},
 	mouse: function (condition) {
 		const button = parseMouseButton(condition.button);
-		const mouse = Local.get!('command.if.mouse');
+		const mouse = t('command.if.mouse');
 		const state = parseMouseState(condition.state);
 		return mouse + Token('[') + Command.setStringColor!(button) + Token(']') + ' ' + state;
 	},
@@ -403,7 +403,7 @@ const open = (
 	} as unknown as IfConditionData
 ): void => {
 	document
-		.getElementById('if-condition-actor-shortcutKey')
+		.getElementById('if-condition-actor-shortcutKey')!
 		.loadItems(Enum.getStringItems!('shortcut-key'));
 	Window.open!('if-condition');
 	const defaultVariable = { type: 'local', key: '' };

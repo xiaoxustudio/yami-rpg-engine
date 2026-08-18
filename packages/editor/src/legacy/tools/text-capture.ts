@@ -1,16 +1,16 @@
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
-import { $ } from '@/util/dom.ts';
-import type { TextSuggestionTarget } from '@/command/text-tip.ts';
-import { getFocus } from '@/util/element-utils';
-import { ctrl } from '@/util/event-accessors.ts';
-import { TextSuggestion } from '@/command/text-tip.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Localization } from '@/local/local-window.ts';
-import { Printer } from '@/printer/printer.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import type { TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Localization } from '@app/legacy/local/local-window.ts';
+import { Printer } from '@app/legacy/printer/printer.ts';
 import { Color } from './color-picker-window.ts';
-import { Local } from './localization.ts';
-import { Variable } from '@/variable/variable.ts';
+import { createGetter } from '@app/i18n';
+import { Variable } from '@app/legacy/variable/variable.ts';
 
 export type {
 	FontForm,
@@ -439,7 +439,7 @@ Selection.inputPointerup = function (this: SelectionShape, event: PointerEvent) 
 					const pastable = !!clipText;
 					const undoable = element.history.canUndo();
 					const redoable = element.history.canRedo();
-					const get = Local.createGetter!('menuTextBox');
+					const get = createGetter('menuTextBox');
 					const wrap = element.parentNode as HTMLElement;
 					const menu = wrap.getAttribute('menu') ?? 'tag';
 					const tagItems: {
@@ -889,7 +889,7 @@ Selection.globalVariable = {
 	open: function (this: VariableController, { key = '' } = {}) {
 		this.proxy.key = key;
 		this.proxy.element = Selection.target;
-		Variable.open(this.proxy);
+		Variable.open!(this.proxy);
 	},
 	proxy: {
 		key: '',
@@ -914,7 +914,7 @@ Selection.dynamicGlobalVariable = {
 	open: function (this: VariableController, { key = '' } = {}) {
 		this.proxy.key = key;
 		this.proxy.element = Selection.target;
-		Variable.open(this.proxy);
+		Variable.open!(this.proxy);
 	},
 	proxy: {
 		key: '',

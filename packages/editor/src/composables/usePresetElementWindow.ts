@@ -67,12 +67,12 @@ function initialize(): void {
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	ui = document.getElementById('presetElement-uiId');
+	ui = document.getElementById('presetElement-uiId')!;
 	list = current;
-	searcher = document.getElementById('presetElement-searcher');
+	searcher = document.getElementById('presetElement-searcher')!;
 	list.bind(() => nodes);
 	searcher.on('keydown', searcherKeydown);
-	document.getElementById('presetElement').addEventListener('closed', windowClosed);
+	document.getElementById('presetElement')!.addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetElementTarget): void {

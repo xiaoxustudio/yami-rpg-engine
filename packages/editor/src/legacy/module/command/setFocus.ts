@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setFocus = new CommandSchema({
 	name: 'setFocus',
@@ -22,16 +22,16 @@ Command.cases.setFocus = new CommandSchema({
 		mode: string;
 		cancelable: unknown;
 	}) {
-		const words = Command.words.push(Local.get!('command.setFocus.' + operation));
+		const words = Command.words.push(t('command.setFocus.' + operation));
 		switch (operation) {
 			case 'add':
 				if (mode === undefined) {
 					mode = 'control-child-buttons';
 				}
 				words.push(Command.parseElement!(element));
-				words.push(Local.get!('command.setFocus.' + mode));
+				words.push(t('command.setFocus.' + mode));
 				if (cancelable) {
-					words.push(Local.get!('command.setFocus.cancelable'));
+					words.push(t('command.setFocus.cancelable'));
 				}
 				break;
 			case 'remove':
@@ -40,7 +40,7 @@ Command.cases.setFocus = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setFocus') + Token(': ') },
+			{ text: t('command.setFocus') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

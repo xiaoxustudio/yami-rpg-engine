@@ -1,7 +1,7 @@
-import { clear, write } from '@/util/element-utils.ts';
-import { Window } from '@/tools/window-object.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Local } from '@/tools/localization.ts';
+import { clear, write } from '@app/legacy/util/element-utils.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { createGetter } from '@app/i18n';
 import { getVariableStore } from '@app/stores/variable';
 import { Variable } from './variable.ts';
 
@@ -9,7 +9,7 @@ Variable.windowClose = function (this: typeof Variable, event: Event) {
 	this.list.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedVariables')

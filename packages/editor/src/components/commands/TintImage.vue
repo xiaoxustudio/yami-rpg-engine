@@ -36,7 +36,7 @@ import { onMounted, watch } from 'vue';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear, write } from '@app/legacy/util/element-utils';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -81,7 +81,7 @@ watch(
 );
 
 onMounted(() => {
-	const get = Local.createGetter!('command.tintImage');
+	const get = createGetter('command.tintImage');
 	$('#tintImage-mode')?.loadItems?.([
 		{ name: get('full') || 'Full', value: 'full' },
 		{ name: get('rgb') || 'RGB', value: 'rgb' },

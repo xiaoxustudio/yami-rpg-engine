@@ -1,7 +1,7 @@
-import { $, getElementReader } from '@/util/dom.ts';
-import { write } from '@/util/element-utils';
+import { $, getElementReader } from '@app/legacy/util/dom.ts';
+import { write } from '@app/legacy/util/element-utils';
 import { Inspector } from './inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 {
 	interface UIButtonShape {

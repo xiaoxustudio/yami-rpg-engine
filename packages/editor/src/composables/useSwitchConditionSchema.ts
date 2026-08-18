@@ -6,7 +6,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface SwitchConditionData {
 	type:
@@ -67,19 +67,19 @@ const parse = (condition: SwitchConditionData, listData?: boolean): string => {
 			break;
 		case 'keyboard': {
 			const key = condition.keycode!;
-			const keyboard = Local.get!('command.switch.keyboard');
+			const keyboard = t('command.switch.keyboard');
 			string = keyboard + Token('[') + Command.setStringColor!(key) + Token(']');
 			break;
 		}
 		case 'gamepad': {
 			const button = getButtonName(condition.button!);
-			const gamepad = Local.get!('command.switch.gamepad');
+			const gamepad = t('command.switch.gamepad');
 			string = gamepad + Token('[') + Command.setStringColor!(button) + Token(']');
 			break;
 		}
 		case 'mouse': {
 			const button = IfCondition.parseMouseButton!(condition.button!);
-			const mouse = Local.get!('command.switch.mouse');
+			const mouse = t('command.switch.mouse');
 			string = mouse + Token('[') + Command.setStringColor!(button) + Token(']');
 			break;
 		}

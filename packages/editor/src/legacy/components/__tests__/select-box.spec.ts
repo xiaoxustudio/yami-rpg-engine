@@ -1,6 +1,6 @@
 ﻿import { describe, expect, it } from 'vitest';
 import type { SelectBoxApi } from '@ui-kit';
-import { createSelectBox, selectBoxSetItemNames } from '@/components/select-box';
+import { createSelectBox, selectBoxSetItemNames } from '@app/legacy/components/select-box';
 
 describe('select-box 转发层（9.32 递归修复 + 9.35 popup 回归保护）', () => {
 	it('createSelectBox returns select-box with api', () => {

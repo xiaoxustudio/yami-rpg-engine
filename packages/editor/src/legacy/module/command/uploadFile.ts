@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.uploadFile = new CommandSchema({
 	name: 'uploadFile',
@@ -32,7 +32,7 @@ Command.cases.uploadFile = new CommandSchema({
 	}) {
 		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
-			{ text: Local.get!('command.uploadFile') },
+			{ text: t('command.uploadFile') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -61,7 +61,7 @@ Command.cases.uploadFile = new CommandSchema({
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get!('command.uploadFilePath')} = ` },
+			{ text: `, ${t('command.uploadFilePath')} = ` },
 			{ color: 'normal' },
 			{
 				text: typeof path === 'string' ? path : Command.parseVariable!(path, 'any')

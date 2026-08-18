@@ -24,7 +24,7 @@ import { onMounted } from 'vue';
 import { useStopEventCommandSchema } from '@app/composables/commands/useStopEventCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { write } from '@app/legacy/util/element-utils';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -87,7 +87,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.stopEvent');
+	const get = createGetter('command.stopEvent');
 	$('#stopEvent-type')?.loadItems?.([
 		{ name: get('current') || 'Current', value: 'current' },
 		{ name: 'Global', value: 'global' },

@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.simulateKey = new CommandSchema({
 	name: 'simulateKey',
@@ -11,11 +11,11 @@ Command.cases.simulateKey = new CommandSchema({
 	],
 	customParse({ operation, keycode }: { operation: string; keycode: unknown }) {
 		const words = Command.words
-			.push(Local.get!('command.simulateKey.' + operation))
+			.push(t('command.simulateKey.' + operation))
 			.push(Command.setStringColor!(keycode));
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.simulateKey') + Token(': ') },
+			{ text: t('command.simulateKey') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

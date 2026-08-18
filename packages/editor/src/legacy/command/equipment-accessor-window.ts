@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
-import { Enum } from '@/enum/enum-window.ts';
-import { AccessorBaseShape, AccessorTarget } from '@/types/legacy-shapes.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { AccessorBaseShape, AccessorTarget } from '@app/legacy/types/legacy-shapes.ts';
 
 interface EquipmentGetterShape extends AccessorBaseShape {
 	checkDataForPlugin: ((data: unknown) => boolean) | null;

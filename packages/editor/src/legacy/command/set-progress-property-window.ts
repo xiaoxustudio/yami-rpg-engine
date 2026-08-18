@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
-import { Local } from '@/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
 
 export const ProgressBarProperty = createPropertyWindow({
 	prefix: 'setProgressBar',
@@ -21,15 +21,15 @@ export const ProgressBarProperty = createPropertyWindow({
 		{ name: 'Color Alpha', value: 'color-3', default: 0 }
 	],
 	init() {
-		const get = Local.createGetter!('command.setProgressBar');
+		const get = createGetter('command.setProgressBar');
 		$('#setProgressBar-property-display').loadItems([
 			{ name: get('display.stretch') || 'Stretch', value: 'stretch' },
 			{ name: get('display.clip') || 'Clip', value: 'clip' }
 		]);
 		$('#setProgressBar-property-blend').loadItems([
-			{ name: Local.get!('blend.normal') || 'Normal', value: 'normal' },
-			{ name: Local.get!('blend.additive') || 'Additive', value: 'additive' },
-			{ name: Local.get!('blend.subtract') || 'Subtract', value: 'subtract' }
+			{ name: t('blend.normal') || 'Normal', value: 'normal' },
+			{ name: t('blend.additive') || 'Additive', value: 'additive' },
+			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' }
 		]);
 	},
 	parsers: {

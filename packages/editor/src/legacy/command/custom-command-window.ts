@@ -1,20 +1,20 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, hide, on, show } from '@/util/element-utils.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, hide, on, show } from '@app/legacy/util/element-utils.ts';
 import { Command } from './command-object.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { File } from '@/file/file-system-core.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
-import { Local } from '@/tools/localization.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import { createGetter } from '@app/i18n';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 
-import { ctrl } from '@/util/event-accessors.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
 
 const Clipboard = getGlobalClipboard();
 
@@ -269,7 +269,7 @@ CustomCommand.getItemById = Easing.getItemById as unknown as (
 CustomCommand.windowClose = function (this: CustomCommandShape, event: Event): void {
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedCommands')
@@ -365,7 +365,7 @@ CustomCommand.listPopup = function (
 	const selected = !!item;
 	const pastable = Clipboard.has('yami.data.customCommand');
 	const deletable = selected;
-	const get = Local.createGetter!('menuCustomCommandList');
+	const get = createGetter('menuCustomCommandList');
 	Menu.popup(
 		{
 			x: event.clientX,

@@ -11,7 +11,7 @@ import {
 	addClass,
 	removeClass,
 	hasClass
-} from '@/util/element-utils';
+} from '@app/legacy/util/element-utils';
 
 describe('element-utils 低依赖工具（回归保护）', () => {
 	it('hide/show toggles hidden class', () => {

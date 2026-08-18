@@ -1,16 +1,17 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { write } from '@/util/element-utils';
-import { ctrl } from '@/util/event-accessors.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Editor } from '@/main/editor.ts';
-import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Local } from '@/tools/localization.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { write } from '@app/legacy/util/element-utils';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import {
 	addClass,
 	removeClass,
@@ -20,7 +21,7 @@ import {
 	clear,
 	read,
 	getFocus
-} from '@/util/element-utils.ts';
+} from '@app/legacy/util/element-utils.ts';
 
 interface EventCommandShape {
 	id: string;
@@ -306,7 +307,7 @@ function bindListMethods() {
 				this.selectIndex!(index);
 			};
 			if (item.changed) {
-				const get = Local.createGetter!('confirmation');
+				const get = createGetter('confirmation');
 				return Window.confirm!(
 					{
 						message: get('closeUnsavedEvent')
@@ -341,7 +342,7 @@ function bindListMethods() {
 		};
 		for (const item of items) {
 			if (item.changed) {
-				const get = Local.createGetter!('confirmation');
+				const get = createGetter('confirmation');
 				return Window.confirm!(
 					{
 						message: get('closeUnsavedEvent')
@@ -1236,8 +1237,8 @@ EventEditor.getGlobalEventName = function (this: EventEditorShape, id: string) {
 
 EventEditor.windowLocalize = function (this: EventEditorShape, event: Event) {
 	const types = EventEditor.types;
-	const getType = Local.createGetter!('eventTypes');
-	const getTip = Local.createGetter!('eventTips');
+	const getType = createGetter('eventTypes');
+	const getTip = createGetter('eventTips');
 	for (const item of types.all) {
 		const key = item.value;
 		const name = getType(key);
@@ -1261,7 +1262,7 @@ EventEditor.windowClose = function (this: EventEditorShape, event: Event) {
 	this.closing = true;
 	if (this.isChanged!()) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		return Window.confirm!(
 			{
 				message: get('closeUnsavedEvent')
@@ -1404,7 +1405,7 @@ EventEditor.listSelect = function (this: EventEditorShape, event: Event) {
 EventEditor.listPopup = function (this: EventEditorShape, event: Event) {
 	const item = event.value;
 	const selected = !!item;
-	const get = Local.createGetter!('menuEventList');
+	const get = createGetter('menuEventList');
 	Menu.popup!(
 		{
 			x: event.clientX,

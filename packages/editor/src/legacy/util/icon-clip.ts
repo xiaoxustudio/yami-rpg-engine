@@ -1,4 +1,4 @@
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 
 export function setIconClip(
 	icon: HTMLElement,

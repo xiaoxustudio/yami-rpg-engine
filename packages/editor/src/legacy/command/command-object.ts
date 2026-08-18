@@ -1,4 +1,4 @@
-import { CommandSchema } from '@/module/command/schema.ts';
+import { CommandSchema } from '@app/legacy/module/command/schema.ts';
 import type { WordListShape } from '@app/composables/useWordList.ts';
 import { commandState } from '@app/composables/useCommandState.ts';
 

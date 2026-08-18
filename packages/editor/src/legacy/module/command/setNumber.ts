@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { NumberOperand } from '@/command/set-value-operand-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { NumberOperand } from '@app/legacy/command/set-value-operand-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface SetNumberOperand {
 	operation: string;
@@ -92,7 +92,7 @@ Command.cases.setNumber = new CommandSchema({
 		const expression = this.parseOperands!(operands);
 		return [
 			{ color: 'variable' },
-			{ text: Local.get!('command.setNumber.alias') + ' ' },
+			{ text: t('command.setNumber.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${expression}` }
 		];

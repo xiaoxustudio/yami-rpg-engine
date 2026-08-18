@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface ForEachForm {
 	data: string;
@@ -38,7 +38,7 @@ Command.cases.forEach = new CommandSchema({
 		touchId: unknown;
 		commands: unknown;
 	}) {
-		const dataInfo = Local.get!('command.forEach.' + data);
+		const dataInfo = t('command.forEach.' + data);
 		const words = Command.words;
 		switch (data) {
 			case 'list': {
@@ -100,12 +100,12 @@ Command.cases.forEach = new CommandSchema({
 		return [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get!('command.forEach') + ' ' },
+			{ text: t('command.forEach') + ' ' },
 			{ color: 'restore' },
 			{ text: words.join() },
 			{ children: commands },
 			{ color: 'flow' },
-			{ text: Local.get!('command.forEach.end') }
+			{ text: t('command.forEach.end') }
 		];
 	}
 });

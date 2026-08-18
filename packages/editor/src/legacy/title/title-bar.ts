@@ -1,31 +1,31 @@
 import { ipcRenderer } from 'electron';
 import type { IpcRendererEvent } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
-import { addClass, hasClass, hide, removeClass, show } from '@/util/element-utils';
-import { Path } from '@/util/config.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { AudioManager } from '@/audio/audio-manager.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, hasClass, hide, removeClass, show } from '@app/legacy/util/element-utils';
+import { Path } from '@app/legacy/util/config.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Editor } from '@/main/editor.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { getTitleStore } from '@app/stores/title';
-import { ApkBuilder } from '@/module/apkbuilder.ts';
-import { WebServer } from '@/module/webserver.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { DynamicShape } from '@/types/legacy-shapes.ts';
+import { ApkBuilder } from '@app/legacy/module/apkbuilder.ts';
+import { WebServer } from '@app/legacy/module/webserver.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
+import { t, createGetter } from '@app/i18n';
 import { Deployment } from './deploy-project-window.ts';
 import { NewProject } from './new-project-window.ts';
-import { Local } from '@/tools/localization.ts';
 
 // 通用可空方法契约（运行时挂载的具体方法签名各异，统一用宽类型）
 type TitleMethod = ((...args: any[]) => any) | null;
@@ -303,7 +303,7 @@ Title.reopenClosedTab = function (this: TitleShape, meta: TitleMeta) {
 
 Title.askWhetherToSave = function (this: TitleShape, callback: () => void) {
 	if (Data.manifest?.changes.length > 0) {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedProject')
@@ -449,7 +449,7 @@ Title.loadFromProject = function (this: TitleShape, project: EditorProjectShape)
 
 	const dirItem = {
 		icon: '\uf07c',
-		name: Local.get!('common.directory'),
+		name: t('common.directory'),
 		meta: { guid: '' },
 		type: 'directory'
 	};
@@ -560,7 +560,7 @@ Title.windowDirchange = function (this: TitleShape, event: Event) {
 Title.windowLocalize = function (this: TitleShape, event: Event) {
 	const text = Title.tabBar.dirItem?.tab?.text;
 	if (text instanceof HTMLElement) {
-		text.textContent = Local.get!('common.directory');
+		text.textContent = t('common.directory');
 	}
 };
 
@@ -684,7 +684,7 @@ Title.tabBarPopup = function (this: TitleShape, event: MouseEvent) {
 	if (!item) return;
 	const items = this.data;
 	const last = items[items.length - 1];
-	const get = Local.createGetter!('menuTab');
+	const get = createGetter('menuTab');
 	Menu.popup!(
 		{
 			x: event.clientX,

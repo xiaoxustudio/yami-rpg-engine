@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { hide, show } from '@/util/element-utils';
-import { File } from '@/file/file-system-core.ts';
+import { hide, show } from '@app/legacy/util/element-utils';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 
 {

@@ -1,7 +1,7 @@
 import { Data } from './data-object.ts';
 import { Meta } from './metadata.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Title } from '@/title/title-bar.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
 
 export type FileMeta = InstanceType<typeof Meta>;
 

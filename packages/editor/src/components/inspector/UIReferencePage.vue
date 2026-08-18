@@ -1,15 +1,15 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiReference-properties-grid') || 'Reference Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiReference-properties-grid.label') || 'Reference Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiReference-properties-grid">
-			<div class="text">{{ local.getLabel('uiReference-prefabId') || 'Prefab' }}</div
+			<div class="text">{{ t('components.uiReference-prefabId.label') || 'Prefab' }}</div
 			><CustomBox
 				id="uiReference-prefabId"
 				:model-value="form.prefabId"
 				type="preset-element"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('uiReference-synchronous') || 'Synchronous' }}</div
+			<div class="text">{{ t('components.uiReference-synchronous.label') || 'Synchronous' }}</div
 			><CheckBox
 				id="uiReference-synchronous"
 				:model-value="form.synchronous"
@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUIReferencePage } from '@app/composables/useUIReferencePage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -32,7 +32,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIReferencePage();
 

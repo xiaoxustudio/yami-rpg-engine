@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { DialogBoxProperty } from '@/command/set-dialog-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { DialogBoxProperty } from '@app/legacy/command/set-dialog-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setDialogBox = new CommandSchema({
 	name: 'setDialogBox',
@@ -23,7 +23,7 @@ Command.cases.setDialogBox = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setDialogBox') + Token(': ') },
+			{ text: t('command.setDialogBox') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

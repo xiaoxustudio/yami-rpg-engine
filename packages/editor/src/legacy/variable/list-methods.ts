@@ -1,4 +1,4 @@
-import { Data } from '@/data/data-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { getVariableStore } from '@app/stores/variable';
 
 import { Variable } from './variable.ts';

@@ -1,4 +1,8 @@
 import { vi } from 'vitest';
+import { config } from '@vue/test-utils';
+import { initYamiI18n } from '@app/i18n';
+
+config.global.plugins = [initYamiI18n()];
 
 // legacy inspector 页面由 composable/组件顶层侧效应 import 注册挂载点，
 // 测试环境统一 mock 为空模块，避免 IIFE 覆盖各测试文件的 Inspector 挂载点 mock

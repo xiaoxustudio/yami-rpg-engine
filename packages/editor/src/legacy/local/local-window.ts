@@ -1,32 +1,41 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Window } from '@/tools/window-object.ts';
-import { on, show, hide, clear, addClass, read, write, getFocus } from '@/util/element-utils.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Shortcuts } from '@/tools/shortcut-registry.ts';
-import { createDetailBox } from '@/components/detail-box.ts';
-import { createDetailSummary } from '@/components/detail-summary.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { createTextArea } from '@/components/text-area.ts';
-import { TreeList } from '@/components/tree-list.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import {
+	on,
+	show,
+	hide,
+	clear,
+	addClass,
+	read,
+	write,
+	getFocus
+} from '@app/legacy/util/element-utils.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
+import { createDetailBox } from '@app/legacy/components/detail-box.ts';
+import { createDetailSummary } from '@app/legacy/components/detail-summary.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { createTextArea } from '@app/legacy/components/text-area.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { ExportLanguage } from './export-language-window.ts';
 import { ImportLanguage } from './import-language-window.ts';
-import { Reference } from '@/log/related-references.ts';
-import { History } from '@/tools/history.ts';
-import { Local } from '@/tools/localization.ts';
-import { Selection } from '@/tools/text-capture.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { t, createGetter } from '@app/i18n';
+import { Selection } from '@app/legacy/tools/text-capture.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
-import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { bindListClipboardMethods } from '@app/legacy/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
-import { type TreeListElement } from '@/components/tree-list.ts';
+import { type TreeListElement } from '@app/legacy/components/tree-list.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { ipcRenderer } from 'electron';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 
 interface LocalizationItem {
 	id?: string;
@@ -278,7 +287,7 @@ Localization.createInputs = function () {
 	for (const language of this.languages!) {
 		const detailBox = createDetailBox();
 		const detailSummary = createDetailSummary();
-		detailSummary.textContent = Local.get!('languages.' + language);
+		detailSummary.textContent = t('languages.' + language);
 		const textarea = createTextArea();
 		(textarea as HTMLElement & { language: string }).language = language;
 		textarea.setAttribute('menu', 'tag-global tag-dynamic-global-var');
@@ -492,7 +501,7 @@ Localization.windowClose = function (this: LocalizationShape, event: Event) {
 	this.list!.saveScroll();
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedLocalization')
@@ -610,7 +619,7 @@ Localization.listPopup = function (event: Event & { clientX: number; clientY: nu
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.localization');
 	const undoable = Localization.history!.canUndo();
 	const redoable = Localization.history!.canRedo();
-	const get = Local.createGetter!('menuLocalList');
+	const get = createGetter('menuLocalList');
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

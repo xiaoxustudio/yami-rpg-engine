@@ -1,12 +1,12 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, hasClass, hide, on, show } from '@/util/element-utils.ts';
-import { Command } from '@/command/command-object.ts';
-import { Title } from '@/title/title-bar.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, hasClass, hide, on, show } from '@app/legacy/util/element-utils.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { createGetter } from '@app/i18n';
 import { h, render } from 'vue';
 
-import { getMonaco } from '@/util/monaco';
+import { getMonaco } from '@app/legacy/util/monaco';
 import type * as monacoNs from 'monaco-editor';
 
 interface EditDataNodeShape {
@@ -60,7 +60,7 @@ export const EditDataInstance = new (class {
 		on(this.editorParent, 'close', (event: Event) => {
 			if (this.changed) {
 				event.preventDefault();
-				const get = Local.createGetter!('confirmation');
+				const get = createGetter('confirmation');
 				Window.confirm!(
 					{
 						message: get('closeUnsavedData'),

@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.commandLine = new CommandSchema({
 	name: 'commandLine',
@@ -13,7 +13,7 @@ Command.cases.commandLine = new CommandSchema({
 	customParse({ type = 'get', key = '', value = '', variable = { type: 'local', key: '' } }) {
 		const head = [
 			{ color: 'system' },
-			{ text: Local.get!('command.commandLine') },
+			{ text: t('command.commandLine') },
 			{ color: 'normal' },
 			{ text: ' ' }
 		];
@@ -23,7 +23,7 @@ Command.cases.commandLine = new CommandSchema({
 					typeof value == 'string' ? value : Command.parseVariable!(value, 'string');
 				return head.concat(
 					{ color: 'flow' },
-					{ text: Local.get!('command.commandLine.set') },
+					{ text: t('command.commandLine.set') },
 					{ text: ' ' },
 					{ color: 'text' },
 					{ color: 'save' },
@@ -54,10 +54,10 @@ Command.cases.commandLine = new CommandSchema({
 					{
 						text:
 							type === 'get'
-								? Local.get!('command.commandLine.get')
+								? t('command.commandLine.get')
 								: type === 'rm'
-									? Local.get!('command.commandLine.rm')
-									: Local.get!('command.commandLine.has')
+									? t('command.commandLine.rm')
+									: t('command.commandLine.has')
 					},
 					{ text: ' ' },
 					{ color: 'text' },
@@ -69,7 +69,7 @@ Command.cases.commandLine = new CommandSchema({
 					{ color: 'gray' },
 					{ color: 'save' },
 					{
-						text: Local.get!('command.commandLine.variable')
+						text: t('command.commandLine.variable')
 					},
 					{ text: ' ' },
 					{

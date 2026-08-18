@@ -1,10 +1,10 @@
-import { Data } from '@/data/data-object.ts';
-import { Window } from '@/tools/window-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 
-import { show } from '@/util/element-utils';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Particle } from '@/particle/particle-window.ts';
+import { show } from '@app/legacy/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { Light } from './light.ts';
 import { Parallax } from './parallax.ts';
 import { Scene } from './scene-window.ts';

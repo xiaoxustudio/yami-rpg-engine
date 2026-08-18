@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export type SetStringOperand = Record<string, any>;
 
@@ -82,7 +82,7 @@ Command.cases.setString = new CommandSchema({
 	parseStringMethod(operand: SetStringOperand) {
 		const method = operand.method;
 		const variable = operand.variable;
-		const methodName = Local.get!('command.setString.string.' + method);
+		const methodName = t('command.setString.string.' + method);
 		const varName = Command.parseVariable!(variable, 'string');
 		switch (method) {
 			case 'char': {
@@ -135,7 +135,7 @@ Command.cases.setString = new CommandSchema({
 		}
 	},
 	parseObjectProperty(operand: SetStringOperand) {
-		const property = Local.get!('command.setString.object.' + operand.property);
+		const property = t('command.setString.object.' + operand.property);
 		switch (operand.property) {
 			case 'actor-team-id':
 			case 'actor-file-id':
@@ -162,14 +162,11 @@ Command.cases.setString = new CommandSchema({
 	},
 	parseElementProperty(operand: SetStringOperand) {
 		const element = Command.parseElement!(operand.element);
-		const property = Local.get!('command.setString.element.' + operand.property);
+		const property = t('command.setString.element.' + operand.property);
 		return element + Token(' -> ') + property.replace('.', Token('.'));
 	},
 	parseOther(operand: SetStringOperand) {
-		const label = Local.get!('command.setString.other.' + operand.data).replace(
-			'.',
-			Token('.')
-		);
+		const label = t('command.setString.other.' + operand.data).replace('.', Token('.'));
 		switch (operand.data) {
 			case 'trigger-key':
 			case 'start-position-scene-id':
@@ -180,7 +177,7 @@ Command.cases.setString = new CommandSchema({
 			case 'showChoices-content-1':
 			case 'showChoices-content-2':
 			case 'showChoices-content-3': {
-				const label = Local.get!('command.setString.other.showChoices-content');
+				const label = t('command.setString.other.showChoices-content');
 				return (
 					label +
 					Token('[') +
@@ -249,7 +246,7 @@ Command.cases.setString = new CommandSchema({
 		const expression = this.parseOperand!(operand);
 		return [
 			{ color: 'variable' },
-			{ text: Local.get!('command.setString.alias') + ' ' },
+			{ text: t('command.setString.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: `${varDesc}${operator}${expression}` }
 		];

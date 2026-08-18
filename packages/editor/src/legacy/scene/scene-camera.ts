@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
-import { write } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { write } from '@app/legacy/util/element-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { SceneCameraEngine } from '@app/engine/scene/scene-camera-engine.ts';
 

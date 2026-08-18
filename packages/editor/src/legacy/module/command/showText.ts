@@ -1,9 +1,9 @@
-import { measureText } from '@/util/dom.ts';
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { GameLocal } from '@/local/local-object.ts';
+import { measureText } from '@app/legacy/util/dom.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type ShowTextLine = { fold?: boolean; color?: string; text?: string; break?: boolean };
 
@@ -29,7 +29,7 @@ Command.cases.showText = new CommandSchema({
 	latinCharWidth: 0,
 	otherCharWidth: 0,
 	customParse({ target, parameters, content }: ShowTextCommandData) {
-		const alias = Local.get!('command.showText.alias');
+		const alias = t('command.showText.alias');
 		const words = Command.words
 			.push(Command.parseActor!(target))
 			.push(Command.setCommaColors!(parameters));

@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.removeTarget = new CommandSchema({
 	name: 'removeTarget',
@@ -15,7 +15,7 @@ Command.cases.removeTarget = new CommandSchema({
 			.push(Command.parseActor(target));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.removeTarget') + Token(': ') },
+			{ text: t('command.removeTarget') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

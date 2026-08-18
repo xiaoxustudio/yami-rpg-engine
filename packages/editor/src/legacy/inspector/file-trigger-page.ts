@@ -1,10 +1,9 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear, read, write } from '@/util/element-utils';
-import { Animation } from '@/animation/animation-window.ts';
-import { File } from '@/file/file-system-core.ts';
+import { clear, read, write } from '@app/legacy/util/element-utils';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface FileTriggerShape {

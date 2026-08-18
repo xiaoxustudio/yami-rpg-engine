@@ -17,8 +17,8 @@ const switchTypeAndTagInput = (): void => {
 		hide(input.previousElementSibling);
 		hide(input);
 	};
-	const typeInput = document.getElementById('registerEvent-type');
-	const tagInput = document.getElementById('registerEvent-tag');
+	const typeInput = document.getElementById('registerEvent-type')!;
+	const tagInput = document.getElementById('registerEvent-tag')!;
 	const target = read(document.getElementById('registerEvent-target'));
 	const operation = read(document.getElementById('registerEvent-operation'));
 	switch (target) {
@@ -76,7 +76,7 @@ const switchPriority = (): void => {
 	const target = read(document.getElementById('registerEvent-target'));
 	const operation = read(document.getElementById('registerEvent-operation'));
 	const type = read(document.getElementById('registerEvent-type'));
-	const priority = document.getElementById('registerEvent-priority');
+	const priority = document.getElementById('registerEvent-priority')!;
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
 		show(priority);
@@ -89,7 +89,7 @@ const switchPriority = (): void => {
 };
 
 const switchNamespace = (): void => {
-	const namespace = document.getElementById('registerEvent-namespace');
+	const namespace = document.getElementById('registerEvent-namespace')!;
 	const operation = read(document.getElementById('registerEvent-operation'));
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);
@@ -102,7 +102,7 @@ const switchNamespace = (): void => {
 
 const targetWrite = (event: { value: string }): void => {
 	const type = event.value;
-	const elEventType = document.getElementById('registerEvent-type');
+	const elEventType = document.getElementById('registerEvent-type')!;
 	const registerType = 'register_' + type;
 	const eventTypes = Enum.getMergedItems!(
 		EventEditor.types?.[registerType] ?? EventEditor.types?.all,

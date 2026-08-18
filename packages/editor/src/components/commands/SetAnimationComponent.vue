@@ -56,7 +56,7 @@ import { onMounted } from 'vue';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { read } from '@app/legacy/util/element-utils';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -108,7 +108,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.setAnimationComponent');
+	const get = createGetter('command.setAnimationComponent');
 	$('#setAnimationComponent-operation')?.loadItems?.([
 		{ name: get('set-angle') || 'Set Angle', value: 'set-angle' },
 		{ name: get('set-scale') || 'Set Scale', value: 'set-scale' },

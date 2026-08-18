@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setPartyMember = new CommandSchema({
 	name: 'setPartyMember',
@@ -11,11 +11,11 @@ Command.cases.setPartyMember = new CommandSchema({
 	],
 	customParse({ operation, actor }: { operation: string; actor: unknown }) {
 		const words = Command.words
-			.push(Local.get!('command.setPartyMember.' + operation))
+			.push(t('command.setPartyMember.' + operation))
 			.push(Command.parseActor!(actor));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.setPartyMember') + Token(': ') },
+			{ text: t('command.setPartyMember') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

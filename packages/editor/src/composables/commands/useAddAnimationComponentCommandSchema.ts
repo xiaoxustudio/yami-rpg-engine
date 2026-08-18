@@ -11,7 +11,7 @@ export function useAddAnimationComponentCommandSchema() {
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = document.getElementById('addAnimationComponent-motion');
+		const elMotion = document.getElementById('addAnimationComponent-motion')!;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	};

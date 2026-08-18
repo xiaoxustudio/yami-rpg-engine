@@ -1,6 +1,6 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import {
 	addClass,
 	dispatchUpdateEvent,
@@ -11,10 +11,11 @@ import {
 	read,
 	setTooltip,
 	show
-} from '@/util/element-utils.ts';
+} from '@app/legacy/util/element-utils.ts';
 import { Command } from './command-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Local } from '@/tools/localization.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { t, createGetter } from '@app/i18n';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 export interface CommandSuggestionItem {
 	value: string;
@@ -199,7 +200,7 @@ function bindListMethods() {
 			}
 		};
 		return function (this: CommandSuggestionList): void {
-			update(this.data as CommandSuggestionItem[], Local.createGetter!('command'));
+			update(this.data as CommandSuggestionItem[], createGetter('command'));
 		};
 	})();
 
@@ -221,7 +222,7 @@ function bindListMethods() {
 				}
 			}
 			const tip1 = item.class === 'folder' ? '' : `$${item.name}\n${item.desc ?? ''}\n`;
-			const tip2 = `$${Local.get!('command.keywords')}\n${words.join(', ')}`;
+			const tip2 = `$${t('command.keywords')}\n${words.join(', ')}`;
 			addClass(element, 'command-suggestion-item');
 			setTooltip(element, Local.parseTip!(tip1 + tip2, ''));
 		};

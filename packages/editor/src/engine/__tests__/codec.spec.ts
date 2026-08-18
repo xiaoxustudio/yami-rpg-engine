@@ -38,7 +38,7 @@ describe('Codec.encodeFile', () => {
 	it('对前 16 字节加 0x80', () => {
 		const input = new Uint8Array(32);
 		for (let i = 0; i < 32; i++) input[i] = i;
-		const result = Codec.encodeFile(input);
+		const result = Codec.encodeFile!(input);
 		for (let i = 0; i < 0x10; i++) {
 			expect(result[i]).toBe(i + 0x80);
 		}
@@ -48,7 +48,7 @@ describe('Codec.encodeFile', () => {
 	});
 
 	it('字符串输入先 UTF-8 编码再加 0x80', () => {
-		const result = Codec.encodeFile('AB');
+		const result = Codec.encodeFile!('AB');
 		expect(result[0]).toBe(0x41 + 0x80);
 		expect(result[1]).toBe(0x42 + 0x80);
 	});
@@ -62,8 +62,8 @@ describe('Codec.encodeClone / decodeClone', () => {
 	it('小数值（1-31）单字节编解码往返', () => {
 		const buf = new Uint8Array(256);
 		for (const count of [1, 15, 31]) {
-			const end = Codec.encodeClone(buf, 10, count);
-			const result = Codec.decodeClone(buf, 10);
+			const end = Codec.encodeClone!(buf, 10, count);
+			const result = Codec.decodeClone!(buf, 10);
 			expect(result.count).toBe(count);
 			expect(result.index).toBe(end);
 		}
@@ -72,8 +72,8 @@ describe('Codec.encodeClone / decodeClone', () => {
 	it('中等数值（32-1023）双字节编解码往返', () => {
 		const buf = new Uint8Array(256);
 		const count = 500;
-		const end = Codec.encodeClone(buf, 0, count);
-		const result = Codec.decodeClone(buf, 0);
+		const end = Codec.encodeClone!(buf, 0, count);
+		const result = Codec.decodeClone!(buf, 0);
 		expect(result.count).toBe(count);
 		expect(result.index).toBe(end);
 	});
@@ -81,8 +81,8 @@ describe('Codec.encodeClone / decodeClone', () => {
 	it('大数值（>1023）多字节编解码往返', () => {
 		const buf = new Uint8Array(256);
 		const count = 10000;
-		const end = Codec.encodeClone(buf, 0, count);
-		const result = Codec.decodeClone(buf, 0);
+		const end = Codec.encodeClone!(buf, 0, count);
+		const result = Codec.decodeClone!(buf, 0);
 		expect(result.count).toBe(count);
 		expect(result.index).toBe(end);
 	});
@@ -90,8 +90,8 @@ describe('Codec.encodeClone / decodeClone', () => {
 	it('最大测试值编解码往返', () => {
 		const buf = new Uint8Array(256);
 		const count = 65535;
-		const end = Codec.encodeClone(buf, 0, count);
-		const result = Codec.decodeClone(buf, 0);
+		const end = Codec.encodeClone!(buf, 0, count);
+		const result = Codec.decodeClone!(buf, 0);
 		expect(result.count).toBe(count);
 		expect(result.index).toBe(end);
 	});
@@ -106,8 +106,8 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const width = 4;
 		const height = 4;
 		const emptyTiles = new Uint32Array(width * height);
-		const code = Codec.encodeTiles(emptyTiles);
-		const decoded = Codec.decodeTiles(code, width, height);
+		const code = Codec.encodeTiles!(emptyTiles);
+		const decoded = Codec.decodeTiles!(code, width, height);
 		expect(decoded.length).toBe(width * height);
 		expect(Array.from(decoded)).toEqual(new Array(width * height).fill(0));
 	});
@@ -116,8 +116,8 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const width = 1;
 		const height = 1;
 		const tiles = new Uint32Array([0x01020304]);
-		const code = Codec.encodeTiles(tiles);
-		const decoded = Codec.decodeTiles(code, width, height);
+		const code = Codec.encodeTiles!(tiles);
+		const decoded = Codec.decodeTiles!(code, width, height);
 		expect(decoded[0]).toBe(0x01020304);
 	});
 
@@ -126,8 +126,8 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const height = 1;
 		const value = 0x3f3f3f3f;
 		const tiles = new Uint32Array(width).fill(value);
-		const code = Codec.encodeTiles(tiles);
-		const decoded = Codec.decodeTiles(code, width, height);
+		const code = Codec.encodeTiles!(tiles);
+		const decoded = Codec.decodeTiles!(code, width, height);
 		expect(Array.from(decoded)).toEqual(new Array(width).fill(value));
 	});
 
@@ -135,8 +135,8 @@ describe('Codec.encodeTiles / decodeTiles', () => {
 		const width = 6;
 		const height = 1;
 		const tiles = new Uint32Array([0x01020304, 0, 0, 0x05060708, 0, 0x090a0b0c]);
-		const code = Codec.encodeTiles(tiles);
-		const decoded = Codec.decodeTiles(code, width, height);
+		const code = Codec.encodeTiles!(tiles);
+		const decoded = Codec.decodeTiles!(code, width, height);
 		expect(Array.from(decoded)).toEqual(Array.from(tiles));
 	});
 });
@@ -150,8 +150,8 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const width = 5;
 		const height = 5;
 		const empty = new Uint8Array(width * height);
-		const code = Codec.encodeTerrains(empty);
-		const decoded = Codec.decodeTerrains(code, width, height);
+		const code = Codec.encodeTerrains!(empty);
+		const decoded = Codec.decodeTerrains!(code, width, height);
 		expect(decoded.length).toBe(width * height);
 		expect(Array.from(decoded)).toEqual(new Array(width * height).fill(0));
 	});
@@ -160,8 +160,8 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const width = 1;
 		const height = 1;
 		const terrains = new Uint8Array([3]);
-		const code = Codec.encodeTerrains(terrains);
-		const decoded = Codec.decodeTerrains(code, width, height);
+		const code = Codec.encodeTerrains!(terrains);
+		const decoded = Codec.decodeTerrains!(code, width, height);
 		expect(decoded[0]).toBe(3);
 	});
 
@@ -169,8 +169,8 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const width = 30;
 		const height = 1;
 		const terrains = new Uint8Array(width).fill(5);
-		const code = Codec.encodeTerrains(terrains);
-		const decoded = Codec.decodeTerrains(code, width, height);
+		const code = Codec.encodeTerrains!(terrains);
+		const decoded = Codec.decodeTerrains!(code, width, height);
 		expect(Array.from(decoded)).toEqual(new Array(width).fill(5));
 	});
 
@@ -178,8 +178,8 @@ describe('Codec.encodeTerrains / decodeTerrains', () => {
 		const width = 10;
 		const height = 1;
 		const terrains = new Uint8Array([1, 2, 0, 0, 0, 3, 3, 3, 4, 0]);
-		const code = Codec.encodeTerrains(terrains);
-		const decoded = Codec.decodeTerrains(code, width, height);
+		const code = Codec.encodeTerrains!(terrains);
+		const decoded = Codec.decodeTerrains!(code, width, height);
 		expect(Array.from(decoded)).toEqual(Array.from(terrains));
 	});
 });
@@ -193,8 +193,8 @@ describe('Codec.encodeTeamData / decodeTeamData', () => {
 		const length = 6;
 		const dataLength = ((length + 1) / 2) * length;
 		const data = new Uint8Array(dataLength);
-		const code = Codec.encodeTeamData(data);
-		const decoded = Codec.decodeTeamData(code, length);
+		const code = Codec.encodeTeamData!(data);
+		const decoded = Codec.decodeTeamData!(code, length);
 		expect(decoded.length).toBe(dataLength);
 		expect(Array.from(decoded)).toEqual(Array.from(data));
 	});
@@ -206,8 +206,8 @@ describe('Codec.encodeTeamData / decodeTeamData', () => {
 		data[0] = 1;
 		data[5] = 1;
 		data[10] = 1;
-		const code = Codec.encodeTeamData(data);
-		const decoded = Codec.decodeTeamData(code, length);
+		const code = Codec.encodeTeamData!(data);
+		const decoded = Codec.decodeTeamData!(code, length);
 		expect(decoded.length).toBe(dataLength);
 		expect(Array.from(decoded)).toEqual(Array.from(data));
 	});
@@ -221,7 +221,7 @@ describe('Codec.getTilemaps', () => {
 				{ class: 'actor' }
 			]
 		} as any;
-		const result = Codec.getTilemaps(scene);
+		const result = Codec.getTilemaps!(scene);
 		expect(result.length).toBe(1);
 		expect(result[0].class).toBe('tilemap');
 	});
@@ -230,7 +230,7 @@ describe('Codec.getTilemaps', () => {
 		const scene = {
 			objects: [{ class: 'actor' }, { class: 'folder', children: [] }]
 		} as any;
-		const result = Codec.getTilemaps(scene);
+		const result = Codec.getTilemaps!(scene);
 		expect(result.length).toBe(0);
 	});
 
@@ -248,7 +248,7 @@ describe('Codec.getTilemaps', () => {
 				}
 			]
 		} as any;
-		const result = Codec.getTilemaps(scene);
+		const result = Codec.getTilemaps!(scene);
 		expect(result.length).toBe(1);
 	});
 });

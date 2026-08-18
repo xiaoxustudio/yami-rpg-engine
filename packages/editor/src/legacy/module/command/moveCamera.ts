@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.moveCamera = new CommandSchema({
 	name: 'moveCamera',
@@ -29,7 +29,7 @@ Command.cases.moveCamera = new CommandSchema({
 		duration: unknown;
 		wait: unknown;
 	}) {
-		const words = Command.words.push(Local.get!('command.moveCamera.' + mode));
+		const words = Command.words.push(t('command.moveCamera.' + mode));
 		switch (mode) {
 			case 'position':
 				words.push(Command.parsePosition!(position));
@@ -41,7 +41,7 @@ Command.cases.moveCamera = new CommandSchema({
 		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'scene' },
-			{ text: Local.get!('command.moveCamera') + Token(': ') },
+			{ text: t('command.moveCamera') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

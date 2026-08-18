@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.nestElement = new CommandSchema({
 	name: 'nestElement',
@@ -14,7 +14,7 @@ Command.cases.nestElement = new CommandSchema({
 		const cElement = Command.parseElement(child);
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.nestElement') + Token(': ') },
+			{ text: t('command.nestElement') + Token(': ') },
 			{ text: pElement + Token(' -> ') + cElement }
 		];
 	}

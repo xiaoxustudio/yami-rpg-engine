@@ -1,6 +1,6 @@
-import { File } from '@/file/file-system-core.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 Scene.createDefaultAnimation = (function IIFE() {

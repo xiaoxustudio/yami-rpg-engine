@@ -1,5 +1,6 @@
 import { createI18n, type I18n } from 'vue-i18n';
 import { convertLocaleData, type LocaleData, type FlatMessages } from './convert';
+import { loadLanguage, loadLanguageList, resolveLanguage } from './loader';
 
 // vue-i18n 唯一真源（扁平消息表）。
 // 兼容层（legacy Local.get / createGetter / store.getLabel）内部转发到此实例，
@@ -45,8 +46,23 @@ export function applyLocaleData(lang: string, data: LocaleData): void {
 }
 
 // 应用初始化：注册到 App（legacy Local 加载完成后会经 applyLocaleData 填充）
-export function initYamiI18n(): I18n {
+export function initYamiI18n(options?: { autoLoad?: boolean; language?: string }): I18n {
+	if (options?.autoLoad) {
+		loadI18n(options.language).catch(() => undefined);
+	}
 	return i18n;
+}
+
+// i18n 独立加载语言文件（不依赖 legacy Local）：读列表 → 解析当前语言 → 读取 JSON → 喂 i18n
+export async function loadI18n(language?: string): Promise<string> {
+	const languages = await loadLanguageList();
+	const key = resolveLanguage(languages, language);
+	const entry = languages.find((l) => l.key === key);
+	if (!entry) return '';
+	if (flatMessages[key]) return key;
+	const data = await loadLanguage(entry.filename);
+	applyLocaleData(entry.key, data);
+	return entry.key;
 }
 
 export function getYamiI18n(): I18n {

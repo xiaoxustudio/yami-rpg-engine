@@ -36,13 +36,15 @@ export const Codec = {
 	encodeTilemap: null as ((tilemap: TilemapData) => void) | null,
 	decodeTilemap: null as ((tilemap: TilemapData) => TilemapData) | null,
 	encodeTiles: null as ((tiles: Uint32Array) => string) | null,
-	decodeTiles: null as ((code: Uint8Array, width: number, height: number) => Uint32Array) | null,
+	decodeTiles: null as
+		| ((code: Uint8Array | string, width: number, height: number) => Uint32Array)
+		| null,
 	encodeTerrains: null as ((terrains: Uint8Array) => string) | null,
 	decodeTerrains: null as
-		| ((code: Uint8Array, width: number, height: number) => Uint8Array)
+		| ((code: Uint8Array | string, width: number, height: number) => Uint8Array)
 		| null,
 	encodeTeamData: null as ((data: Uint8Array) => string) | null,
-	decodeTeamData: null as ((code: Uint8Array, length: number) => Uint8Array) | null,
+	decodeTeamData: null as ((code: Uint8Array | string, length: number) => Uint8Array) | null,
 	encodeClone: null as ((array: Uint8Array, index: number, count: number) => number) | null,
 	decodeClone: null as
 		| ((array: Uint8Array, index: number) => { index: number; count: number })

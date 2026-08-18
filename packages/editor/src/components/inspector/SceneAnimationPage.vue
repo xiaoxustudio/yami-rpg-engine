@@ -1,9 +1,9 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneAnimation-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneAnimation-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneAnimation-general-grid">
-			<div class="text">{{ local.getLabel('sceneAnimation-name') || 'Name' }}</div><TextBox id="sceneAnimation-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-animationId') || 'Animation' }}</div
+			<div class="text">{{ t('components.sceneAnimation-name.label') || 'Name' }}</div><TextBox id="sceneAnimation-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneAnimation-animationId.label') || 'Animation' }}</div
 			><CustomBox
 				id="sceneAnimation-animationId"
 				:model-value="form.animationId"
@@ -12,9 +12,9 @@
 				@input="onParamInput"
 				@write="onAnimationIdWrite"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-motion') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion" v-model="form.motion" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-rotatable') || 'Rotatable' }}</div
-			><SelectBox id="sceneAnimation-rotatable" v-model="form.rotatable" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneAnimation-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneAnimation-motion.label') || 'Motion' }}</div><SelectBox id="sceneAnimation-motion" v-model="form.motion" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.sceneAnimation-rotatable.label') || 'Rotatable' }}</div
+			><SelectBox id="sceneAnimation-rotatable" v-model="form.rotatable" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.sceneAnimation-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneAnimation-x"
 				v-model="form.x"
@@ -25,7 +25,7 @@
 				unit="tile"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneAnimation-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneAnimation-y"
 				v-model="form.y"
@@ -36,7 +36,7 @@
 				unit="tile"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneAnimation-angle-box') || 'Angle' }}</div
+			<div class="text">{{ t('components.sceneAnimation-angle-box.label') || 'Angle' }}</div
 			><div class="flex-box" id="sceneAnimation-angle-box">
 				<SliderBox
 					id="sceneAnimation-angle-slider"
@@ -56,7 +56,7 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneAnimation-scale-box') || 'Scale' }}</div
+			<div class="text">{{ t('components.sceneAnimation-scale-box.label') || 'Scale' }}</div
 			><div class="flex-box" id="sceneAnimation-scale-box">
 				<SliderBox
 					id="sceneAnimation-scale-slider"
@@ -75,7 +75,7 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneAnimation-speed-box') || 'Speed' }}</div
+			<div class="text">{{ t('components.sceneAnimation-speed-box.label') || 'Speed' }}</div
 			><div class="flex-box" id="sceneAnimation-speed-box">
 				<SliderBox
 					id="sceneAnimation-speed-slider"
@@ -94,7 +94,7 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneAnimation-opacity-box') || 'Opacity' }}</div
+			<div class="text">{{ t('components.sceneAnimation-opacity-box.label') || 'Opacity' }}</div
 			><div class="flex-box" id="sceneAnimation-opacity-box">
 				<SliderBox
 					id="sceneAnimation-opacity-slider"
@@ -113,7 +113,7 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneAnimation-priority-box') || 'Priority' }}</div
+			<div class="text">{{ t('components.sceneAnimation-priority-box.label') || 'Priority' }}</div
 			><div class="flex-box" id="sceneAnimation-priority-box">
 				<SliderBox
 					id="sceneAnimation-priority-slider"
@@ -133,7 +133,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneAnimation-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneAnimation-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-conditions"
 			class="inspector-list"
@@ -141,7 +141,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneAnimation-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneAnimation-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-events"
 			class="inspector-list"
@@ -150,7 +150,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneAnimation-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneAnimation-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneAnimation-scripts"
 			class="inspector-list"
@@ -162,6 +162,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -169,7 +170,6 @@ import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
 import { useSceneStore } from '@app/stores/scene';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -182,7 +182,7 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneAnimationPage();
 

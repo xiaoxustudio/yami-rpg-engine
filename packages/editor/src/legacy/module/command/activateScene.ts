@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.activateScene = new CommandSchema({
 	name: 'activateScene',
@@ -17,7 +17,7 @@ Command.cases.activateScene = new CommandSchema({
 	customParse({ pointer }: { pointer: number }) {
 		return [
 			{ color: 'scene' },
-			{ text: Local.get!('command.activateScene') + Token(': ') },
+			{ text: t('command.activateScene') + Token(': ') },
 			{ text: this.parsePointer!(pointer) }
 		];
 	}

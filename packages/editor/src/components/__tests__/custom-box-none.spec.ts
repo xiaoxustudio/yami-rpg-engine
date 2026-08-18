@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { describe, expect, it, vi } from 'vitest';
 import { customBoxOptions } from '@app/legacy/components/custom-box-opts.ts';
 
-beforeEach(() => {
-	vi.spyOn(Local as unknown as { get: (key: string) => string }, 'get').mockReturnValue('None');
+vi.mock('@app/i18n', async (importOriginal) => {
+	const mod = await importOriginal<typeof import('@app/i18n')>();
+	return { ...mod, t: () => 'None', createGetter: () => () => 'None' };
 });
 
 const parse = (type: string, value: unknown): string => {

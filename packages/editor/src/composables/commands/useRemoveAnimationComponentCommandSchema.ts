@@ -11,7 +11,7 @@ export function useRemoveAnimationComponentCommandSchema() {
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = document.getElementById('removeAnimationComponent-motion');
+		const elMotion = document.getElementById('removeAnimationComponent-motion')!;
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	};

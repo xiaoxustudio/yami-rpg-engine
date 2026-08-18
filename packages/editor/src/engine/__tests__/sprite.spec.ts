@@ -65,7 +65,7 @@ vi.mock('@app/legacy/palette/palette', () => ({
 }));
 
 import { Sprite } from '@app/engine/sprite/sprite.ts';
-import '@/util/css.ts';
+import '@app/legacy/util/css.ts';
 
 function createEl(id: string): HTMLElement {
 	const el = document.createElement('div');

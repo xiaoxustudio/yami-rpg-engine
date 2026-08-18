@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setLoop = new CommandSchema({
 	name: 'setLoop',
@@ -12,16 +12,16 @@ Command.cases.setLoop = new CommandSchema({
 	parseLoop(loop: boolean) {
 		switch (loop) {
 			case false:
-				return Local.get!('command.setLoop.once');
+				return t('command.setLoop.once');
 			case true:
-				return Local.get!('command.setLoop.loop');
+				return t('command.setLoop.loop');
 		}
 	},
 	customParse({ type, loop }: { type: unknown; loop: boolean }) {
 		const words = Command.words.push(Command.parseAudioType!(type)).push(this.parseLoop!(loop));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get!('command.setLoop') + Token(': ') },
+			{ text: t('command.setLoop') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

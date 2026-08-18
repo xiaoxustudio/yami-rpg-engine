@@ -1,6 +1,6 @@
-import { read } from '@/util/element-utils.ts';
+import { read } from '@app/legacy/util/element-utils.ts';
 import { Variable } from './variable.ts';
-import { Shortcuts } from '@/tools/shortcut-registry.ts';
+import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
 
 Variable.keydown = Shortcuts.createUndoRedo(Variable);
 

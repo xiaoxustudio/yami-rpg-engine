@@ -1,8 +1,8 @@
-import { Data } from '@/data/data-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { FileItem } from '@/file/file-item.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
 import { Scene } from './scene-window.ts';
-import { StageColor } from '@/util/stage-color.ts';
+import { StageColor } from '@app/legacy/util/stage-color.ts';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 
 interface SceneObjectShape {

@@ -1,8 +1,8 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animParticleLayer-properties-grid') || 'Particle Layer' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animParticleLayer-properties-grid.label') || 'Particle Layer' }}</DetailSummary>
 		<div class="detail-grid" id="animParticleLayer-properties-grid">
-			<div class="text">{{ local.getLabel('animParticleLayer-particleId') || 'Particle' }}</div
+			<div class="text">{{ t('components.animParticleLayer-particleId.label') || 'Particle' }}</div
 			><CustomBox
 				id="animParticleLayer-particleId"
 				type="file"
@@ -10,27 +10,27 @@
 				:model-value="form.particleId"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('animParticleLayer-position') || 'Position' }}</div
+			<div class="text">{{ t('components.animParticleLayer-position.label') || 'Position' }}</div
 			><SelectBox id="animParticleLayer-position" v-model="form.position" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animParticleLayer-angle') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle" v-model="form.angle" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animParticleLayer-order') || 'Order' }}</div><SelectBox id="animParticleLayer-order" v-model="form.order" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.animParticleLayer-angle.label') || 'Angle' }}</div><SelectBox id="animParticleLayer-angle" v-model="form.angle" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.animParticleLayer-order.label') || 'Order' }}</div><SelectBox id="animParticleLayer-order" v-model="form.order" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleLayerPage } from '@app/composables/useAnimParticleLayerPage';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimParticleLayerPage();
 

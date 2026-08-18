@@ -1,29 +1,30 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, hide, on, read, show } from '@/util/element-utils.ts';
-import { getVariable } from '@/util/safe.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Command } from '@/command/command-object.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { ActorGetter } from '@/command/actor-accessor-window.ts';
-import { ElementGetter } from '@/command/element-accessor-window.ts';
-import { EquipmentGetter } from '@/command/equipment-accessor-window.ts';
-import { ItemGetter } from '@/command/item-accessor-window.ts';
-import { PositionGetter } from '@/command/position-accessor-window.ts';
-import { SkillGetter } from '@/command/skill-accessor-window.ts';
-import { StateGetter } from '@/command/state-accessor-window.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList, type TreeListElement } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Local } from '@/tools/localization.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, hide, on, read, show } from '@app/legacy/util/element-utils.ts';
+import { getVariable } from '@app/legacy/util/safe.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
+import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
+import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
+import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
+import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
+import { SkillGetter } from '@app/legacy/command/skill-accessor-window.ts';
+import { StateGetter } from '@app/legacy/command/state-accessor-window.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList, type TreeListElement } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 
 interface PluginItemShape {
 	id: string;
@@ -1570,7 +1571,7 @@ PluginManager.loadFromProject = function (this: typeof PluginManager, project: E
 PluginManager.windowClose = function (this: typeof PluginManager, event: Event) {
 	if (this.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedPlugins')
@@ -1680,7 +1681,7 @@ PluginManager.listPopup = function (
 	const selected = !!item;
 	const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.data.plugin');
 	const deletable = selected;
-	const get = Local.createGetter!('menuPluginList');
+	const get = createGetter('menuPluginList');
 	Menu.popup(
 		{
 			x: event.clientX,
@@ -1756,7 +1757,7 @@ PluginManager.overviewPointerdown = (function IIFE() {
 				},
 				[
 					{
-						label: Local.get!('menuPluginOverview.detail'),
+						label: t('menuPluginOverview.detail'),
 						accelerator: ctrl('D'),
 						checked: PluginManager.detailed,
 						click: () => {
@@ -1866,7 +1867,7 @@ PluginManager.list_paste = function (this: TreeListElement, dItem: PluginItemSha
 
 // 列表 - 删除
 PluginManager.list_delete = function (this: TreeListElement, item: PluginItemShape) {
-	const get = Local.createGetter!('confirmation');
+	const get = createGetter('confirmation');
 	const name = Command.removeTextTags(Command.parseFileName(item.id));
 	Window.confirm!(
 		{

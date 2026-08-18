@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.webSocketClose = new CommandSchema({
 	name: 'webSocketClose',
@@ -12,7 +12,7 @@ Command.cases.webSocketClose = new CommandSchema({
 	customParse({ id = '', code = '', reason = '' }) {
 		const head = [
 			{ color: 'network' },
-			{ text: Local.get!('command.webSocketClose') },
+			{ text: t('command.webSocketClose') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{ text: id }

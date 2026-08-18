@@ -69,7 +69,7 @@ interface TileNodeWindow {
 const getCanvas = (): HTMLCanvasElement =>
 	document.getElementById('autoTile-selectNode-canvas') as HTMLCanvasElement;
 
-const getScreen = (): HTMLElement => document.getElementById('autoTile-selectNode-screen');
+const getScreen = (): HTMLElement => document.getElementById('autoTile-selectNode-screen')!;
 
 const getMarquee = (): TileNodeMarquee =>
 	document.getElementById('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
@@ -107,7 +107,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = document.getElementById('autoTile-selectNode');
+	const windowFrame = document.getElementById('autoTile-selectNode')!;
 	const screen = getScreen();
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;

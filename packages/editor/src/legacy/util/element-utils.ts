@@ -1,7 +1,7 @@
 import { $ } from './dom.ts';
 import { Timer } from './timer.ts';
 import { Cursor } from '../tools/pointer-object.ts';
-import { createScrollBar } from '@/components/scroll-bar.ts';
+import { createScrollBar } from '@app/legacy/components/scroll-bar.ts';
 import { attachDoubleclick, detachDoubleclick } from './doubleclick.ts';
 import { Fragment, h, render, type VNode } from 'vue';
 

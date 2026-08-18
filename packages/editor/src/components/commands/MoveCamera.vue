@@ -27,7 +27,7 @@
 import { onMounted } from 'vue';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { clear } from '@app/legacy/util/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -51,7 +51,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.moveCamera');
+	const get = createGetter('command.moveCamera');
 	$('#moveCamera-mode')?.loadItems?.([
 		{ name: get('position') || 'Move to Position', value: 'position' },
 		{ name: get('actor') || 'Follow Actor', value: 'actor' }

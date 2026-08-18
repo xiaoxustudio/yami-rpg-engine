@@ -1,24 +1,32 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { addScrollbars, hide, show, on, write, clear, rect } from '@/util/element-utils.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import {
+	addScrollbars,
+	hide,
+	show,
+	on,
+	write,
+	clear,
+	rect
+} from '@app/legacy/util/element-utils.ts';
 import { getListConfig } from '@ui-kit';
-import { Timer } from '@/util/timer.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 
-import { Reference } from '@/log/related-references.ts';
-import { Editor } from '@/main/editor.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { Data } from '@/data/data-object.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Particle } from '@/particle/particle-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { ObjectFolder } from './default-object-folder.ts';
 import { SceneShift } from './move-scene.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
-import { History } from '@/tools/history.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 

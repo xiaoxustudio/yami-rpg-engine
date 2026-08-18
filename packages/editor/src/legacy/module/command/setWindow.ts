@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { WindowProperty } from '@/command/set-window-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { WindowProperty } from '@app/legacy/command/set-window-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setWindow = new CommandSchema({
 	name: 'setWindow',
@@ -23,7 +23,7 @@ Command.cases.setWindow = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setWindow') + Token(': ') },
+			{ text: t('command.setWindow') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

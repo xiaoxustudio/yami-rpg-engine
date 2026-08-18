@@ -1,13 +1,13 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileFont-info-grid') || 'File Info' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileFont-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-info-grid">
-			<div class="text">{{ local.getLabel('fileFont-name') || 'Name' }}</div><div class="text" id="fileFont-name"></div> <div class="text">{{ local.getLabel('fileFont-size') || 'Size' }}</div
+			<div class="text">{{ t('components.fileFont-name.label') || 'Name' }}</div><div class="text" id="fileFont-name"></div> <div class="text">{{ t('components.fileFont-size.label') || 'Size' }}</div
 			><div class="text" id="fileFont-size"></div>
 		</div>
 	</DetailBox>
 	<DetailBox id="fileFont-font-detail" open>
-		<DetailSummary>{{ local.getLabel('fileFont-font-grid') || 'Font Preview' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileFont-font-grid.label') || 'Font Preview' }}</DetailSummary>
 		<div class="detail-grid" id="fileFont-font-grid">
 			<TextBox id="fileFont-content" @input="onTextInput" />
 			<div class="text fileFont-preview" id="fileFont-12px"></div>
@@ -23,14 +23,14 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { onTextInput } = useFileFontPage();
 

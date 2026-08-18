@@ -1,12 +1,12 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { attachDoubleclick } from '@/util/doubleclick.ts';
-import { on, hide, show, hasClass, read } from '@/util/element-utils.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Local } from './localization.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { attachDoubleclick } from '@app/legacy/util/doubleclick.ts';
+import { on, hide, show, hasClass, read } from '@app/legacy/util/element-utils.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { t } from '@app/i18n';
 import { Cursor } from './pointer-object.ts';
-import { Path } from '@/util/config.ts';
+import { Path } from '@app/legacy/util/config.ts';
 
 type CropTarget = {
 	getAttribute?: (name: string) => string | null;
@@ -164,7 +164,7 @@ ImageClip.updateTitle = function (this: typeof ImageClip, ...args: unknown[]) {
 		const height = image.naturalHeight;
 		info = `${alias} - ${width}x${height}`;
 	} else {
-		info = Local.get!('common.none');
+		info = t('common.none');
 	}
 	this.window.setTitle(info);
 };

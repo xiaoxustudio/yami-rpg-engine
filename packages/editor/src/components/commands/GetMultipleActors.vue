@@ -43,7 +43,7 @@
 import { onMounted } from 'vue';
 import { useGetMultipleActorsCommandSchema } from '@app/composables/commands/useGetMultipleActorsCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { clear } from '@app/legacy/util/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -76,7 +76,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.getMultipleActors');
+	const get = createGetter('command.getMultipleActors');
 	$('#getMultipleActors-area')?.loadItems?.([
 		{ name: get('rectangle') || 'Rectangle', value: 'rectangle' },
 		{ name: get('circle') || 'Circle', value: 'circle' }

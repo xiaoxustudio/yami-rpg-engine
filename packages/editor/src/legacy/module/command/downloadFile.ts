@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.downloadFile = new CommandSchema({
 	name: 'downloadFile',
@@ -35,7 +35,7 @@ Command.cases.downloadFile = new CommandSchema({
 	}) {
 		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
-			{ text: Local.get!('command.downloadFile') },
+			{ text: t('command.downloadFile') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -76,7 +76,7 @@ Command.cases.downloadFile = new CommandSchema({
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get!('command.downloadFileData')} = ` },
+			{ text: `, ${t('command.downloadFileData')} = ` },
 			datas.slice(1),
 			{ text: ' , ' },
 			{ color: 'normal' },

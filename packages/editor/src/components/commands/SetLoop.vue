@@ -15,7 +15,7 @@
 import { onMounted } from 'vue';
 import { useSetLoopCommandSchema } from '@app/composables/commands/useSetLoopCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
@@ -27,7 +27,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.setLoop');
+	const get = createGetter('command.setLoop');
 	$('#setLoop-type')?.loadItems?.([
 		{ name: 'BGM', value: 'bgm' },
 		{ name: 'BGS', value: 'bgs' },

@@ -1,22 +1,22 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileActor-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileActor-general-grid.label') || 'General' }}</DetailSummary>
 			<div class="detail-grid" id="fileActor-general-grid">
-				<div class="text">{{ local.getLabel('fileActor-portrait') || 'Portrait' }}</div
+				<div class="text">{{ t('components.fileActor-portrait.label') || 'Portrait' }}</div
 			><CustomBox
 				id="fileActor-portrait"
 				type="file"
 				filter="image"
 				:model-value="form.portrait"
 				@input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileActor-clip') || 'Clip' }}</div
+			<div class="text">{{ t('components.fileActor-clip.label') || 'Clip' }}</div
 			><CustomBox
 				id="fileActor-clip"
 				type="clip"
 				image="fileActor-portrait"
 				:model-value="form.clip"
 				@input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileActor-animationId') || 'Animation' }}</div
+			<div class="text">{{ t('components.fileActor-animationId.label') || 'Animation' }}</div
 			><CustomBox
 				id="fileActor-animationId"
 				type="file"
@@ -90,7 +90,7 @@
 			</div>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-sprites') || 'Sprites' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-sprites.label') || 'Sprites' }}</DetailSummary>
 			<ParamList
 				id="fileActor-sprites" @change="onListChange"
 				class="inspector-list"
@@ -98,7 +98,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-attributes') || 'Attributes' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-attributes.label') || 'Attributes' }}</DetailSummary>
 			<ParamList
 				id="fileActor-attributes" @change="onListChange"
 				class="inspector-list"
@@ -107,7 +107,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-skills') || 'Skills' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-skills.label') || 'Skills' }}</DetailSummary>
 			<ParamList
 				id="fileActor-skills" @change="onListChange"
 				class="inspector-list"
@@ -115,7 +115,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-equipments') || 'Equipments' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-equipments.label') || 'Equipments' }}</DetailSummary>
 			<ParamList
 				id="fileActor-equipments" @change="onListChange"
 				class="inspector-list"
@@ -123,7 +123,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-inventory') || 'Inventory' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-inventory.label') || 'Inventory' }}</DetailSummary>
 			<ParamList
 				id="fileActor-inventory" @change="onListChange"
 				class="inspector-list"
@@ -131,7 +131,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-events') || 'Events' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-events.label') || 'Events' }}</DetailSummary>
 			<ParamList
 				id="fileActor-events" @change="onListChange"
 				class="inspector-list"
@@ -140,7 +140,7 @@
 			/>
 		</DetailBox>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileActor-scripts') || 'Scripts' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileActor-scripts.label') || 'Scripts' }}</DetailSummary>
 			<ParamList
 				id="fileActor-scripts" @change="onListChange"
 				class="inspector-list"
@@ -152,13 +152,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileActorPage } from '@app/composables/useFileActorPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -169,7 +169,7 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileActorPage();
 

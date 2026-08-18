@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.createTrigger = new CommandSchema({
 	name: 'createTrigger',
@@ -43,7 +43,7 @@ Command.cases.createTrigger = new CommandSchema({
 			.push(Command.parseVariableNumber!(timeScale));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.createTrigger') + Token(': ') },
+			{ text: t('command.createTrigger') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

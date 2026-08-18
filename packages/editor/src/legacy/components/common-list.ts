@@ -5,7 +5,7 @@ import {
 	hasClass,
 	seek,
 	listenDraggingScrollbarEvent
-} from '@/util/element-utils.ts';
+} from '@app/legacy/util/element-utils.ts';
 
 type CommonListElement = HTMLElement & { dataValue?: unknown; versionId?: number };
 

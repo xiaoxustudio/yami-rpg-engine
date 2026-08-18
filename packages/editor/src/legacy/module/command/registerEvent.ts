@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type RegisterEventData = {
 	target: string;
@@ -46,13 +46,11 @@ Command.cases.registerEvent = new CommandSchema({
 					}
 					case 'unregister': {
 						const tagName = Token('(') + Command.parseVariableString!(tag) + Token(')');
-						words.push(
-							Local.get!('command.registerEvent.reset.global-event') + tagName
-						);
+						words.push(t('command.registerEvent.reset.global-event') + tagName);
 						break;
 					}
 					case 'reset':
-						words.push(Local.get!('command.registerEvent.reset.global-events'));
+						words.push(t('command.registerEvent.reset.global-events'));
 						break;
 				}
 				break;
@@ -67,7 +65,7 @@ Command.cases.registerEvent = new CommandSchema({
 						words.push(
 							Command.parseActor!(actor) +
 								Token(' -> ') +
-								Local.get!('command.registerEvent.reset.events')
+								t('command.registerEvent.reset.events')
 						);
 						break;
 				}
@@ -83,14 +81,14 @@ Command.cases.registerEvent = new CommandSchema({
 						words.push(
 							Command.parseElement!(element) +
 								Token(' -> ') +
-								Local.get!('command.registerEvent.reset.events')
+								t('command.registerEvent.reset.events')
 						);
 						break;
 				}
 				break;
 		}
 		if (operation === 'register' && namespace) {
-			words.push(Local.get!('command.registerEvent.namespace'));
+			words.push(t('command.registerEvent.namespace'));
 		}
 
 		const contents: Array<{
@@ -102,7 +100,7 @@ Command.cases.registerEvent = new CommandSchema({
 		}> = [
 			{ color: 'flow' },
 			{
-				text: Local.get!('command.registerEvent.alias.' + operation) + Token(': ')
+				text: t('command.registerEvent.alias.' + operation) + Token(': ')
 			},
 			{ text: words.join() }
 		];
@@ -111,7 +109,7 @@ Command.cases.registerEvent = new CommandSchema({
 			contents.push(
 				{ children: commands },
 				{ color: 'flow' },
-				{ text: Local.get!('command.registerEvent.end') }
+				{ text: t('command.registerEvent.end') }
 			);
 		}
 		return contents;

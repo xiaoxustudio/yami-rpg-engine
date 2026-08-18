@@ -1,7 +1,7 @@
 ﻿import '@app/legacy/module/command/showChoices.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 import { reactive } from 'vue';
 
 const form = reactive<Record<string, unknown>>({});
@@ -10,11 +10,11 @@ let choices: unknown[] | null = null;
 const createDefaultChoices = (): unknown[] => {
 	return [
 		{
-			content: Local.get!('showChoices.yes'),
+			content: t('showChoices.yes'),
 			commands: []
 		},
 		{
-			content: Local.get!('showChoices.no'),
+			content: t('showChoices.no'),
 			commands: []
 		}
 	];

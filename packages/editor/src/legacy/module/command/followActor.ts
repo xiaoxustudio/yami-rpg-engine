@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.followActor = new CommandSchema({
 	name: 'followActor',
@@ -56,7 +56,7 @@ Command.cases.followActor = new CommandSchema({
 		}
 		const words = Command.words
 			.push(this.parseActors!(actor, target))
-			.push(Local.get!('command.followActor.mode.' + mode))
+			.push(t('command.followActor.mode.' + mode))
 			.push(
 				Command.parseVariableNumber!(minDist) +
 					Token(' ~ ') +
@@ -72,18 +72,18 @@ Command.cases.followActor = new CommandSchema({
 		}
 		words.push(Command.setNumberColor!(bufferDist.toString()));
 		if (navigate) {
-			words.push(Local.get!('command.followActor.navigate'));
+			words.push(t('command.followActor.navigate'));
 			if (bypass) {
-				words.push(Local.get!('command.followActor.bypass'));
+				words.push(t('command.followActor.bypass'));
 			}
 		}
 		if (once) {
-			words.push(Local.get!('command.followActor.once'));
+			words.push(t('command.followActor.once'));
 			words.push(Command.parseWait!(wait));
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.followActor') + Token(': ') },
+			{ text: t('command.followActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

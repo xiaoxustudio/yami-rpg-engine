@@ -17,7 +17,7 @@ const close = (className: string): void => {
 export function usePointerObjectWindow(): PointerObjectWindow {
 	return {
 		get region() {
-			return document.getElementById('cursor-region');
+			return document.getElementById('cursor-region')!;
 		},
 		open,
 		close

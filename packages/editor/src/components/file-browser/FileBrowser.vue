@@ -36,7 +36,7 @@ import { FileItem } from '@app/legacy/file/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/legacy/file/folder-item.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { Path } from '@app/legacy/util/config.ts';
 import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
 import { setIconClip } from '@app/legacy/util/icon-clip.ts';
@@ -130,7 +130,7 @@ const pathUtil = {
 	basename: (p: string, ext?: string) => Path.basename(p, ext),
 	resolve: (...paths: string[]) => Path.resolve(...paths)
 };
-const localize = { createGetter: (key: string) => Local.createGetter(key) };
+const localize = { createGetter: (key: string) => createGetter(key) };
 const fileClasses = { FileItem, FolderItem };
 const menuState = () => Menu.state;
 const dataApi = {

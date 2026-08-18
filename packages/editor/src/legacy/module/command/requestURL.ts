@@ -1,9 +1,9 @@
-import { getElementReader, $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, write } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
+import { getElementReader, $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, write } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export type RequestKeyValue = {
 	key: string | { key: string };
@@ -79,7 +79,7 @@ Command.cases.requestURL = new CommandSchema({
 	}) {
 		const head: Array<{ text?: string; color?: string }> = [
 			{ color: 'network' },
-			{ text: Local.get!('command.requestURL') },
+			{ text: t('command.requestURL') },
 			{ text: ' , ' },
 			{ color: 'normal' },
 			{
@@ -113,7 +113,7 @@ Command.cases.requestURL = new CommandSchema({
 		}
 		return head.concat(
 			contents.slice(1),
-			{ text: `, ${Local.get!('command.requestURLData')} = ` },
+			{ text: `, ${t('command.requestURLData')} = ` },
 			datas.slice(1)
 		);
 	}

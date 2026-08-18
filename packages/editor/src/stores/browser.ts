@@ -17,6 +17,7 @@ import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { addClass, hasClass, removeClass, seek } from '@app/legacy/util/element-utils';
 import { pinia } from './pinia';
@@ -229,7 +230,7 @@ export const useBrowserStore = defineStore('browser', () => {
 		const items: MenuItem[] = [];
 		const { target } = event.raw;
 		const { browser, nav } = Browser.links ?? { browser: undefined, nav: undefined };
-		const get = Local.createGetter!('menuFileBrowser');
+		const get = createGetter('menuFileBrowser');
 		const Clipboard = getGlobalClipboard();
 		const pastable = Clipboard?.has?.('yami.files');
 		let creatable = false;

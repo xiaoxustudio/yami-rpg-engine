@@ -1,12 +1,12 @@
-import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { addClass, hasClass, hide, removeClass, show, write } from '@/util/element-utils';
-import { AudioManager } from '@/audio/audio-manager.ts';
-import { File } from '@/file/file-system-core.ts';
-import { FileItem } from '@/file/file-item.ts';
-import type { FileMeta } from '@/data/metadata-manifest.ts';
+import { addClass, hasClass, hide, removeClass, show, write } from '@app/legacy/util/element-utils';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
-import { Timer } from '@/util/timer.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
 
 {
 	interface FileAudioShape {

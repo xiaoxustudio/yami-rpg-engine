@@ -10,7 +10,7 @@ import { createNumberVar } from '@app/legacy/components/number-var.ts';
 import { createSelectBox } from '@app/legacy/components/select-box.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 import { h, render } from 'vue';
@@ -209,8 +209,8 @@ export function useCallEventCommandSchema() {
 		}
 		write(input, { type: 'local', key: '' });
 		const label = document.createElement('div');
-		const text = Local.get!('command.callEvent.return');
-		const tip = Local.get!('command.callEvent.return.tip');
+		const text = t('command.callEvent.return');
+		const tip = t('command.callEvent.return.tip');
 		render(h('div', { class: 'text call-event-component' }, text), label);
 		const labelEl = label.firstElementChild as HTMLElement;
 		setTooltip(input, `<b>${text}</b>\n${tip}`);
@@ -270,7 +270,7 @@ export function useCallEventCommandSchema() {
 	const typeWrite = (event: { value: string }): void => {
 		const type = event.value;
 		if (type !== 'inherited') {
-			const elEventType = document.getElementById('callEvent-eventType');
+			const elEventType = document.getElementById('callEvent-eventType')!;
 			const eventTypes = Enum.getMergedItems!(
 				EventEditor.types?.[type] ?? EventEditor.types?.all,
 				type + '-event'

@@ -34,7 +34,7 @@ import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/legacy/file/folder-item.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { Editor } from '@app/legacy/main/editor.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { Path } from '@app/legacy/util/config.ts';
 import { setIconClip } from '@app/legacy/util/icon-clip.ts';
 import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
@@ -73,7 +73,7 @@ const referenceApi = {
 		Reference.openList?.(list),
 	openRelated: (guid: string) => Reference.openRelated?.(guid)
 };
-const localize = { createGetter: (key: string) => Local.createGetter(key) };
+const localize = { createGetter: (key: string) => createGetter(key) };
 const editorApi = { config: Editor.config };
 const directoryApi = {
 	sortFiles: (dir: Array<FileItem | FolderItem>) => Directory.sortFiles?.(dir),

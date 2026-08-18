@@ -1,23 +1,23 @@
-import { relate } from '@/util/element-utils';
+import { relate } from '@app/legacy/util/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { hasClass, read, write } from '@/util/element-utils.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { Reference } from '@/log/related-references.ts';
-import { Palette } from '@/palette/palette.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { hasClass, read, write } from '@app/legacy/util/element-utils.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 import { ObjectFolder } from './default-object-folder.ts';
 import { SceneShift } from './move-scene.ts';
 import { Scene } from './scene-window.ts';
-import { Title } from '@/title/title-bar.ts';
-import { Local } from '@/tools/localization.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { t, createGetter } from '@app/i18n';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {
@@ -1065,7 +1065,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 		const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has(
 			'yami.scene.object'
 		);
-		const get = Local.createGetter!('menuScene');
+		const get = createGetter('menuScene');
 		const menuItems: MenuItem[] = [
 			{
 				label: get('create'),
@@ -1221,7 +1221,7 @@ Scene.menuPopup = function (this: typeof Scene, event: PointerEvent) {
 		const file = Scene.getObjectFile!(target);
 		if (file !== undefined) {
 			menuItems.push({
-				label: Local.get!('common.findInProject'),
+				label: t('common.findInProject'),
 				enabled: file instanceof FileItem,
 				click: () => {
 					Scene.openFileLocation!(target);
@@ -1416,7 +1416,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 	const list = Scene.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
-	const get = Local.createGetter!('menuSceneList');
+	const get = createGetter('menuSceneList');
 	let copyable;
 	let pastable;
 	let deletable;
@@ -1628,7 +1628,7 @@ Scene.listPopup = function (this: typeof Scene, event: Event & { value?: SceneIt
 	const file = Scene.getObjectFile!(item);
 	if (file !== undefined) {
 		menuItems.push({
-			label: Local.get!('common.findInProject'),
+			label: t('common.findInProject'),
 			enabled: file instanceof FileItem,
 			click: () => {
 				Scene.openFileLocation!(item);

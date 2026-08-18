@@ -1,16 +1,15 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@/util/element-utils';
-import { Animation } from '@/animation/animation-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Local } from '@/tools/localization.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { t } from '@app/i18n';
 
 {
 	type ActorShape = {
@@ -444,7 +443,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 				}
 				case 'money':
 					return [
-						{ content: Local.get!('common.money') },
+						{ content: t('common.money') },
 						{ content: money.toString(), class: 'weak' }
 					];
 			}

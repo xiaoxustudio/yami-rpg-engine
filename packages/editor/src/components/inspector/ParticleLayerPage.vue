@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-general-grid">
-			<div class="text">{{ local.getLabel('particleLayer-name') || 'Name' }}</div><TextBox id="particleLayer-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('particleLayer-area-type') || 'Emission Area' }}</div
-			><SelectBox id="particleLayer-area-type" v-model="form.area.type" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('particleLayer-area-x') || 'X' }}</div
+			<div class="text">{{ t('components.particleLayer-name.label') || 'Name' }}</div><TextBox id="particleLayer-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.particleLayer-area-type.label') || 'Emission Area' }}</div
+			><SelectBox id="particleLayer-area-type" v-model="form.area.type" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.particleLayer-area-x.label') || 'X' }}</div
 			><NumberBox
 				id="particleLayer-area-x"
 				v-model="form.area.x" @input="onParamInput"
@@ -12,7 +12,7 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-area-y') || 'Y' }}</div
+			<div class="text">{{ t('components.particleLayer-area-y.label') || 'Y' }}</div
 			><NumberBox
 				id="particleLayer-area-y"
 				v-model="form.area.y" @input="onParamInput"
@@ -20,7 +20,7 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-area-width') || 'Width' }}</div
+			<div class="text">{{ t('components.particleLayer-area-width.label') || 'Width' }}</div
 			><NumberBox
 				id="particleLayer-area-width"
 				v-model="form.area.width" @input="onParamInput"
@@ -28,7 +28,7 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-area-height') || 'Height' }}</div
+			<div class="text">{{ t('components.particleLayer-area-height.label') || 'Height' }}</div
 			><NumberBox
 				id="particleLayer-area-height"
 				v-model="form.area.height" @input="onParamInput"
@@ -36,7 +36,7 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-area-radius') || 'Radius' }}</div
+			<div class="text">{{ t('components.particleLayer-area-radius.label') || 'Radius' }}</div
 			><NumberBox
 				id="particleLayer-area-radius"
 				v-model="form.area.radius" @input="onParamInput"
@@ -44,14 +44,14 @@
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-count') || 'Emission Count' }}</div
+			<div class="text">{{ t('components.particleLayer-count.label') || 'Emission Count' }}</div
 			><NumberBox
 				id="particleLayer-count"
 				v-model="form.count" @input="onParamInput"
 				min="0"
 				max="1000000000"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-delay') || 'Initial Delay' }}</div
+			<div class="text">{{ t('components.particleLayer-delay.label') || 'Initial Delay' }}</div
 			><NumberBox
 				id="particleLayer-delay"
 				v-model="form.delay" @input="onParamInput"
@@ -59,7 +59,7 @@
 				max="1000000000"
 				unit="ms"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-interval') || 'Interval' }}</div
+			<div class="text">{{ t('components.particleLayer-interval.label') || 'Interval' }}</div
 			><NumberBox
 				id="particleLayer-interval"
 				v-model="form.interval" @input="onParamInput"
@@ -67,7 +67,7 @@
 				max="1000000000"
 				unit="ms"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-lifetime') || 'Lifetime' }}</div
+			<div class="text">{{ t('components.particleLayer-lifetime.label') || 'Lifetime' }}</div
 			><NumberBox
 				id="particleLayer-lifetime"
 				v-model="form.lifetime" @input="onParamInput"
@@ -75,7 +75,7 @@
 				max="1000000000"
 				unit="ms"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-lifetimeDev') || 'Lifetime Dev' }}</div
+			<div class="text">{{ t('components.particleLayer-lifetimeDev.label') || 'Lifetime Dev' }}</div
 			><NumberBox
 				id="particleLayer-lifetimeDev"
 				v-model="form.lifetimeDev" @input="onParamInput"
@@ -83,7 +83,7 @@
 				max="1000000000"
 				unit="ms"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-fadeout') || 'Fadeout' }}</div
+			<div class="text">{{ t('components.particleLayer-fadeout.label') || 'Fadeout' }}</div
 			><NumberBox
 				id="particleLayer-fadeout"
 				v-model="form.fadeout" @input="onParamInput"
@@ -94,9 +94,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-anchor-grid') || 'Anchor' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-anchor-grid.label') || 'Anchor' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-anchor-grid">
-			<div class="text">{{ local.getLabel('particleLayer-anchor-x-box') || 'Anchor X' }}</div>
+			<div class="text">{{ t('components.particleLayer-anchor-x-box.label') || 'Anchor X' }}</div>
 			<div class="flex-box" id="particleLayer-anchor-x-box">
 				<NumberBox
 					id="particleLayer-anchor-x-0"
@@ -117,7 +117,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-anchor-y-box') || 'Anchor Y' }}</div>
+			<div class="text">{{ t('components.particleLayer-anchor-y-box.label') || 'Anchor Y' }}</div>
 			<div class="flex-box" id="particleLayer-anchor-y-box">
 				<NumberBox
 					id="particleLayer-anchor-y-0"
@@ -138,7 +138,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-anchor-speedX-box') || 'Anchor Speed X' }}</div>
+			<div class="text">{{ t('components.particleLayer-anchor-speedX-box.label') || 'Anchor Speed X' }}</div>
 			<div class="flex-box" id="particleLayer-anchor-speedX-box">
 				<NumberBox
 					id="particleLayer-anchor-speedX-0"
@@ -159,7 +159,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-anchor-speedY-box') || 'Anchor Speed Y' }}</div>
+			<div class="text">{{ t('components.particleLayer-anchor-speedY-box.label') || 'Anchor Speed Y' }}</div>
 			<div class="flex-box" id="particleLayer-anchor-speedY-box">
 				<NumberBox
 					id="particleLayer-anchor-speedY-0"
@@ -183,9 +183,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-movement-grid') || 'Movement' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-movement-grid.label') || 'Movement' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-movement-grid">
-			<div class="text">{{ local.getLabel('particleLayer-movement-angle-box') || 'Movement Angle' }}</div>
+			<div class="text">{{ t('components.particleLayer-movement-angle-box.label') || 'Movement Angle' }}</div>
 			<div class="flex-box" id="particleLayer-movement-angle-box">
 				<NumberBox
 					id="particleLayer-movement-angle-0"
@@ -208,7 +208,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-movement-speed-box') || 'Movement Speed' }}</div>
+			<div class="text">{{ t('components.particleLayer-movement-speed-box.label') || 'Movement Speed' }}</div>
 			<div class="flex-box" id="particleLayer-movement-speed-box">
 				<NumberBox
 					id="particleLayer-movement-speed-0"
@@ -227,7 +227,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-movement-accelAngle-box') || 'Accel Angle' }}</div>
+			<div class="text">{{ t('components.particleLayer-movement-accelAngle-box.label') || 'Accel Angle' }}</div>
 			<div class="flex-box" id="particleLayer-movement-accelAngle-box">
 				<NumberBox
 					id="particleLayer-movement-accelAngle-0"
@@ -250,7 +250,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-movement-accel-box') || 'Accel' }}</div>
+			<div class="text">{{ t('components.particleLayer-movement-accel-box.label') || 'Accel' }}</div>
 			<div class="flex-box" id="particleLayer-movement-accel-box">
 				<NumberBox
 					id="particleLayer-movement-accel-0"
@@ -272,9 +272,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-rotation-grid') || 'Rotation' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-rotation-grid.label') || 'Rotation' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-rotation-grid">
-			<div class="text">{{ local.getLabel('particleLayer-rotation-angle-box') || 'Rotation Angle' }}</div>
+			<div class="text">{{ t('components.particleLayer-rotation-angle-box.label') || 'Rotation Angle' }}</div>
 			<div class="flex-box" id="particleLayer-rotation-angle-box">
 				<NumberBox
 					id="particleLayer-rotation-angle-0"
@@ -297,7 +297,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-rotation-speed-box') || 'Angular Velocity' }}</div>
+			<div class="text">{{ t('components.particleLayer-rotation-speed-box.label') || 'Angular Velocity' }}</div>
 			<div class="flex-box" id="particleLayer-rotation-speed-box">
 				<NumberBox
 					id="particleLayer-rotation-speed-0"
@@ -318,7 +318,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-rotation-accel-box') || 'Angular Accel' }}</div>
+			<div class="text">{{ t('components.particleLayer-rotation-accel-box.label') || 'Angular Accel' }}</div>
 			<div class="flex-box" id="particleLayer-rotation-accel-box">
 				<NumberBox
 					id="particleLayer-rotation-accel-0"
@@ -342,9 +342,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-hRotation-grid') || 'Horizontal Rotation' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-hRotation-grid.label') || 'Horizontal Rotation' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-hRotation-grid">
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-radius-box') || 'Initial Radius' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-radius-box.label') || 'Initial Radius' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-radius-box">
 				<NumberBox
 					id="particleLayer-hRotation-radius-0"
@@ -365,7 +365,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-expansionSpeed-box') || 'Expansion Speed' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-expansionSpeed-box.label') || 'Expansion Speed' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-expansionSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionSpeed-0"
@@ -384,7 +384,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-expansionAccel-box') || 'Expansion Accel' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-expansionAccel-box.label') || 'Expansion Accel' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-expansionAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-expansionAccel-0"
@@ -403,7 +403,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-angle-box') || 'Rotation Angle' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-angle-box.label') || 'Rotation Angle' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-angle-box">
 				<NumberBox
 					id="particleLayer-hRotation-angle-0"
@@ -426,7 +426,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-angularSpeed-box') || 'Angular Velocity' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-angularSpeed-box.label') || 'Angular Velocity' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-angularSpeed-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularSpeed-0"
@@ -447,7 +447,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-hRotation-angularAccel-box') || 'Angular Accel' }}</div>
+			<div class="text">{{ t('components.particleLayer-hRotation-angularAccel-box.label') || 'Angular Accel' }}</div>
 			<div class="flex-box" id="particleLayer-hRotation-angularAccel-box">
 				<NumberBox
 					id="particleLayer-hRotation-angularAccel-0"
@@ -471,9 +471,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-scale-grid') || 'Scale' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-scale-grid.label') || 'Scale' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-scale-grid">
-			<div class="text">{{ local.getLabel('particleLayer-scale-factor-box') || 'Scale Factor' }}</div>
+			<div class="text">{{ t('components.particleLayer-scale-factor-box.label') || 'Scale Factor' }}</div>
 			<div class="flex-box" id="particleLayer-scale-factor-box">
 				<NumberBox
 					id="particleLayer-scale-factor-0"
@@ -494,7 +494,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-scale-speed-box') || 'Expansion Speed' }}</div>
+			<div class="text">{{ t('components.particleLayer-scale-speed-box.label') || 'Expansion Speed' }}</div>
 			<div class="flex-box" id="particleLayer-scale-speed-box">
 				<NumberBox
 					id="particleLayer-scale-speed-0"
@@ -515,7 +515,7 @@
 					><div class="text label">dev</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-scale-accel-box') || 'Expansion Accel' }}</div>
+			<div class="text">{{ t('components.particleLayer-scale-accel-box.label') || 'Expansion Accel' }}</div>
 			<div class="flex-box" id="particleLayer-scale-accel-box">
 				<NumberBox
 					id="particleLayer-scale-accel-0"
@@ -539,9 +539,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('particleLayer-rendering-grid') || 'Rendering' }}</DetailSummary>
+		<DetailSummary>{{ t('components.particleLayer-rendering-grid.label') || 'Rendering' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-rendering-grid">
-			<div class="text">{{ local.getLabel('particleLayer-image') || 'Image' }}</div
+			<div class="text">{{ t('components.particleLayer-image.label') || 'Image' }}</div
 			><CustomBox
 				id="particleLayer-image"
 				type="file"
@@ -549,27 +549,27 @@
 				:model-value="form.image"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('particleLayer-blend') || 'Blend' }}</div><SelectBox id="particleLayer-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('particleLayer-light') || 'Light Sampling' }}</div
-			><SelectBox id="particleLayer-light" v-model="form.light" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('particleLayer-sort') || 'Sort' }}</div
+			<div class="text">{{ t('components.particleLayer-blend.label') || 'Blend' }}</div><SelectBox id="particleLayer-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.particleLayer-light.label') || 'Light Sampling' }}</div
+			><SelectBox id="particleLayer-light" v-model="form.light" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.particleLayer-sort.label') || 'Sort' }}</div
 			><SelectBox id="particleLayer-sort" v-model="form.sort" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('particleLayer-sprite-mode') || 'Sprite Mode' }}</div
+			<div class="text">{{ t('components.particleLayer-sprite-mode.label') || 'Sprite Mode' }}</div
 			><SelectBox id="particleLayer-sprite-mode" v-model="form.sprite.mode" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('particleLayer-sprite-hframes') || 'Horiz Frames' }}</div
+			<div class="text">{{ t('components.particleLayer-sprite-hframes.label') || 'Horiz Frames' }}</div
 			><NumberBox
 				id="particleLayer-sprite-hframes"
 				v-model="form.sprite.hframes" @input="onParamInput"
 				min="1"
 				max="100"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-sprite-vframes') || 'Vert Frames' }}</div
+			<div class="text">{{ t('components.particleLayer-sprite-vframes.label') || 'Vert Frames' }}</div
 			><NumberBox
 				id="particleLayer-sprite-vframes"
 				v-model="form.sprite.vframes" @input="onParamInput"
 				min="1"
 				max="100"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-sprite-interval') || 'Animation Interval' }}</div
+			<div class="text">{{ t('components.particleLayer-sprite-interval.label') || 'Animation Interval' }}</div
 			><NumberBox
 				id="particleLayer-sprite-interval"
 				v-model="form.sprite.interval" @input="onParamInput"
@@ -577,9 +577,9 @@
 				max="5000"
 				unit="ms"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('particleLayer-color-mode') || 'Color Mode' }}</div
+			<div class="text">{{ t('components.particleLayer-color-mode.label') || 'Color Mode' }}</div
 			><SelectBox id="particleLayer-color-mode" v-model="form.color.mode" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('particleLayer-color-rgba-box') || 'Color' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-rgba-box.label') || 'Color' }}</div>
 			<div class="flex-box" id="particleLayer-color-rgba-box">
 				<NumberBox
 					id="particleLayer-color-rgba-0"
@@ -614,7 +614,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-min-box') || 'Color Min' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-min-box.label') || 'Color Min' }}</div>
 			<div class="flex-box" id="particleLayer-color-min-box">
 				<NumberBox
 					id="particleLayer-color-min-0"
@@ -649,7 +649,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-max-box') || 'Color Max' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-max-box.label') || 'Color Max' }}</div>
 			<div class="flex-box" id="particleLayer-color-max-box">
 				<NumberBox
 					id="particleLayer-color-max-0"
@@ -684,9 +684,9 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-easingId') || 'Color Easing' }}</div
+			<div class="text">{{ t('components.particleLayer-color-easingId.label') || 'Color Easing' }}</div
 			><SelectBox id="particleLayer-color-easingId" v-model="form.color.easingId" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('particleLayer-color-startMin-box') || 'Color Start Min' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-startMin-box.label') || 'Color Start Min' }}</div>
 			<div class="flex-box" id="particleLayer-color-startMin-box">
 				<NumberBox
 					id="particleLayer-color-startMin-0"
@@ -721,7 +721,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-startMax-box') || 'Color Start Max' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-startMax-box.label') || 'Color Start Max' }}</div>
 			<div class="flex-box" id="particleLayer-color-startMax-box">
 				<NumberBox
 					id="particleLayer-color-startMax-0"
@@ -756,7 +756,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-endMin-box') || 'Color End Min' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-endMin-box.label') || 'Color End Min' }}</div>
 			<div class="flex-box" id="particleLayer-color-endMin-box">
 				<NumberBox
 					id="particleLayer-color-endMin-0"
@@ -791,7 +791,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-endMax-box') || 'Color End Max' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-endMax-box.label') || 'Color End Max' }}</div>
 			<div class="flex-box" id="particleLayer-color-endMax-box">
 				<NumberBox
 					id="particleLayer-color-endMax-0"
@@ -826,7 +826,7 @@
 					><div class="text label">A</div></NumberBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-tint-0-box') || 'Tint - Red' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-tint-0-box.label') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="particleLayer-color-tint-0-box">
 				<SliderBox
 					id="particleLayer-color-tint-0-slider"
@@ -843,7 +843,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-tint-1-box') || 'Tint - Green' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-tint-1-box.label') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="particleLayer-color-tint-1-box">
 				<SliderBox
 					id="particleLayer-color-tint-1-slider"
@@ -860,7 +860,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-tint-2-box') || 'Tint - Blue' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-tint-2-box.label') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="particleLayer-color-tint-2-box">
 				<SliderBox
 					id="particleLayer-color-tint-2-slider"
@@ -877,7 +877,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('particleLayer-color-tint-3-box') || 'Tint - Grayscale' }}</div>
+			<div class="text">{{ t('components.particleLayer-color-tint-3-box.label') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="particleLayer-color-tint-3-box">
 				<SliderBox
 					id="particleLayer-color-tint-3-slider"
@@ -900,6 +900,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
@@ -914,6 +915,7 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useParticleLayerPage();
 

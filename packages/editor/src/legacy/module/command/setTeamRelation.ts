@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTeamRelation = new CommandSchema({
 	name: 'setTeamRelation',
@@ -12,7 +12,7 @@ Command.cases.setTeamRelation = new CommandSchema({
 		{ key: 'relation', default: 0 }
 	],
 	parseRelation(relation: number) {
-		return Local.get!('command.setTeamRelation.relation.' + relation);
+		return t('command.setTeamRelation.relation.' + relation);
 	},
 	customParse({
 		teamId1,
@@ -29,7 +29,7 @@ Command.cases.setTeamRelation = new CommandSchema({
 			.push(this.parseRelation!(relation));
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.setTeamRelation') + Token(': ') },
+			{ text: t('command.setTeamRelation') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

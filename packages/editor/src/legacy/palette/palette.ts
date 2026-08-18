@@ -1,6 +1,6 @@
-import { relate } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
+import { relate } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	addClass,
 	addScrollbars,
@@ -12,25 +12,25 @@ import {
 	removeClass,
 	show,
 	write
-} from '@/util/element-utils.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+} from '@app/legacy/util/element-utils.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { SetTileTag } from '@/module/global.ts';
+import { SetTileTag } from '@app/legacy/module/global.ts';
 import { AutoTile } from './auto-tile.ts';
 import { FrameGenerator } from './tile-frame-generator.ts';
 import { TileFrame } from './tile-frame-index.ts';
 import { TileNode } from './tile-node-window.ts';
-import { Local } from '@/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { PaletteEngine } from '@app/engine/palette/palette-engine.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 
-import { Timer } from '@/util/timer.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
 import { h, render } from 'vue';
 
 export const Palette: Record<string, any> = {
@@ -1329,7 +1329,7 @@ Palette.marqueePopup = function (this: typeof Palette, event: PointerEvent) {
 		const copyable = existing;
 		const pastable = (GlobalClipboard as unknown as ClipboardShape).has('yami.tile');
 		const deletable = existing;
-		const get = Local.createGetter!('menuTileset');
+		const get = createGetter('menuTileset');
 		Menu.popup(
 			{
 				x: event.clientX,

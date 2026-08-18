@@ -1,8 +1,8 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animParticleFrame-properties-grid') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animParticleFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animParticleFrame-properties-grid">
-			<div class="text">{{ local.getLabel('animParticleFrame-position-box') || 'Position' }}</div>
+			<div class="text">{{ t('components.animParticleFrame-position-box.label') || 'Position' }}</div>
 			<div
 				id="animParticleFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -24,7 +24,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animParticleFrame-rotation-box') || 'Rotation' }}</div>
+			<div class="text">{{ t('components.animParticleFrame-rotation-box.label') || 'Rotation' }}</div>
 			<div
 				id="animParticleFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -38,7 +38,7 @@
 					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animParticleFrame-scale-box') || 'Scale' }}</div>
+			<div class="text">{{ t('components.animParticleFrame-scale-box.label') || 'Scale' }}</div>
 			<div
 				id="animParticleFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -60,7 +60,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animParticleFrame-opacity-box') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.animParticleFrame-opacity-box.label') || 'Opacity' }}</div>
 			<div
 				id="animParticleFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -74,7 +74,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animParticleFrame-scale') || 'Particle Scale' }}</div
+			<div class="text">{{ t('components.animParticleFrame-scale.label') || 'Particle Scale' }}</div
 			><NumberBox
 				id="animParticleFrame-scale"
 				v-model="form.scale"
@@ -83,7 +83,7 @@
 				step="0.1"
 				decimals="4" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('animParticleFrame-speed') || 'Speed' }}</div
+			<div class="text">{{ t('components.animParticleFrame-speed.label') || 'Speed' }}</div
 			><NumberBox
 				id="animParticleFrame-speed"
 				v-model="form.speed"
@@ -98,16 +98,16 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimParticleFramePage();
 

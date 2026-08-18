@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneActor-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneActor-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneActor-general-grid">
-			<div class="text">{{ local.getLabel('sceneActor-name') || 'Name' }}</div><TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneActor-type') || 'Type' }}</div><SelectBox id="sceneActor-type" v-model="form.type" @input="onParamInput" @write="onTypeWrite"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneActor-actorId') || 'Actor' }}</div
+			<div class="text">{{ t('components.sceneActor-name.label') || 'Name' }}</div><TextBox id="sceneActor-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneActor-type.label') || 'Type' }}</div><SelectBox id="sceneActor-type" v-model="form.type" @input="onParamInput" @write="onTypeWrite"></SelectBox>
+			<div class="text">{{ t('components.sceneActor-actorId.label') || 'Actor' }}</div
 			><CustomBox
 				id="sceneActor-actorId"
 				:model-value="form.actorId"
@@ -12,8 +12,8 @@
 				filter="actor"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneActor-teamId') || 'Team' }}</div><SelectBox id="sceneActor-teamId" v-model="form.teamId" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneActor-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneActor-teamId.label') || 'Team' }}</div><SelectBox id="sceneActor-teamId" v-model="form.teamId" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.sceneActor-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneActor-x"
 				v-model="form.x"
@@ -23,7 +23,7 @@
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneActor-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneActor-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneActor-y"
 				v-model="form.y"
@@ -33,7 +33,7 @@
 				decimals="4"
 				@input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneActor-angle-box') || 'Angle' }}</div
+			<div class="text">{{ t('components.sceneActor-angle-box.label') || 'Angle' }}</div
 			><div class="flex-box" id="sceneActor-angle-box">
 				<SliderBox
 					id="sceneActor-angle-slider"
@@ -53,7 +53,7 @@
 					@input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneActor-scale-box') || 'Scale' }}</div
+			<div class="text">{{ t('components.sceneActor-scale-box.label') || 'Scale' }}</div
 			><div class="flex-box" id="sceneActor-scale-box">
 				<SliderBox
 					id="sceneActor-scale-slider"
@@ -75,7 +75,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneActor-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneActor-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneActor-conditions"
 			class="inspector-list"
@@ -83,7 +83,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneActor-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneActor-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneActor-events"
 			class="inspector-list"
@@ -92,7 +92,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox id="sceneActor-scripts-detail" open>
-		<DetailSummary>{{ local.getLabel('sceneActor-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneActor-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneActor-scripts"
 			class="inspector-list"
@@ -104,6 +104,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -111,7 +112,6 @@ import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useSceneStore } from '@app/stores/scene';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -124,7 +124,7 @@ import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneActorPage();
 

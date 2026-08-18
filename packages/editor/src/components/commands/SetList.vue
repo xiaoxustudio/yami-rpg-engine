@@ -90,7 +90,7 @@
 import { onMounted } from 'vue';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -136,7 +136,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.setList');
+	const get = createGetter('command.setList');
 	$('#setList-operation')?.loadItems?.([
 		{ name: 'Set to Empty', value: 'set-empty' },
 		{ name: 'Set Numbers', value: 'set-numbers' },

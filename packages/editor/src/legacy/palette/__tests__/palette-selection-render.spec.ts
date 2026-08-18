@@ -1,5 +1,5 @@
 import { describe, expect, it, afterAll, beforeAll } from 'vitest';
-import { Palette } from '@/palette/palette.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 
 type SelectionShape = HTMLElement & { x: number; y: number };
 type MarqueeShape = HTMLElement & {

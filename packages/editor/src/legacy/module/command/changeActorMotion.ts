@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.changeActorMotion = new CommandSchema({
 	name: 'changeActorMotion',
@@ -11,7 +11,7 @@ Command.cases.changeActorMotion = new CommandSchema({
 		{ key: 'motion', default: '', required: true }
 	],
 	parseMapping(type: string, motion: unknown) {
-		const motionType = Local.get!('command.changeActorMotion.type.' + type);
+		const motionType = t('command.changeActorMotion.type.' + type);
 		const motionName = Command.parseEnumString!(motion);
 		return motionType + Token(' -> ') + motionName;
 	},
@@ -21,7 +21,7 @@ Command.cases.changeActorMotion = new CommandSchema({
 			.push(this.parseMapping!(type, motion));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.changeActorMotion') + Token(': ') },
+			{ text: t('command.changeActorMotion') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

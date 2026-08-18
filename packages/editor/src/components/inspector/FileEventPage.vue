@@ -1,20 +1,20 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileEvent-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileEvent-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileEvent-general-grid">
-			<div class="text">{{ local.getLabel('fileEvent-type') || 'Type' }}</div><SelectBox id="fileEvent-type" :model-value="form.type" @input="onParamInput" @write="onTypeWrite" />
-			<div class="text">{{ local.getLabel('fileEvent-enabled') || 'Enabled' }}</div
+			<div class="text">{{ t('components.fileEvent-type.label') || 'Type' }}</div><SelectBox id="fileEvent-type" :model-value="form.type" @input="onParamInput" @write="onTypeWrite" />
+			<div class="text">{{ t('components.fileEvent-enabled.label') || 'Enabled' }}</div
 			><CheckBox id="fileEvent-enabled" class="standard large" :model-value="form.enabled" @input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileEvent-priority') || 'Priority' }}</div
+			<div class="text">{{ t('components.fileEvent-priority.label') || 'Priority' }}</div
 			><CheckBox id="fileEvent-priority" class="standard large" :model-value="form.priority" @input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileEvent-namespace') || 'Namespace' }}</div
+			<div class="text">{{ t('components.fileEvent-namespace.label') || 'Namespace' }}</div
 			><CheckBox id="fileEvent-namespace" class="standard large" :model-value="form.namespace" @input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileEvent-returnType') || 'Return Type' }}</div
+			<div class="text">{{ t('components.fileEvent-returnType.label') || 'Return Type' }}</div
 			><SelectBox id="fileEvent-returnType" :model-value="form.returnType" @input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileEvent-description') || 'Description' }}</div><TextArea id="fileEvent-description" :model-value="form.description" @input="onParamInput" />
+			<div class="text">{{ t('components.fileEvent-description.label') || 'Description' }}</div><TextArea id="fileEvent-description" :model-value="form.description" @input="onParamInput" />
 		</div>
 		<DetailBox open>
-			<DetailSummary>{{ local.getLabel('fileEvent-parameters') || 'Parameters' }}</DetailSummary>
+			<DetailSummary>{{ t('components.fileEvent-parameters.label') || 'Parameters' }}</DetailSummary>
 			<ParamList
 				id="fileEvent-parameters"
 				class="inspector-list"
@@ -26,11 +26,11 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -40,7 +40,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
 const inspector = useInspectorStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileEventPage();
 

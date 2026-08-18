@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { initYamiI18n } from '@app/i18n';
 import UIButtonPage from '@app/components/inspector/UIButtonPage.vue';
 
 interface ButtonData {
@@ -74,7 +75,10 @@ describe('UIButtonPage（uiButton inspector 响应式双向绑定桥接）', () 
 		const host = document.createElement('div');
 		host.id = 'uiButton-vue-mount';
 		document.body.appendChild(host);
-		const wrapper = mount(UIButtonPage, { attachTo: document.body });
+		const wrapper = mount(UIButtonPage, {
+			attachTo: document.body,
+			global: { plugins: [initYamiI18n()] }
+		});
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		return wrapper;

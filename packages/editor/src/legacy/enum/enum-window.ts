@@ -1,21 +1,21 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { clear, getFocus, hide, on, read, show, write } from '@/util/element-utils.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Shortcuts } from '@/tools/shortcut-registry.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { GameLocal } from '@/local/local-object.ts';
-import { Reference } from '@/log/related-references.ts';
-import { History } from '@/tools/history.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { clear, getFocus, hide, on, read, show, write } from '@app/legacy/util/element-utils.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { createGetter } from '@app/i18n';
 
-import { bindListClipboardMethods } from '@/tools/list-clipboard-methods.ts';
+import { bindListClipboardMethods } from '@app/legacy/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
-import { type TreeListElement } from '@/components/tree-list.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { type TreeListElement } from '@app/legacy/components/tree-list.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import type { EnumItemShape } from '@app/stores/enum';
 
@@ -530,7 +530,7 @@ Enum.windowClose = function (this: typeof Enum, event: Event) {
 	this.list.saveScroll();
 	if (getEnumStore().state.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEnumeration')
@@ -662,7 +662,7 @@ Enum.listPopup = function (event: Event & { clientX: number; clientY: number }) 
 	const pastable = (GlobalClipboard as unknown as Clipboard).has('yami.data.enumeration');
 	const undoable = getEnumStore().state.history!.canUndo();
 	const redoable = getEnumStore().state.history!.canRedo();
-	const get = Local.createGetter!('menuEnumList');
+	const get = createGetter('menuEnumList');
 	const items: MenuItem[] = [
 		{
 			label: get('create'),

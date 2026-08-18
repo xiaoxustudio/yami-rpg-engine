@@ -1,17 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileSkill-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileSkill-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileSkill-general-grid">
-			<div class="text">{{ local.getLabel('fileSkill-icon') || 'Icon' }}</div
+			<div class="text">{{ t('components.fileSkill-icon.label') || 'Icon' }}</div
 			><CustomBox id="fileSkill-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ local.getLabel('fileSkill-clip') || 'Clip' }}</div
+			<div class="text">{{ t('components.fileSkill-clip.label') || 'Clip' }}</div
 			><CustomBox id="fileSkill-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileSkill-icon" />
-			<div class="text">{{ local.getLabel('fileSkill-inherit') || 'Inherit' }}</div
+			<div class="text">{{ t('components.fileSkill-inherit.label') || 'Inherit' }}</div
 			><CustomBox id="fileSkill-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="skill" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileSkill-attributes') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileSkill-attributes.label') || 'Attributes' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-attributes" @change="onListChange"
 			class="inspector-list"
@@ -20,7 +20,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileSkill-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileSkill-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-events" @change="onListChange"
 			class="inspector-list"
@@ -29,7 +29,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileSkill-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileSkill-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileSkill-scripts" @change="onListChange"
 			class="inspector-list"
@@ -41,13 +41,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileSkillPage } from '@app/composables/useFileSkillPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -56,7 +56,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileSkillPage();
 

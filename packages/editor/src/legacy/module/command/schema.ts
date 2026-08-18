@@ -1,28 +1,28 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus, on, read, write } from '@/util/element-utils';
-import { reportError } from '@/util/safe.ts';
-import { ActorGetter } from '@/command/actor-accessor-window.ts';
-import { AncestorGetter } from '@/command/ancestor-accessor-window.ts';
-import { AngleGetter } from '@/command/angle-accessor-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { CommandSuggestion } from '@/command/command-tip.ts';
-import { ElementGetter } from '@/command/element-accessor-window.ts';
-import { EquipmentGetter } from '@/command/equipment-accessor-window.ts';
-import { ItemGetter } from '@/command/item-accessor-window.ts';
-import { LightGetter } from '@/command/preset-accessor-factory.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { PositionGetter } from '@/command/position-accessor-window.ts';
-import { RegionGetter } from '@/command/region-accessor-window.ts';
-import { ObjectGetter } from '@/command/preset-accessor-factory.ts';
-import { SkillGetter } from '@/command/skill-accessor-window.ts';
-import { StateGetter } from '@/command/state-accessor-window.ts';
-import { TextSuggestion } from '@/command/text-tip.ts';
-import { TilemapGetter } from '@/command/tilemap-accessor-window.ts';
-import { TriggerGetter } from '@/command/trigger-accessor-window.ts';
-import { VariableGetter } from '@/command/variable-accessor-window.ts';
-import { Data } from '@/data/data-object.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus, on, read, write } from '@app/legacy/util/element-utils';
+import { reportError } from '@app/legacy/util/safe.ts';
+import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
+import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window.ts';
+import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';
+import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
+import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
+import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
+import { LightGetter } from '@app/legacy/command/preset-accessor-factory.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
+import { RegionGetter } from '@app/legacy/command/region-accessor-window.ts';
+import { ObjectGetter } from '@app/legacy/command/preset-accessor-factory.ts';
+import { SkillGetter } from '@app/legacy/command/skill-accessor-window.ts';
+import { StateGetter } from '@app/legacy/command/state-accessor-window.ts';
+import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
+import { TilemapGetter } from '@app/legacy/command/tilemap-accessor-window.ts';
+import { TriggerGetter } from '@app/legacy/command/trigger-accessor-window.ts';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { t } from '@app/i18n';
 
 interface CommandField {
 	key: string;
@@ -155,7 +155,7 @@ export class CommandSchema {
 		if (this.customParse) {
 			return this.customParse!(data);
 		}
-		const alias = Local.get!(`command.${this.name}.alias`);
+		const alias = t(`command.${this.name}.alias`);
 		const contents = [
 			{ fold: true },
 			{ color: 'flow' },

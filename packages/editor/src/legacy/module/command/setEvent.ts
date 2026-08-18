@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setEvent = new CommandSchema({
 	name: 'setEvent',
@@ -22,7 +22,7 @@ Command.cases.setEvent = new CommandSchema({
 		eventId: unknown;
 		choiceIndex: unknown;
 	}) {
-		const words = Command.words.push(Local.get!('command.setEvent.' + operation));
+		const words = Command.words.push(t('command.setEvent.' + operation));
 		switch (operation) {
 			case 'pause':
 				words.push(Command.parseVariable!(variable, 'object', true));
@@ -41,7 +41,7 @@ Command.cases.setEvent = new CommandSchema({
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get!('command.setEvent.alias') + Token(': ') },
+			{ text: t('command.setEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

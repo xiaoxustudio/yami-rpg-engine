@@ -1,5 +1,5 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
-import '@/util/math.ts';
+import { describe, expect, it, vi } from 'vitest';
+import '@app/legacy/util/math.ts';
 
 if (!Array.prototype.append) {
 	(Array.prototype as any).append = function (this: any[], ...items: any[]) {

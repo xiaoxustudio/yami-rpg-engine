@@ -46,7 +46,7 @@
 import { onMounted, reactive } from 'vue';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { clear } from '@app/legacy/util/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -77,7 +77,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.getActor');
+	const get = createGetter('command.getActor');
 	$('#getActor-area')?.loadItems?.([
 		{ name: get('square') || 'Square', value: 'square' },
 		{ name: get('circle') || 'Circle', value: 'circle' }

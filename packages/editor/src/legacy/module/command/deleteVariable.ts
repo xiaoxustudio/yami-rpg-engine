@@ -1,6 +1,6 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.deleteVariable = new CommandSchema({
 	name: 'deleteVariable',
@@ -8,7 +8,7 @@ Command.cases.deleteVariable = new CommandSchema({
 	customParse({ variable }: { variable: unknown }) {
 		return [
 			{ color: 'variable' },
-			{ text: Local.get!('command.deleteVariable.alias') + ' ' },
+			{ text: t('command.deleteVariable.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: Command.parseVariable(variable, 'any') }
 		];

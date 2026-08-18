@@ -48,7 +48,9 @@ describe('FileAudioPage（文件音频信息响应式渲染桥接）', () => {
 		const host = document.createElement('div');
 		host.id = 'fileAudio';
 		document.body.appendChild(host);
-		const wrapper = mount(FileAudioPage, { attachTo: document.body });
+		const wrapper = mount(FileAudioPage, {
+			attachTo: document.body
+		});
 		await wrapper.vm.$nextTick();
 		return wrapper;
 	};

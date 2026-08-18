@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 import { applyLocaleData } from '@app/i18n';
 import data from '../../../../Project/Locales/zh-CN.简体中文.json';
 
@@ -7,7 +7,7 @@ describe('localize keys', () => {
 	it('resolves property keys（经 i18n 唯一真源 + Local 兼容转发）', () => {
 		const locale = data as unknown as {
 			properties: Record<string, unknown>;
-			components: Record<string, unknown>;
+			components: Record<string, Record<string, unknown>>;
 		};
 		applyLocaleData('zh-CN', locale);
 		const get = (Local.createGetter as unknown as (p: string) => (k: string) => string)(

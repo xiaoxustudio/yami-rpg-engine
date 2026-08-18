@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { initYamiI18n } from '@app/i18n';
 import FileActorPage from '@app/components/inspector/FileActorPage.vue';
 
 interface ActorData {
@@ -55,7 +56,10 @@ describe('FileActorPage（fileActor inspector 响应式双向绑定桥接）', (
 		const host = document.createElement('div');
 		host.id = 'fileActor-vue-mount';
 		document.body.appendChild(host);
-		const wrapper = mount(FileActorPage, { attachTo: document.body });
+		const wrapper = mount(FileActorPage, {
+			attachTo: document.body,
+			global: { plugins: [initYamiI18n()] }
+		});
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		return wrapper;

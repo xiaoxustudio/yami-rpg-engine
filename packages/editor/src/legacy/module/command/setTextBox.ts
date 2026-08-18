@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { TextBoxProperty } from '@/command/set-textbox-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { TextBoxProperty } from '@app/legacy/command/set-textbox-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTextBox = new CommandSchema({
 	name: 'setTextBox',
@@ -23,7 +23,7 @@ Command.cases.setTextBox = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setTextBox') + Token(': ') },
+			{ text: t('command.setTextBox') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

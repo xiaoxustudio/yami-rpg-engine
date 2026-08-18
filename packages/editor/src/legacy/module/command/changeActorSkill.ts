@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.changeActorSkill = new CommandSchema({
 	name: 'changeActorSkill',
@@ -12,7 +12,7 @@ Command.cases.changeActorSkill = new CommandSchema({
 		{ key: 'skill', default: { type: 'trigger' } }
 	],
 	parseOperation(operation: string) {
-		return Local.get!('command.changeActorSkill.' + operation);
+		return t('command.changeActorSkill.' + operation);
 	},
 	customParse({
 		actor,
@@ -39,7 +39,7 @@ Command.cases.changeActorSkill = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.changeActorSkill') + Token(': ') },
+			{ text: t('command.changeActorSkill') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

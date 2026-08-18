@@ -5,7 +5,7 @@ import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface OperandRefShape {
 	type: string;
@@ -122,12 +122,12 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	document.getElementById('setNumber-operand-common-variable').filter = filter;
+	document.getElementById('setNumber-operand-common-variable')!.filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {
 	const method = operand.method;
-	const label = Local.get!('command.setNumber.math.' + method);
+	const label = t('command.setNumber.math.' + method);
 	switch (method) {
 		case 'round': {
 			const varName = Command.parseVariable!(operand.variable, 'number');
@@ -169,7 +169,7 @@ const parseMathMethod = (operand: NumberOperandData): string | undefined => {
 
 const parseStringMethod = (operand: NumberOperandData): string | undefined => {
 	const method = operand.method;
-	const methodName = Local.get!('command.setNumber.string.' + method);
+	const methodName = t('command.setNumber.string.' + method);
 	switch (method) {
 		case 'length':
 		case 'parse': {
@@ -187,7 +187,7 @@ const parseStringMethod = (operand: NumberOperandData): string | undefined => {
 };
 
 const parseObjectProperty = (operand: NumberOperandData): string | undefined => {
-	const property = Local.get!('command.setNumber.object.' + operand.property);
+	const property = t('command.setNumber.object.' + operand.property);
 	switch (operand.property) {
 		case 'actor-x':
 		case 'actor-y':
@@ -281,12 +281,12 @@ const parseObjectProperty = (operand: NumberOperandData): string | undefined => 
 
 const parseElementProperty = (operand: NumberOperandData): string => {
 	const element = Command.parseElement!(operand.element);
-	const property = Local.get!('command.setNumber.element.' + operand.property);
+	const property = t('command.setNumber.element.' + operand.property);
 	return element + Token(' -> ') + property.replace('.', Token('.'));
 };
 
 const parseOther = (operand: NumberOperandData): string => {
-	const label = Local.get!('command.setNumber.other.' + operand.data);
+	const label = t('command.setNumber.other.' + operand.data);
 	switch (operand.data) {
 		case 'touch-screen-x':
 		case 'touch-screen-y':
@@ -409,7 +409,7 @@ const open = (
 	Window.open!('setNumber-operand');
 
 	if (target!.start === 0) {
-		document.getElementById('setNumber-operation').save();
+		document.getElementById('setNumber-operation')!.save();
 		show(document.getElementById('setNumber-operation'));
 		getFocus(document.getElementById('setNumber-operation'));
 		hide(document.getElementById('setNumber-operand-operation'));
@@ -420,7 +420,7 @@ const open = (
 	}
 
 	document
-		.getElementById('setNumber-operand-cooldown-key')
+		.getElementById('setNumber-operand-cooldown-key')!
 		.loadItems(Enum.getStringItems!('cooldown-key'));
 
 	let constantValue = 0;
@@ -835,7 +835,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	document.getElementById('setNumber-operation').save();
+	document.getElementById('setNumber-operation')!.save();
 	Window.close!('setNumber-operand');
 	return operand;
 };

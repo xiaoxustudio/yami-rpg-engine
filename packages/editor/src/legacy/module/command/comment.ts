@@ -1,4 +1,4 @@
-import { Command } from '@/command/command-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
 
 Command.cases.comment = new CommandSchema({

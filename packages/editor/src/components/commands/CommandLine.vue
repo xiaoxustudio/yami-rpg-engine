@@ -17,7 +17,7 @@
 import { onMounted } from 'vue';
 import { useCommandLineCommandSchema } from '@app/composables/commands/useCommandLineCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -39,7 +39,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.commandLine');
+	const get = createGetter('command.commandLine');
 	$('#commandLine-type')?.loadItems?.([
 		{ name: get('get') || 'get', value: 'get' },
 		{ name: get('rm') || 'rm', value: 'rm' },

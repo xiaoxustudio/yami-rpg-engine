@@ -1,5 +1,5 @@
 import { Scene } from './scene-window.ts';
-import { History } from '@/tools/history.ts';
+import { History } from '@app/legacy/tools/history.ts';
 (() => {
 	interface TilemapBuffer extends Uint32Array {
 		width: number;

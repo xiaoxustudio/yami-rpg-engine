@@ -1,13 +1,13 @@
-import { $ } from '@/util/dom.ts';
-import { addClass, removeClass } from '@/util/element-utils';
-import { Scene } from '@/scene/scene-window.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { Animation } from '@/animation/animation-window.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, removeClass } from '@app/legacy/util/element-utils';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Menubar } from '@/title/menu-bar.ts';
-import { Title } from '@/title/title-bar.ts';
-import { DynamicShape } from '@/types/legacy-shapes.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Menubar } from '@app/legacy/title/menu-bar.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 
 type WindowFrame = HTMLElement & {

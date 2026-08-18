@@ -12,7 +12,7 @@ import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { Editor } from './editor.ts';
 import { WebServer } from '@app/legacy/module/webserver.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 
 import { Updater } from '@app/services/updater/updater.ts';
 
@@ -37,7 +37,7 @@ Editor.open = async function (this: typeof Editor, path, agreed = false) {
 
 	File.updateRoot!(path);
 
-	const get = Local.createGetter!('confirmation');
+	const get = createGetter('confirmation');
 
 	try {
 		const json = FS.readFileSync!(path, 'utf8');

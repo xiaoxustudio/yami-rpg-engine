@@ -1,10 +1,10 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animSpriteLayer-properties-grid') || 'Sprite Layer' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animSpriteLayer-properties-grid.label') || 'Sprite Layer' }}</DetailSummary>
 		<div class="detail-grid" id="animSpriteLayer-properties-grid">
-			<div class="text">{{ local.getLabel('animSpriteLayer-sprite') || 'Sprite' }}</div><SelectBox id="animSpriteLayer-sprite" v-model="form.sprite" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animSpriteLayer-blend') || 'Blend' }}</div><SelectBox id="animSpriteLayer-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animSpriteLayer-light') || 'Light Sampling' }}</div
+			<div class="text">{{ t('components.animSpriteLayer-sprite.label') || 'Sprite' }}</div><SelectBox id="animSpriteLayer-sprite" v-model="form.sprite" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.animSpriteLayer-blend.label') || 'Blend' }}</div><SelectBox id="animSpriteLayer-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.animSpriteLayer-light.label') || 'Light Sampling' }}</div
 			><SelectBox id="animSpriteLayer-light" v-model="form.light" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage';
 import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
@@ -21,6 +22,7 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
+const { t } = useI18n();
 const local = useLocalStore();
 
 const { form, sync, onParamInput } = useAnimSpriteLayerPage();

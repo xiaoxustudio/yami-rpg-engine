@@ -1,20 +1,20 @@
 import { getListConfig } from '@ui-kit';
-import { getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { getFocus, on, read, write } from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { ctrl } from '@/util/event-accessors.ts';
+import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { getFocus, on, read, write } from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Data } from './data-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 
-import { Inspector } from '@/inspector/inspector.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Local } from '@/tools/localization.ts';
-import { SetKey } from '@/tools/set-key-window.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { createGetter } from '@app/i18n';
+import { SetKey } from '@app/legacy/tools/set-key-window.ts';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 
 const Clipboard = getGlobalClipboard();
@@ -394,7 +394,7 @@ Easing.paste = function (this: typeof Easing, dItem?: EasingData) {
 Easing.delete = function (this: typeof Easing, item: EasingData) {
 	const items = getEasingStore().data!;
 	if (items.length > 1) {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('deleteSingleFile').replace('<filename>', item.name)
@@ -786,7 +786,7 @@ Easing.stopRendering = function (this: typeof Easing) {
 Easing.windowClose = function (this: typeof Easing, event: Event) {
 	if (Easing.changed) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedEasings')
@@ -899,7 +899,7 @@ Easing.listPopup = function (
 	const selected = !!item;
 	const pastable = Clipboard.has('yami.data.easing');
 	const deletable = selected && getEasingStore().data!.length > 1;
-	const get = Local.createGetter!('menuEasingList');
+	const get = createGetter('menuEasingList');
 	Menu.popup(
 		{
 			x: event.clientX,

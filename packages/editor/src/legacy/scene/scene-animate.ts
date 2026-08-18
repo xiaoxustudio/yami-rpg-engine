@@ -1,6 +1,6 @@
-import { $ } from '@/util/dom.ts';
-import { addClass, removeClass, hasClass } from '@/util/element-utils.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, removeClass, hasClass } from '@app/legacy/util/element-utils.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { SceneAnimateEngine } from '@app/engine/scene/scene-animate-engine.ts';
 

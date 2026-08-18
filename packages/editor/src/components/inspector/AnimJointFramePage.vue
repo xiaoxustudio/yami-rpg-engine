@@ -1,8 +1,8 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animJointFrame-properties-grid') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animJointFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animJointFrame-properties-grid">
-			<div class="text">{{ local.getLabel('animJointFrame-position-box') || 'Position' }}</div>
+			<div class="text">{{ t('components.animJointFrame-position-box.label') || 'Position' }}</div>
 			<div
 				id="animJointFrame-position-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -24,7 +24,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animJointFrame-rotation-box') || 'Rotation' }}</div>
+			<div class="text">{{ t('components.animJointFrame-rotation-box.label') || 'Rotation' }}</div>
 			<div
 				id="animJointFrame-rotation-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -38,7 +38,7 @@
 					unit="deg" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animJointFrame-scale-box') || 'Scale' }}</div>
+			<div class="text">{{ t('components.animJointFrame-scale-box.label') || 'Scale' }}</div>
 			<div
 				id="animJointFrame-scale-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -60,7 +60,7 @@
 					decimals="4" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('animJointFrame-opacity-box') || 'Opacity' }}</div>
+			<div class="text">{{ t('components.animJointFrame-opacity-box.label') || 'Opacity' }}</div>
 			<div
 				id="animJointFrame-opacity-box"
 				class="box uiElement-grid-box with-2-columns"
@@ -80,8 +80,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAnimJointFramePage } from '@app/composables/useAnimJointFramePage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -89,7 +89,7 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimJointFramePage();
 

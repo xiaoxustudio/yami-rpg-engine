@@ -1,10 +1,10 @@
-import { macRedoKey } from '@/util/event-accessors';
-import { Window } from '@/tools/window-object.ts';
+import { macRedoKey } from '@app/legacy/util/event-accessors';
+import { Window } from '@app/legacy/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { SettingConfig } from '@/module/settingconfig';
+import { SettingConfig } from '@app/legacy/module/settingconfig';
 import type { MenuItem } from '@ui-kit';
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	addClass,
 	disable,
@@ -14,44 +14,45 @@ import {
 	removeClass,
 	setTooltip,
 	write
-} from '@/util/element-utils';
+} from '@app/legacy/util/element-utils';
 import { h, render } from 'vue';
-import { Path } from '@/util/config.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { CustomCommand } from '@/command/custom-command-window.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Project } from '@/data/project-settings-window.ts';
-import { Team } from '@/data/team-window.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { CustomCommand } from '@app/legacy/command/custom-command-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Project } from '@app/legacy/data/project-settings-window.ts';
+import { Team } from '@app/legacy/data/team-window.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { ExportLanguage } from '@/local/export-language-window.ts';
-import { ImportLanguage } from '@/local/import-language-window.ts';
-import { Localization } from '@/local/local-window.ts';
-import { UpdateLog } from '@/log/update-log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { ApkBuilder } from '@/module/apkbuilder.ts';
-import { Resources } from '@/module/resource.ts';
+import { ExportLanguage } from '@app/legacy/local/export-language-window.ts';
+import { ImportLanguage } from '@app/legacy/local/import-language-window.ts';
+import { Localization } from '@app/legacy/local/local-window.ts';
+import { UpdateLog } from '@app/legacy/log/update-log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { ApkBuilder } from '@app/legacy/module/apkbuilder.ts';
+import { Resources } from '@app/legacy/module/resource.ts';
 
-import { WebServer } from '@/module/webserver.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { WebServer } from '@app/legacy/module/webserver.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Title } from './title-bar.ts';
-import { Color } from '@/tools/color-picker-window.ts';
-import { Local } from '@/tools/localization.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
-import { Zoom } from '@/tools/zoom-window.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Variable } from '@/variable/variable.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { Zoom } from '@app/legacy/tools/zoom-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Variable } from '@app/legacy/variable/variable.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 
 // ******************************** 菜单栏对象 ********************************
 
@@ -131,7 +132,7 @@ Menubar.popupFileMenu = function (this: typeof Menubar, target: HTMLElement) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = Local.createGetter!('menuFile');
+		const get = createGetter('menuFile');
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -229,7 +230,7 @@ Menubar.popupEditMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = Local.createGetter!('menuEdit');
+		const get = createGetter('menuEdit');
 		const items = {
 			cut: {
 				label: get('cut'),
@@ -385,7 +386,7 @@ Menubar.popupViewMenu = function (this: typeof Menubar, target: HTMLElement) {
 		const isAnimationOpen = Scene.showAnimation;
 		const isDarkTheme = hasClass(document.documentElement, 'dark');
 		const isLightTheme = !isDarkTheme;
-		const get = Local.createGetter!('menuView');
+		const get = createGetter('menuView');
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -535,7 +536,7 @@ Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
 		const open = Editor.state === 'open';
-		const get = Local.createGetter!('menuWindow');
+		const get = createGetter('menuWindow');
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -558,7 +559,7 @@ Menubar.popupWindowMenu = function (this: typeof Menubar, target: HTMLElement) {
 					accelerator: 'F3',
 					enabled: open,
 					click: () => {
-						Variable.open();
+						Variable.open!();
 					}
 				},
 				{
@@ -633,7 +634,7 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 	if (!hasClass(target, 'selected')) {
 		addClass(target, 'selected');
 		const bounds = rect(target);
-		const get = Local.createGetter!('menuHelp');
+		const get = createGetter('menuHelp');
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -706,7 +707,7 @@ Menubar.popupOpenYamiMenu = function (this: typeof Menubar, target: HTMLElement)
 		addClass(target, 'selected');
 		const open = Editor.state === 'open';
 		const bounds = rect(target);
-		const get = Local.createGetter!('menuOpenYami');
+		const get = createGetter('menuOpenYami');
 		Menu.popup!(
 			{
 				x: bounds.left,
@@ -860,7 +861,7 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 	}
 	const recentTabs = Editor.project!.recentTabs!;
 	const items: (MenuItem & { meta?: RecentTabMeta })[] = [];
-	const get = Local.createGetter!('menuFile');
+	const get = createGetter('menuFile');
 	items.push({
 		label: get('openRecent.reopenClosedFile'),
 		enabled: !!Title.getClosedTabMeta!(),
@@ -900,7 +901,7 @@ Menubar.createRecentItems = function (this: typeof Menubar) {
 
 // 创建语言项目
 Menubar.createLanguageItems = function (this: typeof Menubar) {
-	const get = Local.createGetter!('menuView.language');
+	const get = createGetter('menuView.language');
 	const autoChecked = Editor.config!.language === '';
 	const autoLabel = get('auto');
 	const items: MenuItem[] = [
@@ -1059,7 +1060,7 @@ Menubar.keydown = function (this: typeof Menubar, event: KeyboardEvent) {
 				Project.open!();
 				break;
 			case 'F3':
-				Variable.open();
+				Variable.open!();
 				break;
 			case 'F6':
 				Attribute.open!();

@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setMovementSpeed = new CommandSchema({
 	name: 'setMovementSpeed',
@@ -22,7 +22,7 @@ Command.cases.setMovementSpeed = new CommandSchema({
 		base: unknown;
 		factor: unknown;
 	}) {
-		const label = Local.get!('command.setMovementSpeed.' + property);
+		const label = t('command.setMovementSpeed.' + property);
 		const words = Command.words
 			.push(Command.parseActor!(actor))
 			.push(label.replace('(', Token('(')).replace(')', Token(')')));
@@ -37,7 +37,7 @@ Command.cases.setMovementSpeed = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.setMovementSpeed') + Token(': ') },
+			{ text: t('command.setMovementSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

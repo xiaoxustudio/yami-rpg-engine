@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type SetAnimationComponentData = {
 	actor: unknown;
@@ -66,7 +66,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 			.push(Command.parseActor!(actor))
 			.push(Command.parseFileName!(animationId))
 			.push(Command.parseEnumString!(motion))
-			.push(Local.get!('command.setAnimationComponent.' + operation));
+			.push(t('command.setAnimationComponent.' + operation));
 		switch (operation) {
 			case 'set-angle':
 				words.push(Command.parseAngle!(angle));
@@ -97,7 +97,7 @@ Command.cases.setAnimationComponent = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.setAnimationComponent') + Token(': ') },
+			{ text: t('command.setAnimationComponent') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

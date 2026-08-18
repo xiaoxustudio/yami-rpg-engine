@@ -1,13 +1,13 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animMotion-general-grid') || 'Motion' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animMotion-general-grid.label') || 'Motion' }}</DetailSummary>
 		<div class="detail-grid" id="animMotion-general-grid">
-			<div class="text">{{ local.getLabel('animMotion-mode') || 'Direction' }}</div><SelectBox id="animMotion-mode" v-model="form.mode" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('animMotion-skip') || 'Skip Last Frame' }}</div
+			<div class="text">{{ t('components.animMotion-mode.label') || 'Direction' }}</div><SelectBox id="animMotion-mode" v-model="form.mode" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.animMotion-skip.label') || 'Skip Last Frame' }}</div
 			><CheckBox id="animMotion-skip" class="standard large" :model-value="form.skip" @input="onParamInput"></CheckBox>
-			<div class="text">{{ local.getLabel('animMotion-loop') || 'Loop' }}</div
+			<div class="text">{{ t('components.animMotion-loop.label') || 'Loop' }}</div
 			><CheckBox id="animMotion-loop" class="standard large" :model-value="form.loop" @input="onParamInput"></CheckBox>
-			<div class="text">{{ local.getLabel('animMotion-loopStart') || 'Loop Start' }}</div
+			<div class="text">{{ t('components.animMotion-loopStart.label') || 'Loop Start' }}</div
 			><NumberBox id="animMotion-loopStart" v-model="form.loopStart" min="0" max="10000" @input="onParamInput"></NumberBox>
 		</div>
 	</DetailBox>
@@ -15,8 +15,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAnimMotionPage } from '@app/composables/useAnimMotionPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -26,7 +26,7 @@ import CheckBox from '@app/components/common/CheckBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimMotionPage();
 

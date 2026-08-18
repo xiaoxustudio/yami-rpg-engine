@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setReverb = new CommandSchema({
 	name: 'setReverb',
@@ -36,7 +36,7 @@ Command.cases.setReverb = new CommandSchema({
 			.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get!('command.setReverb') + Token(': ') },
+			{ text: t('command.setReverb') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

@@ -22,7 +22,7 @@
 import { onMounted } from 'vue';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -40,7 +40,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.setMovementSpeed');
+	const get = createGetter('command.setMovementSpeed');
 	$('#setMovementSpeed-property')?.loadItems?.([
 		{ name: get('base') || 'Base Speed', value: 'base' },
 		{ name: get('factor') || 'Speed Factor', value: 'factor' },

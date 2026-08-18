@@ -1,4 +1,4 @@
-import { HistoryData, IArrayHistory } from '@/types/history.ts';
+import { HistoryData, IArrayHistory } from '@app/legacy/types/history.ts';
 import { getHistoryStore } from '@app/stores/history';
 
 export type HistoryRecord = HistoryData;

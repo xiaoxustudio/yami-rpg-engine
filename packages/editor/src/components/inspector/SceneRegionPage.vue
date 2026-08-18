@@ -1,10 +1,10 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneRegion-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneRegion-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneRegion-general-grid">
-			<div class="text">{{ local.getLabel('sceneRegion-name') || 'Name' }}</div><TextBox id="sceneRegion-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneRegion-color') || 'Color' }}</div><ColorBox id="sceneRegion-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('sceneRegion-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneRegion-name.label') || 'Name' }}</div><TextBox id="sceneRegion-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneRegion-color.label') || 'Color' }}</div><ColorBox id="sceneRegion-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.sceneRegion-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneRegion-x" v-model="form.x" @input="onParamInput"
 				min="-128"
@@ -12,7 +12,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneRegion-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneRegion-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneRegion-y" v-model="form.y" @input="onParamInput"
 				min="-128"
@@ -20,14 +20,14 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneRegion-width') || 'Width' }}</div
+			<div class="text">{{ t('components.sceneRegion-width.label') || 'Width' }}</div
 			><NumberBox
 				id="sceneRegion-width" v-model="form.width" @input="onParamInput"
 				min="0"
 				max="512"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneRegion-height') || 'Height' }}</div
+			<div class="text">{{ t('components.sceneRegion-height.label') || 'Height' }}</div
 			><NumberBox
 				id="sceneRegion-height" v-model="form.height" @input="onParamInput"
 				min="0"
@@ -37,7 +37,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneRegion-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneRegion-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-conditions"
 			class="inspector-list"
@@ -45,7 +45,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneRegion-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneRegion-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-events"
 			class="inspector-list"
@@ -54,7 +54,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneRegion-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneRegion-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneRegion-scripts"
 			class="inspector-list"
@@ -66,8 +66,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -82,7 +82,7 @@ import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneRegionPage();
 

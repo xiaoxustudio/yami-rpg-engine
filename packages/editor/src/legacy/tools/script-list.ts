@@ -1,16 +1,16 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
-import { addClass, hasClass, removeClass } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { PluginManager } from '@/plugin/plugin.ts';
+import { addClass, hasClass, removeClass } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { h, render } from 'vue';
 
-import { IEditableHistory } from '@/types/history.ts';
-import { IScriptListInterface } from '@/types/list-interface.ts';
+import { IEditableHistory } from '@app/legacy/types/history.ts';
+import { IScriptListInterface } from '@app/legacy/types/list-interface.ts';
 
 interface ScriptData {
 	id: string;

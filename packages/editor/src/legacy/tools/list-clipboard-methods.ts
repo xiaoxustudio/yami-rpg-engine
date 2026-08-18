@@ -1,6 +1,6 @@
-import { Local } from '@/tools/localization.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getGlobalClipboard } from '@/types/global-clipboard.ts';
+import { createGetter } from '@app/i18n';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 
 const Clipboard = getGlobalClipboard();
 
@@ -64,7 +64,7 @@ export function bindListClipboardMethods(config: ListClipboardConfig) {
 
 	list.delete = function (item: ListItem) {
 		if (item) {
-			const get = Local.createGetter!('confirmation');
+			const get = createGetter('confirmation');
 			Window.confirm!(
 				{
 					message: get!('deleteSingleFile').replace('<filename>', item.name)

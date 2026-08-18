@@ -1,9 +1,9 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
 import { Token } from './mark-string-manager.ts';
-import { Color } from '@/tools/color-picker-window.ts';
-import { Local } from '@/tools/localization.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { t, createGetter } from '@app/i18n';
 
 const effectRelate = [
 	{
@@ -40,7 +40,7 @@ export const TextProperty = createPropertyWindow({
 	],
 	subRelates: [{ selector: 'effect-type', cases: effectRelate }],
 	init() {
-		const get = Local.createGetter!('command.setText');
+		const get = createGetter('command.setText');
 		$('#setText-property-effect-type').loadItems([
 			{ name: get('effect.none') || 'None', value: 'none' },
 			{ name: get('effect.shadow') || 'Shadow', value: 'shadow' },
@@ -48,9 +48,9 @@ export const TextProperty = createPropertyWindow({
 			{ name: get('effect.outline') || 'Outline', value: 'outline' }
 		]);
 		$('#setText-property-blend').loadItems([
-			{ name: Local.get!('blend.normal') || 'Normal', value: 'normal' },
-			{ name: Local.get!('blend.additive') || 'Additive', value: 'additive' },
-			{ name: Local.get!('blend.subtract') || 'Subtract', value: 'subtract' }
+			{ name: t('blend.normal') || 'Normal', value: 'normal' },
+			{ name: t('blend.additive') || 'Additive', value: 'additive' },
+			{ name: t('blend.subtract') || 'Subtract', value: 'subtract' }
 		]);
 	},
 	openData(defaults: Record<string, unknown>, key: string, value: unknown) {

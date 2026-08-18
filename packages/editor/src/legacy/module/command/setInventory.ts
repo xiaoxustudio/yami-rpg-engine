@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setInventory = new CommandSchema({
 	name: 'setInventory',
@@ -42,7 +42,7 @@ Command.cases.setInventory = new CommandSchema({
 	}) {
 		const words = Command.words
 			.push(Command.parseActor!(actor))
-			.push(Local.get!('command.setInventory.' + operation));
+			.push(t('command.setInventory.' + operation));
 		switch (operation) {
 			case 'increase-money':
 			case 'decrease-money':
@@ -73,7 +73,7 @@ Command.cases.setInventory = new CommandSchema({
 		}
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get!('command.setInventory') + Token(': ') },
+			{ text: t('command.setInventory') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

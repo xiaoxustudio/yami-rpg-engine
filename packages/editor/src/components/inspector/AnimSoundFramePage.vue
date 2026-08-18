@@ -1,8 +1,8 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('animSoundFrame-properties-grid') || 'Frame' }}</DetailSummary>
+		<DetailSummary>{{ t('components.animSoundFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSoundFrame-properties-grid">
-			<div class="text">{{ local.getLabel('animSoundFrame-sound') || 'Sound' }}</div
+			<div class="text">{{ t('components.animSoundFrame-sound.label') || 'Sound' }}</div
 			><CustomBox
 				id="animSoundFrame-sound"
 				:model-value="form.sound"
@@ -10,7 +10,7 @@
 				filter="audio"
 				@input="onParamInput"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('animSoundFrame-volume') || 'Volume' }}</div
+			<div class="text">{{ t('components.animSoundFrame-volume.label') || 'Volume' }}</div
 			><NumberBox
 				id="animSoundFrame-volume"
 				v-model="form.volume"
@@ -25,8 +25,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAnimSoundFramePage } from '@app/composables/useAnimSoundFramePage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -35,7 +35,7 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useAnimSoundFramePage();
 

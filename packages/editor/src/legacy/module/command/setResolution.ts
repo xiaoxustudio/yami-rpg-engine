@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setResolution = new CommandSchema({
 	name: 'setResolution',
@@ -32,7 +32,7 @@ Command.cases.setResolution = new CommandSchema({
 			.push(Command.parseVariableNumber(uiScale));
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.setResolution') + Token(': ') },
+			{ text: t('command.setResolution') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

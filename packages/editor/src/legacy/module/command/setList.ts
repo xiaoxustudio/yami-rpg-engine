@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface SetListForm {
 	variable: { type: string; key: string };
@@ -111,7 +111,7 @@ Command.cases.setList = new CommandSchema({
 					Token('[') + Command.parseVariableNumber!(index) + Token(']')
 				} ${equal} ${Command.setBooleanColor!(constant)}`;
 				if (skipCheck) {
-					info += `, ${Local.get!('command.setList.skipCheck')}`;
+					info += `, ${t('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'set-number':
@@ -119,7 +119,7 @@ Command.cases.setList = new CommandSchema({
 					Token('[') + Command.parseVariableNumber!(index) + Token(']')
 				} ${equal} ${Command.setNumberColor!(constant)}`;
 				if (skipCheck) {
-					info += `, ${Local.get!('command.setList.skipCheck')}`;
+					info += `, ${t('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'set-string': {
@@ -130,7 +130,7 @@ Command.cases.setList = new CommandSchema({
 					Token('[') + Command.parseVariableNumber!(index) + Token(']')
 				} ${equal} ${string}`;
 				if (skipCheck) {
-					info += `, ${Local.get!('command.setList.skipCheck')}`;
+					info += `, ${t('command.setList.skipCheck')}`;
 				}
 				break;
 			}
@@ -139,11 +139,11 @@ Command.cases.setList = new CommandSchema({
 					Token('[') + Command.parseVariableNumber!(index) + Token(']')
 				} ${equal} ${Command.parseVariable!(operand, 'any')}`;
 				if (skipCheck) {
-					info += `, ${Local.get!('command.setList.skipCheck')}`;
+					info += `, ${t('command.setList.skipCheck')}`;
 				}
 				break;
 			case 'split-string': {
-				const label = Local.get!('command.setList.split-string');
+				const label = t('command.setList.split-string');
 				const text1 = Command.parseVariable!(operand, 'string');
 				const text2 = Command.parseVariableString!(separator);
 				const comma = Command.setDelimiterColor!(', ');
@@ -164,20 +164,20 @@ Command.cases.setList = new CommandSchema({
 				break;
 			case 'get-attribute-names':
 			case 'get-attribute-keys': {
-				const label = Local.get!('command.setList.' + operation);
+				const label = t('command.setList.' + operation);
 				const group = Command.parseAttributeGroup!(groupId);
 				info = `${varName} ${equal} ${label}${Token('(')}${group}${Token(')')}`;
 				break;
 			}
 			case 'get-enum-names':
 			case 'get-enum-values': {
-				const label = Local.get!('command.setList.' + operation);
+				const label = t('command.setList.' + operation);
 				const group = Command.parseEnumGroup!(groupId);
 				info = `${varName} ${equal} ${label}${Token('(')}${group}${Token(')')}`;
 				break;
 			}
 			case 'get-actor-targets': {
-				const label = Local.get!('command.setList.' + operation);
+				const label = t('command.setList.' + operation);
 				const actorInfo = Command.parseActor!(actor);
 				info = `${varName} ${equal} ${label}${Token('(')}${actorInfo}${Token(')')}`;
 				break;
@@ -185,7 +185,7 @@ Command.cases.setList = new CommandSchema({
 		}
 		return [
 			{ color: 'variable' },
-			{ text: Local.get!('command.setList.alias') + ' ' },
+			{ text: t('command.setList.alias') + ' ' },
 			{ color: 'restore' },
 			{ text: info }
 		];

@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.castSkill = new CommandSchema({
 	name: 'castSkill',
@@ -50,7 +50,7 @@ Command.cases.castSkill = new CommandSchema({
 		words.push(Command.parseWait!(wait));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.castSkill') + Token(': ') },
+			{ text: t('command.castSkill') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

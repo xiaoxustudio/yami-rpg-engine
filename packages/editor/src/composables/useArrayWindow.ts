@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus } from '@app/legacy/util/element-utils';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 
 export interface ArrayForm {
 	values: unknown[];
@@ -66,7 +66,7 @@ const markChanged = (): void => {
 const onWindowClose = (event: Event): void => {
 	if (changedState.value) {
 		event.preventDefault();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		Window.confirm!(
 			{
 				message: get('closeUnsavedData')

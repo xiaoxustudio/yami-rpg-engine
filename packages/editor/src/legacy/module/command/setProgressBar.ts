@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { ProgressBarProperty } from '@/command/set-progress-property-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { ProgressBarProperty } from '@app/legacy/command/set-progress-property-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setProgressBar = new CommandSchema({
 	name: 'setProgressBar',
@@ -23,7 +23,7 @@ Command.cases.setProgressBar = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setProgressBar') + Token(': ') },
+			{ text: t('command.setProgressBar') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

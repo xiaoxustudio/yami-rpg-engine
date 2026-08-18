@@ -1,9 +1,9 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { $ } from '@/util/dom.ts';
-import { enable } from '@/util/element-utils.ts';
-import { Path } from '@/util/config.ts';
-import { Editor } from '@/main/editor.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { enable } from '@app/legacy/util/element-utils.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { TemplatesPath } from './global.ts';
 
 interface ApkConfig {

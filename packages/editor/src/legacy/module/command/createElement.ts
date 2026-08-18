@@ -1,9 +1,9 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
-import { PresetElement } from '@/tools/preset-element-window.ts';
+import { t } from '@app/i18n';
+import { PresetElement } from '@app/legacy/tools/preset-element-window.ts';
 
 Command.cases.createElement = new CommandSchema({
 	name: 'createElement',
@@ -66,7 +66,7 @@ Command.cases.createElement = new CommandSchema({
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.createElement') + Token(': ') },
+			{ text: t('command.createElement') + Token(': ') },
 			{ text: info }
 		];
 	}

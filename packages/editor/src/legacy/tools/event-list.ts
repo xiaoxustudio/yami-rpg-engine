@@ -1,13 +1,13 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { Command } from '@/command/command-object.ts';
-import { addClass } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
-import { EventEditor } from '@/command/event-editor.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { Local } from './localization.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { addClass } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { t } from '@app/i18n';
 
-import { IListInterface } from '@/types/list-interface.ts';
-import { HistoryData, IEditableHistory } from '@/types/history.ts';
+import { IListInterface } from '@app/legacy/types/list-interface.ts';
+import { HistoryData, IEditableHistory } from '@app/legacy/types/history.ts';
 
 interface EventListTargetShape {
 	guid?: string;
@@ -100,7 +100,7 @@ export class EventListInterface implements IListInterface {
 			};
 		}
 		return {
-			content: Local.get!('eventTypes.' + type),
+			content: t('eventTypes.' + type),
 			class: event.enabled ? '' : 'weak'
 		};
 	}

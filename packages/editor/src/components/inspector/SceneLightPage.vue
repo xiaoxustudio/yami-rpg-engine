@@ -1,11 +1,11 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneLight-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneLight-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneLight-general-grid">
-			<div class="text">{{ local.getLabel('sceneLight-name') || 'Name' }}</div><TextBox id="sceneLight-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneLight-type') || 'Type' }}</div><SelectBox id="sceneLight-type" v-model="form.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneLight-blend') || 'Blend' }}</div><SelectBox id="sceneLight-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneLight-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneLight-name.label') || 'Name' }}</div><TextBox id="sceneLight-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneLight-type.label') || 'Type' }}</div><SelectBox id="sceneLight-type" v-model="form.type" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.sceneLight-blend.label') || 'Blend' }}</div><SelectBox id="sceneLight-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.sceneLight-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneLight-x" v-model="form.x" @input="onParamInput"
 				min="-128"
@@ -13,7 +13,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneLight-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneLight-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneLight-y" v-model="form.y" @input="onParamInput"
 				min="-128"
@@ -21,7 +21,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneLight-range-box') || 'Range' }}</div>
+			<div class="text">{{ t('components.sceneLight-range-box.label') || 'Range' }}</div>
 			<div class="flex-box" id="sceneLight-range-box">
 				<SliderBox
 					id="sceneLight-range-slider"
@@ -37,7 +37,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-intensity-box') || 'Intensity' }}</div>
+			<div class="text">{{ t('components.sceneLight-intensity-box.label') || 'Intensity' }}</div>
 			<div class="flex-box" id="sceneLight-intensity-box">
 				<SliderBox
 					id="sceneLight-intensity-slider"
@@ -54,13 +54,13 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-mask') || 'Mask' }}</div
+			<div class="text">{{ t('components.sceneLight-mask.label') || 'Mask' }}</div
 			><CustomBox
 				id="sceneLight-mask" :model-value="form.mask" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneLight-anchorX-box') || 'Anchor X' }}</div>
+			<div class="text">{{ t('components.sceneLight-anchorX-box.label') || 'Anchor X' }}</div>
 			<div class="flex-box" id="sceneLight-anchorX-box">
 				<SliderBox
 					id="sceneLight-anchorX-slider"
@@ -77,7 +77,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-anchorY-box') || 'Anchor Y' }}</div>
+			<div class="text">{{ t('components.sceneLight-anchorY-box.label') || 'Anchor Y' }}</div>
 			<div class="flex-box" id="sceneLight-anchorY-box">
 				<SliderBox
 					id="sceneLight-anchorY-slider"
@@ -94,7 +94,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-width-box') || 'Width' }}</div>
+			<div class="text">{{ t('components.sceneLight-width-box.label') || 'Width' }}</div>
 			<div class="flex-box" id="sceneLight-width-box">
 				<SliderBox
 					id="sceneLight-width-slider"
@@ -111,7 +111,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-height-box') || 'Height' }}</div>
+			<div class="text">{{ t('components.sceneLight-height-box.label') || 'Height' }}</div>
 			<div class="flex-box" id="sceneLight-height-box">
 				<SliderBox
 					id="sceneLight-height-slider"
@@ -128,7 +128,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-angle-box') || 'Angle' }}</div>
+			<div class="text">{{ t('components.sceneLight-angle-box.label') || 'Angle' }}</div>
 			<div class="flex-box" id="sceneLight-angle-box">
 				<SliderBox
 					id="sceneLight-angle-slider"
@@ -145,7 +145,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-red-box') || 'Red' }}</div>
+			<div class="text">{{ t('components.sceneLight-red-box.label') || 'Red' }}</div>
 			<div class="flex-box" id="sceneLight-red-box">
 				<SliderBox
 					id="sceneLight-red-slider"
@@ -161,7 +161,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-green-box') || 'Green' }}</div>
+			<div class="text">{{ t('components.sceneLight-green-box.label') || 'Green' }}</div>
 			<div class="flex-box" id="sceneLight-green-box">
 				<SliderBox
 					id="sceneLight-green-slider"
@@ -177,7 +177,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-blue-box') || 'Blue' }}</div>
+			<div class="text">{{ t('components.sceneLight-blue-box.label') || 'Blue' }}</div>
 			<div class="flex-box" id="sceneLight-blue-box">
 				<SliderBox
 					id="sceneLight-blue-slider"
@@ -193,7 +193,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneLight-direct-box') || 'Direct Light Ratio' }}</div>
+			<div class="text">{{ t('components.sceneLight-direct-box.label') || 'Direct Light Ratio' }}</div>
 			<div class="flex-box" id="sceneLight-direct-box">
 				<SliderBox
 					id="sceneLight-direct-slider"
@@ -213,7 +213,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneLight-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneLight-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-conditions"
 			class="inspector-list"
@@ -221,7 +221,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneLight-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneLight-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-events"
 			class="inspector-list"
@@ -230,7 +230,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneLight-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneLight-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneLight-scripts"
 			class="inspector-list"
@@ -242,8 +242,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -260,7 +260,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneLightPage();
 

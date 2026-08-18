@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTriggerSpeed = new CommandSchema({
 	name: 'setTriggerSpeed',
@@ -15,7 +15,7 @@ Command.cases.setTriggerSpeed = new CommandSchema({
 			.push(Command.parseVariableNumber(speed, 't/s'));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.setTriggerSpeed') + Token(': ') },
+			{ text: t('command.setTriggerSpeed') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

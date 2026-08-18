@@ -1,17 +1,17 @@
 ﻿<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileEquipment-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileEquipment-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileEquipment-general-grid">
-			<div class="text">{{ local.getLabel('fileEquipment-icon') || 'Icon' }}</div
+			<div class="text">{{ t('components.fileEquipment-icon.label') || 'Icon' }}</div
 			><CustomBox id="fileEquipment-icon" :model-value="form.icon" @input="onParamInput" type="file" filter="image" />
-			<div class="text">{{ local.getLabel('fileEquipment-clip') || 'Clip' }}</div
+			<div class="text">{{ t('components.fileEquipment-clip.label') || 'Clip' }}</div
 			><CustomBox id="fileEquipment-clip" :model-value="form.clip" @input="onParamInput" type="clip" image="fileEquipment-icon" />
-			<div class="text">{{ local.getLabel('fileEquipment-inherit') || 'Inherit' }}</div
+			<div class="text">{{ t('components.fileEquipment-inherit.label') || 'Inherit' }}</div
 			><CustomBox id="fileEquipment-inherit" :model-value="form.inherit" @input="onParamInput" type="file" filter="equipment" />
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileEquipment-attributes') || 'Attributes' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileEquipment-attributes.label') || 'Attributes' }}</DetailSummary>
 		<ParamList
 			id="fileEquipment-attributes" @change="onListChange"
 			class="inspector-list"
@@ -20,7 +20,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileEquipment-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileEquipment-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileEquipment-events" @change="onListChange"
 			class="inspector-list"
@@ -29,7 +29,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileEquipment-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileEquipment-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileEquipment-scripts" @change="onListChange"
 			class="inspector-list"
@@ -41,13 +41,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileEquipmentPage } from '@app/composables/useFileEquipmentPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -56,7 +56,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const inspector = useInspectorStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileEquipmentPage();
 

@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setElement = new CommandSchema({
 	name: 'setElement',
@@ -12,10 +12,10 @@ Command.cases.setElement = new CommandSchema({
 	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
-			.push(Local.get!('command.setElement.' + operation));
+			.push(t('command.setElement.' + operation));
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.setElement.alias') + Token(': ') },
+			{ text: t('command.setElement.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

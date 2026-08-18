@@ -1,15 +1,15 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { createSelectBox } from '@/components/select-box.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { GameLocal } from '@/local/local-object.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { createSelectBox } from '@app/legacy/components/select-box.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
 
-import { IListInterface } from '@/types/list-interface.ts';
-import { IEditableHistory } from '@/types/history.ts';
+import { IListInterface } from '@app/legacy/types/list-interface.ts';
+import { IEditableHistory } from '@app/legacy/types/history.ts';
 
 interface AttributeItemShape {
 	key: string;

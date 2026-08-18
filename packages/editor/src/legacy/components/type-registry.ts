@@ -1,7 +1,7 @@
 ﻿import { createTypeRegistry } from '@ui-kit';
-import { Data } from '@/data/data-object.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 
 export const TypeRegistry = createTypeRegistry({
 	createEasingItems: () => Data.createEasingItems(),

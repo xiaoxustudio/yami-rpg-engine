@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.useItem = new CommandSchema({
 	name: 'useItem',
@@ -44,7 +44,7 @@ Command.cases.useItem = new CommandSchema({
 		words.push(Command.parseWait!(wait));
 		return [
 			{ color: 'inventory' },
-			{ text: Local.get!('command.useItem') + Token(': ') },
+			{ text: t('command.useItem') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

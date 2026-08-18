@@ -19,7 +19,7 @@ import { YMParamList, type MenuItem, type MenuOptions } from '@ui-kit';
 import { ParamListHistory } from '@app/legacy/components/param-history';
 import { ctrl as ctrlText } from '@app/legacy/util/event-accessors';
 import { Menu } from '@app/legacy/components/menu-list';
-import { Local } from '@app/legacy/tools/localization';
+import { createGetter } from '@app/i18n';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
 
@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const historyFactory = (list: unknown): ParamListHistory => new ParamListHistory(list);
 const menuPopup = (options: MenuOptions, items: MenuItem[]): void => Menu.popup(options, items);
-const localize = (key: string): string => Local.createGetter('menuParamList')(key);
+const localize = (key: string): string => createGetter('menuParamList')(key);
 interface ClipboardAdapter {
 	write(type: string, data: unknown): void;
 	read(type: string): unknown;

@@ -1,7 +1,7 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { on } from '@/util/element-utils.ts';
-import { Editor } from '@/main/editor.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { on } from '@app/legacy/util/element-utils.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 
 export const ObjectFolder: {
 	initialize: (() => void) | null;

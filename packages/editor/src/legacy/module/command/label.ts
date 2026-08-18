@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.label = new CommandSchema({
 	name: 'label',
@@ -9,7 +9,7 @@ Command.cases.label = new CommandSchema({
 	customParse({ name }: { name: string }) {
 		return [
 			{ color: 'flow' },
-			{ text: Local.get!('command.label') + Token(': ') },
+			{ text: t('command.label') + Token(': ') },
 			{ color: 'label' },
 			{ text: name }
 		];

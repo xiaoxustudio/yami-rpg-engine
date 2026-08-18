@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setState = new CommandSchema({
 	name: 'setState',
@@ -11,7 +11,7 @@ Command.cases.setState = new CommandSchema({
 		{ key: 'time', default: 0 }
 	],
 	parseOperation(operation: string) {
-		return Local.get!('command.setState.' + operation);
+		return t('command.setState.' + operation);
 	},
 	customParse({ state, operation, time }: { state: unknown; operation: string; time: unknown }) {
 		const words = Command.words
@@ -20,7 +20,7 @@ Command.cases.setState = new CommandSchema({
 			.push(Command.parseVariableNumber!(time, 'ms'));
 		return [
 			{ color: 'object' },
-			{ text: Local.get!('command.setState') + Token(': ') },
+			{ text: t('command.setState') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

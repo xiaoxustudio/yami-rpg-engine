@@ -1,7 +1,7 @@
 import { Data } from './data-object.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Updater } from '@/update/updater.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Updater } from '@app/legacy/update/updater.ts';
 
 export const Meta = (function IIFE() {
 	const typeMapToGroupName = () => ({

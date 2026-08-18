@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type MoveActorMode = 'stop' | 'keep' | 'straight' | 'navigate' | 'navigate-bypass' | 'teleport';
 
@@ -24,7 +24,7 @@ Command.cases.moveActor = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	parseMode(mode: MoveActorMode) {
-		let string = Local.get!('command.moveActor.mode.' + mode);
+		let string = t('command.moveActor.mode.' + mode);
 		if (mode === 'navigate-bypass') {
 			string = string.replace('(', Token('(')).replace(')', Token(')'));
 		}
@@ -50,7 +50,7 @@ Command.cases.moveActor = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.moveActor') + Token(': ') },
+			{ text: t('command.moveActor') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

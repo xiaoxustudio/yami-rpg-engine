@@ -1,7 +1,7 @@
-import { getElementWriter } from '@/util/dom.ts';
+import { getElementWriter } from '@app/legacy/util/dom.ts';
 import { Inspector } from './inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { read } from '@/util/element-utils.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { read } from '@app/legacy/util/element-utils.ts';
 
 {
 	interface UIImageShape {

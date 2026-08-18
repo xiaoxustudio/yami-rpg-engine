@@ -1,14 +1,14 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiDialogBox-properties-grid') || 'DialogBox Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiDialogBox-properties-grid.label') || 'DialogBox Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiDialogBox-properties-grid">
-			<div class="text">{{ local.getLabel('uiDialogBox-content') || 'Content' }}</div
+			<div class="text">{{ t('components.uiDialogBox-content.label') || 'Content' }}</div
 			><TextArea
 				id="uiDialogBox-content"
 				:model-value="form.content"
 				menu="tag-localization" @input="onParamInput"
 			></TextArea>
-			<div class="text">{{ local.getLabel('uiDialogBox-interval') || 'Print Interval' }}</div
+			<div class="text">{{ t('components.uiDialogBox-interval.label') || 'Print Interval' }}</div
 			><NumberBox
 				id="uiDialogBox-interval"
 				v-model="form.interval"
@@ -17,7 +17,7 @@
 				decimals="4"
 				unit="ms" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-size-box') || 'Size' }}</div>
+			<div class="text">{{ t('components.uiDialogBox-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiDialogBox-size-box">
 				<SliderBox
 					id="uiDialogBox-size-slider"
@@ -34,7 +34,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiDialogBox-lineSpacing-box') || 'Line Spacing' }}</div>
+			<div class="text">{{ t('components.uiDialogBox-lineSpacing-box.label') || 'Line Spacing' }}</div>
 			<div class="flex-box" id="uiDialogBox-lineSpacing-box">
 				<SliderBox
 					id="uiDialogBox-lineSpacing-slider"
@@ -51,7 +51,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiDialogBox-letterSpacing-box') || 'Letter Spacing' }}</div>
+			<div class="text">{{ t('components.uiDialogBox-letterSpacing-box.label') || 'Letter Spacing' }}</div>
 			<div class="flex-box" id="uiDialogBox-letterSpacing-box">
 				<SliderBox
 					id="uiDialogBox-letterSpacing-slider"
@@ -68,12 +68,12 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiDialogBox-color') || 'Color' }}</div><ColorBox id="uiDialogBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-font') || 'Font' }}</div><TextBox id="uiDialogBox-font" v-model="form.font" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-typeface') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-effect-type') || 'Effect' }}</div
+			<div class="text">{{ t('components.uiDialogBox-color.label') || 'Color' }}</div><ColorBox id="uiDialogBox-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.uiDialogBox-font.label') || 'Font' }}</div><TextBox id="uiDialogBox-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiDialogBox-typeface.label') || 'Typeface' }}</div><SelectBox id="uiDialogBox-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiDialogBox-effect-type.label') || 'Effect' }}</div
 			><SelectBox id="uiDialogBox-effect-type" v-model="form.effect.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetX') || 'Shadow X' }}</div
+			<div class="text">{{ t('components.uiDialogBox-effect-shadowOffsetX.label') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetX"
 				v-model="form.effect.shadowOffsetX"
@@ -81,7 +81,7 @@
 				max="9"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-effect-shadowOffsetY') || 'Shadow Y' }}</div
+			<div class="text">{{ t('components.uiDialogBox-effect-shadowOffsetY.label') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-shadowOffsetY"
 				v-model="form.effect.shadowOffsetY"
@@ -89,7 +89,7 @@
 				max="9"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-effect-strokeWidth') || 'Stroke Width' }}</div
+			<div class="text">{{ t('components.uiDialogBox-effect-strokeWidth.label') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiDialogBox-effect-strokeWidth"
 				v-model="form.effect.strokeWidth"
@@ -97,8 +97,8 @@
 				max="20"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiDialogBox-effect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiDialogBox-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiDialogBox-blend') || 'Blend' }}</div
+			<div class="text">{{ t('components.uiDialogBox-effect-color.label') || 'Effect Color' }}</div
+			><ColorBox id="uiDialogBox-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ t('components.uiDialogBox-blend.label') || 'Blend' }}</div
 			><SelectBox id="uiDialogBox-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
@@ -106,8 +106,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -120,7 +120,7 @@ import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUIDialogBoxPage();
 

@@ -1,19 +1,19 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileScene-general-grid') || 'Scene' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileScene-general-grid.label') || 'Scene' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-general-grid">
-			<div class="text">{{ local.getLabel('fileScene-width') || 'Width' }}</div
+			<div class="text">{{ t('components.fileScene-width.label') || 'Width' }}</div
 			><NumberBox id="fileScene-width" v-model="form.width" min="0" max="512" unit="tile" @change="onParamInput" />
-			<div class="text">{{ local.getLabel('fileScene-height') || 'Height' }}</div
+			<div class="text">{{ t('components.fileScene-height.label') || 'Height' }}</div
 			><NumberBox id="fileScene-height" v-model="form.height" min="0" max="512" unit="tile" @change="onParamInput" />
-			<div class="text">{{ local.getLabel('fileScene-tileWidth') || 'Tile Width' }}</div
+			<div class="text">{{ t('components.fileScene-tileWidth.label') || 'Tile Width' }}</div
 			><NumberBox
 				id="fileScene-tileWidth" v-model="form.tileWidth" @input="onParamInput"
 				min="16"
 				max="256"
 				unit="px"
 			/>
-			<div class="text">{{ local.getLabel('fileScene-tileHeight') || 'Tile Height' }}</div
+			<div class="text">{{ t('components.fileScene-tileHeight.label') || 'Tile Height' }}</div
 			><NumberBox
 				id="fileScene-tileHeight" v-model="form.tileHeight" @input="onParamInput"
 				min="16"
@@ -23,9 +23,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileScene-ambient-grid') || 'Ambient Light' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileScene-ambient-grid.label') || 'Ambient Light' }}</DetailSummary>
 		<div class="detail-grid" id="fileScene-ambient-grid">
-			<div class="text">{{ local.getLabel('fileScene-ambient-red-box') || 'Red' }}</div>
+			<div class="text">{{ t('components.fileScene-ambient-red-box.label') || 'Red' }}</div>
 			<div class="flex-box" id="fileScene-ambient-red-box">
 				<SliderBox
 					id="fileScene-ambient-red-slider"
@@ -41,7 +41,7 @@
 					step="5"
 				/>
 			</div>
-			<div class="text">{{ local.getLabel('fileScene-ambient-green-box') || 'Green' }}</div>
+			<div class="text">{{ t('components.fileScene-ambient-green-box.label') || 'Green' }}</div>
 			<div class="flex-box" id="fileScene-ambient-green-box">
 				<SliderBox
 					id="fileScene-ambient-green-slider"
@@ -57,7 +57,7 @@
 					step="5"
 				/>
 			</div>
-			<div class="text">{{ local.getLabel('fileScene-ambient-blue-box') || 'Blue' }}</div>
+			<div class="text">{{ t('components.fileScene-ambient-blue-box.label') || 'Blue' }}</div>
 			<div class="flex-box" id="fileScene-ambient-blue-box">
 				<SliderBox
 					id="fileScene-ambient-blue-slider"
@@ -73,7 +73,7 @@
 					step="5"
 				/>
 			</div>
-			<div class="text">{{ local.getLabel('fileScene-ambient-direct-box') || 'Direct Light Ratio' }}</div>
+			<div class="text">{{ t('components.fileScene-ambient-direct-box.label') || 'Direct Light Ratio' }}</div>
 			<div class="flex-box" id="fileScene-ambient-direct-box">
 				<SliderBox
 					id="fileScene-ambient-direct-slider"
@@ -93,7 +93,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileScene-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileScene-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="fileScene-events"
 			class="inspector-list"
@@ -102,7 +102,7 @@
 		/>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileScene-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileScene-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="fileScene-scripts"
 			class="inspector-list"
@@ -114,13 +114,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileScenePage } from '@app/composables/useFileScenePage';
 import { useSceneStore } from '@app/stores/scene';
-import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -130,7 +130,7 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
 const scene = useSceneStore();
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useFileScenePage();
 

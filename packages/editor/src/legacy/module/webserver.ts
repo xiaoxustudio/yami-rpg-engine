@@ -1,13 +1,13 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
-import { disable, enable, on, write } from '@/util/element-utils.ts';
-import { Path } from '@/util/config.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { disable, enable, on, write } from '@app/legacy/util/element-utils.ts';
+import { Path } from '@app/legacy/util/config.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { Deployment } from '@/title/deploy-project-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { Deployment } from '@app/legacy/title/deploy-project-window.ts';
 
 export const WebServer = new (class {
 	port = 5959;

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Home } from '@/title/home-page.ts';
+import { Home } from '@app/legacy/title/home-page.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { getHomeStore, homeStateKeys } from '@app/stores/home';
 

@@ -63,4 +63,4 @@ Command.forEachCommand = function (
 	forEach(commands);
 };
 
-Command.WordList = WordList;
+Command.WordList = WordList as unknown as typeof Command.WordList;

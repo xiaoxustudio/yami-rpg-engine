@@ -1,6 +1,6 @@
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, afterEach } from 'vitest';
 import { Layout } from '@app/engine/layout/layout.ts';
-import '@/util/css.ts';
+import '@app/legacy/util/css.ts';
 
 function createLeafGroup(tabs: string[] = []): HTMLElement {
 	const root = document.createElement('div');

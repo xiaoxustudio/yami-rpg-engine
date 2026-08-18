@@ -30,7 +30,7 @@ import { TypeRegistry } from '@app/legacy/components/type-registry';
 import { Select } from '@app/legacy/components/select-list';
 import { Data } from '@app/legacy/data/data-object';
 import { PluginManager } from '@app/legacy/plugin/plugin';
-import { Local } from '@app/legacy/tools/localization';
+import { t } from '@app/i18n';
 import { Selection } from '@app/legacy/tools/text-capture';
 import { measureText as measureTextUtil } from '@app/legacy/util/dom';
 import { setTooltip as setTooltipUtil } from '@app/legacy/util/element-utils';
@@ -57,7 +57,7 @@ const controls = {
 
 const dataManifest = (): { guidMap: Record<string, unknown> } | null => Data.manifest;
 const plugin = computed(() => PluginManager);
-const localize = (key: string): string => Local.get(key);
+const localize = (key: string): string => t(key);
 const selection = computed(() => Selection);
 const selectList = computed(() => Select);
 const measureText = (text: string, font: string): { width: number } =>

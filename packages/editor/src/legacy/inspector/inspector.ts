@@ -1,13 +1,18 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import {
+	hasScrollBar,
+	listenDraggingScrollbarEvent,
+	read,
+	write
+} from '@app/legacy/util/element-utils';
 
-import { Animation } from '@/animation/animation-window.ts';
-import { Log } from '@/log/log-window.ts';
-import { History } from '@/tools/history.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { ParamListHistory } from '@/components/param-history.ts';
-import { DynamicShape } from '@/types/legacy-shapes.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { ParamListHistory } from '@app/legacy/components/param-history.ts';
+import { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
 
 interface InspectorChange {
 	input: HTMLElement;

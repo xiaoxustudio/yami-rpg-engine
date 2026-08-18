@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Layout } from '@app/engine/layout/layout.ts';
-import '@/util/css.ts';
+import '@app/legacy/util/css.ts';
 
 type FakeDragEvent = {
 	dataTransfer: { setDragImage: () => void };

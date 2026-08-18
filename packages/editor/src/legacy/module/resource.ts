@@ -1,10 +1,10 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Window } from '@/tools/window-object.ts';
-import { GlobalPath, Path } from '@/util/config.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { GlobalPath, Path } from '@app/legacy/util/config.ts';
 import { SettingConfig } from './settingconfig';
-import { $ } from '@/util/dom.ts';
-import { disable, enable, on, write } from '@/util/element-utils.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { disable, enable, on, write } from '@app/legacy/util/element-utils.ts';
 
 import { Net } from './net.ts';
 import {
@@ -18,7 +18,7 @@ import {
 	setPackMeta,
 	setNoResourceObj
 } from './global.ts';
-import { Local } from '@/tools/localization.ts';
+import { t, createGetter } from '@app/i18n';
 
 interface TextBoxElement extends HTMLElement {
 	input?: HTMLInputElement | null;
@@ -97,8 +97,8 @@ export const Resources = new (class {
 
 	async initialize() {
 		if (!$('#resource-check-version')) return;
-		this.checkVersionText = Local.get!('confirmation.resource-check-version');
-		this.openDirText = Local.get!('confirmation.resource-open-dir');
+		this.checkVersionText = t('confirmation.resource-check-version');
+		this.openDirText = t('confirmation.resource-open-dir');
 		(this.window as HTMLElement & { update?: () => void }).update?.();
 
 		on($('#resource-check-version'), 'click', () => this.checkVersion());
@@ -112,7 +112,7 @@ export const Resources = new (class {
 	getCurrentNodeInfo() {
 		const config = SettingConfig.config?.github?.accelerationNode || 'auto';
 		if (!this._fastGithubArray) return { nodeName: '', nodeUrl: '' };
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 
 		let nodeName = '';
 		let nodeUrl = '';
@@ -209,7 +209,7 @@ export const Resources = new (class {
 
 	async updateNodeInfo() {
 		const { nodeName, nodeUrl } = this.getCurrentNodeInfo();
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 
 		const nodeLabel = get('resource-current-node-label') || '当前节点';
 		if (this.currentNodeText) {
@@ -342,7 +342,7 @@ export const Resources = new (class {
 	}
 
 	async checkEditorVersion() {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		const url = `${this.fastGithubPrefix}Open-Yami-Community/yami-rpg-editor/refs/heads/main/Project/Script/module/packmeta.json`;
 		const jsonParse = await Net.get(url, {
 			headers: {
@@ -397,7 +397,7 @@ export const Resources = new (class {
 			versionString += `${i} ${PackMeta[i]} -> ${elemVersion}\n`;
 		}
 
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		if (isReOpen) {
 			Window.close!('resource');
 			if (
@@ -435,7 +435,7 @@ export const Resources = new (class {
 			// 判断目录下是否有zip文件，有则删除它节省空间
 			if (fs.existsSync(targetPath)) fs.unlink(targetPath);
 		};
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 
 		const domPase = new DOMParser().parseFromString(
 			`<div id="resource-item-${value}" class="box resource-item" style="display: flex; flex-direction: column; padding: 10px; margin: 5px 0; border: 1px solid var(--border-color); border-radius: 4px;">
@@ -478,11 +478,11 @@ export const Resources = new (class {
 		const speedText = boxDom.querySelector(`#resource-item-${value}-speed`)!;
 		const sizeText = boxDom.querySelector(`#resource-item-${value}-size`)!;
 
-		button.textContent = Local.get!('confirmation.resource-download');
+		button.textContent = t('confirmation.resource-download');
 
 		this.getFileSize(val)
 			.then((size) => {
-				const get = Local.createGetter!('confirmation');
+				const get = createGetter('confirmation');
 				const sizeLabel = get('resource-size-label') || '大小';
 				if (size > 0) {
 					sizeText.textContent = `${sizeLabel}: ${this.formatFileSize(size)}`;
@@ -491,7 +491,7 @@ export const Resources = new (class {
 				}
 			})
 			.catch(() => {
-				const get = Local.createGetter!('confirmation');
+				const get = createGetter('confirmation');
 				const sizeLabel = get('resource-size-label') || '大小';
 				sizeText.textContent = `${sizeLabel}: ${get('resource-size-unknown') || '未知'}`;
 			});
@@ -510,12 +510,12 @@ export const Resources = new (class {
 			isDownloading = true;
 			disable(button);
 			pauseButton.style.display = 'inline-block';
-			pauseButton.textContent = Local.get!('confirmation.resource-pause') || '暂停';
+			pauseButton.textContent = t('confirmation.resource-pause') || '暂停';
 			progressContainer.style.display = 'flex';
 
 			progressBar.style.width = '0%';
 			progressText.textContent = '0%';
-			speedText.textContent = Local.get!('confirmation.resource-speed') || '速度: 0 KB/s';
+			speedText.textContent = t('confirmation.resource-speed') || '速度: 0 KB/s';
 			lastLoaded = 0;
 			lastTime = Date.now();
 
@@ -550,8 +550,7 @@ export const Resources = new (class {
 							speedText_str = `${(speed / 1024 / 1024).toFixed(2)} MB/s`;
 						}
 
-						const speedLabel =
-							Local.get!('confirmation.resource-speed-label') || '速度';
+						const speedLabel = t('confirmation.resource-speed-label') || '速度';
 						speedText.textContent = `${speedLabel}: ${speedText_str}`;
 
 						lastLoaded = ev.loaded;
@@ -565,7 +564,7 @@ export const Resources = new (class {
 					progressContainer.style.display = 'none';
 					pauseButton.style.display = 'none';
 
-					button.textContent = Local.get!('confirmation.resource-decompression');
+					button.textContent = t('confirmation.resource-decompression');
 					disable(button);
 					progressContainer.style.display = 'flex';
 					progressBar.style.background = 'linear-gradient(90deg, #2196f3, #42a5f5)';
@@ -589,7 +588,7 @@ export const Resources = new (class {
 							setPackMeta(this.readTemplate());
 							isDecompressing = false;
 							_check();
-							button.textContent = Local.get!('confirmation.resource-download');
+							button.textContent = t('confirmation.resource-download');
 							progressContainer.style.display = 'none';
 							progressBar.style.background =
 								'linear-gradient(90deg, #4caf50, #66bb6a)';
@@ -640,7 +639,7 @@ export const Resources = new (class {
 		});
 
 		const buttonDelete = boxDom.querySelector(`#resource-item-${value}-delete`)!;
-		buttonDelete.textContent = Local.get!('common.delete');
+		buttonDelete.textContent = t('common.delete');
 		const tempPath = Path.resolve(TemplatesPath, val);
 		on(buttonDelete, 'click', () => {
 			if (fs.existsSync(tempPath)) fs.rmSync(tempPath, { recursive: true, force: true });

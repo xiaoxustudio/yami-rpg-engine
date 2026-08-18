@@ -1,8 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { addClass, read, removeClass } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { addClass, read, removeClass } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { Inspector } from './inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 {
 	interface FileUIShape {

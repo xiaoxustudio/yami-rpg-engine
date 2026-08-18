@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
-import '@/util/array.ts';
+import '@app/legacy/util/array.ts';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { Layout } from '@app/engine/layout/layout';
-import { Title } from '@/title/title-bar';
-import { Window } from '@/tools/window-object';
+import { Title } from '@app/legacy/title/title-bar';
+import { Window } from '@app/legacy/tools/window-object';
 
 interface TestFrame extends HTMLElement {
 	open: () => void;

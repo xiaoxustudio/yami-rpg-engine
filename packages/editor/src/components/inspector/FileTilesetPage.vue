@@ -68,43 +68,43 @@
 		<div class="text" id="palette-info">{{ paletteInfo }}</div>
 	</div>
 	<DetailBox id="fileTileset-general-detail" open>
-		<DetailSummary>{{ local.getLabel('fileTileset-general-grid') || 'Tileset' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileTileset-general-grid.label') || 'Tileset' }}</DetailSummary>
 		<div class="detail-grid" id="fileTileset-general-grid">
-			<div class="text">{{ local.getLabel('fileTileset-image') || 'Image' }}</div
+			<div class="text">{{ t('components.fileTileset-image.label') || 'Image' }}</div
 			><CustomBox id="fileTileset-image" type="file" filter="image" @input="onParamInput" />
-			<div class="text">{{ local.getLabel('fileTileset-width') || 'Width' }}</div
+			<div class="text">{{ t('components.fileTileset-width.label') || 'Width' }}</div
 			><NumberBox id="fileTileset-width" min="1" max="256" unit="tile" @change="onParamChange" />
-			<div class="text">{{ local.getLabel('fileTileset-height') || 'Height' }}</div
+			<div class="text">{{ t('components.fileTileset-height.label') || 'Height' }}</div
 			><NumberBox id="fileTileset-height" min="1" max="256" unit="tile" @change="onParamChange" />
-			<div class="text">{{ local.getLabel('fileTileset-tileWidth') || 'Tile Width' }}</div
+			<div class="text">{{ t('components.fileTileset-tileWidth.label') || 'Tile Width' }}</div
 			><NumberBox
 				id="fileTileset-tileWidth"
 				min="16"
 				max="256"
 				unit="px" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTileset-tileHeight') || 'Tile Height' }}</div
+			<div class="text">{{ t('components.fileTileset-tileHeight.label') || 'Tile Height' }}</div
 			><NumberBox
 				id="fileTileset-tileHeight"
 				min="16"
 				max="256"
 				unit="px" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTileset-globalOffsetX') || 'Tile Offset X' }}</div
+			<div class="text">{{ t('components.fileTileset-globalOffsetX.label') || 'Tile Offset X' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetX"
 				min="-256"
 				max="256"
 				unit="px" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTileset-globalOffsetY') || 'Tile Offset Y' }}</div
+			<div class="text">{{ t('components.fileTileset-globalOffsetY.label') || 'Tile Offset Y' }}</div
 			><NumberBox
 				id="fileTileset-globalOffsetY"
 				min="-256"
 				max="256"
 				unit="px" @input="onParamInput"
 			/>
-			<div class="text">{{ local.getLabel('fileTileset-globalPriority') || 'Tile Priority' }}</div
+			<div class="text">{{ t('components.fileTileset-globalPriority.label') || 'Tile Priority' }}</div
 			><NumberBox
 				id="fileTileset-globalPriority"
 				min="-10"
@@ -118,11 +118,11 @@
 <script setup lang="ts">
 import '@app/legacy/inspector/file-tileset-page.ts';
 import { computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { focus } from '@app/legacy/util/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Palette } from '@app/legacy/palette/palette.ts';
 import { useSceneStore } from '@app/stores/scene';
-import { useLocalStore } from '@app/stores/local';
 import { usePaletteStore } from '@app/stores/palette';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -132,7 +132,7 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import SliderBox from '@app/components/common/SliderBox.vue';
 
 const scene = useSceneStore();
-const local = useLocalStore();
+const { t } = useI18n();
 const palette = usePaletteStore();
 
 const onParamInput = (event: Event) => {

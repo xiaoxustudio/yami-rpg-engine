@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.deleteElement = new CommandSchema({
 	name: 'deleteElement',
@@ -19,15 +19,15 @@ Command.cases.deleteElement = new CommandSchema({
 				info =
 					Command.parseElement!(element) +
 					Token(' -> ') +
-					Local.get!('command.deleteElement.children');
+					t('command.deleteElement.children');
 				break;
 			case 'delete-all':
-				info = Local.get!('command.deleteElement.all-elements');
+				info = t('command.deleteElement.all-elements');
 				break;
 		}
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.deleteElement') + Token(': ') },
+			{ text: t('command.deleteElement') + Token(': ') },
 			{ text: info }
 		];
 	}

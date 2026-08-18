@@ -1,11 +1,11 @@
 import { useColorWindow } from '@app/composables/useColorWindow';
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { relate, getRelativeCoords, on, read, setTooltip } from '@/util/element-utils';
-import { File } from '@/file/file-system-core.ts';
-import { UI } from '@/ui/ui-window.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Local } from './localization.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { relate, getRelativeCoords, on, read, setTooltip } from '@app/legacy/util/element-utils';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { createGetter } from '@app/i18n';
 import { Rename } from './rename-window.ts';
 
 type ColorTarget = {
@@ -339,7 +339,7 @@ Color.indexedColorPointerdown = function (this: typeof Color, event: PointerEven
 			const element = event.target as HTMLElement & { dataValue?: string };
 			const index = element.dataValue;
 			const indexedColor = Data.config.indexedColors[index];
-			const get = Local.createGetter!('menuIndexedColor');
+			const get = createGetter('menuIndexedColor');
 			Menu.popup(
 				{
 					x: event.clientX,

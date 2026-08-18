@@ -1,9 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { clear, hide, show, write } from '@/util/element-utils';
-import { Data } from '@/data/data-object.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { clear, hide, show, write } from '@app/legacy/util/element-utils';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { Inspector } from './inspector.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 
 {
 	interface SceneActorPlayer {

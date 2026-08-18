@@ -72,7 +72,9 @@ describe('animation-frame 页（inspector sync 响应式桥接——P3 迁移回
 		const host = document.createElement('div');
 		host.id = mountId;
 		document.body.appendChild(host);
-		const wrapper = mount(component, { attachTo: document.body });
+		const wrapper = mount(component, {
+			attachTo: document.body
+		});
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		return wrapper;

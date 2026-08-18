@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.stopAudio = new CommandSchema({
 	name: 'stopAudio',
@@ -10,7 +10,7 @@ Command.cases.stopAudio = new CommandSchema({
 		const words = Command.words.push(Command.parseAudioType!(type));
 		return [
 			{ color: 'audio' },
-			{ text: Local.get!('command.stopAudio') + Token(': ') },
+			{ text: t('command.stopAudio') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

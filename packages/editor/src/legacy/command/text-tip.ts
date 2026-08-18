@@ -1,6 +1,6 @@
-import { $ } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { addClass, hasClass, hide, rect, show } from '@/util/element-utils';
+import { $ } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { addClass, hasClass, hide, rect, show } from '@app/legacy/util/element-utils';
 import { Fragment, h, render, type VNode } from 'vue';
 
 interface TextSuggestionItem {

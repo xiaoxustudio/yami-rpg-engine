@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Color } from '@/tools/color-picker-window.ts';
-import { Local } from '@/tools/localization.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { t } from '@app/i18n';
 
 type RenderOutlineOperation = 'add' | 'remove' | 'reset';
 
@@ -21,7 +21,7 @@ Command.cases.renderOutline = new CommandSchema({
 		{ key: 'color', default: 'ffffffff' }
 	],
 	customParse({ operation, actor, color }: RenderOutlineData) {
-		const label = Local.get!('command.renderOutline.' + operation);
+		const label = t('command.renderOutline.' + operation);
 		const words = Command.words;
 		switch (operation) {
 			case 'add':
@@ -39,7 +39,7 @@ Command.cases.renderOutline = new CommandSchema({
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get!('command.renderOutline') + Token(': ') },
+			{ text: t('command.renderOutline') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

@@ -1,20 +1,20 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParallax-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParallax-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
-			<div class="text">{{ local.getLabel('sceneParallax-name') || 'Name' }}</div><TextBox id="sceneParallax-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneParallax-image') || 'Image' }}</div
+			<div class="text">{{ t('components.sceneParallax-name.label') || 'Name' }}</div><TextBox id="sceneParallax-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneParallax-image.label') || 'Image' }}</div
 			><CustomBox
 				id="sceneParallax-image" :model-value="form.image" @input="onParamInput"
 				type="file"
 				filter="image"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneParallax-layer') || 'Layer' }}</div><SelectBox id="sceneParallax-layer" v-model="form.layer" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('sceneParallax-order') || 'Order' }}</div
+			<div class="text">{{ t('components.sceneParallax-layer.label') || 'Layer' }}</div><SelectBox id="sceneParallax-layer" v-model="form.layer" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.sceneParallax-order.label') || 'Order' }}</div
 			><NumberBox id="sceneParallax-order" v-model="form.order" @input="onParamInput" min="0" max="100"></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-light') || 'Light Sampling' }}</div
-			><SelectBox id="sceneParallax-light" v-model="form.light" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-blend') || 'Blend' }}</div
-			><SelectBox id="sceneParallax-blend" v-model="form.blend" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('sceneParallax-opacity') || 'Opacity' }}</div
+			<div class="text">{{ t('components.sceneParallax-light.label') || 'Light Sampling' }}</div
+			><SelectBox id="sceneParallax-light" v-model="form.light" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.sceneParallax-blend.label') || 'Blend' }}</div
+			><SelectBox id="sceneParallax-blend" v-model="form.blend" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.sceneParallax-opacity.label') || 'Opacity' }}</div
 			><NumberBox
 				id="sceneParallax-opacity" v-model="form.opacity" @input="onParamInput"
 				min="0"
@@ -22,7 +22,7 @@
 				step="0.05"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneParallax-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneParallax-x" v-model="form.x" @input="onParamInput"
 				min="-128"
@@ -31,7 +31,7 @@
 				decimals="4"
 				unit="tile"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneParallax-y" v-model="form.y" @input="onParamInput"
 				min="-128"
@@ -43,9 +43,9 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParallax-parallax-grid') || 'Parallax' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParallax-parallax-grid.label') || 'Parallax' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-parallax-grid">
-			<div class="text">{{ local.getLabel('sceneParallax-scaleX') || 'Scale X' }}</div
+			<div class="text">{{ t('components.sceneParallax-scaleX.label') || 'Scale X' }}</div
 			><NumberBox
 				id="sceneParallax-scaleX" v-model="form.scaleX" @input="onParamInput"
 				min="0.2"
@@ -53,7 +53,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-scaleY') || 'Scale Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-scaleY.label') || 'Scale Y' }}</div
 			><NumberBox
 				id="sceneParallax-scaleY" v-model="form.scaleY" @input="onParamInput"
 				min="0.2"
@@ -61,11 +61,11 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-repeatX') || 'Repeat X' }}</div
+			<div class="text">{{ t('components.sceneParallax-repeatX.label') || 'Repeat X' }}</div
 			><NumberBox id="sceneParallax-repeatX" v-model="form.repeatX" @input="onParamInput" min="1" max="100"></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-repeatY') || 'Repeat Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-repeatY.label') || 'Repeat Y' }}</div
 			><NumberBox id="sceneParallax-repeatY" v-model="form.repeatY" @input="onParamInput" min="1" max="100"></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-anchorX') || 'Anchor X' }}</div
+			<div class="text">{{ t('components.sceneParallax-anchorX.label') || 'Anchor X' }}</div
 			><NumberBox
 				id="sceneParallax-anchorX" v-model="form.anchorX" @input="onParamInput"
 				min="0"
@@ -73,7 +73,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-anchorY') || 'Anchor Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-anchorY.label') || 'Anchor Y' }}</div
 			><NumberBox
 				id="sceneParallax-anchorY" v-model="form.anchorY" @input="onParamInput"
 				min="0"
@@ -81,21 +81,21 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-offsetX') || 'Offset X' }}</div
+			<div class="text">{{ t('components.sceneParallax-offsetX.label') || 'Offset X' }}</div
 			><NumberBox
 				id="sceneParallax-offsetX" v-model="form.offsetX" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-offsetY') || 'Offset Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-offsetY.label') || 'Offset Y' }}</div
 			><NumberBox
 				id="sceneParallax-offsetY" v-model="form.offsetY" @input="onParamInput"
 				min="-10000"
 				max="10000"
 				unit="px"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorX') || 'Parallax Factor X' }}</div
+			<div class="text">{{ t('components.sceneParallax-parallaxFactorX.label') || 'Parallax Factor X' }}</div
 			><NumberBox
 				id="sceneParallax-parallaxFactorX" v-model="form.parallaxFactorX" @input="onParamInput"
 				min="-4"
@@ -103,7 +103,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-parallaxFactorY') || 'Parallax Factor Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-parallaxFactorY.label') || 'Parallax Factor Y' }}</div
 			><NumberBox
 				id="sceneParallax-parallaxFactorY" v-model="form.parallaxFactorY" @input="onParamInput"
 				min="-4"
@@ -111,7 +111,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedX') || 'Shift Speed X' }}</div
+			<div class="text">{{ t('components.sceneParallax-shiftSpeedX.label') || 'Shift Speed X' }}</div
 			><NumberBox
 				id="sceneParallax-shiftSpeedX" v-model="form.shiftSpeedX" @input="onParamInput"
 				min="-10000"
@@ -120,7 +120,7 @@
 				decimals="4"
 				unit="px/s"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-shiftSpeedY') || 'Shift Speed Y' }}</div
+			<div class="text">{{ t('components.sceneParallax-shiftSpeedY.label') || 'Shift Speed Y' }}</div
 			><NumberBox
 				id="sceneParallax-shiftSpeedY" v-model="form.shiftSpeedY" @input="onParamInput"
 				min="-10000"
@@ -129,7 +129,7 @@
 				decimals="4"
 				unit="px/s"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParallax-tint-0-box') || 'Tint - Red' }}</div>
+			<div class="text">{{ t('components.sceneParallax-tint-0-box.label') || 'Tint - Red' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-0-box">
 				<SliderBox
 					id="sceneParallax-tint-0-slider"
@@ -145,7 +145,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParallax-tint-1-box') || 'Tint - Green' }}</div>
+			<div class="text">{{ t('components.sceneParallax-tint-1-box.label') || 'Tint - Green' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-1-box">
 				<SliderBox
 					id="sceneParallax-tint-1-slider"
@@ -161,7 +161,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParallax-tint-2-box') || 'Tint - Blue' }}</div>
+			<div class="text">{{ t('components.sceneParallax-tint-2-box.label') || 'Tint - Blue' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-2-box">
 				<SliderBox
 					id="sceneParallax-tint-2-slider"
@@ -177,7 +177,7 @@
 					step="5"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParallax-tint-3-box') || 'Tint - Grayscale' }}</div>
+			<div class="text">{{ t('components.sceneParallax-tint-3-box.label') || 'Tint - Grayscale' }}</div>
 			<div class="flex-box" id="sceneParallax-tint-3-box">
 				<SliderBox
 					id="sceneParallax-tint-3-slider"
@@ -196,7 +196,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParallax-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParallax-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-conditions"
 			class="inspector-list"
@@ -204,7 +204,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParallax-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParallax-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-events"
 			class="inspector-list"
@@ -213,7 +213,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParallax-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParallax-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneParallax-scripts"
 			class="inspector-list"
@@ -225,6 +225,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -246,6 +247,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneParallaxPage();
 

@@ -1,5 +1,5 @@
 ﻿import { TreeDataContext as YMTreeDataContext } from '@ui-kit';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
 
 export class TreeDataContext extends YMTreeDataContext {
 	constructor(data: Record<string, unknown>, keysField: string) {

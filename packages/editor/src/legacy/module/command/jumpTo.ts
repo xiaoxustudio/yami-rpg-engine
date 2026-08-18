@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type JumpToData = {
 	operation: string;
@@ -17,15 +17,15 @@ Command.cases.jumpTo = new CommandSchema({
 				words.push(label);
 				break;
 			case 'save-jump':
-				words.push(label).push(Local.get!('command.jumpTo.save'));
+				words.push(label).push(t('command.jumpTo.save'));
 				break;
 			case 'return':
-				words.push(Local.get!('command.jumpTo.savedLocation'));
+				words.push(t('command.jumpTo.savedLocation'));
 				break;
 		}
 		return [
 			{ color: 'flow' },
-			{ text: Local.get!('command.jumpTo.alias') + Token(': ') },
+			{ text: t('command.jumpTo.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

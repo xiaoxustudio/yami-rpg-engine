@@ -1,8 +1,8 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { read, write } from '@/util/element-utils';
-import { Animation } from '@/animation/animation-window.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { read, write } from '@app/legacy/util/element-utils';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 {
 	interface UIAnimationShape {

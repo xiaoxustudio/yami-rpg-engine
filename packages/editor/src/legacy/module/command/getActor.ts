@@ -1,9 +1,9 @@
-import { Attribute } from '@/attribute/attribute-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type GetActorCommandData = {
 	variable: unknown;
@@ -64,7 +64,7 @@ Command.cases.getActor = new CommandSchema({
 		{ key: 'exclusionTeamId', default: () => Data.teams.list[0].id }
 	],
 	parseCondition(condition: string, attribute?: string, divisor?: string) {
-		const label = Local.get!('command.getActor.condition.' + condition);
+		const label = t('command.getActor.condition.' + condition);
 		switch (condition) {
 			case 'nearest':
 			case 'farthest':
@@ -111,7 +111,7 @@ Command.cases.getActor = new CommandSchema({
 		const actor = Command.parseVariable!(variable, 'object', true);
 		const words = Command.words
 			.push(Command.parsePosition!(position))
-			.push(Local.get!('command.getActor.' + area))
+			.push(t('command.getActor.' + area))
 			.push(Command.parseVariableNumber!(size ?? radius, 't'));
 		const selectorLabel = Command.parseActorSelector!(selector);
 		switch (selector) {
@@ -127,15 +127,15 @@ Command.cases.getActor = new CommandSchema({
 				break;
 		}
 		words.push(this.parseCondition!(condition, attribute, divisor));
-		words.push(Local.get!('command.getActor.' + activation));
+		words.push(t('command.getActor.' + activation));
 		switch (exclusion) {
 			case 'actor': {
-				const label = Local.get!('command.getActor.exclude');
+				const label = t('command.getActor.exclude');
 				words.push(label + Token('(') + Command.parseActor!(exclusionActor) + Token(')'));
 				break;
 			}
 			case 'team': {
-				const label = Local.get!('command.getActor.exclude');
+				const label = t('command.getActor.exclude');
 				words.push(
 					label + Token('(') + Command.parseVariableTeam!(exclusionTeamId) + Token(')')
 				);
@@ -144,7 +144,7 @@ Command.cases.getActor = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.getActor') + Token(': ') },
+			{ text: t('command.getActor') + Token(': ') },
 			{ text: actor + Token(' = ') + words.join() }
 		];
 	}

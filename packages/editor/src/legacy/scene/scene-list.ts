@@ -1,12 +1,12 @@
 import { getListConfig } from '@ui-kit';
-import { dispatchChangeEvent, rect } from '@/util/element-utils.ts';
+import { dispatchChangeEvent, rect } from '@app/legacy/util/element-utils.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Editor } from '@/main/editor.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { Scene } from './scene-window.ts';
-import { Local } from '@/tools/localization.ts';
-import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
+import { t } from '@app/i18n';
+import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {
@@ -150,7 +150,7 @@ Scene.list.createTilemapShortcutItems = function (this: typeof Scene, tilemap: S
 		};
 		if (i === 0) {
 			menuItems.push({
-				label: Local.get!('menuSceneList.shortcut.none'),
+				label: t('menuSceneList.shortcut.none'),
 				checked: checked,
 				click: click
 			});

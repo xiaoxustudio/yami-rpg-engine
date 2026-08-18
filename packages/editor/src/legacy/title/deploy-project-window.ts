@@ -1,18 +1,18 @@
-import { $, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { disable, enable, getFocus, read, write } from '@/util/element-utils';
-import { Timer } from '@/util/timer.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { disable, enable, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { Timer } from '@app/legacy/util/timer.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { Data } from '@/data/data-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
-import { FolderItem } from '@/file/folder-item.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
-import { TemplatesPath } from '@/module/global.ts';
-import { Local } from '@/tools/localization.ts';
+import { FolderItem } from '@app/legacy/file/folder-item.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
+import { TemplatesPath } from '@app/legacy/module/global.ts';
+import { t } from '@app/i18n';
 
-import { Path } from '@/util/config.ts';
+import { Path } from '@app/legacy/util/config.ts';
 // @ts-ignore no declaration
 import uglifyJs from 'uglify-js';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
@@ -144,13 +144,13 @@ Deployment.check = function (this: typeof Deployment) {
 	if (!folder) {
 		if (this.state !== 'unnamed') {
 			this.state = 'unnamed';
-			$('#deployment-warning').textContent = Local.get!('confirmation.enterFolderName');
+			$('#deployment-warning').textContent = t('confirmation.enterFolderName');
 			disable($('#deployment-confirm'));
 		}
 	} else if (FS.existsSync!(Path.resolve!(location, folder))) {
 		if (this.state !== 'existing') {
 			this.state = 'existing';
-			$('#deployment-warning').textContent = Local.get!('confirmation.folderAlreadyExists');
+			$('#deployment-warning').textContent = t('confirmation.folderAlreadyExists');
 			disable($('#deployment-confirm'));
 		}
 	} else {

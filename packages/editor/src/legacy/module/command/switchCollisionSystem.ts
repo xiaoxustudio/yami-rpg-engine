@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.switchCollisionSystem = new CommandSchema({
 	name: 'switchCollisionSystem',
@@ -9,8 +9,8 @@ Command.cases.switchCollisionSystem = new CommandSchema({
 	customParse({ operation }: { operation: string }) {
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.switchCollisionSystem') + Token(': ') },
-			{ text: Local.get!('command.switchCollisionSystem.' + operation) }
+			{ text: t('command.switchCollisionSystem') + Token(': ') },
+			{ text: t('command.switchCollisionSystem.' + operation) }
 		];
 	}
 });

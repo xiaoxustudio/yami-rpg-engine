@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@/util/element-utils';
-import { Window } from '@/tools/window-object.ts';
-import { $ } from '@/util/dom.ts';
+import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import {
 	addScrollbars,
 	dispatchChangeEvent,
@@ -13,38 +13,38 @@ import {
 	write,
 	clear,
 	rect
-} from '@/util/element-utils.ts';
-import { Timer } from '@/util/timer.ts';
-import { ctrl } from '@/util/event-accessors.ts';
-import { Inspector } from '@/inspector/inspector.ts';
+} from '@app/legacy/util/element-utils.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
-import { Reference } from '@/log/related-references.ts';
-import { Editor } from '@/main/editor.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { Cursor } from '@/tools/pointer-object.ts';
-import { UndoManager } from '@/tools/undo-manager.ts';
+import { Cursor } from '@app/legacy/tools/pointer-object.ts';
+import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 import { UIInstanceList } from '@app/engine/ui/element-instance-list.ts';
-import { Scene } from '@/scene/scene-window.ts';
-import { Menu } from '@/components/menu-list.ts';
-import { TreeList } from '@/components/tree-list.ts';
-import { Data } from '@/data/data-object.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { File } from '@/file/file-system-core.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
+import { TreeList } from '@app/legacy/components/tree-list.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Particle } from '@/particle/particle-window.ts';
-import { Title } from '@/title/title-bar.ts';
-import { EventBus } from '@/module/eventbus.ts';
-import { History } from '@/tools/history.ts';
-import { Local } from '@/tools/localization.ts';
-import { StageColor } from '@/util/stage-color.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { EventBus } from '@app/legacy/module/eventbus.ts';
+import { History } from '@app/legacy/tools/history.ts';
+import { t, createGetter } from '@app/i18n';
+import { StageColor } from '@app/legacy/util/stage-color.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
-import type { GlobalClipboardHost } from '@/types/global-clipboard.ts';
-import { GlobalClipboard } from '@/util/clipboard.ts';
-import type { DynamicShape } from '@/types/legacy-shapes.ts';
+import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
+import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import type { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
 
 interface ControlPoint {
 	x: number;
@@ -1272,7 +1272,7 @@ UI.createPrefabItem = function (
 		}
 	}
 	return {
-		label: Local.get!('menuUIList.create.prefab'),
+		label: t('menuUIList.create.prefab'),
 		enabled: items.length !== 0,
 		submenu: items.sort((a, b) => a.label.localeCompare(b.label))
 	};
@@ -2066,7 +2066,7 @@ UI.menuPopup = function (this: UIShape, event: UIPointerEvent) {
 	const target = getUIStore().target;
 	const selected = !!target;
 	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');
-	const get = Local.createGetter!('menuUIList');
+	const get = createGetter('menuUIList');
 	const items = [
 		{
 			label: get('create'),
@@ -2333,7 +2333,7 @@ UI.listPopup = function (this: UIShape, event: Event) {
 	const list = UI.list;
 	const item = event.value;
 	const menuItems: MenuItem[] = [];
-	const get = Local.createGetter!('menuUIList');
+	const get = createGetter('menuUIList');
 	const selected = !!item;
 	const copyable = selected;
 	const pastable = (GlobalClipboard as unknown as GlobalClipboardHost).has('yami.ui.object');

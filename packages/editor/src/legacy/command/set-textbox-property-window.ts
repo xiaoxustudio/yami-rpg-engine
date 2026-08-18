@@ -1,8 +1,8 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
-import { Color } from '@/tools/color-picker-window.ts';
-import { Local } from '@/tools/localization.ts';
+import { Color } from '@app/legacy/tools/color-picker-window.ts';
+import { createGetter } from '@app/i18n';
 
 export const TextBoxProperty = createPropertyWindow({
 	prefix: 'setTextBox',
@@ -17,7 +17,7 @@ export const TextBoxProperty = createPropertyWindow({
 		{ name: 'Color', value: 'color', default: 'ffffffff' }
 	],
 	init() {
-		const get = Local.createGetter!('command.setTextBox');
+		const get = createGetter('command.setTextBox');
 		$('#setTextBox-property-type').loadItems([
 			{ name: get('type.text') || 'Text', value: 'text' },
 			{ name: get('type.number') || 'Number', value: 'number' }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CommandList } from '@/components/command-list.ts';
-import { updateCommandElement } from '@/module/eslints.ts';
+import { CommandList } from '@app/legacy/components/command-list.ts';
+import { updateCommandElement } from '@app/legacy/module/eslints.ts';
 
 type CommandItemElement = Parameters<typeof updateCommandElement>[0];
 

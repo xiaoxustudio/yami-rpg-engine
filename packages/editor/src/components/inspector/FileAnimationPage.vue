@@ -1,6 +1,6 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('fileAnimation-sprites') || 'Sprites' }}</DetailSummary>
+		<DetailSummary>{{ t('components.fileAnimation-sprites.label') || 'Sprites' }}</DetailSummary>
 		<ParamList
 			id="fileAnimation-sprites"
 			class="inspector-list"
@@ -12,14 +12,14 @@
 <script setup lang="ts">
 import '@app/legacy/inspector/file-animation-page.ts';
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 onMounted(() => {
 	const editor = Inspector.fileAnimation;

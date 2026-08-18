@@ -1,14 +1,14 @@
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
-import { AttributeContext } from '@/attribute/attribute-context.ts';
+import { AttributeContext } from '@app/legacy/attribute/attribute-context.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Manifest } from './metadata-manifest.ts';
-import { EnumerationContext } from '@/enum/enum-context.ts';
+import { EnumerationContext } from '@app/legacy/enum/enum-context.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Log } from '@/log/log-window.ts';
-import { Reference } from '@/log/related-references.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Reference } from '@app/legacy/log/related-references.ts';
 
-import { PluginManager } from '@/plugin/plugin.ts';
+import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { dataKeys, getDataStore } from '@app/stores/data';
 
 type DataEntry = { guid?: string; name?: string; [k: string]: unknown };

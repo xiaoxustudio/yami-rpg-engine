@@ -1,9 +1,9 @@
-﻿import { $ } from '@/util/dom.ts';
+﻿import { $ } from '@app/legacy/util/dom.ts';
 import {
 	useLightGetterWindow,
 	useObjectGetterWindow
 } from '@app/composables/usePresetGetterWindow';
-import type { AccessorTarget } from '@/types/legacy-shapes.ts';
+import type { AccessorTarget } from '@app/legacy/types/legacy-shapes.ts';
 
 interface PresetAccessorShape {
 	target: AccessorTarget | null;

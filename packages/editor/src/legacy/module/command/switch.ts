@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { SwitchBranch } from '@/command/match-branch-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.switch = new CommandSchema({
 	name: 'switch',
@@ -23,12 +23,12 @@ Command.cases.switch = new CommandSchema({
 		}> = [
 			{ fold: true },
 			{ color: 'flow' },
-			{ text: Local.get!('command.switch') + ' ' },
+			{ text: t('command.switch') + ' ' },
 			{ color: 'normal' },
 			{ text: Command.parseVariable!(variable, 'any') },
 			{ break: true }
 		];
-		const textCase = Local.get!('command.switch.case');
+		const textCase = t('command.switch.case');
 		for (const branch of branches) {
 			contents.push(
 				{ color: 'flow' },
@@ -41,11 +41,11 @@ Command.cases.switch = new CommandSchema({
 		if (defaultCommands) {
 			contents.push(
 				{ color: 'flow' },
-				{ text: Local.get!('command.switch.default') },
+				{ text: t('command.switch.default') },
 				{ children: defaultCommands }
 			);
 		}
-		contents.push({ color: 'flow' }, { text: Local.get!('command.switch.end') });
+		contents.push({ color: 'flow' }, { text: t('command.switch.end') });
 		return contents;
 	}
 });

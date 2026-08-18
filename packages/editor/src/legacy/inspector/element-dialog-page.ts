@@ -1,6 +1,6 @@
-import { $, getElementReader } from '@/util/dom.ts';
+import { $, getElementReader } from '@app/legacy/util/dom.ts';
 import { Inspector } from './inspector.ts';
-import { UI } from '@/ui/ui-window.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 
 {
 	interface UIDialogBoxShape {

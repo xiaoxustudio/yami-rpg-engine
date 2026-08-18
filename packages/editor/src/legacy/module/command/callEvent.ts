@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 export interface CallEventArg {
 	type: string;
@@ -55,7 +55,7 @@ Command.cases.callEvent = new CommandSchema({
 					}
 				}
 				const info = `${Command.setClass('error')}${name}${
-					Token(': ') + Command.setWeakColor!(Local.get!('eventParameterTypes.' + type))
+					Token(': ') + Command.setWeakColor!(t('eventParameterTypes.' + type))
 				}`;
 				words.push(info);
 			}
@@ -177,10 +177,10 @@ Command.cases.callEvent = new CommandSchema({
 				break;
 			}
 			case 'inherited':
-				words.push(Local.get!('command.callEvent.inherited'));
+				words.push(t('command.callEvent.inherited'));
 				break;
 			case 'scene':
-				words.push(Local.get!('command.callEvent.scene'));
+				words.push(t('command.callEvent.scene'));
 				break;
 			case 'actor':
 				words.push(Command.parseActor!(actor));
@@ -209,7 +209,7 @@ Command.cases.callEvent = new CommandSchema({
 		}
 		const contents: Record<string, unknown>[] = [
 			{ color: 'flow' },
-			{ text: Local.get!('command.callEvent.alias') + Token(': ') },
+			{ text: t('command.callEvent.alias') + Token(': ') },
 			{ text: words.join() }
 		];
 		if (type === 'global') {

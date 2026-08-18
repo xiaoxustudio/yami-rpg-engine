@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.changeActorPortrait = new CommandSchema({
 	name: 'changeActorPortrait',
@@ -12,7 +12,7 @@ Command.cases.changeActorPortrait = new CommandSchema({
 		{ key: 'clip', default: [0, 0, 64, 64] }
 	],
 	parsePortraitClip(clip: number[]) {
-		const label = Local.get!('command.changeActorPortrait.clip');
+		const label = t('command.changeActorPortrait.clip');
 		const x = Command.setNumberColor!(clip[0]);
 		const y = Command.setNumberColor!(clip[1]);
 		const width = Command.setNumberColor!(clip[2]);
@@ -55,7 +55,7 @@ Command.cases.changeActorPortrait = new CommandSchema({
 		}
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.changeActorPortrait') + Token(': ') },
+			{ text: t('command.changeActorPortrait') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

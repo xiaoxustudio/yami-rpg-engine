@@ -1,14 +1,15 @@
-import { SettingConfig } from '@/module/settingconfig';
-import { $ } from '@/util/dom.ts';
-import { addClass, hasClass, rect, removeClass } from '@/util/element-utils';
-import { Path } from '@/util/config.ts';
-import { File } from '@/file/file-system-core.ts';
-import { Menu } from '@/components/menu-list.ts';
+import { SettingConfig } from '@app/legacy/module/settingconfig';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, hasClass, rect, removeClass } from '@app/legacy/util/element-utils';
+import { Path } from '@app/legacy/util/config.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { Menu } from '@app/legacy/components/menu-list.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Editor } from '@/main/editor.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { Title } from './title-bar.ts';
-import { Local } from '@/tools/localization.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { getHomeStore } from '@app/stores/home';
 
 import type { Dirent, Stats } from 'node:fs';
@@ -202,7 +203,7 @@ Home.parseRecentProjects = function (this: typeof Home) {
 				counts.total =
 					counts.data + counts.script + counts.image + counts.media + counts.other;
 				sizes.total = sizes.data + sizes.script + sizes.image + sizes.media + sizes.other;
-				const get = Local.createGetter!('stats');
+				const get = createGetter('stats');
 				const texts: string[] = [];
 				for (const { type, name } of [
 					{ type: 'data', name: get('data') },
@@ -455,7 +456,7 @@ Home.recentPointerup = function (this: typeof Home, event: Event) {
 				addClass(element, 'hover');
 				const index = parseInt(element.getAttribute('value') ?? '0');
 				const enabled = !hasClass(element, 'disabled');
-				const get = Local.createGetter!('menuRecent');
+				const get = createGetter('menuRecent');
 				Menu.popup!(
 					{
 						x: event.clientX,

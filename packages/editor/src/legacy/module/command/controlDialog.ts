@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.controlDialog = new CommandSchema({
 	name: 'controlDialog',
@@ -12,10 +12,10 @@ Command.cases.controlDialog = new CommandSchema({
 	customParse({ element, operation }: { element: unknown; operation: string }) {
 		const words = Command.words
 			.push(Command.parseElement!(element))
-			.push(Local.get!('command.controlDialog.' + operation));
+			.push(t('command.controlDialog.' + operation));
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.controlDialog') + Token(': ') },
+			{ text: t('command.controlDialog') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

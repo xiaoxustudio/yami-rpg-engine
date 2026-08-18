@@ -1,6 +1,7 @@
-import { $ } from '@/util/dom.ts';
-import { addClass, on, removeClass, setTooltip, write } from '@/util/element-utils.ts';
-import { Local } from '@/tools/localization.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, on, removeClass, setTooltip, write } from '@app/legacy/util/element-utils.ts';
+import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { ApkBuilder } from '../apkbuilder.ts';
 import type { SettingOption, SettingSection } from './types.ts';
 
@@ -91,7 +92,7 @@ export class SettingRenderer {
 
 	/** 应用本地化：标题、命名标签、components 标签/提示 */
 	applyL10n() {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		const components = Local.components ?? {};
 		const localize = (sections: SettingSection[], basePath: string[]) => {
 			for (const section of sections) {
@@ -177,7 +178,7 @@ export class SettingRenderer {
 			`#${this.optionId(sectionPath, opt)}`
 		)[0] as HTMLElement;
 		if (!el) return;
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		const items = await opt.optionsFn({ get, config: this.host.config });
 		el.loadItems(items);
 		write(el, this.readConfig(sectionPath, opt.key));

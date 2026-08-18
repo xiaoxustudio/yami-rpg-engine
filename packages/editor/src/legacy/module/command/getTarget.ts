@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.getTarget = new CommandSchema({
 	name: 'getTarget',
@@ -14,7 +14,7 @@ Command.cases.getTarget = new CommandSchema({
 		{ key: 'divisor', default: () => Attribute.getDefAttributeId!('actor', 'number') }
 	],
 	parseCondition(condition: string, attribute: unknown, divisor: unknown) {
-		const label = Local.get!('command.getTarget.condition.' + condition);
+		const label = t('command.getTarget.condition.' + condition);
 		switch (condition) {
 			case 'max-threat':
 			case 'nearest':
@@ -57,7 +57,7 @@ Command.cases.getTarget = new CommandSchema({
 			.push(this.parseCondition!(condition, attribute, divisor));
 		return [
 			{ color: 'actor' },
-			{ text: Local.get!('command.getTarget') + Token(': ') },
+			{ text: t('command.getTarget') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

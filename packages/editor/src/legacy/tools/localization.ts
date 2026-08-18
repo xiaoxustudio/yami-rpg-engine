@@ -1,11 +1,11 @@
-import { $ } from '@/util/dom.ts';
-import { addClass, setTooltip } from '@/util/element-utils';
-import { Path } from '@/util/config.ts';
+import { $ } from '@app/legacy/util/dom.ts';
+import { addClass, setTooltip } from '@app/legacy/util/element-utils';
+import { Path } from '@app/legacy/util/config.ts';
 import { fileURLToPath } from 'node:url';
-import { File } from '@/file/file-system-core.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
-import { Log } from '@/log/log-window.ts';
-import { Editor } from '@/main/editor.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
+import { Editor } from '@app/legacy/main/editor.ts';
 import { applyLocaleData, t as i18nT, createGetter as i18nCreateGetter } from '@app/i18n';
 
 interface LocalComponentItem {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import '@/util/math.ts';
+import '@app/legacy/util/math.ts';
 
 vi.mock('@app/legacy/util/element-utils', () => ({
 	relate: () => true,
@@ -325,6 +325,7 @@ const { Scene } = vi.hoisted(() => ({
 		parallaxes: [] as any[],
 		activeTilemapId: -1,
 		showAnimation: false,
+		showLight: false,
 		brush: 'pencil',
 		shiftKey: false,
 		patternOriginX: 0,
@@ -346,6 +347,7 @@ const { Scene } = vi.hoisted(() => ({
 		restoreMapData: vi.fn(),
 		updateParallaxes: vi.fn(),
 		updateAnimations: vi.fn(),
+		updateAnimation: vi.fn(),
 		updateParticles: vi.fn(),
 		drawScene: vi.fn(),
 		player: { update: vi.fn() },

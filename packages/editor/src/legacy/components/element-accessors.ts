@@ -1,4 +1,4 @@
-import { css } from '@/util/element-utils.ts';
+import { css } from '@app/legacy/util/element-utils.ts';
 
 Object.defineProperty(HTMLElement.prototype, 'name', {
 	get: function (this: HTMLElement): string | null {

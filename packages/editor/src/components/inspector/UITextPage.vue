@@ -1,9 +1,9 @@
 <template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('uiText-properties-grid') || 'Text Properties' }}</DetailSummary>
+		<DetailSummary>{{ t('components.uiText-properties-grid.label') || 'Text Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiText-properties-grid">
-			<div class="text">{{ local.getLabel('uiText-direction') || 'Direction' }}</div><SelectBox id="uiText-direction" v-model="form.direction" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiText-align-box') || 'Align' }}</div>
+			<div class="text">{{ t('components.uiText-direction.label') || 'Direction' }}</div><SelectBox id="uiText-direction" v-model="form.direction" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiText-align-box.label') || 'Align' }}</div>
 			<div class="flex-box" id="uiText-align-box">
 				<RadioBox
 					id="uiText-align-left"
@@ -54,13 +54,13 @@
 					><div class="text">&#xf038;</div></RadioBox
 				>
 			</div>
-			<div class="text">{{ local.getLabel('uiText-content') || 'Content' }}</div
+			<div class="text">{{ t('components.uiText-content.label') || 'Content' }}</div
 			><TextArea
 				id="uiText-content"
 				v-model="form.content"
 				menu="tag-global-var tag-dynamic-global-var tag-localization" @input="onParamInput"
 			></TextArea>
-			<div class="text">{{ local.getLabel('uiText-size-box') || 'Size' }}</div>
+			<div class="text">{{ t('components.uiText-size-box.label') || 'Size' }}</div>
 			<div class="flex-box" id="uiText-size-box">
 				<SliderBox
 					id="uiText-size-slider"
@@ -78,7 +78,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiText-lineSpacing-box') || 'Line Spacing' }}</div>
+			<div class="text">{{ t('components.uiText-lineSpacing-box.label') || 'Line Spacing' }}</div>
 			<div class="flex-box" id="uiText-lineSpacing-box">
 				<SliderBox
 					id="uiText-lineSpacing-slider"
@@ -96,7 +96,7 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiText-letterSpacing-box') || 'Letter Spacing' }}</div>
+			<div class="text">{{ t('components.uiText-letterSpacing-box.label') || 'Letter Spacing' }}</div>
 			<div class="flex-box" id="uiText-letterSpacing-box">
 				<SliderBox
 					id="uiText-letterSpacing-slider"
@@ -114,11 +114,11 @@
 					unit="px" @input="onParamInput"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('uiText-color') || 'Color' }}</div><ColorBox id="uiText-color" v-model="form.color" @input="onParamInput"></ColorBox>
-			<div class="text">{{ local.getLabel('uiText-font') || 'Font' }}</div><TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('uiText-typeface') || 'Typeface' }}</div><SelectBox id="uiText-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiText-effect-type') || 'Effect' }}</div><SelectBox id="uiText-effect-type" v-model="form.effect.type" @input="onParamInput"></SelectBox>
-			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetX') || 'Shadow X' }}</div
+			<div class="text">{{ t('components.uiText-color.label') || 'Color' }}</div><ColorBox id="uiText-color" v-model="form.color" @input="onParamInput"></ColorBox>
+			<div class="text">{{ t('components.uiText-font.label') || 'Font' }}</div><TextBox id="uiText-font" v-model="form.font" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.uiText-typeface.label') || 'Typeface' }}</div><SelectBox id="uiText-typeface" v-model="form.typeface" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiText-effect-type.label') || 'Effect' }}</div><SelectBox id="uiText-effect-type" v-model="form.effect.type" @input="onParamInput"></SelectBox>
+			<div class="text">{{ t('components.uiText-effect-shadowOffsetX.label') || 'Shadow X' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetX"
 				v-model="form.effect.shadowOffsetX"
@@ -126,7 +126,7 @@
 				max="9"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiText-effect-shadowOffsetY') || 'Shadow Y' }}</div
+			<div class="text">{{ t('components.uiText-effect-shadowOffsetY.label') || 'Shadow Y' }}</div
 			><NumberBox
 				id="uiText-effect-shadowOffsetY"
 				v-model="form.effect.shadowOffsetY"
@@ -134,7 +134,7 @@
 				max="9"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiText-effect-strokeWidth') || 'Stroke Width' }}</div
+			<div class="text">{{ t('components.uiText-effect-strokeWidth.label') || 'Stroke Width' }}</div
 			><NumberBox
 				id="uiText-effect-strokeWidth"
 				v-model="form.effect.strokeWidth"
@@ -142,9 +142,9 @@
 				max="20"
 				unit="px" @input="onParamInput"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('uiText-effect-color') || 'Effect Color' }}</div
-			><ColorBox id="uiText-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ local.getLabel('uiText-overflow') || 'Overflow' }}</div
-			><SelectBox id="uiText-overflow" v-model="form.overflow" @input="onParamInput"></SelectBox> <div class="text">{{ local.getLabel('uiText-blend') || 'Blend' }}</div
+			<div class="text">{{ t('components.uiText-effect-color.label') || 'Effect Color' }}</div
+			><ColorBox id="uiText-effect-color" v-model="form.effect.color" @input="onParamInput"></ColorBox> <div class="text">{{ t('components.uiText-overflow.label') || 'Overflow' }}</div
+			><SelectBox id="uiText-overflow" v-model="form.overflow" @input="onParamInput"></SelectBox> <div class="text">{{ t('components.uiText-blend.label') || 'Blend' }}</div
 			><SelectBox id="uiText-blend" v-model="form.blend" @input="onParamInput"></SelectBox>
 		</div>
 	</DetailBox>
@@ -152,8 +152,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUITextPage } from '@app/composables/useUITextPage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -167,7 +167,7 @@ import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useUITextPage();
 

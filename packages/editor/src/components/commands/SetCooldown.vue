@@ -18,7 +18,7 @@
 import { onMounted } from 'vue';
 import { useSetCooldownCommandSchema } from '@app/composables/commands/useSetCooldownCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -37,7 +37,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.setCooldown');
+	const get = createGetter('command.setCooldown');
 	$('#setCooldown-operation')?.loadItems?.([
 		{ name: get('set') || 'Set', value: 'set' },
 		{ name: get('increase') || 'Increase', value: 'increase' },

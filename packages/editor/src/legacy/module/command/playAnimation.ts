@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 type PlayAnimationCommandData = {
 	mode: string;
@@ -33,7 +33,7 @@ Command.cases.playAnimation = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	parseRotatable(rotatable: boolean) {
-		return rotatable ? Local.get!('command.playAnimation.rotatable') : '';
+		return rotatable ? t('command.playAnimation.rotatable') : '';
 	},
 	parsePriority(priority: number) {
 		if (priority === 0) return '';
@@ -68,7 +68,7 @@ Command.cases.playAnimation = new CommandSchema({
 				words.push(Command.parsePosition!(position));
 				break;
 			case 'actor': {
-				const bind = Local.get!('command.playAnimation.bind');
+				const bind = t('command.playAnimation.bind');
 				words.push(bind + Token('(') + Command.parseActor!(actor) + Token(')'));
 				break;
 			}
@@ -84,7 +84,7 @@ Command.cases.playAnimation = new CommandSchema({
 			.push(Command.parseWait!(wait));
 		return [
 			{ color: 'object' },
-			{ text: Local.get!('command.playAnimation') + Token(': ') },
+			{ text: t('command.playAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

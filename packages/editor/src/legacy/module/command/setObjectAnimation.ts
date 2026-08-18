@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setObjectAnimation = new CommandSchema({
 	name: 'setObjectAnimation',
@@ -24,7 +24,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		{ key: 'wait', default: false }
 	],
 	parseTint(operation: string, [red, green, blue, gray]: number[]) {
-		const label = Local.get!('command.setObjectAnimation.' + operation);
+		const label = t('command.setObjectAnimation.' + operation);
 		const _red = Command.setNumberColor!(red);
 		const _green = Command.setNumberColor!(green);
 		const _blue = Command.setNumberColor!(blue);
@@ -59,7 +59,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		}
 	},
 	parseProperty(operation: string, property: string | number) {
-		const label = Local.get!('command.setObjectAnimation.' + operation);
+		const label = t('command.setObjectAnimation.' + operation);
 		return label + Token('(') + Command.parseVariableNumber!(property) + Token(')');
 	},
 	customParse({
@@ -86,7 +86,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		wait: boolean;
 	}) {
 		const words = Command.words;
-		words.push(Local.get!('command.setObjectAnimation.sort.' + sort));
+		words.push(t('command.setObjectAnimation.sort.' + sort));
 		switch (sort) {
 			case 'actor':
 			case 'components':
@@ -118,7 +118,7 @@ Command.cases.setObjectAnimation = new CommandSchema({
 		words.push(Command.parseEasing!(easingId, duration, wait));
 		return [
 			{ color: 'object' },
-			{ text: Local.get!('command.setObjectAnimation') + Token(': ') },
+			{ text: t('command.setObjectAnimation') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

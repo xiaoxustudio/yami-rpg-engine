@@ -1,31 +1,31 @@
-﻿import { Command } from '@/command/command-object';
+﻿import { Command } from '@app/legacy/command/command-object';
 import type { CustomBoxApiOptions } from '@ui-kit';
-import { Attribute } from '@/attribute/attribute-window';
+import { Attribute } from '@app/legacy/attribute/attribute-window';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { ActorGetter } from '@/command/actor-accessor-window';
-import { AncestorGetter } from '@/command/ancestor-accessor-window';
-import { AngleGetter } from '@/command/angle-accessor-window';
-import { ElementGetter } from '@/command/element-accessor-window';
-import { EquipmentGetter } from '@/command/equipment-accessor-window';
-import { ItemGetter } from '@/command/item-accessor-window';
-import { LightGetter, ObjectGetter } from '@/command/preset-accessor-factory';
-import { PositionGetter } from '@/command/position-accessor-window';
-import { RegionGetter } from '@/command/region-accessor-window';
-import { SkillGetter } from '@/command/skill-accessor-window';
-import { StateGetter } from '@/command/state-accessor-window';
-import { TilemapGetter } from '@/command/tilemap-accessor-window';
-import { TriggerGetter } from '@/command/trigger-accessor-window';
-import { VariableGetter } from '@/command/variable-accessor-window';
-import { Enum } from '@/enum/enum-window';
-import { File } from '@/file/file-system-core';
-import { GameLocal } from '@/local/local-object';
-import { ArrayList } from '@/tools/array-window';
-import { ImageClip } from '@/tools/image-crop-window';
-import { Local } from '@/tools/localization';
-import { PresetElement } from '@/tools/preset-element-window';
-import { PresetObject } from '@/tools/scene-preset-window';
-import { Variable } from '@/variable/variable';
+import { ActorGetter } from '@app/legacy/command/actor-accessor-window';
+import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window';
+import { AngleGetter } from '@app/legacy/command/angle-accessor-window';
+import { ElementGetter } from '@app/legacy/command/element-accessor-window';
+import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window';
+import { ItemGetter } from '@app/legacy/command/item-accessor-window';
+import { LightGetter, ObjectGetter } from '@app/legacy/command/preset-accessor-factory';
+import { PositionGetter } from '@app/legacy/command/position-accessor-window';
+import { RegionGetter } from '@app/legacy/command/region-accessor-window';
+import { SkillGetter } from '@app/legacy/command/skill-accessor-window';
+import { StateGetter } from '@app/legacy/command/state-accessor-window';
+import { TilemapGetter } from '@app/legacy/command/tilemap-accessor-window';
+import { TriggerGetter } from '@app/legacy/command/trigger-accessor-window';
+import { VariableGetter } from '@app/legacy/command/variable-accessor-window';
+import { Enum } from '@app/legacy/enum/enum-window';
+import { File } from '@app/legacy/file/file-system-core';
+import { GameLocal } from '@app/legacy/local/local-object';
+import { ArrayList } from '@app/legacy/tools/array-window';
+import { ImageClip } from '@app/legacy/tools/image-crop-window';
+import { t } from '@app/i18n';
+import { PresetElement } from '@app/legacy/tools/preset-element-window';
+import { PresetObject } from '@app/legacy/tools/scene-preset-window';
+import { Variable } from '@app/legacy/variable/variable';
 
 interface GetterElement {
 	dataValue: unknown;
@@ -42,25 +42,25 @@ const parseText = (
 	parse: ((value: unknown) => string | undefined) | undefined
 ): { text: string } => {
 	if (value == null || value === '') {
-		return { text: Local.get!('common.none') };
+		return { text: t('common.none') };
 	}
 	if (!parse) {
 		return { text: String(value) };
 	}
 	const parsed = parse(value);
 	const text = Command.removeTextTags?.(parsed) ?? parsed ?? '';
-	return { text: text || Local.get!('common.none') };
+	return { text: text || t('common.none') };
 };
 
 const parseWithInvalid = (fn: (value: string) => string) => {
 	return (value: unknown) => {
 		Command.invalid = false;
 		if (value == null || value === '') {
-			return { text: Local.get!('common.none') };
+			return { text: t('common.none') };
 		}
 		const text = fn(value as string);
 		const parsed = Command.removeTextTags?.(text) ?? text;
-		return { text: parsed || Local.get!('common.none'), invalid: Command.invalid };
+		return { text: parsed || t('common.none'), invalid: Command.invalid };
 	};
 };
 
@@ -76,7 +76,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		clip: (el: GetterElement) => ImageClip.open(el),
 		variable: (el: GetterElement) =>
 			VariableGetter.open(el as unknown as Parameters<typeof VariableGetter.open>[0]),
-		'global-variable': (el: GetterElement) => Variable.open(el),
+		'global-variable': (el: GetterElement) => Variable.open!(el),
 		actor: (el: GetterElement) => ActorGetter.open!(el),
 		skill: (el: GetterElement) => SkillGetter.open!(el),
 		state: (el: GetterElement) => StateGetter.open!(el),
@@ -112,12 +112,12 @@ export const customBoxOptions: CustomBoxApiOptions = {
 	parsers: {
 		file: parseWithInvalid((guid: string) => Command.parseFileName?.(guid) ?? ''),
 		'dialog-dir': (path: unknown) => ({
-			text: path == null || path === '' ? Local.get!('common.none') : (path as string)
+			text: path == null || path === '' ? t('common.none') : (path as string)
 		}),
 		clip: (clip: unknown) => ({
 			text:
 				clip == null || clip === '' || (Array.isArray(clip) && clip.length === 0)
-					? Local.get!('common.none')
+					? t('common.none')
 					: Array.isArray(clip)
 						? (clip as unknown[]).join(', ')
 						: String(clip)
@@ -125,7 +125,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 		variable: (variable: unknown) => {
 			const data = variable as { type?: string; key?: unknown } | null | undefined;
 			if (data == null) {
-				return { text: Local.get!('common.none') };
+				return { text: t('common.none') };
 			}
 			if (data.type === 'self' || data.key) {
 				const parseVariable = Command.parseVariable as
@@ -136,7 +136,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 					: String(data.key);
 				return { text: parsed ?? '' };
 			}
-			return { text: Local.get!('common.none') };
+			return { text: t('common.none') };
 		},
 		'global-variable': (id: unknown) =>
 			parseText(
@@ -219,14 +219,14 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			text:
 				(array as unknown[]).length !== 0
 					? (Command.parseMultiLineString?.((array as unknown[]).join(', ')) ??
-						Local.get!('common.empty'))
-					: Local.get!('common.empty')
+						t('common.empty'))
+					: t('common.empty')
 		}),
 		'attribute-group': parseWithInvalid(
 			(groupId: string) => Command.parseAttributeGroup?.(groupId) ?? ''
 		),
 		attribute: (attrId: unknown) => {
-			if (attrId == null || attrId === '') return { text: Local.get!('common.none') };
+			if (attrId == null || attrId === '') return { text: t('common.none') };
 			const attribute = Attribute.getAttribute(attrId as string);
 			if (attribute) {
 				return { text: GameLocal.replace(attribute.name) };
@@ -237,7 +237,7 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			(groupId: string) => Command.parseEnumGroup?.(groupId) ?? ''
 		),
 		'enum-string': (stringId: unknown) => {
-			if (stringId == null || stringId === '') return { text: Local.get!('common.none') };
+			if (stringId == null || stringId === '') return { text: t('common.none') };
 			const string = Enum.getString(stringId as string);
 			if (string) {
 				return { text: GameLocal.replace(string.name) };
@@ -256,5 +256,5 @@ export const customBoxOptions: CustomBoxApiOptions = {
 			| { activeFile?: { type?: string; meta?: { guid: string } } }
 			| undefined
 	}),
-	localize: (key: string): string => Local.get!(key)
+	localize: (key: string): string => t(key)
 };

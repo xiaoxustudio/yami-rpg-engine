@@ -1,7 +1,7 @@
-import { $ } from '@/util/dom.ts';
+import { $ } from '@app/legacy/util/dom.ts';
 import { usePositionGetterWindow } from '@app/composables/usePositionGetterWindow';
-import { PresetObject } from '@/tools/scene-preset-window.ts';
-import { AccessorBaseShape } from '@/types/legacy-shapes.ts';
+import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
+import { AccessorBaseShape } from '@app/legacy/types/legacy-shapes.ts';
 
 interface PositionGetterTarget {
 	dataValue: PositionData;

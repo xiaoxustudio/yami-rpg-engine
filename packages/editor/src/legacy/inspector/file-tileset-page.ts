@@ -1,11 +1,11 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { $, getElementWriter } from '@app/legacy/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { addClass, disable, enable, read, removeClass } from '@/util/element-utils';
-import { File } from '@/file/file-system-core.ts';
-import type { FileMeta } from '@/data/metadata-manifest.ts';
+import { addClass, disable, enable, read, removeClass } from '@app/legacy/util/element-utils';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
-import { Palette } from '@/palette/palette.ts';
-import { Scene } from '@/scene/scene-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
 
 {
 	interface FileTilesetShape {

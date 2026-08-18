@@ -23,7 +23,7 @@
 
 import { onMounted } from 'vue';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -49,7 +49,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.registerEvent');
+	const get = createGetter('command.registerEvent');
 	$('#registerEvent-target')?.loadItems?.([
 		{ name: 'Global', value: 'global' },
 		{ name: 'Actor', value: 'actor' },

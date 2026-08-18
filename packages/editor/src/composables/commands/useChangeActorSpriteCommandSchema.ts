@@ -12,7 +12,7 @@ export function useChangeActorSpriteCommandSchema() {
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
 		const items = Animation.getSpriteListItems!(event.value);
-		const elSpriteId = document.getElementById('changeActorSprite-spriteId');
+		const elSpriteId = document.getElementById('changeActorSprite-spriteId')!;
 		elSpriteId.loadItems(items);
 		write(elSpriteId, read(elSpriteId));
 	};

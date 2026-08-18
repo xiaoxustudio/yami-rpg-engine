@@ -23,7 +23,7 @@
 import { onMounted } from 'vue';
 import { useMoveActorCommandSchema } from '@app/composables/commands/useMoveActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
@@ -45,7 +45,7 @@ const onConfirm = () => {
 };
 
 onMounted(() => {
-	const get = Local.createGetter!('command.moveActor');
+	const get = createGetter('command.moveActor');
 	$('#moveActor-mode')?.loadItems?.([
 		{ name: get('mode.stop') || 'Stop', value: 'stop' },
 		{ name: get('mode.keep') || 'Keep', value: 'keep' },

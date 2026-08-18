@@ -1,8 +1,8 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
-import { Enum } from '@/enum/enum-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.loadImage = new CommandSchema({
 	name: 'loadImage',
@@ -39,7 +39,7 @@ Command.cases.loadImage = new CommandSchema({
 		variable: unknown;
 	}) {
 		const words = Command.words.push(Command.parseElement!(element));
-		const label = Local.get!('command.loadImage.' + type);
+		const label = t('command.loadImage.' + type);
 		let content;
 		switch (type) {
 			case 'actor-portrait':
@@ -70,7 +70,7 @@ Command.cases.loadImage = new CommandSchema({
 		words.push(label + Token('(') + content + Token(')'));
 		return [
 			{ color: 'element' },
-			{ text: Local.get!('command.loadImage') + Token(': ') },
+			{ text: t('command.loadImage') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

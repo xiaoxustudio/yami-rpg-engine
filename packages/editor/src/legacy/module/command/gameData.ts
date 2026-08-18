@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.gameData = new CommandSchema({
 	name: 'gameData',
@@ -20,12 +20,12 @@ Command.cases.gameData = new CommandSchema({
 		variables: string;
 	}) {
 		const words = Command.words
-			.push(Local.get!('command.gameData.' + operation))
+			.push(t('command.gameData.' + operation))
 			.push(Command.parseVariableNumber!(index));
 		switch (operation) {
 			case 'save':
 				if (variables) {
-					const label = Local.get!('command.gameData.variables');
+					const label = t('command.gameData.variables');
 					const keys = variables
 						.split(/\s*,\s*/)
 						.map((key: string) => Command.setVariableColor!(key));
@@ -36,7 +36,7 @@ Command.cases.gameData = new CommandSchema({
 		}
 		return [
 			{ color: 'system' },
-			{ text: Local.get!('command.gameData') + Token(': ') },
+			{ text: t('command.gameData') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

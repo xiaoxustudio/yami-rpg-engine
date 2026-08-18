@@ -75,13 +75,13 @@ function initialize(): void {
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	scene = document.getElementById('presetObject-sceneId');
+	scene = document.getElementById('presetObject-sceneId')!;
 	list = current;
-	searcher = document.getElementById('presetObject-searcher');
+	searcher = document.getElementById('presetObject-searcher')!;
 	list.bind(() => nodes);
 	searcher.addCloseButton();
 	searcher.on('keydown', searcherKeydown);
-	document.getElementById('presetObject').addEventListener('closed', windowClosed);
+	document.getElementById('presetObject')!.addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetObjectTarget): void {

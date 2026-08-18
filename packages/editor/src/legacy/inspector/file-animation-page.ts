@@ -1,8 +1,8 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { addClass, getFocus, removeClass } from '@/util/element-utils';
-import { Animation } from '@/animation/animation-window.ts';
-import { Command } from '@/command/command-object.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { addClass, getFocus, removeClass } from '@app/legacy/util/element-utils';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Inspector } from './inspector.ts';
 

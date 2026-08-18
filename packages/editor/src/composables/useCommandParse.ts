@@ -1,13 +1,13 @@
-import { getVariable, reportError } from '@/util/safe.ts';
-import { Attribute } from '@/attribute/attribute-window.ts';
+import { getVariable, reportError } from '@app/legacy/util/safe.ts';
+import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
-import { Data } from '@/data/data-object.ts';
-import { Enum } from '@/enum/enum-window.ts';
-import { FileItem } from '@/file/file-item.ts';
-import { File } from '@/file/file-system-core.ts';
-import { GameLocal } from '@/local/local-object.ts';
-import { Local } from '@/tools/localization.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { FileItem } from '@app/legacy/file/file-item.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { t } from '@app/i18n';
 
 interface CommandObjectShape {
 	type: string;
@@ -31,7 +31,7 @@ interface TextContent {
 }
 
 export function parseBlend(this: typeof Command, blend: string): string {
-	return Local.get!('blend.' + blend);
+	return t('blend.' + blend);
 }
 
 export function fetchVariables(
@@ -73,7 +73,7 @@ export function fetchVariables(
 			Command.variables.push({
 				name: key,
 				type: varType,
-				comment: this.eventName || '⭐️' + Local.get!(`eventParameterTypes.${type}`),
+				comment: this.eventName || '⭐️' + t(`eventParameterTypes.${type}`),
 				evIndex: eventIndex,
 				isLeftValue: true,
 				refCount: 0
@@ -156,7 +156,7 @@ export function parseVariable(
 					});
 				}
 			}
-			let varName = Command.setVariableColor!(key || Local.get!('common.none'));
+			let varName = Command.setVariableColor!(key || t('common.none'));
 			if (valueType) {
 				const textId = Command.setTextId!(`local-${valueType}-${key}`);
 				varName = textId + varName;
@@ -174,7 +174,7 @@ export function parseVariable(
 			return varName;
 		}
 		case 'self': {
-			let varName = Command.setVariableColor!(Local.get!('variable.self'));
+			let varName = Command.setVariableColor!(t('variable.self'));
 			if (valueType) {
 				const textId = Command.setTextId!(`self-${valueType}-unnamed`);
 				varName = textId + varName;
@@ -235,7 +235,7 @@ export function parseGlobalVariable(this: typeof Command, id: string): string {
 export function parseAttributeGroup(this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Attribute.getGroup!(groupKey);
-	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName);
+	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName!);
 	this.invalid = true;
 	return Command.parseUnlinkedId!(groupKey);
 }
@@ -408,15 +408,13 @@ export function parseSpriteName(
 }
 
 export function parseEventType(this: typeof Command, groupKey: string, eventType: string): string {
-	return (
-		Local.get!('eventTypes.' + eventType) || Command.parseGroupEnumString!(groupKey, eventType)
-	);
+	return t('eventTypes.' + eventType) || Command.parseGroupEnumString!(groupKey, eventType);
 }
 
 export function parseEnumGroup(this: typeof Command, groupKey: string): string {
 	if (groupKey === '') return Token('none');
 	const group = Enum.getGroup!(groupKey);
-	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName);
+	if (group) return GameLocal.replace!((group as { groupName?: string }).groupName!);
 	this.invalid = true;
 	return Command.parseUnlinkedId!(groupKey);
 }
@@ -461,7 +459,7 @@ export function parseListItem(
 }
 
 export function parseParameter(this: typeof Command, key: CommandObjectShape | string): string {
-	const label = Local.get!('parameter.param');
+	const label = t('parameter.param');
 	const paramKey = Command.parseVariableString!(key);
 	return label + Token('(') + paramKey + Token(')');
 }
@@ -469,19 +467,19 @@ export function parseParameter(this: typeof Command, key: CommandObjectShape | s
 export function parseActor(this: typeof Command, actor: CommandObjectShape): string | undefined {
 	switch (actor.type) {
 		case 'trigger':
-			return Command.setTextId!('actor-object-trigger') + Local.get!('actor.trigger');
+			return Command.setTextId!('actor-object-trigger') + t('actor.trigger');
 		case 'caster':
-			return Command.setTextId!('actor-object-caster') + Local.get!('actor.caster');
+			return Command.setTextId!('actor-object-caster') + t('actor.caster');
 		case 'latest':
-			return Command.setTextId!('actor-object-latest') + Local.get!('actor.latest');
+			return Command.setTextId!('actor-object-latest') + t('actor.latest');
 		case 'target':
-			return Command.setTextId!('actor-object-target') + Local.get!('actor.target');
+			return Command.setTextId!('actor-object-target') + t('actor.target');
 		case 'player':
-			return Command.setTextId!('actor-object-player') + Local.get!('actor.player');
+			return Command.setTextId!('actor-object-player') + t('actor.player');
 		case 'member':
 			return (
 				Command.setTextId!('actor-object-member') +
-				Local.get!('actor.member') +
+				t('actor.member') +
 				Token('[') +
 				Command.parseVariableNumber!(actor.memberId) +
 				Token(']')
@@ -494,7 +492,7 @@ export function parseActor(this: typeof Command, actor: CommandObjectShape): str
 		case 'by-id':
 			return Command.parsePresetObject!(actor.presetId);
 		case 'variable': {
-			const label = Local.get!('actor.common');
+			const label = t('actor.common');
 			const textId = Command.setTextId!('actor-object-variable');
 			const variable = Command.parseVariable!(actor.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -505,12 +503,12 @@ export function parseActor(this: typeof Command, actor: CommandObjectShape): str
 export function parseSkill(this: typeof Command, skill: CommandObjectShape): string | undefined {
 	switch (skill.type) {
 		case 'trigger':
-			return Command.setTextId!('skill-object-trigger') + Local.get!('skill.trigger');
+			return Command.setTextId!('skill-object-trigger') + t('skill.trigger');
 		case 'latest':
-			return Command.setTextId!('skill-object-latest') + Local.get!('skill.latest');
+			return Command.setTextId!('skill-object-latest') + t('skill.latest');
 		case 'by-key': {
 			const actor = Command.parseActor!(skill.actor);
-			const label = Local.get!('skill.common');
+			const label = t('skill.common');
 			const textId = Command.setTextId!('skill-object-by-key');
 			const key = Command.parseVariableEnum!('shortcut-key', skill.key);
 			return actor + Token(' -> ') + textId + label + Token('<') + key + Token('>');
@@ -521,7 +519,7 @@ export function parseSkill(this: typeof Command, skill: CommandObjectShape): str
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
-			const label = Local.get!('skill.common');
+			const label = t('skill.common');
 			const textId = Command.setTextId!('skill-object-variable');
 			const variable = Command.parseVariable!(skill.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -532,16 +530,16 @@ export function parseSkill(this: typeof Command, skill: CommandObjectShape): str
 export function parseState(this: typeof Command, state: CommandObjectShape): string | undefined {
 	switch (state.type) {
 		case 'trigger':
-			return Command.setTextId!('state-object-trigger') + Local.get!('state.trigger');
+			return Command.setTextId!('state-object-trigger') + t('state.trigger');
 		case 'latest':
-			return Command.setTextId!('state-object-latest') + Local.get!('state.latest');
+			return Command.setTextId!('state-object-latest') + t('state.latest');
 		case 'by-id': {
 			const actor = Command.parseActor!(state.actor);
 			const file = Command.parseFileName!(state.stateId);
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
-			const label = Local.get!('state.common');
+			const label = t('state.common');
 			const textId = Command.setTextId!('state-object-variable');
 			const variable = Command.parseVariable!(state.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -555,12 +553,12 @@ export function parseEquipment(
 ): string | undefined {
 	switch (equipment.type) {
 		case 'trigger':
-			return Command.setTextId!('equipment-object-trigger') + Local.get!('equipment.trigger');
+			return Command.setTextId!('equipment-object-trigger') + t('equipment.trigger');
 		case 'latest':
-			return Command.setTextId!('equipment-object-latest') + Local.get!('equipment.latest');
+			return Command.setTextId!('equipment-object-latest') + t('equipment.latest');
 		case 'by-slot': {
 			const actor = Command.parseActor!(equipment.actor);
-			const label = Local.get!('equipment.common');
+			const label = t('equipment.common');
 			const textId = Command.setTextId!('equipment-object-by-slot');
 			const slot = Command.parseVariableEnum!('equipment-slot', equipment.slot);
 			return actor + Token(' -> ') + textId + label + Token('<') + slot + Token('>');
@@ -569,11 +567,11 @@ export function parseEquipment(
 		case 'by-id-inventory': {
 			const actor = Command.parseActor!(equipment.actor);
 			const file = Command.parseFileName!(equipment.equipmentId);
-			const source = Command.setWeakColor!(Local.get!('equipment.' + equipment.type));
+			const source = Command.setWeakColor!(t('equipment.' + equipment.type));
 			return actor + Token(' -> ') + file + ' ' + Token('(') + source + Token(')');
 		}
 		case 'variable': {
-			const label = Local.get!('equipment.common');
+			const label = t('equipment.common');
 			const textId = Command.setTextId!('equipment-object-variable');
 			const variable = Command.parseVariable!(equipment.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -584,12 +582,12 @@ export function parseEquipment(
 export function parseItem(this: typeof Command, item: CommandObjectShape): string | undefined {
 	switch (item.type) {
 		case 'trigger':
-			return Command.setTextId!('item-object-trigger') + Local.get!('item.trigger');
+			return Command.setTextId!('item-object-trigger') + t('item.trigger');
 		case 'latest':
-			return Command.setTextId!('item-object-latest') + Local.get!('item.latest');
+			return Command.setTextId!('item-object-latest') + t('item.latest');
 		case 'by-key': {
 			const actor = Command.parseActor!(item.actor);
-			const label = Local.get!('item.common');
+			const label = t('item.common');
 			const textId = Command.setTextId!('item-object-by-key');
 			const key = Command.parseVariableEnum!('shortcut-key', item.key);
 			return actor + Token(' -> ') + textId + label + Token('<') + key + Token('>');
@@ -600,7 +598,7 @@ export function parseItem(this: typeof Command, item: CommandObjectShape): strin
 			return actor + Token(' -> ') + file;
 		}
 		case 'variable': {
-			const label = Local.get!('item.common');
+			const label = t('item.common');
 			const variable = Command.parseVariable!(item.variable, 'object');
 			const textId = Command.setTextId!('item-object-variable');
 			return textId + label + Token('(') + variable + Token(')');
@@ -616,66 +614,48 @@ export function parsePosition(
 		case 'absolute': {
 			const x = Command.parseVariableNumber!(position.x);
 			const y = Command.parseVariableNumber!(position.y);
-			return Local.get!('position.common') + Token('(') + x + Token(', ') + y + Token(')');
+			return t('position.common') + Token('(') + x + Token(', ') + y + Token(')');
 		}
 		case 'relative': {
 			const x = Command.parseVariableNumber!(position.x);
 			const y = Command.parseVariableNumber!(position.y);
-			return Local.get!('position.relative') + Token('(') + x + Token(', ') + y + Token(')');
+			return t('position.relative') + Token('(') + x + Token(', ') + y + Token(')');
 		}
 		case 'actor':
 			return (
-				Local.get!('position.common') +
-				Token('(') +
-				Command.parseActor!(position.actor) +
-				Token(')')
+				t('position.common') + Token('(') + Command.parseActor!(position.actor) + Token(')')
 			);
 		case 'trigger':
 			return (
-				Local.get!('position.common') +
+				t('position.common') +
 				Token('(') +
 				Command.parseTrigger!(position.trigger) +
 				Token(')')
 			);
 		case 'light':
 			return (
-				Local.get!('position.common') +
-				Token('(') +
-				Command.parseLight!(position.light) +
-				Token(')')
+				t('position.common') + Token('(') + Command.parseLight!(position.light) + Token(')')
 			);
 		case 'region': {
 			const region = Command.parseRegion!(position.region);
-			const mode = Local.get!('position.region.mode.' + position.mode);
-			return (
-				Local.get!('position.common') +
-				Token('(') +
-				region +
-				Token(', ') +
-				mode +
-				Token(')')
-			);
+			const mode = t('position.region.mode.' + position.mode);
+			return t('position.common') + Token('(') + region + Token(', ') + mode + Token(')');
 		}
 		case 'object':
 			return (
-				Local.get!('position.common') +
+				t('position.common') +
 				Token('(') +
 				Command.parsePresetObject!(position.objectId) +
 				Token(')')
 			);
 		case 'mouse':
-			return (
-				Local.get!('position.common') +
-				Token('(') +
-				Local.get!('position.mouse') +
-				Token(')')
-			);
+			return t('position.common') + Token('(') + t('position.mouse') + Token(')');
 	}
 }
 
 export function parseAngle(this: typeof Command, angle: CommandObjectShape): string | undefined {
 	const type = angle.type;
-	const desc = Local.get!('angle.' + type);
+	const desc = t('angle.' + type);
 	switch (type) {
 		case 'position':
 			return `${desc} ${Command.parsePosition!(angle.position)}`;
@@ -694,11 +674,11 @@ export function parseTrigger(
 ): string | undefined {
 	switch (trigger.type) {
 		case 'trigger':
-			return Command.setTextId!('trigger-object-trigger') + Local.get!('trigger.trigger');
+			return Command.setTextId!('trigger-object-trigger') + t('trigger.trigger');
 		case 'latest':
-			return Command.setTextId!('trigger-object-latest') + Local.get!('trigger.latest');
+			return Command.setTextId!('trigger-object-latest') + t('trigger.latest');
 		case 'variable': {
-			const label = Local.get!('trigger.common');
+			const label = t('trigger.common');
 			const textId = Command.setTextId!('trigger-object-variable');
 			const variable = Command.parseVariable!(trigger.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -709,13 +689,13 @@ export function parseTrigger(
 export function parseLight(this: typeof Command, light: CommandObjectShape): string | undefined {
 	switch (light.type) {
 		case 'trigger':
-			return Command.setTextId!('light-object-trigger') + Local.get!('light.trigger');
+			return Command.setTextId!('light-object-trigger') + t('light.trigger');
 		case 'latest':
-			return Command.setTextId!('light-object-latest') + Local.get!('light.latest');
+			return Command.setTextId!('light-object-latest') + t('light.latest');
 		case 'by-id':
 			return Command.parsePresetObject!(light.presetId);
 		case 'variable': {
-			const label = Local.get!('light.common');
+			const label = t('light.common');
 			const textId = Command.setTextId!('light-object-variable');
 			const variable = Command.parseVariable!(light.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -726,7 +706,7 @@ export function parseLight(this: typeof Command, light: CommandObjectShape): str
 export function parseRegion(this: typeof Command, region: CommandObjectShape): string | undefined {
 	switch (region.type) {
 		case 'trigger':
-			return Command.setTextId!('region-object-trigger') + Local.get!('region.trigger');
+			return Command.setTextId!('region-object-trigger') + t('region.trigger');
 		case 'by-id':
 			return Command.parsePresetObject!(region.presetId);
 	}
@@ -738,7 +718,7 @@ export function parseTilemap(
 ): string | undefined {
 	switch (tilemap.type) {
 		case 'trigger':
-			return Command.setTextId!('tilemap-object-trigger') + Local.get!('tilemap.trigger');
+			return Command.setTextId!('tilemap-object-trigger') + t('tilemap.trigger');
 		case 'by-id':
 			return Command.parsePresetObject!(tilemap.presetId);
 		case 'variable':
@@ -749,13 +729,13 @@ export function parseTilemap(
 export function parseObject(this: typeof Command, object: CommandObjectShape): string | undefined {
 	switch (object.type) {
 		case 'trigger':
-			return Command.setTextId!('preset-object-trigger') + Local.get!('object.trigger');
+			return Command.setTextId!('preset-object-trigger') + t('object.trigger');
 		case 'latest':
-			return Command.setTextId!('preset-object-latest') + Local.get!('object.latest');
+			return Command.setTextId!('preset-object-latest') + t('object.latest');
 		case 'by-id':
 			return Command.parsePresetObject!(object.presetId);
 		case 'variable': {
-			const label = Local.get!('object.common');
+			const label = t('object.common');
 			const textId = Command.setTextId!('preset-object-variable');
 			const variable = Command.parseVariable!(object.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -769,9 +749,9 @@ export function parseElement(
 ): string | undefined {
 	switch (element.type) {
 		case 'trigger':
-			return Command.setTextId!('element-object-trigger') + Local.get!('element.trigger');
+			return Command.setTextId!('element-object-trigger') + t('element.trigger');
 		case 'latest':
-			return Command.setTextId!('element-object-latest') + Local.get!('element.latest');
+			return Command.setTextId!('element-object-latest') + t('element.latest');
 		case 'by-id':
 			return Command.parsePresetElement!(element.presetId, false);
 		case 'by-ancestor-and-id': {
@@ -781,7 +761,7 @@ export function parseElement(
 		}
 		case 'by-index': {
 			const parent = Command.parseElement!(element.parent);
-			const label = Local.get!('element.common');
+			const label = t('element.common');
 			const textId = Command.setTextId!('element-object-by-index');
 			const index = Command.parseVariableNumber!(element.index);
 			const child = textId + label + Token('[') + index + Token(']');
@@ -789,7 +769,7 @@ export function parseElement(
 		}
 		case 'by-button-index': {
 			const focus = Command.parseElement!(element.focus);
-			const label = Local.get!('element.button');
+			const label = t('element.button');
 			const textId = Command.setTextId!('element-object-by-button-index');
 			const index = Command.parseVariableNumber!(element.index);
 			const child = textId + label + Token('[') + index + Token(']');
@@ -797,20 +777,20 @@ export function parseElement(
 		}
 		case 'selected-button': {
 			const focus = Command.parseElement!(element.focus);
-			const button = Local.get!('element.selected-button');
+			const button = t('element.selected-button');
 			const textId = Command.setTextId!('element-object-selected-button');
 			return focus + Token(' -> ') + textId + button;
 		}
 		case 'focus':
-			return Command.setTextId!('element-object-focus') + Local.get!('element.focus');
+			return Command.setTextId!('element-object-focus') + t('element.focus');
 		case 'parent': {
-			const label = Local.get!('element.parent');
+			const label = t('element.parent');
 			const textId = Command.setTextId!('element-object-parent');
 			const parent = Command.parseVariable!(element.variable, 'object');
 			return textId + label + Token('(') + parent + Token(')');
 		}
 		case 'variable': {
-			const label = Local.get!('element.common');
+			const label = t('element.common');
 			const textId = Command.setTextId!('element-object-variable');
 			const variable = Command.parseVariable!(element.variable, 'object');
 			return textId + label + Token('(') + variable + Token(')');
@@ -872,7 +852,7 @@ export function parseActorSelector(this: typeof Command, selector: string): stri
 		case 'team-except-self':
 		case 'any-except-self':
 		case 'any':
-			return Local.get!('actorFilter.' + selector);
+			return t('actorFilter.' + selector);
 	}
 }
 
@@ -906,7 +886,7 @@ export function parseWait(this: typeof Command, wait: boolean): string {
 		case false:
 			return '';
 		case true:
-			return Local.get!('transition.wait');
+			return t('transition.wait');
 	}
 }
 
@@ -920,7 +900,7 @@ export function parseEasing(
 	const easing = Data.easings.map[easingId];
 	const time = Command.parseVariableNumber!(duration, 'ms');
 	const info = (easing?.name ?? `#${easingId}`) + Token(', ') + time;
-	return wait ? info + Token(', ') + Local.get!('transition.wait') : info;
+	return wait ? info + Token(', ') + t('transition.wait') : info;
 }
 
 export function parseUnlinkedId(this: typeof Command, name: string): string {

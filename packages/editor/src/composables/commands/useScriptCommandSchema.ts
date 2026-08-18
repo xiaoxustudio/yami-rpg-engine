@@ -6,7 +6,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { Editor } from '@app/legacy/main/editor.ts';
 import { loadDtsFolder } from '@app/legacy/module/global.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { createGetter } from '@app/i18n';
 import { Path } from '@app/legacy/util/config.ts';
 import { getMonaco } from '@app/legacy/util/monaco.ts';
 import { reactive } from 'vue';
@@ -57,7 +57,7 @@ const isMaximized = (): boolean => hasClass(document.getElementById('script'), '
 
 const resize = (): void => {
 	if (!editor) return;
-	const content = document.getElementById('script-script');
+	const content = document.getElementById('script-script')!;
 	const parent = content.parentElement!;
 	if (!isMaximized()) {
 		content.style.width = '';
@@ -82,7 +82,7 @@ const createEditor = async (): Promise<void> => {
 	const monaco = await getMonaco();
 	const { theme } = Title;
 	await Command.cases.script.createTheme(theme);
-	editor = monaco.editor.create(document.getElementById('script-script'), {
+	editor = monaco.editor.create(document.getElementById('script-script')!, {
 		language: 'javascript',
 		theme: theme ?? '',
 		tabSize: 2,
@@ -120,7 +120,7 @@ const createEditor = async (): Promise<void> => {
 	document.getElementById('script-change')?.on?.('click', async () => {
 		const currentLanguage = editor!.getModel()!.getLanguageId();
 		let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		const scriptChange = document.getElementById('script-change');
 		if (scriptChange) {
 			scriptChange.name =
@@ -210,7 +210,7 @@ const save = async (): Promise<void> => {
 			script = result.res!;
 		}
 	} catch (error: unknown) {
-		const get = Local.createGetter!('confirmation');
+		const get = createGetter('confirmation');
 		let continued = false;
 		return Window.confirm!(
 			{
@@ -246,7 +246,7 @@ const initialize = (): void => {
 	document.getElementById('script')?.on('close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
-			const get = Local.createGetter!('confirmation');
+			const get = createGetter('confirmation');
 			Window.confirm!(
 				{
 					message: get('closeUnsavedScript'),

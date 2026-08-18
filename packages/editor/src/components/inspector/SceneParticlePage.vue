@@ -1,15 +1,15 @@
-﻿<template>
+<template>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParticle-general-grid') || 'General' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParticle-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParticle-general-grid">
-			<div class="text">{{ local.getLabel('sceneParticle-name') || 'Name' }}</div><TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
-			<div class="text">{{ local.getLabel('sceneParticle-particleId') || 'Particle' }}</div
+			<div class="text">{{ t('components.sceneParticle-name.label') || 'Name' }}</div><TextBox id="sceneParticle-name" v-model="form.name" @input="onParamInput"></TextBox>
+			<div class="text">{{ t('components.sceneParticle-particleId.label') || 'Particle' }}</div
 			><CustomBox
 				id="sceneParticle-particleId" :model-value="form.particleId" @input="onParamInput"
 				type="file"
 				filter="particle"
 			></CustomBox>
-			<div class="text">{{ local.getLabel('sceneParticle-x') || 'X' }}</div
+			<div class="text">{{ t('components.sceneParticle-x.label') || 'X' }}</div
 			><NumberBox
 				id="sceneParticle-x" v-model="form.x" @input="onParamInput"
 				min="-128"
@@ -17,7 +17,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParticle-y') || 'Y' }}</div
+			<div class="text">{{ t('components.sceneParticle-y.label') || 'Y' }}</div
 			><NumberBox
 				id="sceneParticle-y" v-model="form.y" @input="onParamInput"
 				min="-128"
@@ -25,7 +25,7 @@
 				step="0.1"
 				decimals="4"
 			></NumberBox>
-			<div class="text">{{ local.getLabel('sceneParticle-angle-box') || 'Angle' }}</div
+			<div class="text">{{ t('components.sceneParticle-angle-box.label') || 'Angle' }}</div
 			><div class="flex-box" id="sceneParticle-angle-box">
 				<SliderBox
 					id="sceneParticle-angle-slider"
@@ -43,7 +43,7 @@
 					unit="deg"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParticle-scale-box') || 'Scale' }}</div
+			<div class="text">{{ t('components.sceneParticle-scale-box.label') || 'Scale' }}</div
 			><div class="flex-box" id="sceneParticle-scale-box">
 				<SliderBox
 					id="sceneParticle-scale-slider"
@@ -60,7 +60,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParticle-speed-box') || 'Speed' }}</div
+			<div class="text">{{ t('components.sceneParticle-speed-box.label') || 'Speed' }}</div
 			><div class="flex-box" id="sceneParticle-speed-box">
 				<SliderBox
 					id="sceneParticle-speed-slider"
@@ -77,7 +77,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParticle-opacity-box') || 'Opacity' }}</div
+			<div class="text">{{ t('components.sceneParticle-opacity-box.label') || 'Opacity' }}</div
 			><div class="flex-box" id="sceneParticle-opacity-box">
 				<SliderBox
 					id="sceneParticle-opacity-slider"
@@ -94,7 +94,7 @@
 					decimals="4"
 				></NumberBox>
 			</div>
-			<div class="text">{{ local.getLabel('sceneParticle-priority-box') || 'Priority' }}</div
+			<div class="text">{{ t('components.sceneParticle-priority-box.label') || 'Priority' }}</div
 			><div class="flex-box" id="sceneParticle-priority-box">
 				<SliderBox
 					id="sceneParticle-priority-slider"
@@ -112,7 +112,7 @@
 		</div>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParticle-conditions') || 'Conditions' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParticle-conditions.label') || 'Conditions' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-conditions"
 			class="inspector-list"
@@ -120,7 +120,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParticle-events') || 'Events' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParticle-events.label') || 'Events' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-events"
 			class="inspector-list"
@@ -129,7 +129,7 @@
 		></ParamList>
 	</DetailBox>
 	<DetailBox open>
-		<DetailSummary>{{ local.getLabel('sceneParticle-scripts') || 'Scripts' }}</DetailSummary>
+		<DetailSummary>{{ t('components.sceneParticle-scripts.label') || 'Scripts' }}</DetailSummary>
 		<ParamList
 			id="sceneParticle-scripts"
 			class="inspector-list"
@@ -141,8 +141,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
-import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -158,7 +158,7 @@ import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneParticlePage();
 

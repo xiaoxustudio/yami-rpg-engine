@@ -416,8 +416,8 @@ describe('TextureManager', () => {
 		mgr.append(tex2);
 		mgr.clear();
 		expect(mgr.count).toBe(1);
-		expect(mgr.map[tex1.index!]).toBeUndefined();
-		expect(mgr.map[tex2.index!]).toBe(tex2);
+		expect(mgr.map[tex1.index as number]).toBeUndefined();
+		expect(mgr.map[tex2.index as number]).toBe(tex2);
 	});
 });
 

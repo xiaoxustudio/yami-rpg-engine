@@ -1,23 +1,23 @@
-import { SettingConfig } from '@/module/settingconfig';
-import { Window } from '@/tools/window-object.ts';
-import { Path } from '@/util/config.ts';
-import { Animation } from '@/animation/animation-window.ts';
-import { Command } from '@/command/command-object.ts';
-import { Data } from '@/data/data-object.ts';
-import { Project } from '@/data/project-settings-window.ts';
-import { Directory } from '@/file/directory-object.ts';
-import { File } from '@/file/file-system-core.ts';
+import { SettingConfig } from '@app/legacy/module/settingconfig';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { Path } from '@app/legacy/util/config.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { Project } from '@app/legacy/data/project-settings-window.ts';
+import { Directory } from '@app/legacy/file/directory-object.ts';
+import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { GameLocal } from '@/local/local-object.ts';
-import { Log } from '@/log/log-window.ts';
+import { GameLocal } from '@app/legacy/local/local-object.ts';
+import { Log } from '@app/legacy/log/log-window.ts';
 import { Editor } from './editor.ts';
-import { WebServer } from '@/module/webserver.ts';
-import { Printer } from '@/printer/printer.ts';
-import { Title } from '@/title/title-bar.ts';
-import { Local } from '@/tools/localization.ts';
+import { WebServer } from '@app/legacy/module/webserver.ts';
+import { Printer } from '@app/legacy/printer/printer.ts';
+import { Title } from '@app/legacy/title/title-bar.ts';
+import { createGetter } from '@app/i18n';
 
-import { Updater } from '@/update/updater.ts';
+import { Updater } from '@app/legacy/update/updater.ts';
 
 Editor.open = async function (this: typeof Editor, path, agreed = false) {
 	path = Path.slash!(path ?? this.config!.project);
@@ -40,7 +40,7 @@ Editor.open = async function (this: typeof Editor, path, agreed = false) {
 
 	File.updateRoot!(path);
 
-	const get = Local.createGetter!('confirmation');
+	const get = createGetter('confirmation');
 
 	try {
 		const json = FS.readFileSync!(path, 'utf8');

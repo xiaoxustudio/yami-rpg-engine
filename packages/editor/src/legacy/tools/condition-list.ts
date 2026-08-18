@@ -1,13 +1,13 @@
-import { $, getElementReader, getElementWriter } from '@/util/dom.ts';
-import { Window } from '@/tools/window-object.ts';
-import { getFocus } from '@/util/element-utils';
-import { Command } from '@/command/command-object.ts';
-import { IfCondition } from '@/command/conditional-condition-window.ts';
-import { Inspector } from '@/inspector/inspector.ts';
-import { IListInterface } from '@/types/list-interface.ts';
-import { IEditableHistory } from '@/types/history.ts';
-import type { History } from '@/tools/history.ts';
-import { Local } from './localization.ts';
+import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { Window } from '@app/legacy/tools/window-object.ts';
+import { getFocus } from '@app/legacy/util/element-utils';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { IListInterface } from '@app/legacy/types/list-interface.ts';
+import { IEditableHistory } from '@app/legacy/types/history.ts';
+import type { History } from '@app/legacy/tools/history.ts';
+import { t } from '@app/i18n';
 
 interface ConditionData {
 	type: string;
@@ -51,7 +51,7 @@ export class ConditionListInterface implements IListInterface {
 			case 'self-boolean':
 			case 'self-number':
 			case 'self-string':
-				return Local.get!('variable.self');
+				return t('variable.self');
 		}
 	}
 

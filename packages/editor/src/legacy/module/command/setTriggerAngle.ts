@@ -1,7 +1,7 @@
-import { Command } from '@/command/command-object.ts';
-import { Token } from '@/command/mark-string-manager.ts';
+import { Command } from '@app/legacy/command/command-object.ts';
+import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { CommandSchema } from './schema.ts';
-import { Local } from '@/tools/localization.ts';
+import { t } from '@app/i18n';
 
 Command.cases.setTriggerAngle = new CommandSchema({
 	name: 'setTriggerAngle',
@@ -15,7 +15,7 @@ Command.cases.setTriggerAngle = new CommandSchema({
 			.push(Command.parseAngle(angle));
 		return [
 			{ color: 'skill' },
-			{ text: Local.get!('command.setTriggerAngle') + Token(': ') },
+			{ text: t('command.setTriggerAngle') + Token(': ') },
 			{ text: words.join() }
 		];
 	}

@@ -14,7 +14,7 @@ window.addEventListener('error', (e: ErrorEvent) => {
 
 const app = createApp(App);
 app.use(pinia);
-app.use(initYamiI18n());
+app.use(initYamiI18n({ autoLoad: true }));
 
 const el = document.getElementById('app');
 if (el) {

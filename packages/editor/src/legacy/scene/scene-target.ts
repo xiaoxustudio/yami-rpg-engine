@@ -1,7 +1,7 @@
-import { Timer } from '@/util/timer.ts';
-import { Easing } from '@/data/transition-window.ts';
-import { addClass, read, removeClass, write } from '@/util/element-utils';
-import { Inspector } from '@/inspector/inspector.ts';
+import { Timer } from '@app/legacy/util/timer.ts';
+import { Easing } from '@app/legacy/data/transition-window.ts';
+import { addClass, read, removeClass, write } from '@app/legacy/util/element-utils';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';
 Scene.setTarget = function (this: typeof Scene, target: { class: string } | null) {

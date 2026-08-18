@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { initYamiI18n } from '@app/i18n';
 import UIImagePage from '@app/components/inspector/UIImagePage.vue';
 
 interface ElementData {
@@ -50,7 +51,10 @@ describe('UIImagePage（uiElement inspector 响应式双向绑定桥接）', () 
 		const host = document.createElement('div');
 		host.id = 'uiImage-vue-mount';
 		document.body.appendChild(host);
-		const wrapper = mount(UIImagePage, { attachTo: document.body });
+		const wrapper = mount(UIImagePage, {
+			attachTo: document.body,
+			global: { plugins: [initYamiI18n()] }
+		});
 		await wrapper.vm.$nextTick();
 		await wrapper.vm.$nextTick();
 		return wrapper;
