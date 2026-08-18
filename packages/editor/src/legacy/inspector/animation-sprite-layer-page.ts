@@ -18,35 +18,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimSpriteLayer.initialize = function (this: typeof AnimSpriteLayer) {
-		if (!$('#animSpriteLayer-blend')) return;
-		$('#animSpriteLayer-blend').loadItems([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-
-		$('#animSpriteLayer-light').loadItems([
-			{ name: 'Raw', value: 'raw' },
-			{ name: 'Global Sampling', value: 'global' },
-			{ name: 'Anchor Sampling', value: 'anchor' }
-		]);
-
-		const elements = $(
-			'#animSpriteLayer-sprite, #animSpriteLayer-blend, #animSpriteLayer-light'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		elements.on(
-			'blur',
-			Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-layer-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
-		);
-	};
+	AnimSpriteLayer.initialize = function (this: typeof AnimSpriteLayer) {};
 
 	AnimSpriteLayer.create = function (this: typeof AnimSpriteLayer) {
 		return {

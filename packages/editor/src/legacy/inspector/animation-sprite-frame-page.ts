@@ -27,43 +27,7 @@ import { Sprite } from '@app/engine/sprite/sprite.ts';
 		update: null
 	};
 
-	AnimSpriteFrame.initialize = function (this: typeof AnimSpriteFrame) {
-		if (!$('#animSpriteFrame-tint-0-slider')) return;
-		$('#animSpriteFrame-tint-0-slider').synchronize($('#animSpriteFrame-tint-0'));
-		$('#animSpriteFrame-tint-1-slider').synchronize($('#animSpriteFrame-tint-1'));
-		$('#animSpriteFrame-tint-2-slider').synchronize($('#animSpriteFrame-tint-2'));
-		$('#animSpriteFrame-tint-3-slider').synchronize($('#animSpriteFrame-tint-3'));
-
-		const elements = document.querySelectorAll(`
-    #animSpriteFrame-anchorX, #animSpriteFrame-anchorY,
-    #animSpriteFrame-pivotX, #animSpriteFrame-pivotY,
-    #animSpriteFrame-x, #animSpriteFrame-y, #animSpriteFrame-rotation,
-    #animSpriteFrame-scaleX, #animSpriteFrame-scaleY, #animSpriteFrame-opacity,
-    #animSpriteFrame-tint-0, #animSpriteFrame-tint-1, #animSpriteFrame-tint-2, #animSpriteFrame-tint-3`);
-		const sliders = document.querySelectorAll(`
-    #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
-    #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on(
-				'blur',
-				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-					data.type = 'inspector-frame-change';
-					data.motion = this.motion;
-					data.direction = Animation.direction;
-				})
-			)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('blur', Inspector.sliderBlur)
-		);
-		Sprite.initialize();
-	};
+	AnimSpriteFrame.initialize = function (this: typeof AnimSpriteFrame) {};
 
 	AnimSpriteFrame.create = function (this: typeof AnimSpriteFrame) {
 		return {

@@ -1,6 +1,5 @@
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+﻿import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { on, rect, css, addClass } from '@app/legacy/util/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
@@ -67,12 +66,13 @@ interface TileNodeWindow {
 	pointermove: (event: PointerEvent) => void;
 }
 
-const getCanvas = (): HTMLCanvasElement => $('#autoTile-selectNode-canvas') as HTMLCanvasElement;
+const getCanvas = (): HTMLCanvasElement =>
+	document.getElementById('autoTile-selectNode-canvas') as HTMLCanvasElement;
 
-const getScreen = (): HTMLElement => $('#autoTile-selectNode-screen');
+const getScreen = (): HTMLElement => document.getElementById('autoTile-selectNode-screen');
 
 const getMarquee = (): TileNodeMarquee =>
-	$('#autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
+	document.getElementById('autoTile-selectNode-marquee') as unknown as TileNodeMarquee;
 
 let context: CanvasRenderingContext2D | null = null;
 let dragging: TileNodeDragging | null = null;
@@ -107,7 +107,7 @@ const open = (
 	const MAX_CONTENT_HEIGHT = 696;
 	const MIN_CONTENT_WIDTH = 100;
 	const MIN_CONTENT_HEIGHT = 100;
-	const windowFrame = $('#autoTile-selectNode');
+	const windowFrame = document.getElementById('autoTile-selectNode');
 	const screen = getScreen();
 	const tileWidth = Palette.tileset.tileWidth;
 	const tileHeight = Palette.tileset.tileHeight;

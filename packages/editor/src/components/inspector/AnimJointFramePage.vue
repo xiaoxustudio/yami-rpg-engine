@@ -82,6 +82,8 @@
 import { onMounted } from 'vue';
 import { useAnimJointFramePage } from '@app/composables/useAnimJointFramePage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -92,6 +94,24 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useAnimJointFramePage();
 
 onMounted(() => {
+	const animJointFrame = Inspector.animJointFrame;
+	if (!animJointFrame) return;
+
+	const elements = document.querySelectorAll(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
+    #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(animJointFrame, Animation, (data: Record<string, unknown>) => {
+				data.type = 'inspector-frame-change';
+				data.motion = animJointFrame.motion;
+				data.direction = Animation.direction;
+			}))
+		);
+	}
+
 	const el = document.getElementById('animJointFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

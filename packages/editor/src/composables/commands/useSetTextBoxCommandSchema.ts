@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setTextBox.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setTextBox.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,13 +6,14 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetTextBoxCommandSchema() {
 	const { form, save, load } = useCommandSchema('setTextBox', {
 		onLoad() {
-			getFocus($('#setTextBox-element'));
+			getFocus(document.getElementById('setTextBox-element'));
 		}
 	});
 	const onSave = (): void => {
-		const properties = read($('#setTextBox-properties')) ?? form.properties;
+		const properties =
+			read(document.getElementById('setTextBox-properties')) ?? form.properties;
 		if (properties.length === 0) {
-			getFocus($('#setTextBox-properties'));
+			getFocus(document.getElementById('setTextBox-properties'));
 			return;
 		}
 		save();

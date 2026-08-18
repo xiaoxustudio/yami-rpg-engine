@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setList.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setList.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -8,7 +7,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetListCommandSchema() {
 	const { form, save, load } = useCommandSchema('setList', {
 		onLoad() {
-			getFocus($('#setList-variable'));
+			getFocus(document.getElementById('setList-variable'));
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -72,105 +71,114 @@ export function useSetListCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const variable = read($('#setList-variable')) ?? form.variable;
+		const variable = read(document.getElementById('setList-variable')) ?? form.variable;
 		if (VariableGetter.isNone!(variable)) {
-			return getFocus($('#setList-variable'));
+			return getFocus(document.getElementById('setList-variable'));
 		}
-		const operation = (read($('#setList-operation')) ?? form.operation) as string;
+		const operation = (read(document.getElementById('setList-operation')) ??
+			form.operation) as string;
 		switch (operation) {
 			case 'set-empty':
 				Command.save?.({ variable, operation });
 				break;
 			case 'set-numbers': {
-				const list = (read($('#setList-numbers')) ?? form.numbers) as number[];
+				const list = (read(document.getElementById('setList-numbers')) ??
+					form.numbers) as number[];
 				if (list.length === 0) {
-					return getFocus($('#setList-numbers'));
+					return getFocus(document.getElementById('setList-numbers'));
 				}
 				Command.save?.({ variable, operation, list });
 				break;
 			}
 			case 'set-strings': {
-				const list = (read($('#setList-strings')) ?? form.strings) as string[];
+				const list = (read(document.getElementById('setList-strings')) ??
+					form.strings) as string[];
 				if (list.length === 0) {
-					return getFocus($('#setList-strings'));
+					return getFocus(document.getElementById('setList-strings'));
 				}
 				Command.save?.({ variable, operation, list });
 				break;
 			}
 			case 'set-boolean': {
-				const index = (read($('#setList-index')) ?? form.index) as number;
-				const skipCheck = (read($('#setList-index-skip-check')) ??
+				const index = (read(document.getElementById('setList-index')) ??
+					form.index) as number;
+				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
-				const constant = read($('#setList-boolean')) ?? form.boolean;
+				const constant = read(document.getElementById('setList-boolean')) ?? form.boolean;
 				Command.save?.({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-number': {
-				const index = (read($('#setList-index')) ?? form.index) as number;
-				const skipCheck = (read($('#setList-index-skip-check')) ??
+				const index = (read(document.getElementById('setList-index')) ??
+					form.index) as number;
+				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
-				const constant = read($('#setList-number')) ?? form.number;
+				const constant = read(document.getElementById('setList-number')) ?? form.number;
 				Command.save?.({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-string': {
-				const index = (read($('#setList-index')) ?? form.index) as number;
-				const skipCheck = (read($('#setList-index-skip-check')) ??
+				const index = (read(document.getElementById('setList-index')) ??
+					form.index) as number;
+				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
-				const constant = read($('#setList-string')) ?? form.string;
+				const constant = read(document.getElementById('setList-string')) ?? form.string;
 				Command.save?.({ variable, operation, index, constant, skipCheck });
 				break;
 			}
 			case 'set-variable': {
-				const index = (read($('#setList-index')) ?? form.index) as number;
-				const skipCheck = (read($('#setList-index-skip-check')) ??
+				const index = (read(document.getElementById('setList-index')) ??
+					form.index) as number;
+				const skipCheck = (read(document.getElementById('setList-index-skip-check')) ??
 					form.indexSkipCheck) as boolean;
-				const operand = read($('#setList-operand')) ?? form.operand;
+				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
 				if (VariableGetter.isNone!(operand)) {
-					return getFocus($('#setList-operand'));
+					return getFocus(document.getElementById('setList-operand'));
 				}
 				Command.save?.({ variable, operation, index, operand, skipCheck });
 				break;
 			}
 			case 'split-string': {
-				const operand = read($('#setList-operand')) ?? form.operand;
+				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
 				if (VariableGetter.isNone!(operand)) {
-					return getFocus($('#setList-operand'));
+					return getFocus(document.getElementById('setList-operand'));
 				}
-				const separator = (read($('#setList-separator')) ?? form.separator) as string;
+				const separator = (read(document.getElementById('setList-separator')) ??
+					form.separator) as string;
 				Command.save?.({ variable, operation, operand, separator });
 				break;
 			}
 			case 'push':
 			case 'remove': {
-				const operand = read($('#setList-operand')) ?? form.operand;
+				const operand = read(document.getElementById('setList-operand')) ?? form.operand;
 				if (VariableGetter.isNone!(operand)) {
-					return getFocus($('#setList-operand'));
+					return getFocus(document.getElementById('setList-operand'));
 				}
 				Command.save?.({ variable, operation, operand });
 				break;
 			}
 			case 'get-attribute-names':
 			case 'get-attribute-keys': {
-				const groupId = (read($('#setList-attribute-groupId')) ??
+				const groupId = (read(document.getElementById('setList-attribute-groupId')) ??
 					form.attributeGroupId) as string;
 				if (groupId === '') {
-					return getFocus($('#setList-attribute-groupId'));
+					return getFocus(document.getElementById('setList-attribute-groupId'));
 				}
 				Command.save?.({ variable, operation, groupId });
 				break;
 			}
 			case 'get-enum-names':
 			case 'get-enum-values': {
-				const groupId = (read($('#setList-enum-groupId')) ?? form.enumGroupId) as string;
+				const groupId = (read(document.getElementById('setList-enum-groupId')) ??
+					form.enumGroupId) as string;
 				if (groupId === '') {
-					return getFocus($('#setList-enum-groupId'));
+					return getFocus(document.getElementById('setList-enum-groupId'));
 				}
 				Command.save?.({ variable, operation, groupId });
 				break;
 			}
 			case 'get-actor-targets': {
-				const actor = read($('#setList-actor')) ?? form.actor;
+				const actor = read(document.getElementById('setList-actor')) ?? form.actor;
 				Command.save?.({ variable, operation, actor });
 				break;
 			}

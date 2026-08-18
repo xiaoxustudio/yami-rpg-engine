@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setFocus.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setFocus.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,24 +6,25 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetFocusCommandSchema() {
 	const { form, save, load } = useCommandSchema('setFocus', {
 		onLoad() {
-			getFocus($('#setFocus-operation'));
+			getFocus(document.getElementById('setFocus-operation'));
 		}
 	});
 	const onSave = (): void => {
-		const operation = read($('#setFocus-operation')) ?? form.operation;
+		const operation = read(document.getElementById('setFocus-operation')) ?? form.operation;
 		switch (operation) {
 			case 'add':
 				Command.save?.({
 					operation,
-					element: read($('#setFocus-element')) ?? form.element,
-					mode: read($('#setFocus-mode')) ?? form.mode,
-					cancelable: read($('#setFocus-cancelable')) ?? form.cancelable
+					element: read(document.getElementById('setFocus-element')) ?? form.element,
+					mode: read(document.getElementById('setFocus-mode')) ?? form.mode,
+					cancelable:
+						read(document.getElementById('setFocus-cancelable')) ?? form.cancelable
 				});
 				break;
 			case 'remove':
 				Command.save?.({
 					operation,
-					element: read($('#setFocus-element')) ?? form.element
+					element: read(document.getElementById('setFocus-element')) ?? form.element
 				});
 				break;
 			case 'remove-latest':

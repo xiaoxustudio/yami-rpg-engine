@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setNumber.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setNumber.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -10,20 +9,22 @@ import type { SetNumberOperand } from '@app/legacy/module/command/setNumber.ts';
 export function useSetNumberCommandSchema() {
 	const { form, save, load } = useCommandSchema('setNumber', {
 		onLoad() {
-			getFocus($('#setNumber-variable'));
+			getFocus(document.getElementById('setNumber-variable'));
 		}
 	});
 	useNumberOperandSchema();
 	const onSave = (): void => {
-		const variable = read($('#setNumber-variable')) ?? form.variable;
+		const variable = read(document.getElementById('setNumber-variable')) ?? form.variable;
 		if (VariableGetter.isNone!(variable)) {
-			getFocus($('#setNumber-variable'));
+			getFocus(document.getElementById('setNumber-variable'));
 			return;
 		}
-		const operation = (read($('#setNumber-operation')) ?? form.operation) as string;
-		const operands = (read($('#setNumber-operands')) ?? form.operands) as SetNumberOperand[];
+		const operation = (read(document.getElementById('setNumber-operation')) ??
+			form.operation) as string;
+		const operands = (read(document.getElementById('setNumber-operands')) ??
+			form.operands) as SetNumberOperand[];
 		if (operands.length === 0) {
-			getFocus($('#setNumber-operands'));
+			getFocus(document.getElementById('setNumber-operands'));
 			return;
 		}
 		operands[0].operation = 'add';

@@ -1,5 +1,5 @@
-import '@app/legacy/module/command/registerEvent.ts';
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/registerEvent.ts';
+import { getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
@@ -17,10 +17,10 @@ const switchTypeAndTagInput = (): void => {
 		hide(input.previousElementSibling);
 		hide(input);
 	};
-	const typeInput = $('#registerEvent-type');
-	const tagInput = $('#registerEvent-tag');
-	const target = read($('#registerEvent-target'));
-	const operation = read($('#registerEvent-operation'));
+	const typeInput = document.getElementById('registerEvent-type');
+	const tagInput = document.getElementById('registerEvent-tag');
+	const target = read(document.getElementById('registerEvent-target'));
+	const operation = read(document.getElementById('registerEvent-operation'));
 	switch (target) {
 		case 'global':
 			switch (operation) {
@@ -73,10 +73,10 @@ const switchPriority = (): void => {
 		gamepadleftstickchange: true,
 		gamepadrightstickchange: true
 	};
-	const target = read($('#registerEvent-target'));
-	const operation = read($('#registerEvent-operation'));
-	const type = read($('#registerEvent-type'));
-	const priority = $('#registerEvent-priority');
+	const target = read(document.getElementById('registerEvent-target'));
+	const operation = read(document.getElementById('registerEvent-operation'));
+	const type = read(document.getElementById('registerEvent-type'));
+	const priority = document.getElementById('registerEvent-priority');
 	if (target === 'global' && operation === 'register' && type in priorityTypes) {
 		show(priority.previousElementSibling);
 		show(priority);
@@ -89,8 +89,8 @@ const switchPriority = (): void => {
 };
 
 const switchNamespace = (): void => {
-	const namespace = $('#registerEvent-namespace');
-	const operation = read($('#registerEvent-operation'));
+	const namespace = document.getElementById('registerEvent-namespace');
+	const operation = read(document.getElementById('registerEvent-operation'));
 	if (operation === 'register') {
 		show(namespace.previousElementSibling);
 		show(namespace);
@@ -102,7 +102,7 @@ const switchNamespace = (): void => {
 
 const targetWrite = (event: { value: string }): void => {
 	const type = event.value;
-	const elEventType = $('#registerEvent-type');
+	const elEventType = document.getElementById('registerEvent-type');
 	const registerType = 'register_' + type;
 	const eventTypes = Enum.getMergedItems!(
 		EventEditor.types?.[registerType] ?? EventEditor.types?.all,
@@ -156,7 +156,7 @@ const load = ({
 	write('tag', tag);
 	commands = children as unknown[];
 	switchNamespace();
-	getFocus($('#registerEvent-target'));
+	getFocus(document.getElementById('registerEvent-target'));
 };
 
 const save = (): unknown => {
@@ -189,7 +189,7 @@ const save = (): unknown => {
 				case 'unregister': {
 					let tag = read('tag');
 					if (typeof tag === 'string' && (tag = tag.trim()) === '') {
-						return getFocus($('#registerEvent-tag'));
+						return getFocus(document.getElementById('registerEvent-tag'));
 					}
 					Command.save?.({ target, operation, tag });
 					break;

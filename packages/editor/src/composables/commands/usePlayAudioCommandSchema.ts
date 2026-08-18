@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/playAudio.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/playAudio.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,15 +6,15 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function usePlayAudioCommandSchema() {
 	const { form, save, load } = useCommandSchema('playAudio', {
 		onLoad() {
-			getFocus($('#playAudio-type'));
+			getFocus(document.getElementById('playAudio-type'));
 		}
 	});
 	const onSave = (): void => {
-		const type = read($('#playAudio-type')) ?? form.type;
-		const audio = read($('#playAudio-audio')) ?? form.audio;
-		const volume = read($('#playAudio-volume')) ?? form.volume;
+		const type = read(document.getElementById('playAudio-type')) ?? form.type;
+		const audio = read(document.getElementById('playAudio-audio')) ?? form.audio;
+		const volume = read(document.getElementById('playAudio-volume')) ?? form.volume;
 		if (audio === '') {
-			getFocus($('#playAudio-audio'));
+			getFocus(document.getElementById('playAudio-audio'));
 			return;
 		}
 		switch (type) {
@@ -26,7 +25,8 @@ export function usePlayAudioCommandSchema() {
 				Command.save!({ type, audio, volume });
 				break;
 			case 'se-attenuated': {
-				const location = read($('#playAudio-location')) ?? form.location;
+				const location =
+					read(document.getElementById('playAudio-location')) ?? form.location;
 				Command.save!({ type, audio, volume, location });
 				break;
 			}

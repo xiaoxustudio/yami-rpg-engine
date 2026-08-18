@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import {
+﻿import {
 	addClass,
 	hide,
 	on,
@@ -85,10 +84,10 @@ let index: number | null | '' = null;
 let curveMap: CurveMapInstance | null = null;
 
 const initialize = (): void => {
-	page = $('#animation-easing');
-	head = $('#animation-easing-head');
-	list = $('#animation-easing-id') as unknown as CurveList;
-	canvas = $('#animation-easing-canvas') as unknown as CurveCanvas;
+	page = document.getElementById('animation-easing');
+	head = document.getElementById('animation-easing-head');
+	list = document.getElementById('animation-easing-id') as unknown as CurveList;
+	canvas = document.getElementById('animation-easing-canvas') as unknown as CurveCanvas;
 	hide(page);
 	hide(list);
 
@@ -119,7 +118,7 @@ const initialize = (): void => {
 	window.addEventListener('datachange', datachange as unknown as EventListener);
 	on(page!, 'resize', windowResize as unknown as (event?: Event) => void);
 	on(
-		$('#animation-easing-settings'),
+		document.getElementById('animation-easing-settings'),
 		'pointerdown',
 		settingsPointerdown as unknown as (event: PointerEvent) => void
 	);

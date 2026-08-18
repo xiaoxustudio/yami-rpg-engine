@@ -28,19 +28,7 @@ import { UI } from '@/ui/ui-window.ts';
 		animationIdWrite: null
 	};
 
-	UIAnimation.initialize = function (this: typeof UIAnimation) {
-		if (!$('#uiAnimation-animation')) return;
-		$('#uiAnimation-animation')?.on?.('write', this.animationIdWrite);
-		const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
-    #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
-    #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, UI))
-		);
-	};
+	UIAnimation.initialize = function (this: typeof UIAnimation) {};
 
 	UIAnimation.create = function (this: typeof UIAnimation) {
 		const transform = Inspector.uiElement.createTransform();

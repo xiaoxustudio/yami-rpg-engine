@@ -56,6 +56,8 @@
 import { onMounted } from 'vue';
 import { useUITextBoxPage } from '@app/composables/useUITextBoxPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -68,7 +70,52 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUITextBoxPage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
 onMounted(() => {
+	const uiTextBox = Inspector.uiTextBox;
+	if (!uiTextBox) return;
+
+	loadItems('uiTextBox-type', [
+		{ name: 'Text', value: 'text' },
+		{ name: 'Number', value: 'number' }
+	]);
+	loadItems('uiTextBox-align', [
+		{ name: 'Left', value: 'left' },
+		{ name: 'Center', value: 'center' },
+		{ name: 'Right', value: 'right' }
+	]);
+	relate('uiTextBox-type', [
+		{ case: 'text', targets: [document.getElementById('uiTextBox-text'), document.getElementById('uiTextBox-maxLength')] },
+		{ case: 'number', targets: [
+			document.getElementById('uiTextBox-number'),
+			document.getElementById('uiTextBox-min'),
+			document.getElementById('uiTextBox-max'),
+			document.getElementById('uiTextBox-decimals')
+		]}
+	]);
+
+	const elements = document.querySelectorAll(`#uiTextBox-type, #uiTextBox-align, #uiTextBox-text,
+    #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
+    #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
+    #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiTextBox, UI))
+		);
+	}
+
 	const el = document.getElementById('uiTextBox-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

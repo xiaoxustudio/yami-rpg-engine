@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/forEach.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -39,7 +38,9 @@ const load = ({
 			break;
 	}
 	const setForm = (
-		$('#forEach') as (HTMLElement & { setForm?: (data: Partial<ForEachForm>) => void }) | null
+		document.getElementById('forEach')! as
+			| (HTMLElement & { setForm?: (data: Partial<ForEachForm>) => void })
+			| null
 	)?.setForm;
 	setForm?.({
 		data,
@@ -53,12 +54,15 @@ const load = ({
 		touchId: touchId as { type: string; key: string }
 	});
 	commands = children as unknown[];
-	getFocus($('#forEach-data'));
+	getFocus(document.getElementById('forEach-data')!);
 };
 
 const save = (): unknown => {
-	const getForm = ($('#forEach') as (HTMLElement & { getForm?: () => ForEachForm }) | null)
-		?.getForm;
+	const getForm = (
+		document.getElementById('forEach')! as
+			| (HTMLElement & { getForm?: () => ForEachForm })
+			| null
+	)?.getForm;
 	const form = getForm?.() ?? ({} as ForEachForm);
 	const data = form.data;
 	const children = commands;
@@ -66,11 +70,11 @@ const save = (): unknown => {
 		case 'list': {
 			const list = form.list;
 			if (VariableGetter.isNone!(list)) {
-				return getFocus($('#forEach-list'));
+				return getFocus(document.getElementById('forEach-list')!);
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, list, variable, commands: children });
 			break;
@@ -82,7 +86,7 @@ const save = (): unknown => {
 			const actor = form.actor;
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, actor, variable, commands: children });
 			break;
@@ -91,7 +95,7 @@ const save = (): unknown => {
 			const element = form.element;
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, element, variable, commands: children });
 			break;
@@ -99,7 +103,7 @@ const save = (): unknown => {
 		case 'member': {
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, variable, commands: children });
 			break;
@@ -107,11 +111,11 @@ const save = (): unknown => {
 		case 'attribute': {
 			const groupId = form.attributeGroupId;
 			if (groupId === '') {
-				return getFocus($('#forEach-attribute-groupId'));
+				return getFocus(document.getElementById('forEach-attribute-groupId')!);
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, groupId, variable, commands: children });
 			break;
@@ -119,11 +123,11 @@ const save = (): unknown => {
 		case 'enum': {
 			const groupId = form.enumGroupId;
 			if (groupId === '') {
-				return getFocus($('#forEach-enum-groupId'));
+				return getFocus(document.getElementById('forEach-enum-groupId')!);
 			}
 			const variable = form.variable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#forEach-variable'));
+				return getFocus(document.getElementById('forEach-variable')!);
 			}
 			Command.save?.({ data, groupId, variable, commands: children });
 			break;
@@ -131,7 +135,7 @@ const save = (): unknown => {
 		case 'save': {
 			const saveIndex = form.saveIndex;
 			if (VariableGetter.isNone!(saveIndex)) {
-				return getFocus($('#forEach-saveIndex'));
+				return getFocus(document.getElementById('forEach-saveIndex')!);
 			}
 			Command.save?.({ data, saveIndex, commands: children });
 			break;
@@ -140,7 +144,7 @@ const save = (): unknown => {
 		case 'changed-touch': {
 			const touchId = form.touchId;
 			if (VariableGetter.isNone!(touchId)) {
-				return getFocus($('#forEach-touchId'));
+				return getFocus(document.getElementById('forEach-touchId')!);
 			}
 			Command.save?.({ data, touchId, commands: children });
 			break;

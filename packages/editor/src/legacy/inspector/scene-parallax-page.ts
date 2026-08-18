@@ -2,9 +2,7 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneParallaxShape {
@@ -34,75 +32,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		update: null
 	};
 
-	SceneParallax.initialize = function (this: typeof SceneParallax) {
-		if (!$('#sceneParallax-name')) return;
-		this.nameBox = $('#sceneParallax-name');
-		$('#sceneParallax-layer')?.loadItems?.([
-			{ name: 'Background', value: 'background' },
-			{ name: 'Foreground', value: 'foreground' }
-		]);
-
-		$('#sceneParallax-light')?.loadItems?.([
-			{ name: 'Raw', value: 'raw' },
-			{ name: 'Global Sampling', value: 'global' },
-			{ name: 'Anchor Sampling', value: 'anchor' },
-			{ name: 'Ambient Light', value: 'ambient' }
-		]);
-
-		$('#sceneParallax-blend')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-
-		$('#sceneParallax-tint-0-slider')?.synchronize?.($('#sceneParallax-tint-0'));
-		$('#sceneParallax-tint-1-slider')?.synchronize?.($('#sceneParallax-tint-1'));
-		$('#sceneParallax-tint-2-slider')?.synchronize?.($('#sceneParallax-tint-2'));
-		$('#sceneParallax-tint-3-slider')?.synchronize?.($('#sceneParallax-tint-3'));
-
-		$('#sceneParallax-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneParallax-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneParallax-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneParallax-parameter-pane')?.bind?.($('#sceneParallax-scripts'));
-
-		const elements = document.querySelectorAll(`#sceneParallax-name,
-    #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order,
-    #sceneParallax-light, #sceneParallax-blend,
-    #sceneParallax-opacity, #sceneParallax-x, #sceneParallax-y,
-    #sceneParallax-scaleX, #sceneParallax-scaleY,
-    #sceneParallax-repeatX, #sceneParallax-repeatY,
-    #sceneParallax-anchorX, #sceneParallax-anchorY,
-    #sceneParallax-offsetX, #sceneParallax-offsetY,
-    #sceneParallax-parallaxFactorX, #sceneParallax-parallaxFactorY,
-    #sceneParallax-shiftSpeedX, #sceneParallax-shiftSpeedY,
-    #sceneParallax-tint-0, #sceneParallax-tint-1,
-    #sceneParallax-tint-2, #sceneParallax-tint-3`);
-		const sliders = document.querySelectorAll(`
-    #sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider,
-    #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		document
-			.querySelectorAll(
-				'#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts'
-			)
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneParallax.initialize = function () {};
 
 	SceneParallax.create = function (this: typeof SceneParallax) {
 		return {

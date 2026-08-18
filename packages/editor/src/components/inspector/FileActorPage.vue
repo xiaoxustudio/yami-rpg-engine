@@ -153,6 +153,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileActorPage } from '@app/composables/useFileActorPage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
@@ -178,10 +181,56 @@ const onListChange = () => {
 };
 
 onMounted(() => {
+	const editor = Inspector.fileActor;
+	if (!editor) return;
+
 	const el = document.getElementById('fileActor-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elRotatable = document.getElementById('fileActor-rotatable') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elRotatable?.loadItems) {
+		elRotatable.loadItems([
+			{ name: 'Yes', value: true },
+			{ name: 'No', value: false }
+		]);
+	}
+
+	const elPassage = document.getElementById('fileActor-passage') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elPassage?.loadItems) {
+		elPassage.loadItems([
+			{ name: 'Land', value: 'land' },
+			{ name: 'Water', value: 'water' },
+			{ name: 'Unrestricted', value: 'unrestricted' }
+		]);
+	}
+
+	const elShape = document.getElementById('fileActor-shape') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elShape?.loadItems) {
+		elShape.loadItems([
+			{ name: 'Square', value: 'square' },
+			{ name: 'Circle', value: 'circle' }
+		]);
+	}
+
+	const elImmovable = document.getElementById('fileActor-immovable') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elImmovable?.loadItems) {
+		elImmovable.loadItems([
+			{ name: 'Yes', value: true },
+			{ name: 'No', value: false }
+		]);
+	}
+
+	if (editor.sprites) document.getElementById('fileActor-sprites')?.bind?.(editor.sprites);
+	document.getElementById('fileActor-attributes')?.bind?.(new AttributeListInterface());
+	if (editor.skills) document.getElementById('fileActor-skills')?.bind?.(editor.skills);
+	if (editor.equipments) document.getElementById('fileActor-equipments')?.bind?.(editor.equipments);
+	if (editor.inventory) document.getElementById('fileActor-inventory')?.bind?.(editor.inventory);
+	document.getElementById('fileActor-events')?.bind?.(new EventListInterface(editor));
+	document.getElementById('fileActor-scripts')?.bind?.(new ScriptListInterface());
+	document.getElementById('fileActor-parameter-pane')?.bind?.(document.getElementById('fileActor-scripts'));
+
 	sync();
 });
 </script>

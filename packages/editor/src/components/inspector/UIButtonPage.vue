@@ -340,6 +340,8 @@
 import { onMounted } from 'vue';
 import { useUIButtonPage } from '@app/composables/useUIButtonPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -355,7 +357,137 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUIButtonPage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const uiButton = Inspector.uiButton;
+	if (!uiButton) return;
+
+	loadItems('uiButton-display', [
+		{ name: 'Stretch', value: 'stretch' },
+		{ name: 'Tile', value: 'tile' },
+		{ name: 'Clip', value: 'clip' },
+		{ name: 'Slice', value: 'slice' }
+	]);
+	relate('uiButton-display', [
+		{ case: ['stretch', 'tile'], targets: [document.getElementById('uiButton-flip')] },
+		{ case: 'clip', targets: [
+			document.getElementById('uiButton-flip'),
+			document.getElementById('uiButton-normalClip'),
+			document.getElementById('uiButton-hoverClip'),
+			document.getElementById('uiButton-activeClip')
+		]},
+		{ case: 'slice', targets: [
+			document.getElementById('uiButton-normalClip'),
+			document.getElementById('uiButton-hoverClip'),
+			document.getElementById('uiButton-activeClip'),
+			document.getElementById('uiButton-border')
+		]}
+	]);
+
+	loadItems('uiButton-flip', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Horizontal', value: 'horizontal' },
+		{ name: 'Vertical', value: 'vertical' },
+		{ name: 'Both', value: 'both' }
+	]);
+	loadItems('uiButton-imageEffect', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Tint', value: 'tint-1' },
+		{ name: 'Tint (Normal, Hover)', value: 'tint-2' },
+		{ name: 'Tint (Normal, Hover, Active)', value: 'tint-3' }
+	]);
+	relate('uiButton-imageEffect', [
+		{ case: 'tint-1', targets: [document.getElementById('uiButton-normalTint-box')] },
+		{ case: 'tint-2', targets: [document.getElementById('uiButton-normalTint-box'), document.getElementById('uiButton-hoverTint-box')] },
+		{ case: 'tint-3', targets: [
+			document.getElementById('uiButton-normalTint-box'),
+			document.getElementById('uiButton-hoverTint-box'),
+			document.getElementById('uiButton-activeTint-box')
+		]}
+	]);
+	loadItems('uiButton-direction', [
+		{ name: 'Horizontal', value: 'horizontal-tb' },
+		{ name: 'Vertical', value: 'vertical-lr' }
+	]);
+	loadItems('uiButton-typeface', [
+		{ name: 'Regular', value: 'regular' },
+		{ name: 'Bold', value: 'bold' },
+		{ name: 'Italic', value: 'italic' },
+		{ name: 'Bold Italic', value: 'bold-italic' }
+	]);
+	loadItems('uiButton-textEffect-type', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Shadow', value: 'shadow' },
+		{ name: 'Stroke', value: 'stroke' },
+		{ name: 'Outline', value: 'outline' }
+	]);
+	relate('uiButton-textEffect-type', [
+		{ case: 'shadow', targets: [
+			document.getElementById('uiButton-textEffect-shadowOffsetX'),
+			document.getElementById('uiButton-textEffect-shadowOffsetY'),
+			document.getElementById('uiButton-textEffect-color')
+		]},
+		{ case: 'stroke', targets: [
+			document.getElementById('uiButton-textEffect-strokeWidth'),
+			document.getElementById('uiButton-textEffect-color')
+		]},
+		{ case: 'outline', targets: [document.getElementById('uiButton-textEffect-color')] }
+	]);
+
+	synchronize('uiButton-imagePadding-slider', 'uiButton-imagePadding');
+	synchronize('uiButton-imageOpacity-slider', 'uiButton-imageOpacity');
+	synchronize('uiButton-size-slider', 'uiButton-size');
+	synchronize('uiButton-letterSpacing-slider', 'uiButton-letterSpacing');
+	synchronize('uiButton-textPadding-slider', 'uiButton-textPadding');
+
+	const elements = document.querySelectorAll(`#uiButton-display,
+    #uiButton-normalImage, #uiButton-normalClip,
+    #uiButton-hoverImage, #uiButton-hoverClip,
+    #uiButton-activeImage, #uiButton-activeClip,
+    #uiButton-flip, #uiButton-border, #uiButton-imagePadding, #uiButton-imageOpacity, #uiButton-imageEffect,
+    #uiButton-normalTint-0, #uiButton-normalTint-1, #uiButton-normalTint-2, #uiButton-normalTint-3,
+    #uiButton-hoverTint-0, #uiButton-hoverTint-1, #uiButton-hoverTint-2, #uiButton-hoverTint-3,
+    #uiButton-activeTint-0, #uiButton-activeTint-1, #uiButton-activeTint-2, #uiButton-activeTint-3,
+    #uiButton-direction, #uiButton-horizontalAlign, #uiButton-verticalAlign,
+    #uiButton-content, #uiButton-size, #uiButton-letterSpacing, #uiButton-textPadding,
+    #uiButton-font, #uiButton-typeface, #uiButton-textEffect-type, #uiButton-textEffect-shadowOffsetX,
+    #uiButton-textEffect-shadowOffsetY, #uiButton-textEffect-strokeWidth, #uiButton-textEffect-color,
+    #uiButton-normalColor, #uiButton-hoverColor, #uiButton-activeColor,
+    #uiButton-hoverSound, #uiButton-clickSound`);
+	const sliders = document.querySelectorAll(`#uiButton-imagePadding-slider, #uiButton-imageOpacity-slider,
+    #uiButton-size-slider, #uiButton-letterSpacing-slider, #uiButton-textPadding-slider`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiButton, UI))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+
 	const el = document.getElementById('uiButton-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

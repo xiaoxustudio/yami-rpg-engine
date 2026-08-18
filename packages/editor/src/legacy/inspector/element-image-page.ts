@@ -1,4 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { getElementWriter } from '@/util/dom.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
 import { read } from '@/util/element-utils.ts';
@@ -25,71 +25,7 @@ import { read } from '@/util/element-utils.ts';
 		paramInput: null
 	};
 
-	UIImage.initialize = function (this: typeof UIImage) {
-		if (!$('#uiImage-display')) return;
-		$('#uiImage-display')?.loadItems?.([
-			{ name: 'Stretch', value: 'stretch' },
-			{ name: 'Tile', value: 'tile' },
-			{ name: 'Clip', value: 'clip' },
-			{ name: 'Slice', value: 'slice' }
-		]);
-
-		const elDisplay = $('#uiImage-display');
-		if (elDisplay)
-			elDisplay.enableHiddenMode().relate([
-				{
-					case: ['stretch', 'tile'],
-					targets: [$('#uiImage-flip'), $('#uiImage-shift-box')]
-				},
-				{
-					case: 'clip',
-					targets: [$('#uiImage-flip'), $('#uiImage-clip')]
-				},
-				{
-					case: 'slice',
-					targets: [$('#uiImage-clip'), $('#uiImage-border')]
-				}
-			]);
-
-		$('#uiImage-flip')?.loadItems?.([
-			{ name: 'None', value: 'none' },
-			{ name: 'Horizontal', value: 'horizontal' },
-			{ name: 'Vertical', value: 'vertical' },
-			{ name: 'Both', value: 'both' }
-		]);
-
-		$('#uiImage-blend')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' },
-			{ name: 'Mask', value: 'mask' }
-		]);
-
-		$('#uiImage-tint-0-slider')?.synchronize?.($('#uiImage-tint-0'));
-		$('#uiImage-tint-1-slider')?.synchronize?.($('#uiImage-tint-1'));
-		$('#uiImage-tint-2-slider')?.synchronize?.($('#uiImage-tint-2'));
-		$('#uiImage-tint-3-slider')?.synchronize?.($('#uiImage-tint-3'));
-
-		const elements = document.querySelectorAll(`#uiImage-image,
-    #uiImage-display, #uiImage-flip, #uiImage-blend,
-    #uiImage-shiftX, #uiImage-shiftY, #uiImage-clip, #uiImage-border,
-    #uiImage-tint-0, #uiImage-tint-1, #uiImage-tint-2, #uiImage-tint-3`);
-		const sliders = document.querySelectorAll(`
-    #uiImage-tint-0-slider, #uiImage-tint-1-slider,
-    #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('blur', Inspector.sliderBlur)
-		);
-	};
+	UIImage.initialize = function (this: typeof UIImage) {};
 
 	UIImage.create = function (this: typeof UIImage) {
 		const transform = Inspector.uiElement.createTransform();

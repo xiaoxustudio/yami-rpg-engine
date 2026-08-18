@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setInventory.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setInventory.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { reactive } from 'vue';
@@ -19,51 +18,52 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	Object.assign(form, createDefault(), params);
-	write($('#setInventory-actor'), form.actor);
-	write($('#setInventory-operation'), form.operation);
-	write($('#setInventory-money'), form.money);
-	write($('#setInventory-itemId'), form.itemId);
-	write($('#setInventory-quantity'), form.quantity);
-	write($('#setInventory-equipmentId'), form.equipmentId);
-	write($('#setInventory-equipment'), form.equipment);
-	write($('#setInventory-order1'), form.order1);
-	write($('#setInventory-order2'), form.order2);
-	write($('#setInventory-refActor'), form.refActor);
-	getFocus($('#setInventory-actor'));
+	write(document.getElementById('setInventory-actor'), form.actor);
+	write(document.getElementById('setInventory-operation'), form.operation);
+	write(document.getElementById('setInventory-money'), form.money);
+	write(document.getElementById('setInventory-itemId'), form.itemId);
+	write(document.getElementById('setInventory-quantity'), form.quantity);
+	write(document.getElementById('setInventory-equipmentId'), form.equipmentId);
+	write(document.getElementById('setInventory-equipment'), form.equipment);
+	write(document.getElementById('setInventory-order1'), form.order1);
+	write(document.getElementById('setInventory-order2'), form.order2);
+	write(document.getElementById('setInventory-refActor'), form.refActor);
+	getFocus(document.getElementById('setInventory-actor'));
 };
 
 const save = (): void => {
-	const actor = read($('#setInventory-actor')) ?? form.actor;
-	const operation = read($('#setInventory-operation')) ?? form.operation;
+	const actor = read(document.getElementById('setInventory-actor')) ?? form.actor;
+	const operation = read(document.getElementById('setInventory-operation')) ?? form.operation;
 	switch (operation) {
 		case 'increase-money':
 		case 'decrease-money':
 			Command.save?.({
 				actor,
 				operation,
-				money: read($('#setInventory-money')) ?? form.money
+				money: read(document.getElementById('setInventory-money')) ?? form.money
 			});
 			break;
 		case 'increase-items':
 		case 'decrease-items': {
-			const itemId = read($('#setInventory-itemId')) ?? form.itemId;
+			const itemId = read(document.getElementById('setInventory-itemId')) ?? form.itemId;
 			if (itemId === '') {
-				getFocus($('#setInventory-itemId'));
+				getFocus(document.getElementById('setInventory-itemId'));
 				return;
 			}
 			Command.save?.({
 				actor,
 				operation,
 				itemId,
-				quantity: read($('#setInventory-quantity')) ?? form.quantity
+				quantity: read(document.getElementById('setInventory-quantity')) ?? form.quantity
 			});
 			break;
 		}
 		case 'gain-equipment':
 		case 'lose-equipment': {
-			const equipmentId = read($('#setInventory-equipmentId')) ?? form.equipmentId;
+			const equipmentId =
+				read(document.getElementById('setInventory-equipmentId')) ?? form.equipmentId;
 			if (equipmentId === '') {
-				getFocus($('#setInventory-equipmentId'));
+				getFocus(document.getElementById('setInventory-equipmentId'));
 				return;
 			}
 			Command.save?.({ actor, operation, equipmentId });
@@ -74,15 +74,15 @@ const save = (): void => {
 			Command.save?.({
 				actor,
 				operation,
-				equipment: read($('#setInventory-equipment')) ?? form.equipment
+				equipment: read(document.getElementById('setInventory-equipment')) ?? form.equipment
 			});
 			break;
 		case 'swap':
 			Command.save?.({
 				actor,
 				operation,
-				order1: read($('#setInventory-order1')) ?? form.order1,
-				order2: read($('#setInventory-order2')) ?? form.order2
+				order1: read(document.getElementById('setInventory-order1')) ?? form.order1,
+				order2: read(document.getElementById('setInventory-order2')) ?? form.order2
 			});
 			break;
 		case 'sort':
@@ -95,7 +95,7 @@ const save = (): void => {
 			Command.save?.({
 				actor,
 				operation,
-				refActor: read($('#setInventory-refActor')) ?? form.refActor
+				refActor: read(document.getElementById('setInventory-refActor')) ?? form.refActor
 			});
 			break;
 	}

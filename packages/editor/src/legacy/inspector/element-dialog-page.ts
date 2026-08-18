@@ -23,74 +23,7 @@ import { UI } from '@/ui/ui-window.ts';
 		update: null
 	};
 
-	UIDialogBox.initialize = function (this: typeof UIDialogBox) {
-		if (!$('#uiDialogBox-typeface')) return;
-		$('#uiDialogBox-typeface')?.loadItems?.([
-			{ name: 'Regular', value: 'regular' },
-			{ name: 'Bold', value: 'bold' },
-			{ name: 'Italic', value: 'italic' },
-			{ name: 'Bold Italic', value: 'bold-italic' }
-		]);
-
-		$('#uiDialogBox-effect-type')?.loadItems?.([
-			{ name: 'None', value: 'none' },
-			{ name: 'Shadow', value: 'shadow' },
-			{ name: 'Stroke', value: 'stroke' },
-			{ name: 'Outline', value: 'outline' }
-		]);
-
-		$('#uiDialogBox-blend')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-
-		$('#uiDialogBox-size-slider')?.synchronize?.($('#uiDialogBox-size'));
-		$('#uiDialogBox-lineSpacing-slider')?.synchronize?.($('#uiDialogBox-lineSpacing'));
-		$('#uiDialogBox-letterSpacing-slider')?.synchronize?.($('#uiDialogBox-letterSpacing'));
-
-		const elEffectType = $('#uiDialogBox-effect-type');
-		if (elEffectType)
-			elEffectType.enableHiddenMode().relate([
-				{
-					case: 'shadow',
-					targets: [
-						$('#uiDialogBox-effect-shadowOffsetX'),
-						$('#uiDialogBox-effect-shadowOffsetY'),
-						$('#uiDialogBox-effect-color')
-					]
-				},
-				{
-					case: 'stroke',
-					targets: [$('#uiDialogBox-effect-strokeWidth'), $('#uiDialogBox-effect-color')]
-				},
-				{
-					case: 'outline',
-					targets: [$('#uiDialogBox-effect-color')]
-				}
-			]);
-
-		const elements =
-			document.querySelectorAll(`#uiDialogBox-content, #uiDialogBox-interval, #uiDialogBox-size,
-    #uiDialogBox-lineSpacing, #uiDialogBox-letterSpacing, #uiDialogBox-color, #uiDialogBox-font,
-    #uiDialogBox-typeface, #uiDialogBox-effect-type, #uiDialogBox-effect-shadowOffsetX, #uiDialogBox-effect-shadowOffsetY,
-    #uiDialogBox-effect-strokeWidth, #uiDialogBox-effect-color, #uiDialogBox-blend`);
-		const sliders = $(
-			'#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('blur', Inspector.sliderBlur)
-		);
-	};
+	UIDialogBox.initialize = function (this: typeof UIDialogBox) {};
 
 	UIDialogBox.create = function (this: typeof UIDialogBox) {
 		const transform = Inspector.uiElement.createTransform();

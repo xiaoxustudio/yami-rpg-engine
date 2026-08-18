@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/callEvent.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/callEvent.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { addClass, hide, setTooltip, show } from '@app/legacy/util/element-utils';
 import { createTextAreaVar } from '@app/legacy/components/textarea-var.ts';
@@ -46,10 +45,11 @@ export function useCallEventCommandSchema() {
 	let pendingArgs: CallEventArg[] | null = [];
 
 	const getGridBox = (): HTMLElement | null =>
-		($('#callEvent')?.querySelector('.grid-box') as HTMLElement | null) ?? null;
+		(document.getElementById('callEvent')?.querySelector('.grid-box') as HTMLElement | null) ??
+		null;
 
 	const resizeWindow = (): void => {
-		const frame = $('#callEvent');
+		const frame = document.getElementById('callEvent');
 		const gridBox = getGridBox();
 		if (frame && gridBox) {
 			frame.style.height = `${gridBox.clientHeight + 78}px`;
@@ -270,7 +270,7 @@ export function useCallEventCommandSchema() {
 	const typeWrite = (event: { value: string }): void => {
 		const type = event.value;
 		if (type !== 'inherited') {
-			const elEventType = $('#callEvent-eventType');
+			const elEventType = document.getElementById('callEvent-eventType');
 			const eventTypes = Enum.getMergedItems!(
 				EventEditor.types?.[type] ?? EventEditor.types?.all,
 				type + '-event'
@@ -279,7 +279,7 @@ export function useCallEventCommandSchema() {
 			elEventType.createTooltip();
 			write(elEventType, eventTypes[0].value);
 		}
-		for (const element of $('.call-event-component')) {
+		for (const element of document.querySelectorAll('.call-event-component')) {
 			type === 'global' ? show(element) : hide(element);
 		}
 		resizeWindow();
@@ -324,15 +324,16 @@ export function useCallEventCommandSchema() {
 		});
 		writeEventArgs((params.eventArgs ?? []) as CallEventArg[]);
 		writeEventResult((params.eventResult ?? { type: 'none' }) as CallEventResultData);
-		getFocus($('#callEvent-type'));
+		getFocus(document.getElementById('callEvent-type'));
 	};
 	const onSave = (): void => {
-		const type = (read($('#callEvent-type')) ?? form.type) as string;
+		const type = (read(document.getElementById('callEvent-type')) ?? form.type) as string;
 		switch (type) {
 			case 'global': {
-				const eventId = (read($('#callEvent-eventId')) ?? form.eventId) as string;
+				const eventId = (read(document.getElementById('callEvent-eventId')) ??
+					form.eventId) as string;
 				if (eventId === '') {
-					getFocus($('#callEvent-eventId'));
+					getFocus(document.getElementById('callEvent-eventId'));
 					return;
 				}
 				const eventArgs = readEventArgs();
@@ -352,19 +353,21 @@ export function useCallEventCommandSchema() {
 				Command.save?.({ type });
 				break;
 			case 'scene': {
-				const eventType = (read($('#callEvent-eventType')) ?? form.eventType) as string;
+				const eventType = (read(document.getElementById('callEvent-eventType')) ??
+					form.eventType) as string;
 				if (eventType === '') {
-					getFocus($('#callEvent-eventType'));
+					getFocus(document.getElementById('callEvent-eventType'));
 					return;
 				}
 				Command.save?.({ type, eventType });
 				break;
 			}
 			default: {
-				const target = read($(`#callEvent-${type}`)) ?? form[type];
-				const eventType = (read($('#callEvent-eventType')) ?? form.eventType) as string;
+				const target = read(document.getElementById('callEvent-${type}')) ?? form[type];
+				const eventType = (read(document.getElementById('callEvent-eventType')) ??
+					form.eventType) as string;
 				if (eventType === '') {
-					getFocus($('#callEvent-eventType'));
+					getFocus(document.getElementById('callEvent-eventType'));
 					return;
 				}
 				Command.save?.({ type, [type]: target, eventType });

@@ -9,9 +9,7 @@ import { Enum } from '@/enum/enum-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
 import { Local } from '@/tools/localization.ts';
-import { AttributeListInterface } from '@/tools/property-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
@@ -57,45 +55,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		listChange: null
 	};
 
-	FileActor.initialize = function (this: FileActorShape) {
-		if (!$('#fileActor-rotatable')) return;
-		$('#fileActor-rotatable')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-
-		$('#fileActor-passage')?.loadItems?.([
-			{ name: 'Land', value: 'land' },
-			{ name: 'Water', value: 'water' },
-			{ name: 'Unrestricted', value: 'unrestricted' }
-		]);
-
-		$('#fileActor-shape')?.loadItems?.([
-			{ name: 'Square', value: 'square' },
-			{ name: 'Circle', value: 'circle' }
-		]);
-
-		$('#fileActor-immovable')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-
-		$('#fileActor-attributes')?.bind?.(new AttributeListInterface());
-
-		$('#fileActor-sprites')?.bind?.(this.sprites);
-
-		$('#fileActor-skills')?.bind?.(this.skills);
-
-		$('#fileActor-equipments')?.bind?.(this.equipments);
-
-		$('#fileActor-inventory')?.bind?.(this.inventory);
-
-		$('#fileActor-events')?.bind?.(new EventListInterface(this));
-
-		$('#fileActor-scripts')?.bind?.(new ScriptListInterface());
-
-		$('#fileActor-parameter-pane')?.bind?.($('#fileActor-scripts'));
-	};
+	FileActor.initialize = function () {};
 
 	FileActor.create = function (this: FileActorShape) {
 		return {

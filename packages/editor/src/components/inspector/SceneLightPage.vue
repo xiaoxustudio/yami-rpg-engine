@@ -243,8 +243,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useSceneLightPage } from '@app/composables/useSceneLightPage';
-import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -256,16 +260,111 @@ import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 
-const scene = useSceneStore();
 const local = useLocalStore();
 
 const { form, sync, onParamInput } = useSceneLightPage();
 
 onMounted(() => {
+	const editor = Inspector.sceneLight;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneLight-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	try {
+		const elType = document.getElementById('sceneLight-type') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+		if (elType?.loadItems) {
+			elType.loadItems([
+				{ name: 'Point', value: 'point' },
+				{ name: 'Area', value: 'area' }
+			]);
+		}
+
+		const elBlend = document.getElementById('sceneLight-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+		if (elBlend?.loadItems) {
+			elBlend.loadItems([
+				{ name: 'Screen', value: 'screen' },
+				{ name: 'Additive', value: 'additive' },
+				{ name: 'Subtract', value: 'subtract' },
+				{ name: 'Max', value: 'max' }
+			]);
+		}
+
+		if (elType?.enableHiddenMode) {
+			const hidden = elType.enableHiddenMode();
+			hidden.relate?.([
+				{
+					case: 'point',
+					targets: [document.getElementById('sceneLight-range-box'), document.getElementById('sceneLight-intensity-box')]
+				},
+				{
+					case: 'area',
+					targets: [
+						document.getElementById('sceneLight-mask'),
+						document.getElementById('sceneLight-anchorX-box'),
+						document.getElementById('sceneLight-anchorY-box'),
+						document.getElementById('sceneLight-width-box'),
+						document.getElementById('sceneLight-height-box'),
+						document.getElementById('sceneLight-angle-box')
+					]
+				}
+			]);
+		}
+
+		const conditions = document.getElementById('sceneLight-conditions');
+		conditions?.bind?.(new ConditionListInterface(editor, Scene));
+
+		const events = document.getElementById('sceneLight-events');
+		events?.bind?.(new EventListInterface(editor, Scene));
+
+		const scripts = document.getElementById('sceneLight-scripts');
+		scripts?.bind?.(
+			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+		);
+
+		const parameterPane = document.getElementById('sceneLight-parameter-pane');
+		parameterPane?.bind?.(scripts);
+
+		document.getElementById('sceneLight-range-slider')?.synchronize?.(document.getElementById('sceneLight-range'));
+		document.getElementById('sceneLight-intensity-slider')?.synchronize?.(document.getElementById('sceneLight-intensity'));
+		document.getElementById('sceneLight-anchorX-slider')?.synchronize?.(document.getElementById('sceneLight-anchorX'));
+		document.getElementById('sceneLight-anchorY-slider')?.synchronize?.(document.getElementById('sceneLight-anchorY'));
+		document.getElementById('sceneLight-width-slider')?.synchronize?.(document.getElementById('sceneLight-width'));
+		document.getElementById('sceneLight-height-slider')?.synchronize?.(document.getElementById('sceneLight-height'));
+		document.getElementById('sceneLight-angle-slider')?.synchronize?.(document.getElementById('sceneLight-angle'));
+		document.getElementById('sceneLight-red-slider')?.synchronize?.(document.getElementById('sceneLight-red'));
+		document.getElementById('sceneLight-green-slider')?.synchronize?.(document.getElementById('sceneLight-green'));
+		document.getElementById('sceneLight-blue-slider')?.synchronize?.(document.getElementById('sceneLight-blue'));
+		document.getElementById('sceneLight-direct-slider')?.synchronize?.(document.getElementById('sceneLight-direct'));
+
+		const elements = document.querySelectorAll(
+			'#sceneLight-name, #sceneLight-type, #sceneLight-blend, #sceneLight-x, #sceneLight-y, #sceneLight-range, #sceneLight-intensity, #sceneLight-mask, #sceneLight-anchorX, #sceneLight-anchorY, #sceneLight-width, #sceneLight-height, #sceneLight-angle, #sceneLight-red, #sceneLight-green, #sceneLight-blue, #sceneLight-direct'
+		);
+		const sliders = document.querySelectorAll(
+			'#sceneLight-range-slider, #sceneLight-intensity-slider, #sceneLight-anchorX-slider, #sceneLight-anchorY-slider, #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider, #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider'
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+
+		document
+			.querySelectorAll('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
+	} catch (e) {
+		console.warn('[SceneLightPage] init skipped:', (e as Error)?.message);
+	}
+
 	sync();
 });
 </script>

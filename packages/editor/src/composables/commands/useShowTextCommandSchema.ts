@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/showText.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/showText.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -9,21 +8,21 @@ export function useShowTextCommandSchema() {
 		onLoad(params) {
 			const content = (params.content as string) ?? '';
 			if (content === '') {
-				getFocus($('#showText-target'));
+				getFocus(document.getElementById('showText-target'));
 			} else {
-				getFocus($('#showText-content'));
+				getFocus(document.getElementById('showText-content'));
 			}
 		}
 	});
 	const onSave = (): void => {
-		const content = read($('#showText-content')) ?? form.content;
+		const content = read(document.getElementById('showText-content')) ?? form.content;
 		if (content === '') {
-			getFocus($('#showText-content'));
+			getFocus(document.getElementById('showText-content'));
 			return;
 		}
 		Command.save?.({
-			target: read($('#showText-target')) ?? form.target,
-			parameters: read($('#showText-parameters')) ?? form.parameters,
+			target: read(document.getElementById('showText-target')) ?? form.target,
+			parameters: read(document.getElementById('showText-parameters')) ?? form.parameters,
 			content
 		});
 	};

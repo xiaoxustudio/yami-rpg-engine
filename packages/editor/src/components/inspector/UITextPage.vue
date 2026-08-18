@@ -154,6 +154,8 @@
 import { onMounted } from 'vue';
 import { useUITextPage } from '@app/composables/useUITextPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -169,7 +171,85 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUITextPage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const uiText = Inspector.uiText;
+	if (!uiText) return;
+
+	loadItems('uiText-direction', [
+		{ name: 'Horizontal - TB', value: 'horizontal-tb' },
+		{ name: 'Vertical - LR', value: 'vertical-lr' },
+		{ name: 'Vertical - RL', value: 'vertical-rl' }
+	]);
+	loadItems('uiText-typeface', [
+		{ name: 'Regular', value: 'regular' },
+		{ name: 'Bold', value: 'bold' },
+		{ name: 'Italic', value: 'italic' },
+		{ name: 'Bold Italic', value: 'bold-italic' }
+	]);
+	loadItems('uiText-effect-type', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Shadow', value: 'shadow' },
+		{ name: 'Stroke', value: 'stroke' },
+		{ name: 'Outline', value: 'outline' }
+	]);
+	loadItems('uiText-overflow', [
+		{ name: 'Visible', value: 'visible' },
+		{ name: 'Wrap', value: 'wrap' },
+		{ name: 'Truncate', value: 'truncate' },
+		{ name: 'Wrap Truncate', value: 'wrap-truncate' }
+	]);
+	loadItems('uiText-blend', [
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Additive', value: 'additive' },
+		{ name: 'Subtract', value: 'subtract' }
+	]);
+	synchronize('uiText-size-slider', 'uiText-size');
+	synchronize('uiText-lineSpacing-slider', 'uiText-lineSpacing');
+	synchronize('uiText-letterSpacing-slider', 'uiText-letterSpacing');
+	relate('uiText-effect-type', [
+		{ case: 'shadow', targets: [document.getElementById('uiText-effect-shadowOffsetX'), document.getElementById('uiText-effect-shadowOffsetY'), document.getElementById('uiText-effect-color')] },
+		{ case: 'stroke', targets: [document.getElementById('uiText-effect-strokeWidth'), document.getElementById('uiText-effect-color')] },
+		{ case: 'outline', targets: [document.getElementById('uiText-effect-color')] }
+	]);
+
+	const elements = document.querySelectorAll(`#uiText-direction, #uiText-horizontalAlign, #uiText-verticalAlign,
+    #uiText-content, #uiText-size, #uiText-lineSpacing, #uiText-letterSpacing, #uiText-color, #uiText-font,
+    #uiText-typeface, #uiText-effect-type, #uiText-effect-shadowOffsetX, #uiText-effect-shadowOffsetY,
+    #uiText-effect-strokeWidth, #uiText-effect-color, #uiText-overflow, #uiText-blend`);
+	const sliders = document.querySelectorAll('#uiText-size-slider, #uiText-lineSpacing-slider, #uiText-letterSpacing-slider');
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiText, UI))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+
 	const el = document.getElementById('uiText-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
@@ -72,17 +71,17 @@ let nodes: PresetObjectNode[] | null = null;
 let initializedElement: PresetObjectListElement | null = null;
 
 function initialize(): void {
-	const current = $('#presetObject-list') as PresetObjectListElement | null;
+	const current = document.getElementById('presetObject-list') as PresetObjectListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
-	scene = $('#presetObject-sceneId');
+	scene = document.getElementById('presetObject-sceneId');
 	list = current;
-	searcher = $('#presetObject-searcher');
+	searcher = document.getElementById('presetObject-searcher');
 	list.bind(() => nodes);
 	searcher.addCloseButton();
 	searcher.on('keydown', searcherKeydown);
-	$('#presetObject').addEventListener('closed', windowClosed);
+	document.getElementById('presetObject').addEventListener('closed', windowClosed);
 }
 
 function open(openTarget: PresetObjectTarget): void {

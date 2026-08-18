@@ -36,8 +36,13 @@ const syncOverview = (): void => {
 };
 
 onMounted(() => {
-
-
+	const fileScript = Inspector.fileScript;
+	if (fileScript) {
+		fileScript.overview = document.getElementById('fileScript-overview');
+	}
 	overviewEl.value?.addEventListener('update', syncOverview);
+	if (fileScript) {
+		window.addEventListener('localize', fileScript.windowLocalize);
+	}
 });
 </script>

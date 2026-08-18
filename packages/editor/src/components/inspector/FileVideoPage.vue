@@ -19,6 +19,7 @@
 import { onMounted } from 'vue';
 import { useFileVideoPage } from '@app/composables/useFileVideoPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 
@@ -27,6 +28,10 @@ const local = useLocalStore();
 const { windowError } = useFileVideoPage();
 
 onMounted(() => {
+	const fileVideo = Inspector.fileVideo;
+	if (fileVideo) {
+		fileVideo.video = document.getElementById('fileVideo-video') as HTMLVideoElement;
+	}
 	window.addEventListener('error', windowError);
 });
 </script>

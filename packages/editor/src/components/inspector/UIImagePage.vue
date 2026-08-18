@@ -349,6 +349,8 @@
 import { onMounted } from 'vue';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -364,7 +366,78 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUIImagePage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const uiImage = Inspector.uiImage;
+	if (!uiImage) return;
+
+	loadItems('uiImage-display', [
+		{ name: 'Stretch', value: 'stretch' },
+		{ name: 'Tile', value: 'tile' },
+		{ name: 'Clip', value: 'clip' },
+		{ name: 'Slice', value: 'slice' }
+	]);
+	relate('uiImage-display', [
+		{ case: ['stretch', 'tile'], targets: [document.getElementById('uiImage-flip'), document.getElementById('uiImage-shift-box')] },
+		{ case: 'clip', targets: [document.getElementById('uiImage-flip'), document.getElementById('uiImage-clip')] },
+		{ case: 'slice', targets: [document.getElementById('uiImage-clip'), document.getElementById('uiImage-border')] }
+	]);
+	loadItems('uiImage-flip', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Horizontal', value: 'horizontal' },
+		{ name: 'Vertical', value: 'vertical' },
+		{ name: 'Both', value: 'both' }
+	]);
+	loadItems('uiImage-blend', [
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Additive', value: 'additive' },
+		{ name: 'Subtract', value: 'subtract' },
+		{ name: 'Mask', value: 'mask' }
+	]);
+	synchronize('uiImage-tint-0-slider', 'uiImage-tint-0');
+	synchronize('uiImage-tint-1-slider', 'uiImage-tint-1');
+	synchronize('uiImage-tint-2-slider', 'uiImage-tint-2');
+	synchronize('uiImage-tint-3-slider', 'uiImage-tint-3');
+
+	const elements = document.querySelectorAll(`#uiImage-image,
+    #uiImage-display, #uiImage-flip, #uiImage-blend,
+    #uiImage-shiftX, #uiImage-shiftY, #uiImage-clip, #uiImage-border,
+    #uiImage-tint-0, #uiImage-tint-1, #uiImage-tint-2, #uiImage-tint-3`);
+	const sliders = document.querySelectorAll(`
+    #uiImage-tint-0-slider, #uiImage-tint-1-slider,
+    #uiImage-tint-2-slider, #uiImage-tint-3-slider`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiImage, UI))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+
 	const el = document.getElementById('uiImage-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/moveCamera.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,19 +6,20 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useMoveCameraCommandSchema() {
 	const { form, save, load } = useCommandSchema('moveCamera', {
 		onLoad() {
-			getFocus($('#moveCamera-mode'));
+			getFocus(document.getElementById('moveCamera-mode')!);
 		}
 	});
 	const onSave = (): void => {
-		const mode = read($('#moveCamera-mode')) ?? form.mode;
-		const easingId = read($('#moveCamera-easingId')) ?? form.easingId;
-		const duration = read($('#moveCamera-duration')) ?? form.duration;
-		const wait = read($('#moveCamera-wait')) ?? form.wait;
+		const mode = read(document.getElementById('moveCamera-mode')!) ?? form.mode;
+		const easingId = read(document.getElementById('moveCamera-easingId')!) ?? form.easingId;
+		const duration = read(document.getElementById('moveCamera-duration')!) ?? form.duration;
+		const wait = read(document.getElementById('moveCamera-wait')!) ?? form.wait;
 		switch (mode) {
 			case 'position':
 				Command.save?.({
 					mode,
-					position: read($('#moveCamera-position')) ?? form.position,
+					position:
+						read(document.getElementById('moveCamera-position')!) ?? form.position,
 					easingId,
 					duration,
 					wait
@@ -28,7 +28,7 @@ export function useMoveCameraCommandSchema() {
 			case 'actor':
 				Command.save?.({
 					mode,
-					actor: read($('#moveCamera-actor')) ?? form.actor,
+					actor: read(document.getElementById('moveCamera-actor')!) ?? form.actor,
 					easingId,
 					duration,
 					wait

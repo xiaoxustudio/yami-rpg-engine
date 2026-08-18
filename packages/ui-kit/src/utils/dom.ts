@@ -59,19 +59,23 @@ export const css = (el: Element): CSSStyleDeclaration => getComputedStyle(el);
 
 export const rect = (el: Node | null): DOMRect => (el as Element).getBoundingClientRect();
 
-export const read = (el: HTMLElement | { read?: () => unknown } | null | undefined): unknown => {
+export const read = (
+	el: HTMLElement | { read?: () => unknown; dataValue?: unknown } | null | undefined
+): unknown => {
 	if (el && 'read' in el && typeof el.read === 'function') {
 		return el.read();
 	}
-	return undefined;
+	return el?.dataValue;
 };
 
 export const write = (
-	el: HTMLElement | { write?: (value: unknown) => void } | null | undefined,
+	el: HTMLElement | { write?: (value: unknown) => void; dataValue?: unknown } | null | undefined,
 	value: unknown
 ): void => {
 	if (el && 'write' in el && typeof el.write === 'function') {
 		el.write(value);
+	} else if (el) {
+		el.dataValue = value;
 	}
 };
 

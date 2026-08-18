@@ -146,6 +146,8 @@
 import { onMounted } from 'vue';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -158,7 +160,96 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUIProgressBarPage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const uiProgressBar = Inspector.uiProgressBar;
+	if (!uiProgressBar) return;
+
+	loadItems('uiProgressBar-display', [
+		{ name: 'Stretch', value: 'stretch' },
+		{ name: 'Clip', value: 'clip' }
+	]);
+	relate('uiProgressBar-display', [
+		{ case: 'clip', targets: [document.getElementById('uiProgressBar-clip')] }
+	]);
+	loadItems('uiProgressBar-type', [
+		{ name: 'Horizontal', value: 'horizontal' },
+		{ name: 'Vertical', value: 'vertical' },
+		{ name: 'Round', value: 'round' }
+	]);
+	relate('uiProgressBar-type', [
+		{ case: 'round', targets: [
+			document.getElementById('uiProgressBar-centerX'),
+			document.getElementById('uiProgressBar-centerY'),
+			document.getElementById('uiProgressBar-startAngle'),
+			document.getElementById('uiProgressBar-centralAngle')
+		]}
+	]);
+	loadItems('uiProgressBar-blend', [
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Additive', value: 'additive' },
+		{ name: 'Subtract', value: 'subtract' }
+	]);
+	loadItems('uiProgressBar-colorMode', [
+		{ name: 'Texture Sampling', value: 'texture' },
+		{ name: 'Fixed', value: 'fixed' }
+	]);
+	relate('uiProgressBar-colorMode', [
+		{ case: 'fixed', targets: [
+			document.getElementById('uiProgressBar-color-0-box'),
+			document.getElementById('uiProgressBar-color-1-box'),
+			document.getElementById('uiProgressBar-color-2-box'),
+			document.getElementById('uiProgressBar-color-3-box')
+		]}
+	]);
+
+	synchronize('uiProgressBar-color-0-slider', 'uiProgressBar-color-0');
+	synchronize('uiProgressBar-color-1-slider', 'uiProgressBar-color-1');
+	synchronize('uiProgressBar-color-2-slider', 'uiProgressBar-color-2');
+	synchronize('uiProgressBar-color-3-slider', 'uiProgressBar-color-3');
+
+	const elements = document.querySelectorAll(`#uiProgressBar-image,
+    #uiProgressBar-display, #uiProgressBar-clip,
+    #uiProgressBar-type, #uiProgressBar-centerX, #uiProgressBar-centerY,
+    #uiProgressBar-startAngle, #uiProgressBar-centralAngle, #uiProgressBar-step,
+    #uiProgressBar-progress, #uiProgressBar-blend, #uiProgressBar-colorMode,
+    #uiProgressBar-color-0, #uiProgressBar-color-1,
+    #uiProgressBar-color-2, #uiProgressBar-color-3`);
+	const sliders = document.querySelectorAll(`
+    #uiProgressBar-color-0-slider, #uiProgressBar-color-1-slider,
+    #uiProgressBar-color-2-slider, #uiProgressBar-color-3-slider`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiProgressBar, UI))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+
 	const el = document.getElementById('uiProgressBar-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

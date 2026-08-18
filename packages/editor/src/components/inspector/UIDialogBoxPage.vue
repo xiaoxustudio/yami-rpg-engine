@@ -108,6 +108,8 @@
 import { onMounted } from 'vue';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -122,7 +124,74 @@ const local = useLocalStore();
 
 const { form, sync, onParamInput } = useUIDialogBoxPage();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const uiDialogBox = Inspector.uiDialogBox;
+	if (!uiDialogBox) return;
+
+	loadItems('uiDialogBox-typeface', [
+		{ name: 'Regular', value: 'regular' },
+		{ name: 'Bold', value: 'bold' },
+		{ name: 'Italic', value: 'italic' },
+		{ name: 'Bold Italic', value: 'bold-italic' }
+	]);
+	loadItems('uiDialogBox-effect-type', [
+		{ name: 'None', value: 'none' },
+		{ name: 'Shadow', value: 'shadow' },
+		{ name: 'Stroke', value: 'stroke' },
+		{ name: 'Outline', value: 'outline' }
+	]);
+	loadItems('uiDialogBox-blend', [
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Additive', value: 'additive' },
+		{ name: 'Subtract', value: 'subtract' }
+	]);
+	synchronize('uiDialogBox-size-slider', 'uiDialogBox-size');
+	synchronize('uiDialogBox-lineSpacing-slider', 'uiDialogBox-lineSpacing');
+	synchronize('uiDialogBox-letterSpacing-slider', 'uiDialogBox-letterSpacing');
+	relate('uiDialogBox-effect-type', [
+		{ case: 'shadow', targets: [document.getElementById('uiDialogBox-effect-shadowOffsetX'), document.getElementById('uiDialogBox-effect-shadowOffsetY'), document.getElementById('uiDialogBox-effect-color')] },
+		{ case: 'stroke', targets: [document.getElementById('uiDialogBox-effect-strokeWidth'), document.getElementById('uiDialogBox-effect-color')] },
+		{ case: 'outline', targets: [document.getElementById('uiDialogBox-effect-color')] }
+	]);
+
+	const elements = document.querySelectorAll(`#uiDialogBox-content, #uiDialogBox-interval, #uiDialogBox-size,
+    #uiDialogBox-lineSpacing, #uiDialogBox-letterSpacing, #uiDialogBox-color, #uiDialogBox-font,
+    #uiDialogBox-typeface, #uiDialogBox-effect-type, #uiDialogBox-effect-shadowOffsetX, #uiDialogBox-effect-shadowOffsetY,
+    #uiDialogBox-effect-strokeWidth, #uiDialogBox-effect-color, #uiDialogBox-blend`);
+	const sliders = document.querySelectorAll('#uiDialogBox-size-slider, #uiDialogBox-lineSpacing-slider, #uiDialogBox-letterSpacing-slider');
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiDialogBox, UI))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+
 	const el = document.getElementById('uiDialogBox-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

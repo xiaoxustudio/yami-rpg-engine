@@ -3,9 +3,7 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { clear, read } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
 import { AttributeListInterface } from '@/tools/property-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 type FileEntityData = {
 	icon: string;
@@ -43,13 +41,7 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		listChange: null
 	} as unknown as FileEntityPage;
 
-	entity.initialize = function (this: FileEntityPage) {
-		if (!$(`#${domKey}-attributes`)) return;
-		$(`#${domKey}-attributes`).bind(new AttributeListInterface());
-		$(`#${domKey}-events`).bind(new EventListInterface(this));
-		$(`#${domKey}-scripts`).bind(new ScriptListInterface());
-		$(`#${domKey}-parameter-pane`).bind($(`#${domKey}-scripts`));
-	};
+	entity.initialize = function () {};
 
 	entity.create = function (this: FileEntityPage) {
 		return {

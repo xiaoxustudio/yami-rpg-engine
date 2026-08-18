@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/moveActor.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,18 +6,22 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useMoveActorCommandSchema() {
 	const { form, save, load } = useCommandSchema('moveActor', {
 		onLoad() {
-			getFocus($('#moveActor-actor'));
+			getFocus(document.getElementById('moveActor-actor')!);
 		}
 	});
 	const onSave = (): void => {
-		const actor = read($('#moveActor-actor')) ?? form.actor;
-		const mode = read($('#moveActor-mode')) ?? form.mode;
+		const actor = read(document.getElementById('moveActor-actor')!) ?? form.actor;
+		const mode = read(document.getElementById('moveActor-mode')!) ?? form.mode;
 		switch (mode) {
 			case 'stop':
 				Command.save?.({ actor, mode });
 				break;
 			case 'keep':
-				Command.save?.({ actor, mode, angle: read($('#moveActor-angle')) ?? form.angle });
+				Command.save?.({
+					actor,
+					mode,
+					angle: read(document.getElementById('moveActor-angle')!) ?? form.angle
+				});
 				break;
 			case 'straight':
 			case 'navigate':
@@ -26,15 +29,17 @@ export function useMoveActorCommandSchema() {
 				Command.save?.({
 					actor,
 					mode,
-					destination: read($('#moveActor-destination')) ?? form.destination,
-					wait: read($('#moveActor-wait')) ?? form.wait
+					destination:
+						read(document.getElementById('moveActor-destination')!) ?? form.destination,
+					wait: read(document.getElementById('moveActor-wait')!) ?? form.wait
 				});
 				break;
 			case 'teleport':
 				Command.save?.({
 					actor,
 					mode,
-					destination: read($('#moveActor-destination')) ?? form.destination
+					destination:
+						read(document.getElementById('moveActor-destination')!) ?? form.destination
 				});
 				break;
 		}

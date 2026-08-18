@@ -3,9 +3,7 @@ import { clear, read, write } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneAnimationData {
@@ -42,57 +40,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		animationIdWrite: null
 	};
 
-	SceneAnimation.initialize = function (this: typeof SceneAnimation) {
-		if (!$('#sceneAnimation-name')) return;
-		this.nameBox = $('#sceneAnimation-name');
-		$('#sceneAnimation-rotatable')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-
-		$('#sceneAnimation-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneAnimation-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneAnimation-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneAnimation-parameter-pane')?.bind?.($('#sceneAnimation-scripts'));
-
-		$('#sceneAnimation-angle-slider')?.synchronize?.($('#sceneAnimation-angle'));
-		$('#sceneAnimation-scale-slider')?.synchronize?.($('#sceneAnimation-scale'));
-		$('#sceneAnimation-speed-slider')?.synchronize?.($('#sceneAnimation-speed'));
-		$('#sceneAnimation-opacity-slider')?.synchronize?.($('#sceneAnimation-opacity'));
-		$('#sceneAnimation-priority-slider')?.synchronize?.($('#sceneAnimation-priority'));
-
-		$('#sceneAnimation-animationId')?.on?.('write', this.animationIdWrite);
-		const elements =
-			document.querySelectorAll(`#sceneAnimation-name, #sceneAnimation-animationId,
-    #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y,
-    #sceneAnimation-angle, #sceneAnimation-scale, #sceneAnimation-speed,
-    #sceneAnimation-opacity, #sceneAnimation-priority`);
-		const sliders = document.querySelectorAll(`#sceneAnimation-angle-slider,
-    #sceneAnimation-scale-slider, #sceneAnimation-speed-slider,
-    #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		document
-			.querySelectorAll(
-				'#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts'
-			)
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneAnimation.initialize = function () {};
 
 	SceneAnimation.create = function (this: typeof SceneAnimation) {
 		return {

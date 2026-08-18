@@ -1,4 +1,4 @@
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+﻿import { getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus } from '@app/legacy/util/element-utils';
 import { getButtonName } from '@app/components/common/gamepad-button-name';
@@ -146,7 +146,7 @@ const open = (condition: SwitchConditionData = { type: 'number', value: 0 }): vo
 	write('gamepad-button', gamepadButton);
 	write('mouse-button', mouseButton);
 	write('variable-variable', variableVariable);
-	getFocus($('#switch-condition-type'));
+	getFocus(document.getElementById('switch-condition-type'));
 };
 
 const save = (): SwitchConditionData => {
@@ -176,7 +176,7 @@ const save = (): SwitchConditionData => {
 			const attributeId = read('attribute-attributeId') as string;
 			if (attributeId === '') {
 				return getFocus(
-					$('#switch-condition-attribute-attributeId')
+					document.getElementById('switch-condition-attribute-attributeId')
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, attributeId };
@@ -186,7 +186,7 @@ const save = (): SwitchConditionData => {
 			const stringId = read('enum-stringId') as string;
 			if (stringId === '') {
 				return getFocus(
-					$('#switch-condition-enum-stringId')
+					document.getElementById('switch-condition-enum-stringId')
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, stringId };
@@ -196,7 +196,7 @@ const save = (): SwitchConditionData => {
 			const keycode = read('keyboard-keycode') as string;
 			if (keycode === '') {
 				return getFocus(
-					$('#switch-condition-keyboard-keycode')
+					document.getElementById('switch-condition-keyboard-keycode')
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, keycode };
@@ -206,7 +206,7 @@ const save = (): SwitchConditionData => {
 			const button = read('gamepad-button') as number;
 			if (button === -1) {
 				return getFocus(
-					$('#switch-condition-gamepad-button')
+					document.getElementById('switch-condition-gamepad-button')
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, button };
@@ -221,7 +221,7 @@ const save = (): SwitchConditionData => {
 			const variable = read('variable-variable') as { type: string; key: string };
 			if (VariableGetter.isNone!(variable)) {
 				return getFocus(
-					$('#switch-condition-variable-variable')
+					document.getElementById('switch-condition-variable-variable')
 				) as unknown as SwitchConditionData;
 			}
 			condition = { type, variable };

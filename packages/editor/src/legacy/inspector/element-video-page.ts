@@ -1,4 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { getElementWriter } from '@/util/dom.ts';
 import { read } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
@@ -29,36 +29,7 @@ import { UI } from '@/ui/ui-window.ts';
 		paramInput: null
 	};
 
-	UIVideo.initialize = function (this: typeof UIVideo) {
-		if (!$('#uiVideo-loop')) return;
-		$('#uiVideo-loop')?.loadItems?.([
-			{ name: 'Once', value: false },
-			{ name: 'Loop', value: true }
-		]);
-
-		$('#uiVideo-flip')?.loadItems?.([
-			{ name: 'None', value: 'none' },
-			{ name: 'Horizontal', value: 'horizontal' },
-			{ name: 'Vertical', value: 'vertical' },
-			{ name: 'Both', value: 'both' }
-		]);
-
-		$('#uiVideo-blend')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-
-		const elements = $(
-			'#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
-		);
-	};
+	UIVideo.initialize = function () {};
 
 	UIVideo.create = function (this: typeof UIVideo) {
 		const transform = Inspector.uiElement.createTransform();

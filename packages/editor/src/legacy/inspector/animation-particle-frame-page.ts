@@ -20,26 +20,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimParticleFrame.initialize = function (this: typeof AnimParticleFrame) {
-		if (!$('#animParticleFrame-x')) return;
-		const elements =
-			document.querySelectorAll(`#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation,
-    #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity,
-    #animParticleFrame-scale, #animParticleFrame-speed`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener(
-				'blur',
-				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-					data.type = 'inspector-frame-change';
-					data.motion = this.motion;
-					data.direction = Animation.direction;
-				})
-			)
-		);
-	};
+	AnimParticleFrame.initialize = function () {};
 
 	AnimParticleFrame.create = function (this: typeof AnimParticleFrame) {
 		return {

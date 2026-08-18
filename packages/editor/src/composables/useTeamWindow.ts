@@ -1,5 +1,4 @@
-import { getListConfig } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import { getListConfig } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, hasClass, on } from '@app/legacy/util/element-utils.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
@@ -85,7 +84,7 @@ function mountListMethods(listElement: TeamListElement): void {
 }
 
 function initialize(): void {
-	const current = $('#team-list') as TeamListElement | null;
+	const current = document.getElementById('team-list') as TeamListElement | null;
 	if (!current) return;
 	if (initializedElement === current) return;
 	initializedElement = current;
@@ -101,11 +100,11 @@ function initialize(): void {
 	listElement.bind(() => getTeamStore().data);
 	getListConfig(listElement).updaters.push(listElement.updateTextNode);
 
-	on($('#team'), 'close', windowClose);
-	on($('#team'), 'closed', windowClosed);
+	on(document.getElementById('team'), 'close', windowClose);
+	on(document.getElementById('team'), 'closed', windowClosed);
 	on(listElement, 'keydown', listKeydown);
 	on(listElement, 'pointerdown', listPointerdown);
-	on($('#team-confirm'), 'click', confirm);
+	on(document.getElementById('team-confirm'), 'click', confirm);
 }
 
 function open(data?: unknown): void {

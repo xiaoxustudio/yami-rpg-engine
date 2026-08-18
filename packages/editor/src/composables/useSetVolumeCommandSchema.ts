@@ -1,12 +1,11 @@
-import '@app/legacy/module/command/setVolume.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setVolume.ts';
 import { getFocus } from '@app/legacy/util/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetVolumeCommandSchema() {
 	return useCommandSchema('setVolume', {
 		onLoad() {
-			getFocus($('#setVolume-type'));
+			getFocus(document.getElementById('setVolume-type'));
 		}
 	});
 }

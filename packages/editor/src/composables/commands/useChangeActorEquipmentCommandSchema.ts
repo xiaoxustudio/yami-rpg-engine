@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/changeActorEquipment.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/changeActorEquipment.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
@@ -19,54 +18,63 @@ const createDefault = (): Record<string, unknown> => {
 };
 
 const load = (params: Record<string, unknown> = {}): void => {
-	$('#changeActorEquipment-slot')?.loadItems?.(Enum.getStringItems!('equipment-slot'));
+	document
+		.getElementById('changeActorEquipment-slot')
+		?.loadItems?.(Enum.getStringItems!('equipment-slot'));
 	Object.assign(form, createDefault(), params);
-	write($('#changeActorEquipment-actor'), form.actor);
-	write($('#changeActorEquipment-operation'), form.operation);
-	write($('#changeActorEquipment-slot'), form.slot);
-	write($('#changeActorEquipment-equipmentId'), form.equipmentId);
-	write($('#changeActorEquipment-equipment'), form.equipment);
-	getFocus($('#changeActorEquipment-actor'));
+	write(document.getElementById('changeActorEquipment-actor'), form.actor);
+	write(document.getElementById('changeActorEquipment-operation'), form.operation);
+	write(document.getElementById('changeActorEquipment-slot'), form.slot);
+	write(document.getElementById('changeActorEquipment-equipmentId'), form.equipmentId);
+	write(document.getElementById('changeActorEquipment-equipment'), form.equipment);
+	getFocus(document.getElementById('changeActorEquipment-actor'));
 };
 
 const save = (): void => {
-	const actor = read($('#changeActorEquipment-actor')) ?? form.actor;
-	const operation = read($('#changeActorEquipment-operation')) ?? form.operation;
+	const actor = read(document.getElementById('changeActorEquipment-actor')) ?? form.actor;
+	const operation =
+		read(document.getElementById('changeActorEquipment-operation')) ?? form.operation;
 	switch (operation) {
 		case 'add': {
-			const slot = read($('#changeActorEquipment-slot')) ?? form.slot;
+			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
 			if (slot === '') {
-				getFocus($('#changeActorEquipment-slot'));
+				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
-			const equipmentId = read($('#changeActorEquipment-equipmentId')) ?? form.equipmentId;
+			const equipmentId =
+				read(document.getElementById('changeActorEquipment-equipmentId')) ??
+				form.equipmentId;
 			if (equipmentId === '') {
-				getFocus($('#changeActorEquipment-equipmentId'));
+				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
 			}
 			Command.save?.({ actor, operation, slot, equipmentId });
 			break;
 		}
 		case 'remove': {
-			const equipmentId = read($('#changeActorEquipment-equipmentId')) ?? form.equipmentId;
+			const equipmentId =
+				read(document.getElementById('changeActorEquipment-equipmentId')) ??
+				form.equipmentId;
 			if (equipmentId === '') {
-				getFocus($('#changeActorEquipment-equipmentId'));
+				getFocus(document.getElementById('changeActorEquipment-equipmentId'));
 				return;
 			}
 			Command.save?.({ actor, operation, equipmentId });
 			break;
 		}
 		case 'add-instance': {
-			const slot = read($('#changeActorEquipment-slot')) ?? form.slot;
+			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
 			if (slot === '') {
-				getFocus($('#changeActorEquipment-slot'));
+				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
 			Command.save?.({
 				actor,
 				operation,
 				slot,
-				equipment: read($('#changeActorEquipment-equipment')) ?? form.equipment
+				equipment:
+					read(document.getElementById('changeActorEquipment-equipment')) ??
+					form.equipment
 			});
 			break;
 		}
@@ -74,13 +82,15 @@ const save = (): void => {
 			Command.save?.({
 				actor,
 				operation,
-				equipment: read($('#changeActorEquipment-equipment')) ?? form.equipment
+				equipment:
+					read(document.getElementById('changeActorEquipment-equipment')) ??
+					form.equipment
 			});
 			break;
 		case 'remove-slot': {
-			const slot = read($('#changeActorEquipment-slot')) ?? form.slot;
+			const slot = read(document.getElementById('changeActorEquipment-slot')) ?? form.slot;
 			if (slot === '') {
-				getFocus($('#changeActorEquipment-slot'));
+				getFocus(document.getElementById('changeActorEquipment-slot'));
 				return;
 			}
 			Command.save?.({ actor, operation, slot });

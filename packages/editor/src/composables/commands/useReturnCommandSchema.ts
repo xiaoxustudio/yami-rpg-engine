@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/return.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/return.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -9,7 +8,7 @@ export function useReturnCommandSchema() {
 	const { form, save, load } = useCommandSchema('return');
 	const loadTypeItems = (type: string): void => {
 		const items = Command.cases.return.typeItems;
-		$('#return-type')?.loadItems?.([items[type] ?? items.none]);
+		document.getElementById('return-type')?.loadItems?.([items[type] ?? items.none]);
 	};
 	const onLoad = (params: Record<string, unknown>): void => {
 		const type = (params.type ?? Command.returnType) as string;
@@ -31,55 +30,88 @@ export function useReturnCommandSchema() {
 			light: type === 'light' && value !== null ? value : { type: 'trigger' },
 			element: type === 'element' && value !== null ? value : { type: 'trigger' }
 		});
-		getFocus($('#return-type'));
+		getFocus(document.getElementById('return-type'));
 	};
 	const onSave = (): void => {
-		const type = read($('#return-type')) ?? form.type;
+		const type = read(document.getElementById('return-type')) ?? form.type;
 		switch (type) {
 			case 'none':
 				Command.save?.({ type });
 				break;
 			case 'boolean':
-				Command.save?.({ type, value: read($('#return-boolean')) ?? form.boolean });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-boolean')) ?? form.boolean
+				});
 				break;
 			case 'number':
-				Command.save?.({ type, value: read($('#return-number')) ?? form.number });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-number')) ?? form.number
+				});
 				break;
 			case 'string':
-				Command.save?.({ type, value: read($('#return-string')) ?? form.string });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-string')) ?? form.string
+				});
 				break;
 			case 'object': {
-				const variable = read($('#return-object')) ?? form.object;
+				const variable = read(document.getElementById('return-object')) ?? form.object;
 				if (VariableGetter.isNone!(variable)) {
-					getFocus($('#return-object'));
+					getFocus(document.getElementById('return-object'));
 					return;
 				}
 				Command.save?.({ type, value: variable });
 				break;
 			}
 			case 'actor':
-				Command.save?.({ type, value: read($('#return-actor')) ?? form.actor });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-actor')) ?? form.actor
+				});
 				break;
 			case 'skill':
-				Command.save?.({ type, value: read($('#return-skill')) ?? form.skill });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-skill')) ?? form.skill
+				});
 				break;
 			case 'state':
-				Command.save?.({ type, value: read($('#return-state')) ?? form.state });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-state')) ?? form.state
+				});
 				break;
 			case 'equipment':
-				Command.save?.({ type, value: read($('#return-equipment')) ?? form.equipment });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-equipment')) ?? form.equipment
+				});
 				break;
 			case 'item':
-				Command.save?.({ type, value: read($('#return-item')) ?? form.item });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-item')) ?? form.item
+				});
 				break;
 			case 'trigger':
-				Command.save?.({ type, value: read($('#return-trigger')) ?? form.trigger });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-trigger')) ?? form.trigger
+				});
 				break;
 			case 'light':
-				Command.save?.({ type, value: read($('#return-light')) ?? form.light });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-light')) ?? form.light
+				});
 				break;
 			case 'element':
-				Command.save?.({ type, value: read($('#return-element')) ?? form.element });
+				Command.save?.({
+					type,
+					value: read(document.getElementById('return-element')) ?? form.element
+				});
 				break;
 		}
 	};

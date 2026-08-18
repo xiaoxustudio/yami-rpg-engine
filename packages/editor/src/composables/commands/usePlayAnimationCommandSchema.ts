@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/playAnimation.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
@@ -8,37 +7,40 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function usePlayAnimationCommandSchema() {
 	const { form, save, load } = useCommandSchema('playAnimation', {
 		onLoad() {
-			getFocus($('#playAnimation-mode'));
+			getFocus(document.getElementById('playAnimation-mode')!);
 		}
 	});
 	const writeHandler = (event: { value: string }): void => {
-		const elMotion = $('#playAnimation-motion');
+		const elMotion = document.getElementById('playAnimation-motion')!;
 		elMotion?.loadItems?.(Animation.getMotionListItems!(event.value));
 		elMotion?.write2?.(read(elMotion));
 	};
 	const onSave = (): void => {
-		const mode = read($('#playAnimation-mode')) ?? form.mode;
-		const animationId = read($('#playAnimation-animationId')) ?? form.animationId;
-		const motion = read($('#playAnimation-motion')) ?? form.motion;
-		const rotatable = read($('#playAnimation-rotatable')) ?? form.rotatable;
-		const priority = read($('#playAnimation-priority')) ?? form.priority;
-		const offsetY = read($('#playAnimation-offsetY')) ?? form.offsetY;
-		const angle = read($('#playAnimation-angle')) ?? form.angle;
-		const speed = read($('#playAnimation-speed')) ?? form.speed;
-		const wait = read($('#playAnimation-wait')) ?? form.wait;
+		const mode = read(document.getElementById('playAnimation-mode')!) ?? form.mode;
+		const animationId =
+			read(document.getElementById('playAnimation-animationId')!) ?? form.animationId;
+		const motion = read(document.getElementById('playAnimation-motion')!) ?? form.motion;
+		const rotatable =
+			read(document.getElementById('playAnimation-rotatable')!) ?? form.rotatable;
+		const priority = read(document.getElementById('playAnimation-priority')!) ?? form.priority;
+		const offsetY = read(document.getElementById('playAnimation-offsetY')!) ?? form.offsetY;
+		const angle = read(document.getElementById('playAnimation-angle')!) ?? form.angle;
+		const speed = read(document.getElementById('playAnimation-speed')!) ?? form.speed;
+		const wait = read(document.getElementById('playAnimation-wait')!) ?? form.wait;
 		if (animationId === '') {
-			getFocus($('#playAnimation-animationId'));
+			getFocus(document.getElementById('playAnimation-animationId')!);
 			return;
 		}
 		if (motion === '') {
-			getFocus($('#playAnimation-motion'));
+			getFocus(document.getElementById('playAnimation-motion')!);
 			return;
 		}
 		switch (mode) {
 			case 'position':
 				Command.save?.({
 					mode,
-					position: read($('#playAnimation-position')) ?? form.position,
+					position:
+						read(document.getElementById('playAnimation-position')!) ?? form.position,
 					animationId,
 					motion,
 					rotatable,
@@ -52,7 +54,7 @@ export function usePlayAnimationCommandSchema() {
 			case 'actor':
 				Command.save?.({
 					mode,
-					actor: read($('#playAnimation-actor')) ?? form.actor,
+					actor: read(document.getElementById('playAnimation-actor')!) ?? form.actor,
 					animationId,
 					motion,
 					rotatable,

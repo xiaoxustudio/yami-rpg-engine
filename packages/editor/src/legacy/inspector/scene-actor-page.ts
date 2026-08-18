@@ -3,9 +3,7 @@ import { clear, hide, show, write } from '@/util/element-utils';
 import { Data } from '@/data/data-object.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneActorPlayer {
@@ -38,50 +36,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		typeWrite: null
 	};
 
-	SceneActor.initialize = function (this: typeof SceneActor) {
-		if (!$('#sceneActor-name')) return;
-		this.nameBox = $('#sceneActor-name');
-		$('#sceneActor-type')?.loadItems?.([
-			{ name: 'Local Actor', value: 'local' },
-			{ name: 'Global Actor', value: 'global' }
-		]);
-
-		$('#sceneActor-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneActor-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneActor-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneActor-parameter-pane')?.bind?.($('#sceneActor-scripts'));
-
-		$('#sceneActor-angle-slider')?.synchronize?.($('#sceneActor-angle'));
-		$('#sceneActor-scale-slider')?.synchronize?.($('#sceneActor-scale'));
-
-		window.addEventListener('datachange', this.datachange as unknown as EventListener);
-		const elements =
-			document.querySelectorAll(`#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId,
-    #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale`);
-		const sliders = document.querySelectorAll(
-			'#sceneActor-angle-slider, #sceneActor-scale-slider'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		document
-			.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneActor.initialize = function () {};
 
 	SceneActor.create = function (this: typeof SceneActor) {
 		return {

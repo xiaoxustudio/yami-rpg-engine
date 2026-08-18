@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setDialogBox.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setDialogBox.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,17 +6,18 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetDialogBoxCommandSchema() {
 	const { form, save, load } = useCommandSchema('setDialogBox', {
 		onLoad() {
-			getFocus($('#setDialogBox-element'));
+			getFocus(document.getElementById('setDialogBox-element'));
 		}
 	});
 	const onSave = (): void => {
-		const properties = read($('#setDialogBox-properties')) ?? form.properties;
+		const properties =
+			read(document.getElementById('setDialogBox-properties')) ?? form.properties;
 		if (properties.length === 0) {
-			getFocus($('#setDialogBox-properties'));
+			getFocus(document.getElementById('setDialogBox-properties'));
 			return;
 		}
 		Command.save?.({
-			element: read($('#setDialogBox-element')) ?? form.element,
+			element: read(document.getElementById('setDialogBox-element')) ?? form.element,
 			properties
 		});
 	};

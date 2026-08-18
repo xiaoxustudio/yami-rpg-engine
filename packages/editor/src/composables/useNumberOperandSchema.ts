@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, hide, read, show } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
@@ -123,7 +122,7 @@ const writeHandler = (event: { value?: unknown }): void => {
 			filter = 'object';
 			break;
 	}
-	$('#setNumber-operand-common-variable').filter = filter;
+	document.getElementById('setNumber-operand-common-variable').filter = filter;
 };
 
 const parseMathMethod = (operand: NumberOperandData): string | undefined => {
@@ -347,7 +346,7 @@ const parse = (
 	let operation;
 	let operator;
 	if (index === 0) {
-		operation = read($('#setNumber-operation'));
+		operation = read(document.getElementById('setNumber-operation'));
 		switch (operation) {
 			case 'set':
 				operator = '= ';
@@ -410,17 +409,19 @@ const open = (
 	Window.open!('setNumber-operand');
 
 	if (target!.start === 0) {
-		$('#setNumber-operation').save();
-		show($('#setNumber-operation'));
-		getFocus($('#setNumber-operation'));
-		hide($('#setNumber-operand-operation'));
+		document.getElementById('setNumber-operation').save();
+		show(document.getElementById('setNumber-operation'));
+		getFocus(document.getElementById('setNumber-operation'));
+		hide(document.getElementById('setNumber-operand-operation'));
 	} else {
-		hide($('#setNumber-operation'));
-		show($('#setNumber-operand-operation'));
-		getFocus($('#setNumber-operand-operation'));
+		hide(document.getElementById('setNumber-operation'));
+		show(document.getElementById('setNumber-operand-operation'));
+		getFocus(document.getElementById('setNumber-operand-operation'));
 	}
 
-	$('#setNumber-operand-cooldown-key').loadItems(Enum.getStringItems!('cooldown-key'));
+	document
+		.getElementById('setNumber-operand-cooldown-key')
+		.loadItems(Enum.getStringItems!('cooldown-key'));
 
 	let constantValue = 0;
 	let mathMethod: string | undefined = 'round';
@@ -519,7 +520,7 @@ const open = (
 			break;
 	}
 	const setForm = (
-		$('#setNumber-operand') as
+		document.getElementById('setNumber-operand') as
 			| (HTMLElement & { setForm?: (data: Partial<NumberOperandForm>) => void })
 			| null
 	)?.setForm;
@@ -561,7 +562,9 @@ const open = (
 
 const save = (): unknown => {
 	const getForm = (
-		$('#setNumber-operand') as (HTMLElement & { getForm?: () => NumberOperandForm }) | null
+		document.getElementById('setNumber-operand') as
+			| (HTMLElement & { getForm?: () => NumberOperandForm })
+			| null
 	)?.getForm;
 	const form = getForm?.() ?? ({} as NumberOperandForm);
 	const operation = form.operation;
@@ -576,7 +579,7 @@ const save = (): unknown => {
 		case 'variable': {
 			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#setNumber-operand-common-variable'));
+				return getFocus(document.getElementById('setNumber-operand-common-variable'));
 			}
 			operand = { operation, type, variable };
 			break;
@@ -587,7 +590,9 @@ const save = (): unknown => {
 				case 'round': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus($('#setNumber-operand-common-variable'));
+						return getFocus(
+							document.getElementById('setNumber-operand-common-variable')
+						);
 					}
 					const decimals = form.mathDecimals;
 					operand = { operation, type, method, variable, decimals };
@@ -602,7 +607,9 @@ const save = (): unknown => {
 				case 'tan': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus($('#setNumber-operand-common-variable'));
+						return getFocus(
+							document.getElementById('setNumber-operand-common-variable')
+						);
 					}
 					operand = { operation, type, method, variable };
 					break;
@@ -632,7 +639,7 @@ const save = (): unknown => {
 			const method = form.stringMethod;
 			const variable = form.commonVariable;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#setNumber-operand-common-variable'));
+				return getFocus(document.getElementById('setNumber-operand-common-variable'));
 			}
 			switch (method) {
 				case 'length':
@@ -642,7 +649,7 @@ const save = (): unknown => {
 				case 'search': {
 					const search = form.stringSearch;
 					if (search === '') {
-						return getFocus($('#setNumber-operand-string-search'));
+						return getFocus(document.getElementById('setNumber-operand-string-search'));
 					}
 					operand = { operation, type, method, variable, search };
 					break;
@@ -683,7 +690,7 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const itemId = form.objectItemId;
 					if (itemId === '') {
-						return getFocus($('#setNumber-operand-object-itemId'));
+						return getFocus(document.getElementById('setNumber-operand-object-itemId'));
 					}
 					operand = { operation, type, property, actor, itemId };
 					break;
@@ -692,7 +699,9 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const equipmentId = form.objectEquipmentId;
 					if (equipmentId === '') {
-						return getFocus($('#setNumber-operand-object-equipmentId'));
+						return getFocus(
+							document.getElementById('setNumber-operand-object-equipmentId')
+						);
 					}
 					operand = { operation, type, property, actor, equipmentId };
 					break;
@@ -703,7 +712,7 @@ const save = (): unknown => {
 					const actor = form.commonActor;
 					const key = form.cooldownKey;
 					if (key === '') {
-						return getFocus($('#setNumber-operand-cooldown-key'));
+						return getFocus(document.getElementById('setNumber-operand-cooldown-key'));
 					}
 					operand = { operation, type, property, actor, key };
 					break;
@@ -760,7 +769,9 @@ const save = (): unknown => {
 				case 'list-length': {
 					const variable = form.commonVariable;
 					if (VariableGetter.isNone!(variable)) {
-						return getFocus($('#setNumber-operand-common-variable'));
+						return getFocus(
+							document.getElementById('setNumber-operand-common-variable')
+						);
 					}
 					operand = { operation, type, property, variable };
 					break;
@@ -778,7 +789,7 @@ const save = (): unknown => {
 			const variable = form.commonVariable;
 			const index = form.listIndex;
 			if (VariableGetter.isNone!(variable)) {
-				return getFocus($('#setNumber-operand-common-variable'));
+				return getFocus(document.getElementById('setNumber-operand-common-variable'));
 			}
 			operand = { operation, type, variable, index };
 			break;
@@ -786,7 +797,7 @@ const save = (): unknown => {
 		case 'parameter': {
 			const key = form.parameterKey;
 			if (key === '') {
-				return getFocus($('#setNumber-operand-parameter-key'));
+				return getFocus(document.getElementById('setNumber-operand-parameter-key'));
 			}
 			operand = { operation, type, key };
 			break;
@@ -794,7 +805,7 @@ const save = (): unknown => {
 		case 'script': {
 			const script = form.script!.trim();
 			if (script === '') {
-				return getFocus($('#setNumber-operand-script'));
+				return getFocus(document.getElementById('setNumber-operand-script'));
 			}
 			operand = { operation, type, script };
 			break;
@@ -824,7 +835,7 @@ const save = (): unknown => {
 			break;
 		}
 	}
-	$('#setNumber-operation').save();
+	document.getElementById('setNumber-operation').save();
 	Window.close!('setNumber-operand');
 	return operand;
 };

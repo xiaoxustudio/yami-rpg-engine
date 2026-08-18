@@ -25,28 +25,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimSoundLayer.initialize = function (this: typeof AnimSoundLayer) {
-		if (!$('#animSoundLayer-playbackRate')) return;
-		$('#animSoundLayer-playbackRate').loadItems([
-			{ name: 'Default', value: 'default' },
-			{ name: 'Inherit', value: 'inherit' }
-		]);
-
-		const element = $('#animSoundLayer-playbackRate');
-		element.on('focus', Inspector.inputFocus);
-		element.on(
-			'blur',
-			Inspector.inputBlur!(
-				this,
-				Animation,
-				(data: { type: string; [k: string]: unknown }) => {
-					data.type = 'inspector-layer-change';
-					data.motion = this.motion;
-					data.direction = Animation.direction;
-				}
-			)
-		);
-	};
+	AnimSoundLayer.initialize = function (this: typeof AnimSoundLayer) {};
 
 	AnimSoundLayer.create = function (this: typeof AnimSoundLayer) {
 		return {

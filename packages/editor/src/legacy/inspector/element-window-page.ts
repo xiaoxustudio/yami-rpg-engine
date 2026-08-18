@@ -1,4 +1,4 @@
-import { $, getElementWriter } from '@/util/dom.ts';
+import { getElementWriter } from '@/util/dom.ts';
 import { read } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@/ui/ui-window.ts';
@@ -26,52 +26,7 @@ import { UI } from '@/ui/ui-window.ts';
 		paramInput: null
 	};
 
-	UIWindow.initialize = function (this: typeof UIWindow) {
-		if (!$('#uiWindow-layout')) return;
-		$('#uiWindow-layout')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Horizontal Grid', value: 'horizontal-grid' },
-			{ name: 'Vertical Grid', value: 'vertical-grid' }
-		]);
-
-		const elLayout = $('#uiWindow-layout');
-		if (elLayout)
-			elLayout.enableHiddenMode().relate([
-				{
-					case: 'normal',
-					targets: [$('#uiWindow-scrollX'), $('#uiWindow-scrollY')]
-				},
-				{
-					case: ['horizontal-grid', 'vertical-grid'],
-					targets: [
-						$('#uiWindow-scrollX'),
-						$('#uiWindow-scrollY'),
-						$('#uiWindow-gridWidth'),
-						$('#uiWindow-gridHeight'),
-						$('#uiWindow-gridGapX'),
-						$('#uiWindow-gridGapY'),
-						$('#uiWindow-paddingX'),
-						$('#uiWindow-paddingY')
-					]
-				}
-			]);
-
-		$('#uiWindow-overflow')?.loadItems?.([
-			{ name: 'Visible', value: 'visible' },
-			{ name: 'Hidden', value: 'hidden' }
-		]);
-
-		const elements = document.querySelectorAll(`#uiWindow-layout,
-    #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
-    #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
-    #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
-		);
-	};
+	UIWindow.initialize = function (this: typeof UIWindow) {};
 
 	UIWindow.create = function (this: typeof UIWindow) {
 		const transform = Inspector.uiElement.createTransform();

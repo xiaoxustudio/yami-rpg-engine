@@ -61,6 +61,7 @@ import '@app/legacy/inspector/element-animation-page.ts';
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { useLocalStore } from '@app/stores/local';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
@@ -76,5 +77,21 @@ const onParamInput = (event: Event) => {
 };
 
 onMounted(() => {
+	const uiAnimation = Inspector.uiAnimation;
+	if (!uiAnimation) return;
+	document.getElementById('uiAnimation-animation')?.addEventListener('write', (event: Event) => {
+		uiAnimation.animationIdWrite(event);
+	});
+	const elements = document.querySelectorAll(`#uiAnimation-animation, #uiAnimation-motion,
+    #uiAnimation-autoplay, #uiAnimation-rotatable, #uiAnimation-angle,
+    #uiAnimation-frame, #uiAnimation-offsetX, #uiAnimation-offsetY`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiAnimation, UI))
+		);
+	}
 });
 </script>

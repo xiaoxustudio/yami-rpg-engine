@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/downloadFile.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { disable, enable, getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -8,32 +7,36 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useDownloadFileCommandSchema() {
 	const { form, save, load } = useCommandSchema('downloadFile', {
 		onLoad() {
-			getFocus($('#downloadFile-url'));
+			getFocus(document.getElementById('downloadFile-url')!);
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
 		if (params.isBackground) {
-			enable($('#downloadFile-isBackground-path'));
+			enable(document.getElementById('downloadFile-isBackground-path')!);
 		} else {
-			disable($('#downloadFile-isBackground-path'));
+			disable(document.getElementById('downloadFile-isBackground-path')!);
 		}
 		load(params);
 	};
 	const onSave = (): void => {
-		const url = read($('#downloadFile-url')) ?? form.url;
+		const url = read(document.getElementById('downloadFile-url')!) ?? form.url;
 		if (!url || VariableGetter.isNone!(url)) {
-			getFocus($('#downloadFile-url'));
+			getFocus(document.getElementById('downloadFile-url')!);
 			return;
 		}
 		Command.save?.({
 			url,
-			method: read($('#downloadFile-method')) ?? form.method,
-			headers: read($('#downloadFile-header')) ?? form.header,
-			data: read($('#downloadFile-data')) ?? form.data,
-			callback: read($('#downloadFile-callback')) ?? form.callback,
-			rateCallback: read($('#downloadFile-rateCallback')) ?? form.rateCallback,
-			isBackground: read($('#downloadFile-isBackground')) ?? form.isBackground,
-			isBackgroundPath: read($('#downloadFile-isBackground-path')) ?? form.isBackgroundPath
+			method: read(document.getElementById('downloadFile-method')!) ?? form.method,
+			headers: read(document.getElementById('downloadFile-header')!) ?? form.header,
+			data: read(document.getElementById('downloadFile-data')!) ?? form.data,
+			callback: read(document.getElementById('downloadFile-callback')!) ?? form.callback,
+			rateCallback:
+				read(document.getElementById('downloadFile-rateCallback')!) ?? form.rateCallback,
+			isBackground:
+				read(document.getElementById('downloadFile-isBackground')!) ?? form.isBackground,
+			isBackgroundPath:
+				read(document.getElementById('downloadFile-isBackground-path')!) ??
+				form.isBackgroundPath
 		});
 	};
 	Command.cases.downloadFile.customLoad = onLoad;

@@ -50,33 +50,7 @@ import { Local } from '@/tools/localization.ts';
 		listChange: null
 	} as unknown as FileEventPage;
 
-	FileEvent.initialize = function (this: FileEventPage) {
-		if (!$('#fileEvent-type')) return;
-		if (!EventEditor.types) return;
-		$('#fileEvent-type')?.loadItems?.(EventEditor.types.global);
-		EventEditor.types.relatedElements.push($('#fileEvent-type'));
-
-		$('#fileEvent-returnType')?.loadItems?.([
-			{ name: 'None', value: 'none' },
-			{ name: 'Boolean', value: 'boolean' },
-			{ name: 'Number', value: 'number' },
-			{ name: 'String', value: 'string' },
-			{ name: 'Object', value: 'object' },
-			{ name: 'Actor', value: 'actor' },
-			{ name: 'Skill', value: 'skill' },
-			{ name: 'State', value: 'state' },
-			{ name: 'Equipment', value: 'equipment' },
-			{ name: 'Item', value: 'item' },
-			{ name: 'Trigger', value: 'trigger' },
-			{ name: 'Light', value: 'light' },
-			{ name: 'Element', value: 'element' }
-		]);
-
-		$('#fileEvent-parameters')?.bind?.(this.parameters);
-
-		// 6 闂佺敤鐭囬崒娑卞仺 input + type write 缂?Vue 濠碘槅鍨崜婵嗩熆濡堢粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eEventPage.vue @input/@write 闂?FileEvent.*闂?
-		$('#fileEvent-parameters')?.on?.('change', this.listChange);
-	};
+	FileEvent.initialize = function () {};
 
 	FileEvent.create = function (this: FileEventPage, filter: string) {
 		const type = EventEditor.types?.[filter]?.[0]?.value ?? 'common';

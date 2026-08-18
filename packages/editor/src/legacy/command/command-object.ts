@@ -1,16 +1,85 @@
 import { CommandSchema } from '@/module/command/schema.ts';
+import type { WordListShape } from '@app/composables/useWordList.ts';
+import { commandState } from '@app/composables/useCommandState.ts';
 
-// Command 是中央属性袋：大量字段以 null 起步，由 command-parse / command-color / command-custom / command-tip 等模块在加载后动态挂载。为避免在后续文件中赋值时类型报错，所有方法字段统一声明为可空函数类型。
+export { commandState } from '@app/composables/useCommandState.ts';
+export type { CommandState, CommandTargetShape } from '@app/composables/useCommandState.ts';
+
+export {
+	setNormalColor,
+	setVariableColor,
+	setGlobalVariableColor,
+	setDelimiterColor,
+	setOperatorColor,
+	setBooleanColor,
+	setNumberColor,
+	setStringColor,
+	setScriptColor,
+	setFileColor,
+	setPresetColor,
+	setWeakColor,
+	setCommaColors,
+	setTextId,
+	setTooltip,
+	setClass
+} from '@app/composables/useCommandColor.ts';
+
+export { WordList } from '@app/composables/useWordList.ts';
+export type { WordListShape } from '@app/composables/useWordList.ts';
+
+export {
+	parseBlend,
+	fetchVariables,
+	parseVariable,
+	parseGlobalVariable,
+	parseAttributeGroup,
+	parseAttributeKey,
+	parseAttributeTag,
+	parseVariableTag,
+	parseVariableNumber,
+	parseVariableString,
+	parseVariableTemplate,
+	parseVariableAttr,
+	parseVariableEnum,
+	parseVariableFile,
+	parseVariableTeam,
+	parseMultiLineString,
+	parseSpriteName,
+	parseEventType,
+	parseEnumGroup,
+	parseEnumString,
+	parseEnumStringTag,
+	parseGroupEnumString,
+	parseListItem,
+	parseParameter,
+	parseActor,
+	parseSkill,
+	parseState,
+	parseEquipment,
+	parseItem,
+	parsePosition,
+	parseAngle,
+	parseTrigger,
+	parseLight,
+	parseRegion,
+	parseTilemap,
+	parseObject,
+	parseElement,
+	parsePresetObject,
+	parsePresetElement,
+	parseTeam,
+	parseHexColor,
+	parseActorSelector,
+	parseFileName,
+	parseAudioType,
+	parseWait,
+	parseEasing,
+	parseUnlinkedId,
+	parseTextTags,
+	removeTextTags
+} from '@app/composables/useCommandParse.ts';
 
 type CommandMethod = (...args: any[]) => any;
-
-interface WordListShape {
-	count: number;
-	push(string: string): this;
-	join(joint?: string): string;
-	readonly length: number;
-	[Symbol.iterator](): IterableIterator<string>;
-}
 
 interface CommandCustomShape {
 	customFolder: {
@@ -45,33 +114,19 @@ interface CommandCustomShape {
 	[k: string]: unknown;
 }
 
-interface CommandTargetShape {
-	scrollAndResize?: () => void;
-	getSelectionPosition?: () => { x: number; y: number } | null;
-	save?: (data: { id: string; params: Record<string, unknown> }) => unknown;
-}
-
 export const Command: {
-	target: CommandTargetShape | null;
-	id: string;
-	words: WordListShape;
-	invalid: boolean;
-	saveVars: boolean;
-	returnType: string;
-	eventName: string;
-	eventIndex: number;
-	variables: Array<{
-		name: string;
-		type: string;
-		comment: string;
-		evIndex: number;
-		isLeftValue: boolean;
-		refCount: number;
-		command?: unknown;
-	}>;
-	varMap: Record<string, unknown>;
-	dependsOn: string[];
-	currentCommand: Record<string, unknown> | null;
+	target: typeof commandState.target;
+	id: typeof commandState.id;
+	words: typeof commandState.words;
+	invalid: typeof commandState.invalid;
+	saveVars: typeof commandState.saveVars;
+	returnType: typeof commandState.returnType;
+	eventName: typeof commandState.eventName;
+	eventIndex: typeof commandState.eventIndex;
+	variables: typeof commandState.variables;
+	varMap: typeof commandState.varMap;
+	dependsOn: typeof commandState.dependsOn;
+	currentCommand: typeof commandState.currentCommand;
 	setClass: (className: string) => string;
 	initialize: CommandMethod;
 	insert: CommandMethod;
@@ -150,20 +205,18 @@ export const Command: {
 	cases: Record<string, CommandSchema>;
 	custom: CommandCustomShape;
 } = {
-	target: null,
-	id: null as unknown as string,
-	words: null as unknown as WordListShape,
-	invalid: false,
-	saveVars: false,
-	returnType: '',
-	eventName: '',
-	eventIndex: 0,
-	variables: [],
-	varMap: {},
-	dependsOn: ['Inspector'],
-	// runtime 挂载: command-parse.ts 中赋值当前正在解析的指令上下文
-	currentCommand: null,
-	// runtime 挂载: command-color.ts 中挂载类名染色函数
+	target: commandState.target,
+	id: commandState.id,
+	words: commandState.words,
+	invalid: commandState.invalid,
+	saveVars: commandState.saveVars,
+	returnType: commandState.returnType,
+	eventName: commandState.eventName,
+	eventIndex: commandState.eventIndex,
+	variables: commandState.variables,
+	varMap: commandState.varMap,
+	dependsOn: commandState.dependsOn,
+	currentCommand: commandState.currentCommand,
 	setClass: null as unknown as (className: string) => string,
 	initialize: null as unknown as CommandMethod,
 	insert: null as unknown as CommandMethod,

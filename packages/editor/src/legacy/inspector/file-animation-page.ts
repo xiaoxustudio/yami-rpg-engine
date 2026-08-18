@@ -29,25 +29,20 @@ import { Inspector } from './inspector.ts';
 		close: null
 	};
 
-	FileAnimation.initialize = function (this: typeof FileAnimation) {
-		this.button = $('#animation-switch-settings');
-		this.owner = {
-			setTarget: (target: unknown) => {
-				if (this.target !== target) {
-					Inspector.open!('fileAnimation', target);
-				}
-			},
-			planToSave: () => {
-				Animation.planToSave!();
-			},
-			get history() {
-				return Animation.history;
+	FileAnimation.initialize = function () {};
+	FileAnimation.button = $('#animation-switch-settings');
+	FileAnimation.owner = {
+		setTarget: (target: unknown) => {
+			if (FileAnimation.target !== target) {
+				Inspector.open!('fileAnimation', target);
 			}
-		};
-
-		$('#fileAnimation-sprites')?.bind(this.sprites);
-
-		$('#fileAnimation-sprites')?.on('change', Animation.listChange);
+		},
+		planToSave: () => {
+			Animation.planToSave!();
+		},
+		get history() {
+			return Animation.history;
+		}
 	};
 
 	FileAnimation.create = function (this: typeof FileAnimation) {

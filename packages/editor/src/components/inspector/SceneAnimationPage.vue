@@ -163,6 +163,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneAnimationPage } from '@app/composables/useSceneAnimationPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
@@ -187,10 +191,50 @@ const onAnimationIdWrite = (value: unknown) => {
 };
 
 onMounted(() => {
+	const editor = Inspector.sceneAnimation;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneAnimation-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elRotatable = document.getElementById('sceneAnimation-rotatable') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elRotatable?.loadItems) {
+		elRotatable.loadItems([
+			{ name: 'Yes', value: true },
+			{ name: 'No', value: false }
+		]);
+	}
+
+	document.getElementById('sceneAnimation-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document.getElementById('sceneAnimation-events')?.bind?.(new EventListInterface(editor, Scene));
+	document.getElementById('sceneAnimation-scripts')?.bind?.(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	document.getElementById('sceneAnimation-parameter-pane')?.bind?.(document.getElementById('sceneAnimation-scripts'));
+
+	document.getElementById('sceneAnimation-angle-slider')?.synchronize?.(document.getElementById('sceneAnimation-angle'));
+	document.getElementById('sceneAnimation-scale-slider')?.synchronize?.(document.getElementById('sceneAnimation-scale'));
+	document.getElementById('sceneAnimation-speed-slider')?.synchronize?.(document.getElementById('sceneAnimation-speed'));
+	document.getElementById('sceneAnimation-opacity-slider')?.synchronize?.(document.getElementById('sceneAnimation-opacity'));
+	document.getElementById('sceneAnimation-priority-slider')?.synchronize?.(document.getElementById('sceneAnimation-priority'));
+
+	document.getElementById('sceneAnimation-animationId')?.on?.('write', editor.animationIdWrite);
+
+	const elements = document.querySelectorAll(
+		'#sceneAnimation-name, #sceneAnimation-animationId, #sceneAnimation-motion, #sceneAnimation-rotatable, #sceneAnimation-x, #sceneAnimation-y, #sceneAnimation-angle, #sceneAnimation-scale, #sceneAnimation-speed, #sceneAnimation-opacity, #sceneAnimation-priority'
+	);
+	const sliders = document.querySelectorAll(
+		'#sceneAnimation-angle-slider, #sceneAnimation-scale-slider, #sceneAnimation-speed-slider, #sceneAnimation-opacity-slider, #sceneAnimation-priority-slider'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	document.querySelectorAll('#sceneAnimation-conditions, #sceneAnimation-events, #sceneAnimation-scripts')
+		.forEach((el) => el.addEventListener('change', Scene.listChange));
+
 	sync();
 });
 </script>

@@ -80,20 +80,28 @@ const directoryApi = {
 	getFolder: (path: string) => Directory.getFolder?.(path),
 	update: () => Directory.update?.(),
 	deleteFiles: (files: Array<FileItem | FolderItem>) => {
-		try { Directory.deleteFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => Directory.deleteFiles?.(files))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	moveFiles: (path: string, dir: Array<{ name: string; path: string; children?: unknown[] }>) => {
-		try { Directory.moveFiles?.(path, dir); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => Directory.moveFiles?.(path, dir))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	copyFiles: (
 		path: string,
 		dir: Array<{ name: string; path: string; children?: unknown[] }>,
 		prefix?: string
 	) => {
-		try { Directory.copyFiles?.(path, dir, prefix); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => Directory.copyFiles?.(path, dir, prefix))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	saveFiles: (files: Array<FileItem | FolderItem>) => {
-		try { Directory.saveFiles?.(files); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => Directory.saveFiles?.(files))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	readdir: (paths: string[]) => Directory.readdir?.(paths),
 	get assets() {
@@ -117,7 +125,9 @@ const fileSystemApi = {
 	copyFile: (src: string, dst: string) => FSP.copyFile(src, dst),
 	stat: (p: string, bigint?: boolean) => FSP.stat(p, bigint),
 	rename: (oldPath: string, newPath: string) => {
-		try { FSP.rename(oldPath, newPath); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => FSP.rename(oldPath, newPath))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	existsSync: (p: string) => FSP.existsSync(p),
 	addOversizeImagePaths: (p: string) => FileItem.addOversizeImagePaths?.(p)

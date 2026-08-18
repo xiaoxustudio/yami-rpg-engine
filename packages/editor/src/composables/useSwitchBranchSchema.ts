@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import {
@@ -52,8 +51,8 @@ const open = (branch: SwitchBranchData): void => {
 		SwitchCondition.open!();
 	} else {
 		Window.open!('switch-branch');
-		write($('#switch-branch-conditions'), branch.conditions.slice());
-		getFocus($('#switch-branch-conditions'));
+		write(document.getElementById('switch-branch-conditions'), branch.conditions.slice());
+		getFocus(document.getElementById('switch-branch-conditions'));
 		commands = branch.commands;
 	}
 };
@@ -67,7 +66,7 @@ const save = (): unknown => {
 			return { conditions, commands };
 		}
 	} else {
-		const element = $('#switch-branch-conditions');
+		const element = document.getElementById('switch-branch-conditions');
 		const conditions = read(element);
 		if (conditions.length === 0) {
 			return getFocus(element);
@@ -80,7 +79,7 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	commands = null;
-	clear($('#switch-branch-conditions'));
+	clear(document.getElementById('switch-branch-conditions'));
 };
 
 const confirm = (event: Event): void => {

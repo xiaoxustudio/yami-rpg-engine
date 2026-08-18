@@ -22,8 +22,10 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useFileFontPage } from '@app/composables/useFileFontPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
@@ -31,4 +33,23 @@ import TextBox from '@app/components/common/TextBox.vue';
 const local = useLocalStore();
 
 const { onTextInput } = useFileFontPage();
+
+onMounted(() => {
+	const fileFont = Inspector.fileFont;
+	if (!fileFont) return;
+	const previews = document.querySelectorAll('.fileFont-preview');
+	fileFont.previews = previews;
+	const input = document.getElementById('fileFont-content') as HTMLInputElement & { input?: HTMLInputElement } | null;
+	if (input) {
+		input.textContent = 'Yami RPG Editor';
+		const innerInput = input.querySelector('input') ?? (input as any).input;
+		if (innerInput) {
+			fileFont.textInput({ target: innerInput });
+		}
+	}
+	const el = document.getElementById('fileFont');
+	if (el) {
+		el.addEventListener('resize', fileFont.windowResize);
+	}
+});
 </script>

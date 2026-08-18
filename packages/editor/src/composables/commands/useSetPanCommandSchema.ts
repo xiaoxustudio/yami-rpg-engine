@@ -1,12 +1,11 @@
-import '@app/legacy/module/command/setPan.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setPan.ts';
 import { getFocus } from '@app/legacy/util/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetPanCommandSchema() {
 	return useCommandSchema('setPan', {
 		onLoad() {
-			getFocus($('#setPan-type'));
+			getFocus(document.getElementById('setPan-type'));
 		}
 	});
 }

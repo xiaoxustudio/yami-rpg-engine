@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { pinia } from '@app/stores/pinia';
+import { initYamiI18n } from '@app/i18n';
 import '@app/utils/element-data.ts';
 import '@app/legacy/_register.ts';
 
@@ -13,6 +14,7 @@ window.addEventListener('error', (e: ErrorEvent) => {
 
 const app = createApp(App);
 app.use(pinia);
+app.use(initYamiI18n());
 
 const el = document.getElementById('app');
 if (el) {

@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
@@ -41,19 +40,22 @@ const parse = (choice: ChoicesData): string => {
 const open = (choice: ChoicesData = { content: '', commands: [] }): void => {
 	Window.open!('choice');
 	const setForm = (
-		$('#choice') as (HTMLElement & { setForm?: (data: Partial<ChoicesForm>) => void }) | null
+		document.getElementById('choice') as
+			| (HTMLElement & { setForm?: (data: Partial<ChoicesForm>) => void })
+			| null
 	)?.setForm;
 	setForm?.({ content: choice.content });
-	getFocus($('#choice-content'), 'all');
+	getFocus(document.getElementById('choice-content'), 'all');
 	commands = choice.commands;
 };
 
 const save = (): unknown => {
-	const getForm = ($('#choice') as (HTMLElement & { getForm?: () => ChoicesForm }) | null)
-		?.getForm;
+	const getForm = (
+		document.getElementById('choice') as (HTMLElement & { getForm?: () => ChoicesForm }) | null
+	)?.getForm;
 	const content = (getForm?.()?.content ?? '').trim();
 	if (content === '') {
-		return getFocus($('#choice-content'));
+		return getFocus(document.getElementById('choice-content'));
 	}
 	Window.close!('choice');
 	return { content, commands };

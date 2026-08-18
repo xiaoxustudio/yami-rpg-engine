@@ -151,6 +151,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileTriggerPage } from '@app/composables/useFileTriggerPage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
@@ -176,10 +178,89 @@ const onListChange = () => {
 };
 
 onMounted(() => {
+	const editor = Inspector.fileTrigger;
+	if (!editor) return;
+
 	const el = document.getElementById('fileTrigger-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elSelector = document.getElementById('fileTrigger-selector') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elSelector?.loadItems) {
+		elSelector.loadItems([
+			{ name: 'Enemy', value: 'enemy' },
+			{ name: 'Friend', value: 'friend' },
+			{ name: 'Team Member', value: 'team' },
+			{ name: 'Team Member Except Self', value: 'team-except-self' },
+			{ name: 'Any Except Self', value: 'any-except-self' },
+			{ name: 'Any', value: 'any' }
+		]);
+	}
+
+	const elOnHitWalls = document.getElementById('fileTrigger-onHitWalls') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elOnHitWalls?.loadItems) {
+		elOnHitWalls.loadItems([
+			{ name: 'Penetrate', value: 'penetrate' },
+			{ name: 'Destroy', value: 'destroy' }
+		]);
+	}
+
+	const elOnHitActors = document.getElementById('fileTrigger-onHitActors') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elOnHitActors?.loadItems) {
+		elOnHitActors.loadItems([
+			{ name: 'Penetrate', value: 'penetrate' },
+			{ name: 'Destroy', value: 'destroy' },
+			{ name: 'Destroy After Multiple Hits', value: 'penetrate-destroy' }
+		]);
+	}
+	if (elOnHitActors?.enableHiddenMode) {
+		const hidden = elOnHitActors.enableHiddenMode();
+		hidden.relate?.([{ case: 'penetrate-destroy', targets: [document.getElementById('fileTrigger-hitCount')] }]);
+	}
+
+	const elShapeType = document.getElementById('fileTrigger-shape-type') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elShapeType?.loadItems) {
+		elShapeType.loadItems([
+			{ name: 'Rectangle', value: 'rectangle' },
+			{ name: 'Circle', value: 'circle' },
+			{ name: 'Sector', value: 'sector' }
+		]);
+	}
+	if (elShapeType?.enableHiddenMode) {
+		const hidden = elShapeType.enableHiddenMode();
+		hidden.relate?.([
+			{ case: 'rectangle', targets: [document.getElementById('fileTrigger-shape-width'), document.getElementById('fileTrigger-shape-height'), document.getElementById('fileTrigger-shape-anchor')] },
+			{ case: 'circle', targets: [document.getElementById('fileTrigger-shape-radius')] },
+			{ case: 'sector', targets: [document.getElementById('fileTrigger-shape-radius'), document.getElementById('fileTrigger-shape-centralAngle')] }
+		]);
+	}
+
+	const elHitMode = document.getElementById('fileTrigger-hitMode') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elHitMode?.loadItems) {
+		elHitMode.loadItems([
+			{ name: 'Once', value: 'once' },
+			{ name: 'Once On Overlap', value: 'once-on-overlap' },
+			{ name: 'Repeat', value: 'repeat' }
+		]);
+	}
+	if (elHitMode?.enableHiddenMode) {
+		const hidden = elHitMode.enableHiddenMode();
+		hidden.relate?.([{ case: 'repeat', targets: [document.getElementById('fileTrigger-hitInterval')] }]);
+	}
+
+	const elRotatable = document.getElementById('fileTrigger-rotatable') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elRotatable?.loadItems) {
+		elRotatable.loadItems([
+			{ name: 'Yes', value: true },
+			{ name: 'No', value: false }
+		]);
+	}
+
+	document.getElementById('fileTrigger-events')?.bind?.(new EventListInterface(editor));
+	document.getElementById('fileTrigger-scripts')?.bind?.(new ScriptListInterface());
+	document.getElementById('fileTrigger-parameter-pane')?.bind?.(document.getElementById('fileTrigger-scripts'));
+
 	sync();
 });
 </script>

@@ -42,6 +42,9 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileStatePage } from '@app/composables/useFileStatePage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
@@ -62,10 +65,19 @@ const onListChange = () => {
 };
 
 onMounted(() => {
+	const editor = Inspector.fileState;
+	if (!editor) return;
+
 	const el = document.getElementById('fileState-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	document.getElementById('fileState-attributes')?.bind?.(new AttributeListInterface());
+	document.getElementById('fileState-events')?.bind?.(new EventListInterface(editor));
+	document.getElementById('fileState-scripts')?.bind?.(new ScriptListInterface());
+	document.getElementById('fileState-parameter-pane')?.bind?.(document.getElementById('fileState-scripts'));
+
 	sync();
 });
 </script>

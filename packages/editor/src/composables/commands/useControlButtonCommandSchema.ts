@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/controlButton.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/controlButton.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,11 +6,12 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useControlButtonCommandSchema() {
 	const { form, save, load } = useCommandSchema('controlButton', {
 		onLoad() {
-			getFocus($('#controlButton-operation'));
+			getFocus(document.getElementById('controlButton-operation'));
 		}
 	});
 	const onSave = (): void => {
-		const operation = read($('#controlButton-operation')) ?? form.operation;
+		const operation =
+			read(document.getElementById('controlButton-operation')) ?? form.operation;
 		switch (operation) {
 			case 'select-default':
 				Command.save!({ operation });
@@ -22,7 +22,7 @@ export function useControlButtonCommandSchema() {
 			case 'normal-mode': {
 				Command.save!({
 					operation,
-					element: read($('#controlButton-element')) ?? form.element
+					element: read(document.getElementById('controlButton-element')) ?? form.element
 				});
 				break;
 			}

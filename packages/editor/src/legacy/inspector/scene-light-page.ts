@@ -2,9 +2,6 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneLightShape {
@@ -28,91 +25,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		update: null
 	};
 
-	SceneLight.initialize = function (this: typeof SceneLight) {
-		if (!$('#sceneLight-name')) return;
-		this.nameBox = $('#sceneLight-name');
-		$('#sceneLight-type')?.loadItems?.([
-			{ name: 'Point', value: 'point' },
-			{ name: 'Area', value: 'area' }
-		]);
-
-		$('#sceneLight-blend')?.loadItems?.([
-			{ name: 'Screen', value: 'screen' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' },
-			{ name: 'Max', value: 'max' }
-		]);
-
-		const elLightType = $('#sceneLight-type');
-		if (elLightType)
-			elLightType.enableHiddenMode().relate([
-				{
-					case: 'point',
-					targets: [$('#sceneLight-range-box'), $('#sceneLight-intensity-box')]
-				},
-				{
-					case: 'area',
-					targets: [
-						$('#sceneLight-mask'),
-						$('#sceneLight-anchorX-box'),
-						$('#sceneLight-anchorY-box'),
-						$('#sceneLight-width-box'),
-						$('#sceneLight-height-box'),
-						$('#sceneLight-angle-box')
-					]
-				}
-			]);
-
-		$('#sceneLight-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneLight-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneLight-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneLight-parameter-pane')?.bind?.($('#sceneLight-scripts'));
-
-		$('#sceneLight-range-slider')?.synchronize?.($('#sceneLight-range'));
-		$('#sceneLight-intensity-slider')?.synchronize?.($('#sceneLight-intensity'));
-		$('#sceneLight-anchorX-slider')?.synchronize?.($('#sceneLight-anchorX'));
-		$('#sceneLight-anchorY-slider')?.synchronize?.($('#sceneLight-anchorY'));
-		$('#sceneLight-width-slider')?.synchronize?.($('#sceneLight-width'));
-		$('#sceneLight-height-slider')?.synchronize?.($('#sceneLight-height'));
-		$('#sceneLight-angle-slider')?.synchronize?.($('#sceneLight-angle'));
-		$('#sceneLight-red-slider')?.synchronize?.($('#sceneLight-red'));
-		$('#sceneLight-green-slider')?.synchronize?.($('#sceneLight-green'));
-		$('#sceneLight-blue-slider')?.synchronize?.($('#sceneLight-blue'));
-		$('#sceneLight-direct-slider')?.synchronize?.($('#sceneLight-direct'));
-
-		const elements = document.querySelectorAll(`
-    #sceneLight-name, #sceneLight-type,
-    #sceneLight-blend, #sceneLight-x, #sceneLight-y,
-    #sceneLight-range, #sceneLight-intensity,
-    #sceneLight-mask, #sceneLight-anchorX, #sceneLight-anchorY,
-    #sceneLight-width, #sceneLight-height, #sceneLight-angle,
-    #sceneLight-red, #sceneLight-green, #sceneLight-blue, #sceneLight-direct`);
-		const sliders = document.querySelectorAll(`
-    #sceneLight-range-slider, #sceneLight-intensity-slider,
-    #sceneLight-anchorX-slider, #sceneLight-anchorY-slider,
-    #sceneLight-width-slider, #sceneLight-height-slider, #sceneLight-angle-slider,
-    #sceneLight-red-slider, #sceneLight-green-slider, #sceneLight-blue-slider, #sceneLight-direct-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		document
-			.querySelectorAll('#sceneLight-conditions, #sceneLight-events, #sceneLight-scripts')
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneLight.initialize = function () {};
 
 	SceneLight.create = function (this: typeof SceneLight) {
 		return {

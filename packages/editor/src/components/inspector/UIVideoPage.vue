@@ -23,6 +23,7 @@
 import '@app/legacy/inspector/element-video-page.ts';
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -38,5 +39,38 @@ const onParamInput = (event: Event) => {
 };
 
 onMounted(() => {
+	const editor = Inspector.uiVideo;
+	if (!editor) return;
+
+	const elLoop = document.getElementById('uiVideo-loop') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elLoop?.loadItems) {
+		elLoop.loadItems([
+			{ name: 'Once', value: false },
+			{ name: 'Loop', value: true }
+		]);
+	}
+
+	const elFlip = document.getElementById('uiVideo-flip') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elFlip?.loadItems) {
+		elFlip.loadItems([
+			{ name: 'None', value: 'none' },
+			{ name: 'Horizontal', value: 'horizontal' },
+			{ name: 'Vertical', value: 'vertical' },
+			{ name: 'Both', value: 'both' }
+		]);
+	}
+
+	const elBlend = document.getElementById('uiVideo-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elBlend?.loadItems) {
+		elBlend.loadItems([
+			{ name: 'Normal', value: 'normal' },
+			{ name: 'Additive', value: 'additive' },
+			{ name: 'Subtract', value: 'subtract' }
+		]);
+	}
+
+	const elements = document.querySelectorAll('#uiVideo-video, #uiVideo-playbackRate, #uiVideo-loop, #uiVideo-flip, #uiVideo-blend');
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, UI)));
 });
 </script>

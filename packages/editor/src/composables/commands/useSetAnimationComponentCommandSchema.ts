@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setAnimationComponent.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setAnimationComponent.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
@@ -8,37 +7,39 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetAnimationComponentCommandSchema() {
 	const { form, save, load } = useCommandSchema('setAnimationComponent', {
 		onLoad() {
-			getFocus($('#setAnimationComponent-actor'));
+			getFocus(document.getElementById('setAnimationComponent-actor'));
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
 		const animationId = (params.animationId ?? '') as string;
 		if (animationId !== '') {
-			$('#setAnimationComponent-motion')?.loadItems?.(
-				Animation.getMotionListItems!(animationId)
-			);
-			$('#setAnimationComponent-playMotion')?.loadItems?.(
-				Animation.getMotionListItems!(animationId)
-			);
-			$('#setAnimationComponent-spriteId')?.loadItems?.(
-				Animation.getSpriteListItems!(animationId)
-			);
+			document
+				.getElementById('setAnimationComponent-motion')
+				?.loadItems?.(Animation.getMotionListItems!(animationId));
+			document
+				.getElementById('setAnimationComponent-playMotion')
+				?.loadItems?.(Animation.getMotionListItems!(animationId));
+			document
+				.getElementById('setAnimationComponent-spriteId')
+				?.loadItems?.(Animation.getSpriteListItems!(animationId));
 		}
 		load(params);
 	};
 	const onSave = (): void => {
-		const actor = read($('#setAnimationComponent-actor')) ?? form.actor;
-		const animationId = read($('#setAnimationComponent-animationId')) ?? form.animationId;
+		const actor = read(document.getElementById('setAnimationComponent-actor')) ?? form.actor;
+		const animationId =
+			read(document.getElementById('setAnimationComponent-animationId')) ?? form.animationId;
 		if (animationId === '') {
-			getFocus($('#setAnimationComponent-animationId'));
+			getFocus(document.getElementById('setAnimationComponent-animationId'));
 			return;
 		}
-		const motion = read($('#setAnimationComponent-motion')) ?? form.motion;
+		const motion = read(document.getElementById('setAnimationComponent-motion')) ?? form.motion;
 		if (motion === '') {
-			getFocus($('#setAnimationComponent-motion'));
+			getFocus(document.getElementById('setAnimationComponent-motion'));
 			return;
 		}
-		const operation = read($('#setAnimationComponent-operation')) ?? form.operation;
+		const operation =
+			read(document.getElementById('setAnimationComponent-operation')) ?? form.operation;
 		switch (operation) {
 			case 'set-angle':
 				Command.save?.({
@@ -46,7 +47,8 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					angle: read($('#setAnimationComponent-angle')) ?? form.angle
+					angle:
+						read(document.getElementById('setAnimationComponent-angle')) ?? form.angle
 				});
 				break;
 			case 'set-scale':
@@ -55,7 +57,8 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					scale: read($('#setAnimationComponent-scale')) ?? form.scale
+					scale:
+						read(document.getElementById('setAnimationComponent-scale')) ?? form.scale
 				});
 				break;
 			case 'set-speed':
@@ -64,7 +67,8 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					speed: read($('#setAnimationComponent-speed')) ?? form.speed
+					speed:
+						read(document.getElementById('setAnimationComponent-speed')) ?? form.speed
 				});
 				break;
 			case 'set-opacity':
@@ -73,7 +77,9 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					opacity: read($('#setAnimationComponent-opacity')) ?? form.opacity
+					opacity:
+						read(document.getElementById('setAnimationComponent-opacity')) ??
+						form.opacity
 				});
 				break;
 			case 'set-priority':
@@ -82,7 +88,9 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					priority: read($('#setAnimationComponent-priority')) ?? form.priority
+					priority:
+						read(document.getElementById('setAnimationComponent-priority')) ??
+						form.priority
 				});
 				break;
 			case 'set-offsetY':
@@ -91,13 +99,17 @@ export function useSetAnimationComponentCommandSchema() {
 					animationId,
 					motion,
 					operation,
-					offsetY: read($('#setAnimationComponent-offsetY')) ?? form.offsetY
+					offsetY:
+						read(document.getElementById('setAnimationComponent-offsetY')) ??
+						form.offsetY
 				});
 				break;
 			case 'set-sprite': {
-				const spriteId = read($('#setAnimationComponent-spriteId')) ?? form.spriteId;
+				const spriteId =
+					read(document.getElementById('setAnimationComponent-spriteId')) ??
+					form.spriteId;
 				if (spriteId === '') {
-					getFocus($('#setAnimationComponent-spriteId'));
+					getFocus(document.getElementById('setAnimationComponent-spriteId'));
 					return;
 				}
 				Command.save?.({
@@ -106,14 +118,17 @@ export function useSetAnimationComponentCommandSchema() {
 					motion,
 					operation,
 					spriteId,
-					image: read($('#setAnimationComponent-image')) ?? form.image
+					image:
+						read(document.getElementById('setAnimationComponent-image')) ?? form.image
 				});
 				break;
 			}
 			case 'play-motion': {
-				const playMotion = read($('#setAnimationComponent-playMotion')) ?? form.playMotion;
+				const playMotion =
+					read(document.getElementById('setAnimationComponent-playMotion')) ??
+					form.playMotion;
 				if (playMotion === '') {
-					getFocus($('#setAnimationComponent-playMotion'));
+					getFocus(document.getElementById('setAnimationComponent-playMotion'));
 					return;
 				}
 				Command.save?.({
@@ -122,7 +137,7 @@ export function useSetAnimationComponentCommandSchema() {
 					motion,
 					operation,
 					playMotion,
-					wait: read($('#setAnimationComponent-wait')) ?? form.wait
+					wait: read(document.getElementById('setAnimationComponent-wait')) ?? form.wait
 				});
 				break;
 			}

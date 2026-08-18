@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import {
@@ -62,9 +61,9 @@ const open = (branch: IfBranchData): void => {
 		IfCondition.open!();
 	} else {
 		Window.open!('if-branch');
-		write($('#if-branch-mode'), branch.mode);
-		write($('#if-branch-conditions'), branch.conditions.slice());
-		getFocus($('#if-branch-conditions'));
+		write(document.getElementById('if-branch-mode'), branch.mode);
+		write(document.getElementById('if-branch-conditions'), branch.conditions.slice());
+		getFocus(document.getElementById('if-branch-conditions'));
 		commands = branch.commands!;
 	}
 };
@@ -79,8 +78,8 @@ const save = (): unknown => {
 			return { mode, conditions, commands };
 		}
 	} else {
-		const mode = read($('#if-branch-mode'));
-		const element = $('#if-branch-conditions');
+		const mode = read(document.getElementById('if-branch-mode'));
+		const element = document.getElementById('if-branch-conditions');
 		const conditions = read(element);
 		if (conditions.length === 0) {
 			return getFocus(element);
@@ -93,7 +92,7 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	commands = null;
-	clear($('#if-branch-conditions'));
+	clear(document.getElementById('if-branch-conditions'));
 };
 
 const confirm = (event: Event): void => {

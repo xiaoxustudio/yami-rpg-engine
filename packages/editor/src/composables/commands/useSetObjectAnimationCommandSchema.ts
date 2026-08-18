@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setObjectAnimation.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setObjectAnimation.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -12,7 +11,7 @@ type ObjectRef = {
 export function useSetObjectAnimationCommandSchema() {
 	const { form, save, load } = useCommandSchema('setObjectAnimation', {
 		onLoad() {
-			getFocus($('#setObjectAnimation-sort'));
+			getFocus(document.getElementById('setObjectAnimation-sort'));
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -33,27 +32,34 @@ export function useSetObjectAnimationCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const sort = read($('#setObjectAnimation-sort')) ?? form.sort;
-		const operation = read($('#setObjectAnimation-operation')) ?? form.operation;
+		const sort = read(document.getElementById('setObjectAnimation-sort')) ?? form.sort;
+		const operation =
+			read(document.getElementById('setObjectAnimation-operation')) ?? form.operation;
 		let object: ObjectRef;
 		switch (sort) {
 			case 'actor':
 			case 'components':
-				object = read($('#setObjectAnimation-actor')) ?? (form.actor as ObjectRef);
+				object =
+					read(document.getElementById('setObjectAnimation-actor')) ??
+					(form.actor as ObjectRef);
 				break;
 			case 'trigger':
-				object = read($('#setObjectAnimation-trigger')) ?? (form.trigger as ObjectRef);
+				object =
+					read(document.getElementById('setObjectAnimation-trigger')) ??
+					(form.trigger as ObjectRef);
 				break;
 			case 'animation':
-				object = read($('#setObjectAnimation-animation')) ?? (form.animation as ObjectRef);
+				object =
+					read(document.getElementById('setObjectAnimation-animation')) ??
+					(form.animation as ObjectRef);
 				break;
 			default:
 				return;
 		}
-		let red = read($('#setObjectAnimation-tint-0')) ?? form['tint-0'];
-		let green = read($('#setObjectAnimation-tint-1')) ?? form['tint-1'];
-		let blue = read($('#setObjectAnimation-tint-2')) ?? form['tint-2'];
-		let gray = read($('#setObjectAnimation-tint-3')) ?? form['tint-3'];
+		let red = read(document.getElementById('setObjectAnimation-tint-0')) ?? form['tint-0'];
+		let green = read(document.getElementById('setObjectAnimation-tint-1')) ?? form['tint-1'];
+		let blue = read(document.getElementById('setObjectAnimation-tint-2')) ?? form['tint-2'];
+		let gray = read(document.getElementById('setObjectAnimation-tint-3')) ?? form['tint-3'];
 		switch (operation) {
 			case 'set-tint':
 				break;
@@ -66,9 +72,11 @@ export function useSetObjectAnimationCommandSchema() {
 				blue = 0;
 				break;
 		}
-		const easingId = read($('#setObjectAnimation-easingId')) ?? form.easingId;
-		const duration = read($('#setObjectAnimation-duration')) ?? form.duration;
-		const wait = read($('#setObjectAnimation-wait')) ?? form.wait;
+		const easingId =
+			read(document.getElementById('setObjectAnimation-easingId')) ?? form.easingId;
+		const duration =
+			read(document.getElementById('setObjectAnimation-duration')) ?? form.duration;
+		const wait = read(document.getElementById('setObjectAnimation-wait')) ?? form.wait;
 		if ('set-tint|set-rgb|set-gray'.includes(operation as string)) {
 			Command.save?.({
 				sort,
@@ -84,7 +92,8 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				opacity: read($('#setObjectAnimation-opacity')) ?? form.opacity,
+				opacity:
+					read(document.getElementById('setObjectAnimation-opacity')) ?? form.opacity,
 				easingId,
 				duration,
 				wait
@@ -94,7 +103,8 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				offsetY: read($('#setObjectAnimation-offsetY')) ?? form.offsetY,
+				offsetY:
+					read(document.getElementById('setObjectAnimation-offsetY')) ?? form.offsetY,
 				easingId,
 				duration,
 				wait
@@ -104,7 +114,8 @@ export function useSetObjectAnimationCommandSchema() {
 				sort,
 				object,
 				operation,
-				rotation: read($('#setObjectAnimation-rotation')) ?? form.rotation,
+				rotation:
+					read(document.getElementById('setObjectAnimation-rotation')) ?? form.rotation,
 				easingId,
 				duration,
 				wait

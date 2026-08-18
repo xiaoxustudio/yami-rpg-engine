@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setObject.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setObject.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -28,7 +27,7 @@ type SetObjectOperand = {
 export function useSetObjectCommandSchema() {
 	const { form, save, load } = useCommandSchema('setObject', {
 		onLoad() {
-			getFocus($('#setObject-variable'));
+			getFocus(document.getElementById('setObject-variable'));
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -52,62 +51,84 @@ export function useSetObjectCommandSchema() {
 		});
 	};
 	const onSave = (): void => {
-		const variable = read($('#setObject-variable')) ?? form.variable;
+		const variable = read(document.getElementById('setObject-variable')) ?? form.variable;
 		if (VariableGetter.isNone!(variable)) {
-			getFocus($('#setObject-variable'));
+			getFocus(document.getElementById('setObject-variable'));
 			return;
 		}
-		const type = read($('#setObject-operand-type')) ?? form['operand-type'];
+		const type =
+			read(document.getElementById('setObject-operand-type')) ?? form['operand-type'];
 		let operand: SetObjectOperand = { type: type as string };
 		switch (type) {
 			case 'none':
 				break;
 			case 'actor':
-				operand.actor = read($('#setObject-operand-actor')) ?? form['operand-actor'];
+				operand.actor =
+					read(document.getElementById('setObject-operand-actor')) ??
+					form['operand-actor'];
 				break;
 			case 'skill':
-				operand.skill = read($('#setObject-operand-skill')) ?? form['operand-skill'];
+				operand.skill =
+					read(document.getElementById('setObject-operand-skill')) ??
+					form['operand-skill'];
 				break;
 			case 'state':
-				operand.state = read($('#setObject-operand-state')) ?? form['operand-state'];
+				operand.state =
+					read(document.getElementById('setObject-operand-state')) ??
+					form['operand-state'];
 				break;
 			case 'equipment':
 				operand.equipment =
-					read($('#setObject-operand-equipment')) ?? form['operand-equipment'];
+					read(document.getElementById('setObject-operand-equipment')) ??
+					form['operand-equipment'];
 				break;
 			case 'item':
-				operand.item = read($('#setObject-operand-item')) ?? form['operand-item'];
+				operand.item =
+					read(document.getElementById('setObject-operand-item')) ?? form['operand-item'];
 				break;
 			case 'trigger':
-				operand.trigger = read($('#setObject-operand-trigger')) ?? form['operand-trigger'];
+				operand.trigger =
+					read(document.getElementById('setObject-operand-trigger')) ??
+					form['operand-trigger'];
 				break;
 			case 'light':
-				operand.light = read($('#setObject-operand-light')) ?? form['operand-light'];
+				operand.light =
+					read(document.getElementById('setObject-operand-light')) ??
+					form['operand-light'];
 				break;
 			case 'object':
-				operand.object = read($('#setObject-operand-object')) ?? form['operand-object'];
+				operand.object =
+					read(document.getElementById('setObject-operand-object')) ??
+					form['operand-object'];
 				break;
 			case 'element':
-				operand.element = read($('#setObject-operand-element')) ?? form['operand-element'];
+				operand.element =
+					read(document.getElementById('setObject-operand-element')) ??
+					form['operand-element'];
 				break;
 			case 'variable': {
-				const value = read($('#setObject-operand-variable')) ?? form['operand-variable'];
+				const value =
+					read(document.getElementById('setObject-operand-variable')) ??
+					form['operand-variable'];
 				if (VariableGetter.isNone!(value)) {
-					getFocus($('#setObject-operand-variable'));
+					getFocus(document.getElementById('setObject-operand-variable'));
 					return;
 				}
 				operand.variable = value;
 				break;
 			}
 			case 'list': {
-				const value = read($('#setObject-operand-variable')) ?? form['operand-variable'];
+				const value =
+					read(document.getElementById('setObject-operand-variable')) ??
+					form['operand-variable'];
 				if (VariableGetter.isNone!(value)) {
-					getFocus($('#setObject-operand-variable'));
+					getFocus(document.getElementById('setObject-operand-variable'));
 					return;
 				}
 				operand.variable = value;
 				operand.index =
-					read($('#setObject-operand-list-index')) ?? form['operand-list-index'];
+					read(document.getElementById('setObject-operand-list-index')) ??
+					form['operand-list-index'];
 				break;
 			}
 		}

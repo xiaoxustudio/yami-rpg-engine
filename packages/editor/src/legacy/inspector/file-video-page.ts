@@ -22,10 +22,7 @@ import { Inspector } from './inspector.ts';
 		play: null
 	};
 
-	FileVideo.initialize = function (this: typeof FileVideo) {
-		if (!$('#fileVideo-video')) return;
-		this.video = $('#fileVideo-video') as HTMLVideoElement;
-	};
+	FileVideo.initialize = function (this: typeof FileVideo) {};
 
 	FileVideo.open = function (this: typeof FileVideo, file: FileItem, meta: FileMeta | null) {
 		if (this.target !== file) {

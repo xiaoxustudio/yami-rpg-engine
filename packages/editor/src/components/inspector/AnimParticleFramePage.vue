@@ -98,6 +98,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleFramePage } from '@app/composables/useAnimParticleFramePage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -110,10 +112,28 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useAnimParticleFramePage();
 
 onMounted(() => {
+	const editor = Inspector.animParticleFrame;
+	if (!editor) return;
+
 	const el = document.getElementById('animParticleFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elements = document.querySelectorAll(
+		'#animParticleFrame-x, #animParticleFrame-y, #animParticleFrame-rotation, #animParticleFrame-scaleX, #animParticleFrame-scaleY, #animParticleFrame-opacity, #animParticleFrame-scale, #animParticleFrame-speed'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(editor, Animation, (data: Record<string, unknown>) => {
+				data.type = 'inspector-frame-change';
+				data.motion = editor.motion;
+				data.direction = Animation.direction;
+			}))
+		);
+	}
+
 	sync();
 });
 </script>

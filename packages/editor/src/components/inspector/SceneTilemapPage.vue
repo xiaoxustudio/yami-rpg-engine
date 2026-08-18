@@ -129,8 +129,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneTilemapPage } from '@app/composables/useSceneTilemapPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
@@ -145,6 +150,7 @@ import SelectBox from '@app/components/common/SelectBox.vue';
 
 const scene = useSceneStore();
 const local = useLocalStore();
+const { t } = useI18n();
 
 const { form, sync, onParamInput } = useSceneTilemapPage();
 
@@ -153,10 +159,88 @@ const onLayerWrite = (value: unknown) => {
 };
 
 onMounted(() => {
+	const editor = Inspector.sceneTilemap;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneTilemap-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elLayer = document.getElementById('sceneTilemap-layer') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elLayer?.loadItems) {
+		elLayer.loadItems([
+			{ name: 'Background', value: 'background' },
+			{ name: 'Foreground', value: 'foreground' },
+			{ name: 'Object', value: 'object' }
+		]);
+	}
+
+	const elLight = document.getElementById('sceneTilemap-light') as HTMLElement & { loadItems?: (items: unknown[]) => void; lightItems?: Record<string, unknown[]>; dataItems?: unknown[] | null; dataValue?: unknown; update?: () => void } | null;
+	const elBlend = document.getElementById('sceneTilemap-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const refreshLocalizedItems = () => {
+		const readOption = (id: string, key: string) => {
+			const legacyComponents = local.components as unknown as Record<
+				string,
+				{ options?: Record<string, { name?: string }> }
+			>;
+			const legacyName = legacyComponents[id]?.options?.[key]?.name;
+			if (legacyName) return legacyName;
+			return t(`components.${id}.options.${key}.label`);
+		};
+		if (elLight) {
+			const items = {
+				raw: { name: readOption('sceneTilemap-light', 'raw'), value: 'raw' },
+				global: { name: readOption('sceneTilemap-light', 'global'), value: 'global' },
+				ambient: { name: readOption('sceneTilemap-light', 'ambient'), value: 'ambient' },
+				anchor: { name: readOption('sceneTilemap-light', 'anchor'), value: 'anchor' }
+			};
+			(elLight as unknown as { lightItems: { all: unknown[]; tile: unknown[]; sprite: unknown[] } }).lightItems = {
+				all: Object.values(items),
+				tile: [items.raw, items.global, items.ambient],
+				sprite: [items.raw, items.global, items.anchor]
+			};
+			if (elLight.loadItems) elLight.loadItems(items.tile);
+		}
+		if (elBlend?.loadItems) {
+			elBlend.loadItems([
+				{ name: readOption('sceneTilemap-blend', 'normal'), value: 'normal' },
+				{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
+				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
+			]);
+		}
+	};
+	if (elLight) {
+		editor.lightBox = elLight;
+		refreshLocalizedItems();
+	}
+
+	if (elBlend?.loadItems) {
+		refreshLocalizedItems();
+	}
+
+	document.getElementById('sceneTilemap-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document.getElementById('sceneTilemap-events')?.bind?.(new EventListInterface(editor, Scene));
+	document.getElementById('sceneTilemap-scripts')?.bind?.(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	document.getElementById('sceneTilemap-parameter-pane')?.bind?.(document.getElementById('sceneTilemap-scripts'));
+
+	const elements = document.querySelectorAll(
+		'#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order, #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y, #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY, #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
+	document.getElementById('sceneTilemap-layer')?.addEventListener('input', editor.layerInput!);
+	document.querySelectorAll('#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts')
+		.forEach((el) => el.addEventListener('change', Scene.listChange));
+
+watch(
+		() => local.components,
+		() => refreshLocalizedItems()
+	);
 	sync();
+	window.addEventListener('localize', refreshLocalizedItems);
+	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 });
 </script>

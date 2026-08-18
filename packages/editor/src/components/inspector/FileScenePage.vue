@@ -114,6 +114,10 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileScenePage } from '@app/composables/useFileScenePage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
@@ -131,10 +135,37 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useFileScenePage();
 
 onMounted(() => {
+	const editor = Inspector.fileScene;
+	if (!editor) return;
+
 	const el = document.getElementById('fileScene-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	document.getElementById('fileScene-ambient-red-slider')?.synchronize?.(document.getElementById('fileScene-ambient-red'));
+	document.getElementById('fileScene-ambient-green-slider')?.synchronize?.(document.getElementById('fileScene-ambient-green'));
+	document.getElementById('fileScene-ambient-blue-slider')?.synchronize?.(document.getElementById('fileScene-ambient-blue'));
+	document.getElementById('fileScene-ambient-direct-slider')?.synchronize?.(document.getElementById('fileScene-ambient-direct'));
+
+	const owner = editor.owner;
+	document.getElementById('fileScene-events')?.bind?.(new EventListInterface(editor, owner));
+	document.getElementById('fileScene-scripts')?.bind?.(new ScriptListInterface(editor, owner));
+	document.getElementById('fileScene-parameter-pane')?.bind?.(document.getElementById('fileScene-scripts'));
+
+	const elements = document.querySelectorAll(
+		'#fileScene-tileWidth, #fileScene-tileHeight, #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct'
+	);
+	const sliders = document.querySelectorAll(
+		'#fileScene-ambient-red-slider, #fileScene-ambient-green-slider, #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, owner)));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	document.querySelectorAll('#fileScene-events, #fileScene-scripts')
+		.forEach((el) => el.addEventListener('change', Scene.listChange));
+
 	sync();
 });
 </script>

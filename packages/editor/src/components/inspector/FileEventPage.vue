@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
@@ -48,10 +49,44 @@ const onTypeWrite = (value: unknown) => {
 };
 
 onMounted(() => {
+	const editor = Inspector.fileEvent;
+	if (!editor) return;
+
 	const el = document.getElementById('fileEvent-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	if (EventEditor.types) {
+		const elType = document.getElementById('fileEvent-type') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+		if (elType?.loadItems) {
+			elType.loadItems(EventEditor.types.global);
+		}
+		EventEditor.types.relatedElements.push(document.getElementById('fileEvent-type'));
+	}
+
+	const elReturnType = document.getElementById('fileEvent-returnType') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elReturnType?.loadItems) {
+		elReturnType.loadItems([
+			{ name: 'None', value: 'none' },
+			{ name: 'Boolean', value: 'boolean' },
+			{ name: 'Number', value: 'number' },
+			{ name: 'String', value: 'string' },
+			{ name: 'Object', value: 'object' },
+			{ name: 'Actor', value: 'actor' },
+			{ name: 'Skill', value: 'skill' },
+			{ name: 'State', value: 'state' },
+			{ name: 'Equipment', value: 'equipment' },
+			{ name: 'Item', value: 'item' },
+			{ name: 'Trigger', value: 'trigger' },
+			{ name: 'Light', value: 'light' },
+			{ name: 'Element', value: 'element' }
+		]);
+	}
+
+	document.getElementById('fileEvent-parameters')?.bind?.(editor.parameters);
+	document.getElementById('fileEvent-parameters')?.on?.('change', editor.listChange);
+
 	sync();
 });
 </script>

@@ -1,7 +1,6 @@
-import '@app/legacy/module/command/script.ts';
+﻿import '@app/legacy/module/command/script.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, hasClass, hide, show } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Editor } from '@app/legacy/main/editor.ts';
@@ -47,18 +46,18 @@ const setChangeState = (value: boolean): void => {
 	if (changed !== value) {
 		changed = value;
 		if (value) {
-			show($('#script-mark'));
+			show(document.getElementById('script-mark'));
 		} else {
-			hide($('#script-mark'));
+			hide(document.getElementById('script-mark'));
 		}
 	}
 };
 
-const isMaximized = (): boolean => hasClass($('#script'), 'maximized');
+const isMaximized = (): boolean => hasClass(document.getElementById('script'), 'maximized');
 
 const resize = (): void => {
 	if (!editor) return;
-	const content = $('#script-script');
+	const content = document.getElementById('script-script');
 	const parent = content.parentElement!;
 	if (!isMaximized()) {
 		content.style.width = '';
@@ -83,7 +82,7 @@ const createEditor = async (): Promise<void> => {
 	const monaco = await getMonaco();
 	const { theme } = Title;
 	await Command.cases.script.createTheme(theme);
-	editor = monaco.editor.create($('#script-script'), {
+	editor = monaco.editor.create(document.getElementById('script-script'), {
 		language: 'javascript',
 		theme: theme ?? '',
 		tabSize: 2,
@@ -118,11 +117,11 @@ const createEditor = async (): Promise<void> => {
 	} as unknown as Parameters<typeof monaco.editor.create>[1]);
 	model = editor!.getModel() as unknown as ScriptModel;
 
-	$('#script-change')?.on?.('click', async () => {
+	document.getElementById('script-change')?.on?.('click', async () => {
 		const currentLanguage = editor!.getModel()!.getLanguageId();
 		let languageId = currentLanguage === 'javascript' ? 'typescript' : 'javascript';
 		const get = Local.createGetter!('confirmation');
-		const scriptChange = $('#script-change');
+		const scriptChange = document.getElementById('script-change');
 		if (scriptChange) {
 			scriptChange.name =
 				currentLanguage === 'javascript' ? 'script-change-ts' : 'script-change-js';
@@ -244,7 +243,7 @@ const save = async (): Promise<void> => {
 const initialize = (): void => {
 	if (bound) return;
 	bound = true;
-	$('#script')?.on('close', (event: Event) => {
+	document.getElementById('script')?.on('close', (event: Event) => {
 		if (changed) {
 			event.preventDefault();
 			const get = Local.createGetter!('confirmation');
@@ -271,15 +270,15 @@ const initialize = (): void => {
 		}
 	});
 
-	$('#script')?.on('resize', () => {
+	document.getElementById('script')?.on('resize', () => {
 		resize();
 	});
 
-	$('#script')?.on('closed', () => {
+	document.getElementById('script')?.on('closed', () => {
 		model?.setValue('');
 	});
 
-	$('#script')?.on('keydown', (event: KeyboardEvent) => {
+	document.getElementById('script')?.on('keydown', (event: KeyboardEvent) => {
 		if (hasClass(event.target, 'inputarea')) {
 			switch (event.code) {
 				case 'Enter':

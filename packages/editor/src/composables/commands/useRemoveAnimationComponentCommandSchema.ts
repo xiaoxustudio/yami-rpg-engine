@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/removeAnimationComponent.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/removeAnimationComponent.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,12 +6,12 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useRemoveAnimationComponentCommandSchema() {
 	const { form, save, load } = useCommandSchema('removeAnimationComponent', {
 		onLoad() {
-			getFocus($('#removeAnimationComponent-actor'));
+			getFocus(document.getElementById('removeAnimationComponent-actor'));
 		}
 	});
 	const writeHandler = (event: { value: string }): void => {
 		if (!event.value) return;
-		const elMotion = $('#removeAnimationComponent-motion');
+		const elMotion = document.getElementById('removeAnimationComponent-motion');
 		elMotion.loadItems(Animation.getMotionListItems!(event.value));
 		elMotion.write2(read(elMotion));
 	};

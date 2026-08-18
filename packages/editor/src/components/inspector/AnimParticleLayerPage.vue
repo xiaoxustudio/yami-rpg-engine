@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useAnimParticleLayerPage } from '@app/composables/useAnimParticleLayerPage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -33,10 +35,52 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useAnimParticleLayerPage();
 
 onMounted(() => {
+	const editor = Inspector.animParticleLayer;
+	if (!editor) return;
+
 	const el = document.getElementById('animParticleLayer-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elPosition = document.getElementById('animParticleLayer-position') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elPosition?.loadItems) {
+		elPosition.loadItems([
+			{ name: 'Absolute', value: 'absolute' },
+			{ name: 'Relative', value: 'relative' }
+		]);
+	}
+
+	const elAngle = document.getElementById('animParticleLayer-angle') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elAngle?.loadItems) {
+		elAngle.loadItems([
+			{ name: 'Default', value: 'default' },
+			{ name: 'Inherit', value: 'inherit' }
+		]);
+	}
+
+	const elOrder = document.getElementById('animParticleLayer-order') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elOrder?.loadItems) {
+		elOrder.loadItems([
+			{ name: 'Behind Sprites', value: 'before' },
+			{ name: 'Front of Sprites', value: 'after' }
+		]);
+	}
+
+	const elements = document.querySelectorAll(
+		'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(editor, Animation, (data: Record<string, unknown>) => {
+				data.type = 'inspector-layer-change';
+				data.motion = editor.motion;
+				data.direction = Animation.direction;
+			}))
+		);
+	}
+
 	sync();
 });
 </script>

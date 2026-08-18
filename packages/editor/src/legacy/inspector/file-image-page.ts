@@ -21,10 +21,7 @@ import { Inspector } from './inspector.ts';
 		close: null
 	};
 
-	FileImage.initialize = function (this: typeof FileImage) {
-		if (!$('#fileImage-image')) return;
-		this.image = $('#fileImage-image') as HTMLImageElement;
-	};
+	FileImage.initialize = function () {};
 
 	FileImage.open = function (this: typeof FileImage, file: FileItem, meta: FileMeta | null) {
 		if (this.target !== file) {

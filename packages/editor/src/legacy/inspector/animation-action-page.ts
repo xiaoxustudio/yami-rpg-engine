@@ -26,38 +26,7 @@ import { write } from '@/util/element-utils.ts';
 		update: null
 	};
 
-	AnimMotion.initialize = function (this: typeof AnimMotion) {
-		if (!$('#animMotion-mode')) return;
-		this.owner = {
-			setTarget: (motion: Record<string, unknown>) => {
-				Animation.setMotion!(motion);
-				Inspector.open!('animMotion', motion);
-			}
-		};
-
-		$('#animMotion-mode').loadItems([
-			{ name: '1 Directional', value: '1-dir' },
-			{ name: '2 Directional', value: '2-dir' },
-			{ name: '4 Directional', value: '4-dir' },
-			{ name: '8 Directional', value: '8-dir' },
-			{ name: '1 Directional - Mirror', value: '1-dir-mirror' },
-			{ name: '2 Directional - Mirror', value: '2-dir-mirror' },
-			{ name: '3 Directional - Mirror', value: '3-dir-mirror' },
-			{ name: '5 Directional - Mirror', value: '5-dir-mirror' }
-		]);
-
-		$('#animMotion-loop').relate([$('#animMotion-loopStart')]);
-
-		const elements = document.querySelectorAll(
-			'#animMotion-skip, #animMotion-loop, #animMotion-loopStart'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Animation))
-		);
-	};
+	AnimMotion.initialize = function (this: typeof AnimMotion) {};
 
 	AnimMotion.create = function (this: typeof AnimMotion, motionId: string) {
 		return {

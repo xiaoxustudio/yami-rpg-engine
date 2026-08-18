@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setProgressBar.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setProgressBar.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,13 +6,14 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetProgressBarCommandSchema() {
 	const { form, save, load } = useCommandSchema('setProgressBar', {
 		onLoad() {
-			getFocus($('#setProgressBar-element'));
+			getFocus(document.getElementById('setProgressBar-element'));
 		}
 	});
 	const onSave = (): void => {
-		const properties = read($('#setProgressBar-properties')) ?? form.properties;
+		const properties =
+			read(document.getElementById('setProgressBar-properties')) ?? form.properties;
 		if (properties.length === 0) {
-			getFocus($('#setProgressBar-properties'));
+			getFocus(document.getElementById('setProgressBar-properties'));
 			return;
 		}
 		save();

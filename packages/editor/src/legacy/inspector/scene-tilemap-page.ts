@@ -1,12 +1,9 @@
 import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, read, write } from '@/util/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
-import { selectBoxSetItemNames } from '@/components/select-box.ts';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
 import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneTilemapLightItem {
@@ -56,76 +53,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		layerInput: null
 	};
 
-	SceneTilemap.initialize = function (this: typeof SceneTilemap) {
-		if (!$('#sceneTilemap-name')) return;
-		this.nameBox = $('#sceneTilemap-name');
-		this.lightBox = $('#sceneTilemap-light') as unknown as SceneTilemapLightBox;
-		$('#sceneTilemap-layer')?.loadItems?.([
-			{ name: 'Background', value: 'background' },
-			{ name: 'Foreground', value: 'foreground' },
-			{ name: 'Object', value: 'object' }
-		]);
-
-		const items = {
-			raw: { name: 'Raw', value: 'raw' },
-			global: { name: 'Global Sampling', value: 'global' },
-			ambient: { name: 'Ambient Light', value: 'ambient' },
-			anchor: { name: 'Anchor Sampling', value: 'anchor' }
-		};
-		this.lightBox!.lightItems = {
-			all: Object.values(items),
-			tile: [items.raw, items.global, items.ambient],
-			sprite: [items.raw, items.global, items.anchor]
-		};
-
-		// 闂佺绻愰ˇ閬嶅吹鎼淬劍鐓傞柛銉ｅ妿婢瑰姊洪銏╂█闁?- 闂備焦褰冪粔鎾疮閹捐埖濯奸柛鎾楀懏鐎梻渚囧亜椤︾敻濡村澶婅Е鐎广儱鎳愰幗鐔兼煛閸屾繍娼愮痪?
-		this.lightBox!.setItemNames = function (
-			this: SceneTilemapLightBox,
-			options: Record<string, string | { name?: string; tip?: string }>
-		) {
-			const backup = this.dataItems;
-			this.dataItems = this.lightItems.all;
-			selectBoxSetItemNames(this, options);
-			this.dataItems = backup;
-			if (this.dataValue !== null) {
-				this.update();
-			}
-		};
-
-		$('#sceneTilemap-blend')?.loadItems?.([
-			{ name: 'Normal', value: 'normal' },
-			{ name: 'Additive', value: 'additive' },
-			{ name: 'Subtract', value: 'subtract' }
-		]);
-
-		$('#sceneTilemap-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneTilemap-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneTilemap-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneTilemap-parameter-pane')?.bind?.($('#sceneTilemap-scripts'));
-
-		const elements =
-			document.querySelectorAll(`#sceneTilemap-name, #sceneTilemap-layer, #sceneTilemap-order,
-    #sceneTilemap-light, #sceneTilemap-blend, #sceneTilemap-x, #sceneTilemap-y,
-    #sceneTilemap-anchorX, #sceneTilemap-anchorY, #sceneTilemap-offsetX, #sceneTilemap-offsetY,
-    #sceneTilemap-parallaxFactorX, #sceneTilemap-parallaxFactorY, #sceneTilemap-opacity`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		$('#sceneTilemap-layer')?.addEventListener('input', this.layerInput!);
-		document
-			.querySelectorAll(
-				'#sceneTilemap-conditions, #sceneTilemap-events, #sceneTilemap-scripts'
-			)
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneTilemap.initialize = function () {};
 
 	SceneTilemap.create = function (this: typeof SceneTilemap, width = 4, height = 4) {
 		const tiles = Scene.createTiles!(width, height);
@@ -254,7 +182,13 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		this: typeof SceneTilemap,
 		event: Event & { value: unknown }
 	) {
-		const lightBox = SceneTilemap.lightBox!;
+		const lightBox =
+			SceneTilemap.lightBox ??
+			(document.getElementById(
+				'sceneTilemap-light'
+			) as unknown as typeof SceneTilemap.lightBox);
+		if (!lightBox?.lightItems) return;
+		SceneTilemap.lightBox = lightBox;
 		const type = event.value === 'object' ? 'sprite' : 'tile';
 		const items = lightBox.lightItems[type];
 		if (lightBox.dataItems !== items) {

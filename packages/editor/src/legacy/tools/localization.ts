@@ -167,6 +167,7 @@ Local.setLanguage = async function (this: typeof Local, language: string) {
 				this.update!(await File.get!({ local: path, type: 'json' }));
 				this.active = filename;
 				this.language = language;
+				getLocalStore().setLanguage(language);
 				window.dispatchEvent(new Event('localize'));
 			} catch (error: unknown) {
 				console.error(new Error('Failed to load language pack'));
@@ -186,33 +187,41 @@ Local.update = (function IIFE() {
 	return function (this: typeof Local, data: Record<string, unknown>) {
 		this.setProperties!(data.properties as Record<string, unknown>);
 		this.components = (data.components ?? {}) as Record<string, LocalComponentItem>;
+		getLocalStore().setLanguage(this.language || 'en-US');
 		getLocalStore().properties = this.properties;
 		getLocalStore().components = this.components;
 		const entries = Object.entries(data.components ?? {});
 		const length = entries.length;
 		for (let i = 0; i < length; i++) {
 			const [key, item] = entries[i];
-			if (key[0] === '[') {
-				if (key === '[comment]') continue;
-				const elements =
-					key[1] === '.'
-						? document.getElementsByClassName(key.slice(2, -1))
-						: document.getElementsByName(key.slice(1, -1));
-				const length = elements.length;
-				if (length !== 0) {
-					for (let i = 0; i < length; i++) {
-						this.setElement!(elements[i] as HTMLElement, item as LocalComponentItem);
+			try {
+				if (key[0] === '[') {
+					if (key === '[comment]') continue;
+					const elements =
+						key[1] === '.'
+							? document.getElementsByClassName(key.slice(2, -1))
+							: document.getElementsByName(key.slice(1, -1));
+					const length = elements.length;
+					if (length !== 0) {
+						for (let i = 0; i < length; i++) {
+							this.setElement!(
+								elements[i] as HTMLElement,
+								item as LocalComponentItem
+							);
+						}
+					} else {
+						throwError(`key '${key}' is invalid`);
 					}
 				} else {
-					throwError(`key '${key}' is invalid`);
+					const element = document.getElementById(key);
+					if (element !== null) {
+						this.setElement!(element, item as LocalComponentItem);
+					} else {
+						throwError(`key '${key}' is invalid`);
+					}
 				}
-			} else {
-				const element = document.getElementById(key);
-				if (element !== null) {
-					this.setElement!(element, item as LocalComponentItem);
-				} else {
-					throwError(`key '${key}' is invalid`);
-				}
+			} catch {
+				// 单个控件本地化失败不阻断整个语言包加载（控件可能尚未初始化）
 			}
 		}
 		this.saveItems = {} as Record<string, LocalComponentItem>;

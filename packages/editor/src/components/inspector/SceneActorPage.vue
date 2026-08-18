@@ -105,6 +105,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneActorPage } from '@app/composables/useSceneActorPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
@@ -129,10 +133,44 @@ const onTypeWrite = (value: unknown) => {
 };
 
 onMounted(() => {
+	const editor = Inspector.sceneActor;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneActor-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elType = document.getElementById('sceneActor-type') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elType?.loadItems) {
+		elType.loadItems([
+			{ name: 'Local Actor', value: 'local' },
+			{ name: 'Global Actor', value: 'global' }
+		]);
+	}
+
+	document.getElementById('sceneActor-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document.getElementById('sceneActor-events')?.bind?.(new EventListInterface(editor, Scene));
+	document.getElementById('sceneActor-scripts')?.bind?.(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	document.getElementById('sceneActor-parameter-pane')?.bind?.(document.getElementById('sceneActor-scripts'));
+
+	document.getElementById('sceneActor-angle-slider')?.synchronize?.(document.getElementById('sceneActor-angle'));
+	document.getElementById('sceneActor-scale-slider')?.synchronize?.(document.getElementById('sceneActor-scale'));
+
+	window.addEventListener('datachange', editor.datachange as unknown as EventListener);
+	const elements = document.querySelectorAll(
+		'#sceneActor-name, #sceneActor-type, #sceneActor-actorId, #sceneActor-teamId, #sceneActor-x, #sceneActor-y, #sceneActor-angle, #sceneActor-scale'
+	);
+	const sliders = document.querySelectorAll('#sceneActor-angle-slider, #sceneActor-scale-slider');
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	document.querySelectorAll('#sceneActor-conditions, #sceneActor-events, #sceneActor-scripts')
+		.forEach((el) => el.addEventListener('change', Scene.listChange));
+
 	sync();
 });
 </script>

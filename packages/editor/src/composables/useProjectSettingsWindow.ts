@@ -1,9 +1,8 @@
-import { reactive } from 'vue';
+﻿import { reactive } from 'vue';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
@@ -64,89 +63,93 @@ let changed = false;
 let tscStarted = false;
 
 function initialize(): void {
-	if (!$('#config-window-display')) return;
-	$('#config-window-display').loadItems([
+	if (!document.getElementById('config-window-display')) return;
+	document.getElementById('config-window-display').loadItems([
 		{ name: 'Windowed', value: 'windowed' },
 		{ name: 'Maximized', value: 'maximized' },
 		{ name: 'Fullscreen', value: 'fullscreen' }
 	]);
 
-	$('#config-collision-actor-enabled').loadItems([
+	document.getElementById('config-collision-actor-enabled').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	$('#config-collision-scene-enabled').loadItems([
+	document.getElementById('config-collision-scene-enabled').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	$('#config-collision-scene-enabled')
+	document
+		.getElementById('config-collision-scene-enabled')
 		.enableHiddenMode()
-		.relate([{ case: true, targets: [$('#config-collision-scene-actorSize')] }]);
+		.relate([
+			{ case: true, targets: [document.getElementById('config-collision-scene-actorSize')] }
+		]);
 
-	$('#config-collision-trigger-collideWithActorShape').loadItems([
+	document.getElementById('config-collision-trigger-collideWithActorShape').loadItems([
 		{ name: "Collide With Actor's Shape", value: true },
 		{ name: "Collide With Actor's Anchor", value: false }
 	]);
 
-	$('#config-text-importedFonts').bind(importedFonts);
+	document.getElementById('config-text-importedFonts').bind(importedFonts);
 
-	$('#config-text-highDefinition').loadItems([
+	document.getElementById('config-text-highDefinition').loadItems([
 		{ name: 'Yes', value: true },
 		{ name: 'No', value: false }
 	]);
 
-	$('#config-actor-tempAttributes').bind(new AttributeListInterface());
+	document.getElementById('config-actor-tempAttributes').bind(new AttributeListInterface());
 
-	$('#config-webgl-desynchronized').loadItems([
+	document.getElementById('config-webgl-desynchronized').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	$('#config-webgl-textureMagFilter').loadItems([
+	document.getElementById('config-webgl-textureMagFilter').loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	$('#config-webgl-textureMinFilter').loadItems([
+	document.getElementById('config-webgl-textureMinFilter').loadItems([
 		{ name: 'Nearest', value: 'nearest' },
 		{ name: 'Linear', value: 'linear' }
 	]);
 
-	$('#config-script-autoCompile').loadItems([
+	document.getElementById('config-script-autoCompile').loadItems([
 		{ name: 'Enabled', value: true },
 		{ name: 'Disabled', value: false }
 	]);
 
-	$('#config-save-location').loadItems([
+	document.getElementById('config-save-location').loadItems([
 		{ name: 'App Data', value: 'app-data' },
 		{ name: 'Documents', value: 'documents' },
 		{ name: 'Local Directory', value: 'local' }
 	]);
 
-	$('#config-save-location')
+	document
+		.getElementById('config-save-location')
 		.enableHiddenMode()
 		.relate([
 			{
 				case: ['app-data', 'documents'],
-				targets: [$('#config-save-subdir')]
+				targets: [document.getElementById('config-save-subdir')]
 			}
 		]);
 
-	$('#config-localization-languages').bind(languages);
+	document.getElementById('config-localization-languages').bind(languages);
 
-	$('#config-preload').loadItems([
+	document.getElementById('config-preload').loadItems([
 		{ name: 'Never', value: 'never' },
 		{ name: 'Always', value: 'always' },
 		{ name: 'Only on Deployment', value: 'deployed' }
 	]);
 
 	window.addEventListener('datachange', projectChange as EventListener);
-	on($('#project-settings'), 'close', windowClose);
-	on($('#project-settings'), 'closed', windowClosed);
-	on($('#project-settings'), 'change', dataChange);
-	on($('#project-confirm'), 'click', confirm);
+	on(document.getElementById('project-settings'), 'close', windowClose);
+	on(document.getElementById('project-settings'), 'closed', windowClosed);
+	on(document.getElementById('project-settings'), 'change', dataChange);
+	on(document.getElementById('project-confirm'), 'click', confirm);
 	document
 		.querySelectorAll(`#config-window-title, #config-window-width, #config-window-height,
     #config-window-display, #config-resolution-width, #config-resolution-height,
@@ -177,7 +180,7 @@ function open(): void {
 
 	getProjectStore().state = 'open';
 
-	$('#config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
+	document.getElementById('config-soundAttenuation-easingId').loadItems(Data.createEasingItems());
 
 	const data = getProjectStore().data;
 	const setForm = (
@@ -326,12 +329,12 @@ const importedFonts: ImportedFonts = {
 
 const languages: LanguagesInterface = {
 	initialize: function (this: LanguagesInterface, list: { inserting?: boolean }) {
-		on($('#language-confirm'), 'click', () => {
+		on(document.getElementById('language-confirm'), 'click', () => {
 			if (list.inserting) {
 				const languages = getProjectStore().data!.localization.languages;
-				const langName = read($('#language-name'));
+				const langName = read(document.getElementById('language-name'));
 				if (languages.find((lang: { name: string }) => lang.name === langName)) {
-					return getFocus($('#language-name'));
+					return getFocus(document.getElementById('language-name'));
 				}
 			}
 			this.target?.save?.();
@@ -345,22 +348,22 @@ const languages: LanguagesInterface = {
 		];
 	},
 	open: function (language = { name: '', font: '', scale: 1 }) {
-		$('#language-name').loadItems(this.createAllItems());
-		$('#language-name').write2(language.name);
-		write($('#language-font'), language.font);
-		write($('#language-scale'), language.scale);
-		getFocus($('#language-name'));
+		document.getElementById('language-name').loadItems(this.createAllItems());
+		document.getElementById('language-name').write2(language.name);
+		write(document.getElementById('language-font'), language.font);
+		write(document.getElementById('language-scale'), language.scale);
+		getFocus(document.getElementById('language-name'));
 		Window.open!('language');
 	},
 	save: function () {
 		return {
-			name: read($('#language-name')),
-			font: read($('#language-font')),
-			scale: read($('#language-scale'))
+			name: read(document.getElementById('language-name')),
+			font: read(document.getElementById('language-font')),
+			scale: read(document.getElementById('language-scale'))
 		};
 	},
 	update: function () {
-		const selectBox = $('#config-localization-default');
+		const selectBox = document.getElementById('config-localization-default');
 		const defaultLang = read(selectBox);
 		selectBox.loadItems(languages.createValidItems());
 		if (defaultLang) write(selectBox, defaultLang);

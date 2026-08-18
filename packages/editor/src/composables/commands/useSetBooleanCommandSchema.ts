@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setBoolean.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setBoolean.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -17,7 +16,7 @@ const writeHandler = (event: { value: string }): void => {
 			filter = 'object';
 			break;
 	}
-	const element = $('#setBoolean-common-variable');
+	const element = document.getElementById('setBoolean-common-variable');
 	if (element) {
 		element.filter = filter;
 	}
@@ -71,62 +70,70 @@ const load = ({
 	form['list-index'] = listIndex;
 	form['parameter-key'] = parameterKey;
 	form.script = script;
-	write($('#setBoolean-variable'), form.variable);
-	write($('#setBoolean-operation'), form.operation);
-	write($('#setBoolean-operand-type'), form['operand-type']);
-	write($('#setBoolean-constant-value'), form['constant-value']);
-	write($('#setBoolean-common-variable'), form['common-variable']);
-	write($('#setBoolean-list-index'), form['list-index']);
-	write($('#setBoolean-parameter-key'), form['parameter-key']);
-	write($('#setBoolean-script'), form.script);
-	getFocus($('#setBoolean-variable'));
+	write(document.getElementById('setBoolean-variable'), form.variable);
+	write(document.getElementById('setBoolean-operation'), form.operation);
+	write(document.getElementById('setBoolean-operand-type'), form['operand-type']);
+	write(document.getElementById('setBoolean-constant-value'), form['constant-value']);
+	write(document.getElementById('setBoolean-common-variable'), form['common-variable']);
+	write(document.getElementById('setBoolean-list-index'), form['list-index']);
+	write(document.getElementById('setBoolean-parameter-key'), form['parameter-key']);
+	write(document.getElementById('setBoolean-script'), form.script);
+	getFocus(document.getElementById('setBoolean-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read($('#setBoolean-variable')) ?? form.variable;
+	const variable = read(document.getElementById('setBoolean-variable')) ?? form.variable;
 	if (VariableGetter.isNone!(variable as any)) {
-		return getFocus($('#setBoolean-variable'));
+		return getFocus(document.getElementById('setBoolean-variable'));
 	}
-	const operation = read($('#setBoolean-operation')) ?? form.operation;
-	const type = read($('#setBoolean-operand-type')) ?? form['operand-type'];
+	const operation = read(document.getElementById('setBoolean-operation')) ?? form.operation;
+	const type = read(document.getElementById('setBoolean-operand-type')) ?? form['operand-type'];
 	let operand;
 	switch (type) {
 		case 'constant': {
-			const value = read($('#setBoolean-constant-value')) ?? form['constant-value'];
+			const value =
+				read(document.getElementById('setBoolean-constant-value')) ??
+				form['constant-value'];
 			operand = { type, value };
 			break;
 		}
 		case 'variable': {
 			const commonVariable =
-				read($('#setBoolean-common-variable')) ?? form['common-variable'];
+				read(document.getElementById('setBoolean-common-variable')) ??
+				form['common-variable'];
 			if (VariableGetter.isNone!(commonVariable as any)) {
-				return getFocus($('#setBoolean-common-variable'));
+				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
 			operand = { type, variable: commonVariable };
 			break;
 		}
 		case 'list': {
 			const commonVariable =
-				read($('#setBoolean-common-variable')) ?? form['common-variable'];
+				read(document.getElementById('setBoolean-common-variable')) ??
+				form['common-variable'];
 			if (VariableGetter.isNone!(commonVariable as any)) {
-				return getFocus($('#setBoolean-common-variable'));
+				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
-			const index = read($('#setBoolean-list-index')) ?? form['list-index'];
+			const index =
+				read(document.getElementById('setBoolean-list-index')) ?? form['list-index'];
 			operand = { type, variable: commonVariable, index };
 			break;
 		}
 		case 'parameter': {
-			const key = read($('#setBoolean-parameter-key')) ?? form['parameter-key'];
+			const key =
+				read(document.getElementById('setBoolean-parameter-key')) ?? form['parameter-key'];
 			if (key === '') {
-				return getFocus($('#setBoolean-parameter-key'));
+				return getFocus(document.getElementById('setBoolean-parameter-key'));
 			}
 			operand = { type, key };
 			break;
 		}
 		case 'script': {
-			const script = ((read($('#setBoolean-script')) ?? form.script) as string).trim();
+			const script = (
+				(read(document.getElementById('setBoolean-script')) ?? form.script) as string
+			).trim();
 			if (script === '') {
-				return getFocus($('#setBoolean-script'));
+				return getFocus(document.getElementById('setBoolean-script'));
 			}
 			operand = { type, script };
 			break;

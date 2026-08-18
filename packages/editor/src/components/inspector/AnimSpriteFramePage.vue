@@ -210,7 +210,7 @@
 					id="sprite-screen"
 					tabindex="-1"
 					@keydown="onScreenKeydown"
-					@wheel.passive="onScreenWheel"
+					@wheel="onScreenWheel"
 				>
 					<MarqueeArea
 						id="sprite-marquee"
@@ -227,6 +227,8 @@ import { onMounted } from 'vue';
 import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage';
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
@@ -254,7 +256,52 @@ const onMarqueePointerdown = (event: PointerEvent) => {
 	Sprite?.marqueePointerdown?.(event);
 };
 
+const synchronize = (sliderId: string, inputId: string) => {
+	const slider = document.getElementById(sliderId) as unknown as { synchronize?: (el: HTMLElement | null) => void } | null;
+	const input = document.getElementById(inputId);
+	slider?.synchronize?.(input);
+};
+
 onMounted(() => {
+	const animSpriteFrame = Inspector.animSpriteFrame;
+	if (!animSpriteFrame) return;
+
+	synchronize('animSpriteFrame-tint-0-slider', 'animSpriteFrame-tint-0');
+	synchronize('animSpriteFrame-tint-1-slider', 'animSpriteFrame-tint-1');
+	synchronize('animSpriteFrame-tint-2-slider', 'animSpriteFrame-tint-2');
+	synchronize('animSpriteFrame-tint-3-slider', 'animSpriteFrame-tint-3');
+
+	const elements = document.querySelectorAll(`
+    #animSpriteFrame-anchorX, #animSpriteFrame-anchorY,
+    #animSpriteFrame-pivotX, #animSpriteFrame-pivotY,
+    #animSpriteFrame-x, #animSpriteFrame-y, #animSpriteFrame-rotation,
+    #animSpriteFrame-scaleX, #animSpriteFrame-scaleY, #animSpriteFrame-opacity,
+    #animSpriteFrame-tint-0, #animSpriteFrame-tint-1, #animSpriteFrame-tint-2, #animSpriteFrame-tint-3`);
+	const sliders = document.querySelectorAll(`
+    #animSpriteFrame-tint-0-slider, #animSpriteFrame-tint-1-slider,
+    #animSpriteFrame-tint-2-slider, #animSpriteFrame-tint-3-slider`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(animSpriteFrame, Animation, (data: Record<string, unknown>) => {
+				data.type = 'inspector-frame-change';
+				data.motion = animSpriteFrame.motion;
+				data.direction = Animation.direction;
+			}))
+		);
+	}
+	if (Inspector.sliderFocus && Inspector.sliderBlur) {
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+	}
+	Sprite.initialize();
+
 	const el = document.getElementById('animSpriteFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

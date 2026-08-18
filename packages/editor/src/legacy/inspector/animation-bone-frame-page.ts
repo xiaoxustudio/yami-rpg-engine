@@ -20,25 +20,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimJointFrame.initialize = function (this: typeof AnimJointFrame) {
-		if (!$('#animJointFrame-x')) return;
-		const elements =
-			document.querySelectorAll(`#animJointFrame-x, #animJointFrame-y, #animJointFrame-rotation,
-    #animJointFrame-scaleX, #animJointFrame-scaleY, #animJointFrame-opacity`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener(
-				'blur',
-				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-					data.type = 'inspector-frame-change';
-					data.motion = this.motion;
-					data.direction = Animation.direction;
-				})
-			)
-		);
-	};
+	AnimJointFrame.initialize = function (this: typeof AnimJointFrame) {};
 
 	AnimJointFrame.create = function (this: typeof AnimJointFrame) {
 		return {

@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/showChoices.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/showChoices.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Local } from '@app/legacy/tools/localization.ts';
@@ -30,24 +29,25 @@ const load = ({
 } = {}): void => {
 	form.choices = list.slice();
 	form.parameters = parameters;
-	write($('#showChoices-choices'), form.choices);
-	write($('#showChoices-parameters'), form.parameters);
+	write(document.getElementById('showChoices-choices'), form.choices);
+	write(document.getElementById('showChoices-parameters'), form.parameters);
 	choices = list;
-	getFocus($('#showChoices-choices'));
+	getFocus(document.getElementById('showChoices-choices'));
 };
 
 const save = (): unknown => {
-	const list = (read($('#showChoices-choices')) ?? form.choices) as unknown[];
+	const list = (read(document.getElementById('showChoices-choices')) ??
+		form.choices) as unknown[];
 	if (list.length === 0) {
-		return getFocus($('#showChoices-choices'));
+		return getFocus(document.getElementById('showChoices-choices'));
 	}
-	const parameters = read($('#showChoices-parameters')) ?? form.parameters;
+	const parameters = read(document.getElementById('showChoices-parameters')) ?? form.parameters;
 	Command.save?.({ choices: list, parameters });
 };
 
 const windowClosed = (event: Event): void => {
 	choices = null;
-	clear($('#showChoices-choices'));
+	clear(document.getElementById('showChoices-choices'));
 };
 
 const schema = Command.cases.showChoices;

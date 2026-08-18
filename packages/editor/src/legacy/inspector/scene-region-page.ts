@@ -2,9 +2,6 @@ import { $, getElementWriter } from '@/util/dom.ts';
 import { clear, write } from '@/util/element-utils';
 import { Inspector } from './inspector.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { ConditionListInterface } from '@/tools/condition-list.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
-import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
 	interface SceneRegionShape {
@@ -24,31 +21,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		update: null
 	};
 
-	SceneRegion.initialize = function (this: typeof SceneRegion) {
-		if (!$('#sceneRegion-name')) return;
-		this.nameBox = $('#sceneRegion-name');
-		$('#sceneRegion-conditions')?.bind?.(new ConditionListInterface(this, Scene));
-
-		$('#sceneRegion-events')?.bind?.(new EventListInterface(this, Scene));
-
-		$('#sceneRegion-scripts')?.bind?.(
-			new ScriptListInterface(this as unknown as { target?: { id: string } }, Scene)
-		);
-
-		$('#sceneRegion-parameter-pane')?.bind?.($('#sceneRegion-scripts'));
-
-		const elements = document.querySelectorAll(`#sceneRegion-name, #sceneRegion-color,
-    #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, Scene))
-		);
-		document
-			.querySelectorAll('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts')
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
-	};
+	SceneRegion.initialize = function () {};
 
 	SceneRegion.create = function (this: typeof SceneRegion) {
 		return {

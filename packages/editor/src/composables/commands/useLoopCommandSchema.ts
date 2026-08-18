@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/loop.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -10,13 +9,13 @@ export function useLoopCommandSchema() {
 	const { form, save, load } = useCommandSchema('loop', {
 		onLoad(params) {
 			commands = params.commands ?? [];
-			getFocus($('#loop-conditions'));
+			getFocus(document.getElementById('loop-conditions')!);
 		}
 	});
 	const onSave = (): void => {
 		Command.save?.({
-			mode: read($('#loop-mode')) ?? form.mode,
-			conditions: read($('#loop-conditions')) ?? form.conditions,
+			mode: read(document.getElementById('loop-mode')!) ?? form.mode,
+			conditions: read(document.getElementById('loop-conditions')!) ?? form.conditions,
 			commands
 		});
 	};

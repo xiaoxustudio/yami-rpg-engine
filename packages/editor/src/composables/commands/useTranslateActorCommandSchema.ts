@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/translateActor.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/translateActor.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,22 +6,22 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useTranslateActorCommandSchema() {
 	const { form, save, load } = useCommandSchema('translateActor', {
 		onLoad() {
-			getFocus($('#translateActor-actor'));
+			getFocus(document.getElementById('translateActor-actor'));
 		}
 	});
 	const onSave = (): void => {
-		const distance = read($('#translateActor-distance')) ?? form.distance;
+		const distance = read(document.getElementById('translateActor-distance')) ?? form.distance;
 		if (distance === 0) {
-			getFocus($('#translateActor-distance'), 'all');
+			getFocus(document.getElementById('translateActor-distance'), 'all');
 			return;
 		}
 		Command.save!({
-			actor: read($('#translateActor-actor')) ?? form.actor,
-			angle: read($('#translateActor-angle')) ?? form.angle,
+			actor: read(document.getElementById('translateActor-actor')) ?? form.actor,
+			angle: read(document.getElementById('translateActor-angle')) ?? form.angle,
 			distance,
-			easingId: read($('#translateActor-easingId')) ?? form.easingId,
-			duration: read($('#translateActor-duration')) ?? form.duration,
-			wait: read($('#translateActor-wait')) ?? form.wait
+			easingId: read(document.getElementById('translateActor-easingId')) ?? form.easingId,
+			duration: read(document.getElementById('translateActor-duration')) ?? form.duration,
+			wait: read(document.getElementById('translateActor-wait')) ?? form.wait
 		});
 	};
 	Command.cases.translateActor.customSave = onSave;

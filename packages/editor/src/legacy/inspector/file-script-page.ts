@@ -21,12 +21,7 @@ import { Inspector } from './inspector.ts';
 		windowLocalize: null
 	};
 
-	FileScript.initialize = function (this: typeof FileScript) {
-		if (!$('#fileScript-overview')) return;
-		this.overview = $('#fileScript-overview');
-
-		window.addEventListener('localize', this.windowLocalize);
-	};
+	FileScript.initialize = function (this: typeof FileScript) {};
 
 	FileScript.create = function (this: typeof FileScript) {
 		return `/* @plugin @version @author @link @desc */

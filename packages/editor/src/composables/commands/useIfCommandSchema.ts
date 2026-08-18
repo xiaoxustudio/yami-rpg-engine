@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/if.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/if.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { reactive } from 'vue';
@@ -16,18 +15,18 @@ const load = ({
 } = {}): void => {
 	form.branches = branches.slice();
 	form.else = !!value;
-	write($('#if-branches'), form.branches);
-	write($('#if-else'), form.else);
+	write(document.getElementById('if-branches'), form.branches);
+	write(document.getElementById('if-else'), form.else);
 	elseCommands = value as unknown[] | null;
-	getFocus($('#if-branches'));
+	getFocus(document.getElementById('if-branches'));
 };
 
 const save = (): unknown => {
-	const branches = (read($('#if-branches')) ?? form.branches) as unknown[];
+	const branches = (read(document.getElementById('if-branches')) ?? form.branches) as unknown[];
 	if (branches.length === 0) {
-		return getFocus($('#if-branches'));
+		return getFocus(document.getElementById('if-branches'));
 	}
-	switch (read($('#if-else')) ?? form.else) {
+	switch (read(document.getElementById('if-else')) ?? form.else) {
 		case true: {
 			const commands = elseCommands ?? [];
 			Command.save?.({ branches, elseCommands: commands });
@@ -41,7 +40,7 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	elseCommands = null;
-	clear($('#if-branches'));
+	clear(document.getElementById('if-branches'));
 };
 
 const schema = Command.cases.if;

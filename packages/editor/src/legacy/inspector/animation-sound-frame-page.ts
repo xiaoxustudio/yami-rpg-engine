@@ -19,23 +19,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimSoundFrame.initialize = function (this: typeof AnimSoundFrame) {
-		if (!$('#animSoundFrame-sound')) return;
-		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on(
-				'blur',
-				Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-					data.type = 'inspector-frame-change';
-					data.motion = this.motion;
-					data.direction = Animation.direction;
-				})
-			)
-		);
-	};
+	AnimSoundFrame.initialize = function (this: typeof AnimSoundFrame) {};
 
 	AnimSoundFrame.create = function (this: typeof AnimSoundFrame) {
 		return {

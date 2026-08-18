@@ -47,7 +47,9 @@ const directoryApi = {
 const fileSystem = {
 	path: (p: string) => File.path(p),
 	rename: (oldPath: string, newPath: string) => {
-		try { FSP.rename(oldPath, newPath); } catch (e) { toast.show(String(e), 'error'); }
+		return Promise.resolve()
+			.then(() => FSP.rename(oldPath, newPath))
+			.catch((e) => toast.show(String(e), 'error'));
 	},
 	existsSync: (p: string) => FS.existsSync(p)
 };

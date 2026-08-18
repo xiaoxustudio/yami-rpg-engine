@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/setMovementSpeed.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,18 +6,19 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetMovementSpeedCommandSchema() {
 	const { form, save, load } = useCommandSchema('setMovementSpeed', {
 		onLoad() {
-			getFocus($('#setMovementSpeed-actor'));
+			getFocus(document.getElementById('setMovementSpeed-actor')!);
 		}
 	});
 	const onSave = (): void => {
-		const actor = read($('#setMovementSpeed-actor')) ?? form.actor;
-		const property = read($('#setMovementSpeed-property')) ?? form.property;
+		const actor = read(document.getElementById('setMovementSpeed-actor')!) ?? form.actor;
+		const property =
+			read(document.getElementById('setMovementSpeed-property')!) ?? form.property;
 		switch (property) {
 			case 'base':
 				Command.save?.({
 					actor,
 					property,
-					base: read($('#setMovementSpeed-base')) ?? form.base
+					base: read(document.getElementById('setMovementSpeed-base')!) ?? form.base
 				});
 				break;
 			case 'factor':
@@ -26,7 +26,7 @@ export function useSetMovementSpeedCommandSchema() {
 				Command.save?.({
 					actor,
 					property,
-					factor: read($('#setMovementSpeed-factor')) ?? form.factor
+					factor: read(document.getElementById('setMovementSpeed-factor')!) ?? form.factor
 				});
 				break;
 		}

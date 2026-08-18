@@ -224,7 +224,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
@@ -245,10 +250,78 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useSceneParallaxPage();
 
 onMounted(() => {
+	const editor = Inspector.sceneParallax;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneParallax-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elLayer = document.getElementById('sceneParallax-layer') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elLayer?.loadItems) {
+		elLayer.loadItems([
+			{ name: 'Background', value: 'background' },
+			{ name: 'Foreground', value: 'foreground' }
+		]);
+	}
+
+	const elLight = document.getElementById('sceneParallax-light') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const elBlend = document.getElementById('sceneParallax-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	const refreshLocalizedItems = () => {
+		if (elLight?.loadItems) {
+			const lightName = (key: string, fallback: string) =>
+				local.components?.['sceneParallax-light']?.options?.[key]?.name || fallback;
+			elLight.loadItems([
+				{ name: lightName('raw', 'Raw'), value: 'raw' },
+				{ name: lightName('global', 'Global Sampling'), value: 'global' },
+				{ name: lightName('anchor', 'Anchor Sampling'), value: 'anchor' },
+				{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
+			]);
+		}
+		if (elBlend?.loadItems) {
+		const blendName = (key: string, fallback: string) =>
+			local.components?.['sceneParallax-blend']?.options?.[key]?.name || fallback;
+		elBlend.loadItems([
+			{ name: blendName('normal', 'Normal'), value: 'normal' },
+			{ name: blendName('additive', 'Additive'), value: 'additive' },
+			{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
+		]);
+		}
+	};
+	refreshLocalizedItems();
+
+	document.getElementById('sceneParallax-tint-0-slider')?.synchronize?.(document.getElementById('sceneParallax-tint-0'));
+	document.getElementById('sceneParallax-tint-1-slider')?.synchronize?.(document.getElementById('sceneParallax-tint-1'));
+	document.getElementById('sceneParallax-tint-2-slider')?.synchronize?.(document.getElementById('sceneParallax-tint-2'));
+	document.getElementById('sceneParallax-tint-3-slider')?.synchronize?.(document.getElementById('sceneParallax-tint-3'));
+
+	document.getElementById('sceneParallax-conditions')?.bind?.(new ConditionListInterface(editor, Scene));
+	document.getElementById('sceneParallax-events')?.bind?.(new EventListInterface(editor, Scene));
+	document.getElementById('sceneParallax-scripts')?.bind?.(
+		new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+	);
+	document.getElementById('sceneParallax-parameter-pane')?.bind?.(document.getElementById('sceneParallax-scripts'));
+
+	const elements = document.querySelectorAll(
+		'#sceneParallax-name, #sceneParallax-image, #sceneParallax-layer, #sceneParallax-order, #sceneParallax-light, #sceneParallax-blend, #sceneParallax-opacity, #sceneParallax-x, #sceneParallax-y, #sceneParallax-scaleX, #sceneParallax-scaleY, #sceneParallax-repeatX, #sceneParallax-repeatY, #sceneParallax-anchorX, #sceneParallax-anchorY, #sceneParallax-offsetX, #sceneParallax-offsetY, #sceneParallax-parallaxFactorX, #sceneParallax-parallaxFactorY, #sceneParallax-shiftSpeedX, #sceneParallax-shiftSpeedY, #sceneParallax-tint-0, #sceneParallax-tint-1, #sceneParallax-tint-2, #sceneParallax-tint-3'
+	);
+	const sliders = document.querySelectorAll(
+		'#sceneParallax-tint-0-slider, #sceneParallax-tint-1-slider, #sceneParallax-tint-2-slider, #sceneParallax-tint-3-slider'
+	);
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.inputBlur!(editor, Scene)));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	document.querySelectorAll('#sceneParallax-conditions, #sceneParallax-events, #sceneParallax-scripts')
+		.forEach((el) => el.addEventListener('change', Scene.listChange));
+
 	sync();
+	window.addEventListener('localize', refreshLocalizedItems);
+	watch(
+		() => local.components,
+		() => refreshLocalizedItems()
+	);
+	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
 });
 </script>

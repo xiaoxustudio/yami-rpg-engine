@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/setText.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/setText.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,13 +6,13 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useSetTextCommandSchema() {
 	const { form, save, load } = useCommandSchema('setText', {
 		onLoad() {
-			getFocus($('#setText-element'));
+			getFocus(document.getElementById('setText-element'));
 		}
 	});
 	const onSave = (): void => {
-		const properties = read($('#setText-properties')) ?? form.properties;
+		const properties = read(document.getElementById('setText-properties')) ?? form.properties;
 		if (properties.length === 0) {
-			getFocus($('#setText-properties'));
+			getFocus(document.getElementById('setText-properties'));
 			return;
 		}
 		save();

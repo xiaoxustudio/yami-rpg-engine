@@ -142,8 +142,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useSceneParticlePage } from '@app/composables/useSceneParticlePage';
-import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -154,16 +158,66 @@ import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const scene = useSceneStore();
 const local = useLocalStore();
 
 const { form, sync, onParamInput } = useSceneParticlePage();
 
 onMounted(() => {
+	const editor = Inspector.sceneParticle;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneParticle-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	try {
+		const conditions = document.getElementById('sceneParticle-conditions');
+		conditions?.bind?.(new ConditionListInterface(editor, Scene));
+
+		const events = document.getElementById('sceneParticle-events');
+		events?.bind?.(new EventListInterface(editor, Scene));
+
+		const scripts = document.getElementById('sceneParticle-scripts');
+		scripts?.bind?.(
+			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+		);
+
+		const parameterPane = document.getElementById('sceneParticle-parameter-pane');
+		parameterPane?.bind?.(scripts);
+
+		document.getElementById('sceneParticle-angle-slider')?.synchronize?.(document.getElementById('sceneParticle-angle'));
+		document.getElementById('sceneParticle-scale-slider')?.synchronize?.(document.getElementById('sceneParticle-scale'));
+		document.getElementById('sceneParticle-speed-slider')?.synchronize?.(document.getElementById('sceneParticle-speed'));
+		document.getElementById('sceneParticle-opacity-slider')?.synchronize?.(document.getElementById('sceneParticle-opacity'));
+		document.getElementById('sceneParticle-priority-slider')?.synchronize?.(document.getElementById('sceneParticle-priority'));
+
+		const elements = document.querySelectorAll(
+			'#sceneParticle-name, #sceneParticle-particleId, #sceneParticle-x, #sceneParticle-y, #sceneParticle-angle, #sceneParticle-scale, #sceneParticle-speed, #sceneParticle-opacity, #sceneParticle-priority'
+		);
+		const sliders = document.querySelectorAll(
+			'#sceneParticle-angle-slider, #sceneParticle-scale-slider, #sceneParticle-speed-slider, #sceneParticle-opacity-slider, #sceneParticle-priority-slider'
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.sliderFocus)
+		);
+		(sliders as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.sliderBlur)
+		);
+
+		document
+			.querySelectorAll('#sceneParticle-conditions, #sceneParticle-events, #sceneParticle-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
+	} catch (e) {
+		console.warn('[SceneParticlePage] init skipped:', (e as Error)?.message);
+	}
+
 	sync();
 });
 </script>

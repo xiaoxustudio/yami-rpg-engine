@@ -56,7 +56,7 @@
 				id="palette-screen"
 				tabindex="-1"
 				@keydown="onScreenKeydown"
-				@wheel.passive="onScreenWheel"
+				@wheel="onScreenWheel"
 			>
 				<MarqueeArea
 					id="palette-marquee"

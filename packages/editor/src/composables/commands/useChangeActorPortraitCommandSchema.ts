@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/changeActorPortrait.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/changeActorPortrait.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,14 +6,15 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useChangeActorPortraitCommandSchema() {
 	const { form, save, load } = useCommandSchema('changeActorPortrait', {
 		onLoad() {
-			getFocus($('#changeActorPortrait-actor'));
+			getFocus(document.getElementById('changeActorPortrait-actor'));
 		}
 	});
 	const onSave = (): void => {
-		const actor = read($('#changeActorPortrait-actor')) ?? form.actor;
-		const mode = read($('#changeActorPortrait-mode')) ?? form.mode;
-		const portrait = read($('#changeActorPortrait-portrait')) ?? form.portrait;
-		const clip = read($('#changeActorPortrait-clip')) ?? form.clip;
+		const actor = read(document.getElementById('changeActorPortrait-actor')) ?? form.actor;
+		const mode = read(document.getElementById('changeActorPortrait-mode')) ?? form.mode;
+		const portrait =
+			read(document.getElementById('changeActorPortrait-portrait')) ?? form.portrait;
+		const clip = read(document.getElementById('changeActorPortrait-clip')) ?? form.clip;
 		switch (mode) {
 			case 'full':
 				Command.save?.({ actor, mode, portrait, clip });

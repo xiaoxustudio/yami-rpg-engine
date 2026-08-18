@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/transition.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/transition.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -29,29 +28,30 @@ const load = ({
 	form.end = end;
 	form.easingId = easingId;
 	form.duration = duration;
-	write($('#transition-variable'), form.variable);
-	write($('#transition-start'), form.start);
-	write($('#transition-end'), form.end);
-	write($('#transition-easingId'), form.easingId);
-	write($('#transition-duration'), form.duration);
+	write(document.getElementById('transition-variable'), form.variable);
+	write(document.getElementById('transition-start'), form.start);
+	write(document.getElementById('transition-end'), form.end);
+	write(document.getElementById('transition-easingId'), form.easingId);
+	write(document.getElementById('transition-duration'), form.duration);
 	commands = children as unknown[];
-	getFocus($('#transition-variable'));
+	getFocus(document.getElementById('transition-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read($('#transition-variable')) ?? form.variable;
+	const variable = read(document.getElementById('transition-variable')) ?? form.variable;
 	if (VariableGetter.isNone!(variable as any)) {
-		return getFocus($('#transition-variable'));
+		return getFocus(document.getElementById('transition-variable'));
 	}
-	const duration = (read($('#transition-duration')) ?? form.duration) as number;
+	const duration = (read(document.getElementById('transition-duration')) ??
+		form.duration) as number;
 	if (duration === 0) {
-		return getFocus($('#transition-duration'), 'all');
+		return getFocus(document.getElementById('transition-duration'), 'all');
 	}
 	Command.save?.({
 		variable,
-		start: read($('#transition-start')) ?? form.start,
-		end: read($('#transition-end')) ?? form.end,
-		easingId: read($('#transition-easingId')) ?? form.easingId,
+		start: read(document.getElementById('transition-start')) ?? form.start,
+		end: read(document.getElementById('transition-end')) ?? form.end,
+		easingId: read(document.getElementById('transition-easingId')) ?? form.easingId,
 		duration,
 		commands
 	});
@@ -59,11 +59,11 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	commands = null;
-	clear($('#transition-easingId'));
+	clear(document.getElementById('transition-easingId'));
 };
 
 const open = (): void => {
-	$('#transition-easingId')?.loadItems?.(Data.createEasingItems!());
+	document.getElementById('transition-easingId')?.loadItems?.(Data.createEasingItems!());
 };
 
 const schema = Command.cases.transition;

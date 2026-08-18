@@ -1,5 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, removeClass } from '@app/legacy/util/element-utils';
+﻿import { addClass, removeClass } from '@app/legacy/util/element-utils';
 
 interface PointerObjectWindow {
 	readonly region: HTMLElement;
@@ -8,17 +7,17 @@ interface PointerObjectWindow {
 }
 
 const open = (className: string): void => {
-	addClass($('#cursor-region'), className);
+	addClass(document.getElementById('cursor-region'), className);
 };
 
 const close = (className: string): void => {
-	removeClass($('#cursor-region'), className);
+	removeClass(document.getElementById('cursor-region'), className);
 };
 
 export function usePointerObjectWindow(): PointerObjectWindow {
 	return {
 		get region() {
-			return $('#cursor-region');
+			return document.getElementById('cursor-region');
 		},
 		open,
 		close

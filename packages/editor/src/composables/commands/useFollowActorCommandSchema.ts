@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/followActor.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/followActor.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,20 +6,25 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useFollowActorCommandSchema() {
 	const { form, save, load } = useCommandSchema('followActor', {
 		onLoad() {
-			getFocus($('#followActor-actor'));
+			getFocus(document.getElementById('followActor-actor'));
 		}
 	});
 	const onSave = (): void => {
-		const actor = read($('#followActor-actor')) ?? form.actor;
-		const target = read($('#followActor-target')) ?? form.target;
-		const mode = read($('#followActor-mode')) ?? form.mode;
-		const minDist = read($('#followActor-minDist')) ?? form.minDist;
-		const maxDist = read($('#followActor-maxDist')) ?? form.maxDist;
-		const bufferDist = read($('#followActor-bufferDist')) ?? form.bufferDist;
-		const navigate = read($('#followActor-navigate')) ?? form.navigate;
-		const bypass = navigate ? { bypass: read($('#followActor-bypass')) ?? form.bypass } : {};
-		const once = read($('#followActor-once')) ?? form.once;
-		const wait = once ? (read($('#followActor-wait')) ?? form.wait) : false;
+		const actor = read(document.getElementById('followActor-actor')) ?? form.actor;
+		const target = read(document.getElementById('followActor-target')) ?? form.target;
+		const mode = read(document.getElementById('followActor-mode')) ?? form.mode;
+		const minDist = read(document.getElementById('followActor-minDist')) ?? form.minDist;
+		const maxDist = read(document.getElementById('followActor-maxDist')) ?? form.maxDist;
+		const bufferDist =
+			read(document.getElementById('followActor-bufferDist')) ?? form.bufferDist;
+		const navigate = read(document.getElementById('followActor-navigate')) ?? form.navigate;
+		const bypass = navigate
+			? { bypass: read(document.getElementById('followActor-bypass')) ?? form.bypass }
+			: {};
+		const once = read(document.getElementById('followActor-once')) ?? form.once;
+		const wait = once
+			? (read(document.getElementById('followActor-wait')) ?? form.wait)
+			: false;
 		switch (mode) {
 			case 'circle':
 				Command.save?.({
@@ -29,7 +33,7 @@ export function useFollowActorCommandSchema() {
 					mode,
 					minDist,
 					maxDist,
-					offset: read($('#followActor-offset')) ?? form.offset,
+					offset: read(document.getElementById('followActor-offset')) ?? form.offset,
 					bufferDist,
 					navigate,
 					...bypass,
@@ -44,7 +48,8 @@ export function useFollowActorCommandSchema() {
 					mode,
 					minDist,
 					maxDist,
-					vertDist: read($('#followActor-vertDist')) ?? form.vertDist,
+					vertDist:
+						read(document.getElementById('followActor-vertDist')) ?? form.vertDist,
 					bufferDist,
 					navigate,
 					...bypass,

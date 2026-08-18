@@ -48,13 +48,14 @@
 		"typescript": "7.1.0-dev.20260811.1",
 		"uglify-js": "^3.19.3",
 		"vue": "^3.6.0-rc.3",
+		"vue-i18n": "^11.4.8",
 		"xml2js": "^0.6.2",
 		"yauzl": "^3.3.1"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "^11.0.4",
 		"@types/node": "^22.19.19",
 		"@types/uglify-js": "^3.17.5",
-		"@types/fs-extra": "^11.0.4",
 		"@vitejs/plugin-legacy": "^8.2.1",
 		"@vitejs/plugin-vue": "^6.0.8",
 		"@vue/test-utils": "^2.4.11",

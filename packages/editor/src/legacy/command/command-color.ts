@@ -1,77 +1,36 @@
 import { Command } from './command-object.ts';
-import { Token } from './mark-string-manager.ts';
+import {
+	setNormalColor,
+	setVariableColor,
+	setGlobalVariableColor,
+	setDelimiterColor,
+	setOperatorColor,
+	setBooleanColor,
+	setNumberColor,
+	setStringColor,
+	setScriptColor,
+	setFileColor,
+	setPresetColor,
+	setWeakColor,
+	setCommaColors,
+	setTextId,
+	setTooltip,
+	setClass
+} from '@app/composables/useCommandColor.ts';
 
-Command.setNormalColor = function (value: string): string {
-	return `$_normal_$${value}$_/_$`;
-};
-
-Command.setVariableColor = function (value: string): string {
-	return `$_identifier_$${value}$_/_$`;
-};
-
-Command.setGlobalVariableColor = function (value: string): string {
-	return `$_global-var_$${value}$_/_$`;
-};
-
-Command.setDelimiterColor = function (value: string): string {
-	return `$_delimiter_$${value}$_/_$`;
-};
-
-Command.setOperatorColor = function (value: string): string {
-	return `$_operator_$${value}$_/_$`;
-};
-
-Command.setBooleanColor = function (value: string): string {
-	return `$_boolean_$${value}$_/_$`;
-};
-
-Command.setNumberColor = function (value: number | string): string {
-	let v: string;
-	if (typeof value === 'number') {
-		v = value.toString();
-	} else {
-		v = value;
-	}
-	if (v[0] !== '-') return `$_number_$${v}$_/_$`;
-	return Token('-') + `$_number_$${v.slice(1)}$_/_$`;
-};
-
-Command.setStringColor = function (value: string, save: boolean = false): string {
-	if (save === false) return `$_string_$${value}$_/_$`;
-	return `$_string_$$_none_$$_/_$$_save_$$_none_$$_/_$${value}$_normal_$$_none_$$_/_$$_save_$$_none_$$_/_$`;
-};
-
-Command.setScriptColor = function (value: string): string {
-	return `$_text_$${value}$_/_$`;
-};
-
-Command.setFileColor = function (value: string): string {
-	return `$_file_$${value}$_/_$`;
-};
-
-Command.setPresetColor = function (value: string): string {
-	return `$_preset_$${value}$_/_$`;
-};
-
-Command.setWeakColor = function (value: string): string {
-	return `$_weak_$${value}$_/_$`;
-};
-
-Command.setCommaColors = (function IIFE() {
-	const regexp = /,/g;
-	return function (value: string): string {
-		return value.replace(regexp, '$_delimiter_$,$_/_$');
-	};
-})();
-
-Command.setTextId = function (id: string): string {
-	return `$_textId_$${id}$_/_$`;
-};
-
-Command.setTooltip = function (tip: string): string {
-	return `$_tooltip_$${tip}$_/_$`;
-};
-
-Command.setClass = function (className: string): string {
-	return `$_class_$${className}$_/_$`;
-};
+Command.setNormalColor = setNormalColor;
+Command.setVariableColor = setVariableColor;
+Command.setGlobalVariableColor = setGlobalVariableColor;
+Command.setDelimiterColor = setDelimiterColor;
+Command.setOperatorColor = setOperatorColor;
+Command.setBooleanColor = setBooleanColor;
+Command.setNumberColor = setNumberColor;
+Command.setStringColor = setStringColor;
+Command.setScriptColor = setScriptColor;
+Command.setFileColor = setFileColor;
+Command.setPresetColor = setPresetColor;
+Command.setWeakColor = setWeakColor;
+Command.setCommaColors = setCommaColors;
+Command.setTextId = setTextId;
+Command.setTooltip = setTooltip;
+Command.setClass = setClass;

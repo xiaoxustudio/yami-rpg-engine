@@ -67,8 +67,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useSceneRegionPage } from '@app/composables/useSceneRegionPage';
-import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Scene } from '@app/legacy/scene/scene-window.ts';
+import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
+import { EventListInterface } from '@app/legacy/tools/event-list.ts';
+import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -78,16 +82,51 @@ import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 
-const scene = useSceneStore();
 const local = useLocalStore();
 
 const { form, sync, onParamInput } = useSceneRegionPage();
 
 onMounted(() => {
+	const editor = Inspector.sceneRegion;
+	if (!editor) return;
+
 	const el = document.getElementById('sceneRegion-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	try {
+		const conditions = document.getElementById('sceneRegion-conditions');
+		conditions?.bind?.(new ConditionListInterface(editor, Scene));
+
+		const events = document.getElementById('sceneRegion-events');
+		events?.bind?.(new EventListInterface(editor, Scene));
+
+		const scripts = document.getElementById('sceneRegion-scripts');
+		scripts?.bind?.(
+			new ScriptListInterface(editor as unknown as { target?: { id: string } }, Scene)
+		);
+
+		const parameterPane = document.getElementById('sceneRegion-parameter-pane');
+		parameterPane?.bind?.(scripts);
+
+		const elements = document.querySelectorAll(
+			'#sceneRegion-name, #sceneRegion-color, #sceneRegion-x, #sceneRegion-y, #sceneRegion-width, #sceneRegion-height'
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(editor, Scene))
+		);
+
+		document
+			.querySelectorAll('#sceneRegion-conditions, #sceneRegion-events, #sceneRegion-scripts')
+			.forEach((el) => el.addEventListener('change', Scene.listChange));
+	} catch (e) {
+		console.warn('[SceneRegionPage] init skipped:', (e as Error)?.message);
+	}
+
 	sync();
 });
 </script>

@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/tintImage.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/tintImage.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,7 +6,7 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useTintImageCommandSchema() {
 	const { form, save, load } = useCommandSchema('tintImage', {
 		onLoad() {
-			getFocus($('#tintImage-element'));
+			getFocus(document.getElementById('tintImage-element'));
 		}
 	});
 	const onLoad = (params: Record<string, unknown>): void => {
@@ -19,15 +18,15 @@ export function useTintImageCommandSchema() {
 			'tint-2': tint[2],
 			'tint-3': tint[3]
 		});
-		write($('#tintImage-filter'), tint);
+		write(document.getElementById('tintImage-filter'), tint);
 	};
 	const onSave = (): void => {
-		const element = read($('#tintImage-element')) ?? form.element;
-		const mode = read($('#tintImage-mode')) ?? form.mode;
-		let red = read($('#tintImage-tint-0')) ?? form['tint-0'];
-		let green = read($('#tintImage-tint-1')) ?? form['tint-1'];
-		let blue = read($('#tintImage-tint-2')) ?? form['tint-2'];
-		let gray = read($('#tintImage-tint-3')) ?? form['tint-3'];
+		const element = read(document.getElementById('tintImage-element')) ?? form.element;
+		const mode = read(document.getElementById('tintImage-mode')) ?? form.mode;
+		let red = read(document.getElementById('tintImage-tint-0')) ?? form['tint-0'];
+		let green = read(document.getElementById('tintImage-tint-1')) ?? form['tint-1'];
+		let blue = read(document.getElementById('tintImage-tint-2')) ?? form['tint-2'];
+		let gray = read(document.getElementById('tintImage-tint-3')) ?? form['tint-3'];
 		switch (mode) {
 			case 'full':
 				break;
@@ -44,9 +43,9 @@ export function useTintImageCommandSchema() {
 			element,
 			mode,
 			tint: [red, green, blue, gray],
-			easingId: read($('#tintImage-easingId')) ?? form.easingId,
-			duration: read($('#tintImage-duration')) ?? form.duration,
-			wait: read($('#tintImage-wait')) ?? form.wait
+			easingId: read(document.getElementById('tintImage-easingId')) ?? form.easingId,
+			duration: read(document.getElementById('tintImage-duration')) ?? form.duration,
+			wait: read(document.getElementById('tintImage-wait')) ?? form.wait
 		});
 	};
 	Command.cases.tintImage.customLoad = onLoad;

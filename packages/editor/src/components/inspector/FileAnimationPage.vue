@@ -12,6 +12,8 @@
 <script setup lang="ts">
 import '@app/legacy/inspector/file-animation-page.ts';
 import { onMounted } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -20,5 +22,13 @@ import ParamList from '@app/components/common/ParamList.vue';
 const local = useLocalStore();
 
 onMounted(() => {
+	const editor = Inspector.fileAnimation;
+	if (!editor) return;
+
+	const elSprites = document.getElementById('fileAnimation-sprites');
+	if (elSprites) {
+		elSprites.bind(editor.sprites);
+		elSprites.on('change', Animation.listChange);
+	}
 });
 </script>

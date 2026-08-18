@@ -246,6 +246,7 @@ const loadItems = (items: unknown[]): void => {
 const setItemNames = (
 	options: Record<string, string | { name?: string; tip?: string }>
 ): void => {
+	if (!dataItems) return;
 	for (const item of dataItems) {
 		const key = item.value;
 		const option = options[key as string];

@@ -25,12 +25,7 @@ import { Scene } from '@/scene/scene-window.ts';
 		paramInput: null
 	};
 
-	FileTileset.initialize = function (this: typeof FileTileset) {
-		if (!$('#fileTileset-image')) return;
-		// 6 闂佺鐭囬崒娑卞仺 input + width/height change 缂?Vue 濠碘槅鍨崜婵嗩熆濡粯濮滄い鎺嗗亾鐟滄澘鍊块弫宥夊捶濮掔垐eTilesetPage.vue @input/@change 闂?FileTileset.*闂?
-
-		Palette.initialize!();
-	};
+	FileTileset.initialize = function () {};
 
 	FileTileset.create = function (this: typeof FileTileset, type: string) {
 		switch (type) {

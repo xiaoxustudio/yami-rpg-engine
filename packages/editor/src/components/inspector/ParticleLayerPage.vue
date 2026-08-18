@@ -899,7 +899,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
@@ -916,10 +918,126 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useParticleLayerPage();
 
 onMounted(() => {
+	const editor = Inspector.particleLayer;
+	if (!editor) return;
+
 	const el = document.getElementById('particleLayer-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });
 	}
+
+	const elAreaType = document.getElementById('particleLayer-area-type') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elAreaType?.loadItems) {
+		elAreaType.loadItems([
+			{ name: 'Point', value: 'point' },
+			{ name: 'Rectangle', value: 'rectangle' },
+			{ name: 'Circle', value: 'circle' },
+			{ name: 'Screen Edge', value: 'edge' }
+		]);
+	}
+	if (elAreaType?.enableHiddenMode) {
+		const hidden = elAreaType.enableHiddenMode();
+		hidden.relate?.([
+			{ case: 'point', targets: [document.getElementById('particleLayer-area-x'), document.getElementById('particleLayer-area-y')] },
+			{ case: 'rectangle', targets: [document.getElementById('particleLayer-area-x'), document.getElementById('particleLayer-area-y'), document.getElementById('particleLayer-area-width'), document.getElementById('particleLayer-area-height')] },
+			{ case: 'circle', targets: [document.getElementById('particleLayer-area-x'), document.getElementById('particleLayer-area-y'), document.getElementById('particleLayer-area-radius')] }
+		]);
+	}
+
+	const elBlend = document.getElementById('particleLayer-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elBlend?.loadItems) {
+		const blendName = (key: string, fallback: string) =>
+			local.components?.['particleLayer-blend']?.options?.[key]?.name || fallback;
+		elBlend.loadItems([
+			{ name: blendName('normal', 'Normal'), value: 'normal' },
+			{ name: blendName('additive', 'Additive'), value: 'additive' },
+			{ name: blendName('subtract', 'Subtract'), value: 'subtract' }
+		]);
+	}
+
+	const elLight = document.getElementById('particleLayer-light') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elLight?.loadItems) {
+		const lightName = (key: string, fallback: string) =>
+			local.components?.['particleLayer-light']?.options?.[key]?.name || fallback;
+		elLight.loadItems([
+			{ name: lightName('raw', 'Raw'), value: 'raw' },
+			{ name: lightName('global', 'Global Sampling'), value: 'global' },
+			{ name: lightName('ambient', 'Ambient Light'), value: 'ambient' }
+		]);
+	}
+
+	const elSort = document.getElementById('particleLayer-sort') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
+	if (elSort?.loadItems) {
+		elSort.loadItems([
+			{ name: 'Youngest in Front', value: 'youngest-in-front' },
+			{ name: 'Oldest in Front', value: 'oldest-in-front' },
+			{ name: 'By Scale Factor', value: 'by-scale-factor' }
+		]);
+	}
+
+	const elSpriteMode = document.getElementById('particleLayer-sprite-mode') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elSpriteMode?.loadItems) {
+		elSpriteMode.loadItems([
+			{ name: 'Random', value: 'random' },
+			{ name: 'Animation', value: 'animation' },
+			{ name: 'Animation(Loop)', value: 'animation-loop' }
+		]);
+	}
+	if (elSpriteMode?.enableHiddenMode) {
+		const hidden = elSpriteMode.enableHiddenMode();
+		hidden.relate?.([{ case: ['animation', 'animation-loop'], targets: [document.getElementById('particleLayer-sprite-interval')] }]);
+	}
+
+	const elColorMode = document.getElementById('particleLayer-color-mode') as HTMLElement & { loadItems?: (items: unknown[]) => void; enableHiddenMode?: () => HTMLElement & { relate?: (entries: unknown) => void } } | null;
+	if (elColorMode?.loadItems) {
+		elColorMode.loadItems([
+			{ name: 'Fixed', value: 'fixed' },
+			{ name: 'Random', value: 'random' },
+			{ name: 'Easing', value: 'easing' },
+			{ name: 'Texture Sampling', value: 'texture' }
+		]);
+	}
+	if (elColorMode?.enableHiddenMode) {
+		const hidden = elColorMode.enableHiddenMode();
+		hidden.relate?.([
+			{ case: 'fixed', targets: [document.getElementById('particleLayer-color-rgba-box')] },
+			{ case: 'random', targets: [document.getElementById('particleLayer-color-min-box'), document.getElementById('particleLayer-color-max-box')] },
+			{ case: 'easing', targets: [document.getElementById('particleLayer-color-easingId'), document.getElementById('particleLayer-color-startMin-box'), document.getElementById('particleLayer-color-startMax-box'), document.getElementById('particleLayer-color-endMin-box'), document.getElementById('particleLayer-color-endMax-box')] },
+			{ case: 'texture', targets: [document.getElementById('particleLayer-color-tint-0-box'), document.getElementById('particleLayer-color-tint-1-box'), document.getElementById('particleLayer-color-tint-2-box'), document.getElementById('particleLayer-color-tint-3-box')] }
+		]);
+	}
+
+	document.getElementById('particleLayer-color-tint-0-slider')?.synchronize?.(document.getElementById('particleLayer-color-tint-0'));
+	document.getElementById('particleLayer-color-tint-1-slider')?.synchronize?.(document.getElementById('particleLayer-color-tint-1'));
+	document.getElementById('particleLayer-color-tint-2-slider')?.synchronize?.(document.getElementById('particleLayer-color-tint-2'));
+	document.getElementById('particleLayer-color-tint-3-slider')?.synchronize?.(document.getElementById('particleLayer-color-tint-3'));
+
+	const elements = document.querySelectorAll(
+		'#particleLayer-name, #particleLayer-area-type, #particleLayer-area-x, #particleLayer-area-y, #particleLayer-area-width, #particleLayer-area-height, #particleLayer-area-radius, #particleLayer-count, #particleLayer-delay, #particleLayer-interval, #particleLayer-lifetime, #particleLayer-lifetimeDev, #particleLayer-fadeout, #particleLayer-anchor-x-0, #particleLayer-anchor-x-1, #particleLayer-anchor-y-0, #particleLayer-anchor-y-1, #particleLayer-anchor-speedX-0, #particleLayer-anchor-speedX-1, #particleLayer-anchor-speedY-0, #particleLayer-anchor-speedY-1, #particleLayer-movement-angle-0, #particleLayer-movement-angle-1, #particleLayer-movement-speed-0, #particleLayer-movement-speed-1, #particleLayer-movement-accelAngle-0, #particleLayer-movement-accelAngle-1, #particleLayer-movement-accel-0, #particleLayer-movement-accel-1, #particleLayer-rotation-angle-0, #particleLayer-rotation-angle-1, #particleLayer-rotation-speed-0, #particleLayer-rotation-speed-1, #particleLayer-rotation-accel-0, #particleLayer-rotation-accel-1, #particleLayer-hRotation-radius-0, #particleLayer-hRotation-radius-1, #particleLayer-hRotation-expansionSpeed-0, #particleLayer-hRotation-expansionSpeed-1, #particleLayer-hRotation-expansionAccel-0, #particleLayer-hRotation-expansionAccel-1, #particleLayer-hRotation-angle-0, #particleLayer-hRotation-angle-1, #particleLayer-hRotation-angularSpeed-0, #particleLayer-hRotation-angularSpeed-1, #particleLayer-hRotation-angularAccel-0, #particleLayer-hRotation-angularAccel-1, #particleLayer-scale-factor-0, #particleLayer-scale-factor-1, #particleLayer-scale-speed-0, #particleLayer-scale-speed-1, #particleLayer-scale-accel-0, #particleLayer-scale-accel-1, #particleLayer-image, #particleLayer-blend, #particleLayer-light, #particleLayer-sort, #particleLayer-sprite-mode, #particleLayer-sprite-hframes, #particleLayer-sprite-vframes, #particleLayer-sprite-interval, #particleLayer-color-mode, #particleLayer-color-rgba-0, #particleLayer-color-rgba-1, #particleLayer-color-rgba-2, #particleLayer-color-rgba-3, #particleLayer-color-min-0, #particleLayer-color-min-1, #particleLayer-color-min-2, #particleLayer-color-min-3, #particleLayer-color-max-0, #particleLayer-color-max-1, #particleLayer-color-max-2, #particleLayer-color-max-3, #particleLayer-color-easingId, #particleLayer-color-startMin-0, #particleLayer-color-startMin-1, #particleLayer-color-startMin-2, #particleLayer-color-startMin-3, #particleLayer-color-startMax-0, #particleLayer-color-startMax-1, #particleLayer-color-startMax-2, #particleLayer-color-startMax-3, #particleLayer-color-endMin-0, #particleLayer-color-endMin-1, #particleLayer-color-endMin-2, #particleLayer-color-endMin-3, #particleLayer-color-endMax-0, #particleLayer-color-endMax-1, #particleLayer-color-endMax-2, #particleLayer-color-endMax-3, #particleLayer-color-tint-0, #particleLayer-color-tint-1, #particleLayer-color-tint-2, #particleLayer-color-tint-3'
+	);
+	const sliders = document.querySelectorAll(
+		'#particleLayer-color-tint-0-slider, #particleLayer-color-tint-1-slider, #particleLayer-color-tint-2-slider, #particleLayer-color-tint-3-slider'
+	);
+	const blurHandler = Inspector.inputBlur ? Inspector.inputBlur(editor, Particle) : () => {};
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.inputFocus));
+	(elements as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', blurHandler));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('focus', Inspector.sliderFocus));
+	(sliders as unknown as HTMLElement[]).forEach((el) => el.addEventListener('blur', Inspector.sliderBlur));
+	const refreshLocalizedItems = () => {
+		const getNames = (id: string, values: string[]) => {
+			const options = local.components?.[id]?.options;
+			return values.map((value) => ({ name: options?.[value]?.name || value, value }));
+		};
+		(document.getElementById('particleLayer-blend') as any)?.loadItems?.(getNames('particleLayer-blend', ['normal', 'additive', 'subtract']));
+		(document.getElementById('particleLayer-light') as any)?.loadItems?.(getNames('particleLayer-light', ['raw', 'global', 'ambient']));
+	};
+	window.addEventListener('localize', refreshLocalizedItems);
+	watch(
+		() => local.components,
+		() => refreshLocalizedItems()
+	);
+	onBeforeUnmount(() => window.removeEventListener('localize', refreshLocalizedItems));
+
 	sync();
 });
 </script>

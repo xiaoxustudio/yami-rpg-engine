@@ -58,34 +58,7 @@ import { Timer } from '@/util/timer.ts';
 		update: null
 	};
 
-	FileAudio.initialize = function (this: typeof FileAudio) {
-		if (!$('#fileAudio-progress')) return;
-		this.progress = $('#fileAudio-progress');
-		this.progressFiller = $('#fileAudio-progress-filler');
-		this.pointer = hide($('#fileAudio-progress-pointer'));
-		this.currentTimeInfo = $('#fileAudio-currentTime');
-		this.pointerTimeInfo = $('#fileAudio-pointerTime');
-		this.canvas = $('#fileAudio-frequency-canvas');
-		this.context = this.canvas.getContext('2d', { desynchronized: true });
-
-		const analyser = AudioManager.analyser!;
-		analyser.fftSize = 512;
-		analyser.smoothingTimeConstant = 0;
-
-		this.dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-		this.intervals = new Float64Array(64);
-
-		this.intensities = new Float64Array(64);
-		this.intensities.index = 0;
-
-		window.addEventListener('themechange', this.themechange);
-		$('#fileAudio')?.addEventListener('resize', this.windowResize);
-		$('#fileAudio-frequency-detail')?.addEventListener('toggle', this.windowResize);
-		this.progress.addEventListener('pointerdown', this.progressPointerdown);
-		this.progress.addEventListener('pointermove', this.progressPointermove);
-		this.progress.addEventListener('pointerleave', this.progressPointerleave);
-	};
+	FileAudio.initialize = function (this: typeof FileAudio) {};
 
 	FileAudio.open = function (this: typeof FileAudio, file: FileItem, meta: FileMeta | null) {
 		if (this.target !== file) {

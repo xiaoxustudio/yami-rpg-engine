@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/jumpTo.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
@@ -31,19 +30,19 @@ const load = ({
 	operation?: string;
 	label?: string;
 } = {}): void => {
-	write($('#jumpTo-operation'), operation);
-	write($('#jumpTo-label'), label);
-	getFocus($('#jumpTo-operation'));
+	write(document.getElementById('jumpTo-operation')!, operation);
+	write(document.getElementById('jumpTo-label')!, label);
+	getFocus(document.getElementById('jumpTo-operation')!);
 };
 
 const save = (): unknown => {
-	const operation = read($('#jumpTo-operation'));
+	const operation = read(document.getElementById('jumpTo-operation')!);
 	switch (operation) {
 		case 'jump':
 		case 'save-jump': {
-			const label = read($('#jumpTo-label')).trim();
+			const label = read(document.getElementById('jumpTo-label')!).trim();
 			if (label === '') {
-				return getFocus($('#jumpTo-label'));
+				return getFocus(document.getElementById('jumpTo-label')!);
 			}
 			Command.save?.({ operation, label });
 			break;

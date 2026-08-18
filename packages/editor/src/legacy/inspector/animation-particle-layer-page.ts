@@ -18,38 +18,7 @@ import { Inspector } from './inspector.ts';
 		update: null
 	};
 
-	AnimParticleLayer.initialize = function (this: typeof AnimParticleLayer) {
-		if (!$('#animParticleLayer-position')) return;
-		$('#animParticleLayer-position').loadItems([
-			{ name: 'Absolute', value: 'absolute' },
-			{ name: 'Relative', value: 'relative' }
-		]);
-
-		$('#animParticleLayer-angle').loadItems([
-			{ name: 'Default', value: 'default' },
-			{ name: 'Inherit', value: 'inherit' }
-		]);
-
-		$('#animParticleLayer-order').loadItems([
-			{ name: 'Behind Sprites', value: 'before' },
-			{ name: 'Front of Sprites', value: 'after' }
-		]);
-
-		const elements = $(
-			'#animParticleLayer-particleId, #animParticleLayer-position, #animParticleLayer-angle, #animParticleLayer-order'
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		elements.on(
-			'blur',
-			Inspector.inputBlur!(this, Animation, (data: Record<string, unknown>) => {
-				data.type = 'inspector-layer-change';
-				data.motion = this.motion;
-				data.direction = Animation.direction;
-			})
-		);
-	};
+	AnimParticleLayer.initialize = function () {};
 
 	AnimParticleLayer.create = function (this: typeof AnimParticleLayer) {
 		return {

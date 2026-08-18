@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/getActor.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/getActor.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -28,45 +27,47 @@ const load = (params: Record<string, unknown> = {}): void => {
 		params.active as boolean | undefined
 	);
 	const attrItems = Attribute.getAttributeItems!('actor', 'number');
-	$('#getActor-attribute')?.loadItems?.(attrItems);
-	$('#getActor-divisor')?.loadItems?.(attrItems);
+	document.getElementById('getActor-attribute')?.loadItems?.(attrItems);
+	document.getElementById('getActor-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), { ...params, selector, activation });
-	write($('#getActor-variable'), form.variable);
-	write($('#getActor-position'), form.position);
-	write($('#getActor-area'), form.area);
-	write($('#getActor-size'), form.size);
-	write($('#getActor-radius'), form.radius);
-	write($('#getActor-selector'), form.selector);
-	write($('#getActor-teamId'), form.teamId);
-	write($('#getActor-condition'), form.condition);
-	write($('#getActor-attribute'), form.attribute);
-	write($('#getActor-divisor'), form.divisor);
-	write($('#getActor-activation'), form.activation);
-	write($('#getActor-exclusion'), form.exclusion);
-	write($('#getActor-exclusionActor'), form.exclusionActor);
-	write($('#getActor-exclusionTeamId'), form.exclusionTeamId);
-	getFocus($('#getActor-variable'));
+	write(document.getElementById('getActor-variable'), form.variable);
+	write(document.getElementById('getActor-position'), form.position);
+	write(document.getElementById('getActor-area'), form.area);
+	write(document.getElementById('getActor-size'), form.size);
+	write(document.getElementById('getActor-radius'), form.radius);
+	write(document.getElementById('getActor-selector'), form.selector);
+	write(document.getElementById('getActor-teamId'), form.teamId);
+	write(document.getElementById('getActor-condition'), form.condition);
+	write(document.getElementById('getActor-attribute'), form.attribute);
+	write(document.getElementById('getActor-divisor'), form.divisor);
+	write(document.getElementById('getActor-activation'), form.activation);
+	write(document.getElementById('getActor-exclusion'), form.exclusion);
+	write(document.getElementById('getActor-exclusionActor'), form.exclusionActor);
+	write(document.getElementById('getActor-exclusionTeamId'), form.exclusionTeamId);
+	getFocus(document.getElementById('getActor-variable'));
 };
 
 const save = (): void => {
-	const variable = read($('#getActor-variable')) ?? form.variable;
+	const variable = read(document.getElementById('getActor-variable')) ?? form.variable;
 	if (VariableGetter.isNone!(variable)) {
-		getFocus($('#getActor-variable'));
+		getFocus(document.getElementById('getActor-variable'));
 		return;
 	}
-	const position = read($('#getActor-position')) ?? form.position;
-	const area = read($('#getActor-area')) ?? form.area;
-	const size = read($('#getActor-size')) ?? form.size;
-	const radius = read($('#getActor-radius')) ?? form.radius;
-	const selector = read($('#getActor-selector')) ?? form.selector;
-	const teamId = read($('#getActor-teamId')) ?? form.teamId;
-	const condition = read($('#getActor-condition')) ?? form.condition;
-	const attribute = read($('#getActor-attribute')) ?? form.attribute;
-	const divisor = read($('#getActor-divisor')) ?? form.divisor;
-	const activation = read($('#getActor-activation')) ?? form.activation;
-	const exclusion = read($('#getActor-exclusion')) ?? form.exclusion;
-	const exclusionActor = read($('#getActor-exclusionActor')) ?? form.exclusionActor;
-	const exclusionTeamId = read($('#getActor-exclusionTeamId')) ?? form.exclusionTeamId;
+	const position = read(document.getElementById('getActor-position')) ?? form.position;
+	const area = read(document.getElementById('getActor-area')) ?? form.area;
+	const size = read(document.getElementById('getActor-size')) ?? form.size;
+	const radius = read(document.getElementById('getActor-radius')) ?? form.radius;
+	const selector = read(document.getElementById('getActor-selector')) ?? form.selector;
+	const teamId = read(document.getElementById('getActor-teamId')) ?? form.teamId;
+	const condition = read(document.getElementById('getActor-condition')) ?? form.condition;
+	const attribute = read(document.getElementById('getActor-attribute')) ?? form.attribute;
+	const divisor = read(document.getElementById('getActor-divisor')) ?? form.divisor;
+	const activation = read(document.getElementById('getActor-activation')) ?? form.activation;
+	const exclusion = read(document.getElementById('getActor-exclusion')) ?? form.exclusion;
+	const exclusionActor =
+		read(document.getElementById('getActor-exclusionActor')) ?? form.exclusionActor;
+	const exclusionTeamId =
+		read(document.getElementById('getActor-exclusionTeamId')) ?? form.exclusionTeamId;
 	let params1;
 	let params2;
 	let params3;
@@ -98,7 +99,7 @@ const save = (): void => {
 		case 'min-attribute-value':
 		case 'max-attribute-value':
 			if (attribute === '') {
-				getFocus($('#getActor-attribute'));
+				getFocus(document.getElementById('getActor-attribute'));
 				return;
 			}
 			params3 = { condition, attribute };
@@ -106,11 +107,11 @@ const save = (): void => {
 		case 'min-attribute-ratio':
 		case 'max-attribute-ratio':
 			if (attribute === '') {
-				getFocus($('#getActor-attribute'));
+				getFocus(document.getElementById('getActor-attribute'));
 				return;
 			}
 			if (divisor === '' || attribute === divisor) {
-				getFocus($('#getActor-divisor'));
+				getFocus(document.getElementById('getActor-divisor'));
 				return;
 			}
 			params3 = { condition, attribute, divisor };

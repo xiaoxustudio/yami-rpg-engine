@@ -27,6 +27,8 @@
 import { onMounted } from 'vue';
 import { useAnimSoundFramePage } from '@app/composables/useAnimSoundFramePage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -38,6 +40,25 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useAnimSoundFramePage();
 
 onMounted(() => {
+	const animSoundFrame = Inspector.animSoundFrame;
+	if (animSoundFrame) {
+		const elements = document.querySelectorAll('#animSoundFrame-sound, #animSoundFrame-volume');
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('focus', Inspector.inputFocus)
+		);
+		if (Inspector.inputBlur) {
+			(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
+				el.addEventListener(
+					'blur',
+					Inspector.inputBlur!(animSoundFrame, Animation, (data: Record<string, unknown>) => {
+						data.type = 'inspector-frame-change';
+						data.motion = animSoundFrame.motion;
+						data.direction = Animation.direction;
+					})
+				)
+			);
+		}
+	}
 	const el = document.getElementById('animSoundFrame-vue-mount');
 	if (el) {
 		attachElementApi(el, { sync });

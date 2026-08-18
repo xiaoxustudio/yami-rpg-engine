@@ -36,49 +36,7 @@ import { UI } from '@/ui/ui-window.ts';
 		update: null
 	};
 
-	UITextBox.initialize = function (this: typeof UITextBox) {
-		if (!$('#uiTextBox-type')) return;
-		$('#uiTextBox-type')?.loadItems?.([
-			{ name: 'Text', value: 'text' },
-			{ name: 'Number', value: 'number' }
-		]);
-
-		$('#uiTextBox-align')?.loadItems?.([
-			{ name: 'Left', value: 'left' },
-			{ name: 'Center', value: 'center' },
-			{ name: 'Right', value: 'right' }
-		]);
-
-		const elType = $('#uiTextBox-type');
-		if (elType)
-			elType.enableHiddenMode().relate([
-				{
-					case: 'text',
-					targets: [$('#uiTextBox-text'), $('#uiTextBox-maxLength')]
-				},
-				{
-					case: 'number',
-					targets: [
-						$('#uiTextBox-number'),
-						$('#uiTextBox-min'),
-						$('#uiTextBox-max'),
-						$('#uiTextBox-decimals')
-					]
-				}
-			]);
-
-		const elements =
-			document.querySelectorAll(`#uiTextBox-type, #uiTextBox-align, #uiTextBox-text,
-    #uiTextBox-maxLength, #uiTextBox-number, #uiTextBox-min, #uiTextBox-max,
-    #uiTextBox-decimals, #uiTextBox-padding, #uiTextBox-size, #uiTextBox-font,
-    #uiTextBox-color, #uiTextBox-selectionColor, #uiTextBox-selectionBgColor`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			(el as HTMLElement).on('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el: HTMLElement) =>
-			(el as HTMLElement).on('blur', Inspector.inputBlur!(this, UI))
-		);
-	};
+	UITextBox.initialize = function (this: typeof UITextBox) {};
 
 	UITextBox.create = function (this: typeof UITextBox) {
 		const transform = Inspector.uiElement.createTransform();

@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/switch.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/switch.ts';
 import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
@@ -20,23 +19,24 @@ const load = ({
 	form.variable = variable;
 	form.branches = branches.slice();
 	form.default = !!value;
-	write($('#switch-variable'), form.variable);
-	write($('#switch-branches'), form.branches);
-	write($('#switch-default'), form.default);
+	write(document.getElementById('switch-variable'), form.variable);
+	write(document.getElementById('switch-branches'), form.branches);
+	write(document.getElementById('switch-default'), form.default);
 	defaultCommands = value as unknown[] | null;
-	getFocus($('#switch-variable'));
+	getFocus(document.getElementById('switch-variable'));
 };
 
 const save = (): unknown => {
-	const variable = read($('#switch-variable')) ?? form.variable;
+	const variable = read(document.getElementById('switch-variable')) ?? form.variable;
 	if (VariableGetter.isNone!(variable as any)) {
-		return getFocus($('#switch-variable'));
+		return getFocus(document.getElementById('switch-variable'));
 	}
-	const branches = (read($('#switch-branches')) ?? form.branches) as unknown[];
+	const branches = (read(document.getElementById('switch-branches')) ??
+		form.branches) as unknown[];
 	if (branches.length === 0) {
-		return getFocus($('#switch-branches'));
+		return getFocus(document.getElementById('switch-branches'));
 	}
-	switch (read($('#switch-default')) ?? form.default) {
+	switch (read(document.getElementById('switch-default')) ?? form.default) {
 		case true: {
 			const commands = defaultCommands ?? [];
 			Command.save?.({ variable, branches, defaultCommands: commands });
@@ -50,7 +50,7 @@ const save = (): unknown => {
 
 const windowClosed = (event: Event): void => {
 	defaultCommands = null;
-	clear($('#switch-branches'));
+	clear(document.getElementById('switch-branches'));
 };
 
 const schema = Command.cases.switch;

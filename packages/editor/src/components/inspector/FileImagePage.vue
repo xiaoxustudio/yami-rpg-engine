@@ -19,6 +19,7 @@
 import { onMounted } from 'vue';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -28,6 +29,11 @@ const local = useLocalStore();
 const { updateImage, windowResize } = useFileImagePage();
 
 onMounted(() => {
+	const fileImage = Inspector.fileImage;
+	if (fileImage) {
+		fileImage.image = document.getElementById('fileImage-image') as HTMLImageElement | null;
+	}
+
 	const el = document.getElementById('fileImage');
 	if (!el) return;
 	attachElementApi(el, { updateImage });

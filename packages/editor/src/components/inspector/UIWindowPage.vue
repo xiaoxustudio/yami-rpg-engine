@@ -68,6 +68,7 @@
 import '@app/legacy/inspector/element-window-page.ts';
 import { onMounted } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { UI } from '@app/legacy/ui/ui-window.ts';
 import { useLocalStore } from '@app/stores/local';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -81,6 +82,45 @@ const onParamInput = (event: Event) => {
 
 const local = useLocalStore();
 
+const loadItems = (id: string, items: { name: string; value: string }[]) => {
+	const el = document.getElementById(id) as unknown as { loadItems?: (items: { name: string; value: string }[]) => void } | null;
+	el?.loadItems?.(items);
+};
+
+const relate = (id: string, config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => {
+	const el = document.getElementById(id) as unknown as { enableHiddenMode?: () => { relate: (config: { case: string | string[]; targets: (HTMLElement | null)[] }[]) => void } } | null;
+	if (el) el.enableHiddenMode()?.relate(config);
+};
+
 onMounted(() => {
+	const uiWindow = Inspector.uiWindow;
+	if (!uiWindow) return;
+
+	loadItems('uiWindow-layout', [
+		{ name: 'Normal', value: 'normal' },
+		{ name: 'Horizontal Grid', value: 'horizontal-grid' },
+		{ name: 'Vertical Grid', value: 'vertical-grid' }
+	]);
+	relate('uiWindow-layout', [
+		{ case: 'normal', targets: [document.getElementById('uiWindow-scrollX'), document.getElementById('uiWindow-scrollY')] },
+		{ case: ['horizontal-grid', 'vertical-grid'], targets: [document.getElementById('uiWindow-scrollX'), document.getElementById('uiWindow-scrollY'), document.getElementById('uiWindow-gridWidth'), document.getElementById('uiWindow-gridHeight'), document.getElementById('uiWindow-gridGapX'), document.getElementById('uiWindow-gridGapY'), document.getElementById('uiWindow-paddingX'), document.getElementById('uiWindow-paddingY')] }
+	]);
+	loadItems('uiWindow-overflow', [
+		{ name: 'Visible', value: 'visible' },
+		{ name: 'Hidden', value: 'hidden' }
+	]);
+
+	const elements = document.querySelectorAll(`#uiWindow-layout,
+    #uiWindow-scrollX, #uiWindow-scrollY, #uiWindow-gridWidth,
+    #uiWindow-gridHeight, #uiWindow-gridGapX, #uiWindow-gridGapY,
+    #uiWindow-paddingX, #uiWindow-paddingY, #uiWindow-overflow`);
+	(elements as unknown as HTMLElement[]).forEach((el) =>
+		el.addEventListener('focus', Inspector.inputFocus)
+	);
+	if (Inspector.inputBlur) {
+		(elements as unknown as HTMLElement[]).forEach((el) =>
+			el.addEventListener('blur', Inspector.inputBlur!(uiWindow, UI))
+		);
+	}
 });
 </script>

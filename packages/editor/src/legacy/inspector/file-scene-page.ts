@@ -4,7 +4,6 @@ import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from './inspector.ts';
 import { Editor } from '@/main/editor.ts';
 import { Scene } from '@/scene/scene-window.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
@@ -31,54 +30,20 @@ import { GL } from '@app/engine/webgl/webgl-init.ts';
 		update: null
 	};
 
-	FileScene.initialize = function (this: typeof FileScene) {
-		if (!$('#scene-switch-settings')) return;
-		this.button = $('#scene-switch-settings');
-		this.owner = {
-			setTarget: (target: unknown) => {
-				if (this.target !== target) {
-					Inspector.open!('fileScene', target);
-				}
-			},
-			planToSave: () => {
-				Scene.planToSave!();
-			},
-			get history() {
-				return Scene.history;
+	FileScene.initialize = function () {};
+	FileScene.button = $('#scene-switch-settings');
+	FileScene.owner = {
+		setTarget: (target: unknown) => {
+			if (FileScene.target !== target) {
+				Inspector.open!('fileScene', target);
 			}
-		};
-
-		$('#fileScene-ambient-red-slider')?.synchronize?.($('#fileScene-ambient-red'));
-		$('#fileScene-ambient-green-slider')?.synchronize?.($('#fileScene-ambient-green'));
-		$('#fileScene-ambient-blue-slider')?.synchronize?.($('#fileScene-ambient-blue'));
-		$('#fileScene-ambient-direct-slider')?.synchronize?.($('#fileScene-ambient-direct'));
-
-		$('#fileScene-events')?.bind?.(new EventListInterface(this, this.owner));
-
-		$('#fileScene-scripts')?.bind?.(new ScriptListInterface(this, this.owner));
-
-		$('#fileScene-parameter-pane')?.bind?.($('#fileScene-scripts'));
-
-		const elements = document.querySelectorAll(`#fileScene-tileWidth, #fileScene-tileHeight,
-    #fileScene-ambient-red, #fileScene-ambient-green, #fileScene-ambient-blue, #fileScene-ambient-direct`);
-		const sliders =
-			document.querySelectorAll(`#fileScene-ambient-red-slider, #fileScene-ambient-green-slider,
-    #fileScene-ambient-blue-slider, #fileScene-ambient-direct-slider`);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.inputFocus)
-		);
-		(elements as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.inputBlur!(this, this.owner))
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('focus', Inspector.sliderFocus)
-		);
-		(sliders as unknown as HTMLElement[]).forEach((el) =>
-			el.addEventListener('blur', Inspector.sliderBlur)
-		);
-		document
-			.querySelectorAll('#fileScene-events, #fileScene-scripts')
-			.forEach((el) => el.addEventListener('change', Scene.listChange));
+		},
+		planToSave: () => {
+			Scene.planToSave!();
+		},
+		get history() {
+			return Scene.history;
+		}
 	};
 
 	FileScene.create = function (this: typeof FileScene) {

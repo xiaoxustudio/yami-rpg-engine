@@ -78,7 +78,7 @@
 						id="scene-screen"
 						tabindex="-1"
 						@keydown="onSceneScreenKeydown"
-						@wheel.passive="onSceneScreenWheel"
+						@wheel="onSceneScreenWheel"
 					>
 						<MarqueeArea
 							id="scene-marquee"
@@ -142,7 +142,7 @@
 						id="ui-screen"
 						tabindex="-1"
 						@keydown="onUiScreenKeydown"
-						@wheel.passive="onUiScreenWheel"
+						@wheel="onUiScreenWheel"
 					>
 						<MarqueeArea
 							id="ui-marquee"
@@ -198,7 +198,7 @@
 						id="animation-screen"
 						tabindex="-1"
 						@keydown="onAnimationScreenKeydown"
-						@wheel.passive="onAnimationScreenWheel"
+						@wheel="onAnimationScreenWheel"
 					>
 						<MarqueeArea
 							id="animation-marquee"
@@ -314,7 +314,7 @@
 						id="particle-screen"
 						tabindex="-1"
 						@keydown="onParticleScreenKeydown"
-						@wheel.passive="onParticleScreenWheel"
+						@wheel="onParticleScreenWheel"
 					>
 						<MarqueeArea
 							id="particle-marquee"

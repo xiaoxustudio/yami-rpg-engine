@@ -1,5 +1,4 @@
 import '@app/legacy/module/command/getTarget.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
@@ -20,21 +19,21 @@ const createDefault = (): Record<string, unknown> => {
 
 const load = (params: Record<string, unknown> = {}): void => {
 	const attrItems = Attribute.getAttributeItems!('actor', 'number');
-	$('#getTarget-attribute')?.loadItems?.(attrItems);
-	$('#getTarget-divisor')?.loadItems?.(attrItems);
+	document.getElementById('getTarget-attribute')?.loadItems?.(attrItems);
+	document.getElementById('getTarget-divisor')?.loadItems?.(attrItems);
 	Object.assign(form, createDefault(), params);
-	write($('#getTarget-actor'), form.actor);
-	write($('#getTarget-selector'), form.selector);
-	write($('#getTarget-condition'), form.condition);
-	write($('#getTarget-attribute'), form.attribute);
-	write($('#getTarget-divisor'), form.divisor);
-	getFocus($('#getTarget-actor'));
+	write(document.getElementById('getTarget-actor')!, form.actor);
+	write(document.getElementById('getTarget-selector')!, form.selector);
+	write(document.getElementById('getTarget-condition')!, form.condition);
+	write(document.getElementById('getTarget-attribute')!, form.attribute);
+	write(document.getElementById('getTarget-divisor')!, form.divisor);
+	getFocus(document.getElementById('getTarget-actor')!);
 };
 
 const save = (): void => {
-	const actor = read($('#getTarget-actor')) ?? form.actor;
-	const selector = read($('#getTarget-selector')) ?? form.selector;
-	const condition = read($('#getTarget-condition')) ?? form.condition;
+	const actor = read(document.getElementById('getTarget-actor')!) ?? form.actor;
+	const selector = read(document.getElementById('getTarget-selector')!) ?? form.selector;
+	const condition = read(document.getElementById('getTarget-condition')!) ?? form.condition;
 	switch (condition) {
 		case 'max-threat':
 		case 'nearest':
@@ -44,9 +43,10 @@ const save = (): void => {
 			break;
 		case 'min-attribute-value':
 		case 'max-attribute-value': {
-			const attribute = read($('#getTarget-attribute')) ?? form.attribute;
+			const attribute =
+				read(document.getElementById('getTarget-attribute')!) ?? form.attribute;
 			if (attribute === '') {
-				getFocus($('#getTarget-attribute'));
+				getFocus(document.getElementById('getTarget-attribute')!);
 				return;
 			}
 			Command.save?.({ actor, selector, condition, attribute });
@@ -54,14 +54,15 @@ const save = (): void => {
 		}
 		case 'min-attribute-ratio':
 		case 'max-attribute-ratio': {
-			const attribute = read($('#getTarget-attribute')) ?? form.attribute;
-			const divisor = read($('#getTarget-divisor')) ?? form.divisor;
+			const attribute =
+				read(document.getElementById('getTarget-attribute')!) ?? form.attribute;
+			const divisor = read(document.getElementById('getTarget-divisor')!) ?? form.divisor;
 			if (attribute === '') {
-				getFocus($('#getTarget-attribute'));
+				getFocus(document.getElementById('getTarget-attribute')!);
 				return;
 			}
 			if (divisor === '') {
-				getFocus($('#getTarget-divisor'));
+				getFocus(document.getElementById('getTarget-divisor')!);
 				return;
 			}
 			Command.save?.({

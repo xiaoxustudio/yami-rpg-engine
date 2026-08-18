@@ -4,7 +4,6 @@ import { clear, read, write } from '@/util/element-utils';
 import { Animation } from '@/animation/animation-window.ts';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
-import { EventListInterface } from '@/tools/event-list.ts';
 import { ScriptListInterface } from '@/tools/script-list.ts';
 
 {
@@ -44,84 +43,7 @@ import { ScriptListInterface } from '@/tools/script-list.ts';
 		listChange: null
 	};
 
-	FileTrigger.initialize = function (this: typeof FileTrigger) {
-		if (!$('#fileTrigger-selector')) return;
-		$('#fileTrigger-selector')?.loadItems?.([
-			{ name: 'Enemy', value: 'enemy' },
-			{ name: 'Friend', value: 'friend' },
-			{ name: 'Team Member', value: 'team' },
-			{ name: 'Team Member Except Self', value: 'team-except-self' },
-			{ name: 'Any Except Self', value: 'any-except-self' },
-			{ name: 'Any', value: 'any' }
-		]);
-
-		$('#fileTrigger-onHitWalls')?.loadItems?.([
-			{ name: 'Penetrate', value: 'penetrate' },
-			{ name: 'Destroy', value: 'destroy' }
-		]);
-
-		$('#fileTrigger-onHitActors')?.loadItems?.([
-			{ name: 'Penetrate', value: 'penetrate' },
-			{ name: 'Destroy', value: 'destroy' },
-			{ name: 'Destroy After Multiple Hits', value: 'penetrate-destroy' }
-		]);
-
-		const elOnHitActors = $('#fileTrigger-onHitActors');
-		if (elOnHitActors)
-			elOnHitActors.enableHiddenMode().relate([
-				{
-					case: 'penetrate-destroy',
-					targets: [$('#fileTrigger-hitCount')]
-				}
-			]);
-
-		$('#fileTrigger-shape-type')?.loadItems?.([
-			{ name: 'Rectangle', value: 'rectangle' },
-			{ name: 'Circle', value: 'circle' },
-			{ name: 'Sector', value: 'sector' }
-		]);
-
-		const elShapeType = $('#fileTrigger-shape-type');
-		if (elShapeType)
-			elShapeType.enableHiddenMode().relate([
-				{
-					case: 'rectangle',
-					targets: [
-						$('#fileTrigger-shape-width'),
-						$('#fileTrigger-shape-height'),
-						$('#fileTrigger-shape-anchor')
-					]
-				},
-				{ case: 'circle', targets: [$('#fileTrigger-shape-radius')] },
-				{
-					case: 'sector',
-					targets: [$('#fileTrigger-shape-radius'), $('#fileTrigger-shape-centralAngle')]
-				}
-			]);
-
-		$('#fileTrigger-hitMode')?.loadItems?.([
-			{ name: 'Once', value: 'once' },
-			{ name: 'Once On Overlap', value: 'once-on-overlap' },
-			{ name: 'Repeat', value: 'repeat' }
-		]);
-
-		const elHitMode = $('#fileTrigger-hitMode');
-		if (elHitMode)
-			elHitMode
-				.enableHiddenMode()
-				.relate([{ case: 'repeat', targets: [$('#fileTrigger-hitInterval')] }]);
-
-		$('#fileTrigger-rotatable')?.loadItems?.([
-			{ name: 'Yes', value: true },
-			{ name: 'No', value: false }
-		]);
-
-		$('#fileTrigger-events')?.bind?.(new EventListInterface(this));
-
-		$('#fileTrigger-scripts')?.bind?.(new ScriptListInterface());
-
-		$('#fileTrigger-parameter-pane')?.bind?.($('#fileTrigger-scripts'));
-	};
+	FileTrigger.initialize = function () {};
 
 	FileTrigger.create = function (this: typeof FileTrigger) {
 		return {

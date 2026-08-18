@@ -1,5 +1,4 @@
-import '@app/legacy/module/command/renderOutline.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import '@app/legacy/module/command/renderOutline.ts';
 import { getFocus, read } from '@app/legacy/util/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
@@ -7,24 +6,25 @@ import { useCommandSchema } from '@app/composables/useCommandSchema';
 export function useRenderOutlineCommandSchema() {
 	const { form, save, load } = useCommandSchema('renderOutline', {
 		onLoad() {
-			getFocus($('#renderOutline-operation'));
+			getFocus(document.getElementById('renderOutline-operation'));
 		}
 	});
 	const onSave = (): void => {
-		const operation = read($('#renderOutline-operation')) ?? form.operation;
+		const operation =
+			read(document.getElementById('renderOutline-operation')) ?? form.operation;
 		switch (operation) {
 			case 'add': {
 				Command.save!({
 					operation,
-					actor: read($('#renderOutline-actor')) ?? form.actor,
-					color: read($('#renderOutline-color')) ?? form.color
+					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor,
+					color: read(document.getElementById('renderOutline-color')) ?? form.color
 				});
 				break;
 			}
 			case 'remove': {
 				Command.save!({
 					operation,
-					actor: read($('#renderOutline-actor')) ?? form.actor
+					actor: read(document.getElementById('renderOutline-actor')) ?? form.actor
 				});
 				break;
 			}

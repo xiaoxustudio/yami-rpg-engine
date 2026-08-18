@@ -74,6 +74,8 @@
 import { onMounted } from 'vue';
 import { useFileAudioPage } from '@app/composables/useFileAudioPage';
 import { useLocalStore } from '@app/stores/local';
+import { Inspector } from '@app/legacy/inspector/inspector.ts';
+import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
@@ -84,9 +86,45 @@ const local = useLocalStore();
 const { form, sync, onParamInput } = useFileAudioPage();
 
 onMounted(() => {
+	const fileAudio = Inspector.fileAudio;
+	if (!fileAudio) return;
+
+	const progress = document.getElementById('fileAudio-progress');
+	if (progress) {
+		fileAudio.progress = progress;
+		fileAudio.progressFiller = document.getElementById('fileAudio-progress-filler');
+		const pointer = document.getElementById('fileAudio-progress-pointer');
+		if (pointer) pointer.style.display = 'none';
+		fileAudio.pointer = pointer;
+		fileAudio.currentTimeInfo = document.getElementById('fileAudio-currentTime');
+		fileAudio.pointerTimeInfo = document.getElementById('fileAudio-pointerTime');
+		const canvas = document.getElementById('fileAudio-frequency-canvas') as HTMLCanvasElement;
+		fileAudio.canvas = canvas;
+		fileAudio.context = canvas.getContext('2d', { desynchronized: true });
+
+		const analyser = AudioManager.analyser;
+		if (analyser) {
+			analyser.fftSize = 512;
+			analyser.smoothingTimeConstant = 0;
+			fileAudio.dataArray = new Uint8Array(analyser.frequencyBinCount);
+			fileAudio.intervals = new Float64Array(64);
+			fileAudio.intensities = new Float64Array(64);
+			fileAudio.intensities.index = 0;
+		}
+
+		window.addEventListener('themechange', fileAudio.themechange);
+		const el = document.getElementById('fileAudio');
+		el?.addEventListener('resize', fileAudio.windowResize);
+		document.getElementById('fileAudio-frequency-detail')?.addEventListener('toggle', fileAudio.windowResize);
+		progress.addEventListener('pointerdown', fileAudio.progressPointerdown);
+		progress.addEventListener('pointermove', fileAudio.progressPointermove);
+		progress.addEventListener('pointerleave', fileAudio.progressPointerleave);
+	}
+
 	const el = document.getElementById('fileAudio');
-	if (!el) return;
-	attachElementApi(el, { update: sync });
+	if (el) {
+		attachElementApi(el, { update: sync });
+	}
 	sync();
 });
 </script>

@@ -1,6 +1,5 @@
 import { reactive } from 'vue';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
 import { getFocus, read, write } from '@app/legacy/util/element-utils';
 
 export interface UseCommandSchemaOptions {
@@ -24,7 +23,7 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 	const load = (params: Record<string, unknown>): void => {
 		Object.assign(form, createDefault(), params);
 		for (const field of fields) {
-			write($(`#${name}-${field.domId ?? field.key}`), form[field.key]);
+			write(document.getElementById(`${name}-${field.domId ?? field.key}`), form[field.key]);
 		}
 		options.onLoad?.(params);
 	};
@@ -33,7 +32,7 @@ export function useCommandSchema(name: string, options: UseCommandSchemaOptions 
 		let focusTarget: HTMLElement | null = null;
 		let invalid = false;
 		for (const field of fields) {
-			const control = $(`#${name}-${field.domId ?? field.key}`);
+			const control = document.getElementById(`${name}-${field.domId ?? field.key}`);
 			const value = read(control) ?? form[field.key];
 			if (field.required && (value === '' || value === undefined)) {
 				invalid = true;

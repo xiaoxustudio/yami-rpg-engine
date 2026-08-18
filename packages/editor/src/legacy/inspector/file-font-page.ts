@@ -1,6 +1,6 @@
 import { $ } from '@/util/dom.ts';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { hide, show, write } from '@/util/element-utils';
+import { hide, show } from '@/util/element-utils';
 import { File } from '@/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 
@@ -19,7 +19,6 @@ import { Inspector } from './inspector.ts';
 		meta: null,
 		symbol: null,
 		font: null,
-		input: null,
 		previews: null,
 		initialize: null,
 		open: null,
@@ -28,16 +27,7 @@ import { Inspector } from './inspector.ts';
 		textInput: null
 	};
 
-	FileFont.initialize = function (this: FileFontShape) {
-		if (!$('#fileFont-content')) return;
-		this.previews = $('.fileFont-preview');
-
-		this.input = $('#fileFont-content');
-		write(this.input, 'Yami RPG Editor');
-		this.textInput({ target: this.input!.input });
-
-		$('#fileFont')?.addEventListener('resize', this.windowResize);
-	};
+	FileFont.initialize = function () {};
 
 	FileFont.open = function (this: FileFontShape, file: FileFontFileShape, meta: unknown) {
 		if (this.target !== file) {
@@ -87,7 +77,7 @@ import { Inspector } from './inspector.ts';
 		}
 	};
 
-	FileFont.windowResize = function (this: FileFontShape, event: Event) {
+	FileFont.windowResize = function (this: FileFontShape) {
 		const previews = FileFont.previews;
 		const dpr = window.devicePixelRatio;
 		if (previews.dpr !== dpr) {
