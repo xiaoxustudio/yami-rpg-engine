@@ -6,6 +6,7 @@ import { File } from '@/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Log } from '@/log/log-window.ts';
 import { Editor } from '@/main/editor.ts';
+import { applyLocaleData, t as i18nT, createGetter as i18nCreateGetter } from '@app/i18n';
 
 interface LocalComponentItem {
 	save?: string;
@@ -164,10 +165,11 @@ Local.setLanguage = async function (this: typeof Local, language: string) {
 		if (this.active !== filename) {
 			try {
 				const path = Path.resolve!(this.dirname, filename);
-				this.update!(await File.get!({ local: path, type: 'json' }));
-				this.active = filename;
+				// 先设语言，使 update 内的 applyLocaleData 用目标语言构建 messages
 				this.language = language;
 				getLocalStore().setLanguage(language);
+				this.update!(await File.get!({ local: path, type: 'json' }));
+				this.active = filename;
 				window.dispatchEvent(new Event('localize'));
 			} catch (error: unknown) {
 				console.error(new Error('Failed to load language pack'));
@@ -187,6 +189,8 @@ Local.update = (function IIFE() {
 	return function (this: typeof Local, data: Record<string, unknown>) {
 		this.setProperties!(data.properties as Record<string, unknown>);
 		this.components = (data.components ?? {}) as Record<string, LocalComponentItem>;
+		// 喂给 vue-i18n 唯一真源（Local.get/createGetter 已转发 i18n）
+		applyLocaleData(this.language || 'en-US', data as never);
 		getLocalStore().setLanguage(this.language || 'en-US');
 		getLocalStore().properties = this.properties;
 		getLocalStore().components = this.components;
@@ -303,21 +307,11 @@ Local.parseTip = function (this: typeof Local, tip: string, title: string) {
 };
 
 Local.createGetter = function (this: typeof Local, path: string) {
-	const prefix = path + '.';
-	return (key: string) => this.get!(prefix + key);
+	return i18nCreateGetter(path);
 };
 
 Local.get = function (this: typeof Local, key: string) {
-	const property = this.properties[key];
-	if (property === undefined) {
-		const index = key.lastIndexOf('.');
-		if (index !== -1) {
-			key = key.slice(index + 1);
-		}
-		const remap = 'common.' + key;
-		return this.properties[remap] ?? '';
-	}
-	return property ?? '';
+	return i18nT(key);
 };
 
 Local.showInExplorer = function (this: typeof Local) {

@@ -1,0 +1,73 @@
+// 语言 JSON → vue-i18n messages 转换（扁平表）。
+// legacy 数据形态：properties 展平为点路径键；components 段 label/tip/content/options。
+// 关键：输出**扁平表**（完整点路径 → 字符串），避免嵌套 messages 中
+// `plugin.enum`（值）与 `plugin.enum.group`（前缀）冲突。
+// vue-i18n 经自定义 messageResolver 按完整键精确查询（+ legacy common fallback）。
+
+export type LocaleData = {
+	properties: Record<string, unknown>;
+	components: Record<string, Record<string, unknown>>;
+};
+
+export type FlatMessages = Record<string, string>;
+
+// 递归展开嵌套对象为点路径键（值限定为字符串/数字/布尔，忽略对象以避免嵌套冲突）
+function flatten(obj: unknown, prefix: string, out: Record<string, string>): void {
+	if (obj === null || typeof obj !== 'object') return;
+	for (const key of Object.keys(obj as Record<string, unknown>)) {
+		const path = prefix ? `${prefix}.${key}` : key;
+		const value = (obj as Record<string, unknown>)[key];
+		if (value !== null && typeof value === 'object') {
+			flatten(value, path, out);
+		} else if (
+			typeof value === 'string' ||
+			typeof value === 'number' ||
+			typeof value === 'boolean'
+		) {
+			out[path] = String(value);
+		}
+	}
+}
+
+// components 段转换：label/tip/content + options（字符串直值/对象统一 name+label）
+function flattenComponents(
+	components: Record<string, Record<string, unknown>>,
+	out: Record<string, string>
+): void {
+	for (const id of Object.keys(components)) {
+		const comp = components[id] ?? {};
+		const put = (suffix: string, value: unknown): void => {
+			if (typeof value === 'string') out[`components.${id}.${suffix}`] = value;
+		};
+		put('label', comp.label);
+		put('tip', comp.tip);
+		put('content', comp.content);
+		const options = comp.options;
+		if (options !== undefined && typeof options === 'object') {
+			for (const optKey of Object.keys(options as Record<string, unknown>)) {
+				const opt = (options as Record<string, unknown>)[optKey];
+				if (typeof opt === 'string') {
+					// 字符串直值：同作 name 与 label（兼容旧 getLabel / 新 t 双习惯）
+					out[`components.${id}.options.${optKey}.name`] = opt;
+					out[`components.${id}.options.${optKey}.label`] = opt;
+				} else if (opt !== null && typeof opt === 'object') {
+					const o = opt as { name?: string; tip?: string };
+					if (typeof o.name === 'string') {
+						out[`components.${id}.options.${optKey}.name`] = o.name;
+						out[`components.${id}.options.${optKey}.label`] = o.name;
+					}
+					if (typeof o.tip === 'string') {
+						out[`components.${id}.options.${optKey}.tip`] = o.tip;
+					}
+				}
+			}
+		}
+	}
+}
+
+export function convertLocaleData(data: LocaleData): FlatMessages {
+	const flat: Record<string, string> = {};
+	flatten(data.properties ?? {}, '', flat);
+	flattenComponents(data.components ?? {}, flat);
+	return flat;
+}

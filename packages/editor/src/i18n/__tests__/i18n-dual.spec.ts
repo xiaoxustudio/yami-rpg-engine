@@ -1,49 +1,39 @@
 import { describe, expect, it } from 'vitest';
-import { createPinia, setActivePinia } from 'pinia';
-import { useLocalStore } from '@app/stores/local';
-import { initYamiI18n, getYamiI18n } from '@app/i18n';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { applyLocaleData, initYamiI18n, t, createGetter, getLabel, getYamiI18n } from '@app/i18n';
+import type { LocaleData } from '@app/i18n/convert';
 
-function loadLocale(filename: string) {
+function loadLocale(filename: string): LocaleData {
 	const p = resolve(process.cwd(), 'Project/Locales', filename);
-	const data = JSON.parse(readFileSync(p, 'utf8')) as {
-		properties: Record<string, unknown>;
-		components: Record<string, unknown>;
-	};
-	return data;
+	return JSON.parse(readFileSync(p, 'utf8')) as LocaleData;
 }
 
-function setupStore(lang: string, props: Record<string, unknown>, comps: Record<string, unknown>) {
-	setActivePinia(createPinia());
-	const store = useLocalStore();
-	store.setLanguage(lang);
-	store.properties = props as never;
-	store.components = comps as never;
-	return store;
-}
-
-describe('i18n 双接口', () => {
-	it('真实语言文件 properties → useI18n().t 可用', () => {
-		const zhdata = loadLocale('zh-CN.简体中文.json');
-		setupStore('zh-CN', zhdata.properties, zhdata.components);
+describe('i18n 唯一真源 + 兼容层', () => {
+	it('applyLocaleData 后 properties 键可用（t/createGetter）', () => {
 		initYamiI18n();
-		const g = getYamiI18n().global as unknown as {
-			t: (k: string) => string;
-			locale: { value: string };
-		};
-		expect(g.locale.value).toBe('zh-CN');
-		expect(g.t('common.none')).toBe('none');
-		expect(g.t('common.create')).toBe('创建');
+		const zh = loadLocale('zh-CN.简体中文.json');
+		applyLocaleData('zh-CN', zh);
+		expect((getYamiI18n().global.locale as { value: string }).value).toBe('zh-CN');
+		expect(t('common.create')).toBe('创建');
+		expect(createGetter('command.setVideo')('loop.false')).toBe('播放一次');
 	});
 
-	it('components 段 label/options 可用', () => {
-		const zhdata = loadLocale('zh-CN.简体中文.json');
-		setupStore('zh-CN', zhdata.properties, zhdata.components);
+	it('components 段 label/options 可用（getLabel + .name/.label 双别名）', () => {
 		initYamiI18n();
-		const g = getYamiI18n().global as unknown as { t: (k: string) => string };
-		expect(g.t('components.sceneTilemap-light.label')).toBe('光线采样');
-		expect(g.t('components.sceneTilemap-light.options.raw.label')).toBe('原始图像');
-		expect(g.t('components.sceneTilemap-light.options.global.label')).toBe('全局采样');
+		const zh = loadLocale('zh-CN.简体中文.json');
+		applyLocaleData('zh-CN', zh);
+		expect(getLabel('sceneTilemap-light')).toBe('光线采样');
+		expect(t('components.sceneTilemap-light.options.raw.name')).toBe('原始图像');
+		expect(t('components.sceneTilemap-light.options.raw.label')).toBe('原始图像');
+		expect(t('components.sceneTilemap-light.options.global.label')).toBe('全局采样');
+	});
+
+	it('legacy common fallback：缺失键回退 common.<lastSegment>', () => {
+		initYamiI18n();
+		const zh = loadLocale('zh-CN.简体中文.json');
+		applyLocaleData('zh-CN', zh);
+		// 不存在 menuFile.none 时应回退 common.none
+		expect(t('menuFile.none')).toBe(t('common.none'));
 	});
 });

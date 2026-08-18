@@ -3,7 +3,7 @@ vi.mock('@app/legacy/module/resource.ts', () => ({}));
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { applyLocaleData } from '@app/i18n';
 import type { PluginMetaShape } from '@app/legacy/plugin/plugin.ts';
 
 const helper = vi.hoisted(() => ({
@@ -68,23 +68,28 @@ const mountPanel = (meta: PluginMetaShape | null, detailed: boolean) => {
 };
 
 beforeAll(() => {
-	Local.properties = {
-		'plugin.author': 'Author',
-		'plugin.deprecated': 'Deprecated',
-		'plugin.requireMissing': 'Missing: ',
-		'plugin.attribute': 'Attribute',
-		'plugin.attribute.number': 'Attribute Number',
-		'plugin.key': 'Key',
-		'plugin.enum': 'Enum',
-		'plugin.value': 'Value',
-		'plugin.attribute.group': 'Attribute Group',
-		'plugin.enum.group': 'Enum Group',
-		'plugin.element': 'Element',
-		'plugin.id': 'ID',
-		'plugin.file.image': 'Image',
-		'plugin.file.audio': 'Audio',
-		'plugin.number': 'Number'
-	};
+	applyLocaleData('en-US', {
+		properties: {
+			plugin: {
+				author: 'Author',
+				deprecated: 'Deprecated',
+				requireMissing: 'Missing: ',
+				attribute: 'Attribute',
+				'attribute.number': 'Attribute Number',
+				key: 'Key',
+				enum: 'Enum',
+				value: 'Value',
+				'attribute.group': 'Attribute Group',
+				'enum.group': 'Enum Group',
+				element: 'Element',
+				id: 'ID',
+				'file.image': 'Image',
+				'file.audio': 'Audio',
+				number: 'Number'
+			}
+		},
+		components: {}
+	});
 });
 
 beforeEach(() => {
