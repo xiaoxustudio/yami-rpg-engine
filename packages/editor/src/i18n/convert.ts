@@ -39,6 +39,7 @@ function flattenComponents(
 		const put = (suffix: string, value: unknown): void => {
 			if (typeof value === 'string') out[`components.${id}.${suffix}`] = value;
 		};
+		put('title', comp.title);
 		put('label', comp.label);
 		put('tip', comp.tip);
 		put('content', comp.content);
@@ -70,4 +71,21 @@ export function convertLocaleData(data: LocaleData): FlatMessages {
 	flatten(data.properties ?? {}, '', flat);
 	flattenComponents(data.components ?? {}, flat);
 	return flat;
+}
+
+// 展平 properties 为点路径键（保留中间对象键，与 legacy Local.setProperties 语义一致）
+export function flattenProperties(data: Record<string, unknown>): Record<string, string> {
+	const map: Record<string, string> = {};
+	const setProperty = (path: string, value: unknown) => {
+		map[path] = value as string;
+		if (value instanceof Object) {
+			for (const key of Object.keys(value as Record<string, unknown>)) {
+				setProperty(path + '.' + key, (value as Record<string, unknown>)[key]);
+			}
+		}
+	};
+	for (const key of Object.keys(data)) {
+		setProperty(key, data[key]);
+	}
+	return map;
 }

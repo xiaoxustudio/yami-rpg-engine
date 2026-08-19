@@ -1,6 +1,6 @@
 <template>
 <WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
-	<template #title><TitleBar>For Each<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.forEach.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Data</div
@@ -56,6 +56,7 @@
 <script setup lang="ts">
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
 import { on } from '@app/legacy/util/element-utils.ts';
@@ -66,6 +67,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save, windowClosed } = useForEachCommandSchema();
 

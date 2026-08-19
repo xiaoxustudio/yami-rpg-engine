@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setInventory" @confirm="onConfirm">
-	<template #title><TitleBar>Set Inventory<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setInventory.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setInventory-actor" type="actor" />
@@ -29,6 +29,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetInventoryCommandSchema } from '@app/composables/commands/useSetInventoryCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -38,6 +39,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save } = useSetInventoryCommandSchema();
 

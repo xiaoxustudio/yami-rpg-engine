@@ -28,6 +28,7 @@ import { UpdateLog } from '@app/legacy/log/update-log-window.ts';
 import { Editor } from './editor.ts';
 import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { SetTileTag } from '@app/legacy/module/global.ts';
+import { initI18n } from '@app/i18n';
 import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';
@@ -53,7 +54,6 @@ import { ArrayList } from '@app/legacy/tools/array-window.ts';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
 import { ImageClip } from '@app/legacy/tools/image-crop-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
 import { PresetElement } from '@app/legacy/tools/preset-element-window.ts';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { Rename } from '@app/legacy/tools/rename-window.ts';
@@ -100,10 +100,10 @@ Editor.initialize = async function (this: typeof Editor) {
 		this.config = data ?? {};
 		if (this.config) this.checkForEditorUpdates!();
 		Object.defineProperty(this.config, 'code', { value: code });
+		void initI18n();
 
 		const initializedSet = new Set();
 		const singletonMap = {
-			Local,
 			AudioManager,
 			Menubar,
 			Home,

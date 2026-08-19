@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame ref="frame" id="localVariable" @confirm="onConfirm">
-		<template #title><TitleBar>Set Local Variable<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.localVariable.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Local Variable</div><TextBox id="localVariable-key" :model-value="form.key" />
+				<div class="text">{{ t('components.localVariable-key.label') }}</div><TextBox id="localVariable-key" :model-value="form.key" />
 			</div>
 		
 	</WindowFrame>
@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { LocalVariableForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -19,6 +20,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<LocalVariableForm>({
 	key: ''

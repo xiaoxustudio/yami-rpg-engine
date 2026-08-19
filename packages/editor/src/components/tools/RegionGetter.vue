@@ -1,9 +1,9 @@
 <template>
 		<WindowFrame ref="frame" id="regionGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Region<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.regionGetter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="regionGetter-type" v-model="form.type" /> <div class="text">Region</div
+				<div class="text">{{ t('components.regionGetter-type.label') }}</div><SelectBox id="regionGetter-type" v-model="form.type" /> <div class="text">{{ t('components.regionGetter-presetId.label') }}</div
 				><CustomBox
 					id="regionGetter-presetId"
 					:model-value="form.presetId"
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { RegionGetter } from '@app/legacy/command/region-accessor-window.ts';
 import {
 	useRegionGetterWindow,
@@ -29,6 +30,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const regionGetter = useRegionGetterWindow();
 const form = regionGetter.form;

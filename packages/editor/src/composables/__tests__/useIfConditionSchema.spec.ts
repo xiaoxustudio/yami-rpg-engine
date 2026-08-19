@@ -16,8 +16,12 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/tools/localization.ts', () => ({
-	Local: { get: (key: string) => key }
+vi.mock('@app/i18n', () => ({
+	t: (key: string) => key,
+	createGetter: () => (key: string) => key,
+	getLabel: () => '',
+	getTip: () => '',
+	getContent: () => ''
 }));
 
 const target = {

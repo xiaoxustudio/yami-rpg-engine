@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setObjectAnimation" @confirm="onConfirm">
-		<template #title><TitleBar>Set Object Animation<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setObjectAnimation.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box" id="setObjectAnimation-grid-box">
 				<div class="text">Sort</div><SelectBox id="setObjectAnimation-sort" v-model="form.sort" />
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetObjectAnimationCommandSchema } from '@app/composables/commands/useSetObjectAnimationCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -75,6 +76,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetObjectAnimationCommandSchema();
 

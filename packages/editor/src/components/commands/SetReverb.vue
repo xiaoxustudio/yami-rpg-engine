@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setReverb" @confirm="onConfirm">
-	<template #title><TitleBar>Set Reverb<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setReverb.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="setReverb-type" v-model="form.type" /> <div class="text">Dry</div
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetReverbCommandSchema } from '@app/composables/commands/useSetReverbCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -35,6 +36,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetReverbCommandSchema();
 

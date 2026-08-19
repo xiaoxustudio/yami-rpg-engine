@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorPortrait" @confirm="onConfirm">
-	<template #title><TitleBar>Change Actor Portrait<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.changeActorPortrait.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeActorPortrait-actor" type="actor" @input="onActor" /><div class="text">Mode</div><SelectBox id="changeActorPortrait-mode" v-model="form.mode" /><div class="text">Portrait</div
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useChangeActorPortraitCommandSchema } from '@app/composables/commands/useChangeActorPortraitCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -25,6 +26,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useChangeActorPortraitCommandSchema();
 

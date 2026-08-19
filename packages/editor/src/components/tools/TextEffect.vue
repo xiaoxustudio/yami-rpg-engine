@@ -1,16 +1,16 @@
 <template>
 	<!-- 设置文字效果 -->
 	<WindowFrame ref="frame" id="textEffect" @confirm="onConfirm">
-		<template #title><TitleBar>Set Text Effect<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.textEffect.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Effect</div><SelectBox id="textEffect-type" :model-value="form.type" /> <div class="text">Shadow X</div
+				<div class="text">{{ t('components.textEffect-type.label') }}</div><SelectBox id="textEffect-type" :model-value="form.type" /> <div class="text">{{ t('components.textEffect-shadowOffsetX.label') }}</div
 				><NumberBox id="textEffect-shadowOffsetX" min="-9" max="9" unit="px" :model-value="form.shadowOffsetX" />
-				<div class="text">Shadow Y</div
+				<div class="text">{{ t('components.textEffect-shadowOffsetY.label') }}</div
 				><NumberBox id="textEffect-shadowOffsetY" min="-9" max="9" unit="px" :model-value="form.shadowOffsetY" />
-				<div class="text">Stroke Width</div
+				<div class="text">{{ t('components.textEffect-strokeWidth.label') }}</div
 				><NumberBox id="textEffect-strokeWidth" min="1" max="20" unit="px" :model-value="form.strokeWidth" />
-				<div class="text">Effect Color</div><ColorBox id="textEffect-color" :model-value="form.color" />
+				<div class="text">{{ t('components.textEffect-color.label') }}</div><ColorBox id="textEffect-color" :model-value="form.color" />
 			</div>
 		
 	</WindowFrame>
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { TextEffectForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,6 +29,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import ColorBox from '@app/components/common/ColorBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<TextEffectForm>({
 	type: 'shadow',

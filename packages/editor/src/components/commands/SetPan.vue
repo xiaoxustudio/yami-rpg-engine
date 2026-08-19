@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setPan" @confirm="onConfirm">
-	<template #title><TitleBar>Set Pan<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setPan.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="setPan-type" v-model="form.type" /> <div class="text">Pan</div
@@ -24,6 +24,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetPanCommandSchema } from '@app/composables/commands/useSetPanCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -33,6 +34,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetPanCommandSchema();
 

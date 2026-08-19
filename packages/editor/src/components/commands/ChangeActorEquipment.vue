@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorEquipment" @confirm="onConfirm">
-	<template #title><TitleBar>Change Actor Equipment<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.changeActorEquipment.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeActorEquipment-actor" type="actor" /><div class="text">Operation</div><SelectBox id="changeActorEquipment-operation" /><div class="text">Shortcut Key</div><SelectVar id="changeActorEquipment-slot" /><div class="text">Equipment</div
@@ -17,6 +17,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useChangeActorEquipmentCommandSchema } from '@app/composables/commands/useChangeActorEquipmentCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -25,6 +26,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save } = useChangeActorEquipmentCommandSchema();
 

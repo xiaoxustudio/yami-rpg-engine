@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setProgressBar" @confirm="onConfirm">
-		<template #title><TitleBar>Set Progress Bar<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setProgressBar.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setProgressBar-element" type="element" @input="onElement" />
@@ -13,6 +13,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetProgressBarCommandSchema } from '@app/composables/commands/useSetProgressBarCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -21,6 +22,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetProgressBarCommandSchema();
 

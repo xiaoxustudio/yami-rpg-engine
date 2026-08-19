@@ -6,15 +6,16 @@ import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/tools/localization.ts', () => ({
-	Local: { get: () => '' }
+vi.mock('@app/i18n', () => ({
+	t: (key: string) =>
+		key.includes('keyboard') ? 'Key' : key.includes('gamepad') ? 'Gamepad' : 'Mouse',
+	createGetter: () => (key: string) => key
 }));
 
 interface ControlEl extends HTMLElement {
@@ -47,12 +48,6 @@ describe('useSwitchConditionSchema（switch 条件窗口 composable：open/save/
 		Command.parseAttributeTag = ((id: string) => `<attr:${id}>`) as never;
 		Command.parseEnumStringTag = ((id: string) => `<enum:${id}>`) as never;
 		Command.removeTextTags = ((value: string) => value) as never;
-		Local.get = ((key: string) =>
-			key.includes('keyboard')
-				? 'Key'
-				: key.includes('gamepad')
-					? 'Gamepad'
-					: 'Mouse') as never;
 		SwitchCondition.target = target as never;
 	});
 

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="block" @confirm="onConfirm">
-	<template #title><TitleBar>Block<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.block.title') }}<div class="close" /></TitleBar></template>
 	
 		<TextBox id="block-note" v-model="form.note" />
 		<CheckBox id="block-asynchronous" class="standard" v-model="form.asynchronous"
@@ -13,12 +13,15 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useBlockCommandSchema } from '@app/composables/commands/useBlockCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const { form, save, reset } = useBlockCommandSchema();
 

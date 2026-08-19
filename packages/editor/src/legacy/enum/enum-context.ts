@@ -1,7 +1,7 @@
 import { TreeDataContext } from '@app/legacy/components/tree-data-context.ts';
 import type { TreeDataItem } from '@ui-kit';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { parseLocalTip } from '@app/legacy/localize/dom-localizer';
 
 export class EnumerationContext extends TreeDataContext {
 	constructor(enumeration: Record<string, unknown>) {
@@ -43,9 +43,7 @@ export class EnumerationContext extends TreeDataContext {
 					}
 					const name = GameLocal.replace(string.name ?? '');
 					item.name = name;
-					item.tip = string.note
-						? Local.parseTip!(string.note as string, name)
-						: undefined;
+					item.tip = string.note ? parseLocalTip(string.note as string, name) : undefined;
 					items.push(item);
 				}
 			}
@@ -86,9 +84,7 @@ export class EnumerationContext extends TreeDataContext {
 					}
 					const name = GameLocal.replace(string.name ?? '');
 					item.name = name;
-					item.tip = string.note
-						? Local.parseTip!(string.note as string, name)
-						: undefined;
+					item.tip = string.note ? parseLocalTip(string.note as string, name) : undefined;
 					items.push(item);
 				}
 			}

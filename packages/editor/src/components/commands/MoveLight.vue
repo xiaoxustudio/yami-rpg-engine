@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveLight" @confirm="onConfirm">
-		<template #title><TitleBar>Move Light<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.moveLight.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Light</div><CustomBox id="moveLight-light" type="light" @input="onLight" />
@@ -24,6 +24,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -35,6 +36,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useMoveLightCommandSchema();
 

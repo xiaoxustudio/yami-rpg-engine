@@ -1,6 +1,17 @@
 import { vi } from 'vitest';
 import { config } from '@vue/test-utils';
-import { initYamiI18n } from '@app/i18n';
+
+// 编辑器 legacy 模块顶层副作用依赖的通用 DOM 元素（jsdom 默认不存在）
+for (const id of ['tooltip', 'window-ambient']) {
+	if (!document.getElementById(id)) {
+		const el = document.createElement('div');
+		el.id = id;
+		document.body.appendChild(el);
+	}
+}
+
+// i18n（→ dom-localizer → element-utils）顶层副作用依赖 #tooltip，须在注入后导入
+const { initYamiI18n } = await import('@app/i18n');
 
 config.global.plugins = [initYamiI18n()];
 
@@ -49,15 +60,6 @@ vi.mock('@app/legacy/inspector/animation-particle-frame-page.ts', () => ({}));
 vi.mock('@app/legacy/inspector/animation-sound-layer-page.ts', () => ({}));
 vi.mock('@app/legacy/inspector/animation-sound-frame-page.ts', () => ({}));
 vi.mock('@app/legacy/inspector/particle-layer-page.ts', () => ({}));
-
-// 编辑器 legacy 模块顶层副作用依赖的通用 DOM 元素（jsdom 默认不存在）
-for (const id of ['tooltip', 'window-ambient']) {
-	if (!document.getElementById(id)) {
-		const el = document.createElement('div');
-		el.id = id;
-		document.body.appendChild(el);
-	}
-}
 
 // WebGL mock（jsdom 无 canvas 实现——GL 初始化需要 getContext/getExtension）
 const mockContext = new Proxy(

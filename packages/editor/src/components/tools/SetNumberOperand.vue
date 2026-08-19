@@ -1,15 +1,15 @@
 <template>
 		<WindowFrame ref="frame" id="setNumber-operand" @confirm="onConfirm">
-		<template #title><TitleBar>Number Operand<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setNumber-operand.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Operation</div><SelectBox id="setNumber-operation" />
-				<SelectBox id="setNumber-operand-operation" :model-value="form.operation" /> <div class="text">Type</div
+				<div class="text">{{ t('components.setNumber-operation.label') }}</div><SelectBox id="setNumber-operation" />
+				<SelectBox id="setNumber-operand-operation" :model-value="form.operation" /> <div class="text">{{ t('components.setNumber-operand-type.label') }}</div
 				><SelectBox
 					id="setNumber-operand-type"
 					:model-value="form.operandType"
 					@write="onWrite"
-				/> <div class="text">Constant</div
+				/> <div class="text">{{ t('components.setNumber-operand-constant-value.label') }}</div
 				><NumberBox
 					id="setNumber-operand-constant-value"
 					min="-1000000000"
@@ -17,151 +17,151 @@
 					decimals="10"
 					:model-value="form.constantValue"
 				/>
-				<div class="text">Math Method</div
+				<div class="text">{{ t('components.setNumber-operand-math-method.label') }}</div
 				><SelectBox id="setNumber-operand-math-method" :model-value="form.mathMethod" />
-				<div class="text">String Method</div
+				<div class="text">{{ t('components.setNumber-operand-string-method.label') }}</div
 				><SelectBox id="setNumber-operand-string-method" :model-value="form.stringMethod" />
-				<div class="text">Property</div
+				<div class="text">{{ t('components.setNumber-operand-object-property.label') }}</div
 				><SelectBox id="setNumber-operand-object-property" :model-value="form.objectProperty" />
-				<div class="text">Property</div
+				<div class="text">{{ t('components.setNumber-operand-element-property.label') }}</div
 				><SelectBox
 					id="setNumber-operand-element-property"
 					:model-value="form.elementProperty"
 				/>
-				<div class="text">Element</div
+				<div class="text">{{ t('components.setNumber-operand-element-element.label') }}</div
 				><CustomBox
 					id="setNumber-operand-element-element"
 					type="element"
 					:model-value="form.elementElement"
 				/>
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.setNumber-operand-common-variable.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-variable"
 					type="variable"
 					filter="all"
 					:model-value="form.commonVariable"
 				/>
-				<div class="text">Actor</div
+				<div class="text">{{ t('components.setNumber-operand-common-actor.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-actor"
 					type="actor"
 					:model-value="form.commonActor"
 				/>
-				<div class="text">Skill</div
+				<div class="text">{{ t('components.setNumber-operand-common-skill.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-skill"
 					type="skill"
 					:model-value="form.commonSkill"
 				/>
-				<div class="text">State</div
+				<div class="text">{{ t('components.setNumber-operand-common-state.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-state"
 					type="state"
 					:model-value="form.commonState"
 				/>
-				<div class="text">Equipment</div
+				<div class="text">{{ t('components.setNumber-operand-common-equipment.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-equipment"
 					type="equipment"
 					:model-value="form.commonEquipment"
 				/>
-				<div class="text">Item</div
+				<div class="text">{{ t('components.setNumber-operand-common-item.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-item"
 					type="item"
 					:model-value="form.commonItem"
 				/>
-				<div class="text">Trigger</div
+				<div class="text">{{ t('components.setNumber-operand-common-trigger.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-trigger"
 					type="trigger"
 					:model-value="form.commonTrigger"
 				/>
-				<div class="text">Tilemap</div
+				<div class="text">{{ t('components.setNumber-operand-common-tilemap.label') }}</div
 				><CustomBox
 					id="setNumber-operand-common-tilemap"
 					type="tilemap"
 					:model-value="form.commonTilemap"
 				/>
-				<div class="text">Tilemap Position</div
+				<div class="text">{{ t('components.setNumber-operand-tilemapPosition.label') }}</div
 				><CustomBox
 					id="setNumber-operand-tilemapPosition"
 					type="position"
 					:model-value="form.tilemapPosition"
 				/>
-				<div class="text">Item</div
+				<div class="text">{{ t('components.setNumber-operand-object-itemId.label') }}</div
 				><FileVar
 					id="setNumber-operand-object-itemId"
 					type="file"
 					filter="item"
 					:model-value="form.objectItemId"
 				/>
-				<div class="text">Equipment</div
+				<div class="text">{{ t('components.setNumber-operand-object-equipmentId.label') }}</div
 				><FileVar
 					id="setNumber-operand-object-equipmentId"
 					type="file"
 					filter="equipment"
 					:model-value="form.objectEquipmentId"
 				/>
-				<div class="text">Search String</div
+				<div class="text">{{ t('components.setNumber-operand-string-search.label') }}</div
 				><StringVar id="setNumber-operand-string-search" :model-value="form.stringSearch" />
-				<div class="text">Decimal Places</div
+				<div class="text">{{ t('components.setNumber-operand-math-decimals.label') }}</div
 				><NumberBox
 					id="setNumber-operand-math-decimals"
 					min="0"
 					max="10"
 					:model-value="form.mathDecimals"
 				/>
-				<div class="text">Min</div
+				<div class="text">{{ t('components.setNumber-operand-math-min.label') }}</div
 				><NumberVar
 					id="setNumber-operand-math-min"
 					min="-1000000000"
 					max="1000000000"
 					:model-value="form.mathMin"
 				/>
-				<div class="text">Max</div
+				<div class="text">{{ t('components.setNumber-operand-math-max.label') }}</div
 				><NumberVar
 					id="setNumber-operand-math-max"
 					min="-1000000000"
 					max="1000000000"
 					:model-value="form.mathMax"
 				/>
-				<div class="text">Start Position</div
+				<div class="text">{{ t('components.setNumber-operand-math-startPosition.label') }}</div
 				><CustomBox
 					id="setNumber-operand-math-startPosition"
 					type="position"
 					:model-value="form.mathStartPosition"
 				/>
-				<div class="text">End Position</div
+				<div class="text">{{ t('components.setNumber-operand-math-endPosition.label') }}</div
 				><CustomBox
 					id="setNumber-operand-math-endPosition"
 					type="position"
 					:model-value="form.mathEndPosition"
 				/>
-				<div class="text">Cooldown Key</div
+				<div class="text">{{ t('components.setNumber-operand-cooldown-key.label') }}</div
 				><SelectVar id="setNumber-operand-cooldown-key" :model-value="form.cooldownKey" />
-				<div class="text">Index</div
+				<div class="text">{{ t('components.setNumber-operand-list-index.label') }}</div
 				><NumberVar
 					id="setNumber-operand-list-index"
 					min="0"
 					max="1000000000"
 					:model-value="form.listIndex"
 				/>
-				<div class="text">Param Name</div
+				<div class="text">{{ t('components.setNumber-operand-parameter-key.label') }}</div
 				><StringVar
 					id="setNumber-operand-parameter-key"
 					:model-value="form.parameterKey"
 				/>
-				<div class="text">Script</div
-				><TextBox id="setNumber-operand-script" :model-value="form.script" /> <div class="text">Data</div
-				><SelectBox id="setNumber-operand-other-data" :model-value="form.otherData" /> <div class="text">Touch Id</div
+				<div class="text">{{ t('components.setNumber-operand-script.label') }}</div
+				><TextBox id="setNumber-operand-script" :model-value="form.script" /> <div class="text">{{ t('components.setNumber-operand-other-data.label') }}</div
+				><SelectBox id="setNumber-operand-other-data" :model-value="form.otherData" /> <div class="text">{{ t('components.setNumber-operand-other-touchId.label') }}</div
 				><NumberVar
 					id="setNumber-operand-other-touchId"
 					min="0"
 					max="10"
 					:model-value="form.otherTouchId"
 				/>
-				<div class="text">Team</div
+				<div class="text">{{ t('components.setNumber-operand-other-teamId.label') }}</div
 				><SelectBox id="setNumber-operand-other-teamId" :model-value="form.otherTeamId" />
 			</div>
 		
@@ -170,6 +170,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { on, clear } from '@app/legacy/util/element-utils.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
@@ -187,6 +188,8 @@ import SelectVar from '@app/components/common/SelectVar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<NumberOperandForm>({
 	operation: 'add',

@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame ref="frame" id="exportLanguage">
-		<template #title><TitleBar>Export Language Pack<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.exportLanguage.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">First Lang</div><SelectBox id="exportLanguage-first" v-model="form.first" />
-				<div class="text">Second Lang</div><SelectBox id="exportLanguage-second" v-model="form.second" />
+				<div class="text">{{ t('components.exportLanguage-first.label') }}</div><SelectBox id="exportLanguage-first" v-model="form.first" />
+				<div class="text">{{ t('components.exportLanguage-second.label') }}</div><SelectBox id="exportLanguage-second" v-model="form.second" />
 			</div>
 		
 	</WindowFrame>
@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { ExportLanguageForm } from '@app/legacy/local/export-language-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -19,6 +20,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<ExportLanguageForm>({ first: '', second: '' });
 

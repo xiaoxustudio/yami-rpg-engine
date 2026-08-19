@@ -1,9 +1,9 @@
 <template>
 		<WindowFrame id="plugin" show-apply @apply="onApply">
-		<template #title><TitleBar>Plugin<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.plugin.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="field-set input pad" id="plugin-list-fieldset">
-				<div class="legend">List</div>
+				<div class="legend">{{ t('components.plugin-list.label') }}</div>
 				<TreeList
 					id="plugin-list"
 					padded
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref, shallowRef, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
 import { PluginManager } from '@app/legacy/plugin/plugin.ts';
@@ -48,6 +49,8 @@ import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ParameterPane from '@app/components/common/ParameterPane.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import PluginOverview from '@app/components/tools/PluginOverview.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

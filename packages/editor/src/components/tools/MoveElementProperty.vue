@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="moveElement-property">
-		<template #title><TitleBar>Transform Property<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.moveElement-property.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Property</div><SelectBox id="moveElement-property-key" />
-				<div class="text">Anchor X</div
+				<div class="text">{{ t('components.moveElement-property-key.label') }}</div><SelectBox id="moveElement-property-key" />
+				<div class="text">{{ t('components.moveElement-property-anchorX.label') }}</div
 				><NumberVar
 					id="moveElement-property-anchorX"
 					min="-100"
@@ -12,7 +12,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">Anchor Y</div
+				<div class="text">{{ t('components.moveElement-property-anchorY.label') }}</div
 				><NumberVar
 					id="moveElement-property-anchorY"
 					min="-100"
@@ -20,7 +20,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">X</div
+				<div class="text">{{ t('components.moveElement-property-x.label') }}</div
 				><NumberVar
 					id="moveElement-property-x"
 					min="-10000"
@@ -28,7 +28,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<div class="text">Y</div
+				<div class="text">{{ t('components.moveElement-property-y.label') }}</div
 				><NumberVar
 					id="moveElement-property-y"
 					min="-10000"
@@ -36,7 +36,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<div class="text">Width</div
+				<div class="text">{{ t('components.moveElement-property-width.label') }}</div
 				><NumberVar
 					id="moveElement-property-width"
 					min="-10000"
@@ -44,7 +44,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<div class="text">Height</div
+				<div class="text">{{ t('components.moveElement-property-height.label') }}</div
 				><NumberVar
 					id="moveElement-property-height"
 					min="-10000"
@@ -52,7 +52,7 @@
 					decimals="4"
 					unit="px"
 				/>
-				<div class="text">X2</div
+				<div class="text">{{ t('components.moveElement-property-x2.label') }}</div
 				><NumberVar
 					id="moveElement-property-x2"
 					min="-100"
@@ -61,7 +61,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<div class="text">Y2</div
+				<div class="text">{{ t('components.moveElement-property-y2.label') }}</div
 				><NumberVar
 					id="moveElement-property-y2"
 					min="-100"
@@ -70,7 +70,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<div class="text">Width2</div
+				<div class="text">{{ t('components.moveElement-property-width2.label') }}</div
 				><NumberVar
 					id="moveElement-property-width2"
 					min="-100"
@@ -79,7 +79,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<div class="text">Height2</div
+				<div class="text">{{ t('components.moveElement-property-height2.label') }}</div
 				><NumberVar
 					id="moveElement-property-height2"
 					min="-100"
@@ -88,7 +88,7 @@
 					decimals="4"
 					unit="r"
 				/>
-				<div class="text">Rotation</div
+				<div class="text">{{ t('components.moveElement-property-rotation.label') }}</div
 				><NumberVar
 					id="moveElement-property-rotation"
 					min="-36000"
@@ -96,7 +96,7 @@
 					decimals="4"
 					unit="deg"
 				/>
-				<div class="text">Scale X</div
+				<div class="text">{{ t('components.moveElement-property-scaleX.label') }}</div
 				><NumberVar
 					id="moveElement-property-scaleX"
 					min="-100"
@@ -104,7 +104,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">Scale Y</div
+				<div class="text">{{ t('components.moveElement-property-scaleY.label') }}</div
 				><NumberVar
 					id="moveElement-property-scaleY"
 					min="-100"
@@ -112,7 +112,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">Skew X</div
+				<div class="text">{{ t('components.moveElement-property-skewX.label') }}</div
 				><NumberVar
 					id="moveElement-property-skewX"
 					min="-100"
@@ -120,7 +120,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">Skew Y</div
+				<div class="text">{{ t('components.moveElement-property-skewY.label') }}</div
 				><NumberVar
 					id="moveElement-property-skewY"
 					min="-100"
@@ -128,7 +128,7 @@
 					step="0.1"
 					decimals="4"
 				/>
-				<div class="text">Opacity</div
+				<div class="text">{{ t('components.moveElement-property-opacity.label') }}</div
 				><NumberVar
 					id="moveElement-property-opacity"
 					min="0"
@@ -143,12 +143,15 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

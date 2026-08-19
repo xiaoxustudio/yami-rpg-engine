@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="loadSubscene" @confirm="onConfirm">
-		<template #title><TitleBar>Load Subscene<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.loadSubscene.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Scene</div
@@ -14,11 +14,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useLoadSubsceneCommandSchema } from '@app/composables/commands/useLoadSubsceneCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useLoadSubsceneCommandSchema();
 

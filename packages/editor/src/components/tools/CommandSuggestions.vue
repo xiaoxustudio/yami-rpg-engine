@@ -6,7 +6,6 @@
 import { h, onMounted, type VNode } from 'vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { Local } from '@app/legacy/tools/localization.ts';
 import TreeList from '@app/components/common/TreeList.vue';
 
 const inspector = useInspectorStore();
@@ -24,7 +23,7 @@ const nodeIconRenderer = (item: unknown): VNode[] => {
 const nodeExtras = (item: unknown): VNode[] => {
 	const node = item as { class?: string; value?: string; keywords?: string };
 	const nodes: VNode[] = [];
-	if (node.class !== 'folder' && !Local.language.startsWith('en')) {
+	if (node.class !== 'folder' && !local.language.startsWith('en')) {
 		const string = node.class === 'custom' ? (node.keywords ?? node.value) : node.value;
 		if (string) {
 			nodes.push(

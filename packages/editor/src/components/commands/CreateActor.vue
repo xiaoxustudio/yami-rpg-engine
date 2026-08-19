@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="createActor" @confirm="onConfirm">
-	<template #title><TitleBar>Create Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.createActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCreateActorCommandSchema } from '@app/composables/commands/useCreateActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -30,6 +31,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useCreateActorCommandSchema();
 

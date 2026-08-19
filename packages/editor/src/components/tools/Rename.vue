@@ -1,8 +1,8 @@
 <template>
 		<WindowFrame ref="frame" id="rename" @confirm="onConfirm">
-		<template #title><TitleBar>Rename<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.rename.title') }}<div class="close"></div></TitleBar></template>
 		
-			<div class="grid-box"> <div class="text">Name</div
+			<div class="grid-box"> <div class="text">{{ t('components.rename-name.label') }}</div
 			><TextBox id="rename-name" :model-value="form.name" /> </div>
 		
 	</WindowFrame>
@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRenameWindow, type RenameForm } from '@app/composables/useRenameWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -17,6 +18,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const rename = useRenameWindow();
 const form = rename.form;

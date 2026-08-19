@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setBoolean" @confirm="onConfirm">
-		<template #title><TitleBar>Set Boolean<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setBoolean.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Variable</div
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { useSetBooleanCommandSchema } from '@app/composables/commands/useSetBooleanCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -35,6 +36,8 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save, writeHandler } = useSetBooleanCommandSchema();
 

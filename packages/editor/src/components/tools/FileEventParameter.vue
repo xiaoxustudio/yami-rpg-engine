@@ -1,10 +1,10 @@
 <template>
 	<WindowFrame id="fileEvent-parameter" @confirm="onConfirm">
-		<template #title><TitleBar>Parameter<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.fileEvent-parameter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="fileEvent-parameter-type" /> <div class="text">Key</div
-				><TextBox id="fileEvent-parameter-key" /> <div class="text">Note</div
+				<div class="text">{{ t('components.fileEvent-parameter-type.label') }}</div><SelectBox id="fileEvent-parameter-type" /> <div class="text">{{ t('components.fileEvent-parameter-key.label') }}</div
+				><TextBox id="fileEvent-parameter-key" /> <div class="text">{{ t('components.fileEvent-parameter-note.label') }}</div
 				><TextArea id="fileEvent-parameter-note" />
 			</div>
 		
@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -21,6 +22,8 @@ import { useLocalStore } from '@app/stores/local';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

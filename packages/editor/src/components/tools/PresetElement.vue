@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="presetElement" mode="center" @confirm="onConfirm">
-		<template #title><TitleBar>Element<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.presetElement.title') }}<div class="close"></div></TitleBar></template>
 		
 			<CustomBox
 				id="presetElement-uiId"
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PresetElement } from '@app/legacy/tools/preset-element-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
@@ -26,6 +27,8 @@ import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 

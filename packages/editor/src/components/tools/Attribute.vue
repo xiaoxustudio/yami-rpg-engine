@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame id="attribute" show-apply @apply="onApply">
-		<template #title><TitleBar>Attribute<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.attribute.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="attribute-list-fieldset">
-				<div class="legend">List</div>
+				<div class="legend">{{ t('components.attribute-list.label') }}</div>
 				<TreeList
 					id="attribute-list"
 					padded
@@ -16,14 +16,14 @@
 				/>
 			</div>
 			<div class="field-set" id="attribute-properties-fieldset">
-				<div class="legend">Properties</div>
+				<div class="legend">{{ t('components.attribute-properties-flex.label') }}</div>
 				<div class="flex-box" id="attribute-properties-flex">
 					<div class="flex-item"
-						><div class="text">Name</div
+						><div class="text">{{ t('components.attribute-name.label') }}</div
 						><TextBox id="attribute-name" menu="tag-localization" @input="onNameInput" /></div>
-					<div class="flex-item"><div class="text">Key</div><TextBox id="attribute-key" @input="onKeyInput" /></div>
+					<div class="flex-item"><div class="text">{{ t('components.attribute-key.label') }}</div><TextBox id="attribute-key" @input="onKeyInput" /></div>
 					<div class="flex-item" id="attribute-type-box"
-						><div class="text">Type</div>
+						><div class="text">{{ t('components.attribute-type-boolean.label') }}</div>
 						<RadioBox
 							id="attribute-type-boolean"
 							name="attribute-type"
@@ -31,7 +31,7 @@
 							value="boolean"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="attribute-type-boolean-label">Boolean</div></RadioBox
+							><div class="text" id="attribute-type-boolean-label">{{ t('components.attribute-type-boolean-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-number"
@@ -40,7 +40,7 @@
 							value="number"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="attribute-type-number-label">Number</div></RadioBox
+							><div class="text" id="attribute-type-number-label">{{ t('components.attribute-type-number-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-string"
@@ -49,7 +49,7 @@
 							value="string"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="attribute-type-string-label">String</div></RadioBox
+							><div class="text" id="attribute-type-string-label">{{ t('components.attribute-type-string-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-enum"
@@ -58,7 +58,7 @@
 							value="enum"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="attribute-type-enum-label">String(Enum)</div></RadioBox
+							><div class="text" id="attribute-type-enum-label">{{ t('components.attribute-type-enum-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="attribute-type-object"
@@ -68,14 +68,14 @@
 							@input="onTypeInput"
 							@write="onTypeWrite"
 							><div class="text" id="attribute-type-object-label"
-								>Object(For Element)</div
+								>{{ t('components.attribute-type-object-label.content') }}</div
 							></RadioBox
 						>
 					</div>
 					<div class="flex-item" id="attribute-enum-box"
-						><div class="text">Options</div>
+						><div class="text">{{ t('components.attribute-enum.label') }}</div>
 						<CustomBox id="attribute-enum" type="enum-group" /></div>
-					<div class="flex-item"><div class="text">Note</div><TextArea id="attribute-note" /></div>
+					<div class="flex-item"><div class="text">{{ t('components.attribute-note.label') }}</div><TextArea id="attribute-note" /></div>
 				</div>
 			</div>
 			<TextBox id="attribute-searcher" name="search" />
@@ -85,6 +85,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -96,6 +97,8 @@ import RadioBox from '@app/components/common/RadioBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -21,7 +21,7 @@ import {
 	dispatchChangeEvent
 } from '@app/legacy/util/element-utils';
 import { Select } from '@app/legacy/components/select-list.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { parseLocalTip } from '@app/legacy/localize/dom-localizer';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface SelectBoxElement extends HTMLElement {
@@ -129,7 +129,7 @@ const setItemNames = (
 		} else if (option && typeof option === 'object') {
 			const copy: { name?: string; tip?: string } = { ...option };
 			if ('tip' in copy) {
-				copy.tip = Local.parseTip(copy.tip, copy.name);
+				copy.tip = parseLocalTip(copy.tip, copy.name);
 			}
 			mapped[key] = copy;
 		}

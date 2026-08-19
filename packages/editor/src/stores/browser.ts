@@ -16,7 +16,7 @@ import { Title } from '@app/legacy/title/title-bar.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { addClass, hasClass, removeClass, seek } from '@app/legacy/util/element-utils';
@@ -240,7 +240,7 @@ export const useBrowserStore = defineStore('browser', () => {
 				creatable = true;
 				items.push(
 					{
-						label: get(Local.showInExplorer?.() ?? ''),
+						label: get(showInExplorerCommand),
 						click: () => {
 							File.openPath?.(File.route?.(folders[0].path));
 						}
@@ -290,7 +290,7 @@ export const useBrowserStore = defineStore('browser', () => {
 					}
 				}
 				items.push({
-					label: get(Local.showInExplorer?.() ?? ''),
+					label: get(showInExplorerCommand),
 					click: () => {
 						Browser.body?.showInExplorer?.();
 					}

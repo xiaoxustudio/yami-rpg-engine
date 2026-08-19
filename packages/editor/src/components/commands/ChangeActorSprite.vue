@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeActorSprite" @confirm="onConfirm">
-	<template #title><TitleBar>Change Actor Sprite<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.changeActorSprite.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeActorSprite-actor" type="actor" @input="onActor" /><div class="text">Animation</div
@@ -17,11 +17,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useChangeActorSpriteCommandSchema } from '@app/composables/commands/useChangeActorSpriteCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save, writeHandler } = useChangeActorSpriteCommandSchema();
 

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setFocus" @confirm="onConfirm">
-		<template #title><TitleBar>Set Focus<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setFocus.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="setFocus-operation" v-model="form.operation" />
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetFocusCommandSchema } from '@app/composables/commands/useSetFocusCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -22,6 +23,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetFocusCommandSchema();
 

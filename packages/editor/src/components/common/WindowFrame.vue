@@ -16,10 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { YMWindowFrame } from '@ui-kit';
 import { Layout } from '@app/engine/layout/layout';
-import { Local } from '@app/legacy/tools/localization';
+import { useLocalStore } from '@app/stores/local';
+import { pinia } from '@app/stores/pinia';
+import { setLocalElement, type LocalComponentItem } from '@app/legacy/localize/dom-localizer';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 
 interface Props {
@@ -36,7 +38,11 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const focusableSelector = computed<string>(() => Layout.focusableSelector as string);
-const localizeAdapter = computed(() => Local);
+const localizeAdapter = computed(() => ({
+	components: useLocalStore(pinia).components,
+	setElement: (el: Element, item: unknown) =>
+		setLocalElement(el as HTMLElement, item as LocalComponentItem)
+}));
 
 const ym = ref<{
 	root: HTMLElement | null;
@@ -89,5 +95,25 @@ onMounted(() => {
 	for (const type of ['confirm', 'apply', 'cancel'] as const) {
 		el.addEventListener(type, () => emit(type));
 	}
+	// 切语言时重写窗口内元素（懒加载窗口挂载后语言已加载，靠此兜底）
+	const onLocalize = (): void => {
+		const store = useLocalStore(pinia);
+		if (!store.components) return;
+		const components = store.components as Record<string, LocalComponentItem>;
+		const rootEl = root.value;
+		if (!rootEl) return;
+		const ids = new Set<string>([rootEl.id]);
+		rootEl.querySelectorAll<HTMLElement>('[id]').forEach((n) => ids.add(n.id));
+		for (const id of ids) {
+			const item = components[id];
+			if (item) {
+				const element =
+					rootEl.id === id ? rootEl : rootEl.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+				if (element) setLocalElement(element, item);
+			}
+		}
+	};
+	window.addEventListener('localize', onLocalize);
+	onBeforeUnmount(() => window.removeEventListener('localize', onLocalize));
 });
 </script>

@@ -19,7 +19,7 @@ import { Menu } from './menu-list.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { SearchString } from '@app/legacy/module/searchstring.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { getLocalStore } from '@app/stores/local';
 import { t, createGetter } from '@app/i18n';
 import { setTooltip } from '@app/legacy/util/element-utils.ts';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
@@ -53,7 +53,7 @@ const options = {
 	},
 	settingConfig: SettingConfig,
 	localize: {
-		language: () => Local.language,
+		language: () => getLocalStore().language,
 		get: (key: string) => t(key),
 		createGetter: (key: string) => createGetter(key)
 	},

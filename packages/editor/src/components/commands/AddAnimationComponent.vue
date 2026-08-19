@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="addAnimationComponent" @confirm="onConfirm">
-	<template #title><TitleBar>Add Animation Component<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.addAnimationComponent.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAddAnimationComponentCommandSchema } from '@app/composables/commands/useAddAnimationComponentCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -33,6 +34,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save, writeHandler } = useAddAnimationComponentCommandSchema();
 

@@ -8,8 +8,8 @@ import { Editor } from '@app/legacy/main/editor.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { TreeList } from '@app/legacy/components/tree-list.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
 import { createGetter } from '@app/i18n';
+import { parseLocalTip } from '@app/legacy/localize/dom-localizer';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import {
@@ -1247,7 +1247,7 @@ EventEditor.windowLocalize = function (this: EventEditorShape, event: Event) {
 			item.name = name;
 		}
 		if (tip !== '') {
-			item.tip = Local.parseTip!(tip, name);
+			item.tip = parseLocalTip(tip, name);
 		}
 	}
 	for (const selectBox of types.relatedElements) {

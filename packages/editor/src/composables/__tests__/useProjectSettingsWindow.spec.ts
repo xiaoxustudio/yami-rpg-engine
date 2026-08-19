@@ -24,11 +24,12 @@ vi.mock('@app/legacy/file/file-system-core.ts', () => ({
 	File: { planToSave: vi.fn(), root: '/mock/project' }
 }));
 
-vi.mock('@app/legacy/tools/localization.ts', () => ({
-	Local: {
-		createGetter: () => (key: string) => key,
-		get: () => undefined
-	}
+vi.mock('@app/i18n', () => ({
+	t: () => '',
+	createGetter: () => (key: string) => key,
+	getLabel: () => '',
+	getTip: () => '',
+	getContent: () => ''
 }));
 
 vi.mock('@app/legacy/log/log-window.ts', () => ({

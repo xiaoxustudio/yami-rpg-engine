@@ -44,8 +44,10 @@ import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Title } from './title-bar.ts';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
-import { createGetter } from '@app/i18n';
+import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
+import { createGetter, loadI18n } from '@app/i18n';
+import { loadLanguageList, resolveLocalesDir } from '@app/i18n/loader';
+import { getLocalStore } from '@app/stores/local';
 import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
 import { Zoom } from '@app/legacy/tools/zoom-window.ts';
@@ -648,7 +650,7 @@ Menubar.popupHelpMenu = function (this: typeof Menubar, target: HTMLElement) {
 					label: get('documentation'),
 					click: () => {
 						File.openURL!(
-							Local.language.slice(0, 2) === 'zh'
+							getLocalStore().language.slice(0, 2) === 'zh'
 								? 'https://open-yami-community.github.io/open-yami-doc/'
 								: 'https://open-yami-community.github.io/open-yami-doc/' // 锁死中文
 						);
@@ -910,14 +912,14 @@ Menubar.createLanguageItems = function (this: typeof Menubar) {
 			checked: autoChecked,
 			click: () => {
 				if (!autoChecked) {
-					Local.setLanguage!('');
+					void loadI18n('');
 				}
 			}
 		}
 	];
-	Local.readLanguageList!()!.then(
+	loadLanguageList().then(
 		(languages: Array<{ key: string; alias: string; filename: string }>) => {
-			const active = Local.active;
+			const active = getLocalStore().active;
 			if (languages.length !== 0) {
 				items.push({ type: 'separator' });
 			}
@@ -932,16 +934,16 @@ Menubar.createLanguageItems = function (this: typeof Menubar) {
 					checked: checked,
 					click: () => {
 						if (!checked) {
-							Local.setLanguage!(key);
+							void loadI18n(key);
 						}
 					}
 				});
 			}
 			items.push({ type: 'separator' });
 			items.push({
-				label: get(Local.showInExplorer!()!),
+				label: get(showInExplorerCommand),
 				click: () => {
-					File.openPath!(Local.dirname);
+					File.openPath!(resolveLocalesDir());
 				}
 			});
 		}

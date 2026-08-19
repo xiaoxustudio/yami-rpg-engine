@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="moveCamera" @confirm="onConfirm">
-		<template #title><TitleBar>Move Camera<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.moveCamera.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Mode</div><SelectBox id="moveCamera-mode" v-model="form.mode" /> <div class="text">Position</div
@@ -25,6 +25,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useMoveCameraCommandSchema } from '@app/composables/commands/useMoveCameraCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -35,6 +36,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useMoveCameraCommandSchema();
 

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="webSocketSend" @confirm="onConfirm">
-		<template #title><TitleBar>webSocketSend<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.webSocketSend.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">ID</div><StringVar id="webSocketSend-id" v-model="form.id" /> <div class="text">Data</div
@@ -13,10 +13,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useWebSocketSendCommandSchema } from '@app/composables/commands/useWebSocketSendCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useWebSocketSendCommandSchema();
 

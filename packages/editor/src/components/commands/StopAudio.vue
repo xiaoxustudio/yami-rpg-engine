@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="stopAudio" @confirm="onConfirm">
-	<template #title><TitleBar>Stop Audio<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.stopAudio.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box"> <div class="text">Type</div><SelectBox id="stopAudio-type" v-model="form.type" /> </div>
 	
@@ -10,11 +10,14 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useStopAudioCommandSchema } from '@app/composables/commands/useStopAudioCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useStopAudioCommandSchema();
 

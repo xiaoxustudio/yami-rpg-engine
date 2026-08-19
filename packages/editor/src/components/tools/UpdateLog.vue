@@ -1,7 +1,7 @@
 <template>
 	<!-- 公告窗口 -->
 	<WindowFrame id="update-log" no-buttons>
-		<template #title><TitleBar>Update Log<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.update-log.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="box" id="update-log-tabs" @click="onTabsClick">
 				<button id="update-log-tab-internal" class="update-log-tab" :class="{ active: mode === 'internal' }">{{ tabInternal }}</button>
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { UpdateLog, type UpdateLogItem } from '@app/legacy/log/update-log-window.ts';
 import { markndownToHtml } from '@app/legacy/module/global.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
@@ -40,6 +41,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+
+const { t } = useI18n();
 
 interface Donor {
 	name: string;

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="simulateKey" @confirm="onConfirm">
-		<template #title><TitleBar>Simulate Key<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.simulateKey.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="simulateKey-operation" v-model="form.operation" />
@@ -13,12 +13,15 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSimulateKeyCommandSchema } from '@app/composables/useSimulateKeyCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSimulateKeyCommandSchema();
 

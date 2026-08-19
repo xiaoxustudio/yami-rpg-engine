@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="changeThreat" @confirm="onConfirm">
-	<template #title><TitleBar>Change Threat<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.changeThreat.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="changeThreat-actor" type="actor" @input="onActor" /><div class="text">Target</div><CustomBox id="changeThreat-target" type="actor" @input="onTarget" /><div class="text">Operation</div><SelectBox id="changeThreat-operation" v-model="form.operation" /><div class="text">Threat</div
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useChangeThreatCommandSchema } from '@app/composables/commands/useChangeThreatCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -26,6 +27,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useChangeThreatCommandSchema();
 

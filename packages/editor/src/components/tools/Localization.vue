@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame id="localization" show-apply mode="center" @apply="onApply">
-		<template #title><TitleBar>Localization<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.localization.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="field-set input pad" id="localization-list-fieldset">
-				<div class="legend">List</div>
+				<div class="legend">{{ t('components.localization-list.label') }}</div>
 				<TreeList
 					id="localization-list"
 					padded
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Localization } from '@app/legacy/local/local-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -32,6 +33,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

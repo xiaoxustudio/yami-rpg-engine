@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="clampCamera" @confirm="onConfirm">
-		<template #title><TitleBar>Clamp Camera<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.clampCamera.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Left</div
@@ -47,10 +47,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useClampCameraCommandSchema } from '@app/composables/commands/useClampCameraCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useClampCameraCommandSchema();
 

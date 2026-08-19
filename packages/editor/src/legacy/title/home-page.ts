@@ -8,7 +8,7 @@ import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
 import { Editor } from '@app/legacy/main/editor.ts';
 import { Title } from './title-bar.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';
 import { getHomeStore } from '@app/stores/home';
 
@@ -478,7 +478,7 @@ Home.recentPointerup = function (this: typeof Home, event: Event) {
 							}
 						},
 						{
-							label: get(Local.showInExplorer!() ?? ''),
+							label: get(showInExplorerCommand),
 							enabled: enabled,
 							click: () => {
 								const items = Editor.config!.recent! as RecentProject[];

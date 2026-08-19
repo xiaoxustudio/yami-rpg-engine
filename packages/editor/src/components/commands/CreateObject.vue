@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="createObject" @confirm="onConfirm">
-		<template #title><TitleBar>Create Object<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.createObject.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Object</div
@@ -14,10 +14,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useCreateObjectCommandSchema } from '@app/composables/commands/useCreateObjectCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useCreateObjectCommandSchema();
 

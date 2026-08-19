@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setString" @confirm="onConfirm">
-		<template #title><TitleBar>Set String<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setString.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Variable</div
@@ -208,6 +208,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetStringCommandSchema } from '@app/composables/commands/useSetStringCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -220,6 +221,8 @@ import StringVar from '@app/components/common/StringVar.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save, writeHandler } = useSetStringCommandSchema();
 

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTeamRelation" @confirm="onConfirm">
-		<template #title><TitleBar>Change Team Relation<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setTeamRelation.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Team A</div><SelectBox id="setTeamRelation-teamId1" v-model="form.teamId1" />
@@ -14,6 +14,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetTeamRelationCommandSchema } from '@app/composables/commands/useSetTeamRelationCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -21,6 +22,8 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetTeamRelationCommandSchema();
 

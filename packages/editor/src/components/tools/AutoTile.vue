@@ -1,18 +1,18 @@
 <template>
 	<WindowFrame id="autoTile" @confirm="onConfirm">
-		<template #title><TitleBar>Auto Tile<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.autoTile.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="field-set" id="autoTile-general-fieldset">
-				<div class="legend">General</div>
+				<div class="legend">{{ t('components.autoTile-general-grid.label') }}</div>
 				<div class="grid-box" id="autoTile-general-grid">
-					<div class="text">Image</div
+					<div class="text">{{ t('components.autoTile-image.label') }}</div
 					><CustomBox id="autoTile-image" type="file" filter="image" @input="onImageInput" />
-					<div class="text">Offset X</div><NumberBox id="autoTile-x" min="0" max="255" @input="onOffsetXInput" />
-					<div class="text">Offset Y</div><NumberBox id="autoTile-y" min="0" max="255" @input="onOffsetYInput" />
+					<div class="text">{{ t('components.autoTile-x.label') }}</div><NumberBox id="autoTile-x" min="0" max="255" @input="onOffsetXInput" />
+					<div class="text">{{ t('components.autoTile-y.label') }}</div><NumberBox id="autoTile-y" min="0" max="255" @input="onOffsetYInput" />
 				</div>
 			</div>
 			<div class="field-set input pad" id="autoTile-templates-fieldset">
-				<div class="legend">Templates</div>
+				<div class="legend">{{ t('components.autoTile-templates.label') }}</div>
 				<TreeList
 					id="autoTile-templates"
 					padded
@@ -23,15 +23,15 @@
 				/>
 			</div>
 			<div class="field-set input pad" id="autoTile-nodes-fieldset">
-				<div class="legend">Tiles</div>
+				<div class="legend">{{ t('components.autoTile-nodes.label') }}</div>
 				<CommonList id="autoTile-nodes" @write="onNodesWrite" @popup="onNodesPopup" />
 			</div>
 			<div class="field-set" id="autoTile-canvas-fieldset">
-				<div class="legend">View</div>
+				<div class="legend">{{ t('components.autoTile-canvas.label') }}</div>
 				<canvas id="autoTile-canvas" width="128" height="128" @click="onCanvasClick" />
 			</div>
 			<div class="field-set" id="autoTile-rule-fieldset">
-				<div class="legend">Neighbors</div>
+				<div class="legend">{{ t('components.autoTile-rule-grid.label') }}</div>
 				<div class="grid-box" id="autoTile-rule-grid">
 					<SwitchItem
 						id="autoTile-rule-1"
@@ -77,7 +77,7 @@
 				</div>
 			</div>
 			<div class="field-set input pad" id="autoTile-frames-fieldset">
-				<div class="legend">Frames</div>
+				<div class="legend">{{ t('components.autoTile-frames.label') }}</div>
 				<CommonList id="autoTile-frames" @write="onFramesWrite" @popup="onFramesPopup" />
 			</div>
 		
@@ -86,6 +86,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { AutoTile } from '@app/legacy/palette/auto-tile.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -97,6 +98,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import CommonList from '@app/components/common/CommonList.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -21,7 +21,9 @@ export interface TreeDataLists {
 }
 
 export interface LocalizeAdapter {
+	language: string;
 	get(key: string): string;
+	createGetter(key: string): (key: string) => string;
 }
 
 export class TreeDataContext {

@@ -1,9 +1,9 @@
 <template>
 		<WindowFrame ref="frame" id="positionGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Position<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.positionGetter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="positionGetter-type" /> <div class="text">X</div
+				<div class="text">{{ t('components.positionGetter-type.label') }}</div><SelectBox id="positionGetter-type" /> <div class="text">{{ t('components.positionGetter-common-x.label') }}</div
 				><NumberVar
 					id="positionGetter-common-x"
 					min="-512"
@@ -11,7 +11,7 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<div class="text">Y</div
+				<div class="text">{{ t('components.positionGetter-common-y.label') }}</div
 				><NumberVar
 					id="positionGetter-common-y"
 					min="-512"
@@ -19,12 +19,12 @@
 					decimals="4"
 					unit="tile"
 				/>
-				<div class="text">Actor</div><CustomBox id="positionGetter-actor" type="actor" />
-				<div class="text">Trigger</div><CustomBox id="positionGetter-trigger" type="trigger" />
-				<div class="text">Light</div><CustomBox id="positionGetter-light" type="light" />
-				<div class="text">Region</div><CustomBox id="positionGetter-region" type="region" />
-				<div class="text">Mode</div><SelectBox id="positionGetter-region-mode" />
-				<div class="text">Object</div
+				<div class="text">{{ t('components.positionGetter-actor.label') }}</div><CustomBox id="positionGetter-actor" type="actor" />
+				<div class="text">{{ t('components.positionGetter-trigger.label') }}</div><CustomBox id="positionGetter-trigger" type="trigger" />
+				<div class="text">{{ t('components.positionGetter-light.label') }}</div><CustomBox id="positionGetter-light" type="light" />
+				<div class="text">{{ t('components.positionGetter-region.label') }}</div><CustomBox id="positionGetter-region" type="region" />
+				<div class="text">{{ t('components.positionGetter-region-mode.label') }}</div><SelectBox id="positionGetter-region-mode" />
+				<div class="text">{{ t('components.positionGetter-objectId.label') }}</div
 				><CustomBox
 					id="positionGetter-objectId"
 					type="preset-object"
@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
 import {
 	usePositionGetterWindow,
@@ -50,6 +51,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const positionGetter = usePositionGetterWindow();
 const form = positionGetter.form;

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="downloadFile" @confirm="onConfirm">
-	<template #title><TitleBar>downloadFile<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.downloadFile.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">URL</div><StringVar id="downloadFile-url" v-model="form.url" /> <div class="text">Header</div
@@ -21,6 +21,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { disable, enable } from '@app/legacy/util/element-utils';
@@ -32,6 +33,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useDownloadFileCommandSchema();
 

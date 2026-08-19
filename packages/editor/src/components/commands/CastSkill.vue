@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="castSkill" @confirm="onConfirm">
-		<template #title><TitleBar>Cast Skill<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.castSkill.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Actor</div><CustomBox id="castSkill-actor" type="actor" />
@@ -19,6 +19,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCastSkillCommandSchema } from '@app/composables/commands/useCastSkillCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -26,6 +27,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save } = useCastSkillCommandSchema();
 

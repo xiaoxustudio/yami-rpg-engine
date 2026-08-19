@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="discardTargets" @confirm="onConfirm">
-	<template #title><TitleBar>Discard Targets<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.discardTargets.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="discardTargets-actor" type="actor" @input="onActor" /><div class="text">Selector</div><SelectBox id="discardTargets-selector" v-model="form.selector" /><div class="text">Distance</div
@@ -19,6 +19,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDiscardTargetsCommandSchema } from '@app/composables/commands/useDiscardTargetsCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -26,6 +27,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useDiscardTargetsCommandSchema();
 

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="transferGlobalActor" @confirm="onConfirm">
-	<template #title><TitleBar>Transfer Global Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.transferGlobalActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="transferGlobalActor-actor" type="actor" @input="onActor" />
@@ -13,10 +13,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useTransferGlobalActorCommandSchema } from '@app/composables/commands/useTransferGlobalActorCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useTransferGlobalActorCommandSchema();
 

@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame ref="frame" id="insertImage" @confirm="onConfirm">
-		<template #title><TitleBar>Insert Image<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.insertImage.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Mode</div><SelectBox id="insertImage-mode" :model-value="form.mode" /> <div class="text">Image</div
+				<div class="text">{{ t('components.insertImage-mode.label') }}</div><SelectBox id="insertImage-mode" :model-value="form.mode" /> <div class="text">{{ t('components.insertImage-image.label') }}</div
 				><CustomBox id="insertImage-image" type="file" filter="image" :model-value="form.image" />
-				<div class="text">Clip</div
+				<div class="text">{{ t('components.insertImage-clip.label') }}</div
 				><CustomBox id="insertImage-clip" type="clip" image="insertImage-image" :model-value="form.clip" />
-				<div class="text">Width</div><NumberBox id="insertImage-width" min="0" max="10000" :model-value="form.width" />
-				<div class="text">Height</div><NumberBox id="insertImage-height" min="0" max="10000" :model-value="form.height" />
+				<div class="text">{{ t('components.insertImage-width.label') }}</div><NumberBox id="insertImage-width" min="0" max="10000" :model-value="form.width" />
+				<div class="text">{{ t('components.insertImage-height.label') }}</div><NumberBox id="insertImage-height" min="0" max="10000" :model-value="form.height" />
 			</div>
 		
 	</WindowFrame>
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { InsertImageForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -26,6 +27,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<InsertImageForm>({
 	mode: 'image',

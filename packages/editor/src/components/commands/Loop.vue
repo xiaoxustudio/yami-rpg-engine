@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="loop" @confirm="onConfirm">
-	<template #title><TitleBar>Loop<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.loop.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Mode</div><SelectBox id="loop-mode" v-model="form.mode" /> <div class="text">Conditions</div
@@ -13,6 +13,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useLoopCommandSchema } from '@app/composables/commands/useLoopCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -21,6 +22,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+
+const { t } = useI18n();
 
 const { form, save, reset } = useLoopCommandSchema();
 

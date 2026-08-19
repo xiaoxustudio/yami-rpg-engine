@@ -1,10 +1,10 @@
 <template>
 	<!-- 设置数量窗口 -->
 	<WindowFrame ref="frame" id="setQuantity" @confirm="onConfirm">
-		<template #title><TitleBar>Set Quantity<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setQuantity.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Quantity</div
+				<div class="text">{{ t('components.setQuantity-quantity.label') }}</div
 				><NumberBox
 					id="setQuantity-quantity"
 					min="1"
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { SetQuantity, type SetQuantityForm } from '@app/legacy/tools/set-number-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -25,6 +26,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<SetQuantityForm>({ quantity: 1, max: 1 });
 

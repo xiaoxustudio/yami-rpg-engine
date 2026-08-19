@@ -1,10 +1,10 @@
 <template>
 	<!-- 缩放窗口 -->
 	<WindowFrame ref="frame" id="zoom" @confirm="onConfirm">
-		<template #title><TitleBar>Zoom<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.zoom.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Zoom Factor</div
+				<div class="text">{{ t('components.zoom-factor.label') }}</div
 				><NumberBox
 					id="zoom-factor"
 					min="0.6666"
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useZoomWindow, type ZoomForm } from '@app/composables/useZoomWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -26,6 +27,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
+
+const { t } = useI18n();
 
 const zoom = useZoomWindow();
 const form = zoom.form;

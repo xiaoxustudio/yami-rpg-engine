@@ -1,11 +1,11 @@
 <template>
 		<WindowFrame ref="frame" id="objectGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Scene Object<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.objectGetter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="objectGetter-type" /> <div class="text">Object</div
+				<div class="text">{{ t('components.objectGetter-type.label') }}</div><SelectBox id="objectGetter-type" /> <div class="text">{{ t('components.objectGetter-presetId.label') }}</div
 				><CustomBox id="objectGetter-presetId" type="preset-object" filter="any" />
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.objectGetter-variable.label') }}</div
 				><CustomBox id="objectGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ObjectGetter } from '@app/legacy/command/preset-accessor-factory.ts';
 import { useObjectGetterWindow, type PresetGetterForm } from '@app/composables/usePresetGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -23,6 +24,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const objectGetter = useObjectGetterWindow();
 const form = objectGetter.form;

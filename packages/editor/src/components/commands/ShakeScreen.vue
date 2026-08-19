@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="shakeScreen" @confirm="onConfirm">
-		<template #title><TitleBar>Tint Screen<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.shakeScreen.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Shake Mode</div><SelectBox id="shakeScreen-mode" v-model="form.mode" /> <div class="text">Power</div
@@ -25,6 +25,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useShakeScreenCommandSchema } from '@app/composables/commands/useShakeScreenCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -33,6 +34,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useShakeScreenCommandSchema();
 

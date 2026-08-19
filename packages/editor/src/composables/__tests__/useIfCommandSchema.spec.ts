@@ -17,8 +17,12 @@ vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
 }));
 
-vi.mock('@app/legacy/tools/localization.ts', () => ({
-	Local: { get: () => '' }
+vi.mock('@app/i18n', () => ({
+	t: () => '',
+	createGetter: () => () => '',
+	getLabel: () => '',
+	getTip: () => '',
+	getContent: () => ''
 }));
 
 interface ParamListElement extends HTMLElement {

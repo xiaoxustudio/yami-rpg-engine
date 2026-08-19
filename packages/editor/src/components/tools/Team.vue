@@ -1,7 +1,7 @@
 <template>
 	<!-- 队伍窗口 -->
 	<WindowFrame id="team">
-		<template #title><TitleBar>Team<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.team.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="team-list-fieldset">
 				<TreeList
@@ -19,12 +19,15 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Team } from '@app/legacy/data/team-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

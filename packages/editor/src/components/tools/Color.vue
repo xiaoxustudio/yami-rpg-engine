@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame ref="frame" id="color" @confirm="onConfirm">
-		<template #title><TitleBar>Color Picker<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.color.title') }}<div class="close" /></TitleBar></template>
 		
 			<canvas id="color-palette-canvas" width="256" height="194" />
 			<div class="box" id="color-palette-frame">
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';
 import { useColorWindow, type ColorForm } from '@app/composables/useColorWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -54,6 +55,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const color = useColorWindow();
 const form = color.form;

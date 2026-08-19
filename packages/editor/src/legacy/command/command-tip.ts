@@ -15,7 +15,7 @@ import {
 import { Command } from './command-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { t, createGetter } from '@app/i18n';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { parseLocalTip } from '@app/legacy/localize/dom-localizer';
 
 export interface CommandSuggestionItem {
 	value: string;
@@ -224,7 +224,7 @@ function bindListMethods() {
 			const tip1 = item.class === 'folder' ? '' : `$${item.name}\n${item.desc ?? ''}\n`;
 			const tip2 = `$${t('command.keywords')}\n${words.join(', ')}`;
 			addClass(element, 'command-suggestion-item');
-			setTooltip(element, Local.parseTip!(tip1 + tip2, ''));
+			setTooltip(element, parseLocalTip(tip1 + tip2, ''));
 		};
 	})();
 

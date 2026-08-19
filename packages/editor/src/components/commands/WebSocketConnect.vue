@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="webSocketConnect" @confirm="onConfirm">
-		<template #title><TitleBar>webSocketConnect<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.webSocketConnect.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">URL</div><StringVar id="webSocketConnect-url" v-model="form.url" /> <div class="text">ID</div
@@ -20,11 +20,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useWebSocketConnectCommandSchema } from '@app/composables/commands/useWebSocketConnectCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useWebSocketConnectCommandSchema();
 

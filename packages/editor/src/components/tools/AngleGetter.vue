@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame ref="frame" id="angleGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Angle<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.angleGetter.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="angleGetter-type" /> <div class="text">Position</div
+				<div class="text">{{ t('components.angleGetter-type.label') }}</div><SelectBox id="angleGetter-type" /> <div class="text">{{ t('components.angleGetter-position-position.label') }}</div
 				><CustomBox id="angleGetter-position-position" type="position" />
-				<div class="text">Degrees</div
+				<div class="text">{{ t('components.angleGetter-common-degrees.label') }}</div
 				><NumberVar
 					id="angleGetter-common-degrees"
 					min="-36000"
@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
 import {
 	useAngleGetterWindow,
@@ -33,6 +34,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const angleGetter = useAngleGetterWindow();
 const form = angleGetter.form;

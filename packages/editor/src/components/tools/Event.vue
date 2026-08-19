@@ -1,16 +1,16 @@
 <template>
 	<WindowFrame id="event" show-apply class="opaque" @apply="onApply">
 		<template #title><TitleBar id="event-title"
-			>Event<div class="maximize"></div>
+			>{{ t('components.event.title') }}<div class="maximize"></div>
 			<div class="close"></div>
 		</TitleBar></template>
 		
 			<div class="field-set input pad" id="event-open-fieldset">
-				<div class="legend">Event</div>
+				<div class="legend">{{ t('components.event-open-list.label') }}</div>
 				<TreeList id="event-open-list" :node-extras="nodeExtras" :node-icon-renderer="nodeIconRenderer" />
 			</div>
 			<div class="field-set input pad" id="event-commands-fieldset">
-				<div class="legend">Content</div>
+				<div class="legend">{{ t('components.event-commands-gutter-background.label') }}</div>
 				<div class="box" id="event-commands-gutter-background" />
 				<CommandList id="event-commands" />
 				<div class="box" id="event-commands-gutter-outer">
@@ -24,6 +24,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -33,6 +34,8 @@ import { useLocalStore } from '@app/stores/local';
 import CommandList from '@app/components/common/CommandList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,10 +1,10 @@
 <template>
 	<!-- 鍙橀噺绐楀彛 -->
 	<WindowFrame id="variable" show-apply mode="center" @apply="onApply">
-		<template #title><TitleBar>Variable<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.variable.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="variable-list-fieldset">
-				<div class="legend">List</div>
+				<div class="legend">{{ t('components.variable-list.label') }}</div>
 				<TreeList
 					id="variable-list"
 					padded
@@ -17,11 +17,11 @@
 				/>
 			</div>
 			<div class="field-set" id="variable-properties-fieldset">
-				<div class="legend">Properties</div>
+				<div class="legend">{{ t('components.variable-properties-flex.label') }}</div>
 				<div class="flex-box" id="variable-properties-flex">
-					<div class="flex-item"><div class="text">Name</div><TextBox id="variable-name" @input="onNameInput" /></div>
+					<div class="flex-item"><div class="text">{{ t('components.variable-name.label') }}</div><TextBox id="variable-name" @input="onNameInput" /></div>
 					<div class="flex-item"
-						><div class="text">Sort</div>
+						><div class="text">{{ t('components.variable-sort-normal.label') }}</div>
 						<RadioBox
 							id="variable-sort-normal"
 							name="variable-sort"
@@ -29,7 +29,7 @@
 							value="0"
 							@input="onSortInput"
 							@write="onSortWrite"
-							><div class="text" id="variable-sort-normal-label">Normal</div></RadioBox
+							><div class="text" id="variable-sort-normal-label">{{ t('components.variable-sort-normal-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="variable-sort-shared"
@@ -38,7 +38,7 @@
 							value="1"
 							@input="onSortInput"
 							@write="onSortWrite"
-							><div class="text" id="variable-sort-shared-label">Shared</div></RadioBox
+							><div class="text" id="variable-sort-shared-label">{{ t('components.variable-sort-shared-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="variable-sort-temporary"
@@ -47,11 +47,11 @@
 							value="2"
 							@input="onSortInput"
 							@write="onSortWrite"
-							><div class="text" id="variable-sort-temporary-label">Temporary</div></RadioBox
+							><div class="text" id="variable-sort-temporary-label">{{ t('components.variable-sort-temporary-label.content') }}</div></RadioBox
 						>
 					</div>
 					<div class="flex-item"
-						><div class="text">Type</div>
+						><div class="text">{{ t('components.variable-type-boolean.label') }}</div>
 						<RadioBox
 							id="variable-type-boolean"
 							name="variable-type"
@@ -59,7 +59,7 @@
 							value="boolean"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="variable-type-boolean-label">Boolean</div></RadioBox
+							><div class="text" id="variable-type-boolean-label">{{ t('components.variable-type-boolean-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-number"
@@ -68,7 +68,7 @@
 							value="number"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="variable-type-number-label">Number</div></RadioBox
+							><div class="text" id="variable-type-number-label">{{ t('components.variable-type-number-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-string"
@@ -77,7 +77,7 @@
 							value="string"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="variable-type-string-label">String</div></RadioBox
+							><div class="text" id="variable-type-string-label">{{ t('components.variable-type-string-label.content') }}</div></RadioBox
 						>
 						<RadioBox
 							id="variable-type-object"
@@ -86,11 +86,11 @@
 							value="object"
 							@input="onTypeInput"
 							@write="onTypeWrite"
-							><div class="text" id="variable-type-object-label">Object</div></RadioBox
+							><div class="text" id="variable-type-object-label">{{ t('components.variable-type-object-label.content') }}</div></RadioBox
 						>
 					</div>
 					<div class="flex-item" id="variable-value-box"
-						><div class="text">Value</div>
+						><div class="text">{{ t('components.variable-value-manager.label') }}</div>
 						<PageManager id="variable-value-manager">
 							<div class="page-frame" value="boolean">
 								<RadioBox
@@ -121,7 +121,7 @@
 							</div>
 						</PageManager>
 					</div>
-					<div class="flex-item"><div class="text">Note</div><TextArea id="variable-note" /></div>
+					<div class="flex-item"><div class="text">{{ t('components.variable-note.label') }}</div><TextArea id="variable-note" /></div>
 				</div>
 			</div>
 			<TextBox id="variable-searcher" name="search" />
@@ -131,6 +131,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Variable } from '@app/legacy/variable/variable.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -143,6 +144,8 @@ import RadioBox from '@app/components/common/RadioBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

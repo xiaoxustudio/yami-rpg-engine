@@ -1,11 +1,11 @@
 <template>
 	<WindowFrame ref="frame" id="ancestorGetter">
-		<template #title><TitleBar>Element<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.ancestorGetter.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="ancestorGetter-type" /> <div class="text">Data ID</div
+				<div class="text">{{ t('components.ancestorGetter-type.label') }}</div><SelectBox id="ancestorGetter-type" /> <div class="text">{{ t('components.ancestorGetter-presetId.label') }}</div
 				><CustomBox id="ancestorGetter-presetId" type="preset-element" />
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.ancestorGetter-variable.label') }}</div
 				><CustomBox id="ancestorGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
 	useAncestorGetterWindow,
 	type AncestorGetterForm
@@ -25,6 +26,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const ancestorGetter = useAncestorGetterWindow();
 const form = ancestorGetter.form;

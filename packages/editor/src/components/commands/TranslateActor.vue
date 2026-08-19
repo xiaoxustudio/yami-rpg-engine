@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="translateActor" @confirm="onConfirm">
-	<template #title><TitleBar>Translate Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.translateActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="translateActor-actor" type="actor" @input="onActor" />
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useTranslateActorCommandSchema } from '@app/composables/commands/useTranslateActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -42,6 +43,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useTranslateActorCommandSchema();
 

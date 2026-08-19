@@ -22,7 +22,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { Easing } from '@app/legacy/data/transition-window.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { getLocalStore } from '@app/stores/local';
 import { t, createGetter } from '@app/i18n';
 import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
 
@@ -1023,12 +1023,12 @@ PluginManager.parseMeta = (function IIFE() {
 		}
 
 		update() {
-			if (this.language !== Local.language) {
-				this.language = Local.language;
+			if (this.language !== getLocalStore().language) {
+				this.language = getLocalStore().language;
 				const packs = this.packs;
 				let active = packs[0];
 				let matchedWeight = 0;
-				const sKeys = Local.language.split('-');
+				const sKeys = getLocalStore().language.split('-');
 				for (const pack of packs) {
 					const dKeys = pack.name.split('-');
 					if (sKeys[0] === dKeys[0]) {

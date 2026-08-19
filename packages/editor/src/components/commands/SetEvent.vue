@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setEvent" @confirm="onConfirm">
-	<template #title><TitleBar>Set Event<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setEvent.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Operation</div><SelectBox id="setEvent-operation" v-model="form.operation" />
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetEventCommandSchema } from '@app/composables/commands/useSetEventCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -26,6 +27,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetEventCommandSchema();
 

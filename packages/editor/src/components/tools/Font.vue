@@ -1,14 +1,15 @@
 <template>
 	<WindowFrame ref="frame" id="font" @confirm="onConfirm">
-		<template #title><TitleBar>Set Font<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.font.title') }}<div class="close"></div></TitleBar></template>
 		
-			<div class="grid-box"> <div class="text">Font Family</div><TextBox id="font-font" :model-value="form.font" /> </div>
+			<div class="grid-box"> <div class="text">{{ t('components.font-font.label') }}</div><TextBox id="font-font" :model-value="form.font" /> </div>
 		
 	</WindowFrame>
 </template>
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { FontForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -17,6 +18,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<FontForm>({
 	font: ''

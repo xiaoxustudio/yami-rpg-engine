@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame id="command" show-apply @apply="onApply">
-		<template #title><TitleBar>Custom Command<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.command.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="field-set input pad" id="command-list-fieldset">
-				<div class="legend">List</div>
+				<div class="legend">{{ t('components.command-list.label') }}</div>
 				<TreeList
 					id="command-list"
 					padded
@@ -25,7 +25,7 @@
 				<DetailBox id="command-settings-detail" open>
 					<DetailSummary>Settings</DetailSummary>
 					<div class="detail-grid" id="command-settings-grid">
-						<div class="text">Alias</div><TextBox id="command-alias" @input="onParamInput" /> <div class="text">Keywords</div
+						<div class="text">{{ t('components.command-alias.label') }}</div><TextBox id="command-alias" @input="onParamInput" /> <div class="text">{{ t('components.command-keywords.label') }}</div
 					><TextBox id="command-keywords" @input="onParamInput" />
 					</div>
 				</DetailBox>
@@ -36,6 +36,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, ref, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { getBrowserStore } from '@app/stores/browser';
 import { CustomCommand } from '@app/legacy/command/custom-command-window.ts';
@@ -49,6 +50,8 @@ import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

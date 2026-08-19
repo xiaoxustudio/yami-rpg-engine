@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame id="about" no-buttons>
-		<template #title><TitleBar>Yami RPG Editor<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.about.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text" id="about-credits">Credits</div
+				<div class="text" id="about-credits">{{ t('components.about-credits.content') }}</div
 				><div class="text">
 					<div class="text href">刀里个刀</div><br />
 					<div class="text href" href="https://store.steampowered.com/app/2346410/Border_Pioneer"
@@ -31,10 +31,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

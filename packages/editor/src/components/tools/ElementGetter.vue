@@ -1,14 +1,14 @@
 <template>
 	<WindowFrame ref="frame" id="elementGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Element<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.elementGetter.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="elementGetter-type" /> <div class="text">Ancestor</div
+				<div class="text">{{ t('components.elementGetter-type.label') }}</div><SelectBox id="elementGetter-type" /> <div class="text">{{ t('components.elementGetter-ancestor.label') }}</div
 				><CustomBox id="elementGetter-ancestor" type="ancestor-element" />
-				<div class="text">Data ID</div
+				<div class="text">{{ t('components.elementGetter-presetId.label') }}</div
 				><CustomBox id="elementGetter-presetId" type="preset-element" />
-				<div class="text">Index</div><NumberVar id="elementGetter-index" min="0" max="10000" />
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.elementGetter-index.label') }}</div><NumberVar id="elementGetter-index" min="0" max="10000" />
+				<div class="text">{{ t('components.elementGetter-variable.label') }}</div
 				><CustomBox id="elementGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
 import {
 	useElementGetterWindow,
@@ -30,6 +31,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const elementGetter = useElementGetterWindow();
 const form = elementGetter.form;

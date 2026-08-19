@@ -93,7 +93,7 @@ const update = (): void => {
 	if (!infoEl) return;
 	const value = dataValue;
 	const items = dataItems;
-	const length = items.length;
+	const length = items?.length ?? 0;
 	let name: string | undefined;
 	for (let i = 0; i < length; i++) {
 		const item = items[i];
@@ -236,6 +236,7 @@ const hideChildNodes = (): void => {
 };
 
 const loadItems = (items: unknown[]): void => {
+	if (!Array.isArray(items)) return;
 	dataItems = items as SelectItem[];
 	if (root.value) (root.value as SelectBoxApi).dataItems = items as SelectItem[];
 	if (dataValue !== null && dataValue !== undefined) {

@@ -1,15 +1,15 @@
 <template>
 	<WindowFrame ref="frame" id="actorGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Actor<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.actorGetter.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="actorGetter-type" /> <div class="text">Member ID</div
+				<div class="text">{{ t('components.actorGetter-type.label') }}</div><SelectBox id="actorGetter-type" /> <div class="text">{{ t('components.actorGetter-memberId.label') }}</div
 				><NumberVar id="actorGetter-memberId" min="0" max="10000" />
-				<div class="text">Actor</div
+				<div class="text">{{ t('components.actorGetter-actorId.label') }}</div
 				><CustomBox id="actorGetter-actorId" type="file" filter="actor" />
-				<div class="text">Data ID</div
+				<div class="text">{{ t('components.actorGetter-presetId.label') }}</div
 				><CustomBox id="actorGetter-presetId" type="preset-object" filter="actor" />
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.actorGetter-variable.label') }}</div
 				><CustomBox id="actorGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
 import { useActorGetterWindow, type ActorGetterForm } from '@app/composables/useActorGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -28,6 +29,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const actorGetter = useActorGetterWindow();
 const form = actorGetter.form;

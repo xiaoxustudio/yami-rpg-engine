@@ -1,13 +1,13 @@
 <template>
 	<WindowFrame id="fileAnimation-sprite" @confirm="onConfirm">
-		<template #title><TitleBar>Sprite<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.fileAnimation-sprite.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Name</div><TextBox id="fileAnimation-sprite-name" /> <div class="text">Image</div
+				<div class="text">{{ t('components.fileAnimation-sprite-name.label') }}</div><TextBox id="fileAnimation-sprite-name" /> <div class="text">{{ t('components.fileAnimation-sprite-image.label') }}</div
 				><CustomBox id="fileAnimation-sprite-image" type="file" filter="image" />
-				<div class="text">Horiz Frames</div
+				<div class="text">{{ t('components.fileAnimation-sprite-hframes.label') }}</div
 				><NumberBox id="fileAnimation-sprite-hframes" min="1" max="256" />
-				<div class="text">Vert Frames</div
+				<div class="text">{{ t('components.fileAnimation-sprite-vframes.label') }}</div
 				><NumberBox id="fileAnimation-sprite-vframes" min="1" max="256" />
 			</div>
 		
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -24,6 +25,8 @@ import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,13 +1,13 @@
 <template>
 	<WindowFrame ref="frame" id="itemGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Actor<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.itemGetter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="itemGetter-type" /> <div class="text">Actor</div
-				><CustomBox id="itemGetter-actor" type="actor" /> <div class="text">Shortcut Key</div
-				><SelectVar id="itemGetter-key" /> <div class="text">Item</div
+				<div class="text">{{ t('components.itemGetter-type.label') }}</div><SelectBox id="itemGetter-type" /> <div class="text">{{ t('components.itemGetter-actor.label') }}</div
+				><CustomBox id="itemGetter-actor" type="actor" /> <div class="text">{{ t('components.itemGetter-key.label') }}</div
+				><SelectVar id="itemGetter-key" /> <div class="text">{{ t('components.itemGetter-itemId.label') }}</div
 				><CustomBox id="itemGetter-itemId" type="file" filter="item" />
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.itemGetter-variable.label') }}</div
 				><CustomBox id="itemGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
 import { useItemGetterWindow, type ItemGetterForm } from '@app/composables/useItemGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -26,6 +27,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const itemGetter = useItemGetterWindow();
 const form = itemGetter.form;

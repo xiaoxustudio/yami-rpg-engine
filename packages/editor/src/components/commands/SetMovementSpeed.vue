@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setMovementSpeed" @confirm="onConfirm">
-	<template #title><TitleBar>Set Movement Speed<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setMovementSpeed.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setMovementSpeed-actor" type="actor" @input="onActor" /><div class="text">Property</div><SelectBox id="setMovementSpeed-property" v-model="form.property" /><div class="text">Base Speed</div
@@ -20,6 +20,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetMovementSpeedCommandSchema } from '@app/composables/commands/useSetMovementSpeedCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -28,6 +29,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetMovementSpeedCommandSchema();
 

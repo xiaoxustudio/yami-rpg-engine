@@ -1,21 +1,21 @@
 <template>
 	<WindowFrame id="deployment" @confirm="onConfirm">
-		<template #title><TitleBar>Deployment<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.deployment.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Platform</div><SelectBox id="deployment-platform" @input="onPlatformInput" />
-				<div class="text">Folder</div
+				<div class="text">{{ t('components.deployment-platform.label') }}</div><SelectBox id="deployment-platform" @input="onPlatformInput" />
+				<div class="text">{{ t('components.deployment-folder.label') }}</div
 				><TextBox
 					id="deployment-folder"
 					@beforeinput="onFolderBeforeinput"
 					@input="onFolderInput"
 				/>
-				<div class="text">Output Location</div>
+				<div class="text">{{ t('components.deployment-location-box.label') }}</div>
 				<div class="flex-box" id="deployment-location-box">
 					<TextBox id="deployment-location" @input="onLocationInput" />
 					<button id="deployment-choose" @click="onChooseClick">…</button>
 				</div>
-				<div class="text">Compress Resources</div>
+				<div class="text">{{ t('components.deployment-compress.label') }}</div>
 			<CheckBox id="deployment-compress" standard @change="onCompressChange" />
 			</div>
 			<div class="text" id="deployment-warning" />
@@ -25,6 +25,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -34,6 +35,8 @@ import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { Deployment } from '@app/legacy/title/deploy-project-window';
 import { useToastService } from '@app/composables/useToastService';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

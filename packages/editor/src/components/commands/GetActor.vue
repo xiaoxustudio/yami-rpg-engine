@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="getActor" @confirm="onConfirm">
-	<template #title><TitleBar>Get Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.getActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Write to Variable</div
@@ -44,6 +44,7 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -55,6 +56,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save } = useGetActorCommandSchema();
 

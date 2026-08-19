@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="useItem" @confirm="onConfirm">
-	<template #title><TitleBar>Use Item<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.useItem.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="useItem-actor" type="actor" @input="onActor" />
@@ -17,12 +17,15 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUseItemCommandSchema } from '@app/composables/commands/useUseItemCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useUseItemCommandSchema();
 

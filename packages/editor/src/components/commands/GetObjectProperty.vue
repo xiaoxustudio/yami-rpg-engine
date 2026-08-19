@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="getObjectProperty" @confirm="onConfirm">
-		<template #title><TitleBar>getObjectProperty<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.getObjectProperty.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Variable</div
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -34,6 +35,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useGetObjectPropertyCommandSchema();
 

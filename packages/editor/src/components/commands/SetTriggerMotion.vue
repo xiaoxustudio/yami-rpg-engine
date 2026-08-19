@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerMotion" @confirm="onConfirm">
-		<template #title><TitleBar>Set Trigger Motion<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setTriggerMotion.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Trigger</div
@@ -14,10 +14,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useSetTriggerMotionCommandSchema } from '@app/composables/commands/useSetTriggerMotionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetTriggerMotionCommandSchema();
 

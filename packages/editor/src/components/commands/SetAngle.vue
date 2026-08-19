@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="setAngle" @confirm="onConfirm">
-	<template #title><TitleBar>Set Angle<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.setAngle.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="setAngle-actor" type="actor" @input="onActor" /><div class="text">Angle</div><CustomBox id="setAngle-angle" type="angle" @input="onAngle" /><div class="text">Easing</div><SelectBox id="setAngle-easingId" name="easing" v-model="form.easingId" /><div class="text">Duration</div
@@ -19,6 +19,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetAngleCommandSchema } from '@app/composables/commands/useSetAngleCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -28,6 +29,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetAngleCommandSchema();
 

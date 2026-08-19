@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteTile" @confirm="onConfirm">
-		<template #title><TitleBar>Delete Tile<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.deleteTile.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Tilemap</div><CustomBox id="deleteTile-tilemap" type="tilemap" @input="onTilemap" />
@@ -15,11 +15,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useDeleteTileCommandSchema } from '@app/composables/commands/useDeleteTileCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useDeleteTileCommandSchema();
 

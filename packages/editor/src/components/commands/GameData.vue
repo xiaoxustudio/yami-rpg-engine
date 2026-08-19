@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="gameData" @confirm="onConfirm">
-		<template #title><TitleBar>Game Data<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.gameData.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="gameData-operation" v-model="form.operation" />
@@ -15,6 +15,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGameDataCommandSchema } from '@app/composables/commands/useGameDataCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -23,6 +24,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useGameDataCommandSchema();
 

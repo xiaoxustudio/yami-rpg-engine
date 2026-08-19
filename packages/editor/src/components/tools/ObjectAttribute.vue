@@ -1,20 +1,20 @@
 <template>
 		<WindowFrame id="object-attribute" @confirm="onConfirm">
-		<template #title><TitleBar>Attribute<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.object-attribute.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Key</div
-				><SelectBox id="object-attribute-key" @write="onKeyWrite" /> <div class="text">Boolean</div
-				><SelectBox id="object-attribute-boolean-value" /> <div class="text">Number</div
+				<div class="text">{{ t('components.object-attribute-key.label') }}</div
+				><SelectBox id="object-attribute-key" @write="onKeyWrite" /> <div class="text">{{ t('components.object-attribute-boolean-value.label') }}</div
+				><SelectBox id="object-attribute-boolean-value" /> <div class="text">{{ t('components.object-attribute-number-value.label') }}</div
 				><NumberBox
 					id="object-attribute-number-value"
 					min="-1000000000"
 					max="1000000000"
 					decimals="6"
 				/>
-				<div class="text">String</div
+				<div class="text">{{ t('components.object-attribute-string-value.label') }}</div
 				><TextArea id="object-attribute-string-value" menu="tag-localization" />
-				<div class="text">Option</div><SelectBox id="object-attribute-enum-value" />
+				<div class="text">{{ t('components.object-attribute-enum-value.label') }}</div><SelectBox id="object-attribute-enum-value" />
 			</div>
 		
 	</WindowFrame>
@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
@@ -30,6 +31,8 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import { AttributeListInterface } from '@app/legacy/tools/property-list';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

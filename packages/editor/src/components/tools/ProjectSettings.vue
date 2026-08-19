@@ -1,53 +1,53 @@
 <template>
 		<WindowFrame id="project-settings" buttons-id-prefix="project">
-		<template #title><TitleBar>Project Settings<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.project-settings.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="box" id="project-page">
 				<div class="box" id="project-grid-box">
-					<div class="text project-summary" id="config-window-summary">Window</div>
-					<div class="text project-label">Title</div
+					<div class="text project-summary" id="config-window-summary">{{ t('components.config-window-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-window-title.label') }}</div
 					><TextBox id="config-window-title" />
-					<div class="text project-label">Width</div
+					<div class="text project-label">{{ t('components.config-window-width.label') }}</div
 					><NumberBox id="config-window-width" min="240" max="7680" unit="px" />
-					<div class="text project-label">Height</div
+					<div class="text project-label">{{ t('components.config-window-height.label') }}</div
 					><NumberBox id="config-window-height" min="240" max="7680" unit="px" />
-					<div class="text project-label">Display</div
+					<div class="text project-label">{{ t('components.config-window-display.label') }}</div
 					><SelectBox id="config-window-display" />
 					<div class="text project-summary" id="config-resolution-summary"
-						>Virtual Resolution</div
+						>{{ t('components.config-resolution-summary.content') }}</div
 					>
-					<div class="text project-label">Width</div
+					<div class="text project-label">{{ t('components.config-resolution-width.label') }}</div
 					><NumberBox
 						id="config-resolution-width"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
-					<div class="text project-label">Height</div
+					<div class="text project-label">{{ t('components.config-resolution-height.label') }}</div
 					><NumberBox
 						id="config-resolution-height"
 						min="240"
 						max="7680"
 						unit="px"
 					/>
-					<div class="text project-label">Scene Scale</div
+					<div class="text project-label">{{ t('components.config-resolution-sceneScale.label') }}</div
 					><NumberBox
 						id="config-resolution-sceneScale"
 						min="0.5"
 						max="8"
 						decimals="10"
 					/>
-					<div class="text project-label">UI Scale</div
+					<div class="text project-label">{{ t('components.config-resolution-uiScale.label') }}</div
 					><NumberBox
 						id="config-resolution-uiScale"
 						min="0.5"
 						max="4"
 						decimals="10"
 					/>
-					<div class="text project-summary" id="config-scene-summary">Scene</div>
-					<div class="text project-label">Padding</div
+					<div class="text project-summary" id="config-scene-summary">{{ t('components.config-scene-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-scene-padding.label') }}</div
 					><NumberBox id="config-scene-padding" min="0" max="7680" unit="px" />
-					<div class="text project-label">Tile Animation Interval</div
+					<div class="text project-label">{{ t('components.config-scene-animationInterval.label') }}</div
 					><NumberBox
 						id="config-scene-animationInterval"
 						min="0"
@@ -55,30 +55,30 @@
 						unit="ms"
 					/>
 					<div class="text project-summary" id="config-tileArea-summary"
-						>Tile Rendering Area</div
+						>{{ t('components.config-tileArea-summary.content') }}</div
 					>
-					<div class="text project-label">Expansion Top</div
+					<div class="text project-label">{{ t('components.config-tileArea-expansionTop.label') }}</div
 					><NumberBox
 						id="config-tileArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Left</div
+					<div class="text project-label">{{ t('components.config-tileArea-expansionLeft.label') }}</div
 					><NumberBox
 						id="config-tileArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Right</div
+					<div class="text project-label">{{ t('components.config-tileArea-expansionRight.label') }}</div
 					><NumberBox
 						id="config-tileArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Bottom</div
+					<div class="text project-label">{{ t('components.config-tileArea-expansionBottom.label') }}</div
 					><NumberBox
 						id="config-tileArea-expansionBottom"
 						min="0"
@@ -86,30 +86,30 @@
 						unit="px"
 					/>
 					<div class="text project-summary" id="config-animationArea-summary"
-						>Animation Rendering Area</div
+						>{{ t('components.config-animationArea-summary.content') }}</div
 					>
-					<div class="text project-label">Expansion Top</div
+					<div class="text project-label">{{ t('components.config-animationArea-expansionTop.label') }}</div
 					><NumberBox
 						id="config-animationArea-expansionTop"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Left</div
+					<div class="text project-label">{{ t('components.config-animationArea-expansionLeft.label') }}</div
 					><NumberBox
 						id="config-animationArea-expansionLeft"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Right</div
+					<div class="text project-label">{{ t('components.config-animationArea-expansionRight.label') }}</div
 					><NumberBox
 						id="config-animationArea-expansionRight"
 						min="0"
 						max="800"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Bottom</div
+					<div class="text project-label">{{ t('components.config-animationArea-expansionBottom.label') }}</div
 					><NumberBox
 						id="config-animationArea-expansionBottom"
 						min="0"
@@ -117,51 +117,51 @@
 						unit="px"
 					/>
 					<div class="text project-summary" id="config-lightArea-summary"
-						>Light Rendering Area</div
+						>{{ t('components.config-lightArea-summary.content') }}</div
 					>
-					<div class="text project-label">Expansion Top</div
+					<div class="text project-label">{{ t('components.config-lightArea-expansionTop.label') }}</div
 					><NumberBox
 						id="config-lightArea-expansionTop"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Left</div
+					<div class="text project-label">{{ t('components.config-lightArea-expansionLeft.label') }}</div
 					><NumberBox
 						id="config-lightArea-expansionLeft"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Right</div
+					<div class="text project-label">{{ t('components.config-lightArea-expansionRight.label') }}</div
 					><NumberBox
 						id="config-lightArea-expansionRight"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-label">Expansion Bottom</div
+					<div class="text project-label">{{ t('components.config-lightArea-expansionBottom.label') }}</div
 					><NumberBox
 						id="config-lightArea-expansionBottom"
 						min="0"
 						max="400"
 						unit="px"
 					/>
-					<div class="text project-summary" id="config-virtualAxis-summary">Virtual Axis</div>
-					<div class="text project-label">Axis Up</div
+					<div class="text project-summary" id="config-virtualAxis-summary">{{ t('components.config-virtualAxis-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-virtualAxis-up.label') }}</div
 					><KeyboardBox id="config-virtualAxis-up" />
-					<div class="text project-label">Axis Down</div
+					<div class="text project-label">{{ t('components.config-virtualAxis-down.label') }}</div
 					><KeyboardBox id="config-virtualAxis-down" />
-					<div class="text project-label">Axis Left</div
+					<div class="text project-label">{{ t('components.config-virtualAxis-left.label') }}</div
 					><KeyboardBox id="config-virtualAxis-left" />
-					<div class="text project-label">Axis Right</div
+					<div class="text project-label">{{ t('components.config-virtualAxis-right.label') }}</div
 					><KeyboardBox id="config-virtualAxis-right" />
-					<div class="text project-summary" id="config-collision-summary">Collision System</div>
-					<div class="text project-label">Actor Collision</div
+					<div class="text project-summary" id="config-collision-summary">{{ t('components.config-collision-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-collision-actor-enabled.label') }}</div
 					><SelectBox id="config-collision-actor-enabled" />
-					<div class="text project-label">Scene Collision</div
+					<div class="text project-label">{{ t('components.config-collision-scene-enabled.label') }}</div
 					><SelectBox id="config-collision-scene-enabled" />
-					<div class="text project-label">Scene Collision Size</div
+					<div class="text project-label">{{ t('components.config-collision-scene-actorSize.label') }}</div
 					><NumberBox
 						id="config-collision-scene-actorSize"
 						min="0.5"
@@ -170,20 +170,20 @@
 						decimals="4"
 						unit="tile"
 					/>
-					<div class="text project-label">Trigger Collision Mode</div
+					<div class="text project-label">{{ t('components.config-collision-trigger-collideWithActorShape.label') }}</div
 					><SelectBox id="config-collision-trigger-collideWithActorShape" />
-					<div class="text project-summary" id="config-text-summary">Text</div>
-					<div class="text project-label">Imported Fonts</div
+					<div class="text project-summary" id="config-text-summary">{{ t('components.config-text-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-text-importedFonts.label') }}</div
 					><ParamList id="config-text-importedFonts" flexible />
-					<div class="text project-label">Default Font Family</div
+					<div class="text project-label">{{ t('components.config-text-fontFamily.label') }}</div
 					><TextBox id="config-text-fontFamily" />
-					<div class="text project-label">High Definition</div
+					<div class="text project-label">{{ t('components.config-text-highDefinition.label') }}</div
 					><SelectBox id="config-text-highDefinition" />
-					<div class="text project-summary" id="config-actor-summary">Actor</div>
-					<div class="text project-label">Temporary Attributes</div
+					<div class="text project-summary" id="config-actor-summary">{{ t('components.config-actor-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-actor-tempAttributes.label') }}</div
 					><ParamList id="config-actor-tempAttributes" group="actor" flexible />
-					<div class="text project-summary" id="config-animation-summary">Animation</div>
-					<div class="text project-label">Frame Rate</div
+					<div class="text project-summary" id="config-animation-summary">{{ t('components.config-animation-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-animation-frameRate.label') }}</div
 					><NumberBox
 						id="config-animation-frameRate"
 						min="1"
@@ -191,41 +191,41 @@
 						unit="fps"
 					/>
 					<div class="text project-summary" id="config-soundAttenuation-summary"
-						>Sound Attenuation</div
+						>{{ t('components.config-soundAttenuation-summary.content') }}</div
 					>
-					<div class="text project-label">Attenuation Distance</div
+					<div class="text project-label">{{ t('components.config-soundAttenuation-distance.label') }}</div
 					><NumberBox
 						id="config-soundAttenuation-distance"
 						min="0"
 						max="100"
 						unit="tile"
 					/>
-					<div class="text project-label">Attenuation Easing</div
+					<div class="text project-label">{{ t('components.config-soundAttenuation-easingId.label') }}</div
 					><SelectBox id="config-soundAttenuation-easingId" />
-					<div class="text project-summary" id="config-webgl-summary">WebGL</div>
-					<div class="text project-label">Low Latency Mode</div
+					<div class="text project-summary" id="config-webgl-summary">{{ t('components.config-webgl-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-webgl-desynchronized.label') }}</div
 					><SelectBox id="config-webgl-desynchronized" />
-					<div class="text project-label">Texture Mag Filter</div
+					<div class="text project-label">{{ t('components.config-webgl-textureMagFilter.label') }}</div
 					><SelectBox id="config-webgl-textureMagFilter" />
-					<div class="text project-label">Texture Min Filter</div
+					<div class="text project-label">{{ t('components.config-webgl-textureMinFilter.label') }}</div
 					><SelectBox id="config-webgl-textureMinFilter" />
-					<div class="text project-summary" id="config-script-summary">Script</div>
-					<div class="text project-label">Auto Compile</div
+					<div class="text project-summary" id="config-script-summary">{{ t('components.config-script-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-script-autoCompile.label') }}</div
 					><SelectBox id="config-script-autoCompile" />
-					<div class="text project-summary" id="config-save-summary">Save</div>
-					<div class="text project-label">Save Location</div
+					<div class="text project-summary" id="config-save-summary">{{ t('components.config-save-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-save-location.label') }}</div
 					><SelectBox id="config-save-location" />
-					<div class="text project-label">Subdirectory</div
+					<div class="text project-label">{{ t('components.config-save-subdir.label') }}</div
 					><TextBox id="config-save-subdir" />
-					<div class="text project-summary" id="config-localization-summary">Localization</div>
-					<div class="text project-label">Languages</div
+					<div class="text project-summary" id="config-localization-summary">{{ t('components.config-localization-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-localization-languages.label') }}</div
 					><ParamList id="config-localization-languages" flexible />
-					<div class="text project-label">Default Game Language</div
+					<div class="text project-label">{{ t('components.config-localization-default.label') }}</div
 					><SelectBox id="config-localization-default" />
-					<div class="text project-summary" id="config-other-summary">Other Options</div>
-					<div class="text project-label">Preload Files</div
+					<div class="text project-summary" id="config-other-summary">{{ t('components.config-other-summary.content') }}</div>
+					<div class="text project-label">{{ t('components.config-preload.label') }}</div
 					><SelectBox id="config-preload" />
-					<div class="text project-label">dead Zone</div
+					<div class="text project-label">{{ t('components.config-deadzone.label') }}</div
 					><NumberBox
 						id="config-deadzone"
 						min="0"
@@ -241,6 +241,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useProjectSettingsWindow } from '@app/composables/useProjectSettingsWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -253,6 +254,8 @@ import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const settings = useProjectSettingsWindow();
 const form = settings.form;

@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setElement" @confirm="onConfirm">
-		<template #title><TitleBar>Set Element<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setElement.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Element</div><CustomBox id="setElement-element" type="element" @input="onElement" />
@@ -13,6 +13,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetElementCommandSchema } from '@app/composables/commands/useSetElementCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -20,6 +21,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetElementCommandSchema();
 

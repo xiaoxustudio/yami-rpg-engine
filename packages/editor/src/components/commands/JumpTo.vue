@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="jumpTo" @confirm="onConfirm">
-	<template #title><TitleBar>Jump to<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.jumpTo.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Operation</div><SelectBox id="jumpTo-operation" v-model="form.operation" />
@@ -13,6 +13,7 @@
 <script setup lang="ts">
 
 import { onMounted, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { TextSuggestion, type TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
 import { useJumpToCommandSchema } from '@app/composables/commands/useJumpToCommandSchema';
@@ -20,6 +21,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save, loadLabels } = useJumpToCommandSchema();
 

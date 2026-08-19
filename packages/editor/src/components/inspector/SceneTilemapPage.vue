@@ -179,6 +179,7 @@ onMounted(() => {
 	const elLight = document.getElementById('sceneTilemap-light') as HTMLElement & { loadItems?: (items: unknown[]) => void; lightItems?: Record<string, unknown[]>; dataItems?: unknown[] | null; dataValue?: unknown; update?: () => void } | null;
 	const elBlend = document.getElementById('sceneTilemap-blend') as HTMLElement & { loadItems?: (items: unknown[]) => void } | null;
 	const refreshLocalizedItems = () => {
+		try {
 		const readOption = (id: string, key: string) => {
 			const legacyComponents = local.components as unknown as Record<
 				string,
@@ -208,6 +209,9 @@ onMounted(() => {
 				{ name: readOption('sceneTilemap-blend', 'additive'), value: 'additive' },
 				{ name: readOption('sceneTilemap-blend', 'subtract'), value: 'subtract' }
 			]);
+		}
+		} catch {
+			// 语言切换中间态：t()/DOM 访问可能失败，跳过本次刷新
 		}
 	};
 	if (elLight) {

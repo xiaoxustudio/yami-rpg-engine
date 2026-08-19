@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame ref="frame" id="choice" @confirm="onConfirm">
-		<template #title><TitleBar>Choice<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.choice.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Content</div
+				<div class="text">{{ t('components.choice-content.label') }}</div
 				><TextBox
 					id="choice-content"
 					v-model="form.content"
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { on } from '@app/legacy/util/element-utils.ts';
 import type { ChoicesForm } from '@app/legacy/command/show-options-window.ts';
@@ -26,6 +27,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<ChoicesForm>({ content: '' });
 

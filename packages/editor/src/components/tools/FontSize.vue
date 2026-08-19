@@ -1,9 +1,9 @@
 <template>
 	<WindowFrame ref="frame" id="fontSize" @confirm="onConfirm">
-		<template #title><TitleBar>Set Font Size<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.fontSize.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Size</div
+				<div class="text">{{ t('components.fontSize-size.label') }}</div
 				><NumberBox id="fontSize-size" min="10" max="400" unit="px" :model-value="form.size" />
 			</div>
 		
@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { FontSizeForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -20,6 +21,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<FontSizeForm>({
 	size: 12

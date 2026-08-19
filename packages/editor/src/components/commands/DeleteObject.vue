@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="deleteObject" @confirm="onConfirm">
-		<template #title><TitleBar>Delete Object<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.deleteObject.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Object</div><CustomBox id="deleteObject-object" type="object" @input="onObject" />
@@ -11,10 +11,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useDeleteObjectCommandSchema } from '@app/composables/commands/useDeleteObjectCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useDeleteObjectCommandSchema();
 

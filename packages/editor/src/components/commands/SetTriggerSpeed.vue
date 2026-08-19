@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTriggerSpeed" @confirm="onConfirm">
-		<template #title><TitleBar>Set Trigger Speed<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setTriggerSpeed.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Trigger</div
@@ -21,11 +21,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useSetTriggerSpeedCommandSchema } from '@app/composables/commands/useSetTriggerSpeedCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetTriggerSpeedCommandSchema();
 

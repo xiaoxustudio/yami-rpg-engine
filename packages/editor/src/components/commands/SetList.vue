@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setList" @confirm="onConfirm">
-		<template #title><TitleBar>Set List<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setList.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Variable</div
@@ -88,6 +88,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetListCommandSchema } from '@app/composables/commands/useSetListCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -100,6 +101,8 @@ import NumberVar from '@app/components/common/NumberVar.vue';
 import TextArea from '@app/components/common/TextArea.vue';
 import TextAreaVar from '@app/components/common/TextAreaVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetListCommandSchema();
 

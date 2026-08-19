@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame ref="frame" id="arrayList-string">
-		<template #title><TitleBar>String<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.arrayList-string.title') }}<div class="close" /></TitleBar></template>
 		
 			<TextArea id="arrayList-string-value" :model-value="form.value" />
 		
@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useArrayWindow, type ArrayStringForm } from '@app/composables/useArrayWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
@@ -16,6 +17,8 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import TextArea from '@app/components/common/TextArea.vue';
+
+const { t } = useI18n();
 
 const arrayWindow = useArrayWindow();
 const form = arrayWindow.stringForm;

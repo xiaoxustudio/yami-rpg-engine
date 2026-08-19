@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setZoomFactor" @confirm="onConfirm">
-		<template #title><TitleBar>Set Zoom Factor<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setZoomFactor.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Zoom Factor</div
@@ -32,6 +32,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetZoomFactorCommandSchema } from '@app/composables/commands/useSetZoomFactorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -40,6 +41,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetZoomFactorCommandSchema();
 

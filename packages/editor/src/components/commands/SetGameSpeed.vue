@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setGameSpeed" @confirm="onConfirm">
-		<template #title><TitleBar>Set Game Speed<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setGameSpeed.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Speed</div
@@ -31,6 +31,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetGameSpeedCommandSchema } from '@app/composables/commands/useSetGameSpeedCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -39,6 +40,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetGameSpeedCommandSchema();
 

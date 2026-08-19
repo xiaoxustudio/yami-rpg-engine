@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="transition" @confirm="onConfirm">
-	<template #title><TitleBar>Transition<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.transition.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Write to Variable</div
@@ -36,6 +36,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { on } from '@app/legacy/util/element-utils';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
@@ -44,6 +45,8 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save, open, windowClosed } = useTransitionCommandSchema();
 

@@ -5,7 +5,7 @@ import type { LocaleData } from './convert';
 
 export type LanguageEntry = { key: string; alias: string; filename: string };
 
-function resolveLocalesDir(): string {
+export function resolveLocalesDir(): string {
 	const moduleURL = new URL(import.meta.url);
 	const modulePath =
 		typeof fileURLToPath === 'function' && moduleURL.protocol === 'file:'

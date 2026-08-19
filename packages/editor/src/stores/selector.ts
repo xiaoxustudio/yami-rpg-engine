@@ -11,7 +11,7 @@ import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';
 import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { pinia } from './pinia';
@@ -318,7 +318,7 @@ export const useSelectorStore = defineStore('selector', () => {
 				return;
 			}
 			items.push({
-				label: get(Local.showInExplorer?.() ?? ''),
+				label: get(showInExplorerCommand),
 				click: () => {
 					File.openPath?.(File.path?.((folders as { path?: string }[])[0]?.path));
 				}

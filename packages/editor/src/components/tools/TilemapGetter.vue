@@ -1,16 +1,16 @@
 <template>
 	<!-- 瓦片地图访问器窗口 -->
 	<WindowFrame ref="frame" id="tilemapGetter">
-		<template #title><TitleBar>Tilemap<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.tilemapGetter.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="tilemapGetter-type" /> <div class="text">Tilemap</div
+				<div class="text">{{ t('components.tilemapGetter-type.label') }}</div><SelectBox id="tilemapGetter-type" /> <div class="text">{{ t('components.tilemapGetter-presetId.label') }}</div
 				><CustomBox
 					id="tilemapGetter-presetId"
 					type="preset-object"
 					filter="tilemap"
 				/>
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.tilemapGetter-variable.label') }}</div
 				><CustomBox id="tilemapGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import {
 	useTilemapGetterWindow,
 	type TilemapGetterForm
@@ -30,6 +31,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const tilemapGetter = useTilemapGetterWindow();
 const form = tilemapGetter.form;

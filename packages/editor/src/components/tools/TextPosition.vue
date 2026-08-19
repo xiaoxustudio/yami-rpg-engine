@@ -1,11 +1,11 @@
 <template>
 	<!-- 设置文字位置 -->
 	<WindowFrame ref="frame" id="textPosition" @confirm="onConfirm">
-		<template #title><TitleBar>Set Text Position<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.textPosition.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Axis</div><SelectBox id="textPosition-axis" :model-value="form.axis" /> <div class="text">Operation</div
-				><SelectBox id="textPosition-operation" :model-value="form.operation" /> <div class="text">Value</div
+				<div class="text">{{ t('components.textPosition-axis.label') }}</div><SelectBox id="textPosition-axis" :model-value="form.axis" /> <div class="text">{{ t('components.textPosition-operation.label') }}</div
+				><SelectBox id="textPosition-operation" :model-value="form.operation" /> <div class="text">{{ t('components.textPosition-value.label') }}</div
 				><NumberBox id="textPosition-value" min="-1000" max="1000" unit="px" :model-value="form.value" />
 			</div>
 		
@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { TextPositionForm } from '@app/legacy/tools/text-capture.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -23,6 +24,8 @@ import { useLocalStore } from '@app/stores/local';
 import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const form = reactive<TextPositionForm>({
 	axis: 'x',

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="followActor" @confirm="onConfirm">
-	<template #title><TitleBar>Follow Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.followActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div><CustomBox id="followActor-actor" type="actor" @input="onActor" /><div class="text">Target</div><CustomBox id="followActor-target" type="actor" @input="onTarget" /><div class="text">Mode</div><SelectBox id="followActor-mode" v-model="form.mode" /><div class="text">Min Distance</div
@@ -52,6 +52,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFollowActorCommandSchema } from '@app/composables/commands/useFollowActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
@@ -61,6 +62,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useFollowActorCommandSchema();
 

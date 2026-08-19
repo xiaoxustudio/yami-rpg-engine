@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setResolution" @confirm="onConfirm">
-		<template #title><TitleBar>Set Resolution<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setResolution.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Width</div
@@ -18,10 +18,13 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useSetResolutionCommandSchema } from '@app/composables/commands/useSetResolutionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetResolutionCommandSchema();
 

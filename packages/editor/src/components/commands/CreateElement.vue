@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="createElement" @confirm="onConfirm">
-		<template #title><TitleBar>Create Element<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.createElement.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="createElement-operation" v-model="form.operation" />
@@ -17,12 +17,15 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCreateElementCommandSchema } from '@app/composables/commands/useCreateElementCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useCreateElementCommandSchema();
 

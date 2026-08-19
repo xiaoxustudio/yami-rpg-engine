@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="requestURL" @confirm="onConfirm">
-	<template #title><TitleBar>requestURL<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.requestURL.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">URL</div><StringVar id="requestURL-url" v-model="form.url" /> <div class="text">Header</div
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
@@ -24,6 +25,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import ParamList from '@app/components/common/ParamList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useRequestURLCommandSchema();
 

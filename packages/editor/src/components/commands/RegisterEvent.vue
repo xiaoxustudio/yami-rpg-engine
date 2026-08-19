@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="registerEvent" @confirm="onConfirm">
-	<template #title><TitleBar>Register Event<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.registerEvent.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Target</div
@@ -22,6 +22,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { $ } from '@app/legacy/util/dom.ts';
 import { createGetter } from '@app/i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
@@ -31,6 +32,8 @@ import CheckBox from '@app/components/common/CheckBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { save, targetWrite, operationWrite, typeWrite } = useRegisterEventCommandSchema();
 

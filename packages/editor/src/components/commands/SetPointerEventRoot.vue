@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setPointerEventRoot" @confirm="onConfirm">
-		<template #title><TitleBar>Set Pointer Event Root<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setPointerEventRoot.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Operation</div><SelectBox id="setPointerEventRoot-operation" v-model="form.operation" />
@@ -14,12 +14,15 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useSetPointerEventRootCommandSchema } from '@app/composables/commands/useSetPointerEventRootCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetPointerEventRootCommandSchema();
 

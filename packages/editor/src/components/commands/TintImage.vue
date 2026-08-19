@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="tintImage" @confirm="onConfirm">
-		<template #title><TitleBar>Tint Image<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.tintImage.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box" id="tintImage-grid-box">
 				<div class="text">Element</div><CustomBox id="tintImage-element" type="element" @input="onElement" />
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 
 import { onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear, write } from '@app/legacy/util/element-utils';
@@ -44,6 +45,8 @@ import FilterBox from '@app/components/common/FilterBox.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useTintImageCommandSchema();
 

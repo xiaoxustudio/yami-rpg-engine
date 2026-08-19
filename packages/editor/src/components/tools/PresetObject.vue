@@ -1,6 +1,6 @@
 <template>
 		<WindowFrame id="presetObject" mode="center" @confirm="onConfirm">
-		<template #title><TitleBar>Object<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.presetObject.title') }}<div class="close"></div></TitleBar></template>
 		
 			<CustomBox
 				id="presetObject-sceneId"
@@ -16,6 +16,7 @@
 
 <script setup lang="ts">
 import { h, onMounted, type VNode } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
@@ -26,6 +27,8 @@ import { useLocalStore } from '@app/stores/local';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

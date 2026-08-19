@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="createGlobalActor" @confirm="onConfirm">
-	<template #title><TitleBar>Create Global Actor<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.createGlobalActor.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Actor</div
@@ -12,6 +12,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCreateGlobalActorCommandSchema } from '@app/composables/commands/useCreateGlobalActorCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import { clear } from '@app/legacy/util/element-utils';
@@ -20,6 +21,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useCreateGlobalActorCommandSchema();
 

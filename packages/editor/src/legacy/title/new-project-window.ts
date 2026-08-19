@@ -10,7 +10,7 @@ import { Layout } from '@app/engine/layout/layout.ts';
 import { Log } from '@app/legacy/log/log-window.ts';
 import { Editor } from '@app/legacy/main/editor.ts';
 import { TemplatesPath } from '@app/legacy/module/global.ts';
-import { Local } from '@app/legacy/tools/localization.ts';
+import { getLocalStore } from '@app/stores/local';
 import { t } from '@app/i18n';
 
 import { Path } from '@app/legacy/util/config.ts';
@@ -80,7 +80,7 @@ NewProject.open = function (this: typeof NewProject) {
 	const location = Path.normalize!(dialogs.new!);
 	const folder = this.getNewFolder!(location);
 	let template;
-	switch (Local.language) {
+	switch (getLocalStore().language) {
 		default:
 		case 'en-US':
 			template = 'arpg-ts-english';

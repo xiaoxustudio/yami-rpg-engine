@@ -1,17 +1,17 @@
 <template>
 	<WindowFrame ref="frame" id="equipmentGetter" @confirm="onConfirm">
-		<template #title><TitleBar>Actor<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.equipmentGetter.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
-				<div class="text">Type</div><SelectBox id="equipmentGetter-type" /> <div class="text">Actor</div
-				><CustomBox id="equipmentGetter-actor" type="actor" /> <div class="text">Slot</div
-				><SelectVar id="equipmentGetter-slot" /> <div class="text">Equipment</div
+				<div class="text">{{ t('components.equipmentGetter-type.label') }}</div><SelectBox id="equipmentGetter-type" /> <div class="text">{{ t('components.equipmentGetter-actor.label') }}</div
+				><CustomBox id="equipmentGetter-actor" type="actor" /> <div class="text">{{ t('components.equipmentGetter-slot.label') }}</div
+				><SelectVar id="equipmentGetter-slot" /> <div class="text">{{ t('components.equipmentGetter-equipmentId.label') }}</div
 				><CustomBox
 					id="equipmentGetter-equipmentId"
 					type="file"
 					filter="equipment"
 				/>
-				<div class="text">Variable</div
+				<div class="text">{{ t('components.equipmentGetter-variable.label') }}</div
 				><CustomBox id="equipmentGetter-variable" type="variable" filter="object" />
 			</div>
 		
@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
 import {
 	useEquipmentGetterWindow,
@@ -33,6 +34,8 @@ import { attachElementApi } from '@app/legacy/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const equipmentGetter = useEquipmentGetterWindow();
 const form = equipmentGetter.form;

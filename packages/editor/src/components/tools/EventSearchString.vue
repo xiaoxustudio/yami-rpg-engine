@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="event-search-string" no-buttons>
-		<template #title><TitleBar>Search String<div class="close"></div></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.event-search-string.title') }}<div class="close"></div></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text"></div><TextBox id="event-search-string-search" /> <div class="text"></div
@@ -18,12 +18,15 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import CheckBox from '@app/components/common/CheckBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
+
+const { t } = useI18n();
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

@@ -1,6 +1,6 @@
 <template>
 <WindowFrame id="return" @confirm="onConfirm">
-	<template #title><TitleBar>Return<div class="close" /></TitleBar></template>
+	<template #title><TitleBar>{{ t('components.return.title') }}<div class="close" /></TitleBar></template>
 	
 		<div class="grid-box">
 			<div class="text">Type</div><SelectBox id="return-type" v-model="form.type" /> <div class="text">Boolean</div
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useReturnCommandSchema } from '@app/composables/commands/useReturnCommandSchema';
 import { $ } from '@app/legacy/util/dom.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -38,6 +39,8 @@ import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
 import StringVar from '@app/components/common/StringVar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useReturnCommandSchema();
 

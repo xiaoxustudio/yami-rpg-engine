@@ -1,6 +1,6 @@
 <template>
 	<WindowFrame id="setTile" @confirm="onConfirm">
-		<template #title><TitleBar>Set Tile<div class="close" /></TitleBar></template>
+		<template #title><TitleBar>{{ t('components.setTile.title') }}<div class="close" /></TitleBar></template>
 		
 			<div class="grid-box">
 				<div class="text">Tilemap</div><CustomBox id="setTile-tilemap" type="tilemap" @input="onTilemap" />
@@ -17,11 +17,14 @@
 
 <script setup lang="ts">
 
+import { useI18n } from 'vue-i18n';
 import { useSetTileCommandSchema } from '@app/composables/commands/useSetTileCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberVar from '@app/components/common/NumberVar.vue';
+
+const { t } = useI18n();
 
 const { form, save } = useSetTileCommandSchema();
 
