@@ -1,4 +1,4 @@
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { Easing } from '@app/legacy/data/transition-window.ts';
 import { addClass, read, removeClass, write } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

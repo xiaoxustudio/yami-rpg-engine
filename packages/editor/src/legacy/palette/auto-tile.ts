@@ -2,7 +2,7 @@ import { getListConfig } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { on, hasClass, write, getFocus, read, clear } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
@@ -18,7 +18,7 @@ import { SceneShift } from '@app/legacy/scene/move-scene.ts';
 import { AutoTileEngine } from '@app/engine/palette/auto-tile-engine.ts';
 import { createGetter } from '@app/i18n';
 import { SetQuantity } from '@app/legacy/tools/set-number-window.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import { h, render } from 'vue';
 
 type AutoTileClipboardData = AutoTileTemplateData | { frame: unknown };

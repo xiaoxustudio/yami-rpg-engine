@@ -16,7 +16,7 @@ import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
-Editor.close = function (this: typeof Editor, save = true) {
+function close(this: typeof Editor, save = true) {
 	Layout.manager.switch(null);
 	if (this.state === 'open') {
 		this.state = 'closed';
@@ -42,12 +42,17 @@ Editor.close = function (this: typeof Editor, save = true) {
 		GL.textureManager.clear();
 		WebServer.stop();
 	}
-};
+}
 
-Editor.quit = function (this: typeof Editor) {
+function quit(this: typeof Editor) {
 	this.saveConfig!();
 	this.saveProject!();
 	this.saveManifest!();
 	WebServer.stop();
 	ipcRenderer.send(CHANNELS.on.forceCloseWindow);
-};
+}
+
+export function initProjectClose(): void {
+	Editor.close = close;
+	Editor.quit = quit;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import '@app/legacy/util/math.ts';
+import '@app/utils/math';
 
 vi.mock('@app/utils/element-utils', () => ({
 	getRelativeCoords: vi.fn(() => ({ x: 0, y: 0 })),
@@ -62,7 +62,7 @@ vi.mock('@app/legacy/data/data-object', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/timer', () => ({
+vi.mock('@app/utils/timer', () => ({
 	Timer: {
 		appendUpdater: vi.fn(),
 		removeUpdater: vi.fn()

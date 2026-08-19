@@ -1,6 +1,6 @@
 import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
-import { getMonaco } from '@app/legacy/util/monaco.ts';
+import { getMonaco } from '@app/utils/monaco';
 import { h, render } from 'vue';
 import { Title } from '@app/legacy/title/title-bar.ts';
 

@@ -13,7 +13,7 @@ import { UI } from '@app/legacy/ui/ui-window.ts';
 import { useBrowserStore } from '@app/stores/browser.ts';
 import { useSelectorStore } from '@app/stores/selector.ts';
 
-Editor.saveProject = function (this: typeof Editor) {
+function saveProject(this: typeof Editor) {
 	const { project } = this;
 	if (!project) {
 		return;
@@ -44,9 +44,9 @@ Editor.saveProject = function (this: typeof Editor) {
 		Log.throw!(error);
 		return console.error(error);
 	}
-};
+}
 
-Editor.loadProject = function (this: typeof Editor) {
+function loadProject(this: typeof Editor) {
 	const project = this.project!;
 	Scene.loadFromProject!(project);
 	UI.loadFromProject(project);
@@ -58,8 +58,14 @@ Editor.loadProject = function (this: typeof Editor) {
 	useSelectorStore().loadFromProject(project);
 	Editor.hooks.onPluginLoad(project);
 	Title.loadFromProject!(project);
-};
+}
 
-Editor.saveManifest = function (this: typeof Editor) {
+function saveManifest(this: typeof Editor) {
 	return Data.saveManifest!();
-};
+}
+
+export function initProjectProject(): void {
+	Editor.saveProject = saveProject;
+	Editor.loadProject = loadProject;
+	Editor.saveManifest = saveManifest;
+}

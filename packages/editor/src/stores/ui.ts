@@ -48,6 +48,14 @@ export const useUIStore = defineStore('ui', () => {
 	const height = shallowRef<number | null>(null);
 	const mode = shallowRef<string | null>(null);
 
+	const initialized = shallowRef(false);
+
+	function initialize() {
+		if (initialized.value) return;
+		UI?.initialize?.();
+		initialized.value = true;
+	}
+
 	function open(context: UIContextShape) {
 		UI?.open?.(context);
 	}
@@ -252,6 +260,8 @@ export const useUIStore = defineStore('ui', () => {
 		width,
 		height,
 		mode,
+		initialized,
+		initialize,
 		open,
 		close,
 		planToSave,

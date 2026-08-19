@@ -1,7 +1,7 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
@@ -11,8 +11,8 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';
 import { createGetter } from '@app/i18n';
-import '@app/legacy/util/number.ts';
-import '@app/legacy/util/object.ts';
+import '@app/utils/number';
+import '@app/utils/object';
 import { getTeamStore } from '@app/stores/team';
 
 const Clipboard = getGlobalClipboard();

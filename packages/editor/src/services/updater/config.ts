@@ -2,7 +2,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateConfig = function (verNum: number) {
+function updateConfig(verNum: number) {
 	// 修改font属性为text属性
 	if (verNum < Updater.getVersionNumber!('1.0.54')) {
 		const sConfig = Data.config;
@@ -137,4 +137,8 @@ Updater.updateConfig = function (verNum: number) {
 		}
 		File.planToSave!(Data.manifest.project.config);
 	}
-};
+}
+
+export function initUpdaterConfig(): void {
+	Updater.updateConfig = updateConfig;
+}

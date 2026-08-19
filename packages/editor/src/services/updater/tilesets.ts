@@ -2,7 +2,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateTilesets = function (verNum: number) {
+function updateTilesets(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.60')) {
 		const tilesets = Data.tilesets;
 		for (const [guid, tileset] of Object.entries<any>(tilesets)) {
@@ -27,4 +27,8 @@ Updater.updateTilesets = function (verNum: number) {
 			File.planToSave!(meta);
 		}
 	}
-};
+}
+
+export function initUpdaterTilesets(): void {
+	Updater.updateTilesets = updateTilesets;
+}

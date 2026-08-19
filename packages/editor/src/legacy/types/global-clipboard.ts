@@ -1,4 +1,4 @@
-import { GlobalClipboard } from '../util/clipboard';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
 export interface GlobalClipboardHost {
 	has(type: string): boolean;

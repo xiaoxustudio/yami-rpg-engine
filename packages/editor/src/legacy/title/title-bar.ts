@@ -1,11 +1,11 @@
-﻿import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import type { IpcRendererEvent } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
 import { addClass, hasClass, hide, removeClass, show } from '@app/utils/element-utils';
 import { Path } from '@app/utils/config';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';

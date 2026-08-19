@@ -1,4 +1,4 @@
-import { INTRGBA } from '@app/legacy/util/color-utils.ts';
+import { INTRGBA } from '@app/utils/color-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Palette } from '@app/legacy/palette/palette.ts';

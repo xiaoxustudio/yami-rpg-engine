@@ -9,7 +9,7 @@ interface SceneObject {
 	[key: string]: unknown;
 }
 
-Updater.updateScenes = function (verNum: number) {
+function updateScenes(verNum: number) {
 	const replaceSceneObject = (replacer: (object: SceneObject) => SceneObject | undefined) => {
 		const forEachObject = (
 			objects: SceneObject[],
@@ -78,4 +78,8 @@ Updater.updateScenes = function (verNum: number) {
 			}
 		});
 	}
-};
+}
+
+export function initUpdaterScenes(): void {
+	Updater.updateScenes = updateScenes;
+}

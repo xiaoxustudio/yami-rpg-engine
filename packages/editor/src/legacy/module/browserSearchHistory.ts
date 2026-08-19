@@ -102,4 +102,6 @@ BrowserSearchHistory.hide = function (this: BrowserSearchHistoryShape) {
 	dropdown?.hide();
 };
 
-BrowserSearchHistory.initialize!();
+export function initBrowserSearchHistory(): void {
+	BrowserSearchHistory.initialize!();
+}

@@ -1,4 +1,4 @@
-import { CSSRGBA } from '@app/legacy/util/color-utils.ts';
+import { CSSRGBA } from '@app/utils/color-utils';
 import { getVariable } from '@app/legacy/util/safe.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';

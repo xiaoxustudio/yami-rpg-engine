@@ -1,7 +1,7 @@
-﻿import { $, getElementWriter } from '@app/utils/dom';
+import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { disable, enable, getFocus, read, write } from '@app/utils/element-utils';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';

@@ -1,4 +1,4 @@
-﻿import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
 import { Editor } from '@app/services/project/editor.ts';
 import { shallowRef } from 'vue';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
@@ -11,7 +11,7 @@ import { Path } from '@app/utils/config';
 import { TemplatesPath } from '@app/legacy/module/global.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import type { MenuItem } from '@ui-kit';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

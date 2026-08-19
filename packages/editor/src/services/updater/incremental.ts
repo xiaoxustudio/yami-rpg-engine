@@ -16,7 +16,7 @@ const _modulePath =
 			: '';
 const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-Updater.updateIncrementalChanges = function (version: string) {
+function updateIncrementalChanges(version: string) {
 	const verNum = Updater.getVersionNumber!(version);
 	const dstProjectDir = Path.dirname!(Updater.hooks.getProjectPath()!);
 	const srcProjectDir = Path.resolve!(__dirname, 'Templates/arpg-ts-update');
@@ -368,4 +368,8 @@ Updater.updateIncrementalChanges = function (version: string) {
 		}
 	}
 	updater.showMessage();
-};
+}
+
+export function initUpdaterIncremental(): void {
+	Updater.updateIncrementalChanges = updateIncrementalChanges;
+}

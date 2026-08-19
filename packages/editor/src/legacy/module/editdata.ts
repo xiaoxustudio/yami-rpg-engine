@@ -6,7 +6,7 @@ import { Title } from '@app/legacy/title/title-bar.ts';
 import { createGetter } from '@app/i18n';
 import { h, render } from 'vue';
 
-import { getMonaco } from '@app/legacy/util/monaco';
+import { getMonaco } from '@app/utils/monaco';
 import type * as monacoNs from 'monaco-editor';
 
 interface EditDataNodeShape {

@@ -1,4 +1,4 @@
-import { CSSRGBA } from '@app/legacy/util/color-utils.ts';
+import { CSSRGBA } from '@app/utils/color-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

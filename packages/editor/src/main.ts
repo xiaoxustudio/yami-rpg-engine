@@ -3,7 +3,7 @@ import App from './App.vue';
 import { pinia } from '@app/stores/pinia';
 import { initYamiI18n } from '@app/i18n';
 import '@app/utils/element-data.ts';
-import '@app/legacy/_register.ts';
+import '@app/legacy/main/startup.ts';
 
 window.addEventListener('error', (e: ErrorEvent) => {
 	if (e.message === 'ResizeObserver loop limit exceeded') {

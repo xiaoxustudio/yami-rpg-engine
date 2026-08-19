@@ -213,5 +213,6 @@ const paletteInfo = computed(() => {
 });
 
 onMounted(() => {
+	palette.initialize();
 });
 </script>

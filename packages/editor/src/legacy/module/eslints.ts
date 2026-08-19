@@ -99,15 +99,17 @@ export function updateCommandElement(
 	return ret;
 }
 
-EventBus.once('editor_loaded', () => {
-	// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
-	ensureUpdateCommandElementOverride();
-});
-
 export function ensureUpdateCommandElementOverride(): void {
 	if (_origUpdateCommandElement) return;
 	_origUpdateCommandElement = CommandList.prototype.updateCommandElement;
 	CommandList.prototype.updateCommandElement = updateCommandElement;
+}
+
+export function initEslints(): void {
+	EventBus.once('editor_loaded', () => {
+		// 必须在覆盖之前捕获原方法，否则新方法首次调用时取到的 prototype.updateCommandElement 已是新方法自己，_origUpdateCommandElement.call(this, ...) 会无限递归调自己
+		ensureUpdateCommandElementOverride();
+	});
 }
 
 export function applyCommandListInstanceOverride(

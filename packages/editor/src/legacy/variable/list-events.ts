@@ -1,4 +1,4 @@
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import type { MenuItem } from '@ui-kit';
 import { write } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';

@@ -1,8 +1,8 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show, write } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
@@ -15,7 +15,7 @@ import { createGetter } from '@app/i18n';
 import { bindListClipboardMethods } from '@app/legacy/tools/list-clipboard-methods.ts';
 import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@app/legacy/components/tree-list.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import { getEnumStore, enumStateKeys } from '@app/stores/enum';
 import type { EnumItemShape } from '@app/stores/enum';
 

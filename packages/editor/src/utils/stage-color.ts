@@ -1,4 +1,4 @@
-import { INTRGBA } from './color-utils.ts';
+import { INTRGBA } from '@app/utils/color-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 
 export class StageColor {

@@ -1,4 +1,4 @@
-﻿import { reactive } from 'vue';
+import { reactive } from 'vue';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
@@ -12,7 +12,7 @@ import { Title } from '@app/legacy/title/title-bar.ts';
 import { t, createGetter, tObject } from '@app/i18n';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
-import '@app/legacy/util/object.ts';
+import '@app/utils/object';
 import { getProjectStore } from '@app/stores/project';
 
 type ImportedFonts = {

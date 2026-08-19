@@ -1,4 +1,4 @@
-import { INTRGBA } from '@app/legacy/util/color-utils.ts';
+import { INTRGBA } from '@app/utils/color-utils';
 import { Printer } from '@app/legacy/printer/printer.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Texture } from '@app/engine/webgl/texture.ts';

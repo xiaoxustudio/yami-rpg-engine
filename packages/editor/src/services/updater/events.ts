@@ -2,7 +2,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateLocalEvents = function (verNum: number) {
+function updateLocalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const listMap = Updater.hooks.getLocalEvents();
 		for (const [guid, events] of Object.entries<any>(listMap)) {
@@ -19,9 +19,9 @@ Updater.updateLocalEvents = function (verNum: number) {
 			File.planToSave!(meta, guid);
 		}
 	}
-};
+}
 
-Updater.updateGlobalEvents = function (verNum: number) {
+function updateGlobalEvents(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const events = Data.events;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileEvent', 'global'));
@@ -46,9 +46,9 @@ Updater.updateGlobalEvents = function (verNum: number) {
 			File.planToSave!(meta);
 		}
 	}
-};
+}
 
-Updater.updateGlobalEvent = function (meta: unknown) {
+function updateGlobalEvent(meta: unknown) {
 	const metaObj = meta as { guid: string };
 	const guid = metaObj.guid;
 	const sEvent = Data.events[guid];
@@ -67,4 +67,10 @@ Updater.updateGlobalEvent = function (meta: unknown) {
 	}
 	Data.events[guid] = dEvent;
 	File.planToSave!(metaObj);
-};
+}
+
+export function initUpdaterEvents(): void {
+	Updater.updateLocalEvents = updateLocalEvents;
+	Updater.updateGlobalEvents = updateGlobalEvents;
+	Updater.updateGlobalEvent = updateGlobalEvent;
+}

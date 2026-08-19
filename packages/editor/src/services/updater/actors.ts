@@ -2,7 +2,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateActors = function (verNum: number) {
+function updateActors(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.122')) {
 		const actors = Data.actors;
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('fileActor'));
@@ -27,4 +27,8 @@ Updater.updateActors = function (verNum: number) {
 			File.planToSave!(meta);
 		}
 	}
-};
+}
+
+export function initUpdaterActors(): void {
+	Updater.updateActors = updateActors;
+}

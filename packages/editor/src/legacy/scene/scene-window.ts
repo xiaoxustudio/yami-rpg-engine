@@ -1,8 +1,8 @@
-﻿import { $ } from '@app/utils/dom';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { File } from '@app/legacy/file/file-system-core.ts';
 
 import { Reference } from '@app/legacy/log/related-references.ts';

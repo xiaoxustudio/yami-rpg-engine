@@ -16,7 +16,7 @@ import { createGetter } from '@app/i18n';
 
 import { Updater } from '@app/services/updater/updater.ts';
 
-Editor.open = async function (this: typeof Editor, path, agreed = false) {
+async function open(this: typeof Editor, path: string, agreed = false) {
 	path = Path.slash!(path ?? this.config!.project);
 
 	if (!path) {
@@ -187,4 +187,8 @@ Editor.open = async function (this: typeof Editor, path, agreed = false) {
 	// 打开开发服务器 SettingConfig.config 在 SettingConfig 实例化期 load() 从 yami-config.json 载入；但若 load() 抛错或文件缺失未兜底，config.server 可能是 undefined，裸取 .auto 会炸
 	const serverConfig = SettingConfig.config?.server ?? {};
 	if (serverConfig.auto) WebServer.start(path);
-};
+}
+
+export function initProjectOpen(): void {
+	Editor.open = open;
+}

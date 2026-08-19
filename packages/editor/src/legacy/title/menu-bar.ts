@@ -1,4 +1,4 @@
-﻿import { macRedoKey } from '@app/legacy/util/event-accessors';
+import { macRedoKey } from '@app/utils/event-accessors';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
@@ -52,9 +52,9 @@ import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
 import { Zoom } from '@app/legacy/tools/zoom-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Variable } from '@app/legacy/variable/variable.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
 // ******************************** 菜单栏对象 ********************************
 

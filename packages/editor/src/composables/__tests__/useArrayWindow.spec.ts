@@ -7,7 +7,7 @@ import ArrayListString from '@app/components/tools/ArrayListString.vue';
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { ArrayList as ArrayListController } from '@app/legacy/tools/array-window.ts';
-import '@app/legacy/util/number.ts';
+import '@app/utils/number';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

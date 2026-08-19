@@ -1,6 +1,6 @@
 import { Editor } from './editor.ts';
 
-Editor.switchHotkey = (function IIFE() {
+const switchHotkey = (function IIFE() {
 	const keydown = function (event: KeyboardEvent) {
 		if (event.ctrlKey || event.metaKey) {
 			switch (event.code) {
@@ -21,7 +21,7 @@ Editor.switchHotkey = (function IIFE() {
 		}
 		event.stopPropagation();
 	};
-	return function (enabled) {
+	return function (enabled: boolean): void {
 		switch (enabled) {
 			case true:
 				window.removeEventListener('keydown', keydown, { capture: true });
@@ -32,3 +32,7 @@ Editor.switchHotkey = (function IIFE() {
 		}
 	};
 })();
+
+export function initProjectHotkey(): void {
+	Editor.switchHotkey = switchHotkey;
+}

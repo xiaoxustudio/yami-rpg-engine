@@ -3,8 +3,8 @@ import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Timer } from '@app/utils/timer';
+import { ctrl } from '@app/utils/event-accessors';
 import { Data } from './data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 

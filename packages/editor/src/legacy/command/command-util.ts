@@ -16,10 +16,7 @@ interface CommandCase {
 	};
 }
 
-Command.forEachCommand = function (
-	commands: CommandCase[],
-	handler: (command: CommandCase) => void
-): void {
+function forEachCommand(commands: CommandCase[], handler: (command: CommandCase) => void): void {
 	const forEach = (commands: CommandCase[]): void => {
 		for (const command of commands) {
 			handler(command);
@@ -61,6 +58,9 @@ Command.forEachCommand = function (
 		}
 	};
 	forEach(commands);
-};
+}
 
-Command.WordList = WordList as unknown as typeof Command.WordList;
+export function initCommandUtilBridges(): void {
+	Command.forEachCommand = forEachCommand;
+	Command.WordList = WordList as unknown as typeof Command.WordList;
+}

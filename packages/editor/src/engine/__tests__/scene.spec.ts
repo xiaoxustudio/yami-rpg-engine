@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import '@app/legacy/util/math.ts';
+import '@app/utils/math';
 
 vi.mock('@app/utils/element-utils', () => ({
 	relate: () => true,
@@ -52,7 +52,7 @@ const mockTimer = vi.hoisted(() => ({
 	updaters: { stageRendering: null as any, stageAnimation: null as any }
 }));
 
-vi.mock('@app/legacy/util/timer', () => ({
+vi.mock('@app/utils/timer', () => ({
 	Timer: mockTimer
 }));
 

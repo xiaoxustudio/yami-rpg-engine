@@ -4,7 +4,7 @@ import { useCurveWindow, type CurveFrame } from '@app/composables/useCurveWindow
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Easing } from '@app/legacy/data/transition-window.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })
@@ -52,7 +52,7 @@ vi.mock('@app/engine/layout/layout.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/timer.ts', () => ({
+vi.mock('@app/utils/timer', () => ({
 	Timer: { appendUpdater: vi.fn(), removeUpdater: vi.fn() }
 }));
 

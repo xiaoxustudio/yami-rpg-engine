@@ -12,7 +12,7 @@ import {
 	write,
 	getFocus
 } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
@@ -35,7 +35,7 @@ import { type MenuItem } from '@ui-kit';
 import { type TreeListElement } from '@app/legacy/components/tree-list.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { ipcRenderer } from 'electron';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
 interface LocalizationItem {
 	id?: string;

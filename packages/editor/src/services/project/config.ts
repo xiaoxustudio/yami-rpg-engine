@@ -11,7 +11,7 @@ import { UI } from '@app/legacy/ui/ui-window.ts';
 
 type LayoutConfigShape = Parameters<NonNullable<typeof Layout.saveToConfig>>[0];
 
-Editor.saveConfig = function (this: typeof Editor) {
+function saveConfig(this: typeof Editor) {
 	const { config } = this;
 	if (!config) {
 		return;
@@ -35,9 +35,9 @@ Editor.saveConfig = function (this: typeof Editor) {
 	} catch (error: unknown) {
 		Log.throw!(error);
 	}
-};
+}
 
-Editor.loadConfig = function (this: typeof Editor) {
+function loadConfig(this: typeof Editor) {
 	const { config } = this;
 	// schema 兜底：旧配置或首次启动可能缺字段，缺失则用默认值 （与 Project/default.json 保持一致），避免下游直取炸
 	if (config) {
@@ -85,4 +85,9 @@ Editor.loadConfig = function (this: typeof Editor) {
 	UI.loadFromConfig(config! as { colors: Record<string, string> });
 	Animation.loadFromConfig!(config!);
 	Particle.loadFromConfig!(config! as { colors: Record<string, string> });
-};
+}
+
+export function initProjectConfig(): void {
+	Editor.saveConfig = saveConfig;
+	Editor.loadConfig = loadConfig;
+}

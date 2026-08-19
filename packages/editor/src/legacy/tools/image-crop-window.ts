@@ -1,7 +1,7 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $, getElementReader, getElementWriter } from '@app/utils/dom';
-import { attachDoubleclick } from '@app/legacy/util/doubleclick.ts';
+import { attachDoubleclick } from '@app/utils/doubleclick';
 import { on, hide, show, hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { t } from '@app/i18n';

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { shallowRef } from 'vue';
 
 export const useTimerStore = defineStore('timer', () => {

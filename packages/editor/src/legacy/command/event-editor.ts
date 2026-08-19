@@ -1,8 +1,8 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { write } from '@app/utils/element-utils';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

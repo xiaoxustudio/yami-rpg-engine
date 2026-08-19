@@ -45,6 +45,14 @@ export const useAnimationStore = defineStore('animation', () => {
 	const loop = shallowRef<boolean>(false);
 	const playing = shallowRef<boolean>(false);
 
+	const initialized = shallowRef(false);
+
+	function initialize() {
+		if (initialized.value) return;
+		Animation?.initialize?.();
+		initialized.value = true;
+	}
+
 	function open(context: AnimationContextShape) {
 		Animation?.open?.(context);
 	}
@@ -146,6 +154,8 @@ export const useAnimationStore = defineStore('animation', () => {
 		mirror,
 		loop,
 		playing,
+		initialized,
+		initialize,
 		open,
 		load,
 		save,

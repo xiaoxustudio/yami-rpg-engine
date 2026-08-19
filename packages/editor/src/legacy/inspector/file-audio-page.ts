@@ -6,7 +6,7 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
 import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 
 {
 	interface FileAudioShape {

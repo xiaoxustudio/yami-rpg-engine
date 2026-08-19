@@ -1,11 +1,11 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { $ } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus, hide, on, read, show } from '@app/utils/element-utils.ts';
 import { getVariable } from '@app/legacy/util/safe.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
@@ -24,7 +24,7 @@ import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { getLocalStore } from '@app/stores/local';
 import { t, createGetter } from '@app/i18n';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
 interface PluginItemShape {
 	id: string;

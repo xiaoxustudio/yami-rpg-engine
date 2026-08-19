@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { shallowReactive } from 'vue';
+import { shallowReactive, shallowRef } from 'vue';
 import { pinia } from './pinia';
 import { GUID } from '@app/services/file-system/guid';
 import { History } from '@app/legacy/tools/history.ts';
@@ -39,6 +39,16 @@ export const useVariableStore = defineStore('variable', () => {
 		changed: false,
 		selected: null
 	});
+
+	const initialized = shallowRef(false);
+
+	async function initialize(): Promise<void> {
+		if (initialized.value) return;
+		const { Variable } = await import('@app/legacy/variable/variable.ts');
+		if (initialized.value) return;
+		Variable?.initialize?.();
+		initialized.value = true;
+	}
 
 	function createId(): string {
 		let id: string;
@@ -175,6 +185,8 @@ export const useVariableStore = defineStore('variable', () => {
 
 	return {
 		state,
+		initialized,
+		initialize,
 		createId,
 		register,
 		unregister,

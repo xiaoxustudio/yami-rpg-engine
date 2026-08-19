@@ -14,7 +14,7 @@ import {
 	show,
 	write
 } from '@app/utils/element-utils.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
@@ -28,12 +28,12 @@ import { History } from '@app/legacy/tools/history.ts';
 import { createGetter } from '@app/i18n';
 import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import type { EditorConfigShape, EditorProjectShape } from '@app/stores/editor';
 import { getParticleStore, type ParticleTargetShape } from '@app/stores/particle';
 
-import { StageColor } from '@app/legacy/util/stage-color.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { StageColor } from '@app/utils/stage-color';
+import { Timer } from '@app/utils/timer';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

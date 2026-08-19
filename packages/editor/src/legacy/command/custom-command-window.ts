@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { $, getElementWriter } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
@@ -14,7 +14,7 @@ import { createGetter } from '@app/i18n';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 
 const Clipboard = getGlobalClipboard();
 

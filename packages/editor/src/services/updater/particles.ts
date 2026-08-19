@@ -2,7 +2,7 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Updater } from './updater.ts';
 
-Updater.updateParticles = function (verNum: number) {
+function updateParticles(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.95')) {
 		const convert = (array: number[]) => {
 			const min = array[0];
@@ -74,4 +74,8 @@ Updater.updateParticles = function (verNum: number) {
 			File.planToSave!(meta);
 		}
 	}
-};
+}
+
+export function initUpdaterParticles(): void {
+	Updater.updateParticles = updateParticles;
+}

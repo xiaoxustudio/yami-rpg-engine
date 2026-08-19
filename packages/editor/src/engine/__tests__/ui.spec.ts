@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import '@app/legacy/util/math.ts';
+import '@app/utils/math';
 
 if (!Array.prototype.append) {
 	(Array.prototype as any).append = function (this: any[], ...items: any[]) {
@@ -21,7 +21,7 @@ vi.mock('@app/legacy/inspector/inspector', () => ({
 	Inspector: { manager: { focusing: false }, uiElement: { target: null, write: vi.fn() } }
 }));
 
-vi.mock('@app/legacy/util/timer', () => ({
+vi.mock('@app/utils/timer', () => ({
 	Timer: class {
 		static appendUpdater = vi.fn();
 		static removeUpdater = vi.fn();
@@ -63,7 +63,7 @@ vi.mock('@app/legacy/printer/printer.ts', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/color-utils.ts', () => ({
+vi.mock('@app/utils/color-utils', () => ({
 	CSSRGBA: (v: string) => v,
 	INTRGBA: () => ({ r: 0, g: 0, b: 0, a: 0 })
 }));

@@ -3,7 +3,7 @@ import { Directory } from '@app/legacy/file/directory-object.ts';
 import { Editor } from './editor.ts';
 import { Updater } from '@app/services/updater/updater.ts';
 
-Editor.checkForEditorUpdates = function (this: typeof Editor) {
+function checkForEditorUpdates(this: typeof Editor) {
 	if (!Editor.config) return;
 	const ver1 = Editor.config!.version;
 	const ver2 = Updater.latestEditorVersion;
@@ -13,9 +13,9 @@ Editor.checkForEditorUpdates = function (this: typeof Editor) {
 		Editor.config!.version = ver2!;
 		console.warn(`升级编辑器版本：${ver1} -> ${ver2}`);
 	}
-};
+}
 
-Editor.checkForProjectUpdates = async function (this: typeof Editor) {
+async function checkForProjectUpdates(this: typeof Editor) {
 	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = Updater.getVersionNumber!(ver1!);
@@ -45,9 +45,9 @@ Editor.checkForProjectUpdates = async function (this: typeof Editor) {
 
 		Directory.update!();
 	}
-};
+}
 
-Editor.isProjectVersionSupported = function (this: typeof Editor) {
+function isProjectVersionSupported(this: typeof Editor) {
 	const ver1 = Editor.project!.version;
 	const ver2 = Updater.latestProjectVersion;
 	const verNum1 = Updater.getVersionNumber!(ver1!);
@@ -55,4 +55,10 @@ Editor.isProjectVersionSupported = function (this: typeof Editor) {
 	if (verNum1 <= verNum2) {
 		return true;
 	}
-};
+}
+
+export function initProjectVersion(): void {
+	Editor.checkForEditorUpdates = checkForEditorUpdates;
+	Editor.checkForProjectUpdates = checkForProjectUpdates;
+	Editor.isProjectVersionSupported = isProjectVersionSupported;
+}

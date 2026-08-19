@@ -1,5 +1,5 @@
-﻿import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
+import { Timer } from '@app/utils/timer';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Easing } from '@app/legacy/data/transition-window.ts';

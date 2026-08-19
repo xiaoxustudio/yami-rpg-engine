@@ -28,9 +28,9 @@ import { TileNode } from './tile-node-window.ts';
 import { createGetter } from '@app/i18n';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { PaletteEngine } from '@app/engine/palette/palette-engine.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { h, render } from 'vue';
 
 export const Palette: Record<string, any> = {

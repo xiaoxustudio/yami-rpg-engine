@@ -1,4 +1,4 @@
-import { macRedoKey } from '@app/legacy/util/event-accessors';
+import { macRedoKey } from '@app/utils/event-accessors';
 
 type ShortcutStoreShape = {
 	registerShortcut(id: string, handler: (...args: unknown[]) => boolean): void;

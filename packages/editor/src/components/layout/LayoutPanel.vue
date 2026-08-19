@@ -385,7 +385,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, onMounted, ref, type VNode } from 'vue';
+import { computed, h, nextTick, onMounted, ref, type VNode } from 'vue';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import PageManager from '@app/components/common/PageManager.vue';
 import NavBar from '@app/components/common/NavBar.vue';
@@ -395,7 +395,10 @@ import TextBox from '@app/components/common/TextBox.vue';
 import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
-import { useAnimationStore } from '@app/stores/animation';
+import { getAnimationStore } from '@app/stores/animation';
+import { getSceneStore } from '@app/stores/scene';
+import { getParticleStore } from '@app/stores/particle';
+import { getUIStore } from '@app/stores/ui';
 import { attachElementApi } from '@app/utils/attach-element-api';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
@@ -859,7 +862,7 @@ const dirs = ref<string[]>([]);
 const direction = ref(-1);
 const dirListEl = ref<HTMLElement | null>(null);
 
-const animation = useAnimationStore();
+const animation = getAnimationStore();
 
 const speedModel = computed<number>({
 	get: () => animation.speed ?? 0,
@@ -894,6 +897,12 @@ onMounted(() => {
 	const el = dirListEl.value;
 	if (!el) return;
 	attachElementApi(el, { setDirItems, setDirDirection });
+	nextTick(() => {
+		getUIStore().initialize();
+		getParticleStore().initialize();
+		getSceneStore().initialize();
+		getAnimationStore().initialize();
+	});
 });
 
 const onSceneHeadPointerdown = (event: PointerEvent) => {

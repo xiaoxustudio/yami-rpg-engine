@@ -9,7 +9,7 @@ interface AnimLayer {
 	[key: string]: unknown;
 }
 
-Updater.updateAnimations = function (verNum: number) {
+function updateAnimations(verNum: number) {
 	if (verNum < Updater.getVersionNumber!('1.0.37')) {
 		const keys = Object.keys(Updater.hooks.createInspectorSchema('animSpriteFrame'));
 		const update = (layers: AnimLayer[]) => {
@@ -89,4 +89,8 @@ Updater.updateAnimations = function (verNum: number) {
 			File.planToSave!(meta);
 		}
 	}
-};
+}
+
+export function initUpdaterAnimations(): void {
+	Updater.updateAnimations = updateAnimations;
+}

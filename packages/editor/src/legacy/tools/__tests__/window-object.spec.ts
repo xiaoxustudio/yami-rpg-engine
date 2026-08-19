@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
-import '@app/legacy/util/array.ts';
+import '@app/utils/array';
 import { getConfirmationStore } from '@app/stores/confirmation';
 import { Layout } from '@app/engine/layout/layout';
 import { Title } from '@app/legacy/title/title-bar';

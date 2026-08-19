@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { dispatchChangeEvent, rect } from '@app/utils/element-utils.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
@@ -6,7 +6,7 @@ import { Editor } from '@app/services/project/editor.ts';
 import { Scene } from './scene-window.ts';
 import { t } from '@app/i18n';
 import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {

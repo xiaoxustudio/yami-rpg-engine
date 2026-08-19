@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ScriptWindow from '@app/components/commands/Script.vue';
@@ -53,7 +53,7 @@ const { modelMock, editorMock, monacoMock } = vi.hoisted(() => {
 	return { modelMock, editorMock, monacoMock };
 });
 
-vi.mock('@app/legacy/util/monaco', () => ({
+vi.mock('@app/utils/monaco', () => ({
 	getMonaco: vi.fn(() => Promise.resolve(monacoMock))
 }));
 

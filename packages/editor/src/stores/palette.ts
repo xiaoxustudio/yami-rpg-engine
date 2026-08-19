@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { shallowRef } from 'vue';
 import { pinia } from './pinia';
+import { Palette } from '@app/legacy/palette/palette.ts';
 
 export type PaletteMode = 'normal' | 'priority' | 'tag' | 'terrain' | 'edit';
 export type PaletteState = 'closed' | 'loading' | 'open' | 'suspended';
@@ -40,6 +41,14 @@ export const usePaletteStore = defineStore('palette', () => {
 	const activeIndex = shallowRef<number | null>(null);
 	const tileset = shallowRef<any>(null);
 
+	const initialized = shallowRef(false);
+
+	function initialize() {
+		if (initialized.value) return;
+		Palette?.initialize?.();
+		initialized.value = true;
+	}
+
 	function setMode(value: PaletteMode) {
 		mode.value = value;
 	}
@@ -60,6 +69,8 @@ export const usePaletteStore = defineStore('palette', () => {
 		scrollable,
 		activeIndex,
 		tileset,
+		initialized,
+		initialize,
 		setMode,
 		setState,
 		setActiveIndex

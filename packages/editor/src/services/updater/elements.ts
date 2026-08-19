@@ -11,7 +11,7 @@ interface UiNode {
 	[key: string]: unknown;
 }
 
-Updater.updateElements = function (verNum: number) {
+function updateElements(verNum: number) {
 	const replaceUIElement = (replacer: (node: UiNode) => UiNode | undefined) => {
 		const forEachElement = (
 			nodes: UiNode[],
@@ -102,4 +102,8 @@ Updater.updateElements = function (verNum: number) {
 			}
 		});
 	}
-};
+}
+
+export function initUpdaterElements(): void {
+	Updater.updateElements = updateElements;
+}

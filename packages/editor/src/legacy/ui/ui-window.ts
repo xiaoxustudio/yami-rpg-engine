@@ -1,4 +1,4 @@
-﻿import { getListConfig } from '@ui-kit';
+import { getListConfig } from '@ui-kit';
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { $ } from '@app/utils/dom';
@@ -14,8 +14,8 @@ import {
 	clear,
 	rect
 } from '@app/utils/element-utils.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Timer } from '@app/utils/timer';
+import { ctrl } from '@app/utils/event-accessors';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 import { Reference } from '@app/legacy/log/related-references.ts';
@@ -36,14 +36,14 @@ import { Title } from '@app/legacy/title/title-bar.ts';
 import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { History } from '@app/legacy/tools/history.ts';
 import { t, createGetter } from '@app/i18n';
-import { StageColor } from '@app/legacy/util/stage-color.ts';
+import { StageColor } from '@app/utils/stage-color';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { UIEngine } from '@app/engine/ui/ui-engine.ts';
 import type { MenuItem } from '@ui-kit';
 import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import type { DynamicShape } from '@app/legacy/types/legacy-shapes.ts';
 
 interface ControlPoint {

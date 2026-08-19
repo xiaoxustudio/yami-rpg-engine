@@ -1,7 +1,7 @@
 import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { $ } from '@app/utils/dom';
 import { addScrollbars, on, show, hide, clear, read, write } from '@app/utils/element-utils.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';

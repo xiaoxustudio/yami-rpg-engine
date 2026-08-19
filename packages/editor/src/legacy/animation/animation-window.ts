@@ -15,8 +15,8 @@ import {
 	show,
 	write
 } from '@app/utils/element-utils.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { Timer } from '@app/utils/timer';
+import { ctrl } from '@app/utils/event-accessors';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
@@ -38,7 +38,7 @@ import { History } from '@app/legacy/tools/history.ts';
 import { t, createGetter } from '@app/i18n';
 import { UndoManager } from '@app/legacy/tools/undo-manager.ts';
 
-import { StageColor } from '@app/legacy/util/stage-color.ts';
+import { StageColor } from '@app/utils/stage-color';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

@@ -1,14 +1,10 @@
-import { Timer } from '@app/legacy/util/timer.ts';
-import { getSelectorInstance } from '@app/stores/selector.ts';
-import { getBrowserInstance } from '@app/stores/browser.ts';
+import { Timer } from '@app/utils/timer';
 import { lazyComponentsReady } from '@app/bootstrap';
 import { loadConfigPromise } from '@app/utils/config';
 import { registerTool, type ToolInstance } from '@app/legacy/tools/tool-registry';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { Variable } from '@app/legacy/variable/variable.ts';
 import '../variable/initialize.js';
 
-import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
@@ -29,28 +25,11 @@ import { Editor } from '@app/services/project/editor.ts';
 import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { SetTileTag } from '@app/legacy/module/global.ts';
 import { initI18n } from '@app/i18n';
-import { Particle } from '@app/legacy/particle/particle-window.ts';
-import { Palette } from '@app/legacy/palette/palette.ts';
 import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';
-import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Home } from '@app/legacy/title/home-page.ts';
 import { Menubar } from '@app/legacy/title/menu-bar.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
-import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
-import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window.ts';
-import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
-import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
-import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
-import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
-import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
-import { RegionGetter } from '@app/legacy/command/region-accessor-window.ts';
-import { SkillGetter } from '@app/legacy/command/skill-accessor-window.ts';
-import { StateGetter } from '@app/legacy/command/state-accessor-window.ts';
-import { TilemapGetter } from '@app/legacy/command/tilemap-accessor-window.ts';
-import { TriggerGetter } from '@app/legacy/command/trigger-accessor-window.ts';
-import { LightGetter, ObjectGetter } from '@app/legacy/command/preset-accessor-factory.ts';
 import { ArrayList } from '@app/legacy/tools/array-window.ts';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';
 import { ConditionListInterface } from '@app/legacy/tools/condition-list.ts';
@@ -63,12 +42,9 @@ import { SetKey } from '@app/legacy/tools/set-key-window.ts';
 import { SetQuantity } from '@app/legacy/tools/set-number-window.ts';
 import { Selection } from '@app/legacy/tools/text-capture.ts';
 import { Zoom } from '@app/legacy/tools/zoom-window.ts';
-import { UI } from '@app/legacy/ui/ui-window.ts';
 
 interface SingletonShape {
 	initialize?: (() => void) | null;
-	dependsOn?: string[];
-	[k: string]: unknown;
 }
 
 registerTool('ArrayList', ArrayList as unknown as ToolInstance);
@@ -82,6 +58,64 @@ registerTool('PresetObject', PresetObject as unknown as ToolInstance);
 registerTool('PresetElement', PresetElement as unknown as ToolInstance);
 registerTool('Selection', Selection as unknown as ToolInstance);
 
+const initializedSet = new Set<string>();
+
+function initSingleton(name: string, singleton: unknown): void {
+	if (initializedSet.has(name)) return;
+	initializedSet.add(name);
+	const shape = singleton as SingletonShape;
+	if (!singleton || typeof shape.initialize !== 'function') {
+		return;
+	}
+	try {
+		shape.initialize.call(singleton);
+	} catch (e: unknown) {
+		console.warn(`[init] ${name} initialize failed:`, (e as Error)?.message);
+		console.warn(`[init] ${name} stack:`, (e as Error)?.stack);
+	}
+}
+
+function initCore(): void {
+	initSingleton('AudioManager', AudioManager);
+	initSingleton('Menubar', Menubar);
+	initSingleton('Layout', Layout);
+	initSingleton('Home', Home);
+	initSingleton('Timer', Timer);
+	initSingleton('Window', Window);
+}
+
+function initEditors(): void {
+	initSingleton('EventEditor', EventEditor);
+	initSingleton('Inspector', Inspector);
+	initSingleton('Command', Command);
+	initSingleton('Project', Project);
+	initSingleton('Easing', Easing);
+	initSingleton('Team', Team);
+	initSingleton('PluginManager', PluginManager);
+	initSingleton('CustomCommand', CustomCommand);
+	initSingleton('Log', Log);
+	initSingleton('UpdateLog', UpdateLog);
+	initSingleton('Reference', Reference);
+	initSingleton('Directory', Directory);
+	initSingleton('Printer', Printer);
+}
+
+function initTools(): void {
+	initSingleton('Color', Color);
+	initSingleton('Attribute', Attribute);
+	initSingleton('Enum', Enum);
+	initSingleton('Localization', Localization);
+	initSingleton('ImageClip', ImageClip);
+	initSingleton('Selection', Selection);
+	initSingleton('SetQuantity', SetQuantity);
+	initSingleton('SetTileTag', SetTileTag);
+	initSingleton('PresetObject', PresetObject);
+	initSingleton('PresetElement', PresetElement);
+	initSingleton('ArrayList', ArrayList);
+	initSingleton('AttributeListInterface', AttributeListInterface);
+	initSingleton('ConditionListInterface', ConditionListInterface);
+}
+
 Editor.initialize = async function (this: typeof Editor) {
 	this.switchHotkey!(false);
 
@@ -93,8 +127,6 @@ Editor.initialize = async function (this: typeof Editor) {
 	]);
 
 	try {
-		// Selector 为懒加载 Vue 组件（#selector-browser），须等 __lazyComponentsReady__ 挂载完成后再解析
-		const Selector = getSelectorInstance();
 		Title.initialize!();
 		const data = await loadConfigPromise;
 		const code = JSON.stringify(data);
@@ -103,110 +135,9 @@ Editor.initialize = async function (this: typeof Editor) {
 		Object.defineProperty(this.config, 'code', { value: code });
 		void initI18n();
 
-		const initializedSet = new Set();
-		const singletonMap = {
-			AudioManager,
-			Menubar,
-			Home,
-			Layout,
-			Timer,
-			Scene,
-			UI,
-			Animation,
-			Particle,
-			Palette,
-			Window,
-			EventEditor,
-			Inspector,
-			Command,
-			Project,
-			Easing,
-			Team,
-			PluginManager,
-			CustomCommand,
-			Log,
-			UpdateLog,
-			Reference,
-			Directory,
-			Browser: getBrowserInstance(),
-			Selector,
-			Printer,
-			Color,
-			Variable,
-			VariableGetter,
-			ActorGetter,
-			AncestorGetter,
-			AngleGetter,
-			ElementGetter,
-			EquipmentGetter,
-			ItemGetter,
-			PositionGetter,
-			RegionGetter,
-			SkillGetter,
-			StateGetter,
-			TilemapGetter,
-			TriggerGetter,
-			LightGetter,
-			ObjectGetter,
-			Attribute,
-			Enum,
-			Localization,
-			ImageClip,
-			Selection,
-			Zoom,
-			Rename,
-			SetKey,
-			SetQuantity,
-			SetTileTag,
-			PresetObject,
-			PresetElement,
-			ArrayList,
-			AttributeListInterface,
-			ConditionListInterface
-		};
-		const singletons = singletonMap as unknown as Record<string, SingletonShape>;
-		const initNames = Object.keys(singletons).filter(
-			(n: string) => singletons[n] != null && typeof singletons[n].initialize === 'function'
-		);
-		const graph = new Map<string, string[]>(initNames.map((n: string) => [n, [] as string[]]));
-		const inDegree = new Map<string, number>(initNames.map((n: string) => [n, 0]));
-		for (const name of initNames) {
-			const deps = singletons[name].dependsOn ?? [];
-			for (const dep of deps) {
-				if (!graph.has(dep)) continue;
-				graph.get(dep)!.push(name);
-				inDegree.set(name, (inDegree.get(name) ?? 0) + 1);
-			}
-		}
-		const queue = initNames.filter((n: string) => inDegree.get(n) === 0);
-		while (queue.length) {
-			const node = queue.shift()!;
-			const singleton = singletons[node];
-			try {
-				singleton.initialize!.call(singleton);
-			} catch (e: unknown) {
-				console.warn(`[init] ${node} initialize failed:`, (e as Error)?.message);
-				console.warn(`[init] ${node} stack:`, (e as Error)?.stack);
-			}
-			initializedSet.add(node);
-			for (const next of graph.get(node)!) {
-				inDegree.set(next, (inDegree.get(next) ?? 0) - 1);
-				if (inDegree.get(next) === 0) queue.push(next);
-			}
-		}
-		for (const name of initNames) {
-			if (!initializedSet.has(name)) {
-				if (typeof Log !== 'undefined' && Log.warn) {
-					Log.warn!(`初始化循环依赖：${name} 未被初始化`, singletons[name].dependsOn);
-				}
-				try {
-					singletons[name].initialize!.call(singletons[name]);
-				} catch (e) {
-					console.warn(`[init] ${name} initialize failed (cyclic):`, e);
-				}
-				initializedSet.add(name);
-			}
-		}
+		initCore();
+		initEditors();
+		initTools();
 
 		this.loadConfig!();
 		Layout.manager.switch('home');

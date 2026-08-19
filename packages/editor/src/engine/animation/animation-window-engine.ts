@@ -1,6 +1,6 @@
 import { getAnimationStore } from '@app/stores/animation';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
+import { Timer } from '@app/utils/timer';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

@@ -1,4 +1,3 @@
-// CSS 是全局 interface, TS 不允许直接给静态 interface 赋值新属性. 这里用 `declare global` 已扩展 CSS interface, 但运行时挂载仍需 通过 Object.assign(CSS, {...}) 形式触发 type-safe 赋值.
 Object.assign(CSS, {
 	encodeURL: (function IIFE() {
 		const regexp = /([()])/g;
@@ -6,7 +5,6 @@ Object.assign(CSS, {
 			return `url(${encodeURI(string).replace(regexp, '\\$1')})`;
 		};
 	})(),
-	// 光栅化 CSS 像素坐标使其对齐到设备像素
 	rasterize(csspx: number) {
 		const dpr = window.devicePixelRatio;
 		return Math.round(csspx * dpr) / dpr;

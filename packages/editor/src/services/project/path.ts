@@ -1,7 +1,7 @@
 import { Path } from '@app/utils/config';
 import { Editor } from './editor.ts';
 
-Editor.updatePath = function (this: typeof Editor, path: string) {
+function updatePath(this: typeof Editor, path: string) {
 	const { config } = this;
 
 	config!.project = path;
@@ -21,4 +21,8 @@ Editor.updatePath = function (this: typeof Editor, path: string) {
 			items.pop();
 		}
 	}
-};
+}
+
+export function initProjectPath(): void {
+	Editor.updatePath = updatePath;
+}

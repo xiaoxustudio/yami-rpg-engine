@@ -16,7 +16,7 @@ const _modulePath =
 			: '';
 const __dirname = _modulePath ? Path.dirname!(Path.dirname!(_modulePath)) : '';
 
-Updater.updateToLatest = function (this: typeof Updater, version: string) {
+function updateToLatest(this: typeof Updater, version: string) {
 	const verNum = Updater.getVersionNumber!(version);
 	if (verNum >= Updater.getVersionNumber!('1.0.122')) {
 		return Updater.updateIncrementalChanges!(version);
@@ -87,4 +87,8 @@ Updater.updateToLatest = function (this: typeof Updater, version: string) {
 	FS.copyFileSync!(sTsconfigPath, dTsconfigPath);
 
 	Updater.hooks.openUpdateLog();
-};
+}
+
+export function initUpdaterToLatest(): void {
+	Updater.updateToLatest = updateToLatest;
+}

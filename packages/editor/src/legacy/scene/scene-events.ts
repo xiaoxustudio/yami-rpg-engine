@@ -1,6 +1,6 @@
 import { relate } from '@app/utils/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { ctrl } from '@app/legacy/util/event-accessors.ts';
+import { ctrl } from '@app/utils/event-accessors';
 import { hasClass, read, write } from '@app/utils/element-utils.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
@@ -17,7 +17,7 @@ import { Title } from '@app/legacy/title/title-bar.ts';
 import { t, createGetter } from '@app/i18n';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import type { GlobalClipboardHost } from '@app/legacy/types/global-clipboard.ts';
-import { GlobalClipboard } from '@app/legacy/util/clipboard.ts';
+import { GlobalClipboard } from '@app/utils/clipboard';
 import type { MenuItem } from '@ui-kit';
 
 type SceneItem = {

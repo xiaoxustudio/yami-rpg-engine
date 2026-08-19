@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import '@app/legacy/util/math.ts';
+import '@app/utils/math';
 
 vi.mock('@app/legacy/data/data-object', () => ({
 	Data: {
@@ -204,7 +204,7 @@ vi.mock('@app/engine/webgl/image-texture', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/timer', () => ({
+vi.mock('@app/utils/timer', () => ({
 	Timer: {
 		appendUpdater: vi.fn(),
 		removeUpdater: vi.fn()

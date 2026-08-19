@@ -53,6 +53,14 @@ export const useParticleStore = defineStore('particle', () => {
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
 
+	const initialized = shallowRef(false);
+
+	function initialize() {
+		if (initialized.value) return;
+		Particle?.initialize?.();
+		initialized.value = true;
+	}
+
 	function open(context: ParticleContextShape) {
 		Particle?.open?.(context);
 	}
@@ -143,6 +151,8 @@ export const useParticleStore = defineStore('particle', () => {
 		zoom,
 		scaleX,
 		scaleY,
+		initialized,
+		initialize,
 		open,
 		close,
 		planToSave,

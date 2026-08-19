@@ -6,8 +6,8 @@ import { useTileNodeWindow } from '@app/composables/useTileNodeWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { Palette } from '@app/legacy/palette/palette.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { Timer } from '@app/legacy/util/timer.ts';
-import '@app/legacy/util/math.ts';
+import { Timer } from '@app/utils/timer';
+import '@app/utils/math';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

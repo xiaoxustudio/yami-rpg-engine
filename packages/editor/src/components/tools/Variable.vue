@@ -138,6 +138,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
+import { getVariableStore } from '@app/stores/variable';
 import PageManager from '@app/components/common/PageManager.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import RadioBox from '@app/components/common/RadioBox.vue';
@@ -251,7 +252,6 @@ const onApply = () => {
 };
 
 onMounted(() => {
-
-
+	getVariableStore().initialize();
 });
 </script>

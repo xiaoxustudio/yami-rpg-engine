@@ -26,6 +26,14 @@ export const useSceneStore = defineStore('scene', () => {
 	const scaleX = shallowRef<number | null>(null);
 	const scaleY = shallowRef<number | null>(null);
 
+	const initialized = shallowRef(false);
+
+	function initialize() {
+		if (initialized.value) return;
+		Scene?.initialize?.();
+		initialized.value = true;
+	}
+
 	function open(target: unknown) {
 		Scene?.open?.(target);
 	}
@@ -96,6 +104,8 @@ export const useSceneStore = defineStore('scene', () => {
 		zoom,
 		scaleX,
 		scaleY,
+		initialized,
+		initialize,
 		open,
 		close,
 		planToSave,
