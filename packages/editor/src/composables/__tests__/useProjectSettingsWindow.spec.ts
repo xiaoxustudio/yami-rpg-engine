@@ -26,6 +26,7 @@ vi.mock('@app/legacy/file/file-system-core.ts', () => ({
 
 vi.mock('@app/i18n', () => ({
 	t: () => '',
+	tObject: () => ({}),
 	createGetter: () => (key: string) => key,
 	getLabel: () => '',
 	getTip: () => '',

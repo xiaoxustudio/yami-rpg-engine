@@ -693,9 +693,15 @@ PaletteEngine.scrollToSelection = function (this: typeof Palette, shiftKey: bool
 	}
 };
 
+// 稳定的 bound 渲染函数（Timer 调用无 this——预绑定 Palette，removeUpdater 引用匹配）
+let boundRenderingFunction: ((deltaTime: number) => void) | null = null;
+
 PaletteEngine.requestRendering = function (this: typeof Palette) {
 	if (getPaletteStore().state === 'open') {
-		Timer.appendUpdater!('sharedRendering', this.renderingFunction);
+		if (!boundRenderingFunction) {
+			boundRenderingFunction = PaletteEngine.renderingFunction.bind(this);
+		}
+		Timer.appendUpdater!('sharedRendering', boundRenderingFunction!);
 	}
 };
 
@@ -704,5 +710,7 @@ PaletteEngine.renderingFunction = function (this: typeof Palette) {
 };
 
 PaletteEngine.stopRendering = function (this: typeof Palette) {
-	Timer.removeUpdater!('sharedRendering', this.renderingFunction);
+	if (boundRenderingFunction) {
+		Timer.removeUpdater!('sharedRendering', boundRenderingFunction);
+	}
 };

@@ -30,6 +30,7 @@ import { EventBus } from '@app/legacy/module/eventbus.ts';
 import { SetTileTag } from '@app/legacy/module/global.ts';
 import { initI18n } from '@app/i18n';
 import { Particle } from '@app/legacy/particle/particle-window.ts';
+import { Palette } from '@app/legacy/palette/palette.ts';
 import { PluginManager } from '@app/legacy/plugin/plugin.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
@@ -113,6 +114,7 @@ Editor.initialize = async function (this: typeof Editor) {
 			UI,
 			Animation,
 			Particle,
+			Palette,
 			Window,
 			EventEditor,
 			Inspector,

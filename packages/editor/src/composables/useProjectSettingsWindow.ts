@@ -9,7 +9,7 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Log } from '@app/legacy/log/log-window.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
-import { t, createGetter } from '@app/i18n';
+import { t, createGetter, tObject } from '@app/i18n';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { getFocus, on, read, write } from '@app/legacy/util/element-utils.ts';
 import '@app/legacy/util/object.ts';
@@ -372,11 +372,9 @@ const languages: LanguagesInterface = {
 	},
 	createAllItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = t('languages');
+		const languages = tObject<Record<string, string>>('languages');
 		if (languages) {
-			for (const [value, name] of Object.entries(
-				languages as unknown as Record<string, string>
-			)) {
+			for (const [value, name] of Object.entries(languages)) {
 				if (value !== 'auto') {
 					items.push({ name, value });
 				}
@@ -386,16 +384,14 @@ const languages: LanguagesInterface = {
 	},
 	createValidItems: function () {
 		const items: Array<{ name: string; value: string }> = [];
-		const languages = t('languages');
+		const languages = tObject<Record<string, string>>('languages');
 		if (languages) {
 			const langList = new Set(
 				getProjectStore().data!.localization.languages.map(
 					(lang: { name: string }) => lang.name
 				)
 			);
-			for (const [value, name] of Object.entries(
-				languages as unknown as Record<string, string>
-			)) {
+			for (const [value, name] of Object.entries(languages)) {
 				if (value === 'auto' || langList.has(value)) {
 					items.push({ name, value });
 				}

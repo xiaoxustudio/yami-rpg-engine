@@ -10,7 +10,8 @@ vi.mock('@app/legacy/util/element-utils', () => ({
 	show: vi.fn(),
 	hide: vi.fn(),
 	write: vi.fn(),
-	read: vi.fn()
+	read: vi.fn(),
+	setTooltip: vi.fn()
 }));
 
 vi.mock('@app/legacy/file/file-system-core', () => ({

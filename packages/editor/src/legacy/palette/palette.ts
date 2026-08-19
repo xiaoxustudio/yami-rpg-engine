@@ -474,7 +474,7 @@ Palette.setTerrain = function (this: typeof Palette, x: number, y: number, offse
 };
 
 Palette.loadImages = async function (this: typeof Palette) {
-	const last = this.images;
+	const last = (this.images = this.images ?? {});
 	const images = { '': null } as Record<string, HTMLImageElement | symbol | null>;
 	const promises: Promise<void>[] = [];
 	const tileset = getPaletteStore().tileset;

@@ -24,6 +24,25 @@ let loadPromise: Promise<string> | null = null;
 function resolveFlat(messages: unknown, key: string): unknown {
 	const table = (messages ?? {}) as FlatMessages;
 	if (key in table) return table[key];
+	// 嵌套对象读取：t('languages') 返回 languages.* 的嵌套对象（如 {en, zh-CN}）
+	const prefix = `${key}.`;
+	let nested: Record<string, unknown> | null = null;
+	for (const flatKey of Object.keys(table)) {
+		if (flatKey.startsWith(prefix)) {
+			if (!nested) nested = {};
+			const parts = flatKey.slice(prefix.length).split('.');
+			let node = nested;
+			for (let i = 0; i < parts.length - 1; i++) {
+				const part = parts[i];
+				if (!(part in node) || typeof node[part] !== 'object') node[part] = {};
+				node = node[part] as Record<string, unknown>;
+			}
+			node[parts[parts.length - 1]] = table[flatKey];
+		}
+	}
+	if (nested) {
+		return nested;
+	}
 	const index = key.lastIndexOf('.');
 	if (index !== -1) {
 		const last = key.slice(index + 1);
@@ -147,6 +166,14 @@ export function t(key: string): string {
 export function createGetter(path: string): (key: string) => string {
 	const prefix = path ? `${path}.` : '';
 	return (key: string) => t(prefix + key);
+}
+
+// 兼容嵌套对象读取：从原始语言数据读 properties 下的嵌套对象（如 tObject('languages')）
+export function tObject<T = Record<string, unknown>>(key: string): T | undefined {
+	if (!locale || !loadedLocaleData[locale]) return undefined;
+	const properties = loadedLocaleData[locale].properties as Record<string, unknown>;
+	const value = properties[key];
+	return (value as T) ?? undefined;
 }
 
 // 兼容 components 段：components.<id>.label
