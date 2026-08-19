@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileEvent-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileEvent-general-grid">
@@ -31,7 +31,7 @@ import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { useFileEventPage } from '@app/composables/useFileEventPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';

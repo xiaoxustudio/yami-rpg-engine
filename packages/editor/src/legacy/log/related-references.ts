@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { on, addClass, removeClass, clear } from '@app/legacy/util/element-utils.ts';
+import { on, addClass, removeClass, clear } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { t, createGetter } from '@app/i18n';

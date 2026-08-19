@@ -1,4 +1,4 @@
-import { Editor } from './editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 
 (function main() {
 	const start = () => {

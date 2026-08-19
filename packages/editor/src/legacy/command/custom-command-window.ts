@@ -1,8 +1,8 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { $, getElementWriter } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, hide, on, show } from '@app/legacy/util/element-utils.ts';
+import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from './command-object.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { TreeList } from '@app/legacy/components/tree-list.ts';

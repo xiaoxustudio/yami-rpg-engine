@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/showChoices.ts';
-import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { t } from '@app/i18n';
 import { reactive } from 'vue';

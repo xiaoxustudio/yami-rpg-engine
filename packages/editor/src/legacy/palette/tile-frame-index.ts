@@ -1,7 +1,7 @@
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on, rect, css } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on, rect, css } from '@app/utils/element-utils.ts';
 
 import { AutoTile } from './auto-tile.ts';
 import { Palette } from './palette.ts';

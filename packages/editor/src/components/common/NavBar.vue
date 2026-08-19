@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMNavBar ref="ym" :id="props.id">
 		<slot />
 	</YMNavBar>
@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMNavBar } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface NavBarElement extends HTMLElement {
 	read(): unknown;

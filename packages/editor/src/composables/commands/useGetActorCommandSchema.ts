@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/getActor.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';

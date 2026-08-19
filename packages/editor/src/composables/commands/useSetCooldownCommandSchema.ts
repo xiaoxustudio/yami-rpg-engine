@@ -1,5 +1,5 @@
 import '@app/legacy/module/command/setCooldown.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 

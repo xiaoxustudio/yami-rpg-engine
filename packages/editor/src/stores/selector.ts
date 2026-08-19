@@ -2,8 +2,8 @@
 import type { MenuItem } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { shallowRef } from 'vue';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear, hasClass, seek } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear, hasClass, seek } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';

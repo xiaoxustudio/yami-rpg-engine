@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { hide, show } from '@app/legacy/util/element-utils';
+import { hide, show } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 

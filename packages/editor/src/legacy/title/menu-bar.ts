@@ -1,10 +1,10 @@
-import { macRedoKey } from '@app/legacy/util/event-accessors';
+﻿import { macRedoKey } from '@app/legacy/util/event-accessors';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { SettingConfig } from '@app/legacy/module/settingconfig';
 import type { MenuItem } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	addClass,
 	disable,
@@ -14,9 +14,9 @@ import {
 	removeClass,
 	setTooltip,
 	write
-} from '@app/legacy/util/element-utils';
+} from '@app/utils/element-utils';
 import { h, render } from 'vue';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { CustomCommand } from '@app/legacy/command/custom-command-window.ts';
@@ -33,7 +33,7 @@ import { ExportLanguage } from '@app/legacy/local/export-language-window.ts';
 import { ImportLanguage } from '@app/legacy/local/import-language-window.ts';
 import { Localization } from '@app/legacy/local/local-window.ts';
 import { UpdateLog } from '@app/legacy/log/update-log-window.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { ApkBuilder } from '@app/legacy/module/apkbuilder.ts';
 import { Resources } from '@app/legacy/module/resource.ts';
 

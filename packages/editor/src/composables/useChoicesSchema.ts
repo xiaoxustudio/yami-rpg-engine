@@ -1,5 +1,5 @@
 ﻿import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus } from '@app/legacy/util/element-utils.ts';
+import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
 

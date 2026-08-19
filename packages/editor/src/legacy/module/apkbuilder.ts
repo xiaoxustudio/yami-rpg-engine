@@ -1,9 +1,9 @@
-import { ipcRenderer } from 'electron';
+﻿import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { $ } from '@app/legacy/util/dom.ts';
-import { enable } from '@app/legacy/util/element-utils.ts';
-import { Path } from '@app/legacy/util/config.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { $ } from '@app/utils/dom';
+import { enable } from '@app/utils/element-utils.ts';
+import { Path } from '@app/utils/config';
+import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from './global.ts';
 
 interface ApkConfig {
@@ -72,7 +72,6 @@ export const ApkBuilder = new (class {
 			config[v] = this.processPathOnly!(config[v]);
 		});
 		config.projectPath = Path.dirname!(Editor.config!.project!);
-		console.log(config);
 		return config;
 	}
 })();

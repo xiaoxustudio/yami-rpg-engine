@@ -1,4 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';

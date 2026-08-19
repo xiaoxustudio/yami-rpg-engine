@@ -11,7 +11,7 @@ import { Log } from '@app/legacy/log/log-window.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { t, createGetter, tObject } from '@app/i18n';
 import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
-import { getFocus, on, read, write } from '@app/legacy/util/element-utils.ts';
+import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
 import '@app/legacy/util/object.ts';
 import { getProjectStore } from '@app/stores/project';
 

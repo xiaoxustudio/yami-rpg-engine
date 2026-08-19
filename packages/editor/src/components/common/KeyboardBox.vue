@@ -1,11 +1,11 @@
-<template>
+﻿<template>
 	<YMKeyboardBox ref="ym" :id="props.id" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMKeyboardBox } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface KeyboardBoxElement extends HTMLElement {
 	input: HTMLInputElement;

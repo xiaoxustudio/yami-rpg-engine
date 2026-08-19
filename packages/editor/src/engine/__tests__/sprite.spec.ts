@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 
-vi.mock('@app/legacy/util/element-utils', () => ({
+vi.mock('@app/utils/element-utils', () => ({
 	relate: () => true,
 	getRelativeCoords: () => ({ x: 0, y: 0 }),
 	hideDragImage: () => {},
@@ -19,7 +19,7 @@ vi.mock('@app/legacy/util/element-utils', () => ({
 	dispatchResizeEvent: () => {}
 }));
 
-vi.mock('@app/legacy/util/dom', () => ({
+vi.mock('@app/utils/dom', () => ({
 	$: (selector: string) => {
 		const el = document.createElement('div');
 		el.id = selector.replace('#', '');

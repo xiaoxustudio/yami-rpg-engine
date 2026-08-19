@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 		<WindowFrame ref="frame" id="setNumber-operand" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.setNumber-operand.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -171,15 +171,15 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on, clear } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on, clear } from '@app/utils/element-utils.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { NumberOperand, type NumberOperandForm } from '@app/legacy/command/set-value-operand-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import FileVar from '@app/components/common/FileVar.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';

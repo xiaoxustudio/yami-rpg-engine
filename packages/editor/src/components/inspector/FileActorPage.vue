@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileActor-general-grid.label') || 'General' }}</DetailSummary>
 			<div class="detail-grid" id="fileActor-general-grid">
@@ -159,7 +159,7 @@ import { AttributeListInterface } from '@app/legacy/tools/property-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileActorPage } from '@app/composables/useFileActorPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

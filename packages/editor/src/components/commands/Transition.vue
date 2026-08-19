@@ -37,8 +37,8 @@
 
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils';
 import { useTransitionCommandSchema } from '@app/composables/commands/useTransitionCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

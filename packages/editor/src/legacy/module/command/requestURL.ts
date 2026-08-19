@@ -1,6 +1,6 @@
-import { getElementReader, $ } from '@app/legacy/util/dom.ts';
+import { getElementReader, $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, write } from '@app/legacy/util/element-utils';
+import { getFocus, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from './schema.ts';
 import { t } from '@app/i18n';

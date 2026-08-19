@@ -1,5 +1,5 @@
 import { createTextAreaElement, type TextAreaApi } from '@ui-kit';
-import { listenDraggingScrollbarEvent } from '@app/legacy/util/element-utils';
+import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
 
 export function createTextArea(): TextAreaApi {
 	return createTextAreaElement({ listenDraggingScrollbarEvent });

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame id="export-apk" no-buttons>
 		<template #title><TitleBar>构建APK<div class="close"></div></TitleBar></template>
 		
@@ -48,7 +48,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import TextBox from '@app/components/common/TextBox.vue';
 import { ApkBuilder } from '@app/legacy/module/apkbuilder.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

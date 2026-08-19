@@ -1,5 +1,5 @@
-import { $, getElementReader } from '@app/legacy/util/dom.ts';
-import { read } from '@app/legacy/util/element-utils';
+import { $, getElementReader } from '@app/utils/dom';
+import { read } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Inspector } from './inspector.ts';
 import { Particle } from '@app/legacy/particle/particle-window.ts';

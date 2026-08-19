@@ -1,6 +1,6 @@
-﻿import { $ } from '@app/legacy/util/dom.ts';
+﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { disable, enable, on, read, write } from '@app/legacy/util/element-utils.ts';
+import { disable, enable, on, read, write } from '@app/utils/element-utils.ts';
 
 interface SearchMode {
 	caseInsensitive: boolean;

@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, on } from '@app/legacy/util/element-utils';
+import { getFocus, on } from '@app/utils/element-utils';
 import { getVariable } from '@app/legacy/util/safe.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';

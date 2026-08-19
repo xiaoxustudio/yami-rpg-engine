@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMTabBar ref="ym" :id="props.id" :update-app-region="updateAppRegion" />
 </template>
 
@@ -6,7 +6,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { YMTabBar } from '@ui-kit';
 import { Title } from '@app/legacy/title/title-bar';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

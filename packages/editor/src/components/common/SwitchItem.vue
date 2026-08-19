@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMSwitchItem
 		ref="ym"
 		:model-value="dataValue"
@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMSwitchItem } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SwitchItemElement extends HTMLDivElement {
 	read(): number;

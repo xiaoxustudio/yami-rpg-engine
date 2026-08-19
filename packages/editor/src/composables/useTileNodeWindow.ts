@@ -1,6 +1,6 @@
-﻿import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+﻿import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { on, rect, css, addClass } from '@app/legacy/util/element-utils.ts';
+import { on, rect, css, addClass } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';

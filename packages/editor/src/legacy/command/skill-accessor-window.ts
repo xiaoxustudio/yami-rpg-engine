@@ -1,5 +1,5 @@
-﻿import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils';
+﻿import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils';
 import { useSkillGetterWindow } from '@app/composables/useSkillGetterWindow';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@app/legacy/types/legacy-shapes.ts';

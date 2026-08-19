@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.uiDialogBox-properties-grid.label') || 'DialogBox Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiDialogBox-properties-grid">
@@ -110,7 +110,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIDialogBoxPage } from '@app/composables/useUIDialogBoxPage';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import ColorBox from '@app/components/common/ColorBox.vue';

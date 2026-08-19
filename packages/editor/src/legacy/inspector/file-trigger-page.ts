@@ -1,6 +1,6 @@
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear, read, write } from '@app/legacy/util/element-utils';
+import { clear, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';

@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
-import { Editor } from '@app/legacy/main/editor.ts';
+﻿import { defineStore } from 'pinia';
+import { Editor } from '@app/services/project/editor.ts';
 import { shallowRef } from 'vue';
 import { getDirectoryTree } from '@app/services/file-system/directory-tree.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
@@ -7,7 +7,7 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { TemplatesPath } from '@app/legacy/module/global.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import type { MenuItem } from '@ui-kit';
@@ -18,8 +18,8 @@ import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, hasClass, removeClass, seek } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { addClass, hasClass, removeClass, seek } from '@app/utils/element-utils';
 import { pinia } from './pinia';
 import type { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
@@ -456,7 +456,6 @@ export const useBrowserStore = defineStore('browser', () => {
 						body?.rename?.(file);
 					}
 				}
-				console.log(`write: ${path}`);
 			})
 			.catch((error: unknown) => {
 				console.warn(error);
@@ -492,7 +491,6 @@ export const useBrowserStore = defineStore('browser', () => {
 						body?.rename?.(file);
 					}
 				}
-				console.log(`write: ${path}`);
 			})
 			.catch((error: unknown) => {
 				console.warn(error);

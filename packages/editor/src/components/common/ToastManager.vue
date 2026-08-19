@@ -1,11 +1,11 @@
-<template>
+﻿<template>
 	<YMToastManager ref="ym" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMToastManager } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface ToastManagerElement extends HTMLElement {
 	show(message: string, type?: string, duration?: number): HTMLDivElement;

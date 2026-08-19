@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/setPan.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 
 export function useSetPanCommandSchema() {

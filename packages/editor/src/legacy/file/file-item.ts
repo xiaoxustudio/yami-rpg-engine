@@ -1,4 +1,4 @@
-import { request } from '@app/legacy/util/dom.ts';
+import { request } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { t } from '@app/i18n';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

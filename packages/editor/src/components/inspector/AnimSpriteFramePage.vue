@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox id="animSpriteFrame-properties-detail" open>
 		<DetailSummary>{{ t('components.animSpriteFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSpriteFrame-properties-grid">
@@ -229,7 +229,7 @@ import { useAnimSpriteFramePage } from '@app/composables/useAnimSpriteFramePage'
 import { Sprite } from '@app/engine/sprite/sprite.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';

@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, hide, removeClass, setTooltip, show } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { addClass, hide, removeClass, setTooltip, show } from '@app/utils/element-utils';
 import { Scene } from './scene-window.ts';
 
 interface TilemapData {

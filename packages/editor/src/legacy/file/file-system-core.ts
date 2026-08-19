@@ -2,7 +2,7 @@ import { ipcRenderer, shell } from 'electron';
 import nodeFs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
@@ -221,9 +221,7 @@ File.saveFile = function (meta) {
 	const path = meta.path;
 	const route = File.path?.(path);
 	return FSP.writeFile(route, text, true)
-		.then(() => {
-			console.log(`write: ${path}`);
-		})
+		.then(() => {})
 		.catch((error: unknown) => {
 			console.warn(error);
 		});

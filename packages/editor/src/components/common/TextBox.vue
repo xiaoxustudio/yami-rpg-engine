@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMTextBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -15,7 +15,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMTextBox } from '@ui-kit';
 import { TextHistory } from '@app/legacy/components/text-history';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface TextBoxElement extends HTMLElement {
 	input: HTMLInputElement;

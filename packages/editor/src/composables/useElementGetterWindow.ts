@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 
 export interface ElementGetterForm {
 	type: string;

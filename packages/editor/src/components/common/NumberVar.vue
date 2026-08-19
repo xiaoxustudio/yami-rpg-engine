@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMNumberVar
 		ref="ym"
 		:min="props.min"
@@ -26,7 +26,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import { YMNumberVar } from '@ui-kit';
 import { defVar, defVarForPlugin } from '@app/legacy/components/number-var';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

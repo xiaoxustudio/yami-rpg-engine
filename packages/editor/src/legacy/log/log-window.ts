@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+﻿import { $ } from '@app/utils/dom';
+import { Editor } from '@app/services/project/editor.ts';
 
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';

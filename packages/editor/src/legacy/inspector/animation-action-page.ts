@@ -1,7 +1,7 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Inspector } from './inspector.ts';
-import { write } from '@app/legacy/util/element-utils.ts';
+import { write } from '@app/utils/element-utils.ts';
 
 {
 	interface AnimMotionShape {

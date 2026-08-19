@@ -1,9 +1,9 @@
-import { Window } from '@app/legacy/tools/window-object.ts';
+﻿import { Window } from '@app/legacy/tools/window-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Meta } from '@app/legacy/data/metadata.ts';
 import { FolderItem } from './folder-item.ts';
 import { Log } from '@app/legacy/log/log-window.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { File } from './file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { DirectoryTree, registerDirectoryTree } from '@app/services/file-system/directory-tree.ts';

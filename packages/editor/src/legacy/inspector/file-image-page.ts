@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { hide } from '@app/legacy/util/element-utils';
+import { hide } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
 import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';

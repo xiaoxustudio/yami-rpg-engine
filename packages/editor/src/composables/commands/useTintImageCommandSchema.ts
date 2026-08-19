@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/tintImage.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 

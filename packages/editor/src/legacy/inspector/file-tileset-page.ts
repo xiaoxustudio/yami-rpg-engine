@@ -1,6 +1,6 @@
-import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { addClass, disable, enable, read, removeClass } from '@app/legacy/util/element-utils';
+import { addClass, disable, enable, read, removeClass } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import type { FileMeta } from '@app/legacy/data/metadata-manifest.ts';
 import { Inspector } from './inspector.ts';

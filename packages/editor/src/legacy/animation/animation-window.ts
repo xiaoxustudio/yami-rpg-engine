@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	addClass,
 	addSetScrollMethod,
@@ -14,7 +14,7 @@ import {
 	removeClass,
 	show,
 	write
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Command } from '@app/legacy/command/command-object.ts';

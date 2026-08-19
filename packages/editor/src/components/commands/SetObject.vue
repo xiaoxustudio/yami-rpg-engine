@@ -37,7 +37,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetObjectCommandSchema } from '@app/composables/commands/useSetObjectCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

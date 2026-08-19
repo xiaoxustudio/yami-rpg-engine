@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/castSkill.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { reactive } from 'vue';

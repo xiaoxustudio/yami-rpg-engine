@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { YMFileNavPane } from '@ui-kit';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Directory } from '@app/legacy/file/directory-object.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';

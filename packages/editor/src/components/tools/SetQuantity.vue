@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<!-- 设置数量窗口 -->
 	<WindowFrame ref="frame" id="setQuantity" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.setQuantity.title') }}<div class="close" /></TitleBar></template>
@@ -24,7 +24,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import NumberBox from '@app/components/common/NumberBox.vue';
 
 const { t } = useI18n();

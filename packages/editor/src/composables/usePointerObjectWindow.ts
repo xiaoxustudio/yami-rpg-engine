@@ -1,4 +1,4 @@
-﻿import { addClass, removeClass } from '@app/legacy/util/element-utils';
+﻿import { addClass, removeClass } from '@app/utils/element-utils';
 
 interface PointerObjectWindow {
 	readonly region: HTMLElement;

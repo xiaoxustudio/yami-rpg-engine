@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import '@app/legacy/util/math.ts';
 
-vi.mock('@app/legacy/util/element-utils', () => ({
+vi.mock('@app/utils/element-utils', () => ({
 	relate: () => true,
 	getRelativeCoords: () => ({ x: 10, y: 20 }),
 	hideDragImage: () => {},

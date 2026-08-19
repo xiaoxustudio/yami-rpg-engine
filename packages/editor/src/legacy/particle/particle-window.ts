@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	addClass,
 	addSetScrollMethod,
@@ -13,7 +13,7 @@ import {
 	removeClass,
 	show,
 	write
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
@@ -37,7 +37,7 @@ import { Timer } from '@app/legacy/util/timer.ts';
 import { ImageTexture } from '@app/engine/webgl/image-texture.ts';
 import { Matrix } from '@app/engine/webgl/matrix2.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
-import type { ParticleElementLayer } from './particle-element.ts';
+import { ParticleEngine, type ParticleElementLayer } from '@app/engine/particle/particle-engine.ts';
 
 type ParticleState = 'closed' | 'open';
 
@@ -403,6 +403,10 @@ export const Particle: ParticleShape = {
 		stage: Record<string, any>;
 	}
 };
+
+Particle.Emitter = ParticleEngine.Emitter;
+Particle.Layer = ParticleEngine.Layer;
+Particle.Element = ParticleEngine.Element;
 
 Particle.list.create = null as unknown as (...args: unknown[]) => any;
 Particle.list.copy = null as unknown as (...args: unknown[]) => any;

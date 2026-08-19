@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="arrayList-string">
 		<template #title><TitleBar>{{ t('components.arrayList-string.title') }}<div class="close" /></TitleBar></template>
 		
@@ -15,7 +15,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import TextArea from '@app/components/common/TextArea.vue';
 
 const { t } = useI18n();

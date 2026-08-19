@@ -1,4 +1,4 @@
-import { GlobalPath, Path } from '@app/legacy/util/config.ts';
+import { GlobalPath, Path } from '@app/utils/config';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';

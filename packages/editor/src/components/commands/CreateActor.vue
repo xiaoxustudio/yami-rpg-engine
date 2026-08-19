@@ -23,8 +23,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCreateActorCommandSchema } from '@app/composables/commands/useCreateActorCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

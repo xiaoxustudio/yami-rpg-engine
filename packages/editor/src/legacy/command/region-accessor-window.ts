@@ -1,4 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { useRegionGetterWindow } from '@app/composables/useRegionGetterWindow';
 import { PresetObject } from '@app/legacy/tools/scene-preset-window.ts';
 import { AccessorBaseShape } from '@app/legacy/types/legacy-shapes.ts';

@@ -119,7 +119,7 @@
 import '@app/legacy/inspector/file-tileset-page.ts';
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { focus } from '@app/legacy/util/element-utils';
+import { focus } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Palette } from '@app/legacy/palette/palette.ts';
 import { useSceneStore } from '@app/stores/scene';

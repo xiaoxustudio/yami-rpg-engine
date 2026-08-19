@@ -23,8 +23,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { disable, enable } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { disable, enable } from '@app/utils/element-utils';
 import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

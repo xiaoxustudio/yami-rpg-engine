@@ -55,8 +55,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetAnimationComponentCommandSchema } from '@app/composables/commands/useSetAnimationComponentCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { read } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { read } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

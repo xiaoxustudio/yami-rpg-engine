@@ -1,4 +1,4 @@
-import { drawAndFitImage } from '@app/legacy/util/element-utils';
+import { drawAndFitImage } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { getPaletteStore } from '@app/stores/palette';
 import { getAutoTileStore } from '@app/stores/autoTile';

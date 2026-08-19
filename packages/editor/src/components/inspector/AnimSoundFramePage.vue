@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.animSoundFrame-properties-grid.label') || 'Frame' }}</DetailSummary>
 		<div class="detail-grid" id="animSoundFrame-properties-grid">
@@ -29,7 +29,7 @@ import { useI18n } from 'vue-i18n';
 import { useAnimSoundFramePage } from '@app/composables/useAnimSoundFramePage';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

@@ -1,5 +1,5 @@
 import '@app/legacy/inspector/file-image-page.ts';
-import { hide, show } from '@app/legacy/util/element-utils';
+import { hide, show } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 export function useFileImagePage() {

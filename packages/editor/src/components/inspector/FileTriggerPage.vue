@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileTrigger-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="fileTrigger-general-grid">
@@ -156,7 +156,7 @@ import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useFileTriggerPage } from '@app/composables/useFileTriggerPage';
 import { useInspectorStore } from '@app/stores/inspector';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

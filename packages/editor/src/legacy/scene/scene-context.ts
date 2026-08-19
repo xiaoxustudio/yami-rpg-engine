@@ -1,7 +1,7 @@
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
-import { show } from '@app/legacy/util/element-utils';
+import { show } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Particle } from '@app/legacy/particle/particle-window.ts';

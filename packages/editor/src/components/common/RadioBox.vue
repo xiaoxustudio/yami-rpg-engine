@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMRadioBox
 		ref="ym"
 		:name="props.name"
@@ -22,7 +22,7 @@ import {
 	type RadioProxyElement,
 	type RadioRelationEntry
 } from '@app/legacy/components/radio-proxy';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface RadioBoxElement extends HTMLElement {
 	proxy: RadioProxyElement;

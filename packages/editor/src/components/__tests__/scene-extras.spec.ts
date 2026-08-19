@@ -92,9 +92,6 @@ describe('scene 列表图标渲染（事件/脚本/条件/可见性/锁定）', 
 		el.update();
 		await wrapper.vm.$nextTick();
 		const extrasEls = el.querySelectorAll('.tree-node-extras');
-		console.log('[diag] extras containers:', extrasEls.length);
-		console.log('[diag] extras html:', extrasEls.length ? extrasEls[0].innerHTML : 'NONE');
-		console.log('[diag] list html:', el.innerHTML.slice(0, 300));
 		expect(el.querySelector('.icon-eventEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-scriptEnabled')).toBeTruthy();
 		expect(el.querySelector('.icon-conditional')).toBeTruthy();

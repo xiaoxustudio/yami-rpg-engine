@@ -1,4 +1,4 @@
-import { $, getElementReader } from '@app/legacy/util/dom.ts';
+import { $, getElementReader } from '@app/utils/dom';
 import { Inspector } from './inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 

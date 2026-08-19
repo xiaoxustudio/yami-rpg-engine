@@ -1,12 +1,12 @@
-<template>
+﻿<template>
 	<YMCommonList ref="ym" :id="props.id" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMCommonList } from '@ui-kit';
-import { listenDraggingScrollbarEvent } from '@app/legacy/util/element-utils';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { listenDraggingScrollbarEvent } from '@app/utils/element-utils';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface CommonListElement extends HTMLElement {
 	read(): unknown;

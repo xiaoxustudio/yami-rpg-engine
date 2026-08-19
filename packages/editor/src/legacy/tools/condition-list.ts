@@ -1,6 +1,6 @@
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

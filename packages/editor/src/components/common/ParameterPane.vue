@@ -32,9 +32,9 @@ import { Data } from '@app/legacy/data/data-object';
 import { PluginManager } from '@app/legacy/plugin/plugin';
 import { t } from '@app/i18n';
 import { Selection } from '@app/legacy/tools/text-capture';
-import { measureText as measureTextUtil } from '@app/legacy/util/dom';
-import { setTooltip as setTooltipUtil } from '@app/legacy/util/element-utils';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { measureText as measureTextUtil } from '@app/utils/dom';
+import { setTooltip as setTooltipUtil } from '@app/utils/element-utils';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

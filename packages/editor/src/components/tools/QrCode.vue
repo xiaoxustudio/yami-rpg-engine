@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 		<WindowFrame id="qr-code" no-buttons>
 		<template #title><TitleBar>本地服务预览<div class="close"></div></TitleBar></template>
 		
@@ -22,7 +22,7 @@
 import { onMounted, ref } from 'vue';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 

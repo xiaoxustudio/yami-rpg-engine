@@ -1,5 +1,5 @@
 import '@app/legacy/module/command/downloadFile.ts';
-import { disable, enable, getFocus, read } from '@app/legacy/util/element-utils';
+import { disable, enable, getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';

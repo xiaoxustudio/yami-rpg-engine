@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMFileBrowser
 		ref="ym"
 		:id="props.id"
@@ -30,14 +30,14 @@ import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { Directory } from '@app/legacy/file/directory-object.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/legacy/file/folder-item.ts';
 import { createGetter } from '@app/i18n';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { createTextBox as createTextBoxFactory } from '@app/legacy/components/text-box.ts';
 import { setIconClip } from '@app/legacy/util/icon-clip.ts';
 import { getBrowserStore, type FileBrowserInstance } from '@app/stores/browser.ts';

@@ -1,4 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Curve } from '@app/legacy/animation/curve-window.ts';
 import { Inspector } from './inspector.ts';

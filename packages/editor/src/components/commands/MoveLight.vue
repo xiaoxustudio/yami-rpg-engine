@@ -26,8 +26,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { LightProperty } from '@app/legacy/command/move-light-property-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

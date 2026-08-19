@@ -45,14 +45,12 @@ interface WebGLPrototypeBufferData {
 
 	// 侦听WebGL上下文丢失事件
 	canvas.addEventListener('webglcontextlost', function (event) {
-		console.log('webglcontextlost');
 		event.preventDefault();
 		setTimeout(() => GL.WEBGL_lose_context.restoreContext());
 	});
 
 	// 侦听WebGL上下文恢复事件
 	canvas.addEventListener('webglcontextrestored', function (event) {
-		console.log('webglcontextrestored');
 		GL.restore();
 	});
 

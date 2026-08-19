@@ -1,7 +1,7 @@
 import '@app/legacy/inspector/scene-animation-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { read } from '@app/legacy/util/element-utils';
+import { read } from '@app/utils/element-utils';
 
 interface AnimationForm {
 	name: string;

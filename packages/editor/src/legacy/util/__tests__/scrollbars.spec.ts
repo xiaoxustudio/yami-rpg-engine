@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addScrollbars } from '@app/legacy/util/element-utils';
+import { addScrollbars } from '@app/utils/element-utils';
 
 describe('addScrollbars 集成（9.45-9.48 回归保护）', () => {
 	it('creates horizontal/vertical scroll bars bound to target', () => {

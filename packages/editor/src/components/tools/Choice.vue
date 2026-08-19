@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="choice" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.choice.title') }}<div class="close" /></TitleBar></template>
 		
@@ -17,15 +17,15 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils.ts';
 import type { ChoicesForm } from '@app/legacy/command/show-options-window.ts';
 import { Choices } from '@app/legacy/command/show-options-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import TextBox from '@app/components/common/TextBox.vue';
 
 const { t } = useI18n();

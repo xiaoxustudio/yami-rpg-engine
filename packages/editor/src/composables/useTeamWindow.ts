@@ -1,6 +1,6 @@
 ﻿import { getListConfig } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, hasClass, on } from '@app/legacy/util/element-utils.ts';
+import { getFocus, hasClass, on } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';

@@ -1,6 +1,6 @@
 import { useColorWindow } from '@app/composables/useColorWindow';
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
-import { relate, getRelativeCoords, on, read, setTooltip } from '@app/legacy/util/element-utils';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { relate, getRelativeCoords, on, read, setTooltip } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';

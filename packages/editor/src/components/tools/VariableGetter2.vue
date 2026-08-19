@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<!-- 变量访问器窗口2 -->
 	<WindowFrame ref="frame" id="variableGetter2" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.variableGetter2.title') }}<div class="close" /></TitleBar></template>
@@ -26,7 +26,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

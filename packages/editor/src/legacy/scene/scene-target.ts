@@ -1,6 +1,6 @@
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Easing } from '@app/legacy/data/transition-window.ts';
-import { addClass, read, removeClass, write } from '@app/legacy/util/element-utils';
+import { addClass, read, removeClass, write } from '@app/utils/element-utils';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';
 import { TilemapShortcuts } from './tilemap-shortcut-list.ts';

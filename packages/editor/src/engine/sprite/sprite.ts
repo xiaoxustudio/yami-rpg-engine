@@ -1,14 +1,6 @@
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
-import { $ } from '@app/legacy/util/dom.ts';
-import {
-	addScrollbars,
-	on,
-	show,
-	hide,
-	clear,
-	read,
-	write
-} from '@app/legacy/util/element-utils.ts';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
+import { $ } from '@app/utils/dom';
+import { addScrollbars, on, show, hide, clear, read, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';

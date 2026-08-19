@@ -1,5 +1,5 @@
 import { SettingConfig } from '@app/legacy/module/settingconfig';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

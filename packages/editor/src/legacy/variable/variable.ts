@@ -1,6 +1,6 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on, hide, read, write } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on, hide, read, write } from '@app/utils/element-utils.ts';
 import { RadioProxy } from '@app/legacy/components/radio-proxy.ts';
 import { History } from '@app/legacy/tools/history.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';

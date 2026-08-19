@@ -12,7 +12,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStopAudioCommandSchema } from '@app/composables/commands/useStopAudioCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

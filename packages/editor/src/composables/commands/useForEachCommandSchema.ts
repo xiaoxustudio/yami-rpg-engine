@@ -1,5 +1,5 @@
 import '@app/legacy/module/command/forEach.ts';
-import { getFocus } from '@app/legacy/util/element-utils.ts';
+import { getFocus } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';

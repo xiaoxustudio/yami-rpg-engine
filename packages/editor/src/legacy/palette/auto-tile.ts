@@ -1,7 +1,7 @@
 import { getListConfig } from '@ui-kit';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
-import { on, hasClass, write, getFocus, read, clear } from '@app/legacy/util/element-utils.ts';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { on, hasClass, write, getFocus, read, clear } from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
@@ -940,7 +940,6 @@ AutoTile.confirm = function (this: typeof AutoTile, event: Event) {
 	Palette.requestRendering();
 	Scene.requestRendering();
 	Window.close!('autoTile');
-	// console.log(JSON.stringify(tiles[index], null, 2))
 }.bind(AutoTile);
 
 const autoTileBridgeKeys = [

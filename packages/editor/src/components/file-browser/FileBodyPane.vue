@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMFileBodyPane
 		ref="ym"
 		:links="props.links"
@@ -33,9 +33,9 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/legacy/file/folder-item.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { createGetter } from '@app/i18n';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { setIconClip } from '@app/legacy/util/icon-clip.ts';
 import { FileBrowserLinks } from '@app/legacy/types/file-browser-links.ts';
 import { useToastService } from '@app/composables/useToastService';

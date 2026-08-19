@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/transition.ts';
-import { clear, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
@@ -39,7 +39,7 @@ const load = ({
 
 const save = (): unknown => {
 	const variable = read(document.getElementById('transition-variable')) ?? form.variable;
-	if (VariableGetter.isNone!(variable as any)) {
+	if (VariableGetter.isNone!(variable)) {
 		return getFocus(document.getElementById('transition-variable'));
 	}
 	const duration = (read(document.getElementById('transition-duration')) ??

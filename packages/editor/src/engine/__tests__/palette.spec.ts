@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import '@app/legacy/util/math.ts';
 
-vi.mock('@app/legacy/util/element-utils', () => ({
+vi.mock('@app/utils/element-utils', () => ({
 	getRelativeCoords: vi.fn(() => ({ x: 0, y: 0 })),
 	clear: vi.fn(),
 	removeClass: vi.fn(),
@@ -91,7 +91,7 @@ vi.mock('@app/stores/palette', () => ({
 }));
 
 import { PaletteEngine } from '@app/engine/palette/palette-engine.ts';
-import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { getRelativeCoords } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object';
 import { getPaletteStore } from '@app/stores/palette';
 

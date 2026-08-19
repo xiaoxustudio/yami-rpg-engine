@@ -98,6 +98,5 @@ export class Manifest {
 			delete dataMap[guid];
 		}
 		this.changed = true;
-		console.log(`delete meta: ${meta.path}`);
 	}
 }

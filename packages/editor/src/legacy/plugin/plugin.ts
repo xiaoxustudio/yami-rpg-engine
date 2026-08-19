@@ -1,9 +1,9 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import type { EditorProjectShape } from '@app/stores/editor';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { clear, getFocus, hide, on, read, show } from '@app/legacy/util/element-utils.ts';
+import { clear, getFocus, hide, on, read, show } from '@app/utils/element-utils.ts';
 import { getVariable } from '@app/legacy/util/safe.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
@@ -1185,7 +1185,6 @@ PluginManager.parseMeta = (function IIFE() {
 			while ((match = statement.exec(code))) {
 				type = match[1];
 				content = match[2].trim();
-				// console.log(type, content)
 				processors[type]?.();
 			}
 		}

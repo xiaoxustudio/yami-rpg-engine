@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { read } from '@app/legacy/util/element-utils';
+import { read } from '@app/utils/element-utils';
 
 export function useUIContainerPage() {
 	const form = reactive<Record<string, never>>({});

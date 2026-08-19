@@ -1,5 +1,5 @@
 import { createSelectListApi, createSelectListElement, type SelectListApi } from '@ui-kit';
-import { setTooltip } from '@app/legacy/util/element-utils.ts';
+import { setTooltip } from '@app/utils/element-utils.ts';
 
 export function attachSelectListApi(el: HTMLElement): void {
 	createSelectListApi(el, { setTooltip });

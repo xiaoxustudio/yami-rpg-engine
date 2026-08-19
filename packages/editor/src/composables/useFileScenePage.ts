@@ -2,7 +2,7 @@ import '@app/legacy/inspector/file-scene-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
-import { read } from '@app/legacy/util/element-utils';
+import { read } from '@app/utils/element-utils';
 
 interface FileSceneForm {
 	width: number;

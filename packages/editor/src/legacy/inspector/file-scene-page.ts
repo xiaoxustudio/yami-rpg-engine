@@ -1,8 +1,8 @@
-import { $, getElementWriter } from '@app/legacy/util/dom.ts';
-import { addClass, clear, removeClass, write } from '@app/legacy/util/element-utils';
+﻿import { $, getElementWriter } from '@app/utils/dom';
+import { addClass, clear, removeClass, write } from '@app/utils/element-utils';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Inspector } from './inspector.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 

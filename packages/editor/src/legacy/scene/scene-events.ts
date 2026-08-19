@@ -1,7 +1,7 @@
-import { relate } from '@app/legacy/util/element-utils';
+import { relate } from '@app/utils/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
-import { hasClass, read, write } from '@app/legacy/util/element-utils.ts';
+import { hasClass, read, write } from '@app/utils/element-utils.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

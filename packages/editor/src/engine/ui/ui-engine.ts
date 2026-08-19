@@ -1,7 +1,7 @@
 import { getUIStore } from '@app/stores/ui';
-import { $ } from '@app/legacy/util/dom.ts';
-import { getRelativeCoords } from '@app/legacy/util/element-utils';
-import { write } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { getRelativeCoords } from '@app/utils/element-utils';
+import { write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';

@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, on, removeClass, setTooltip, write } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { addClass, on, removeClass, setTooltip, write } from '@app/utils/element-utils.ts';
 import { setLocalElement } from '@app/legacy/localize/dom-localizer';
 import { createGetter } from '@app/i18n';
 import { getLocalStore } from '@app/stores/local';

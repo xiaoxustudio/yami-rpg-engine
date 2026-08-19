@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { disable, enable, hide, read, show, write } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { disable, enable, hide, read, show, write } from '@app/utils/element-utils.ts';
 import { getVariableStore } from '@app/stores/variable';
 import type { VariableItemShape } from '@app/stores/variable';
 import { Variable } from './variable.ts';

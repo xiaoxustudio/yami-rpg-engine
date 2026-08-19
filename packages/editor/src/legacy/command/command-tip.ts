@@ -1,5 +1,5 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import {
 	addClass,
@@ -11,7 +11,7 @@ import {
 	read,
 	setTooltip,
 	show
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { Command } from './command-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { t, createGetter } from '@app/i18n';

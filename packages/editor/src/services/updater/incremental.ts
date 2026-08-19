@@ -1,4 +1,4 @@
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS } from '@app/services/file-system/fs-bridge.ts';
@@ -47,7 +47,6 @@ Updater.updateIncrementalChanges = function (version: string) {
 			const path = Path.relative!(dstProjectDir, dstPath);
 			const message = `write: ${path}`;
 			messages.push({ minor: this.capitalize!(message) });
-			console.log(message);
 		}
 
 		capitalize(message: string) {
@@ -61,7 +60,6 @@ Updater.updateIncrementalChanges = function (version: string) {
 				const folderName = Path.basename!(bakFolderDir);
 				const message = `backup: ${folderName}`;
 				messages.push({ minor: this.capitalize!(message) });
-				console.log(message);
 			}
 		}
 

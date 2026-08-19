@@ -12,7 +12,6 @@ export const ConfigDir = '.openyami';
 export const GlobalPath =
 	typeof Path.resolve === 'function' ? Path.resolve(GlobalPathForDir, ConfigDir) : '';
 
-// 提前读取配置文件以减少等待时间 promise.then的执行顺序在main.js之后 文件名必须与 Editor.saveConfig（main/config.js）写入的路径一致，否则写到 config.json、读到 yami-config.json，配置无法持久化
 export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => {
 	if (typeof (window as unknown as Record<string, unknown>).__nodeRequire !== 'function') {
 		return undefined;
@@ -26,8 +25,7 @@ export const loadConfigPromise: Promise<EditorConfigShape> | undefined = (() => 
 		.readFile(configFile, 'utf8')
 		.then((json) => JSON.parse(json))
 		.catch(() => {
-			// 如果不存在配置文件或加载出错
-			return import('../file/file-system-core.ts').then(({ File }) => {
+			return import('@app/legacy/file/file-system-core.ts').then(({ File }) => {
 				return File.get!({
 					local: 'default.json',
 					type: 'json'

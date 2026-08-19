@@ -23,12 +23,6 @@ describe('repro variableGetter relate', () => {
 		await type.vm.$nextTick();
 		await presetKey.vm.$nextTick();
 		const el = presetKey.element as HTMLElement;
-		console.log(
-			'preset-key after local: display=',
-			el.style.display,
-			'disabled=',
-			el.classList.contains('disabled')
-		);
 		expect(el.style.display).toBe('none');
 	});
 
@@ -46,12 +40,6 @@ describe('repro variableGetter relate', () => {
 		await type.vm.$nextTick();
 		await presetKey.vm.$nextTick();
 		const el = presetKey.element as HTMLElement;
-		console.log(
-			'preset-key after actor: display=',
-			el.style.display,
-			'disabled=',
-			el.classList.contains('disabled')
-		);
 		expect(el.style.display).not.toBe('none');
 	});
 });

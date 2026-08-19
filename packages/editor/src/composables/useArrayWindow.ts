@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
 
 export interface ArrayForm {

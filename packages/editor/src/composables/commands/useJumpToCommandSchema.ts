@@ -1,5 +1,5 @@
 import '@app/legacy/module/command/jumpTo.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 

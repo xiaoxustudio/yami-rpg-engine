@@ -1,9 +1,9 @@
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
-import { Path } from '@app/legacy/util/config.ts';
+import { on } from '@app/utils/element-utils.ts';
+import { Path } from '@app/utils/config';
 import { File } from '@app/legacy/file/file-system-core.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { FSP } from '@app/services/file-system/fs-bridge.ts';
 import { t } from '@app/i18n';

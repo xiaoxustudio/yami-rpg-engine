@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.uiProgressBar-properties-grid.label') || 'ProgressBar Properties' }}</DetailSummary>
 		<div class="detail-grid" id="uiProgressBar-properties-grid">
@@ -148,7 +148,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIProgressBarPage } from '@app/composables/useUIProgressBarPage';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

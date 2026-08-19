@@ -1,4 +1,4 @@
-import { hasClass } from './element-utils.ts';
+import { hasClass } from '@app/utils/element-utils';
 
 export class Timer {
 	static state: string | null = null;

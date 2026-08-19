@@ -15,7 +15,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import CommonList from '@app/components/common/CommonList.vue';
 import { registerReferenceUpdate, type ReferenceItem } from '@app/legacy/log/related-references.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

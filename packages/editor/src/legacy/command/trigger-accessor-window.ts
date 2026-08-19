@@ -1,5 +1,5 @@
-﻿import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+﻿import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils.ts';
 import { useTriggerGetterWindow } from '@app/composables/useTriggerGetterWindow';
 import { AccessorBaseShape } from '@app/legacy/types/legacy-shapes.ts';
 

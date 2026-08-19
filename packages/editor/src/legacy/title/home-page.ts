@@ -1,12 +1,12 @@
-import { SettingConfig } from '@app/legacy/module/settingconfig';
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, hasClass, rect, removeClass } from '@app/legacy/util/element-utils';
-import { Path } from '@app/legacy/util/config.ts';
+﻿import { SettingConfig } from '@app/legacy/module/settingconfig';
+import { $ } from '@app/utils/dom';
+import { addClass, hasClass, rect, removeClass } from '@app/utils/element-utils';
+import { Path } from '@app/utils/config';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { Layout } from '@app/engine/layout/layout.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { Title } from './title-bar.ts';
 import { showInExplorerCommand } from '@app/legacy/tools/platform.ts';
 import { createGetter } from '@app/i18n';

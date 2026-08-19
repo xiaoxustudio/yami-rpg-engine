@@ -1,10 +1,10 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { GlobalPath, Path } from '@app/legacy/util/config.ts';
+import { GlobalPath, Path } from '@app/utils/config';
 import { SettingConfig } from './settingconfig';
-import { $ } from '@app/legacy/util/dom.ts';
-import { disable, enable, on, write } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { disable, enable, on, write } from '@app/utils/element-utils.ts';
 
 import { Net } from './net.ts';
 import {
@@ -281,7 +281,7 @@ export const Resources = new (class {
 			},
 			...({ cache: 'no-cache' } as unknown as Record<string, unknown>)
 		}).catch((error) => {
-			console.log('downloadNetMeta error:', error?.message || error);
+			console.error('downloadNetMeta error:', error?.message || error);
 			return { data: [] };
 		});
 	}

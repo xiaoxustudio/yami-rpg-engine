@@ -1,5 +1,5 @@
 import '@app/legacy/module/command/playAnimation.ts';
-import { getFocus, read } from '@app/legacy/util/element-utils';
+import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';

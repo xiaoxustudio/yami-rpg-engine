@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { getElementReader, getElementWriter } from '../dom';
+import { getElementReader, getElementWriter } from '@app/utils/dom';
 
 describe('getElementReader/getElementWriter 防御（回归保护）', () => {
 	beforeEach(() => {

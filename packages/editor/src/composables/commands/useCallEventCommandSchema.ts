@@ -1,6 +1,6 @@
 ﻿import '@app/legacy/module/command/callEvent.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
-import { addClass, hide, setTooltip, show } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
+import { addClass, hide, setTooltip, show } from '@app/utils/element-utils';
 import { createTextAreaVar } from '@app/legacy/components/textarea-var.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';

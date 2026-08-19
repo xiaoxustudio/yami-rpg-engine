@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="arrayList" mode="center">
 		<template #title><TitleBar>Array<div class="close" /></TitleBar></template>
 		
@@ -15,7 +15,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import ParamList from '@app/components/common/ParamList.vue';
 
 const arrayWindow = useArrayWindow();

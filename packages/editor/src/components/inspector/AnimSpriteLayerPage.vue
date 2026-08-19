@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.animSpriteLayer-properties-grid.label') || 'Sprite Layer' }}</DetailSummary>
 		<div class="detail-grid" id="animSpriteLayer-properties-grid">
@@ -17,7 +17,7 @@ import { useAnimSpriteLayerPage } from '@app/composables/useAnimSpriteLayerPage'
 import { useLocalStore } from '@app/stores/local';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

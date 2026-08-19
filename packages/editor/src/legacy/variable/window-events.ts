@@ -1,4 +1,4 @@
-import { clear, write } from '@app/legacy/util/element-utils.ts';
+import { clear, write } from '@app/utils/element-utils.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { createGetter } from '@app/i18n';

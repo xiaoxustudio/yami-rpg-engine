@@ -8,7 +8,7 @@ import {
 import type { MenuItem, MenuOptions } from '@ui-kit';
 import { SettingConfig } from '@app/legacy/module/settingconfig';
 import { getVariable } from '@app/legacy/util/safe.ts';
-import { CommandHistory } from './command-history.ts';
+import { CommandHistory } from '@ui-kit';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
@@ -21,7 +21,7 @@ import { GameLocal } from '@app/legacy/local/local-object.ts';
 import { SearchString } from '@app/legacy/module/searchstring.ts';
 import { getLocalStore } from '@app/stores/local';
 import { t, createGetter } from '@app/i18n';
-import { setTooltip } from '@app/legacy/util/element-utils.ts';
+import { setTooltip } from '@app/utils/element-utils.ts';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard.ts';
 
 const Clipboard = getGlobalClipboard();

@@ -513,13 +513,9 @@ Data.generateVariableEnumScript = function (this: typeof Data) {
 		const code = contents.join('\n');
 		const path = 'Script/yami.ts';
 		const route = File.path!(path);
-		FSP.writeFile(route, code)
-			.then(() => {
-				console.log(`write: ${path}`);
-			})
-			.catch((error: unknown) => {
-				console.warn(error);
-			});
+		FSP.writeFile(route, code).catch((error: unknown) => {
+			console.warn(error);
+		});
 	}
 };
 

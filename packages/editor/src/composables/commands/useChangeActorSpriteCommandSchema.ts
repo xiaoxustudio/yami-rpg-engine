@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/changeActorSprite.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 

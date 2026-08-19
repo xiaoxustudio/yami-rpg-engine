@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { addClass, removeClass } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { addClass, removeClass } from '@app/utils/element-utils';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';

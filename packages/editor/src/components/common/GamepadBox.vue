@@ -1,11 +1,11 @@
-<template>
+﻿<template>
 	<YMGamepadBox ref="ym" :id="props.id" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMGamepadBox } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface GamepadBoxElement extends HTMLElement {
 	read(): number | null;

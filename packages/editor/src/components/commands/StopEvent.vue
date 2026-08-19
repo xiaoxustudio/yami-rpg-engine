@@ -23,8 +23,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStopEventCommandSchema } from '@app/composables/commands/useStopEventCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { write } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { write } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';

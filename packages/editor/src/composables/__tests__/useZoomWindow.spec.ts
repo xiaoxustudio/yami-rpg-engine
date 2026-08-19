@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import Zoom from '@app/components/tools/Zoom.vue';
 import { useZoomWindow } from '@app/composables/useZoomWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
 
 vi.mock('@app/stores/local', () => ({

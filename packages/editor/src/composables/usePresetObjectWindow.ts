@@ -1,5 +1,5 @@
 ﻿import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 

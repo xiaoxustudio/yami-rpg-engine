@@ -1,11 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import {
-	hasScrollBar,
-	listenDraggingScrollbarEvent,
-	read,
-	write
-} from '@app/legacy/util/element-utils';
+import { hasScrollBar, listenDraggingScrollbarEvent, read, write } from '@app/utils/element-utils';
 
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Log } from '@app/legacy/log/log-window.ts';

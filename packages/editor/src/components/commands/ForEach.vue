@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 <WindowFrame ref="frame" id="forEach" @confirm="onConfirm">
 	<template #title><TitleBar>{{ t('components.forEach.title') }}<div class="close" /></TitleBar></template>
 	
@@ -57,14 +57,14 @@
 import { useLocalStore } from '@app/stores/local';
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { on } from '@app/utils/element-utils.ts';
 import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 

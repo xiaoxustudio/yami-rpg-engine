@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 		<WindowFrame id="resource" no-buttons>
 		<template #title><TitleBar>
 			<div class="close"></div>
@@ -51,7 +51,7 @@ import TitleBar from '@app/components/common/TitleBar.vue';
 import { Resources } from '@app/legacy/module/resource';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 const inspector = useInspectorStore();
 const local = useLocalStore();

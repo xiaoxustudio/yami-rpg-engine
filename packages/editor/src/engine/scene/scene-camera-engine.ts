@@ -1,4 +1,4 @@
-import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { getRelativeCoords } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';

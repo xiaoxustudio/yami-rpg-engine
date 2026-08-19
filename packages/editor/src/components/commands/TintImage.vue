@@ -35,8 +35,8 @@
 import { onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useTintImageCommandSchema } from '@app/composables/commands/useTintImageCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear, write } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear, write } from '@app/utils/element-utils';
 import { createGetter } from '@app/i18n';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

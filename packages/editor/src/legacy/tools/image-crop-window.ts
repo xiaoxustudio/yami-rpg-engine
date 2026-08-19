@@ -1,12 +1,12 @@
 import { useImageClipWindow } from '@app/composables/useImageClipWindow';
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { attachDoubleclick } from '@app/legacy/util/doubleclick.ts';
-import { on, hide, show, hasClass, read } from '@app/legacy/util/element-utils.ts';
+import { on, hide, show, hasClass, read } from '@app/utils/element-utils.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { t } from '@app/i18n';
 import { Cursor } from './pointer-object.ts';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 
 type CropTarget = {
 	getAttribute?: (name: string) => string | null;

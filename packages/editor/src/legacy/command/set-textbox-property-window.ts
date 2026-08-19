@@ -1,4 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { createPropertyWindow } from './property-window-factory.ts';
 import { Command } from './command-object.ts';
 import { Color } from '@app/legacy/tools/color-picker-window.ts';

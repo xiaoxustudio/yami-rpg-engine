@@ -46,9 +46,9 @@
 import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGetActorCommandSchema } from '@app/composables/commands/useGetActorCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
-import { clear } from '@app/legacy/util/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

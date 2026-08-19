@@ -1,5 +1,5 @@
 ﻿import { Window } from '@app/legacy/tools/window-object.ts';
-import { clear, getFocus, read, write } from '@app/legacy/util/element-utils.ts';
+import { clear, getFocus, read, write } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import {
 	IfCondition,

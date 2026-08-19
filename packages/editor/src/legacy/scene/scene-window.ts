@@ -1,20 +1,12 @@
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import {
-	addScrollbars,
-	hide,
-	show,
-	on,
-	write,
-	clear,
-	rect
-} from '@app/legacy/util/element-utils.ts';
+import { addScrollbars, hide, show, on, write, clear, rect } from '@app/utils/element-utils.ts';
 import { getListConfig } from '@ui-kit';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

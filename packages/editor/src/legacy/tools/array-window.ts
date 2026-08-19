@@ -1,6 +1,6 @@
 import { useArrayWindow } from '@app/composables/useArrayWindow';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on, read } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { on, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { h, render } from 'vue';
 

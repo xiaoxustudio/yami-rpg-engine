@@ -15,8 +15,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetDialogBoxCommandSchema } from '@app/composables/commands/useSetDialogBoxCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { DialogBoxProperty } from '@app/legacy/command/set-dialog-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

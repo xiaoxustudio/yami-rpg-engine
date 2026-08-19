@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMSliderBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -22,8 +22,8 @@ import {
 	hideChildNodes,
 	showChildNodes,
 	read as readElement
-} from '@app/legacy/util/element-utils';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+} from '@app/utils/element-utils';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface SliderBoxElement extends HTMLElement {
 	filler: HTMLElement;

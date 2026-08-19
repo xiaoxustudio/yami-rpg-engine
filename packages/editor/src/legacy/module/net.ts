@@ -69,7 +69,7 @@ class _NetInstance {
 			this.cancelQueue = this.cancelQueue.filter((item) => item !== source);
 
 			if (axios.isCancel(err)) {
-				console.log('下载已取消：', (err as { message?: string }).message);
+				console.warn('下载已取消：', (err as { message?: string }).message);
 			} else {
 				console.error('下载出错：', err);
 			}

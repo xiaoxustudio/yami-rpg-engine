@@ -13,7 +13,12 @@ export {
 	on,
 	off,
 	dispatchResizeEvent,
-	dispatchChangeEvent
+	dispatchChangeEvent,
+	measureText,
+	request,
+	$,
+	getElementReader,
+	getElementWriter
 } from './dom';
 export {
 	clamp,

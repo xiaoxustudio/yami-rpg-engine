@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMColorBox
 		ref="ym"
 		:model-value="props.modelValue"
@@ -13,7 +13,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { YMColorBox } from '@ui-kit';
 import { Color } from '@app/legacy/tools/color-picker-window';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface ColorBoxElement extends HTMLElement {
 	dataValue: string;

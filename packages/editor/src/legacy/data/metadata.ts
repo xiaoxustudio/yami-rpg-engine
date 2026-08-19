@@ -1,7 +1,7 @@
-import { Data } from './data-object.ts';
+﻿import { Data } from './data-object.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
-import { Updater } from '@app/legacy/update/updater.ts';
+import { Updater } from '@app/services/updater/updater.ts';
 
 export const Meta = (function IIFE() {
 	const typeMapToGroupName = () => ({
@@ -90,7 +90,7 @@ export const Meta = (function IIFE() {
 						}
 					})
 					.catch((error: unknown) => {
-						console.log(`读取失败: ${(error as Error).message}`);
+						console.error(`读取失败: ${(error as Error).message}`);
 					});
 			}
 

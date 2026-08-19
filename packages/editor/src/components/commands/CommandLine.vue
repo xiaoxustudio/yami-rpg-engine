@@ -17,7 +17,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useCommandLineCommandSchema } from '@app/composables/commands/useCommandLineCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

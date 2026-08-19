@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, hasClass, hide, on, show } from '@app/legacy/util/element-utils.ts';
+import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { createGetter } from '@app/i18n';

@@ -1,7 +1,7 @@
-import { reactive } from 'vue';
+﻿import { reactive } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { getFocus } from '@app/utils/element-utils';
+import { Editor } from '@app/services/project/editor.ts';
 import { webFrame } from 'electron';
 
 export interface ZoomForm {

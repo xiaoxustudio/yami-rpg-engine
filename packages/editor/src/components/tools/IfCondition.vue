@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="if-condition" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.if-condition.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -245,8 +245,8 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on, clear } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on, clear } from '@app/utils/element-utils.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { IfCondition, type IfConditionForm } from '@app/legacy/command/conditional-condition-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
@@ -255,7 +255,7 @@ import GamepadBox from '@app/components/common/GamepadBox.vue';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectVar from '@app/components/common/SelectVar.vue';

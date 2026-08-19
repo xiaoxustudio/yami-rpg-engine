@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div ref="rootEl" class="box" id="log-message" :class="{ open: items.length !== 0 }" @click="onMessageClick">
 		<log-item v-for="(item, index) in items" :key="index" :class="item.type" v-html="item.message" />
 	</div>
@@ -10,7 +10,7 @@ import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
 import { Log } from '@app/legacy/log/log-window.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import { useToastService } from '@app/composables/useToastService';
 
 const inspector = useInspectorStore();

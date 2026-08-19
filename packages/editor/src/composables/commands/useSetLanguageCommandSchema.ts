@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/setLanguage.ts';
-import { getFocus, write } from '@app/legacy/util/element-utils';
+import { getFocus, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 

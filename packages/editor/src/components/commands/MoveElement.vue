@@ -26,8 +26,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMoveElementCommandSchema } from '@app/composables/commands/useMoveElementCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { TransformProperty } from '@app/legacy/command/move-element-property-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

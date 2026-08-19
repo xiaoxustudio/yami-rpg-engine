@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="insertImage" @confirm="onConfirm">
 		<template #title><TitleBar>{{ t('components.insertImage.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -23,7 +23,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import CustomBox from '@app/components/common/CustomBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';

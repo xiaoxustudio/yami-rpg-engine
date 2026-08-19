@@ -15,8 +15,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetImageCommandSchema } from '@app/composables/commands/useSetImageCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { ImageProperty } from '@app/legacy/command/set-image-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

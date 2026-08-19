@@ -1,6 +1,6 @@
-import { relate } from '@app/legacy/util/element-utils';
+import { relate } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	addClass,
 	addScrollbars,
@@ -12,7 +12,7 @@ import {
 	removeClass,
 	show,
 	write
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';

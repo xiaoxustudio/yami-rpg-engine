@@ -1,5 +1,5 @@
 ﻿import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, hide, read, show } from '@app/legacy/util/element-utils';
+import { getFocus, hide, read, show } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';

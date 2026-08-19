@@ -1,7 +1,7 @@
-import { getListConfig } from '@ui-kit';
-import { relate, getRelativeCoords } from '@app/legacy/util/element-utils';
+﻿import { getListConfig } from '@ui-kit';
+import { relate, getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	addScrollbars,
 	dispatchChangeEvent,
@@ -13,13 +13,13 @@ import {
 	write,
 	clear,
 	rect
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 
 import { Reference } from '@app/legacy/log/related-references.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { GUID } from '@app/services/file-system/guid.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import { UndoManager } from '@app/legacy/tools/undo-manager.ts';

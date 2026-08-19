@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/stopEvent.ts';
-import { getFocus, read } from '@app/legacy/util/element-utils';
+import { getFocus, read } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
 

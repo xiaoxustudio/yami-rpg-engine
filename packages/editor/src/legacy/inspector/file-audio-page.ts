@@ -1,6 +1,6 @@
-import { $, getElementReader } from '@app/legacy/util/dom.ts';
+import { $, getElementReader } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { addClass, hasClass, hide, removeClass, show, write } from '@app/legacy/util/element-utils';
+import { addClass, hasClass, hide, removeClass, show, write } from '@app/utils/element-utils';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';

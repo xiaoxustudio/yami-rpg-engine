@@ -1,4 +1,4 @@
-import { read } from '@app/legacy/util/element-utils.ts';
+import { read } from '@app/utils/element-utils.ts';
 import { Variable } from './variable.ts';
 import { Shortcuts } from '@app/legacy/tools/shortcut-registry.ts';
 

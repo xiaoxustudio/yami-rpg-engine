@@ -1,4 +1,4 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { AccessorBaseShape, AccessorTarget } from '@app/legacy/types/legacy-shapes.ts';

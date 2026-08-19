@@ -1,5 +1,5 @@
-import { $ } from '@app/legacy/util/dom.ts';
-import { write } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { write } from '@app/utils/element-utils';
 import { GL } from '@app/engine/webgl/webgl-init.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Scene } from './scene-window.ts';

@@ -154,7 +154,7 @@ export async function initI18n(): Promise<string> {
 	return language;
 }
 
-// 兼容层：legacy 旧接口转发到 i18n 真源
+// 兼容层：legacy 旧接口转发到 i18n 真源（仅叶子字符串键；段级/对象读取请用 tObject）
 export function t(key: string): string {
 	if (!i18nLocal?.global) return key;
 	const value = (i18nLocal.global as unknown as { t: (k: string) => string }).t(key);

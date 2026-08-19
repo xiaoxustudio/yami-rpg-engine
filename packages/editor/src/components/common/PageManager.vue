@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMPageManager ref="ym" :id="props.id">
 		<slot />
 	</YMPageManager>
@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMPageManager } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface PageManagerElement extends HTMLElement {
 	switch(value: unknown): void;

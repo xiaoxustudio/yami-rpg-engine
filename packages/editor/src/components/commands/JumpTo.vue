@@ -14,7 +14,7 @@
 
 import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { TextSuggestion, type TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
 import { useJumpToCommandSchema } from '@app/composables/commands/useJumpToCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMParamList
 		ref="ym"
 		:id="props.id"
@@ -20,7 +20,7 @@ import { ParamListHistory } from '@app/legacy/components/param-history';
 import { ctrl as ctrlText } from '@app/legacy/util/event-accessors';
 import { Menu } from '@app/legacy/components/menu-list';
 import { createGetter } from '@app/i18n';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import { getGlobalClipboard } from '@app/legacy/types/global-clipboard';
 
 interface Props {

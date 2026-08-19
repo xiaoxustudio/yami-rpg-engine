@@ -1,8 +1,8 @@
-import { $ } from './dom.ts';
-import { Timer } from './timer.ts';
-import { Cursor } from '../tools/pointer-object.ts';
-import { createScrollBar } from '@app/legacy/components/scroll-bar.ts';
-import { attachDoubleclick, detachDoubleclick } from './doubleclick.ts';
+import { $ } from '@app/utils/dom';
+import { Timer } from '../legacy/util/timer.ts';
+import { Cursor } from '../legacy/tools/pointer-object.ts';
+import { createScrollBarElement as createScrollBar } from '@ui-kit';
+import { attachDoubleclick, detachDoubleclick } from '../legacy/util/doubleclick.ts';
 import { Fragment, h, render, type VNode } from 'vue';
 
 if (typeof (HTMLElement.prototype as unknown as Record<string, unknown>).on !== 'function') {

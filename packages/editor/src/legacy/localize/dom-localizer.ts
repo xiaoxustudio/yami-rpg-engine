@@ -1,4 +1,4 @@
-import { setTooltip } from '@app/legacy/util/element-utils';
+import { setTooltip } from '@app/utils/element-utils';
 
 export interface LocalComponentItem {
 	save?: string;

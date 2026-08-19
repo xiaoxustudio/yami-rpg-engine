@@ -1,5 +1,5 @@
-﻿import { $, getElementWriter } from '@app/legacy/util/dom.ts';
-import { clear, disable, enable, hide, show } from '@app/legacy/util/element-utils';
+﻿import { $, getElementWriter } from '@app/utils/dom';
+import { clear, disable, enable, hide, show } from '@app/utils/element-utils';
 import { Inspector } from './inspector.ts';
 import { EventListInterface } from '@app/legacy/tools/event-list.ts';
 import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';

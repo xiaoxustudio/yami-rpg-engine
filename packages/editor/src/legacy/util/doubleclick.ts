@@ -1,4 +1,4 @@
-import { isInContent } from './element-utils.ts';
+import { isInContent } from '@app/utils/element-utils';
 
 let last: PointerEvent | null = null;
 

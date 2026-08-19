@@ -1,6 +1,6 @@
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import type { MenuItem } from '@ui-kit';
-import { write } from '@app/legacy/util/element-utils.ts';
+import { write } from '@app/utils/element-utils.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { Reference } from '@app/legacy/log/related-references.ts';
 import { createGetter } from '@app/i18n';

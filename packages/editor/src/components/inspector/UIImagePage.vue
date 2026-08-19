@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox id="uiElement-general-group" open>
 		<DetailSummary>{{ t('components.uiElement-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="uiElement-general-grid">
@@ -351,7 +351,7 @@ import { useI18n } from 'vue-i18n';
 import { useUIImagePage } from '@app/composables/useUIImagePage';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

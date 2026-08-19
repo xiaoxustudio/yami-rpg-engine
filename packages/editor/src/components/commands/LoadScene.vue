@@ -20,7 +20,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useLoadSceneCommandSchema } from '@app/composables/commands/useLoadSceneCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import FileVar from '@app/components/common/FileVar.vue';

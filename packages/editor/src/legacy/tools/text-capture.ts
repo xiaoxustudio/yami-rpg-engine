@@ -1,7 +1,7 @@
 import { useTextCaptureWindow } from '@app/composables/useTextCaptureWindow';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import type { TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
-import { getFocus } from '@app/legacy/util/element-utils';
+import { getFocus } from '@app/utils/element-utils';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';

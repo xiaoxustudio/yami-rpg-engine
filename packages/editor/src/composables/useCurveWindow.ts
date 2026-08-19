@@ -1,12 +1,4 @@
-﻿import {
-	addClass,
-	hide,
-	on,
-	rect,
-	removeClass,
-	show,
-	write
-} from '@app/legacy/util/element-utils.ts';
+﻿import { addClass, hide, on, rect, removeClass, show, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

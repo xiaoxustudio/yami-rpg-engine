@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.sceneParallax-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="sceneParallax-general-grid">
@@ -234,7 +234,7 @@ import { ScriptListInterface } from '@app/legacy/tools/script-list.ts';
 import { useSceneParallaxPage } from '@app/composables/useSceneParallaxPage';
 import { useSceneStore } from '@app/stores/scene';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

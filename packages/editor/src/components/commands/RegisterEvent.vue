@@ -23,7 +23,7 @@
 
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
 import { useRegisterEventCommandSchema } from '@app/composables/commands/useRegisterEventCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

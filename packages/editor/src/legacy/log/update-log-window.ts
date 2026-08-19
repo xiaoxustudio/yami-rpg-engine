@@ -1,7 +1,7 @@
-import { $ } from '@app/legacy/util/dom.ts';
+﻿import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
-import { Updater } from '@app/legacy/update/updater.ts';
+import { on } from '@app/utils/element-utils.ts';
+import { Updater } from '@app/services/updater/updater.ts';
 import { initializeUpdateLog } from '@app/legacy/module/global.ts';
 
 export interface UpdateLogItem {

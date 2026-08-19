@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.particleLayer-general-grid.label') || 'General' }}</DetailSummary>
 		<div class="detail-grid" id="particleLayer-general-grid">
@@ -905,7 +905,7 @@ import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { Particle } from '@app/legacy/particle/particle-window.ts';
 import { useParticleLayerPage } from '@app/composables/useParticleLayerPage';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

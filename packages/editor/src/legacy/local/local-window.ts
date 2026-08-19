@@ -1,5 +1,5 @@
 import { getListConfig } from '@ui-kit';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import {
@@ -11,7 +11,7 @@ import {
 	read,
 	write,
 	getFocus
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';

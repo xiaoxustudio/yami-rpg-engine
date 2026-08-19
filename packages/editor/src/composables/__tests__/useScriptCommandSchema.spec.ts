@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ScriptWindow from '@app/components/commands/Script.vue';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { CommandSchema } from '@app/legacy/module/command/schema.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { ipcRenderer } from 'electron';
 import { loadDtsFolder } from '@app/legacy/module/global';
 

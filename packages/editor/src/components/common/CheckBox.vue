@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMCheckBox
 		ref="ym"
 		:model-value="state.dataValue"
@@ -20,8 +20,8 @@ import {
 	enable as enableElement,
 	disable as disableElement,
 	dispatchChangeEvent
-} from '@app/legacy/util/element-utils';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+} from '@app/utils/element-utils';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface CheckBoxElement extends HTMLElement {
 	read(): boolean;

@@ -1,7 +1,7 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
-import { GlobalPathForDir, GlobalPath } from '@app/legacy/util/config.ts';
+import { on } from '@app/utils/element-utils.ts';
+import { GlobalPathForDir, GlobalPath } from '@app/utils/config';
 
 import { WebServer } from '../webserver.ts';
 import nodeFs from 'node:fs';

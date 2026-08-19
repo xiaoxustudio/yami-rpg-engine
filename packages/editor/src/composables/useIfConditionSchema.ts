@@ -6,7 +6,7 @@ import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts'
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { t } from '@app/i18n';
-import { getFocus } from '@app/legacy/util/element-utils.ts';
+import { getFocus } from '@app/utils/element-utils.ts';
 
 export interface IfConditionTarget {
 	save: () => unknown;

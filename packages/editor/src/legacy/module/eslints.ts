@@ -1,5 +1,5 @@
 import { EventBus } from './eventbus.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { on } from '@app/utils/element-utils.ts';
 import { CommandList } from '@app/legacy/components/command-list.ts';
 import { h, render } from 'vue';
 

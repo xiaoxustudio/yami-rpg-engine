@@ -1,8 +1,8 @@
 import { getListConfig } from '@ui-kit';
-import { getRelativeCoords } from '@app/legacy/util/element-utils';
+import { getRelativeCoords } from '@app/utils/element-utils';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { $, getElementReader, getElementWriter } from '@app/legacy/util/dom.ts';
-import { getFocus, on, read, write } from '@app/legacy/util/element-utils.ts';
+import { $, getElementReader, getElementWriter } from '@app/utils/dom';
+import { getFocus, on, read, write } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { ctrl } from '@app/legacy/util/event-accessors.ts';
 import { Data } from './data-object.ts';

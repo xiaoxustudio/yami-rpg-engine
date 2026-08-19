@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMSelectVar
 		ref="ym"
 		:items="props.items"
@@ -26,7 +26,7 @@ import { YMSelectVar } from '@ui-kit';
 import { defVar } from '@app/legacy/components/select-var';
 import { Select } from '@app/legacy/components/select-list.ts';
 import CustomBox from '@app/components/common/CustomBox.vue';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

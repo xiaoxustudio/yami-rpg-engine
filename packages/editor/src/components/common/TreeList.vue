@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMTreeList ref="ym" :id="props.id" :padded="props.padded" :render-node-extras="renderNodeExtras" :render-node-icon="props.nodeIconRenderer ? renderNodeIcon : undefined" />
 </template>
 
@@ -7,7 +7,7 @@ import { computed, onMounted, ref } from 'vue';
 import { Fragment, h, render, type VNode } from 'vue';
 import { YMTreeList } from '@ui-kit';
 import { useMenuService } from '@app/composables/useMenuService';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

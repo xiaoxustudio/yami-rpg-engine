@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<PageManager id="workspace-page-manager">
 		<div class="page-frame" id="home" value="home">
 			<div class="box" id="home-content">
@@ -396,7 +396,7 @@ import TreeList from '@app/components/common/TreeList.vue';
 import SelectBox from '@app/components/common/SelectBox.vue';
 import HomeRecentList from '@app/components/layout/HomeRecentList.vue';
 import { useAnimationStore } from '@app/stores/animation';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 import { Animation } from '@app/legacy/animation/animation-window.ts';

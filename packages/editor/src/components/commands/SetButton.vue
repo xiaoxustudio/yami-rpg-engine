@@ -15,8 +15,8 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSetButtonCommandSchema } from '@app/composables/commands/useSetButtonCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
-import { clear } from '@app/legacy/util/element-utils';
+import { $ } from '@app/utils/dom';
+import { clear } from '@app/utils/element-utils';
 import { ButtonProperty } from '@app/legacy/command/set-button-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

@@ -33,14 +33,14 @@ vi.mock('@app/legacy/util/timer', () => ({
 	}
 }));
 
-vi.mock('@app/legacy/util/element-utils', () => ({
+vi.mock('@app/utils/element-utils', () => ({
 	getRelativeCoords: () => ({ x: 0, y: 0 }),
 	write: vi.fn(),
 	read: vi.fn(() => 2),
 	css: () => ({ fontFamily: 'sans-serif' })
 }));
 
-vi.mock('@app/legacy/util/dom', () => ({
+vi.mock('@app/utils/dom', () => ({
 	$: (selector: string) => {
 		const el = document.createElement('div');
 		el.id = selector.replace('#', '');

@@ -2,7 +2,7 @@ import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { CommandSchema } from './schema.ts';
-import { t } from '@app/i18n';
+import { t, tObject } from '@app/i18n';
 
 Command.cases.setLanguage = new CommandSchema({
 	name: 'setLanguage',
@@ -16,7 +16,7 @@ Command.cases.setLanguage = new CommandSchema({
 	},
 	createLanguageItems() {
 		const items = [];
-		const languages = t('languages');
+		const languages = tObject<Record<string, string>>('languages');
 		if (languages) {
 			const langList = new Set(
 				Data.config.localization.languages.map((lang: { name: string }) => lang.name)

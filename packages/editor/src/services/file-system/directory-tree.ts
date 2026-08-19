@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FileItem, FolderItem } from '@app/services/file-system/file-item.ts';
 import type { FileItemHooks } from '@app/services/file-system/file-item.ts';
@@ -196,7 +196,7 @@ export class DirectoryTree {
 						dir.push({ name, path });
 					}
 				} catch (error: unknown) {
-					console.log(error);
+					console.error(error);
 				}
 			}
 			await Promise.all(readPromises);
@@ -348,7 +348,6 @@ async function trash(
 	const promises: Array<Promise<unknown>> = [];
 	for (const file of files) {
 		const path = hooks.file.path(file.path);
-		console.log('delete: ' + Path.normalize(path));
 		promises.push(invoke(CHANNELS.invoke.trashItem, path));
 	}
 	if (promises.length !== 0) {

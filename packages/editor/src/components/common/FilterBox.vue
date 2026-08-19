@@ -1,11 +1,11 @@
-<template>
+﻿<template>
 	<YMFilterBox ref="ym" :id="props.id" :width="props.width" :height="props.height" />
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { YMFilterBox } from '@ui-kit';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface FilterBoxElement extends HTMLElement {
 	read(): [number, number, number, number] | null;

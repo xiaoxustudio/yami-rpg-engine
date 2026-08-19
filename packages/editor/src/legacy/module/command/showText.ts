@@ -1,4 +1,4 @@
-import { measureText } from '@app/legacy/util/dom.ts';
+import { measureText } from '@app/utils/dom';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';

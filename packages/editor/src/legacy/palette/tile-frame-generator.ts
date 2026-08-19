@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { write, getFocus, read, on } from '@app/legacy/util/element-utils.ts';
+import { write, getFocus, read, on } from '@app/utils/element-utils.ts';
 
 export const FrameGenerator: Record<string, any> = {
 	callback: null,

@@ -14,8 +14,8 @@
 
 import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils.ts';
 import { Choices } from '@app/legacy/command/show-options-window.ts';
 import { useShowChoicesCommandSchema } from '@app/composables/commands/useShowChoicesCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';

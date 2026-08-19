@@ -1,5 +1,5 @@
 ﻿import '@app/legacy/module/command/setBoolean.ts';
-import { getFocus, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, read, write } from '@app/utils/element-utils';
 import { Command } from '@app/legacy/command/command-object.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { reactive } from 'vue';
@@ -83,7 +83,7 @@ const load = ({
 
 const save = (): unknown => {
 	const variable = read(document.getElementById('setBoolean-variable')) ?? form.variable;
-	if (VariableGetter.isNone!(variable as any)) {
+	if (VariableGetter.isNone!(variable)) {
 		return getFocus(document.getElementById('setBoolean-variable'));
 	}
 	const operation = read(document.getElementById('setBoolean-operation')) ?? form.operation;
@@ -101,7 +101,7 @@ const save = (): unknown => {
 			const commonVariable =
 				read(document.getElementById('setBoolean-common-variable')) ??
 				form['common-variable'];
-			if (VariableGetter.isNone!(commonVariable as any)) {
+			if (VariableGetter.isNone!(commonVariable)) {
 				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
 			operand = { type, variable: commonVariable };
@@ -111,7 +111,7 @@ const save = (): unknown => {
 			const commonVariable =
 				read(document.getElementById('setBoolean-common-variable')) ??
 				form['common-variable'];
-			if (VariableGetter.isNone!(commonVariable as any)) {
+			if (VariableGetter.isNone!(commonVariable)) {
 				return getFocus(document.getElementById('setBoolean-common-variable'));
 			}
 			const index =

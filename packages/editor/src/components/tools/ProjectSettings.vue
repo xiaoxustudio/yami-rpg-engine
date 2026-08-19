@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 		<WindowFrame id="project-settings" buttons-id-prefix="project">
 		<template #title><TitleBar>{{ t('components.project-settings.title') }}<div class="close"></div></TitleBar></template>
 		
@@ -247,8 +247,8 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
-import { getElementWriter } from '@app/legacy/util/dom.ts';
+import { attachElementApi } from '@app/utils/attach-element-api';
+import { getElementWriter } from '@app/utils/dom';
 import KeyboardBox from '@app/components/common/KeyboardBox.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 import TextBox from '@app/components/common/TextBox.vue';

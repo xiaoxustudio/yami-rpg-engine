@@ -1,4 +1,4 @@
-﻿import { $ } from '@app/legacy/util/dom.ts';
+﻿import { $ } from '@app/utils/dom';
 import {
 	useLightGetterWindow,
 	useObjectGetterWindow

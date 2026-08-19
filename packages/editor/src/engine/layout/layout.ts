@@ -1,6 +1,6 @@
-import { relate, hideDragImage, getRelativeCoords } from '@app/legacy/util/element-utils';
+import { relate, hideDragImage, getRelativeCoords } from '@app/utils/element-utils';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import {
 	on,
 	off,
@@ -11,7 +11,7 @@ import {
 	clear,
 	write,
 	dispatchResizeEvent
-} from '@app/legacy/util/element-utils.ts';
+} from '@app/utils/element-utils.ts';
 import { createDragAndDropHint } from '@app/legacy/components/drag-and-drop-hint.ts';
 import { createNavBar } from '@app/legacy/components/nav-bar.ts';
 import { createPageManager } from '@app/legacy/components/page-manager.ts';

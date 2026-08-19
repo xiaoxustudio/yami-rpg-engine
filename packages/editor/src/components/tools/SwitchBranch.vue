@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils.ts';
 import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

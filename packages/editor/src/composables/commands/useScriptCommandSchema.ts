@@ -1,13 +1,13 @@
 ﻿import '@app/legacy/module/command/script.ts';
 import { ipcRenderer } from 'electron';
 import { CHANNELS } from '@app/services/ipc/channels.ts';
-import { getFocus, hasClass, hide, show } from '@app/legacy/util/element-utils.ts';
+import { getFocus, hasClass, hide, show } from '@app/utils/element-utils.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { loadDtsFolder } from '@app/legacy/module/global.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { createGetter } from '@app/i18n';
-import { Path } from '@app/legacy/util/config.ts';
+import { Path } from '@app/utils/config';
 import { getMonaco } from '@app/legacy/util/monaco.ts';
 import { reactive } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';

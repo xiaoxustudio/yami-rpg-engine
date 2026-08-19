@@ -17,7 +17,7 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRequestURLCommandSchema } from '@app/composables/commands/useRequestURLCommandSchema';
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<WindowFrame ref="frame" id="imageClip" @confirm="onConfirm">
 		<template #title><TitleBar
 			>Image Clip<div class="maximize"></div>
@@ -35,7 +35,7 @@ import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';
 import { useLocalStore } from '@app/stores/local';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import MarqueeArea from '@app/components/common/MarqueeArea.vue';
 import NumberBox from '@app/components/common/NumberBox.vue';
 

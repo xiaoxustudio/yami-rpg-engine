@@ -1,5 +1,5 @@
-import { getRelativeCoords } from '@app/legacy/util/element-utils';
-import { clear, removeClass } from '@app/legacy/util/element-utils.ts';
+import { getRelativeCoords } from '@app/utils/element-utils';
+import { clear, removeClass } from '@app/utils/element-utils.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Scene } from '@app/legacy/scene/scene-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

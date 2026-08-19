@@ -12,8 +12,8 @@
 
 import { onMounted, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { $ } from '@app/legacy/util/dom.ts';
-import { on } from '@app/legacy/util/element-utils.ts';
+import { $ } from '@app/utils/dom';
+import { on } from '@app/utils/element-utils.ts';
 import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { useIfCommandSchema } from '@app/composables/commands/useIfCommandSchema';

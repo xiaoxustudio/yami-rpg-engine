@@ -1,5 +1,5 @@
-import { $, getElementWriter } from '@app/legacy/util/dom.ts';
-import { addClass, read, removeClass } from '@app/legacy/util/element-utils';
+import { $, getElementWriter } from '@app/utils/dom';
+import { addClass, read, removeClass } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Inspector } from './inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';

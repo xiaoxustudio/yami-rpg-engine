@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<DetailBox open>
 		<DetailSummary>{{ t('components.fileImage-info-grid.label') || 'File Info' }}</DetailSummary>
 		<div class="detail-grid" id="fileImage-info-grid">
@@ -20,7 +20,7 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFileImagePage } from '@app/composables/useFileImagePage';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 import DetailBox from '@app/components/common/DetailBox.vue';
 import DetailSummary from '@app/components/common/DetailSummary.vue';
 

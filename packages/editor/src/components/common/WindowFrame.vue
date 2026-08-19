@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<YMWindowFrame
 		ref="ym"
 		:id="props.id"
@@ -22,7 +22,7 @@ import { Layout } from '@app/engine/layout/layout';
 import { useLocalStore } from '@app/stores/local';
 import { pinia } from '@app/stores/pinia';
 import { setLocalElement, type LocalComponentItem } from '@app/legacy/localize/dom-localizer';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface Props {
 	id?: string;

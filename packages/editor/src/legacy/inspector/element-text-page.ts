@@ -1,5 +1,5 @@
-import { $, getElementReader } from '@app/legacy/util/dom.ts';
-import { write } from '@app/legacy/util/element-utils';
+import { $, getElementReader } from '@app/utils/dom';
+import { write } from '@app/utils/element-utils';
 import { Inspector } from './inspector.ts';
 import { UI } from '@app/legacy/ui/ui-window.ts';
 

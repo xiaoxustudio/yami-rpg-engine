@@ -44,7 +44,6 @@ Editor.checkForProjectUpdates = async function (this: typeof Editor) {
 		Editor.project!.version = ver2!;
 
 		Directory.update!();
-		console.log('项目升级完毕!');
 	}
 };
 

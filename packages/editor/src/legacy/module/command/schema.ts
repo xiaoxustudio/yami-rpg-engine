@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { getFocus, on, read, write } from '@app/legacy/util/element-utils';
+import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { reportError } from '@app/legacy/util/safe.ts';
 import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
 import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window.ts';

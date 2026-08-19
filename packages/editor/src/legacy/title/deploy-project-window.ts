@@ -1,6 +1,6 @@
-import { $, getElementWriter } from '@app/legacy/util/dom.ts';
+﻿import { $, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { disable, enable, getFocus, read, write } from '@app/legacy/util/element-utils';
+import { disable, enable, getFocus, read, write } from '@app/utils/element-utils';
 import { Timer } from '@app/legacy/util/timer.ts';
 import { Codec } from '@app/engine/codec/codec.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
@@ -8,12 +8,11 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { FS, FSP } from '@app/services/file-system/fs-bridge.ts';
 import { FolderItem } from '@app/legacy/file/folder-item.ts';
 import { Log } from '@app/legacy/log/log-window.ts';
-import { Editor } from '@app/legacy/main/editor.ts';
+import { Editor } from '@app/services/project/editor.ts';
 import { TemplatesPath } from '@app/legacy/module/global.ts';
 import { t } from '@app/i18n';
 
-import { Path } from '@app/legacy/util/config.ts';
-// @ts-ignore no declaration
+import { Path } from '@app/utils/config';
 import uglifyJs from 'uglify-js';
 // ESM 下 __dirname 不存在，用 import.meta.url 推算：file: 协议剥两次得 dist/，http/https 兜底 cwd()/Project
 import { fileURLToPath } from 'node:url';

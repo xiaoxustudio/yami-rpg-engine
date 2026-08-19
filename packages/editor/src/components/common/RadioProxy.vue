@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 	<div class="radio-proxy" ref="root" />
 </template>
 
@@ -11,8 +11,8 @@ import {
 	enable,
 	disable,
 	dispatchChangeEvent
-} from '@app/legacy/util/element-utils';
-import { attachElementApi } from '@app/legacy/utils/attach-element-api';
+} from '@app/utils/element-utils';
+import { attachElementApi } from '@app/utils/attach-element-api';
 
 interface RadioRelationTarget extends HTMLElement {
 	enable?(): void;

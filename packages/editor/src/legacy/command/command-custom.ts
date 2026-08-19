@@ -1,6 +1,6 @@
-import { $ } from '@app/legacy/util/dom.ts';
+import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { clear, getFocus } from '@app/legacy/util/element-utils';
+import { clear, getFocus } from '@app/utils/element-utils';
 import { Command } from './command-object.ts';
 
 import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
