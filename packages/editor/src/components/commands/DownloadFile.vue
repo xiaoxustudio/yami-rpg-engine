@@ -25,7 +25,7 @@ import { useI18n } from 'vue-i18n';
 import { useDownloadFileCommandSchema } from '@app/composables/commands/useDownloadFileCommandSchema';
 import { $ } from '@app/utils/dom';
 import { disable, enable } from '@app/utils/element-utils';
-import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
+import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CheckBox from '@app/components/common/CheckBox.vue';

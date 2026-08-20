@@ -8,9 +8,9 @@
 </template>
 
 <script lang="ts">
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { commandCases } from '@app/legacy/command/command-registry.ts';
+import { commandCases } from '@app/commands/command-registry.ts';
 import { t } from '@app/i18n';
 
 commandCases.preventSceneInput = new CommandSchema({

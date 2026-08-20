@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import ElementGetter from '@app/components/tools/ElementGetter.vue';
 import { useElementGetterWindow } from '@app/composables/useElementGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { ElementGetter as ElementGetterController } from '@app/legacy/command/element-accessor-window.ts';
+import { ElementGetter as ElementGetterController } from '@app/commands/accessors/element-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

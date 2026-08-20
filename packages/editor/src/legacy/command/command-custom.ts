@@ -1,10 +1,10 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus } from '@app/utils/element-utils';
-import { Command } from './command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 
 import { CommandSuggestion, CommandSuggestionItem } from './command-tip.ts';
-import { Token } from './mark-string-manager.ts';
+import { Token } from '@app/commands/token.ts';
 import { TreeList } from '@app/legacy/components/tree-list.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Layout } from '@app/engine/layout/layout.ts';

@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RegionGetter } from '@app/legacy/command/region-accessor-window.ts';
+import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts';
 import {
 	useRegionGetterWindow,
 	type RegionGetterForm

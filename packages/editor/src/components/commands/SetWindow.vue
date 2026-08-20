@@ -17,7 +17,7 @@ import { useI18n } from 'vue-i18n';
 import { useSetWindowCommandSchema } from '@app/composables/commands/useSetWindowCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { WindowProperty } from '@app/legacy/command/set-window-property-window.ts';
+import { WindowProperty } from '@app/commands/property-window/set-window-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

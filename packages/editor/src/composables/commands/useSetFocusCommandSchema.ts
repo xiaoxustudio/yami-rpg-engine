@@ -1,7 +1,52 @@
-﻿import '@app/legacy/module/command/setFocus.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.setFocus = new CommandSchema({
+	name: 'setFocus',
+	fields: [
+		{ key: 'operation', default: 'add' },
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'mode', default: 'control-child-buttons' },
+		{ key: 'cancelable', default: true }
+	],
+	customParse({
+		operation,
+		element,
+		mode,
+		cancelable
+	}: {
+		operation: string;
+		element: unknown;
+		mode: string;
+		cancelable: unknown;
+	}) {
+		const words = Command.words.push(t('command.setFocus.' + operation));
+		switch (operation) {
+			case 'add':
+				if (mode === undefined) {
+					mode = 'control-child-buttons';
+				}
+				words.push(Command.parseElement!(element));
+				words.push(t('command.setFocus.' + mode));
+				if (cancelable) {
+					words.push(t('command.setFocus.cancelable'));
+				}
+				break;
+			case 'remove':
+				words.push(Command.parseElement!(element));
+				break;
+		}
+		return [
+			{ color: 'element' },
+			{ text: t('command.setFocus') + Token(': ') },
+			{ text: words.join() }
+		];
+	}
+});
 
 export function useSetFocusCommandSchema() {
 	const { form, save, load, commit } = useCommandSchema('setFocus', {

@@ -7,7 +7,7 @@ import '../variable/initialize.js';
 
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { AudioManager } from '@app/legacy/audio/audio-manager.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { CustomCommand } from '@app/legacy/command/custom-command-window.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Project } from '@app/legacy/data/project-settings-window.ts';

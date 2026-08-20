@@ -1,9 +1,58 @@
-﻿import '@app/legacy/module/command/switch.ts';
-import { clear, getFocus, read, write } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
+import { Command } from '@app/commands/command-object.ts';
+import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
+import { t } from '@app/i18n';
 import { reactive } from 'vue';
+
+Command.cases.switch = new CommandSchema({
+	name: 'switch',
+	customParse({
+		variable,
+		branches,
+		defaultCommands
+	}: {
+		variable: unknown;
+		branches: Array<{ commands: unknown }>;
+		defaultCommands: unknown;
+	}) {
+		const contents: Array<{
+			fold?: boolean;
+			color?: string;
+			text?: string;
+			children?: unknown;
+			break?: boolean;
+		}> = [
+			{ fold: true },
+			{ color: 'flow' },
+			{ text: t('command.switch') + ' ' },
+			{ color: 'normal' },
+			{ text: Command.parseVariable!(variable, 'any') },
+			{ break: true }
+		];
+		const textCase = t('command.switch.case');
+		for (const branch of branches) {
+			contents.push(
+				{ color: 'flow' },
+				{ text: textCase + ' ' },
+				{ color: 'normal' },
+				{ text: SwitchBranch.parse!(branch as never) },
+				{ children: branch.commands }
+			);
+		}
+		if (defaultCommands) {
+			contents.push(
+				{ color: 'flow' },
+				{ text: t('command.switch.default') },
+				{ children: defaultCommands }
+			);
+		}
+		contents.push({ color: 'flow' }, { text: t('command.switch.end') });
+		return contents;
+	}
+});
 
 const form = reactive<Record<string, unknown>>({});
 let defaultCommands: unknown[] | null = null;

@@ -17,7 +17,7 @@ import { useI18n } from 'vue-i18n';
 import { useSetImageCommandSchema } from '@app/composables/commands/useSetImageCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { ImageProperty } from '@app/legacy/command/set-image-property-window.ts';
+import { ImageProperty } from '@app/commands/property-window/set-image-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

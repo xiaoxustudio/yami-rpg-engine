@@ -1,7 +1,7 @@
 import { useArrayWindow } from '@app/composables/useArrayWindow';
 import { $ } from '@app/utils/dom';
 import { on, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { h, render } from 'vue';
 
 interface ArrayListTarget {

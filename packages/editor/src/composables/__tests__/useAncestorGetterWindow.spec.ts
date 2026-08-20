@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import AncestorGetter from '@app/components/tools/AncestorGetter.vue';
 import { useAncestorGetterWindow } from '@app/composables/useAncestorGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { AncestorGetter as AncestorGetterController } from '@app/legacy/command/ancestor-accessor-window.ts';
+import { AncestorGetter as AncestorGetterController } from '@app/commands/accessors/ancestor-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

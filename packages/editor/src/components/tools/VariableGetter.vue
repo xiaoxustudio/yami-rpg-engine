@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import {
 	useVariableGetterWindow,
 	type VariableGetterForm

@@ -1,6 +1,21 @@
-﻿import '@app/legacy/module/command/switchCollisionSystem.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus } from '@app/utils/element-utils';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.switchCollisionSystem = new CommandSchema({
+	name: 'switchCollisionSystem',
+	fields: [{ key: 'operation', default: 'enable-actor-collision' }],
+	customParse({ operation }: { operation: string }) {
+		return [
+			{ color: 'system' },
+			{ text: t('command.switchCollisionSystem') + Token(': ') },
+			{ text: t('command.switchCollisionSystem.' + operation) }
+		];
+	}
+});
 
 export function useSwitchCollisionSystemCommandSchema() {
 	return useCommandSchema('switchCollisionSystem', {

@@ -30,7 +30,7 @@ import { useI18n } from 'vue-i18n';
 import { useGetObjectPropertyCommandSchema } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { IndexBind } from '@app/legacy/module/command/getObjectProperty.ts';
+import { IndexBind } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

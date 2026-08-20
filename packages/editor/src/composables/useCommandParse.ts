@@ -1,6 +1,6 @@
 import { getVariable, reportError } from '@app/legacy/util/safe.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { Token } from '@app/legacy/command/mark-string-manager.ts';
+import { Token } from '@app/commands/token.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
@@ -66,10 +66,10 @@ export function fetchVariables(
 	const eventId = commands.eventId ?? '';
 	const calledEvents: string[] = [eventId];
 	let eventIndex = 0;
-	commandState.returnType = Data.events[eventId]?.returnType ?? 'none';
+	commandState.returnType = Data.events?.[eventId]?.returnType ?? 'none';
 	commandState.saveVars = true;
 	const fetchParameters = (guid: string): void => {
-		const globalEvent = Data.events[guid];
+		const globalEvent = Data.events?.[guid];
 		if (!globalEvent) return;
 		for (const { type, key } of globalEvent.parameters) {
 			let varType: string;
@@ -104,7 +104,7 @@ export function fetchVariables(
 			commandState.currentCommand = command;
 			if (id === 'callEvent') {
 				if (params?.type === 'global' && calledEvents.append(params.eventId)) {
-					const file = Data.manifest.guidMap[params.eventId]?.file;
+					const file = Data.manifest?.guidMap[params.eventId]?.file;
 					if (
 						file instanceof FileItem &&
 						!(file as unknown as { data?: { namespace?: unknown } }).data?.namespace
@@ -393,7 +393,7 @@ export function parseMultiLineString(string: string): string {
 
 export function parseSpriteName(animationId: string, spriteId: string): string {
 	if (spriteId === '') return Token('none');
-	const animation = Data.animations[animationId];
+	const animation = Data.animations?.[animationId];
 	const sprite = animation?.sprites.find((a: { id: string; name: string }) => a.id === spriteId);
 	if (sprite) return sprite.name;
 	commandState.invalid = true;
@@ -761,7 +761,7 @@ export function parseElement(element: CommandObjectShape): string | undefined {
 
 export function parsePresetObject(presetId: string): string {
 	if (presetId === '') return Token('none');
-	const name = Data.scenePresets[presetId]?.data.name;
+	const name = Data.scenePresets?.[presetId]?.data.name;
 	const textId = setTextId(`scene-object-${presetId}`);
 	return typeof name === 'string'
 		? textId + setPresetColor(name)
@@ -770,8 +770,8 @@ export function parsePresetObject(presetId: string): string {
 
 export function parsePresetElement(presetId: string, detailed: boolean = true): string {
 	if (presetId === '') return Token('none');
-	const uiId = Data.uiPresets[presetId]?.uiId ?? '';
-	const preset = Data.uiPresets[presetId]?.data;
+	const uiId = Data.uiPresets?.[presetId]?.uiId ?? '';
+	const preset = Data.uiPresets?.[presetId]?.data;
 	const textId = setTextId(`ui-object-${presetId}`);
 	let presetName = preset?.name;
 	if (presetName === undefined) {
@@ -791,7 +791,7 @@ export function parsePresetElement(presetId: string, detailed: boolean = true): 
 }
 
 export function parseTeam(id: string): string {
-	const team = Data.teams.map[id];
+	const team = Data.teams?.map?.[id];
 	if (team) return team.name;
 	commandState.invalid = true;
 	return parseUnlinkedId(id);
@@ -815,7 +815,7 @@ export function parseActorSelector(selector: string): string | undefined {
 
 export function parseFileName(id: string): string {
 	if (id === '') return Token('none');
-	const meta = Data.manifest.guidMap[id];
+	const meta = Data.manifest?.guidMap[id];
 	const textId = setTextId(`file-string-${id}`);
 	if (meta) return textId + setFileColor(File.parseMetaName!(meta));
 	commandState.invalid = true;
@@ -849,7 +849,7 @@ export function parseWait(wait: boolean): string {
 
 export function parseEasing(easingId: string, duration: number, wait: boolean): string {
 	if (duration === 0) return '';
-	const easing = Data.easings.map[easingId];
+	const easing = Data.easings?.map?.[easingId];
 	const time = parseVariableNumber(duration, 'ms');
 	const info = (easing?.name ?? `#${easingId}`) + Token(', ') + time;
 	return wait ? info + Token(', ') + t('transition.wait') : info;
@@ -902,5 +902,5 @@ export function parseTextTags(contents: TextContent[]): TextContent[] {
 const _removeTagRegex = /\$_textId_\$(?:\S+?)_\/_\$|\$_(?:\S+?)_\$/g;
 
 export function removeTextTags(string: string): string {
-	return string.replace(_removeTagRegex, '');
+	return string ? string.replace(_removeTagRegex, '') : '';
 }

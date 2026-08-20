@@ -1,12 +1,13 @@
 import '@app/legacy/_register.ts';
 import { Editor } from '@app/services/project/editor.ts';
-import { initCommandBridges } from '@app/legacy/command/init.ts';
+import { initCommandColorBridges, initCommandParseBridges } from '@app/commands/command-object.ts';
 import { initUpdater } from '@app/services/updater/register.ts';
 import { initBrowserSearchHistory } from '@app/legacy/module/browserSearchHistory.ts';
 import { initEslints } from '@app/legacy/module/eslints.ts';
 import { initEditorService } from '@app/services/project/init.ts';
 
-initCommandBridges();
+initCommandColorBridges();
+initCommandParseBridges();
 initUpdater();
 initBrowserSearchHistory();
 initEslints();

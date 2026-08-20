@@ -2,12 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import SetText from '@app/components/commands/SetText.vue';
-import { initCommandBridges } from '@app/legacy/command/init.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command, initCommandParseBridges } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
-initCommandBridges();
+initCommandParseBridges();
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

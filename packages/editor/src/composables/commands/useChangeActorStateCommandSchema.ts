@@ -1,7 +1,51 @@
-﻿import '@app/legacy/module/command/changeActorState.ts';
-import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+﻿import { getFocus, read } from '@app/utils/element-utils';
+import { Command } from '@app/commands/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
+
+Command.cases.changeActorState = new CommandSchema({
+	name: 'changeActorState',
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'operation', default: 'add' },
+		{ key: 'stateId', default: '' },
+		{ key: 'state', default: { type: 'trigger' } }
+	],
+	parseOperation(operation: string) {
+		return t('command.changeActorState.' + operation);
+	},
+	customParse({
+		actor,
+		operation,
+		stateId,
+		state
+	}: {
+		actor: unknown;
+		operation: string;
+		stateId: unknown;
+		state: unknown;
+	}) {
+		const words = Command.words
+			.push(Command.parseActor!(actor))
+			.push(this.parseOperation!(operation));
+		switch (operation) {
+			case 'add':
+			case 'remove':
+				words.push(Command.parseFileName!(stateId));
+				break;
+			case 'remove-instance':
+				words.push(Command.parseState!(state));
+				break;
+		}
+		return [
+			{ color: 'actor' },
+			{ text: t('command.changeActorState') + Token(': ') },
+			{ text: words.join() }
+		];
+	}
+});
 
 export function useChangeActorStateCommandSchema() {
 	const { form, save, load, commit } = useCommandSchema('changeActorState', {

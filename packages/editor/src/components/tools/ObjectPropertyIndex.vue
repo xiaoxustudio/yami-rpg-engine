@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { IndexBind } from '@app/legacy/module/command/getObjectProperty.ts';
+import { IndexBind } from '@app/composables/commands/useGetObjectPropertyCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useInspectorStore } from '@app/stores/inspector';

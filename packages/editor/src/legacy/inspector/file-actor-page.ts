@@ -3,7 +3,7 @@ import { getBrowserInstance } from '@app/stores/browser.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { clear, getFocus, read, write } from '@app/utils/element-utils';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';

@@ -1,4 +1,4 @@
-import '@app/legacy/inspector/element-page.ts';
+import '@app/inspector/element-page.ts';
 import '@app/legacy/inspector/element-image-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

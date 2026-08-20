@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
+import { ElementGetter } from '@app/commands/accessors/element-accessor-window.ts';
 import {
 	useElementGetterWindow,
 	type ElementGetterForm

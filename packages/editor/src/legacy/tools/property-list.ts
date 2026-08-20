@@ -2,7 +2,7 @@ import { $, getElementReader, getElementWriter } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus } from '@app/utils/element-utils';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { createSelectBox } from '@app/legacy/components/select-box.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';

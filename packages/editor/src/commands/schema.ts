@@ -3,26 +3,26 @@ import { markRaw } from 'vue';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, on, read, write } from '@app/utils/element-utils';
 import { reportError } from '@app/legacy/util/safe.ts';
-import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
-import { AncestorGetter } from '@app/legacy/command/ancestor-accessor-window.ts';
-import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
-import { commandCases } from '@app/legacy/command/command-registry.ts';
+import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
+import { AncestorGetter } from '@app/commands/accessors/ancestor-accessor-window.ts';
+import { AngleGetter } from '@app/commands/accessors/angle-accessor-window.ts';
+import { Command, bindCommandSchema } from '@app/commands/command-object.ts';
+import { commandCases } from '@app/commands/command-registry.ts';
 import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';
-import { ElementGetter } from '@app/legacy/command/element-accessor-window.ts';
-import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
-import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
-import { LightGetter } from '@app/legacy/command/preset-accessor-factory.ts';
-import { Token } from '@app/legacy/command/mark-string-manager.ts';
-import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
-import { RegionGetter } from '@app/legacy/command/region-accessor-window.ts';
-import { ObjectGetter } from '@app/legacy/command/preset-accessor-factory.ts';
-import { SkillGetter } from '@app/legacy/command/skill-accessor-window.ts';
-import { StateGetter } from '@app/legacy/command/state-accessor-window.ts';
+import { ElementGetter } from '@app/commands/accessors/element-accessor-window.ts';
+import { EquipmentGetter } from '@app/commands/accessors/equipment-accessor-window.ts';
+import { ItemGetter } from '@app/commands/accessors/item-accessor-window.ts';
+import { LightGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
+import { Token } from '@app/commands/token.ts';
+import { PositionGetter } from '@app/commands/accessors/position-accessor-window.ts';
+import { RegionGetter } from '@app/commands/accessors/region-accessor-window.ts';
+import { ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
+import { SkillGetter } from '@app/commands/accessors/skill-accessor-window.ts';
+import { StateGetter } from '@app/commands/accessors/state-accessor-window.ts';
 import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
-import { TilemapGetter } from '@app/legacy/command/tilemap-accessor-window.ts';
-import { TriggerGetter } from '@app/legacy/command/trigger-accessor-window.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { TilemapGetter } from '@app/commands/accessors/tilemap-accessor-window.ts';
+import { TriggerGetter } from '@app/commands/accessors/trigger-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { t } from '@app/i18n';
 
@@ -418,3 +418,5 @@ export class CommandSchema {
 		}
 	}
 }
+
+bindCommandSchema(CommandSchema);

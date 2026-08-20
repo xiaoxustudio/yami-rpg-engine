@@ -8,7 +8,7 @@ import {
 	useObjectGetterWindow
 } from '@app/composables/usePresetGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { LightGetter, ObjectGetter } from '@app/legacy/command/preset-accessor-factory.ts';
+import { LightGetter, ObjectGetter } from '@app/commands/accessors/preset-accessor-factory.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

@@ -1,7 +1,35 @@
-﻿import '@app/legacy/module/command/setWindow.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { WindowProperty } from '@app/commands/property-window/set-window-property-window.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.setWindow = new CommandSchema({
+	name: 'setWindow',
+	fields: [
+		{ key: 'element', default: { type: 'trigger' } },
+		{ key: 'properties', default: [] }
+	],
+	customParse({
+		element,
+		properties
+	}: {
+		element: unknown;
+		properties: Array<{ key: string; value: unknown }>;
+	}) {
+		const words = Command.words.push(Command.parseElement!(element));
+		for (const property of properties) {
+			words.push(WindowProperty.parse!(property));
+		}
+		return [
+			{ color: 'element' },
+			{ text: t('command.setWindow') + Token(': ') },
+			{ text: words.join() }
+		];
+	}
+});
 
 export function useSetWindowCommandSchema() {
 	const { form, save, load } = useCommandSchema('setWindow', {

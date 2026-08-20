@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
-import { Command } from '@app/legacy/command/command-object.ts';
-import { commandCases } from '@app/legacy/command/command-registry.ts';
+import { Command } from '@app/commands/command-object.ts';
+import { commandCases } from '@app/commands/command-registry.ts';
 import { getFocus, read, write } from '@app/utils/element-utils';
 
 export function commit(data: Record<string, unknown>): unknown {

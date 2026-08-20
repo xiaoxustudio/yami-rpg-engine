@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import TriggerGetter from '@app/components/tools/TriggerGetter.vue';
 import { useTriggerGetterWindow } from '@app/composables/useTriggerGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { TriggerGetter as TriggerGetterController } from '@app/legacy/command/trigger-accessor-window.ts';
+import { TriggerGetter as TriggerGetterController } from '@app/commands/accessors/trigger-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

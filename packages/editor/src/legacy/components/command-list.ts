@@ -10,7 +10,7 @@ import { SettingConfig } from '@app/legacy/module/settingconfig';
 import { getVariable } from '@app/legacy/util/safe.ts';
 import { CommandHistory } from '@ui-kit';
 import { ctrl } from '@app/utils/event-accessors';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { CommandSuggestion } from '@app/legacy/command/command-tip.ts';

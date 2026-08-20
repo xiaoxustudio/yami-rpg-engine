@@ -1,7 +1,48 @@
-﻿import '@app/legacy/module/command/translateActor.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { Data } from '@app/legacy/data/data-object.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.translateActor = new CommandSchema({
+	name: 'translateActor',
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'angle', default: { type: 'absolute', degrees: 0 } },
+		{ key: 'distance', default: 0 },
+		{ key: 'easingId', default: () => Data.easings[0].id },
+		{ key: 'duration', default: 0 },
+		{ key: 'wait', default: false }
+	],
+	customParse({
+		actor,
+		angle,
+		distance,
+		easingId,
+		duration,
+		wait
+	}: {
+		actor: unknown;
+		angle: unknown;
+		distance: unknown;
+		easingId: unknown;
+		duration: unknown;
+		wait: unknown;
+	}) {
+		const words = Command.words
+			.push(Command.parseActor!(actor))
+			.push(Command.parseAngle!(angle))
+			.push(Command.parseVariableNumber!(distance, 't'))
+			.push(Command.parseEasing!(easingId, duration, wait));
+		return [
+			{ color: 'actor' },
+			{ text: t('command.translateActor') + Token(': ') },
+			{ text: words.join() }
+		];
+	}
+});
 
 export function useTranslateActorCommandSchema() {
 	const { form, save, load, commit } = useCommandSchema('translateActor', {

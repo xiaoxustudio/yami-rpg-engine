@@ -1,9 +1,67 @@
-﻿import '@app/legacy/module/command/changeActorEquipment.ts';
-import { getFocus, read, write } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+﻿import { getFocus, read, write } from '@app/utils/element-utils';
+import { Command } from '@app/commands/command-object.ts';
 import { commit } from '@app/composables/useCommandSchema';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { reactive } from 'vue';
+
+Command.cases.changeActorEquipment = new CommandSchema({
+	name: 'changeActorEquipment',
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'operation', default: 'add' },
+		{ key: 'slot', default: () => Enum.getDefStringId!('equipment-slot') },
+		{ key: 'equipmentId', default: '' },
+		{ key: 'equipment', default: { type: 'trigger' } }
+	],
+	customParse({
+		actor,
+		operation,
+		slot,
+		equipmentId,
+		equipment
+	}: {
+		actor: unknown;
+		operation: string;
+		slot: unknown;
+		equipmentId: unknown;
+		equipment: unknown;
+	}) {
+		const words = Command.words
+			.push(Command.parseActor!(actor))
+			.push(t('command.changeActorEquipment.' + operation));
+		switch (operation) {
+			case 'add': {
+				const equipSlot = Command.parseVariableEnum!('equipment-slot', slot);
+				const equipName = Command.parseFileName!(equipmentId);
+				words.push(equipSlot + Token(' = ') + equipName);
+				break;
+			}
+			case 'remove':
+				words.push(Command.parseFileName!(equipmentId));
+				break;
+			case 'add-instance': {
+				const equipSlot = Command.parseVariableEnum!('equipment-slot', slot);
+				const equipName = Command.parseEquipment!(equipment);
+				words.push(equipSlot + Token(' = ') + equipName);
+				break;
+			}
+			case 'remove-instance':
+				words.push(Command.parseEquipment!(equipment));
+				break;
+			case 'remove-slot':
+				words.push(Command.parseVariableEnum!('equipment-slot', slot));
+				break;
+		}
+		return [
+			{ color: 'actor' },
+			{ text: t('command.changeActorEquipment') + Token(': ') },
+			{ text: words.join() }
+		];
+	}
+});
 
 const form = reactive<Record<string, unknown>>({});
 

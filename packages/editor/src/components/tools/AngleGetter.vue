@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { AngleGetter } from '@app/legacy/command/angle-accessor-window.ts';
+import { AngleGetter } from '@app/commands/accessors/angle-accessor-window.ts';
 import {
 	useAngleGetterWindow,
 	type AngleGetterForm

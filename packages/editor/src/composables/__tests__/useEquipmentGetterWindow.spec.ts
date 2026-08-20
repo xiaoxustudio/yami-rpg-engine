@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import EquipmentGetter from '@app/components/tools/EquipmentGetter.vue';
 import { useEquipmentGetterWindow } from '@app/composables/useEquipmentGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { EquipmentGetter as EquipmentGetterController } from '@app/legacy/command/equipment-accessor-window.ts';
+import { EquipmentGetter as EquipmentGetterController } from '@app/commands/accessors/equipment-accessor-window.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 
 vi.mock('@app/stores/local', () => ({

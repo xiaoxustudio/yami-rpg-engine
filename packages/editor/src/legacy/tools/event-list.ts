@@ -1,5 +1,5 @@
 ﻿import { getListConfig } from '@ui-kit';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { addClass } from '@app/utils/element-utils';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';

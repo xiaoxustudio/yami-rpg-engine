@@ -6,7 +6,7 @@ import {
 	NumberOperand,
 	type NumberOperandData
 } from '@app/legacy/command/set-value-operand-window.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

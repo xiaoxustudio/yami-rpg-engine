@@ -3,7 +3,7 @@ import { $, getElementWriter } from '@app/utils/dom';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, hide, on, show } from '@app/utils/element-utils.ts';
-import { Command } from './command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { TreeList } from '@app/legacy/components/tree-list.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

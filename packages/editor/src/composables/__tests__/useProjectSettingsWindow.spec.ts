@@ -46,7 +46,7 @@ vi.mock('@app/composables/useCommandParse.ts', () => ({
 	parseFileName: (text: string) => text
 }));
 
-vi.mock('@app/legacy/command/command-object.ts', () => ({
+vi.mock('@app/commands/command-object.ts', () => ({
 	Command: { removeTextTags: (text: string) => text, parseFileName: (text: string) => text }
 }));
 

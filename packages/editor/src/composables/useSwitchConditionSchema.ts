@@ -15,8 +15,8 @@ import {
 	removeTextTags
 } from '@app/composables/useCommandParse.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
-import { Token } from '@app/legacy/command/mark-string-manager.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Token } from '@app/commands/token.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { t } from '@app/i18n';
 
 export interface SwitchConditionData {

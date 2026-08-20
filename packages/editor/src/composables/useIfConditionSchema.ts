@@ -23,8 +23,8 @@ import {
 	parseTeam,
 	removeTextTags
 } from '@app/composables/useCommandParse.ts';
-import { Token } from '@app/legacy/command/mark-string-manager.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Token } from '@app/commands/token.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { t } from '@app/i18n';

@@ -7,8 +7,8 @@ import {
 	NumberOperand,
 	type NumberOperandData
 } from '@app/legacy/command/set-value-operand-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { Command } from '@app/commands/command-object.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';

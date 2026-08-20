@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { EquipmentGetter } from '@app/legacy/command/equipment-accessor-window.ts';
+import { EquipmentGetter } from '@app/commands/accessors/equipment-accessor-window.ts';
 import {
 	useEquipmentGetterWindow,
 	type EquipmentGetterForm

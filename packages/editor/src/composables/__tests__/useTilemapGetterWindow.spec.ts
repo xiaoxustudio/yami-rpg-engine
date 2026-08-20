@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import TilemapGetter from '@app/components/tools/TilemapGetter.vue';
 import { useTilemapGetterWindow } from '@app/composables/useTilemapGetterWindow';
 import { Window } from '@app/legacy/tools/window-object.ts';
-import { TilemapGetter as TilemapGetterController } from '@app/legacy/command/tilemap-accessor-window.ts';
+import { TilemapGetter as TilemapGetterController } from '@app/commands/accessors/tilemap-accessor-window.ts';
 
 vi.mock('@app/stores/local', () => ({
 	useLocalStore: () => ({ getLabel: () => '', syncState: vi.fn() })

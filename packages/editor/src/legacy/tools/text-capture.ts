@@ -4,7 +4,7 @@ import type { TextSuggestionTarget } from '@app/legacy/command/text-tip.ts';
 import { getFocus } from '@app/utils/element-utils';
 import { ctrl } from '@app/utils/event-accessors';
 import { TextSuggestion } from '@app/legacy/command/text-tip.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Menu } from '@app/legacy/components/menu-list.ts';
 import { Localization } from '@app/legacy/local/local-window.ts';
 import { Printer } from '@app/legacy/printer/printer.ts';

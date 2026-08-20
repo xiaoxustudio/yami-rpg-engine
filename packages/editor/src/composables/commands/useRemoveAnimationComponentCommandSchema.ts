@@ -1,7 +1,40 @@
-﻿import '@app/legacy/module/command/removeAnimationComponent.ts';
-import { getFocus, read } from '@app/utils/element-utils';
+﻿import { getFocus, read } from '@app/utils/element-utils';
 import { Animation } from '@app/legacy/animation/animation-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
+
+Command.cases.removeAnimationComponent = new CommandSchema({
+	name: 'removeAnimationComponent',
+	fields: [
+		{ key: 'actor', default: { type: 'trigger' } },
+		{ key: 'animationId', default: '', required: true },
+		{ key: 'motion', default: '', required: true }
+	],
+	customParse({
+		actor,
+		animationId,
+		motion
+	}: {
+		actor: unknown;
+		animationId: unknown;
+		motion: unknown;
+	}) {
+		const words = Command.words
+			.push(Command.parseActor!(actor))
+			.push(Command.parseFileName!(animationId))
+			.push(Command.parseEnumString!(motion));
+		return [
+			{ color: 'actor' },
+			{
+				text: t('command.removeAnimationComponent') + Token(': ')
+			},
+			{ text: words.join() }
+		];
+	}
+});
 
 export function useRemoveAnimationComponentCommandSchema() {
 	const { form, save, load } = useCommandSchema('removeAnimationComponent', {

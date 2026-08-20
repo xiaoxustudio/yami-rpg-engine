@@ -23,7 +23,7 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUploadFileCommandSchema } from '@app/composables/commands/useUploadFileCommandSchema';
 import { $ } from '@app/utils/dom';
-import { RequestkeyValueBind } from '@app/legacy/module/command/requestURL.ts';
+import { RequestkeyValueBind } from '@app/composables/commands/useRequestURLCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

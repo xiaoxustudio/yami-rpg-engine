@@ -17,7 +17,7 @@ import { useI18n } from 'vue-i18n';
 import { useSetTextBoxCommandSchema } from '@app/composables/commands/useSetTextBoxCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { TextBoxProperty } from '@app/legacy/command/set-textbox-property-window.ts';
+import { TextBoxProperty } from '@app/commands/property-window/set-textbox-property-window.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import CustomBox from '@app/components/common/CustomBox.vue';

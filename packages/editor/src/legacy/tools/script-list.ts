@@ -3,7 +3,7 @@ import { File } from '@app/legacy/file/file-system-core.ts';
 import { getSelectorInstance } from '@app/stores/selector.ts';
 import { getBrowserInstance, getBrowserStore } from '@app/stores/browser.ts';
 import { addClass, hasClass, removeClass } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { FileItem } from '@app/legacy/file/file-item.ts';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { PluginManager } from '@app/legacy/plugin/plugin.ts';

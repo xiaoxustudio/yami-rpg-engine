@@ -17,7 +17,7 @@ import {
 } from '@app/utils/element-utils.ts';
 import { Timer } from '@app/utils/timer';
 import { ctrl } from '@app/utils/event-accessors';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Cursor } from '@app/legacy/tools/pointer-object.ts';
 import { Curve } from './curve-window.ts';

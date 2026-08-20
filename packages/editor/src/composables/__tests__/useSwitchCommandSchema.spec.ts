@@ -6,9 +6,9 @@ import SwitchBranchWindow from '@app/components/tools/SwitchBranch.vue';
 import SwitchConditionWindow from '@app/components/tools/SwitchCondition.vue';
 import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
 import { SwitchCondition } from '@app/legacy/command/match-condition-window.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { CommandSchema } from '@app/commands/schema.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/composables/useCommandColor.ts', () => ({

@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PositionGetter } from '@app/legacy/command/position-accessor-window.ts';
+import { PositionGetter } from '@app/commands/accessors/position-accessor-window.ts';
 import {
 	usePositionGetterWindow,
 	type PositionGetterForm

@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ItemGetter } from '@app/legacy/command/item-accessor-window.ts';
+import { ItemGetter } from '@app/commands/accessors/item-accessor-window.ts';
 import { useItemGetterWindow, type ItemGetterForm } from '@app/composables/useItemGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

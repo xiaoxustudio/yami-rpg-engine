@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ActorGetter } from '@app/legacy/command/actor-accessor-window.ts';
+import { ActorGetter } from '@app/commands/accessors/actor-accessor-window.ts';
 import { useActorGetterWindow, type ActorGetterForm } from '@app/composables/useActorGetterWindow';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

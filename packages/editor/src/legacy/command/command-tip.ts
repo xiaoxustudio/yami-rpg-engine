@@ -12,7 +12,7 @@ import {
 	setTooltip,
 	show
 } from '@app/utils/element-utils.ts';
-import { Command } from './command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { t, createGetter } from '@app/i18n';
 import { parseLocalTip } from '@app/legacy/localize/dom-localizer';

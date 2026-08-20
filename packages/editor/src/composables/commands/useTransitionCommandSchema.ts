@@ -1,10 +1,48 @@
-﻿import '@app/legacy/module/command/transition.ts';
-import { clear, getFocus, read, write } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
+﻿import { clear, getFocus, read, write } from '@app/utils/element-utils';
+import { Command } from '@app/commands/command-object.ts';
+import { Token } from '@app/commands/token.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { commit } from '@app/composables/useCommandSchema';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
+import { t } from '@app/i18n';
 import { reactive } from 'vue';
+
+Command.cases.transition = new CommandSchema({
+	name: 'transition',
+	customParse({
+		variable,
+		start,
+		end,
+		easingId,
+		duration,
+		commands
+	}: {
+		variable: unknown;
+		start: unknown;
+		end: unknown;
+		easingId: unknown;
+		duration: unknown;
+		commands: unknown;
+	}) {
+		const varName = Command.parseVariable!(variable, 'number', true);
+		const from = Command.parseVariableNumber!(start);
+		const to = Command.parseVariableNumber!(end);
+		const easing = Command.parseEasing!(easingId, duration);
+		const expression = varName + Token(' = ') + from + Token(' -> ') + to;
+		const words = Command.words.push(expression).push(easing);
+		return [
+			{ fold: true },
+			{ color: 'flow' },
+			{ text: t('command.transition') + ' ' },
+			{ color: 'restore' },
+			{ text: words.join() },
+			{ children: commands },
+			{ color: 'flow' },
+			{ text: t('command.transition.end') }
+		];
+	}
+});
 
 const form = reactive<Record<string, unknown>>({});
 let commands: unknown[] | null = null;

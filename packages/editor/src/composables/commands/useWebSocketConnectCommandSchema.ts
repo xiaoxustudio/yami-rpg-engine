@@ -1,8 +1,48 @@
-﻿import '@app/legacy/module/command/webSocketConnect.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.webSocketConnect = new CommandSchema({
+	name: 'webSocketConnect',
+	fields: [
+		{ key: 'url', default: '' },
+		{ key: 'id', default: '' },
+		{ key: 'protocols', default: '' },
+		{ key: 'onOpen', default: '' },
+		{ key: 'onMessage', default: '' },
+		{ key: 'onError', default: '' },
+		{ key: 'onClose', default: '' }
+	],
+	customParse({
+		url = '',
+		id = '',
+		protocols = '',
+		onOpen = '',
+		onMessage = '',
+		onError = '',
+		onClose = ''
+	}) {
+		return [
+			{ color: 'network' },
+			{ text: t('command.webSocketConnect') },
+			{ text: ' , ' },
+			{ color: 'normal' },
+			{
+				text:
+					typeof url === 'string'
+						? url.length > 20
+							? url.substring(0, 20) + '...'
+							: url
+						: Command.parseVariable!(url, 'any')
+			},
+			{ text: ' , ' },
+			{ text: id }
+		];
+	}
+});
 
 export function useWebSocketConnectCommandSchema() {
 	const { form, save, load, commit } = useCommandSchema('webSocketConnect', {

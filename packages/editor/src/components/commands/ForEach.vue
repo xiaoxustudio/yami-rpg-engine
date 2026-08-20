@@ -60,7 +60,7 @@ import { useI18n } from 'vue-i18n';
 import { $ } from '@app/utils/dom';
 import { createGetter } from '@app/i18n';
 import { on } from '@app/utils/element-utils.ts';
-import type { ForEachForm } from '@app/legacy/module/command/forEach.ts';
+import type { ForEachForm } from '@app/composables/commands/useForEachCommandSchema';
 import { useForEachCommandSchema } from '@app/composables/commands/useForEachCommandSchema';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

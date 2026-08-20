@@ -28,7 +28,7 @@ import { useI18n } from 'vue-i18n';
 import { useMoveLightCommandSchema } from '@app/composables/commands/useMoveLightCommandSchema';
 import { $ } from '@app/utils/dom';
 import { clear } from '@app/utils/element-utils';
-import { LightProperty } from '@app/legacy/command/move-light-property-window.ts';
+import { LightProperty } from '@app/commands/property-window/move-light-property-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';

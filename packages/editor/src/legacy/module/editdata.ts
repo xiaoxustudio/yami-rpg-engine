@@ -1,7 +1,7 @@
 import { $ } from '@app/utils/dom';
 import { Window } from '@app/legacy/tools/window-object.ts';
 import { getFocus, hasClass, hide, on, show } from '@app/utils/element-utils.ts';
-import { Command } from '@app/legacy/command/command-object.ts';
+import { Command } from '@app/commands/command-object.ts';
 import { Title } from '@app/legacy/title/title-bar.ts';
 import { createGetter } from '@app/i18n';
 import { h, render } from 'vue';

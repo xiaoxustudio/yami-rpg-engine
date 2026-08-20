@@ -1,8 +1,35 @@
-﻿import '@app/legacy/module/command/webSocketSend.ts';
+﻿import { Command } from '@app/commands/command-object.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { t } from '@app/i18n';
 import { getFocus, read } from '@app/utils/element-utils';
-import { Command } from '@app/legacy/command/command-object.ts';
-import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
+import { VariableGetter } from '@app/commands/accessors/variable-accessor-window.ts';
 import { useCommandSchema } from '@app/composables/useCommandSchema';
+
+Command.cases.webSocketSend = new CommandSchema({
+	name: 'webSocketSend',
+	fields: [
+		{ key: 'id', default: '' },
+		{ key: 'data', default: '' }
+	],
+	customParse({ id = '', data = '' }) {
+		return [
+			{ color: 'network' },
+			{ text: t('command.webSocketSend') },
+			{ text: ' , ' },
+			{ color: 'normal' },
+			{ text: id },
+			{ text: ' , ' },
+			{
+				text:
+					typeof data === 'string'
+						? data.length > 20
+							? data.substring(0, 20) + '...'
+							: data
+						: Command.parseVariable!(data, 'any')
+			}
+		];
+	}
+});
 
 export function useWebSocketSendCommandSchema() {
 	const { form, save, load, commit } = useCommandSchema('webSocketSend', {
