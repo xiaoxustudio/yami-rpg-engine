@@ -1,6 +1,6 @@
 import { Command } from '@app/legacy/command/command-object.ts';
 import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
-import { CommandSchema } from './schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 
 Command.cases.if = new CommandSchema({

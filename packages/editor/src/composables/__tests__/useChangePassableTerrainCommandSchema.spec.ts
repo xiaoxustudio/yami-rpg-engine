@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import ChangePassableTerrain from '@app/components/commands/ChangePassableTerrain.vue';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 
 vi.mock('@app/stores/local', () => ({

@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetNumber from '@app/components/commands/SetNumber.vue';
 import SetNumberOperand from '@app/components/tools/SetNumberOperand.vue';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';

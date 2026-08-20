@@ -1,5 +1,5 @@
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from './schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { getMonaco } from '@app/utils/monaco';
 import { h, render } from 'vue';
 import { Title } from '@app/legacy/title/title-bar.ts';

@@ -1,3 +1,3 @@
-import type { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import type { CommandSchema } from '@app/commands/schema.ts';
 
 export const commandCases: Record<string, CommandSchema> = {};

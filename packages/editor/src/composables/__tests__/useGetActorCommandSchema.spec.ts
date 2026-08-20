@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import GetActor from '@app/components/commands/GetActor.vue';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

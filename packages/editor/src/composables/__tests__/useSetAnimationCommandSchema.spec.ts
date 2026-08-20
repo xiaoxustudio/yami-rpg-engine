@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import SetAnimation from '@app/components/commands/SetAnimation.vue';
 import { initCommandBridges } from '@app/legacy/command/init.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { Data } from '@app/legacy/data/data-object.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';
 

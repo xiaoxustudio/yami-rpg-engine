@@ -1,6 +1,6 @@
 import { $, getElementWriter } from '@app/utils/dom';
 import { getBrowserInstance } from '@app/stores/browser.ts';
-import { clear, read } from '@app/utils/element-utils';
+import { clear } from '@app/utils/element-utils';
 import { File } from '@app/legacy/file/file-system-core.ts';
 import { Inspector } from './inspector.ts';
 
@@ -22,7 +22,6 @@ interface FileEntityPage {
 	open: (entity: FileEntityData, meta: { file: unknown }) => void;
 	close: () => void;
 	update: (entity: FileEntityData, key: string, value: unknown) => void;
-	paramInput: (event: Event) => void;
 	listChange: (event: Event) => void;
 }
 
@@ -36,7 +35,6 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 		open: null,
 		close: null,
 		update: null,
-		paramInput: null,
 		listChange: null
 	} as unknown as FileEntityPage;
 
@@ -58,9 +56,6 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 			this.target = target;
 			this.meta = meta;
 			const write = getElementWriter(domKey, target);
-			write('icon');
-			write('clip');
-			write('inherit');
 			write('attributes');
 			write('events');
 			write('scripts');
@@ -102,20 +97,6 @@ function createFileEntityPage(name: string, inspectorKey: string): FileEntityPag
 				}
 				break;
 		}
-	};
-
-	entity.paramInput = function (this: HTMLElement, event: Event) {
-		const target = event?.target ?? document.activeElement;
-		let element = target;
-		while (element instanceof Element) {
-			if (new RegExp(`^${domKey}-`).test(element.id)) break;
-			element = element.parentElement;
-		}
-		entity.update(
-			entity.target!,
-			Inspector.getKey!(element as HTMLElement),
-			read(element as HTMLElement)
-		);
 	};
 
 	entity.listChange = function (this: FileEntityPage, event: Event) {

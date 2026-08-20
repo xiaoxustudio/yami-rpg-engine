@@ -1,3 +1,4 @@
+import '@app/legacy/inspector/file-entity-page.ts';
 import { reactive } from 'vue';
 import { Inspector } from '@app/legacy/inspector/inspector.ts';
 import { read } from '@app/utils/element-utils';

@@ -7,7 +7,7 @@ import IfConditionWindow from '@app/components/tools/IfCondition.vue';
 import { IfBranch } from '@app/legacy/command/conditional-branch-window.ts';
 import { IfCondition } from '@app/legacy/command/conditional-condition-window.ts';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { VariableGetter } from '@app/legacy/command/variable-accessor-window.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Data } from '@app/legacy/data/data-object.ts';

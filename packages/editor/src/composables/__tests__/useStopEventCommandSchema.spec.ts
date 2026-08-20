@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import StopEvent from '@app/components/commands/StopEvent.vue';
 import { Command } from '@app/legacy/command/command-object.ts';
-import { CommandSchema } from '@app/legacy/module/command/schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { EventEditor } from '@app/legacy/command/event-editor.ts';
 import { Enum } from '@app/legacy/enum/enum-window.ts';
 import { Window } from '@app/legacy/tools/window-object.ts';

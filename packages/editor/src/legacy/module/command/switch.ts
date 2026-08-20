@@ -1,6 +1,6 @@
 import { Command } from '@app/legacy/command/command-object.ts';
 import { SwitchBranch } from '@app/legacy/command/match-branch-window.ts';
-import { CommandSchema } from './schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 
 Command.cases.switch = new CommandSchema({

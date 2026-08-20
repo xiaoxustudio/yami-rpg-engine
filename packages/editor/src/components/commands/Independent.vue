@@ -6,13 +6,32 @@
 </WindowFrame>
 </template>
 
-<script setup lang="ts">
-
-import '@app/legacy/module/command/independent.ts';
+<script lang="ts">
 import { Command } from '@app/legacy/command/command-object.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
+import { commandCases } from '@app/legacy/command/command-registry.ts';
+import { t } from '@app/i18n';
+
+commandCases.independent = new CommandSchema({
+	name: 'independent',
+	noWindow: true,
+	customParse({ commands }: { commands: unknown }) {
+		return [
+			{ fold: true },
+			{ color: 'flow' },
+			{ text: t('command.independent') },
+			{ children: commands },
+			{ text: t('command.independent.end') }
+		];
+	},
+	customSave() {
+		Command.save({ commands: [] });
+	}
+});
+</script>
+
+<script setup lang="ts">
 import WindowFrame from '@app/components/common/WindowFrame.vue';
 import TitleBar from '@app/components/common/TitleBar.vue';
 import { useLocalStore } from '@app/stores/local';
-
-
 </script>

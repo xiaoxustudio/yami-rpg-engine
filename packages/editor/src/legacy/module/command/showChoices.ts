@@ -1,7 +1,7 @@
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { GameLocal } from '@app/legacy/local/local-object.ts';
-import { CommandSchema } from './schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 
 Command.cases.showChoices = new CommandSchema({

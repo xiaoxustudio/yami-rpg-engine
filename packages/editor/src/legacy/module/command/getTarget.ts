@@ -1,7 +1,7 @@
 import { Command } from '@app/legacy/command/command-object.ts';
 import { Token } from '@app/legacy/command/mark-string-manager.ts';
 import { Attribute } from '@app/legacy/attribute/attribute-window.ts';
-import { CommandSchema } from './schema.ts';
+import { CommandSchema } from '@app/commands/schema.ts';
 import { t } from '@app/i18n';
 
 Command.cases.getTarget = new CommandSchema({
